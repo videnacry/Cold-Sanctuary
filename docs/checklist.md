@@ -577,6 +577,15 @@ Decisión del usuario (2026-09-11): **diseñar a fondo primero** (hecho) → **e
 - [ ] Vivencias (frases de conversación, `PhrasePools`) de la familia y los amigos: hacen falta datos de Berón sobre cada uno.
 - [ ] Más casas del árbol (una 4.ª por árbol, con árboles más altos) para los recién llegados.
 
+## Camas de 4 y guerra de almohadas (2026-11-04; rama `claude/edif-personajes`; [`guerra-de-almohadas.md`](guerra-de-almohadas.md))
+- [x] Camas de 4 plazas (colchón de 3,60 × 2,10) en las 18 casas del árbol; casa de 9 × 7 m con los 2 m de paso; cada uno duerme en su plaza (la pareja, en plazas distintas).
+- [x] Ring de almohadas sobre la plataforma central: cama colosal de n × n celdas de 2,5 m (n = ⌈√residentes⌉: hoy 5 × 5, caben 25 para 19), borde blando, almohadones, 50 almohadas sueltas, pista de alfombras propia.
+- [x] Regla y validador (`PillowRing.Validate`, manual J15): falla si no caben los residentes o el personal; al reconstruir crece.
+- [x] Actividad de todos a la vez en el horario libre (sábado 20 h; `LeisureRoster.Activity.together`, etiqueta del ring) con `PillowFight` (coger almohada, almohadazo, risa, vínculo, acotado).
+- [x] Prueba `PillowFightTest` (grupo 89).
+- [ ] Tester: reconstruir SampleScene (solo el santuario) y guardarla; grupos 89, 65, 28 y 55 (frutales de las terrazas); fotos del ring y de una casa.
+- [ ] Regla J16 (todos los miembros a la vez) en el resto de centros: gimnasio, salas de yoga y catálogo de ocio.
+
 ## Charlas entre personas (2026-11-04; [`conversaciones.md`](conversaciones.md))
 - [x] Resumen del sistema que había (`CommunicationSpell`, `Mind`, `SocialField`, vínculos): nadie llevaba el hechizo, solo Mentes, no se veía, sin contexto.
 - [x] `ConversationDirector` (uno por escena con personas): humanos e insectos-humanos (`PersonLife`), personal de la jornada y `Conversable`; humano↔humano, insecto↔insecto y humano↔insecto en la misma escena; cercanía, vínculo, actividad compartida (puesto, comida, franja libre) y ganas de hablar.

@@ -75,6 +75,7 @@ public static class ResidentialBuilder
             Vector3 trunk = trees[i < 12 ? i / 2 : i - 12], away = _houses[i].pos - trunk; away.y = 0f;
             _terraces.Add(_houses[i].pos + away.normalized * (CabinW * 0.5f + 3.5f));   // (el centro de la terraza de 7 m, pegada a la casa)
         }
+        RingSize(Owners.Length + Partners.Count);   // (antes que los árboles: sus ramas esquivan el ring)
         for (int k = 0; k < 6; k++)
             CubeTree.Build(root, $"ArbolResidencial_{k + 1}", center + trees[k], 7100 + k * 13, 26f, carnivorous: false, blocked: p => Built(root.InverseTransformPoint(p)));
 
@@ -97,6 +98,7 @@ public static class ResidentialBuilder
             Beam(root, pos + Vector3.up * -0.35f, trunk);   // viga al tronco que la sostiene
             Beam(root, pos + Vector3.up * -0.35f + Vector3.Cross(Vector3.up, door).normalized * 2.5f, trunk + Vector3.down * 2.5f);   // y su tornapuntas
         }
+        BuildPillowRing(root);   // (2026-11-04) el ring de almohadas sobre la plataforma central (docs/guerra-de-almohadas.md)
         SoftGround.Plant(root, center + Vector3.down * 0.1f, new Vector2(64f, 64f), 77);   // colchón de musgo bajo toda la arboleda
         WorldLabel wl = root.gameObject.AddComponent<WorldLabel>(); wl.text = "Arboleda residencial (casas de árbol)"; wl.height = DeckY + 5f;
         return root;
@@ -108,6 +110,7 @@ public static class ResidentialBuilder
     {
         Vector2 h = new Vector2(q.x, q.z);
         if (Mathf.Abs(q.x) < CentralSize * 0.5f + 1f && Mathf.Abs(q.z) < CentralSize * 0.5f + 1f && q.y > DeckY - 1.5f && q.y < DeckY + 4f) return true;   // plataforma central
+        if (Mathf.Abs(q.x) < _ringX * 0.5f + 1f && Mathf.Abs(q.z) < _ringZ * 0.5f + 1f && q.y > RingY - 1.5f && q.y < RingY + 4f) return true;   // el ring de almohadas
         foreach (var (pos, _) in _houses)
             if ((h - new Vector2(pos.x, pos.z)).magnitude < 6.2f && q.y > pos.y - 1.5f && q.y < pos.y + 4f) return true;   // casas (9 × 7 m: media diagonal 5,7, y margen)
         foreach (Vector3 tp in _terraces)
@@ -159,6 +162,94 @@ public static class ResidentialBuilder
         room.partner = room.owner != null && Partners.TryGetValue(room.owner, out string mate) ? mate : null;
         room.bed = bed; room.sleeps = BedSleeps; room.laneWidth = LaneWidth; room.bedLength = BedLength;   // cama de 4 (2026-11-04)
         WorldLabel wl = t.gameObject.AddComponent<WorldLabel>(); wl.text = ownerIdx < Shown.Length ? $"Habitación de {Shown[ownerIdx]}" : "Habitación libre (para recién llegados)"; wl.height = 2.5f;
+        return t;
+    }
+
+    // ── EL RING DE ALMOHADAS (2026-11-04; docs/guerra-de-almohadas.md) ──────────────────────────────────────────────────────
+    // Berón: «se deben crear guerras de almohadas en un ring que se debe crear en la residencia, el ring debe ser creado con la regla
+    // para que tenga las dimensiones necesarias para que se enfrenten todos los residentes del santuario y debe estar lleno de
+    // almohadas y la base es una cama colosal». Una plataforma 8 m por encima de la central (sobre sus propias columnas), con la
+    // CAMA COLOSAL: colchón de n × n celdas de 2,5 m (PillowRing: n = ⌈√residentes⌉), borde blando de 0,6 m con una entrada de 3 m
+    // al pie, cabecero con almohadones gigantes y dos almohadas sueltas por luchador. 2 m de paso alrededor y hasta su pista de
+    // alfombras (red «Residencia» de edificio: vuela a la plataforma central y al suelo).
+
+    /// <summary>Altura del ring: 8 m sobre la plataforma central (queda dentro del anillo de casas: ver <see cref="RingSize"/>).</summary>
+    public const float RingY = DeckY + 8f;
+    const float HeadZone = 1.6f, ZoneW = 7.6f, ZoneD = 4.4f, EdgeMargin = 0.8f, FootGap = 3f;
+    static int _ringCells = 1, _ringFor;
+    static float _ringX, _ringZ, _bedX, _bedZ;
+
+    /// <summary>Las medidas del ring para <paramref name="fighters"/> residentes (la regla: PillowRing.CellsFor). Avisa si ya no cabe
+    /// dentro del anillo de casas (su borde interior está a 17,5 m del centro): entonces hay que subirlo o llevarlo a otro sitio.</summary>
+    static void RingSize(int fighters)
+    {
+        _ringFor = fighters; _ringCells = PillowRing.CellsFor(fighters);
+        float S = _ringCells * PillowRing.CellSize;
+        _bedX = S + 2f * PillowRing.Bumper; _bedZ = S + PillowRing.Bumper + HeadZone;
+        _ringX = Mathf.Max(_bedX, ZoneW) + 2f * PillowRing.Walkway;
+        _ringZ = PillowRing.Walkway + _bedZ + PillowRing.Walkway + ZoneD + EdgeMargin;
+        float corner = new Vector2(_ringX * 0.5f, _ringZ * 0.5f).magnitude, inner = TreeRing - CabinD * 0.5f - 1f;
+        if (corner > inner) Debug.LogError($"[Residencia] el ring de almohadas para {fighters} residentes ({_ringX:0.0} × {_ringZ:0.0} m) ya no cabe dentro del anillo de casas (esquina a {corner:0.0} m, máximo {inner:0.0}).");
+        else Debug.Log($"[Residencia] ring de almohadas para {fighters} residentes: colchón de {_ringCells} × {_ringCells} celdas ({S:0.0} m de lado, caben {_ringCells * _ringCells}), plataforma de {_ringX:0.0} × {_ringZ:0.0} m a {RingY:0} m.");
+    }
+
+    static void BuildPillowRing(Transform root)
+    {
+        Transform ring = new GameObject("RingAlmohadas").transform;
+        ring.SetParent(root, false);
+        ring.localPosition = new Vector3(0f, RingY, 0f);
+        float S = _ringCells * PillowRing.CellSize, B = PillowRing.Bumper;
+        Color mattressC = new Color(0.97f, 0.95f, 0.91f), soft = new Color(0.93f, 0.76f, 0.83f), quilt = new Color(0.88f, 0.84f, 0.8f);
+        Plank(ring, Vector3.zero, new Vector3(_ringX, 0.3f, _ringZ), "Plataforma_ring");   // cara de arriba a +0,15
+        for (int i = 0; i < 4; i++)
+            Solid(ring, new Vector3((i % 2 == 0 ? -1f : 1f) * (_ringX * 0.5f - 0.4f), -RingY * 0.5f, (i < 2 ? -1f : 1f) * (_ringZ * 0.5f - 0.4f)), new Vector3(0.6f, RingY, 0.6f), Wood, "Columna_ring");
+        // La CAMA COLOSAL: el cabecero en +z, el pie hacia la pista de alfombras (−z).
+        float headTop = _ringZ * 0.5f - PillowRing.Walkway, bedCz = headTop - _bedZ * 0.5f, matCz = headTop - HeadZone - S * 0.5f;
+        Transform mat = Solid(ring, new Vector3(0f, 0.25f, matCz), new Vector3(S, 0.2f, S), mattressC, "Colchon_colosal");   // cara de arriba a +0,35: 0,2 m sobre la plataforma
+        Solid(ring, new Vector3(0f, 0.25f, headTop - HeadZone * 0.5f), new Vector3(S, 0.2f, HeadZone), mattressC, "Colchon_cabecero");
+        for (int k = 1; k < _ringCells; k++)   // el acolchado marca las celdas
+        {
+            float o = (k - _ringCells * 0.5f) * PillowRing.CellSize;
+            Deco(ring, new Vector3(o, 0.353f, matCz), new Vector3(0.05f, 0.006f, S), quilt, "Acolchado");
+            Deco(ring, new Vector3(0f, 0.353f, matCz + o), new Vector3(S, 0.006f, 0.05f), quilt, "Acolchado");
+        }
+        // Borde blando: a los lados entero; al pie, con la ENTRADA de 3 m en el centro (sin escalones: el colchón sube 0,2 m). Es blando:
+        // sin collider, se pasa por encima (quien va a una celda del lado no tiene que rodear hasta la entrada).
+        for (int s = -1; s <= 1; s += 2)
+            Deco(ring, new Vector3(s * (S * 0.5f + B * 0.5f), 0.375f, bedCz), new Vector3(B, 0.45f, _bedZ), soft, "Borde_blando");
+        float footLen = (_bedX - FootGap) * 0.5f, footZ = matCz - S * 0.5f - B * 0.5f;
+        for (int s = -1; s <= 1; s += 2)
+            Deco(ring, new Vector3(s * (FootGap * 0.5f + footLen * 0.5f), 0.375f, footZ), new Vector3(footLen, 0.45f, B), soft, "Borde_blando_pie");
+        Solid(ring, new Vector3(0f, 1.0f, headTop - 0.2f), new Vector3(_bedX, 1.7f, 0.4f), WoodDark, "Cabecero_colosal");
+        for (int k = 0; k < _ringCells; k++)   // almohadones gigantes contra el cabecero
+            Deco(ring, new Vector3((k - (_ringCells - 1) * 0.5f) * PillowRing.CellSize, 0.62f, headTop - 0.4f - (HeadZone - 0.5f) * 0.5f), new Vector3(PillowRing.CellSize * 0.85f, 0.55f, HeadZone - 0.5f), Color.white, "Almohadon_gigante");
+        // LLENO DE ALMOHADAS: dos sueltas por celda (sin collider: se cogen, no se tropieza con ellas).
+        Transform loose = new GameObject("Almohadas").transform; loose.SetParent(ring, false);
+        Color[] pastel = { new Color(0.98f, 0.86f, 0.9f), new Color(0.86f, 0.92f, 0.99f), new Color(0.99f, 0.95f, 0.8f), new Color(0.88f, 0.97f, 0.88f), new Color(0.93f, 0.88f, 0.99f) };
+        var rnd = new System.Random(4242);
+        int cells = _ringCells * _ringCells;
+        for (int c = 0; c < cells; c++)
+            for (int p = 0; p < PillowRing.PillowsPerFighter; p++)
+            {
+                float cx = (c % _ringCells - (_ringCells - 1) * 0.5f) * PillowRing.CellSize, cz = (c / _ringCells - (_ringCells - 1) * 0.5f) * PillowRing.CellSize;
+                Vector3 at = new Vector3(cx + (p == 0 ? -0.65f : 0.65f), 0.43f, matCz + cz + (p == 0 ? 0.55f : -0.55f));
+                Transform pil = Deco(loose, at, new Vector3(0.6f, 0.15f, 0.4f), pastel[(c + p) % pastel.Length], $"Almohada_{c * PillowRing.PillowsPerFighter + p + 1}");
+                pil.localRotation = Quaternion.Euler(0f, (float)rnd.NextDouble() * 360f, 0f);
+            }
+        PillowRing pr = ring.gameObject.AddComponent<PillowRing>();
+        pr.cells = _ringCells; pr.builtFor = _ringFor; pr.mattress = mat; pr.pillows = loose;
+        // Su PISTA DE ALFOMBRAS (red de edificio de la Residencia: vuela a la plataforma central y al suelo), a 2 m del pie de la cama.
+        float zc = -_ringZ * 0.5f + EdgeMargin + ZoneD * 0.5f;
+        CarpetPad.BuildZone(ring, ring.TransformPoint(new Vector3(0f, 0.15f, zc)), ring.rotation, CarpetPad.Kind.Edificio, Name, 2, $"{Name}#ring", "Ring de almohadas", 2, ZoneW, ZoneD);
+        WorldLabel wl = ring.gameObject.AddComponent<WorldLabel>();
+        wl.text = $"Ring de almohadas (cama colosal): {_ringCells} × {_ringCells} celdas, caben {cells}"; wl.height = 3f;
+    }
+
+    // Una pieza sin collider (decoración y almohadas sueltas).
+    static Transform Deco(Transform parent, Vector3 local, Vector3 size, Color c, string name)
+    {
+        Transform t = Solid(parent, local, size, c, name);
+        Object.DestroyImmediate(t.GetComponent<Collider>());
         return t;
     }
 

@@ -33,7 +33,10 @@ public class LeisureRoster
         public string id, title, venue;   // venue: dónde se hace (área del santuario, plantilla de edificio del microcosmos o «casa»)
         public Kind kind;
         public int capacity;              // plazas a la vez (≤ 0 = sin límite: cada uno en su casa)
-        public string pose = "pie";       // cómo se hace: pie, sentado, meditar, ejercicio, baile, tumbado
+        public string pose = "pie";       // cómo se hace: pie, sentado, meditar, ejercicio, baile, tumbado, almohadas
+        // (2026-11-04) TODOS A LA VEZ: una franja fija a la semana (día 0–6 de la semana y franja) para todo el que quepa (la guerra de
+        // almohadas en el ring de la arboleda). Fuera de esa franja no entra en el reparto.
+        public bool together; public int togetherDay = -1, togetherSlot = -1;
         public Activity(string id, string title, Kind kind, string venue, int capacity, string pose = "pie")
         { this.id = id; this.title = title; this.kind = kind; this.venue = venue; this.capacity = capacity; this.pose = pose; }
         public bool Unlimited => capacity <= 0;
@@ -122,7 +125,21 @@ public class LeisureRoster
         int g = GlobalSlot(day, slot);
         var free = new List<Person>(people);
         var left = activities.ToDictionary(a => a, a => a.Unlimited ? int.MaxValue : a.capacity);
-        List<Activity> order = Order(g);
+        // TODOS A LA VEZ (2026-11-04): en su franja de la semana, la actividad de grupo se lleva a todos los que quepan (en el orden fijo
+        // del personal); los que no quepan siguen con el reparto normal.
+        int dow = day - plan.firstDay;
+        foreach (Activity a in activities)
+        {
+            if (!a.together || a.togetherDay != dow || a.togetherSlot != slot) continue;
+            foreach (Person p in new List<Person>(free))
+            {
+                if (left[a] <= 0) break;
+                free.Remove(p); left[a]--;
+                p.count[a.id] = p.Count(a.id) + 1; p.last[a.id] = g;
+                plan.entries.Add(new Entry { person = p, activity = a, day = day, slot = slot });
+            }
+        }
+        List<Activity> order = Order(g).Where(a => !a.together).ToList();   // (las de todos a la vez solo van en su franja)
         bool progress = true;
         while (free.Count > 0 && progress)   // vueltas por el catálogo
         {

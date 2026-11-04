@@ -470,6 +470,8 @@ public class LeisureDirector : MonoBehaviour
         if (v.anchor == null) return g.transform.position;
         if (v.deck)   // la plataforma central (18 × 18): a un lado, lejos de las pistas de alfombras del centro y de los bordes norte y sur
             return OnMesh(v.anchor.TransformPoint(new Vector3(6f - (seat % 2) * 1.6f, ResidentialBuilder_DeckY + 1.15f, -2.4f + (seat / 2) * 1.6f)));
+        // EL RING DE ALMOHADAS (2026-11-04): cada plaza, una celda del colchón de la cama colosal (PillowRing.Spot).
+        if (v.anchor.TryGetComponent(out PillowRing ring)) return ring.Spot(seat) + Vector3.up;
         // Una SALA de los pisos de yoga: cada plaza, una de sus esterillas (de cara a la tarima).
         if (v.anchor.TryGetComponent(out YogaHall yh))
         {
@@ -565,6 +567,8 @@ public class LeisureDirector : MonoBehaviour
         // HACERLA: su postura o su gesto, mirando al centro del sitio.
         r.performed += Time.deltaTime;
         SetStatus(g, r, StatusOf(g));
+        // LA GUERRA DE ALMOHADAS (docs/guerra-de-almohadas.md): coge una almohada y da almohadazos a los de al lado, sin salir de su celda.
+        if (r.entry.activity.pose == "almohadas") { if (a != null) PillowFight.Tick(g, a, r.venue.anchor != null ? r.venue.anchor.GetComponent<PillowRing>() : null); r.posed = true; return; }
         Vector3 c = r.st != null ? r.st.transform.position : r.venue.anchor != null ? r.venue.anchor.position : r.to;
         Vector3 look = c - g.transform.position; look.y = 0f;
         string pose = r.entry.activity.pose;
@@ -612,6 +616,7 @@ public class LeisureDirector : MonoBehaviour
     void Unpose(GameObject g, Run r)
     {
         r.posed = false;
+        PillowFight.Stop(g);   // deja la almohada en el ring (si la llevaba)
         if (g.TryGetComponent(out Anima a) && !a.asleep) DailyPoses.Stand().ApplyFinal(a);
         if (r.onBed) { r.onBed = false; WorkdayDirector.Teleport(g.transform, r.to); r.last = r.to; }
     }

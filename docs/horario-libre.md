@@ -77,7 +77,8 @@ También se mide el Δ por persona: la diferencia entre su actividad más hecha 
 | Tertulia | Restaurante («Cocina») | 8 |
 | Bailar | Sala de Ballet → Calistenia → Gimnasio | 6 |
 | Artes marciales con Gohageneis (antes con Goku, que se fue a su microcosmos el 2026-11-04) | Dojo → Gimnasio | 6 |
-| Descansar en casa (tumbado en su cama) | Su casa del árbol | sin límite |
+| **Guerra de almohadas** (2026-11-04): TODOS A LA VEZ, solo el sábado a las 20 h (`together`); la añade el ring como etiqueta de actividad ([guerra-de-almohadas.md](guerra-de-almohadas.md)) | Ring de almohadas (cama colosal sobre la plataforma central) | las del ring (hoy 25) |
+| Descansar en casa (tumbado en su plaza de la cama de 4) | Su casa del árbol | sin límite |
 
 **Microcosmos** (`MicroActivities`). La plantilla de edificio y la función del registro que se hace allí. Las plazas son los puestos de esos edificios. Solo entran las plantillas que hay en la escena.
 
