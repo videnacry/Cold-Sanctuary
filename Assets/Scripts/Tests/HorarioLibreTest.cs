@@ -25,7 +25,7 @@ public class HorarioLibreTest : MonoBehaviour, ITestUnit
     public bool shots = true;
     static readonly string[] MicroScenes = { "Microcosmos_Buda", "Microcosmos_Patanjali", "Microcosmos_Eratostenes", "Microcosmos_BruceLee" };
     /// <summary>La familia y los amigos de Berón (2026-11-04, de sus fotos).</summary>
-    public static readonly string[] Family = { "Nesvitor", "Amykhuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi", "Gallarle", "Julian", "Fausto" };
+    public static readonly string[] Family = { "Nesvitor", "Amykhuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi", "Gallarle", "Julian", "Fausto", "David", "Adonis", "Julito", "Ale", "Ivelyna", "Luciana" };
     /// <summary>Los famosos que salieron del santuario a sus microcosmos (2026-11-04).</summary>
     public static readonly string[] Famous = { "Sadhguru", "ElonMusk", "Goku", "BillGates", "WarrenBuffett", "MacKenzieScott", "IbrahimTraore" };
 

@@ -52,6 +52,17 @@ public static class Professions
         new Entry("Andrea", "comunicación", "Cocina:coc_avisos"),
         // Irosene: LETRAS (clases de poesía y narración y lecturas en la sala de estudio del Aula) y su textil.
         new Entry("Irosene", "letras (poesía y narración) y textil", "Aula:aul_letras", "Estudio Textil"),
+        // LOS SEIS NUEVOS (Berón 2026-11-04). Informática: el clúster de IA (sistemas, refrigeración y energía).
+        new Entry("David", "informática", "Informática"),
+        new Entry("Adonis", "informática", "Informática"),
+        // Biotecnología: el laboratorio de carne cultivada y la biología (con los fotobiorreactores del árbol, que se cuidan desde Biología).
+        new Entry("Julito", "biotecnología", "Carne Cultivada", "Biología"),
+        new Entry("Ale", "biotecnología", "Carne Cultivada", "Biología"),
+        // Pediatra: en el Hospital (pediatría de los niños de las personas; la Cría es de animales y le toca en la rotación como a todos).
+        new Entry("Ivelyna", "pediatría", "Hospital:hos_pediatria,enf_"),
+        // Piloto: la flota de alfombras voladoras y el transporte aéreo (en la Mecánica) y el vuelo y el control de misión de la lanzadera.
+        // Los submarinos siguen con Adaguchi.
+        new Entry("Luciana", "piloto: alfombras, transporte aéreo y lanzadera", "Mecánica:mec_alfombras", "Control de misión"),
     };
 
     /// <summary>(2026-11-04) Los MAESTROS de una clase de entrenamiento o de ocio que no es misión de grupo: el baile (Berón: «Panterilia y

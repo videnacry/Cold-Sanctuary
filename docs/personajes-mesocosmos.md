@@ -140,6 +140,48 @@ Berón: Panterilia es maestra de baile y de finanzas; Gohageneis, maestro de bai
 - **Julian comparte la dirección de proyectos con Alicita**. Hay dos misiones, `con_proyectos` y la nueva `con_proyectos2`, y cada día
   cada uno coge la que menos ha hecho.
 
+### Los seis nuevos (Berón, 2026-11-04)
+
+| Persona | Profesión | Misiones de su profesión | Sale en |
+|---|---|---|---|
+| **David** | Informática | Informática: el clúster de IA (`ifo_sysadmin`, `ifo_refrigeracion`, `ifo_energia`) | Informática |
+| **Adonis** | Informática | igual que David | Informática |
+| **Julito** | Biotecnología | Carne Cultivada (el laboratorio) y Biología (con el cuidado de los fotobiorreactores del árbol) | Carne Cultivada |
+| **Ale** | Biotecnología | igual que Julito | Carne Cultivada |
+| **Ivelyna** | Pediatra | Hospital: `hos_pediatria` (misión nueva: consulta, vacunas y crecimiento de los niños) y las del hospital `enf_` | el hospital |
+| **Luciana** | Piloto | Mecánica: `mec_alfombras` (misión nueva: la flota de alfombras voladoras y el transporte aéreo); Control de misión: `lan_control` (misión nueva: el seguimiento de la lanzadera y de los vuelos) | la Mecánica |
+
+**Por qué así**:
+- **Ivelyna en el Hospital, no en la Cría**: Berón preguntó si iba en la Cría, pero la Cría es de crías de animales. La pediatría es de
+  los niños de las personas, en el hospital. La Cría le toca en la rotación como a cualquiera.
+  - Aún no hay guardería del santuario. Cuando la haya, entra en su profesión.
+- **Luciana, piloto**: lo que vuela en el santuario son las alfombras (su flota y el transporte aéreo, que se cuida en la Mecánica, junto
+  a los vehículos) y la lanzadera (su control de misión). Los submarinos siguen con Adaguchi.
+
+**Aspecto**: provisional y **pendiente de foto**, como Gallarle (`CubeHair.Placeholder`): pelo corto o media melena castaña, piel media
+y ropa lisa de un color por persona.
+- El rasgo femenino (`Fem`) solo va donde el nombre lo sugiere (Ivelyna, Luciana), y está **pendiente de que Berón lo confirme**.
+- Ale (Alejandro o Alejandra) va sin él.
+- Se reconocen por el nombre **exacto**: David o Ale pueden salir en los microcosmos.
+
+**Casas**: llegan seis y quedaban 2 casas libres.
+- Los árboles de la arboleda crecen de 26 a **38 m** y cada uno lleva una **cuarta casa**, del otro lado y 21 m sobre la primera.
+  - Hay **24 casas: 22 ocupadas y 2 libres**.
+  - Duermen allí **28 residentes**: 22 dueños y 6 parejas.
+- El **ring de almohadas** pasa a **6 × 6** celdas (caben 36).
+  - Para que siga cabiendo dentro del anillo de casas (esquina ≤ 16,5 m del centro), la franja del cabecero baja de 1,6 a 1,2 m y el
+    margen del borde de 0,8 a 0,3. La esquina queda a 16,3 m.
+- `AreaCapacity` sale de la lista del personal: **27 miembros**.
+
+**Regla J16 con 27 miembros**:
+- El **dojo** (25 por piso) pasa a **2 pisos**, el ballet a 2 y el yoga sigue en 2 + 2.
+- El Aula pide 2 pisos (24 por piso).
+- La torre del Entrenamiento lleva 11 pisos de entrenamiento más 2 del Aula: **7 niveles**, con el techo a unos 219 m.
+- **Simulador de holguras** (`mig/Clear.cs`) con 7 niveles: las holguras entre edificios no cambian (árbol–Entrenamiento 16,3 m,
+  Servicios–Entrenamiento 16,5 m, guardián–Entrenamiento 7,0 m) y el tronco del guardián sube a 224 m.
+- **Lanzadera** (regla T13): su plataforma debe quedar ≥ 30 m por encima de lo más alto, así que ≥ ~250 m con el nuevo techo del
+  Entrenamiento. La regla la valida al final del Blockout y, si hace falta, la sube sola.
+  - **Hay que mirarlo al reconstruir**: el registro `[Lanzadera]` y `LaunchSiteTest` (grupo 90).
 ### Pisos en obras
 
 Berón vio bailar en el piso de ballet sin terminar.

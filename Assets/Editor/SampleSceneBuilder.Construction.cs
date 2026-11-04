@@ -177,6 +177,12 @@ public static partial class SampleSceneBuilder
         Put("Fausto", "VehicleWorkshop_Area", new Vector3(2f, 1f, 2f));            // mecánico (la mecánica, antes de Ducristin)
         Put("Julian", "Construction_Area", new Vector3(1.5f, 1f, 3.5f));           // dirección de proyectos, con Alicita (pendiente de foto)
         Put("Irosene_Post", "Classroom_Area", new Vector3(0f, 1f, -1f));                // letras: poesía, narración y lecturas en el Aula
+        Put("David", "Informatics_Area", new Vector3(2f, 1f, 2f));                 // informática: el clúster de IA
+        Put("Adonis", "Informatics_Area", new Vector3(-2f, 1f, 2f));
+        Put("Julito", "CulturedMeatLab_Area", new Vector3(2f, 1f, 2f));               // biotecnología: carne cultivada y biología
+        Put("Ale", "CulturedMeatLab_Area", new Vector3(-2f, 1f, 2f));
+        Put("Ivelyna", "Infirmary_Area", new Vector3(-3f, 1f, -3f));               // pediatra, en el hospital
+        Put("Luciana", "VehicleWorkshop_Area", new Vector3(-2f, 1f, 2f));          // piloto: la flota de alfombras (y el control de misión)
         Put("Gallarle", "Classroom_Area", new Vector3(-3f, 1f, -1f));              // con su pareja, Ducristin (pendiente de foto y de profesión)
     }
 
@@ -197,6 +203,13 @@ public static partial class SampleSceneBuilder
         ("Gallarle", "Gallarle (pendiente de foto)", 48f, new Color(0.45f, 0.5f, 0.55f), 1.0f, 1.0f, 1.0f, 1.0f),
         ("Julian", "Julian (dirección de proyectos; pendiente de foto)", 50f, new Color(0.4f, 0.45f, 0.52f), 1.0f, 1.0f, 1.0f, 1.0f),        // pareja de Alicita (búlgaro)
         ("Fausto", "Fausto (mecánico; pendiente de foto)", 52f, new Color(0.35f, 0.38f, 0.42f), 1.05f, 1.0f, 1.0f, 1.0f), // pareja de Irosene
+        // (2026-11-04) LOS SEIS NUEVOS, pendientes de foto (aspecto provisional en CubeHair.Placeholder).
+        ("David", "David (informática; pendiente de foto)", 54f, new Color(0.4f, 0.45f, 0.52f), 1.0f, 1.0f, 1.0f, 1.0f),
+        ("Adonis", "Adonis (informática; pendiente de foto)", 56f, new Color(0.45f, 0.4f, 0.35f), 1.0f, 1.0f, 1.0f, 1.0f),
+        ("Julito", "Julito (biotecnología; pendiente de foto)", 58f, new Color(0.35f, 0.45f, 0.4f), 1.0f, 1.0f, 1.0f, 1.0f),
+        ("Ale", "Ale (biotecnología; pendiente de foto)", 60f, new Color(0.5f, 0.45f, 0.55f), 1.0f, 1.0f, 1.0f, 1.0f),
+        ("Ivelyna", "Ivelyna (pediatra; pendiente de foto)", 62f, new Color(0.55f, 0.5f, 0.42f), 1.0f, 1.0f, 1.0f, 1.0f),
+        ("Luciana", "Luciana (piloto; pendiente de foto)", 64f, new Color(0.38f, 0.42f, 0.5f), 1.0f, 1.0f, 1.0f, 1.0f),
     };
 
     /// <summary>LOS FAMOSOS QUE SE FUERON A SUS MICROCOSMOS (Berón 2026-11-04: «los personajes famosos, elon musk, sadhguru, y demás

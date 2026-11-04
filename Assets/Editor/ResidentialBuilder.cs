@@ -20,11 +20,14 @@ public static class ResidentialBuilder
         // Tote, Amykhuz y Karen, Ducristin y Gallarle, Josedrilo y Maite, Alicita y Julian, Irosene y Fausto.
         // 16 casas ocupadas de 18: dos libres para recién llegados.
         "Nesvitor", "Amykhuz", "Alicita", "Ducristin", "Josedrilo", "Shalva", "Adaguchi",
+        // (2026-11-04) Los seis nuevos (pendientes de foto), en la CUARTA casa de cada árbol: 22 casas ocupadas de 24.
+        "David", "Adonis", "Julito", "Ale", "Ivelyna", "Luciana",
     };
     static readonly string[] Shown =
     {
         "Kushal", "la Magnate", "Linduarda", "Goluis", "Panterilia", "Gohageneis", "Irosene y Fausto", "Lizmibet y Tote", "Andrea",
         "Nesvitor", "Amykhuz y Karen", "Alicita y Julian", "Ducristin y Gallarle", "Josedrilo y Maite", "Shalva", "Adaguchi",
+        "David", "Adonis", "Julito", "Ale", "Ivelyna", "Luciana",
     };
     /// <summary>La pareja con la que comparte casa cada dueño (manual M18, J14), si la tiene.</summary>
     static readonly System.Collections.Generic.Dictionary<string, string> Partners = new System.Collections.Generic.Dictionary<string, string>
@@ -36,6 +39,12 @@ public static class ResidentialBuilder
         { "Ducristin", "Gallarle" },
         { "Josedrilo", "Maite" },
     };
+
+    /// <summary>Altura de los árboles de la arboleda (2026-11-04: 38 m, antes 26, para sostener la cuarta casa, a 30–33 m).</summary>
+    public const float TreeHeight = 38f;
+    // Casas 0–11: dos por árbol (la 2k a un lado, la 2k+1 al otro); 12–17: la tercera (lado de la primera); 18–23: la cuarta (lado de la segunda).
+    static int TreeOf(int i) => i < 12 ? i / 2 : (i - 12) % 6;
+    static bool OtherSide(int i) => (i < 12 && i % 2 == 1) || (i >= 18 && i < 24);
 
     public const string Name = "Residencia";
     // (2026-11-04, Berón: «las camas de las residencias del santuario deben ser capaces de dar espacio a 4 personas») CAMA DE 4: cuatro
@@ -82,16 +91,24 @@ public static class ResidentialBuilder
             Vector3 dir = new Vector3(Mathf.Cos(a), 0f, Mathf.Sin(a)), side = Vector3.Cross(Vector3.up, dir).normalized;
             _houses.Add((trees[k] + side * HouseOut + Vector3.up * (DeckY - 3f + (k % 3) * 1.5f + 14f), -dir));
         }
+        // (2026-11-04, seis personas más) UNA CUARTA CASA por árbol, del otro lado y 14 m sobre la segunda (21 m sobre la primera): 24
+        // casas. Los árboles crecen a 38 m para sostenerlas (TreeHeight).
+        for (int k = 0; k < 6; k++)
+        {
+            float a = (30f + 60f * k) * Mathf.Deg2Rad;
+            Vector3 dir = new Vector3(Mathf.Cos(a), 0f, Mathf.Sin(a)), side = Vector3.Cross(Vector3.up, dir).normalized;
+            _houses.Add((trees[k] - side * HouseOut + Vector3.up * (DeckY - 3f + (k % 3) * 1.5f + 21f), -dir));
+        }
         // (2026-11-03) Las TERRAZAS FRUTALES de cada casa (7 m más allá de su centro, del lado contrario al tronco): las ramas las esquivan.
         _terraces.Clear();
         for (int i = 0; i < _houses.Count; i++)
         {
-            Vector3 trunk = trees[i < 12 ? i / 2 : i - 12], away = _houses[i].pos - trunk; away.y = 0f;
+            Vector3 trunk = trees[TreeOf(i)], away = _houses[i].pos - trunk; away.y = 0f;
             _terraces.Add(_houses[i].pos + away.normalized * (CabinW * 0.5f + 3.5f));   // (el centro de la terraza de 7 m, pegada a la casa)
         }
         RingSize(Owners.Length + Partners.Count);   // (antes que los árboles: sus ramas esquivan el ring)
         for (int k = 0; k < 6; k++)
-            CubeTree.Build(root, $"ArbolResidencial_{k + 1}", center + trees[k], 7100 + k * 13, 26f, carnivorous: false, blocked: p => Built(root.InverseTransformPoint(p)));
+            CubeTree.Build(root, $"ArbolResidencial_{k + 1}", center + trees[k], 7100 + k * 13, TreeHeight, carnivorous: false, blocked: p => Built(root.InverseTransformPoint(p)));
 
         // Plataforma central (18 × 18) sobre columnas, con sus tres áreas de alfombras.
         Plank(root, new Vector3(0f, DeckY, 0f), new Vector3(CentralSize, 0.3f, CentralSize), "Plataforma central");
@@ -107,8 +124,8 @@ public static class ResidentialBuilder
         for (int i = 0; i < _houses.Count; i++)
         {
             var (pos, door) = _houses[i];
-            Transform cab = Cabin(root, pos, door, i, $"Casa del árbol {i + 1}", i < 12 && i % 2 == 1 ? -1f : 1f);
-            Vector3 trunk = trees[i < 12 ? i / 2 : i - 12] + Vector3.up * (pos.y - 0.35f);
+            Transform cab = Cabin(root, pos, door, i, $"Casa del árbol {i + 1}", OtherSide(i) ? -1f : 1f);
+            Vector3 trunk = trees[TreeOf(i)] + Vector3.up * (pos.y - 0.35f);
             Beam(root, pos + Vector3.up * -0.35f, trunk);   // viga al tronco que la sostiene
             Beam(root, pos + Vector3.up * -0.35f + Vector3.Cross(Vector3.up, door).normalized * 2.5f, trunk + Vector3.down * 2.5f);   // y su tornapuntas
         }
@@ -250,7 +267,7 @@ public static class ResidentialBuilder
 
     /// <summary>Altura del ring: 8 m sobre la plataforma central (queda dentro del anillo de casas: ver <see cref="RingSize"/>).</summary>
     public const float RingY = DeckY + 8f;
-    const float HeadZone = 1.6f, ZoneW = 7.6f, ZoneD = 4.4f, EdgeMargin = 0.8f, FootGap = 3f;
+    const float HeadZone = 1.2f, ZoneW = 7.6f, ZoneD = 4.4f, EdgeMargin = 0.3f, FootGap = 3f;
     static int _ringCells = 1, _ringFor;
     static float _ringX, _ringZ, _bedX, _bedZ;
 
