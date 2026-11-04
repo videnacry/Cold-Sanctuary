@@ -271,7 +271,12 @@ el Dojo…), tocan **todos** los pisos los cambios en `SampleSceneBuilder.Towers
 5. Si el piso tiene versión micro dedicada (el hospital, H8, cuando exista), añadirle lo que cambió en el meso.
 6. Apuntarlo en [checklist.md](checklist.md).
 
-**El gancho:** hoy cubre el hospital (un gancho de Claude Code al editar sus `.cs`). Pendiente: ampliarlo a los demás constructores de piso de la tabla.
+**El gancho (2026-11-04):** un gancho de Claude Code (`.claude/hooks/hospital-reminder.sh`, PostToolUse en Edit|Write) avisa al editar un `.cs` de `Assets/`:
+- del **hospital** → revisar los microcosmos que dependen de su piso;
+- de un **piso, área o edificio-árbol** del santuario → revisar que las **jornadas y el reparto de trabajo** (WorkdayDirector, misiones de área, FruitGardener) y el **horario libre** (LeisureRoster) cuadran con los puestos, tiempos de viaje y capacidades nuevos, y los microcosmos de ese piso;
+- de un **microcosmos** → revisar las jornadas de sus insectos-humanos (MicroJornada), el reparto de puestos y el horario libre frente a los edificios de trabajo, ocio y recuperación que cambiaron.
+
+**Regla W9 (Berón, 2026-11-04):** todo cambio en un piso, área, edificio-árbol o microcosmos obliga a revisar y reajustar las jornadas, el reparto de trabajo y el horario libre de los personajes que lo usan. Se comprueba con el gancho y con las pruebas 50 (jornada), 65 (horario libre) y 62 (eras civilizadas).
 
 ## 12. Recuento y reglas sin comprobación automática
 
