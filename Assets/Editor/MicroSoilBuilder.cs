@@ -18,6 +18,8 @@ using UnityEngine;
 internal static class MicroSoilBuilder
 {
     const int TileCells = 64;
+    /// <summary>¿Se construye la capa de tierra? (MicroGround.SoilEnabled: apagada por defecto, 2026-11-04.)</summary>
+    internal static bool Enabled => MicroGround.SoilEnabled;
     static float T => MicroGround.SoilThickness;
 
     /// <summary>Los suelos del piso gigante que hacen de «terreno» (los planos bajos apoyados en el suelo: el suelo, las alfombras, las
@@ -38,24 +40,83 @@ internal static class MicroSoilBuilder
 
     struct Mound { public Vector2 c; public float r, h; }
 
+    // El terreno: la base (la cara más alta de los suelos del piso), el ruido, los cúmulos (en un HASH de celdas de 40 m: antes cada
+    // vértice recorría los 600 cúmulos) y lo liso y el agua.
     sealed class Field
     {
-        public List<Bounds> layers; public float groundY; public List<Bounds> flat, holes; public List<Mound> mounds = new List<Mound>();
-        public float ox, oz;
+        public List<Bounds> layers; public float groundY; public List<Bounds> flat, holes;
+        public int count; public float ox, oz;
+        const float Cell = 40f;
+        readonly Dictionary<long, List<Mound>> _hash = new Dictionary<long, List<Mound>>();
+        static long Key(int i, int k) => ((long)i << 32) ^ (uint)k;
+        public void Add(Mound m)
+        {
+            int i0 = Mathf.FloorToInt((m.c.x - m.r) / Cell), i1 = Mathf.FloorToInt((m.c.x + m.r) / Cell), k0 = Mathf.FloorToInt((m.c.y - m.r) / Cell), k1 = Mathf.FloorToInt((m.c.y + m.r) / Cell);
+            for (int i = i0; i <= i1; i++) for (int k = k0; k <= k1; k++) { long key = Key(i, k); if (!_hash.TryGetValue(key, out var l)) _hash[key] = l = new List<Mound>(); l.Add(m); }
+            count++;
+        }
         public float Noise(float x, float z) => 0.03f * (Mathf.PerlinNoise(ox + x * 0.13f, oz + z * 0.13f) - 0.5f) * 2f + 0.015f * (Mathf.PerlinNoise(ox + 31f + x * 0.6f, oz + 17f + z * 0.6f) - 0.5f) * 2f;
         public bool Flat(float x, float z) { foreach (Bounds b in flat) if (x > b.min.x && x < b.max.x && z > b.min.z && z < b.max.z) return true; return false; }
         public bool Hole(float x, float z) { foreach (Bounds b in holes) if (x > b.min.x && x < b.max.x && z > b.min.z && z < b.max.z) return true; return false; }
-        public float Y(float x, float z)
+        public float Bump(float x, float z)
         {
-            float y = BaseAt(x, z, layers, groundY) + T;
-            if (Flat(x, z)) return y;
+            if (!_hash.TryGetValue(Key(Mathf.FloorToInt(x / Cell), Mathf.FloorToInt(z / Cell)), out var l)) return 0f;
             float bump = 0f;
-            foreach (Mound m in mounds)
+            foreach (Mound m in l)
             {
                 float dx = x - m.c.x, dz = z - m.c.y, d2 = dx * dx + dz * dz, r2 = m.r * m.r;
                 if (d2 < r2) { float k = 1f - d2 / r2; bump += m.h * k * k; }
             }
-            return y + Mathf.Max(Noise(x, z), -T * 0.5f) + bump;
+            return bump;
+        }
+        /// <summary>La cara de la tierra que se VE (con ruido y cúmulos).</summary>
+        public float Y(float x, float z)
+        {
+            float y = BaseAt(x, z, layers, groundY) + T;
+            if (Flat(x, z)) return y;
+            return y + Mathf.Max(Noise(x, z), -T * 0.5f) + Bump(x, z);
+        }
+        /// <summary>La cara del COLLIDER: lisa (sin ruido ni piedras), por debajo de la que se ve (la mitad del grosor), con los cúmulos
+        /// (lomas suaves). Es la que hornea el NavMesh: con el ruido y las piedras en el collider, sus polígonos se multiplicaban.</summary>
+        public float Yc(float x, float z)
+        {
+            float y = BaseAt(x, z, layers, groundY) + T * 0.5f;
+            return Flat(x, z) ? y : y + Bump(x, z);
+        }
+    }
+
+    /// <summary>Una rejilla de alturas (la de los mosaicos que se ven o la de su collider): celdas de sx × sz que caben justas en su zona.</summary>
+    sealed class Grid
+    {
+        public float x0, z0, sx, sz; public int nx, nz; public float[] h; public bool skipFine; public Bounds fine; public Field f;
+        public Grid(Bounds zone, float step, bool skipFine, Bounds fine, Field f, System.Func<float, float, float> y)
+        {
+            x0 = zone.min.x; z0 = zone.min.z; this.skipFine = skipFine; this.fine = fine; this.f = f;
+            nx = Mathf.Max(1, Mathf.CeilToInt(zone.size.x / step)); nz = Mathf.Max(1, Mathf.CeilToInt(zone.size.z / step));
+            sx = zone.size.x / nx; sz = zone.size.z / nz;
+            h = new float[(nx + 1) * (nz + 1)];
+            for (int i = 0; i <= nx; i++) for (int k = 0; k <= nz; k++) h[i * (nz + 1) + k] = y(x0 + i * sx, z0 + k * sz);
+        }
+        public float H(int i, int k) => h[i * (nz + 1) + k];
+        public Vector3 V(int i, int k) => new Vector3(x0 + i * sx, H(i, k), z0 + k * sz);
+        public bool InFine(float x, float z) => x > fine.min.x && x < fine.max.x && z > fine.min.z && z < fine.max.z;
+        /// <summary>¿Lleva tierra la celda (i, k)? No si la tapa la otra zona ni sobre el agua.</summary>
+        public bool Cell(int i, int k)
+        {
+            float mx = x0 + (i + 0.5f) * sx, mz = z0 + (k + 0.5f) * sz;
+            return !(skipFine && InFine(mx, mz)) && !f.Hole(mx, mz);
+        }
+        /// <summary>La altura de la MALLA en (x, z), con su misma triangulación; false si ahí no hay tierra de esta rejilla.</summary>
+        public bool Sample(float x, float z, out float y)
+        {
+            y = float.NaN;
+            float u = (x - x0) / sx, w = (z - z0) / sz;
+            if (u < 0f || w < 0f || u > nx || w > nz) return false;
+            int i = Mathf.Min(nx - 1, Mathf.FloorToInt(u)), k = Mathf.Min(nz - 1, Mathf.FloorToInt(w));
+            if (!Cell(i, k)) return false;
+            float fu = u - i, fv = w - k, h00 = H(i, k), h11 = H(i + 1, k + 1);
+            y = fu >= fv ? h00 + fu * (H(i + 1, k) - h00) + fv * (h11 - H(i + 1, k)) : h00 + fv * (H(i, k + 1) - h00) + fu * (h11 - H(i, k + 1));
+            return true;
         }
     }
 
@@ -63,10 +124,14 @@ internal static class MicroSoilBuilder
     /// Pone la capa de tierra bajo <paramref name="root"/>: sobre el piso <paramref name="rect"/> (fina en <paramref name="dense"/>, el
     /// barrio de la historia; más abierta en el resto) y en las caras de arriba <paramref name="tops"/>. <paramref name="flat"/>: lo que
     /// ocupa la historia y su pueblo (tierra lisa); <paramref name="holes"/>: el agua de la historia (sin tierra). Devuelve su
-    /// <see cref="MicroSoil"/>.
+    /// <see cref="MicroSoil"/> y, en <paramref name="surface"/>, la altura de la tierra que SE VE en (x, z) (NaN fuera de ella), para
+    /// apoyar las plantas encima (MicroGround.Settle).
+    /// (2026-11-04, rendimiento) Lo que se ve (ruido, cúmulos, piedras) va en mallas SIN collider; el collider es otra malla más gruesa
+    /// y LISA (la mitad del grosor + los cúmulos): con el ruido y las piedras en el collider, el NavMesh de la Cocina (4 × 4 km) no
+    /// terminaba de hornearse.
     /// </summary>
     internal static MicroSoil Lay(Transform root, Bounds rect, Bounds dense, List<Renderer> floors, float groundY, List<Bounds> tops,
-                                  List<Bounds> flat, List<Bounds> holes, Color soil, int seed, string label)
+                                  List<Bounds> flat, List<Bounds> holes, Color soil, int seed, string label, out System.Func<float, float, float> surface)
     {
         Transform g = new GameObject(MicroGround.SoilName).transform; g.SetParent(root, false);
         MicroSoil ms = g.gameObject.AddComponent<MicroSoil>();
@@ -77,13 +142,14 @@ internal static class MicroSoilBuilder
         Material rock = AreaMicrocosmos.Mat("Micro_Tierra_piedra", new Color(0.52f, 0.5f, 0.46f));
         var mats = new[] { earth, rock };
 
-        // Las dos zonas: el barrio (fino) y el resto del piso (abierto). El paso sale del tamaño (≤ ~250 celdas por lado).
+        // Las dos zonas: el barrio (fino) y el resto del piso (abierto). El paso sale del tamaño: ≤ ~240 celdas por lado en el barrio y
+        // ≤ ~100 en el resto (un piso de 4 km: celdas de 40 m; sus cúmulos miden 8–20 m de radio y la malla los suaviza igual).
         Bounds inner = new Bounds(rect.center, new Vector3(rect.size.x, 0f, rect.size.z));
         Bounds fine = dense; { Vector3 mn = Vector3.Max(fine.min, inner.min), mx = Vector3.Min(fine.max, inner.max); fine.SetMinMax(new Vector3(mn.x, 0f, mn.z), new Vector3(Mathf.Max(mn.x, mx.x), 0f, Mathf.Max(mn.z, mx.z))); }
         float fineStep = Mathf.Max(2f, Mathf.Max(fine.size.x, fine.size.z) / 240f);
-        float coarseStep = Mathf.Clamp(Mathf.Max(inner.size.x, inner.size.z) / 180f, 12f, 30f);
+        float coarseStep = Mathf.Clamp(Mathf.Max(inner.size.x, inner.size.z) / 100f, 16f, 40f);
+        float fineCol = Mathf.Max(6f, fineStep * 3f), coarseCol = coarseStep;
 
-        // Cúmulos: lomas suaves (no en lo liso).
         void Mounds(Bounds zone, float density, float rMin, float rMax, float hMin, float hMax, int cap, bool skipFine)
         {
             int n = Mathf.Min(cap, Mathf.RoundToInt(zone.size.x * zone.size.z * density));
@@ -95,62 +161,88 @@ internal static class MicroSoilBuilder
                 bool clear = true;
                 foreach (Bounds b in f.flat) if (x > b.min.x - r && x < b.max.x + r && z > b.min.z - r && z < b.max.z + r) { clear = false; break; }
                 if (!clear) continue;
-                f.mounds.Add(new Mound { c = new Vector2(x, z), r = r, h = R(hMin, hMax) }); i++;
+                f.Add(new Mound { c = new Vector2(x, z), r = r, h = R(hMin, hMax) }); i++;
             }
         }
         Mounds(fine, 1f / 400f, 1.5f, 4f, 0.15f, 0.6f, 300, false);
         Mounds(inner, 1f / 6000f, 8f, 20f, 0.3f, 2f, 300, true);
-        ms.mounds = f.mounds.Count;
+        ms.mounds = f.count;
 
-        // El mosaico de una zona: celdas de «step», en trozos de TileCells × TileCells. skip: celdas que tapa la otra zona.
-        void Grid(Bounds zone, float step, bool skipFine, string name, float stoneDensity, float sMin, float sMax)
+        // Lo que SE VE: la malla con ruido, cúmulos y piedras (sin collider), en mosaicos de TileCells × TileCells.
+        Grid Visual(Bounds zone, float step, bool skipFine, string name, float stoneDensity, float sMin, float sMax)
         {
-            if (zone.size.x < step || zone.size.z < step) return;
-            int nx = Mathf.Max(1, Mathf.CeilToInt(zone.size.x / step)), nz = Mathf.Max(1, Mathf.CeilToInt(zone.size.z / step));
-            for (int tx = 0; tx < nx; tx += TileCells)
-                for (int tz = 0; tz < nz; tz += TileCells)
+            if (zone.size.x < step || zone.size.z < step) return null;
+            var gr = new Grid(zone, step, skipFine, fine, f, f.Y);
+            for (int tx = 0; tx < gr.nx; tx += TileCells)
+                for (int tz = 0; tz < gr.nz; tz += TileCells)
                 {
-                    int cx = Mathf.Min(TileCells, nx - tx), cz = Mathf.Min(TileCells, nz - tz);
-                    var v = new List<Vector3>(); var tri = new List<int>(); var stoneTri = new List<int>();
-                    var idx = new int[cx + 1, cz + 1];
-                    for (int i = 0; i <= cx; i++)
-                        for (int k = 0; k <= cz; k++)
-                        {
-                            float x = Mathf.Min(zone.min.x + (tx + i) * step, zone.max.x), z = Mathf.Min(zone.min.z + (tz + k) * step, zone.max.z);
-                            idx[i, k] = v.Count; v.Add(new Vector3(x, f.Y(x, z), z));
-                        }
+                    int cx = Mathf.Min(TileCells, gr.nx - tx), cz = Mathf.Min(TileCells, gr.nz - tz);
+                    var v = new List<Vector3>((cx + 1) * (cz + 1)); var tri = new List<int>(); var stoneTri = new List<int>();
+                    for (int i = 0; i <= cx; i++) for (int k = 0; k <= cz; k++) v.Add(gr.V(tx + i, tz + k));
                     int cells = 0;
                     for (int i = 0; i < cx; i++)
                         for (int k = 0; k < cz; k++)
                         {
-                            Vector3 a = v[idx[i, k]], c = v[idx[i + 1, k + 1]];
-                            float mx = (a.x + c.x) * 0.5f, mz = (a.z + c.z) * 0.5f;
-                            if (skipFine && mx > fine.min.x && mx < fine.max.x && mz > fine.min.z && mz < fine.max.z) continue;
-                            if (f.Hole(mx, mz)) continue;
-                            tri.Add(idx[i, k]); tri.Add(idx[i, k + 1]); tri.Add(idx[i + 1, k + 1]);
-                            tri.Add(idx[i, k]); tri.Add(idx[i + 1, k + 1]); tri.Add(idx[i + 1, k]);
+                            if (!gr.Cell(tx + i, tz + k)) continue;
+                            int a = i * (cz + 1) + k, b = a + 1, c = (i + 1) * (cz + 1) + k + 1, e = (i + 1) * (cz + 1) + k;
+                            tri.Add(a); tri.Add(b); tri.Add(c); tri.Add(a); tri.Add(c); tri.Add(e);
                             cells++;
                         }
                     if (cells == 0) continue;
-                    // Las piedras del mosaico, medio enterradas (no en lo liso ni en el agua).
-                    float x0 = zone.min.x + tx * step, z0 = zone.min.z + tz * step, w = cx * step, d = cz * step;
+                    float x0 = gr.x0 + tx * gr.sx, z0 = gr.z0 + tz * gr.sz, w = cx * gr.sx, d = cz * gr.sz;
                     int ns = Mathf.Min(200, Mathf.RoundToInt(w * d * stoneDensity));
                     for (int s = 0; s < ns; s++)
                     {
                         float x = x0 + R(0f, w), z = z0 + R(0f, d);
-                        if (skipFine && x > fine.min.x && x < fine.max.x && z > fine.min.z && z < fine.max.z) continue;
-                        if (f.Flat(x, z) || f.Hole(x, z)) continue;
-                        Stone(v, stoneTri, new Vector3(x, f.Y(x, z), z), R(sMin, sMax), R(0f, 360f), R(0.55f, 0.9f));
+                        if (skipFine && gr.InFine(x, z)) continue;
+                        if (f.Flat(x, z) || !gr.Sample(x, z, out float sy)) continue;
+                        Stone(v, stoneTri, new Vector3(x, sy, z), R(sMin, sMax), R(0f, 360f), R(0.55f, 0.9f));
                         ms.stones++;
                     }
-                    Tile(g, $"{name}_{tx / TileCells}_{tz / TileCells}", v, tri, stoneTri, mats);
+                    Tile(g, $"{name}_{tx / TileCells}_{tz / TileCells}", v, tri, stoneTri, mats, false);
                     ms.tiles++;
                 }
+            return gr;
         }
-        Grid(fine, fineStep, false, "Tierra_barrio", 1f / 150f, 0.08f, 0.5f);
-        Grid(inner, coarseStep, true, "Tierra_piso", 1f / 3000f, 0.3f, 1.5f);
+        // El COLLIDER: la misma zona, más gruesa y lisa (Yc), sin renderer.
+        void Collision(Bounds zone, float step, bool skipFine, string name)
+        {
+            if (zone.size.x < step || zone.size.z < step) return;
+            var gr = new Grid(zone, step, skipFine, fine, f, f.Yc);
+            for (int tx = 0; tx < gr.nx; tx += TileCells)
+                for (int tz = 0; tz < gr.nz; tz += TileCells)
+                {
+                    int cx = Mathf.Min(TileCells, gr.nx - tx), cz = Mathf.Min(TileCells, gr.nz - tz);
+                    var v = new List<Vector3>((cx + 1) * (cz + 1)); var tri = new List<int>();
+                    for (int i = 0; i <= cx; i++) for (int k = 0; k <= cz; k++) v.Add(gr.V(tx + i, tz + k));
+                    for (int i = 0; i < cx; i++)
+                        for (int k = 0; k < cz; k++)
+                        {
+                            if (!gr.Cell(tx + i, tz + k)) continue;
+                            int a = i * (cz + 1) + k, b = a + 1, c = (i + 1) * (cz + 1) + k + 1, e = (i + 1) * (cz + 1) + k;
+                            tri.Add(a); tri.Add(b); tri.Add(c); tri.Add(a); tri.Add(c); tri.Add(e);
+                        }
+                    if (tri.Count == 0) continue;
+                    var m = new Mesh { name = $"{name}_{tx / TileCells}_{tz / TileCells}" };
+                    m.SetVertices(v); m.SetTriangles(tri, 0); m.RecalculateBounds();
+                    var go = new GameObject(m.name); go.transform.SetParent(g, false);
+                    go.AddComponent<MeshCollider>().sharedMesh = m;
+                    ms.colliders++;
+                }
+        }
+        Grid gFine = Visual(fine, fineStep, false, "Tierra_barrio", 1f / 150f, 0.08f, 0.5f);
+        Grid gCoarse = Visual(inner, coarseStep, true, "Tierra_piso", 1f / 3000f, 0.3f, 1.5f);
+        Collision(fine, fineCol, false, "Colision_barrio");
+        Collision(inner, coarseCol, true, "Colision_piso");
+        surface = (x, z) =>
+        {
+            if (gFine != null && gFine.Sample(x, z, out float y)) return y;
+            if (gCoarse != null && gCoarse.Sample(x, z, out y)) return y;
+            return float.NaN;
+        };
 
-        // Las PLACAS sobre las caras de arriba de los muebles (se afinan hacia el borde: no asoma un canto de tierra).
+        // Las PLACAS sobre las caras de arriba de los muebles (se afinan hacia el borde: no asoma un canto de tierra). Pequeñas: su
+        // collider es la propia placa, sin las piedras.
         if (tops != null)
             foreach (Bounds top in tops)
             {
@@ -172,6 +264,7 @@ internal static class MicroSoilBuilder
                         int a = i * (nz + 1) + k, b = a + 1, c = (i + 1) * (nz + 1) + k + 1, e = (i + 1) * (nz + 1) + k;
                         tri.Add(a); tri.Add(b); tri.Add(c); tri.Add(a); tri.Add(c); tri.Add(e);
                     }
+                int nv = v.Count;
                 int ns = Mathf.Min(40, Mathf.RoundToInt(top.size.x * top.size.z / 120f));
                 for (int s = 0; s < ns; s++)
                 {
@@ -179,10 +272,12 @@ internal static class MicroSoilBuilder
                     Stone(v, stoneTri, new Vector3(x, y0 + T, z), R(0.1f, 0.6f), R(0f, 360f), R(0.55f, 0.9f));
                     ms.stones++;
                 }
-                Tile(g, $"Tierra_sobre_mueble_{ms.plates}", v, tri, stoneTri, mats);
+                GameObject plate = Tile(g, $"Tierra_sobre_mueble_{ms.plates}", v, tri, stoneTri, mats, false);
+                var cm = new Mesh { name = plate.name + "_colision" }; cm.SetVertices(v.GetRange(0, nv)); cm.SetTriangles(tri, 0); cm.RecalculateBounds();
+                plate.AddComponent<MeshCollider>().sharedMesh = cm;
                 ms.plates++;
             }
-        Debug.Log($"[Tierra] {label}: capa de tierra de {T * 100f:0} cm en {ms.tiles} mosaicos (paso {fineStep:0.#} m en el barrio, {coarseStep:0} m en el resto) y {ms.plates} placas sobre muebles; {ms.mounds} cúmulos y {ms.stones} piedras.");
+        Debug.Log($"[Tierra] {label}: capa de tierra de {T * 100f:0} cm en {ms.tiles} mosaicos (paso {fineStep:0.#} m en el barrio, {coarseStep:0} m en el resto), {ms.colliders} colliders lisos (paso {fineCol:0} / {coarseCol:0} m) y {ms.plates} placas sobre muebles; {ms.mounds} cúmulos y {ms.stones} piedras.");
         return ms;
     }
 
@@ -199,7 +294,7 @@ internal static class MicroSoilBuilder
         foreach (int i in faces) tri.Add(b + i);
     }
 
-    static void Tile(Transform parent, string name, List<Vector3> v, List<int> earthTri, List<int> stoneTri, Material[] mats)
+    static GameObject Tile(Transform parent, string name, List<Vector3> v, List<int> earthTri, List<int> stoneTri, Material[] mats, bool collider)
     {
         var m = new Mesh { name = name };
         if (v.Count > 65000) m.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
@@ -210,7 +305,8 @@ internal static class MicroSoilBuilder
         var go = new GameObject(name); go.transform.SetParent(parent, false);
         go.AddComponent<MeshFilter>().sharedMesh = m;
         var mr = go.AddComponent<MeshRenderer>(); mr.sharedMaterials = mats;
-        go.AddComponent<MeshCollider>().sharedMesh = m;
+        if (collider) go.AddComponent<MeshCollider>().sharedMesh = m;
+        return go;
     }
 
     /// <summary>

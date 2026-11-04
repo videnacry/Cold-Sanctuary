@@ -233,7 +233,7 @@ public class MicroSueloEscenasTest : MonoBehaviour, ITestUnit
         // (2) La tierra.
         MicroSoil soil = root.GetComponentInChildren<MicroSoil>(true);
         int soilRenderers = soil != null ? soil.GetComponentsInChildren<Renderer>(true).Length : 0;
-        TestProbe.Check($"{scene}: capa de tierra de 10 cm con cúmulos y piedras, en mosaicos combinados", soil != null && f.soil && soil.tiles > 0 && soilRenderers <= soil.tiles + soil.plates && soilRenderers < 1500,
+        if (MicroGround.SoilEnabled) TestProbe.Check($"{scene}: capa de tierra de 10 cm con cúmulos y piedras, en mosaicos combinados", soil != null && f.soil && soil.tiles > 0 && soilRenderers <= soil.tiles + soil.plates && soilRenderers < 1500,
             soil != null ? $"{soil.tiles} mosaicos, {soil.plates} placas, {soil.mounds} cúmulos, {soil.stones} piedras, {soilRenderers} renderers; {soil.raised} piezas del pueblo subidas" : "sin MicroSoil");
         Transform story = root.Find("Historia");
         if (story != null && soil != null)
