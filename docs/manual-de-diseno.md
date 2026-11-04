@@ -157,12 +157,13 @@ en el doc de su tema; aquí no se repite.
 | M14 | **Eras avanzadas (desde −3500): el pueblo o la ciudad real ENTERA**, investigada y levantada sobre su plano real (calles, ríos, lagos, montes, sitio de cada edificio). | Que la historia ocurra en su lugar de verdad. | `MicroFloors.Validate` (≥ 12 edificios), `CivilizedErasTest` (grupo 62) | [microcosmos-pueblos-mapas.md](microcosmos-pueblos-mapas.md), regla 5 |
 | M15 | **Solo insectos-humanos civilizados**; flora y fauna salvajes solo si el lugar y la época las tenían. | Fidelidad a la historia (un laboratorio de París de 1898 no tiene fauna). | 43 (animales del pueblo); el resto, **solo en docs** | [microcosmos-reglas-edificacion.md](microcosmos-reglas-edificacion.md) regla 5 |
 | M16 | **El pueblo se amplía con edificios de actividades del santuario** (estudio, entrenamiento, baile, plazas, estaciones, parques, museos, investigación, guarderías, estatuas, policía, bomberos, mercados, talleres, milicia, piscinas, hoteles, carpintería, obra, tecnología…), con el nombre de su época y lugar; lo que no existía no se construye. | Que los habitantes trabajen, aprendan y descansen como en el santuario. | `MicroBuildRules.ValidateSites` (regla 10), `MicroBuildRulesTest` (grupo 63) | [microcosmos-reglas-edificacion.md](microcosmos-reglas-edificacion.md) reglas 8–12 |
-| M17 | **Cada edificio nace con su interacción y su categoría** (trabajo, descanso, recuperación u ocio), su capacidad y los cuerpos que lo usan. | Entra solo en las actividades semanales. | `ValidateSites` (regla 8), 63; `HorarioLibreTest` (65) | [microcosmos-actividades.md](microcosmos-actividades.md) |
+| M17 | **Cada edificio nace con su interacción y su categoría** (trabajo, descanso, recuperación, ocio o entrenamiento), su capacidad y los cuerpos que lo usan. | Entra solo en las actividades semanales. | `ValidateSites` (regla 8), 63; `HorarioLibreTest` (65) | [microcosmos-actividades.md](microcosmos-actividades.md) |
 | M18 | **Un hogar para cada personaje** (una cama por persona, retrete, lavabo, mesa con sillas, despensa), además de su trabajo y los servicios básicos; las parejas comparten casa. | Cada uno vive su ciclo de vida completo. | `Household.Check`; 62 | [microcosmos-reglas-edificacion.md](microcosmos-reglas-edificacion.md) regla 6 |
 | M19 | **El ciclo de vida de humanos e insectos-humanos es el mismo** (necesidades, etapas, vejez, pareja, nacimiento, muerte). | Son personas con otro cuerpo. | `CicloHumanoTest` (59), 62 | memoria 2026-11-02, [ciclo-de-vida.md](ciclo-de-vida.md) |
 | M20 | **Toda residencia tiene su frutal**, de su época y lugar. | Berón lo pidió para las casas del microcosmos. | `ValidateSites` (regla 11), 63 | [microcosmos-reglas-edificacion.md](microcosmos-reglas-edificacion.md) regla 11 |
 | M21 | **Edificios de varias plantas en terraza**, con rampa y sin techos. | Ninguna planta tapa a otra. | `ValidateSites` (regla 12), 63 | [microcosmos-reglas-edificacion.md](microcosmos-reglas-edificacion.md) regla 12 |
 | M22 | **Como mucho 150 edificios por pueblo**; piezas de pocos cubos. | Rendimiento (35 000–76 000 renderers por escena). | **solo en docs** (el registro `[Pueblos]` lo dice) | [microcosmos-pueblos-mapas.md](microcosmos-pueblos-mapas.md) |
+| M35 | **Todo pueblo tiene trabajo, ocio, ENTRENAMIENTO y recuperación** (2026-11-04; el entrenamiento es ahora categoría propia). Lo que el plano histórico no trae se coloca en una **posición de un mapa de hoy**, marcada en el plano (`Tipo \| x z \| actual: fuente`), y se levanta con lo **nativo de la época**: gimnasio griego, palestra, akhāṛā, furusiyya, tekke de güreş, wuguan, dojo, prado de juegos, Turnplatz, Turnhalle, método Hébert, fútbol de la tregua, juego de pelota… con sus aparatos (halteres, mazas, piedras, foso de lucha, pista). Cada lugar lleva su clase estable (`AreaFunctionSite.training`) para los planes de entrenamiento. | «¿En ninguna época de microcosmos hay gimnasio?» | `MicroFloors.ValidateCategories` (en `Validate`), `CivilizedErasTest` (62), 43 | [microcosmos-reglas-edificacion.md](microcosmos-reglas-edificacion.md) regla 16, [microcosmos-entrenamiento-eras.md](microcosmos-entrenamiento-eras.md) |
 
 ### 7.4 Reglas de edificación (micro y meso)
 
@@ -320,13 +321,13 @@ reconstruir. Vale para TODOS los pisos, no solo el hospital. Cada piso del santu
 ## 12. Recuento y reglas sin comprobación automática
 
 
-**Total: 127 reglas** (S 13 · F 12 · T 13 · C 7 · G 8 · H 8 · M 34 · A 5 · J 17 · W 9 = 126 —W9, la de revisar jornadas y horario al
+**Total: 128 reglas** (S 13 · F 12 · T 13 · C 7 · G 8 · H 8 · M 35 · A 5 · J 17 · W 9 = 127 —W9, la de revisar jornadas y horario al
 cambiar un piso, va en §11—, más la regla de sincronización de §11). (Recontado por el probador al integrar yoga, charlas, micro3, personajes, cohetes y pisos;
 micro3, 2026-11-04.)
 
 **Pendientes de implementar (pedidos del 2026-11-04), 2:** M9 (los mapas a mano de todas las historias menos Angostura, que está hecho) y el gancho de
 §11 para los demás pisos (el aviso «REVISAR MICROCOSMOS» al reconstruir ya los cubre). Hechos en código el 2026-11-04, a falta
-de la prueba en vivo: F2, F3, C7, H8, M13, M30, M32, M33, M34 y el aviso de §11 (micro3); F7–F12 (yoga, grupo 64); J7 (charlas,
+de la prueba en vivo: F2, F3, C7, H8, M13, M30, M32, M33, M34 y el aviso de §11 (micro3); M35 (pueblos: las cuatro categorías y el entrenamiento de cada época, grupos 62 y 43); F7–F12 (yoga, grupo 64); J7 (charlas,
 grupo 88).
 
 **Solo en docs (sin validador ni prueba), además de las pendientes:** S8 (medida humana), T12 (anillo en U), C4 (selector por

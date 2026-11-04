@@ -654,6 +654,42 @@ Quien mide más de lo que la barra permite, como Elon Musk (1,88 m) bajo la esca
 
 Ahora baja hasta el agarre y **dobla las rodillas** (`GymFit.TuckLegs`, IK de dos huesos): los pies suben lo que falta y van algo hacia atrás. Hasta 0,4 m de diferencia; con más, el cuerpo se queda sobre el suelo como antes.
 
+## Microcosmos: lugares de entrenar por época (gancho para los planes de entrenamiento, 2026-11-04)
+
+Los pueblos de las historias del microcosmos tienen ahora su lugar de entrenar de época. Son la regla 16 de [microcosmos-reglas-edificacion.md](microcosmos-reglas-edificacion.md); su investigación y sus fuentes están en [microcosmos-entrenamiento-eras.md](microcosmos-entrenamiento-eras.md).
+
+El hilo «entreno» escribe los planes de entrenamiento de los insectos-humanos y los ejercicios de cada era. Para hacerlo, puede contar con esto, que no cambiará:
+
+- **Categoría.** `AreaFunctionSite.activity == AreaFunctionSite.Entrenamiento` («entrenamiento»). La llevan las plantillas «Centro de entrenamiento» y «Dojo» (la palestra de Milón, el kwoon de Yip Man).
+- **Clase estable.** `AreaFunctionSite.training` es una de estas:
+  - `juegos_heroicos`, `gimnasio_griego`, `palestra_romana`;
+  - `patio_lucha_egipcio`, `patio_lucha`, `akhara`;
+  - `furusiyya`, `tekke_guresh`, `juego_pelota`;
+  - `wuguan`, `dojo`, `sala_armas`, `sala_esgrima`;
+  - `prado_juegos`, `garrote_coleo`, `turnplatz_schwingen`;
+  - `turnhalle`, `hebert`, `futbol_tregua`;
+  - `club_deportivo`, `estadio`, `gimnasio_moderno`.
+
+  Sale de `MicroStyles.TrainingKind(estilo, año)`.
+- **Puestos.** Son `AreaFunctionStation.station`, con la clave del aparato. La tabla dice qué función del registro sirve cada uno. Las funciones son de la plantilla «Centro de entrenamiento» (`AreaFunctions.Buildings`).
+
+| Función | Qué se hace | Puestos que la sirven |
+|---|---|---|
+| `ent_entrenar` | Entrenar (rol «todos») | tatami, pista, foso_lucha, pista_carreras, campo |
+| `ent_ensenar` | Dirigir el entrenamiento (rol «maestro») | los mismos que `ent_entrenar` |
+| `ent_lucha` | Luchar en el foso | foso_lucha, tatami |
+| `ent_correr` | Correr | pista_carreras, campo |
+| `ent_pesos` | Levantar pesos | halteres, piedras, mazas, pesas |
+| `ent_golpear` | Golpear el saco, el poste o el muñeco | saco, makiwara, muneco |
+| `ent_aparatos` | Gimnasia en aparatos | barra_fija, paralelas, potro, anillas |
+| `ent_armas` | Esgrima y armas | pista_esgrima, armero |
+| `ent_tiro` | Tiro con arco | diana |
+| `ent_pelota` | Juegos de pelota | balon, campo, pista |
+
+- **Aparatos de cada clase.** Los da `CivicBuilder.TrainingKit(clase)`. Por ejemplo, un `gimnasio_griego` tiene xisto, skamma, halteres, kórykos, discos y jabalinas, y una `akhara` tiene foso de tierra, gada y mugdar, y nal. Un plan de entrenamiento puede elegir los ejercicios por la clase y buscar el puesto con `site.StationFor(AreaFunctions.Get("ent_pesos"))`.
+- **En el horario libre.** Los sitios de entrenamiento entran como hasta ahora: una actividad por plantilla, del tipo «ocio» del roster (`LeisureDirector`).
+
+
 ## Fuentes
 
 - Press de pecho:
