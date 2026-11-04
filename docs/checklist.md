@@ -598,6 +598,8 @@ Decisión del usuario (2026-09-11): **diseñar a fondo primero** (hecho) → **e
 - [ ] Tester: reconstruir SampleScene (solo el santuario) y guardarla; grupos 89, 65, 28 y 55 (frutales de las terrazas); fotos del ring y de una casa.
 - [x] Regla J16 en el resto de centros ([`centros-para-todos.md`](centros-para-todos.md)): pisos según los miembros (yoga, 2 de Hatha y 2 de Ashtanga; gimnasio, calistenia, dojo y ballet, 1), clases de Ashtanga que se reparten por las salas, ocio para todos (crías y textil por turnos, justificado); lo comprueba la regla de capacidad (`AreaCapacity`, grupo 75). Las alfombras rodean el ring de almohadas (`FlyingCarpet.Legs`).
 - [ ] Tester: reconstruir SampleScene (la torre del Entrenamiento sube a 5 niveles) y pasar 75, 89, 65, 50 y las de yoga (`YogaFloorsTest`, `YogaClassTest`); fotos de los pisos de yoga nuevos y de un vuelo de alfombra desde la plataforma central.
+- [x] Pijamadas ([`pijamadas.md`](pijamadas.md), manual J17): litera triple en cada casa (7 por casa), pijamada semanal con anfitrión que rota, dormir en su plaza esa noche y volver a casa a la mañana; prueba `SleepoverTest` (grupo 92).
+- [ ] Tester: con la escena reconstruida, grupo 92 y fotos de una casa con la litera y de una pijamada.
 
 ## Charlas entre personas (2026-11-04; [`conversaciones.md`](conversaciones.md))
 - [x] Resumen del sistema que había (`CommunicationSpell`, `Mind`, `SocialField`, vínculos): nadie llevaba el hechizo, solo Mentes, no se veía, sin contexto.

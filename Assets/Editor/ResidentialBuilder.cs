@@ -143,6 +143,48 @@ public static class ResidentialBuilder
             KitchenProps.C(bed, new Vector3((k - (BedSleeps - 1) * 0.5f) * LaneWidth, 0.55f, BedLength * 0.5f - 0.3f), new Vector3(0.7f, 0.1f, 0.35f), Color.white, 0f, "Almohada");
         KitchenProps.C(t, new Vector3(-0.4f, 0.55f, 3.2f), new Vector3(0.45f, 0.55f, 0.4f), Wood, 0f, "Mesilla");   // pegada a la cama (van juntas)
         KitchenProps.C(t, new Vector3(2.6f, 1.25f, 3.2f), new Vector3(1.4f, 1.9f, 0.55f), Wood, 0f, "Armario");     // a 2,1 m de la mesilla
+        // (2026-11-04, Berón: «las camas son grandes para permitir que los residentes puedan hacer pijamadas, se podría incluso crear
+        // literas para incrementar el número de personas que pueden participar en la pijamada»; docs/pijamadas.md) LITERA TRIPLE delante
+        // de la cama: 3 colchones de 0,90 × 2,00 m (como los de la cama) a 0,6 · 1,5 · 2,4 m, en x −3,05…−2,15 y z −3,2…−1,2: a 2,35 m
+        // de la cama y a 3,3 m de la alfombra-esterilla. SIN ESCALERA (regla de plataformas 3): a los de arriba se sube TREPANDO por su
+        // poste (Climbable, como a los árboles), y a dormir se tumba en su plaza como en la cama. Barandillas en los dos de arriba.
+        Transform bunk = KitchenProps.Root(t, "Litera", new Vector3(-2.6f, 0.25f, -2.2f));
+        float[] tierTop = { 0.4f, 1.3f, 2.2f };   // cara de arriba de cada colchón (sobre la raíz de la litera)
+        for (int sx = -1; sx <= 1; sx += 2)
+            for (int sz = -1; sz <= 1; sz += 2)
+            {
+                Transform post = KitchenProps.C(bunk, new Vector3(sx * 0.48f, 1.3f, sz * 1.03f), new Vector3(0.08f, 2.6f, 0.08f), WoodDark, 0f, "Poste");
+                if (sx < 0 && sz < 0)   // el poste para trepar (por el lado del pasillo)
+                {
+                    if (post.GetComponent<Collider>() == null) post.gameObject.AddComponent<BoxCollider>();
+                    Climbable cl = post.gameObject.AddComponent<Climbable>(); cl.topY = bunk.position.y + tierTop[tierTop.Length - 1];
+                }
+            }
+        for (int k = 0; k < tierTop.Length; k++)
+        {
+            KitchenProps.C(bunk, new Vector3(0f, tierTop[k] - 0.15f, 0f), new Vector3(1.0f, 0.06f, 2.1f), WoodDark, 0f, "Somier_litera");
+            KitchenProps.C(bunk, new Vector3(0f, tierTop[k] - 0.06f, 0f), new Vector3(0.9f, 0.12f, 2.0f), new Color(0.95f, 0.95f, 0.93f), 0f, "Colchon_litera");
+            KitchenProps.C(bunk, new Vector3(0f, tierTop[k] + 0.04f, 0.75f), new Vector3(0.6f, 0.08f, 0.3f), Color.white, 0f, "Almohada");
+            if (k > 0) KitchenProps.C(bunk, new Vector3(0.48f, tierTop[k] + 0.2f, 0f), new Vector3(0.04f, 0.04f, 1.9f), WoodDark, 0f, "Barandilla");
+        }
+        // LAS PLAZAS PARA DORMIR (Bedroom.spots): las 4 de la cama y las 3 de la litera; cada una 0,5 m por debajo de la cara de arriba
+        // de su colchón (como la raíz de la cama: SleepSpell tumba a cada uno 0,5 m más arriba) y girada como su cama.
+        var spots = new System.Collections.Generic.List<Transform>();
+        for (int k = 0; k < BedSleeps; k++)
+        {
+            Transform sp = new GameObject($"Plaza_{k + 1}").transform; sp.SetParent(bed, false);
+            sp.localPosition = new Vector3((k - (BedSleeps - 1) * 0.5f) * LaneWidth, 0f, 0f); spots.Add(sp);
+        }
+        for (int k = 0; k < tierTop.Length; k++)
+        {
+            Transform sp = new GameObject($"Plaza_litera_{k + 1}").transform; sp.SetParent(bunk, false);
+            sp.localPosition = new Vector3(0f, tierTop[k] - 0.5f, 0f); spots.Add(sp);
+        }
+        // Dónde se juntan los de una pijamada: el pasillo entre la cama (z ≥ 1,15) y la litera (z ≤ −1,2), y junto a la alfombra.
+        var gather = new System.Collections.Generic.List<Transform>();
+        Vector3[] gp = { new Vector3(-4.0f, 0.25f, 0.35f), new Vector3(-3.0f, 0.25f, 0.35f), new Vector3(-2.0f, 0.25f, 0.35f), new Vector3(-1.0f, 0.25f, 0.35f),
+                         new Vector3(-1.5f, 0.25f, -0.55f), new Vector3(-0.6f, 0.25f, -0.55f), new Vector3(0.3f, 0.25f, -0.55f) };
+        for (int k = 0; k < gp.Length; k++) { Transform gt = new GameObject($"Pijamada_{k + 1}").transform; gt.SetParent(t, false); gt.localPosition = gp[k]; gather.Add(gt); }
         // SU ALFOMBRA, que es también su ESTERILLA DE YOGA: lleva a la plataforma central (y se hace yoga encima). Zona de 3 × 3,6 m
         // de x 1,15 a 4,15 y de z −3,45 a 0,15: a 2,15 m de la cama y a 2,8 m del armario.
         string who = ownerIdx < Shown.Length ? $"Habitación de {Shown[ownerIdx]}" : $"Habitación libre {ownerIdx + 1}";
@@ -161,6 +203,7 @@ public static class ResidentialBuilder
         room.owner = ownerIdx < Owners.Length ? Owners[ownerIdx] : null;   // las demás: para quien llegue al santuario
         room.partner = room.owner != null && Partners.TryGetValue(room.owner, out string mate) ? mate : null;
         room.bed = bed; room.sleeps = BedSleeps; room.laneWidth = LaneWidth; room.bedLength = BedLength;   // cama de 4 (2026-11-04)
+        room.spots = spots.ToArray(); room.gather = gather.ToArray();   // pijamadas: 4 en la cama y 3 en la litera (2026-11-04)
         WorldLabel wl = t.gameObject.AddComponent<WorldLabel>(); wl.text = ownerIdx < Shown.Length ? $"Habitación de {Shown[ownerIdx]}" : "Habitación libre (para recién llegados)"; wl.height = 2.5f;
         return t;
     }
@@ -238,7 +281,6 @@ public static class ResidentialBuilder
             }
         PillowRing pr = ring.gameObject.AddComponent<PillowRing>();
         pr.cells = _ringCells; pr.builtFor = _ringFor; pr.mattress = mat; pr.pillows = loose;
-        AreaSeat.Add(ring.gameObject, "guerra de almohadas", AreaSeat.Category.Entrenamiento, _ringCells * _ringCells);   // regla de capacidad (AreaCapacity, S13 / J16): todos a la vez
         // Su PISTA DE ALFOMBRAS (red de edificio de la Residencia: vuela a la plataforma central y al suelo), a 2 m del pie de la cama.
         float zc = -_ringZ * 0.5f + EdgeMargin + ZoneD * 0.5f;
         CarpetPad.BuildZone(ring, ring.TransformPoint(new Vector3(0f, 0.15f, zc)), ring.rotation, CarpetPad.Kind.Edificio, Name, 2, $"{Name}#ring", "Ring de almohadas", 2, ZoneW, ZoneD);

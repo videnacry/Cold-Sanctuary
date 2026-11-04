@@ -492,6 +492,8 @@ public class LeisureDirector : MonoBehaviour
         }
         // EL RING DE ALMOHADAS (2026-11-04): cada plaza, una celda del colchón de la cama colosal (PillowRing.Spot).
         if (v.anchor.TryGetComponent(out PillowRing ring)) return ring.Spot(seat) + Vector3.up;
+        // LA PIJAMADA (2026-11-04): en la casa del anfitrión, cada plaza un punto del pasillo entre la cama y la litera.
+        if (!v.home && v.anchor.TryGetComponent(out Bedroom hostRoom)) return hostRoom.GatherSpot(seat) + Vector3.up;
         // Una SALA de los pisos de yoga: cada plaza, una de sus esterillas (de cara a la tarima).
         if (v.halls.Count > 0 || v.anchor.TryGetComponent(out YogaHall _))
         {
@@ -590,6 +592,9 @@ public class LeisureDirector : MonoBehaviour
         SetStatus(g, r, StatusOf(g));
         // LA GUERRA DE ALMOHADAS (docs/guerra-de-almohadas.md): coge una almohada y da almohadazos a los de al lado, sin salir de su celda.
         if (r.entry.activity.pose == "almohadas") { if (a != null) PillowFight.Tick(g, a, r.venue.anchor != null ? r.venue.anchor.GetComponent<PillowRing>() : null); r.posed = true; return; }
+        // LA PIJAMADA (docs/pijamadas.md): al llegar a la casa del anfitrión se apunta a dormir allí esta noche (Sleepover: su plaza en la
+        // cama o la litera); luego, sentado charlando con los demás.
+        if (r.entry.activity.pose == Sleepover.ActivityId && a != null && !r.posed && r.venue.anchor != null && r.venue.anchor.TryGetComponent(out Bedroom host)) Sleepover.Join(a, host, r.entry.day);
         Vector3 c = r.st != null ? r.st.transform.position : r.venue.anchor != null ? r.venue.anchor.position : r.to;
         Vector3 look = c - g.transform.position; look.y = 0f;
         string pose = r.entry.activity.pose;
@@ -613,6 +618,7 @@ public class LeisureDirector : MonoBehaviour
         switch (pose)
         {
             case "sentado": return DailyPoses.Sit();
+            case "pijamada": return DailyPoses.Sit();   // charlando en la casa del anfitrión, antes de dormir
             case "meditar": return DailyPoses.Meditate();
             case "tumbado": return DailyPoses.Lie();
             case "ejercicio": return b ? DailyPoses.Sit() : DailyPoses.Stand();   // sentadillas
@@ -628,7 +634,7 @@ public class LeisureDirector : MonoBehaviour
         if (room == null || room.bed == null || Vector3.Distance(room.bed.position, g.transform.position) > 3.5f) { DailyPoses.Sit().ApplyFinal(a); return; }
         CharacterController cc = g.GetComponent<CharacterController>(); if (cc != null) cc.enabled = false;
         g.transform.position = room.LieSpot(a) + Vector3.up * 0.5f;   // en su plaza de la cama de 4
-        g.transform.rotation = room.bed.rotation * Quaternion.Euler(0f, 180f, 0f);
+        g.transform.rotation = room.LieRotation(a) * Quaternion.Euler(0f, 180f, 0f);
         if (cc != null) cc.enabled = true;
         r.onBed = true; r.last = g.transform.position;
         DailyPoses.Lie().ApplyFinal(a);

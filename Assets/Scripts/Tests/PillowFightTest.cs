@@ -131,11 +131,14 @@ public class PillowFightTest : MonoBehaviour, ITestUnit
         TestProbe.Check("en su franja (sábado, 20 h) la tienen todos", fighters == gr.plan.people.Count && fighters > 0, $"{fighters}/{gr.plan.people.Count}");
         TestProbe.Check("caben todos a la vez en el ring", fighters <= ring.Capacity, $"{fighters} de {ring.Capacity}");
         TestProbe.Check("fuera de su franja no se reparte", gr.plan.entries.Count(e => e.activity == act) == fighters);
-        // REGLA J16 (Berón 2026-11-04: los centros de entrenamiento y de ocio dan servicio a TODOS los miembros a la vez). Hoy solo la
-        // cumple el ring; el resto se apunta en el registro (pendiente en docs/guerra-de-almohadas.md §Regla J16), sin fallar la prueba.
-        int members = gr.plan.people.Count;
-        string shortOf = string.Join(", ", gr.catalog.Where(a => !a.Unlimited && a.capacity < members).Select(a => $"{a.title} {a.capacity}/{members}"));
-        Log($"regla J16 (todos a la vez): {(shortOf.Length == 0 ? "todas las actividades caben" : "aún no caben todos en: " + shortOf)}");
+        // REGLA J16 (= S13; Berón 2026-11-04: los centros de entrenamiento y de ocio dan servicio a TODOS los miembros a la vez), con el
+        // único validador, AreaCapacity.CheckActivities: el ring y cada actividad de ocio «para todos». Las de por turnos (crías, textil;
+        // docs/centros-para-todos.md), al registro.
+        var forAll = gr.catalog.Where(a => a.id == PillowRing.ActivityId || LeisureDirector.AllMembers.Contains(a.id)).Select(a => (a.title, a.capacity, a.Unlimited));
+        var j16 = AreaCapacity.CheckActivities(forAll, AreaCapacity.Members());
+        TestProbe.Check("regla J16: el ring y el ocio «para todos» tienen plazas para todos los miembros (AreaCapacity)", j16.Count > 0 && j16.All(l => l.ok), string.Join(" · ", j16));
+        foreach (var a in gr.catalog.Where(a => a.id != PillowRing.ActivityId && !LeisureDirector.AllMembers.Contains(a.id) && !a.Unlimited))
+            Log($"por turnos (justificado en docs/centros-para-todos.md): {a.title} {a.capacity}");
 
         // En vivo: toda la franja de las 20 h (acotado en tiempo real).
         PillowFight.ResetCounters();

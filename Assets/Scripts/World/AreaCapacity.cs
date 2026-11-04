@@ -114,7 +114,6 @@ public static class AreaCapacity
     {
         var roots = new List<Transform>();
         foreach (SanctuaryArea a in Object.FindObjectsByType<SanctuaryArea>(FindObjectsInactive.Include, FindObjectsSortMode.None)) roots.Add(a.transform);
-        foreach (PillowRing r in Object.FindObjectsByType<PillowRing>(FindObjectsInactive.Include, FindObjectsSortMode.None)) roots.Add(r.transform);   // el ring de almohadas (arboleda residencial; regla J15)
         int members = Members();
         var lines = Check(roots, members, out var pending);
         var bad = lines.FindAll(l => !l.ok);
