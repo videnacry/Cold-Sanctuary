@@ -235,14 +235,18 @@ public static partial class SampleSceneBuilder
         return best < float.MaxValue;
     }
 
-    // Nada sólido a ras del agua donde va el casco (placas de hielo sueltas, muelles…).
+    // Nada sólido a ras del agua donde va el casco (placas de hielo sueltas, muelles…). El plano provisional del suelo
+    // («Ground_Placeholder») no cuenta: los submarinos se hacen antes que la banquisa (BuildPolarIce), que es la que le quita el
+    // collider; con él, todo el mapa salía «sólido» y el Leviatán no encontraba atraque (2026-11-03). El hielo de verdad lo mira
+    // FindBerth con NaturalIce.
     static bool PhysicsClear(Vector3 c, Quaternion q, float L, float B)
     {
         for (float lz = -L * 0.5f; lz <= L * 0.5f; lz += 6f)
             for (float lx = -B * 0.5f; lx <= B * 0.5f; lx += 6f)
             {
                 Vector3 p = c + q * new Vector3(lx, 0f, lz);
-                if (Physics.Raycast(new Vector3(p.x, 8f, p.z), Vector3.down, out RaycastHit hit, 9f, ~0, QueryTriggerInteraction.Ignore) && hit.point.y > -0.4f) return false;
+                foreach (RaycastHit hit in Physics.RaycastAll(new Vector3(p.x, 8f, p.z), Vector3.down, 9f, ~0, QueryTriggerInteraction.Ignore))
+                    if (hit.point.y > -0.4f && hit.collider.name != "Ground_Placeholder") return false;
             }
         return true;
     }
