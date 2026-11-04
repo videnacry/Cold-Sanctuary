@@ -2692,7 +2692,7 @@ public static partial class SampleSceneBuilder
         GuardTower.TreeHeight = Mathf.Max(GuardTower.BaseHeight, TallestBuilding());
         GuardTower.Build(root.transform, new Vector3(-20f, 0f, 57f), w => HelixBlockedAt(w, TreeSpec.TreeClearance));   // en su isla, al noroeste del hub
         root.AddComponent<ElevatedElement>().label = "el árbol de la guardia";   // cuenta para la regla de altura de la lanzadera
-        Debug.Log($"[Guardia] El árbol de la guardia mide {GuardTower.TreeHeight:0.0} m (el edificio más alto, con la columna de la puerta de su techo).");
+        Debug.Log($"[Guardia] El árbol guardián mide {GuardTower.TreeHeight:0.0} m: lo mayor del récord histórico ({GuardianTree.RecordHeight:0.0} m) y del edificio más alto con la columna de la puerta de su techo ({TallestBuilding():0.0} m).");
         (string name, Vector3 pos)[] posts =
         {
             ("PuestoVigia_1_Arrozal", new Vector3(-50f, 0f, -5f)),
