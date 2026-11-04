@@ -51,6 +51,9 @@ public class FruitGardener : MonoBehaviour
         /// de su fondo abierto (docs/mascaras-de-oxigeno.md). Sin macetas.</summary>
         public ArbolCampos tree; public List<MaskStation> masks = new List<MaskStation>(); public List<Phytoplankton> beds = new List<Phytoplankton>();
         public bool TreeTasks => tree != null;
+        /// <summary>Lo que se planea para las tareas de la semana de sus macetas (h de juego, media diaria; <see cref="WeeklyHoursPerDay"/>) y
+        /// lo que de verdad le cupo en su ronda (<see cref="reserve"/>): la ronda deja ese tiempo libre para polinizar y podar.</summary>
+        public float weekly, reserve;
     }
     public class Round { public string id, title; public List<Leg> legs = new List<Leg>(); public float hours; public IEnumerable<FruitPlant> Plants => legs.SelectMany(l => l.plants); public IEnumerable<Leg> TreeLegs => legs.Where(l => l.TreeTasks); }
 
@@ -143,10 +146,10 @@ public class FruitGardener : MonoBehaviour
             if (byRoof.ContainsKey(b))
                 foreach (FruitPlant p in byRoof[b])
                 {
-                    float work = (p.Ficha != null ? p.Ficha.minutos : 2f) / 60f + WeeklyHoursPerDay(p), plantH = work + (leg != null ? Hop(at, p) / 2.6f / SecondsPerGameHour : 0f);
+                    float work = (p.Ficha != null ? p.Ficha.minutos : 2f) / 60f, plantH = work + (leg != null ? Hop(at, p) / 2.6f / SecondsPerGameHour : 0f);
                     if (leg == null || (leg.plants.Count > 0 && leg.hours + plantH > RoundTarget))   // (solo si el edificio no cabe entero en una ronda)
                     { leg = new Leg { building = b, station = StationOf(b), hours = Open(b, pieces++ == 0) }; units.Add(leg); plantH = work; }
-                    leg.plants.Add(p); leg.hours += plantH; at = p;
+                    leg.plants.Add(p); leg.hours += plantH; leg.weekly += WeeklyHoursPerDay(p); at = p;
                 }
             if (trees.TryGetValue(b, out ArbolCampos tree))
             {
@@ -183,10 +186,19 @@ public class FruitGardener : MonoBehaviour
             foreach (Round r in _rounds)
             {
                 bool afterOwn = r.legs.Count > 0 && r.legs[r.legs.Count - 1].building == u.building;
-                float h = u.hours + (u.TreeTasks && !afterOwn ? flightH : 0f);
+                float h = u.hours + u.weekly + (u.TreeTasks && !afterOwn ? flightH : 0f);
                 if (r.hours + h <= RoundTarget) { fit = r; fitH = h; if (afterOwn) break; }
             }
-            if (fit == null) { fit = new Round(); _rounds.Add(fit); fitH = u.hours + (u.TreeTasks ? flightH : 0f); }
+            // Las macetas de un edificio son UN tramo (no se parten si caben solas en una ronda): si el edificio llena la ronda él
+            // solo, se le reserva para la semana lo que quede hasta las 2,9 h.
+            if (fit == null)
+            {
+                fit = new Round(); _rounds.Add(fit);
+                float baseH = u.hours + (u.TreeTasks ? flightH : 0f);
+                u.reserve = Mathf.Clamp(RoundTarget - baseH, 0f, u.weekly);
+                fitH = baseH + u.reserve;
+            }
+            else u.reserve = u.weekly;
             fit.legs.Add(u); fit.hours += fitH;
         }
         for (int i = 0; i < _rounds.Count; i++)
@@ -597,6 +609,7 @@ public class FruitGardener : MonoBehaviour
         for (int i = _leg + 1; i < _round.legs.Count; i++) { rest += _round.legs[i].hours + (_round.legs[i].building != _round.legs[i - 1].building ? flightH : 0f); restPlants += _round.legs[i].plants.Count; }
         float spare = Mathf.Max(0f, MaxRoundHours - ExtraMargin - elapsed - rest);
         float share = spare * leg.plants.Count / Mathf.Max(1, leg.plants.Count + restPlants);
+        share = Mathf.Max(share, leg.reserve);   // (2026-11-04) lo que la ronda reservó para la semana de este tramo, aunque la revisión haya ido lenta
         _extraUntil = Time.time + share * SecondsPerGameHour;
         NextExtra();
     }
