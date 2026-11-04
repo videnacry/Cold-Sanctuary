@@ -638,7 +638,9 @@ Decisión del usuario (2026-09-11): **diseñar a fondo primero** (hecho) → **e
 - [x] Maestros de baile (Panterilia, también finanzas, y Gohageneis) que se turnan por días: guían el baile de las 20 h (en la Sala de Ballet o en la de reserva mientras está en obras) y el entrenamiento de ballet si la sala está terminada; Julian, dirección de proyectos con Alicita (`con_proyectos2`). Prueba en `HorarioLibreTest` (65).
 - [ ] Berón: fotos de Gallarle, Julian y Fausto; profesión de Gallarle.
 - [x] Seis nuevos (Berón 2026-11-04; [`personajes-mesocosmos.md`](personajes-mesocosmos.md) §Los seis nuevos): David y Adonis (informática), Julito y Ale (biotecnología), Ivelyna (pediatra), Luciana (piloto); aspecto provisional pendiente de foto (Fem por el nombre, pendiente de confirmar); cuarta casa por árbol (árboles de 38 m, 24 casas); ring 6 × 6; 27 miembros (dojo 2 pisos, Aula 2; la torre del Entrenamiento, 7 niveles; simulador de holguras pasado).
-- [ ] Berón: fotos de los seis y confirmar el cuerpo (Fem) de Ivelyna, Luciana y Ale.
+- [x] Neo, niño, hijo de Ducristin y Gallarle: vive en su casa, sin jornada, va con su madre ([`personajes-mesocosmos.md`](personajes-mesocosmos.md) §Neo). Ale es hombre (confirmado).
+- [ ] Berón: fotos de los seis y de Neo; confirmar el cuerpo (Fem) de Ivelyna y Luciana; confirmar la grafía «Ducristin» (escribió «Dukristin»).
+- [ ] Guardería o juego de niños para Neo, con Ivelyna (hoy no existe: solo sigue a su madre).
 - [ ] Tester: reconstruir SampleScene; mirar la lanzadera (T13: debe subir con el nuevo techo del Entrenamiento, `LaunchSiteTest` 90), y grupos 28, 50, 55, 65, 75, 89 y 92.
 - [ ] Tester: reconstruir SampleScene (la torre del Entrenamiento sube a 6 niveles: el ballet pide 2 pisos con 21 miembros); grupos 45, 50, 51, 55, 64, 65, 75, 89 y 92.
 

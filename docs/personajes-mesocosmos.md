@@ -161,8 +161,14 @@ Berón: Panterilia es maestra de baile y de finanzas; Gohageneis, maestro de bai
 **Aspecto**: provisional y **pendiente de foto**, como Gallarle (`CubeHair.Placeholder`): pelo corto o media melena castaña, piel media
 y ropa lisa de un color por persona.
 - El rasgo femenino (`Fem`) solo va donde el nombre lo sugiere (Ivelyna, Luciana), y está **pendiente de que Berón lo confirme**.
-- Ale (Alejandro o Alejandra) va sin él.
+- Ale es **hombre** (confirmado por Berón): va sin él.
 - Se reconocen por el nombre **exacto**: David o Ale pueden salir en los microcosmos.
+
+## Neo (2026-11-04)
+
+Neo es un **niño, hijo de Ducristin y Gallarle** (pendiente de foto). Vive en la casa de sus padres (`Bedroom.kids`, `Kids` en `ResidentialBuilder`) y cuenta en el aforo del ring. Lleva el ciclo de vida de los humanos: `PersonLife` en etapa de niño, `BodyAging.growth` 0,35, con `mother` (Gallarle) y `father` (Ducristin) enlazados. **No está en la jornada** (`WorkdayDirector.Staff`): su tiempo es libre y va con su madre (`FollowMother`). Todavía no hay guardería ni juego propio de niños; cuando exista, con Ivelyna (pediatra), irá ahí.
+
+**Por confirmar:** Berón escribió «Dukristin»; se conserva el nombre «Ducristin» hasta que lo confirme.
 
 **Casas**: llegan seis y quedaban 2 casas libres.
 - Los árboles de la arboleda crecen de 26 a **38 m** y cada uno lleva una **cuarta casa**, del otro lado y 21 m sobre la primera.
