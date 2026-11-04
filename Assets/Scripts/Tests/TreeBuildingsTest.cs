@@ -184,7 +184,7 @@ public class TreeBuildingsTest : MonoBehaviour, ITestUnit
 
         // ── 5. EL ÁRBOL DE LA GUARDIA ──
         GameObject guard = GameObject.Find("CasaArbolGuardia");
-        float tallest = all.Count > 0 ? all.Max(t => t.rootHeight) : 0f;
+        float tallest = all.Where(t => t.building != LaunchHeightRule.Building).Select(t => t.rootHeight).DefaultIfEmpty(0f).Max();   // (sin la lanzadera de cohetes: va por encima de todo por su regla)
         float gh = 0f;
         if (guard != null) foreach (Renderer r in guard.GetComponentsInChildren<Renderer>()) if (r.name == "Tronco") gh = Mathf.Max(gh, r.bounds.max.y - guard.transform.position.y);
         TestProbe.Check("el árbol de la guardia (la excepción: un árbol modificado) crece tan alto como el edificio más alto", guard != null && gh >= tallest - 0.5f, $"tronco {gh:0.0} m, edificio más alto {tallest:0.0} m");
