@@ -68,6 +68,7 @@ en el doc de su tema; aquí no se repite.
 | F10 | **Sala tradicional**: suelo de tierra, alfombras de algodón, asiento de kusha y algodón (**sin piel animal**), lámparas de aceite y su elemento (linga como el Dhyanalinga en Hatha; Adiyogi y Patanjali en Ashtanga). | La práctica clásica (Bhagavad Gita 6.11, Hatha Yoga Pradipika, Isha, Mysore); el santuario no usa pieles. | `YogaFloorsTest` (64: sus elementos) | [yoga-pisos.md](yoga-pisos.md) §1, §3 |
 | F11 | **Inmersión antes de la práctica tradicional**: un **kund** con agua del tronco del árbol, sujeta por el campo magnético (sin escalones); cada alumno se sumerge antes de ir a su esterilla (como en los Theerthakund de Isha antes del Dhyanalinga). Espera acotada: si no llega, practica sin bañarse. | Prepararse como en la tradición; el agua del árbol, la misma de todo el edificio. | `YogaFloorsTest` (64: se sumergen antes de que empiece la clase) | [yoga-pisos.md](yoga-pisos.md) §1.3, §5 |
 | F12 | **Sala occidental**: suelo de madera, esterillas, accesorios (bloques, cinturones, bolsters, mantas; en Ashtanga, alfombras de Mysore), Buda o Ganesha, y **sin pared de espejo** (distrae de la práctica interior; y no hay muros). | La versión de estudio que conocen los visitantes, sin lo que estorba a la práctica. | `YogaFloorsTest` (64: sus elementos, sin «Espejo») | [yoga-pisos.md](yoga-pisos.md) §1.4 |
+| F13 | **Las obras avanzan a la vista** (Berón 2026-11-04: «el progreso de las obras podría ser visual?»). Las piezas del «Acabado» se reparten por los días de obra en orden de etapas (**cimientos y suelo → estructura → instalaciones → muebles y máquinas → acabados y decoración**); cada turno de «Trabajar la obra» las va colocando (crecen y bajan a su sitio) mientras el equipo martillea con polvo; los palés del material del día menguan; el andamio va junto a lo que se construye y el cartel dice etapa y %. Lo que se ve antes de terminar es una **maqueta sin colisiones ni conductas**: nada se usa hasta acabar (y sigue la regla de no poner nada en los pisos sin terminar). El estado se guarda por días hechos y al cargar se ven las piezas de esas etapas. | Que la obra no se termine «por arte de magia» el último día. | `ConstructionProject` (plan y maqueta `Obra_en_progreso`); `ConstructionProgressTest` (grupo 98) | [construction-simulation.md](construction-simulation.md) §7 |
 
 ## 3. Edificios-árbol
 
@@ -320,7 +321,7 @@ reconstruir. Vale para TODOS los pisos, no solo el hospital. Cada piso del santu
 ## 12. Recuento y reglas sin comprobación automática
 
 
-**Total: 127 reglas** (S 13 · F 12 · T 13 · C 7 · G 8 · H 8 · M 34 · A 5 · J 17 · W 9 = 126 —W9, la de revisar jornadas y horario al
+**Total: 128 reglas** (S 13 · F 13 · T 13 · C 7 · G 8 · H 8 · M 34 · A 5 · J 17 · W 9 = 127 —W9, la de revisar jornadas y horario al
 cambiar un piso, va en §11—, más la regla de sincronización de §11). (Recontado por el probador al integrar yoga, charlas, micro3, personajes, cohetes y pisos;
 micro3, 2026-11-04.)
 

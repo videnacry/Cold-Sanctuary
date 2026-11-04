@@ -898,6 +898,10 @@ public class WorkdayDirector : MonoBehaviour
     void Begin(WorkRoster.Assignment a)
     {
         Debug.Log($"[Jornada] {a.start:00.0} h · {a.worker.name} empieza «{a.mission.title}» ({a.mission.area}).");
+        // OBRA VISIBLE (docs/construction-simulation.md): el turno de «Trabajar la obra» va colocando las piezas del día.
+        if (a.mission.id != null && a.mission.id.StartsWith("obra_trabajo_") && a.mission.site != null)
+            foreach (ConstructionProject cp in ConstructionProject.All)
+                if (cp != null && cp.title == a.mission.site) cp.BeginShift(a.worker.name, Body(a.worker.name), a.start, a.mission.hours);
         if (a.firstTime && !a.worker.clone)
         {
             // INICIACIÓN: la Magnate (un clon suyo) aparece junto a quien hace la misión por primera vez y lo inicia.

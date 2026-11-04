@@ -95,7 +95,7 @@ Las marcadas con * son obligatorias cada día.
   - **Dojo** de artes marciales: 6 días.
   - Parque de **calistenia**: 4 días.
 - Cada obra tiene a pie de obra el **material de un día** (ladrillo, cemento, tablones), andamio y paredes a medio levantar.
-- Con «llevar material» y «trabajar la obra» las paredes suben y el cartel cuenta los días.
+- Con «llevar material» y «trabajar la obra» las paredes suben y la obra se levanta **a la vista**: cada turno coloca las piezas del día por etapas (cimientos y suelo → estructura → instalaciones → muebles y máquinas → acabados y decoración) mientras el equipo martillea, los palés menguan, el andamio va a lo que se construye y el cartel dice etapa y %. Lo que se ve antes de acabar es una maqueta que no se puede usar (docs/construction-simulation.md §7, prueba 98).
 - Terminada, se abre su entrenamiento y entra en la rotación.
 
 ## Iniciación (bloqueante)
