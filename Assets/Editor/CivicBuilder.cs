@@ -75,6 +75,7 @@ internal static partial class CivicBuilder
         }
         int homes = Homes(t, lots, display);   // regla 6: un hogar para cada personaje (las parejas, juntas; CivicBuilder.Homes)
         EnsureNeeds(t, lots, NeedsStyle);
+        if (MicroBuildRules.IsTownEra(Year) && _plan != null) EnsureCategories(t, lots, display);   // regla 16 (2026-11-04): trabajo, ocio, entrenamiento y recuperación
         // (2026-11-03) Los hogares rehacen los muebles a la medida de cada familia y la casa crece (Relayout): si al crecer se acerca a
         // menos de una calle de otro edificio, se corre a un solar libre (la Higuera de una casa nueva del Huerto quedaba a 0,16 m
         // del banco de la casa redonda de al lado).

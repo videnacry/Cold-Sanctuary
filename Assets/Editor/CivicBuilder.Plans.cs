@@ -33,7 +33,7 @@ internal static partial class CivicBuilder
         public string town;
         public readonly List<Feat> feats = new List<Feat>();
         public readonly Dictionary<int, Vector2> hitos = new Dictionary<int, Vector2>();
-        public readonly List<(MicroStyles.Civic c, Vector2 at)> civic = new List<(MicroStyles.Civic, Vector2)>();
+        public readonly List<(MicroStyles.Civic c, Vector2 at, string src)> civic = new List<(MicroStyles.Civic, Vector2, string)>();   // src: "" = plano histórico; «mapa actual: …» (regla 16)
         public int fill = 60; public Vector2 fillNear;
         public float scale = 1f;
     }
@@ -48,6 +48,9 @@ internal static partial class CivicBuilder
     //   lago Nombre | rx rz | x z             colina / monte Nombre | radio alto | x z    campo / mar Nombre | ancho fondo | x z
     //   hito i | x z  (el edificio i de la historia)     Tipo | x z  (un edificio del pueblo: MicroStyles.Civic)
     //   relleno | n | x z  (n casas y talleres a lo largo de las calles, empezando cerca de x z)
+    //   (2026-11-04, regla 16) Tipo | x z | actual: fuente   — una posición sacada de un MAPA DE HOY (el plano histórico no traía
+    //   ese lugar de entrenamiento, ocio, recuperación o trabajo); el edificio es el NATIVO de la época (MicroStyles.CivicName). Sin
+    //   ese tercer campo, la posición es del plano histórico (fuentes en docs/microcosmos-pueblos-mapas.md).
     static readonly Dictionary<string, string> PlanText = new Dictionary<string, string>
     {
         // CROTONA (~530 a. C.): retícula de plateiai E-O junto al mar Jonio (este), el río Esaro al norte, la acrópolis sobre el
@@ -203,6 +206,7 @@ Obra | 650 110
 Guarderia | 700 260
 Mecanica | 750 -260
 Investigacion | -160 -120
+Entrenamiento | 560 -120 | actual: campo de juego de Colsterworth, entre Skillington Road y Woolsthorpe Road (mapa de senderos de la parroquia de Colsterworth)
 relleno | 30 | 700 0",
         // BERKELEY (1796): la calle mayor, Canonbury y Salter Street; la iglesia de Santa María con The Chantry junto al
         // cementerio; el castillo al sureste; el Little Avon y el estuario del Severn al oeste. (Jenner Museum; VCH Glos. vol. 5)
@@ -236,6 +240,7 @@ Obra | 300 380
 Guarderia | -120 250
 Mecanica | 270 200
 Investigacion | -130 50
+Entrenamiento | -40 -260 | actual: campo de deportes de Hamfields (Hamfields Lane, Berkeley); posición aproximada
 relleno | 50 | 60 100",
         // ANGOSTURA (1819): la cuadrícula colonial en la orilla sur del Orinoco (aquí, su estrechura), la Plaza Mayor con la
         // catedral y la Casa del Congreso, el Paseo junto al río, la Piedra del Medio y el cerro El Zamuro con su fortín.
@@ -275,6 +280,7 @@ Guarderia | -120 -230
 Taller | -260 20
 Mecanica | 380 0
 Estudio | 150 -60
+Entrenamiento | -380 -250 | actual: Estadio Polideportivo Heres (Ciudad Bolívar); posición aproximada
 relleno | 60 | 0 0",
         // SILS MARIA (1881): el pueblo entre el lago de Sils (oeste) y el de Silvaplana (noreste), a la boca del valle de Fex
         // (sur); la península de Chastè; el piz Corvatsch y el piz Lagrev. (Siegfriedkarte 1:50 000, hoja 518, 1878)
@@ -304,6 +310,7 @@ Piscina | -460 250
 Policia | -150 -65
 Carpinteria | 200 -100
 Taller | -200 -150
+Entrenamiento | -20 -170 | actual: campo de deportes Muot Marias, en el centro de Sils Maria
 relleno | 30 | 0 0",
         // PARÍS (1898): el Barrio Latino. La rue Lhomond (la ESPCI y su cobertizo), rue Mouffetard, rue d'Ulm, la Montagne
         // Sainte-Geneviève con el Panteón, el boulevard Saint-Michel, Port-Royal, el Jardín del Luxemburgo, el Jardin des Plantes,
@@ -566,6 +573,7 @@ Entrenamiento | 650 150
 Museo | 750 250
 Milicia | 500 -300
 Pileta | -50 125
+Sanacion | 300 -350 | actual: Miami Valley Hospital (fundado en 1890), al sur del centro de Dayton; posición aproximada
 relleno | 60 | 0 0",
         // KAPILAVASTU (s. V a. C.): Tilaurakot, ciudad amurallada de ~500 × 450 m con puertas a los puntos cardinales (las del este
         // y el oeste, excavadas), calles en cuadrícula, estanques revestidos de ladrillo; el río Banganga al oeste y los arrozales.
@@ -681,6 +689,9 @@ campo Bosque de Ploegsteert | 450 260 | -450 -380
 campo Campo de remolachas | 300 200 | 400 -350
 rio Douve | 10 | -900 420, 0 380, 900 450
 colina Colina de Messines | 500 60 | 300 900
+Entrenamiento | 150 10 | actual: el campo de Saint-Yvon (Ploegsteert) con el monumento al partido de fútbol de la tregua (UEFA, 2014)
+Parque | -150 10 | actual: la cruz de la tregua de los Khaki Chums (1999) en Saint-Yvon (Ploegsteert)
+Sanacion | -300 -300 | actual: cementerio Lancashire Cottage (CWGC), al sur del bosque de Ploegsteert, donde estaban los puestos de la línea; posición aproximada
 relleno | 20 | -250 -450
 calle Camino de Ploegsteert | 6 | -250 -45, -250 -800
 calle Calle de Ploegsteert | 6 | -500 -600, 0 -600",
@@ -704,6 +715,8 @@ Bomberos | 260 -120
 Tecnologia | 380 -60
 Investigacion | 120 -260
 Parque | -300 200
+Entrenamiento | -40 -220 | actual: Gymnase Lavoisier (10 rue Pierre Nicole, París 5.º), junto a la rue Lhomond
+Sanacion | 250 160 | actual: Inselspital (Berna), al oeste del casco viejo; posición aproximada
 relleno | 40 | 0 0",
         // URUK (~3500 a. C.): el recinto del Eanna, la terraza de Anu con el Templo Blanco al oeste (13 m), los canales que cruzan
         // la ciudad y el viejo curso del Éufrates; campos y palmerales fuera. (Nissen 1988; Crüsemann et al. 2019, Uruk)
@@ -750,6 +763,7 @@ Piscina | -380 -560
 Hotel | 300 -500
 Tecnologia | 550 300
 Guarderia | -300 -420
+Entrenamiento | 100 480 | actual: estadio del Polonia (ul. Konwiktorska, Varsovia; desde 1928); posición aproximada
 relleno | 30 | 400 -200",
         // LE CHAMBON-SUR-LIGNON (1942): el pueblo del plateau, el río Lignon, la estación del tren del Vivarais (1902), la carretera
         // de Le Mazet y el monte Lizieux. (Carte de l'État-major; Hallie 1979)
@@ -772,6 +786,7 @@ Taller | -420 -60
 Mecanica | -460 160
 Guarderia | 220 360
 Obra | -220 360
+Entrenamiento | -150 120 | actual: estadio de la route du Stade (complejo de los Bretchs, Le Chambon-sur-Lignon); posición aproximada
 relleno | 25 | 300 120",
         // BRUCE LEE (1957–1971): dos barrios. KOWLOON (Yau Ma Tei y Mong Kok, años 50) al oeste: Nathan Road, Temple Street,
         // Shanghai Street, Jordan Road y Waterloo Road, el puerto Victoria al sur y la Roca del León al norte (Hong Kong Map, 1957,
@@ -837,6 +852,7 @@ Milicia | -150 220
 Carpinteria | -250 -200
 Obra | 120 -150
 Taller | -350 -100
+Entrenamiento | -450 -250 | actual: estadio municipal de Egina, al sur del puerto junto al mar (calle Gymnastirio)
 relleno | 40 | -100 60",
         // PALENQUE (683): Lakamha', «el lugar de las grandes aguas». El Palacio y el Templo de las Inscripciones sobre la Gran
         // Plaza, el Otolum que corre al norte (con su acueducto bajo el Palacio), el Grupo de las Cruces sobre su colina al este,
@@ -908,7 +924,7 @@ relleno | 40 | 0 120",
                         break;
                     }
                     default:
-                        if (System.Enum.TryParse(kind, out MicroStyles.Civic c)) p.civic.Add((c, V(f[1])));
+                        if (System.Enum.TryParse(kind, out MicroStyles.Civic c)) p.civic.Add((c, V(f[1]), f.Length > 2 && f[2].StartsWith("actual") ? MicroFloors.CurrentMap + " " + f[2].Substring(f[2].IndexOf(':') + 1).Trim() : ""));
                         else Debug.LogWarning($"[Pueblos] {display}: línea del plano sin entender: «{line}»");
                         break;
                 }
@@ -1108,7 +1124,7 @@ relleno | 40 | 0 120",
         MicroStyles.Entry e = MicroStyles.For(Year, Region);
         Style st = _planStyle ?? NeedsStyle;
         int n = 0, skipped = 0; var none = new List<string>();
-        foreach (var (c, at) in p.civic)
+        foreach (var (c, at, src) in p.civic)
         {
             if (Count(t) >= PlanMaxSites) break;
             string region0 = Region; Style st0 = st;
@@ -1121,9 +1137,46 @@ relleno | 40 | 0 120",
             bool ok = PlaceOn(lots, site, PlanPoint(at));
             Region = region0; st = st0; e = MicroStyles.For(Year, Region);
             if (!ok) { Object.DestroyImmediate(site.gameObject); skipped++; continue; }
+            site.mapSource = src;
             n++;
         }
         Debug.Log($"[Pueblos] {p.town}: {n} edificios del pueblo en su sitio del plano ({e.id}, {Eras.Format(Year)}){(skipped > 0 ? $"; {skipped} sin solar" : "")}{(none.Count > 0 ? $"; no existían entonces: {string.Join(", ", none)}" : "")}.");
+        return n;
+    }
+
+    /// <summary>
+    /// REGLA 16 (2026-11-04): un pueblo de historia tiene al menos un edificio de TRABAJO, OCIO, ENTRENAMIENTO y RECUPERACIÓN. Los
+    /// huecos del plano histórico se llenan EN EL PLANO con posiciones de un mapa de hoy («Tipo | x z | actual: fuente»). Si aun así
+    /// falta una categoría (un plano sin su línea), se levanta el edificio nativo de la época junto al centro y queda marcado
+    /// «FALTA posición del mapa actual» (MicroFloors.ValidateCategories lo señala: hay que añadir su línea al plano). Devuelve cuántos puso.
+    /// </summary>
+    static int EnsureCategories(Transform t, Lots lots, string display)
+    {
+        var have = new HashSet<string>();
+        foreach (AreaFunctionSite s in t.GetComponentsInChildren<AreaFunctionSite>(true)) if (!string.IsNullOrEmpty(s.activity)) have.Add(s.activity);
+        MicroStyles.Entry e = MicroStyles.For(Year, Region);
+        Style st = _planStyle ?? NeedsStyle;
+        int n = 0;
+        foreach (string cat in AreaFunctionSite.TownCategories)
+        {
+            if (have.Contains(cat)) continue;
+            MicroStyles.Civic[] options = cat == AreaFunctionSite.Entrenamiento ? new[] { MicroStyles.Civic.Entrenamiento } :
+                cat == AreaFunctionSite.Recuperacion ? new[] { MicroStyles.Civic.Piscina, MicroStyles.Civic.Sanacion } :
+                cat == AreaFunctionSite.Ocio ? new[] { MicroStyles.Civic.Plaza, MicroStyles.Civic.Parque, MicroStyles.Civic.Baile } : new[] { MicroStyles.Civic.Mercado, MicroStyles.Civic.Taller };
+            AreaFunctionSite site = null;
+            foreach (MicroStyles.Civic c in options)
+            {
+                string title = MicroStyles.CivicName(c, e, Year);
+                if (title == null) continue;
+                site = Civic(t, c, title, st, e);
+                if (site != null) break;
+            }
+            if (site == null) { Debug.LogWarning($"[Pueblos] {display}: sin edificio de {cat} en {e.id} ({Eras.Format(Year)}): no hay ninguno de la época."); continue; }
+            if (!PlaceOn(lots, site, Vector2.zero)) { Object.DestroyImmediate(site.gameObject); Debug.LogWarning($"[Pueblos] {display}: sin solar para el edificio de {cat}."); continue; }
+            site.mapSource = MicroFloors.MissingMap + " posición del mapa actual (añadir su línea al plano)";
+            Debug.LogWarning($"[Pueblos] {display}: faltaba {cat}; «{site.title}» va junto al centro SIN posición del mapa actual (regla 16: añade «{site.name} | x z | actual: fuente» al plano).");
+            n++;
+        }
         return n;
     }
 

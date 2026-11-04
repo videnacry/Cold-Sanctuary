@@ -148,7 +148,7 @@ public class CivilizedErasTest : MonoBehaviour, ITestUnit
         foreach (GameObject root in s.GetRootGameObjects()) if (root.GetComponentInChildren<AreaFunctionSite>(true) != null) rules.AddRange(MicroBuildRules.Validate(root.transform, sceneName, true, false));
         TestProbe.Check($"{sceneName}: cumple las reglas de edificación", rules.Count == 0, string.Join(" · ", rules.GetRange(0, Mathf.Min(8, rules.Count))));
 
-        // (2026-11-04) REGLA 15: un pueblo de historia tiene trabajo, ocio, entrenamiento y recuperación; lo que el plano histórico no
+        // (2026-11-04) REGLA 16: un pueblo de historia tiene trabajo, ocio, entrenamiento y recuperación; lo que el plano histórico no
         // traía sale de un mapa actual (y lo dice), recreado con lo nativo de la época.
         foreach (GameObject root in s.GetRootGameObjects())
             foreach (MicroFloor mf in root.GetComponentsInChildren<MicroFloor>(true))

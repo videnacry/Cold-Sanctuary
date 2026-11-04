@@ -25,7 +25,7 @@ public class AreaFunctionSite : MonoBehaviour
     // el ENTRENAMIENTO es su propia categoría (antes los centros de entrenamiento y los dojos contaban como ocio).
     public const string Trabajo = "trabajo", Descanso = "descanso", Recuperacion = "recuperacion", Ocio = "ocio", Entrenamiento = "entrenamiento";
     public static readonly string[] Activities = { Trabajo, Descanso, Recuperacion, Ocio, Entrenamiento };
-    /// <summary>(2026-11-04, regla 15 de los microcosmos) Las cuatro categorías que TODO pueblo de historia debe tener (al menos un
+    /// <summary>(2026-11-04, regla 16 de los microcosmos) Las cuatro categorías que TODO pueblo de historia debe tener (al menos un
     /// edificio de cada una; MicroFloors.Validate). El descanso lo dan las casas.</summary>
     public static readonly string[] TownCategories = { Trabajo, Ocio, Entrenamiento, Recuperacion };
     [Tooltip("(2026-11-04) Si es de entrenamiento: su CLASE ESTABLE de época y lugar (gimnasio_griego, akhara, zurkhaneh, wuguan, dojo, turnhalle, juego_pelota…; MicroStyles.TrainingKind). La leen los planes de entrenamiento de los insectos-humanos (docs/gimnasio-maquinas.md).")]
