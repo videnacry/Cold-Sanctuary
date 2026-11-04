@@ -138,7 +138,7 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
             string.Join("; ", today.Select(m => $"{m.id} {m.hours:0.#} h")));
 
         // ── 6. EL JARDINERO ──
-        FruitGardener.Round round = rounds.OrderByDescending(r => r.legs.Select(l => l.building).Distinct().Count()).ThenBy(r => r.hours).First();
+        FruitGardener.Round round = rounds.OrderByDescending(r => r.Plants.Any(p => FruitCare.Polinizar(p.kind) || FruitCare.PodaDias(p.kind) > 0) ? 1 : 0).ThenByDescending(r => r.legs.Where(l => l.plants.Count > 0).Select(l => l.building).Distinct().Count()).ThenBy(r => r.hours).First();
         var rp = round.Plants.ToList();
         foreach (FruitPlant p in rp) { p.water = 0.3f; p.nutrients = 0.3f; p.pests = 0.4f; p.health = 0.55f; }
         float wellBefore = rp.Average(p => p.Wellbeing);
@@ -182,7 +182,7 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
                 var rot = masks.Where(m => !notDue.Contains(m)).ToList();
                 foreach (Phytoplankton b in beds) b.condition = 0.3f;
                 GameObject gb = WorkdayDirector.SpawnBodyCopy("Irosene", "Jardinera de máscaras (prueba)");
-                if (tree.Ground != null) WorkdayDirector.Teleport(gb.transform, tree.World(tree.Ground.outside) + Vector3.up);
+                if (tree.Top != null) WorkdayDirector.Teleport(gb.transform, tree.World(tree.Top.outside) + Vector3.up);
                 FruitGardener tg = gb.AddComponent<FruitGardener>();
                 float sc0 = Time.timeScale; Time.timeScale = 4f;
                 tg.AssignTreeTasks(tree);

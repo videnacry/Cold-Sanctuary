@@ -161,3 +161,5 @@ Botón «Horario libre» abajo a la izquierda, o en la consola `horario` (tambi�
 4. **Microcosmos** (Kapilavastu o el siguiente que haya): lo mismo con sus insectos-humanos, de 16 a 17 h.
 
 La jornada sigue intacta: se vuelve a correr el grupo 50.
+
+**Lejos, en el microcosmos** (2026-11-04): en los pueblos ×100 los sitios quedan a cientos de metros. Si está lejos, el insecto-humano va a **paso ligero** (hasta 6 m/s, para llegar en unos 75 s) y tiene más tiempo para llegar andando (de 60 a 120 s de juego, según la distancia). Si aun así no llega, se le pone allí con `Warp` (NavMeshAgent) y cuenta como `fallback`. Los saltos solo se cuentan mientras lo lleva el horario: lo que lo mueva una necesidad no cuenta.

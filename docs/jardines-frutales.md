@@ -489,3 +489,11 @@ el bancal), y por eso la salud no bajaba.
 jardinero lee el panel de máscaras en la puerta del suelo y revisa a mano solo 1/7 de las estaciones (rotación semanal) y las que su luz
 marca en rojo; las cortinas de fitoplancton, 2 min cada una junto a la puerta del suelo. ~0,4–0,7 h por árbol. Detalle en
 [mascaras-de-oxigeno.md](mascaras-de-oxigeno.md) §El jardinero.
+
+**Ronda 2 del probador (2026-11-04).** Dos cambios más:
+- **El reparto no parte las macetas de un edificio.** Con la reserva de la semana sumada a cada maceta, Servicios, Ciencias y la
+  Central pasaban de 2,9 h y se partían. Ahora las macetas de un edificio son UN tramo (solo su revisión y su paseo) y la reserva va
+  aparte (`Leg.weekly`): entera si cabe en la ronda y, si el edificio llena la ronda él solo, lo que quede hasta las 2,9 h
+  (`Leg.reserve`).
+- **El jardinero usa esa reserva aunque la revisión vaya lenta** (`StartExtras`: lo reservado como mínimo). Antes, con las tareas
+  del árbol detrás, no le quedaba nada. La prueba 55 elige para el jardinero una ronda con macetas que se polinizan o se podan.

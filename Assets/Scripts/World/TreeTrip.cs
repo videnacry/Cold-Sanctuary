@@ -51,7 +51,7 @@ public class TreeTrip : MonoBehaviour
         t._swim = SwimBody.Of(g.transform);
         float len = 0f; for (int i = 1; i < path.Count; i++) len += Vector3.Distance(path[i - 1], path[i]);
         t._t0 = Time.time; t._left = g.transform.position; t._recheck = Time.time + 1f;
-        t._until = Time.time + len / Mathf.Max(0.5f, tree.routeSwimSpeed) * 3f + 20f;
+        t._until = Time.time + len / Mathf.Max(0.5f, tree.routeSwimSpeed) * 3f + 40f;   // (2026-11-04: +20 s de margen: con 4 a la vez por una rama, uno se daba por atascado, prueba 53)
         // El jugador: se le sujeta el cuerpo (su control no lo mueve a la vez) y, como a todos, se le lleva sin chocar con los
         // cantos de las puertas: el CharacterController se apaga durante el viaje (GroundGuard tampoco lo toca).
         if (g.TryGetComponent(out PlayerController pc) && !t._held) { pc.HoldBody(true); t._held = true; }
@@ -125,7 +125,10 @@ public class TreeTrip : MonoBehaviour
         if (_i < 2) return false;
         MaskStation r = MaskStation.Nearest(transform.position, MaskStation.Kind.Rack, 7f, false, true)
                         ?? MaskStation.Nearest(_tree.World(_path[Mathf.Min(2, _path.Count - 1)]), MaskStation.Kind.Station, 9f, true, true);
-        if (r != null && BreathingMask.Of(transform).Equip(r)) { _maskUntil = Time.time + BreathingMask.FitSeconds; _until += BreathingMask.FitSeconds; return true; }
+        // (2026-11-04) Sin pararse: la coge al pasar por la puerta, ya entrando (la pausa de 1,2 s por viaje, y los rodeos, sumaban en la
+        // jornada: Kushal llegó a su ronda de la Planta con menos de la mitad del tiempo, prueba 50).
+        if (r != null) BreathingMask.Of(transform).Equip(r);
+        _maskDone = true; return false;
         _maskDone = true; return false;
     }
 

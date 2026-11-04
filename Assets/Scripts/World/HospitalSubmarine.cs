@@ -390,40 +390,59 @@ public class HospitalSubmarine : MonoBehaviour
     }
 
     /// <summary>Atracado en la puerta de urgencias: dos del hospital de turno andan hasta la puerta y suben a sus asientos.</summary>
+    /// <summary>EL EQUIPO SUBE (2026-11-04: en la prueba del Leviatán nadie llegaba a tiempo a la puerta de urgencias: tras la misión
+    /// del oso, el equipo estaba en el piso veterinario y nadar de un piso a otro pasaba de los 120 s). El submarino va a la PUERTA
+    /// DEL PISO DONDE ESTÁ CADA UNO (urgencias primero) y allí lo espera; quien está fuera del árbol, en urgencias.</summary>
     IEnumerator BoardCrew(ArbolCampos ac, TreeLevel urg, bool animal)
     {
         phase = Phase.ARecogerEquipo;
-        yield return TrunkTo(ac, urg);
-        phase = Phase.EmbarqueEquipo;
         var want = PickCrew(animal);
         foreach (GameObject g in want) _engaged.Add(g);
-        Vector3 meet = ac.World(urg.outside);
-        float w0 = Time.time;
-        var arrived = new HashSet<GameObject>();
-        while (arrived.Count < want.Count && Time.time - w0 < 120f)
+        var stops = new List<(TreeLevel lv, List<GameObject> who)>();
+        foreach (GameObject g in want)
         {
-            for (int i = 0; i < want.Count; i++)
-            {
-                GameObject g = want[i]; if (g == null || arrived.Contains(g)) continue;
-                Vector3 spot = meet + Vector3.Cross(Vector3.up, Flat(meet - transform.position)) * (i == 0 ? 1f : -1f);
-                PathMover.Of(g.transform).StepToward(spot, 3f);
-                Vector3 f = spot - g.transform.position; f.y = 0f;
-                if (f.magnitude < 1.5f && Mathf.Abs(spot.y - g.transform.position.y) < 2.5f) arrived.Add(g);
-            }
-            yield return null;
+            ArbolCampos at = ArbolCampos.At(g.transform.position, out TreeLevel lv, out _, false);
+            if (at != ac || lv == null || (lv.kind != TreeLevel.Kind.Floor && lv.kind != TreeLevel.Kind.Ring) || lv.tip) lv = urg;
+            int k = stops.FindIndex(s => s.lv == lv);
+            if (k < 0) { stops.Add((lv, new List<GameObject>())); k = stops.Count - 1; }
+            stops[k].who.Add(g);
         }
-        for (int i = 0; i < want.Count; i++)
+        stops.Sort((a, b) => (a.lv == urg ? 0 : 1).CompareTo(b.lv == urg ? 0 : 1));
+        if (stops.Count == 0) { yield return TrunkTo(ac, urg); Say("nadie del hospital libre: sale sin equipo"); yield break; }
+        foreach (var (lv, who) in stops)
         {
-            GameObject g = want[i]; if (g == null) continue;
-            if (!arrived.Contains(g)) { Say($"«{g.name}» no llega a la puerta en 120 s: sale sin él"); _engaged.Remove(g); continue; }
-            Carried.Take(g, Seat(crew.Count));
-            float b0 = Time.time;
-            while (!Carried.MoveTowards(g.transform, ac.World(urg.door) + Vector3.up * 0.05f, stretcherSpeed * 2f) && Time.time - b0 < 20f) yield return null;
-            while (!Carried.MoveTowards(g.transform, Seat(crew.Count).position, stretcherSpeed * 2f) && Time.time - b0 < 40f) yield return null;
-            crew.Add(g);
+            yield return TrunkTo(ac, lv);
+            phase = Phase.EmbarqueEquipo;
+            Vector3 meet = ac.World(lv.outside);
+            float w0 = Time.time;
+            var arrived = new HashSet<GameObject>();
+            while (arrived.Count < who.Count && Time.time - w0 < 120f)
+            {
+                for (int i = 0; i < who.Count; i++)
+                {
+                    GameObject g = who[i]; if (g == null || arrived.Contains(g)) continue;
+                    Vector3 spot = meet + Vector3.Cross(Vector3.up, Flat(meet - transform.position)) * (i == 0 ? 1f : -1f);
+                    PathMover.Of(g.transform).StepToward(spot, 3f);
+                    Vector3 f = spot - g.transform.position; f.y = 0f;
+                    if (f.magnitude < 1.5f && Mathf.Abs(spot.y - g.transform.position.y) < 2.5f) arrived.Add(g);
+                }
+                yield return null;
+            }
+            foreach (GameObject g in who)
+            {
+                if (g == null) continue;
+                if (!arrived.Contains(g)) { Say($"«{g.name}» no llega a la puerta de {lv.name} en 120 s: sale sin él"); _engaged.Remove(g); continue; }
+                Carried.Take(g, Seat(crew.Count));
+                float b0 = Time.time;
+                while (!Carried.MoveTowards(g.transform, ac.World(lv.door) + Vector3.up * 0.05f, stretcherSpeed * 2f) && Time.time - b0 < 20f) yield return null;
+                while (!Carried.MoveTowards(g.transform, Seat(crew.Count).position, stretcherSpeed * 2f) && Time.time - b0 < 40f) yield return null;
+                crew.Add(g);
+                Say($"«{g.name}» sube en la puerta de {lv.name}");
+            }
         }
         Say($"embarcan {crew.Count} del hospital: {string.Join(", ", crew.ConvertAll(x => x.name))}");
     }
+
 
     /// <summary>LANZADERA DEL EQUIPO VETERINARIO al Leviatán (el submarino colosal no cabe en los árboles): recoge al equipo en
     /// la puerta de urgencias, va a su pasarela y los sube a sus asientos (<paramref name="seats"/>); luego vuelve a su sitio.</summary>
