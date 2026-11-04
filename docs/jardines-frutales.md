@@ -192,7 +192,7 @@ tras la transformación encaja con el trabajo físico.
 - Las fichas de `FruitCare` son su saber, y la sala lleva su nombre.
 - **Andrea** soñó con «frutales, animales y casas en los árboles» y con un restaurante de platillos de fruta: es el dueño
   que lo pidió.
-- Lizmibet (médica), su esposo (obras) y Sadhguru (yoga) ya tienen su papel.
+- Lizmibet (médica), su esposo (obras) y Andrea (yoga, desde el 2026-11-04; antes Sadhguru) ya tienen su papel.
 
 ### Riego por goteo (decisión de Berón, 2026-10-31)
 

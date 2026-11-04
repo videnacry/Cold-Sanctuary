@@ -13,14 +13,18 @@ public static class ResidentialBuilder
 
     public static readonly string[] Owners =
     {
-        "Player", "Magnate", "Linduarda", "Goluis", "Panterilia", "Gohageneis", "Irosene", "Lizmibet", "JefeConstruccion", "Sadhguru", "Andrea",   // solo personajes del juego
-        "ElonMusk", "Goku", "BillGates", "WarrenBuffett", "MacKenzieScott", "IbrahimTraore",   // los seis del mesocosmos
+        "Player", "Magnate", "Linduarda", "Goluis", "Panterilia", "Gohageneis", "Irosene", "Lizmibet", "JefeConstruccion", "Andrea",   // solo personajes del juego
+        // (2026-11-04) La familia y los amigos de Berón, en las casas que dejaron Sadhguru y los seis del mesocosmos (se fueron a sus
+        // microcosmos). Amahuz y Karen, pareja, comparten casa (Partners). Con ellos, las 18 casas están ocupadas.
+        "Nesvitor", "Amahuz", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi",
     };
     static readonly string[] Shown =
     {
-        "Kushal", "la Magnate", "Linduarda", "Goluis", "Panterilia", "Gohageneis", "Irosene", "Lizmibet", "el jefe de construcción", "Sadhguru", "Andrea",
-        "Elon Musk", "Goku", "Bill Gates", "Warren Buffett", "MacKenzie Scott", "Ibrahim Traoré",
+        "Kushal", "la Magnate", "Linduarda", "Goluis", "Panterilia", "Gohageneis", "Irosene", "Lizmibet", "el jefe de construcción", "Andrea",
+        "Nesvitor", "Amahuz y Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi",
     };
+    /// <summary>La pareja con la que comparte casa cada dueño (manual M18), si la tiene.</summary>
+    static readonly System.Collections.Generic.Dictionary<string, string> Partners = new System.Collections.Generic.Dictionary<string, string> { { "Amahuz", "Karen" } };
 
     public const string Name = "Residencia";
     const float CentralSize = 18f, TreeRing = 21f, HouseOut = 5.2f;
@@ -50,7 +54,7 @@ public static class ResidentialBuilder
             _houses.Add((trees[k] + side * HouseOut + Vector3.up * low, -dir));
             _houses.Add((trees[k] - side * HouseOut + Vector3.up * (low + 7f), -dir));
         }
-        // (2026-11-03) UNA TERCERA CASA por árbol, 14 m sobre la de abajo y del mismo lado: los seis del mesocosmos (18 casas).
+        // (2026-11-03) UNA TERCERA CASA por árbol, 14 m sobre la de abajo y del mismo lado (18 casas; desde el 2026-11-04, de la familia y los amigos de Berón).
         for (int k = 0; k < 6; k++)
         {
             float a = (30f + 60f * k) * Mathf.Deg2Rad;
@@ -140,6 +144,7 @@ public static class ResidentialBuilder
         pot.position = t.TransformPoint(new Vector3(terraceSide * (W * 0.5f + 5f), 0.15f, 0f));
         Bedroom room = t.gameObject.AddComponent<Bedroom>();
         room.owner = ownerIdx < Owners.Length ? Owners[ownerIdx] : null;   // las demás: para quien llegue al santuario
+        room.partner = room.owner != null && Partners.TryGetValue(room.owner, out string mate) ? mate : null;
         room.bed = bed;
         WorldLabel wl = t.gameObject.AddComponent<WorldLabel>(); wl.text = ownerIdx < Shown.Length ? $"Habitación de {Shown[ownerIdx]}" : "Habitación libre (para recién llegados)"; wl.height = 2.5f;
         return t;

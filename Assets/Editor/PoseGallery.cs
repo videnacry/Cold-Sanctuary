@@ -101,11 +101,12 @@ public static class PoseGallery
 
     /// <summary>RETRATOS de las personas del santuario (de frente y de lado, a escala real) en Temp/PoseGallery/Personajes.png.</summary>
     [MenuItem("Tools/Cold Sanctuary/Character Gallery (PNG de las personas)")]
-    public static void Characters() => Portraits(new[] { "Player", "Magnate", "Linduarda", "Lizmibet", "JefeConstruccion", "Goluis", "Panterilia", "Gohageneis", "Irosene", "Sadhguru", "Andrea" }, "Personajes", "Caras");
+    public static void Characters() => Portraits(new[] { "Player", "Magnate", "Linduarda", "Lizmibet", "JefeConstruccion", "Goluis", "Panterilia", "Gohageneis", "Irosene", "Andrea" }, "Personajes", "Caras");
 
-    /// <summary>RETRATOS de los seis del mesocosmos (docs/personajes-mesocosmos.md) en Temp/PoseGallery/Mesocosmos.png y MesocosmosCaras.png.</summary>
-    [MenuItem("Tools/Cold Sanctuary/Character Gallery (los seis del mesocosmos)")]
-    public static void MesoCharacters() => Portraits(new[] { "ElonMusk", "Goku", "BillGates", "WarrenBuffett", "MacKenzieScott", "IbrahimTraore" }, "Mesocosmos", "MesocosmosCaras");
+    /// <summary>RETRATOS de la familia y los amigos de Berón (2026-11-04, de sus fotos; docs/diseno-personajes.md §Familia y amigos)
+    /// en Temp/PoseGallery/Familia.png y FamiliaCaras.png.</summary>
+    [MenuItem("Tools/Cold Sanctuary/Character Gallery (familia y amigos de Berón)")]
+    public static void FamilyCharacters() => Portraits(System.Array.ConvertAll(SampleSceneBuilder.FamilyCharacters, c => c.id), "Familia", "FamiliaCaras");
 
     static void Portraits(string[] names, string file, string facesFile)
     {
@@ -138,6 +139,7 @@ public static class PoseGallery
                     { "ElonMusk", new Vector4(1.05f, 0.95f, 1.0f, 1.1f) }, { "Goku", new Vector4(1.6f, 1.5f, 1.6f, 1.1f) }, { "BillGates", new Vector4(0.95f, 0.95f, 1.0f, 1.0f) },
                     { "WarrenBuffett", new Vector4(0.85f, 0.8f, 0.9f, 1.05f) }, { "MacKenzieScott", new Vector4(0.95f, 1.05f, 1.05f, 0.95f) }, { "IbrahimTraore", new Vector4(1.25f, 1.2f, 1.3f, 1.05f) },
                 };
+                foreach (var fc in SampleSceneBuilder.FamilyCharacters) st[fc.id] = new Vector4(fc.s, fc.ag, fc.en, fc.m);   // la familia y los amigos de Berón
                 if (an != null && st.TryGetValue(names[i], out Vector4 sv)) { an.strength = sv.x; an.agility = sv.y; an.endurance = sv.z; an.bodyMass = sv.w; }
                 if (who.TryGetComponent(out BodyShape bsh)) bsh.Apply(true);
                 for (int v = 0; v < 2; v++)

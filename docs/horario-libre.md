@@ -76,7 +76,7 @@ También se mide el Δ por persona: la diferencia entre su actividad más hecha 
 | Manualidades | Estudio Textil | 4 |
 | Tertulia | Restaurante («Cocina») | 8 |
 | Bailar | Sala de Ballet → Calistenia → Gimnasio | 6 |
-| Artes marciales con Goku | Dojo → Gimnasio | 6 |
+| Artes marciales con Gohageneis (antes con Goku, que se fue a su microcosmos el 2026-11-04) | Dojo → Gimnasio | 6 |
 | Descansar en casa (tumbado en su cama) | Su casa del árbol | sin límite |
 
 **Microcosmos** (`MicroActivities`). La plantilla de edificio y la función del registro que se hace allí. Las plazas son los puestos de esos edificios. Solo entran las plantillas que hay en la escena.

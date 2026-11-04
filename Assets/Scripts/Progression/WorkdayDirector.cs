@@ -17,8 +17,11 @@ public class WorkdayDirector : MonoBehaviour
     public static WorkdayDirector Instance { get; private set; }
 
     [Tooltip("Personal del santuario en su orden FIJO (el de la rotación). El jugador entra cuando ya es miembro.")]
-    public string[] staff = { "Player", "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene", "JefeConstruccion", "Sadhguru", "Andrea",
-                               "ElonMusk", "Goku", "BillGates", "WarrenBuffett", "MacKenzieScott", "IbrahimTraore" };   // los seis del mesocosmos (docs/personajes-mesocosmos.md)
+    public string[] staff = { "Player", "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene", "JefeConstruccion", "Andrea",
+                               "Nesvitor", "Amahuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi" };   // familia y amigos de Berón (docs/diseno-personajes.md)
+    // (2026-11-04, Berón: «los personajes famosos … sácalos del mesocosmos y crea sus microcosmos respectivos») Sadhguru y los seis
+    // del mesocosmos (Elon Musk, Goku, Bill Gates, Warren Buffett, MacKenzie Scott, Ibrahim Traoré) ya no son personal del santuario:
+    // viven en sus microcosmos. Sus papeles los llevan otros (docs/personajes-mesocosmos.md §Reparto de papeles).
     public float walkSpeed = 2.6f;
 
     public readonly WorkRoster roster = new WorkRoster();
@@ -507,7 +510,7 @@ public class WorkdayDirector : MonoBehaviour
         {
             // EL HORARIO LIBRE (docs/horario-libre.md): en sus horas libres lo lleva a su actividad de ocio o cuidado de la semana.
             if (LeisureDirector.Drives(g)) { if (idle != null) idle.enabled = false; if (lin != null && !NewcomerWaiting()) lin.enabled = false; return; }
-            if (g.name == "Sadhguru") { if (idle != null) idle.enabled = false; SadhguruMeditates(g); SetStatus(g, "Meditando en la sala de yoga"); return; }   // su tiempo libre: meditar
+            if (g.name == YogaTeacher) { if (idle != null) idle.enabled = false; TeacherMeditates(g); SetStatus(g, "Meditando en la sala de yoga"); return; }   // su tiempo libre: meditar
             // HUECO DENTRO DEL TURNO (p. ej. la obra acaba a las 10 y lo siguiente es a las 12): no es tiempo libre. Antes esta
             // rama le encendía el merodeo ANTES de llegar a OwnNeeds (que es donde se quita el merodeo en turno), y JefeConstruccion
             // y Gohageneis merodeaban por la obra atravesando la «Columna», la «Grua_pluma» y la «Miniexcavadora» (JornadaTest
@@ -602,8 +605,12 @@ public class WorkdayDirector : MonoBehaviour
     // YogaHall.VersionOn (tradicional los pares, occidental los impares). La CLASE DE HATHA (misión de grupo «clase_yoga»): el
     // guía hace la secuencia en la tarima de su sala, el demostrador la hace entre los alumnos y los correctores van de
     // esterilla en esterilla. El ENTRENAMIENTO de las 14 h es la CLASE DE ASHTANGA, en el piso de Ashtanga: la da el primero que
-    // llega. En su tiempo libre, SADHGURU medita en la tarima de la sala de Hatha tradicional, junto al linga.
+    // llega. En su tiempo libre, el MAESTRO DE YOGA ('YogaTeacher': Andrea desde el 2026-11-04; antes Sadhguru) medita en la tarima de la sala de Hatha tradicional, junto al linga.
     const string YogaArea = "Sala de Yoga";
+    /// <summary>MAESTRO DE YOGA del santuario (Hatha y Ashtanga; medita junto al linga en su tiempo libre). Desde el 2026-11-04,
+    /// ANDREA, el único que hacía yoga de verdad con Leo (docs/character-andrea.md); antes, Sadhguru, que se fue a su microcosmos.
+    /// La segunda maestra, para dar las dos clases a la vez, es IROSENE (corre, escala y bucea a sus 70 y tantos).</summary>
+    public const string YogaTeacher = "Andrea", SecondYogaTeacher = "Irosene";
     /// <summary>La sesión de cada clase: Hatha (la guiada, misión «yog_guia») y Ashtanga (el entrenamiento de las 14 h).</summary>
     public const string HathaSession = "Saludo al Sol", AshtangaSession = "Ashtanga Primaria";
 
@@ -679,7 +686,7 @@ public class WorkdayDirector : MonoBehaviour
         return true;
     }
 
-    void SadhguruMeditates(GameObject g)
+    void TeacherMeditates(GameObject g)
     {
         Anima me = g.GetComponent<Anima>(); ActionQueue mq = g.GetComponent<ActionQueue>();
         if (me == null || me.asleep || (mq != null && mq.Own.Count > 0)) return;   // comer, el baño y dormir van antes

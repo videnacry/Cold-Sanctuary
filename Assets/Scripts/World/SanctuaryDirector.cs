@@ -158,11 +158,14 @@ public class SanctuaryDirector : MonoBehaviour
     {
         { "Goluis", SanctuaryAreaType.Kitchen }, { "Irosene", SanctuaryAreaType.TextileStudio },
         { "Panterilia", SanctuaryAreaType.Garden },   // Gohageneis es guardia: patrulla, no tiene área fija
-        { "Lizmibet", SanctuaryAreaType.Infirmary }, { "Sadhguru", SanctuaryAreaType.YogaRoom },   // la médica; el maestro de yoga
+        { "Lizmibet", SanctuaryAreaType.Infirmary }, { "Andrea", SanctuaryAreaType.YogaRoom },     // la médica; el maestro de yoga (antes Sadhguru)
         { "JefeConstruccion", SanctuaryAreaType.Construction },                                     // Tofelite («Tote»), el esposo de Lizmibet, dirige las obras
-        // Los seis del mesocosmos (docs/personajes-mesocosmos.md). Ibrahim Traoré coordina la Guardia: como Gohageneis, sin área fija.
-        { "ElonMusk", SanctuaryAreaType.VehicleWorkshop }, { "Goku", SanctuaryAreaType.Gym }, { "BillGates", SanctuaryAreaType.Infirmary },
-        { "WarrenBuffett", SanctuaryAreaType.Kitchen }, { "MacKenzieScott", SanctuaryAreaType.Garden },
+        // (2026-11-04) Los papeles de los famosos que se fueron a sus microcosmos (docs/personajes-mesocosmos.md §Reparto de papeles):
+        // la mecánica → Ducristin; registros y vacunación del hospital → Maite; las cuentas, desde el restaurante → Nesvitor; el
+        // huerto para los visitantes → Alicita. Josedrilo se une a la Guardia con Gohageneis (patrulla: sin área fija), y Gohageneis
+        // da además las artes marciales. Amahuz, Karen, Shalva y Adaguchi: personal general (empiezan en el área de su nivel).
+        { "Ducristin", SanctuaryAreaType.VehicleWorkshop }, { "Maite", SanctuaryAreaType.Infirmary },
+        { "Nesvitor", SanctuaryAreaType.Kitchen }, { "Alicita", SanctuaryAreaType.Garden },
     };
 
     SanctuaryArea DetermineStartArea(WorldCharacter character)
