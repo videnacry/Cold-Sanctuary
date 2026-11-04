@@ -478,3 +478,10 @@ internal static bool? AreaMicrocosmos.FemaleByName(string name);   // «Hannah»
 4b. (2026-11-03) `PlanCivic` (los edificios del pueblo, en su sitio del plano) va tras `Settle`; con plano, el relleno va a lo largo de las calles (`PlanFill`); al final, `Tag` en todos los edificios (reglas 8–9).
 5. `MicroBuildRules.Validate` en el registro.
 
+
+### 13–15. Escala cívica, asientos utilizables y estatuas de insecto-humano (2026-11-04)
+`MicroBuildRules.ValidateCivicScale`: (13) toda silla y banco lleva su `MicroSeat` con sitios (y los ciudadanos se sientan en su
+tiempo libre: `PublicSeatSpell`); (14) los platos dan una comida (≥ 0,26 m) y las ollas 2 L por comensal; (15) las estatuas son
+monumentales (≥ 2,1 × el ciudadano) y modelan un insecto-humano (`MicroStatue`), y las fuentes miden lo de una plaza (≥ 2,4 ×). No un
+×2 global: lo que se usa, a la medida del cuerpo. Detalle: [microcosmos-suelo-y-elementos.md](microcosmos-suelo-y-elementos.md) §Escala.
+La flora encima, la capa de tierra y la forma de microcosmos del piso son las reglas 7–9 de `MicroFloors.Validate` (mismo doc).

@@ -304,6 +304,7 @@ public class LeisureDirector : MonoBehaviour
         public Group group; public LeisureRoster.Entry entry; public Venue venue;
         public Vector3 to; public AreaFunctionStation st;
         public float since, arrivedAt = -1f, performed, blockedFor, walked, flown, poseAt;
+        public bool reachable;   // (microcosmos) su punto tiene camino andando por el NavMesh
         public float speed = 2.6f, allowed = 60f;   // a qué paso va y cuánto tiempo tiene para llegar andando (microcosmos)
         public Vector3 last; public int jumps; public bool fallback, posed, b, onBed;
         public bool idleWas, linWas, touchedIdle, touchedLin;
@@ -385,10 +386,57 @@ public class LeisureDirector : MonoBehaviour
     {
         if (!gr.micro) { r.speed = walkSpeed; return; }
         float baseSpeed = g.TryGetComponent(out MicroJornada mj) ? mj.speed : microSpeed;
+        Reachable(r, g, mj);
         Vector3 d = r.to - g.transform.position; d.y = 0f;
         float dist = d.magnitude;
         r.speed = Mathf.Clamp(dist / 75f, baseSpeed, Mathf.Max(baseSpeed, 6f));
         r.allowed = Mathf.Clamp(dist / r.speed * 1.4f + 15f, microFallback, 120f);
+    }
+
+    // UN SITIO AL QUE SE PUEDA LLEGAR ANDANDO (2026-11-04, ronda 3 en Kapilavastu: 0/5 llegaban andando; el agente se quedaba en el
+    // final de un camino PARCIAL —el puesto está pegado a su mueble o en la meseta de un mueble gigante— y a los 60–120 s se le ponía
+    // allí). Se busca, entre los puestos de los edificios de la actividad, uno con camino COMPLETO por el NavMesh (con sus trepadas) y
+    // se va a su punto del NavMesh; si no hay ninguno, al final del camino parcial si queda junto al edificio (≤ 15 m).
+    void Reachable(Run r, GameObject g, MicroJornada mj)
+    {
+        UnityEngine.AI.NavMeshAgent ag = g.GetComponent<UnityEngine.AI.NavMeshAgent>();
+        if (ag == null || !ag.enabled || !ag.isOnNavMesh || r.venue == null) return;
+        var cands = new List<(AreaFunctionStation st, Vector3 p)>();
+        if (r.st != null) cands.Add((r.st, r.to));
+        var sites = r.venue.home ? (mj != null && mj.home != null ? new List<AreaFunctionSite> { mj.home } : new List<AreaFunctionSite>()) : r.venue.sites;
+        foreach (AreaFunctionSite s in sites)
+            foreach (AreaFunctionStation st in s.Stations)
+            {
+                if (cands.Count >= 14) break;
+                if (st == r.st || (st.occupant != null && st.occupant != (Object)g)) continue;
+                if (r.venue.fn != null && r.venue.fn.stations.Length > 0 && System.Array.IndexOf(r.venue.fn.stations, st.station) < 0) continue;
+                cands.Add((st, MicroJornada.WorkSpotOf(st, g.transform.position)));
+            }
+        var path = new UnityEngine.AI.NavMeshPath();
+        Vector3? partialEnd = null; AreaFunctionStation partialSt = null;
+        foreach (var (st, p) in cands)
+        {
+            if (!UnityEngine.AI.NavMesh.SamplePosition(p, out UnityEngine.AI.NavMeshHit hit, 4f, ag.areaMask)) continue;
+            if (!ag.CalculatePath(hit.position, path)) continue;
+            if (path.status == UnityEngine.AI.NavMeshPathStatus.PathComplete) { Take(r, g, st, hit.position); r.reachable = true; return; }
+            if (partialEnd == null && path.status == UnityEngine.AI.NavMeshPathStatus.PathPartial && path.corners.Length > 0)
+            {
+                Vector3 end = path.corners[path.corners.Length - 1];
+                Vector3 site = st != null ? st.transform.position : p; Vector3 dd = end - site; dd.y = 0f;
+                if (dd.magnitude <= 15f) { partialEnd = end; partialSt = st; }
+            }
+        }
+        if (partialEnd.HasValue) { Take(r, g, partialSt, partialEnd.Value); r.reachable = true; }
+    }
+
+    static void Take(Run r, GameObject g, AreaFunctionStation st, Vector3 p)
+    {
+        if (st != null && st != r.st)
+        {
+            if (r.st != null && r.st.occupant == (Object)g) r.st.occupant = null;
+            r.st = st; if (st.occupant == null) st.occupant = g;
+        }
+        r.to = p;
     }
 
     // Dónde se pone a hacerla: un sitio repartido por plazas (no se amontonan), sobre el NavMesh.
@@ -492,6 +540,7 @@ public class LeisureDirector : MonoBehaviour
             SetStatus(g, r, StatusOf(g));
             Vector3 d = r.to - pos; float dy = Mathf.Abs(d.y); d.y = 0f;
             bool there = d.magnitude <= (r.group.micro ? 1.6f : 1.7f) && dy < 2.2f;
+            if (!there && r.group.micro && d.magnitude <= 4f && g.TryGetComponent(out UnityEngine.AI.NavMeshAgent mag) && mag.enabled && mag.isOnNavMesh && !mag.pathPending && mag.hasPath && mag.remainingDistance <= 0.8f) there = true;   // (el agente ya está al final de su camino, junto al puesto)
             if (!there)
             {
                 if (r.group.micro)

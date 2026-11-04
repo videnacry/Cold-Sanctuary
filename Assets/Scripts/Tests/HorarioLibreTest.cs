@@ -48,7 +48,7 @@ public class HorarioLibreTest : MonoBehaviour, ITestUnit
         yield return Micro();
         LeisureDirector.ForceRun = false;
         if (LeisureDirector.Instance != null) LeisureDirector.Instance.ReleaseAll();
-        HorarioPanel.Show = false;
+        HorarioPanel.Show = false; HorarioPanel.FocusScene = "";
         Time.timeScale = oldScale;
         TestProbe.End();
     }
@@ -116,6 +116,13 @@ public class HorarioLibreTest : MonoBehaviour, ITestUnit
         LeisureDirector ld = LeisureDirector.Instance;
         TimeController tc = TimeController.timeController;
         if (!TestProbe.Check("hay director del horario libre", ld != null)) yield break;
+        // Sale del microcosmos si una prueba anterior lo dejó dentro (Ambrosio): el santuario, a la vista (y su cámara, allí).
+        if (MobWorldLoader.HasInstance && MobWorldLoader.Instance.IsInMobWorld)
+        {
+            MobWorldLoader.Instance.ExitMobWorld();
+            float until = Time.realtimeSinceStartup + 30f;
+            while ((MobWorldLoader.Instance.IsInMobWorld || MobWorldLoader.Instance.IsBusy) && Time.realtimeSinceStartup < until) yield return null;
+        }
         WorkdayDirector wd = WorkdayDirector.Instance;
         // La tarde empieza descansada (como la jornada, grupo 50): sin hambre, sueño ni baño que se adelanten a todo.
         Rest(wd != null ? wd.staff : new string[0]);
@@ -142,10 +149,10 @@ public class HorarioLibreTest : MonoBehaviour, ITestUnit
         while (tc.Hour < 18.02f && tc.Day == day && Time.realtimeSinceStartup < end)
         {
             if (!labels && tc.Hour > 16.5f) labels = gr.bodies.Any(b => b != null && b.TryGetComponent(out WorldLabel wl) && wl.text.Contains("Libre:"));
-            if (shots && !shot1 && tc.Hour > 16.75f) { shot1 = true; Capture("panel_santuario_1645"); }
+            if (shots && !shot1 && tc.Hour > 16.75f) { shot1 = true; HorarioPanel.FocusScene = gr.name; StartCoroutine(Shoot(ld, gr, "panel_santuario_1645")); }
             yield return null;
         }
-        if (shots) Capture("panel_santuario_1800");
+        if (shots) { HorarioPanel.FocusScene = gr.name; yield return Shoot(ld, gr, "panel_santuario_1800"); }
         Log($"santuario: el reloj llegó a las {tc.Hour:00.00} h del día {tc.Day} (hasta las 18 h)");
         ld.Tick();   // cierra la franja de las 17 h
         var recs = LeisureDirector.Records.Skip(rec0).Concat(ld.Snapshot()).Where(x => !x.micro && x.day == day && x.slot <= 1).ToList();   // (y las que siguen en marcha si el reloj no llegó)
@@ -193,7 +200,7 @@ public class HorarioLibreTest : MonoBehaviour, ITestUnit
             bool shot = false;
             while (tc.Hour < 17.02f && tc.Day == day && Time.realtimeSinceStartup < end)
             {
-                if (shots && !shot && tc.Hour > 16.7f) { shot = true; HorarioPanel.Show = true; Capture("panel_" + sceneName); }
+                if (shots && !shot && tc.Hour > 16.7f) { shot = true; HorarioPanel.Show = true; HorarioPanel.FocusScene = gr.name; StartCoroutine(Shoot(ld, gr, "panel_" + sceneName)); }
                 yield return null;
             }
             float reached = tc.Hour; bool started = reached >= 16f || tc.Day > day;
@@ -263,6 +270,28 @@ public class HorarioLibreTest : MonoBehaviour, ITestUnit
 
     // ── Fotos ────────────────────────────────────────────────────────────────────────────────────
     const string Dir = "Temp/Horario";
+
+    // UNA CAPTURA DE LA ESCENA DEL GRUPO con el panel encima (2026-11-04: la del santuario salía con el microcosmos de Ambrosio de fondo
+    // —la cámara seguía allí— y la de Kapilavastu con el horario del santuario). Una cámara propia, por encima de la principal, mira a
+    // alguien del grupo (mejor uno que ya hace su actividad); el panel enseña ese grupo (HorarioPanel.FocusScene).
+    IEnumerator Shoot(LeisureDirector ld, LeisureDirector.Group gr, string tag)
+    {
+        GameObject who = null;
+        foreach (var kv in ld.Runs) if (kv.Key != null && kv.Value.group == gr && kv.Value.Arrived) { who = kv.Key; break; }
+        if (who == null) who = gr.bodies.FirstOrDefault(b => b != null);
+        if (who == null) { Capture(tag); yield break; }
+        var go = new GameObject("FotoHorarioPanel_TEMP");
+        Camera cam = go.AddComponent<Camera>();
+        cam.depth = 100f; cam.fieldOfView = 50f; cam.nearClipPlane = 0.1f;
+        Transform t = who.transform;
+        Vector3 at = t.position + Vector3.up * 0.8f;
+        cam.transform.position = at - t.forward * 7f + t.right * 3f + Vector3.up * 3.5f;
+        cam.transform.LookAt(at);
+        yield return null;
+        Capture(tag);
+        yield return null; yield return null;
+        Destroy(go);
+    }
 
     static void Capture(string tag)
     {

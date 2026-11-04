@@ -175,6 +175,46 @@ public static class MicroBuildRules
                 { bad.Add($"la planta en terraza de «{site.title}» tapa «{mp.name}»"); break; }
             }
         }
+        bad.AddRange(ValidateCivicScale(scope));
+        return bad;
+    }
+
+    /// <summary>
+    /// (2026-11-04) LA ESCALA DEL MOBILIARIO CÍVICO (reglas 13–15, docs/microcosmos-suelo-y-elementos.md §Escala; <see cref="MicroCivicScale"/>):
+    /// 13. TODO ASIENTO ES UTILIZABLE: cada silla y cada banco (MicroPiece «silla»/«banco») lleva su <see cref="MicroSeat"/> con sitios;
+    /// 14. los PLATOS de las mesas dan una comida (≥ <see cref="MicroCivicScale.PlateFor"/>) y las OLLAS de las cocinas, 2 L por comensal;
+    /// 15. las ESTATUAS son monumentales y modelan INSECTOS-HUMANOS (nada de figura humana), y las fuentes miden lo de una plaza.
+    /// </summary>
+    public static List<string> ValidateCivicScale(Transform scope)
+    {
+        var bad = new List<string>();
+        foreach (MicroPiece mp in scope.GetComponentsInChildren<MicroPiece>(true))
+        {
+            if (mp.kind == "silla" || mp.kind == "banco")
+            {
+                MicroSeat s = mp.GetComponent<MicroSeat>();
+                if (s == null || s.points == null || s.points.Length == 0) bad.Add($"asiento «{mp.name}» sin sitio para sentarse (MicroSeat)");
+            }
+            else if (mp.kind == "estatua")
+            {
+                if (Box(mp.transform, out Bounds b) && b.size.y < MicroCivicScale.StatueTotal() * 0.85f) bad.Add($"estatua «{mp.name}» de {b.size.y:0.0} m (< {MicroCivicScale.StatueTotal():0.0}: no es monumental)");
+                bool insect = false, human = false;
+                foreach (Transform c in mp.GetComponentsInChildren<Transform>(true)) { if (c.name == "Figura_insecto_humano") insect = true; if (c.name == "Figura" || c.name == "Brazo" && c.parent == mp.transform) human = true; }
+                if (human && !insect) bad.Add($"estatua «{mp.name}» con figura humana (debe modelar un insecto-humano)");
+            }
+            else if (mp.kind == "fuente" && Box(mp.transform, out Bounds fb) && Mathf.Max(fb.size.x, fb.size.z) < MicroCivicScale.FountainSide() * 0.85f)
+                bad.Add($"fuente «{mp.name}» de {Mathf.Max(fb.size.x, fb.size.z):0.0} m de lado (< {MicroCivicScale.FountainSide():0.0})");
+        }
+        foreach (Transform t in scope.GetComponentsInChildren<Transform>(true))
+        {
+            if (t.name == "Plato" && t.parent != null && t.parent.name == "Mesa" && t.localScale.x * 0.24f < MicroCivicScale.PlateFor() * 0.95f)
+            { bad.Add($"plato de {t.localScale.x * 0.24f:0.00} m en «{t.parent.parent?.name}» (< {MicroCivicScale.PlateFor():0.00}: no da una comida)"); break; }
+        }
+        foreach (Transform t in scope.GetComponentsInChildren<Transform>(true))
+        {
+            if (t.name == "Olla" && t.GetComponentInParent<MicroPiece>(true) != null && Box(t, out Bounds ob) && MicroCivicScale.PotLitres(Mathf.Max(ob.size.x, ob.size.z) * 0.8f) < 2f * 6f)
+            { bad.Add($"olla de {MicroCivicScale.PotLitres(Mathf.Max(ob.size.x, ob.size.z) * 0.8f):0} L en «{t.parent?.name}» (< 12 L: no da de comer a una casa)"); break; }
+        }
         return bad;
     }
 

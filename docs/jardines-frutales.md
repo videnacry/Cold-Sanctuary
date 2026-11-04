@@ -497,3 +497,7 @@ marca en rojo; las cortinas de fitoplancton, 2 min cada una junto a la puerta de
   (`Leg.reserve`).
 - **El jardinero usa esa reserva aunque la revisión vaya lenta** (`StartExtras`: lo reservado como mínimo). Antes, con las tareas
   del árbol detrás, no le quedaba nada. La prueba 55 elige para el jardinero una ronda con macetas que se polinizan o se podan.
+
+**Ronda 3 (2026-11-04): las residencias.** Las macetas de las terrazas de las casas del árbol (ed774ff) se recorren **en alfombra**,
+casa a casa. `Hop` cuenta un vuelo (`FlightSeconds`) entre dos casas distintas: antes contaba la recta andando y la ronda de la
+Residencia no acababa en su tiempo. La prueba 55 elige para su jardinero una ronda de techos.

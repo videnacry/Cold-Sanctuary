@@ -6,8 +6,8 @@ using UnityEngine;
 /// - el SUBMARINO-AMBULANCIA anfibio (<see cref="HospitalSubmarine"/>): 14 × 5 × 5 m (el vehículo de diseño de los árboles), con orugas para el hielo y hélices para el
 ///   mar; cabe por las puertas de los edificios-árbol y sube nadando por el tronco a la puerta del piso del hospital. Aparcado
 ///   junto a la puerta del suelo del árbol del hospital (a un lado del paso).
-/// - el LEVIATÁN (<see cref="WhaleHospitalSubmarine"/>): 72 × 18 × 12 m, hospital de animales gigantes con su pozo médico de
-///   32 × 10 m y suelo elevable; atracado en superficie junto a una orilla («a ras del suelo»), con su pasarela al hielo.
+/// - el LEVIATÁN (<see cref="WhaleHospitalSubmarine"/>): 56 × 16 × 12 m, hospital de animales gigantes con su pozo médico de
+///   20 × 8 m y suelo elevable; atracado en superficie junto a una orilla («a ras del suelo»), con su pasarela al hielo.
 /// Son vehículos: sin colisiones (se mueven ellos) y fuera del NavMesh.
 /// </summary>
 public static partial class SampleSceneBuilder
@@ -88,12 +88,13 @@ public static partial class SampleSceneBuilder
         }
         KitchenProps.C(cab, new Vector3(0f, 0.7f, 2.1f), new Vector3(2.6f, 0.5f, 0.4f), SubDark, 0f, "Consola_navegacion");
         // BODEGA (7,5 × 3,8 × 4 m): camilla, trineo de la grúa de 8 t, oxígeno, monitor, desfibrilador, ventilador, sangre y fluidos.
-        Transform bay = new GameObject("Bodega").transform; bay.SetParent(t, false); bay.localPosition = new Vector3(0f, -1.85f, -2f);
+        // (2026-11-04) La bodega, por ENCIMA del casco bajo (su techo, a −0,45 m): a −1,85 m el paciente quedaba dentro del casco y no se veía.
+        Transform bay = new GameObject("Bodega").transform; bay.SetParent(t, false); bay.localPosition = new Vector3(0f, -0.4f, -2f);
         Vector3 BY = HospitalSubmarine.Bay;
         KitchenProps.C(bay, new Vector3(0f, -0.05f, 0f), new Vector3(BY.x, 0.1f, BY.z), new Color(0.75f, 0.85f, 0.85f), 0f, "Suelo_bodega");
         KitchenProps.C(bay, new Vector3(0f, 0.12f, 0.2f), new Vector3(2.6f, 0.15f, 5.6f), KitchenProps.Steel, 0f, "Trineo_carga");
-        KitchenProps.C(bay, new Vector3(0f, BY.y - 0.15f, 0f), new Vector3(0.25f, 0.2f, BY.z), KitchenProps.DarkSteel, 0f, "Viga_grua_8t");
-        KitchenProps.C(bay, new Vector3(0f, BY.y - 0.6f, 0.8f), new Vector3(0.6f, 0.5f, 0.6f), SubOrange, 0f, "Polipasto");
+        KitchenProps.C(bay, new Vector3(0f, 2.15f, 0f), new Vector3(0.25f, 0.2f, BY.z), KitchenProps.DarkSteel, 0f, "Viga_grua_8t");
+        KitchenProps.C(bay, new Vector3(0f, 1.75f, 0.8f), new Vector3(0.6f, 0.5f, 0.6f), SubOrange, 0f, "Polipasto");
         KitchenProps.C(bay, new Vector3(-1.4f, 0.55f, 2.6f), new Vector3(0.6f, 0.15f, 2.0f), KitchenProps.White, 0f, "Camilla");
         Transform wall = new GameObject("Equipos").transform; wall.SetParent(bay, false); wall.localPosition = new Vector3(1.55f, 0f, 0f);
         KitchenProps.C(wall, new Vector3(0f, 0.6f, -2.8f), new Vector3(0.5f, 1.2f, 0.5f), KitchenProps.White, 0f, "Concentrador_O2");
@@ -190,7 +191,7 @@ public static partial class SampleSceneBuilder
         KitchenProps.C(gw, new Vector3(shoreSide * reach * 0.5f, 0.05f, 0f), new Vector3(reach, 0.1f, 2f), KitchenProps.Steel, 0f, "Tablero");
         Transform end = new GameObject("Fin").transform; end.SetParent(gw, false); end.localPosition = new Vector3(shoreSide * (reach + 0.5f), 0f, 0f);
         WorldLabel wl = t.gameObject.AddComponent<WorldLabel>();
-        wl.text = "Leviatán: hospital submarino de animales gigantes (72 × 18 m; pozo médico de 32 × 10 m con suelo elevable; orcas, belugas, ballenas de hasta 16 m)";
+        wl.text = "Leviatán: hospital submarino de animales gigantes (56 × 16 m; pozo médico de 20 × 8 m con suelo elevable; orcas, belugas, ballenas de hasta 16 m)";
         wl.height = H * 0.5f + 8f;
         Debug.Log($"[Leviatán] Atracado en ({berth.x:0}, {berth.z:0}), rumbo {yaw:0}°, cubierta a {deckTop:0.0} m (a ras del hielo); pozo de {WL:0} × {W:0} m.");
         return t;

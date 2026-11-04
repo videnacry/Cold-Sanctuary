@@ -12,6 +12,10 @@ using UnityEngine;
 public class HorarioPanel : MonoBehaviour
 {
     public static bool Show;
+    /// <summary>La escena cuyo horario se muestra (las pruebas la fijan). Vacía: la que se eligió con «otra escena» o, si no, la de
+    /// donde está el jugador (en el microcosmos, la del microcosmos; en el santuario, la del santuario).</summary>
+    public static string FocusScene = "";
+    bool _picked;
     static readonly string[] DayNames = { "lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo" };
     int _dayOffset = -1, _groupIdx;
     Vector2 _scroll;
@@ -45,7 +49,7 @@ public class HorarioPanel : MonoBehaviour
         }
         if (ld.groups.Count == 0) ld.Scan(true);
         if (ld.groups.Count == 0) return;
-        _groupIdx = Mathf.Clamp(_groupIdx, 0, ld.groups.Count - 1);
+        _groupIdx = Mathf.Clamp(PickGroup(ld), 0, ld.groups.Count - 1);
         LeisureDirector.Group gr = ld.groups[_groupIdx];
         if (gr.plan == null) return;
         TimeController tc = TimeController.timeController;
@@ -68,7 +72,7 @@ public class HorarioPanel : MonoBehaviour
         if (GUI.Button(new Rect(r.x + 12f, y, 26f, 22f), "◀")) _dayOffset = (_dayOffset + LeisureRoster.DaysPerWeek - 1) % LeisureRoster.DaysPerWeek;
         GUI.Label(new Rect(r.x + 42f, y + 2f, 190f, 22f), $"<b>{DayName(day)}</b> · día {day}{(day == today ? " (hoy)" : "")}", _st);
         if (GUI.Button(new Rect(r.x + 236f, y, 26f, 22f), "▶")) _dayOffset = (_dayOffset + 1) % LeisureRoster.DaysPerWeek;
-        if (ld.groups.Count > 1 && GUI.Button(new Rect(r.x + 280f, y, 150f, 22f), "otra escena")) { _groupIdx = (_groupIdx + 1) % ld.groups.Count; _dayOffset = -1; }
+        if (ld.groups.Count > 1 && GUI.Button(new Rect(r.x + 280f, y, 150f, 22f), "otra escena")) { _groupIdx = (_groupIdx + 1) % ld.groups.Count; _dayOffset = -1; _picked = true; }
         GUI.Label(new Rect(r.x + 440f, y + 3f, w - 450f, 22f), "<color=#9AA0A6>8–16 jornada · 19–20 cena · 22–7 sueño · el resto, libre</color>", _small);
         y += 28f;
         // Cabecera de las franjas.
@@ -112,6 +116,22 @@ public class HorarioPanel : MonoBehaviour
             ry += 16f;
         }
         GUI.EndScrollView();
+    }
+
+    // (2026-11-04, fotos de la prueba 65: con el microcosmos de Kapilavastu cargado el panel enseñaba el horario del santuario)
+    int PickGroup(LeisureDirector ld)
+    {
+        string want = FocusScene;
+        if (string.IsNullOrEmpty(want) && _picked) return _groupIdx;
+        if (string.IsNullOrEmpty(want))
+        {
+            GameObject p = GameObject.FindGameObjectWithTag("Player");
+            if (p != null) want = p.scene.name;
+        }
+        int k = ld.groups.FindIndex(x => x.name == want);
+        if (k < 0) return _groupIdx;
+        if (k != _groupIdx) _dayOffset = -1;
+        return k;
     }
 
     static string KindName(LeisureRoster.Kind k) => k == LeisureRoster.Kind.Ocio ? "ocio" : k == LeisureRoster.Kind.Cuidado ? "cuidado" : k == LeisureRoster.Kind.Descanso ? "descanso" : "recuperación";

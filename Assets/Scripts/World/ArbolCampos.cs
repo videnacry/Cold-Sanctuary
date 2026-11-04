@@ -210,6 +210,7 @@ public class ArbolCampos : MonoBehaviour
             if (!wet && a != null && (a.kind == G || a.kind == T))
             {
                 if (b.kind != G && b.kind != T) to = tb.World(tb.Top.outside);
+                Log(g, $"en {a.name} de {ta.building} → en alfombra a {(b.kind == G || b.kind == T ? b.name : "el techo")} de {tb.building}", to);
                 return Hop.None;
             }
             b = null;
@@ -229,11 +230,12 @@ public class ArbolCampos : MonoBehaviour
         {
             if (b.kind == G || b.kind == T) return Hop.None;
             to = t.World(t.Top.outside);
+            Log(g, $"fuera de los árboles → en alfombra al techo de {t.building} (va a {b.name})", to);
             return Hop.None;
         }
         PathMover pm = PathMover.Of(g.transform);
         float ph = pm.PivotHeight;
-        if (wet) { TreeTrip.Start(g, t, t.SwimPath(null, b, t.transform.InverseTransformPoint(g.transform.position) - Vector3.up * ph), b, true); return Hop.Swimming; }
+        if (wet) { Log(g, $"en el agua de {t.building} (sin nivel) → nada a {b.name}", to); TreeTrip.Start(g, t, t.SwimPath(null, b, t.transform.InverseTransformPoint(g.transform.position) - Vector3.up * ph), b, true); return Hop.Swimming; }
         Vector3 door = t.World(a.outside) + Vector3.up * ph;
         Vector3 d = door - g.transform.position;
         // (El jugador lleva CharacterController: a ×6 su cápsula choca con el marco de la puerta del techo y lo devuelve 1,1 m;
@@ -241,8 +243,22 @@ public class ArbolCampos : MonoBehaviour
         //  el viaje empieza andando hasta la puerta, con la cápsula apagada.)
         float near = g.TryGetComponent(out CharacterController _) ? 1.6f : 0.9f;
         if (new Vector2(d.x, d.z).magnitude > near || Mathf.Abs(d.y) > 1.5f) { to = door; return Hop.Walk; }   // primero, a su puerta
+        Log(g, $"de {a.name} a {b.name} de {t.building}, nadando por el tronco (puerta de {a.name}, a {Mathf.Abs(b.door.y - a.door.y):0} m de altura)", to);
         TreeTrip.Start(g, t, t.SwimPath(a, b), b);
         return Hop.Swimming;
+    }
+
+    // REGISTRO DE RUTAS (2026-11-04, prueba 50: Kushal nadaba 106 m por un tronco camino de la Planta Atómica): por qué entra en un
+    // tronco. Se apunta para el JUGADOR (o con TreeTrip.Verbose), solo cuando cambia la decisión.
+    static readonly Dictionary<GameObject, string> _routeLog = new Dictionary<GameObject, string>();
+    static void Log(GameObject g, string what, Vector3 to)
+    {
+        if (g == null || !(g.CompareTag("Player") || TreeTrip.Verbose)) return;
+        ArbolCampos tb = At(to, out TreeLevel lb, out _, false);
+        string msg = $"[Ruta-árbol] «{g.name}» en ({g.transform.position.x:0},{g.transform.position.y:0},{g.transform.position.z:0}) {what}; destino ({to.x:0},{to.y:0},{to.z:0}) = {(tb != null ? $"{lb?.name ?? "?"} de {tb.building}" : "fuera de los árboles")}";
+        if (_routeLog.TryGetValue(g, out string last) && last == what) return;
+        _routeLog[g] = what;
+        Debug.Log(msg);
     }
 
     /// <summary>Hechizo «piso»: lleva a <paramref name="who"/> al nivel <paramref name="what"/> andando y nadando por el tronco.</summary>

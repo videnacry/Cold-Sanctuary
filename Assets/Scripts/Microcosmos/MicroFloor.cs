@@ -43,6 +43,18 @@ public class MicroFloor : MonoBehaviour
     [Tooltip("Enlaces para TREPAR (NavMeshLink) del suelo a las caras de arriba de los muebles: los insectos-humanos suben por patas y paredes.")]
     public int climbLinks;
 
+    // ── EL SUELO, LOS ELEMENTOS DEL PISO Y SUS DEPENDENCIAS (2026-11-04, docs/microcosmos-suelo-y-elementos.md) ──
+    [Tooltip("¿Lleva la capa de tierra (MicroGround.SoilThickness sobre cada suelo, MicroSoil)?")]
+    public bool soil;
+    [Tooltip("Al construirlo: plantas y bichos apoyados en la superficie de encima de su pie, y plantas quitadas por quedar dentro de un collider.")]
+    public int plantsSettled, plantsRemoved;
+    [Tooltip("Elementos del piso reinterpretados por la forma de microcosmos (MicroFloorElements) y los que no tenían fila en el catálogo.")]
+    public int elementsMapped, elementsUnmapped;
+    [Tooltip("El inventario del piso del mesocosmos con el que se montó (MicroFloorElements.Inventory): sus claves, ordenadas.")]
+    public string[] mesoInventory = new string[0];
+    [Tooltip("La firma de ese inventario (MicroFloorElements.Signature): si el piso del mesocosmos cambia, cambia y el microcosmos se marca para revisar.")]
+    public string mesoSignature = "";
+
     /// <summary>Nombres de los cuatro muros (bajo «Muros_del_piso»).</summary>
     public static readonly string[] WallNames = { "Muro_N", "Muro_S", "Muro_E", "Muro_O" };
 

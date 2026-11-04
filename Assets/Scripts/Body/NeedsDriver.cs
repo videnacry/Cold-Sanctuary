@@ -37,7 +37,7 @@ public class NeedsDriver : MonoBehaviour
         if (_a == null || _body == null || _a.death || Time.time < _next) return;
         if (Orchestra.Busy(gameObject)) return;   // en una iniciación (examen, clase, cocina, huerto o acompañándolo): sus necesidades esperan (se acaba con tope)
         _next = Time.time + checkEvery;
-        foreach (QueuedSpell s in _q.Own) if (s is EatSpell || s is SleepSpell || s is DineSpell || s is ToiletSpell || s is HomeNeedSpell) return;   // ya atendiendo una necesidad
+        foreach (QueuedSpell s in _q.Own) if (s is EatSpell || s is SleepSpell || s is DineSpell || s is ToiletSpell || s is HomeNeedSpell || s is PublicSeatSpell) return;   // ya atendiendo una necesidad
 
         // CON HOGAR (Household: los insectos-humanos de las eras civilizadas y las escenas de ciclo de vida humano), las
         // necesidades se atienden EN CASA: comer en su mesa, dormir en su cama, el retrete y el lavabo. Un insecto-humano sin
@@ -96,8 +96,21 @@ public class NeedsDriver : MonoBehaviour
         if (_body.hunger >= eatAbove && (!HomeNeedSpell.RetryEat.TryGetValue(_a, out float at) || Time.time >= at)
             && !(_body.hunger < starvingAbove && mj != null && mj.OnShift))
         { _q.EnqueueOwn(new HomeNeedSpell { need = HomeNeedSpell.Need.Comer, home = home }); return; }
-        if (_body.dirt >= 0.85f) _q.EnqueueOwn(new HomeNeedSpell { need = HomeNeedSpell.Need.Lavarse, home = home });
+        if (_body.dirt >= 0.85f) { _q.EnqueueOwn(new HomeNeedSpell { need = HomeNeedSpell.Need.Lavarse, home = home }); return; }
+        // (2026-11-04) SENTARSE EN LA PLAZA (MicroSeat, docs/microcosmos-suelo-y-elementos.md §Escala; Berón: «debe ser posible sentarse
+        // en las sillas de restaurantes y bancos de las plazas»): en su tiempo libre de día, de vez en cuando, en el asiento público
+        // libre más cercano (un banco de la plaza, una silla de un comedor, el pretil de la fuente), un cuarto de hora.
+        bool free = mj == null || (!mj.OnShift && !mj.AtHomeBlock);
+        if (free && !night && Time.time >= _nextSeat && MicroSeat.All.Count > 0)
+        {
+            _nextSeat = Time.time + seatEvery * Random.Range(0.6f, 1.4f);
+            if (Random.value < 0.35f) _q.EnqueueOwn(new PublicSeatSpell());
+        }
     }
+
+    [Tooltip("Cada cuántos segundos reales (de media) piensa en sentarse en un asiento público en su tiempo libre.")]
+    public float seatEvery = 90f;
+    float _nextSeat;
 }
 
 /// <summary>COMER: camina (por el NavMesh) a la comida más cercana con raciones, toma una y sacia el cuerpo.</summary>

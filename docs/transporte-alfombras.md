@@ -17,3 +17,7 @@
   el lanzador de hechizos se **oculta**.
 
 Código: `SampleSceneBuilder.Transport.cs` (puentes y pistas), `CarpetPad`, `FlyingCarpet`, `ChoiceDialog`.
+
+**(2026-11-04) Alfombras más gruesas** (Berón: «son alfombras voladoras hechas con tecnología de modo que dentro tienen circuitos»):
+7 cm de canto (`FlyingCarpet.Thickness`) con núcleo de circuitos, pistas doradas en el canto y costura de LED; el pasajero va encima
+de su grosor. Ver [microcosmos-suelo-y-elementos.md](microcosmos-suelo-y-elementos.md) §Alfombras y el manual (C7).
