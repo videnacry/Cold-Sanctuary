@@ -159,6 +159,39 @@ public static class MicroGround
         return bad;
     }
 
+
+    /// <summary>
+    /// (2026-11-04) CAER DESDE EL AIRE (Berón: «un truco que conozco es crear todos los objetos en el aire para que caigan sobre la
+    /// superficie que tenga debajo»): cada pieza de <paramref name="items"/> se suelta desde <paramref name="fromY"/> (bajo la tapa de los
+    /// muros) y queda sobre la superficie MÁS ALTA de debajo de su (x, z) entre los colliders de <paramref name="root"/> (sin plantas,
+    /// bichos ni gente), las caras de <paramref name="surfaces"/> y la tierra que se ve (<paramref name="soilAt"/>). Para lo que se
+    /// coloca a mano (el mapa de cada historia): ahí donde cae es donde el autor lo quiso, también sobre un mueble. Devuelve cuántas.
+    /// </summary>
+    public static int Drop(Transform root, IList<Transform> items, float fromY, IList<Bounds> surfaces = null, System.Func<float, float, float> soilAt = null)
+    {
+        if (root == null || items == null) return 0;
+        Physics.SyncTransforms();
+        int n = 0;
+        foreach (Transform it in items)
+        {
+            if (it == null) continue;
+            Vector3 p = it.position;
+            float top = float.MinValue;
+            foreach (RaycastHit h in Physics.RaycastAll(new Vector3(p.x, fromY, p.z), Vector3.down, fromY - p.y + 50f, ~0, QueryTriggerInteraction.Ignore))
+            {
+                if (h.normal.y < 0.3f || Ignored(h.collider, it) || !h.transform.IsChildOf(root)) continue;
+                if (h.point.y > top) top = h.point.y;
+            }
+            if (surfaces != null) foreach (Bounds b in surfaces) if (p.x >= b.min.x && p.x <= b.max.x && p.z >= b.min.z && p.z <= b.max.z && b.max.y < fromY && b.max.y > top) top = b.max.y;
+            float s = soilAt != null ? soilAt(p.x, p.z) : float.NaN;
+            if (!float.IsNaN(s) && s > top) top = s;
+            if (top == float.MinValue) continue;
+            it.position = new Vector3(p.x, top, p.z);
+            n++;
+        }
+        return n;
+    }
+
     /// <summary>
     /// APOYA cada planta (y cada bicho de «Fauna_a_escala») en la superficie más alta de encima de su pie y QUITA las que quedan
     /// dentro de un collider. Lo usa el constructor del microcosmos después de sembrar (también vale en juego). Devuelve

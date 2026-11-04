@@ -126,7 +126,7 @@ internal static class MicroFloorDress
         foreach (El.Piece p in inventory)
         {
             El.Element e = p.element ?? El.Other;
-            El.Override ov = El.OverrideFor(story ?? display, p.key);
+            El.Override ov = El.OverrideFor(story ?? display, p.key, e.id);
             if (ov != null && ov.action == El.Action.Como && El.ById(ov.element) != null) e = El.ById(ov.element);
             var rec = new GameObject($"{e.id}__{p.key}").AddComponent<MicroElement>();
             rec.transform.SetParent(recs, false);

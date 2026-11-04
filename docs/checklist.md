@@ -31,7 +31,9 @@ Doc: [`microcosmos-suelo-y-elementos.md`](microcosmos-suelo-y-elementos.md); man
 - [x] **Escala cívica por pieza** (no ×2): asientos utilizables (`MicroSeat`, `PublicSeatSpell`), bancos en la plaza, plato y olla por raciones, fuente y estatua monumentales (`MicroCivicScale`, reglas 13–15).
 - [x] **Estatuas de insecto-humano** (`MicroStatue`) en la plaza y colosos en la forma de microcosmos.
 - [ ] **Verificar en vivo** (probador): reconstruir SampleScene y luego, UNO A UNO, Bolívar, Ambrosio, Hospital, Sakshi y Cocina (y el resto cuando se pueda); grupos 68 y 67, y 43, 60, 62, 63, 66 (las reglas nuevas 7–9 y 13–15 harán fallar los microcosmos aún sin reconstruir); fotos con `Tools/TmpCheck/Microcosmos suelo fotos` y `Alfombra canto foto`.
-- [ ] Pendiente: un microcosmos hecho de cero para una historia (M9); el gancho de Claude Code para los demás pisos (el aviso al reconstruir ya los cubre).
+- [x] **Capa de tierra APAGADA** por defecto (`MicroGround.SoilEnabled`; colgaba el NavMesh de la Cocina) y, encendida, con collider liso aparte.
+- [x] **Mapas a mano** (`MicroStoryMaps`, regla M9, [`microcosmos-mapas-a-mano.md`](microcosmos-mapas-a-mano.md)): Angostura hecho (flora, fauna, piso, edificios); lo colocado cae desde el aire (`MicroGround.Drop`); la siembra al azar es respaldo y se registra.
+- [ ] Hacer los mapas a mano de las demás historias (esbozos con lo que les falta); el gancho de Claude Code para los demás pisos.
 
 > **HECHO 2026-11-04 (hilo de personajes, rama claude/edif-personajes):** la **familia y los amigos de Berón** (Nesvitor, Amahuz y Karen, Alicita, Ducristin, Josedrilo, Maite, Shalva, Adaguchi) en el santuario con su aspecto de sus fotos, Tote mejorado, y los **famosos** (Sadhguru y los seis del mesocosmos) **fuera, a sus microcosmos**, con sus papeles repartidos (yoga → Andrea). *Falta:* la verificación en vivo del tester y que Berón confirme los nombres de `cumbaya.jpg`. Ver la sección «Familia y amigos de Berón» abajo.>
 >
