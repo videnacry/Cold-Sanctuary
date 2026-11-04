@@ -25,7 +25,7 @@ public class HorarioLibreTest : MonoBehaviour, ITestUnit
     public bool shots = true;
     static readonly string[] MicroScenes = { "Microcosmos_Buda", "Microcosmos_Patanjali", "Microcosmos_Eratostenes", "Microcosmos_BruceLee" };
     /// <summary>La familia y los amigos de Berón (2026-11-04, de sus fotos).</summary>
-    public static readonly string[] Family = { "Nesvitor", "Amahuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi" };
+    public static readonly string[] Family = { "Nesvitor", "Amahuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi", "Gallarle" };
     /// <summary>Los famosos que salieron del santuario a sus microcosmos (2026-11-04).</summary>
     public static readonly string[] Famous = { "Sadhguru", "ElonMusk", "Goku", "BillGates", "WarrenBuffett", "MacKenzieScott", "IbrahimTraore" };
 
@@ -90,13 +90,13 @@ public class HorarioLibreTest : MonoBehaviour, ITestUnit
             if (!g.TryGetComponent(out Anima a) || Bedroom.Of(a) == null) homeless += id + " ";
         }
         TestProbe.Check("la familia y los amigos de Berón están en el santuario", missing.Length == 0, missing.Length > 0 ? "faltan: " + missing : string.Join(", ", Family));
-        TestProbe.Check("los nueve tienen cuerpo de cubos", bodyless.Length == 0, bodyless);
-        TestProbe.Check("los nueve llevan su nombre en el rótulo", unlabeled.Length == 0, unlabeled);
-        TestProbe.Check("los nueve tienen su casa del árbol (dormitorio)", homeless.Length == 0, homeless);
+        TestProbe.Check("los de la familia y amigos tienen cuerpo de cubos", bodyless.Length == 0, bodyless);
+        TestProbe.Check("los de la familia y amigos llevan su nombre en el rótulo", unlabeled.Length == 0, unlabeled);
+        TestProbe.Check("los de la familia y amigos tienen su casa del árbol (dormitorio)", homeless.Length == 0, homeless);
         GameObject ama = WorkdayDirector.Body("Amahuz"), kar = WorkdayDirector.Body("Karen");
         Bedroom bA = ama != null && ama.TryGetComponent(out Anima aa) ? Bedroom.Of(aa) : null, bK = kar != null && kar.TryGetComponent(out Anima ak) ? Bedroom.Of(ak) : null;
         TestProbe.Check("Amahuz y Karen (pareja) comparten casa", bA != null && bA == bK, $"{(bA != null ? bA.name : "—")} · {(bK != null ? bK.name : "—")}");
-        TestProbe.Check("los nueve están en la jornada (personal del santuario)", wd != null && Family.All(s => wd.staff.Contains(s)));
+        TestProbe.Check("los de la familia y amigos están en la jornada (personal del santuario)", wd != null && Family.All(s => wd.staff.Contains(s)));
         TestProbe.Check("ningún famoso (Sadhguru ni los seis del mesocosmos) sigue en la jornada", wd != null && !Famous.Any(s => wd.staff.Contains(s)), wd != null ? string.Join(", ", Famous.Where(s => wd.staff.Contains(s))) : "sin jornada");
         string still = string.Join(" ", Famous.Where(s => { GameObject g = WorkdayDirector.Body(s); return g != null && g.scene == SceneManager.GetActiveScene(); }));
         TestProbe.Check("ningún famoso sigue en el santuario (se fueron a sus microcosmos)", still.Length == 0, still);
@@ -105,7 +105,7 @@ public class HorarioLibreTest : MonoBehaviour, ITestUnit
             TimeController tc = TimeController.timeController;
             WorkRoster.DayPlan p = wd.today ?? wd.PlanDay(tc.Day);
             var got = Family.Where(s => wd.roster.Find(s) != null && p.work.Any(a => a.worker.name == s)).ToList();
-            TestProbe.Check("los nueve reciben misiones en el reparto de la jornada", got.Count == Family.Length, string.Join(" · ", Family.Select(s => $"{s}: {string.Join(", ", p.work.Where(a => a.worker.name == s).Select(a => a.mission.title))}")));
+            TestProbe.Check("los de la familia y amigos reciben misiones en el reparto de la jornada", got.Count == Family.Length, string.Join(" · ", Family.Select(s => $"{s}: {string.Join(", ", p.work.Where(a => a.worker.name == s).Select(a => a.mission.title))}")));
         }
         if (shots) foreach (string id in Family) { GameObject g = WorkdayDirector.Body(id); if (g != null) Portrait(g.transform, id); }
     }

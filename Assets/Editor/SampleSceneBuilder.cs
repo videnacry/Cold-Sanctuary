@@ -3106,11 +3106,11 @@ public static partial class SampleSceneBuilder
         liz.AddComponent<WorldCharacter>().characterName = "Lizmibet";
 
         // Su ESPOSO, JEFE DE CONSTRUCCIÓN (docs/construction-simulation.md): repara y levanta las estructuras de las áreas
-        // humanas desde el área de Construcción (maquinaria y material). ANDREA da las clases de yoga (antes Sadhguru).
+        // humanas desde el área de Construcción (maquinaria y material). JOSEDRILO da las clases de yoga (el profesional; antes Andrea y Sadhguru).
         // ANDREA es uno de los DUEÑOS del santuario (los turistas son una de sus vías de ingresos).
         MakeCharacter(root.transform, "JefeConstruccion", "Tote · Tofelite (jefe de construcción)",   // Tofelite, esposo de Lizmibet; lo suelen llamar Tote. El id sigue siendo JefeConstruccion (escenas y pruebas)
              new Vector3(12f, 1f, 8f), new Color(0.78f, 0.8f, 0.82f), 1.3f, 0.95f, 1.25f, 1.15f);
-        MakeCharacter(root.transform, "Andrea", "Andrea (dueño del santuario y maestro de yoga)", new Vector3(16f, 1f, 8f), new Color(0.08f, 0.08f, 0.09f), 1.15f, 1.2f, 1.2f, 1.0f);
+        MakeCharacter(root.transform, "Andrea", "Andrea (dueño del santuario)", new Vector3(16f, 1f, 8f), new Color(0.08f, 0.08f, 0.09f), 1.15f, 1.2f, 1.2f, 1.0f);
         // (2026-11-04) SADHGURU y LOS SEIS DEL MESOCOSMOS ya no se construyen aquí: Berón los sacó a sus microcosmos («los personajes
         // famosos … sácalos del mesocosmos y crea sus microcosmos respectivos»). Sus datos siguen en MesoCharacters y su aspecto en
         // CubeHair.For; sus papeles los llevan otros (docs/personajes-mesocosmos.md §Reparto de papeles).

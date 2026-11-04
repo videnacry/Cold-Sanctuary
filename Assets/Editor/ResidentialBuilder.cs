@@ -13,18 +13,26 @@ public static class ResidentialBuilder
 
     public static readonly string[] Owners =
     {
-        "Player", "Magnate", "Linduarda", "Goluis", "Panterilia", "Gohageneis", "Irosene", "Lizmibet", "JefeConstruccion", "Andrea",   // solo personajes del juego
+        "Player", "Magnate", "Linduarda", "Goluis", "Panterilia", "Gohageneis", "Irosene", "Lizmibet", "Andrea",   // solo personajes del juego
         // (2026-11-04) La familia y los amigos de Berón, en las casas que dejaron Sadhguru y los seis del mesocosmos (se fueron a sus
-        // microcosmos). Amahuz y Karen, pareja, comparten casa (Partners). Con ellos, las 18 casas están ocupadas.
-        "Nesvitor", "Amahuz", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi",
+        // microcosmos). LAS PAREJAS COMPARTEN CASA (Partners; Berón: «Josedrilo y Maite son pareja, ¿Lizmibet y su esposo comparten
+        // residencia?; Ducristin tiene de pareja a Gallarle»): Lizmibet y Tote, Amahuz y Karen, Ducristin y Gallarle, Josedrilo y Maite.
+        // 16 casas ocupadas de 18: dos libres para recién llegados.
+        "Nesvitor", "Amahuz", "Alicita", "Ducristin", "Josedrilo", "Shalva", "Adaguchi",
     };
     static readonly string[] Shown =
     {
-        "Kushal", "la Magnate", "Linduarda", "Goluis", "Panterilia", "Gohageneis", "Irosene", "Lizmibet", "el jefe de construcción", "Andrea",
-        "Nesvitor", "Amahuz y Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi",
+        "Kushal", "la Magnate", "Linduarda", "Goluis", "Panterilia", "Gohageneis", "Irosene", "Lizmibet y Tote", "Andrea",
+        "Nesvitor", "Amahuz y Karen", "Alicita", "Ducristin y Gallarle", "Josedrilo y Maite", "Shalva", "Adaguchi",
     };
-    /// <summary>La pareja con la que comparte casa cada dueño (manual M18), si la tiene.</summary>
-    static readonly System.Collections.Generic.Dictionary<string, string> Partners = new System.Collections.Generic.Dictionary<string, string> { { "Amahuz", "Karen" } };
+    /// <summary>La pareja con la que comparte casa cada dueño (manual M18, J14), si la tiene.</summary>
+    static readonly System.Collections.Generic.Dictionary<string, string> Partners = new System.Collections.Generic.Dictionary<string, string>
+    {
+        { "Lizmibet", "JefeConstruccion" },   // Tote, su esposo
+        { "Amahuz", "Karen" },                // (de su foto; pendiente de que Berón lo confirme)
+        { "Ducristin", "Gallarle" },
+        { "Josedrilo", "Maite" },
+    };
 
     public const string Name = "Residencia";
     // (2026-11-04, Berón: «las camas de las residencias del santuario deben ser capaces de dar espacio a 4 personas») CAMA DE 4: cuatro

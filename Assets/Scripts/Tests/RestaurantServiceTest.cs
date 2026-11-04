@@ -36,7 +36,9 @@ public class RestaurantServiceTest : MonoBehaviour, ITestUnit
 
     // La brigada acordada: (misión de la jornada, quién). Goluis, el jefe, en la línea; Gohageneis, en el pase.
     static readonly string[] Missions = { "coc_servicio", "coc_atender", "coc_servicio", "coc_servicio", "coc_obrador", "coc_obrador", "coc_limpieza", "coc_comedor" };
-    static readonly string[] People = { "Goluis", "Gohageneis", "Panterilia", "Irosene", "Lizmibet", "JefeConstruccion", "Nesvitor", "Andrea" };   // (2026-11-04: Nesvitor en vez de Sadhguru)
+    // (2026-11-04) Con los PROFESIONALES de cocina (Berón: Maite, Amahuz y Adaguchi; Professions): Goluis, el jefe, y Maite y Amahuz en la
+    // línea; Gohageneis en el pase; Adaguchi y Panterilia en el obrador; Irosene en la limpieza; Nesvitor en el comedor.
+    static readonly string[] People = { "Goluis", "Gohageneis", "Maite", "Amahuz", "Adaguchi", "Panterilia", "Irosene", "Nesvitor" };
 
     class Track
     {

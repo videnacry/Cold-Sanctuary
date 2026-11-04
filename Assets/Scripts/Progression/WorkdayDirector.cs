@@ -17,7 +17,8 @@ public class WorkdayDirector : MonoBehaviour
     public static WorkdayDirector Instance { get; private set; }
 
     public static readonly string[] Staff = { "Player", "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene", "JefeConstruccion", "Andrea",
-                               "Nesvitor", "Amahuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi" };   // familia y amigos de Berón (docs/diseno-personajes.md)
+                               "Nesvitor", "Amahuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi",   // familia y amigos de Berón (docs/diseno-personajes.md)
+                               "Gallarle" };   // (2026-11-04) pareja de Ducristin: pendiente de foto y de profesión
     /// <summary>(2026-11-04) La lista del personal, también sin escena: la usan la regla de capacidad (AreaCapacity) y el
     /// constructor del Aula (cuántas plazas y cuántos pisos).</summary>
     [Tooltip("Personal del santuario en su orden FIJO (el de la rotación). El jugador entra cuando ya es miembro.")]
@@ -608,12 +609,13 @@ public class WorkdayDirector : MonoBehaviour
     // YogaHall.VersionOn (tradicional los pares, occidental los impares). La CLASE DE HATHA (misión de grupo «clase_yoga»): el
     // guía hace la secuencia en la tarima de su sala, el demostrador la hace entre los alumnos y los correctores van de
     // esterilla en esterilla. El ENTRENAMIENTO de las 14 h es la CLASE DE ASHTANGA, en el piso de Ashtanga: la da el primero que
-    // llega. En su tiempo libre, el MAESTRO DE YOGA ('YogaTeacher': Andrea desde el 2026-11-04; antes Sadhguru) medita en la tarima de la sala de Hatha tradicional, junto al linga.
+    // llega. En su tiempo libre, el MAESTRO DE YOGA ('YogaTeacher': Josedrilo, el profesional de yoga; antes Andrea y Sadhguru) medita en la tarima de la sala de Hatha tradicional, junto al linga.
     const string YogaArea = "Sala de Yoga";
-    /// <summary>MAESTRO DE YOGA del santuario (Hatha y Ashtanga; medita junto al linga en su tiempo libre). Desde el 2026-11-04,
-    /// ANDREA, el único que hacía yoga de verdad con Leo (docs/character-andrea.md); antes, Sadhguru, que se fue a su microcosmos.
-    /// La segunda maestra, para dar las dos clases a la vez, es IROSENE (corre, escala y bucea a sus 70 y tantos).</summary>
-    public const string YogaTeacher = "Andrea", SecondYogaTeacher = "Irosene";
+    /// <summary>MAESTRO DE YOGA del santuario (Hatha y Ashtanga; medita junto al linga en su tiempo libre): JOSEDRILO, el profesional de
+    /// yoga (Berón 2026-11-04: «el profesional de yoga es Josedrilo»; Professions). Antes, Andrea (que pasa a entrenador del gimnasio) y
+    /// Sadhguru (que se fue a su microcosmos). La segunda maestra, para dar las dos clases a la vez, sigue siendo IROSENE (corre, escala
+    /// y bucea a sus 70 y tantos).</summary>
+    public const string YogaTeacher = "Josedrilo", SecondYogaTeacher = "Irosene";
     /// <summary>La sesión de cada clase: Hatha (la guiada, misión «yog_guia») y Ashtanga (el entrenamiento de las 14 h).</summary>
     public const string HathaSession = "Saludo al Sol", AshtangaSession = "Ashtanga Primaria";
 
