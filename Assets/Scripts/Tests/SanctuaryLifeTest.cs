@@ -514,9 +514,10 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         // LOS PISOS DE YOGA (Berón 2026-11-04): sin anillo; cuatro salas (Hatha y Ashtanga, occidental y tradicional), cada una con
         // su tarima en el centro y sus alfombras-esterilla alrededor (lo demás lo mira YogaFloorsTest, grupo 64).
         var yogaHalls = YogaHall.All.Where(h => h != null).ToList();
-        TestProbe.Check("los pisos de yoga: sin anillo, cuatro salas (Hatha y Ashtanga × occidental y tradicional) con su tarima en el centro y sus alfombras-esterilla",
-            GameObject.Find("Anillo_yoga") == null && yogaHalls.Count == 4 && yogaHalls.All(h => h.tarima != null && h.Mats().Count >= 6 && h.Mats().All(m => m.building.StartsWith("Entrenamiento"))),
-            string.Join(" · ", yogaHalls.Select(h => $"{h.Label}: {h.Mats().Count} esterillas")));
+        int yMem = AreaCapacity.Members(), yExpect = 2 * (TrainingCentres.FloorsFor("Yoga Hatha", yMem) + TrainingCentres.FloorsFor("Yoga Ashtanga", yMem));   // (regla J16: los pisos que piden los miembros)
+        TestProbe.Check($"los pisos de yoga: sin anillo, {yExpect} salas (Hatha y Ashtanga × occidental y tradicional, en los pisos que pide la regla J16) con su tarima en el centro y sus alfombras-esterilla",
+            GameObject.Find("Anillo_yoga") == null && yogaHalls.Count == yExpect && yogaHalls.All(h => h.tarima != null && h.Mats().Count >= 6 && h.Mats().All(m => m.building.StartsWith("Entrenamiento"))),
+            string.Join(" · ", yogaHalls.Select(h => $"{h.Label} (piso {h.floorNo}): {h.Mats().Count} esterillas")));
         // PROGRESO (hechizo «progreso»): abre el checklist de historias y misiones, y lo vuelve a cerrar.
         SpellConsole scp = FindAnyObjectByType<SpellConsole>();
         if (scp != null)

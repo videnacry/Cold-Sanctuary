@@ -144,3 +144,14 @@ piso veterinario y no llegaba a la puerta de urgencias en 120 s. Ahora el submar
   elevable. Antes quedaba a 1,26 m, porque su pivote no está en su centro.
 - **La bodega de la ambulancia, a la vista**: estaba dentro del casco bajo (a −1,85 m) y el paciente no se veía por el ventanal. Ahora
   está por encima, a −0,4 m.
+
+**Ronda 5 (2026-11-04): el equipo, por su papel.** Con el reparto nuevo de papeles (docs/personajes-mesocosmos.md), la lanzadera salía
+vacía: el equipo se buscaba por nombre y Andrea pasó a maestro de yoga. `HospitalSubmarine.PickCrew` lo elige ahora **por papel**,
+en este orden:
+1. quien tiene hoy una misión del hospital con papel médico o de enfermería (para un animal, primero las veterinarias: `hos_veterinaria`
+   y `enf_animales`);
+2. quien está ahora en el hospital;
+3. el personal sanitario fijo (Linduarda, quien lleve `VetCare`);
+4. y, si aún falta, el personal más cercano.
+
+Siempre elige gente libre y, en cada grupo, a los más cercanos. El registro dice a quién eligió.

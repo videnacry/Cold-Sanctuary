@@ -80,7 +80,7 @@ public static partial class SampleSceneBuilder
         }
         KitchenProps.C(f, new Vector3(5f, 1.2f, 6f), new Vector3(1.2f, 2.4f, 1.2f), new Color(0.9f, 0.9f, 0.92f), 0f, "Carga_util_cofia");
         for (int s = -1; s <= 1; s += 2) KitchenProps.C(f, new Vector3(s * (S * 0.5f - 1.5f), 4f, 4f), new Vector3(0.4f, 8f, 0.4f), steel, 0f, "Columna_grua");
-        KitchenProps.C(f, new Vector3(0f, 8f, 4f), new Vector3(S - 3f, 0.5f, 0.6f), yel, 0f, "Puente_grua");
+        KitchenProps.C(f, new Vector3(0f, 8f, 4f), new Vector3(S - 3f, 0.5f, 0.6f), yel, 0f, "Grua_puente");   // (no «Puente_…»: SanctuaryLifeTest busca puentes entre plataformas por ese prefijo)
         Label(KitchenProps.C(f, new Vector3(0f, 9f, 4f), Vector3.one * 0.1f, yel, 0f, "Cartel_fabrica"), $"{LaunchSite.FactoryFloor}: etapas, carga útil e integración (ver el microcosmos de Musk)", 1f);
         SubmarineBay(f, null, new Vector3(0f, 0.02f, -6f));
     }
@@ -89,6 +89,9 @@ public static partial class SampleSceneBuilder
     static void FurnishMissionControl(Transform f, float S)
     {
         Color desk = new Color(0.32f, 0.34f, 0.38f), screen = new Color(0.12f, 0.35f, 0.45f), chair = new Color(0.18f, 0.18f, 0.2f);
+        // (2026-11-04) Su «Mat» (el suelo del área, del tamaño del piso): con él, el tanque de virtualización del área busca su sitio con 2 m
+        // libres en todo el piso de 32 m; sin él lo buscaba en 10 × 10 m, entre los puestos (prueba 28: 0,00–0,91 m).
+        KitchenProps.C(f, new Vector3(0f, 0.01f, 0f), new Vector3(S - 1f, 0.02f, S - 1f), new Color(0.3f, 0.32f, 0.35f), 0f, "Mat");
         for (int row = 0; row < 3; row++)
             for (int i = 0; i < 4; i++)
             {

@@ -40,11 +40,19 @@ public class GuardianTreeTest : MonoBehaviour, ITestUnit
             $"tronco {top:0.0} m (Hyperion, el más alto vivo, {GuardianTree.LivingRecordHeight:0.0} m)");
 
         // ── 2. ANCHO ──
-        float wx = 0f, wz = 0f;
-        foreach (Renderer r in trunk) if (r.bounds.min.y - o.y < 2f) { wx = Mathf.Max(wx, Mathf.Abs(r.bounds.max.x - o.x), Mathf.Abs(r.bounds.min.x - o.x)); wz = Mathf.Max(wz, Mathf.Abs(r.bounds.max.z - o.z), Mathf.Abs(r.bounds.min.z - o.z)); }
+        // (2026-11-04) El DIÁMETRO = 2 × la esquina más alejada del eje de las duelas de abajo (con su giro real): con la caja alineada a los
+        // ejes de cada renderer salía 15,9 m (las duelas que miran a los pasadizos no están: ahí van los túneles).
+        float rMax = 0f;
+        foreach (Transform b in g.GetComponentsInChildren<Transform>()) if (b.name == "Tronco" && b.position.y - o.y < 2f)
+            for (int i = 0; i < 8; i++)
+            {
+                Vector3 p = b.TransformPoint(new Vector3((i & 1) == 0 ? -0.5f : 0.5f, (i & 2) == 0 ? -0.5f : 0.5f, (i & 4) == 0 ? -0.5f : 0.5f)) - o;
+                rMax = Mathf.Max(rMax, new Vector2(p.x, p.z).magnitude);
+            }
+        float wx = rMax, wz = rMax;
         int roots = g.GetComponentsInChildren<Transform>().Count(x => x.name == "Raiz");
         TestProbe.Check($"la base es la del árbol más ancho de la historia (≥ 18 m; el castaño de los cien caballos: {GuardianTree.RecordGirth:0.0} m de perímetro), con contrafuertes",
-            2f * Mathf.Min(wx, wz) >= 18f && roots >= 4, $"{2f * wx:0.0} × {2f * wz:0.0} m a ras de suelo, {roots} contrafuertes");
+            2f * Mathf.Min(wx, wz) >= 18f && roots >= 4, $"{2f * rMax:0.0} m de diámetro a ras de suelo, {roots} contrafuertes");
 
         // ── 3. PASADIZOS ──
         float L = GuardianTree.BaseDiameter * 0.5f + 3f, hw = GuardianTree.TunnelWidth * 0.5f;
@@ -73,9 +81,9 @@ public class GuardianTreeTest : MonoBehaviour, ITestUnit
         // ── 4. HIELO Y PANALES ──
         Color ice = new Color(0.55f, 0.72f, 0.80f);
         bool iceBark = trunk.Count > 0 && trunk.All(r => r.sharedMaterial != null && Vector4.Distance(r.sharedMaterial.color, ice) < 0.05f);
-        int hives = g.GetComponentsInChildren<Hive>().Length, perches = g.GetComponentsInChildren<Transform>().Count(x => x.name == "Rama_Plataforma");
+        int hives = g.GetComponentsInChildren<Hive>(true).Length, nidos = g.GetComponentsInChildren<Transform>(true).Count(x => x.name == "Nido_Abejas"), perches = g.GetComponentsInChildren<Transform>().Count(x => x.name == "Rama_Plataforma");
         TestProbe.Check("con los matices de los árboles de hielo: corteza de hielo azulado, posaderos con escarcha y panales de las abejas de las nieves; no caza",
-            iceBark && hives >= 4 && perches >= 10 && g.GetComponent<IceCarnivorousTree>() == null, $"corteza de hielo {iceBark}, {hives} panales, {perches} posaderos");
+            iceBark && hives >= 4 && perches >= 10 && g.GetComponent<IceCarnivorousTree>() == null, $"corteza de hielo {iceBark}, {hives} colmenas en {nidos} nidos, {perches} posaderos");
 
         // ── 5. GUARDIA ──
         int pads = CarpetPad.All.Count(p => p != null && p.building == "Casa del guarda");

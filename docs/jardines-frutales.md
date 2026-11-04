@@ -501,3 +501,9 @@ marca en rojo; las cortinas de fitoplancton, 2 min cada una junto a la puerta de
 **Ronda 3 (2026-11-04): las residencias.** Las macetas de las terrazas de las casas del árbol (ed774ff) se recorren **en alfombra**,
 casa a casa. `Hop` cuenta un vuelo (`FlightSeconds`) entre dos casas distintas: antes contaba la recta andando y la ronda de la
 Residencia no acababa en su tiempo. La prueba 55 elige para su jardinero una ronda de techos.
+
+**Ronda 5 (2026-11-04).**
+- Las **18 casas del árbol** de la Residencia son casas sueltas, a un vuelo una de otra: se reparten en rondas por grupos de casas.
+  La prueba 55 ya no las cuenta como un techo que no debe partirse.
+- La maceta de control de la prueba del goteo es una **con goteo, de un techo**: las de las casas del árbol no llevan goteo, y el
+  mortiño elegido se quedaba sin agua.

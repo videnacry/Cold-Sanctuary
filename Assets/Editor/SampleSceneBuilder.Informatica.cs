@@ -93,7 +93,9 @@ public static partial class SampleSceneBuilder
         blocks.AddRange(Times(2, "SAI", 1.2f, 0.9f, t => { KitchenProps.C(t, new Vector3(0f, 0.95f, 0f), new Vector3(1.2f, 1.9f, 0.85f), new Color(0.25f, 0.27f, 0.3f), 0f, "SAI"); KitchenProps.C(t, new Vector3(0.3f, 1.5f, -0.44f), new Vector3(0.3f, 0.2f, 0.02f), LedGreen, 0f, "Pantalla_SAI"); AreaSeat.Add(t.gameObject, "energía", AreaSeat.Category.Trabajo); }));
         blocks.AddRange(Times(3, "Armario de baterías de litio", 0.8f, 0.8f, t => Tall(t, 0.8f, 0.75f, 1.9f, new Color(0.3f, 0.32f, 0.36f), "Baterias_litio", LedGreen)));
         blocks.Add(new LabBlock("Extinción por gas inerte", 1.6f, 0.6f, t => { for (int i = 0; i < 4; i++) KitchenProps.C(t, new Vector3(-0.6f + i * 0.4f, 0.8f, 0f), new Vector3(0.3f, 1.6f, 0.3f), LabRed, 45f, "Botella_gas_inerte"); }));
-        blocks.AddRange(Times(4, "Puesto de monitorización", 1.6f, 1.0f, t => { MonitorDesk(t, 3); AreaSeat.Add(t.gameObject, "sysadmin", AreaSeat.Category.Trabajo); }));
+        // (2026-11-04, ronda 5) Huella de 2,3 m de fondo: la silla queda 0,85 m detrás de la mesa (con 1,0 m asomaba 0,6 m y el
+        // depósito de reposición quedaba a 1,53 m del puesto 1, grupo 28).
+        blocks.AddRange(Times(4, "Puesto de monitorización", 1.6f, 2.3f, t => { MonitorDesk(t, 3); AreaSeat.Add(t.gameObject, "sysadmin", AreaSeat.Category.Trabajo); }));
         blocks.AddRange(Times(2, "Banco de mantenimiento de la refrigeración", 2.0f, 0.9f, t => { Bench(t, 2f, 0.9f, LabBench); KitchenProps.C(t, new Vector3(-0.5f, 1.05f, 0f), new Vector3(0.4f, 0.2f, 0.3f), HoseBlue, 0f, "Manguera_y_racores"); KitchenProps.C(t, new Vector3(0.5f, 1.05f, 0f), new Vector3(0.35f, 0.15f, 0.35f), LabBlue, 0f, "Filtros_nuevos"); AreaSeat.Add(t.gameObject, "refrigeración", AreaSeat.Category.Trabajo); }));
         blocks.Add(new LabBlock("Armario de repuestos (GPU, ventiladores, mangueras)", 1.2f, 0.6f, t => Cabinet(t, 1.2f, new Color(0.4f, 0.42f, 0.46f), "Repuestos")));
         LogLeft("Informática", PackFloor(g, s, blocks, CarpetKeepOut(s)));

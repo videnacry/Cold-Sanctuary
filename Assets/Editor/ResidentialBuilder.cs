@@ -167,7 +167,25 @@ public static class ResidentialBuilder
                 }
             }
         KitchenProps.C(bed, new Vector3(-(BedWidth * 0.5f + 0.05f), upperTop + 0.25f, 0f), new Vector3(0.05f, 0.05f, BedLength), WoodDark, 0f, "Barandilla");   // lados abiertos de arriba
-        KitchenProps.C(bed, new Vector3(-0.45f, upperTop + 0.25f, -(BedLength * 0.5f + 0.1f)), new Vector3(BedWidth - 0.9f, 0.05f, 0.05f), WoodDark, 0f, "Barandilla");   // al pie, sin tapar el poste
+        KitchenProps.C(bed, new Vector3(0.225f, upperTop + 0.25f, -(BedLength * 0.5f + 0.1f)), new Vector3(2.25f, 0.05f, 0.05f), WoodDark, 0f, "Barandilla");   // al pie: libres el poste (+x) y la boca del tobogán (−x)
+        // EL TOBOGÁN (Berón 2026-11-04: «las literas tienen resbaladera»): por él se BAJA del piso de arriba (se sube trepando por el poste).
+        // Sale del pie de la cama por el lado −x (x −4,3…−3,7 de la casa) y baja en recta 2,6 m hacia −z hasta el suelo (z ≈ −1,45), con
+        // ~32° de pendiente, sus bordes y una pista de frenado plana de 0,6 m. Es parte de la cama (va con ella) y no lleva collider: no
+        // estorba al paso. Queda a 5 m de la alfombra-esterilla.
+        float slideX = -BedWidth * 0.5f + 0.4f, slideZ0 = -(BedLength * 0.5f + 0.1f), run = 2.6f, drop = upperTop + 0.05f - 0.1f;
+        Transform slide = new GameObject("Tobogan").transform; slide.SetParent(bed, false);
+        float len = Mathf.Sqrt(run * run + drop * drop), ang = Mathf.Atan2(drop, run) * Mathf.Rad2Deg;
+        Transform board = KitchenProps.C(slide, new Vector3(slideX, 0.1f + drop * 0.5f, slideZ0 - run * 0.5f), new Vector3(0.6f, 0.04f, len), new Color(0.95f, 0.55f, 0.2f), 0f, "Rampa_tobogan");
+        board.localRotation = Quaternion.Euler(-ang, 0f, 0f);
+        for (int s = -1; s <= 1; s += 2)
+        {
+            Transform edge = KitchenProps.C(slide, new Vector3(slideX + s * 0.31f, 0.22f + drop * 0.5f, slideZ0 - run * 0.5f), new Vector3(0.04f, 0.2f, len), new Color(0.98f, 0.8f, 0.3f), 0f, "Borde_tobogan");
+            edge.localRotation = Quaternion.Euler(-ang, 0f, 0f);
+        }
+        KitchenProps.C(slide, new Vector3(slideX, 0.08f, slideZ0 - run - 0.3f), new Vector3(0.6f, 0.04f, 0.6f), new Color(0.95f, 0.55f, 0.2f), 0f, "Frenada_tobogan");
+        foreach (Collider c in slide.GetComponentsInChildren<Collider>()) Object.DestroyImmediate(c);
+        Transform slideTop = new GameObject("Tobogan_arriba").transform; slideTop.SetParent(slide, false); slideTop.localPosition = new Vector3(slideX, upperTop + 0.05f, slideZ0);
+        Transform slideBottom = new GameObject("Tobogan_abajo").transform; slideBottom.SetParent(slide, false); slideBottom.localPosition = new Vector3(slideX, 0.1f, slideZ0 - run - 0.45f);
         KitchenProps.C(t, new Vector3(-0.4f, 0.55f, 3.2f), new Vector3(0.45f, 0.55f, 0.4f), Wood, 0f, "Mesilla");   // pegada a la cama (van juntas)
         KitchenProps.C(t, new Vector3(2.6f, 1.25f, 3.2f), new Vector3(1.4f, 1.9f, 0.55f), Wood, 0f, "Armario");     // a 2,1 m de la mesilla
         // LAS PLAZAS PARA DORMIR (Bedroom.spots): las 4 de abajo y las 4 de arriba; cada una 0,5 m por debajo de la cara de arriba de su
@@ -182,8 +200,8 @@ public static class ResidentialBuilder
         // Dónde se juntan los de una pijamada: delante de la cama, en el sitio que dejó la litera aparte (x −4,5…−0,85, z −3,5…0,9),
         // a ≥ 2 m de la alfombra-esterilla (x ≥ 1,15).
         var gather = new System.Collections.Generic.List<Transform>();
-        Vector3[] gp = { new Vector3(-4.0f, 0.25f, 0.4f), new Vector3(-3.0f, 0.25f, 0.4f), new Vector3(-2.0f, 0.25f, 0.4f), new Vector3(-1.0f, 0.25f, 0.4f),
-                         new Vector3(-4.0f, 0.25f, -1.2f), new Vector3(-3.0f, 0.25f, -1.2f), new Vector3(-2.0f, 0.25f, -1.2f), new Vector3(-1.0f, 0.25f, -1.2f) };
+        Vector3[] gp = { new Vector3(-3.0f, 0.25f, 0.4f), new Vector3(-2.2f, 0.25f, 0.4f), new Vector3(-1.4f, 0.25f, 0.4f), new Vector3(-0.6f, 0.25f, 0.4f),   // (a ≥ 0,7 m del tobogán, x ≤ −3,7)
+                         new Vector3(-3.0f, 0.25f, -1.2f), new Vector3(-2.2f, 0.25f, -1.2f), new Vector3(-1.4f, 0.25f, -1.2f), new Vector3(-0.6f, 0.25f, -1.2f) };
         for (int k = 0; k < gp.Length; k++) { Transform gt = new GameObject($"Pijamada_{k + 1}").transform; gt.SetParent(t, false); gt.localPosition = gp[k]; gather.Add(gt); }
         // SU ALFOMBRA, que es también su ESTERILLA DE YOGA: lleva a la plataforma central (y se hace yoga encima). Zona de 3 × 3,6 m
         // de x 1,15 a 4,15 y de z −3,45 a 0,15: a 2,15 m de la cama y a 2,8 m del armario.
@@ -204,6 +222,7 @@ public static class ResidentialBuilder
         room.partner = room.owner != null && Partners.TryGetValue(room.owner, out string mate) ? mate : null;
         room.bed = bed; room.sleeps = BedSleeps; room.laneWidth = LaneWidth; room.bedLength = BedLength;   // cama de 4 (2026-11-04)
         room.spots = spots.ToArray(); room.gather = gather.ToArray();   // pijamadas: 4 abajo y 4 arriba en la cama-litera (2026-11-04)
+        room.slideTop = slideTop; room.slideBottom = slideBottom;   // el tobogán para bajar del piso de arriba
         WorldLabel wl = t.gameObject.AddComponent<WorldLabel>(); wl.text = ownerIdx < Shown.Length ? $"Habitación de {Shown[ownerIdx]}" : "Habitación libre (para recién llegados)"; wl.height = 2.5f;
         return t;
     }
@@ -250,6 +269,10 @@ public static class ResidentialBuilder
         float headTop = _ringZ * 0.5f - PillowRing.Walkway, bedCz = headTop - _bedZ * 0.5f, matCz = headTop - HeadZone - S * 0.5f;
         Transform mat = Solid(ring, new Vector3(0f, 0.25f, matCz), new Vector3(S, 0.2f, S), mattressC, "Colchon_colosal");   // cara de arriba a +0,35: 0,2 m sobre la plataforma
         Solid(ring, new Vector3(0f, 0.25f, headTop - HeadZone * 0.5f), new Vector3(S, 0.2f, HeadZone), mattressC, "Colchon_cabecero");
+        // (2026-11-04, grupo 89) El colchón es BLANDO: sin collider se anda sobre la plataforma y uno se hunde 0,2 m en él; con collider,
+        // su escalón de 0,2 m frenaba a algunos al entrar. (PillowRing.Spot sigue dando la cara de arriba; CarpetPad.For ve la plataforma.)
+        Object.DestroyImmediate(mat.GetComponent<Collider>());
+        foreach (Transform hm in ring) if (hm.name == "Colchon_cabecero") Object.DestroyImmediate(hm.GetComponent<Collider>());
         for (int k = 1; k < _ringCells; k++)   // el acolchado marca las celdas
         {
             float o = (k - _ringCells * 0.5f) * PillowRing.CellSize;

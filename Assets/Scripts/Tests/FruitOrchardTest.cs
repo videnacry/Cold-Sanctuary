@@ -102,7 +102,7 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
         TestProbe.Check("cada maceta enseña su agua, abono y salud (barras y etiqueta)", shown == plants.Count, $"{shown}/{plants.Count}");
 
         // ── 4. BIENESTAR ──
-        FruitPlant probe = plants.FirstOrDefault(p => p.bed == null) ?? plants[0];   // (una maceta: en un bancal de tierra el abono y la plaga van más despacio, GardenBed)
+        FruitPlant probe = plants.FirstOrDefault(p => p.bed == null && p.drip && p.GetComponentInParent<Bedroom>() == null) ?? plants[0];   // (una maceta CON GOTEO de un techo, 2026-11-04: las de las casas del árbol no llevan goteo; en un bancal de tierra el abono y la plaga van más despacio, GardenBed)
         float w0 = probe.water, h0 = probe.health;
         probe.water = 0.3f; probe.nutrients = 0.25f; probe.pests = 0.5f; probe.health = 0.5f;
         float n0 = probe.nutrients;
@@ -126,7 +126,7 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
         // árbol cuyas tareas no quepan con sus macetas.
         int roofs = rounds.SelectMany(r => r.legs).Where(l => l.plants.Count > 0).Select(l => l.building).Distinct().Count();
         int treeUnits = rounds.SelectMany(r => r.TreeLegs).Count();
-        var split = rounds.SelectMany(r => r.legs).Where(l => l.plants.Count > 0).GroupBy(l => l.building).Where(g => g.Count() > 1).Select(g => g.Key).ToList();
+        var split = rounds.SelectMany(r => r.legs).Where(l => l.plants.Count > 0 && !l.plants.Any(p => p.GetComponentInParent<Bedroom>() != null)).GroupBy(l => l.building).Where(g => g.Count() > 1).Select(g => g.Key).ToList();   // (2026-11-04) las casas del árbol de la Residencia (18) son casas sueltas a un vuelo una de otra: se reparten por grupos de casas, no son un techo
         TestProbe.Check("con el goteo, las macetas de cada edificio las hace una persona (ningún edificio se parte); las máscaras y el fitoplancton de cada árbol, en tramos que caben en una ronda, todos repartidos",
             rounds.Count <= roofs + treeUnits && split.Count == 0 && ArbolCampos.All.Where(a => a != null).All(a => FruitGardener.TreeTaskList(a).masks.All(m => rounds.SelectMany(r => r.TreeLegs).Any(l => l.masks.Contains(m))))
             && rounds.Count <= Mathf.CeilToInt(rounds.Sum(r => r.hours) / (FruitGardener.RoundTarget * 0.6f)),   // (2026-11-04: las tareas de un árbol van en tramos que caben en una ronda; todas sus puertas, en alguno; y las rondas, bien llenas)
