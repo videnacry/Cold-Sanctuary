@@ -222,6 +222,7 @@ en el doc de su tema; aquí no se repite.
 | J15 | **El ring de almohadas cabe a todos los residentes**: colchón de n × n celdas de 2,5 m con n = ⌈√residentes⌉, borde blando, almohadones contra el cabecero, 2 almohadas sueltas por luchador, 2 m de paso y su pista de alfombras; si llegan más residentes, el validador falla y al reconstruir crece. | Que se enfrenten todos a la vez (Berón 2026-11-04). | `PillowFightTest` (89), `PillowRing.Validate` | [guerra-de-almohadas.md](guerra-de-almohadas.md) |
 | J16 | **Los centros de entrenamiento y de ocio dan servicio a todos los miembros a la vez; si los pisos de un área no llegan, se añade otro piso de la misma área.** **Es la MISMA regla que S13**: un solo validador, `AreaCapacity` (`Check` para los pisos, `CheckActivities` para el catálogo del horario libre; cuenta también el ring de almohadas) (Berón 2026-11-04: «si las 2 de yoga existentes no son suficientes se crea una más y lo mismo con el dojo y demás áreas de estudio y entrenamiento»). Cada centro lleva ⌈miembros / plazas de un piso⌉ pisos (`TrainingCentres.FloorsFor`, miembros = la lista del personal), apilados en su edificio-árbol con la hélice, los 22 m, los anillos, las alfombras y las máscaras de cualquier piso; las clases de Ashtanga abren la siguiente sala cuando una se llena; el ocio «para todos» tiene plazas para todos (crías y textil van por turnos, justificado). El Aula lleva la misma regla en su constructor. | Que nadie se quede fuera de una actividad común. | `CapacidadPisosTest` (75, con `AreaCapacity`: gimnasio, yoga por estilo, calistenia, dojo, ballet, ring y Aula), 89 | [centros-para-todos.md](centros-para-todos.md) |
 | J17 | **Pijamadas en las casas del árbol**: cada casa duerme a 8 en UNA sola cama-litera de dos pisos de 4 (sin escalera: se trepa por su poste; los que viven allí, abajo; los invitados, primero abajo y luego arriba); una vez por semana (viernes, 21 h) hay pijamada en la casa de un anfitrión que rota cada semana; van el anfitrión, su pareja y los que menos llevan, hasta llenar la casa; esa noche duermen allí y a la mañana siguiente vuelven a su casa. | Que las camas grandes se usen para estar juntos (Berón 2026-11-04). | `SleepoverTest` (92) | [pijamadas.md](pijamadas.md) |
+| J18 | **Las tareas y las iniciaciones del jugador se hacen con «E» en los sitios marcados** (el modelo de Ambrosio): cada misión de su jornada es una secuencia de pasos con marcador «E — acción» en el mueble de su puesto, aviso en el sitio, pista de ruta, progreso y cierre; la E en el sitio hace el gesto, da el objeto y pasa al siguiente. Cuenta como hecha **solo con todos los pasos** (o virtualizada); si la ignora, **caduca sin efecto**: nadie (ni la jornada ni la IA) la hace por él. Las iniciaciones de cocina, huerto y yoga ofrecen cada paso como «E — paso» en el sitio del alumno. Una misión nueva lleva sus pasos en `PlayerTasks` (si no, salen los genéricos de su clase). | Que el jugador haga su trabajo él mismo, como en Ambrosio (Berón 2026-11-04). | `PlayerTasksTest` (grupo 96: catálogo y marcadores de todas las misiones, 3 misiones, caducar, iniciaciones de huerto y cocina), `JornadaTest` (50) | [tareas-del-jugador.md](tareas-del-jugador.md) |
 
 ## 10. Pruebas y flujo de trabajo
 
@@ -320,13 +321,13 @@ reconstruir. Vale para TODOS los pisos, no solo el hospital. Cada piso del santu
 ## 12. Recuento y reglas sin comprobación automática
 
 
-**Total: 127 reglas** (S 13 · F 12 · T 13 · C 7 · G 8 · H 8 · M 34 · A 5 · J 17 · W 9 = 126 —W9, la de revisar jornadas y horario al
+**Total: 128 reglas** (S 13 · F 12 · T 13 · C 7 · G 8 · H 8 · M 34 · A 5 · J 18 · W 9 = 127 —W9, la de revisar jornadas y horario al
 cambiar un piso, va en §11—, más la regla de sincronización de §11). (Recontado por el probador al integrar yoga, charlas, micro3, personajes, cohetes y pisos;
 micro3, 2026-11-04.)
 
 **Pendientes de implementar (pedidos del 2026-11-04), 2:** M9 (los mapas a mano de todas las historias menos Angostura, que está hecho) y el gancho de
 §11 para los demás pisos (el aviso «REVISAR MICROCOSMOS» al reconstruir ya los cubre). Hechos en código el 2026-11-04, a falta
-de la prueba en vivo: F2, F3, C7, H8, M13, M30, M32, M33, M34 y el aviso de §11 (micro3); F7–F12 (yoga, grupo 64); J7 (charlas,
+de la prueba en vivo: F2, F3, C7, H8, M13, M30, M32, M33, M34 y el aviso de §11 (micro3); F7–F12 (yoga, grupo 64); J18 (tareas con E, grupo 96); J7 (charlas,
 grupo 88).
 
 **Solo en docs (sin validador ni prueba), además de las pendientes:** S8 (medida humana), T12 (anillo en U), C4 (selector por
@@ -345,4 +346,4 @@ realista), J6 (respeto a las figuras reales), J10 (temas del contexto) y las de 
 [microcosmos-reglas-edificacion.md](microcosmos-reglas-edificacion.md) · [microcosmos-pueblos-mapas.md](microcosmos-pueblos-mapas.md) ·
 [microcosmos-actividades.md](microcosmos-actividades.md) · [microcosmos-famosos.md](microcosmos-famosos.md) · [luz-microcosmos.md](luz-microcosmos.md) ·
 [grupos-de-animales.md](grupos-de-animales.md) · [jornada-y-rotacion.md](jornada-y-rotacion.md) · [horario-libre.md](horario-libre.md) ·
-[personajes-mesocosmos.md](personajes-mesocosmos.md) · [conversaciones.md](conversaciones.md) · [conventions.md](conventions.md) · [checklist.md](checklist.md)
+[personajes-mesocosmos.md](personajes-mesocosmos.md) · [conversaciones.md](conversaciones.md) · [tareas-del-jugador.md](tareas-del-jugador.md) · [conventions.md](conventions.md) · [checklist.md](checklist.md)
