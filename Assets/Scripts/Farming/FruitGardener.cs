@@ -110,7 +110,7 @@ public class FruitGardener : MonoBehaviour
         if (_rounds != null && _roundsFor == key) return _rounds;
         _roundsFor = key;
         _rounds = new List<Round>();
-        var byRoof = FruitPlant.All.GroupBy(p => p.building).ToDictionary(g => g.Key, g => TipOrder(g.OrderBy(p => p.order).ToList()));
+        var byRoof = FruitPlant.All.Where(p => !p.HomeTended).GroupBy(p => p.building).ToDictionary(g => g.Key, g => TipOrder(g.OrderBy(p => p.order).ToList()));   // (2026-11-04) las macetas de las casas del árbol las cuida su residente (FruitPlant.HomeTended)
         // LOS EDIFICIOS-ÁRBOL y sus tareas (Berón 2026-11-03): revisar las máscaras de oxígeno y cuidar el fitoplancton. Las hace el
         // jardinero de ese edificio (si no cabe en su ronda, otro jardinero del mismo edificio); el Árbol de los Campos, sin
         // frutales, entra en el camino solo por sus tareas.
@@ -516,6 +516,9 @@ public class FruitGardener : MonoBehaviour
         if (_round == null || _phase == Phase.Done) return;
         // Las NECESIDADES van antes (baño, comer, dormir), como el guardia.
         if (TryGetComponent(out ActionQueue q) && q.Own.Count > 0 && (q.Own[0] is ToiletSpell || q.Own[0] is DineSpell || q.Own[0] is SleepSpell || q.Own[0] is EatSpell)) return;
+        // TOPE DE LA RONDA (2026-11-04): su misión dura 3 h; si se alarga (una maceta que no se alcanza, tareas de la semana lentas), a las
+        // 3,2 h la da por terminada y lo dice: lo que queda, al día siguiente.
+        if (Time.time - _startedAt > (MaxRoundHours + 0.2f) * SecondsPerGameHour && !(CurLeg != null && CurLeg.TreeTasks)) { if (CurLeg != null && !roofsDone.Contains(CurLeg.building)) roofsDone.Add(CurLeg.building); Debug.LogWarning($"[Frutales] «{name}»: «{MissionId}» pasa de {MaxRoundHours + 0.2f:0.0} h: la da por terminada (va por «{Doing}»)."); Finish(); return; }
         Leg leg = CurLeg;
         if (leg == null) { Finish(); return; }
         if (leg.TreeTasks) { TreeUpdate(leg); return; }
@@ -560,7 +563,7 @@ public class FruitGardener : MonoBehaviour
             }
             case Phase.ToExtra:
             {
-                if (_extras.Count == 0) { EndLeg(); return; }
+                if (_extras.Count == 0 || Time.time > _extraUntil + RealSecondsForGameMinutes(5f)) { _extras.Clear(); Hold(false); EndLeg(); return; }   // (2026-11-04) las tareas de la semana no pasan de su tiempo: lo que no cabe, otro día
                 FruitPlant p = _extras[0];
                 if (p == null) { _extras.RemoveAt(0); return; }
                 Doing = $"Va al {p.Name} a {ExtraWhat(p)} (techo de {leg.building})";
