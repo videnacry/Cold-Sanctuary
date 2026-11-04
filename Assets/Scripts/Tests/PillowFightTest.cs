@@ -28,6 +28,7 @@ public class PillowFightTest : MonoBehaviour, ITestUnit
     }
 
     static void Log(string s) => Debug.Log("[Almohadas] " + s);
+    const string ResidenciaName = "Residencia";   // (ResidentialBuilder.Name, en el Editor)
 
     public IEnumerator Run()
     {
@@ -58,6 +59,31 @@ public class PillowFightTest : MonoBehaviour, ITestUnit
             TestProbe.Check("la pista queda a ≥ 2 m de la cama colosal (regla de paso)", gap >= 1.9f, $"{gap:0.00} m");
             TestProbe.Check("se llega en alfombra desde la plataforma central", CarpetPad.All.Any(p => p != null && p != pad && pad.FliesTo(p) && p.building == pad.building && p.floor == 1));
         }
+        // LAS ALFOMBRAS NO LO ATRAVIESAN: de cada pista de la plataforma central (debajo del ring) a cada casa del árbol y a la pista
+        // del propio ring, ningún punto del vuelo (FlyingCarpet.Legs) cae dentro de su caja.
+        Bounds box = ring.Box();
+        var central = CarpetPad.All.Where(p => p != null && p.building == ResidenciaName && p.floor == 1).ToList();
+        var targets = CarpetPad.All.Where(p => p != null && (p.kind == CarpetPad.Kind.Habitacion || p.transform.IsChildOf(ring.transform))).ToList();
+        int flights = 0, through = 0; string firstBad = "";
+        foreach (CarpetPad a in central)
+            foreach (CarpetPad b in targets)
+            {
+                flights++;
+                foreach (var (l0, l1, arc) in FlyingCarpet.Legs(a.transform.position, b.transform.position, 26f))
+                {
+                    float top = Mathf.Max(l0.y, l1.y) + (arc ? 26f : 0f);
+                    bool hit = false;
+                    for (int i = 0; i <= 60 && !hit; i++)
+                    {
+                        float u = i / 60f, s = Mathf.SmoothStep(0f, 1f, u);
+                        Vector3 p = Vector3.Lerp(l0, l1, s);
+                        if (arc) p.y = Mathf.Lerp(l0.y, l1.y, s) + Mathf.Sin(u * Mathf.PI) * (top - Mathf.Max(l0.y, l1.y));
+                        hit = box.Contains(p);
+                    }
+                    if (hit) { through++; if (firstBad.Length == 0) firstBad = $"{a.displayName} → {b.displayName}"; break; }
+                }
+            }
+        TestProbe.Check("las alfombras no atraviesan el ring (salen por debajo, suben por fuera o por encima)", flights > 0 && through == 0, $"{through}/{flights} vuelos lo cruzan{(firstBad.Length > 0 ? ": " + firstBad : "")}");
         int spotsOn = Enumerable.Range(0, ring.Capacity).Count(i => ring.OnMattress(ring.Spot(i)));
         TestProbe.Check("todas las celdas están sobre el colchón", spotsOn == ring.Capacity, $"{spotsOn}/{ring.Capacity}");
         Log($"ring: {ring.cells} × {ring.cells}, caben {ring.Capacity}, residentes {residents}, almohadas {(ring.pillows != null ? ring.pillows.childCount : 0)}");

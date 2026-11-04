@@ -23,20 +23,29 @@ public static partial class SampleSceneBuilder
     static readonly float[] YogaMatRowsZ = { -5f, 0f, 5f };
 
     /// <summary>Amuebla los dos pisos de yoga: el de Hatha (<paramref name="area"/>) y el de Ashtanga (<paramref name="ashtanga"/>).</summary>
-    static void FurnishYoga(Transform area, Transform ashtanga, Vector2 size)
+    static void FurnishYoga(Transform area, Transform ashtanga, Vector2 size) =>
+        FurnishYogaFloors(new List<Transform> { area }, ashtanga != null ? new List<Transform> { ashtanga } : new List<Transform>(), size);
+
+    /// <summary>(2026-11-04, regla J16) Amuebla TODOS los pisos de yoga: los de Hatha (el primero es el de la Sala de Yoga, con sus aseos
+    /// puestos fuera) y los de Ashtanga, cuantos pidan los miembros (TrainingCentres). Cada piso, sus dos salas; su capacidad (las
+    /// esterillas del piso) la cuenta AreaCapacity (regla S13 / J16).</summary>
+    static void FurnishYogaFloors(List<Transform> hatha, List<Transform> ashtanga, Vector2 size)
     {
-        var halls = new List<YogaHall>
+        var halls = new List<YogaHall>();
+        void Build(List<Transform> floors, YogaHall.Style style, string centre)
         {
-            BuildYogaHall(area, YogaHall.Style.Hatha, YogaHall.Version.Occidental, -YogaHallHalfX),
-            BuildYogaHall(area, YogaHall.Style.Hatha, YogaHall.Version.Tradicional, YogaHallHalfX),
-        };
-        if (ashtanga != null)
-        {
-            halls.Add(BuildYogaHall(ashtanga, YogaHall.Style.Ashtanga, YogaHall.Version.Occidental, -YogaHallHalfX));
-            halls.Add(BuildYogaHall(ashtanga, YogaHall.Style.Ashtanga, YogaHall.Version.Tradicional, YogaHallHalfX));
-            // Sus aseos, como los del piso de Hatha: contra el borde +Z, esquina −X (en la sala occidental, junto a su estante).
-            Aseos(ashtanga, new Vector3(-size.x * 0.5f + 3.1f, 0.1f, size.y * 0.5f - 0.8f), 180f);
+            for (int k = 0; k < floors.Count; k++)
+            {
+                YogaHall o = BuildYogaHall(floors[k], style, YogaHall.Version.Occidental, -YogaHallHalfX), t = BuildYogaHall(floors[k], style, YogaHall.Version.Tradicional, YogaHallHalfX);
+                o.floorNo = t.floorNo = k + 1;
+                halls.Add(o); halls.Add(t);
+                if (style == YogaHall.Style.Ashtanga || k > 0)   // sus aseos (los del primer piso de Hatha los pone quien amuebla el área)
+                    Aseos(floors[k], new Vector3(-size.x * 0.5f + 3.1f, 0.1f, size.y * 0.5f - 0.8f), 180f);
+                Debug.Log($"[Yoga] {centre}, piso {k + 1}: {o.Mats().Count + t.Mats().Count} esterillas.");
+            }
         }
+        Build(hatha, YogaHall.Style.Hatha, "Yoga Hatha");
+        if (ashtanga.Count > 0) Build(ashtanga, YogaHall.Style.Ashtanga, "Yoga Ashtanga");
         else Debug.LogError("[Yoga] falta la planta de Ashtanga: solo se amuebla el piso de Hatha.");
         foreach (YogaHall h in halls)
         {
@@ -45,6 +54,17 @@ public static partial class SampleSceneBuilder
             else Debug.Log($"[Yoga] {why}.");
         }
         Debug.Log($"[Yoga] Pisos de yoga: Hatha (piso de la Sala de Yoga) y Ashtanga (planta propia), {halls.Count} salas, sin anillo.");
+    }
+
+    /// <summary>(regla J16 / S13) Los PUESTOS de un piso de un centro de entrenamiento para la regla de capacidad (AreaCapacity): un
+    /// AreaSeat con las plazas de su ficha (TrainingCentres). El gimnasio y el yoga no lo llevan: AreaCapacity cuenta sus máquinas y
+    /// sus esterillas una a una.</summary>
+    static void Centre(Transform floor, string centre, int floorNo)
+    {
+        TrainingCentres.Spec? spec = TrainingCentres.Of(centre);
+        if (!spec.HasValue || string.IsNullOrEmpty(spec.Value.activity)) return;
+        Transform t = new GameObject($"Puestos_{centre}_{floorNo}").transform; t.SetParent(floor, false);
+        AreaSeat.Add(t.gameObject, spec.Value.activity, AreaSeat.Category.Entrenamiento, spec.Value.perFloor);
     }
 
     /// <summary>Una SALA de un piso de yoga, centrada en x = <paramref name="cx"/> del piso.</summary>

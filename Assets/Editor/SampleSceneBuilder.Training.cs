@@ -38,7 +38,7 @@ public static partial class SampleSceneBuilder
     /// regulables, 3 jaulas de sentadillas, 2 press de banca planos y 1 inclinado, Smith, plataforma de peso muerto, árboles de
     /// discos y soporte de barras. 2 m libres entre huellas. Sin entreplanta: se cambia de piso en alfombra (la zona de
     /// alfombras, en <see cref="GymCarpetSpot"/>, queda libre).</summary>
-    static void FurnishGym(Transform area, Vector2 size)
+    static void FurnishGym(Transform area, Vector2 size, int copyBase = 0)   // copyBase: la primera copia de cada máquina en este piso (regla J16: un piso más del gimnasio, copias 3, 4, 5…)
     {
         Transform r = new GameObject("Gimnasio").transform; r.SetParent(area, false); r.localPosition = new Vector3(0f, 0.1f, 0f);
         KitchenProps.C(r, new Vector3(0f, 0.01f, 0f), new Vector3(size.x - 0.4f, 0.02f, size.y - 0.4f), TRubber, 0f, "Suelo_caucho");
@@ -61,7 +61,7 @@ public static partial class SampleSceneBuilder
             {
                 int t = rowTypes[row, j / 3], c = j % 3;
                 Vector2 o = GymMachineCenter[t];
-                GymMachine(r, $"{types[t]} {c + 1}", t, c, new Vector3(rowX[row][j] - o.x, 0f, rowZ[row] - o.y), j == 0 ? 1f : -1f);   // la primera columna, junto al borde: se llega por su derecha
+                GymMachine(r, $"{types[t]} {copyBase + c + 1}", t, copyBase + c, new Vector3(rowX[row][j] - o.x, 0f, rowZ[row] - o.y), j == 0 ? 1f : -1f);   // la primera columna, junto al borde: se llega por su derecha
             }
         WorldLabel ml = KitchenProps.Root(r, "Zona_maquinas", new Vector3(-7.5f, 0f, 4f)).gameObject.AddComponent<WorldLabel>(); ml.text = "Máquinas de placas"; ml.height = 3.2f;
 

@@ -35,8 +35,29 @@ public class PillowRing : MonoBehaviour
     public Transform pillows;
 
     public static readonly List<PillowRing> All = new List<PillowRing>();
-    void OnEnable() => All.Add(this);
+    void OnEnable()
+    {
+        All.Add(this);
+        if (!_noFly) { _noFly = true; FlyingCarpet.NoFlyProviders.Add(NoFlyBoxes); }   // las alfombras no lo atraviesan (FlyingCarpet.Legs)
+    }
     void OnDisable() => All.Remove(this);
+    static bool _noFly;
+
+    /// <summary>La caja del ring en el mundo: su plataforma, la cama colosal y el cabecero (sin las columnas, que bajan al suelo, ni
+    /// sus alfombras). Las alfombras que salen de la plataforma central, justo debajo, salen por debajo hasta fuera de ella.</summary>
+    public Bounds Box()
+    {
+        Bounds b = new Bounds(transform.position, Vector3.zero); bool any = false;
+        foreach (Renderer r in GetComponentsInChildren<Renderer>(true))
+        {
+            if (r.name.StartsWith("Columna") || r.GetComponentInParent<CarpetPad>() != null || r.GetComponentInParent<FlyingCarpet>() != null) continue;
+            if (!any) { b = r.bounds; any = true; } else b.Encapsulate(r.bounds);
+        }
+        if (!any) b = new Bounds(transform.position + Vector3.up, new Vector3(Side + 6f, 3f, Side + 10f));
+        return b;
+    }
+
+    static IEnumerable<Bounds> NoFlyBoxes() { foreach (PillowRing r in All) if (r != null) yield return r.Box(); }
 
     /// <summary>Celdas por lado para <paramref name="fighters"/> luchadores: ⌈√n⌉ (al menos 1).</summary>
     public static int CellsFor(int fighters) => Mathf.Max(1, Mathf.CeilToInt(Mathf.Sqrt(Mathf.Max(1, fighters)) - 1e-4f));
@@ -86,8 +107,7 @@ public class PillowRing : MonoBehaviour
     {
         Scene s = gameObject.scene;
         int residents = Residents(s);
-        int members = 1;   // la Magnate
-        if (WorkdayDirector.Instance != null) members += WorkdayDirector.Instance.staff.Length;
+        int members = AreaCapacity.Members();   // los de la regla de capacidad (S13 / J16): la lista del personal
         int need = Mathf.Max(residents, members);
         int loose = pillows != null ? pillows.childCount : 0;
         var bad = new List<string>();
