@@ -541,14 +541,20 @@ public class LeisureDirector : MonoBehaviour
         if (r.touchedLin && g.TryGetComponent(out Linduarda lin)) lin.enabled = r.linWas;
         if (r.st != null && r.st.occupant == (Object)g) r.st.occupant = null;
         SetStatus(g, r, null);
-        Records.Add(new Record
-        {
-            who = g.name, group = r.group.name, micro = r.group.micro, activity = r.entry.activity.title, venue = r.venue != null ? r.venue.title : "—",
-            day = r.entry.day, slot = r.entry.slot, arrived = r.Arrived, fallback = r.fallback, walked = r.walked, flown = r.flown,
-            performed = r.performed, blocked = r.blockedFor, since = Time.time - r.since, jumps = r.jumps, blockedBy = r.blockedBy
-        });
+        Records.Add(ToRecord(g, r));
         if (Records.Count > 4000) Records.RemoveRange(0, 1000);
     }
+
+    /// <summary>El registro de una franja (en marcha o terminada).</summary>
+    static Record ToRecord(GameObject g, Run r) => new Record
+    {
+        who = g.name, group = r.group.name, micro = r.group.micro, activity = r.entry.activity.title, venue = r.venue != null ? r.venue.title : "—",
+        day = r.entry.day, slot = r.entry.slot, arrived = r.Arrived, fallback = r.fallback, walked = r.walked, flown = r.flown,
+        performed = r.performed, blocked = r.blockedFor, since = Time.time - r.since, jumps = r.jumps, blockedBy = r.blockedBy
+    };
+
+    /// <summary>Los registros de las franjas que AÚN están en marcha (sin terminarlas): las pruebas miden también lo que va por la mitad.</summary>
+    public List<Record> Snapshot() { var l = new List<Record>(); foreach (var kv in _runs) if (kv.Key != null) l.Add(ToRecord(kv.Key, kv.Value)); return l; }
 
     /// <summary>Termina todas las franjas en marcha del grupo (o de todos): cada uno, de pie y con su merodeo de vuelta.</summary>
     public void ReleaseAll(Group gr = null)

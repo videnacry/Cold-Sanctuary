@@ -528,7 +528,7 @@ Decisión del usuario (2026-09-11): **diseñar a fondo primero** (hecho) → **e
 - [x] Elon Musk, Goku, Bill Gates, Warren Buffett, MacKenzie Scott e Ibrahim Traoré: papel, aspecto de cubos, casa del árbol (3.ª casa por árbol) y jornada.
 - [x] Prueba `HorarioLibreTest` (grupo 65).
 - [x] Retratos de los seis (Temp/Horario/Mesocosmos.png y MesocosmosCaras.png) con la escena reconstruida (Blockout + microcosmos) y guardada.
-- [ ] Verificación en vivo de los grupos 65, 28, 62 y 50 (línea base 196/1) y fotos del panel: la hace el tester único.
+- [ ] Verificación en vivo de los grupos 65, 28, 62 y 50 (línea base 196/1) y fotos del panel: la hace el tester único. 1.ª pasada (2026-11-04): 65 = 30/1 (Kapilavastu sin franjas: el reloj no llegaba a las 16 h con la escena cargada; corregido con tope de tiempo mayor y las franjas en marcha) y 50 = 148/2 (Elon Musk no llegaba a la escalera horizontal; corregido: dobla las rodillas). Repetir 65 y 50.
 - [ ] Ballet, Dojo y Calistenia entran solos en el catálogo al terminarse sus obras (hoy el baile y las artes marciales van al Gimnasio).
 - [ ] Horario libre de Kushal como sugerencia (hoy el jugador es libre y no entra en el reparto).
 

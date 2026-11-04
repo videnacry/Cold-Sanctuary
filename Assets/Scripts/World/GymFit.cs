@@ -256,7 +256,7 @@ public static class GymFit
         Equipment eq = Of(st);
         int feet = Feet(st.type, b), hands = Hands(st.type, b);
         bool legacy = (int)st.type <= (int)GymMachineType.BicepsTriceps;
-        float dy = 0f;
+        float dy = 0f, tuck = 0f;
         // Ningún pie metido en nada: si lo está, el cuerpo sube lo que haga falta (hasta 4 veces: al subir, el pie puede dar
         // con otra pieza, el reposapiés justo encima del bastidor).
         void Unsink()
@@ -303,7 +303,15 @@ public static class GymFit
                 float sum = 0f; int n = 0;
                 foreach (var (hand, target) in HandTargets(rig, eq, hands, 0.9f)) { sum += target.y - hand.position.y; n++; }
                 if (n > 0) dy = sum / n;
-                if (minGap < float.MaxValue && minGap + dy < 0f) dy = -minGap;   // ningún pie dentro del suelo
+                // QUIEN ES ALTO (Elon Musk, 1,88 m, en la escalera horizontal a 2,4 m: GymUsabilityTest 2026-11-04) llega a la barra con los
+                // pies ya en el suelo: en vez de quedarse con las manos 15 cm por encima del agarre, baja hasta él y DOBLA LAS RODILLAS
+                // (como hace cualquiera alto colgado de una barra baja). Hasta 0,4 m; más, el cuerpo se queda sobre el suelo como antes.
+                if (minGap < float.MaxValue && minGap + dy < 0f)
+                {
+                    float deficit = -(minGap + dy);
+                    if (deficit <= 0.4f && dy >= -0.8f) tuck = deficit + 0.03f;
+                    else dy = -minGap;   // ningún pie dentro del suelo
+                }
             }
             else if (feet > 0 && minGap < float.MaxValue)   // el pie más bajo, sobre lo que pisa
             {
@@ -314,6 +322,7 @@ public static class GymFit
             dy = Mathf.Clamp(dy, -0.8f, 0.8f);
             if (Debug_) Debug.Log($"[GymFitDbg] f{Time.frameCount} {st.name} {g.name} b={b} feet={feet} minGap={minGap:0.000} dy={dy:0.000} legacy={legacy} planta={LowestY(Segment(rig, BodyPart.FootLeft)) - st.SeatPoint(b ? 1f : 0f).y:0.000}");
             if (Mathf.Abs(dy) > 1e-4f) g.transform.position += Vector3.up * dy;
+            if (tuck > 0f) TuckLegs(rig, g.transform, tuck);   // colgado y alto: rodillas dobladas, pies sobre el suelo
             // CURL FEMORAL (tumbado boca abajo): la postura apoya en el puesto su punto más bajo, que son las MANOS colgando,
             // y el cuerpo flotaba sobre el banco con las manos a la altura del tablero (a 0,2 m de los asideros, que están
             // más abajo). El tronco y las piernas se apoyan en el banco; las manos bajan luego a los asideros por IK.
@@ -645,6 +654,20 @@ public static class GymFit
     /// <summary>BICIS: con la pierna estirada, quien es alto metía la punta del pie en el volante (y el ajuste lo subía 0,3 m
     /// del asiento: las manos ya no llegaban a las asas). La rodilla se dobla más —el pie se acerca a la cadera, de 3 en 3 cm,
     /// hasta 0,3 m— hasta que ni el pie ni la pierna entran en nada (los pedales luego van bajo el pie).</summary>
+    /// <summary>COLGADO Y ALTO: sube cada pie <paramref name="up"/> m (y algo hacia atrás) doblando la rodilla con IK, para que no
+    /// atraviese el suelo cuando las manos ya están en el agarre.</summary>
+    static void TuckLegs(CreatureRig rig, Transform self, float up)
+    {
+        foreach (bool left in new[] { true, false })
+        {
+            BodyPart pt = left ? BodyPart.ThighLeft : BodyPart.ThighRight, ps = left ? BodyPart.ShinLeft : BodyPart.ShinRight, pf = left ? BodyPart.FootLeft : BodyPart.FootRight;
+            Transform th = rig.Get(pt), sh = rig.Get(ps), foot = rig.Get(pf);
+            if (th == null || sh == null || foot == null) continue;
+            TwoBoneIK.Solve(th, sh, foot, foot.position + Vector3.up * up - self.forward * (up * 0.6f), sh.position + self.forward * 0.4f, 1f);
+            rig.LockPose(pt); rig.LockPose(ps);
+        }
+    }
+
     static void RetractFeet(CreatureRig rig, Equipment eq, Transform self)
     {
         var solids = eq.solid.Where(t => t != null && !eq.withFeet.Contains(t)).ToList();
