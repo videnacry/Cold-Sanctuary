@@ -20,7 +20,7 @@ Las reglas están en el [manual de diseño](manual-de-diseno.md): F2, F3, C7, H8
 | `FloorForms.MicroName` | `Assets/Scripts/World/FloorForms.cs`, `SampleSceneBuilder.FloorForms.cs` | La tercera forma («Forma_microcosmos»): oculta en el santuario con su inventario; el aviso de microcosmos por revisar. |
 | `MicroCivicScale`, `MicroSeat`, `PublicSeatSpell` | `Assets/Scripts/Microcosmos/MicroSeat.cs` | Las medidas del mobiliario cívico, los asientos utilizables y sentarse en ellos. |
 | `MicroStatue` | `Assets/Editor/MicroStatue.cs` | La figura de insecto-humano de piedra de las estatuas. |
-| Pruebas 64 y 67 | `Assets/Scripts/Tests/MicroSueloTest.cs` | Casos sin escenas (64) y los microcosmos construidos, uno a uno (67). |
+| Pruebas 68 y 67 | `Assets/Scripts/Tests/MicroSueloTest.cs` | Casos sin escenas (68) y los microcosmos construidos, uno a uno (67). |
 
 ---
 
@@ -135,7 +135,7 @@ centrales; el gotero, antenas; la silla de ruedas, estaciones; el lavabo, lagos�
 cada piso.
 - **Sincronía**: `MicroFloorElements.Missing(piso del santuario, forma de microcosmos)` da las claves del piso sin su versión de
   microcosmos. Al construir se avisa (`[Forma microcosmos] … sin su versión de microcosmos`); la prueba 67 lo exige con el piso del
-  santuario cargado; la 64 lo prueba con casos.
+  santuario cargado; la 68 lo prueba con casos.
 - **Dependencias**: `MicroFloorElements.DependentsOf(piso)` (de `MicroFloors.Table`) y el registro local
   `UserSettings/MicroFloorDeps.txt` (escena, piso, firma, inventario). Si el piso cambia, `EnsureFloorForms` y el menú
   «Pisos: microcosmos por revisar» avisan qué microcosmos reconstruir y qué cambió (manual §11).
@@ -177,7 +177,7 @@ la humana se apaga). La estela maya y el león guardián chino no son figuras hu
 
 ## Pruebas y fotos
 
-- **64 · `MicroSueloTest`** (sin escenas): una planta bajo una losa se ve enterrada y Settle la apoya; una dentro de una pata se ve y
+- **68 · `MicroSueloTest`** (sin escenas): una planta bajo una losa se ve enterrada y Settle la apoya; una dentro de una pata se ve y
   se quita; el grosor de la tierra; el catálogo (las filas de Berón, «pilar», «silla de ruedas», las claves); el inventario, la firma
   y la sincronía; quién depende del hospital; el canto de la alfombra; plato, olla, estatua y fuente; el banco sin y con MicroSeat;
   el asiento libre más cercano; la estatua humana frente a la de insecto-humano.

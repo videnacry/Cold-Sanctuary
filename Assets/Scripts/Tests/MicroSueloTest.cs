@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// PRUEBA 64 · EL SUELO Y LOS ELEMENTOS DE LOS MICROCOSMOS, SIN CARGAR ESCENAS (docs/microcosmos-suelo-y-elementos.md; Berón
+/// PRUEBA 68 · EL SUELO Y LOS ELEMENTOS DE LOS MICROCOSMOS, SIN CARGAR ESCENAS (docs/microcosmos-suelo-y-elementos.md; Berón
 /// 2026-11-04). Casos pequeños para cada pedido:
 /// 1. la FLORA ENCIMA: una planta bajo una losa se ve enterrada; Settle la sube; una planta dentro de un collider se ve y se quita;
 /// 2. la CAPA DE TIERRA: 10 cm (MicroGround.SoilThickness);
@@ -19,7 +19,7 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class MicroSueloTest : MonoBehaviour, ITestUnit
 {
-    public int Group => 64;   // tras las reglas de edificación (63); no carga escenas
+    public int Group => 68;   // no carga escenas (el 64 es YogaFloorsTest)
     public bool ParallelSafe => false;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
