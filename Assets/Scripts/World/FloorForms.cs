@@ -2,7 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LAS DOS FORMAS DE CADA PISO DEL SANTUARIO (docs/construcciones-elevadas.md §Formas del piso; Berón 2026-11-03: «todos los pisos
+/// LAS TRES FORMAS DE CADA PISO DEL SANTUARIO (la tercera, la de MICROCOSMOS, desde 2026-11-04: <see cref="MicroName"/>,
+/// docs/microcosmos-suelo-y-elementos.md) (docs/construcciones-elevadas.md §Formas del piso; Berón 2026-11-03: «todos los pisos
 /// deben tener preparada su forma en construcción y su forma finalizada, y los microcosmos se crean siempre sobre la forma
 /// finalizada»).
 /// - FORMA FINALIZADA: lo que el piso es terminado. En un piso en obras (Dojo, Sala de Ballet: <see cref="ConstructionProject"/>)
@@ -21,10 +22,16 @@ public class FloorForms : MonoBehaviour
     public Transform construction;
     [Tooltip("¿El santuario lo enseña hoy EN OBRAS? (Dojo y Ballet, hasta que su ConstructionProject termina).")]
     public bool underConstruction;
+    [Tooltip("(2026-11-04) La TERCERA forma, la de MICROCOSMOS («Forma_microcosmos», oculta): el inventario del piso con la versión de microcosmos de cada pieza (MicroFloorForm). Los microcosmos se montan desde ella.")]
+    public Transform microcosm;
 
     /// <summary>Nombres de las piezas de OBRA (la forma en construcción) que cuelgan del área.</summary>
     public static readonly string[] ObraNames = { "Andamio_obra", "Material_del_dia", "Cono", "Forma_en_obra" };
     public const string FinishedName = "Acabado", ConstructionName = "Forma_en_obra";
+    /// <summary>(2026-11-04) LA TERCERA FORMA, la de MICROCOSMOS: en el piso del santuario, oculta, con su inventario
+    /// (<see cref="MicroFloorForm"/>: cada pieza con su versión de mesocosmos y de microcosmos); en el microcosmos, la versión
+    /// detallada de cada pieza (<see cref="MicroElement"/>, la viste MicroFloorDress) junto a la copia gigante del piso.</summary>
+    public const string MicroName = "Forma_microcosmos";
 
     public static bool IsObra(Transform t)
     {
