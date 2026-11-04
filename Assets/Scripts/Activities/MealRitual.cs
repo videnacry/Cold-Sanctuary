@@ -201,6 +201,8 @@ public class MealRitual
         if (_tray == null || who == null) return;
         ActivityKit.ClearProps(who);
         float s = S(who);
+        if (_plate == null) { Finish(); return; }
+        _tray.SetParent(who.transform, false);   // (la escala de la bandeja es relativa a quien la lleva)
         _plate.SetParent(_tray, false); _plate.localPosition = new Vector3(-0.06f, 0f, 0f); _plate.localRotation = Quaternion.identity; _plate.localScale = Vector3.one;
         if (_cup != null) { _cup.gameObject.SetActive(true); _cup.SetParent(_tray, false); _cup.localPosition = new Vector3(0.15f, 0.045f, 0.06f); _cup.localRotation = Quaternion.identity; _cup.localScale = new Vector3(0.06f, 0.09f, 0.06f); }
         KitchenProps.C(_tray, new Vector3(-0.06f, 0.03f, 0.08f), new Vector3(0.02f, 0.006f, 0.16f), new Color(0.73f, 0.75f, 0.78f), 20f, "Cubiertos");
