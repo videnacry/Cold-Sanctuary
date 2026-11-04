@@ -361,5 +361,4 @@ realista), J6 (respeto a las figuras reales), J10 (temas del contexto) y las de 
 [microcosmos-reglas-edificacion.md](microcosmos-reglas-edificacion.md) · [microcosmos-pueblos-mapas.md](microcosmos-pueblos-mapas.md) ·
 [microcosmos-actividades.md](microcosmos-actividades.md) · [microcosmos-famosos.md](microcosmos-famosos.md) · [luz-microcosmos.md](luz-microcosmos.md) ·
 [grupos-de-animales.md](grupos-de-animales.md) · [jornada-y-rotacion.md](jornada-y-rotacion.md) · [horario-libre.md](horario-libre.md) ·
-[personajes-mesocosmos.md](personajes-mesocosmos.md) · [conversaciones.md](conversaciones.md) · [actividades-y-uniformes.md](actividades-y-uniformes.md) · [conventions.md](conventions.md) · [checklist.md](checklist.md)
-[personajes-mesocosmos.md](personajes-mesocosmos.md) · [conversaciones.md](conversaciones.md) · [tareas-del-jugador.md](tareas-del-jugador.md) · [conventions.md](conventions.md) · [checklist.md](checklist.md)
+[personajes-mesocosmos.md](personajes-mesocosmos.md) · [conversaciones.md](conversaciones.md) · [actividades-y-uniformes.md](actividades-y-uniformes.md) · [tareas-del-jugador.md](tareas-del-jugador.md) · [conventions.md](conventions.md) · [checklist.md](checklist.md)
