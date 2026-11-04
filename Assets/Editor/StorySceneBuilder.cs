@@ -43,6 +43,7 @@ public static partial class StorySceneBuilder
         // LOS FAMOSOS (StorySceneBuilder.Famosos.cs, docs/microcosmos-famosos.md): una historia de su vida pública en su pueblo real.
         ("YogaRoom_Area", "Velliangiri", "Microcosmos_Sadhguru", new Color(0.8f, 0.7f, 0.55f), new System.Func<Transform, int>(Sadhguru)),
         ("VehicleWorkshop_Area", "Hawthorne", "Microcosmos_ElonMusk", new Color(0.7f, 0.72f, 0.78f), new System.Func<Transform, int>(ElonMusk)),
+        ("MartialArts_Area", "Aldea de la montaña", "Microcosmos_Goku", new Color(0.85f, 0.6f, 0.35f), new System.Func<Transform, int>(Goku)),
     };
 
     // La PLANTILLA (MicrocosmTemplate): la fecha y la hora de cada historia.
@@ -70,6 +71,7 @@ public static partial class StorySceneBuilder
         ["Palenque"] = ("28 de agosto de 683 (9.12.11.5.18 en la Cuenta Larga)", 7.0f),   // el amanecer del día en que muere Pakal
         ["Velliangiri"] = ("24 de junio de 1999", 6.0f),   // el amanecer del día en que termina la consagración del Dhyanalinga
         ["Hawthorne"] = ("28 de septiembre de 2008", 16.25f),   // 23:15 UTC: las 16:15 en California, la hora del cuarto lanzamiento
+        ["Aldea de la montaña"] = ("un amanecer de primavera (homenaje a Dragon Ball; sin fecha real)", 6.0f),   // ficción: el entrenamiento empieza al amanecer
     };
 
     // Las historias son de ERAS CIVILIZADAS (docs/microcosmos-civilizaciones.md §8): tras la historia, los EDIFICIOS REALES de su era

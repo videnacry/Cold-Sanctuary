@@ -12,7 +12,8 @@ internal static partial class CivicBuilder
 {
     static readonly Style IshaBrick = new Style(C(0.7f, 0.46f, 0.34f), C(0.82f, 0.78f, 0.7f), C(0.6f, 0.35f, 0.25f), Roof.None, 3.4f);     // Isha: ladrillo de barro y suelo de piedra clara
     static readonly Style FactorySteel = new Style(C(0.85f, 0.86f, 0.88f), C(0.82f, 0.83f, 0.85f), C(0.6f, 0.62f, 0.65f), Roof.None, 6f);  // la nave de SpaceX: chapa blanca y suelo de epoxi
-    static readonly Style TamilTile =new Style(C(0.92f, 0.88f, 0.78f), C(0.6f, 0.45f, 0.32f), C(0.7f, 0.32f, 0.22f), Roof.Gable, 3.2f);  // aldea tamil: encalado y teja de Mangalore
+    static readonly Style MountainTimber = new Style(C(0.72f, 0.66f, 0.56f), C(0.55f, 0.5f, 0.44f), C(0.35f, 0.36f, 0.38f), Roof.Gable, 3.2f);  // aldea de montaña: piedra, pino y teja gris
+    static readonly Style TamilTile = new Style(C(0.92f, 0.88f, 0.78f), C(0.6f, 0.45f, 0.32f), C(0.7f, 0.32f, 0.22f), Roof.Gable, 3.2f);  // aldea tamil: encalado y teja de Mangalore
 
     /// <summary>El pueblo de cada famoso (0 si <paramref name="display"/> no es uno de ellos).</summary>
     static int FamousTown(Transform t, string display)
@@ -21,6 +22,7 @@ internal static partial class CivicBuilder
         {
             case "Velliangiri": return VelliangiriTown(t);
             case "Hawthorne": return HawthorneTown(t);
+            case "Aldea de la montaña": return MountainVillageTown(t);
             default: return 0;
         }
     }
@@ -95,6 +97,39 @@ Mecanica | -300 -300
 Tecnologia | 420 -200
 Estacion | -900 600
 relleno | 60 | 600 -600",
+        // ALDEA DE LA MONTAÑA (homenaje a Goku; FICCIÓN): un valle con su torrente que baja de una cascada al norte, el monte al
+        // noroeste, bancales de arroz y de té en las laderas, el camino de la cumbre y la calle de la aldea. Inventado (no es un lugar
+        // real ni de la obra), al modo de las aldeas de los montes Song y Wudang.
+        ["Aldea de la montaña"] = @"
+rio Torrente de la cascada | 16 | -260 1000, -180 400, -60 0, 120 -500, 300 -1000
+lago Poza de la cascada | 40 30 | -260 980
+monte El monte del maestro | 700 1300 | -1300 900 | nieve
+colina Colina de los pinos | 200 70 | 700 600
+colina Cumbre del amanecer | 160 90 | 650 -450
+acantilado Paredón de la cascada | 30 | -420 1050, -260 1100, -100 1050
+campo Bancales de arroz | 300 200 | 380 -150
+campo Bancales de té | 260 180 | -500 -300
+calle Calle de la aldea | 6 | -300 60, 400 60
+calle Camino de la cascada | 4 | -40 120, -200 900
+calle Camino de la cumbre | 4 | 120 40, 600 -400
+calle Callejón del templo | 4 | 150 60, 150 320
+hito 0 | 0 150
+hito 1 | -110 140
+hito 2 | 110 140
+hito 3 | -60 -50
+hito 4 | 150 300
+hito 5 | 330 -60
+hito 6 | -220 40
+Plaza | 40 -80
+Mercado | 260 120
+Pileta | -150 -100
+Parque | 520 300
+Estudio | -300 180
+Guarderia | 300 -260
+Hotel | -400 -80
+Carpinteria | -350 300
+Obra | 430 220
+relleno | 30 | 0 60",
     };
 
     // ══ VELLIANGIRI (1999): el Isha Yoga Center (el Dhyanalinga bajo su cúpula, la sala de práctica, el comedor, las cabañas de los
@@ -163,6 +198,43 @@ relleno | 60 | 600 -600",
         n += W(t, "Técnico de motores", s[2], "", s[3], null, s[4]);
         n += W(t, "Cocinera de la cafetería", s[3], "cocinero", s[3], null, null);
         n += Townsfolk(t, s, 5, "Vecina de Hawthorne", "Vecino de Hawthorne", s[3], null);
+        return n;
+    }
+
+    // ══ ALDEA DE LA MONTAÑA (homenaje a Goku; ficción): el patio de entrenamiento, la casa de la maestra, la cabaña de Goku, la cocina
+    //    de la aldea, el templo de la montaña, los bancales de arroz y la leñera; casas de piedra y pino, huertos de té, un molino.
+    static int MountainVillageTown(Transform t)
+    {
+        var s = Town(t, "Aldea de la montaña", new[]
+        {
+            new Lot("Patio de entrenamiento", "Centro de entrenamiento", "Patio de entrenamiento de la aldea", 16f, 12f, MountainTimber,
+                S("muneco", -4f, 2f, 1f, 1f, "Poste de madera"), S("muneco", 0f, 2f, 1f, 1f, "Poste de madera"), S("armario", 5f, -3f, 1.4f, 0.6f, "Bastones y cubos")),
+            new Lot("Casa de la maestra", "Casa", "Casa de la maestra de la montaña", 12f, 10f, MountainTimber,
+                S("cama", -2f, 2f, 1.2f, 2f, "Cama de la maestra"), S("estante", 3f, 2f, 0.8f, 1.6f, "Rollos y tazas de té")),
+            new Lot("Cabaña de Goku", "Casa", "Cabaña de Goku", 10f, 9f, MountainTimber,
+                S("cama", -2f, 2f, 1.2f, 2f, "Cama de Goku")),
+            new Lot("Cocina de la aldea", "Cocina", "Cocina de la aldea (arroz y verduras del huerto)", 14f, 10f, MountainTimber,
+                S("fogon", -3f, 2f, 1.6f, 0.8f, "Wok sobre el fogón de leña"), S("mesa", 2f, -1f, 2f, 1f, "Mesa larga con banquetas"), S("estante", 4f, 3f, 0.8f, 1.6f, "Tarros de encurtidos")),
+            new Lot("Templo de la montaña", "Templo", "Templo de la montaña", 12f, 10f, MountainTimber,
+                S("altar", 0f, 2f, 2f, 1f, "Altar con incienso"), S("banco", 0f, -1f, 2f, 0.6f, "Banco")),
+            new Lot("Bancales de arroz", "Huerto", "Bancales de arroz de la aldea", 14f, 12f, MountainTimber,
+                S("bancal", -2f, 0f, 4f, 6f, "Bancal de arroz"), S("pozo", 4f, 2f, 1.2f, 1.2f, "Acequia")),
+            new Lot("Leñera y taller", "Taller", "Leñera y taller de la aldea", 12f, 10f, MountainTimber,
+                S("banco_taller", 0f, 2f, 2f, 0.9f, "Tajo de cortar leña"), S("armario", 3f, -3f, 1.2f, 0.6f, "Hachas y sierras")),
+        }, new[]
+        {
+            new Lot("Casa de la aldea", "Casa", "Casa de piedra y pino de la aldea", 10f, 9f, MountainTimber),
+            new Lot("Huerto de té", "Huerto", "Huerto de té de la ladera", 12f, 10f, MountainTimber, S("bancal", 0f, 0f, 4f, 6f, "Matas de té"), S("pozo", 0f, 0f, 1f, 1f, "Pozo")),
+            new Lot("Molino de agua", "Granero", "Molino de agua del torrente", 10f, 8f, MountainTimber, S("granero", 0f, 0f, 2f, 2f, "Muela del molino"), S("estante", 0f, 0f, 0.8f, 1.6f, "Sacos de harina")),
+            new Lot("Tienda de la aldea", "Mercado", "Tienda de la aldea", 10f, 8f, MountainTimber, S("puesto", 0f, 0f, 2f, 1f, "Mostrador (té, sal, aceite)"), S("estante", 0f, 0f, 0.8f, 1.6f, "Tarros")),
+        }, C(0.55f, 0.5f, 0.44f));
+        int n = 0;
+        n += W(t, "Aprendiz de la maestra", s[0], "alumno", s[3], s[0], null);
+        n += W(t, "Cocinera de la aldea", s[3], "cocinero", s[3], s[0], null);
+        n += W(t, "Guardián del templo", s[4], "", s[3], s[0], null);
+        n += W(t, "Hortelano del arrozal", s[5], "hortelano", s[3], s[0], null);
+        n += W(t, "Carpintera de la aldea", s[6], "", s[3], s[0], null);
+        n += Townsfolk(t, s, 7, "Vecina de la aldea", "Vecino de la aldea", s[3], s[0]);
         return n;
     }
 }

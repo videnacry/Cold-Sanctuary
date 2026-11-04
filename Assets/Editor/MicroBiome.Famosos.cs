@@ -52,6 +52,29 @@ public static partial class MicroBiome
                 new Pet("Woodlouse", 3, 0.7f, C(0.8f, 0.72f, 0.6f), "Perro de la casa (en el microcosmos, una cochinilla hormiguera)"),
                 new Pet("Woodlouse", 2, 0.5f, C(0.85f, 0.83f, 0.78f), "Gato de la casa (en el microcosmos, una cochinilla hormiguera)") },
               bugs = new Bug[0] };
+            // ── Aldea de la montaña (homenaje a Goku; ficción): monte subtropical del sur de China en primavera. Bambú, pino de
+            //    Masson, camelia del té, azalea, helecho y musgo en la piedra húmeda; cigarra, luciérnaga, mantis, hormiga y saltamontes.
+            //    En la aldea: los frutales de la China tradicional, el bambú y el té plantados; gallinas y el perro de la casa.
+            case "Aldea de la montaña": return new Biome { title = "Aldea de la montaña (homenaje), monte subtropical en primavera", ground = C(0.42f, 0.36f, 0.26f), plants = new[] {
+                new Plant(Kind.Shrub, 8, "Bambú (Phyllostachys edulis)", 1200, C(0.35f, 0.58f, 0.3f), C(0.55f, 0.6f, 0.3f)),
+                new Plant(Kind.Shrub, 6, "Pino de Masson (Pinus massoniana)", 1800, C(0.2f, 0.38f, 0.25f), C(0.45f, 0.35f, 0.25f)),
+                new Plant(Kind.Flower, 5, "Azalea (Rhododendron simsii)", 150, C(0.25f, 0.42f, 0.22f), C(0.9f, 0.25f, 0.4f)),
+                new Plant(Kind.Fern, 8, "Helecho del monte (Dicranopteris)", 80, C(0.3f, 0.55f, 0.28f), C(0.35f, 0.3f, 0.2f)),
+                new Plant(Kind.Moss, 6, "Musgo de la piedra húmeda", 3, C(0.3f, 0.5f, 0.22f), C(0.45f, 0.6f, 0.25f)),
+                new Plant(Kind.Stone, 12, "Granito del monte", 0, C(0.62f, 0.62f, 0.6f), Stone) },
+              town = new[] {
+                new Plant(Kind.Shrub, 5, "Bambú del patio (Phyllostachys), plantado", 800, C(0.35f, 0.58f, 0.3f), C(0.55f, 0.6f, 0.3f)),
+                new Plant(Kind.Shrub, 6, "Camelia del té (Camellia sinensis), plantada", 120, C(0.2f, 0.4f, 0.2f), C(0.95f, 0.95f, 0.85f)),
+                new Plant(Kind.Grass, 10, "Hierba del sendero", 15, C(0.45f, 0.6f, 0.3f), C(0.5f, 0.55f, 0.3f)) },
+              bugs = new[] {
+                new Bug("Cicada", 3, 40, C(0.3f, 0.35f, 0.25f), "Cigarra (Cryptotympana atrata)"),
+                new Bug("Firefly", 4, 12, C(0.25f, 0.22f, 0.2f), "Luciérnaga del arrozal"),
+                new Bug("Mantis", 2, 80, C(0.4f, 0.65f, 0.3f), "Mantis china (Tenodera sinensis)"),
+                new Bug("Ant", 6, 8, C(0.35f, 0.22f, 0.15f), "Hormiga del monte (Camponotus japonicus)"),
+                new Bug("Grasshopper", 4, 30, C(0.45f, 0.6f, 0.3f), "Saltamontes del bancal (Oxya chinensis)") },
+              townFauna = new[] {
+                new Pet("Ladybug", 3, 0.5f, C(0.75f, 0.45f, 0.2f), "Gallina de la aldea (en el microcosmos, una mariquita parda)"),
+                new Pet("Woodlouse", 2, 0.7f, C(0.7f, 0.55f, 0.35f), "Perro de la aldea (en el microcosmos, una cochinilla hormiguera)") } };
             default: return null;
         }
     }

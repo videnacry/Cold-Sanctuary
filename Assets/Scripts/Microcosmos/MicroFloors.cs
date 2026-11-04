@@ -60,6 +60,7 @@ public static class MicroFloors
         // Los famosos (docs/microcosmos-famosos.md)
         M("Velliangiri", "YogaRoom_Area", "Sadhguru y el Dhyanalinga: meditar en silencio, la Sala de Yoga"),
         M("Hawthorne", "VehicleWorkshop_Area", "Musk y el Falcon 1: motores y montaje, el taller de Mecánica", "Fábrica de cohetes y control de misión"),
+        M("Aldea de la montaña", "MartialArts_Area", "Goku (homenaje, ficción): entrenar en la aldea de la montaña, el Dojo"),
     };
 
     /// <summary>La fila del microcosmos <paramref name="display"/> (o null).</summary>

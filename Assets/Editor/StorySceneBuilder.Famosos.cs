@@ -14,7 +14,7 @@ public static partial class StorySceneBuilder
 {
     internal static readonly string[] FamousScenes =
     {
-        "Microcosmos_Sadhguru", "Microcosmos_ElonMusk",
+        "Microcosmos_Sadhguru", "Microcosmos_ElonMusk", "Microcosmos_Goku",
     };
 
     /// <summary>Genera SOLO los microcosmos de los famosos, uno tras otro (con la escena principal abierta). Con poca memoria, mejor
@@ -26,6 +26,8 @@ public static partial class StorySceneBuilder
     public static void BuildSadhguru() => BuildOne("Microcosmos_Sadhguru");
     [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de famosos/Elon Musk (Hawthorne, 2008)")]
     public static void BuildElonMusk() => BuildOne("Microcosmos_ElonMusk");
+    [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de famosos/Goku (aldea de la montaña, homenaje)")]
+    public static void BuildGoku() => BuildOne("Microcosmos_Goku");
 
     // ══ SADHGURU · Isha Yoga Center, al pie de los montes Velliangiri (Coimbatore), 24 de junio de 1999 · Sala de Yoga ══════════════
 
@@ -184,6 +186,81 @@ public static partial class StorySceneBuilder
                 "Koenigsmann, H. et al. (2009). «Falcon 1 Launch Vehicle: Demo Flights, Status, Manifest and Upgrade Path». SmallSat Conference (digitalcommons.usu.edu/smallsat/2009).",
             },
             "Elon Musk", "Que falle no es lo grave. Lo grave sería dejar de intentarlo.");
+        return n;
+    }
+
+    // ══ GOKU · una aldea de montaña (HOMENAJE ORIGINAL, ficción) · Dojo ═══════════════════════════════════════════════════════════
+    //    Goku es un personaje de ficción (Dragon Ball, Akira Toriyama). Esto NO copia ninguna escena, diálogo, lugar ni técnica de la
+    //    obra: es una historia nueva de entrenamiento en una aldea de montaña, al modo de las escuelas de artes marciales de los montes
+    //    de China (Song, Wudang), donde el entrenamiento empieza por las tareas del pueblo.
+
+    static int Goku(Transform t)
+    {
+        Material wood = M("Madera_de_pino", 0.6f, 0.45f, 0.3f), stone = M("Piedra_del_monte", 0.6f, 0.6f, 0.58f), water = M("Agua_del_torrente", 0.35f, 0.6f, 0.7f);
+        Material bucket = M("Cubo_de_madera", 0.55f, 0.4f, 0.25f), mud = M("Barro_del_bancal", 0.45f, 0.36f, 0.25f), log = M("Leña", 0.5f, 0.35f, 0.22f);
+
+        // 1 · EL PATIO: postes de madera para golpear (hoy no se usan) y el aljibe de piedra.
+        Transform yard = Spot(t, "Patio de entrenamiento", new Vector3(0f, 0f, 14f), "El patio de entrenamiento de la aldea", 3f);
+        for (int k = 0; k < 3; k++) Prop(yard, "Poste de madera", new Vector3(-4f + k * 4f, 0.9f, 3f), new Vector3(0.35f, 1.8f, 0.35f), wood);
+        Transform cistern = Spot(t, "Aljibe de la aldea", new Vector3(6f, 0f, 8f), "El aljibe de la aldea (vacío al amanecer)", 2.4f);
+        Prop(cistern, "Aljibe de piedra", new Vector3(0f, 0.45f, 0f), new Vector3(1.8f, 0.9f, 1.8f), stone);
+
+        // 2 · EL TORRENTE: tres cubos para subir el agua.
+        Transform river = Spot(t, "Torrente", new Vector3(-17f, 0f, 6f), "El torrente que baja de la cascada", 2.4f);
+        Prop(river, "Agua del torrente", new Vector3(0f, 0.02f, 0f), new Vector3(3f, 0.04f, 18f), water, false);
+        var buckets = Items(t, bucket, new Vector3(0.45f, 0.5f, 0.45f), ("Cubo de agua", new Vector3(-15f, 0.25f, 0f)), ("Cubo de agua", new Vector3(-15f, 0.25f, 3f)), ("Cubo de agua", new Vector3(-15f, 0.25f, 6f)));
+
+        // 3 · LAS TAREAS: la leñera, el bancal de arroz y la cerca del huerto.
+        var chores = Items(t, log, new Vector3(1.2f, 0.6f, 0.8f),
+            ("Leña sin apilar", new Vector3(14f, 0.3f, 2f)), ("Bancal sin escardar", new Vector3(16f, 0.3f, 10f)), ("Cerca caída del huerto", new Vector3(12f, 0.3f, 16f)));
+        Prop(t, "Bancal de arroz", new Vector3(17f, 0.05f, 13f), new Vector3(5f, 0.1f, 4f), mud, false);
+
+        // 4 · LA CASCADA y 5 · LA CUMBRE.
+        Transform falls = Spot(t, "Poza de la cascada", new Vector3(-14f, 0f, 18f), "La cascada: respirar bajo el agua fría", 4f);
+        Prop(falls, "Roca de la cascada", new Vector3(0f, 1.5f, 2f), new Vector3(3f, 3f, 1.2f), stone);
+        Prop(falls, "Chorro de agua", new Vector3(0f, 1.5f, 1.3f), new Vector3(1f, 3f, 0.2f), water, false);
+        Prop(falls, "Poza", new Vector3(0f, 0.02f, 0f), new Vector3(4f, 0.04f, 3f), water, false);
+        Transform summit = Spot(t, "Cumbre", new Vector3(16f, 0f, -6f), "La cumbre: el sol sale sobre el valle", 3f);
+        Prop(summit, "Roca plana de la cumbre", new Vector3(0f, 0.3f, 0f), new Vector3(3f, 0.6f, 2.4f), stone);
+
+        // La gente: insectos-humanos. Goku, un ESCARABAJO PELOTERO (el insecto más fuerte por su peso, Onthophagus taurus, que
+        // entrena empujando cada día su carga), con el naranja y el azul de su versión humana.
+        Color orange = new Color(0.95f, 0.47f, 0.12f), grey = new Color(0.55f, 0.55f, 0.52f), blue = new Color(0.12f, 0.25f, 0.62f);
+        GameObject goku = Who(t, "Goku", new Vector3(2f, 0f, 9f), false, 1.75f, "DungBeetle"); CubeInsect.WearShirt(goku, orange);
+        GameObject master = Who(t, "Maestra de la montaña (Shanidar)", new Vector3(-2f, 0f, 16f), true, 1.6f); CubeInsect.WearShirt(master, grey);
+        GameObject rival = Who(t, "Compañero de entrenamiento (Momo)", new Vector3(4f, 0f, 17f), false, 1.7f); CubeInsect.WearShirt(rival, blue); Routine(rival, yard, falls);
+        GameObject farmer = Who(t, "Campesina del arrozal (Ruth)", new Vector3(15f, 0f, 8f), true); CubeInsect.WearShirt(farmer, new Color(0.45f, 0.55f, 0.6f)); Routine(farmer, chores[1], chores[2]);
+        GameObject cutter = Who(t, "Leñador de la aldea (Atlas)", new Vector3(12f, 0f, 0f), false); CubeInsect.WearShirt(cutter, new Color(0.5f, 0.4f, 0.3f)); Routine(cutter, chores[0], river);
+        int n = 5;
+
+        Mission(t, "Goku en la aldea de la montaña (homenaje)", StoryMission.Marga.Stats, 60f,
+            new[]
+            {
+                Talk("Al amanecer, habla con la maestra de la montaña", master.transform, "Maestra", "Hoy no vas a golpear ningún poste. Hoy vas a entrenar como entrenaban los viejos: sirviendo a la aldea. El aljibe está vacío."),
+                Collect("Sube tres cubos de agua del torrente al aljibe", buckets, cistern, "Goku", "¡Uf! Pesan más que cualquier rival. Y ahora toda la aldea tiene agua para el día."),
+                Visit("Ayuda en la aldea: apila la leña, escarda el bancal y levanta la cerca", chores, "Campesina del arrozal", "Con la misma fuerza con que golpeas, ayudas. Eso también es kung fu: trabajo hecho con esfuerzo."),
+                Hold("Bajo la cascada: respira despacio con el agua fría encima", falls, 10f, "Maestra", "El cuerpo quiere salir corriendo. No lo dejes mandar: respira largo y tranquilo."),
+                Talk("Habla con tu compañero de entrenamiento", rival.transform, "Compañero", "Ayer me ganaste y hoy no me has dicho nada. Gracias. Mañana te enseño cómo me esquivaste, que yo también aprendo."),
+                Reach("Sube a la cumbre antes de que salga el sol del todo", summit, "Goku", "¡Desde aquí se ve todo el valle! Mira: el humo de las cocinas, el arrozal, el torrente."),
+                Hold("En la cumbre: haz la forma despacio, con el sol", summit, 10f, "Maestra", "Despacio se aprende lo que deprisa se olvida."),
+                Talk("Vuelve con la maestra", master.transform, "Maestra", "Ser fuerte no es ganar. Es poder ayudar cuando alguien lo necesita. Eso ya lo sabías; hoy lo has entrenado."),
+            },
+            "Una aldea en un valle de montaña, al amanecer, sobre el Dojo del santuario a escala de hormiga. Un HOMENAJE ORIGINAL a Goku, el personaje de ficción de Dragon Ball: aquí no hay combates ni técnicas de la obra, sino un día de entrenamiento en el que la fuerza se usa para servir al pueblo. E para hablar, recoger y ayudar; para respirar, quédate quieto.",
+            new[]
+            {
+                "Goku es el protagonista de Dragon Ball, el manga de Akira Toriyama (1955–2024) publicado en la revista Weekly Shōnen Jump entre 1984 y 1995 y después llevado al anime. El personaje se inspira en Sun Wukong, el Rey Mono de la novela china «Viaje al Oeste» (siglo XVI, atribuida a Wu Cheng'en).",
+                "Este microcosmos no recrea ninguna escena, diálogo, lugar ni técnica de la obra: es una historia nueva, en homenaje, sobre la idea que Goku encarna para muchos lectores: entrenar cada día, disfrutar del esfuerzo y usar la fuerza para proteger a los demás.",
+                "La aldea se inspira en las escuelas de artes marciales de las montañas de China: el monasterio de Shaolin, en el monte Song (Henan, fundado hacia el 495), y los templos de los montes Wudang (Hubei), Patrimonio de la Humanidad desde 1994. En las historias de esas escuelas, el aprendiz empieza por las tareas: acarrear agua, cortar leña, cuidar el huerto.",
+                "Como no es una historia real, su fecha («un amanecer de primavera») y su lugar son de ficción; su estilo de casas y muebles es el de una aldea de montaña de la China tradicional.",
+            },
+            new[]
+            {
+                "Toriyama, A. (1984–1995). Dragon Ball. Shūeisha (Weekly Shōnen Jump).",
+                "Wu Cheng'en (atrib.), Viaje al Oeste (trad. A. C. Yu, The Journey to the West, University of Chicago Press, 2012).",
+                "Shahar, M. (2008). The Shaolin Monastery: History, Religion, and the Chinese Martial Arts. University of Hawai'i Press.",
+                "UNESCO, «Ancient Building Complex in the Wudang Mountains» (whc.unesco.org/en/list/705).",
+            },
+            "Maestra", "Mañana el aljibe volverá a estar vacío. Y tú volverás a llenarlo.");
         return n;
     }
 }

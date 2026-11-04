@@ -38,6 +38,7 @@ public static class EraHubSceneBuilder
         ("Microcosmos_Pakal", "Palenque", "Pakal de Palenque: el rey que renace como el maíz (683)"),
         ("Microcosmos_Sadhguru", "Velliangiri", "Sadhguru y el Dhyanalinga (1999)"),
         ("Microcosmos_ElonMusk", "Hawthorne", "Elon Musk y el cuarto Falcon 1 (2008)"),
+        ("Microcosmos_Goku", "Aldea de la montaña", "Goku en la aldea de la montaña (homenaje)"),
         ("Microcosmos_IrenaSendler", "Irena Sendler", "Irena Sendler y los niños del gueto"),
         ("Microcosmos_LeChambon", "Le Chambon-sur-Lignon", "el pueblo que escondió a miles"),
         ("Microcosmos_Pitagoras", "Crotona", "Pitágoras y la escuela de Crotona"),
