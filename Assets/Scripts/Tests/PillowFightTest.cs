@@ -64,6 +64,8 @@ public class PillowFightTest : MonoBehaviour, ITestUnit
         Bounds box = ring.Box();
         var central = CarpetPad.All.Where(p => p != null && p.building == ResidenciaName && p.floor == 1).ToList();
         var targets = CarpetPad.All.Where(p => p != null && (p.kind == CarpetPad.Kind.Habitacion || p.transform.IsChildOf(ring.transform))).ToList();
+        Transform ringPadT = CarpetPad.All.Where(p => p != null && p.transform.IsChildOf(ring.transform)).Select(p => p.transform).FirstOrDefault();
+        Vector3 ringPad = ringPadT != null ? ringPadT.position : Vector3.zero;
         int flights = 0, through = 0; string firstBad = "";
         foreach (CarpetPad a in central)
             foreach (CarpetPad b in targets)
@@ -78,7 +80,10 @@ public class PillowFightTest : MonoBehaviour, ITestUnit
                         float u = i / 60f, s = Mathf.SmoothStep(0f, 1f, u);
                         Vector3 p = Vector3.Lerp(l0, l1, s);
                         if (arc) p.y = Mathf.Lerp(l0.y, l1.y, s) + Mathf.Sin(u * Mathf.PI) * (top - Mathf.Max(l0.y, l1.y));
-                        hit = box.Contains(p);
+                        // (ronda 6: los 3 «cruces» eran el ATERRIZAJE en la pista del propio ring, en vertical desde encima) La columna
+                        // de la pista del ring (≤ 4,5 m de ella) no cuenta: aterrizar en el ring no es cruzarlo.
+                        Vector3 toPad = p - ringPad; toPad.y = 0f;
+                        hit = box.Contains(p) && (ringPadT == null || toPad.magnitude > 4.5f);
                     }
                     if (hit) { through++; if (firstBad.Length == 0) firstBad = $"{a.displayName} → {b.displayName}"; break; }
                 }
@@ -118,7 +123,7 @@ public class PillowFightTest : MonoBehaviour, ITestUnit
         while (day - LeisureRoster.WeekOf(day) * LeisureRoster.DaysPerWeek != PillowRing.Day) day++;
         float start = LeisureRoster.SlotHours[PillowRing.Slot];
         Rest(wd != null ? wd.staff : new string[0]);
-        tc.SetClock(day, start - 0.05f);
+        tc.SetClock(day, start - LeisureDirector.TogetherLead - 0.02f);   // (se sale con tiempo hacia las de todos a la vez)
         if (wd != null) wd.PlanDay(day);
         ld.Scan(true);
         GameObject any = WorkdayDirector.Body("Linduarda") ?? WorkdayDirector.Body("Goluis");

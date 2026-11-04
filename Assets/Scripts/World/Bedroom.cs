@@ -4,7 +4,7 @@ using UnityEngine;
 /// <summary>
 /// DORMITORIO de un habitante (arboleda residencial: cabañas en los árboles o sobre columnas). Cuando su cuerpo pide
 /// dormir (NeedsDriver), el habitante va primero a SU cama y duerme allí. El dueño se reconoce por su nombre; una pareja
-/// comparte casa y cama (manual M18; 2026-11-04: Amahuz y Karen).
+/// comparte casa y cama (manual M18; 2026-11-04: Amykhuz y Karen).
 /// (2026-11-04, Berón: «las camas de las residencias del santuario deben ser capaces de dar espacio a 4 personas») La cama tiene
 /// <see cref="sleeps"/> PLAZAS de <see cref="laneWidth"/> una junto a otra: cada uno se tumba en la suya (<see cref="LieSpot"/>),
 /// el dueño y su pareja en las dos del medio.

@@ -175,10 +175,10 @@ public static class CubeHair
         // Nesvitor (Néstor): piel curtida morena, pelo canoso y negro peinado hacia atrás, BIGOTE espeso canoso; forro polar negro
         // con cremallera ABIERTO sobre camisa blanca de CUADROS finos azules y camiseta amarilla; las gafas colgadas de la camisa.
         if (n.Contains("nesvitor")) return new Look(Style.SweptBack, C(0.3f, 0.29f, 0.28f), C(0.7f, 0.5f, 0.38f), C(0.2f, 0.14f, 0.1f)).Face(0.84f, 0.5f).Moustache(C(0.6f, 0.58f, 0.56f)).Wear(C(0.1f, 0.1f, 0.11f), 1.68f).Jacket(C(0.95f, 0.95f, 0.97f), C(0.98f, 0.84f, 0.2f)).Pattern(C(0.55f, 0.66f, 0.88f), Weave.Checks).HangingGlasses(C(0.72f, 0.66f, 0.5f)).Pants(C(0.22f, 0.22f, 0.25f)).Shoes(C(0.12f, 0.1f, 0.09f));
-        // Amahuz (pareja de Karen): delgado, piel clara morena, pelo castaño oscuro, BIGOTE fino; polo azul marino de manga corta
+        // Amykhuz (antes «Amahuz»; Berón 2026-11-04; pareja de Karen, confirmado): delgado, piel clara morena, pelo castaño oscuro, BIGOTE fino; polo azul marino de manga corta
         // (cuello cerrado), pantalón oscuro y BOLSO negro cruzado.
-        if (n.Contains("amahuz")) return new Look(Style.Short, C(0.2f, 0.13f, 0.09f), C(0.86f, 0.68f, 0.55f), C(0.22f, 0.15f, 0.1f)).Face(0.78f, 0.45f).Moustache(C(0.24f, 0.17f, 0.12f), true).Wear(C(0.1f, 0.12f, 0.22f), 1.76f).Collar().Pants(C(0.08f, 0.08f, 0.1f)).Bag(C(0.06f, 0.06f, 0.07f)).Shoes(C(0.07f, 0.07f, 0.08f));
-        // Karen (pareja de Amahuz): piel morena cálida, melena larga castaña oscura con una PINZA DE FLOR rosa y amarilla,
+        if (n.Contains("amykhuz") || n.Contains("amahuz")) return new Look(Style.Short, C(0.2f, 0.13f, 0.09f), C(0.86f, 0.68f, 0.55f), C(0.22f, 0.15f, 0.1f)).Face(0.78f, 0.45f).Moustache(C(0.24f, 0.17f, 0.12f), true).Wear(C(0.1f, 0.12f, 0.22f), 1.76f).Collar().Pants(C(0.08f, 0.08f, 0.1f)).Bag(C(0.06f, 0.06f, 0.07f)).Shoes(C(0.07f, 0.07f, 0.08f));
+        // Karen (pareja de Amykhuz): piel morena cálida, melena larga castaña oscura con una PINZA DE FLOR rosa y amarilla,
         // pendientes pequeños; blusa blanca sin mangas con VOLANTES, FALDA berenjena con flores rosas y lilas, RELOJ negro.
         if (n.Contains("karen")) return new Look(Style.Long, C(0.22f, 0.14f, 0.09f), C(0.74f, 0.53f, 0.4f), C(0.2f, 0.13f, 0.08f)).Fem().Face(0.78f, 0.55f).Lips(C(0.72f, 0.42f, 0.42f)).HairClip(C(0.95f, 0.55f, 0.72f), C(0.98f, 0.85f, 0.3f)).Earrings().Wear(C(0.97f, 0.96f, 0.95f), 1.58f).Sleeveless().Ruffles().Skirt(C(0.24f, 0.12f, 0.18f), C(0.88f, 0.58f, 0.82f)).Watch(C(0.08f, 0.08f, 0.09f), C(0.2f, 0.2f, 0.22f)).Shoes(C(0.16f, 0.1f, 0.1f));
         // Alicita (Alicia): piel clara morena, melena larga lisa negra, ARETES de aro pequeños; chaqueta negra con cremallera
@@ -202,6 +202,10 @@ public static class CubeHair
         // Gallarle (2026-11-04, pareja de Ducristin): PENDIENTE DE FOTO. Aspecto neutro provisional, sin rasgos inventados ni género:
         // pelo corto castaño, piel media, camiseta gris azulada y pantalón oscuro, 1,70 m. Se cambia cuando Berón mande la foto.
         if (n.Contains("gallarle")) return new Look(Style.Short, C(0.3f, 0.22f, 0.15f), C(0.84f, 0.66f, 0.52f), C(0.25f, 0.18f, 0.12f)).Face(0.8f, 0.45f).Wear(C(0.45f, 0.5f, 0.55f), 1.7f).Pants(C(0.18f, 0.18f, 0.22f)).Shoes(C(0.15f, 0.13f, 0.12f));
+        // Julian (pareja de Alicita; búlgaro) y Fausto (pareja de Irosene; mecánico), 2026-11-04: PENDIENTES DE FOTO. Aspecto neutro
+        // provisional como el de Gallarle (sin rasgos inventados ni género); Fausto con ropa de taller.
+        if (n.Contains("julian")) return new Look(Style.Short, C(0.28f, 0.2f, 0.14f), C(0.9f, 0.76f, 0.66f), C(0.3f, 0.24f, 0.18f)).Face(0.8f, 0.45f).Wear(C(0.4f, 0.45f, 0.52f), 1.75f).Pants(C(0.2f, 0.2f, 0.24f)).Shoes(C(0.15f, 0.13f, 0.12f));
+        if (n.Contains("fausto")) return new Look(Style.Short, C(0.25f, 0.2f, 0.16f), C(0.82f, 0.64f, 0.5f), C(0.25f, 0.18f, 0.12f)).Face(0.84f, 0.45f).Wear(C(0.35f, 0.38f, 0.42f), 1.72f).Sleeves(C(0.35f, 0.38f, 0.42f)).Pants(C(0.3f, 0.32f, 0.36f)).Shoes(C(0.12f, 0.1f, 0.09f));
         // BRUCE LEE (docs/microcosmos-bruce-lee.md): figura histórica del microcosmos del Dojo. Sin parecido de cine: un hombre
         // delgado y atlético de ~1,72 m, pelo negro corto, ropa sencilla de entrenamiento negra (chaqueta de cuello chino, pantalón
         // y zapatillas de tela). La complexión delgada y fibrosa sale de sus stats (BodyShape), que pone su builder.

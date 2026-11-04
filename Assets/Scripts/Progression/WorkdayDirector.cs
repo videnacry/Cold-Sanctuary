@@ -17,8 +17,8 @@ public class WorkdayDirector : MonoBehaviour
     public static WorkdayDirector Instance { get; private set; }
 
     public static readonly string[] Staff = { "Player", "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene", "JefeConstruccion", "Andrea",
-                               "Nesvitor", "Amahuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi",   // familia y amigos de Berón (docs/diseno-personajes.md)
-                               "Gallarle" };   // (2026-11-04) pareja de Ducristin: pendiente de foto y de profesión
+                               "Nesvitor", "Amykhuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi",   // familia y amigos de Berón (docs/diseno-personajes.md)
+                               "Gallarle", "Julian", "Fausto" };   // (2026-11-04) parejas: de Ducristin (Gallarle), de Alicita (Julian) y de Irosene (Fausto); pendientes de foto
     /// <summary>(2026-11-04) La lista del personal, también sin escena: la usan la regla de capacidad (AreaCapacity) y el
     /// constructor del Aula (cuántas plazas y cuántos pisos).</summary>
     [Tooltip("Personal del santuario en su orden FIJO (el de la rotación). El jugador entra cuando ya es miembro.")]
@@ -71,11 +71,16 @@ public class WorkdayDirector : MonoBehaviour
 
     /// <summary>El GameObject de un miembro del personal (en escena algunos se llaman «Goluis_Post»…).</summary>
     static readonly Dictionary<string, GameObject> _bodies = new Dictionary<string, GameObject>();
+    /// <summary>Ids de antes de un cambio de nombre (id nuevo → id viejo), para las escenas sin reconstruir.</summary>
+    public static readonly System.Collections.Generic.Dictionary<string, string> LegacyIds = new System.Collections.Generic.Dictionary<string, string> { { "Amykhuz", "Amahuz" } };
+
     /// <summary>El GameObject de un miembro del personal (en escena algunos se llaman «Goluis_Post»…). Cacheado: buscar por nombre cada frame era lo más caro de la jornada.</summary>
     public static GameObject Body(string n)
     {
         if (_bodies.TryGetValue(n, out GameObject g) && g != null) return g;
         g = GameObject.Find(n) ?? GameObject.Find(n + "_Post");
+        // (2026-11-04) NOMBRES ANTIGUOS: las escenas sin reconstruir guardan el id de antes (Amahuz → Amykhuz).
+        if (g == null && LegacyIds.TryGetValue(n, out string old)) g = GameObject.Find(old) ?? GameObject.Find(old + "_Post");
         _bodies[n] = g;
         return g;
     }
@@ -618,9 +623,9 @@ public class WorkdayDirector : MonoBehaviour
     const string YogaArea = "Sala de Yoga";
     /// <summary>MAESTRO DE YOGA del santuario (Hatha y Ashtanga; medita junto al linga en su tiempo libre): JOSEDRILO, el profesional de
     /// yoga (Berón 2026-11-04: «el profesional de yoga es Josedrilo»; Professions). Antes, Andrea (que pasa a entrenador del gimnasio) y
-    /// Sadhguru (que se fue a su microcosmos). La segunda maestra, para dar las dos clases a la vez, sigue siendo IROSENE (corre, escala
-    /// y bucea a sus 70 y tantos).</summary>
-    public const string YogaTeacher = "Josedrilo", SecondYogaTeacher = "Irosene";
+    /// Sadhguru (que se fue a su microcosmos). La SEGUNDA MAESTRA, para dar las dos clases a la vez, es PANTERILIA (2026-11-04: la de la
+    /// percepción, la que observa; corregir posturas es mirar): Irosene, que lo fue, pasa a las letras en el Aula, como sugirió Berón.</summary>
+    public const string YogaTeacher = "Josedrilo", SecondYogaTeacher = "Panterilia";
     /// <summary>La sesión de cada clase: Hatha (la guiada, misión «yog_guia») y Ashtanga (el entrenamiento de las 14 h).</summary>
     public const string HathaSession = "Saludo al Sol", AshtangaSession = "Ashtanga Primaria";
 

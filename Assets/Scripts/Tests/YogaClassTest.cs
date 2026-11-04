@@ -55,7 +55,7 @@ public class YogaClassTest : MonoBehaviour, ITestUnit
             yield return new WaitForSecondsRealtime(1f);
         yield return new WaitForSecondsRealtime(1f);
         WorkdayDirector wd = WorkdayDirector.Instance;
-        string[] names = wd != null ? wd.staff : new[] { "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene", "JefeConstruccion", "Andrea", "Nesvitor", "Amahuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi", "Gallarle" };
+        string[] names = wd != null ? wd.staff : new[] { "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene", "JefeConstruccion", "Andrea", "Nesvitor", "Amykhuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi", "Gallarle", "Julian", "Fausto" };
         var people = new List<Anima>();
         foreach (string n in names)
         {
@@ -68,8 +68,8 @@ public class YogaClassTest : MonoBehaviour, ITestUnit
         }
         TestProbe.Check($"hay maestro y {practitioners} practicantes en el personal", people.Count >= practitioners + 1, string.Join(", ", people.Select(p => p.name)));
         if (people.Count < 2) { TestProbe.End(); yield break; }
-        // El maestro: el de yoga del santuario (WorkdayDirector.YogaTeacher, Andrea) si está; si no, el primero.
-        Anima teacher = people.FirstOrDefault(p => p.name == WorkdayDirector.YogaTeacher) ?? people[0];
+        // El maestro: el de yoga del santuario (WorkdayDirector.YogaTeacher, Josedrilo) si está; si no, el primero.
+        Anima teacher = people.FirstOrDefault(p => p.name.Replace("_Post", "") == WorkdayDirector.YogaTeacher) ?? people[0];
         List<Anima> studs = people.Where(p => p != teacher).Take(practitioners).ToList();
 
         WorkdayDirector.LogTeleports = true;

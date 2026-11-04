@@ -170,10 +170,11 @@ public class WorkRoster
         foreach (Worker w in workers)
         {
             if (w.clone) continue;
-            foreach (string area in Professions.AreasOf(w.name))
+            foreach (string area in Professions.AreasOf(w.name).Distinct())
             {
                 if (!pools.TryGetValue(area, out var pool) || pool.Count == 0) continue;
-                Mission pick = Choose(w, IsNewcomer(w, plan.day) ? pool.Where(m => !m.lead).ToList() : pool, used[w]);
+                var mine = pool.Where(m => Professions.Practises(w.name, area, m.id) && (!IsNewcomer(w, plan.day) || !m.lead) && string.IsNullOrEmpty(m.group)).ToList();   // (solo las de su profesión; las de grupo van en AssignGroups)
+                Mission pick = Choose(w, mine, used[w]);
                 if (pick == null) continue;
                 pool.Remove(pick);
                 Assign(plan, w, pick, used);
@@ -196,8 +197,8 @@ public class WorkRoster
             if (workers.Count < roles.Count) continue;   // sin gente suficiente: quedan para los clones
             var crew = new List<Worker>();
             // (2026-11-04) EL PROFESIONAL del área (el maestro de yoga en la clase), si está libre y no es recién llegado, entra y la dirige.
-            Worker pro = useProfessions ? workers.FirstOrDefault(w => !w.clone && used[w] <= 0f && !IsNewcomer(w, plan.day) && Professions.Practises(w.name, roles[0].area)) : null;
-            if (pro != null && roles.Any(m => m.lead)) crew.Add(pro); else pro = null;
+            Worker pro = useProfessions ? workers.FirstOrDefault(w => !w.clone && used[w] <= 0f && !IsNewcomer(w, plan.day) && Professions.Practises(w.name, roles[0].area, roles[0].id)) : null;
+            if (pro != null) crew.Add(pro);   // (si hay papel que dirige, lo dirige; en una obra, entra el jefe de obra nueva)
             int support = roles.Count(m => !m.lead), newcomers = 0;
             for (int i = 0; crew.Count < roles.Count && i < workers.Count; i++)
             {
