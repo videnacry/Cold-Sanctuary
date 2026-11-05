@@ -79,7 +79,7 @@ del Sur ya no salen (`BuildIceFlora` pregunta `IceAt`).
 ### La isla por dentro
 
 - **Suelo:** tundra en el interior y orilla de grava de 5 m. La placa mide 1,5 m, como el hielo.
-- **Roca:** la tierra es una placa de 1,5 m, como el hielo, y bajo la orilla hay una **falda de roca hasta −6 m** (`Zocalo_rocoso`), en una sola malla con su collider. No llega al fondo (−16 m): el submarino de obra pasa por debajo, a −12 m, sin túneles. Antes de separar los santuarios ([sitio-nuclear.md](sitio-nuclear.md) §20) era un anillo hasta el lecho con túneles; cómo rehacerlo está en §23 de ese documento.
+- **Roca:** la tierra es una placa de 1,5 m, como el hielo, y bajo la orilla hay una **falda de roca hasta −6 m** (`Zocalo_rocoso`), en una sola malla con su collider. No llega al fondo (−16 m): el submarino de obra pasa por debajo, a −12 m, sin túneles. Antes de separar los santuarios ([sitio-nuclear.md](sitio-nuclear.md) §20) era un anillo hasta el lecho con túneles; cómo rehacerlo está en §24 de ese documento.
 - **Relieve:** cuatro lomas de 3 terrazas de 25 cm, por las que se anda.
 - **Charcas:** cuatro, con `WaterSource`; los animales que beben van a ellas.
 - **Flora (`PolarUnderstory.Tundra`):** por comunidades, según un ruido suave:

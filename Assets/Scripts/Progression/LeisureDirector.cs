@@ -186,6 +186,29 @@ public class LeisureDirector : MonoBehaviour
     /// telares y la rueca del estudio textil), que van por turnos.</summary>
     public static readonly HashSet<string> AllMembers = new HashSet<string> { "pesas", "yoga", "ashtanga", "huerto", "lectura", "tertulia", "baile", "artes", "concierto", "asamblea" };
 
+    /// <summary>LAS SESIONES SEMANALES DE TODOS (Berón 2026-11-05): una franja fija, día 0–6 de la semana y franja de <see cref="LeisureRoster.SlotHours"/>, con plaza para todos
+    /// los miembros. La asamblea, el primer día a las 18 h; el concierto, el cuarto a las 17 h (no a las 20 h, la de las clases con maestro). Fuera de ella no entran en el reparto.</summary>
+    public static readonly Dictionary<string, (int day, int slot)> WeeklySessions = new Dictionary<string, (int day, int slot)> { { "asamblea", (0, 2) }, { "concierto", (3, 1) } };
+
+    /// <summary>Convierte la actividad en sesión semanal, si lo es.</summary>
+    public static bool ApplyWeekly(LeisureRoster.Activity a)
+    {
+        if (!WeeklySessions.TryGetValue(a.id, out var w)) return false;
+        a.together = true; a.togetherDay = w.day; a.togetherSlot = w.slot;
+        return true;
+    }
+
+    // LA ASISTENCIA: quién llegó de verdad a cada sesión semanal (actividad@día).
+    static readonly Dictionary<string, HashSet<string>> _attendance = new Dictionary<string, HashSet<string>>();
+    public static void MarkAttendance(string id, int day, string who)
+    {
+        string k = id + "@" + day;
+        if (!_attendance.TryGetValue(k, out var l)) _attendance[k] = l = new HashSet<string>();
+        l.Add(who);
+    }
+    /// <summary>Cuántos llegaron a la sesión de ese día.</summary>
+    public static int Attendance(string id, int day) => _attendance.TryGetValue(id + "@" + day, out var l) ? l.Count : 0;
+
     /// <summary>Prefijo de un sitio que es una SALA de los pisos de yoga («Sala de Yoga · Hatha tradicional»…).</summary>
     public const string YogaVenue = "Sala de Yoga · ";
 
@@ -227,6 +250,7 @@ public class LeisureDirector : MonoBehaviour
             int cap = AllMembers.Contains(d.id) ? Mathf.Max(d.cap, AreaCapacity.Members()) : d.cap;
             v.capacity = cap; v.index = k++;
             var act = new LeisureRoster.Activity(d.id, d.title, d.kind, v.title, cap, d.pose);
+            ApplyWeekly(act);
             gr.catalog.Add(act); gr.venues[act] = v;
         }
         LeisureTags.AddVenues(gr);
@@ -530,6 +554,17 @@ public class LeisureDirector : MonoBehaviour
             if (v.halls.Count > 0) foreach (YogaHall hh in v.halls) mats.AddRange(hh.Mats()); else mats.AddRange(v.anchor.GetComponent<YogaHall>().Mats());
             if (mats.Count > 0) return OnMesh(mats[seat % mats.Count].transform.position + Vector3.up);
         }
+        // LAS SESIONES DE TODOS: cada uno, una plaza de las filas de sillas de la sala (AreaSeat con el id de la actividad), delante de su asiento.
+        if (r.entry != null && WeeklySessions.ContainsKey(r.entry.activity.id))
+        {
+            int left = seat;
+            foreach (AreaSeat row in v.anchor.GetComponentsInChildren<AreaSeat>())
+            {
+                if (row.activity != r.entry.activity.id) continue;
+                if (left < row.seats) return OnMesh(row.transform.TransformPoint(new Vector3((left - (row.seats - 1) * 0.5f) * 0.7f, 1f, -0.55f)));
+                left -= row.seats;
+            }
+        }
         // (2026-11-04) EL MAESTRO de la clase (el baile: Panterilia o Gohageneis) se pone DELANTE de su grupo, a 1,5 m de la primera fila.
         if (r.entry != null && r.entry.lead) return OnMesh(v.anchor.TransformPoint(new Vector3(((v.index % 3) - 1) * 5f, 1f, 0f - (v.index / 3 % 2) * 4f)));
         // Un área: cada actividad en su zona (−5, 0, +5 m) y cada plaza en una rejilla de 1,6 m.
@@ -618,6 +653,7 @@ public class LeisureDirector : MonoBehaviour
                 return;
             }
             r.arrivedAt = Time.time;
+            if (r.entry.activity.together && WeeklySessions.ContainsKey(r.entry.activity.id)) MarkAttendance(r.entry.activity.id, r.entry.day, g.name.Replace("_Post", ""));
             Debug.Log($"[Horario] {TC.Hour:00.0} h · «{g.name}» llega a «{r.entry.activity.title}» ({r.venue.title}) tras {r.walked:0} m andando{(r.flown > 1f ? $" y {r.flown:0} m en alfombra" : "")}.");
         }
         // HACERLA: su postura o su gesto, mirando al centro del sitio.

@@ -74,8 +74,8 @@ santuario propio, no una zona del Subterráneo).
 | Santuario | Peligro | Topología | Notas |
 |---|---|---|---|
 | **Terrestre** (origen) | Bajo | Unido alrededor de una plaza central | Hub permanente. Fauna tipo animales reales, inofensiva. |
-| **Marino** | Medio→Alto (por profundidad) | Vertical | Burbuja/cúpula de aire bajo el agua. Ver §3.1. |
-| **Aéreo** | Medio | Muy disperso | Islas/plataformas separadas; viajes entre ellas. |
+| **Marino** | Medio→Alto (por profundidad) | Vertical | Burbuja/cúpula de aire bajo el agua. Ver §3.1. **Hecho en parte (2026-11-05):** escena `Santuario_Marino`, con las cavernas y el refugio ([sitio-nuclear.md](sitio-nuclear.md) §20–§21). |
+| **Aéreo** | Medio | Muy disperso | Islas/plataformas separadas; viajes entre ellas. **Hecho en parte (2026-11-05):** escena `Santuario_Aereo`, con la lanzadera y el parque energético; cerca del Terrestre, en territorio frío, no en una montaña lejana ([sitio-nuclear.md](sitio-nuclear.md) §23). |
 | **Subterráneo** | Alto | Unido | Descenso vertical por roca cada vez más caliente; da paso al Núcleo. |
 | **Núcleo** | Máximo | Todo en un castillo (2 capas) | Endgame. Ver §3.2. |
 

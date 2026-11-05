@@ -143,19 +143,14 @@ public static partial class SampleSceneBuilder
         BuildMagnate(root.transform);            // LA MAGNATE: maestra-guardiana (estado infinito; pacifica; enseña yoga al rezagado). docs/anyma-factory-and-control.md
         BuildLinduarda(root.transform);          // LINDUARDA (enfermería): guardiana de salud emergente (status→vacuna/analiza al que tenga HealthRecord false, p.ej. Kushal)
         BuildPatrolPosts(root.transform);          // los puestos de vigía de la patrulla
-        BuildLaunchSite(root.transform);          // LANZADERA DE COHETES: casquete artificial lejos del santuario y su árbol reforzado, por encima de todo (docs/lanzadera-de-cohetes.md)
-        // (2026-11-04) La máquina de virtualización del control de misión (Musk en Hawthorne, re-apuntado por la alerta de piso nuevo): la
-        // lanzadera se levanta después de BuildMeditationContent, así que su máquina se cablea aquí.
-        WireMeditationArea(root.transform, "Control_de_mision", LaunchSite.ControlArea, new Color(0.45f, 0.55f, 0.7f), MissionKind.Channel, null, virtualOnly: true);
         ResidentialBuilder.Build(root.transform, new Vector3(-60f, 0f, 95f));   // ARBOLEDA RESIDENCIAL: un dormitorio elevado por persona
         BuildGourmetDining(root.transform);      // RESTAURANTE: el comedor gourmet para 30, en la misma plataforma que la cocina abierta
         RelocateTanks();       // los tanques, donde quedan 2 m libres con todos los muebles ya puestos
         PlaceCarpetAreas();    // alfombras voladoras: un área en cada piso y el piso de alfombras en el techo (ya con los muebles puestos)
-        FinishLaunchSite();    // la corona de lanzamiento sobre el techo de su árbol, y la regla de altura
         FinishNuclearSite();   // el sitio nuclear: contención, agua pasiva, chimenea, vigilancia y exclusión (docs/sitio-nuclear.md)
         SpotAtCarpets("CocinaSpot", "Kitchen_Area");   // la Magnate deja al nuevo donde se llega a la cocina: junto a sus alfombras
         PlaceRooftopSolar();   // paneles en el piso más alto de cada edificio, en un borde libre (antes del bosque: sus ramas los esquivan)
-        FinishEnergySite();   // el Parque Energético: las demandas de los pisos, el campo solar en proporción, viento, mareal y almacén (docs/energia.md)
+        BuildAereoDock(root.transform);   // el muelle del Santuario Aéreo y la lógica de la energía (docs/sitio-nuclear.md §23)
         PlaceRooftopOrchards();   // FRUTALES en maceta en el resto de cada techo, con su punto de cuidados (docs/jardines-frutales.md)
         BuildMedicalSubmarines(root.transform);   // SUBMARINO-AMBULANCIA anfibio y LEVIATÁN de animales gigantes (docs/submarinos-medicos.md)
         BuildIceFlora(root.transform);           // FLORA de hielo: árbol carnívoro (señuelo+sopor) + abejas de las nieves — docs/ice-sanctuary-ecology.md
@@ -168,7 +163,6 @@ public static partial class SampleSceneBuilder
         PlaceGroundCarpetAreas();        // al pie de cada edificio, en el hielo (ya hecho), sus alfombras para subir
         FurnitureSpacing.Report();       // muebles sin su pasillo mínimo (máquinas, mesas, camas…): aviso por consola
         EnsureFloorForms();              // cada piso con su forma finalizada y su forma en construcción (FloorForms; los microcosmos, sobre la finalizada)
-        ValidateLaunchHeight("al final del Blockout");   // la regla de la lanzadera, con todo lo elevado ya puesto (si algo creció, sube la plataforma)
         ValidateNuclearSite("al final del Blockout");   // la regla del sitio nuclear, con todo ya puesto
         ValidateEnergySite("al final del Blockout");   // oferta ≥ demanda, con todos los pisos ya puestos (docs/energia.md)
         // (2026-11-04) ALERTA DE PISO NUEVO (manual §11): TODOS los pisos de la escena (también los que no salen de BuildAreaStructures,
@@ -3515,8 +3509,6 @@ public static partial class SampleSceneBuilder
         _nuclearPowerArea = nuc.transform;
         BuildPhysicsHall(plant.transform);
         BuildNuclearUpperFloors();
-        // EL PARQUE ENERGÉTICO (Berón 2026-11-05; docs/energia.md): su casquete y su árbol bajo; el campo, las turbinas y el almacén, al final (FinishEnergySite).
-        areas.Add(BeginEnergyTree(areasGroup.transform));
         // Los EDIFICIOS (sus plantas bajas): sin puentes ni escaleras, cada uno con sus alfombras (docs/alfombras-plan.md).
         var ground = new List<SanctuaryArea>();   // (todos son edificios-árbol: llevan sus alfombras en el techo y en el suelo)
         // Techo de cada edificio: sobre su piso MÁS ALTO (la cadena entera); encima va su techo de alfombras, con sus paneles.

@@ -71,3 +71,7 @@ Está en `AreaDesign.All`, con su prueba (grupo 77). Criterio: investigado y ≥
 **Propuesta para lo que falta** (Huerto y Construcción, ya hechos el 2026-11-05): El Hospital, con medicina de varias culturas, pide cuidado: solo lo que tenga evidencia.
 
 Los microcosmos ya cumplen F14 en lo principal: cada pueblo lleva su estilo y sus fuentes (`MicroStyles`, planos). Los «esbozos» de `MicroStoryMaps` aún no.
+
+## La sesión semanal (2026-11-05)
+
+Es una sesión de verdad: todos los miembros, una vez a la semana, el primer día a las 18 h, cada uno en una plaza de las filas y con asistencia. Ver [horario-libre.md](horario-libre.md).

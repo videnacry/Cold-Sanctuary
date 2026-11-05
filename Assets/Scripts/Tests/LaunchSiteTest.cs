@@ -27,9 +27,10 @@ public class LaunchSiteTest : MonoBehaviour, ITestUnit
     public IEnumerator Run()
     {
         TestProbe.Begin("Lanzadera de cohetes: sitio, regla de altura, validador, contención, pisos y acceso");
+        yield return AereoLink.LoadForTest();   // (está en el Santuario Aéreo)
         LaunchSite ls = FindAnyObjectByType<LaunchSite>();
         ArbolCampos lt = ArbolCampos.All.FirstOrDefault(a => a != null && a.building == LaunchHeightRule.Building);
-        if (ls == null || lt == null) { TestProbe.Check("hay una lanzadera de cohetes (su árbol y su plataforma)", false); TestProbe.End(); yield break; }
+        if (ls == null || lt == null) { TestProbe.Check("hay una lanzadera de cohetes (su árbol y su plataforma): Build Santuario Aéreo", false); TestProbe.End(); yield break; }
 
         // ── 1. SITIO ──
         float nearestTree = ArbolCampos.All.Where(a => a != null && a != lt).Select(a => Vector2.Distance(new Vector2(a.transform.position.x, a.transform.position.z), new Vector2(lt.transform.position.x, lt.transform.position.z))).DefaultIfEmpty(9999f).Min();
@@ -87,8 +88,7 @@ public class LaunchSiteTest : MonoBehaviour, ITestUnit
             $"fábrica {fab}, control {(ctl != null)}, {consoles} puestos, {missions.Count} misiones");
 
         // ── 6. ACCESO: alfombras y el submarino de obra ──
-        int pads = FindObjectsByType<CarpetPad>(FindObjectsSortMode.None).Count(p => p != null && p.building == LaunchHeightRule.Building);
-        TestProbe.Check("se llega en alfombra (suelo del casquete, techo y plataforma; sin escaleras)", pads >= 3, $"{pads} zonas de alfombras");
+        TestProbe.Check("se llega por el muelle aéreo, y tiene su andén para volver", AereoLink.Instance != null && AereoBase.Instance != null && AereoBase.Instance.launchArrival != null);
         ConstructionSubmarine sub = ConstructionSubmarine.Instance;
         TreeLevel garage = lt.levels.FirstOrDefault(l => l.deck != null && l.deck.name == "Garaje_lanzadera");
         if (sub == null || garage == null) TestProbe.Check("el submarino de obra llega por la vía marina al garaje de la lanzadera", false, $"submarino {sub != null}, garaje {garage != null}");
@@ -108,6 +108,7 @@ public class LaunchSiteTest : MonoBehaviour, ITestUnit
             while (sub.Now != ConstructionSubmarine.State.Parked && Time.time - t1 < 900f && Time.realtimeSinceStartup - r1 < 300f) yield return null;
             Time.timeScale = old;
         }
+        yield return AereoLink.UnloadForTest();
         TestProbe.End();
     }
 

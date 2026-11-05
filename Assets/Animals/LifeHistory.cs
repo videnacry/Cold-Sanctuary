@@ -146,6 +146,42 @@ public class LifeHistory
             eggLabel = "La hembra forma el huevo (cópula → puesta)", layLabel = "Pone el huevo en el nido de guijarros",
             incubateLabel = "El macho hace el primer turno largo en el nido (ella se va al mar)", hatchLabel = "Eclosión (nace el polluelo)",
             sources = "Davis 1988 (Auk 105:428); NZ Birds Online (Adelie penguin); Animal Diversity Web" } },
+        // Págalo polar (Stercorarius maccormicki): docs/fauna-fria-santuarios.md. Como el petrel: nido en roca y un turno de incubación.
+        { "PolarSkua", new LifeHistory {
+            water = Water.SeaOrSnow, drinkHours = 8f, waterLabel = "Bebe agua de mar o come nieve",
+            care = Care.Regurgitation, biparental = true, careLabel = "Crianza: los padres van y vienen a alimentar al pollo",
+            youngFollow = true, followDistance = 1.5f, followLabel = "El pollo, en el nido, con sus padres",
+            eggs = true, incubationMonths = 0.95f, incubator = Incubator.Male, eggNest = true, eggChillHours = 4f,
+            eggLabel = "La hembra forma el huevo", layLabel = "Pone en su nido de roca",
+            incubateLabel = "El macho hace el turno en el nido", hatchLabel = "Eclosión (nace el pollo)",
+            sources = "docs/fauna-fria-santuarios.md" } },
+        // Petrel damero (Daption capense): docs/fauna-fria-santuarios.md. Como el petrel: nido en roca y un turno de incubación.
+        { "CapePetrel", new LifeHistory {
+            water = Water.SeaOrSnow, drinkHours = 8f, waterLabel = "Bebe agua de mar o come nieve",
+            care = Care.Regurgitation, biparental = true, careLabel = "Crianza: los padres van y vienen a alimentar al pollo",
+            youngFollow = true, followDistance = 1.5f, followLabel = "El pollo, en el nido, con sus padres",
+            eggs = true, incubationMonths = 1.5f, incubator = Incubator.Male, eggNest = true, eggChillHours = 4f,
+            eggLabel = "La hembra forma el huevo", layLabel = "Pone en su nido de roca",
+            incubateLabel = "El macho hace el turno en el nido", hatchLabel = "Eclosión (nace el pollo)",
+            sources = "docs/fauna-fria-santuarios.md" } },
+        // Albatros viajero (Diomedea exulans): docs/fauna-fria-santuarios.md. Como el petrel: nido en roca y un turno de incubación.
+        { "WanderingAlbatross", new LifeHistory {
+            water = Water.SeaOrSnow, drinkHours = 8f, waterLabel = "Bebe agua de mar o come nieve",
+            care = Care.Regurgitation, biparental = true, careLabel = "Crianza: los padres van y vienen a alimentar al pollo",
+            youngFollow = true, followDistance = 1.5f, followLabel = "El pollo, en el nido, con sus padres",
+            eggs = true, incubationMonths = 2.6f, incubator = Incubator.Male, eggNest = true, eggChillHours = 4f,
+            eggLabel = "La hembra forma el huevo", layLabel = "Pone en su nido de roca",
+            incubateLabel = "El macho hace el turno en el nido", hatchLabel = "Eclosión (nace el pollo)",
+            sources = "docs/fauna-fria-santuarios.md" } },
+        // Charrán ártico (Sterna paradisaea): docs/fauna-fria-santuarios.md. Como el petrel: nido en roca y un turno de incubación.
+        { "ArcticTern", new LifeHistory {
+            water = Water.SeaOrSnow, drinkHours = 8f, waterLabel = "Bebe agua de mar o come nieve",
+            care = Care.Regurgitation, biparental = true, careLabel = "Crianza: los padres van y vienen a alimentar al pollo",
+            youngFollow = true, followDistance = 1.5f, followLabel = "El pollo, en el nido, con sus padres",
+            eggs = true, incubationMonths = 0.73f, incubator = Incubator.Male, eggNest = true, eggChillHours = 4f,
+            eggLabel = "La hembra forma el huevo", layLabel = "Pone en su nido de roca",
+            incubateLabel = "El macho hace el turno en el nido", hatchLabel = "Eclosión (nace el pollo)",
+            sources = "docs/fauna-fria-santuarios.md" } },
         // PETREL DE LAS NIEVES (Pagodroma nivea). Un huevo en grieta o repisa de roca, incubación 41–49 d por los dos (aquí el macho hace el turno que vale por todos,
         // como en Adelia), pollo ~46 d, primera cría a los ~11 años (WorldSpecies; BirdForum).
         { "SnowPetrel", new LifeHistory {

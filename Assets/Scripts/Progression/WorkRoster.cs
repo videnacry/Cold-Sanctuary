@@ -230,6 +230,7 @@ public class WorkRoster
     // exista. Devuelve el orden del personal para repartir después las del santuario. Saber iniciar es una tarea más de la lista.
     List<Worker> PlanInitiations(DayPlan plan, Dictionary<string, List<Mission>> pools, Dictionary<Worker, float> used)
     {
+        _busy.Clear();
         var options = pools.Values.SelectMany(p => p)
             .Where(m => string.IsNullOrEmpty(m.owner) && !FruitGardener.IsRound(m.id))
             .GroupBy(m => MissionRequirements.KnowledgeKey(m.id)).Select(g => g.First()).ToList();
@@ -251,7 +252,7 @@ public class WorkRoster
             var classes = new List<Lesson>();
             foreach (Worker w in order)
             {
-                if (w.clone || System.Math.Abs(used[w] - hour) > 1e-3f || done[w] + LessonHours > InitiationCap(w, plan.day) + 1e-3f) continue;
+                if (w.clone || used[w] > hour + 1e-3f || Busy(w, hour) || done[w] + LessonHours > InitiationCap(w, plan.day) + 1e-3f) continue;
                 var mine = options.Where(m => Wants(w, m)).ToList();
                 if (mine.Count == 0) continue;
                 Lesson c = classes.Where(x => x.learners.Count < LessonGroupSize && mine.Contains(x.real)).OrderByDescending(x => Score(x.real)).FirstOrDefault();
@@ -269,14 +270,17 @@ public class WorkRoster
                 used[w] = hour + LessonHours; done[w] += LessonHours;
                 plan.work.Add(new Assignment { worker = w, mission = c.mission, start = clock, lesson = true });
             }
-            // QUIÉN INICIA: quien sepa y esté libre a esa hora; ella, si no hay nadie. Kushal no: el jugador no tiene cómo dar la clase, y sin él no habría nadie delante.
+            // QUIÉN INICIA: quien sepa y esté libre a ESA hora (no hace falta que su jornada vaya por ahí: la hora queda reservada y las tareas se colocan alrededor,
+            // con PlaceFor), el que menos clases lleve hoy; ella, si no hay nadie. Kushal no: el jugador no tiene cómo dar la clase, y sin él no habría nadie delante.
             int magnates = 0;
             foreach (Lesson c in classes)
             {
-                Worker t = !instructorsTeach ? null : workers.FirstOrDefault(w => w.name != "Player" && System.Math.Abs(used[w] - hour) < 1e-3f && CanInitiate(w, c.real) && !c.learners.Contains(w));
+                Worker t = !instructorsTeach ? null : workers.Where(w => w.name != "Player" && used[w] <= hour + 1e-3f && !Busy(w, hour) && CanInitiate(w, c.real) && !c.learners.Contains(w)).OrderBy(w => _busy.TryGetValue(w, out var b) ? b.Count : 0).FirstOrDefault();
                 if (t != null)
                 {
-                    c.instructor = t; c.teacher = t.name; used[t] = hour + LessonHours;
+                    c.instructor = t; c.teacher = t.name;
+                    if (!_busy.TryGetValue(t, out var mine)) _busy[t] = mine = new HashSet<int>();
+                    mine.Add(hour);
                     Mission inst = c.mission.Copy(); inst.id = InstructorPrefix + c.real.id; inst.title = $"Iniciar a {c.learners.Count} en: {c.real.title}";
                     plan.work.Add(new Assignment { worker = t, mission = inst, start = clock, lesson = true });
                 }
@@ -296,7 +300,7 @@ public class WorkRoster
             foreach (Mission m in pool.Where(x => !string.IsNullOrEmpty(x.owner)).ToList())
             {
                 Worker w = Find(m.owner);
-                if (w == null || Place(used[w], m.hours, out _) < 0f) continue;
+                if (w == null || PlaceFor(w, used[w], m.hours, out _) < 0f) continue;
                 pool.Remove(m);
                 Assign(plan, w, m, used);
             }
@@ -347,13 +351,14 @@ public class WorkRoster
                 if (roles.Any(m => Place(f, m.hours, out _) != f)) continue;
                 crew.Clear(); free = f;
                 // (2026-11-04) EL PROFESIONAL del área (el maestro de yoga en la clase), si está libre y no es recién llegado, entra y la dirige.
-                pro = useProfessions ? workers.FirstOrDefault(w => !w.clone && used[w] <= f + 1e-3f && !IsNewcomer(w, plan.day) && Professions.Practises(w.name, roles[0].area, roles[0].id)) : null;
+                float span = roles.Max(m => m.hours);
+                pro = useProfessions ? workers.FirstOrDefault(w => !w.clone && used[w] <= f + 1e-3f && PlaceFor(w, f, span, out _) == f && !IsNewcomer(w, plan.day) && Professions.Practises(w.name, roles[0].area, roles[0].id)) : null;
                 if (pro != null) crew.Add(pro);   // (si hay papel que dirige, lo dirige; en una obra, entra el jefe de obra nueva)
                 int newcomers = 0;
                 for (int i = 0; crew.Count < roles.Count && i < workers.Count; i++)
                 {
                     Worker w = workers[(offset + i) % workers.Count];
-                    if (used[w] > f + 1e-3f || crew.Contains(w)) continue;
+                    if (used[w] > f + 1e-3f || PlaceFor(w, f, span, out _) != f || crew.Contains(w)) continue;
                     if (IsNewcomer(w, plan.day)) { if (newcomers >= support) continue; newcomers++; }   // al recién llegado, solo un papel de apoyo
                     crew.Add(w);
                 }
@@ -406,7 +411,7 @@ public class WorkRoster
         Mission best = null;
         foreach (Mission m in pool)
         {
-            if (Place(used, m.hours, out _) < 0f) continue;
+            if (PlaceFor(w, used, m.hours, out _) < 0f) continue;
             if (w.name == "Player" && FruitGardener.IsRound(m.id)) continue;   // (2026-11-05) la ronda de frutales la hace la conducta FruitGardener, que no mueve al jugador: con Kushal, ese día se quedaba sin hacer
             if (best == null) { best = m; continue; }
             int cm = w.Count(m.id), cb = w.Count(best.id);
@@ -418,7 +423,7 @@ public class WorkRoster
     void Assign(DayPlan plan, Worker w, Mission m, Dictionary<Worker, float> used)
     {
         // Lo que no cabe en lo que queda de su franja empieza en la siguiente (no se parte en la comida ni en el entrenamiento).
-        float u = Place(used[w], m.hours, out float start);
+        float u = PlaceFor(w, used[w], m.hours, out float start);
         var a = new Assignment { worker = w, mission = m, start = start, firstTime = initiationModel ? !Learned(w, m) : !w.Knows(m.id) };
         plan.work.Add(a);
         used[w] = u + m.hours;
@@ -437,6 +442,27 @@ public class WorkRoster
         {
             float u = System.Math.Max(used, b.from);
             if (u + h <= b.to + 1e-4f) { clock = b.clock + u - b.from; return u; }
+        }
+        clock = -1f;
+        return -1f;
+    }
+
+    // Las horas en que alguien ya da una clase: sus tareas se colocan alrededor.
+    readonly Dictionary<Worker, HashSet<int>> _busy = new Dictionary<Worker, HashSet<int>>();
+    bool Busy(Worker w, int hour) => _busy.TryGetValue(w, out var b) && b.Contains(hour);
+
+    /// <summary><see cref="Place"/> para una persona: salta las horas en que da una clase.</summary>
+    public float PlaceFor(Worker w, float used, float h, out float clock)
+    {
+        float from = used;
+        for (int i = 0; i < 6; i++)
+        {
+            float u = Place(from, h, out clock);
+            if (u < 0f) return -1f;
+            int hit = -1;
+            for (int k = (int)u; k < u + h - 1e-3f; k++) if (Busy(w, k)) hit = k;
+            if (hit < 0) return u;
+            from = hit + 1f;
         }
         clock = -1f;
         return -1f;

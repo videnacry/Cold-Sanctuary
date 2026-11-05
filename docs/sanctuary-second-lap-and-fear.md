@@ -89,11 +89,8 @@ Hoy en `1santuary`: **oso, lobo, conejo, foca, ballena** (+ existen zorro, cierv
 - **S1 Hielo *(CONFIRMADO):*** oso polar · lobo (ártico) · foca · ballena · **conejo → liebre ártica** · **+
   pingüino** · **+ leopardo (de las nieves)**.
 - **S1 Selva (V2):** tigre de Sumatra · orangután · jaguar · tapir · guacamayo.
-- **S2 someras:** tortuga marina · dugongo/manatí · foca monje · tiburón. **abisal (V2):** cangrejo yeti ·
-  **caracol de ventilas** (scaly-foot / *Chrysomallon* — real y amenazado, encaja con el snail que ya hay) ·
-  peces abisales · calamar.
-- **S3 montaña:** leopardo de las nieves · cóndor · panda rojo · íbice. **cielo (V2):** águila filipina · cóndor
-  de California · grulla.
+- **S2 Marino (Berón 2026-11-05: fauna fría y nativa):** pez de hielo · austromerluza antártica · calamar colosal · araña de mar gigante · cangrejo yeti · kril. **Hecho:** [fauna-fria-santuarios.md](fauna-fria-santuarios.md).
+- **S3 Aéreo (ídem):** págalo polar · petrel damero · albatros viajero · charrán ártico. **Hecho**, a falta de la escena.
 - **S4 sabana:** elefante · león · rinoceronte negro · guepardo · hipopótamo. **volcán (V2):** extremófilos ·
   insectos · caracol de ventilas. *(volcán tiene poca fauna real → V2 va bien con lo amplificado/mágico)*
 

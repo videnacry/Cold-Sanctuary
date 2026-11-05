@@ -13,6 +13,8 @@ public class EnergySite : MonoBehaviour
     [Tooltip("Todas las plazas de mesa solar, en orden: las primeras 'installed' están montadas; las demás, ocultas hasta que Fernando las instale.")]
     public List<Transform> tables = new List<Transform>();
     public int installed;
+    /// <summary>Plazas de mesa del campo. Las mesas están en el Santuario Aéreo: <see cref="tables"/> solo se llena mientras esa escena está cargada (<see cref="Attach"/>).</summary>
+    public int tableSlots;
     public List<WindTurbineUnit> turbines = new List<WindTurbineUnit>();
     public List<TidalTurbineUnit> tidal = new List<TidalTurbineUnit>();
     [Tooltip("Los contenedores de baterías y el silo (sitios de la misión del almacén).")]
@@ -56,7 +58,7 @@ public class EnergySite : MonoBehaviour
     int _figureSpot;
     float _figuresUntil = -1f, _scareAt = -999f;
 
-    public int Pending { get { Report(); return Mathf.Clamp(Last.tablesRequired - installed, 0, tables.Count - installed); } }
+    public int Pending { get { Report(); return Mathf.Clamp(Last.tablesRequired - installed, 0, tableSlots - installed); } }
     public int Faults => _faults.Count;
     public float FieldKWp => installed * EnergyRule.TableKWp;
 
@@ -66,14 +68,13 @@ public class EnergySite : MonoBehaviour
     void Start()
     {
         EnergyRule.DeclareMissing();
-        for (int i = 0; i < tables.Count; i++) if (tables[i] != null) tables[i].gameObject.SetActive(i < installed);
         Validate("al empezar");
     }
 
     /// <summary>El balance ahora, sin registrar nada.</summary>
     public EnergyRule.Report Report()
     {
-        int free = Mathf.Max(0, tables.Count - installed);
+        int free = Mathf.Max(0, tableSlots - installed);
         return Last = EnergyRule.Check(FieldKWp + EnergyRule.RooftopKWp(), installed, free);
     }
 
@@ -122,7 +123,26 @@ public class EnergySite : MonoBehaviour
         Debug.Log($"[Energía] Avería en la mesa solar {i}.");
     }
 
-    void Beacon(int i, bool on) { Transform b = tables[i] != null ? tables[i].Find("Aviso_averia") : null; if (b != null) b.gameObject.SetActive(on); }
+    void Beacon(int i, bool on) { Transform b = i < tables.Count && tables[i] != null ? tables[i].Find("Aviso_averia") : null; if (b != null) b.gameObject.SetActive(on); }
+
+    /// <summary>La escena de arriba presta sus piezas. La lógica no depende de ellas: sin ellas, sigue dando luz.</summary>
+    public void Attach(AereoBase b)
+    {
+        tables = b.tables; figures = b.figures; figureSpots = b.figureSpots; dragon = b.dragon; storage = b.storage;
+        for (int i = 0; i < tables.Count; i++) if (tables[i] != null) { tables[i].gameObject.SetActive(i < installed); Beacon(i, false); }
+        foreach (int i in _faults) Beacon(i, true);
+        foreach (Transform f in figures) if (f != null) f.gameObject.SetActive(false);
+        for (int i = 0; i < turbines.Count && i < b.rotors.Count; i++) { turbines[i].rotor = b.rotors[i]; turbines[i].blackBlade = b.blades[i]; turbines[i].detector = b.detectors[i]; }
+        for (int i = 0; i < tidal.Count && i < b.tidalRotors.Count; i++) { tidal[i].rotor = b.tidalRotors[i]; tidal[i].sonar = b.tidalSonars[i]; }
+    }
+
+    /// <summary>La escena se descarga: suelta sus piezas.</summary>
+    public void Detach(AereoBase b)
+    {
+        tables = new List<Transform>(); figures = new List<Transform>(); figureSpots = new List<Vector3>(); dragon = null; storage = null;
+        foreach (WindTurbineUnit u in turbines) if (u != null) { u.rotor = null; u.blackBlade = null; u.detector = null; }
+        foreach (TidalTurbineUnit u in tidal) if (u != null) { u.rotor = null; u.sonar = null; }
+    }
 
     /// <summary>Lo que dan el sol, el viento y la marea en ese momento, y el reparto: reactor, baterías, arena.</summary>
     public void Step(float t, float doy, float hour, float dtHours)
@@ -132,7 +152,7 @@ public class EnergySite : MonoBehaviour
         WindKW = 0f; foreach (WindTurbineUnit u in turbines) if (u != null) { u.Tick(wind); WindKW += u.OutputKW(wind); }
         TidalKW = 0f; foreach (TidalTurbineUnit u in tidal) if (u != null) { u.Tick(current); TidalKW += u.OutputKW(current); }
         DemandKW = EnergyRule.DemandKW();
-        float gen = SolarKW + WindKW + TidalKW;
+        float gen = (SolarKW + WindKW + TidalKW) * AereoRule.CableEfficiency;   // por el cable, con su pérdida
         bool reactor = !reactorForcedOff && (NuclearSite.Instance == null || NuclearSite.Instance.State == NuclearSite.Alert.Normal);
         // Sin reactor se apaga lo no esencial: las baterías solo sostienen lo esencial.
         float need = reactor ? DemandKW : Mathf.Min(DemandKW, EnergyRule.EssentialKW());
@@ -225,7 +245,7 @@ public class EnergySite : MonoBehaviour
     public int Install(string who)
     {
         int n = Mathf.Min(EnergyRule.TablesPerShift, Pending);
-        for (int i = 0; i < n; i++) { if (tables[installed] != null) tables[installed].gameObject.SetActive(true); installed++; }
+        for (int i = 0; i < n; i++) { if (installed < tables.Count && tables[installed] != null) tables[installed].gameObject.SetActive(true); installed++; }
         if (n > 0) { Installs += n; Validate($"{who} instala {n} mesas"); }
         return n;
     }
@@ -299,9 +319,10 @@ public class EnergySite : MonoBehaviour
         if ((missionId == "ene_eolica" || missionId == "ene_ronda_aves") && s.turbines.Count > 0) t = s.turbines[hash % s.turbines.Count].transform;
         else if (missionId == "ene_mareal" && s.tidal.Count > 0) t = s.tidal[hash % s.tidal.Count].transform.parent;
         else if (missionId == "ene_almacen" || missionId == "ene_disuasion") t = s.storage;
+        else if (s.tables.Count == 0) return null;   // (el campo solo existe con la escena cargada)
         else if (missionId == "sol_instalacion" && s.installed < s.tables.Count) t = s.tables[s.installed];
         else if (missionId == "sol_reparacion" && s._faults.Count > 0) foreach (int i in s._faults) { t = s.tables[i]; break; }
-        else if (s.installed > 0) t = s.tables[hash % s.installed];
+        else if (s.installed > 0) t = s.tables[hash % Mathf.Min(s.installed, s.tables.Count)];
         if (t == null) return null;
         Vector3 toCentre = EnergyRule.Center - t.position; toCentre.y = 0f;
         Vector3 p = t.position + toCentre.normalized * 6f + Vector3.forward * 2f; p.y = 0f;

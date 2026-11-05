@@ -454,7 +454,7 @@ public class Swarm : MonoBehaviour, ITarget, IEdible
 
     public void Graze(float amount) => Hurt(amount);
 
-    public static string UnitName(SwarmModels.Species sp) => sp == SwarmModels.Species.Clam || sp == SwarmModels.Species.Mya ? "Almeja" : sp == SwarmModels.Species.IceKrill ? "Kril" : sp == SwarmModels.Species.Themisto ? "Anfipodo" : sp == SwarmModels.Species.Cyanea ? "Medusa" : sp == SwarmModels.Species.SnowBee ? "Abeja" : sp == SwarmModels.Species.Krill ? "Kril" : sp == SwarmModels.Species.SilverFish ? "Pez" : "Medusa";
+    public static string UnitName(SwarmModels.Species sp) => sp == SwarmModels.Species.Icefish || sp == SwarmModels.Species.Toothfish ? "Pez" : sp == SwarmModels.Species.ColossalSquid ? "Calamar" : sp == SwarmModels.Species.SeaSpider ? "Arana" : sp == SwarmModels.Species.YetiCrab ? "Cangrejo" : sp == SwarmModels.Species.Clam || sp == SwarmModels.Species.Mya ? "Almeja" : sp == SwarmModels.Species.IceKrill ? "Kril" : sp == SwarmModels.Species.Themisto ? "Anfipodo" : sp == SwarmModels.Species.Cyanea ? "Medusa" : sp == SwarmModels.Species.SnowBee ? "Abeja" : sp == SwarmModels.Species.Krill ? "Kril" : sp == SwarmModels.Species.SilverFish ? "Pez" : "Medusa";
 
     /// <summary>Crea un grupo nuevo (en juego o desde un constructor): el padre es un punto vacío con su Swarm.</summary>
     public static T Create<T>(Transform parent, string name, Vector3 pos, SwarmKind kind, SwarmModels.Species sp, float count, float max, float spread) where T : Swarm

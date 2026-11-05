@@ -61,7 +61,7 @@ No encontré cómo son por dentro las salas del Pacífico ni la de la Patrulla d
 
 - **Misión nueva `gua_sala`** (obligatoria, 2 h), en el sitio «Sala de guardia». Al acabar firma el parte en el registro.
 - **Sigue igual**: la patrulla de `PuestoVigia_*` (ahora bajo `PuestosVigia_AUTO`), el alimentador, su rotación y el uniforme.
-- La profesión de Gohageneis y Nesvitor incluye la sala. Tote no.
+- La profesión de Gohageneis, Nesvitor y Tote incluye la sala: Berón hizo a Tote guardia.
 - Sube a 77 misiones y 20 obligatorias (grupo 61).
 
 ## Lo que falta
