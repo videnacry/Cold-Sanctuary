@@ -217,7 +217,7 @@ public static partial class SampleSceneBuilder
         ("Malena", "Malena (pediatra)", 68f, new Color(0.86f, 0.74f, 0.62f), 1.0f, 1.0f, 1.0f, 1.0f),
         // (2026-11-05) Pendientes de foto. Consol: «muy flexible» (Berón), de ahí su agilidad y su resistencia; Fernando, neutro.
         ("Consol", "Consol (maestra de Ashtanga; pendiente de foto)", 70f, new Color(0.42f, 0.3f, 0.5f), 1.0f, 1.35f, 1.15f, 0.95f),
-        ("Fernando", "Fernando (paneles solares; pendiente de foto)", 72f, new Color(0.85f, 0.55f, 0.15f), 1.05f, 1.0f, 1.0f, 1.0f),
+        ("Fernando", "Fernando (instalador y reparador de paneles solares; pendiente de foto)", 72f, new Color(0.85f, 0.55f, 0.15f), 1.05f, 1.0f, 1.0f, 1.0f),
     };
 
     /// <summary>LOS FAMOSOS QUE SE FUERON A SUS MICROCOSMOS (Berón 2026-11-04: «los personajes famosos, elon musk, sadhguru, y demás

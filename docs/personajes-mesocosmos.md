@@ -35,6 +35,32 @@ Sus microcosmos (rama `claude/edif-famosos`): [microcosmos-famosos.md](microcosm
 - Las estatuas de los pisos de yoga (Buda, Ganesha, Adiyogi, Patanjali) son decoración, no personal.
 - Newton, Curie, Einstein, Bruce Lee y los demás personajes históricos ya viven en sus microcosmos.
 
+## Consol y Fernando (Berón, 2026-11-05)
+
+Reglas de creación de personajes y auditoría de puestos: [reglas-personajes.md](reglas-personajes.md). Ficha de cada persona: `docs/personajes/`.
+
+| Persona | Profesión | Misiones de su profesión | Sale en |
+|---|---|---|---|
+| **Consol** | **Maestra jefa de Ashtanga** (`WorkdayDirector.AshtangaTeacher`) | Sala de Yoga: `yog_ashtanga` (misión nueva, 0,5 h: preparar la clase). Da la clase de las 14 h de lunes a viernes y guía el Ashtanga autoguiado de las 20 h (`Professions.ClassLeads`) | la Sala de Yoga |
+| **Fernando** | **Instalador y reparador de paneles solares** | Energía: `sol_mantenimiento`, `sol_instalacion` y `sol_reparacion`, que genera `EnergySite` ([energia.md](energia.md), rama `claude/edif-energia`). Hasta que se integre, va por la rotación | Construcción, hasta que exista su taller en el Parque Energético |
+
+Berón: «ahora que ha llegado Consol el segundo puesto se le pondría a ella siendo que existe documentación de su gran habilidad, de hecho su
+descripción la hace candidata a ser superior a Josedrilo».
+
+**Decisión**: Consol dirige el Ashtanga y Josedrilo el Hatha, los dos jefes de su estilo. Panterilia deja el yoga: nadie tiene un puesto de yoga sin base.
+
+- **Clase de Hatha** (`yog_guia`): Josedrilo. Consol no entra en el grupo `clase_yoga`, porque su profesión nombra solo `yog_ashtanga`.
+- **Clase de Ashtanga de las 14 h**: la abre Consol en la primera sala del día (`AshtangaHead`), aunque no haya llegado aún. Sábado y domingo va al gimnasio y la abre el primero que llega. Las salas de desborde (J16) las abre el primero que llega.
+- **Su clase profunda**: [ashtanga-primary-series.md](ashtanga-primary-series.md) §Clase profunda.
+
+**Cuentas con 30 miembros y 32 residentes** (25 dueños, 6 parejas y Neo):
+- **Casas**: quedaba una libre, para Consol. Fernando estrena una **quinta tanda**: 6 casas, una por árbol, del lado de la primera y 28 m sobre ella. Hay **30 casas, 25 ocupadas y 5 libres**.
+- **Árboles de la arboleda**: de 38 a **46 m**, para sostener la quinta casa, a 37–40 m.
+- **Ring**: sigue en 6 × 6 celdas (caben 36).
+- **J16**: ningún centro cambia de pisos. El yoga da 32 esterillas por estilo, el dojo 50, el ballet 40, el Aula 48 y la calistenia 40.
+- **Hay que vigilar**: el gimnasio da 30 y ya está justo. **Con 31 miembros pide un piso más.**
+- **W9**: entran `yog_ashtanga` y, con energía, las `sol_`. El reparto tiene sitio de sobra.
+
 ## Profesiones y parejas (Berón, 2026-11-04) — lo que vale ahora
 
 Lo que dijo Berón, en dos tandas:
@@ -73,7 +99,7 @@ La profesión da a cada uno su papel sin quitar la rotación (regla J2):
 
 | Persona | Profesión | Misiones de su profesión | Sale en |
 |---|---|---|---|
-| **Josedrilo** | Maestro de yoga (`YogaTeacher`), **jefe de obra nueva** y bioconstrucción | Sala de Yoga (guía la clase); Construcción: `obra_` (las obras) y `mat_` (el material) | la tarima de Hatha tradicional |
+| **Josedrilo** | **Maestro jefe de Hatha** (`YogaTeacher`), **jefe de obra nueva** y bioconstrucción | Sala de Yoga (guía la clase); Construcción: `obra_` (las obras) y `mat_` (el material) | la tarima de Hatha tradicional |
 | **Tote** (`JefeConstruccion`) | **Jefe de reparaciones** y **guardia** | Construcción: `rep_`; Guardia | Construcción |
 | **Gohageneis** | Guardia, artes marciales y **maestro de baile** | Guardia (y su patrulla, `CarnivoreKeeper`); guía el baile (un día de cada dos) | — |
 | **Nesvitor** | **Guardia** y **agricultor** | Guardia; Huerto | el huerto |
@@ -87,7 +113,7 @@ La profesión da a cada uno su papel sin quitar la rotación (regla J2):
 | **Fausto** | **Mecánico** (la mecánica, antes de Ducristin) | Mecánica | el taller |
 | **Andrea** | **Comunicación**: los avisos del santuario y la radio | Cocina: `coc_avisos` (misión nueva) | el comedor |
 | **Irosene** | **Letras** (poesía y narración) y textil | Aula: `aul_letras` (misión nueva: clase y lecturas); Estudio Textil | el Aula |
-| **Panterilia** | **Maestra de baile**, **finanzas** y segunda maestra de yoga (`SecondYogaTeacher`) | Cocina: `coc_cuentas`; guía el baile (un día de cada dos) | el huerto |
+| **Panterilia** | **Maestra de baile** y **finanzas** (dejó el yoga el 2026-11-05) | Cocina: `coc_cuentas`; guía el baile (un día de cada dos) | el huerto |
 | **Julian** | **Dirección de proyectos**, con Alicita | Construcción: `con_proyectos` y `con_proyectos2` (misión nueva: una para cada uno) | Construcción |
 | Gallarle | Pendiente de foto y de profesión | — | con su pareja |
 
@@ -100,7 +126,7 @@ La profesión da a cada uno su papel sin quitar la rotación (regla J2):
   avisos y se hace la radio. Su papel de **entrenador del gimnasio** lo pone la rama del entrenamiento: aquí no se toca.
 - **Irosene al Aula**, como sugirió Berón: da clase de poesía y narración y lee en la sala de estudio. Deja de ser la segunda maestra de
   yoga.
-- **Panterilia segunda maestra**: es «la de la percepción», la que observa, y corregir posturas es mirar.
+- ~~**Panterilia segunda maestra**: es «la de la percepción», la que observa, y corregir posturas es mirar.~~ Era una deducción sin base; se quitó el 2026-11-05.
 - **Karen en el Aula**: no hay área de asuntos legales. La sala de estudio tiene mesas y biblioteca para el despacho, y la pizarra
   sirve para las lenguas.
 - **Los registros y la vacunación** del hospital los llevan las médicas (Lizmibet y Linduarda). Maite, como curandera, hace las plantas
@@ -133,7 +159,7 @@ Berón: Panterilia es maestra de baile y de finanzas; Gohageneis, maestro de bai
   - El sitio es la Sala de Ballet cuando está terminada y, mientras está en obras, la calistenia o el gimnasio.
 - **Jornada**: cuando la Sala de Ballet está terminada y abierta, el maestro del día da su entrenamiento (14–16 h).
   - Hasta entonces entrena como los demás.
-- **Panterilia sigue de segunda maestra de yoga.** No choca:
+- ~~Panterilia sigue de segunda maestra de yoga.~~ (Lo dejó el 2026-11-05; ver §Consol y Fernando.) Entonces no chocaba:
   - el yoga del santuario lo guía Josedrilo;
   - la clase de Ashtanga la abre el primero que llega;
   - el baile es a las 20 h y el entrenamiento de ballet, solo los días que le toca.

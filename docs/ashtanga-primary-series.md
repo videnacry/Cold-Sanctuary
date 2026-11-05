@@ -61,3 +61,27 @@ Surya A (reutiliza `SunSalutation`) → Padangusthasana → Utkatasana → Virab
 Dandasana → Paschimottanasana → Navasana → Baddha Konasana → Setu Bandhasana → Savasana. Mantenimiento 5 respiraciones.
 Las laterales/invertidas (triángulo, torsiones, vela, parada de cabeza) quedan documentadas aquí para añadir con la vista
 en Unity (requieren flexión lateral de columna y apoyos que conviene validar visualmente).
+
+## Clase profunda de Consol (2026-11-05)
+
+Berón: clases profundas, posturas largas, con variaciones y secuencias como en Ashtanga. `AshtangaPrimary.Deep`, sesión «Ashtanga profundo»:
+cuando la maestra de Ashtanga da la Primaria, `YogaClass.Begin` da esta en su lugar.
+
+1. Apertura: Surya Namaskara A.
+2. Tres posturas, cada una **8 respiraciones** (5 en la Primaria) y después su **variación, 5**:
+
+| Postura | Variación | Qué cambia en los cubos |
+|---|---|---|
+| Paschimottanasana | Paschimottanasana B (agarre de las plantas) | Columna 105° en vez de 80°, brazos 100°, cabeza 15° |
+| Baddha Konasana | Baddha Konasana B (la frente hacia el suelo) | Rodillas más abiertas, columna 75°, cabeza 20° |
+| Prasarita Padottanasana A | Prasarita Padottanasana C (manos a la espalda, brazos sobre la cabeza) | Hombros a +100° y sin apoyo de manos |
+
+3. Savasana.
+
+**El tiempo manda.** Con 1 día = 1 hora, las 2 h de entrenamiento son 5 min reales, y cada fase dura al menos 4 s. Solo la apertura son 19 fases, y
+cada postura con su variación, 28. La clase llega a una postura y media, más o menos, según lo que tarden en llegar los alumnos. Por eso:
+- **la secuencia cambia con el día**: la postura que abre rota, así que las tres se trabajan;
+- **a las 15:45 pasa a Savasana** aunque no haya acabado (`YogaClass.DeepCloseHour`): siempre cierra con la relajación. La Primaria se corta a las 16 h.
+
+**Ángulos sin ver todavía**: las tres variaciones se escribieron sin Unity. Son aproximados y hay que mirarlos en foto. Fuente de las posturas: la
+serie Primaria de este doc; las variaciones B y C son las de la serie tradicional.
