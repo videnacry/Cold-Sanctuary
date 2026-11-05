@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// EL ACCESO Y LA VIGILANCIA DE LAS CAVERNAS (docs/sitio-nuclear.md §7–§8): los instrumentos de la roca, la LÍNEA (funicular sellado de una esquina del
+/// EL ACCESO Y LA VIGILANCIA DE LAS CAVERNAS (docs/sitio-nuclear.md §7–§8): los instrumentos de la roca, la LÍNEA (funicular sellado del borde del
 /// casquete a la galería) y la SALIDA DE ESCAPE, en su propio pozo. Sin colisiones, como las cavernas: quien va dentro lo lleva <see cref="SiteLine"/>.
 /// </summary>
 public static partial class SampleSceneBuilder
@@ -76,11 +76,10 @@ public static partial class SampleSceneBuilder
     {
         Vector3 site = hx.site;
         Color conc = new Color(0.6f, 0.6f, 0.58f), steel = TreeSteel, dark = new Color(0.25f, 0.27f, 0.3f), yel = new Color(0.95f, 0.8f, 0.2f), green = new Color(0.25f, 0.7f, 0.4f);
-        // ── ARRIBA: la esquina del casquete más lejana de la galería (la del sureste es de la chimenea): así el tubo sale tendido y la mayor parte va por la roca ──
-        float inset = NuclearCapHalf - 13f;
-        Vector3[] corners = { new Vector3(-inset, 0f, -inset), new Vector3(-inset, 0f, inset), new Vector3(inset, 0f, inset) };
-        Vector3 gflat = new Vector3(gallery.x, 0f, gallery.z);
-        Vector3 top = site + corners.OrderByDescending(c => Vector3.Distance(site + c, gflat)).First();
+        // ── ARRIBA: en el borde del casquete, a lo largo de X y a la altura de la galería. Las cavernas están a ±Z de ella: el tubo tiene que salir por el PILAR
+        //    de roca (en Z se metería por el techo de una caverna o pasaría por encima del pozo del reactor). Se elige el borde más lejano: la pendiente más tendida ──
+        float edge = NuclearCapHalf - 9f, gz = Mathf.Clamp(gallery.z - site.z, -edge + 12f, edge - 12f);
+        Vector3 top = new Vector3(site.x + (gallery.x >= site.x ? -edge : edge), site.y, site.z + gz);
         Vector3 foot = gallery + Vector3.down * 1.2f;   // (el piso del carro, en la galería)
         Vector3 axis = (foot - top).normalized, flat = new Vector3(axis.x, 0f, axis.z).normalized, side = Vector3.Cross(Vector3.up, flat);
         float len = Vector3.Distance(top, foot);
@@ -127,13 +126,13 @@ public static partial class SampleSceneBuilder
         }
         for (int s = -1; s <= 1; s += 2) KitchenProps.C(tube, new Vector3(s * 0.8f, -LineBore * 0.5f + 0.15f, len * 0.5f), new Vector3(0.12f, 0.2f, len), dark, 0f, "Rail_linea");
 
-        // ── EL CARRO: abierto por arriba hasta el pasamanos, para ver a quien va; plataforma para contenedores ──
-        Transform car = new GameObject("Carro_linea").transform; car.SetParent(st, true); car.SetPositionAndRotation(top, tube.rotation);
-        KitchenProps.C(car, new Vector3(0f, 0.04f, 0f), new Vector3(2.6f, 0.08f, 4.6f), dark, 0f, "Piso_carro");
+        // ── EL CARRO: cabina NIVELADA, con el piso siempre plano aunque el tubo vaya casi al 100 % (como Stoos); abierta hasta el pasamanos, para ver a quien va ──
+        Transform car = new GameObject("Carro_linea").transform; car.SetParent(st, true); car.SetPositionAndRotation(top, Quaternion.LookRotation(flat));
+        KitchenProps.C(car, new Vector3(0f, 0.04f, 0f), new Vector3(2.6f, 0.08f, 3f), dark, 0f, "Piso_carro");
         for (int s = -1; s <= 1; s += 2)
         {
-            KitchenProps.C(car, new Vector3(s * 1.3f, 0.55f, 0f), new Vector3(0.08f, 1.1f, 4.6f), yel, 0f, "Costado_carro");
-            KitchenProps.C(car, new Vector3(0f, 0.55f, s * 2.3f), new Vector3(2.6f, 1.1f, 0.08f), yel, 0f, "Frontal_carro");
+            KitchenProps.C(car, new Vector3(s * 1.3f, 0.55f, 0f), new Vector3(0.08f, 1.1f, 3f), yel, 0f, "Costado_carro");
+            KitchenProps.C(car, new Vector3(0f, 0.55f, s * 1.5f), new Vector3(2.6f, 1.1f, 0.08f), yel, 0f, "Frontal_carro");
         }
 
         // ── ABAJO: la estación de la galería, con su registrador ──
@@ -145,7 +144,8 @@ public static partial class SampleSceneBuilder
         line.bottom = bot; line.car = car;
 
         // ── LA SEGUNDA SALIDA: su pozo y su jaula a baterías, separados del tubo y del pozo del reactor ──
-        Vector3[] tries = { -side * 12f, side * 12f, -side * 18f, side * 18f, -flat * 14f, flat * 14f };
+        // Sigue el pilar, al otro lado de la galería que el tubo (±Z son las cavernas; hacia el tubo, el tubo), hasta fuera del tronco y del cajón.
+        Vector3[] tries = { flat * 13f, flat * 18f, flat * 24f, flat * 30f, flat * 36f };
         float poolD = poolCaisson != null ? 7f + 4f : 0f;
         bool Free(Vector3 off)
         {
@@ -153,8 +153,7 @@ public static partial class SampleSceneBuilder
             bool trunk = Mathf.Abs(d.x) < hx.h.OuterHalf + 3f && Mathf.Abs(d.z) < hx.h.OuterHalf + 3f;
             bool onCap = Mathf.Abs(d.x) < NuclearCapHalf - 5f && Mathf.Abs(d.z) < NuclearCapHalf - 5f;
             bool pool = poolCaisson != null && Flat2(p, poolCaisson.position) < poolD;
-            bool nearLine = Mathf.Abs(Vector3.Dot(p - gallery, side)) < 8f && Vector3.Dot(p - gallery, flat) < 0f;   // bajo el tubo
-            return !trunk && onCap && !pool && !nearLine && Flat2(p, well) > 6f;
+            return !trunk && onCap && !pool && Flat2(p, well) > 6f;
         }
         Vector3 off0 = tries.FirstOrDefault(Free);
         if (off0 == Vector3.zero) { Debug.LogError("[Sitio nuclear] No hay sitio para el pozo de escape."); off0 = tries[0]; }

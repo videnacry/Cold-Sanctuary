@@ -174,19 +174,19 @@ sobre la tierra o debajo o una parte enterrada y otra no según convenga».
 | **El punto débil** | La corrosión del casco por fuera | **El pozo y las fisuras**: son el camino del agua y de cualquier fuga; por eso va sellado y se vigila |
 | **Agua que entra** | No debería | Siempre entra algo: el túnel del Canal lleva revestimiento y bombas; aquí, **sumidero** |
 | **Sumidero de calor** | El mar, tocando el casco | **La roca no se lleva el calor: hace falta un bucle de agua** |
-| **Tiempo de acceso** | Minutos, por la esclusa | Un pozo de ~90 m; reparar es lento |
+| **Tiempo de acceso** | Minutos, por la esclusa | Menos de un minuto por la línea (§8); reparar sigue siendo lento |
 | **Retirada** | Se remolca | Hay que subirlo por el pozo |
 
 **El calor era la pega, y tiene solución pasiva:** la caverna queda **más abajo** que su intercambiador del lecho, así que el agua caliente sube sola
 por el **bucle de termosifón** hasta el mar, sin bomba. Es el mismo argumento de §1: el agua fría cae y la caliente sube.
 
-**Lo que no sé:** el juego no tiene geología, así que «roca buena» es un supuesto. En la realidad, antes de excavar habría que estudiar la roca, y
+**Lo que no sé:** el juego no tiene geología, así que «roca buena» es un supuesto (§7 dice qué cambia si no lo es). En la realidad, antes de excavar habría que estudiar la roca, y
 ninguna central moderna se ha construido bajo el mar: esto combina precedentes por separado, no copia uno.
 
 ### Cómo queda
 Lecho visible bajo el sitio (`Lecho_marino`); pozo del microrreactor desde su piso hasta la caverna, con una esclusa desde el tronco; galería entre las
 dos cavernas; `Bucle_termosifon`, `Intercambiador_lecho` y `Sumidero_caverna`. El cajón del TRIGA baja hasta el lecho y apoya en su zapata (ya no lleva
-tirantes). Nadie baja a las cavernas en la jornada: no tienen colisiones y la roca no se ve por dentro.
+tirantes). *(Actualizado en §8: a la galería se baja por la línea, una vez a la semana o con aviso.)* En las cavernas no se anda: no tienen colisiones y la roca no se ve por dentro.
 
 ## 5. ¿Energía de los movimientos sísmicos?
 
@@ -234,6 +234,125 @@ separados y lejos, no enterrados. **No encontré normas sobre almacenes de propu
 - [Davies y Davies, 2010](https://se.copernicus.org/articles/1/5/2010/), [IDDP (Smithsonian)](https://www.smithsonianmag.com/innovation/deep-heart-iceland-theres-new-way-tap-earths-energy-180961030/), [UC Davis](https://www.ucdavis.edu/news/magma-power-geothermal-energy)
 - [Marine Policy: proteger las fuentes activas](https://dukespace.lib.duke.edu/server/api/core/bitstreams/d3f5fcd7-4c15-4ae7-819f-c0d9e10b9bfe/content), [Lucky Strike](https://emso.eu/2026/03/30/life-in-a-patchwork-habitat-mosaics-and-biodiversity-patterns-at-hydrothermal-vents-and-periphery/)
 - [FAA: Explosive Siting Requirements, 2012](https://www.federalregister.gov/documents/2012/09/07/2012-21922/explosive-siting-requirements)
+
+## 7. ¿La tierra podría aplastar las cavernas? (Berón 2026-11-05)
+
+Berón: «bajo tierra podría pasar que la tierra se quiera compactar aplastando las instalaciones? se deberían entonces crear con mucho margen de espacio para reducir el
+impacto de reducciones de terreno dando tiempo a actuar?»
+
+**Respuesta corta.** Depende de la roca. **En sal o en arcilla, sí: la excavación se cierra sola, y el margen de espacio compra décadas. En roca dura como la que el juego supone,
+casi no pasa: ahí lo que puede fallar es que caiga un bloque o suba el agua, y eso no lo para el espacio libre, lo avisa la lectura.** El juego no tiene geología, así que
+«roca dura» es un **supuesto** de diseño. Lo más expuesto a compactarse no era la caverna: era el **cajón del TRIGA**, apoyado en el sedimento.
+
+### Lo investigado
+| Sitio | Roca | Lo medido | Qué enseña |
+|---|---|---|---|
+| **SFR, Forsmark** (60 m bajo el Báltico; excavado hasta 1986) | Cristalina | **18 extensómetros: ≤ 0,30 mm en 1997–2006**, con 0,02 mm de precisión; casi todos, nada. Los 49 bulones de referencia, óptimos en 2006; sin corrosión pese al agua salina. Agua: de 720 l/min (1988) a unos 320–380; **de las cavernas y el silo solo 18 l/min, y unos 200 de los túneles de acceso** | En esta roca, 20 años sin problemas de estabilidad. **El punto débil del agua es el acceso** |
+| **Gjøvik** (61 m de luz, 25–50 m de roca encima) | Gneis (de memoria) | **7–8 mm** de techo con la luz entera, y casi todo al excavar | Incluso una caverna cuatro veces más ancha que las nuestras se mueve milímetros |
+| **WIPP** (655 m) | Sal | **5–13 cm/año** de cierre habitual; una sala cerró un 25 % en 10 años. En 2016 el Panel 7 pasó a ~90 cm/año y **cayó una losa de unos 60 m de largo**, 20 min después de que la cuadrilla saliera | **La convergencia dio un mes de aviso**; una inspección a la vista 5 días antes no vio nada. *(Cifras de 2016 citadas de la evaluación de MSHA por una web de activistas: no leí el original)* |
+| **Minas de sal polacas** (> 900 m) | Sal | 100–600 mm/año los primeros años; 30–100 después | A más hondura, más cierre |
+| **Boulby** (1100–1400 m) | Sal y potasa | Se describe un «excessive ground squeezing» | **No conseguí cifras**: están en una tesis de Newcastle que no pude abrir |
+| **Ekofisk** (mar del Norte) | Creta y sedimento | **El lecho bajó 3,8 m hasta 1987** y hubo que levantar seis plataformas 6 m | El suelo blando bajo el mar sí se hunde, aunque aquí la causa fue vaciar el yacimiento: **no es nuestro caso, pero el cajón apoya en sedimento** |
+
+También se revisa poco en la realidad: en el SFR, deformación y agua **una vez al año**, inspección mayor cada 5 años, bulones cada 6, saneo cada 5. Aquí un día son 150 s y el
+juego no llega a un año: las frecuencias se comprimen.
+
+### Cuánto aplica el miedo
+| Si la roca fuera… | Cierre | La holgura de 3 m dura | ¿Sirve el margen? |
+|---|---|---|---|
+| **Cristalina, como Forsmark (el supuesto)** | ~0,03 mm/año | **~100 000 años** | Sobra; el peligro es otro |
+| Sal, como WIPP | ~100 mm/año | **~30 años** | **Sí: es justo lo que pedía Berón** |
+| Sal en crisis, como el Panel 7 | ~900 mm/año | ~3 años | Sobre el papel, pero el techo cayó en un mes |
+| Sal honda, primeros años | ~600 mm/año | ~5 años | Poco |
+
+**Y en roca dura el margen tiene un límite:** más luz es más techo sin apoyo (razonamiento mío de ingeniería): hacer la caverna mucho mayor empeora justo lo que se quería arreglar.
+
+**Lo que de verdad amenaza esta roca** (razonamiento mío, salvo lo citado): una cuña entre fracturas (el túnel de Forsmark 3 tuvo caídas al cruzar la zona de Singö), el agua, y una
+falla que nadie vio. Sin estudiar la roca antes, una zona así puede estar justo donde va la caverna. El calor del reactor también carga la roca; aquí no se calcula.
+
+### La decisión
+- **Holgura declarada y medida: ≥ 3 m** entre el forro y el equipo, por los lados y por arriba (`CavernRule.ClearanceM`; la mide el constructor y da error si no llega). El reactor ya tenía
+  3,7 m; los **residuos tenían 1,4 m**: esa caverna crece a **24 × 16 m**, y queda en 3,4 m. La luz sigue siendo modesta (16 m frente a los 61 de Gjøvik).
+- **Pilar de roca de 18 m** entre cavernas, no menor que la luz mayor (regla práctica, **de memoria**). Antes eran 14.
+- **Instrumentos** (`CavernRock`): en cada caverna, 4 extensómetros de varilla, 4 dianas de convergencia, 3 células de carga en bulones, 2 geófonos, 2 piezómetros y 1 aforo del sumidero; abajo, un registrador con fibra hasta el **panel de la roca** en la Central.
+- **El cajón del TRIGA:** 4 **pilotes hasta la roca**, 4 hitos de asiento y 2 inclinómetros. Es la pieza donde la pregunta de Berón sí aplica.
+- **Niveles** (`CavernRule.Grade`). **Los números son del juego, no de una norma**: no encontré umbrales publicados, cada proyecto fija los suyos.
+
+| Nivel | Convergencia | Ritmo | Agua | Qué se hace |
+|---|---|---|---|---|
+| **Normal** | < 1 mm | < 0,1 mm/día | < 2 veces | Se lee a diario (`nuc_roca`, 1 h); una bajada a la semana (`nuc_bajada`, 2 h) |
+| **Aviso** | ≥ 1 mm | ≥ 0,1 mm/día | ≥ 2 veces | **Bajada obligatoria**: mirar, sanear y reforzar. La roca para; lo gastado no vuelve |
+| **Alarma** | ≥ 5 mm | ≥ 1 mm/día | ≥ 5 veces | **Nadie baja** (el carro que iba bajando vuelve) y se refuerza a distancia (`nuc_refuerzo`, obligatoria). A los 3 días sin reforzar, **emergencia del sitio** |
+
+- **Por qué manda el ritmo:** en WIPP lo que avisó fue la aceleración, no el total.
+- **Episodios:** alrededor de uno cada 90 días, nunca antes del día 30, fijos para cada día: una cuña (el ritmo se dobla cada día) o agua (sube un 50 % al día). Sin leer, nadie se entera.
+
+## 8. Un acceso rápido al fondo (Berón 2026-11-05)
+
+Berón: «se podría crear un tunnel tren acuatico para llegar al fondo marino super rápido?»
+
+**Sí, pero «súper rápido» aquí es poco: son 82 m de desnivel, y lo que tarda son las puertas, no el vehículo.** La galería queda a **unos 53 s** desde el andén: ~23 s de carro y 30 de esclusas.
+Lo que decide la forma no es la velocidad, sino **qué cabe por ahí y por dónde se sale si falla**.
+
+### Cómo se compara
+*(Tiempos con 15 s de esclusa a cada lado, que es un valor del juego; recorridos de la escena: la longitud exacta sale al construir, 115–140 m según el lado en que caiga el piso.)*
+
+| | **Funicular sellado (elegido)** | Ascensor rápido | Tubo desde el santuario |
+|---|---|---|---|
+| Recorrido | ~115–140 m al 60–105 % | 82 m | ~700 m bajo el mar |
+| Un viaje | **~53 s** | ~48 s | ~110 s; la alfombra tarda ~43 s |
+| Lleva el módulo de 10 m y los contenedores | **Sí, sobre raíles** | No: una jaula no; el pozo actual, de 2,4 m, tampoco | Sí |
+| Si se va la luz | Hay un tubo por el que salir | Queda el pozo | Lejísimos de todo |
+| Peor defecto | **Tiro de chimenea si hay fuego** (Kaprun) | Un solo hueco vertical | **Un agujero recto de los reactores a la gente** |
+
+- **El ascensor gana 5 s, y no compensa.** §4 y §6 prometen que todo se puede sacar, y por un pozo de 2,4 m no sale un módulo de 10 × 3 × 3,2 m. Esa promesa era falsa hasta ahora: **el funicular la arregla**. El  SFR, de hecho, se sirve por dos túneles y no por un pozo (no encontré si fue por eso).
+- **El tubo desde el santuario se descarta**, aunque es lo que más se parece a la idea: no ahorra tiempo y une el reactor con el santuario por dentro, contra toda la distancia que el sitio pagó.
+- **El tramo de 16 m de mar sí es «tren acuático»:** de cristal, se ve el agua. Lo demás va revestido por la roca.
+
+### Kaprun: la advertencia
+Un funicular en túnel mató a **155 personas** en 2000: un calefactor doméstico encendió aceite hidráulico y el túnel inclinado hizo de chimenea; una puerta abierta arriba empeoró el tiro. No había
+detectores de humo, y se daba por imposible un incendio. Por eso aquí: **sin aceite ni calefactor en el carro** y **el motor fuera del tubo** (cabrestante eléctrico en la caseta), **esclusas cerradas en las dos
+estaciones**, y **una segunda salida que no es el tubo**. *(El juego no simula fuego ni humo: `OutOfService` representa cerrar la línea.)*
+
+### La decisión
+- **Trazado:** del **borde del casquete**, a lo largo de X, hasta la **galería entre las cavernas**, siempre por el pilar de roca: en Z entraría por el techo de una caverna o pasaría por encima del pozo del reactor. Sale por el borde más lejano
+  para ir lo más tendido posible.
+- **Cabina nivelada**, como en Stoos (110 %) o Gelmerbahn (106 %), porque según el lado la pendiente ronda el 100 %. A 10 m/s, por debajo de los 12 del Sunnegga.
+- **Con las alfombras:** a la estación se llega en alfombra, porque es **una pista más de la red del edificio** (`Línea de las cavernas`), a unos 8 m del andén. No hizo falta otra red.
+- **Segunda salida:** **pozo propio** con **jaula a baterías** (3 m/s), siguiendo el pilar hacia el lado contrario al tubo, hasta su tapa en el casquete: 45–60 s desde la galería. **No usa el pozo del reactor**: con Lucens (§3), la sala de control se contaminó a 100 m por no estar bien sellada, y una salida no puede pasar por lo que se está huyendo. En Äspö se valora igual tener rampa y pozo.
+- **En la práctica:** el carro lleva de uno en uno y **se vuelve desde donde esté** si hay emergencia o alarma. Con la línea cerrada, quien está abajo sale por el pozo.
+- **Nadie anda por las cavernas:** siguen sin colisiones. El viaje va del andén a la galería y vuelta, y al jugador se le ofrece así al pisar el andén.
+
+### Con la jornada
+Una hora de juego son 150 s.
+
+| Tramo | Tiempo real |
+|---|---|
+| Del santuario a la estación (`TripSeconds`, 85 s + d/18) | ~125 s |
+| Andén → galería | ~53 s |
+| Inspección abajo | 90 s |
+| Galería → andén | ~53 s |
+| **Bajada completa, ida y vuelta en línea** | **~196 s de los 300 de su misión de 2 h** |
+
+La misión aguanta llegar con media alfombra de retraso (~258 s). Son **unas 9 h más de trabajo a la semana** (7 de lectura y 2 de bajada), repartidas como cualquier otra misión.
+
+### Lo que no sé
+- **Todo esto se compiló, pero no se ha probado en vivo:** ni las longitudes exactas, ni la pendiente real, ni si un cuerpo se ve bien en el carro.
+- **La roca es un supuesto.** En la realidad, antes de excavar habría que estudiar el macizo, y lo primero que miraría serían las fallas.
+- **Nada de esto se ha construido junto:** ningún reactor tiene funicular bajo el mar. Son precedentes por separado.
+- **Los 15 s de esclusa, los umbrales y la holgura** son decisiones de juego.
+- **El estado de la roca no se guarda** en la partida: al cargar vuelve a normal.
+
+### Fuentes de §7–§8
+- [SKB R-07-10: experiencia de obra y de explotación del SFR](https://skb.com/publication/1363598/R-07-10.pdf) (la fuente principal: deformación, bulones, agua e inspecciones)
+- [Gjøvik: Vik et al., 1993](https://koreascience.or.kr/article/CFKO199311920450141.page?lang=en), [Wikipedia](https://en.wikipedia.org/wiki/Gj%C3%B8vik_Olympic_Cavern_Hall)
+- WIPP: [Appendix PCS B](https://wipp.energy.gov/library/cra/CRA-2014/References/CCA/Appendix_PCS_B.PDF), [DOE, 2016](https://wipp.energy.gov/images/wipprecovery/Presentations/Town_Hall_Slides_10_13_16.pdf), [Nuclear Watch New Mexico sobre el informe de MSHA](https://nuclearactive.org/rapid-seven-fold-never-been-observed-at-wipp-increases-in-salt-convergence-in-panel-7-where-waste-is-planned-for-disposal/) (secundaria y crítica)
+- [Sal honda: Bieniasz et al., 2011](https://yadda.icm.edu.pl/baztech/element/bwmeta1.element.baztech-article-AGHL-0003-0001/c/Bieniasz.pdf) (solo el resumen de la búsqueda: el PDF no se dejó abrir)
+- [Boulby: compresión del terreno](https://journals.sagepub.com/doi/10.1179/1743286313Y.0000000045) y [tesis de Newcastle](https://dspace.ncl.ac.uk/jspui/bitstream/10443/1645/1/Miller%20H.D.S.%2080.pdf) (no se pudo abrir: demasiado grande)
+- Ekofisk: [Museo del Petróleo de Noruega](https://ekofisk.industriminne.no/en/jacking-provides-the-solution/), [Wikipedia](https://en.wikipedia.org/wiki/Ekofisk_oil_field)
+- Olkiluoto: [vigilancia de la roca, 2012](https://inis.iaea.org/records/tt1d5-axy41) (0,6 mm verticales sobre el repositorio)
+- [Kaprun](https://en.wikipedia.org/wiki/Kaprun_disaster), [Stoos (Guinness)](https://www.guinnessworldrecords.com/world-records/553751-steepest-funicular), [Gelmerbahn](https://www.wikipedia.com/wiki/Gelmerbahn), [Sunnegga](https://en.wikipedia.org/wiki/Zermatt%E2%80%93Sunnegga_Funicular)
+- [Äspö: evacuación con pozo y rampa](https://www.nap.edu/read/4897/chapter/11), [30 CFR 57.19071: velocidad de izado de personas](https://www.govinfo.gov/content/pkg/CFR-2025-title30-vol1/pdf/CFR-2025-title30-vol1-sec57-19071.pdf)
 
 ## Fuentes
 - [10 CFR 100.11](https://www.law.cornell.edu/cfr/text/10/100.11), [10 CFR 100.3](https://www.law.cornell.edu/cfr/text/10/100.3), [10 CFR 53.530](https://www.law.cornell.edu/cfr/text/10/53.530)

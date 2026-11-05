@@ -13,7 +13,7 @@ public static class SiteLineRule
     public const float HoistSpeed = 10f, HoistAccel = 1f;
     /// <summary>La salida de escape: jaula lenta, a baterías, en su propio pozo.</summary>
     public const float EscapeSpeed = 3f, EscapeAccel = 0.5f, WalkSpeed = 1.4f;
-    /// <summary>Pendiente máxima del funicular (m/m). Sunnegga llega al 63 %.</summary>
+    /// <summary>Pendiente máxima del funicular (m/m): la de Stoos, la más empinada de su clase, con cabina nivelada (Gelmerbahn, 106 %; Sunnegga, 63 %).</summary>
     public const float MaxGradient = 1.1f;
     /// <summary>Tiempo de inspección abajo (s reales) y la misión que lo contiene (h de juego).</summary>
     public const float InspectSeconds = 90f, MissionHours = 2f;
@@ -38,7 +38,7 @@ public static class SiteLineRule
 }
 
 /// <summary>
-/// LA LÍNEA DE LAS CAVERNAS (docs/sitio-nuclear.md §8): un funicular sellado e inclinado, de una esquina del casquete a la galería entre las dos cavernas,
+/// LA LÍNEA DE LAS CAVERNAS (docs/sitio-nuclear.md §8): un funicular sellado e inclinado, del borde del casquete a la galería entre las dos cavernas (por el pilar de roca),
 /// y una SALIDA DE ESCAPE en su propio pozo, sin pasar por el del reactor. A la estación de arriba se llega en alfombra (es una pista más de la red del
 /// edificio). Quien va dentro cuenta como «en alfombra» (<see cref="FlyingCarpet.Carry"/>): lo demás del juego ya sabe no tocarlo. Un viaje con la zona en
 /// emergencia o la roca en alarma vuelve atrás; con la línea cerrada, se sale por el pozo de escape. Todas las esperas son finitas.

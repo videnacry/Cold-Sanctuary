@@ -224,7 +224,7 @@ public static partial class SampleSceneBuilder
         return c;
     }
 
-    /// <summary>Una CAVERNA en la roca bajo el lecho: revestimiento de hormigón y su forro de acero. Sin colisiones: nadie entra en la jornada.</summary>
+    /// <summary>Una CAVERNA en la roca bajo el lecho: revestimiento de hormigón y su forro de acero. Sin colisiones: no se anda por ella (la línea lleva a la galería).</summary>
     static Transform BuildCavern(Transform root, string name, Vector3 center, Vector3 size, string sign)
     {
         Transform c = new GameObject(name).transform; c.SetParent(root, false); c.position = center;
