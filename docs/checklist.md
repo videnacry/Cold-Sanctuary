@@ -5,6 +5,7 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 [`world-topology-and-planes.md`](world-topology-and-planes.md) (visión del mundo grande / los 3 planos).
 
 > **HECHO 2026-11-05 (ronda 12, rama claude/fix-ronda12; solo código, sin probar en vivo):** alfombra de la plataforma fuera del Santuario Aéreo, evacuación de todos los de la zona (Linduarda incluida), cordones de Ø 1,8 m en las ramas del Sitio Nuclear, y pruebas 100, 110, 73 y 94 al día con la separación de escenas.
+> - [ ] Ascensor del tronco en los dos árboles del Aéreo: subir en persona del andén a la plataforma (lanzadera) y al techo (parque).
 > - [ ] Reconstruir SampleScene (solo el santuario) y el Santuario Aéreo.
 > - [ ] Probar los grupos 100, 110, 73, 94 y 28.
 
