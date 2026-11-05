@@ -131,6 +131,8 @@ por eso 24 nervios). **Tornapuntas** (2026-11-05): 4, y de 2 en 2 mientras el vo
 **41 %**. **Rama** (punta, columna y tubo a ~30 m): (con los tubos de 5 × 5 m) contra su celosía de ~6,4 m de canto con cordones CFST Ø 1 m (ver el registro de la construcción). Avisa por encima
 del 80 % (con 30 niveles de hélice, avisa) y da error por encima del 100 %.
 
+**Troncos altos** (2026-11-05, `StructuralLimits.Reinforce`): Entrenamiento, con 8 niveles y 241 m por los pisos de Música, llegó a 1863/1841 MN = **101 %** con 48 nervios Ø 0,8 m y zunchos cada 2 m (92 %). Ahora: **40 nervios Ø 1 m** (chapa de 37,5 mm, 2396 MN → **78 %**) y **zunchos cada 1,5 m** (23,6/31 MN/m → **76 %**). `Reinforce` prueba hasta 48 nervios en cada grosor; más de 48 taparía las caras. El modelo llega a Ø 1,2 m y zunchos cada 1 m; si no basta, da el error.
+
 ## Dónde
 
 En el lóbulo **Sur:Milpa**, centro (−50, −84). Distancias con el simulador (`-tree`, puntos reales de las mallas, el árbol

@@ -109,11 +109,11 @@ public class TreeOfFieldsTest : MonoBehaviour, ITestUnit
         foreach (Transform tr in FindObjectsByType<Transform>(FindObjectsSortMode.None))
         {
             string n = tr.name;
-            bool growing = n.StartsWith("ArbolCarnivoroHielo_") || n.StartsWith("ArbolHielo_") || n.StartsWith("ArbolResidencial_");
-            if (!growing && n != "CasaArbolGuardia") continue;
+            bool growing = n.StartsWith("ArbolResidencial_");   // (2026-11-05: ya no hay bosque de hielo)
+            if (!growing && n != GuardianTree.ObjectName) continue;
             float top = 0f;
             foreach (Renderer r in tr.GetComponentsInChildren<Renderer>()) top = Mathf.Max(top, r.bounds.max.y - tr.position.y);
-            if (n == "CasaArbolGuardia") { guard = $"; el de la guardia (único, fijo en su isla): {top:0.0} m"; continue; }
+            if (n == GuardianTree.ObjectName) { guard = $"; el gigante (único, fijo en su isla): {top:0.0} m"; continue; }
             if (top > tallest) { tallest = top; tallestName = n; }
         }
         float lowest = float.MaxValue;

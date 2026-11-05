@@ -57,7 +57,7 @@ Pedido de Berón (2026-10-27). Este documento recoge cómo queda el santuario y 
 | `ResidentialBuilder` | Casas de árbol a distintas alturas, sin pasarelas ni escaleras. Cada una con su alfombra-esterilla y la plataforma central con sus dos áreas. |
 | `NeedsDriver` (ir a la cama) | Usa las alfombras como la jornada (`CarpetPad.Route`). |
 | Restaurante | El comedor (anillo, plataforma hija) conserva sus escaleras interiores. El turista llega en alfombra al área de la cocina. |
-| `GuardTower` | Sin escalera: alfombra en el suelo y en la casa del guarda. |
+| `GuardTower` | (Retirada el 2026-11-05: la guardia está en la torre de Servicios.) |
 | Tests | Los de escaleras (IslandsTest), puente cocina–hospital y comedor desde el puente se cambian por: cada edificio tiene techo de alfombras con dos áreas, cada piso tiene su área, y una alfombra lleva a un trabajador de su piso a su habitación. |
 
 ## Orden de trabajo

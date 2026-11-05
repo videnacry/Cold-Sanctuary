@@ -45,7 +45,7 @@ public class IceInsectLife : MonoBehaviour
     float _stuckUntil, _freeUntil; // (abeja) pegada en una tela
 
     Animal _self;
-    IceCarnivorousTree _home;
+    NestTree _home;
     Transform _nest;
     Vector3 _perch;
     float _angle, _height, _radius;
@@ -69,7 +69,7 @@ public class IceInsectLife : MonoBehaviour
         UnityEngine.AI.NavMeshAgent nav = GetComponent<UnityEngine.AI.NavMeshAgent>();
         if (nav != null) nav.enabled = false;   // vuela / trepa: no anda por el NavMesh
         if (TryGetComponent(out Rigidbody rb)) { rb.isKinematic = true; rb.useGravity = false; }   // vuela: la gravedad no la arrastra
-        _home = Nearest<IceCarnivorousTree>(transform.position, 200f);
+        _home = Nearest<NestTree>(transform.position, 200f);
         if (_home != null)
         {
             foreach (Transform t in _home.GetComponentsInChildren<Transform>()) if (t.name.StartsWith("Nido_Abejas")) { _nest = t; break; }

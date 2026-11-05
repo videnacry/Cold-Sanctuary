@@ -374,7 +374,7 @@ _Total: 720 tipos._
 - **GrimoireTest** (class) — `Assets/Scripts/GrimoireTest.cs` — Unidad de test del REPERTORIO de doble vía (docs/capabilities-and-embodiment.md §2), por `TestProbe`.
 - **GroundGuard** (class) — `Assets/Scripts/Player/GroundGuard.cs` — SALVAGUARDA DE SUELO:
 - **GuardBoard** (class) — `Assets/Scripts/World/GuardBoard.cs` — TABLERO DE GUARDIA (F en lo alto de la torre):
-- **GuardTower** (class) — `Assets/Scripts/World/GuardTower.cs` — CASA DEL ÁRBOL DE GUARDIA (docs/spells-suprahechizo-and-thoughts.md §5b):
+- **GuardRoom** (class) — `Assets/Scripts/World/GuardRoom.cs` — LA SALA DE GUARDIA (docs/sala-de-guardia.md): piso de Servicios, pantallas y lecturas (`GuardWatch`).
 - **GuidedTour** (class) — `Assets/Scripts/Kitchen/GuidedTour.cs` — El PASEO guiado de onboarding (docs/kitchen-simulation.md §1).
 - **GymFit** (class) — `Assets/Scripts/World/GymFit.cs` — EL CUERPO SE AJUSTA A LA MÁQUINA (Berón 2026-10-29:
 - **GymMachineType** (enum) — `Assets/Scripts/World/GymStation.cs` — Tipos de estación del gimnasio.

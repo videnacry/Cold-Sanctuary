@@ -142,7 +142,7 @@ public static partial class SampleSceneBuilder
         BuildGoluisKitchen(root.transform);      // GOLUIS, jefe de cocina: inicia a los recién llegados (sígueme→limpiar→recetas). docs/kitchen-simulation.md
         BuildMagnate(root.transform);            // LA MAGNATE: maestra-guardiana (estado infinito; pacifica; enseña yoga al rezagado). docs/anyma-factory-and-control.md
         BuildLinduarda(root.transform);          // LINDUARDA (enfermería): guardiana de salud emergente (status→vacuna/analiza al que tenga HealthRecord false, p.ej. Kushal)
-        BuildGuardTower(root.transform);          // TORRE DE GUARDIA (tablero de misiones de vigía) + puestos de patrulla
+        BuildGiantTree(root.transform);          // EL ÁRBOL GIGANTE + puestos de vigía de la patrulla
         ResidentialBuilder.Build(root.transform, new Vector3(-60f, 0f, 95f));   // ARBOLEDA RESIDENCIAL: un dormitorio elevado por persona
         BuildGourmetDining(root.transform);      // RESTAURANTE: el comedor gourmet para 30, en la misma plataforma que la cocina abierta
         RelocateTanks();       // los tanques, donde quedan 2 m libres con todos los muebles ya puestos
@@ -199,8 +199,8 @@ public static partial class SampleSceneBuilder
         }
 
         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
-        GameObject flora = GameObject.Find("FloraHielo_AUTO");   // rendimiento: cada árbol de hielo, una malla por material
-        Debug.Log($"[Rendimiento] árboles de hielo combinados: {MergeTreeMeshes(flora != null ? flora.transform : null)} cubos ya no se dibujan uno a uno.");
+        GameObject grove = GameObject.Find(GuardianTree.GroveName);   // rendimiento: el árbol gigante, una malla por material
+        Debug.Log($"[Rendimiento] árbol gigante combinado: {MergeTreeMeshes(grove != null ? grove.transform : null)} cubos ya no se dibujan uno a uno.");
         Debug.Log("[SampleSceneBuilder] Blockout listo bajo 'LevelDressing_AUTO'. Revisar y ajustar posiciones a mano.");
         // Las ESCENAS DE PRUEBA DE UN ÁREA (sala de yoga, enfermería, cocina) salen de ESTE santuario recién construido: se guarda
         // y cada una se queda solo con su piso (SampleSceneBuilder.TestScenes.cs). Así nunca quedan desfasadas.
@@ -2723,17 +2723,19 @@ public static partial class SampleSceneBuilder
         if (spot != null && area != null) spot.transform.position = area.transform.position;
     }
 
-    // TORRE DE GUARDIA + puestos de vigía para la patrulla (docs/spells-suprahechizo-and-thoughts.md §5b).
-    static void BuildGuardTower(Transform parent)
+    // EL ÁRBOL GIGANTE, en su isla, y los puestos de vigía de la patrulla (docs/arbol-guardian.md). La guardia ya no vive aquí: BuildGuardRoom.
+    static void BuildGiantTree(Transform parent)
     {
-        GameObject root = new GameObject("Guardia_AUTO"); root.transform.SetParent(parent);
-        // EL ÁRBOL DE LA GUARDIA crece tan alto como el edificio más alto (Berón 2026-10-31: es la excepción a «los edificios-árbol, por
-        // encima del árbol más alto»: es un árbol modificado). Crece en alto, no en ancho, y sus ramas esquivan los edificios-árbol
-        // (con la holgura de los árboles, 4 m).
-        GuardTower.TreeHeight = Mathf.Max(GuardTower.BaseHeight, TallestBuilding());
-        GuardTower.Build(root.transform, new Vector3(-20f, 0f, 57f), w => HelixBlockedAt(w, TreeSpec.TreeClearance));   // en su isla, al noroeste del hub
-        root.AddComponent<ElevatedElement>().label = "el árbol de la guardia";   // cuenta para la regla de altura de la lanzadera
-        Debug.Log($"[Guardia] El árbol guardián mide {GuardTower.TreeHeight:0.0} m: lo mayor del récord histórico ({GuardianTree.RecordHeight:0.0} m) y del edificio más alto con la columna de la puerta de su techo ({TallestBuilding():0.0} m).");
+        GameObject grove = new GameObject(GuardianTree.GroveName); grove.transform.SetParent(parent);
+        // Lo mayor del récord y del edificio más alto: es la excepción a «los edificios-árbol, por encima del árbol más alto» (T3). Sus ramas esquivan los edificios.
+        GuardianTree.Height = Mathf.Max(GuardianTree.RecordHeight, TallestBuilding());
+        Vector3 at = new Vector3(-20f, 0f, 57f);
+        GameObject giant = GuardianTree.Build(grove.transform, GuardianTree.ObjectName, at, GuardianTree.Height, w => HelixBlockedAt(w, TreeSpec.TreeClearance));
+        SoftGround.Plant(giant.transform, at + Vector3.down * 0.1f, new Vector2(40f, 40f), 11);   // colchón de musgo a su pie
+        WorldLabel tl = giant.AddComponent<WorldLabel>(); tl.text = "El árbol más grande de la historia"; tl.height = 30f;
+        grove.AddComponent<ElevatedElement>().label = "el árbol gigante";   // cuenta para la regla de altura de la lanzadera
+        Debug.Log($"[Árbol gigante] {GuardianTree.Height:0.0} m: lo mayor del récord ({GuardianTree.RecordHeight:0.0} m) y del edificio más alto ({TallestBuilding():0.0} m).");
+        GameObject root = new GameObject("PuestosVigia_AUTO"); root.transform.SetParent(parent);
         (string name, Vector3 pos)[] posts =
         {
             ("PuestoVigia_1_Arrozal", new Vector3(-50f, 0f, -5f)),
@@ -2981,126 +2983,31 @@ public static partial class SampleSceneBuilder
 
     // FLORA DE HIELO (docs/ice-sanctuary-ecology.md): el árbol carnívoro (atrae hambrientos con olor a comida → sopor →
     // muerte → crece) + una colonia de abejas de las nieves que anida cerca. Primitivas (independiente de modelos).
+    /// <summary>(Berón 2026-11-05: «retirar los árboles artificiales dejando solo el gigante y los de la residencia»; docs/ice-sanctuary-ecology.md §Sin bosque.) Ya no hay bosque:
+    /// quedan las abejas y las arañas de las nieves, una familia en el gigante y otra en la residencia. Antes eran 4 de cada.</summary>
     static void BuildIceFlora(Transform parent)
     {
-        // BOSQUE DE HIELO con EDADES: arboledas de un árbol madre (adulto o viejo) rodeado de jóvenes y brotes, y árboles
-        // sueltos, esparcidos por todo el hielo (docs/ice-sanctuary-ecology §2). Lejos de las áreas, del hub, de los nidos
-        // y de los canales, para no cortar el paso. Los brotes aún no cazan; los viejos tienen más raíces y una rama seca.
         GameObject root = new GameObject("FloraHielo_AUTO"); root.transform.SetParent(parent);
-        // VOLUMEN de cada área (todas sus piezas: plataforma, pisos superiores, galerías, barandillas, con 1,5 m de margen):
-        // las ramas lo esquivan, como en la arboleda residencial. Las áreas apiladas (el textil sobre la Construcción a
-        // 10 m) son su propio SanctuaryArea, así que su piso también cuenta.
-        var volumes = new List<Bounds>();
-        var built = new List<Component>(Object.FindObjectsOfType<SanctuaryArea>());
-        built.AddRange(Object.FindObjectsOfType<CarpetPad>());   // las áreas de alfombras
-        foreach (Transform t in _platforms.Keys) if (t != null) built.Add(t);   // todos los pisos y los techos de alfombras (con su losa)
-        foreach (Component sa in built)
+        var homes = new List<Vector3>();
+        GameObject giant = GameObject.Find(GuardianTree.ObjectName), home = GameObject.Find("ArbolResidencial_1");
+        if (giant != null) homes.Add(giant.transform.position + new Vector3(16f, 0f, 0f));
+        if (home != null) homes.Add(home.transform.position + new Vector3(3f, 0f, 0f));
+        GameObject beePrefab = LoadAnimalPrefab("SnowBee"), spiderPrefab = LoadAnimalPrefab("SnowSpider");
+        if (beePrefab == null) Debug.LogWarning("[IceFlora] sin prefab SnowBee (genera prefabs — salen cubos si no hay .fbx), se omiten las abejas.");
+        for (int h = 0; h < homes.Count; h++)
         {
-            bool any = false; Bounds bb = default;
-            foreach (Renderer rr in sa.GetComponentsInChildren<Renderer>())
-            {
-                if (rr.GetComponentInParent<Anima>() != null) continue;   // solo lo construido (no las crías ni los pacientes)
-                if (!any) { bb = rr.bounds; any = true; } else bb.Encapsulate(rr.bounds);
-            }
-            if (!any) continue;
-            bb.Expand(new Vector3(3f, 3f, 3f)); volumes.Add(bb);
-        }
-        bool Built(Vector3 q) { foreach (Bounds bb in volumes) if (bb.Contains(q)) return true; return false; }
-        var avoid = new List<Vector3>
-        {
-            new Vector3(5f, 0f, 38f),       // hub
-            new Vector3(30f, -13f, 12f),    // aparición del jugador
-            new Vector3(130f, -10f, 34f),   // osos
-            new Vector3(155f, 5f, 24f),     // pingüinos
-        };
-        foreach (SanctuaryArea a in Object.FindObjectsOfType<SanctuaryArea>())
-            avoid.Add(new Vector3(a.transform.position.x, a.transform.position.z, 24f));
-        foreach (GardenPlot gp in Object.FindObjectsOfType<GardenPlot>())   // los huertos tampoco van bajo un árbol carnívoro
-            avoid.Add(new Vector3(gp.transform.position.x, gp.transform.position.z, gp.size.magnitude * 0.5f + 8f));
-        avoid.Add(new Vector3(-60f, 95f, 28f));   // la arboleda residencial (sus árboles no cazan)
-        GameObject tower = GameObject.Find("CasaArbolGuardia");   // ni junto a la casa del árbol
-        if (tower != null) avoid.Add(new Vector3(tower.transform.position.x, tower.transform.position.z - 6f, 22f));
-        var plan = PolarLandscapeBuilder.PlanForest(avoid, 9173, groves: 9, loose: 0);   // menos árboles: solo en los dos casquetes salvajes
-        GameObject first = null;
-        var hiveTrees = new List<Vector3>();
-        var count = new Dictionary<PolarLandscapeBuilder.TreeAge, int>();
-        for (int i = 0; i < plan.Count; i++)
-        {
-            var (pos, age, h) = plan[i];
-            GameObject tree = CubeTree.Build(root.transform, $"ArbolCarnivoroHielo_{age}_{i + 1}", pos, 1234 + i * 77, h, blocked: Built);
-            count[age] = count.TryGetValue(age, out int c) ? c + 1 : 1;
-            if (first == null && age != PolarLandscapeBuilder.TreeAge.Brote) first = tree;
-            if (age >= PolarLandscapeBuilder.TreeAge.Adulto && hiveTrees.Count < 4 && i % 3 == 0) hiveTrees.Add(pos);
-        }
-        if (first != null)
-        {
-            WorldLabel wl = first.AddComponent<WorldLabel>();
-            wl.text = "Bosque de árboles carnívoros de hielo";
-            wl.height = 24f;
-        }
-
-        GameObject beePrefab = LoadAnimalPrefab("SnowBee");
-        if (beePrefab != null)
-        {
-            // Colmenas de abejas de las nieves en árboles grandes (anidan en sus ramas, miel de los muertos).
-            for (int h = 0; h < hiveTrees.Count; h++)
+            if (beePrefab != null)
             {
                 GameObject bg = new GameObject($"Abejas_nieve_{h + 1}"); bg.transform.SetParent(root.transform);
-                FamilyGenerator fg = bg.AddComponent<FamilyGenerator>();
-                fg.families = new[] { new FamilyGenerator.Family { animalPrefab = beePrefab, position = hiveTrees[h] + new Vector3(4f, 0f, 0f), quantity = 5, minParentsCount = 1, radius = 5f } };
+                bg.AddComponent<FamilyGenerator>().families = new[] { new FamilyGenerator.Family { animalPrefab = beePrefab, position = homes[h], quantity = 5, minParentsCount = 1, radius = 5f } };
             }
-        }
-        GameObject spiderPrefab = LoadAnimalPrefab("SnowSpider");
-        if (spiderPrefab != null)   // ARAÑAS DE LAS NIEVES: dos por árbol con colmena (acechan en el tronco)
-            for (int h = 0; h < hiveTrees.Count; h++)
+            if (spiderPrefab != null)   // dos por colonia: acechan junto al panal
             {
                 GameObject sg = new GameObject($"Aranas_nieve_{h + 1}"); sg.transform.SetParent(root.transform);
-                FamilyGenerator sfg = sg.AddComponent<FamilyGenerator>();
-                sfg.families = new[] { new FamilyGenerator.Family { animalPrefab = spiderPrefab, position = hiveTrees[h] + new Vector3(-2f, 0f, 1f), quantity = 2, minParentsCount = 1, radius = 2f } };
-            }
-        else Debug.LogWarning("[IceFlora] sin prefab SnowBee (genera prefabs — salen cubos si no hay .fbx), se omiten las abejas.");
-        string ages = string.Join(", ", count.Select(kv => $"{kv.Value} {kv.Key.ToString().ToLowerInvariant()}"));
-        Debug.Log($"[IceFlora] Árboles carnívoros de bloques: {plan.Count} esparcidos ({ages}).");
-
-        // NATURALEZA Y ÁREAS FUSIONADAS: junto a cada área humana crecen árboles de hielo grandes (24–36 m) que NO cazan;
-        // las áreas elevadas quedan entre sus troncos (la gente vive con la naturaleza, no en un claro aparte).
-        var rndF = new System.Random(5150);
-        int fused = 0;
-        // Huella de cada área (sus piezas, con 3 m de margen): ningún árbol crece DENTRO de una plataforma.
-        var prints = new List<Bounds>();
-        foreach (SanctuaryArea sa in Object.FindObjectsOfType<SanctuaryArea>())
-        {
-            Renderer[] rs = sa.GetComponentsInChildren<Renderer>(); if (rs.Length == 0) continue;
-            Bounds bb = rs[0].bounds; foreach (Renderer rr in rs) bb.Encapsulate(rr.bounds);
-            bb.Expand(new Vector3(6f, 0f, 6f)); prints.Add(bb);
-        }
-        bool InsideArea(Vector3 q) { foreach (Bounds bb in prints) if (q.x > bb.min.x && q.x < bb.max.x && q.z > bb.min.z && q.z < bb.max.z) return true; return false; }
-        foreach (SanctuaryArea a in Object.FindObjectsOfType<SanctuaryArea>())
-        {
-            Vector3 c = a.transform.position; c.y = 0f;
-            Renderer[] ars = a.GetComponentsInChildren<Renderer>();
-            float reach = 16f;
-            if (ars.Length > 0) { Bounds ab = ars[0].bounds; foreach (Renderer rr in ars) ab.Encapsulate(rr.bounds); reach = Mathf.Max(16f, new Vector2(ab.extents.x, ab.extents.z).magnitude + 3f); }
-            for (int k = 0; k < 3; k++)
-            {
-                float ang = (k * 120f + 30f + (float)rndF.NextDouble() * 30f) * Mathf.Deg2Rad;   // nunca delante de la escalera (+Z)
-                if (Mathf.Sin(ang) > 0.85f) ang += 0.6f;
-                Vector3 p = c + new Vector3(Mathf.Cos(ang), 0f, Mathf.Sin(ang)) * (reach + (float)rndF.NextDouble() * 4f);
-                bool ice = true;   // con hielo alrededor (las raíces no cuelgan sobre el agua)
-                for (int q = 0; q < 8 && ice; q++) ice = PolarLandscapeBuilder.IceAt(p.x + Mathf.Cos(q * 0.785f) * 5f, p.z + Mathf.Sin(q * 0.785f) * 5f);   // (en la isla de tierra no crecen árboles de hielo)
-                if (!ice || !PolarLandscapeBuilder.IceAt(p.x, p.z) || InsideArea(p)) continue;
-                // Ni junto al ÁRBOL DE LOS CAMPOS (2026-10-31): el Huerto está en su piso 5, y sus árboles de hielo crecían a 16 m
-                // del eje con la copa DENTRO del tronco transparente (un nido de abejas a 5 m del eje, a 38 m), tapando a los que
-                // nadan. Lejos: la esquina del tronco al girar (con su fachada de fotobiorreactores, 16,5 m) + 2 m + lo que abre la copa
-                // (medido en Unity: hasta 21 m desde su tronco).
-                if (_helixes.Exists(hx => hx.root != null && Vector2.Distance(new Vector2(p.x, p.z), new Vector2(hx.root.position.x, hx.root.position.z)) < 16.5f + 2f + 21f)) continue;   // (y junto a cualquier edificio-árbol)
-                GameObject dining = GameObject.Find("Comedor_Gourmet");
-                if (dining != null && Vector2.Distance(new Vector2(p.x, p.z), new Vector2(dining.transform.position.x, dining.transform.position.z)) < 15f) continue;
-                CubeTree.Build(root.transform, $"ArbolHielo_{a.displayName}_{k + 1}", p, 7000 + fused * 31, 24f + (float)rndF.NextDouble() * 12f, carnivorous: false, blocked: Built);
-                fused++;
+                sg.AddComponent<FamilyGenerator>().families = new[] { new FamilyGenerator.Family { animalPrefab = spiderPrefab, position = homes[h] + new Vector3(-2f, 0f, 1f), quantity = 2, minParentsCount = 1, radius = 2f } };
             }
         }
-        Debug.Log($"[IceFlora] {fused} árboles junto a las áreas (no cazan).");
+        Debug.Log($"[IceFlora] Sin bosque: {homes.Count} colonias, en el gigante y en la residencia.");
     }
 
     // LINDUARDA en la enfermería + un paciente demo (Kushal) con HealthRecord en false → ella, por su pensamiento de
@@ -3522,6 +3429,7 @@ public static partial class SampleSceneBuilder
         Floor(hospital.transform); Floor(Child(hospital.transform, "Planta_hospitalizacion")); Floor(Child(hospital.transform, "Planta_veterinaria"));   // las amuebla BuildHospital
         Floor(cria.transform); Floor(meat.transform);
         SanctuaryArea assembly = BuildAssembly(areasGroup.transform); areas.Add(assembly);   // (2026-11-05) docs/piso-asambleas.md
+        BuildGuardRoom(areasGroup.transform);   // (2026-11-05) el piso libre del nivel 4: docs/sala-de-guardia.md
         //  · ENTRENAMIENTO: Gimnasio · Cardio y zona libre · Calistenia, parkour y crossfit · Yoga (Hatha) · Yoga (Ashtanga) · Ballet
         //    · Dojo. Lo pesado y ruidoso (las máquinas) abajo; lo silencioso (los dos pisos de yoga y las salas en obras) arriba.
         //    Un ÁRBOL (Berón 2026-11-04: se quitó el anillo de yoga y el yoga pasó a sus propios pisos, docs/yoga-pisos.md): los niveles

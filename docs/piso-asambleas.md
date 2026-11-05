@@ -47,7 +47,8 @@ que la planta no cambia y las holguras horizontales con las otras torres deberí
 | S1, S2, S3, T3 | Por diseño: piso de la hélice | 28, 57 |
 | S4 ≥ 16 m | **Sin comprobar**: planta igual, torre más alta | 57 |
 | S5 sin escaleras | Rampa en la piedra | fotos |
-| S6 sin muros ni techos | **Dos excepciones que decide Berón**: la tapa de cristal de la cabina (como en Música) y los listones de la toguna, que son un techo bajo por diseño | Berón |
+| S13 capacidad | **La piedra de la palabra no es un puesto** (2026-11-05): habla una persona cada vez, por diseño, y sale de las 72 plazas de «asamblea». Se quitó su puesto de trabajo «hablar» (1/2) | Hecho |
+| S6 sin muros ni techos | **Dos excepciones ya en la regla**: la tapa de cristal de la cabina (como en Música) y los listones de la toguna, un techo bajo por diseño (Berón 2026-11-05) | Hecho |
 | S7, S13, J16 | Calculado | 28, 75 |
 | T13 lanzadera | La torre sube: la corona se valida sola | 90 |
 | F5 | Franja libre, calculado | 57 |
@@ -61,7 +62,7 @@ Está en `AreaDesign.All`, con su prueba (grupo 77). Criterio: investigado y ≥
 
 | Estado | Áreas |
 |---|---|
-| **Cumple** (7) | Sala de asambleas, Cocina (wok, comal, brigada), Dojo, Música y Aula (estas dos, arregladas ahora), Huerto, Construcción |
+| **Cumple** (8) | Sala de guardia, Sala de asambleas, Cocina (wok, comal, brigada), Dojo, Música y Aula (estas dos, arregladas ahora), Huerto, Construcción |
 | **Parcial** (8) | Sala de Yoga (2 culturas), Gimnasio, Sala de Ballet, Estudio Textil, Planta Atómica, Central Nuclear, Control de misión, Informática |
 | **Falta** (7) | Hospital, Química, Biología, Mecánica, Calistenia, Cría, Carne Cultivada |
 

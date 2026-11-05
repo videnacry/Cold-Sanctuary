@@ -7,8 +7,6 @@ using UnityEngine;
 ///  · CASQUETES: el suelo deja de ser una losa única. Es banquisa: placas de hielo separadas por CANALES de agua
 ///    (grietas por donde asoma el mar), con PUENTES de hielo cada cierto tramo para cruzar a pie; al este, mar abierto
 ///    con témpanos sueltos. Las áreas del santuario, los nidos, los seres y el hub quedan siempre sobre hielo firme.
-///  · BOSQUE con EDADES: arboledas de un árbol madre (adulto o viejo) con jóvenes y brotes alrededor, más árboles
-///    sueltos, esparcidos por todo el hielo y lejos de las áreas para no cortar el paso.
 /// Determinista (semillas fijas): cada regeneración da el mismo mapa.
 /// </summary>
 public static class PolarLandscapeBuilder
@@ -290,78 +288,4 @@ public static class PolarLandscapeBuilder
 
     // ── Bosque con edades ───────────────────────────────────────────────────────────────────────
 
-    public enum TreeAge { Brote, Joven, Adulto, Viejo }
-
-    public static float HeightFor(TreeAge age, System.Random rnd)
-    {
-        float r = (float)rnd.NextDouble();
-        switch (age)
-        {
-            case TreeAge.Brote: return Mathf.Lerp(2.5f, 4.5f, r);
-            case TreeAge.Joven: return Mathf.Lerp(9f, 14f, r);
-            case TreeAge.Adulto: return Mathf.Lerp(22f, 32f, r);   // los árboles de hielo adultos: 20–40 m
-            default: return Mathf.Lerp(32f, 40f, r);
-        }
-    }
-
-    /// <summary>
-    /// Arboledas esparcidas: un árbol madre (adulto o viejo) con jóvenes y brotes alrededor (su descendencia), y árboles
-    /// sueltos de cualquier edad. Evita <paramref name="avoid"/> (x, z, radio) y el mar. Devuelve (posición, edad).
-    /// </summary>
-    public static List<(Vector3 pos, TreeAge age, float height)> PlanForest(List<Vector3> avoid, int seed, int groves, int loose)
-    {
-        var rnd = new System.Random(seed);
-        float R(float a, float b) => a + (float)rnd.NextDouble() * (b - a);
-        var trees = new List<(Vector3, TreeAge, float)>();
-
-        int whyEdge = 0, whyIce = 0, whyAvoid = 0, whyTree = 0;
-        bool Free(Vector3 p, float minSpacing)
-        {
-            if (Mathf.Abs(p.x) > Half - 8f || Mathf.Abs(p.z) > Half - 8f) { whyEdge++; return false; }
-            if (!NaturalIce(p.x, p.z) || !NaturalIce(p.x + 3f, p.z) || !NaturalIce(p.x - 3f, p.z) || !NaturalIce(p.x, p.z + 3f) || !NaturalIce(p.x, p.z - 3f)) { whyIce++; return false; }
-            foreach (Vector3 a in avoid) if ((p.x - a.x) * (p.x - a.x) + (p.z - a.y) * (p.z - a.y) < a.z * a.z) { whyAvoid++; return false; }
-            foreach (var t in trees) if (Vector3.Distance(p, t.Item1) < minSpacing) { whyTree++; return false; }
-            return true;
-        }
-
-        // Una arboleda por isla de bosque (y, si sobran, más arboledas en esas mismas islas).
-        var forestIslands = new List<int>();
-        for (int k = 0; k < Islands.Length; k++) if (Islands[k].name.StartsWith("Bosque")) forestIslands.Add(k);   // solo los casquetes salvajes
-        int islandTries = 0;
-        for (int g = 0, tries = 0; g < groves && tries < 4000; tries++)
-        {
-            var isl = Islands[forestIslands[g % forestIslands.Count]];
-            float jit = g < forestIslands.Count ? 0.35f : 0.65f;   // 2ª arboleda de la isla: hacia la orilla, lejos de la 1ª
-            Vector3 c = new Vector3(isl.x + R(-isl.r, isl.r) * jit, 0f, isl.z + R(-isl.r, isl.r) * jit);
-            if (!Free(c, 16f))
-            {
-                if (++islandTries > 80) { Debug.Log($"[IceFlora] la isla {isl.name} no admite otra arboleda (borde {whyEdge}, agua {whyIce}, zona a evitar {whyAvoid}, otro árbol {whyTree})."); whyEdge = whyIce = whyAvoid = whyTree = 0; islandTries = 0; g++; }
-                continue;
-            }
-            islandTries = 0;
-            TreeAge motherAge = rnd.NextDouble() < 0.35 ? TreeAge.Viejo : TreeAge.Adulto;
-            trees.Add((c, motherAge, HeightFor(motherAge, rnd)));
-            int kids = 2 + rnd.Next(3);
-            for (int k = 0, kt = 0; k < kids && kt < 40; kt++)
-            {
-                TreeAge age = rnd.NextDouble() < 0.5 ? TreeAge.Brote : TreeAge.Joven;
-                float ang = R(0f, Mathf.PI * 2f), d = R(10f, 18f);
-                Vector3 p = c + new Vector3(Mathf.Cos(ang), 0f, Mathf.Sin(ang)) * d;
-                if (!Free(p, age == TreeAge.Brote ? 5f : 8f)) continue;
-                trees.Add((p, age, HeightFor(age, rnd)));
-                k++;
-            }
-            g++;
-        }
-        for (int l = 0, tries = 0; l < loose && tries < 2000; tries++)
-        {
-            Vector3 p = new Vector3(R(-Half + 15f, Half - 15f), 0f, R(-Half + 15f, Half - 15f));
-            if (!Free(p, 18f)) continue;
-            double r = rnd.NextDouble();
-            TreeAge age = r < 0.3 ? TreeAge.Brote : r < 0.6 ? TreeAge.Joven : r < 0.9 ? TreeAge.Adulto : TreeAge.Viejo;
-            trees.Add((p, age, HeightFor(age, rnd)));
-            l++;
-        }
-        return trees;
-    }
 }

@@ -139,7 +139,7 @@ public class KitchenOriginStory : MonoBehaviour
 
     void Go(Beat b) { Now = b; _beatAt = Time.time; History.Add(b); Debug.Log($"[Cocina-origen] → {b}"); }
     void Once(string k, bool when, System.Action a) { if (when && _said.Add(k)) a(); }
-    static void Say(string who, string text, float s = 7f) { StorySubtitle.Show(who, text, s); Debug.Log($"[Cocina-origen] {who}: «{text}»"); }
+    static void Say(string who, string text, float s = 7f) { StorySubtitle.Show(who, who.Length > 0 ? LineTruth.Tagged("Cocina", text) : text, s); Debug.Log($"[Cocina-origen] {who}: «{text}»"); }
     // Frase dirigida a Kushal: él contesta (arriba, KushalVoice).
     static void Say(string who, string text, float s, KushalVoice.Ctx reply) { Say(who, text, s); KushalVoice.Reply(reply); }
     static void Goal(string text) => LessonPrompt.Show(text, null, 9999f);

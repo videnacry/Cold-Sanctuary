@@ -53,7 +53,7 @@ public static class StructuralLimits
     /// - PUNTA (T × T): lo mismo, más el anillo con sus frutales (~60 t), la rama (agua 10 × 10 m y acrílico, ~30 m) y la
     ///   columna de agua (10,6 × 10,6 m, de la rama al anillo).
     /// - TECHO: lado del tronco × 0,3 m (2 t/m³) y las alfombras. PARED de acrílico (1,19 t/m³): su peso; no cuenta como portante.
-    /// - CAPACIDAD: nervios CFST Ø 0,8 m (chapa 30 mm S460 + C80), φ = 0,6 → ~38 MN cada uno.
+    /// - CAPACIDAD: nervios CFST Ø <paramref name="ribD"/> (0,8 m: chapa 30 mm S460 + C80), φ = 0,6 → ~38 MN cada uno.
     /// - ZUNCHO: el agua tira de cada cara p·a en el fondo (a = medio lado del agua); lo resisten el acrílico (10 MPa a largo
     ///   plazo) y los zunchos de acero (<paramref name="hoopArea"/> m² cada <paramref name="hoopSpacing"/> m, 350 MPa).
     /// - ACRÍLICO entre nervios y zunchos: placa de luz s = mín(paso de nervios, paso de zunchos), M = p·s²/10, σ = 6M/t² ≤ 10 MPa.
@@ -63,17 +63,20 @@ public static class StructuralLimits
     /// </summary>
     /// <summary>Los NERVIOS y el PASO DE ZUNCHOS que pide un tronco de <paramref name="height"/> m (2026-11-01: con los niveles
     /// cada 22 m los troncos miden 109–153 m y el agua aprieta más): de 24 nervios y zunchos cada 6 m, se añaden nervios (de 4
-    /// en 4, hasta 40) y, si no basta, se acercan los zunchos (4, 3, 2 m) hasta que la carga, el zuncho y el acrílico quedan bajo el 80 %.</summary>
-    public static (int ribs, float hoopSpacing) Reinforce(HelixTower h, int floors, int tips, float height)
+    /// en 4, hasta 48) y, si no basta, se acercan los zunchos (4, 3, 2, 1,5, 1 m) y se engruesan los nervios (de Ø 0,8 a 1,2 m) hasta que la carga, el zuncho y el acrílico
+    /// quedan bajo el 80 %. (2026-11-05: Entrenamiento, 8 niveles con los pisos de Música: 1863/1841 MN = 101 % con 48 nervios Ø 0,8; más nervios dejaría una cara casi tapada,
+    /// así que van más gruesos: 40 de Ø 1 m y zunchos cada 1,5 m.)</summary>
+    public static (int ribs, float hoopSpacing, float ribD) Reinforce(HelixTower h, int floors, int tips, float height)
     {
-        float[] hoops = { 6f, 4f, 3f, 2f };
+        float[] hoops = { 6f, 4f, 3f, 2f, 1.5f, 1f }, diameters = { 0.8f, 0.9f, 1f, 1.1f, 1.2f };
         foreach (float hs in hoops)   // (primero más nervios, con los zunchos cada 6 m: menos rejilla a la vista)
-            for (int ribs = 24; ribs <= 40; ribs += 4)
+            foreach (float d in diameters)
+            for (int ribs = 24; ribs <= 48; ribs += 4)
             {
-                RootReport r = RootCheck(h, floors, tips, height, ribs, hs, 0.09f, 4f);
-                if (r.AxialUse <= RootWarnUse && r.HoopUse <= RootWarnUse && r.PanelUse <= RootWarnUse) return (ribs, hs);
+                RootReport r = RootCheck(h, floors, tips, height, ribs, hs, 0.09f, 4f, d);
+                if (r.AxialUse <= RootWarnUse && r.HoopUse <= RootWarnUse && r.PanelUse <= RootWarnUse) return (ribs, hs, d);
             }
-        return (48, 2f);
+        return (48, 1f, 1.2f);
     }
 
     /// <summary>Toneladas de un piso de <paramref name="S"/> × <paramref name="S"/> m (losa, tierra en el 45 % y uso).</summary>
@@ -99,7 +102,7 @@ public static class StructuralLimits
     }
 
     public static RootReport RootCheck(HelixTower h, int floors, int tips, float height = 92f, int ribs = 24,
-                                       float hoopSpacing = 6f, float hoopArea = 0.09f, float strutDrop = 4f)
+                                       float hoopSpacing = 6f, float hoopArea = 0.09f, float strutDrop = 4f, float ribD = 0.8f)
     {
         const float g = 9.81f;
         var r = new RootReport();
@@ -114,7 +117,8 @@ public static class StructuralLimits
         r.topMN = (side * side * 0.3f * 2f + 20f) * g / 1000f;
         r.selfMN = 4f * (side - h.wall) * h.wall * height * 1.19f * g / 1000f;
         r.axialMN = r.floorsMN + r.tipsMN + r.topMN + r.selfMN;
-        float steel = UnityEngine.Mathf.PI * 0.8f * 0.03f * 460f, concrete = UnityEngine.Mathf.PI * 0.25f * 0.74f * 0.74f * 80f * 0.85f;
+        float ribT = 0.0375f * ribD, ribIn = ribD - 2f * ribT;   // chapa proporcional al Ø (30 mm con Ø 0,8 m)
+        float steel = UnityEngine.Mathf.PI * ribD * ribT * 460f, concrete = UnityEngine.Mathf.PI * 0.25f * ribIn * ribIn * 80f * 0.85f;
         float rib = (steel + concrete) * 0.6f;
         r.axialCapacityMN = ribs * rib;
         r.waterMN = 4f * a * a * height * g / 1000f;

@@ -81,7 +81,7 @@ public static class Uniforms
             case "Planta Atómica": case "Central Nuclear": return Kind.Nuclear;
             case "Estudio Textil": return Kind.Textil;
             case "Cría": return Kind.Cria;
-            case AreaWork.Guard: return Kind.Guardia;
+            case AreaWork.Guard: case AreaWork.GuardRoom: return Kind.Guardia;
             case "Informática": return Kind.Informatica;
             case "Sala de asambleas": return Kind.Asamblea;
             case "Música": return Kind.Musica;

@@ -34,7 +34,7 @@ public class IslandsTest : MonoBehaviour, ITestUnit
             float ang = k * 30f * Mathf.Deg2Rad, rad = k < 12 ? 16f : 22f;
             lobeTarget = lobe + new Vector3(Mathf.Cos(ang), 0f, Mathf.Sin(ang)) * rad;
         }
-        foreach (var (name, target) in new[] { ("la casa del árbol (Guardia)", new Vector3(-20f, 0f, 47f)), ("el pie de la torre de Servicios (cocina y hospital)", CarpetPad.All.Find(p => p.building == "Servicios" && p.floor == 0) is CarpetPad sp ? sp.transform.position : new Vector3(5f, 0f, 84f)), ("el lóbulo de la antigua enfermería (al pie de Servicios)", lobeTarget) })
+        foreach (var (name, target) in new[] { ("el pie del árbol gigante", new Vector3(-38f, 0f, 65f)), ("el pie de la torre de Servicios (cocina y hospital)", CarpetPad.All.Find(p => p.building == "Servicios" && p.floor == 0) is CarpetPad sp ? sp.transform.position : new Vector3(5f, 0f, 84f)), ("el lóbulo de la antigua enfermería (al pie de Servicios)", lobeTarget) })
         {
             bool onB = OnMesh(target, out Vector3 b);
             var path = new NavMeshPath();
@@ -55,14 +55,13 @@ public class IslandsTest : MonoBehaviour, ITestUnit
         }
         TestProbe.Check("la fauna marina vive en la laguna", marine > 0 && marineInLagoon * 2 >= marine, $"{marineInLagoon}/{marine} en la laguna");
 
-        GameObject tree = GameObject.Find("CasaArbolGuardia");
-        TestProbe.NotNull("la casa del árbol de guardia existe", tree);
-        TestProbe.Check("la casa del árbol no es carnívora", tree != null && tree.GetComponent<IceCarnivorousTree>() == null);
-        // Sin escaleras verticales (Berón 2026-10-27, docs/alfombras-plan.md): la casa del árbol se sube en alfombra.
+        GameObject tree = GameObject.Find(GuardianTree.ObjectName);
+        TestProbe.NotNull("el árbol gigante existe", tree);
+        TestProbe.Check("el árbol gigante no es carnívoro", tree != null && tree.GetComponent<IceCarnivorousTree>() == null);
+        // Sin escaleras verticales (Berón 2026-10-27, docs/alfombras-plan.md).
         int ladders = 0;
         foreach (Transform t in FindObjectsByType<Transform>(FindObjectsSortMode.None)) if (t.name == "Escalera" && t.Find("Peldano") != null) ladders++;
         TestProbe.Check("ya no hay escaleras verticales (se sube en alfombra)", ladders == 0, $"{ladders} escaleras");
-        TestProbe.Check("la casa del árbol de guardia tiene alfombra en el suelo y arriba", CarpetPad.All.FindAll(p => p.building == "Casa del guarda").Count >= 2);
         TestProbe.NotNull("la enfermería tiene analizador clínico", FindFirstObjectByType<ClinicalStation>());
         TestProbe.End();
     }

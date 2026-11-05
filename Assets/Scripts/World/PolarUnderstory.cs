@@ -68,9 +68,6 @@ public class PolarUnderstory : MonoBehaviour
         int cubes0 = 0;
         foreach (IceCarnivorousTree tree in FindObjectsByType<IceCarnivorousTree>(FindObjectsSortMode.None))
             AroundTree(tree.transform.position, TreeHeight(tree.transform));
-        // Los brotes no llevan IceCarnivorousTree: también tienen su pequeño corro.
-        foreach (Transform t in transform.parent != null ? transform.parent.GetComponentsInChildren<Transform>() : new Transform[0])
-            if (t.name.StartsWith("ArbolCarnivoroHielo_Brote")) AroundTree(t.position, 4f);
 
         if (tundraArea.width > 0f) Tundra();
 

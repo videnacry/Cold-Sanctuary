@@ -42,6 +42,8 @@ public class AsambleaTest : MonoBehaviour, ITestUnit
             TestProbe.Begin("Sala de asambleas: el piso");
             int seats = area.GetComponentsInChildren<AreaSeat>(true).Where(s => s.activity == "asamblea").Sum(s => s.seats);
             TestProbe.Check("caben todos los miembros a la vez", seats >= WorkdayDirector.Staff.Length, $"{seats} plazas, {WorkdayDirector.Staff.Length} miembros");
+            var low = AreaCapacity.Check(new[] { area.transform }, AreaCapacity.Members(), out _).Where(l => !l.ok).Select(l => l.ToString()).ToList();
+            TestProbe.Check("ningún puesto por debajo de la regla de capacidad (S13)", low.Count == 0, string.Join(" · ", low));
             string names = string.Join(" ", area.GetComponentsInChildren<Transform>(true).Select(t => t.name));
             foreach (string piece in new[] { "Piedra de la palabra", "Toguna", "Kleroterion", "Cabina de intérpretes", "Archivo de actas", "Marcador de votos", "Retoño del roble" })
                 TestProbe.Check($"tiene {piece}", names.Contains(piece));
@@ -52,11 +54,25 @@ public class AsambleaTest : MonoBehaviour, ITestUnit
         foreach (AreaDesign.Row r in AreaDesign.All.Where(x => x.state == AreaDesign.State.Cumple))
             TestProbe.Check($"{r.area}: ≥ 3 culturas y su doc", r.cultures.Length >= 3 && r.doc.Length > 0, string.Join(", ", r.cultures));
         TestProbe.Check("la Sala de asambleas cumple", AreaDesign.Of("Sala de asambleas")?.state == AreaDesign.State.Cumple);
+        TestProbe.Check("el Huerto y Construcción cumplen", AreaDesign.Of("Huerto")?.state == AreaDesign.State.Cumple && AreaDesign.Of("Construcción")?.state == AreaDesign.State.Cumple);
+        GameObject garden = GameObject.Find("Garden_Area"), works = GameObject.Find("Construction_Area");
+        if (garden != null && garden.transform.parent != null)
+        {
+            string plots = string.Join(" ", garden.transform.parent.GetComponentsInChildren<Transform>(true).Select(t => t.name));
+            foreach (string piece in new[] { "Chinampa", "Zai", "Anden", "Hugelkultur", "Batdam", "Subak" }) TestProbe.Check($"el piso del Huerto tiene {piece}", plots.Contains("Metodo_" + piece));
+        }
+        if (works != null)
+        {
+            string samples = string.Join(" ", works.GetComponentsInChildren<Transform>(true).Select(t => t.name));
+            foreach (string piece in new[] { "Guadua", "Tapia", "Kigumi", "Boveda_nubia", "Silleria_inca" }) TestProbe.Check($"Construcción tiene {piece}", samples.Contains("Tecnica_" + piece));
+        }
         TestProbe.End();
 
         TestProbe.Begin("Veracidad de las frases (M39)");
         TestProbe.Check("la promesa del cargo es documentada", LineTruth.Judge("Pedro Sánchez", "Prometo por mi conciencia y honor cumplir", new string[0]).v == Veracity.Documentada);
         TestProbe.Check("la frase de juego de una persona real es recreada, con fuente", LineTruth.Judge("Elon Musk", "Vamos a intentarlo", new[] { "Space.com" }) is var a && a.v == Veracity.Recreada && a.source.Contains("Space.com"));
+        TestProbe.Check("la cita de la música tiene su base", LineTruth.Judge("John Lennon", "Si pudiera vender la paz como se vende un jabón, lo haría.", new string[0]).v == Veracity.Atestiguada);
+        TestProbe.Check("las historias guionizadas tienen su fila", new[] { "Compasión", "Egina", "Sakshi", "Ambrosio", "Cocina" }.All(s => LineTruth.ForStory(s).Length == 1));
         TestProbe.Check("la de un personaje de juego es inventada", LineTruth.Judge("Ujier", "Hoy está esto lleno", new string[0]).v == Veracity.Inventada);
         var probe = new GameObject("Prueba_veracidad"); probe.SetActive(false);
         var card = probe.AddComponent<HistoryCard>(); card.sources = new[] { "Fuente" };

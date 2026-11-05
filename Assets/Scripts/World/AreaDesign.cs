@@ -16,6 +16,7 @@ public static class AreaDesign
     public static readonly Row[] All =
     {
         new Row("Sala de asambleas", State.Cumple, "piso-asambleas.md", "cada pieza con su origen", "Islandia (Lögberg)", "Haudenosaunee (círculo y archivo)", "Botsuana (kgotla)", "Mali (toguna)", "Atenas (kleroterion y clepsidra)", "Alemania (cono del Reichstag)", "ONU (cabina de intérpretes)", "Euskadi (roble de Gernika)", "India (panchayat)", "Andes (quipu)"),
+        new Row("Sala de guardia", State.Cumple, "sala-de-guardia.md", "salas de control reales, cada pieza con su origen", "EE. UU. (consolas de Houston, Patrulla del Hielo, boyas DART)", "Japón (sismógrafo y centros gemelos)", "Hong Kong (radar y VHF)"),
         new Row("Cocina", State.Cumple, "cocina-profesional.md", "wok, comal y brigada de cocina", "China (wok)", "México (comal)", "Francia (brigada)"),
         new Row("Dojo (artes marciales)", State.Cumple, "obras-dojo-ballet.md", "tatami, karate, kickboxing y MMA", "Japón (tatami, karate)", "Tailandia y Países Bajos (kickboxing)", "EE. UU. y Brasil (MMA)"),
         new Row("Música", State.Cumple, "piso-musica.md", "acústica investigada; instrumentos del mundo en el banco del técnico (2026-11-05)", "Alemania y Austria (piano)", "India (sitar)", "Andes (charango)", "Mali (kora)", "Japón (shamisen)"),
@@ -31,9 +32,9 @@ public static class AreaDesign
         new Row("Hospital", State.Falta, "hospital.md", "muy investigado en medicina; sin mezcla de culturas de curar"),
         new Row("Química", State.Falta, "laboratorios-investigacion.md", "técnica; sin mezcla"),
         new Row("Biología", State.Falta, "laboratorios-investigacion.md", "técnica; sin mezcla"),
-        new Row("Construcción", State.Falta, "construction-simulation.md", "sin investigación de diseño ni de culturas (bambú, tapia, adobe, carpintería japonesa…)"),
+        new Row("Construcción", State.Cumple, "construccion-sostenible.md", "muestrario de técnicas en el borde +Z (2026-11-05)", "Colombia (guadua y bahareque)", "Iberia, Magreb y Andes (tapia)", "Japón (kigumi)", "Nubia y Egipto (bóveda sin cimbra)", "Perú (sillería inca)"),
         new Row("Mecánica", State.Falta, "", "sin investigación de diseño"),
-        new Row("Huerto", State.Falta, "huertos-y-cultivos.md", "cultivos sí; métodos del mundo no (chinampa, zaï, terrazas, hügelkultur)"),
+        new Row("Huerto", State.Cumple, "huertos-y-cultivos.md", "seis métodos del mundo junto al cultivo (2026-11-05)", "México (chinampa)", "Burkina Faso (zaï)", "Andes (andén)", "Europa central (hügelkultur)", "Corea (batdam)", "Bali (subak)"),
         new Row("Calistenia", State.Falta, "", "sin investigación de diseño"),
         new Row("Cría", State.Falta, "cria-simulation.md", "sin investigación de diseño"),
         new Row("Carne Cultivada", State.Falta, "carne-cultivada.md", "técnica; sin mezcla"),

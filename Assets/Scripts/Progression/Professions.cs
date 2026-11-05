@@ -37,12 +37,12 @@ public static class Professions
         // Tote: JEFE DE REPARACIONES («rep_») y guardia.
         new Entry("JefeConstruccion", "jefe de reparaciones y guardia", "Construcción:rep_", "Guardia"),
         // Los guardias: Gohageneis (y las artes marciales), Nesvitor (y agricultor) y Tote.
-        new Entry("Gohageneis", "guardia, artes marciales y maestro de baile", "Guardia"),
+        new Entry("Gohageneis", "guardia, artes marciales y maestro de baile", "Guardia", AreaWork.GuardRoom),
         // Panterilia: MAESTRA DE BAILE y FINANZAS (la mesa de cuentas del restaurante). Dejó de ser segunda maestra de yoga (2026-11-05: sin base documentada).
         new Entry("Panterilia", "maestra de baile y finanzas", "Cocina:coc_cuentas"),
         // Julian: DIRECCIÓN DE PROYECTOS, con Alicita (con_proyectos y con_proyectos2: uno cada uno).
         new Entry("Julian", "dirección de proyectos", "Construcción:con_proyectos"),
-        new Entry("Nesvitor", "guardia y agricultor", "Guardia", "Huerto"),
+        new Entry("Nesvitor", "guardia y agricultor", "Guardia", AreaWork.GuardRoom, "Huerto"),
         // Maite: jefa de cocina con Amykhuz, y CURANDERA (las plantas medicinales y las curas del hospital).
         new Entry("Maite", "jefa de cocina y curandera", "Cocina", "Hospital:hos_plantas,enf_visita"),
         new Entry("Amykhuz", "jefe de cocina y química", "Cocina", "Química"),

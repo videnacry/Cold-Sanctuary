@@ -56,7 +56,7 @@ public class BeeSwarm : Swarm
     {
         _trees.Clear(); _crown.Clear();
         Vector3 home = hive != null ? hive.transform.position : transform.position;
-        foreach (IceCarnivorousTree t in FindObjectsByType<IceCarnivorousTree>(FindObjectsSortMode.None))
+        foreach (NestTree t in FindObjectsByType<NestTree>(FindObjectsSortMode.None))
         {
             Vector3 p = t.transform.position;
             if (new Vector2(p.x - home.x, p.z - home.z).magnitude > range) continue;

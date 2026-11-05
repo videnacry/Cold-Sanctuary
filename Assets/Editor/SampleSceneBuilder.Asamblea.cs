@@ -60,7 +60,6 @@ public static partial class SampleSceneBuilder
         KitchenProps.C(centre, new Vector3(0f, 4.45f, 0f), new Vector3(6.1f, 0.08f, 6.1f), AsmGlass, 0f, "Aro_de_luz");
         for (int k = 0; k < 4; k++) KitchenProps.C(centre, new Vector3(0f, 4.2f - k * 0.3f, 0f), new Vector3(3f - k * 0.7f, 0.5f, 3f - k * 0.7f), AsmGlass, 0f, "Cono_de_espejos");
         KitchenProps.Fit(centre);
-        AreaSeat.Add(centre.gameObject, "hablar", AreaSeat.Category.Trabajo, 1);
         WorldLabel cw = centre.gameObject.AddComponent<WorldLabel>(); cw.text = "Piedra de la palabra"; cw.height = 5f;
 
         // LOS DOS ANILLOS DE FILAS, en cuadrado: mirando todos al centro; nadie en lo alto, nadie detrás de nadie.

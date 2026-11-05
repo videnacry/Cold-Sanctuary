@@ -45,6 +45,7 @@ public static partial class SampleSceneBuilder
         /// zunchos cada 6 m, más nervios y zunchos más juntos hasta quedar bajo el 80 %; el agua aprieta más cuanto más alto).</summary>
         public int Ribs => StructuralLimits.Reinforce(h, 2 * h.levels, 2 * h.levels, RootHeight).ribs;
         public float HoopSpacing => StructuralLimits.Reinforce(h, 2 * h.levels, 2 * h.levels, RootHeight).hoopSpacing;
+        public float RibDiameter => StructuralLimits.Reinforce(h, 2 * h.levels, 2 * h.levels, RootHeight).ribD;
     }
 
     static readonly List<Helix> _helixes = new List<Helix>();
@@ -288,10 +289,10 @@ public static partial class SampleSceneBuilder
         TrunkLook(tree);   // que se lea como agua (cristal casi invisible, agua azul, sin sombra)
 
         // EL TRONCO AGUANTA (StructuralLimits.RootCheck).
-        StructuralLimits.RootReport rep = StructuralLimits.RootCheck(h, floors, tips, hx.RootHeight, hx.Ribs, hx.HoopSpacing, TreeSpec.HoopArea, TreeSpec.StrutDrop);
+        StructuralLimits.RootReport rep = StructuralLimits.RootCheck(h, floors, tips, hx.RootHeight, hx.Ribs, hx.HoopSpacing, TreeSpec.HoopArea, TreeSpec.StrutDrop, hx.RibDiameter);
         if (rep.Fail) Debug.LogError($"[Estructura] El tronco de «{hx.building}» no aguanta: {rep}. Refuérzalo (más nervios, más pared o más tornapuntas).");
         else if (rep.Warn) Debug.LogWarning($"[Estructura] El tronco de «{hx.building}» va justo: {rep}.");
-        else Debug.Log($"[Estructura] Tronco de «{hx.building}» ({2f * h.OuterHalf:0} × {2f * h.OuterHalf:0} m, {hx.Ribs} nervios): {rep}.");
+        else Debug.Log($"[Estructura] Tronco de «{hx.building}» ({2f * h.OuterHalf:0} × {2f * h.OuterHalf:0} m, {hx.Ribs} nervios de Ø {hx.RibDiameter:0.0} m, zunchos cada {hx.HoopSpacing:0.#} m): {rep}.");
         Debug.Log($"[Árbol] «{hx.building}» en ({site.x:0}, {site.z:0}), giro {hx.yaw:0}°: tronco cuadrado de {hx.RootHeight:0} m, hélice de {h.levels} niveles desde {h.firstY:0} m, " +
                   $"{floors} pisos de {h.floorSize:0} m, {tips} puntas de {h.tipSize:0} m, {ring} anillos, alcance {h.Reach:0.0} m, puerta del suelo en la cara {hx.groundSide}.");
     }
@@ -432,19 +433,20 @@ public static partial class SampleSceneBuilder
             }
             var ribX = new List<float>();
             int per = hx.Ribs / 4;   // vanos por cara (6 con 24 nervios, 7 con 28)
+            float ribW = hx.RibDiameter / 0.8f;   // (se ven más gruesos en los troncos que los piden)
             for (int i = 1; i < per; i++) ribX.Add(-o + i * (2f * o / per));
             foreach (float x in ribX)
                 for (float y = 0f; y < H; y += 4f)
                 {
                     float y1 = Mathf.Min(H, y + 4f);
                     if (Blocked(x - 0.3f, x + 0.3f, y, y1, 0.3f)) continue;
-                    boxes.Add((q * new Vector3(x, (y + y1) * 0.5f, o + 0.3f), new Vector3(0.55f, y1 - y, 0.6f), q));
+                    boxes.Add((q * new Vector3(x, (y + y1) * 0.5f, o + 0.3f), new Vector3(0.55f * ribW, y1 - y, 0.6f), q));
                 }
             for (float y = 0f; y < H; y += 4f)   // el nervio de la esquina (+x de esta cara)
             {
                 float y1 = Mathf.Min(H, y + 4f);
                 if (AnyBand(y, y1)) continue;
-                boxes.Add((q * new Vector3(o + 0.3f, (y + y1) * 0.5f, o + 0.3f), new Vector3(0.6f, y1 - y, 0.6f), q));
+                boxes.Add((q * new Vector3(o + 0.3f, (y + y1) * 0.5f, o + 0.3f), new Vector3(0.6f * ribW, y1 - y, 0.6f), q));
             }
             var hoopY = new List<float>();
             for (float y = 3f; y < H - 0.5f; y += hx.HoopSpacing) hoopY.Add(y);
@@ -798,7 +800,7 @@ public static partial class SampleSceneBuilder
 {
     /// <summary>¿Choca <paramref name="world"/> (con <paramref name="margin"/> m de holgura) con algún edificio-árbol? Se mide con sus
     /// medidas (aún sin construir el tronco ni las puntas): tronco, pisos con un anillo de 8 m, ramas, puntas con su anillo y techo;
-    /// el Árbol de los Campos, girando (su círculo). Lo usa el árbol de la guardia para que sus ramas los esquiven.</summary>
+    /// el Árbol de los Campos, girando (su círculo). Lo usa el árbol gigante para que sus ramas los esquiven.</summary>
     static bool HelixBlockedAt(Vector3 world, float margin)
     {
         foreach (Helix hx in _helixes)

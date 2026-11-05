@@ -56,7 +56,7 @@ sentido que estén.
 
 **Limita con:** la lanzadera (a 335 m, regla ≥ 300 m) y el sitio nuclear (a 325 m, regla ≥ 300 m: T14, tras separar los santuarios). Por eso la isla no sigue al sureste.
 
-**Los bosques de árboles carnívoros siguen en hielo:** viven de agua y frío. En la isla no crecen árboles de hielo; los de junto a las áreas
+**(2026-11-05: ya no hay bosques: ver ice-sanctuary-ecology.md §Sin bosque.)** Lo que sigue es histórico. **Los bosques de árboles carnívoros siguen en hielo:** viven de agua y frío. En la isla no crecen árboles de hielo; los de junto a las áreas
 del Sur ya no salen (`BuildIceFlora` pregunta `IceAt`).
 
 ### La isla por dentro

@@ -6,7 +6,7 @@ using UnityEngine;
 /// «siempre que se agrega un elemento elevado se valide y se ajuste la altura del lanza-cohetes para que no le afecte».
 ///   altura de la plataforma ≥ máx(lo más alto del santuario, techo de vuelo de las aves) + margen.
 /// - Lo más alto del santuario: el techo de cada edificio-árbol con la columna de su puerta (<see cref="ArbolCampos"/>) y todo lo que
-///   lleve un <see cref="ElevatedElement"/> (el árbol de la guardia, torres, anillos, lo que se añada).
+///   lleve un <see cref="ElevatedElement"/> (el árbol gigante, torres, anillos, lo que se añada).
 /// - Techo de vuelo de las aves: lo más alto que vuelan las aves del santuario (<see cref="BirdBehavior"/>: min + 3 × max) y, como
 ///   mínimo, <see cref="RealBirdBand"/> (152 m = 500 pies: el ~72 % de los choques con aves en aviación son por debajo).
 /// - Margen: <see cref="Margin"/> (30 m: el chorro de los propulsores, la nube del diluvio y los cascotes no bajan a esa franja).

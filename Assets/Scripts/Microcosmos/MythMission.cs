@@ -35,13 +35,14 @@ public class MythMission : MonoBehaviour
     void Start()
     {
         _card = GetComponent<HistoryCard>();
+        if (_card.lineTruth.Length == 0) _card.lineTruth = LineTruth.ForStory("Egina");   // regla M39
         Recruits.Clear();
         Recruits.AddRange(FindObjectsByType<MythRecruit>(FindObjectsSortMode.None));
     }
 
     public void Say(string who, string line)
     {
-        _note = string.IsNullOrEmpty(who) ? line : $"{who}: {line}";
+        _note = string.IsNullOrEmpty(who) ? line : $"{who}: {LineTruth.Tagged("Egina", line)}";
         _noteUntil = Time.time + 5f;
         Debug.Log($"[Egina] {_note}");
     }

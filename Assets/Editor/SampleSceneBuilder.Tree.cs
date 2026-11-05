@@ -61,6 +61,7 @@ public static partial class SampleSceneBuilder
             KitchenProps.C(burn, new Vector3(0f, 0.6f, 0f), new Vector3(1.2f, 1.2f, 1.2f), KitchenProps.DarkSteel, 0f, "Camara");
             KitchenProps.C(burn, new Vector3(0f, 1.8f, 0f), new Vector3(0.3f, 1.2f, 0.3f), KitchenProps.Steel, 0f, "Chimenea_con_filtro");
             burn.gameObject.AddComponent<WorldLabel>().text = "Incinerador: plantas no nativas con su tierra";
+            FurnishWorldGarden(f);   // (2026-11-05, S14) seis métodos del mundo, en la mitad libre del piso
         }
         else
         {

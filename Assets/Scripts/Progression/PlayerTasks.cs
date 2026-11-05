@@ -128,6 +128,7 @@ public static class PlayerTasks
         T("nuc_refuerzo", "Cierra las cavernas|panel_roca|Tablet", "Manda reforzar a distancia|panel_roca|Tablet", "Vigila que el ritmo baje|panel_roca|Tablet");
         // ══ GUARDIA ══
         T("gua_carnivoros", "Coge la linterna|almacen|Linterna", "Patrulla los puestos|recinto|Linterna", "Anota la ronda|recinto|Tablet");
+        T("gua_sala", "Lee el muro de pantallas|consola|Tablet", "Comprueba el radar y el sismógrafo|consola|Tablet", "Firma el parte del turno|consola|Tablet");
         foreach (string ali in new[] { "gua_alimentador", "gua_alimentador_2" })
         {
             T(ali, "Coge las raciones del almacén|almacen|Cubo de carne", "Busca al primero de la lista, desde lejos|depredador|Prismáticos", "Evalúa y lanza su ración o márcalo|depredador|Cubo de carne", "Ve a por el siguiente|depredador|Cubo de carne");

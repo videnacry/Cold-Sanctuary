@@ -110,7 +110,7 @@ public static class VirtualMissionSceneBuilder
     {
         switch (area)
         {
-            case AreaWork.Hospital: case "Guardia": return "Infirmary_Area";
+            case AreaWork.Hospital: case "Guardia": case AreaWork.GuardRoom: return "Infirmary_Area";
             case "Cocina": return "Kitchen_Area";
             case "Huerto": return "Garden_Area";
             case "Sala de Yoga": return "YogaRoom_Area";

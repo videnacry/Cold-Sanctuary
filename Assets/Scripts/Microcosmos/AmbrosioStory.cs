@@ -150,7 +150,7 @@ public class AmbrosioStory : MonoBehaviour
     {
         string n = who != null ? who.name : "";
         if (who == null) return;   // (quien no está en esta escena no habla)
-        StorySubtitle.Show(n == "Hespero" ? "Héspero" : n.Replace('_', ' '), text, secs);   // en pantalla (PlaneMessenger no existe en el microcosmos: no se veía nada)
+        StorySubtitle.Show(n == "Hespero" ? "Héspero" : n.Replace('_', ' '), LineTruth.Tagged("Ambrosio", text), secs);   // en pantalla (PlaneMessenger no existe en el microcosmos: no se veía nada)
         Debug.Log($"[Ambrosio] {n}: «{text}»");
         if (reply != null) KushalVoice.Reply(reply.Value);
     }

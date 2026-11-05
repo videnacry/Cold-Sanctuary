@@ -8,7 +8,8 @@ using System.Collections.Generic;
 /// </summary>
 public static class AreaWork
 {
-    public const string Guard = "Guardia";   // no es un SanctuaryArea: la torre y los puestos de vigía
+    public const string Guard = "Guardia";   // no es un SanctuaryArea: la patrulla, los puestos de vigía y el alimentador
+    public const string GuardRoom = "Sala de guardia";   // un sitio de la jornada, no un SanctuaryArea (docs/sala-de-guardia.md)
     public const string Hospital = "Hospital";   // la antigua Enfermería (docs/hospital.md)
 
     static WorkRoster.Mission M(string area, string id, string title, float h, bool mandatory = false) => new WorkRoster.Mission(area, id, title, h, mandatory);
