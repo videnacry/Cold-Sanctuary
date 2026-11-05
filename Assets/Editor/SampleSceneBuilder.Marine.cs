@@ -24,6 +24,7 @@ public static partial class SampleSceneBuilder
         MarineBase b = go.AddComponent<MarineBase>();
         Transform root = go.transform;
         BuildMarineBase(root, b);
+        PlaceMarineColdFauna(root, NuclearSiteRule.Center + new Vector3(0f, 0f, 40f), SeaRule.MarineFloorY);   // docs/fauna-fria-santuarios.md
         EditorSceneManager.SaveScene(scene, MarineScenePath);
         var bs = new System.Collections.Generic.List<EditorBuildSettingsScene>(EditorBuildSettings.scenes);
         if (!bs.Exists(s => s.path == MarineScenePath)) bs.Add(new EditorBuildSettingsScene(MarineScenePath, true));

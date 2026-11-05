@@ -17,10 +17,10 @@ using UnityEngine;
 /// </summary>
 public static class SwarmModels
 {
-    public enum Species { SilverFish, Krill, Diplulmaris, Desmonema, SnowBee, Clam, ArcticCod, Capelin, IceKrill, Themisto, Cyanea, Mya }
+    public enum Species { SilverFish, Krill, Diplulmaris, Desmonema, SnowBee, Clam, ArcticCod, Capelin, IceKrill, Themisto, Cyanea, Mya, Icefish, Toothfish, ColossalSquid, SeaSpider, YetiCrab }
 
     /// <summary>Escala de visualización sobre la talla real (la talla real va en la malla).</summary>
-    public static float DisplayScale(Species s) => s == Species.SilverFish ? 1.4f : s == Species.ArcticCod ? 1.7f : s == Species.Capelin ? 1.2f
+    public static float DisplayScale(Species s) => s == Species.Icefish ? 4.8f : s == Species.Toothfish ? 10f : s == Species.SeaSpider ? 6f : s == Species.YetiCrab ? 2.5f : s == Species.SilverFish ? 1.4f : s == Species.ArcticCod ? 1.7f : s == Species.Capelin ? 1.2f
         : s == Species.Krill ? 2f : s == Species.IceKrill ? 1.5f : s == Species.Themisto ? 1.2f : 1f;
 
     public static string Label(Species s) => s switch
@@ -32,6 +32,11 @@ public static class SwarmModels
         Species.Themisto => "Anfípodo ártico (Themisto libellula)",
         Species.Cyanea => "Medusa melena de león (Cyanea capillata)",
         Species.Mya => "Almeja truncada (Mya truncata)",
+        Species.Icefish => "Pez de hielo (Chaenocephalus aceratus)",
+        Species.Toothfish => "Austromerluza antártica (Dissostichus mawsoni)",
+        Species.ColossalSquid => "Calamar colosal (Mesonychoteuthis hamiltoni)",
+        Species.SeaSpider => "Araña de mar gigante (Colossendeis megalonyx)",
+        Species.YetiCrab => "Cangrejo yeti (Kiwa tyleri)",
         Species.Krill => "Kril antártico (Euphausia superba)",
         Species.Diplulmaris => "Medusa Diplulmaris antarctica",
         Species.Desmonema => "Medusa Desmonema glaciale",
@@ -52,6 +57,31 @@ public static class SwarmModels
                 Part(g.transform, "Lomo", Get("pez_lomo", FishBack), new Color(0.28f, 0.36f, 0.48f));
                 Part(g.transform, "Aletas", Get("pez_aletas", FishFins), new Color(0.45f, 0.52f, 0.6f));
                 Part(g.transform, "Ojos", Get("pez_ojos", FishEyes), new Color(0.05f, 0.05f, 0.06f));
+                break;
+            case Species.Icefish:   // pálido y casi transparente: su sangre no lleva hemoglobina
+                Part(g.transform, "Cuerpo", Get("pez_cuerpo", FishBody), new Color(0.86f, 0.88f, 0.88f)).localScale = new Vector3(0.7f, 0.7f, 1f);
+                Part(g.transform, "Lomo", Get("pez_lomo", FishBack), new Color(0.68f, 0.7f, 0.72f)).localScale = new Vector3(0.7f, 0.7f, 1f);
+                Part(g.transform, "Aletas", Get("pez_aletas", FishFins), new Color(0.75f, 0.76f, 0.78f));
+                Part(g.transform, "Ojos", Get("pez_ojos", FishEyes), new Color(0.05f, 0.05f, 0.06f));
+                break;
+            case Species.Toothfish:
+                Part(g.transform, "Cuerpo", Get("pez_cuerpo", FishBody), new Color(0.32f, 0.34f, 0.36f));
+                Part(g.transform, "Lomo", Get("pez_lomo", FishBack), new Color(0.2f, 0.21f, 0.23f));
+                Part(g.transform, "Aletas", Get("pez_aletas", FishFins), new Color(0.26f, 0.27f, 0.29f));
+                Part(g.transform, "Ojos", Get("pez_ojos", FishEyes), new Color(0.05f, 0.05f, 0.06f));
+                break;
+            case Species.ColossalSquid:   // manto de 2,5 m, ocho brazos y dos tentáculos
+                Part(g.transform, "Manto", Get("calamar_manto", () => JellyBell(0.6f, 2.5f)), new Color(0.55f, 0.2f, 0.16f));
+                Part(g.transform, "Brazos", Get("calamar_brazos", () => JellyArms(0.25f, 1.6f, 8)), new Color(0.62f, 0.26f, 0.2f));
+                Part(g.transform, "Tentaculos", Get("calamar_tent", () => JellyTentacles(0.3f, 2.4f, 2)), new Color(0.6f, 0.24f, 0.2f));
+                break;
+            case Species.SeaSpider:   // cuerpo mínimo y patas muy largas
+                Part(g.transform, "Cuerpo", Get("kril_cuerpo", KrillBody), new Color(0.9f, 0.55f, 0.2f)).localScale = new Vector3(0.5f, 0.5f, 0.3f);
+                Part(g.transform, "Patas", Get("kril_patas", KrillLegs), new Color(0.92f, 0.6f, 0.25f));
+                break;
+            case Species.YetiCrab:   // blanco, con el pecho peludo
+                Part(g.transform, "Cuerpo", Get("kril_cuerpo", KrillBody), new Color(0.93f, 0.92f, 0.88f));
+                Part(g.transform, "Patas", Get("kril_patas", KrillLegs), new Color(0.85f, 0.84f, 0.78f));
                 break;
             case Species.ArcticCod:   // lomo pardo moteado, vientre plateado (FishBase)
                 Part(g.transform, "Cuerpo", Get("pez_cuerpo", FishBody), new Color(0.78f, 0.78f, 0.74f));

@@ -40,6 +40,10 @@ public static class FoodChain
         { "Bear", 6f },         // 43 focas anilladas al año (Pagano et al. 2018: una adulta cada 10–12 días)
         { "Orca", 120f },       // ~3 % de la masa del catálogo (4–6 % Sergeant 1969; 2 % en cautividad)
         { "Whale", 65f },       // ~5 % de la masa del catálogo (Savoca et al. 2021: 5–30 % los días que come)
+        { "PolarSkua", 0.25f }, // [A] o calculado por energía (docs/fauna-fria-santuarios.md)
+        { "CapePetrel", 0.1f }, // [A] o calculado por energía (docs/fauna-fria-santuarios.md)
+        { "WanderingAlbatross", 0.85f }, // [A] o calculado por energía (docs/fauna-fria-santuarios.md)
+        { "ArcticTern", 0.03f }, // [A] o calculado por energía (docs/fauna-fria-santuarios.md)
         { "SnowPetrel", 0.06f }, // [A] ~20 % de su masa
         { "Penguin", 0.6f },    // Adelia: 0,55–0,65 kg
         { "EmperorPenguin", 3f }, // 1,8–6,3 kg (Robertson & Newgrain 1996)
@@ -259,6 +263,47 @@ public static class FoodChain
             lines.Add(l);
         }
         return lines;
+    }
+
+    /// <summary>Cuántos bancos de esta clase pide un santuario aparte con esta fauna, sin mezclarlo con el 1.</summary>
+    public static int BanksFor(Dictionary<string, int> animals, SwarmKind kind)
+    {
+        float need = 0f;
+        foreach (var (sp, n) in Pairs(animals))
+        {
+            bool fish = Eats(sp, SwarmKind.Fish), krill = Eats(sp, SwarmKind.Krill);
+            if (!(kind == SwarmKind.Fish ? fish : krill)) continue;
+            need += n * (Intake.TryGetValue(sp, out float i) ? i : 1f) * DaysPerYear / (fish && krill ? 2f : 1f);
+        }
+        return need <= 0f ? 0 : Mathf.Max(1, Mathf.CeilToInt(need / (BankYield(kind) * Margin)));
+    }
+
+    /// <summary>El balance de un santuario aparte (el aéreo), con los bancos de <see cref="BanksFor"/>: cada especie y lo que cubre.</summary>
+    public static List<Line> Isolated(Dictionary<string, int> animals)
+    {
+        var lines = new List<Line>();
+        foreach (var (sp, n) in Pairs(animals))
+        {
+            var l = new Line { species = sp, individuals = n, needs = n * (Intake.TryGetValue(sp, out float i) ? i : 1f) * DaysPerYear };
+            float supply = 0f;
+            foreach (SwarmKind k in new[] { SwarmKind.Fish, SwarmKind.Krill })
+                if (Eats(sp, k)) { l.sources.Add(k.ToString()); supply += BanksFor(animals, k) * BankYield(k) * Margin; }
+            l.covered = l.needs <= 0f ? 1f : Mathf.Min(1f, supply / l.needs);
+            lines.Add(l);
+        }
+        return lines;
+    }
+
+    static IEnumerable<(string, int)> Pairs(Dictionary<string, int> d) { foreach (var kv in d) yield return (kv.Key, kv.Value); }
+
+    static bool Eats(string sp, SwarmKind k)
+    {
+        GameObject probe = new GameObject("FoodChain_probe") { hideFlags = HideFlags.HideAndDontSave };
+        probe.SetActive(false);
+        Forager f = probe.AddComponent<Forager>(); f.ConfigureForSpecies(sp);
+        bool eats = k == SwarmKind.Fish ? f.eatsFish : f.eatsKrill;
+        if (Application.isPlaying) Object.Destroy(probe); else Object.DestroyImmediate(probe);
+        return eats;
     }
 
     /// <summary>Lo que escribe el Blockout: una línea por especie y lo que tuvo que subir. Devuelve cuántas especies pasarían hambre.</summary>

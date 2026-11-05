@@ -60,6 +60,10 @@ public class SpeciesProfile
             { "ArcticFox", new SpeciesProfile(0.3f, 0.6f, 0.8f, 2.0f, 0.3f, 0.5f, 4.0f, 0.6f, 6.0f, 0.8f, 0.5f, OrganicMaterial.Meat) },   // grasa de otoño: hasta +50 %
             { "MuskOx",   new SpeciesProfile(0.9f, 0.2f, 1.2f, 3.0f, 1.2f, 0.3f, 6.0f, 0.4f, 60.0f, 0.6f, 0.6f, OrganicMaterial.Meat) },   // packFactor alto: el grupo defiende
             { "SnowPetrel", new SpeciesProfile(0.4f, 0.1f, 1.5f, 0.5f, 0.05f, 0.4f, 5.0f, 0.7f, 1.5f, 0.2f, 0.5f, OrganicMaterial.Meat) },
+            { "ArcticTern", new SpeciesProfile(0.5f, 0.1f, 1.5f, 0.5f, 0.1f, 0.4f, 5.0f, 0.7f, 2.0f, 0.2f, 0.5f, OrganicMaterial.Meat) },   // colonia
+            { "WanderingAlbatross", new SpeciesProfile(0.1f, 0.1f, 1.5f, 0.5f, 0.1f, 0.4f, 5.0f, 0.7f, 2.0f, 0.2f, 0.5f, OrganicMaterial.Meat) },   // solitario, pareja de por vida
+            { "CapePetrel", new SpeciesProfile(0.7f, 0.1f, 1.5f, 0.5f, 0.1f, 0.4f, 5.0f, 0.7f, 2.0f, 0.2f, 0.5f, OrganicMaterial.Meat) },   // bandada ruidosa
+            { "PolarSkua", new SpeciesProfile(0.1f, 0.1f, 1.5f, 0.5f, 0.1f, 0.4f, 5.0f, 0.7f, 2.0f, 0.2f, 0.5f, OrganicMaterial.Meat) },   // pareja territorial
 
             // Insectos — cadena trófica del Microcosmos (Nivel 1)
             { "Ant",     new SpeciesProfile(0.9f, 0.4f, 1.5f, 0.8f, 0.5f, 0.3f, 3.0f, 0.7f,  2.0f, 0.5f, 0.4f, OrganicMaterial.Meat) },  // colonia; defiende

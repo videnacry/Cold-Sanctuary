@@ -14,7 +14,7 @@ public static class PopulationPlan
         { "Bear", 0.3f }, { "PolarBear", 0.3f }, { "Penguin", 1.2f }, { "Seal", 0.6f }, { "Whale", 0.2f }, { "Orca", 0.1f },
         { "Fox", 0.2f }, { "Wolf", 0.3f },
         // Territorio polar (docs/reglas-animales.md): en la isla, más herbívoros que depredadores.
-        { "SnowPetrel", 0.55f }, { "Walrus", 0.3f }, { "EmperorPenguin", 0.8f }, { "Reindeer", 0.6f }, { "MuskOx", 0.3f }, { "ArcticHare", 0.5f }, { "ArcticFox", 0.2f },
+        { "SnowPetrel", 0.55f }, { "ArcticTern", 0.2f }, { "WanderingAlbatross", 0.2f }, { "CapePetrel", 0.2f }, { "PolarSkua", 0.2f }, { "Walrus", 0.3f }, { "EmperorPenguin", 0.8f }, { "Reindeer", 0.6f }, { "MuskOx", 0.3f }, { "ArcticHare", 0.5f }, { "ArcticFox", 0.2f },
     };
 
     /// <summary>Quién vive en el santuario y en cuántos grupos (lo reparte el constructor). Una especie nueva entra aquí y la cadena alimenticia

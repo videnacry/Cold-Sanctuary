@@ -55,6 +55,10 @@ public class Physiognomy
             { "ArcticFox", new Physiognomy(Vector3.one, 3.3f, 0.09f, 0.2f, 0.05f) },
             { "MuskOx",   new Physiognomy(Vector3.one, 300f, 0.07f, 0.25f, 0.1f) },
             { "SnowPetrel", new Physiognomy(Vector3.one, 0.32f, 0.2f, 0.3f, 0.05f) },   // 317 g
+            { "ArcticTern", new Physiognomy(Vector3.one, 0.104f, 0.2f, 0.3f, 0.05f) },
+            { "WanderingAlbatross", new Physiognomy(Vector3.one, 9f, 0.2f, 0.3f, 0.05f) },
+            { "CapePetrel", new Physiognomy(Vector3.one, 0.45f, 0.2f, 0.3f, 0.05f) },
+            { "PolarSkua", new Physiognomy(Vector3.one, 1.3f, 0.2f, 0.3f, 0.05f) },
 
             // Insectos — escala de prefab ajustada al suelo del Microcosmos
             { "Ant",     new Physiognomy(new Vector3(0.003f, 0.003f, 0.003f), 0.002f, 0.10f, 0.15f, 0.05f) },
