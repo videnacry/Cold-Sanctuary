@@ -49,6 +49,11 @@ public static partial class StorySceneBuilder
         ("Classroom_Area", "Prairie View", "Microcosmos_MacKenzieScott", new Color(0.62f, 0.72f, 0.85f), new System.Func<Transform, int>(MacKenzieScott)),
         ("Garden_Area", "Uagadugú", "Microcosmos_IbrahimTraore", new Color(0.8f, 0.55f, 0.35f), new System.Func<Transform, int>(IbrahimTraore)),
         // LA MÚSICA (StorySceneBuilder.Musica.cs, docs/microcosmos-musica.md): una historia de cada artista o banda en su pueblo real, y las canciones que cambiaron el mundo.
+        ("Classroom_Area", "Grandes aportes de las canciones", "Microcosmos_GrandesCanciones", new Color(0.85f, 0.7f, 0.5f), new System.Func<Transform, int>(GrandesCanciones)),
+        ("Classroom_Area", "Long Island", "Microcosmos_PublicEnemy", new Color(0.5f, 0.5f, 0.55f), new System.Func<Transform, int>(PublicEnemy)),
+        ("Ballet_Area", "Belfast", "Microcosmos_U2", new Color(0.6f, 0.62f, 0.68f), new System.Func<Transform, int>(U2)),
+        ("Ballet_Area", "Kingston", "Microcosmos_Wailers", new Color(0.55f, 0.72f, 0.42f), new System.Func<Transform, int>(Wailers)),
+        ("Ballet_Area", "Seúl", "Microcosmos_Blackpink", new Color(0.92f, 0.62f, 0.72f), new System.Func<Transform, int>(Blackpink)),
         ("Ballet_Area", "Gary", "Microcosmos_MichaelJackson", new Color(0.65f, 0.58f, 0.55f), new System.Func<Transform, int>(MichaelJackson)),
         ("Ballet_Area", "Montreal", "Microcosmos_JohnLennon", new Color(0.8f, 0.82f, 0.9f), new System.Func<Transform, int>(JohnLennon)),
         ("Informatics_Area", "Vega Baja", "Microcosmos_BadBunny", new Color(0.55f, 0.75f, 0.6f), new System.Func<Transform, int>(BadBunny)),
@@ -85,6 +90,11 @@ public static partial class StorySceneBuilder
         ["Omaha"] = ("30 de agosto de 1983 (el 53 cumpleaños de Buffett)", 10.0f),   // la mañana en la tienda (hora representativa)
         ["Prairie View"] = ("15 de diciembre de 2020", 10.0f),   // la mañana del anuncio
         ["Uagadugú"] = ("6 de mayo de 2024", 9.0f),   // la mañana de la entrega (hora representativa)
+        ["Grandes aportes de las canciones"] = ("21 de junio (Día de la Música; lugar inventado)", 18.0f),   // la tarde del festival
+        ["Long Island"] = ("primavera de 1989 (Spike Lee les pide Fight the Power)", 16.0f),   // la tarde en el barrio y en el estudio (hora representativa)
+        ["Belfast"] = ("19 de mayo de 1998", 19.0f),   // la tarde del concierto (hora representativa)
+        ["Kingston"] = ("22 de abril de 1978", 17.0f),   // el concierto empieza a las 17:00; las manos en alto, hacia las 00:30
+        ["Seúl"] = ("8 de agosto de 2016 (el debut, tras años de aprendizas)", 11.0f),   // la mañana en la sala de ensayo (hora representativa)
         ["Gary"] = ("1966 (el concurso de talentos de Roosevelt High School)", 17.5f),   // el cambio de turno de la acería y la tarde del concurso (hora representativa)
         ["Montreal"] = ("1 de junio de 1969", 19.0f),   // el último día del Bed-In: la grabación (hora representativa)
         ["Vega Baja"] = ("2016 (sube «Diles» a SoundCloud)", 17.0f),   // la tarde en el súper; la historia acaba de noche

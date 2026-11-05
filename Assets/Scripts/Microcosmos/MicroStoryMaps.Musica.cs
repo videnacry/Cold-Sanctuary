@@ -61,27 +61,27 @@ public static partial class MicroStoryMaps
             },
             flora = new[]
             {
-                new Plant("Ausubo", -240f, -600f, 10, 90f), new Plant("Ausubo", 330f, -620f, 8, 70f), new Plant("Ausubo", -880f, -560f, 6, 60f),
-                new Plant("Palma de sombrero", -120f, -640f, 6, 50f), new Plant("Palma de sombrero", 470f, -600f, 5, 40f),
-                new Plant("Helecho del mogote", -260f, -560f, 14, 70f), new Plant("Helecho del mogote", 310f, -570f, 12, 60f),
-                new Plant("Enea de la laguna", 700f, 470f, 18, 60f), new Plant("Enea de la laguna", 880f, 470f, 14, 50f),
-                new Plant("Yerba del llano", 300f, 470f, 24, 120f), new Plant("Yerba del llano", -500f, 470f, 20, 110f),
-                new Plant("Flamboyán", -60f, 150f), new Plant("Flamboyán", -200f, 150f), new Plant("Flamboyán", -60f, 270f), new Plant("Flamboyán", -200f, 270f),
-                new Plant("Palma real", 40f, -30f), new Plant("Palma real", 150f, -30f), new Plant("Palma real", 260f, -30f), new Plant("Palma real", -160f, -30f),
-                new Plant("Amapola", 120f, 90f, 4, 8f), new Plant("Amapola", -270f, 140f, 4, 8f),
-                new Plant("Caliza del mogote", -200f, -640f, 6, 40f),
+                new Plant("Ausubo", -216f, -468f, 10, 90f), new Plant("Ausubo", 297f, -484f, 8, 70f), new Plant("Ausubo", -792f, -437f, 6, 60f),
+                new Plant("Palma de sombrero", -108f, -499f, 6, 50f), new Plant("Palma de sombrero", 423f, -468f, 5, 40f),
+                new Plant("Helecho del mogote", -234f, -437f, 14, 70f), new Plant("Helecho del mogote", 279f, -445f, 12, 60f),
+                new Plant("Enea de la laguna", 630f, 367f, 18, 60f), new Plant("Enea de la laguna", 792f, 367f, 14, 50f),
+                new Plant("Yerba del llano", 270f, 367f, 24, 120f), new Plant("Yerba del llano", -450f, 367f, 20, 110f),
+                new Plant("Flamboyán", -54f, 117f), new Plant("Flamboyán", -180f, 117f), new Plant("Flamboyán", -54f, 211f), new Plant("Flamboyán", -180f, 211f),
+                new Plant("Palma real", 36f, -23f), new Plant("Palma real", 135f, -23f), new Plant("Palma real", 234f, -23f), new Plant("Palma real", -144f, -23f),
+                new Plant("Amapola", 108f, 70f, 4, 8f), new Plant("Amapola", -243f, 109f, 4, 8f),
+                new Plant("Caliza del mogote", -180f, -499f, 6, 40f),
             },
             fauna = new[]
             {
-                new Animal("Cricket", "Grillo de la noche", -240f, -470f, 4, 1.8f, 40f),
-                new Animal("Firefly", "Cucubano (Pyrophorus), en los mogotes", 330f, -560f, 4, 1.2f, 40f),
-                new Animal("Ant", "Hormiga brava", 300f, 460f, 5, 1.2f, 30f),
-                new Animal("Mantis", "Santateresa, en la enea", 760f, 470f, 2, 2.2f, 30f),
+                new Animal("Cricket", "Grillo de la noche", -216f, -367f, 4, 1.8f, 40f),
+                new Animal("Firefly", "Cucubano (Pyrophorus), en los mogotes", 297f, -437f, 4, 1.2f, 40f),
+                new Animal("Ant", "Hormiga brava", 270f, 359f, 5, 1.2f, 30f),
+                new Animal("Mantis", "Santateresa, en la enea", 684f, 367f, 2, 2.2f, 30f),
             },
             buildings = new[]
             {
-                new Building("Econo Plaza Vega Baja", 90f, 110f), new Building("Iglesia del centro", -280f, 190f), new Building("Casa de la familia Martínez Ocasio", -230f, -540f),
-                new Building("Escuela de Almirante Sur", -130f, -520f), new Building("Plaza", -130f, 210f), new Building("Hospital de Vega Baja", 320f, 170f),
+                new Building("Econo Plaza Vega Baja", 81f, 86f), new Building("Iglesia del centro", -252f, 148f), new Building("Casa de la familia Martínez Ocasio", -207f, -421f),
+                new Building("Escuela de Almirante Sur", -117f, -406f), new Building("Plaza", -117f, 164f), new Building("Hospital de Vega Baja", 288f, 133f),
             },
             todo = new[] { "verificar la situación real del Econo Plaza; en vivo, que la enea quede en la orilla de la laguna" },
         },
@@ -155,6 +155,182 @@ public static partial class MicroStoryMaps
                 new Building("Steeltown Records", 700f, 230f), new Building("St. Mary Mercy Hospital", 420f, 80f),
             },
             todo = new[] { "verificar la distancia real entre Jackson Street y Roosevelt High School en un plano de 1966; Steeltown (dirección no verificada)" },
+        },
+
+        // ══ SEÚL, 2016 (BLACKPINK): sobre la Sala de Ballet (representativa) ═══════════════════════════════════════════════════════════
+        new Map
+        {
+            display = "Seúl", place = "Hapjeong-dong (Mapo-gu), Seúl, agosto de 2016", status = Status.Hecho,
+            source = "Seoul Metropolitan Government (árboles de calle); National Institute of Biological Resources; OpenStreetMap",
+            floor = new[]
+            {
+                new Piece("espejo", Como, "la pared de espejo son las torres de pisos de Mapo (no un glaciar en agosto)", "cajonera"),
+                new Piece("silla", Como, "sin nieve en agosto: las sillas son los cerros del monte Wausan", "mesa"),
+                new Piece("alfombra", Quitar, "el barrio está asfaltado"),
+            },
+            flora = new[]
+            {
+                new Plant("Carrizo del Han", -600f, -445f, 24, 90f), new Plant("Carrizo del Han", 100f, -470f, 20, 90f), new Plant("Hierba de la orilla", -280f, -400f, 20, 110f),
+                new Plant("Bloque de la ribera", -40f, -470f, 6, 60f), new Plant("Pino rojo coreano", 840f, 560f, 14, 110f), new Plant("Pino rojo coreano", 740f, 620f, 8, 70f),
+                new Plant("Ginkgo", -180f, -160f), new Plant("Ginkgo", -60f, -70f), new Plant("Ginkgo", 80f, 30f), new Plant("Ginkgo", 210f, 120f), new Plant("Ginkgo", 340f, 200f),
+                new Plant("Plátano de sombra", 225f, -120f), new Plant("Plátano de sombra", 225f, -10f), new Plant("Plátano de sombra", 225f, 240f), new Plant("Plátano de sombra", 225f, 350f),
+                new Plant("Cerezo Yoshino", -500f, -345f, 6, 40f), new Plant("Cerezo Yoshino", -300f, -345f, 6, 40f),
+                new Plant("Césped del parque", -540f, -390f, 14, 30f), new Plant("Césped del parque", -160f, -390f, 10, 30f),
+            },
+            fauna = new[]
+            {
+                new Animal("Cicada", "Cigarra de Seúl (Hyalessa maculaticollis), en los árboles de la calle", 80f, 30f, 6, 2f, 80f),
+                new Animal("Ladybug", "Mariquita asiática (Harmonia axyridis), en los cerezos", -400f, -345f, 4, 1.2f, 40f),
+                new Animal("Grasshopper", "Saltamontes del carrizal", -600f, -445f, 3, 2f, 50f),
+            },
+            buildings = new[]
+            {
+                new Building("Edificio de la agencia YG", -60f, -40f), new Building("Sala de ensayo de las aprendizas", -120f, 60f), new Building("Residencia de las aprendizas", -230f, 190f),
+                new Building("Mercado de Mangwon", -640f, 180f), new Building("Sala de conciertos de Hongdae", 480f, 390f),
+            },
+            todo = new[] { "la residencia de las aprendizas no consta: su sitio es representativo" },
+        },
+
+        // ══ KINGSTON, 22 de abril de 1978 (Bob Marley y los Wailers): sobre la Sala de Ballet (pendiente de su escenario) ═════════════════
+        new Map
+        {
+            display = "Kingston", place = "Kingston (Jamaica), 22 de abril de 1978", status = Status.Hecho,
+            source = "Adams 1972, Flowering Plants of Jamaica; Trench Town Culture Yard; OpenStreetMap",
+            floor = new[]
+            {
+                new Piece("espejo", Como, "la pared de espejo no es un glaciar en el Caribe: es la muralla de las Montañas Azules", "pared"),
+                new Piece("silla", Como, "sin nieve: las sillas y bancos son las lomas de Long Mountain", "mesa"),
+                new Piece("mesa", Como, "el piano y las mesas: las mesetas de las Montañas Azules, con bosque arriba", "mesa"),
+                new Piece("alfombra", Quitar, "el suelo de Kingston es la llanura de Liguanea"),
+            },
+            flora = new[]
+            {
+                new Plant("Helecho de las Montañas Azules", 840f, 600f, 14, 100f), new Plant("Mahoe azul", 760f, 660f, 10, 90f), new Plant("Mahoe azul", 900f, 560f, 6, 60f),
+                new Plant("Acacia de la ladera", 880f, -160f, 12, 100f), new Plant("Cactus de Long Mountain", 860f, -100f, 8, 80f), new Plant("Grava de la llanura", 930f, -210f, 6, 50f),
+                new Plant("Hierba de guinea", -800f, -500f, 22, 110f), new Plant("Hierba de guinea", 620f, -360f, 14, 90f),
+                new Plant("Lignum vitae", 60f, -30f), new Plant("Lignum vitae", 190f, -30f), new Plant("Lignum vitae", 60f, 150f), new Plant("Lignum vitae", 190f, 150f),
+                new Plant("Almendro de la India", -130f, -80f), new Plant("Almendro de la India", -130f, -190f), new Plant("Almendro de la India", -600f, -30f), new Plant("Almendro de la India", -480f, -30f),
+                new Plant("Cocotero", 280f, 540f), new Plant("Cocotero", 380f, 540f), new Plant("Cocotero", -10f, -500f), new Plant("Cocotero", 130f, -500f),
+                new Plant("Buganvilla", -660f, -20f, 4, 8f), new Plant("Buganvilla", 320f, 500f, 4, 8f),
+            },
+            fauna = new[]
+            {
+                new Animal("Cricket", "Grillo de los patios", -640f, -90f, 5, 1.8f, 50f),
+                new Animal("Firefly", "Peenie-wallie (luciérnaga, Photinus)", 320f, 300f, 5, 1.2f, 50f),
+                new Animal("Ant", "Hormiga de Kingston", -130f, -130f, 5, 1.2f, 30f),
+                new Animal("Grasshopper", "Saltamontes de la seca", -800f, -500f, 4, 2.2f, 60f),
+            },
+            buildings = new[]
+            {
+                new Building("Estadio Nacional", 120f, 60f), new Building("Government Yard de First Street", -640f, -40f), new Building("Patio de Joe Higgs", -700f, -110f), new Building("Studio One", -300f, 230f),
+                new Building("Casa de Hope Road", 330f, 540f), new Building("Coronation Market", -130f, -420f), new Building("Kingston Public Hospital", -40f, -310f),
+            },
+            todo = new[] { "las distancias están a un tercio: en vivo, mirar que Trench Town y el estadio se lean como barrios distintos" },
+        },
+
+        // ══ BELFAST, 19 de mayo de 1998 (U2): sobre la Sala de Ballet (pendiente de su escenario) ═════════════════════════════════════
+        new Map
+        {
+            display = "Belfast", place = "Waterfront Hall, Belfast, 19 de mayo de 1998", status = Status.Hecho,
+            source = "Belfast Hills Partnership; Belfast City Council (árboles); OpenStreetMap",
+            floor = new[]
+            {
+                new Piece("espejo", Como, "la pared de espejo es el acantilado de basalto de Cave Hill", "pared"),
+                new Piece("silla", Como, "sin nieve en mayo: las sillas y bancos son las colinas de Black Mountain", "mesa"),
+                new Piece("mesa", Como, "el piano y las mesas: los astilleros Harland & Wolff y sus grúas", "maquina"),
+                new Piece("alfombra", Quitar, "la orilla del Lagan es llana"),
+            },
+            flora = new[]
+            {
+                new Plant("Aulaga", -880f, 560f, 14, 110f), new Plant("Aulaga", -920f, 170f, 10, 90f), new Plant("Brezo de la colina", -800f, 640f, 18, 100f), new Plant("Brezo de la colina", -860f, 240f, 12, 80f),
+                new Plant("Serbal", -780f, 540f, 6, 70f), new Plant("Basalto de Cave Hill", -900f, 650f, 8, 60f),
+                new Plant("Junco de la orilla", 80f, -360f, 14, 40f), new Plant("Junco de la orilla", 230f, 360f, 14, 40f), new Plant("Junco de la orilla", 80f, 120f, 8, 25f),
+                new Plant("Tilo", -300f, -20f), new Plant("Tilo", -180f, -20f), new Plant("Tilo", -60f, -20f), new Plant("Tilo", -400f, -180f), new Plant("Tilo", -400f, 100f),
+                new Plant("Plátano de sombra", -500f, -380f), new Plant("Plátano de sombra", -590f, -520f), new Plant("Plátano de sombra", 90f, -280f), new Plant("Plátano de sombra", 170f, -440f),
+                new Plant("Narciso del parterre", -320f, -60f, 8, 10f), new Plant("Césped del parque", 560f, -500f, 16, 40f), new Plant("Césped del parque", -320f, -100f, 8, 15f),
+            },
+            fauna = new[]
+            {
+                new Animal("Ant", "Hormiga negra de jardín (Lasius niger)", -320f, -100f, 5, 1f, 30f),
+                new Animal("SnowBee", "Abejorro de Cave Hill (Bombus)", -880f, 560f, 3, 1.6f, 60f),
+                new Animal("Earwig", "Tijereta de los parques", 560f, -500f, 2, 1.2f, 30f),
+            },
+            buildings = new[]
+            {
+                new Building("Waterfront Hall", -10f, 60f), new Building("Oficina del Sí", -160f, 150f), new Building("Maysfield Leisure Centre", 40f, -160f), new Building("Queen's University", -540f, -590f),
+                new Building("Royal Victoria Hospital", -820f, -120f), new Building("Harland & Wolff", 620f, 200f), new Building("Crown Liquor Saloon", -470f, 40f),
+            },
+            todo = new[] { "la oficina del Sí no consta: su sitio es representativo. La línea de paz es una calle (sin muro: no hace falta para la historia)" },
+        },
+
+        // ══ LONG ISLAND, 1989 (Public Enemy): sobre el Aula (pendiente de su sala de grabación y radio) ═══════════════════════════════
+        new Map
+        {
+            display = "Long Island", place = "Roosevelt y Hempstead (Long Island), primavera de 1989", status = Status.Hecho,
+            source = "NY DEC (Hempstead Lake State Park); Long Island Native Plant Initiative; OpenStreetMap",
+            floor = new[]
+            {
+                new Piece("silla", Como, "sin nieve en abril y sin relieve en Long Island: las sillas son los bloques de oficinas de Garden City y Uniondale", "cajonera"),
+                new Piece("mesa", Como, "las mesas son el Nassau Coliseum y sus grandes aparcamientos", "maquina"),
+                new Piece("pared", Como, "las pizarras y pantallas son las pantallas acústicas de la autopista: terrazas de tierra", "escalera"),
+                new Piece("alfombra", Quitar, "la llanura de Hempstead es plana"),
+            },
+            flora = new[]
+            {
+                new Plant("Roble blanco", -700f, -440f, 14, 110f), new Plant("Pino de brea", -640f, -560f, 10, 80f), new Plant("Andropogon pequeño", -760f, -300f, 16, 90f),
+                new Plant("Junco del lago", -780f, -140f, 12, 40f), new Plant("Junco del lago", -790f, 40f, 8, 30f), new Plant("Grava glaciar", -640f, -320f, 5, 40f),
+                new Plant("Roble blanco", 760f, 600f, 10, 90f), new Plant("Andropogon pequeño", 640f, 590f, 10, 70f),
+                new Plant("Arce rojo", 20f, 30f), new Plant("Arce rojo", 20f, 140f), new Plant("Arce rojo", 20f, 250f), new Plant("Arce rojo", -20f, -80f), new Plant("Arce rojo", -20f, -210f),
+                new Plant("Roble de los pantanos", -100f, 620f), new Plant("Roble de los pantanos", 20f, 590f), new Plant("Roble de los pantanos", 200f, 590f), new Plant("Roble de los pantanos", 350f, 590f),
+                new Plant("Cornejo en flor", 90f, 200f, 4, 12f), new Plant("Cornejo en flor", 120f, 640f, 4, 12f),
+                new Plant("Césped de la casa", 480f, -270f, 14, 30f),
+            },
+            fauna = new[]
+            {
+                new Animal("Ant", "Hormiga de las aceras (Tetramorium)", 90f, 240f, 5, 1f, 30f),
+                new Animal("Woodlouse", "Cochinilla del jardín", 480f, -270f, 3, 1f, 30f),
+                new Animal("Spider", "Araña de jardín del parque del lago", -700f, -420f, 2, 1.4f, 40f),
+            },
+            buildings = new[]
+            {
+                new Building("Universidad Adelphi", 120f, 660f), new Building("WBAU", 40f, 680f), new Building("510 South Franklin", -190f, 540f), new Building("Casa de los Ridenhour", -130f, -30f),
+                new Building("Nassau Coliseum", 840f, 380f), new Building("Hospital del condado", 630f, -30f),
+            },
+            todo = new[] { "verificar en un plano de 1989 el número de South Franklin Street; la casa de los Ridenhour no consta: su sitio es representativo" },
+        },
+
+        // ══ LA PLAZA DE LAS CANCIONES (inventada): sobre el Aula (pendiente de su escenario) ═════════════════════════════════════════
+        new Map
+        {
+            display = "Grandes aportes de las canciones", place = "La Plaza de las Canciones (lugar inventado), un 21 de junio", status = Status.Hecho,
+            source = "Inventado; flora de cada rincón: la de su lugar real (Tennessee, valle del Po, Ascot, Cabo Oriental, Kingston, Andes)",
+            floor = new[]
+            {
+                new Piece("silla", Como, "las sillas: los montes de cada rincón, sin nieve salvo arriba en los Andes", "mesa"),
+                new Piece("libro", Como, "los libros del Aula: estratos de historia, se dejan como acantilados de capas", "libro"),
+                new Piece("alfombra", Quitar, "el suelo del pueblo es llano"),
+            },
+            flora = new[]
+            {
+                new Plant("Roble de Tennessee", -820f, 560f, 10, 90f), new Plant("Arroz del Po", -700f, -300f, 28, 110f), new Plant("Roble inglés", -160f, 620f, 6, 70f), new Plant("Pradera de Ascot", -60f, 590f, 18, 90f),
+                new Plant("Acacia de espinas", 700f, 370f, 8, 70f), new Plant("Áloe del Cabo", 760f, 300f, 6, 50f),
+                new Plant("Mahoe de Kingston", 740f, -30f, 5, 50f), new Plant("Ichu de los Andes", 760f, -480f, 22, 110f), new Plant("Queñual", 680f, -540f, 6, 60f), new Plant("Piedra de los Andes", 840f, -420f, 8, 60f),
+                new Plant("Almendro de la plaza", -120f, -20f), new Plant("Almendro de la plaza", 120f, -20f), new Plant("Almendro de la plaza", -240f, -20f), new Plant("Almendro de la plaza", 240f, -20f),
+                new Plant("Flor de la plaza", -100f, -50f, 4, 8f), new Plant("Flor de la plaza", 100f, -50f, 4, 8f), new Plant("Césped de la plaza", 300f, 290f, 14, 25f),
+            },
+            fauna = new[]
+            {
+                new Animal("Firefly", "Luciérnaga del arrozal", -700f, -300f, 4, 1.2f, 60f),
+                new Animal("Cricket", "Grillo de la tarde", -60f, 590f, 4, 1.6f, 50f),
+                new Animal("Cicada", "Cigarra del paseo", 120f, -20f, 3, 1.8f, 60f),
+                new Animal("Grasshopper", "Saltamontes de los Andes", 760f, -480f, 3, 2f, 50f),
+            },
+            buildings = new[]
+            {
+                new Building("Escuela Highlander", -560f, 300f), new Building("Arrozal de las mondine", -600f, -230f), new Building("Tittenhurst Park", -80f, 500f), new Building("Comunidad de Ginsberg", 640f, 300f),
+                new Building("Patio de Trench Town", 650f, -60f), new Building("Pueblo de los Andes", 610f, -370f), new Building("Sala de conciertos", 70f, 110f),
+            },
+            todo = new[] { "en vivo: que cada rincón se distinga del pueblo (suelo, flora y mobiliario de su año)" },
         },
 
         // ══FIN DE LOS MAPAS══

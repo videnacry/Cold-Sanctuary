@@ -104,6 +104,11 @@ public static class Eras
             case "Omaha":                 return (1983, "Omaha, Nebraska (Warren Buffett compra la Nebraska Furniture Mart a Rose Blumkin)");
             case "Prairie View":          return (2020, "Prairie View A&M University, Texas (la donación de MacKenzie Scott)");
             case "Uagadugú":              return (2024, "Uagadugú, Burkina Faso (la entrega de tractores a los productores)");
+            case "Grandes aportes de las canciones": return (2025, "La Plaza de las Canciones (lugar inventado): seis canciones que cambiaron algo");
+            case "Long Island":           return (1989, "Roosevelt y Hempstead, Long Island (Public Enemy y Fight the Power)");
+            case "Belfast":               return (1998, "Belfast, Irlanda del Norte (U2 y el concierto del Sí en el Waterfront Hall)");
+            case "Kingston":              return (1978, "Kingston, Jamaica (Bob Marley y los Wailers: de Trench Town al One Love Peace Concert)");
+            case "Seúl":                  return (2016, "Hapjeong, Seúl (BLACKPINK: los años de aprendizas en YG y el debut)");
             case "Gary":                  return (1966, "Gary, Indiana (la familia Jackson y el primer concurso de los Jackson 5)");
             case "Montreal":              return (1969, "Queen Elizabeth Hotel, Montreal (John Lennon y Yoko Ono: el Bed-In y Give Peace a Chance)");
             case "Vega Baja":             return (2016, "Vega Baja, Puerto Rico (Bad Bunny, del empaque del súper a SoundCloud)");

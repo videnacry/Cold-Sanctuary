@@ -129,6 +129,11 @@ public static class SolarPosition
             ("Omaha", 41.25f, -96.03f, 242f),   // 30 de agosto de 1983
             ("Prairie View", 30.09f, -95.99f, 350f),   // 15 de diciembre de 2020
             ("Uagadugú", 12.37f, -1.52f, 127f),   // 6 de mayo de 2024
+            ("Grandes aportes", 15.0f, -30.0f, 172f),   // lugar inventado: un punto del Atlántico, entre los continentes de sus canciones; 21 de junio
+            ("Long Island", 40.68f, -73.59f, 110f),   // Roosevelt, abril de 1989 (fecha representativa)
+            ("Belfast", 54.6f, -5.92f, 139f),   // 19 de mayo de 1998
+            ("Kingston", 18.0f, -76.78f, 112f),   // 22 de abril de 1978
+            ("Seúl", 37.55f, 126.91f, 221f),   // Hapjeong, 8 de agosto de 2016
             ("Gary", 41.59f, -87.35f, 135f),   // mayo de 1966 (fecha representativa)
             ("Montreal", 45.50f, -73.57f, 152f),   // 1 de junio de 1969
             ("Vega Baja", 18.44f, -66.39f, 244f),   // septiembre de 2016 (fecha representativa)

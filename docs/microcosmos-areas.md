@@ -86,6 +86,7 @@ finalizada, y los microcosmos se crean siempre sobre la forma finalizada».
 | Angostura | Cocina | **pendiente** | Sala de asambleas (parlamento) |
 | Sils Maria | Aula | sí | la biblioteca de filosofía (re-apuntado el 2026-11-04) |
 | Colorado Springs | Construcción | **pendiente** | Taller de electricidad (alta tensión) |
+| Vega Baja · Long Island · Grandes aportes · Montreal · Gary · Kingston · Belfast | Informática · Aula · Aula · Sala de Ballet (las 4 últimas) | **pendiente** | Sala de grabación y escenario de conciertos (música) |
 | Palenque (Pakal) | Huerto | **pendiente** | Templo de los antepasados (memoria, rito y duelo) |
 | Velliangiri (Sadhguru) | Sala de Yoga | sí | meditar en silencio: el Dhyanalinga ([microcosmos-famosos.md](microcosmos-famosos.md)) |
 | Aldea de la montaña (Goku, homenaje) | Dojo | sí | entrenar sirviendo a la aldea |
@@ -105,6 +106,7 @@ finalizada, y los microcosmos se crean siempre sobre la forma finalizada».
 6. **Sala de asambleas (parlamento)** — Angostura (Bolívar).
 7. **Sendero de montaña y biblioteca de filosofía** — Sils Maria (Nietzsche). — **cubierto** (2026-11-04: re-apuntado a un piso que ya existe).
 8. **Taller de electricidad (alta tensión)** — Colorado Springs (Tesla).
+9. **Sala de grabación y escenario de conciertos (música)** — los microcosmos de la música ([microcosmos-musica.md](microcosmos-musica.md)).
 9. **Templo de los antepasados (memoria, rito y duelo)** — Palenque (Pakal).
 10. **Fábrica de cohetes y control de misión** — Hawthorne (Elon Musk). — **cubierto** (2026-11-04: re-apuntado a un piso que ya existe).
 11. ~~Sala de informática~~ — **creado** (piso de Informática, 2026-11-04): Albuquerque (Bill Gates) ya está en él.

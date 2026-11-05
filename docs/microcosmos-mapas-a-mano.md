@@ -50,6 +50,8 @@ flor y lajas de granito del escudo guayanés; el Orinoco al norte, el cerro El Z
 - **Los edificios** (del plano): la Plaza (0, −70), la Casa del Congreso, la Catedral, el Puerto, el Mercado y el fortín del Zamuro.
 
 ## Los esbozos
+Hechos además del ejemplo: las **9 historias de la música** (`MicroStoryMaps.Musica.cs`, [microcosmos-musica.md](microcosmos-musica.md); `MicroStoryMaps.For` mira `All` y luego `Music`). Sus coordenadas caben a 1:1 en el barrio de su piso: si un plano se encogiera, el mapa a mano dejaría de coincidir con él.
+
 
 Todas las demás historias de `MicroFloors.Table` tienen su esbozo con lo que les falta: colocar a mano su flora y fauna, ordenar los
 muebles del piso para su mapa real y lo propio de cada una (el gueto de Varsovia, la Kramgasse de Berna, el Nilo en crecida…). Los

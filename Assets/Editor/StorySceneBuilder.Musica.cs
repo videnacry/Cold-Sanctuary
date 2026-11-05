@@ -28,6 +28,16 @@ public static partial class StorySceneBuilder
     public static void BuildJohnLennon() => BuildOne("Microcosmos_JohnLennon");
     [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de música/Michael Jackson y los Jackson 5 (Gary, 1966)")]
     public static void BuildMichaelJackson() => BuildOne("Microcosmos_MichaelJackson");
+    [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de música/BLACKPINK (Seúl, 2016)")]
+    public static void BuildBlackpink() => BuildOne("Microcosmos_Blackpink");
+    [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de música/Bob Marley y los Wailers (Kingston, 1978)")]
+    public static void BuildWailers() => BuildOne("Microcosmos_Wailers");
+    [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de música/U2 (Belfast, 1998)")]
+    public static void BuildU2() => BuildOne("Microcosmos_U2");
+    [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de música/Public Enemy (Long Island, 1989)")]
+    public static void BuildPublicEnemy() => BuildOne("Microcosmos_PublicEnemy");
+    [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de música/Grandes aportes de las canciones")]
+    public static void BuildGrandesCanciones() => BuildOne("Microcosmos_GrandesCanciones");
     // ══FIN DE LOS MENÚS══
 
     // Un micrófono de pie, un amplificador y una tarima baja (piezas de la historia, en el claro).
@@ -355,6 +365,382 @@ public static partial class StorySceneBuilder
                 "Globetrotting Grandpa (2018), «2300 Jackson Street: The humble origins of a musical dynasty».",
             },
             "Katherine", "Aquí no sobraba nada, pero a esta casa nunca le faltó música.");
+        return n;
+    }
+
+    // ══ BLACKPINK · los años de aprendizas en YG (Hapjeong, Seúl), hasta el 8 de agosto de 2016 · Sala de Ballet (representativa) ═════
+
+    static int Blackpink(Transform t)
+    {
+        Material mirror = M("Espejo_de_ensayo", 0.72f, 0.8f, 0.85f), parquet = M("Suelo_de_ensayo", 0.72f, 0.58f, 0.42f), board = M("Tablón_de_notas", 0.9f, 0.88f, 0.8f);
+        Material book = M("Cuaderno_de_coreano", 0.55f, 0.7f, 0.85f), wood = M("Mesa_clara", 0.75f, 0.62f, 0.45f), steel = M("Cromo_del_pie", 0.75f, 0.76f, 0.78f), speaker = M("Altavoz_negro", 0.12f, 0.12f, 0.14f);
+
+        // 1 · LA SALA DE ENSAYO: espejo, parqué y altavoz.
+        Transform hall = Spot(t, "Sala de ensayo", new Vector3(0f, 0f, 14f), "La sala de ensayo: catorce horas al día", 3.5f);
+        Prop(hall, "Parqué", new Vector3(0f, 0.02f, 0f), new Vector3(12f, 0.04f, 7f), parquet, false);
+        Prop(hall, "Espejo", new Vector3(0f, 1.3f, 3.6f), new Vector3(12f, 2.6f, 0.06f), mirror, false);
+        Prop(hall, "Altavoz", new Vector3(5.4f, 0.5f, -3f), new Vector3(0.7f, 1f, 0.6f), speaker);
+
+        // 2 · LA EVALUACIÓN DEL MES: la mesa de los profesores y el tablón.
+        Transform eval = Spot(t, "Mesa de la evaluación", new Vector3(-16f, 0f, 8f), "La evaluación del mes", 3f);
+        Prop(eval, "Mesa de los profesores", new Vector3(0f, 0.4f, 0f), new Vector3(2.4f, 0.8f, 0.9f), wood);
+        Prop(eval, "Tablón con las notas del mes", new Vector3(0f, 1.3f, 1f), new Vector3(2f, 1.2f, 0.05f), board, false);
+
+        // 3 · EL AULA DE COREANO: Lisa y Rosé llegaron sin hablarlo bien.
+        Transform lesson = Spot(t, "Aula de coreano", new Vector3(15f, 0f, 6f), "Aula de coreano, japonés e inglés", 3f);
+        Prop(lesson, "Mesa de estudio", new Vector3(0f, 0.38f, 0f), new Vector3(2f, 0.76f, 1f), wood);
+        var books = Items(t, book, new Vector3(0.4f, 0.1f, 0.3f), ("Cuaderno de coreano de Lisa", new Vector3(8f, 0.1f, -6f)), ("Diccionario de Rosé", new Vector3(11f, 0.1f, -3f)), ("Cuaderno de canto", new Vector3(14f, 0.1f, -7f)));
+
+        // 4 · LA CABINA: donde se graba por primera vez.
+        Transform booth = Spot(t, "Cabina de voz", new Vector3(-10f, 0f, 19f), "La cabina de voz", 2.5f);
+        Mic(booth, Vector3.zero, steel);
+
+        // La gente: insectos-humanos. Las cuatro, MARIQUITAS ASIÁTICAS (Harmonia axyridis, nativa de Corea: pasan el invierno juntas, apiñadas, durante
+        // meses, y salen a la vez en primavera). Ropa de ensayo de diario: ningún vestuario ni logotipo del grupo.
+        Color black = new Color(0.14f, 0.14f, 0.16f), rose = new Color(0.9f, 0.62f, 0.68f), grey = new Color(0.6f, 0.6f, 0.62f), white = new Color(0.93f, 0.93f, 0.92f);
+        GameObject jennie = Who(t, "Jennie", new Vector3(-3f, 0f, 11f), true, 1.63f, "Ladybug"); CubeInsect.WearShirt(jennie, black);
+        GameObject lisa = Who(t, "Lisa", new Vector3(3f, 0f, 11f), true, 1.66f, "Ladybug"); CubeInsect.WearShirt(lisa, white);
+        GameObject rose1 = Who(t, "Rosé", new Vector3(12f, 0f, 3f), true, 1.68f, "Ladybug"); CubeInsect.WearShirt(rose1, rose);
+        GameObject jisoo = Who(t, "Jisoo", new Vector3(-7f, 0f, 17f), true, 1.62f, "Ladybug"); CubeInsect.WearShirt(jisoo, grey);
+        GameObject teacher = Who(t, "Profesora de la evaluación (Medea)", new Vector3(-14f, 0f, 5f), true); CubeInsect.WearShirt(teacher, black);
+        GameObject korean = Who(t, "Profesora de coreano (Ruth)", new Vector3(17f, 0f, 3f), true); CubeInsect.WearShirt(korean, grey); Routine(korean, lesson, eval);
+        int n = 6;
+
+        Mission(t, "BLACKPINK en Seúl: cuatro aprendizas de tres países, años antes del debut (2016)", StoryMission.Marga.Stats, 60f,
+            new[]
+            {
+                Talk("Habla con Jennie en la sala de ensayo", jennie.transform, "Jennie", "Llegué en 2010, de vuelta de Nueva Zelanda. Han pasado seis años. Nos dijeron que debutaríamos en 2012, éramos muchas, y fueron saliendo. Quedamos estas."),
+                Reach("Ve a la mesa de la evaluación del mes", eval, "Profesora de la evaluación", "Baile, canto y lengua, cada mes, delante de todas. Quien no avanza se va. No es un concurso de televisión: es la rutina de esta casa."),
+                Collect("Lleva los cuadernos al aula de coreano", books, lesson, "Profesora de coreano", "Lisa llegó de Tailandia y Rosé de Australia. Primero aprenden a pedir la comida; luego, a cantar sin acento."),
+                Talk("Habla con Lisa", lisa.transform, "Lisa", "En Bangkok se presentaron unas cuatro mil y me cogieron solo a mí. Tenía catorce años cuando vine. Fui la primera extranjera de la agencia, y por las noches llamaba a casa."),
+                Talk("Habla con Rosé", rose1.transform, "Rosé", "Mi padre me animó a la audición de Sídney. Éramos setecientas. Un día libre cada dos semanas, y otros trece de ensayo. Se aguanta porque estamos juntas."),
+                Hold("Quédate ante el espejo durante el ensayo", hall, 12f, "Jennie", "Otra vez desde el principio. Hasta que las cuatro pisemos en el mismo instante."),
+                Talk("Habla con Jisoo", jisoo.transform, "Jisoo", "Yo soy de aquí, entré en 2011. Las demás lejos de casa y yo cuidándolas. La familia, aquí, es la que ensaya contigo."),
+                Talk("8 de agosto de 2016: vuelve con Jennie", jennie.transform, "Jennie", "Hoy sale el disco. Eran nueve y somos cuatro; seis años por tres minutos. Ahora toca ver si ha valido."),
+            },
+            "El barrio de Hapjeong (Mapo, Seúl), sobre la Sala de Ballet del santuario a escala de hormiga, en los años de aprendizas de la agencia YG hasta el 8 de agosto de 2016, el día del debut. Cuatro chicas de Corea, Tailandia y Australia ensayan catorce horas al día. E para hablar, recoger y ayudar; para mirar, quédate quieto.",
+            new[]
+            {
+                "En 2010 la agencia YG Entertainment hizo audiciones por todo el mundo. Jennie volvió ese año a Corea desde Nueva Zelanda y entró como aprendiz; Lisa fue la única elegida entre unas 4000 aspirantes en Tailandia y en 2011 se convirtió en la primera aprendiz extranjera de YG; Jisoo entró en julio de 2011; Rosé, criada en Melbourne, quedó primera entre 700 en la audición de Australia de 2012.",
+                "YG anunció en noviembre de 2011 un grupo de al menos siete chicas para 2012; el debut se retrasó años y otras aprendizas se quedaron por el camino. En el documental Light Up the Sky (Netflix, 2020) cuentan las catorce horas diarias, un día libre cada dos semanas y las evaluaciones mensuales. Las cuatro se presentaron en junio de 2016 y debutaron el 8 de agosto con Square One, con Boombayah y Whistle (esta historia nombra sus canciones sin reproducir sus letras).",
+                "En 2019 fueron el primer grupo femenino de K-pop en Coachella. En 2021 fueron portavoces de la cumbre del clima COP26 y en 2023 el rey Carlos III les dio la Orden del Imperio Británico honorífica por esa labor.",
+                "El sistema de aprendices de la industria coreana ha sido muy criticado por la presión a menores de edad, y el documental apenas entra en ello: lo que se cuenta aquí sale sobre todo de la agencia y de ellas mismas. Las frases son de juego; las notas y los nombres de las profesoras son inventados. La comparación con otras bandas está en el doc del proyecto.",
+            },
+            new[]
+            {
+                "Wikipedia, «Blackpink» (audiciones, aprendices, anuncios, debut).",
+                "Vogue Singapore (2020), «Blackpink: Light Up the Sky: everything you need to know» (14 horas, evaluaciones mensuales).",
+                "The Korea Times (14-10-2020), «BLACKPINK documentary offers honest look at K-pop's biggest girl group».",
+                "Jezebel (2020), «In Netflix's Blackpink: Light Up the Sky, the World's Biggest Girl Group Reintroduces Itself» (la crítica al sistema).",
+                "Soompi (2021), «BLACKPINK Appointed Official Advocates For UN Climate Change Conference»; AFP (2023) en The Borneo Post, «K-pop stars Blackpink get UK honours for climate advocacy».",
+            },
+            "Jennie", "Nadie ve los años: se ve el minuto en el que todo sale bien.");
+        return n;
+    }
+
+    // ══ BOB MARLEY Y LOS WAILERS · el One Love Peace Concert, Kingston, 22 de abril de 1978 · Sala de Ballet (pendiente: escenario) ════
+    //    La otra banda de la comparación con BLACKPINK (docs/microcosmos-musica.md): de los patios de Trench Town a un estadio que pide la paz en plena
+    //    guerra entre barrios. Sin armas en escena: los partidos y la violencia se cuentan de palabra.
+
+    static int Wailers(Transform t)
+    {
+        Material zinc = M("Zinc_del_patio", 0.6f, 0.62f, 0.62f), wood = M("Tablas_del_escenario", 0.55f, 0.42f, 0.3f), mango = M("Hoja_de_mango", 0.2f, 0.42f, 0.22f), bark = M("Corteza_de_mango", 0.4f, 0.3f, 0.22f);
+        Material steel = M("Cromo_del_pie", 0.75f, 0.76f, 0.78f), box = M("Amplificador_negro", 0.13f, 0.13f, 0.15f), paper = M("Sobres_de_la_taquilla", 0.88f, 0.82f, 0.66f), green = M("Telón_verde", 0.15f, 0.42f, 0.22f), gold = M("Telón_dorado", 0.9f, 0.72f, 0.2f), red = M("Telón_rojo_jamaica", 0.7f, 0.15f, 0.12f);
+
+        // 1 · EL ESCENARIO del Estadio Nacional, con los tres colores del movimiento rastafari.
+        Transform stage = Stage(t, "Escenario del Estadio Nacional", new Vector3(0f, 0f, 16f), "Estadio Nacional de Kingston, 22 de abril de 1978", 10f, 5f, wood);
+        Prop(stage, "Telón rojo", new Vector3(-3.4f, 2f, 2.6f), new Vector3(3.2f, 4f, 0.08f), red, false);
+        Prop(stage, "Telón dorado", new Vector3(0f, 2f, 2.6f), new Vector3(3.2f, 4f, 0.08f), gold, false);
+        Prop(stage, "Telón verde", new Vector3(3.4f, 2f, 2.6f), new Vector3(3.2f, 4f, 0.08f), green, false);
+        Mic(stage, new Vector3(0f, 0.3f, 0f), steel); Amp(stage, new Vector3(-3f, 0.3f, 1f), box); Amp(stage, new Vector3(3f, 0.3f, 1f), box);
+
+        // 2 · EL PATIO DE TRENCH TOWN y el mango de Second Street.
+        Transform yard = Spot(t, "Patio de First Street", new Vector3(-17f, 0f, 6f), "Government Yard de Trench Town: donde empezó todo", 3.5f);
+        Prop(yard, "Pila común", new Vector3(0f, 0.4f, 0f), new Vector3(1.2f, 0.8f, 0.8f), zinc);
+        Prop(yard, "Tronco del mango", new Vector3(3f, 1.2f, 2f), new Vector3(0.6f, 2.4f, 0.6f), bark);
+        Prop(yard, "Copa del mango", new Vector3(3f, 3f, 2f), new Vector3(3.2f, 1.6f, 3.2f), mango, false);
+
+        // 3 · LA TAQUILLA: lo recaudado es para saneamiento y viviendas del oeste de Kingston.
+        Transform office = Spot(t, "Mesa del Comité de la Paz", new Vector3(16f, 0f, 5f), "Comité de la Paz: saneamiento y viviendas para el oeste de Kingston", 3f);
+        Prop(office, "Mesa", new Vector3(0f, 0.4f, 0f), new Vector3(2f, 0.8f, 0.9f), wood);
+        var money = Items(t, paper, new Vector3(0.45f, 0.2f, 0.3f), ("Sobres de la taquilla norte", new Vector3(8f, 0.1f, -6f)), ("Sobres de la taquilla sur", new Vector3(11f, 0.1f, -3f)), ("Sobres de la taquilla oeste", new Vector3(14f, 0.1f, -7f)));
+
+        // 4 · LOS TRES PUESTOS del cartel, de los 16 grupos de la noche.
+        Transform w1 = Spot(t, "Puesto de Peter Tosh", new Vector3(-9f, 0f, 19f), "Peter Tosh: su actuación, un discurso", 2.5f);
+        Amp(w1, Vector3.zero, box);
+        Transform w2 = Spot(t, "Puesto de Jacob Miller", new Vector3(10f, 0f, 20f), "Jacob Miller e Inner Circle", 2.5f);
+        Amp(w2, Vector3.zero, box);
+        Transform w3 = Spot(t, "Puesto de Dennis Brown", new Vector3(17f, 0f, 16f), "Dennis Brown", 2.5f);
+        Amp(w3, Vector3.zero, box);
+        var acts = new List<Transform> { w1, w2, w3 };
+
+        // La gente: insectos-humanos. Marley, un GRILLO (en Jamaica el cri-cri de la noche es la banda sonora de los patios). Sin símbolos de partido y sin armas.
+        Color denim = new Color(0.25f, 0.32f, 0.48f), khaki = new Color(0.55f, 0.5f, 0.38f), suit = new Color(0.3f, 0.3f, 0.34f), orange = new Color(0.85f, 0.5f, 0.2f), greenS = new Color(0.25f, 0.5f, 0.3f);
+        GameObject bob = Who(t, "Bob Marley", new Vector3(2f, 0f, 11f), false, 1.7f, "Cricket"); CubeInsect.WearShirt(bob, denim);
+        GameObject massop = Who(t, "Claudie Massop", new Vector3(-6f, 0f, 3f), false, 1.8f, "Ant"); CubeInsect.WearShirt(massop, greenS);
+        GameObject marshall = Who(t, "Bucky Marshall", new Vector3(-3f, 0f, 3f), false, 1.78f, "Ant"); CubeInsect.WearShirt(marshall, orange);
+        GameObject higgs = Who(t, "Joe Higgs", new Vector3(-15f, 0f, 3f), false, 1.72f, "Cricket"); CubeInsect.WearShirt(higgs, khaki);
+        GameObject tosh = Who(t, "Peter Tosh", new Vector3(-7f, 0f, 17f), false, 1.85f, "Mantis"); CubeInsect.WearShirt(tosh, khaki); Routine(tosh, w1, stage);
+        GameObject seller = Who(t, "Vendedora de Coronation Market (Ruth)", new Vector3(13f, 0f, 2f), true); CubeInsect.WearShirt(seller, suit);
+        int n = 6;
+
+        Mission(t, "Bob Marley y los Wailers: de Trench Town al One Love Peace Concert (1978)", StoryMission.Marga.Bonds, 60f,
+            new[]
+            {
+                Talk("Habla con Claudie Massop y Bucky Marshall", massop.transform, "Claudie Massop", "Él es de un bando y yo del otro. Nos metieron en la misma celda y allí hablamos: nuestros barrios se están matando por los partidos. Solo una persona podía juntarlos. Fui a Londres a buscarle."),
+                Talk("Habla con Bob Marley, que ha vuelto tras más de un año en Londres", bob.transform, "Bob Marley", "Me dispararon en esta ciudad, en mi casa, dos días antes de un concierto; y lo di igual. Me fui. Si los dos lados de la calle me llaman juntos, vuelvo."),
+                Reach("Ve al patio de First Street, en Trench Town", yard, "Joe Higgs", "Aquí les enseñé armonía a Bob, a Bunny y a Peter, por nada, en el patio. Ensayaban bajo el mango de Second Street. Esos muchachos salieron de un patio con una sola pila para todos."),
+                Collect("Lleva los sobres de la taquilla a la mesa del Comité de la Paz", money, office, "Vendedora de Coronation Market", "Lo que se recaude es para letrinas y casas del oeste de Kingston. Aquí, una letrina también es política."),
+                Visit("Recorre los puestos: Peter Tosh, Jacob Miller y Dennis Brown", acts, "Peter Tosh", "Dieciséis grupos en una noche. Yo no vine a sonreírles: tengo a los dos jefes sentados delante y les voy a decir lo que el barrio les diría."),
+                Hold("Medianoche pasada: mira el escenario", stage, 12f, "Bob Marley", "En plena canción llamo a los dos, a Michael Manley y a Edward Seaga. Suben. Les cojo las manos y las levanto. Treinta mil personas se quedan sin aire."),
+                Talk("Habla con la vendedora", seller.transform, "Vendedora de Coronation Market", "No sé si esto va a durar. Pero esta noche he visto a los del otro barrio bailar a mi lado, y eso no lo había visto nunca."),
+                Talk("Vuelve con Bob Marley", bob.transform, "Bob Marley", "Una canción no para una bala. Pero hoy nadie aquí se ha olvidado de que somos vecinos."),
+            },
+            "Kingston (Jamaica), el 22 de abril de 1978, sobre la Sala de Ballet del santuario a escala de hormiga (pendiente de su piso: un escenario). Tras años de violencia entre los barrios de los dos partidos, Bob Marley vuelve del exilio y encabeza un concierto por la paz en el Estadio Nacional. E para hablar, recoger y ayudar; para mirar, quédate quieto.",
+            new[]
+            {
+                "Trench Town nació en los años treinta como barrio modelo sobre la antigua finca de Daniel Trench: patios del gobierno (Government Yards) con cocina y baños comunes. Bob Marley creció en el de First Street. Allí Joe Higgs daba clases informales de canto, en las que coincidieron Bob, Bunny Livingston y Peter Tosh; en 1963 Higgs los llevó a Coxsone Dodd, y Simmer Down llegó al primer puesto en Jamaica. Beverley Kelso recordaba ensayar bajo un mango de Second Street. En 1974 Tosh y Bunny dejaron el grupo (esta historia nombra sus canciones sin reproducir sus letras).",
+                "En los setenta, los dos grandes partidos, el PNP de Michael Manley y el JLP de Edward Seaga, se apoyaban en bandas de sus barrios. En diciembre de 1976 Marley fue tiroteado en su casa de Hope Road y, aun así, cantó dos días después en Smile Jamaica; luego se fue a Londres. En prisión, Claudie Massop (JLP) y Aston «Bucky» Marshall (PNP) pensaron en un gran concierto, y Massop fue a Londres a convencerle.",
+                "El One Love Peace Concert fue el 22 de abril de 1978 en el Estadio Nacional: 16 grupos, más de 32 000 personas y la recaudación destinada a saneamiento y viviendas del oeste de Kingston. Peter Tosh dedicó 66 minutos a criticar de frente a los dos líderes. Hacia las 00:30, durante Jammin', Marley llamó a Manley y a Seaga al escenario y unió sus manos en alto.",
+                "La paz no duró: Massop y Marshall murieron asesinados en menos de dos años y Jamaica tuvo 889 asesinatos en 1980, durante la campaña electoral; las fuentes discuten si los dos líderes subieron de buena gana. Marley murió en 1981. Las frases son de juego; Massop, Marshall y Higgs hablan aquí en resumen de lo que cuentan las crónicas. La historia no elige bando.",
+            },
+            new[]
+            {
+                "Wikipedia, «One Love Peace Concert» y «Trenchtown».",
+                "Biography.com, «Bob Marley's One Love Peace Concert: historic impact».",
+                "The Jamaica Gleaner (22-4-2009), «When peace came: three decades later, a country awaits its return».",
+                "History.com, «Bob Marley's One Love Peace Concert» (22 de abril).",
+                "Wikipedia, «Joe Higgs»; Wikipedia, «Simmer Down» (Kelso y el mango de Second Street).",
+            },
+            "Bob Marley", "Mientras dure la canción, esta calle no tiene dos lados.");
+        return n;
+    }
+
+    // ══ U2 · el concierto del Sí, Waterfront Hall, Belfast, 19 de mayo de 1998 · Sala de Ballet (pendiente: escenario) ═════════════════
+    //    El ROCK que denuncia: de Sunday Bloody Sunday (1983) a poner un escenario al servicio de un referéndum de paz. Por qué U2 y no otros: doc, «Rock y rap».
+    //    Sin armas ni escenas del Domingo Sangriento: se recuerda de palabra.
+
+    static int U2(Transform t)
+    {
+        Material wood = M("Tablas_del_escenario", 0.55f, 0.42f, 0.3f), brick = M("Ladrillo_de_Belfast", 0.58f, 0.3f, 0.24f), steel = M("Cromo_del_pie", 0.75f, 0.76f, 0.78f), box = M("Amplificador_negro", 0.13f, 0.13f, 0.15f);
+        Material ticket = M("Entradas_gratis", 0.92f, 0.9f, 0.82f), yes = M("Cartel_del_Sí", 0.95f, 0.8f, 0.2f), white = M("Bandera_blanca", 0.96f, 0.96f, 0.95f), pole = M("Asta", 0.5f, 0.38f, 0.26f), blue = M("Butaca", 0.25f, 0.3f, 0.5f);
+
+        // 1 · LA OFICINA DEL SÍ, el 12 de mayo: las encuestas no dan.
+        Transform office = Spot(t, "Oficina de la campaña del Sí", new Vector3(-16f, 0f, 6f), "Campaña del Sí: el referéndum es el 22 de mayo", 3f);
+        Prop(office, "Mesa de la campaña", new Vector3(0f, 0.4f, 0f), new Vector3(2.2f, 0.8f, 0.9f), wood);
+        Prop(office, "Cartel del Sí", new Vector3(0f, 1.4f, 1f), new Vector3(1.8f, 1f, 0.05f), yes, false);
+
+        // 2 · LAS ENTRADAS GRATIS, a los dos lados de la ciudad.
+        var tickets = Items(t, ticket, new Vector3(0.4f, 0.15f, 0.3f), ("Entradas para Falls Road", new Vector3(8f, 0.1f, -6f)), ("Entradas para Shankill Road", new Vector3(11f, 0.1f, -3f)), ("Entradas para la universidad", new Vector3(14f, 0.1f, -7f)));
+        Transform door = Spot(t, "Puerta del Waterfront", new Vector3(8f, 0f, 4f), "La puerta: católicos y protestantes, en la misma cola", 2.5f);
+        Prop(door, "Mesa de la entrada", new Vector3(0f, 0.4f, 0f), new Vector3(1.6f, 0.8f, 0.7f), wood);
+
+        // 3 · LA MEMORIA: Maysfield, 1982; la bandera blanca del escenario.
+        Transform maysfield = Spot(t, "Maysfield Leisure Centre", new Vector3(17f, 0f, 12f), "Maysfield (1982): aquí la cantaron por primera vez en Belfast", 3f);
+        Prop(maysfield, "Pared de ladrillo baja", new Vector3(0f, 0.5f, 2f), new Vector3(5f, 1f, 0.3f), brick);
+        Prop(maysfield, "Asta", new Vector3(0f, 1.5f, 0f), new Vector3(0.1f, 3f, 0.1f), pole);
+        Prop(maysfield, "Bandera blanca", new Vector3(0.7f, 2.5f, 0f), new Vector3(1.3f, 0.9f, 0.03f), white, false);
+
+        // 4 · EL ESCENARIO del Waterfront Hall.
+        Transform stage = Stage(t, "Escenario del Waterfront Hall", new Vector3(0f, 0f, 17f), "Waterfront Hall, Belfast, 19 de mayo de 1998", 10f, 5f, wood);
+        Mic(stage, new Vector3(0f, 0.3f, 0f), steel); Amp(stage, new Vector3(-3f, 0.3f, 1f), box); Amp(stage, new Vector3(3f, 0.3f, 1f), box);
+        for (int k = 0; k < 5; k++) Prop(t, "Fila de butacas", new Vector3(0f, 0.25f, 10f - k * 1.5f), new Vector3(10f, 0.5f, 0.6f), blue);
+
+        // La gente: insectos-humanos. Bono, una CIGARRA (el insecto que más fuerte canta); Hume y Trimble, dos HORMIGAS de la MISMA especie: dos comunidades
+        // que comparten suelo. Ropa de calle; sin banderas de ningún bando.
+        Color black = new Color(0.1f, 0.1f, 0.12f), suit = new Color(0.28f, 0.3f, 0.36f), tie = new Color(0.45f, 0.4f, 0.4f), green = new Color(0.4f, 0.5f, 0.35f), brickS = new Color(0.55f, 0.35f, 0.3f);
+        GameObject bono = Who(t, "Bono", new Vector3(2f, 0f, 14f), false, 1.68f, "Cicada"); CubeInsect.WearShirt(bono, black);
+        GameObject hume = Who(t, "John Hume", new Vector3(-7f, 0f, 13f), false, 1.75f, "Ant"); CubeInsect.WearShirt(hume, suit);
+        GameObject trimble = Who(t, "David Trimble", new Vector3(8f, 0f, 13f), false, 1.72f, "Ant"); CubeInsect.WearShirt(trimble, tie);
+        GameObject attwood = Who(t, "Tim Attwood", new Vector3(-13f, 0f, 3f), false, 1.76f, "Grasshopper"); CubeInsect.WearShirt(attwood, green);
+        GameObject student = Who(t, "Estudiante de Queen's (Medea)", new Vector3(10f, 0f, 1f), true); CubeInsect.WearShirt(student, brickS); Routine(student, door, maysfield);
+        GameObject neighbor = Who(t, "Vecina de Falls Road (Ruth)", new Vector3(6f, 0f, 7f), true); CubeInsect.WearShirt(neighbor, green); Routine(neighbor, door);
+        int n = 6;
+
+        Mission(t, "U2 y el concierto del Sí: una canción contra la violencia, un escenario para la paz (Belfast, 1998)", StoryMission.Marga.Bonds, 60f,
+            new[]
+            {
+                Talk("Habla con Tim Attwood en la oficina de la campaña del Sí", attwood.transform, "Tim Attwood", "Faltan diez días. El Acuerdo se firmó en Viernes Santo, pero los protestantes dudan y Trimble tiene problemas. Llamé a Bono y le dije cómo estaba la cosa. Dijo que haría lo que Hume quisiera."),
+                Collect("Reparte las entradas gratis: llévalas a la puerta del Waterfront", tickets, door, "Estudiante de Queen's", "Gratis y a medias: católicos y protestantes. Dos mil personas que quizá nunca se han sentado juntas. Y de esta edad, la mayoría no ha conocido otra cosa que las bombas."),
+                Reach("Ve al Maysfield Leisure Centre, a dos pasos", maysfield, "Vecina de Falls Road", "Aquí mismo, en diciembre del 82, Bono les dijo que esa canción no era para ningún bando, que era contra la matanza venga de quien venga. Yo estaba, y tenía miedo de cómo iba a acabar."),
+                Hold("Quédate mirando la bandera blanca", maysfield, 8f, "Vecina de Falls Road", "Al año siguiente llevaba una bandera blanca por el escenario, cuando cantaba aquello del Domingo Sangriento. Trece muertos en Derry en un día. Enterramos a mucha gente después."),
+                Talk("Habla con David Trimble, entre bastidores", trimble.transform, "David Trimble", "Yo no hago esto. No sé qué hace un líder unionista en un concierto de rock, ni me voy a quitar la chaqueta. Pero sé lo que me juego el viernes."),
+                Talk("Habla con John Hume", hume.transform, "John Hume", "David, tranquilo. Llevo treinta años esperando esto. Se quita la chaqueta y se sale. No hace falta que cantes."),
+                Hold("Mira el concierto desde las butacas", stage, 12f, "Bono", "Os presento a dos hombres que han dado un salto de fe. Y les levanto los brazos: uno a cada lado, los tres sin decir nada. Esa foto da la vuelta al mundo."),
+                Talk("Vuelve con Bono", bono.transform, "Bono", "No he venido a deciros qué votar. Solo que esta noche estáis sentados al lado del otro. El viernes, vosotros."),
+            },
+            "Belfast (Irlanda del Norte), en mayo de 1998, sobre la Sala de Ballet del santuario a escala de hormiga (pendiente de su piso: un escenario). A tres días del referéndum del Acuerdo de Viernes Santo, U2 y Ash tocan gratis en el Waterfront Hall, y Bono sube al escenario a John Hume y David Trimble. E para hablar, recoger y ayudar; para mirar, quédate quieto.",
+            new[]
+            {
+                "El 30 de enero de 1972, en Derry, soldados británicos dispararon contra una marcha por los derechos civiles: murieron 13 personas ese día y otra después, todas desarmadas, como concluyó la investigación Saville en 2010. U2, un grupo de Dublín, grabó entre septiembre y noviembre de 1982 Sunday Bloody Sunday, sobre el horror de esa violencia (esta historia la nombra sin reproducir sus letras): The Edge escribió el riff y el primer texto, y Bono lo rehízo. Publicada en War (1983), en concierto Bono avisaba de que no era una canción de rebeldes, y en la gira de 1983 llevaba una bandera blanca. El 8 de noviembre de 1987, el día de la bomba de Enniskillen, condenó el atentado en mitad de la canción, en Denver.",
+                "El Acuerdo de Viernes Santo se firmó el 10 de abril de 1998 y debía votarse en referéndum el 22 de mayo. Los partidarios temían que no llegara la mayoría de los protestantes. Tim Attwood (SDLP) pidió ayuda a Bono, David Kerr (colaborador de Trimble) se sumó, y en pocos días se organizó un concierto gratuito en el Waterfront Hall, el 19 de mayo, con U2 y Ash y unas 2000–2500 personas de las dos comunidades.",
+                "Bono subió al escenario a John Hume (SDLP, nacionalista) y David Trimble (UUP, unionista) y levantó sus brazos. A Trimble, muy nervioso, costó convencerle de quitarse la chaqueta. El Sí ganó con el 71 %; Hume y Trimble recibieron el Nobel de la Paz ese mismo año.",
+                "Su efecto se discute: un colaborador de Trimble lo llama el momento decisivo de la campaña; el director de la campaña del Sí cree que ayudó al ambiente sin cambiar votos. Bono también ha recibido críticas por mezclar música y política. Las frases son de juego, salvo la anécdota de la chaqueta y el recado de Attwood, en resumen; la vecina y la estudiante son inventadas.",
+            },
+            new[]
+            {
+                "The Irish Times (10-9-2025), «Belfast Agreement referendum vote saved by U2's concert, new book says» (S. Walker, David Trimble: Peacemaker).",
+                "The Irish Times (7-4-2023), «I found myself in between two great men: Bono finds pride in the name of peace».",
+                "The Irish News (17-5-2018), «Opinion split over influence of historic Waterfront gig».",
+                "Hot Press, «On this day in 1998: U2, Ash, John Hume and David Trimble took part in the historic Good Friday Agreement gig in Belfast».",
+                "Wikipedia, «Sunday Bloody Sunday»; UK Government (2010), Report of the Bloody Sunday Inquiry (Saville).",
+            },
+            "Bono", "Una canción puede decir «basta». Lo demás lo votáis vosotros.");
+        return n;
+    }
+
+    // ══ PUBLIC ENEMY · Roosevelt y Hempstead (Long Island), 1989 · Aula (pendiente: sala de grabación y radio) ═══════════════════════
+    //    El RAP que denuncia: un estudiante de diseño, una radio universitaria y un collage de sonido que quiere ser el noticiero de su barrio. Por qué ellos: doc, «Rock y rap».
+
+    static int PublicEnemy(Transform t)
+    {
+        Material wood = M("Mesa_de_radio", 0.55f, 0.42f, 0.3f), vinyl = M("Disco_de_vinilo", 0.08f, 0.08f, 0.1f), crate = M("Caja_de_discos", 0.6f, 0.48f, 0.32f), steel = M("Cromo_del_pie", 0.75f, 0.76f, 0.78f);
+        Material tape = M("Magnetófono", 0.45f, 0.47f, 0.5f), paper = M("Papel_de_dibujo", 0.95f, 0.94f, 0.9f), asphalt = M("Cancha_asfaltada", 0.32f, 0.32f, 0.34f), hoop = M("Aro_naranja", 0.85f, 0.45f, 0.15f), news = M("Periódico", 0.8f, 0.8f, 0.76f);
+
+        // 1 · LA MESA DE DIBUJO DE CHUCK: estudió diseño gráfico en Adelphi.
+        Transform desk = Spot(t, "Mesa de dibujo", new Vector3(-10f, 0f, 14f), "La mesa de dibujo de Chuck (diseño gráfico, Adelphi)", 3f);
+        Prop(desk, "Tablero inclinado", new Vector3(0f, 0.8f, 0f), new Vector3(1.6f, 0.08f, 1.1f), wood);
+        Prop(desk, "Hoja de dibujo", new Vector3(0f, 0.86f, 0f), new Vector3(1.2f, 0.02f, 0.8f), paper, false);
+
+        // 2 · WBAU: la cabina de la radio de la universidad.
+        Transform radio = Spot(t, "Cabina de WBAU", new Vector3(0f, 0f, 18f), "WBAU, la radio de la Universidad Adelphi", 3f);
+        Prop(radio, "Mesa de locución", new Vector3(0f, 0.4f, 0f), new Vector3(2f, 0.8f, 0.9f), wood);
+        Mic(radio, new Vector3(0.4f, 0.8f, 0f), steel);
+
+        // 3 · LOS DISCOS: un sonido hecho de cientos de trozos de otros sonidos.
+        var crates = Items(t, crate, new Vector3(0.6f, 0.4f, 0.5f), ("Caja de discos de soul", new Vector3(9f, 0.2f, -6f)), ("Caja de discursos y noticias", new Vector3(12f, 0.2f, -3f)), ("Caja de ruidos de la calle", new Vector3(15f, 0.2f, -7f)));
+        Transform studio = Spot(t, "Estudio del Bomb Squad", new Vector3(14f, 0f, 8f), "510 South Franklin: el estudio del Bomb Squad", 3f);
+        Prop(studio, "Magnetófono de pistas", new Vector3(0f, 0.5f, 0f), new Vector3(1.6f, 1f, 0.8f), tape);
+        for (int k = 0; k < 3; k++) Prop(studio, "Disco", new Vector3(-1.4f + k * 1.4f, 0.03f, 1.6f), new Vector3(0.3f, 0.02f, 0.3f), vinyl, false);
+
+        // 4 · EL NOTICIERO DEL BARRIO: tres sitios donde se escuchan las noticias de verdad.
+        Transform court = Spot(t, "Cancha de Roosevelt", new Vector3(-18f, 0f, 2f), "La cancha: lo que se habla en el barrio", 3f);
+        Prop(court, "Cancha", new Vector3(0f, 0.02f, 0f), new Vector3(7f, 0.04f, 5f), asphalt, false);
+        Prop(court, "Aro", new Vector3(0f, 2.3f, 2.4f), new Vector3(0.7f, 0.08f, 0.7f), hoop, false);
+        Transform stop = Spot(t, "Parada de Nassau Road", new Vector3(-4f, 0f, 2f), "Nassau Road: las vecinas de la parada", 2.5f);
+        Prop(stop, "Poste de la parada", new Vector3(0f, 1.2f, 0f), new Vector3(0.12f, 2.4f, 0.12f), steel);
+        Transform library = Spot(t, "Biblioteca de Roosevelt", new Vector3(-21f, 0f, 12f), "La biblioteca: los periódicos", 2.5f);
+        Prop(library, "Mesa de periódicos", new Vector3(0f, 0.4f, 0f), new Vector3(1.8f, 0.8f, 0.9f), wood);
+        Prop(library, "Periódicos", new Vector3(0f, 0.84f, 0f), new Vector3(1f, 0.05f, 0.6f), news, false);
+        var hood = new List<Transform> { court, stop, library };
+
+        // La gente: insectos-humanos. Chuck D, un ESCARABAJO PELOTERO (hace rodar y convierte lo que otros tiran: el sampler es eso). Ropa de calle, sin el logotipo del grupo.
+        Color black = new Color(0.12f, 0.12f, 0.14f), red = new Color(0.6f, 0.15f, 0.12f), grey = new Color(0.55f, 0.55f, 0.56f), denim = new Color(0.25f, 0.32f, 0.48f);
+        GameObject chuck = Who(t, "Chuck D", new Vector3(-6f, 0f, 12f), false, 1.83f, "DungBeetle"); CubeInsect.WearShirt(chuck, black);
+        GameObject flav = Who(t, "Flavor Flav", new Vector3(5f, 0f, 3f), false, 1.68f, "Grasshopper"); CubeInsect.WearShirt(flav, red);
+        GameObject hank = Who(t, "Hank Shocklee", new Vector3(12f, 0f, 5f), false, 1.78f, "Ant"); CubeInsect.WearShirt(hank, grey);
+        GameObject bill = Who(t, "Bill Stephney", new Vector3(3f, 0f, 15f), false, 1.76f, "Cricket"); CubeInsect.WearShirt(bill, denim);
+        GameObject neighbor = Who(t, "Vecina de Roosevelt (Ruth)", new Vector3(-5f, 0f, -1f), true); CubeInsect.WearShirt(neighbor, denim); Routine(neighbor, stop, library);
+        GameObject kid = Who(t, "Chico de la cancha (Momo)", new Vector3(-16f, 0f, -1f), false, 1.65f); CubeInsect.WearShirt(kid, red); Routine(kid, court);
+        int n = 6;
+
+        Mission(t, "Public Enemy en Long Island: el noticiero del barrio (1989)", StoryMission.Marga.Stats, 60f,
+            new[]
+            {
+                Talk("Habla con Chuck D en su mesa de dibujo", chuck.transform, "Chuck D", "Estudié diseño gráfico, no música. Pero en los barrios como este lo que pasa no sale en la tele. Si la gente pudiera poner la radio y oírse a sí misma, sería un noticiero."),
+                Reach("Ve a la cabina de WBAU", radio, "Bill Stephney", "La radio de la universidad apenas pasaba rap. Un programa los sábados por la noche, y las cintas de la calle empezaron a llegar. Una promo de Chuck se hizo famosa aquí en Long Island."),
+                Collect("Lleva las cajas de discos al estudio", crates, studio, "Hank Shocklee", "Cuidado con eso: soul, discursos, noticias, sirenas. Cada segundo de nuestro sonido es un trozo de otra cosa."),
+                Talk("Habla con Hank Shocklee", hank.transform, "Hank Shocklee", "A esto lo llaman el Bomb Squad. Se trata de que suene a como se siente vivir aquí: cien cosas a la vez, y ninguna en paz."),
+                Visit("Escucha el barrio: la cancha, la parada y la biblioteca", hood, "Vecina de Roosevelt", "El trabajo que se va, la droga en la esquina, la policía, los de siempre sin voz. ¿Quién lo cuenta? Ese chico alto, el de los Ridenhour, viene aquí a escuchar."),
+                Talk("Habla con Flavor Flav", flav.transform, "Flavor Flav", "Él es la voz seria y yo el que te despierta. Si no te ríes un poco, no aguantas oír esto entero."),
+                Hold("1989: Spike Lee ha pedido un himno para su película. Quédate en la grabación", studio, 12f, "Chuck D", "Lo escribí casi todo en un avión sobre Italia. Se llama como aquella canción de los Isley Brothers. Es decirle a la gente que no se quede sentada."),
+                Talk("Vuelve con Chuck D", chuck.transform, "Chuck D", "Yo no digo qué pensar. Digo que apagues lo que te cuentan y mires tu calle."),
+            },
+            "Roosevelt y Hempstead (Long Island, Nueva York), en 1989, sobre el Aula del santuario a escala de hormiga (pendiente de su piso: una sala de grabación y radio). Public Enemy, un grupo salido de la radio de una universidad, graba para una película el tema que le hará famoso. E para hablar, recoger y ayudar; para mirar, quédate quieto.",
+            new[]
+            {
+                "Carlton Ridenhour (Chuck D) creció en Roosevelt, Long Island, y estudió diseño gráfico en la Universidad Adelphi, donde conoció a Hank Shocklee y a William Drayton (Flavor Flav). Desde 1982–83 hizo programas en WBAU, la emisora universitaria, con Bill Stephney como director de programas; una promo para la radio, Public Enemy #1, dio nombre al grupo. Rick Rubin lo fichó para Def Jam y en 1987 salió su primer disco.",
+                "Con el Bomb Squad (Hank y Keith Shocklee, Eric Sadler) inventaron un sonido hecho de capas de samples. It Takes a Nation of Millions to Hold Us Back (1988) fue el primer disco de hip hop elegido el mejor del año por la crítica de The Village Voice. Chuck D describió el rap como un noticiero del Estados Unidos negro. Sus temas: el racismo, la policía, la droga en los barrios, los medios de comunicación.",
+                "En 1989, Spike Lee les pidió un himno para Do the Right Thing. Chuck D lo escribió sobre todo en un vuelo sobre Italia y el grupo lo grabó con Branford Marsalis: Fight the Power, que se publicó el 4 de julio de 1989 (esta historia la nombra sin reproducir sus letras). El video, una marcha contra la violencia racial, se rodó el 22 de abril en Bedford-Stuyvesant, Brooklyn, dirigido por Lee. En 2005 Fear of a Black Planet (1990) entró en el Registro Nacional de Grabaciones de Estados Unidos; en 2013 entraron en el Salón de la Fama del Rock.",
+                "Lo discutido: en 1989 Professor Griff, miembro del grupo, hizo declaraciones antisemitas; Chuck D se disculpó y lo apartó del grupo, y algunas letras también fueron criticadas, igual que la estética militar de su seguridad. Las frases son de juego, y la vecina y el chico son inventados. No se usa el logotipo del grupo.",
+            },
+            new[]
+            {
+                "Wikipedia, «Public Enemy» y «Fight the Power (Public Enemy song)».",
+                "Encyclopedia.com, «Shocklee, Hank» (WBAU, Spectrum).",
+                "Okayplayer, «The Secret History of Public Enemy's Yo! Bum Rush the Show».",
+                "American Songwriter, «Behind the Band Name: Public Enemy».",
+                "Library of Congress, National Recording Registry (2005): Fear of a Black Planet.",
+            },
+            "Chuck D", "Si tu barrio no sale en las noticias, hazle su noticiero.");
+        return n;
+    }
+
+    // ══ GRANDES APORTES DE LAS CANCIONES · la Plaza de las Canciones (sitio inventado), 21 de junio · Aula (pendiente: escenario) ══════════
+    //    Seis canciones que cambiaron algo, cada una con su historia y su rincón de época (en el claro, y su edificio en el pueblo, con el año y la región de su rincón):
+    //    We Shall Overcome, Bella Ciao, Imagine, Biko, Redemption Song y Latinoamérica. Ninguna letra: título, autor y tema, con palabras propias.
+
+    static int GrandesCanciones(Transform t)
+    {
+        Material wood = M("Madera_vieja", 0.5f, 0.38f, 0.28f), paper = M("Rótulo_del_rincón", 0.92f, 0.88f, 0.76f), rice = M("Agua_del_arrozal", 0.45f, 0.6f, 0.5f), steel = M("Cromo_del_pie", 0.75f, 0.76f, 0.78f);
+        Material porch = M("Porche_de_tablas", 0.6f, 0.5f, 0.38f), white = M("Piano_blanco_de_salón", 0.2f, 0.18f, 0.18f), earth = M("Tierra_roja", 0.6f, 0.36f, 0.25f), yardC = M("Cemento_del_patio", 0.7f, 0.68f, 0.62f), wool = M("Telar_de_los_Andes", 0.75f, 0.3f, 0.25f), stone = M("Piedra_andina", 0.55f, 0.53f, 0.5f);
+
+        Transform Corner(string name, string label, Vector3 at, Material ground, float w = 6f, float d = 5f)
+        {
+            Transform c = Spot(t, name, at, label, 3.5f);
+            Prop(c, "Suelo del rincón", new Vector3(0f, 0.02f, 0f), new Vector3(w, 0.04f, d), ground, false);
+            Prop(c, "Poste del rótulo", new Vector3(-w * 0.5f + 0.3f, 0.7f, -d * 0.5f + 0.3f), new Vector3(0.1f, 1.4f, 0.1f), wood);
+            Prop(c, "Placa del rincón", new Vector3(-w * 0.5f + 0.3f, 1.4f, -d * 0.5f + 0.25f), new Vector3(1f, 0.5f, 0.04f), paper, false);
+            return c;
+        }
+
+        // Los seis rincones, en círculo alrededor de la tarima del centro (la entrada, al sur, queda libre).
+        Transform stage = Stage(t, "Tarima de la Plaza de las Canciones", new Vector3(0f, 0f, 6f), "La Plaza de las Canciones", 6f, 4f, wood);
+        Mic(stage, new Vector3(0f, 0.3f, 0f), steel);
+        Transform high = Corner("Rincón de We Shall Overcome", "We Shall Overcome: Highlander, Tennessee, 1960", new Vector3(-19f, 0f, 4f), porch);
+        Prop(high, "Banco del porche", new Vector3(0.5f, 0.25f, 1.5f), new Vector3(3f, 0.5f, 0.5f), wood);
+        Transform mond = Corner("Rincón de Bella Ciao", "Bella Ciao: los arrozales de Vercelli, hacia 1906", new Vector3(-14f, 0f, 15f), rice);
+        for (int k = 0; k < 8; k++) Prop(mond, "Mata de arroz", new Vector3(-2.4f + k * 0.7f, 0.2f, (k % 2) * 1.2f - 0.6f), new Vector3(0.2f, 0.4f, 0.2f), M("Arroz_verde", 0.45f, 0.65f, 0.3f), false);
+        Transform asc = Corner("Rincón de Imagine", "Imagine: Tittenhurst Park, Ascot, 1971", new Vector3(0f, 0f, 20f), wood);
+        Prop(asc, "Piano vertical", new Vector3(0f, 0.65f, 1f), new Vector3(1.6f, 1.3f, 0.6f), white);
+        Transform gin = Corner("Rincón de Biko", "Biko: Ginsberg, Cabo Oriental, 1977", new Vector3(14f, 0f, 15f), earth);
+        Prop(gin, "Mesa de la clínica y de la imprenta", new Vector3(0.5f, 0.4f, 1f), new Vector3(1.8f, 0.8f, 0.9f), wood);
+        Transform yard = Corner("Rincón de Redemption Song", "Redemption Song: Kingston, 1980", new Vector3(19f, 0f, 4f), yardC);
+        Prop(yard, "Taburete de la guitarra", new Vector3(0f, 0.25f, 0.5f), new Vector3(0.5f, 0.5f, 0.5f), wood);
+        Transform andes = Corner("Rincón de Latinoamérica", "Latinoamérica: los Andes del Perú, 2011", new Vector3(15f, 0f, -6f), stone);
+        Prop(andes, "Telar de cintura", new Vector3(0f, 0.8f, 1f), new Vector3(1.6f, 1.6f, 0.1f), wool, false);
+
+        // La gente: insectos-humanos (cada uno su insecto de InsectCast); el cronista, un GRILLO, que nunca deja de contar. Fuera de los rincones no hay nadie famoso.
+        Color bluish = new Color(0.35f, 0.45f, 0.55f), cream = new Color(0.85f, 0.8f, 0.68f), straw = new Color(0.75f, 0.65f, 0.4f), dark = new Color(0.2f, 0.2f, 0.24f), green = new Color(0.25f, 0.5f, 0.3f), red = new Color(0.65f, 0.25f, 0.2f);
+        GameObject cron = Who(t, "Cronista de las canciones", new Vector3(2f, 0f, 2f), true, 1.65f, "Cricket"); CubeInsect.WearShirt(cron, bluish);
+        GameObject guy = Who(t, "Guy Carawan", new Vector3(-17f, 0f, 2f), false, 1.8f, "Cricket"); CubeInsect.WearShirt(guy, cream);
+        GameObject mondina = Who(t, "Mondina de Vercelli (Ruth)", new Vector3(-12f, 0f, 13f), true, 1.58f, "Ant"); CubeInsect.WearShirt(mondina, straw);
+        GameObject gabriel = Who(t, "Peter Gabriel", new Vector3(12f, 0f, 13f), false, 1.72f, "Grasshopper"); CubeInsect.WearShirt(gabriel, dark);
+        GameObject bob = Who(t, "Bob Marley", new Vector3(17f, 0f, 2f), false, 1.7f, "Cricket"); CubeInsect.WearShirt(bob, green);
+        GameObject baca = Who(t, "Susana Baca", new Vector3(13f, 0f, -8f), true, 1.6f, "Cicada"); CubeInsect.WearShirt(baca, red);
+        GameObject john = Who(t, "John Lennon (1971)", new Vector3(-2f, 0f, 18f), false, 1.79f, "Cicada"); CubeInsect.WearShirt(john, cream);
+        int n = 7;
+
+        Mission(t, "Grandes aportes de las canciones: seis que cambiaron algo", StoryMission.Marga.Bonds, 60f,
+            new[]
+            {
+                Talk("Habla con la cronista en la Plaza de las Canciones", cron.transform, "Cronista", "Aquí, cada 21 de junio, se cuenta cómo una canción movió el mundo. Sin cantarlas: ellas ya están en la memoria de quien las necesita. Recorre los rincones: cada uno guarda su época."),
+                Talk("Rincón de Highlander: habla con Guy Carawan", guy.transform, "Guy Carawan", "Unas trabajadoras del tabaco de Charleston la cantaban en 1945, en piquetes. Zilphia Horton la trajo a esta escuela, Pete Seeger la llevó al norte y yo se la enseñé a los estudiantes en 1960. Cinco años después, el presidente de Estados Unidos dijo su título ante el Congreso."),
+                Talk("Rincón de los arrozales: habla con la mondina", mondina.transform, "Mondina", "Dicen que la melodía viene de nosotras, de las que escardábamos el arroz con el agua hasta las rodillas. Otros, que de un canto de los partisanos. Los historiadores aún discuten. A mí me gusta que la cante quien no se rinde."),
+                Hold("Rincón de Tittenhurst: quédate junto al piano", asc, 8f, "John Lennon", "La escribí en este cuarto, y Yoko debería figurar como autora: sus poemas están dentro. Pide imaginar un mundo sin lo que nos separa. Pedir no cuesta nada, por eso molesta tanto."),
+                Talk("Rincón de Ginsberg: habla con Peter Gabriel", gabriel.transform, "Peter Gabriel", "Oí por la radio que Steve Biko había muerto bajo custodia policial. Yo no soy sudafricano: lo que hice fue contarlo con un tambor, y dar lo que ganara al movimiento. A veces lo único útil es que alguien más lo sepa."),
+                Hold("Rincón de Kingston: quédate escuchando la guitarra", yard, 8f, "Bob Marley", "Solo una guitarra y yo, sin la banda, ya enfermo. La idea es de Marcus Garvey: nadie más que tú puede liberarte la mente. Es lo último que quise decir."),
+                Talk("Rincón de los Andes: habla con Susana Baca", baca.transform, "Susana Baca", "Calle 13 llamó a tres mujeres: Totó, de Colombia; Maria Rita, de Brasil, y yo, de Perú. Es una canción sobre lo que no se puede comprar: la tierra, la gente, la memoria de un continente."),
+                Talk("Vuelve con la cronista", cron.transform, "Cronista", "Ninguna paró una guerra sola. Pero cada una le dio voz a mucha gente, y una voz compartida ya es un principio de algo."),
+            },
+            "La Plaza de las Canciones, un sitio inventado, sobre el Aula del santuario a escala de hormiga (pendiente de su piso: un escenario), un 21 de junio, Día de la Música. Una cronista te guía por seis rincones de época, cada uno con la historia de una canción que cambió algo. E para hablar; para escuchar, quédate quieto.",
+            new[]
+            {
+                "Este microcosmos es un lugar inventado: reúne en un mismo sitio seis canciones reales, sin reproducir sus letras: de cada una, su autor, su época y su tema contado con palabras propias.",
+                "We Shall Overcome. Viene de himnos afroamericanos. En 1945 Lucille Simmons y otras huelguistas del tabaco de Charleston la cantaban lentamente en el piquete; Zilphia Horton la aprendió de ellas y la llevó a la Escuela Highlander (Tennessee); Pete Seeger la difundió, y Guy Carawan la enseñó en 1960 en la fundación del SNCC. Fue el himno de los derechos civiles. El 15 de marzo de 1965, tras Selma, Lyndon Johnson pronunció sus palabras ante el Congreso. Bella Ciao. Su melodía se atribuye a un canto de las mondine, las escardadoras de arroz del valle del Po, aunque el origen se discute (la investigadora Giovannardi apunta a una melodía yidis); la versión partisana hoy se canta en el mundo entero, pero los historiadores dudan de cuánto se cantó de verdad durante la Resistencia (Cesare Bermani la sitúa en la Brigada Maiella). Se hizo global con la serie La casa de papel.",
+                "Imagine. John Lennon la grabó en mayo de 1971 en su estudio de Tittenhurst Park (Ascot), inspirada en los poemas de Yoko Ono, a quien reconoció después como coautora. Pide imaginar un mundo sin fronteras ni posesiones. Biko. Steve Biko, líder de la Conciencia Negra, murió bajo custodia policial el 12 de septiembre de 1977 en Sudáfrica. Peter Gabriel publicó esta canción en 1980 y donó lo recaudado (más de 50 000 libras) al movimiento; inspiró Sun City y las campañas contra el apartheid. Redemption Song. Bob Marley la grabó sola, con guitarra acústica, en Uprising (1980), ya enfermo; recoge una idea de un discurso de Marcus Garvey en Nueva Escocia en 1937, sobre liberarse de la esclavitud mental. Latinoamérica. Calle 13 (Puerto Rico) la publicó en 2011 con Totó la Momposina, Susana Baca y Maria Rita; el video se rodó en Perú y ganó el Grammy Latino a la grabación y la canción del año. Canta la historia común del continente y lo que no se vende.",
+                "Las frases son de juego, también las de personas reales: resumen lo que dijeron o lo que cuentan sus biografías. Sobre lo discutido: ninguna canción de estas paró una guerra por sí sola, y varias se han usado también con fines que sus autores no eligieron.",
+            },
+            new[]
+            {
+                "Library of Congress, Folklife Today (2014), «Tracing the Long Journey of We Shall Overcome»; Highlander Center; PBS American Experience, «LBJ: We Shall Overcome».",
+                "Wikipedia, «Bella ciao»; Tribune (2021), «Bella Ciao: the song of the partisans».",
+                "Wikipedia, «Imagine (John Lennon album)»; The Beatles Bible, «Recording: Imagine by John Lennon»; MusicRadar sobre el papel de Yoko Ono.",
+                "Wikipedia, «Biko (song)»; PRI The World (2024), «Peter Gabriel remakes classic protest song Biko».",
+                "CBC (2019), «Bob Marley's Canadian connection to Redemption Song»; Tattrie, J. (2016), Redemption Songs, Pottersfield Press.",
+                "Wikipedia, «Latinoamérica (song)».",
+            },
+            "Cronista", "Una canción no cambia el mundo. Cambia a quien la canta, y ese sí.");
         return n;
     }
 

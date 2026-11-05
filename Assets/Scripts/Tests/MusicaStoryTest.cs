@@ -29,6 +29,11 @@ public class MusicaStoryTest : MonoBehaviour, ITestUnit
         ("Microcosmos_BadBunny", "Vega Baja", "Bad Bunny", 2016, "CaribeHispano", "Informatics_Area", false, new[] { "Mango", "Guanábana", "Aguacate", "Quenepa" }),
         ("Microcosmos_JohnLennon", "Montreal", "John Lennon", 1969, "NorteamericaNorte", "Ballet_Area", false, new[] { "Manzano", "Cerezo", "Ciruelo" }),
         ("Microcosmos_MichaelJackson", "Gary", "Michael Jackson", 1966, "NorteamericaNorte", "Ballet_Area", false, new[] { "Manzano", "Cerezo", "Ciruelo" }),
+        ("Microcosmos_Blackpink", "Seúl", "Jennie", 2016, "Corea", "Ballet_Area", true, new[] { "Caqui", "Peral", "Azufaifo" }),
+        ("Microcosmos_Wailers", "Kingston", "Bob Marley", 1978, "Jamaica", "Ballet_Area", false, new[] { "Ackee", "Árbol del pan", "Mango" }),
+        ("Microcosmos_U2", "Belfast", "Bono", 1998, "IslasBritanicas", "Ballet_Area", false, new[] { "Manzano", "Ciruelo", "Peral" }),
+        ("Microcosmos_PublicEnemy", "Long Island", "Chuck D", 1989, "NorteamericaNorte", "Classroom_Area", false, new[] { "Manzano", "Cerezo", "Ciruelo" }),
+        ("Microcosmos_GrandesCanciones", "Grandes aportes de las canciones", "Cronista", 2025, "Hispanoamerica", "Classroom_Area", false, new[] { "Limonero", "Manzano" }),
         // ══FIN DE LOS CASOS══
     };
 

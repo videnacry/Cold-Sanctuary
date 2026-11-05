@@ -85,6 +85,7 @@ _Total: 720 tipos._
 - **AiCluster** (class) — `Assets/Scripts/World/AiCluster.cs` — el clúster de IA local del piso de Informática: energía, PUE, agua (WUE), calor a la red de distrito, SAI y mantenimiento (docs/piso-informatica.md).
 - **AreaCapacity** / **AreaSeat** — `Assets/Scripts/World/AreaCapacity.cs`, `AreaSeat.cs` — regla de capacidad (manual S13): puestos por actividad; entrenamiento y estudio para todos los miembros.
 - **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.Famosos.cs` — LOS PUEBLOS DE LOS FAMOSOS (docs/microcosmos-famosos.md; Berón 2026-11-04): `FamousTown`, `FamousPlans` y un pueblo por figura (Velliangiri, Hawthorne, Aldea de la montaña, Albuquerque, Omaha, Prairie View, Uagadugú).
+- **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.Musica.cs` — LOS PUEBLOS DE LA MÚSICA (docs/microcosmos-musica.md; Berón 2026-11-05): `MusicTown`, `MusicPlans` y un pueblo por historia. Con `StorySceneBuilder.Musica.cs`, `MicroBiome.Musica.cs`, `MicroFurniture.Music.cs` (instrumentos), `MicroStoryMaps.Musica.cs` y `MusicaStoryTest` (grupo 86).
 - **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.BruceLee.cs` — EL PUEBLO DE BRUCE LEE (docs/microcosmos-bruce-lee.md §5, docs/microcosmos-reglas-edificacion.md):
 - **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.Eras2.cs` — LAS ERAS QUE FALTABAN (docs/microcosmos-civilizaciones.md §8–9):
 - **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.Homes.cs` — REGLA 6 DE EDIFICACIÓN:
