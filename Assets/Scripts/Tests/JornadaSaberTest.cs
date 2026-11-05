@@ -109,6 +109,18 @@ public class JornadaSaberTest : MonoBehaviour, ITestUnit
         WorkRoster.DayPlan m3 = ro4d.Plan(0, new List<WorkRoster.Mission> { new WorkRoster.Mission("A", "qui_x", "X", 1f) });
         TestProbe.Check("Kushal no da clases: va la Magnate", m3.lessons.Count > 0 && m3.lessons.All(l => l.instructor == null));
 
+        // Quien no tiene nada a las 9 puede iniciar a las 10, y sus tareas se colocan alrededor.
+        WorkRoster ro7 = New(4);
+        WorkRoster.Worker t1 = ro7.workers[0], t2 = ro7.workers[1], l1 = ro7.workers[2], l2 = ro7.workers[3];
+        foreach (WorkRoster.Worker t in new[] { t1, t2 }) foreach (string k in new[] { "qui_a", "qui_b", "qui_c", WorkRoster.InstructSkill }) t.taught.Add(k);
+        l1.taught.Add("qui_b"); l2.taught.Add("qui_c");
+        var seven = new List<WorkRoster.Mission> { new WorkRoster.Mission("A", "qui_a", "A", 1f), new WorkRoster.Mission("A", "qui_b", "B", 1f), new WorkRoster.Mission("A", "qui_c", "C", 1f), new WorkRoster.Mission("B", "limpiar", "Limpiar", 1f), new WorkRoster.Mission("B", "barrer", "Barrer", 1f) };
+        WorkRoster.DayPlan p7 = ro7.Plan(0, seven);
+        var later = p7.lessons.Where(l => l.start > 9f).ToList();
+        TestProbe.Check("el que estaba libre a las 9 inicia a las 10", later.Count == 2 && later.All(l => l.instructor != null) && later.Select(l => l.instructor).Distinct().Count() == 2, string.Join(" · ", later));
+        TestProbe.Check("las clases de después también las da un compañero", p7.lessons.Count >= 3 && p7.lessons.All(l => l.instructor != null), string.Join(" · ", p7.lessons));
+        TestProbe.Check("nadie da dos clases a la vez ni trabaja mientras", ro7.workers.All(w => { var a = p7.Of(w).ToList(); return a.All(x => !a.Any(y => y != x && x.start < y.start + y.mission.hours && y.start < x.start + x.mission.hours)); }));
+
         // ── Clases ──
         WorkRoster big = New(WorkRoster.LessonGroupSize * WorkRoster.MaxLessonGroups + 4);
         var many = new List<WorkRoster.Mission>();

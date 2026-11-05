@@ -52,6 +52,8 @@ Durante las 8 h los personajes van al área de su misión y se quedan allí. **N
 - **Lo que sabe cada uno** (`Worker.taught`, `WorkRoster.Learned`): lo hecho, lo enseñado y lo de su profesión. **No se guarda en la partida**, igual que las cuentas de la rotación.
 - **La iniciación del primer turno** (el clon que aparece a su lado) sigue para lo que nadie le enseñó y no pide lección.
 
+- **Horario del que inicia:** puede dar una clase a cualquier hora que tenga libre, no solo la siguiente de su jornada: esa hora queda reservada y sus tareas se colocan alrededor (`WorkRoster.PlaceFor`). Lo reparte el que menos clases lleve hoy.
+
 ### La regla de oro y quién enseña
 - **J30: todos saben hacer de todo.** La leo como **el destino y una prohibición de exclusivas**: todos acaban sabiéndolo todo, también iniciar, y ninguna tarea es de nadie. Hasta entonces decide el requisito. Si se leyera literal («ya lo saben hoy»), no habría lista de iniciaciones.
 - Solo piden iniciación las tareas con riesgo. Las demás se siguen aprendiendo haciéndolas, y una obligatoria sin nadie que sepa la hace un clon de la Magnate.

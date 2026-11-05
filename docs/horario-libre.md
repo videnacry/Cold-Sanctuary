@@ -172,3 +172,14 @@ La jornada sigue intacta: se vuelve a correr el grupo 50.
 **El panel enseña la escena correcta**: la que fija una prueba (`HorarioPanel.FocusScene`), la que se eligió con «otra escena» o, si no, la escena donde está el jugador.
 
 > **2026-11-04 — Hacer la actividad, comer con su orquesta y uniformes:** en su sitio cada uno HACE su tarea o su actividad (postura, herramienta en la mano, gesto y efecto), come con la orquesta de la comida (bandeja, cubiertos, bocados, beber, devolver) y lleva el uniforme de su tarea; también los insectos-humanos. Ver [actividades-y-uniformes.md](actividades-y-uniformes.md).
+
+## Sesiones semanales de todos (Berón 2026-11-05)
+
+La **asamblea** y el **concierto** ya no son actividades con 8 plazas por franja: son una sesión a la semana con plaza para todos (`LeisureDirector.WeeklySessions`, como la guerra de almohadas).
+
+| Sesión | Cuándo | Dónde |
+|---|---|---|
+| Asamblea | Día 1 de la semana, 18 h | Sala de asambleas, cada uno en su plaza de las filas |
+| Concierto | Día 4 de la semana, 17 h (no a las 20 h, la franja de las clases con maestro) | Piso de Música, cada uno en su butaca |
+
+Se sale con tiempo (`TogetherLead`). La **asistencia** real se apunta al llegar (`LeisureDirector.Attendance`). Prueba: grupo 65.

@@ -105,3 +105,7 @@ Con 28 miembros: gimnasio 1, cardio 1, calistenia 1, Hatha 2, Ashtanga 2, ballet
 1. Al unir `claude/edif-energia`: `SanctuaryAreaType.Music` en la línea de 18 W/m² de `EnergyRule.WattsPerM2` (sin eso, 16). `FloorEnergy.Declare` recorre todas las áreas y calcula las mesas solares sola: estos pisos piden unos 2800 m² × 18 W/m² ≈ 50 kW de media, sin contrastar con las mesas libres.
 2. Reconstruir SampleScene y pasar: 86, 75, 57, 28, 40, 84, 90, 50, 65, 89, 96, 97, 67, 68, 70.
 3. `AreaFunctionRegistryTest`: sus cuentas fijas («55 misiones», 64,5 h) parecen desfasadas ya antes de esto; sin ejecutar.
+
+## El concierto de la semana (2026-11-05)
+
+Todos los miembros, el cuarto día a las 17 h, cada uno en una butaca y con asistencia. Ver [horario-libre.md](horario-libre.md).
