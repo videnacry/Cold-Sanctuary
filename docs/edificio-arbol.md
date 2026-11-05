@@ -274,7 +274,7 @@ cada 3 m (rama 63 %) · Producción 109 m (rama 37 %). Los tubos de 10 m llevan 
 **Sitios** (con las piezas más grandes los árboles alcanzan 57–76 m; nueva búsqueda con el simulador, scratchpad/mig, ≥ 16 m en 3D
 y el tronco en hielo firme): **Servicios** (50, 92) girado 90° → **(55, 102) sin giro** · **Entrenamiento** (−77, 52), girado **90°**
 (antes 0°) · **Ciencias** (92, −107) → **(92, −117) girada 90°** · **Producción** (114, 0) con el primer piso a 96 m → **(113, −15)
-con el primer piso a 64 m** (ya no hace falta subirla). El comedero de los depredadores va con Producción (a 20 m al Este de su eje).
+con el primer piso a 64 m** (ya no hace falta subirla). (El comedero se retiró el 2026-11-05: [alimentador.md](alimentador.md).)
 Holguras del simulador: Árbol–Entrenamiento 16,3 m, Servicios–Entrenamiento 16,5, Ciencias–Producción 17,2, Servicios–Producción 18,0.
 
 ## Después de la migración: arreglos (2026-11-01)
@@ -305,7 +305,7 @@ se ve nadar a la gente. Fotos con el posprocesado del juego en `Temp/PostMig/`: 
   puesto más (`PlayerWorkday.HeadingEarly`; ver el commit).
 - **Viajes que ya no van adonde iban** (`TreeTrip.StillFor`), **alfombras a ninguna parte** desde un árbol (`CarpetPad.ForceHop`),
   **el jugador en la puerta del techo** (su cápsula), **la clase de yoga espera a quien viene de lejos** (`YogaClass`).
-- **El comedero de los depredadores** estaba a 1 m de la cara Este del tronco de Producción: ahora a 9 m. **Rodeos que se
+- **El comedero de los depredadores** (retirado el 2026-11-05) estaba a 1 m de la cara Este del tronco de Producción: ahora a 9 m. **Rodeos que se
   alternan** al pie de un tronco (PathMover solo cambia de camino si el nuevo es claramente más corto) y **el guardia** deja la
   ración cerca si el animal se mueve.
 - **Frutales**: un jardinero por edificio (docs/jardines-frutales.md): 5 rondas, 9,0 h.

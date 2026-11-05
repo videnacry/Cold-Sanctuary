@@ -132,8 +132,26 @@ public static class Ethogram
         // ── SANTUARIO DE HIELO ──
         { "Penguin", new[] {
             new EthoAct(AffordanceKind.Pebble, 0.5f, 6f, HabitEffect.Carry, "lleva un guijarro a su nido (o se lo roba al vecino)", "Adélie: nidos de piedras y robo de guijarros (California Academy of Sciences, 2004; Notornis 22:77)"),
-            new EthoAct(AffordanceKind.HaulOut, 0.3f, 25f, HabitEffect.Rest, "se acicala en el borde del hielo", "acicalamiento: hasta ~1/4 del tiempo en tierra"),
-            new EthoAct(AffordanceKind.HaulOut, 0.3f, 30f, HabitEffect.Huddle, "se apiña con la colonia", "Gilbert et al. 2006, Physiol Behav 88:479 (huddling del pingüino emperador)") } },
+            new EthoAct(AffordanceKind.HaulOut, 0.5f, 25f, HabitEffect.Rest, "se acicala en el borde del hielo", "acicalamiento: hasta ~1/4 del tiempo en tierra") } },
+        { "EmperorPenguin", new[] {
+            new EthoAct(AffordanceKind.HaulOut, 0.6f, 30f, HabitEffect.Huddle, "se apiña con la colonia", "Gilbert et al. 2006, Physiol Behav 88:479 (huddling del pingüino emperador)"),
+            new EthoAct(AffordanceKind.HaulOut, 0.3f, 25f, HabitEffect.Rest, "se acicala en el hielo fijo", "") } },
+        { "Walrus", new[] {
+            new EthoAct(AffordanceKind.HaulOut, 0.6f, 90f, HabitEffect.Rest, "sale a descansar en grupo", "Jay, Farley & Garner 2001, Mar Mamm Sci 17:617 (~77 % del tiempo en el agua)") } },
+        { "Reindeer", new[] {
+            new EthoAct(AffordanceKind.Lichen, 0.5f, 20f, HabitEffect.Feed, "pace liquen de reno", "Cladonia en invierno (Heggberget et al. 2002, Rangifer 22:13)"),
+            new EthoAct(AffordanceKind.Willow, 0.3f, 15f, HabitEffect.Feed, "ramonea sauce", "sauce, abedul y juncias en verano (ADW)"),
+            new EthoAct(AffordanceKind.Grass, 0.3f, 15f, HabitEffect.Feed, "pasta juncia", "") } },
+        { "MuskOx", new[] {
+            new EthoAct(AffordanceKind.Grass, 0.5f, 20f, HabitEffect.Feed, "pasta juncia", "juncias y gramíneas en verano (ADW)"),
+            new EthoAct(AffordanceKind.Willow, 0.4f, 15f, HabitEffect.Feed, "ramonea sauce y abedul enano", "sauce, abedul, musgo y liquen en invierno (ADW)") } },
+        { "ArcticHare", new[] {
+            new EthoAct(AffordanceKind.Willow, 0.7f, 15f, HabitEffect.Feed, "ramonea sauce ártico", "~95 % sauce (ADW); Klein & Bay 1994, Oecologia 97:439") } },
+        { "ArcticFox", new[] {
+            new EthoAct(AffordanceKind.Den, 0.3f, 40f, HabitEffect.Rest, "descansa en su madriguera", "montículos de 1–4 m con 4–8 bocas (ADW)"),
+            new EthoAct(AffordanceKind.Berry, 0.2f, 12f, HabitEffect.Feed, "come bayas", "dieta de verano (Wikipedia/Mammalian Species 713)") } },
+        { "Wolf", new[] {
+            new EthoAct(AffordanceKind.Den, 0.3f, 40f, HabitEffect.Rest, "descansa junto a la guarida", "guarida de roca en Ellesmere usada >700 años (Mech & Packard 1990)") } },
         { "Bear", new[] {
             new EthoAct(AffordanceKind.BreathingHole, 0.6f, 60f, HabitEffect.StillHunt, "acecha inmóvil junto a un respiradero de foca", "Stirling 1974, Can J Zool 52:1191 (still-hunting)"),
             new EthoAct(AffordanceKind.Den, 0.2f, 60f, HabitEffect.Rest, "descansa en su guarida de nieve", "guaridas temporales en ventisqueros (refugio de tormentas y de hembras preñadas)"),

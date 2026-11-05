@@ -82,6 +82,7 @@ public class GardenPlot : MonoBehaviour
     public void Generate()
     {
         if (_root != null) return;
+        if (GetComponent<WeedPatch>() == null) gameObject.AddComponent<WeedPatch>();   // sus malas hierbas (docs/deshierbe-cuidadoso.md)
         _rnd = new System.Random(seed);
         _root = new GameObject("Plantas").transform;
         _root.SetParent(transform, false);

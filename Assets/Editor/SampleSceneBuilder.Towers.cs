@@ -35,7 +35,9 @@ public static partial class SampleSceneBuilder
     public static readonly Vector3 ServiciosCenter = new Vector3(55f, 0f, 102f);     // lóbulo Norte:Enfermeria (donde estuvo el hospital; antes (50, 92))
     public static readonly Vector3 EntrenamientoCenter = new Vector3(-77f, 0f, 52f);  // lóbulo Norte:Bosque_Comestible (antes en el hub, (10, 0); sus cultivos ya están en el Árbol de los Campos)
     public static readonly Vector3 CienciasCenter = new Vector3(92f, 0f, -117f);     // lóbulo Sur:Biologia (antes (92, −107))
-    public static readonly Vector3 ProduccionCenter = new Vector3(113f, 0f, -15f);     // lóbulo Este:Mecanica_Osos (antes (114, 0), en Este:Paso; y antes aún en Sur:Rotacion)
+    // 2026-11-05 (Berón: «en la isla debe haber alguno de los edificios […] la isla reemplace a uno o más casquetes»): Producción, con el comedero y los
+    // osos, se va a la tundra y el casquete Este desaparece (docs/territorio-polar.md). Holgura de mig/Clear.cs: 28,1 m al Árbol de los Campos.
+    public static readonly Vector3 ProduccionCenter = new Vector3(-180f, 0f, -140f);   // lóbulo Isla:Tundra     // lóbulo Este:Mecanica_Osos (antes (114, 0), en Este:Paso; y antes aún en Sur:Rotacion)
     public const float ServiciosYaw = 0f, EntrenamientoYaw = 90f, CienciasYaw = 90f, ProduccionYaw = 90f;
     public const float ProduccionFirstY = 64f;   // (antes 96 m, por encima de Servicios y Ciencias; en su sitio nuevo ya no hace falta)
     // (El Entrenamiento usa GymSize, 36 × 26.)

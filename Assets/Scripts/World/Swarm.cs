@@ -6,7 +6,7 @@ using UnityEngine.Serialization;
 /// Krill pasta el fitoplancton; Pez y Medusa pastan el krill. Los depredadores (Animal) lo muerden según su Forager
 /// (eatsKrill para krill, eatsFish para pez y medusa —el pingüino de Adelia también come medusas—, eatsPrey para las abejas).
 /// Bee: el enjambre de pecoreadoras de una colmena (<see cref="BeeSwarm"/>).</summary>
-public enum SwarmKind { Fish, Krill, Jellyfish, Bee }
+public enum SwarmKind { Fish, Krill, Jellyfish, Bee, Clam }
 
 /// <summary>
 /// GRUPO DE ANIMALES PEQUEÑOS COMO UN SOLO ORGANISMO (banco de peces, enjambre de kril, grupo de medusas, enjambre de abejas;
@@ -149,6 +149,7 @@ public class Swarm : MonoBehaviour, ITarget, IEdible
     /// al tronco de un edificio-árbol por su fondo abierto.</summary>
     protected virtual void Move(float dt)
     {
+        if (kind == SwarmKind.Clam) return;   // los bivalvos están en el fondo: no van a ninguna parte
         // (2026-11-03) Se apartan del SUBMARINO DE OBRA (como de un barco): si pasa a menos de 6 m de su casco, se alejan de él.
         ConstructionSubmarine sub = ConstructionSubmarine.Nearest(transform.position, schoolSpread + 6f);
         if (sub != null)
@@ -239,7 +240,7 @@ public class Swarm : MonoBehaviour, ITarget, IEdible
 
     float GrazeFood(float dt, byte timeScale)
     {
-        if (count >= maxCount || kind == SwarmKind.Bee) return 0f;
+        if (count >= maxCount || kind == SwarmKind.Bee || kind == SwarmKind.Clam) return 0f;
         float bite = grazeRate * timeScale * dt;
         Vector3 pos = transform.position;
         if (kind == SwarmKind.Krill)
@@ -339,6 +340,7 @@ public class Swarm : MonoBehaviour, ITarget, IEdible
         switch (kind)
         {
             case SwarmKind.Krill: return a.Forage.eatsKrill;
+            case SwarmKind.Clam: return a.Forage.eatsClams;
             case SwarmKind.Jellyfish: return a.SpeciesName == "Penguin" || a.Forage.eatsFish;
             case SwarmKind.Bee: return a.Forage.eatsPrey && a.SpeciesName != "Bear";
             default: return a.Forage.eatsFish;
@@ -452,7 +454,7 @@ public class Swarm : MonoBehaviour, ITarget, IEdible
 
     public void Graze(float amount) => Hurt(amount);
 
-    public static string UnitName(SwarmModels.Species sp) => sp == SwarmModels.Species.SnowBee ? "Abeja" : sp == SwarmModels.Species.Krill ? "Kril" : sp == SwarmModels.Species.SilverFish ? "Pez" : "Medusa";
+    public static string UnitName(SwarmModels.Species sp) => sp == SwarmModels.Species.Clam || sp == SwarmModels.Species.Mya ? "Almeja" : sp == SwarmModels.Species.IceKrill ? "Kril" : sp == SwarmModels.Species.Themisto ? "Anfipodo" : sp == SwarmModels.Species.Cyanea ? "Medusa" : sp == SwarmModels.Species.SnowBee ? "Abeja" : sp == SwarmModels.Species.Krill ? "Kril" : sp == SwarmModels.Species.SilverFish ? "Pez" : "Medusa";
 
     /// <summary>Crea un grupo nuevo (en juego o desde un constructor): el padre es un punto vacío con su Swarm.</summary>
     public static T Create<T>(Transform parent, string name, Vector3 pos, SwarmKind kind, SwarmModels.Species sp, float count, float max, float spread) where T : Swarm
@@ -464,7 +466,8 @@ public class Swarm : MonoBehaviour, ITarget, IEdible
         s.kind = kind; s.species = sp; s.speciesSet = true; s.count = count; s.maxCount = max; s.maxVisible = Mathf.CeilToInt(max);
         s.schoolSpread = spread; s.unitName = UnitName(sp);
         if (kind == SwarmKind.Krill) s.perUnitMass = 0.05f;
-        if (kind == SwarmKind.Jellyfish) { s.perUnitMass = sp == SwarmModels.Species.Desmonema ? 4f : 0.1f; s.driftSpeed = 0.5f; s.growthPerSecond = 0.01f; }
+        if (kind == SwarmKind.Clam) { s.perUnitMass = 0.5f; s.driftSpeed = 0f; s.growthPerSecond = 0.05f; }
+        if (kind == SwarmKind.Jellyfish) { s.perUnitMass = sp == SwarmModels.Species.Desmonema || sp == SwarmModels.Species.Cyanea ? 4f : 0.1f; s.driftSpeed = 0.5f; s.growthPerSecond = 0.01f; }
         return s;
     }
 }

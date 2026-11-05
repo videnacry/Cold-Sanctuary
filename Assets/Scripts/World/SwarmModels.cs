@@ -17,17 +17,25 @@ using UnityEngine;
 /// </summary>
 public static class SwarmModels
 {
-    public enum Species { SilverFish, Krill, Diplulmaris, Desmonema, SnowBee }
+    public enum Species { SilverFish, Krill, Diplulmaris, Desmonema, SnowBee, Clam, ArcticCod, Capelin, IceKrill, Themisto, Cyanea, Mya }
 
     /// <summary>Escala de visualización sobre la talla real (la talla real va en la malla).</summary>
-    public static float DisplayScale(Species s) => s == Species.SilverFish ? 1.4f : s == Species.Krill ? 2f : 1f;
+    public static float DisplayScale(Species s) => s == Species.SilverFish ? 1.4f : s == Species.ArcticCod ? 1.7f : s == Species.Capelin ? 1.2f
+        : s == Species.Krill ? 2f : s == Species.IceKrill ? 1.5f : s == Species.Themisto ? 1.2f : 1f;
 
     public static string Label(Species s) => s switch
     {
-        Species.SilverFish => "Pez plateado antártico (Pleuragramma antarctica)",
+        Species.SilverFish => "Pez plateado antártico (Pleuragramma antarcticum)",
+        Species.ArcticCod => "Bacalao ártico (Boreogadus saida)",
+        Species.Capelin => "Capelán (Mallotus villosus)",
+        Species.IceKrill => "Kril de hielo (Euphausia crystallorophias)",
+        Species.Themisto => "Anfípodo ártico (Themisto libellula)",
+        Species.Cyanea => "Medusa melena de león (Cyanea capillata)",
+        Species.Mya => "Almeja truncada (Mya truncata)",
         Species.Krill => "Kril antártico (Euphausia superba)",
         Species.Diplulmaris => "Medusa Diplulmaris antarctica",
         Species.Desmonema => "Medusa Desmonema glaciale",
+        Species.Clam => "Almeja de Groenlandia (Serripes groenlandicus)",
         _ => "Abeja de las nieves",
     };
 
@@ -45,10 +53,45 @@ public static class SwarmModels
                 Part(g.transform, "Aletas", Get("pez_aletas", FishFins), new Color(0.45f, 0.52f, 0.6f));
                 Part(g.transform, "Ojos", Get("pez_ojos", FishEyes), new Color(0.05f, 0.05f, 0.06f));
                 break;
+            case Species.ArcticCod:   // lomo pardo moteado, vientre plateado (FishBase)
+                Part(g.transform, "Cuerpo", Get("pez_cuerpo", FishBody), new Color(0.78f, 0.78f, 0.74f));
+                Part(g.transform, "Lomo", Get("pez_lomo", FishBack), new Color(0.36f, 0.3f, 0.22f));
+                Part(g.transform, "Aletas", Get("pez_aletas", FishFins), new Color(0.42f, 0.38f, 0.32f));
+                Part(g.transform, "Ojos", Get("pez_ojos", FishEyes), new Color(0.05f, 0.05f, 0.06f));
+                break;
+            case Species.Capelin:   // esbelto, lomo oliva y costados plateados
+                Part(g.transform, "Cuerpo", Get("pez_cuerpo", FishBody), new Color(0.76f, 0.8f, 0.8f)).localScale = new Vector3(0.7f, 0.75f, 1f);
+                Part(g.transform, "Lomo", Get("pez_lomo", FishBack), new Color(0.3f, 0.38f, 0.26f)).localScale = new Vector3(0.7f, 0.75f, 1f);
+                Part(g.transform, "Aletas", Get("pez_aletas", FishFins), new Color(0.46f, 0.5f, 0.42f));
+                Part(g.transform, "Ojos", Get("pez_ojos", FishEyes), new Color(0.05f, 0.05f, 0.06f));
+                break;
+            case Species.IceKrill:   // más pequeño y claro que el antártico
+                Part(g.transform, "Cuerpo", Get("kril_cuerpo", KrillBody), new Color(0.98f, 0.62f, 0.5f, 0.8f));
+                Part(g.transform, "Patas", Get("kril_patas", KrillLegs), new Color(0.98f, 0.7f, 0.6f, 0.7f));
+                Part(g.transform, "Ojos", Get("kril_ojos", KrillEyes), new Color(0.04f, 0.04f, 0.04f));
+                break;
+            case Species.Themisto:   // anfípodo: cuerpo curvado translúcido y ojos enormes
+                Part(g.transform, "Cuerpo", Get("kril_cuerpo", KrillBody), new Color(0.82f, 0.72f, 0.6f, 0.7f)).localScale = new Vector3(1.3f, 1.3f, 0.7f);
+                Part(g.transform, "Patas", Get("kril_patas", KrillLegs), new Color(0.75f, 0.62f, 0.5f, 0.7f));
+                Part(g.transform, "Ojos", Get("kril_ojos", KrillEyes), new Color(0.25f, 0.05f, 0.05f)).localScale = Vector3.one * 1.8f;
+                break;
+            case Species.Mya:   // valvas alargadas y blancas
+                Part(g.transform, "Valva", Get("almeja_valva", () => JellyBell(0.06f, 0.025f)), new Color(0.84f, 0.82f, 0.74f)).localScale = new Vector3(0.7f, 1.2f, 1f);
+                Part(g.transform, "Valva_baja", Get("almeja_valva", () => JellyBell(0.06f, 0.025f)), new Color(0.74f, 0.72f, 0.64f)).localScale = new Vector3(0.7f, -1.2f, 1f);
+                break;
+            case Species.Cyanea:   // campana rojiza y amarilla, cabellera de tentáculos
+                Part(g.transform, "Umbrela", Get("des_umbrela", () => JellyBell(0.45f, 0.25f)), new Color(0.72f, 0.36f, 0.16f, 0.55f));
+                Part(g.transform, "Brazos", Get("des_brazos", () => JellyArms(0.15f, 1.6f, 4)), new Color(0.9f, 0.6f, 0.25f, 0.6f));
+                Part(g.transform, "Tentaculos", Get("des_tent", () => JellyTentacles(0.42f, 3.2f, 24)), new Color(0.92f, 0.72f, 0.4f, 0.4f));
+                break;
             case Species.Krill:
                 Part(g.transform, "Cuerpo", Get("kril_cuerpo", KrillBody), new Color(0.95f, 0.42f, 0.32f, 0.82f));
                 Part(g.transform, "Patas", Get("kril_patas", KrillLegs), new Color(0.98f, 0.55f, 0.45f, 0.7f));
                 Part(g.transform, "Ojos", Get("kril_ojos", KrillEyes), new Color(0.04f, 0.04f, 0.04f));
+                break;
+            case Species.Clam:   // dos valvas (la campana de la medusa, aplastada), de ~10 cm
+                Part(g.transform, "Valva", Get("almeja_valva", () => JellyBell(0.06f, 0.025f)), new Color(0.72f, 0.64f, 0.52f));
+                Part(g.transform, "Valva_baja", Get("almeja_valva", () => JellyBell(0.06f, 0.025f)), new Color(0.6f, 0.52f, 0.42f)).localScale = new Vector3(1f, -1f, 1f);
                 break;
             case Species.Diplulmaris:
                 Part(g.transform, "Umbrela", Get("dip_umbrela", () => JellyBell(0.07f, 0.045f)), new Color(0.98f, 0.66f, 0.3f, 0.55f));

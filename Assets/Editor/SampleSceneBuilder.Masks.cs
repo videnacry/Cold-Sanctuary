@@ -90,7 +90,7 @@ public static partial class SampleSceneBuilder
         foreach (Transform b in floes.transform) pieces.Add(b);
         foreach (Transform b in pieces)
         {
-            if (b == null || b.name != "Casquete") continue;
+            if (b == null || (b.name != "Casquete" && !b.name.StartsWith("Tierra"))) continue;
             Vector3 p = b.position, s = b.localScale;
             Rect r = new Rect(p.x - s.x * 0.5f, p.z - s.z * 0.5f, s.x, s.z);
             if (!r.Overlaps(hole)) continue;
@@ -98,7 +98,7 @@ public static partial class SampleSceneBuilder
             {
                 if (x1 - x0 < 0.05f || z1 - z0 < 0.05f) return;
                 GameObject g = Object.Instantiate(b.gameObject, floes.transform);
-                g.name = "Casquete";
+                g.name = b.name;
                 g.transform.position = new Vector3((x0 + x1) * 0.5f, p.y, (z0 + z1) * 0.5f);
                 g.transform.localScale = new Vector3(x1 - x0, s.y, z1 - z0);
             }
@@ -134,11 +134,11 @@ public static partial class SampleSceneBuilder
         }
         Vector3 under = hx.root.position + Vector3.down * 6f;
         var groups = new List<Swarm>();
-        groups.Add(Swarm.Create<Swarm>(root, $"Peces_{hx.rootName}", under + new Vector3(2f, 0f, 0f), SwarmKind.Fish, SwarmModels.Species.SilverFish, 20f, 40f, 3.5f));
-        groups.Add(Swarm.Create<Swarm>(root, $"Kril_{hx.rootName}", under + new Vector3(-2f, 1.5f, 1f), SwarmKind.Krill, SwarmModels.Species.Krill, 40f, 60f, 3f));
-        bool big = index % 2 == 1;
+        groups.Add(Swarm.Create<Swarm>(root, $"Peces_{hx.rootName}", under + new Vector3(2f, 0f, 0f), SwarmKind.Fish, FishOf(index), 20f, 40f, 3.5f));
+        groups.Add(Swarm.Create<Swarm>(root, $"Kril_{hx.rootName}", under + new Vector3(-2f, 1.5f, 1f), SwarmKind.Krill, KrillOf(index), 40f, 60f, 3f));
+        bool big = index % 2 == 1;   // (y una de cada tres, la melena de león del Ártico)
         groups.Add(Swarm.Create<Swarm>(root, $"Medusas_{hx.rootName}", under + new Vector3(0f, -3f, -2f), SwarmKind.Jellyfish,
-            big ? SwarmModels.Species.Desmonema : SwarmModels.Species.Diplulmaris, big ? 3f : 8f, big ? 5f : 12f, big ? 4.5f : 3f));
+            index % 3 == 2 ? SwarmModels.Species.Cyanea : big ? SwarmModels.Species.Desmonema : SwarmModels.Species.Diplulmaris, big ? 3f : 8f, big ? 5f : 12f, big ? 4.5f : 3f));
         foreach (Swarm g in groups) { g.wanderRadius = 6f; g.treeVisitChance = 0.5f; }   // viven bajo el árbol: suben al tronco y bajan
     }
 }

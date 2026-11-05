@@ -99,7 +99,7 @@ public static class AreaFunctions
         Roles(S(Def("Cocina", "coc_limpieza", "Limpieza e inventario de la cocina", 1f, true, Kind.Clean, "fogon")), "cocinero", "camarero");
         Roles(Needs(S(Def("Cocina", "coc_obrador", "Elaboraciones del obrador (pan, quesos, fermentos)", 2f, false, Kind.Cook, "horno")), Eras.Capability.Agriculture), "cocinero");
         Roles(S(Def("Cocina", "coc_sala", "Atender a los turistas en sala", 1f, false, Kind.Serve, "mesa")), "camarero");
-        Roles(S(Def("Huerto", "hue_riego", "Riego y deshierbe de los huertos", 2f, true, Kind.Tend, "bancal")), "hortelano");
+        Roles(S(Def("Huerto", "hue_riego", "Riego y deshierbe con cuidado de los huertos", 2f, true, Kind.Tend, "bancal")), "hortelano");
         Roles(S(Also(Def("Huerto", "hue_cosecha", "Cosecha para la cocina", 1f, false, Kind.Tend, "bancal"), "Cocina")), "hortelano");
         S(Def("Huerto", "hue_visitantes", "Alimentar a los visitantes del huerto", 1f, false, Kind.Serve, "bancal"));
         Roles(S(Lead(Group(Def("Sala de Yoga", "yog_guia", "Clase de Hatha: guiar desde la tarima (objetivo 1)", 1f, true, Kind.Teach, "esterilla"), "clase_yoga"))), "maestro");
@@ -114,7 +114,7 @@ public static class AreaFunctions
         Roles(S(Def("Estudio Textil", "tex_coser", "Coser y reparar ropa", 1f, false, Kind.Make, "telar")), "tejedor");
         S(Def("Carne Cultivada", "lab_biorreactor", "Supervisar los biorreactores (glucosa, pH, oxígeno)", 1f, true, Kind.Operate, "biorreactor"));
         S(Effect(Def("Carne Cultivada", "lab_iniciar", "Iniciar un lote: vial del banco, medio y siembra en el biorreactor", 1f, true, Kind.Operate, "biorreactor"), who => Lab()?.OrderStart(who)));
-        S(Effect(Also(Def("Carne Cultivada", "lab_cosechar", "Cosechar el lote y dar forma a la carne (cocina y comedero)", 1f, true, Kind.Operate, "biorreactor"), "Cocina", "Cría"), who => Lab()?.OrderHarvest(who)));
+        S(Effect(Also(Def("Carne Cultivada", "lab_cosechar", "Cosechar el lote y dar forma a la carne (cocina y almacén del alimentador)", 1f, true, Kind.Operate, "biorreactor"), "Cocina", "Cría"), who => Lab()?.OrderHarvest(who)));
         S(Def("Carne Cultivada", "lab_limpieza", "Limpieza y esterilización del laboratorio", 1f, false, Kind.Clean, "biorreactor"));
         Roles(S(Def("Cocina", "coc_comedor", "Limpieza del comedor y de los aseos", 1f, true, Kind.Clean, "mesa")), "camarero");
         S(Def("Sala de Yoga", "yog_aseos", "Limpieza de los aseos de los pisos de yoga", 0.5f, false, Kind.Clean));
@@ -136,7 +136,12 @@ public static class AreaFunctions
         S(Def("Biología", "bio_cultivo", "Cultivo celular: cabina, incubador, microscopio y biorreactor piloto (medios para la carne cultivada)", 1f, false, Kind.Study, "mesa_laboratorio"));
         S(Def("Biología", "bio_pcr", "Del ADN a la secuencia: extracción, pre-PCR, termociclador y secuenciador", 1f, false, Kind.Study, "mesa_laboratorio"));
         Needs(S(Def("Central Nuclear", "nuc_turno", "Turno de la central: acceso, sala de control, conversión de potencia y calefacción", 1f, false, Kind.Operate, "consola")), Eras.Capability.Nuclear);
-        Roles(S(Def(Guard, "gua_carnivoros", "Patrulla y raciones a los carnívoros", 2f, true, Kind.Guard)), "guardia");
+        Roles(S(Def(Guard, "gua_carnivoros", "Patrulla de los puestos de vigía", 2f, true, Kind.Guard)), "guardia");
+        // EL ALIMENTADOR (docs/alimentador.md): sin papel: por la rotación, como todo. Dos plazas: la lista es compartida y se reparten el trabajo.
+        S(Def(Guard, "gua_alimentador", "Alimentador: sigue a los depredadores, evalúa su hambre y les lanza su ración o los marca", 2f, true, Kind.Guard));
+        S(Def(Guard, "gua_alimentador_2", "Alimentador (segunda plaza): la misma lista compartida", 2f, false, Kind.Guard));
+        // EL TRASPLANTE (docs/deshierbe-cuidadoso.md): lo nativo del vivero, a la tundra de la isla.
+        S(Effect(Def("Huerto", "hue_transplante", "Trasplantar a la tundra las plantas nativas del vivero", 1f, false, Kind.Tend, "bancal"), who => { WeedBench.TransplantAll(who); WeedBench.IncinerateBags(who); }));
         // (2026-11-04) LOS PISOS NUEVOS (docs/piso-informatica.md, docs/piso-aula.md): el clúster de IA de Informática y el Aula.
         Roles(S(Effect(Def("Informática", "ifo_sysadmin", "Administrar el clúster de IA: colas, copias, parches y alertas (puesto de monitorización)", 1f, false, Kind.Operate, "consola"), who => AiCluster.Instance?.Sysadmin(who))), "informatico");
         Roles(S(Effect(Def("Informática", "ifo_refrigeracion", "Mantener la refrigeración líquida: filtros, fugas, bombas e intercambiadores", 1f, false, Kind.Make, "banco_taller"), who => AiCluster.Instance?.CoolingService(who))), "informatico");

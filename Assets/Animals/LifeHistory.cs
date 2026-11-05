@@ -66,6 +66,9 @@ public class LifeHistory
     /// <summary>El huevo va sobre las patas del que incuba (pingüino emperador: no hay nido de piedras); si no, queda en su
     /// sitio (saco de huevos en la tela).</summary>
     public bool eggOnFeet;
+    /// <summary>El huevo queda en un NIDO y quien incuba se queda encima (pingüino de Adelia, sobre su nido de guijarros): ni va sobre las
+    /// patas ni es un saco que se desarrolla solo.</summary>
+    public bool eggNest;
     /// <summary>Horas de juego que el huevo aguanta sin nadie encima antes de helarse (0 = no se hiela: el saco de la araña).</summary>
     public float eggChillHours;
     public string eggLabel, layLabel, incubateLabel, hatchLabel;
@@ -123,7 +126,7 @@ public class LifeHistory
         // ella se va dos meses al mar; vuelve justo antes de la eclosión. Si llega tarde, el macho alimenta al pollito con una
         // secreción del esófago. Luego lo alimentan los dos regurgitando; el pollo va sobre las patas de un padre ~45 días y
         // se independiza con el plumaje impermeable (~150 días). Un huevo al aire a −40 °C se hiela en minutos.
-        { "Penguin", new LifeHistory {
+        { "EmperorPenguin", new LifeHistory {
             water = Water.SeaOrSnow, drinkHours = 6f, waterLabel = "Bebe agua de mar (glándula de la sal) o come nieve",
             care = Care.Regurgitation, biparental = true, careLabel = "Crianza: los padres alimentan al polluelo (regurgitan)",
             youngFollow = true, followDistance = 1.2f, followLabel = "El polluelo, al abrigo de sus padres (sobre sus patas)",
@@ -131,6 +134,62 @@ public class LifeHistory
             eggLabel = "La hembra forma el huevo (cópula → puesta)", layLabel = "Pone el huevo (sobre las patas: no hay nido)",
             incubateLabel = "El macho incuba el huevo (ella se lo pasa y se va al mar)", hatchLabel = "Eclosión (nace el polluelo)",
             sources = "Schmidt-Nielsen 1960 (Circulation 21:955); Prévost 1961; Groscolas (ayuno de 115 d: cortejo 45 + incubación 65); Guinness (incubación 62–67 d)" } },
+        // PINGÜINO DE ADELIA (Pygoscelis adeliae): el «Penguin» del catálogo desde 2026-11-05 (antes mezclaba al emperador con los
+        // guijarros de Adelia). Nido de piedras; 2 huevos (aquí 1, como todo parto); incubación 32–37 d y el macho hace el primer
+        // turno largo, ~2 semanas, en el 85 % de los nidos, mientras ella come en el mar (Davis 1988, Auk 105:428): aquí ese
+        // primer turno vale por toda la incubación. Guardería a las 2–4 semanas y emplume a los ~53 d (NZ Birds Online).
+        { "Penguin", new LifeHistory {
+            water = Water.SeaOrSnow, drinkHours = 6f, waterLabel = "Bebe agua de mar (glándula de la sal) o come nieve",
+            care = Care.Regurgitation, biparental = true, careLabel = "Crianza: los padres alimentan al polluelo (regurgitan)",
+            youngFollow = true, followDistance = 2f, followLabel = "El polluelo, junto al nido y a sus padres",
+            eggs = true, incubationMonths = 1.15f, incubator = Incubator.Male, eggNest = true, eggChillHours = 2f,
+            eggLabel = "La hembra forma el huevo (cópula → puesta)", layLabel = "Pone el huevo en el nido de guijarros",
+            incubateLabel = "El macho hace el primer turno largo en el nido (ella se va al mar)", hatchLabel = "Eclosión (nace el polluelo)",
+            sources = "Davis 1988 (Auk 105:428); NZ Birds Online (Adelie penguin); Animal Diversity Web" } },
+        // MORSA (Odobenus rosmarus). No bebe: agua de la presa (Ortiz 2001). Gestación ~15 meses con 4–5 de implantación diferida, una
+        // cría cada ~2,6 años (BMC Zoology 2022, doi 10.1186/s40850-022-00158-1), lactancia 12–36 meses (ADW): la cría nada con la madre.
+        { "Walrus", new LifeHistory {
+            water = Water.FromFood, waterLabel = "Agua: no bebe; la saca de los bivalvos que come (y de su grasa)",
+            care = Care.Lactation, careLabel = "Crianza: la morsa amamanta a su cría (hasta ~2 años)",
+            youngFollow = true, followDistance = 2f, followLabel = "La cría nada (o se tumba) junto a su madre",
+            sources = "doi 10.1186/s40850-022-00158-1 (BMC Zoology 2022); Ortiz 2001 (J Exp Biol 204:1831); Animal Diversity Web" } },
+        // RENO (Rangifer tarandus). Come nieve o bebe de charcas; gestación 228–234 d, una cría al año; la cría pasta desde ~45 d
+        // y mama hasta el otoño, siguiendo a la madre (ADW; Wikipedia).
+        { "Reindeer", new LifeHistory {
+            water = Water.Drinks, drinkHours = 10f, waterLabel = "Bebe de las charcas o come nieve",
+            care = Care.Lactation, careLabel = "Crianza: la hembra amamanta a su cría",
+            youngFollow = true, followDistance = 3f, followLabel = "La cría corre junto a su madre",
+            sources = "Animal Diversity Web (Rangifer tarandus); doi 10.1016/j.theriogenology.2009.01.022" } },
+        // BUEY ALMIZCLERO (Ovibos moschatus). Gestación ~8 meses, una cría cada 1–2 años, destete 10–14 meses (ADW; GBIF).
+        { "MuskOx", new LifeHistory {
+            water = Water.Drinks, drinkHours = 10f, waterLabel = "Bebe de las charcas o come nieve",
+            care = Care.Lactation, careLabel = "Crianza: la hembra amamanta a su ternero",
+            youngFollow = true, followDistance = 2.5f, followLabel = "El ternero va pegado a su madre",
+            sources = "Animal Diversity Web (Ovibos moschatus); GBIF" } },
+        // LOBO ÁRTICO (Canis lupus arctos). Hay pocas medidas de esta subespecie; gestación 63 d de Canis lupus [A]. Guarida en roca o
+        // cueva: el suelo helado no se puede excavar (Mech & Packard 1990: una usada >700 años). NE de Groenlandia: ~2 cachorros.
+        { "Wolf", new LifeHistory {
+            water = Water.Drinks, drinkHours = 10f, waterLabel = "Bebe de las charcas o come nieve",
+            care = Care.Lactation, careLabel = "Crianza: la loba amamanta a sus cachorros",
+            youngFollow = true, followDistance = 3f, followLabel = "Los cachorros van detrás de sus padres",
+            den = true, denBeforeMonths = 0.05f, denAfterMonths = 0.8f, denFasts = false,
+            denLabel = "La loba entra en su guarida de roca y pare dentro", denExitLabel = "Los cachorros salen de la guarida (≈3 semanas)",
+            sources = "Mech & Packard 1990 (Can Field-Nat); Marquard-Petersen 2008 (Can Field-Nat 122, doi 10.22621/cfn.v122i2.573); gestación [A]" } },
+        // LIEBRE ÁRTICA (Lepus arcticus). Come nieve; gestación 50–53 d, 2–8 lebratos (aquí 1 por parto), destete 8–9 semanas (ADW).
+        { "ArcticHare", new LifeHistory {
+            water = Water.Drinks, drinkHours = 8f, waterLabel = "Come nieve o bebe de las charcas",
+            care = Care.Lactation, careLabel = "Crianza: la liebre amamanta a sus lebratos",
+            youngFollow = true, followDistance = 3f, followLabel = "Los lebratos se quedan cerca de su madre",
+            sources = "Animal Diversity Web (Lepus arcticus)" } },
+        // ZORRO ÁRTICO (Vulpes lagopus). Gestación ~52 d (46–58), camada 5–8; madriguera en montículos de 1–4 m con 4–8 bocas, usada
+        // décadas o siglos; crían los dos padres (ADW; Mammalian Species 713).
+        { "ArcticFox", new LifeHistory {
+            water = Water.Drinks, drinkHours = 8f, waterLabel = "Bebe de las charcas o come nieve",
+            care = Care.Lactation, biparental = true, careLabel = "Crianza: la zorra amamanta y el macho trae comida",
+            youngFollow = true, followDistance = 3f, followLabel = "Los cachorros van detrás de sus padres",
+            den = true, denBeforeMonths = 0.05f, denAfterMonths = 0.7f, denFasts = false,
+            denLabel = "La zorra entra en su madriguera y pare dentro", denExitLabel = "Los cachorros salen de la madriguera",
+            sources = "Animal Diversity Web (Vulpes lagopus); Audet et al. 2002 (Mammalian Species 713)" } },
         // MALAMUTE (perro). Bebe ~50–60 ml/kg/día; los perros de trineo comen nieve si no tienen agua [A]. Gestación 63 d
         // (Reproduction.Calendar); 12–24 h antes del parto la perra hace el nido; los cachorros maman ~7–8 semanas y no salen
         // del nido hasta las ~3 semanas (abren los ojos a las 2) [A].

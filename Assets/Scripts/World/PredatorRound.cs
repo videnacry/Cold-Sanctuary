@@ -1,0 +1,262 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+/// <summary>
+/// LA RONDA DEL ALIMENTADOR (Berón 2026-11-05; docs/alimentador.md): no hay comedero. Quien tiene la misión sigue a cada depredador de tierra por el
+/// mapa, al llegar evalúa si tiene hambre y le deja su ración o lo marca, y va a por el siguiente. La LISTA ES COMPARTIDA: cada alimentador se
+/// reserva uno, así un grupo se reparte el trabajo y nadie mira dos veces al mismo.
+/// La lista SOLO SE RENUEVA CUANDO ESTÁ COMPLETA (Berón 2026-11-05): puede durar varios días, pasa de una jornada a otra, y nadie sale de ella sin estar comprobado:
+/// un depredador al que no se llega vuelve a la cola, porque uno con hambre caza herbívoros.
+///
+/// SEGURIDAD (el oso no es un perro): nadie se acerca a menos de <see cref="SafeDistance"/>, la ración se lanza desde ahí y se cae a unos metros del
+/// animal, nunca en la mano; si el animal se le acerca, el alimentador se retira y lo apunta. La regla real es mucho más dura (Svalbard: 300 m, 500 m
+/// de marzo a junio; los zoos: contacto protegido, el cuidador nunca comparte espacio); aquí va a la escala comprimida del santuario.
+/// </summary>
+public static class PredatorRound
+{
+    public enum State { Pending, Claimed, Checked, Fed }
+
+    public class Entry
+    {
+        public Animal animal;
+        public State state;
+        public string by;
+        /// <summary>Veces que no se le pudo atender: vuelve a la cola, detrás de los demás.</summary>
+        public int misses;
+        public override string ToString() => $"{(animal != null ? animal.name : "?")}: {state}{(by != null ? $" ({by})" : "")}";
+    }
+
+    /// <summary>Con <c>hungry</c> por encima de esto se le da de comer (como la vieja guardia: −0,05).</summary>
+    public const float HungryAt = -0.05f;
+    public const float RationKg = 0.5f;
+
+    static readonly List<Entry> _list = new List<Entry>();
+    static float _nextScan;
+
+    /// <summary>Los metros a los que se queda el alimentador. Oso 18 (el mapa mide 500 m: los 300 de Svalbard no caben), lobo 10, el resto 5.</summary>
+    public static float SafeDistance(string species) => species == "Bear" || species == "PolarBear" ? 18f : species == "Wolf" ? 10f : 5f;
+
+    /// <summary>Raciones de 500 g por visita: la ración diaria de su especie repartida en las rondas del día (3).</summary>
+    public static int RationsFor(string species)
+    {
+        float kg = FoodChain.Intake.TryGetValue(species, out float i) ? i : 1f;
+        return Mathf.Clamp(Mathf.CeilToInt(kg / 3f / RationKg), 1, 8);
+    }
+
+    /// <summary>¿Lo atiende la ronda? Los carnívoros de tierra del santuario, sin crías, ni los del mar, ni los de un recinto de la Cría.</summary>
+    public static bool Served(Animal a)
+    {
+        if (a == null || a.death || a.lifeStage == LifeStage.child || a.Forage == null || !a.Forage.eatsPrey) return false;
+        if (a.GetComponent<MarineLife>() != null || a.GetComponent<IceInsectLife>() != null || a.GetComponentInParent<CriaFeeder>() != null) return false;
+        return Mathf.Abs(a.transform.position.x) <= 250f && Mathf.Abs(a.transform.position.z) <= 250f;   // (fuera, los escenarios de prueba)
+    }
+
+    /// <summary>¿Está hecho? Solo el comprobado sin hambre o el que recibió su ración.</summary>
+    public static bool Done(Entry e) => e.state == State.Checked || e.state == State.Fed;
+
+    /// <summary>La lista en curso. Se renueva solo si todos están hechos; mientras, los muertos salen y los nuevos adultos entran.</summary>
+    public static List<Entry> Today()
+    {
+        _list.RemoveAll(e => e.animal == null || e.animal.death);
+        if (_list.Count == 0 || _list.TrueForAll(Done)) { _list.Clear(); Scan(); _nextScan = Time.time + 20f; }
+        else if (Time.time >= _nextScan) { _nextScan = Time.time + 20f; Scan(); }
+        return _list;
+    }
+
+    static void Scan()
+    {
+        foreach (Animal a in Object.FindObjectsByType<Animal>(FindObjectsSortMode.None))
+            if (Served(a) && !_list.Exists(e => e.animal == a)) _list.Add(new Entry { animal = a, state = State.Pending });
+    }
+
+    /// <summary>Empieza otra lista ya, aunque falte alguien (solo las pruebas).</summary>
+    public static void NewRound() { _list.Clear(); _nextScan = 0f; }
+
+    public static int Left { get { int n = 0; foreach (Entry e in Today()) if (!Done(e)) n++; return n; } }
+
+    /// <summary>Se reserva el depredador pendiente más cercano: nadie más irá a por él. null = la lista está hecha.</summary>
+    public static Entry Claim(string who, Vector3 from)
+    {
+        Entry best = null; float bd = float.MaxValue;
+        foreach (Entry e in Today())
+        {
+            if (e.state != State.Pending) continue;
+            // Los que aún no se han intentado van antes; luego, el más cercano.
+            float d = e.misses * 1000000f + (e.animal.transform.position - from).sqrMagnitude;
+            if (d < bd) { bd = d; best = e; }
+        }
+        if (best != null) { best.state = State.Claimed; best.by = who; }
+        return best;
+    }
+
+    /// <summary>Hecho: se apunta en la lista compartida. Solo <see cref="State.Checked"/> o <see cref="State.Fed"/>.</summary>
+    public static void Report(Entry e, State s)
+    {
+        if (e == null) return;
+        e.state = s;
+        Debug.Log($"[Alimentador] {e.by}: «{(e.animal != null ? e.animal.name : "?")}» {(s == State.Fed ? "tenía hambre: ración lanzada" : "no tiene hambre: marcado")}. Quedan {Left}.");
+    }
+
+    /// <summary>No se pudo atender (no se le alcanzó, se acercó demasiado o no quedan raciones): vuelve a la cola. Nunca sale de la lista.</summary>
+    public static void Requeue(Entry e, string why)
+    {
+        if (e == null) return;
+        e.state = State.Pending; e.by = null; e.misses++;
+        string msg = $"[Alimentador] «{(e.animal != null ? e.animal.name : "?")}» sigue pendiente: {why} ({e.misses}ª vez).";
+        if (e.misses >= 3) Debug.LogWarning(msg); else Debug.Log(msg);
+    }
+
+    /// <summary>Si se le da de comer al llegar: ¿tiene hambre?</summary>
+    public static bool IsHungry(Animal a) => a != null && !a.death && a.hungry > HungryAt;
+
+    /// <summary>El punto donde se queda quien va a verlo: en la línea entre el animal y él, a su distancia.</summary>
+    public static Vector3 StandOff(Animal a, Vector3 from)
+    {
+        Vector3 dir = from - a.transform.position; dir.y = 0f;
+        if (dir.sqrMagnitude < 0.01f) dir = Vector3.back;
+        return a.transform.position + dir.normalized * SafeDistance(a.SpeciesName);
+    }
+
+    /// <summary>La ración, lanzada desde <paramref name="from"/>: cae a 3 m del animal, de su lado, y luego la come por su cuenta (Forager la ve como carne).</summary>
+    public static FoodItem Throw(Animal a, int rations, Vector3 from)
+    {
+        Vector3 dir = from - a.transform.position; dir.y = 0f;
+        if (dir.sqrMagnitude < 0.01f) dir = Vector3.back;
+        Vector3 at = a.transform.position + dir.normalized * 3f;
+        if (Physics.Raycast(at + Vector3.up * 4f, Vector3.down, out RaycastHit h, 10f, ~0, QueryTriggerInteraction.Ignore)) at = h.point + Vector3.up * 0.08f;
+        GameObject g = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        g.name = "Racion_carne_cultivada";
+        Object.Destroy(g.GetComponent<Collider>());
+        g.transform.position = at; g.transform.localScale = new Vector3(0.3f, 0.12f, 0.24f);
+        g.GetComponent<Renderer>().sharedMaterial = KitchenProps.Mat(new Color(0.72f, 0.3f, 0.3f));
+        FoodItem fi = g.AddComponent<FoodItem>(); fi.material = OrganicMaterial.Meat; fi.grams = rations * RationKg * 1000f;
+        return fi;
+    }
+
+    /// <summary>Saca raciones del almacén del laboratorio; las que haya.</summary>
+    public static int TakeRations(int want)
+    {
+        int got = 0;
+        foreach (CulturedMeatLab lab in CulturedMeatLab.All)
+        {
+            if (lab == null) continue;
+            int n = Mathf.Min(want - got, lab.rationsStored);
+            lab.rationsStored -= n; got += n;
+        }
+        return got;
+    }
+
+    /// <summary>El almacén de raciones (junto al laboratorio).</summary>
+    public static Transform Store => CulturedMeatLab.All.Count > 0 && CulturedMeatLab.All[0] != null ? CulturedMeatLab.All[0].feeder : null;
+
+    /// <summary>La visita del jugador (paso con E): el pendiente más cercano. Evalúa, lanza o marca. Devuelve lo que ha hecho.</summary>
+    public static string PlayerVisit(GameObject p)
+    {
+        Entry e = Claim("Kushal", p.transform.position);
+        if (e == null) return "La lista de esta ronda ya está hecha.";
+        if (!IsHungry(e.animal)) { Report(e, State.Checked); return $"«{e.animal.name}» no tiene hambre: marcado."; }
+        int n = TakeRations(RationsFor(e.animal.SpeciesName));
+        if (n == 0) { Requeue(e, "tiene hambre y no quedan raciones"); return $"«{e.animal.name}» tiene hambre, pero no quedan raciones: sigue pendiente."; }
+        Throw(e.animal, n, p.transform.position);
+        Report(e, State.Fed);
+        return $"«{e.animal.name}» tenía hambre: {n} raciones lanzadas desde lejos.";
+    }
+}
+
+/// <summary>
+/// EL ALIMENTADOR (misión de la jornada, por rotación: cualquiera; docs/alimentador.md): recoge raciones en el almacén del laboratorio, se reserva un
+/// depredador de la lista compartida (<see cref="PredatorRound"/>), lo sigue hasta su distancia, evalúa, lanza o marca y sigue. Cada espera, acotada.
+/// </summary>
+public class PredatorFeeder : MonoBehaviour
+{
+    public float speed = 3.2f;
+    public const int Carry = 16;
+    /// <summary>Si en este tiempo no llega, lo devuelve a la cola y va a por otro: no es una salida, sigue pendiente.</summary>
+    public const float RequeueAfter = 120f;
+
+    enum Duty { Load, Seek, Track, Retreat, Done }
+    Duty _duty = Duty.Load;
+    PredatorRound.Entry _e;
+    Vector3 _away;
+    float _since;
+    float _nextLook;
+    bool _empty;
+    public int Rations { get; private set; }
+    public int fed { get; private set; }
+    public int checkedOk { get; private set; }
+    public string Doing => _duty == Duty.Track && _e != null && _e.animal != null ? $"sigue a «{_e.animal.name}»" : _duty == Duty.Load ? "recoge raciones" : _duty == Duty.Retreat ? "se retira" : "alimentador";
+
+    void OnEnable() { _duty = Duty.Load; _e = null; }
+    void OnDisable()
+    {
+        if (_e != null && _e.state == PredatorRound.State.Claimed) { _e.state = PredatorRound.State.Pending; _e.by = null; }   // deja la reserva: otro lo atenderá
+        _e = null;
+    }
+
+    void Update()
+    {
+        if (LeisureDirector.Drives(gameObject)) return;
+        if (TryGetComponent(out ActionQueue q) && q.Own.Count > 0 && (q.Own[0] is ToiletSpell || q.Own[0] is DineSpell || q.Own[0] is SleepSpell || q.Own[0] is EatSpell)) return;
+        switch (_duty)
+        {
+            case Duty.Load:
+                Transform store = PredatorRound.Store;
+                if (store == null || Rations >= Carry) { _duty = Duty.Seek; return; }
+                if (PathMover.Of(this).StepToward(store.position, speed) < 1.8f)
+                {
+                    Rations += PredatorRound.TakeRations(Carry - Rations);
+                    if (Rations == 0 && _empty)   // sin raciones y alguien con hambre: espera al próximo lote; avisa una vez por minuto
+                    {
+                        if (Time.time >= _nextLook) { _nextLook = Time.time + 60f; Debug.LogWarning($"[Alimentador] «{name}» espera raciones: el almacén está vacío y hay depredadores con hambre."); }
+                        return;
+                    }
+                    _empty = false;
+                    Debug.Log($"[Alimentador] «{name}» recoge {Rations} raciones.");
+                    _duty = Duty.Seek;
+                }
+                break;
+            case Duty.Seek:
+                if (Time.time < _nextLook) return;
+                _nextLook = Time.time + 2f;
+                _e = PredatorRound.Claim(name, transform.position);
+                if (_e == null) { _duty = Duty.Done; return; }
+                _since = Time.time; _duty = Duty.Track;
+                break;
+            case Duty.Track:
+                Animal a = _e != null ? _e.animal : null;
+                if (a == null || a.death) { _e = null; _duty = Duty.Seek; return; }   // (la lista lo quita sola)
+                float d = Flat(a.transform.position - transform.position), safe = PredatorRound.SafeDistance(a.SpeciesName);
+                if (d < safe * 0.5f)   // se le ha acercado: no se le da de comer con él encima
+                {
+                    _away = PredatorRound.StandOff(a, transform.position); _since = Time.time; _duty = Duty.Retreat;
+                    PredatorRound.Requeue(_e, "se ha acercado demasiado"); _e = null;
+                    return;
+                }
+                if (d <= safe + 1.5f) { Serve(a); return; }
+                PathMover.Of(this).StepToward(PredatorRound.StandOff(a, transform.position), speed);
+                if (Time.time - _since > RequeueAfter) { PredatorRound.Requeue(_e, "no se le alcanza"); _e = null; _duty = Duty.Seek; }
+                break;
+            case Duty.Retreat:
+                if (PathMover.Of(this).StepToward(_away, speed * 1.2f) < 1.5f || Time.time - _since > 15f) _duty = Duty.Seek;
+                break;
+            case Duty.Done:   // lista hecha: mira de vez en cuando si ya hay ronda nueva
+                if (Time.time >= _nextLook) { _nextLook = Time.time + 20f; if (PredatorRound.Left > 0) _duty = Rations < 2 ? Duty.Load : Duty.Seek; }
+                break;
+        }
+    }
+
+    void Serve(Animal a)
+    {
+        if (!PredatorRound.IsHungry(a)) { PredatorRound.Report(_e, PredatorRound.State.Checked); checkedOk++; }
+        else
+        {
+            int want = PredatorRound.RationsFor(a.SpeciesName), n = Mathf.Min(want, Rations);
+            if (n > 0) { PredatorRound.Throw(a, n, transform.position); Rations -= n; fed++; PredatorRound.Report(_e, PredatorRound.State.Fed); }
+            else { PredatorRound.Requeue(_e, "tiene hambre y no quedan raciones"); _empty = true; }   // nunca se da por hecho a uno con hambre
+        }
+        _e = null;
+        _duty = Rations < 2 ? Duty.Load : Duty.Seek;
+    }
+
+    static float Flat(Vector3 v) => new Vector2(v.x, v.z).magnitude;
+}

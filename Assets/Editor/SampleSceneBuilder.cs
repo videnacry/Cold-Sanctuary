@@ -174,6 +174,8 @@ public static partial class SampleSceneBuilder
         // (2026-11-04) ALERTA DE PISO NUEVO (manual §11): TODOS los pisos de la escena (también los que no salen de BuildAreaStructures,
         // como el control de misión de la lanzadera) contra los microcosmos «pendiente de piso representativo». Y la REGLA DE CAPACIDAD (S13).
         { var fl = new List<(string, string)>(); foreach (SanctuaryArea sa in Object.FindObjectsByType<SanctuaryArea>(FindObjectsInactive.Include, FindObjectsSortMode.None)) fl.Add((sa.name, sa.displayName)); MicroFloors.AlertFloors(fl); AreaCapacity.LogScene(); }
+        ProductionAudit.Log();   // la maquinaria de cada área de producción contra lo que se le pide (regla P19)
+        FoodChain.Log();   // la cadena alimenticia, con todo ya puesto: quién come qué y si a alguien le falta (docs/reglas-animales.md, regla E15)
         BakeNavMesh();
 
         // Genera también las ESCENAS HERMANAS del MICROCOSMOS (cada una es su propia .unity, no van en el mesocosmos):
@@ -2278,14 +2280,16 @@ public static partial class SampleSceneBuilder
         Object.DestroyImmediate(ground.GetComponent<MeshRenderer>());
         Object.DestroyImmediate(ground.GetComponent<MeshFilter>());
         ground.transform.localScale = Vector3.one;
-        int boxes = PolarLandscapeBuilder.BuildFloes(ground.transform, MakeMaterial("Ice_Floe_MAT", new Color(0.86f, 0.91f, 0.95f)));
+        int boxes = PolarLandscapeBuilder.BuildFloes(ground.transform, MakeMaterial("Ice_Floe_MAT", new Color(0.86f, 0.91f, 0.95f)),
+            MakeMaterial("Tierra_tundra_MAT", new Color(0.44f, 0.45f, 0.3f)), MakeMaterial("Orilla_grava_MAT", new Color(0.46f, 0.44f, 0.42f)), MakeMaterial("Zocalo_roca_MAT", new Color(0.3f, 0.29f, 0.28f)));
         CutIceUnderAll();   // los troncos de los edificios-árbol no tienen suelo: su hueco en el hielo (los árboles se hicieron antes)
         int links = PolarLandscapeBuilder.BuildSwimLinks(ground.transform);
-        Debug.Log($"[Islas] {PolarLandscapeBuilder.CapCount} casquetes ({PolarLandscapeBuilder.Islands.Length} lóbulos, {boxes} placas de hielo) alrededor de la laguna central; {links} enlaces de nado para la IA.");
+        Debug.Log($"[Islas] {PolarLandscapeBuilder.CapCount} masas: 5 casquetes y la isla de tierra ({PolarLandscapeBuilder.Islands.Length} lóbulos, {boxes} placas) alrededor de la laguna central; {links} enlaces de nado para la IA.");
 
         GameObject under = new GameObject("SotobosquePolar_AUTO");
         under.transform.SetParent(root, false);
-        under.AddComponent<PolarUnderstory>();
+        PolarUnderstory understory = under.AddComponent<PolarUnderstory>();
+        understory.tundraArea = new Rect(-PolarLandscapeBuilder.Half, -PolarLandscapeBuilder.Half, 2f * PolarLandscapeBuilder.Half, PolarLandscapeBuilder.Half);   // la mitad sur del mapa: ahí está la isla de tierra
 
         // Lo que la fauna polar USA (docs/natural-interactions.md): descansaderos y respiraderos de foca, guijarros de la
         // colonia de pingüinos, guaridas de nieve de los osos y grava de las ballenas.
@@ -2297,8 +2301,11 @@ public static partial class SampleSceneBuilder
         ph.pebbleBeach = pc + toLagoon.normalized * (penguins.r - 4f);   // la orilla de la colonia que da a la laguna
         var dens = new System.Collections.Generic.List<Vector3>();
         foreach (var lobe in PolarLandscapeBuilder.Islands)
-            if (lobe.name == "Este:Mecanica_Osos" || lobe.name.StartsWith("BosqueNorte")) dens.Add(new Vector3(lobe.x + lobe.r * 0.4f, 0f, lobe.z - lobe.r * 0.3f));
+            if (lobe.name.StartsWith("BosqueNorte")) dens.Add(new Vector3(lobe.x + lobe.r * 0.4f, 0f, lobe.z - lobe.r * 0.3f));
         ph.denSites = dens.ToArray();
+        ph.emperorColony = EmperorColony;
+        Territorio ter = BuildTerritorio(root);   // barreras, cuevas, acantilados, lomas, charcas y bivalvos (docs/territorio-polar.md)
+        ph.walrusBeachAngle = 205f;
     }
 
     static void BakeNavMesh()
@@ -2473,7 +2480,7 @@ public static partial class SampleSceneBuilder
         var nests = new System.Collections.Generic.List<NestSpec>();
         var families = new System.Collections.Generic.List<FamilyGenerator.Family>();
         // EQUILIBRIO con los humanos (PopulationPlan): cada especie reparte su objetivo entre sus grupos.
-        var groupsOf = new System.Collections.Generic.Dictionary<string, int> { { "Bear", 1 }, { "Seal", 3 }, { "Whale", 2 }, { "Penguin", 2 }, { "Orca", 1 } };
+        var groupsOf = PopulationPlan.Groups;
         var used = new System.Collections.Generic.Dictionary<string, int>();
         void AddFamily(string species, Vector3 pos, float radius, NestKind kind, float height = 0f)
         {
@@ -2497,7 +2504,7 @@ public static partial class SampleSceneBuilder
         //   Reservados (santuario templado): Bunny×4, Deer×2, Wolf, Fox — ver git para las posiciones previas.
 
         // Oso Polar — apex del hielo; junto al borde de agua/hielo para cazar focas (homeRadius amplio ~300).
-        AddFamily("Bear", new Vector3(132f, 0f, -15f), 12f, NestKind.Predator);   // "Bear" = el prefab/catálogo real (el oso del hielo)
+        AddFamily("Bear", ProduccionCenter + new Vector3(19f, 0f, 0f), 12f, NestKind.Predator);   // "Bear" = el prefab/catálogo real (el oso del hielo)
 
         ValidateNestSeparation(nests);
 
@@ -2514,6 +2521,19 @@ public static partial class SampleSceneBuilder
         AddFamily("Penguin", new Vector3(60f, 0f, -22f), 6f, NestKind.Prey, 0f);      // colonia en el borde hielo/agua; presa de foca/orca
         AddFamily("Penguin", new Vector3(66f, 0f, -19f), 6f, NestKind.Prey, 0f);
         AddFamily("Orca", new Vector3(72f, -1f, 32f), 12f, NestKind.Predator, -1f);  // apex marino; caza focas/ballenas
+        // TERRITORIO POLAR (docs/territorio-polar.md, docs/reglas-animales.md). Morsas en la laguna (sus bivalvos, en los bajíos) y emperadores en
+        // su colonia; en la isla de tierra, los herbívoros repartidos y los lobos en su punta, junto a su cueva.
+        AddFamily("Walrus", new Vector3(52f, -1f, 34f), 8f, NestKind.Prey, -1f);
+        AddFamily("Walrus", new Vector3(70f, -1f, 12f), 8f, NestKind.Prey, -1f);
+        AddFamily("EmperorPenguin", EmperorColony + new Vector3(-3f, 0f, 2f), 5f, NestKind.Prey, 0f);
+        AddFamily("EmperorPenguin", EmperorColony + new Vector3(3f, 0f, -2f), 5f, NestKind.Prey, 0f);
+        AddFamily("Reindeer", new Vector3(-100f, 0f, -148f), 10f, NestKind.Prey, 0f);
+        AddFamily("Reindeer", new Vector3(-62f, 0f, -150f), 10f, NestKind.Prey, 0f);
+        AddFamily("MuskOx", new Vector3(-112f, 0f, -205f), 10f, NestKind.Prey, 0f);
+        AddFamily("ArcticHare", new Vector3(-205f, 0f, -112f), 8f, NestKind.Prey, 0f);
+        AddFamily("ArcticHare", new Vector3(-28f, 0f, -178f), 8f, NestKind.Prey, 0f);
+        AddFamily("ArcticFox", new Vector3(-118f, 0f, -132f), 6f, NestKind.Predator, 0f);
+        AddFamily("Wolf", new Vector3(-205f, 0f, -190f), 8f, NestKind.Predator, 0f);
 
         // NOTA (2026-09-01): los 5 insectos (Ant/Aphid/Ladybug/Spider/Cricket) NO van aquí — se crearon para el
         // Microcosmos Nivel 1 (mundo insecto), no para este bioma. Su generación irá en la escena del Microcosmos con
@@ -2560,7 +2580,7 @@ public static partial class SampleSceneBuilder
         int i = 0;
         foreach (NestSpec nest in nests)
         {
-            if (nest.kind != NestKind.Prey || nest.height < 0f) continue;
+            if (nest.kind != NestKind.Prey || nest.height < 0f || nest.species.Contains("Penguin") || nest.species == "ArcticHare") continue;   // (en el hielo no hay musgo; la liebre tiene sus sauces)
 
             GameObject patch = GameObject.CreatePrimitive(PrimitiveType.Cube);
             patch.name = $"GrassPatch_{i}";
@@ -2583,14 +2603,33 @@ public static partial class SampleSceneBuilder
     {
         GameObject group = new GameObject("Swarms_AUTO");
         group.transform.SetParent(parent);
-        Vector3[] positions = { new Vector3(56f, -2f, 22f), new Vector3(66f, -2f, 30f) };
+        // Tantos bancos como pide la cadena alimenticia (FoodChain). Cada banco, de una especie real: el Ártico y la Antártida se mezclan en la laguna,
+        // como todo el santuario (docs/reglas-animales.md §Peces, crustáceos y medusas).
+        Vector3[] positions = LagoonRing(new Vector3(56f, -2f, 22f), new Vector3(66f, -2f, 30f), FoodChain.Banks(SwarmKind.Fish));
         for (int i = 0; i < positions.Length; i++)
-            Swarm.Create<Swarm>(group.transform, $"Swarm_Fish_{i}", positions[i], SwarmKind.Fish, SwarmModels.Species.SilverFish, 24f, 40f, 4f);
+            Swarm.Create<Swarm>(group.transform, $"Swarm_Fish_{i}", positions[i], SwarmKind.Fish, FishOf(i), 24f, 40f, 4f);
+        // Los mares de la isla de tierra: bacalao ártico y capelán, frente a sus costas (el Ártico, el mar de los osos y las morsas).
+        Swarm.Create<Swarm>(group.transform, "Swarm_Fish_Isla_Norte", new Vector3(-195f, -2f, -65f), SwarmKind.Fish, SwarmModels.Species.ArcticCod, 24f, 40f, 4f);
+        Swarm.Create<Swarm>(group.transform, "Swarm_Fish_Isla_Sur", new Vector3(-20f, -2f, -228f), SwarmKind.Fish, SwarmModels.Species.Capelin, 24f, 40f, 4f);
         // MEDUSAS de McMurdo (mar de Ross): Diplulmaris antarctica (pequeña, anaranjada) y Desmonema glaciale (la grande).
         GameObject jelly = new GameObject("Medusas_AUTO"); jelly.transform.SetParent(parent);
         Swarm.Create<Swarm>(jelly.transform, "Medusas_Diplulmaris_0", new Vector3(58f, -4f, 14f), SwarmKind.Jellyfish, SwarmModels.Species.Diplulmaris, 10f, 14f, 3.5f);
         Swarm.Create<Swarm>(jelly.transform, "Medusas_Desmonema_0", new Vector3(70f, -6f, 24f), SwarmKind.Jellyfish, SwarmModels.Species.Desmonema, 4f, 6f, 5f);
+        Swarm.Create<Swarm>(jelly.transform, "Medusas_Cyanea_0", new Vector3(46f, -5f, 30f), SwarmKind.Jellyfish, SwarmModels.Species.Cyanea, 4f, 6f, 5f);   // melena de león, la del Ártico
     }
+
+    // Los dos sitios de siempre y, si la cadena pide más bancos, repartidos en corro por la laguna.
+    static Vector3[] LagoonRing(Vector3 a, Vector3 b, int n)
+    {
+        var p = new Vector3[Mathf.Max(2, n)]; p[0] = a; p[1] = b;
+        for (int i = 2; i < p.Length; i++) p[i] = PolarLandscapeBuilder.Lagoon + Quaternion.Euler(0f, 25f + i * 137f, 0f) * Vector3.forward * 17f + Vector3.down * 2f;
+        return p;
+    }
+
+    /// <summary>La especie real del banco de peces número <paramref name="i"/>: se turnan.</summary>
+    public static SwarmModels.Species FishOf(int i) => i % 3 == 0 ? SwarmModels.Species.SilverFish : i % 3 == 1 ? SwarmModels.Species.ArcticCod : SwarmModels.Species.Capelin;
+    /// <summary>La especie real del banco de crustáceos número <paramref name="i"/>: se turnan.</summary>
+    public static SwarmModels.Species KrillOf(int i) => i % 3 == 0 ? SwarmModels.Species.Krill : i % 3 == 1 ? SwarmModels.Species.IceKrill : SwarmModels.Species.Themisto;
 
     // Krill: enjambre de clase Krill (dieta propia). Pasta el FITOPLANCTON para crecer; comido por pez (proximidad) y por
     // ballena/pingüino (mordisco-por-colisión). Sembrado en las mismas aguas, entre el fitoplancton y los peces.
@@ -2598,9 +2637,9 @@ public static partial class SampleSceneBuilder
     {
         GameObject group = new GameObject("Krill_AUTO");
         group.transform.SetParent(parent);
-        Vector3[] positions = { new Vector3(62f, -2f, 20f), new Vector3(52f, -2f, 28f) };
+        Vector3[] positions = LagoonRing(new Vector3(62f, -2f, 20f), new Vector3(52f, -2f, 28f), FoodChain.Banks(SwarmKind.Krill));
         for (int i = 0; i < positions.Length; i++)
-            Swarm.Create<Swarm>(group.transform, $"Swarm_Krill_{i}", positions[i], SwarmKind.Krill, SwarmModels.Species.Krill, 40f, 60f, 3f);
+            Swarm.Create<Swarm>(group.transform, $"Swarm_Krill_{i}", positions[i], SwarmKind.Krill, KrillOf(i), 40f, 60f, 3f);
     }
 
     // Fitoplancton: el PRODUCTOR base de la cadena marina ("césped del mar", vive de agua+luz, se autoregenera).
@@ -3054,8 +3093,8 @@ public static partial class SampleSceneBuilder
                 if (Mathf.Sin(ang) > 0.85f) ang += 0.6f;
                 Vector3 p = c + new Vector3(Mathf.Cos(ang), 0f, Mathf.Sin(ang)) * (reach + (float)rndF.NextDouble() * 4f);
                 bool ice = true;   // con hielo alrededor (las raíces no cuelgan sobre el agua)
-                for (int q = 0; q < 8 && ice; q++) ice = PolarLandscapeBuilder.NaturalIce(p.x + Mathf.Cos(q * 0.785f) * 5f, p.z + Mathf.Sin(q * 0.785f) * 5f);
-                if (!ice || !PolarLandscapeBuilder.NaturalIce(p.x, p.z) || InsideArea(p)) continue;
+                for (int q = 0; q < 8 && ice; q++) ice = PolarLandscapeBuilder.IceAt(p.x + Mathf.Cos(q * 0.785f) * 5f, p.z + Mathf.Sin(q * 0.785f) * 5f);   // (en la isla de tierra no crecen árboles de hielo)
+                if (!ice || !PolarLandscapeBuilder.IceAt(p.x, p.z) || InsideArea(p)) continue;
                 // Ni junto al ÁRBOL DE LOS CAMPOS (2026-10-31): el Huerto está en su piso 5, y sus árboles de hielo crecían a 16 m
                 // del eje con la copa DENTRO del tronco transparente (un nido de abejas a 5 m del eje, a 38 m), tapando a los que
                 // nadan. Lejos: la esquina del tronco al girar (con su fachada de fotobiorreactores, 16,5 m) + 2 m + lo que abre la copa
@@ -3362,7 +3401,7 @@ public static partial class SampleSceneBuilder
         gohaMood.anchors.Add(new ThoughtAnchor("hide_pain", 0.7f, 0.005f));
         gohaMood.anchors.Add(new ThoughtAnchor("trust_joy", 0.8f, 0.001f));
         gohageneis.AddComponent<Gohageneis>();
-        gohageneis.AddComponent<CarnivoreKeeper>();   // GUARDIA: patrulla y alimenta a los carnívoros para que no cacen
+        gohageneis.AddComponent<CarnivoreKeeper>();   // GUARDIA: patrulla (alimentar a los depredadores es la misión del alimentador)
         gohageneis.AddComponent<WorldCharacter>().characterName = "Gohageneis";
 
         GameObject goluis = MakePlaceholderPerson("Goluis_Post", new Vector3(-5f, 1f, -5f), new Color(0.4f, 0.4f, 0.55f));
@@ -3549,12 +3588,11 @@ public static partial class SampleSceneBuilder
         s2 = size[textile.transform]; Aseos(textile.transform, new Vector3(3.5f, 0.1f, -s2.y * 0.5f + 0.9f), 0f, 1);   // textil (al fondo, junto a los ovillos)
         s2 = criaLayout; Aseos(meat.transform, new Vector3(s2.x * 0.5f - 0.2f - 1.9f, 0.1f, -s2.y * 0.5f + 0.9f), 0f, 1);   // laboratorio
         s2 = size[works.transform]; Aseos(works.transform, new Vector3(s2.x * 0.5f - 0.2f - 1.9f, 0.1f, s2.y * 0.5f - 0.9f), 180f, 1);   // construcción
-        // Comedero de los depredadores junto a los osos: ahí deja el laboratorio las raciones de carne cultivada (viajan en alfombra).
-        // A 9 m de la cara Este del tronco de Producción (2026-11-01): estaba en (126, −6), a 1 m de la pared (de cuando Producción
-        // estaba en otro sitio), dentro del margen del NavMesh al pie del tronco: el guardia daba vueltas al tronco sin llegar.
-        GameObject feeder = new GameObject("Comedero_depredadores"); feeder.transform.SetParent(areasGroup.transform, false); feeder.transform.position = ProduccionCenter + new Vector3(20f, 0f, -6f);
-        KitchenProps.C(feeder.transform, new Vector3(0f, 0.08f, 0f), new Vector3(1.6f, 0.16f, 1.6f), KitchenProps.DarkSteel, 0f, "Bandeja");
-        WorldLabel fwl = feeder.AddComponent<WorldLabel>(); fwl.text = "Comedero (carne cultivada)"; fwl.height = 1f;
+        // El ALMACÉN DE RACIONES del alimentador, en el piso del laboratorio (Berón 2026-11-05: «retira el comedero»; docs/alimentador.md).
+        GameObject feeder = new GameObject("Almacen_raciones"); feeder.transform.SetParent(meat.transform, false);
+        feeder.transform.localPosition = new Vector3(7.5f, 0f, 4.5f);   // libre: 2 m de la cámara fría y de la formadora
+        KitchenProps.C(feeder.transform, new Vector3(0f, 0.7f, 0f), new Vector3(1.4f, 1.4f, 0.7f), KitchenProps.DarkSteel, 0f, "Camara_raciones");
+        WorldLabel fwl = feeder.AddComponent<WorldLabel>(); fwl.text = "Raciones para el alimentador"; fwl.height = 1.8f;
         CulturedMeatLab.Build(meat.transform, criaLayout, feeder.transform);
         //  · CIENCIAS (docs/edificios-investigacion.md): Física (reactor TRIGA, ciclotrón y la sala de experimentos con su anillo
         //    y la torre de Foucault) · Química (síntesis y análisis) · Biología (cultivo y molecular). El reactor de

@@ -39,7 +39,9 @@ anda hasta el punto del área (`WorkdayDirector.WorkPoint`) y se queda de pie si
 | `ifo_sysadmin`, `ifo_refrigeracion`, `ifo_energia` | jornada (+ efecto en `AiCluster`) | Llega y se queda | **Hace**: consola, paneles, fugas con linterna, filtros, baterías |
 | `sol_*`, `ene_*` (2026-11-05, Fernando) | `EnergySite` (en el casquete: `FieldPoint`) | (nuevas) | **Hace**: cepillar la escarcha, subir y apretar módulos, cambiar el roto, consola, tablet y linterna |
 | `aul_clase`, `aul_estudio` | jornada | Llega y se queda | **Hace**: pizarra con tiza, apuntes, leer |
-| `gua_carnivoros` | `CarnivoreKeeper` (patrulla y raciones) | **Hace** (anda y lleva raciones; sin gesto) | igual; en sus pausas, vigilar con linterna |
+| `gua_alimentador`, `gua_alimentador_2` | `PredatorFeeder` | **Hace** (recoge, sigue, lanza o marca) | en sus pausas, mira la lista y prepara la ración |
+| `hue_transplante` | jornada | Llega y se queda | **Hace**: abrir el hueco, plantar el cepellón, regar |
+| `gua_carnivoros` | `CarnivoreKeeper` (patrulla) | **Hace** (anda; sin gesto) | igual; en sus pausas, vigilar con linterna |
 | Comida 11–12 | `DineSpell` | Pide, se sienta… **y se queda sentado** | **Orquesta de la comida** (§2) |
 | Entrenamiento: gimnasio | `GymSession` / `GymFit` (otro trabajador) | **Hace** | igual + polo del gimnasio |
 | Entrenamiento: yoga (Ashtanga) | `YogaClass` | **Hace** | igual |

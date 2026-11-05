@@ -123,3 +123,9 @@ El banco/enjambre (`Swarm`) ya no es un cubo-plataforma con cubos hijos: es un p
 antártico, medusas (*Diplulmaris antarctica*, *Desmonema glaciale*) o abejas de las nieves como hijos; un mordisco quita un individuo
 al momento y el grupo se rehace solo (sin ciclo de vida). Viven también bajo cada edificio-árbol y suben por su fondo abierto.
 Auditoría y detalle en [grupos-de-animales.md](grupos-de-animales.md).
+
+## 2026-11-05: la isla de tierra
+
+La fauna que aquí se guardaba «para un santuario templado» tiene ya sitio propio, en su versión polar: reno, lobo ártico, liebre ártica, zorro
+ártico y buey almizclero viven en la isla de tierra, con morsas en la laguna y emperadores en su colonia. El bioma de hielo de este doc sigue igual en
+los casquetes. Detalle en [territorio-polar.md](territorio-polar.md) y fichas en [reglas-animales.md](reglas-animales.md).

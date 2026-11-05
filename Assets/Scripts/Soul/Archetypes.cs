@@ -78,6 +78,12 @@ public static class Archetypes
             { "Wolf",     new Dictionary<string, float> { { "Wolf", 15f } } },                        // lealtad de manada
             { "Whale",    new Dictionary<string, float> { { "Seal", 20f }, { "Orca", -50f } } },      // la beluga teme a la orca
             { "Penguin",  new Dictionary<string, float> { { "Seal", -35f }, { "Orca", -40f } } },     // presa de foca y orca
+            { "Walrus",   new Dictionary<string, float> { { "Bear", -30f }, { "Orca", -50f } } },         // osos y orcas (sobre todo a las crías)
+            { "EmperorPenguin", new Dictionary<string, float> { { "Seal", -30f }, { "Orca", -35f } } }, // en el mar, foca leopardo y orca
+            { "Reindeer", new Dictionary<string, float> { { "Wolf", -45f }, { "Bear", -30f } } },
+            { "MuskOx",   new Dictionary<string, float> { { "Wolf", -35f }, { "Bear", -20f } } },
+            { "ArcticHare", new Dictionary<string, float> { { "Wolf", -50f }, { "ArcticFox", -40f } } },
+            { "ArcticFox", new Dictionary<string, float> { { "Wolf", -20f }, { "Bear", -15f } } },
             { "Orca",     new Dictionary<string, float> { { "Seal", -40f }, { "Whale", -40f }, { "Penguin", -20f } } }, // apex: depreda marinos
             { "Bear",     new Dictionary<string, float>() },                                          // solitario, neutro
             { "Fox",      new Dictionary<string, float>() },
@@ -139,6 +145,14 @@ public static class Archetypes
             { "Whale",    MakeBody(3.00f, 0.6f, 1.0f, 2.8f, 3.0f, 2.0f) },
             { "Penguin",  MakeBody(0.60f, 1.0f, 1.1f, 0.5f, 0.5f, 1.2f) },   // pequeño, ágil nadando, débil, resistente al frío
             { "Orca",     MakeBody(2.60f, 1.2f, 1.4f, 2.6f, 2.8f, 2.2f) },   // apex: grande, fuerte, rápido, gran percepción
+            // Territorio polar (docs/reglas-animales.md): altura relativa al humano; fuerza y masa, en proporción a los del catálogo.
+            { "Walrus",   MakeBody(1.80f, 0.6f, 1.0f, 2.4f, 2.8f, 1.8f) },
+            { "EmperorPenguin", MakeBody(0.70f, 1.0f, 1.1f, 0.7f, 0.8f, 1.5f) },   // el mayor pingüino: aguanta el ayuno y −40 °C
+            { "Reindeer", MakeBody(1.40f, 1.4f, 1.5f, 1.1f, 1.5f, 1.7f) },
+            { "MuskOx",   MakeBody(1.50f, 0.9f, 1.2f, 1.9f, 2.2f, 1.8f) },
+            { "ArcticHare", MakeBody(0.40f, 1.8f, 1.4f, 0.35f, 0.35f, 1.1f) },
+            { "ArcticFox", MakeBody(0.60f, 1.4f, 1.6f, 0.6f, 0.5f, 1.4f) },
+
             { "Malamute", MakeBody(1.10f, 1.3f, 1.3f, 1.4f, 1.2f, 1.6f) },
         };
         _minds = new Dictionary<string, ArchetypeProfile>
@@ -161,6 +175,13 @@ public static class Archetypes
             { "Seal",     MakeMind(ElementalTone.Agua,   1.1f, 0.9f, 1.0f, 0.9f, 1.2f, 0.8f) },   // juguetón
             { "Penguin",  MakeMind(ElementalTone.Agua,   0.8f, 0.8f, 0.9f, 0.7f, 1.5f, 1.0f) },   // gregario (colonia), poco individualista
             { "Orca",     MakeMind(ElementalTone.Agua,   1.6f, 1.4f, 1.6f, 1.3f, 1.6f, 1.4f) },   // muy inteligente y social (pod, cultura)
+            { "Walrus",   MakeMind(ElementalTone.Agua,   1.2f, 0.9f, 1.0f, 0.7f, 1.4f, 0.9f) },   // gregaria, tranquila hasta que se la molesta
+            { "EmperorPenguin", MakeMind(ElementalTone.Agua, 1.2f, 0.8f, 1.0f, 0.7f, 1.6f, 1.5f) },   // aguante y disciplina de colonia
+            { "Reindeer", MakeMind(ElementalTone.Viento, 1.0f, 0.8f, 1.1f, 0.6f, 1.4f, 1.0f) },   // manada migradora
+            { "MuskOx",   MakeMind(ElementalTone.Tierra, 1.4f, 0.8f, 1.0f, 0.5f, 1.3f, 1.3f) },   // firme, en corro
+            { "ArcticHare", MakeMind(ElementalTone.Agua, 0.7f, 0.8f, 1.0f, 0.6f, 0.9f, 0.7f) },
+            { "ArcticFox", MakeMind(ElementalTone.Fuego, 0.9f, 1.3f, 1.2f, 1.4f, 0.9f, 0.8f) },   // oportunista
+
             { "Whale",    MakeMind(ElementalTone.Agua,   1.8f, 1.4f, 1.6f, 1.2f, 1.3f, 1.3f) },   // sabio, calmado
             { "Malamute", MakeMind(ElementalTone.Tierra, 1.1f, 1.0f, 1.1f, 0.8f, 1.5f, 1.4f) },   // leal, disciplinado
             { "Ant",     MakeMind(ElementalTone.Tierra, 1.0f, 0.6f, 1.0f, 0.5f, 1.6f, 1.5f) },   // colonia: disciplina máx, muy social, memoria de rastros
@@ -202,6 +223,8 @@ public static class Archetypes
         _bodies["Whale"].waterAffinity = 1.0f; _bodies["Whale"].landAffinity = 0.1f;   // varada e indefensa en tierra
         _bodies["Seal"].waterAffinity  = 1.0f; _bodies["Seal"].landAffinity  = 0.6f;   // anfibia
         _bodies["Orca"].waterAffinity  = 1.0f; _bodies["Orca"].landAffinity  = 0.05f;  // varada e indefensa en tierra
+        _bodies["EmperorPenguin"].waterAffinity = 1.0f; _bodies["EmperorPenguin"].landAffinity = 0.7f;
+        _bodies["Walrus"].waterAffinity = 1.0f; _bodies["Walrus"].landAffinity = 0.5f;   // anfibia: ~77 % del tiempo en el agua
         _bodies["Penguin"].waterAffinity = 1.0f; _bodies["Penguin"].landAffinity = 0.7f;   // anfibio: cómodo en hielo
         // VOLADORES: la abeja de las nieves vuela (IceInsectLife la mueve por el aire, sin NavMesh); con el default terrestre
         // (aire 0) constaba como un animal de suelo que «da vueltas en círculo» al revolotear junto a su panal.

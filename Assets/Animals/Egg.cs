@@ -9,6 +9,7 @@ using UnityEngine;
 ///     al MACHO en cuanto él llega a su lado y se va al mar a comer (ha gastado sus reservas en formarlo); él lo incuba
 ///     2,1 meses AYUNANDO (incubar le gana al hambre: el deseo «incubate» de <see cref="DesireCatalog"/>). Si nadie lo cubre
 ///     se hiela (<see cref="LifeHistory.eggChillHours"/> horas de juego). Eclosiona donde esté.
+///   · PINGÜINO DE ADELIA: el huevo queda en el NIDO (<see cref="LifeHistory.eggNest"/>) y el macho hace encima el primer turno largo.
 ///   · ARAÑA DE LAS NIEVES: un SACO de seda en su tela que la madre guarda; se desarrolla aunque ella se aparte (el frío no
 ///     lo hiela: los sacos de las arañas invernan).
 /// La cría nace por <see cref="Reproduction.Hatch"/> (mismo camino que el parto: evento <see cref="Reproduction.Born"/>).
@@ -37,7 +38,7 @@ public class Egg : MonoBehaviour
     {
         GameObject go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         Object.Destroy(go.GetComponent<Collider>());   // no estorba a la navegación ni a los pies
-        bool sac = !life.eggOnFeet;
+        bool sac = !life.eggOnFeet && !life.eggNest;
         go.name = sac ? $"{mother.LifeSpecies}_saco_de_huevos" : $"{mother.LifeSpecies}_huevo";
         // Pingüino emperador: huevo de ~12 × 8 cm (≈450 g) [A]; saco de la araña de 30 cm: ~6 cm de seda blanca.
         go.transform.localScale = sac ? new Vector3(0.06f, 0.05f, 0.06f) : new Vector3(0.085f, 0.12f, 0.085f);
@@ -60,7 +61,7 @@ public class Egg : MonoBehaviour
         if (a == null) return null;
         foreach (Egg e in All)
         {
-            if (e == null || e._life == null || !e._life.eggOnFeet) continue;   // el saco no se lleva encima: la araña sigue en su tela
+            if (e == null || e._life == null || (!e._life.eggOnFeet && !e._life.eggNest)) continue;   // el saco no se lleva encima: la araña sigue en su tela
             if (e.incubator == a) return e;
             if (e._life.incubator == LifeHistory.Incubator.Male && !e.transferred && e.father == a) return e;   // el macho va a por él
             if (e._life.incubator == LifeHistory.Incubator.Both && (e.father == a || e.mother == a) && (e.incubator == null || e.incubator.death)) return e;

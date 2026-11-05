@@ -40,6 +40,11 @@ public class Family
         // Foca 2, Pingüino 2. parentsRate alto = más adultos y menos crías (mamífero marino: 1 cría por hembra).
         { "Penguin", new Family(4, 0.3f, biparental) },  // colonia (representada pequeña); 2 adultos + 2 pollos
         { "Orca",    new Family(3, 0.25f, maternal)  },  // pod: una pareja adulta + 1 cría (antes 1 adulta sola: no podía criar)
+        // Territorio polar (docs/reglas-animales.md): el parto es siempre 1 cría; grupos pequeños para no multiplicar Animal completos.
+        { "Walrus", new Family(3, 0.3f, maternal) }, { "EmperorPenguin", new Family(4, 0.3f, biparental) },
+        { "Reindeer", new Family(5, 0.3f, maternal) }, { "MuskOx", new Family(4, 0.35f, maternal) },
+        { "ArcticHare", new Family(4, 0.4f, maternal) }, { "ArcticFox", new Family(4, 0.4f, biparental) },
+
         // Insectos
         { "Ant",     new Family(6, 0.8f, maternal) },  // colonia; reinas = parents
         { "Aphid",   new Family(4, 0.6f, maternal) },  // racimo de clones (partenogénesis aproximada)

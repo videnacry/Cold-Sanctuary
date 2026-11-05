@@ -718,6 +718,29 @@ Decisión del usuario (2026-09-11): **diseñar a fondo primero** (hecho) → **e
 - [ ] Ver charlas en SampleScene y en Kapilavastu (comida, franjas libres) y que el registro no se llena.
 - [ ] `ConversationContext` con su historia en los microcosmos de historia.
 
+## Animales polares y territorio (2026-11-05; rama `claude/edif-territorio`; [`reglas-animales.md`](reglas-animales.md), [`territorio-polar.md`](territorio-polar.md))
+
+Código y compilación hechos; falta la prueba en vivo.
+
+- [x] Reglas para crear animales, escritas y en el manual (§13, E1–E14 y P12–P18).
+- [x] Morsa, emperador, reno, liebre ártica, zorro ártico y buey almizclero con todas sus tablas, ficha con fuentes y escena de ciclo de vida; lobo ártico activado.
+- [x] `Penguin` separado: pasa a pingüino de Adelia (0,6 m, nido de guijarros); el emperador tiene clave propia.
+- [x] Bivalvos (`SwarmKind.Clam`) para la morsa.
+- [x] Isla de tierra (58 %) con orilla, zócalo, lomas, charcas y tundra; reemplaza a los casquetes Sur y Este.
+- [x] Producción y los osos en la isla (−180, −140); holgura 28,1 m.
+- [x] Comedero retirado; alimentador por rotación con lista compartida y distancia segura; `LabShare` en vez del 80 % (grupo 77, [`alimentador.md`](alimentador.md)).
+- [x] Deshierbe con raíz: malas hierbas de verdad, vivero, trasplante a la tundra e incinerador para las no nativas (grupo 102, [`deshierbe-cuidadoso.md`](deshierbe-cuidadoso.md)).
+- [x] La lista del alimentador solo se renueva completa; quien no se alcanza vuelve a la cola.
+- [x] Regla P19: maquinaria a la altura de lo que se pide (grupo 103, [`produccion-maquinaria.md`](produccion-maquinaria.md)). Laboratorio ampliado.
+- [x] La isla es roca hasta el lecho; el hielo flota.
+- [ ] Auditar la energía (falta su demanda total) y dar máquinas a las cifras de `AreaProducer`; túneles para el submarino bajo la isla.
+- [x] Cadena alimenticia (`FoodChain`, regla E15, grupo 85) y especie real para todo pez, crustáceo y medusa: 6 especies nuevas.
+- [x] Frentes de barrera, 5 cuevas, acantilados, colonia del emperador, playa de morsas y nidos de Adelia.
+- [x] Pruebas: grupos 99 (`TerritorioTest`) y 85 (`CadenaAlimenticiaTest`).
+- [ ] **Probar en vivo:** «Rebuild Animal Prefabs» (el cuerpo de `Penguin` cambia), Blockout, escenas de ciclo de vida y grupos 99, 85, 77, 102, 103, 58, 57 y 89.
+- [ ] Alimentador de dos en dos con el oso; aves en los acantilados; bosque de algas; corro del buey como conducta.
+- [ ] Lemming, la presa que le falta a la tundra (recomendaciones en `reglas-animales.md`).
+
 ## Siguiente (código)
 - [ ] **Alma compartida (resto)**: `HelpRequest` ya hace "ir juntos" (MVP); falta **compartir pensamientos**
       (misma frase → instancia de mente/madre compartida) y que el sí/no lea bond/humores/inclinaciones.

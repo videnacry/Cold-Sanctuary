@@ -16,7 +16,7 @@ using UnityEngine;
 /// </summary>
 public class CicloVidaPanel : MonoBehaviour
 {
-    public enum Habitat { Hielo, Mar, Costa, Arbol }
+    public enum Habitat { Hielo, Mar, Costa, Arbol, Tierra }
 
     /// <summary>Las especies del santuario (las que pone SampleScene: la fauna de hielo, la laguna, el bosque de árboles
     /// carnívoros y los recintos de la Cría), con su escena y su hábitat. Una sola fuente para el constructor y el panel.
@@ -26,7 +26,14 @@ public class CicloVidaPanel : MonoBehaviour
         ("Bear", "OsoPolar", "Oso polar", Habitat.Hielo),
         ("Seal", "Foca", "Foca", Habitat.Mar),
         ("Whale", "Ballena", "Ballena", Habitat.Mar),
-        ("Penguin", "Pinguino", "Pingüino", Habitat.Costa),
+        ("Penguin", "Pinguino", "Pingüino de Adelia", Habitat.Costa),
+        ("EmperorPenguin", "PinguinoEmperador", "Pingüino emperador", Habitat.Costa),
+        ("Walrus", "Morsa", "Morsa", Habitat.Mar),
+        ("Reindeer", "Reno", "Reno", Habitat.Tierra),
+        ("Wolf", "LoboArtico", "Lobo ártico", Habitat.Tierra),
+        ("ArcticHare", "LiebreArtica", "Liebre ártica", Habitat.Tierra),
+        ("ArcticFox", "ZorroArtico", "Zorro ártico", Habitat.Tierra),
+        ("MuskOx", "BueyAlmizclero", "Buey almizclero", Habitat.Tierra),
         ("Orca", "Orca", "Orca", Habitat.Mar),
         ("Malamute", "Malamute", "Malamute (perro de trineo)", Habitat.Hielo),
         ("SnowBee", "AbejaNieves", "Abeja de las nieves", Habitat.Arbol),
@@ -63,7 +70,7 @@ public class CicloVidaPanel : MonoBehaviour
     public LifeHistory Life => _life ?? (_life = LifeHistory.Of(species));
 
     public bool Bee => species == "SnowBee";
-    public bool Marine => species == "Seal" || species == "Whale" || species == "Orca";
+    public bool Marine => species == "Seal" || species == "Walrus" || species == "Whale" || species == "Orca";
 
     void Add(string key, string label, bool modelled = true, string note = "")
     {

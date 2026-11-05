@@ -540,7 +540,7 @@ public static class DesireCatalog
         Egg e = Egg.ToIncubate(self);
         if (e == null) return;
         self.hungry = Mathf.Min(self.hungry, -0.05f);   // incubando no come: el emperador ayuna ~115 días
-        if (e.incubator != self && Flat(e.transform.position - self.transform.position) > 0.8f && GoTo(self, "incubate", e.transform.position)) return;
+        if ((e.incubator != self || (e.Life != null && e.Life.eggNest)) && Flat(e.transform.position - self.transform.position) > 0.8f && GoTo(self, "incubate", e.transform.position)) return;
         Stop(self, 1f);
     }
 

@@ -1,34 +1,18 @@
 using UnityEngine;
 
 /// <summary>
-/// GUARDIA DEL SANTUARIO: patrulla los puestos de vigía y vigila a los CARNÍVOROS. Los animales se comportan según su
-/// naturaleza (un oso hambriento CAZA); el trabajo del guardia es evitarlo: cuando un carnívoro de tierra empieza a tener
-/// hambre, el guardia va al COMEDERO de los depredadores, recoge una ración de carne cultivada y se la lleva, dejándola
-/// delante de él. Saciado, el carnívoro no caza. Si el comedero está vacío, sigue patrullando y vuelve a mirar.
+/// GUARDIA DEL SANTUARIO: patrulla los puestos de vigía. Dar de comer a los depredadores ya no es cosa suya ni tiene sitio fijo (Berón 2026-11-05: «retira el
+/// comedero»): es la misión del alimentador, que sigue a cada uno por el mapa (<see cref="PredatorFeeder"/>, docs/alimentador.md).
 /// </summary>
 public class CarnivoreKeeper : MonoBehaviour
 {
     public float speed = 3.2f;
-    public float checkEvery = 4f;
-
-    enum Duty { Patrol, ToFeeder, ToAnimal }
-    Duty _duty = Duty.Patrol;
-    Animal _target;
-    FoodItem _ration;
-    Transform _feeder;
     Transform[] _posts;
     int _post;
-    float _nextCheck, _toAnimalSince;
-    public int fed { get; private set; }
-    readonly System.Collections.Generic.Dictionary<Animal, float> _lastFed = new System.Collections.Generic.Dictionary<Animal, float>();
-    [Tooltip("Segundos antes de volver a llevarle ración al mismo animal (así reparte entre todos los carnívoros).")]
-    public float refeedAfter = 90f;
-    public string Doing => _duty == Duty.Patrol ? "patrulla" : _duty == Duty.ToFeeder ? $"va al comedero a por carne para «{(_target != null ? _target.name : "?")}»" : $"lleva carne a «{(_target != null ? _target.name : "?")}»";
+    public string Doing => "patrulla";
 
     void Start()
     {
-        GameObject f = GameObject.Find("Comedero_depredadores");
-        _feeder = f != null ? f.transform : null;
         var posts = new System.Collections.Generic.List<Transform>();
         foreach (Transform t in FindObjectsByType<Transform>(FindObjectsSortMode.None)) if (t.name.StartsWith("PuestoVigia_")) posts.Add(t);
         posts.Sort((a, b) => string.CompareOrdinal(a.name, b.name));
@@ -43,65 +27,7 @@ public class CarnivoreKeeper : MonoBehaviour
         // (2026-11-04, ronda 6 del grupo 89: Gohageneis no llegaba al ring) En su TIEMPO LIBRE lo lleva el horario libre: la patrulla espera.
         if (LeisureDirector.Drives(gameObject)) return;
         if (TryGetComponent(out ActionQueue q) && q.Own.Count > 0 && (q.Own[0] is ToiletSpell || q.Own[0] is DineSpell || q.Own[0] is SleepSpell || q.Own[0] is EatSpell)) return;
-        // (2026-11-01) Solo va al comedero si hay raciones: con el comedero vacío iba, volvía a la patrulla y a los 20 s otra vez al
-        // comedero, ida y vuelta al pie del tronco de Producción («da vueltas», JornadaTest). Sin raciones, sigue patrullando.
-        if (Time.time >= _nextCheck && _duty == Duty.Patrol) { _nextCheck = Time.time + checkEvery; _target = _feeder != null && _feeder.GetComponentInChildren<FoodItem>() != null ? HungryCarnivore() : null; if (_target != null) _duty = Duty.ToFeeder; }
-        switch (_duty)
-        {
-            case Duty.Patrol:
-                if (_posts == null || _posts.Length == 0) return;
-                if (PathMover.Of(this).StepToward(_posts[_post].position, speed * 0.6f) < 1.5f) _post = (_post + 1) % _posts.Length;
-                break;
-            case Duty.ToFeeder:
-                if (_target == null || _target.death || _feeder == null) { _duty = Duty.Patrol; return; }
-                if (PathMover.Of(this).StepToward(_feeder.position, speed) < 1.6f)
-                {
-                    _ration = _feeder.GetComponentInChildren<FoodItem>();
-                    if (_ration == null) { Debug.Log("[Guardia] El comedero está vacío: sigue la patrulla (el laboratorio prepara otra tanda)."); _duty = Duty.Patrol; _nextCheck = Time.time + 20f; return; }
-                    _ration.transform.SetParent(transform, false);
-                    _ration.transform.localPosition = new Vector3(0.35f, 1f, 0.3f);
-                    _toAnimalSince = Time.time;
-                    _duty = Duty.ToAnimal;
-                }
-                break;
-            case Duty.ToAnimal:
-                if (_target == null || _target.death || _ration == null) { DropRation(transform.position + transform.forward); _duty = Duty.Patrol; return; }
-                // (2026-11-01) El animal se mueve (o da vueltas junto al tronco de Producción): tras 8 s de perseguirlo, a menos
-                // de 7 m le basta con dejarle la ración delante, y a los 15 s se la deja donde llegue. Antes lo seguía en círculos («da vueltas»).
-                float left = PathMover.Of(this).StepToward(_target.transform.position, speed);
-                if (left < 3f || (left < 7f && Time.time - _toAnimalSince > 8f) || Time.time - _toAnimalSince > 15f)   // (a los 15 s, donde haya llegado: lo más cerca que se puede)
-                {
-                    Vector3 front = left < 7f ? _target.transform.position + (transform.position - _target.transform.position).normalized * 1.2f : transform.position + transform.forward * 0.8f;
-                    DropRation(front);
-                    fed++; _lastFed[_target] = Time.time;
-                    Debug.Log($"[Guardia] «{name}» da una ración de carne cultivada a «{_target.name}» para que no cace.");
-                    _target = null; _duty = Duty.Patrol;
-                }
-                break;
-        }
-    }
-
-    void DropRation(Vector3 at)
-    {
-        if (_ration == null) return;
-        _ration.transform.SetParent(null, true);
-        if (Physics.Raycast(at + Vector3.up * 3f, Vector3.down, out RaycastHit h, 10f, ~0, QueryTriggerInteraction.Ignore)) at = h.point + Vector3.up * 0.08f;
-        _ration.transform.position = at;
-        _ration = null;
-    }
-
-    // El carnívoro de tierra (caza presas, no es cría) que tenga más hambre; los marinos (orcas) pescan en la laguna.
-    Animal HungryCarnivore()
-    {
-        Animal best = null; float worst = -0.05f;
-        foreach (Animal a in FindObjectsByType<Animal>(FindObjectsSortMode.None))
-        {
-            if (a == null || a.death || a.lifeStage == LifeStage.child || a.Forage == null || !a.Forage.eatsPrey) continue;
-            if (a.GetComponent<MarineLife>() != null || a.GetComponent<IceInsectLife>() != null) continue;
-            if (Mathf.Abs(a.transform.position.x) > 250f || Mathf.Abs(a.transform.position.z) > 250f) continue;   // escenarios de prueba
-            if (_lastFed.TryGetValue(a, out float t) && Time.time - t < refeedAfter) continue;   // ya comió hace poco: turno de otro
-            if (a.hungry > worst) { worst = a.hungry; best = a; }
-        }
-        return best;
+        if (_posts == null || _posts.Length == 0) return;
+        if (PathMover.Of(this).StepToward(_posts[_post].position, speed * 0.6f) < 1.5f) _post = (_post + 1) % _posts.Length;
     }
 }

@@ -14,6 +14,8 @@ using UnityEngine.Rendering;
 ///   · Sauce ártico: ramas leñosas rastreras con hojas ovaladas y amentos erguidos.
 ///   · Camarina: arbusto bajo de hojas aciculares con bayas.
 ///   · Liquen de reno: matas ramificadas gris verdoso.
+/// LA TUNDRA DE LA ISLA DE TIERRA (docs/territorio-polar.md): sobre el suelo «Tierra» crece la misma flora y, además, juncia, abedul enano y, en la
+/// orilla («Tierra_orilla»), tussac (Poa flabellata), repartidas por comunidades: pradera húmeda, brezal y pedregal de líquenes, con manchas de musgo.
 /// Se genera al arrancar (determinista) y se fusiona en pocas mallas por trozo y color. Las manchas de sauce, camarina y
 /// liquen además son <see cref="Affordance"/> (comida que se gasta y rebrota).
 /// </summary>
@@ -25,16 +27,24 @@ public class PolarUnderstory : MonoBehaviour
     [Tooltip("Plantas por metro de altura del árbol (un brote tiene pocas a su pie; un árbol viejo, muchas).")]
     public float plantsPerTreeMeter = 1.6f;
 
-    enum C { Leaf, LeafDark, Stem, Wood, PetalYellow, PetalLilac, PetalPink, PetalWhite, Center, Cotton, Catkin, Berry, Lichen, Cushion }
+    [Tooltip("Zona (x, z, ancho, largo) donde se busca la isla de tierra. Vacía = sin tundra.")]
+    public Rect tundraArea;
+    [Tooltip("Metros entre puntos de muestreo de la tundra.")]
+    public float tundraStep = 6f;
+
+    enum C { Leaf, LeafDark, Stem, Wood, PetalYellow, PetalLilac, PetalPink, PetalWhite, Center, Cotton, Catkin, Berry, Lichen, Cushion, Moss, Heath, Bark, Tussac }
     static readonly Color[] Palette =
     {
         new Color(0.62f, 0.76f, 0.62f), new Color(0.46f, 0.60f, 0.50f), new Color(0.64f, 0.74f, 0.56f), new Color(0.62f, 0.52f, 0.46f),
         new Color(0.99f, 0.93f, 0.60f), new Color(0.84f, 0.72f, 0.95f), new Color(0.98f, 0.74f, 0.84f), new Color(0.98f, 0.98f, 0.96f),
         new Color(0.98f, 0.80f, 0.35f), new Color(1.00f, 1.00f, 1.00f), new Color(0.95f, 0.82f, 0.86f), new Color(0.70f, 0.74f, 0.92f),
         new Color(0.80f, 0.85f, 0.78f), new Color(0.56f, 0.72f, 0.56f),
+        new Color(0.40f, 0.50f, 0.30f), new Color(0.46f, 0.36f, 0.34f), new Color(0.50f, 0.34f, 0.28f), new Color(0.62f, 0.60f, 0.36f),
     };
 
     public int Plants { get; private set; }
+    /// <summary>Plantas de la tundra (ya incluidas en <see cref="Plants"/>).</summary>
+    public int TundraPlants { get; private set; }
 
     Mesh _cube;
     System.Random _rnd;
@@ -62,6 +72,8 @@ public class PolarUnderstory : MonoBehaviour
         foreach (Transform t in transform.parent != null ? transform.parent.GetComponentsInChildren<Transform>() : new Transform[0])
             if (t.name.StartsWith("ArbolCarnivoroHielo_Brote")) AroundTree(t.position, 4f);
 
+        if (tundraArea.width > 0f) Tundra();
+
         Shader sh = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
         foreach (var kv in _lists)
         {
@@ -81,6 +93,67 @@ public class PolarUnderstory : MonoBehaviour
             mr.shadowCastingMode = ShadowCastingMode.Off;
         }
         Debug.Log($"[Flora] Sotobosque al pie de los árboles: {Plants} plantas árticas ({cubes0} bloques) — amapola, saxífraga, silene, dryas, algodón ártico, sauce ártico, camarina y liquen.");
+    }
+
+    // LA TUNDRA: un punto de muestreo cada pocos metros, con su comunidad según un ruido suave (así salen manchas, no confeti). Solo donde el
+    // rayo cae en la tierra misma: ni sobre rocas, ni charcas ni edificios.
+    void Tundra()
+    {
+        for (float x = tundraArea.xMin; x < tundraArea.xMax; x += tundraStep)
+            for (float z = tundraArea.yMin; z < tundraArea.yMax; z += tundraStep)
+            {
+                Vector3 p = new Vector3(x + R(-2f, 2f), 0f, z + R(-2f, 2f));
+                if (!Physics.Raycast(p + Vector3.up * 8f, Vector3.down, out RaycastHit hit, 10f, ~0, QueryTriggerInteraction.Ignore) || !Territorio.IsLand(hit.collider)) continue;
+                p.y = hit.point.y;
+                SetChunk(p);
+                bool shore = hit.collider.name != Territorio.Land;
+                float community = Mathf.PerlinNoise(x * 0.018f + 3.1f, z * 0.018f + 7.7f);
+                Quaternion yaw = Quaternion.Euler(0f, R(0f, 360f), 0f);
+                if (shore)
+                {
+                    if (_rnd.NextDouble() < 0.5) { Tussac(p, yaw); Spot(p, AffordanceKind.Grass, 2); Counted(); }
+                    continue;
+                }
+                // La alfombra: musgo y brezo bajos (un solo bloque ancho); es lo que pinta la isla de verde desde lejos.
+                Add(community < 0.42f ? C.Moss : community < 0.6f ? C.Heath : C.Lichen, p + Vector3.up * 0.015f, yaw, new Vector3(R(3f, 6f), 0.03f, R(3f, 6f)));
+                if (_rnd.NextDouble() < 0.3) continue;   // claros
+                int kind = _rnd.Next(4);
+                if (community < 0.42f)   // pradera húmeda: juncia y algodón ártico
+                {
+                    if (kind < 3) { Sedge(p, yaw); if (kind == 0) Spot(p, AffordanceKind.Grass, 3); } else Cottongrass(p, yaw);
+                }
+                else if (community < 0.6f)   // brezal: camarina, sauce rastrero, abedul enano y dryas
+                {
+                    if (kind == 0) { Crowberry(p, yaw); Spot(p, AffordanceKind.Berry, 2); }
+                    else if (kind == 1) { Willow(p, yaw); Spot(p, AffordanceKind.Willow, 2); }
+                    else if (kind == 2) { DwarfBirch(p, yaw); Spot(p, AffordanceKind.Willow, 2); }
+                    else Dryas(p, yaw);
+                }
+                else   // pedregal: líquenes, cojines y amapolas
+                {
+                    if (kind < 2) { Lichen(p, yaw); Spot(p, AffordanceKind.Lichen, 2); }
+                    else if (kind == 2) Saxifrage(p, yaw);
+                    else { if (_rnd.Next(2) == 0) Poppy(p, yaw); else Campion(p, yaw); }
+                }
+                Counted();
+            }
+        Debug.Log($"[Flora] Tundra de la isla de tierra: {TundraPlants} plantas (juncia, abedul enano, sauce, camarina, dryas, liquen, tussac…).");
+    }
+
+    void Counted() { Plants++; TundraPlants++; }
+
+    void Spot(Vector3 p, AffordanceKind k, int stock)
+    {
+        var spot = new GameObject($"Planta_{k}");
+        spot.transform.SetParent(transform, false); spot.transform.position = p;
+        float s = stock * FoodChain.PlantFactor(k);   // la cadena alimenticia pide más si hay muchos que comer
+        Affordance.Put(spot, k, stock, s, 0.0005f);
+    }
+
+    void SetChunk(Vector3 p)
+    {
+        _chunk = Mathf.Clamp(Mathf.FloorToInt((p.x + Half) / chunkSize), 0, _chunksPerSide - 1) * _chunksPerSide
+               + Mathf.Clamp(Mathf.FloorToInt((p.z + Half) / chunkSize), 0, _chunksPerSide - 1);
     }
 
     static float TreeHeight(Transform t)
@@ -264,6 +337,46 @@ public class PolarUnderstory : MonoBehaviour
         }
         for (int i = 0; i < 6; i++)
             Add(C.Berry, p + yaw * new Vector3(R(-0.12f, 0.12f), R(0.05f, h), R(-0.12f, 0.12f)), yaw, Vector3.one * 0.035f);
+    }
+
+    // Juncia (Carex): macolla de hojas finas y arqueadas, 15–30 cm.
+    void Sedge(Vector3 p, Quaternion yaw)
+    {
+        for (int i = 0; i < 9; i++)
+        {
+            float h = R(0.15f, 0.3f);
+            Quaternion t = yaw * Quaternion.Euler(R(-22f, 22f), i * 40f, R(-22f, 22f));
+            Add(i % 3 == 0 ? C.LeafDark : C.Leaf, p + t * Vector3.up * h * 0.5f, t, new Vector3(0.014f, h, 0.008f));
+        }
+    }
+
+    // Abedul enano (Betula nana): 0,5–1 m, varias ramas leñosas torcidas con hojitas redondas en la mitad de arriba.
+    void DwarfBirch(Vector3 p, Quaternion yaw)
+    {
+        float h = R(0.5f, 1f);
+        for (int b = 0; b < 4; b++)
+        {
+            Quaternion r = yaw * Quaternion.Euler(R(-24f, 24f), b * 90f + R(-30f, 30f), R(-24f, 24f));
+            Add(C.Bark, p + r * Vector3.up * h * 0.5f, r, new Vector3(0.035f, h, 0.035f));
+            for (int l = 0; l < 6; l++)
+            {
+                Vector3 at = p + r * new Vector3(R(-0.14f, 0.14f), h * R(0.5f, 1f), R(-0.14f, 0.14f));
+                Add(l % 2 == 0 ? C.Leaf : C.LeafDark, at, r * Quaternion.Euler(R(-30f, 30f), R(0f, 180f), 0f), new Vector3(0.07f, 0.012f, 0.07f));
+            }
+        }
+    }
+
+    // Tussac (Poa flabellata): pedestal de raíces viejas y una mata de hojas largas, hasta unos 2 m.
+    void Tussac(Vector3 p, Quaternion yaw)
+    {
+        float baseH = R(0.4f, 0.8f), w = R(0.5f, 0.8f);
+        Add(C.Bark, p + Vector3.up * baseH * 0.5f, yaw, new Vector3(w, baseH, w));
+        for (int i = 0; i < 12; i++)
+        {
+            float h = R(0.7f, 1.2f);
+            Quaternion t = yaw * Quaternion.Euler(R(8f, 32f), i * 30f, 0f);
+            Add(C.Tussac, p + Vector3.up * baseH + t * Vector3.up * h * 0.5f, t, new Vector3(0.05f, h, 0.02f));
+        }
     }
 
     void Lichen(Vector3 p, Quaternion yaw)

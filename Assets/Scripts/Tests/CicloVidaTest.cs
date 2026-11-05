@@ -27,6 +27,19 @@ public class CicloVidaTest : MonoBehaviour, ITestUnit
         if (tr != null && tr.GetComponentInChildren<CicloVidaTest>() == null) tr.gameObject.AddComponent<CicloVidaTest>();
     }
 
+    // ¿Su escena le da de comer lo suyo? Un banco de su clase, una planta de su etograma, un cuenco de carne o el panal.
+    static bool FoodNearby(string sp)
+    {
+        if (sp == "SnowBee" || sp == "SnowSpider") return Hive.All.Count > 0;
+        GameObject probe = new GameObject("Dieta_prueba"); probe.SetActive(false);
+        Forager f = probe.AddComponent<Forager>(); f.ConfigureForSpecies(sp);
+        bool ok = (f.eatsFish && Swarm.Nearest(Vector3.zero, SwarmKind.Fish) != null) || (f.eatsKrill && Swarm.Nearest(Vector3.zero, SwarmKind.Krill) != null)
+               || (f.eatsClams && Swarm.Nearest(Vector3.zero, SwarmKind.Clam) != null) || (f.eatsPrey && FoodItem.GetPopulation(OrganicMaterial.Meat).Count > 0);
+        foreach (EthoAct e in Ethogram.Of(sp)) ok |= Ethogram.Eats(sp, e.kind) && Affordance.Of(e.kind).Count > 0;
+        Destroy(probe);
+        return ok;
+    }
+
     CicloVidaPanel _p;
     const short LongLife = 30000;   // días de vida: los padres no envejecen durante la prueba
 
@@ -35,6 +48,8 @@ public class CicloVidaTest : MonoBehaviour, ITestUnit
         _p = FindAnyObjectByType<CicloVidaPanel>();
         TestProbe.Begin($"Ciclo de vida en su isla: {(_p != null ? _p.displayName : "?")}");
         if (_p == null) { Debug.Log("[TEST] SKIP · Ciclo de vida — esta escena no es una isla de ciclo de vida"); TestProbe.End(); yield break; }
+        // Regla E15 (comprobada también aquí): en su isla hay lo que su ficha dice que come.
+        TestProbe.Check("en su isla hay lo que come", FoodNearby(_p.species));
         TimeController tc = TimeController.timeController;
         float oldScale = Time.timeScale, oldYear = tc.DaysPerYear;
         Time.timeScale = 8f;

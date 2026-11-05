@@ -31,7 +31,7 @@ comido. Los depredadores cazan al padre.
 
 | Grupo | Especie | Talla real | En el juego | Come / lo comen |
 |---|---|---|---|---|
-| Banco de peces | Pez plateado antártico (*Pleuragramma antarctica*): el pez pelágico que forma bancos en la plataforma antártica | 15–25 cm | 20 cm × 1,4 a la vista; lomo gris azulado, vientre plateado, caudal ahorquillada | kril / focas, pingüinos, orcas, oso |
+| Banco de peces | Pez plateado antártico (*Pleuragramma antarcticum*): el pez pelágico que forma bancos en la plataforma antártica | 15–25 cm | 20 cm × 1,4 a la vista; lomo gris azulado, vientre plateado, caudal ahorquillada | kril / focas, pingüinos, orcas, oso |
 | Kril | Kril antártico (*Euphausia superba*) | 5–6 cm | 6 cm × 2 a la vista; translúcido rojizo, ojos negros, patas en cesta | fitoplancton / peces, medusas, ballena, pingüino |
 | Medusas | *Diplulmaris antarctica* (umbrela 10–18 cm, anaranjada; registrada en McMurdo) y *Desmonema glaciale* (la grande: umbrela de hasta ~1 m, pardo rojiza, tentáculos de metros) | | a su talla; laten (la umbrela se contrae) y derivan, no huyen | kril / pingüinos (el de Adelia come medusas) y quien come peces |
 | Abejas | Abeja de las nieves del santuario | ~20 cm | cabeza, tórax, abdomen a bandas y dos alas que aletean | néctar / la araña de las nieves |
