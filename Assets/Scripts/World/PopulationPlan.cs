@@ -29,11 +29,15 @@ public static class PopulationPlan
     // Escala de la fauna, no el censo de personas: atada a 11 para no triplicar animales al crecer el equipo (límite de memoria del PC).
     public static int Humans = 11;
 
+    /// <summary>LA ESCALA DE LA FAUNA, fija: la fauna y su cadena alimenticia no siguen a la plantilla en Play (el techo de reproducción habría subido a 1,5 × 32, con 15 osos,
+    /// y los bancos y plantas son los de la construcción). <see cref="Humans"/> cuenta personas (comidas, verdura, prendas). docs/hielo-y-respiraderos.md.</summary>
+    public const int FaunaScale = 11;
+
     /// <summary>Cuántos individuos le tocan a la especie (mínimo 2, para que pueda haber pareja).</summary>
     public static int Target(string species) { FoodChain.Evaluate(); return Raw(species); }
 
     /// <summary><see cref="Target"/> sin pasar por la cadena (la usa la propia cadena).</summary>
-    public static int Raw(string species) => PerHuman.TryGetValue(species, out float r) ? Mathf.Max(2, Mathf.RoundToInt(Humans * r)) : 0;
+    public static int Raw(string species) => PerHuman.TryGetValue(species, out float r) ? Mathf.Max(2, Mathf.RoundToInt(FaunaScale * r)) : 0;
 
     /// <summary>Techo para la reproducción (1,5× el objetivo); 0 = sin plan para esa especie.</summary>
     public static int Cap(string species) { int t = Target(species); return t > 0 ? Mathf.CeilToInt(t * 1.5f) : 0; }

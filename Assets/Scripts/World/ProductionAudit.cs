@@ -38,11 +38,14 @@ public static class ProductionAudit
     /// <summary>Lo que necesitan al día los depredadores de tierra: el censo real en Play y, al construir, el plan.</summary>
     public static float PredatorKgPerDay()
     {
-        if (!Application.isPlaying) return FoodChain.LandNeedKgPerDay;
+        // Para el techo de reproducción (1,5×), no para los que hay hoy: la maquinaria tiene que aguantar lo que pueden llegar a ser. Si el censo real lo pasa, manda el censo.
+        float plan = 0f;
+        foreach (string sp in new[] { "Bear", "Wolf", "ArcticFox" }) plan += PopulationPlan.Cap(sp) * (FoodChain.Intake.TryGetValue(sp, out float i) ? i : 1f);
+        if (!Application.isPlaying) return plan;
         float kg = 0f;
         foreach (Animal a in Object.FindObjectsByType<Animal>(FindObjectsSortMode.None))
             if (PredatorRound.Served(a)) kg += FoodChain.Intake.TryGetValue(a.SpeciesName, out float i) ? i : 1f;
-        return kg;
+        return Mathf.Max(plan, kg);
     }
 
     // Capacidades por máquina: [A] valores de referencia de diseño (docs/produccion-maquinaria.md). La carne sale de las cuentas del propio laboratorio.
@@ -51,7 +54,7 @@ public static class ProductionAudit
         new Line { area = "Carne Cultivada", product = "carne cultivada", unit = "kg", demand = () => PredatorKgPerDay() + 2f, stages = new[] {
             new Stage("biorreactores de 500 L", "Biorreactor_produccion", CulturedMeatLab.ReactorLitres * CulturedMeatLab.GramsPerLitre / 1000f),
             new Stage("perfusión con andamio", "Biorreactor_andamio", CulturedMeatLab.ScaffoldKg),
-            new Stage("centrífuga", "Centrifuga", 40f), new Stage("formadora", "Formadora", 40f) } },
+            new Stage("centrífugas", "Centrifuga", 40f), new Stage("formadoras", "Formadora", 40f) } },
         new Line { area = "Cocina", product = "comidas", unit = "comidas", demand = () => PopulationPlan.Humans * 3f, stages = new[] { new Stage("equipos de cocina", "Equipo_", 10f) } },
         new Line { area = "Huerto", product = "verdura", unit = "kg", demand = () => PopulationPlan.Humans * 0.8f, custom = () => Object.FindObjectsByType<GardenPlot>(FindObjectsInactive.Include, FindObjectsSortMode.None).Sum(p => p.size.x * p.size.y) * 3f / 365f },
         new Line { area = "Estudio Textil", product = "prendas", unit = "prendas", demand = () => PopulationPlan.Humans * 6f / 365f, stages = new[] { new Stage("telares", "Telar_", 0.5f) } },

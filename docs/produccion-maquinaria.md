@@ -10,7 +10,7 @@ Los resultados vienen de leer el código con 11 humanos, y desde la ronda 9 el p
 
 | Área | Pide al día | Da | Resultado |
 |---|---|---|---|
-| Carne Cultivada | 29,5 kg (27,5 de depredadores y 2 de cocina) | 2 kg antes; ahora 32 kg | **FALLABA; arreglada** |
+| Carne Cultivada | 48–49 kg: el techo de depredadores (5 osos, 5 lobos y hasta 6 zorros) y 2 de cocina | 2 kg antes; ahora 60 kg | **FALLABA; arreglada** |
 | Cocina | 33 comidas | 10 por equipo | Por medir (cuenta `Equipo_` en la escena) |
 | Huerto | 8,8 kg de verdura | ~3 kg/m² al año por superficie de bancales | Por medir |
 | Estudio Textil | 0,18 prendas | 2 telares: 1 prenda | Bien |
@@ -22,13 +22,15 @@ Además, las cifras de `AreaProducer` (recursos por minuto de juego) son valores
 
 ## El laboratorio de carne
 
-El lote de 16 kg que puse antes era un número sin máquinas: incumplía esta regla. Ahora:
+Primero puse un lote de 16 kg sin máquinas, que incumplía esta regla. La línea pide lo que pueden llegar a ser los depredadores (techo de reproducción), y no los de hoy: si el censo real lo pasa, manda el censo.
 
 | Máquina | Cuántas | Cuenta | Da |
 |---|---|---|---|
-| Biorreactor de producción, 500 L | 2 (antes 1) | 10⁷ células/mL ÷ 2,5·10⁸ células/g = 40 g/L | 40 kg |
-| Perfusión con andamio | 4 (antes 1) | 8 kg por unidad `[A]` | **32 kg, el cuello de botella** |
-| Centrífuga | 1 | 40 kg al día `[A]` | 40 kg |
-| Formadora | 1 | 40 kg al día `[A]` | 40 kg |
+| Biorreactor de producción, 500 L | 3 (antes 1) | 10⁷ células/mL ÷ 2,5·10⁸ células/g = 40 g/L | **60 kg, el cuello de botella** |
+| Perfusión con andamio, dos alturas | 6 (antes 1) | 12 kg por unidad `[A]` | 72 kg |
+| Centrífuga | 2 (antes 1) | 40 kg al día `[A]` | 80 kg |
+| Formadora | 2 (antes 1) | 40 kg al día `[A]` | 80 kg |
 
-`batchGrams` se calcula de esas máquinas al construir. Un lote da 64 raciones y el almacén guarda 80. Con esto `LabShare` llega al 100 % en el plan, y los depredadores no necesitan cazar **si** la ronda llega a todos. La densidad de 10⁷ células/mL es una cifra de referencia, sin fuente directa.
+`batchGrams` se calcula de esas máquinas. Un lote da 120 raciones y el almacén guarda 160. La densidad de 10⁷ células/mL es una cifra de referencia, sin fuente directa.
+
+**Quién cuenta (ronda 9):** las líneas de Cocina, Huerto y Textil usan las personas reales (`Humans`, ~32): 96 comidas, 25,6 kg y 0,53 prendas. Los depredadores usan `FaunaScale` (11): ver [hielo-y-respiraderos.md](hielo-y-respiraderos.md). El Huerto queda muy justo: 8 pisos de 396 m² dan ~26 kg al día, sin contar los bancales de las puntas.
