@@ -97,7 +97,7 @@ public class NuclearSite : MonoBehaviour
     public int EvacueesLeft { get; private set; }
     /// <summary>¿Se está evacuando el sitio? (la jornada no manda a nadie allí)</summary>
     public static bool Evacuating => Instance != null && Instance.State == Alert.Emergencia;
-    public static bool IsSiteArea(string area) => area == PlantArea || area == PowerArea;
+    public static bool IsSiteArea(string area) => area == PlantArea || area == PowerArea || area == SiteLine.AreaName;
     float _nextCount;
 
     void OnEnable() { Instance = this; }
@@ -156,7 +156,14 @@ public class NuclearSite : MonoBehaviour
         if (Object.FindAnyObjectByType<NuclearSite>() == null) return l;
         l.Add(new WorkRoster.Mission(PowerArea, "nuc_vigilancia", "Vigilancia radiológica: leer las estaciones del casquete, dosímetros y filtros de la chimenea", 1f));
         l.Add(new WorkRoster.Mission(PowerArea, "nuc_pasivos", "Revisar lo pasivo: válvulas del tronco a la piscina, toma de agua de mar y recinto de contención", 1f) { also = new[] { PlantArea } });
-        if (((day % 7) + 7) % 7 == 0) l.Add(new WorkRoster.Mission(PowerArea, "nuc_simulacro", "Simulacro de emergencia: parada, válvulas, balizas y salida del turno", 1f));
+        int week = ((day % 7) + 7) % 7;
+        if (week == 0) l.Add(new WorkRoster.Mission(PowerArea, "nuc_simulacro", "Simulacro de emergencia: parada, válvulas, balizas y salida del turno", 1f));
+        // LA ROCA (docs/sitio-nuclear.md §7): se lee a diario; una bajada a la semana, o en cuanto hay AVISO; en ALARMA nadie baja y se refuerza desde arriba.
+        CavernRock rock = CavernRock.Instance;
+        if (rock == null) return l;
+        l.Add(new WorkRoster.Mission(PowerArea, "nuc_roca", "Leer la roca: extensómetros, convergencia, bulones, microsismos, aforos y asiento del cajón, en el panel", 1f));
+        if (rock.Now == CavernRock.Level.Alarma) l.Add(new WorkRoster.Mission(PowerArea, "nuc_refuerzo", "ALARMA en la roca: cerrar las cavernas y reforzar a distancia (bulones e inyección) hasta que pare", SiteLineRule.MissionHours, true));
+        else if (rock.Now == CavernRock.Level.Aviso || week == 3) l.Add(new WorkRoster.Mission(SiteLine.AreaName, SiteLine.MissionId, "Bajar por la línea a las cavernas: mirar la roca, sanear y reforzar lo que pida", SiteLineRule.MissionHours, rock.Now == CavernRock.Level.Aviso));
         return l;
     }
 }

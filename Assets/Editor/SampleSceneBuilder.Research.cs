@@ -334,6 +334,7 @@ public static partial class SampleSceneBuilder
             new LabBlock("Diésel de respaldo", 6f, 3f, t => { KitchenProps.C(t, new Vector3(0f, 1.3f, 0f), new Vector3(6f, 2.6f, 3f), new Color(0.3f, 0.5f, 0.35f), 0f, "Grupo_electrogeno"); KitchenProps.C(t, new Vector3(2.4f, 3f, 0f), new Vector3(0.3f, 1f, 0.3f), LabDark, 0f, "Escape"); }),
             new LabBlock("Losa de contenedores del núcleo", 15f, 6f, t => { KitchenProps.C(t, new Vector3(0f, 0.15f, 0f), new Vector3(15f, 0.3f, 6f), concrete, 0f, "Losa"); for (int i = 0; i < 2; i++) KitchenProps.C(t, new Vector3(-4f + i * 8f, 1.6f, 0f), new Vector3(6f, 2.6f, 2.6f), new Color(0.5f, 0.52f, 0.55f), 0f, "Contenedor_transporte"); }),
             new LabBlock("Almacén", 6f, 4f, t => Room(t, 6f, 4f, concrete, "Almacen")),
+            new LabBlock("Panel de la roca", 6f, 2f, t => { KitchenProps.C(t, new Vector3(0f, 1.2f, 0.6f), new Vector3(5.6f, 2.4f, 0.3f), LabDark, 0f, "Panel_roca"); KitchenProps.C(t, new Vector3(0f, 0.4f, -0.2f), new Vector3(2.4f, 0.8f, 0.8f), LabSteel, 0f, "Pupitre_roca"); }),
         };
         LogLeft("Central nuclear", PackFloor(g, NuclearSize, blocks, CarpetKeepOut(NuclearSize)));
         // El límite del sitio (la zona de exclusión del juego) va PINTADO en el suelo, no con valla: en el santuario no hay

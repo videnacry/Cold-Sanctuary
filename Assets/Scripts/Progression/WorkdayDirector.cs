@@ -373,6 +373,7 @@ public class WorkdayDirector : MonoBehaviour
     // Todas las áreas con ese nombre (y, para el Huerto, sus parcelas y el bambusal, que están en el suelo).
     static bool InAreaNamed(string name, Vector3 pos)
     {
+        if (name == SiteLine.AreaName) return SiteLine.Instance != null && (pos - SiteLine.Instance.transform.position).sqrMagnitude < 225f;   // la estación no es un área: a 15 m del andén
         foreach (SanctuaryArea a in SceneCache.All<SanctuaryArea>(2f))
             if (a != null && a.displayName == name && a.InBuilding(pos)) return true;
         if (name == "Huerto")
@@ -517,6 +518,7 @@ public class WorkdayDirector : MonoBehaviour
         // EVACUACIÓN DEL SITIO NUCLEAR (docs/sitio-nuclear.md): nadie va a sus pisos, y quien estaba allí, al hospital.
         if (NuclearSite.Evacuating && (NuclearSite.IsSiteArea(area) || area == null && NuclearSiteRule.InZone(g.transform.position)))
         { area = AreaWork.Hospital; doing = EvacuationDoing; missionId = null; alwaysMove = true; }
+        if (missionId == SiteLine.MissionId && SiteLine.Board(g)) return;   // la bajada: ya en la estación, sube al carro (docs/sitio-nuclear.md §8)
         NewcomerInitiator ini = g.GetComponent<NewcomerInitiator>();
         if (ini != null && ini.InProgress) return;   // está iniciando a un recién llegado: lo lleva ella (si no, la jornada la mandaba en alfombra a otro piso)
         Dress(g, area, doing, missionId);   // (2026-11-04) el uniforme de su tarea al llegar; su ropa al acabar
@@ -964,6 +966,9 @@ public class WorkdayDirector : MonoBehaviour
     /// <summary>Un punto del área (repartidos por persona para que no se amontonen).</summary>
     static readonly Dictionary<string, Transform> _areas = new Dictionary<string, Transform>();
     /// <summary>El área por su nombre visible (cacheada).</summary>
+    /// <summary>Un sitio de trabajo que no es un área de la escena (la estación de la línea de las cavernas): la jornada lo trata como a un área.</summary>
+    public static void RegisterPlace(string name, Transform t) { _areas[name] = t; }
+
     public static Transform AreaTransform(string area)
     {
         if (area == null) return null;

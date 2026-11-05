@@ -122,7 +122,7 @@ public static partial class SampleSceneBuilder
         else
         {
             Vector3 at = new Vector3(well.position.x, NuclearSiteRule.CavernCenterY, well.position.z);
-            Transform cav = BuildCavern(root, "Caverna_microrreactor", at, new Vector3(20f, NuclearSiteRule.CavernHeight, 12f), "Caverna del microrreactor: 60 m de roca encima");
+            Transform cav = BuildCavern(root, "Caverna_microrreactor", at, new Vector3(CavernRule.ReactorLength, NuclearSiteRule.CavernHeight, CavernRule.ReactorSpan), "Caverna del microrreactor: 60 m de roca encima");
             Color metal = new Color(0.55f, 0.6f, 0.65f);
             KitchenProps.C(cav, new Vector3(0f, -2f, 0f), new Vector3(10f, 3f, 3.2f), metal, 0f, "Modulo_reactor");
             KitchenProps.C(cav, new Vector3(0f, -0.3f, 0f), new Vector3(10f, 0.4f, 0.6f), steel, 0f, "Tubos_calor");
@@ -140,10 +140,16 @@ public static partial class SampleSceneBuilder
             Vector3 lockA = new Vector3(Mathf.Clamp(well.position.x, site.x - h.waterHalf, site.x + h.waterHalf), -8f, site.z + Mathf.Sign(well.position.z - site.z) * h.OuterHalf), lockB = new Vector3(well.position.x, -8f, well.position.z);
             KitchenProps.C(root, root.InverseTransformPoint((lockA + lockB) * 0.5f), new Vector3(3f, 3f, Mathf.Max(0.5f, (lockB - lockA).magnitude)), steel, Quaternion.LookRotation((lockB - lockA).sqrMagnitude > 0.01f ? lockB - lockA : Vector3.forward), "Esclusa_tronco");
             // LOS RESIDUOS: la caverna de al lado (como el SFR); es lo que más dura, y aquí no toca el agua del mar.
-            Vector3 wasteAt = at + new Vector3(0f, 0f, 26f);
-            Transform waste = BuildCavern(root, "Caverna_residuos", wasteAt, new Vector3(20f, NuclearSiteRule.CavernHeight, 12f), "Caverna de residuos y combustible gastado: se puede sacar todo (como exigió el Tratado Antártico con el PM-3A)");
+            Vector3 wasteAt = at + new Vector3(0f, 0f, CavernRule.WasteOffsetZ);
+            Transform waste = BuildCavern(root, "Caverna_residuos", wasteAt, new Vector3(CavernRule.WasteLength, NuclearSiteRule.CavernHeight, CavernRule.WasteSpan), "Caverna de residuos y combustible gastado: se puede sacar todo (como exigió el Tratado Antártico con el PM-3A)");
             for (int i = 0; i < 6; i++) KitchenProps.C(waste, new Vector3(-7f + (i % 3) * 7f, -3f, i < 3 ? -3f : 3f), new Vector3(2f, 2.5f, 2f), new Color(0.72f, 0.5f, 0.3f), 0f, "Contenedor_residuos");
-            KitchenProps.C(root, root.InverseTransformPoint((at + wasteAt) * 0.5f), new Vector3(3f, 3f, 14f), conc, 0f, "Galeria_cavernas");
+            // LA GALERÍA, por el pilar de roca entre las dos: hueca, porque la línea para aquí.
+            Vector3 galleryAt = at + new Vector3(0f, 0f, CavernRule.ReactorSpan * 0.5f + CavernRule.PillarM * 0.5f);
+            Transform gal = new GameObject("Galeria_cavernas").transform; gal.SetParent(root, false); gal.position = galleryAt;
+            Hull(gal, new Vector3(3f, 3f, CavernRule.PillarM + 2f), 0.3f, conc, "Revestimiento_galeria");
+            BuildRockMonitoring(root, cav, waste, root.Find("Cajon_TRIGA"));
+            _nuclearLine = BuildCavernLine(root, hx, root.Find("Cajon_TRIGA"), well.position, galleryAt);
+            ValidateCavernLine(_nuclearLine);
         }
 
         // ── CHIMENEA FILTRADA a sotavento, en la esquina del casquete: lo único que se suelta, se suelta en alto y filtrado ──

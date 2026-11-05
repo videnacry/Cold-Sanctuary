@@ -114,6 +114,7 @@ public class SwimBody : MonoBehaviour
     public bool UpdateWater()
     {
         _drivenAt = Time.time;
+        if (FlyingCarpet.Riding(gameObject)) { if (Active) End(); return false; }   // en el tubo de la línea, bajo el mar, va seco
         Water w = ProbeHere();
         bool swim = ShouldSwim(w);
         if (swim) { Surface = w.surface; Begin(); }
