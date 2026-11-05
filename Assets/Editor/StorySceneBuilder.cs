@@ -30,7 +30,7 @@ public static partial class StorySceneBuilder
         ("Classroom_Area", "Bagdad", "Microcosmos_AlJuarismi", new Color(0.85f, 0.75f, 0.55f), new System.Func<Transform, int>(AlKhwarizmi)),
         ("AtomicPlant_Area", "Woolsthorpe", "Microcosmos_Newton", new Color(0.55f, 0.65f, 0.4f), new System.Func<Transform, int>(Newton)),
         ("Biology_Area", "Berkeley", "Microcosmos_Jenner", new Color(0.6f, 0.7f, 0.5f), new System.Func<Transform, int>(Jenner)),
-        ("Kitchen_Area", "Angostura", "Microcosmos_Bolivar", new Color(0.8f, 0.6f, 0.4f), new System.Func<Transform, int>(Bolivar)),
+        ("Assembly_Area", "Angostura", "Microcosmos_Bolivar", new Color(0.8f, 0.6f, 0.4f), new System.Func<Transform, int>(Bolivar)),
         ("Classroom_Area", "Sils Maria", "Microcosmos_Nietzsche", new Color(0.6f, 0.7f, 0.8f), new System.Func<Transform, int>(Nietzsche)),
         ("Chemistry_Area", "París 1898", "Microcosmos_Curie", new Color(0.6f, 0.65f, 0.75f), new System.Func<Transform, int>(Curie)),
         ("Construction_Area", "Colorado Springs", "Microcosmos_Tesla", new Color(0.65f, 0.6f, 0.7f), new System.Func<Transform, int>(Tesla)),
@@ -44,15 +44,15 @@ public static partial class StorySceneBuilder
         ("VehicleWorkshop_Area", "Chimbacalle", "Microcosmos_EloyAlfaro", new Color(0.6f, 0.55f, 0.5f), new System.Func<Transform, int>(EloyAlfaro)),
         ("Infirmary_Area", "Lagunillas", "Microcosmos_Galvarino", new Color(0.55f, 0.65f, 0.45f), new System.Func<Transform, int>(Galvarino)),
         ("TextileStudio_Area", "Cajamarca", "Microcosmos_Atahualpa", new Color(0.8f, 0.6f, 0.35f), new System.Func<Transform, int>(Atahualpa)),
-        ("Classroom_Area", "Onondaga", "Microcosmos_GranLeyDeLaPaz", new Color(0.5f, 0.62f, 0.5f), new System.Func<Transform, int>(GranLeyDeLaPaz)),
+        ("Assembly_Area", "Onondaga", "Microcosmos_GranLeyDeLaPaz", new Color(0.5f, 0.62f, 0.5f), new System.Func<Transform, int>(GranLeyDeLaPaz)),
         ("Kitchen_Area", "Alejandría de Cleopatra", "Microcosmos_Cleopatra", new Color(0.8f, 0.7f, 0.5f), new System.Func<Transform, int>(Cleopatra)),
         ("Informatics_Area", "Langley", "Microcosmos_Langley", new Color(0.55f, 0.62f, 0.75f), new System.Func<Transform, int>(Langley)),
         ("Music_Area", "Viena 1824", "Microcosmos_Beethoven", new Color(0.72f, 0.65f, 0.6f), new System.Func<Transform, int>(Beethoven)),
         ("Classroom_Area", "Leiden", "Microcosmos_Descartes", new Color(0.6f, 0.55f, 0.6f), new System.Func<Transform, int>(Descartes)),
         ("Infirmary_Area", "San Pablo", "Microcosmos_CheGuevara", new Color(0.45f, 0.65f, 0.5f), new System.Func<Transform, int>(CheGuevara)),
-        ("Classroom_Area", "Madrid 2018", "Microcosmos_PedroSanchez", new Color(0.65f, 0.6f, 0.55f), new System.Func<Transform, int>(PedroSanchez)),
-        ("Classroom_Area", "Gettysburg", "Microcosmos_Lincoln", new Color(0.6f, 0.58f, 0.55f), new System.Func<Transform, int>(Lincoln)),
-        ("Classroom_Area", "Feria de las Hazañas", "Microcosmos_Hazanas", new Color(0.75f, 0.68f, 0.5f), new System.Func<Transform, int>(Hazanas)),
+        ("Assembly_Area", "Madrid 2018", "Microcosmos_PedroSanchez", new Color(0.65f, 0.6f, 0.55f), new System.Func<Transform, int>(PedroSanchez)),
+        ("Assembly_Area", "Gettysburg", "Microcosmos_Lincoln", new Color(0.6f, 0.58f, 0.55f), new System.Func<Transform, int>(Lincoln)),
+        ("Assembly_Area", "Feria de las Hazañas", "Microcosmos_Hazanas", new Color(0.75f, 0.68f, 0.5f), new System.Func<Transform, int>(Hazanas)),
         // LOS FAMOSOS (StorySceneBuilder.Famosos.cs, docs/microcosmos-famosos.md): una historia de su vida pública en su pueblo real.
         ("YogaRoom_Area", "Velliangiri", "Microcosmos_Sadhguru", new Color(0.8f, 0.7f, 0.55f), new System.Func<Transform, int>(Sadhguru)),
         ("Control_de_mision", "Hawthorne", "Microcosmos_ElonMusk", new Color(0.7f, 0.72f, 0.78f), new System.Func<Transform, int>(ElonMusk)),
@@ -758,6 +758,7 @@ public static partial class StorySceneBuilder
         var m = t.gameObject.AddComponent<StoryMission>();
         m.title = title; m.marga = marga; m.xp = xp; m.steps = steps;
         m.finalSpeaker = finalSpeaker; m.finalLine = finalLine;
+        LineTruth.Fill(m, card);   // (2026-11-05) regla M39: cada frase con su veracidad y su fuente
     }
 
     static StoryMission.StoryStep Make(string goal, StoryMission.Kind kind, Transform[] targets, string speaker, string line) =>

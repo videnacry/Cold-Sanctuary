@@ -264,6 +264,18 @@ public static class Performances
         Mi("ifo_energia", "Revisar el SAI y las baterías",
             Checking("Medir las baterías", P.Tablet, F.Sparks, 6f),
             Noting("Registrar la carga"));
+        Mi("asa_orden", "Preparar el orden del día",
+            Noting("Reunir los temas de la semana"),
+            S("Sortear quién modera", M.Reach, P.None, P.None, 6f, F.None, 1.6f),
+            Console("Poner el orden del día en el marcador", 6f));
+        Mi("asa_acta", "Levantar el acta",
+            Noting("Escribir lo acordado"),
+            Checking("Leerlo en voz alta", P.Tablet),
+            Noting("Guardarlo en el archivo"));
+        Mi("asa_mediar", "Mediar en un desacuerdo",
+            S("Escuchar a una parte", M.Reach, P.None, P.None, 8f, F.None, 1.6f),
+            S("Escuchar a la otra", M.Reach, P.None, P.None, 8f, F.None, 1.6f),
+            Noting("Apuntar el acuerdo"));
         Mi("son_grabar", "Grabar y mezclar",
             Console("Ajustar la mesa de mezclas", 9f),
             Checking("Escuchar la toma", P.Tablet),

@@ -38,7 +38,7 @@ public static partial class MicroStoryMaps
         todo = new[] { "en vivo: que el Amazonas se lea como río ancho y que nada caiga en él" },
     };
 
-    // ══ MADRID, 1 de junio de 2018: sobre el Aula (pendiente de su sala de asambleas) ═══════════════════════════════════════════
+    // ══ MADRID, 1 de junio de 2018: sobre la Sala de asambleas ═══════════════════════════════════════════
     // Ciudad: los plátanos del Paseo del Prado, los tilos de las calles, el Retiro al este. Los pupitres, las manzanas altas del centro.
     static Map MapMadrid() => new Map
     {
@@ -69,7 +69,7 @@ public static partial class MicroStoryMaps
         todo = new[] { "en vivo: los leones van delante del claro y la Zarzuela debe leerse apartada, en su monte" },
     };
 
-    // ══ GETTYSBURG, 19 de noviembre de 1863 (Lincoln): sobre el Aula (pendiente de su sala de asambleas) ═══════════════════════
+    // ══ GETTYSBURG, 19 de noviembre de 1863 (Lincoln): sobre la Sala de asambleas ═══════════════════════
     // Otoño tardío: robles desnudos, rastrojos, manzanos ya cosechados, rocas de diabasa en Culp's Hill y en los Round Tops. El pupitre del profesor,
     // Cemetery Hill; las sillas, lomas; los libros, las rocas de Devil's Den.
     static Map MapGettysburg() => new Map
@@ -101,7 +101,7 @@ public static partial class MicroStoryMaps
         todo = new[] { "en vivo: el pueblo queda al norte del claro: que se vea desde el estrado, como en las fotos de la ceremonia" },
     };
 
-    // ══ LA FERIA DE LAS HAZAÑAS (inventada): sobre el Aula (pendiente de su sala de asambleas) ═════════════════════════════════
+    // ══ LA FERIA DE LAS HAZAÑAS (inventada): sobre la Sala de asambleas ═════════════════════════════════
     // Un jardín de países. El mapa es de invención, a mano igualmente: cada árbol junto a su pabellón.
     static Map MapFeria() => new Map
     {

@@ -173,6 +173,7 @@ public class LeisureDirector : MonoBehaviour
         ("crias", "Jugar con las crías", LeisureRoster.Kind.Cuidado, new[] { "Cría" }, 4, "pie"),
         ("textil", "Manualidades en el estudio textil", LeisureRoster.Kind.Ocio, new[] { "Estudio Textil" }, 4, "sentado"),
         ("tertulia", "Tertulia en el restaurante", LeisureRoster.Kind.Ocio, new[] { "Cocina" }, 8, "sentado"),
+        ("asamblea", "Ir a la asamblea de la semana: hablar y escuchar", LeisureRoster.Kind.Ocio, new[] { "Sala de asambleas", "Cocina" }, 8, "sentado"),   // (2026-11-05) docs/piso-asambleas.md
         ("concierto", "Ir al concierto o tocar en el escenario", LeisureRoster.Kind.Ocio, new[] { "Música", "Cocina" }, 8, "sentado"),   // (2026-11-05) docs/piso-musica.md
         ("baile", "Bailar", LeisureRoster.Kind.Ocio, new[] { "Sala de Ballet", "Calistenia", "Gimnasio" }, 6, "baile"),
         ("artes", "Artes marciales con Gohageneis y Luciana",   // (2026-11-04: antes con Goku, que se fue a su microcosmos; 2026-11-05: y Luciana)
@@ -183,7 +184,7 @@ public class LeisureDirector : MonoBehaviour
     /// <summary>REGLA J16: actividades de ocio que dan cabida a TODOS los miembros a la vez (su capacidad es la de los miembros). Fuera
     /// quedan «Jugar con las crías» (pocas personas por camada, para no agobiarlas) y «Manualidades» (una herramienta por persona: los
     /// telares y la rueca del estudio textil), que van por turnos.</summary>
-    public static readonly HashSet<string> AllMembers = new HashSet<string> { "pesas", "yoga", "ashtanga", "huerto", "lectura", "tertulia", "baile", "artes", "concierto" };
+    public static readonly HashSet<string> AllMembers = new HashSet<string> { "pesas", "yoga", "ashtanga", "huerto", "lectura", "tertulia", "baile", "artes", "concierto", "asamblea" };
 
     /// <summary>Prefijo de un sitio que es una SALA de los pisos de yoga («Sala de Yoga · Hatha tradicional»…).</summary>
     public const string YogaVenue = "Sala de Yoga · ";

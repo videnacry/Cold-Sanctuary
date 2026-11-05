@@ -52,7 +52,7 @@ public static class MicroFloors
         M("Bagdad", "Classroom_Area", "al-Juarismi en la Casa de la Sabiduría: biblioteca y sala de cálculo (el Aula)"),
         M("Woolsthorpe", "AtomicPlant_Area", "Newton, la gravedad y la luz: la planta atómica (física)"),
         M("Berkeley", "Biology_Area", "Jenner y la primera vacuna: el laboratorio de biología"),
-        M("Angostura", "Kitchen_Area", "Bolívar en el Congreso de Angostura", "Sala de asambleas (parlamento)"),
+        M("Angostura", "Assembly_Area", "Bolívar en el Congreso de Angostura: la Sala de asambleas"),
         M("Sils Maria", "Classroom_Area", "Nietzsche: la biblioteca de filosofía (el Aula)"),
         M("París 1898", "Chemistry_Area", "Marie y Pierre Curie aíslan el radio: el laboratorio de química"),
         M("Colorado Springs", "Construction_Area", "Tesla y la electricidad de alta tensión", "Taller de electricidad (alta tensión)"),
@@ -64,15 +64,15 @@ public static class MicroFloors
         M("Chimbacalle", "VehicleWorkshop_Area", "Alfaro y el tren Guayaquil–Quito: locomotoras y mecánica", "Estación de ferrocarril y transporte"),
         M("Lagunillas", "Infirmary_Area", "Galvarino: curarse, volver con los suyos y seguir; la machi y el lawen, el hospital"),
         M("Cajamarca", "TextileStudio_Area", "cómo vivían los incas: el cumbi, los quipus y las colcas, el Estudio Textil", "Almacén y contaduría (qollqas y quipus)"),
-        M("Onondaga", "Classroom_Area", "la Gran Ley de la Paz: el consejo de las Cinco Naciones", "Sala de asambleas (parlamento)"),
+        M("Onondaga", "Assembly_Area", "la Gran Ley de la Paz: el consejo de las Cinco Naciones, la Sala de asambleas"),
         M("Alejandría de Cleopatra", "Kitchen_Area", "Cleopatra abre los graneros en los años sin crecida: dar de comer a una ciudad, la Cocina"),
         M("Langley", "Informatics_Area", "las calculadoras humanas de Langley y el IBM 7090: el piso de Informática"),
         M("Viena 1824", "Music_Area", "Beethoven y el estreno de la Novena: el concierto, el piso de Música"),
         M("Leiden", "Classroom_Area", "Descartes, el método y la geometría: el Aula"),
         M("San Pablo", "Infirmary_Area", "Guevara y Granado en la colonia de leprosos: el hospital"),
-        M("Madrid 2018", "Classroom_Area", "la moción de censura de 2018: cómo funciona un parlamento", "Sala de asambleas (parlamento)"),
-        M("Gettysburg", "Classroom_Area", "Lincoln en Gettysburg: el discurso y la emancipación", "Sala de asambleas (parlamento)"),
-        M("Feria de las Hazañas", "Classroom_Area", "grandes hazañas de presidentes y primeros ministros: aprender de lo que hicieron", "Sala de asambleas (parlamento)"),
+        M("Madrid 2018", "Assembly_Area", "la moción de censura de 2018: cómo funciona un parlamento, la Sala de asambleas"),
+        M("Gettysburg", "Assembly_Area", "Lincoln en Gettysburg: el discurso y la emancipación, la Sala de asambleas"),
+        M("Feria de las Hazañas", "Assembly_Area", "grandes hazañas de presidentes y primeros ministros: aprender de lo que hicieron, la Sala de asambleas"),
         // Los famosos (docs/microcosmos-famosos.md)
         M("Velliangiri", "YogaRoom_Area", "Sadhguru y el Dhyanalinga: meditar en silencio, la Sala de Yoga"),
         M("Hawthorne", "Control_de_mision", "Musk y el Falcon 1: el control de misión de la lanzadera (re-apuntado por la alerta de piso nuevo)"),
@@ -110,6 +110,7 @@ public static class MicroFloors
     {
         ["Informatics_Area"] = new[] { "informática", "ordenador", "programación", "computación", "servidor", "cálculo" },
         ["Classroom_Area"] = new[] { "aula", "biblioteca", "universidad", "universitaria", "estudio", "clase", "archivo" },
+        ["Assembly_Area"] = new[] { "asamblea", "asambleas", "parlamento", "consejo" },
         ["Music_Area"] = new[] { "música", "grabación", "concierto", "escenario" },
     };
 

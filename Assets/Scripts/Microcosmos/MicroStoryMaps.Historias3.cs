@@ -3,8 +3,8 @@ using UnityEngine;
 /// <summary>LOS MAPAS A MANO DE LA TANDA 3 (III): Onondaga y Alejandría.</summary>
 public static partial class MicroStoryMaps
 {
-    // ══ ONONDAGA, hacia 1450 (la Gran Ley de la Paz): sobre el Aula (pendiente de su sala de asambleas) ════════════════════════
-    // El lago al noroeste, los campos de las tres hermanas al sureste, arces y olmos en las lomas, eneas en la orilla, el gran pino blanco
+    // ══ ONONDAGA, hacia 1450 (la Gran Ley de la Paz): sobre la Sala de asambleas ════════════════════════
+    // (Los pupitres de abajo son del Aula, donde iba antes: en la Sala de asambleas esas órdenes no encuentran pieza y no hacen nada.) El lago al noroeste, los campos de las tres hermanas al sureste, arces y olmos en las lomas, eneas en la orilla, el gran pino blanco
     // sobre el claro. Los pupitres son la meseta caliza; las sillas, no nevados: colinas (en Onondaga no hay cumbres blancas a final de verano).
     static Map MapOnondaga() => new Map
     {

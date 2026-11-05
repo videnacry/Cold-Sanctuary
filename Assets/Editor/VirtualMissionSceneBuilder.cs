@@ -126,6 +126,7 @@ public static class VirtualMissionSceneBuilder
             case "Central Nuclear": return "NuclearPower_Area";
             case "Informática": return SampleSceneBuilder.InformaticsArea;   // (2026-11-04) los pisos nuevos
             case "Aula": return SampleSceneBuilder.ClassroomArea;
+            case "Sala de asambleas": return SampleSceneBuilder.AssemblyArea;
             case "Música": return SampleSceneBuilder.MusicArea;
             default: return null;
         }

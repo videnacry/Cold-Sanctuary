@@ -67,7 +67,7 @@ public static partial class StorySceneBuilder
                 Hold("Escucha a Lincoln: dos minutos", stage, 12f, "Abraham Lincoln", "Hace ochenta y siete años nuestros padres crearon en este continente una nación nueva, concebida en libertad y dedicada a la idea de que todos los hombres son creados iguales... y que el gobierno del pueblo, por el pueblo y para el pueblo no desaparezca de la tierra."),
                 Talk("Habla con Lincoln al bajar", abe.transform, "Abraham Lincoln", "No ha gustado mucho, creo. Lo importante no es lo que digamos aquí, sino lo que ellos hicieron. Queda la tarea: que esa frase, «todos los hombres son creados iguales», sea verdad para todos."),
             },
-            "Gettysburg (Pensilvania), el 19 de noviembre de 1863, sobre el Aula del santuario a escala de hormiga (pendiente de su piso: una sala de asambleas). Cuatro meses después de la batalla, el pueblo entierra a sus muertos y el presidente Abraham Lincoln viene a decir unas pocas palabras. E para hablar y recoger; para escuchar, quédate quieto.",
+            "Gettysburg (Pensilvania), el 19 de noviembre de 1863, sobre la Sala de asambleas del santuario a escala de hormiga. Cuatro meses después de la batalla, el pueblo entierra a sus muertos y el presidente Abraham Lincoln viene a decir unas pocas palabras. E para hablar y recoger; para escuchar, quédate quieto.",
             new[]
             {
                 "Abraham Lincoln nació en Kentucky en 1809, en una cabaña de troncos, casi sin escuela: fue autodidacta. Fue abogado en Illinois y presidente de Estados Unidos de 1861 a 1865. Al ganar las elecciones, los estados del Sur, esclavistas, se separaron, y empezó la guerra civil, que costó unos 750 000 muertos.",

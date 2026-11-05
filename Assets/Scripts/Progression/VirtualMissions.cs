@@ -100,6 +100,9 @@ public static class VirtualMissions
             case "ifo_energia": return new[] { "Leer el analizador de la acometida", "Probar el SAI", "Revisar las baterías" };
             case "son_grabar": return new[] { "Preparar la cabina y los micrófonos", "Grabar las tomas", "Mezclarlas en la mesa" };
             case "son_ensayo": return new[] { "Afinar los instrumentos", "Ensayar en la sala", "Probar en el escenario" };
+            case "asa_orden": return new[] { "Reunir los temas", "Sortear quién modera", "Ponerlos en el marcador" };
+            case "asa_acta": return new[] { "Escribir lo acordado", "Guardarlo en el archivo" };
+            case "asa_mediar": return new[] { "Escuchar a una parte", "Escuchar a la otra", "Apuntar el acuerdo" };
             case "son_equipo": return new[] { "Revisar cuerdas y cables", "Probar micrófonos y altavoces" };
             case "aul_clase": return new[] { "Preparar la pizarra y la pantalla", "Dar la clase desde la tarima", "Resolver dudas en las filas" };
             case "aul_estudio": return new[] { "Buscar el libro en la biblioteca", "Consultarlo en el catálogo", "Estudiar en la mesa" };
@@ -140,6 +143,9 @@ public static class VirtualMissions
             case "ifo_energia": return new[] { "Bloque_Cuadro de la acometida (central nuclear y paneles)", "Bloque_SAI 1", "Bloque_Armario de baterías de litio 1" };
             case "son_grabar": return new[] { "Cabina de grabación 1", "Cabina de grabación 1", "Mesa de mezclas 1" };
             case "son_ensayo": return new[] { "Banda de ensayo 1", "Banda de ensayo 1", "Escenario de conciertos" };
+            case "asa_orden": return new[] { "Mesa de la comisión", "Kleroterion y clepsidra (Atenas)", "Marcador de votos" };
+            case "asa_acta": return new[] { "Archivo de actas", "Archivo de actas" };
+            case "asa_mediar": return new[] { "Toguna de mediación (dogon)", "Toguna de mediación (dogon)", "Toguna de mediación (dogon)" };
             case "son_equipo": return new[] { "Banco del técnico de sonido", "Escenario de conciertos" };
             case "aul_clase": return new[] { "Tarima del profesor (mesa, pizarra y pantalla)", "Tarima del profesor (mesa, pizarra y pantalla)", "Fila de pupitres 1 (6 plazas)" };
             case "aul_estudio": return new[] { "Estanterías de la biblioteca", "Puesto del catálogo y de ordenador 1", "Mesa de estudio 1 (6 plazas)" };
@@ -165,6 +171,7 @@ public static class VirtualMissions
             case "Central Nuclear": return new Color(0.75f, 0.78f, 0.8f);
             case "Informática": return new Color(0.55f, 0.65f, 0.8f);   // (2026-11-04) los pisos nuevos (docs/piso-informatica.md, docs/piso-aula.md)
             case "Aula": return new Color(0.85f, 0.8f, 0.65f);
+            case "Sala de asambleas": return new Color(0.62f, 0.48f, 0.34f);
             case "Música": return new Color(0.62f, 0.5f, 0.72f);
             default: return new Color(0.6f, 0.65f, 0.7f);
         }

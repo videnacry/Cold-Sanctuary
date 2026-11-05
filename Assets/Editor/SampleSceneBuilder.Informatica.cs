@@ -206,6 +206,11 @@ public static partial class SampleSceneBuilder
         KitchenProps.C(front, new Vector3(0f, 0.55f, 0.4f), new Vector3(1.9f, 0.7f, 0.05f), new Color(0.45f, 0.34f, 0.24f), 0f, "Faldon_mesa");
         KitchenProps.C(front, new Vector3(-1.6f, 1.6f, -1.15f), new Vector3(2.8f, 1.2f, 0.06f), new Color(0.15f, 0.3f, 0.22f), 0f, "Pizarra");
         KitchenProps.C(front, new Vector3(1.6f, 1.8f, -1.15f), new Vector3(2.6f, 1.5f, 0.04f), new Color(0.95f, 0.95f, 0.95f), 0f, "Pantalla_proyector");
+        // (2026-11-05, regla S14) Herramientas de saber del mundo sobre la mesa: ábaco chino, astrolabio, quipu y esfera griega.
+        KitchenProps.C(front, new Vector3(-0.7f, 1.02f, 0.4f), new Vector3(0.3f, 0.06f, 0.18f), new Color(0.45f, 0.25f, 0.15f), 0f, "Abaco_China");
+        KitchenProps.C(front, new Vector3(-0.25f, 1.03f, 0.4f), new Vector3(0.18f, 0.03f, 0.18f), new Color(0.75f, 0.6f, 0.3f), 0f, "Astrolabio_Al_Andalus");
+        KitchenProps.C(front, new Vector3(0.2f, 1.02f, 0.4f), new Vector3(0.3f, 0.02f, 0.14f), new Color(0.86f, 0.8f, 0.65f), 0f, "Quipu_Andes");
+        KitchenProps.C(front, new Vector3(0.7f, 1.09f, 0.4f), new Vector3(0.18f, 0.18f, 0.18f), new Color(0.6f, 0.55f, 0.4f), 0f, "Esfera_Grecia");
         KitchenProps.Fit(front);
         AreaSeat.Add(front.gameObject, "dar clase", AreaSeat.Category.Trabajo, 2);   // profesor y ayudante
         WorldLabel fl = front.gameObject.AddComponent<WorldLabel>(); fl.text = "Tarima del profesor"; fl.height = 2.8f;

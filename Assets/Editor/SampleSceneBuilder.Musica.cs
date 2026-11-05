@@ -133,6 +133,9 @@ public static partial class SampleSceneBuilder
         Transform repair = KitchenProps.Root(g, "Banco del técnico de sonido", new Vector3(5.5f, 0f, hz - 2.2f));
         Bench(repair, 3f, 0.9f, LabSteel);
         for (int k = 0; k < 4; k++) KitchenProps.C(repair, new Vector3(-1.1f + k * 0.7f, 1f, 0f), new Vector3(0.25f, 0.1f, 0.25f), CableBlack, 0f, "Rollo_de_cable");
+        // (2026-11-05, regla S14) Instrumentos del mundo sobre el banco: sitar, charango, kora y shamisen.
+        string[] world = { "Instrumento_sitar_India", "Instrumento_charango_Andes", "Instrumento_kora_Mali", "Instrumento_shamisen_Japon" };
+        for (int k = 0; k < 4; k++) KitchenProps.C(repair, new Vector3(-1.1f + k * 0.7f, 1.04f, 0.28f), new Vector3(0.5f, 0.08f, 0.14f), StageWood, 0f, world[k]);
         KitchenProps.Fit(repair);
         AreaSeat.Add(repair.gameObject, "sonido", AreaSeat.Category.Trabajo, 2);
         WorldLabel twl = repair.gameObject.AddComponent<WorldLabel>(); twl.text = "Banco del técnico"; twl.height = 2f;

@@ -28,15 +28,15 @@ toca. Reglas: [manual de diseño](manual-de-diseno.md) §7 y J6, y [microcosmos-
 | **Eloy Alfaro** (`Microcosmos_EloyAlfaro`, «Chimbacalle») | Llega el primer tren de Durán a Quito el día de su cumpleaños; la cuadrilla jamaicana, la escuela laica, el clavo de oro | Chimbacalle, Quito, 25-6-1908, 10:00 | **Mecánica**, **pendiente**: «Estación de ferrocarril y transporte» | Hormiga: abre un sendero y por él pasa la colonia |
 | **Galvarino** (`Microcosmos_Galvarino`, «Lagunillas») | Vuelve a su lof; la machi, el lawen, su gente lo cuida; habla en el koyag | Un lof de Arauco, noviembre de 1557, 9:00 | **Hospital**, representativo (curarse y seguir) | Grillo: suelta una pata y sigue saltando |
 | **Atahualpa** (`Microcosmos_Atahualpa`, «Cajamarca») | Cómo vivían los incas: ayni, mit'a, colcas, quipus, caminos, comida y tela; un muro sin terminar; la bienvenida de Tumbes y la chicha a los enviados. Rehecho el 2026-11-05 | Cajamarca, 15-11-1532, 15:00 | **Estudio Textil**, **pendiente**: «Almacén y contaduría (qollqas y quipus)» | Termita: una ciudad de barro sin rueda ni hierro |
-| **La Gran Ley de la Paz** (`Microcosmos_GranLeyDeLaPaz`, «Onondaga») | Jigonsaseh, Ayenwatha, el Pacificador y Tadodaho: cinco naciones, una casa larga | Lago Onondaga, hacia 1450 (fecha discutida), 9:00 | **Aula**, **pendiente**: «Sala de asambleas (parlamento)» | Abeja: el enjambre decide por consenso |
+| **La Gran Ley de la Paz** (`Microcosmos_GranLeyDeLaPaz`, «Onondaga») | Jigonsaseh, Ayenwatha, el Pacificador y Tadodaho: cinco naciones, una casa larga | Lago Onondaga, hacia 1450 (fecha discutida), 9:00 | **Sala de asambleas**, representativo | Abeja: el enjambre decide por consenso |
 | **Cleopatra** (`Microcosmos_Cleopatra`, «Alejandría de Cleopatra») | Dos años sin crecida: abre los graneros y habla a cada barrio en su lengua | Alejandría, verano del 42 a. C., 8:00 | **Cocina**, representativo (dar de comer a la ciudad) | Abeja: el signo del rey del Bajo Egipto |
 | **Las calculadoras de Langley** (`Microcosmos_Langley`, «Langley») | Johnson comprueba a mano la órbita de Glenn; Vaughan y FORTRAN; Jackson y el instituto | Hampton (Virginia), 19–20-2-1962, 9:47 | **Informática**, representativo | Pelotero (Johnson: las estrellas), hormiga (Vaughan), tijereta (Jackson) |
 | **Beethoven** (`Microcosmos_Beethoven`, «Viena 1824») | El estreno de la Novena: hablarle por escrito, las particellas; Unger lo gira | Viena, 7-5-1824, 19:00 | **Música** (`Music_Area`, [piso-musica.md](piso-musica.md)) | Grillo: oye por las patas |
 | **Descartes** (`Microcosmos_Descartes`, «Leiden») | Se imprime el Discurso del método: las cuatro reglas, la rejilla, dudar junto a la estufa | Leiden, 8-6-1637, 10:00 | **Aula**, representativo | Araña: una red de líneas rectas |
 | **Ernesto Guevara** (`Microcosmos_CheGuevara`, «San Pablo») | La colonia de leprosos: curas sin guantes, el brindis, el río, la balsa | San Pablo de Loreto, 14-6-1952, 9:00 | **Hospital**, representativo | Langosta: cruza un continente |
-| **Pedro Sánchez** (`Microcosmos_PedroSanchez`, «Madrid 2018») | Cómo funciona una moción de censura; la votación; la promesa | Congreso, Madrid, 1-6-2018, 11:00 | **Aula**, **pendiente**: «Sala de asambleas (parlamento)» | Abeja: el pleno cuenta apoyos (también Rajoy y Pastor: el insecto es por la institución) |
-| **Lincoln** (`Microcosmos_Lincoln`, «Gettysburg») | Cuatro meses tras la batalla: Wills, Thorn, Biggs, la proclama y los dos minutos | Gettysburg, 19-11-1863, 11:00 | **Aula**, **pendiente**: «Sala de asambleas (parlamento)» | Mantis: alta, delgada y paciente |
-| **Grandes hazañas de presidentes** (`Microcosmos_Hazanas`, «Feria de las Hazañas») | Una feria INVENTADA con 7 pabellones: Lee Kuan Yew, Washington, Roosevelt, Figueres, Khama, Mandela, Sirleaf | Inventado, hoy | **Aula**, **pendiente**: «Sala de asambleas (parlamento)» | Cada uno, el suyo; Lee: hormiga tejedora de Singapur |
+| **Pedro Sánchez** (`Microcosmos_PedroSanchez`, «Madrid 2018») | Cómo funciona una moción de censura; la votación; la promesa | Congreso, Madrid, 1-6-2018, 11:00 | **Sala de asambleas**, representativo | Abeja: el pleno cuenta apoyos (también Rajoy y Pastor: el insecto es por la institución) |
+| **Lincoln** (`Microcosmos_Lincoln`, «Gettysburg») | Cuatro meses tras la batalla: Wills, Thorn, Biggs, la proclama y los dos minutos | Gettysburg, 19-11-1863, 11:00 | **Sala de asambleas**, representativo | Mantis: alta, delgada y paciente |
+| **Grandes hazañas de presidentes** (`Microcosmos_Hazanas`, «Feria de las Hazañas») | Una feria INVENTADA con 7 pabellones: Lee Kuan Yew, Washington, Roosevelt, Figueres, Khama, Mandela, Sirleaf | Inventado, hoy | **Sala de asambleas**, representativo | Cada uno, el suyo; Lee: hormiga tejedora de Singapur |
 
 Cada una lleva sus edificios de la historia con su actividad, su plano, su relleno y las cuatro categorías (trabajo, ocio, entrenamiento,
 recuperación). Ninguna tiene `Milicia`.
@@ -101,10 +101,10 @@ Se auditaron las reglas de §11 (W9, W10, sincronización, alerta de piso nuevo)
 **Reglas añadidas:** M36 (fichas con fecha de caducidad), M37 (antes de la máquina, el piso es roca), M38 (los animales del pueblo van en el mapa), W11 misma.
 
 **Propuestas, sin hacer (para Berón):**
-1. W10 en los vivos no políticos: Sadhguru, Musk, Gates, Buffett y Scott dicen frases de juego (marcadas en su ficha). W10 solo prohíbe actos; ¿se les quitan también las frases, como a los políticos?
+1. ~~Frases de los vivos no políticos~~: decidido por Berón: se conservan, con su veracidad (M39, [veracidad-frases.md](veracidad-frases.md)).
 2. Una prueba que compare la tabla de §11 con `MicroFloors.Table`, y otra que mire los nombres de planta de cada mapa (hoy solo avisa la consola).
 3. Aplicar M37 a las historias antiguas cuando su mapa pase de esbozo a hecho.
-4. Crear el piso «Sala de asambleas (parlamento)»: lo piden Angostura, Onondaga, Madrid, Gettysburg y la Feria.
+4. ~~Crear el piso «Sala de asambleas»~~: hecho ([piso-asambleas.md](piso-asambleas.md)).
 
 ### Lincoln: sí
 
@@ -209,5 +209,4 @@ Las de cada historia están en su ficha (`sources` de la misión); las de plano 
 
 ## Pendiente
 
-- Sala de asambleas: si un día se crea, re-apuntar Onondaga, Madrid, Gettysburg, Feria y Angostura (la alerta de piso nuevo avisará).
 - Standing Bear, en otra tanda.

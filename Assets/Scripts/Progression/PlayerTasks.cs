@@ -121,6 +121,10 @@ public static class PlayerTasks
         T("ifo_energia", "Revisa la acometida|cuadro|Linterna", "Prueba el SAI y las baterías|sai|Tablet");
         T("aul_clase", "Prepara la pizarra|pizarra|Tiza", "Da o sigue la clase|pizarra|Libro", "Recoge los apuntes|mesa|Libro");
         T("aul_estudio", "Coge un libro|estante|Libro", "Estudia en la mesa|mesa|Libro", "Devuelve el libro|estante|Libro");
+        // ══ SALA DE ASAMBLEAS ══
+        T("asa_orden", "Reúne los temas en la mesa de la comisión|comision|Tablet", "Sortea quién modera|kleroterion|", "Ponlos en el marcador|marcador|Tablet");
+        T("asa_acta", "Escribe lo acordado|acta|Tablet", "Guárdalo en el archivo|acta|");
+        T("asa_mediar", "Escucha a una parte en la toguna|toguna|", "Escucha a la otra|toguna|", "Apunta el acuerdo|toguna|Tablet");
         // ══ MÚSICA ══
         T("son_grabar", "Prepara los micrófonos en la cabina|cabina|Tablet", "Graba las tomas|cabina|", "Mézclalas en la mesa|mezclas|Tablet");
         T("son_ensayo", "Afina los instrumentos|ensayo|Llave inglesa", "Ensaya en la sala|ensayo|", "Prueba en el escenario|escenario|");

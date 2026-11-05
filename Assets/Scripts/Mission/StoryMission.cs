@@ -31,6 +31,8 @@ public class StoryMission : MonoBehaviour
         public float seconds = 10f;
         [Tooltip("Lo que se dice al cumplirlo (quién y qué).")]
         public string speaker = "", line = "";
+        [Tooltip("Regla M39: su nivel de veracidad y su fuente (LineTruth).")]
+        public Veracity truth; public string truthSource = "";
         [Tooltip("Al cumplirlo aparecen / desaparecen (la bici arreglada, el avión, la ventana abierta…).")]
         public GameObject[] reveal = new GameObject[0], hide = new GameObject[0];
     }
@@ -41,6 +43,7 @@ public class StoryMission : MonoBehaviour
     public float xp = 50f;
     public float reach = 2.5f;
     public string finalSpeaker = "", finalLine = "";
+    public Veracity finalTruth; public string finalTruthSource = "";
 
     public static StoryMission Instance { get; private set; }
 
@@ -65,6 +68,7 @@ public class StoryMission : MonoBehaviour
     {
         _card = GetComponent<HistoryCard>();
         if (string.IsNullOrEmpty(_card.title)) _card.title = title;
+        LineTruth.Fill(this, _card);   // regla M39 (también en las escenas construidas antes de la regla)
         foreach (StoryStep s in steps) foreach (GameObject g in s.reveal) if (g != null) g.SetActive(false);
     }
 
@@ -157,7 +161,7 @@ public class StoryMission : MonoBehaviour
     {
         foreach (GameObject g in s.reveal) if (g != null) g.SetActive(true);
         foreach (GameObject g in s.hide) if (g != null) g.SetActive(false);
-        Say(s.speaker, s.line);
+        Say(s.speaker, s.line + (s.truth != Veracity.SinMarcar ? $" [{LineTruth.Label(s.truth)}]" : ""));
         if (!string.IsNullOrEmpty(s.speaker) && !string.IsNullOrEmpty(s.line)) KushalVoice.Reply(KushalVoice.Ctx.Listen);   // le hablan: contesta
         _step++; _held = 0f;
         if (Finished) Finish();

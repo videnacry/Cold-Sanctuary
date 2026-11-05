@@ -18,8 +18,13 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 > - [x] Regla W10 (manual §11): revelar lo altruista, bello o de superación; lo inventado, marcado; nada inventado de personas vivas. Las 12 revisadas.
 > - [x] **W10 en las anteriores** (2026-11-05): Pitágoras, Heródoto, Eratóstenes, Newton, Nietzsche, al-Juarismi, Einstein, Tesla, Jenner y Curie con su momento; Gates, Buffett y Traoré con hechos públicos. Reconstruirlos de uno en uno cuando se puedan probar.
 > - [x] Regla W11 (auditar al cambiar una regla), primera auditoría hecha; reglas nuevas M36–M38. Propuestas sin hacer en [`microcosmos-historias-3.md`](microcosmos-historias-3.md) §W11.
+> - [x] **Sala de asambleas** ([`piso-asambleas.md`](piso-asambleas.md)): nivel 4 de Servicios, 72 plazas; Angostura, Onondaga, Madrid, Gettysburg y la Feria re-apuntadas. Reglas S14 y F14, y `AreaDesign`.
+> - [x] **Veracidad de las frases** ([`veracidad-frases.md`](veracidad-frases.md), regla M39).
+> - [ ] **Sala de asambleas: probar en vivo**: Blockout de solo santuario, «Build Microcosmos…» de las 5 y grupos 77, 43, 28, 57, 90.
+> - [ ] **Decidir con Berón**: la tapa de cristal de la cabina y los listones de la toguna (S6). Mezcla de las 17 áreas pendientes de S14.
 > - [x] Regla de oro J30 / P11: todos saben hacer de todo. `Mission.owner` ya no es exclusivo.
-> - [ ] **Decidir con Berón**: palabras de juego de los vivos no políticos (Sadhguru, Musk, Gates, Buffett, Scott), y lo que el jugador aún no puede hacer (P11).
+> - [x] Berón (2026-11-05): los vivos no políticos conservan sus frases, marcadas (M39).
+> - [ ] **Decidir con Berón**: lo que el jugador aún no puede hacer (P11).
 > - [ ] **Revisar la ficha de Pedro Sánchez tras las elecciones del 29-11-2026** (`Historia.PedroSanchez.cs`, último párrafo).
 > - [ ] Repasar los [verificar] del doc (día del clavo de oro, fecha de Lagunillas, número de enfermos de San Pablo y fecha del cruce a nado, cifras de Singapur).
 

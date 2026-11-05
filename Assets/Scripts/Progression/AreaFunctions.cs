@@ -143,6 +143,10 @@ public static class AreaFunctions
         Roles(S(Effect(Def("Informática", "ifo_energia", "Revisar la acometida, el SAI y las baterías del clúster", 0.5f, false, Kind.Operate, "consola"), who => AiCluster.Instance?.PowerCheck(who))), "informatico");
         Roles(S(Def("Aula", "aul_clase", "Dar o recibir una clase en el aula (un tema de las áreas del santuario)", 1f, false, Kind.Teach, "pizarra")), "maestro", "alumno");
         S(Def("Aula", "aul_estudio", "Estudiar en la sala de estudio (biblioteca)", 1f, false, Kind.Study, "mesa"));
+        // (2026-11-05) LA ASAMBLEA (docs/piso-asambleas.md): por rotación normal, como todo (J30).
+        S(Def("Sala de asambleas", "asa_orden", "Preparar el orden del día de la asamblea de la semana", 1f, false, Kind.Study, "mesa"));
+        S(Def("Sala de asambleas", "asa_acta", "Levantar el acta y guardarla en el archivo", 0.5f, false, Kind.Study, "mesa"));
+        S(Def("Sala de asambleas", "asa_mediar", "Mediar en un desacuerdo, sentados en la toguna", 1f, false, Kind.Care, "banco"));
         // (2026-11-05) LA MÚSICA (docs/piso-musica.md): grabar, ensayar y cuidar el equipo (los id son «son_»: «mus_» es el Museo).
         S(Def("Música", "son_grabar", "Grabar y mezclar en el estudio (la mesa de mezclas y la cabina de voz)", 1f, false, Kind.Operate, "consola"));
         S(Def("Música", "son_ensayo", "Preparar y ensayar el concierto de la semana", 1f, false, Kind.Practice, "pista"));

@@ -80,6 +80,14 @@ public class MicrocosmosFloorTest : MonoBehaviour, ITestUnit
     /// <summary>Las comprobaciones de un microcosmos (también se puede llamar desde otras pruebas con el ya cargado).</summary>
     public void Inspect(MicroFloor f, string scene)
     {
+        // (2026-11-05) Regla M39: toda frase de la historia con su veracidad y su fuente; ninguna persona real como inventada.
+        StoryMission told = f.GetComponentInChildren<StoryMission>(true);
+        if (told != null)
+        {
+            LineTruth.Fill(told, f.GetComponentInChildren<HistoryCard>(true));
+            var noTruth = LineTruth.Missing(told);
+            TestProbe.Check($"{scene}: toda frase con su veracidad y su fuente", noTruth.Count == 0, string.Join(" · ", noTruth.GetRange(0, Mathf.Min(6, noTruth.Count))));
+        }
         Bounds rect = f.WorldRect();
         TestProbe.Check($"{scene}: el piso tiene tamaño (×10)", f.size.x > 20f && f.size.y > 20f, $"{f.size.x:0} × {f.size.y:0} m");
 

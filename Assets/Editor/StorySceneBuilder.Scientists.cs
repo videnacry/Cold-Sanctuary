@@ -371,7 +371,7 @@ public static partial class StorySceneBuilder
                 Collect("La tropa sale hacia los Andes: lleva el casabe al fogón para el viaje", tortas, kitchen, "Cocinera", "El casabe se hace con yuca amarga: se ralla, se exprime el jugo venenoso y se tuesta en el budare. Aguanta semanas sin estropearse."),
                 Talk("Despídete de Bolívar antes de la campaña", sb.transform, "Bolívar", "En mayo saldremos a cruzar los llanos inundados y los Andes por el páramo de Pisba. Si llegamos, liberaremos la Nueva Granada."),
             },
-            "Angostura del Orinoco (hoy Ciudad Bolívar, Venezuela), febrero de 1819, sobre la cocina del santuario a escala de hormiga. Simón Bolívar ha reunido aquí un congreso para fundar una república en plena guerra de independencia. Ayuda en la imprenta, escucha el discurso y prepara la comida de la tropa. E para hablar y recoger; para escuchar, quédate quieto.",
+            "Angostura del Orinoco (hoy Ciudad Bolívar, Venezuela), febrero de 1819, sobre la Sala de asambleas del santuario a escala de hormiga. Simón Bolívar ha reunido aquí un congreso para fundar una república en plena guerra de independencia. Ayuda en la imprenta, escucha el discurso y prepara la comida de la tropa. E para hablar y recoger; para escuchar, quédate quieto.",
             new[]
             {
                 "Simón Bolívar (Caracas, 1783 – Santa Marta, 1830) dirigió la independencia de Venezuela, Colombia, Ecuador, Perú y Bolivia frente al Imperio español. Tras varias derrotas, en 1817 los patriotas tomaron Angostura, en el Orinoco, y la hicieron su capital provisional; en junio de 1818 fundaron el periódico «Correo del Orinoco».",

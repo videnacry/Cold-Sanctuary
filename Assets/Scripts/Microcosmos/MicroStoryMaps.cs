@@ -66,7 +66,7 @@ public static partial class MicroStoryMaps
     /// <summary>LOS MAPAS. Angostura es el ejemplo completo; el resto, esbozos con lo que les falta.</summary>
     public static readonly Map[] All =
     {
-        // ══ ANGOSTURA, 15 de febrero de 1819 (Bolívar): sobre la Cocina (pendiente de su Sala de asambleas) ══════════════════════════
+        // ══ ANGOSTURA, 15 de febrero de 1819 (Bolívar): sobre la Sala de asambleas ══════════════════════════
         // El pueblo: la cuadrícula colonial en la orilla sur del Orinoco (su «angostura», ~800 m de río), la Plaza Mayor con la catedral
         // y la Casa del Congreso, el Paseo Orinoco con su barranca de granito, la Piedra del Medio en el río y el cerro El Zamuro con su
         // fortín al sur. Febrero: estación seca; sabana de paja de Trachypogon con chaparros, morichales en los caños, araguaneyes en
@@ -83,6 +83,9 @@ public static partial class MicroStoryMaps
                 new Piece("silla", MicroFloorElements.Action.Como, "ni nieve en el Orinoco: las sillas son cerros de granito", "mesa"),
                 new Piece("lavabo", MicroFloorElements.Action.Como, "los fregaderos son el cauce del Orinoco y sus lagunas de desborde (grifo abierto: el río)", "lavabo"),
                 new Piece("cajonera", MicroFloorElements.Action.Como, "armarios y neveras: las casas de dos plantas de la ciudad colonial (estilo de 1819)", "cajonera"),
+                // (2026-11-05) En la Sala de asambleas: sin pantallas ni máquinas en 1819; lo de antes (fogones, fregaderos) era de cuando iba sobre la Cocina.
+                new Piece("maquina", MicroFloorElements.Action.Como, "sin máquinas en 1819: lajas de granito", "roca"),
+                new Piece("pared", MicroFloorElements.Action.Como, "el marcador: el farallón de la barranca del Orinoco", "pared"),
             },
             flora = new[]
             {

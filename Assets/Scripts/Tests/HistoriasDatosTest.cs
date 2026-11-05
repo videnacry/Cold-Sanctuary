@@ -18,15 +18,15 @@ public class HistoriasDatosTest : MonoBehaviour, ITestUnit
         ("Chimbacalle", "VehicleWorkshop_Area", false, 1908, "Andes", "andes_republicano", "pelota_nacional"),
         ("Lagunillas", "Infirmary_Area", true, 1557, "Mapuche", "mapuche", "palin"),
         ("Cajamarca", "TextileStudio_Area", false, 1532, "Inca", "inca", "warachikuy"),
-        ("Onondaga", "Classroom_Area", false, 1450, "Haudenosaunee", "haudenosaunee", "tewaarathon"),
+        ("Onondaga", "Assembly_Area", true, 1450, "Haudenosaunee", "haudenosaunee", "tewaarathon"),
         ("Alejandría de Cleopatra", "Kitchen_Area", true, -42, "EgiptoPtolemaico", "egipto_ptolemaico", "gimnasio_griego"),
         ("Langley", "Informatics_Area", true, 1962, "VirginiaTidewater", "virginia_1960", "gimnasio_moderno"),
         ("Viena 1824", "Music_Area", true, 1824, "Viena", "viena_biedermeier", "sala_esgrima"),
         ("Leiden", "Classroom_Area", true, 1637, "ProvinciasUnidas", "provincias_1600", "sala_esgrima"),
         ("San Pablo", "Infirmary_Area", true, 1952, "Amazonia", "amazonia_1950", "estadio"),
-        ("Madrid 2018", "Classroom_Area", false, 2018, "EspanaActual", "espana_actual", "gimnasio_moderno"),
-        ("Gettysburg", "Classroom_Area", false, 1863, "Norteamerica", "norteamerica_victoriana", "turnhalle"),
-        ("Feria de las Hazañas", "Classroom_Area", false, 2026, "Exposicion", "exposicion_mundial", "gimnasio_moderno"),
+        ("Madrid 2018", "Assembly_Area", true, 2018, "EspanaActual", "espana_actual", "gimnasio_moderno"),
+        ("Gettysburg", "Assembly_Area", true, 1863, "Norteamerica", "norteamerica_victoriana", "turnhalle"),
+        ("Feria de las Hazañas", "Assembly_Area", true, 2026, "Exposicion", "exposicion_mundial", "gimnasio_moderno"),
     };
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -72,8 +72,6 @@ public class HistoriasDatosTest : MonoBehaviour, ITestUnit
         var onon = new List<string>(); foreach (var fr in MicroStyles.Fruits(MicroStyles.For(1450, MicroStyles.Region.Haudenosaunee))) onon.Add(fr.name);
         TestProbe.Check("en Onondaga no hay frutales europeos (manzanos, perales)", !onon.Exists(x => x.Contains("Manzano") || x.Contains("Peral")), string.Join(", ", onon));
         TestProbe.Check("ninguna de las entradas nuevas levanta un cuartel (historias civiles)", System.Array.TrueForAll(Cases, c => { var e = MicroStyles.For(c.year, MicroStyles.RegionOf(c.display)); return e.id == "norteamerica_victoriana" || MicroStyles.CivicName(MicroStyles.Civic.Milicia, e, c.year) == null; }));
-        var pend = MicroFloors.Pending();
-        TestProbe.Check("la sala de asambleas la esperan al menos cuatro de esta tanda", pend.TryGetValue("Sala de asambleas (parlamento)", out var ls) && ls.Count >= 5, ls != null ? string.Join(" · ", ls) : "");
         TestProbe.End();
     }
 }

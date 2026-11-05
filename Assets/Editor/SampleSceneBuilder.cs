@@ -3478,13 +3478,14 @@ public static partial class SampleSceneBuilder
         var size = new Dictionary<Transform, Vector2>();
         void Floor(Transform t) => size[t] = TowerFloor(t);
         Transform Child(Transform area, string name) { Transform c = new GameObject(name).transform; c.SetParent(area, false); return c; }
-        //  · SERVICIOS: Restaurante · Hospital (urgencias · quirófanos y UCI · veterinario) · Cría · Carne Cultivada.
-        //    Un ÁRBOL (docs/edificio-arbol.md §Migración): 3 niveles de hélice, sus 6 pisos en orden (nivel 1, lados a y c; nivel 2, b
-        //    y d; nivel 3, a y c) y 6 puntas con frutales.
-        BeginTreeTower(areasGroup.transform, TorreServicios, ServiciosCenter, ServiciosSize, ServiciosYaw, 3);
+        //  · SERVICIOS: Restaurante · Hospital (urgencias · quirófanos y UCI · veterinario) · Cría · Carne Cultivada · Sala de asambleas.
+        //    Un ÁRBOL (docs/edificio-arbol.md §Migración): 4 niveles de hélice (2026-11-05: el cuarto, para la Sala de asambleas: las mismas caras
+        //    del nivel 2, así que la planta no cambia), sus 7 pisos en orden (nivel 1, lados a y c; nivel 2, b y d; nivel 3, a y c; nivel 4, b) y uno libre.
+        BeginTreeTower(areasGroup.transform, TorreServicios, ServiciosCenter, ServiciosSize, ServiciosYaw, 4);
         Floor(kitchen.transform);
         Floor(hospital.transform); Floor(Child(hospital.transform, "Planta_hospitalizacion")); Floor(Child(hospital.transform, "Planta_veterinaria"));   // las amuebla BuildHospital
         Floor(cria.transform); Floor(meat.transform);
+        SanctuaryArea assembly = BuildAssembly(areasGroup.transform); areas.Add(assembly);   // (2026-11-05) docs/piso-asambleas.md
         //  · ENTRENAMIENTO: Gimnasio · Cardio y zona libre · Calistenia, parkour y crossfit · Yoga (Hatha) · Yoga (Ashtanga) · Ballet
         //    · Dojo. Lo pesado y ruidoso (las máquinas) abajo; lo silencioso (los dos pisos de yoga y las salas en obras) arriba.
         //    Un ÁRBOL (Berón 2026-11-04: se quitó el anillo de yoga y el yoga pasó a sus propios pisos, docs/yoga-pisos.md): los niveles
@@ -4172,6 +4173,7 @@ public static partial class SampleSceneBuilder
         // (2026-11-04) Los pisos nuevos: Informática (Bill Gates en Albuquerque) y el Aula (MacKenzie Scott en Prairie View).
         WireMeditationArea(parent, "Informatics_Area", "Informática", new Color(0.55f, 0.65f, 0.8f), MissionKind.Channel, null, virtualOnly: true);
         WireMeditationArea(parent, "Classroom_Area", "Aula", new Color(0.85f, 0.8f, 0.65f), MissionKind.Channel, null, virtualOnly: true);
+        WireMeditationArea(parent, AssemblyArea, AssemblyTitle, new Color(0.62f, 0.48f, 0.34f), MissionKind.Channel, null, virtualOnly: true);   // (2026-11-05) docs/piso-asambleas.md
         WireMeditationArea(parent, MusicArea, "Música", new Color(0.62f, 0.5f, 0.72f), MissionKind.Channel, null, virtualOnly: true);   // (2026-11-05) docs/piso-musica.md
 
         // Segunda vía de entrada: el hechizo de loto (arranca bloqueado; se activa al aprenderlo).
