@@ -75,7 +75,7 @@ Con pasos escritos (`PlayerTasks.AuthoredIds`): **todo el catálogo de la jornad
 — hospital (10), cocina (8), huerto (3), sala de yoga (6), mecánica (4), estudio textil (3), carne cultivada (4), construcción (3),
 cría (3), gimnasio (2), planta atómica (5), química (2), biología (2), central nuclear, guardia, informática (3), aula (5) y control de misión (1) —,
 las del **material** (`mat_guadua`, `mat_bahareque`, `mat_micelio`, `mat_cuerda`), los **fotobiorreactores**
-(`bio_fotobio`) , la **lanzadera** (`lanz_control`, `lanz_seguridad`, `lanz_fabrica`) y el **Parque Energético** (`sol_mantenimiento`, `sol_instalacion`, `sol_reparacion`, `ene_control`, `ene_eolica`, `ene_mareal`, `ene_almacen`; sus puestos, en el casquete: `panel`, `aerogenerador`, `detector`, `pontona`, `sonar`, `bateria`, `silo`). Por prefijo: las **elaboraciones**
+(`bio_fotobio`) , la **lanzadera** (`lanz_control`, `lanz_seguridad`, `lanz_fabrica`) y el **Parque Energético** (`sol_mantenimiento`, `sol_instalacion`, `sol_reparacion`, `ene_control`, `ene_eolica`, `ene_mareal`, `ene_almacen`, `ene_ronda_aves`, `ene_disuasion`, y `hos_aves` en el Hospital; sus puestos, en el casquete: `panel`, `aerogenerador`, `detector`, `pontona`, `sonar`, `bateria`, `silo`, `caja_aves`, `hangar`; y `refugio` en la planta veterinaria). Por prefijo: las **elaboraciones**
 (`prep_*`), las **obras** (`obra_material_*`, `obra_trabajo_*`), las **reparaciones** (`rep_*`, el paso de reparar va al área
 rota) y la **ronda de frutales** (`jar_frutales*`). Cualquier otra (las de los edificios de los microcosmos) sale con tres
 pasos genéricos de su clase y su puesto: nunca sin pasos. Una misión nueva del santuario debe traer sus pasos escritos: si no, la

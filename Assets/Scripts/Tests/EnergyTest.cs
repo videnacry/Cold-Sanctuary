@@ -11,6 +11,7 @@ using UnityEngine;
 /// 5. FAUNA: un ave para la turbina y rearma; pala negra, cámaras y radar; un animal en el agua para la mareal; punta ≤ 5 m/s.
 /// 6. ALMACÉN: sin reactor, las baterías sostienen lo esencial y se apaga lo demás; lo que sobra va a las baterías y al silo.
 /// 7. JORNADA: las misiones tienen pasos con E, actuación, uniforme y sitio; averías y reparación; Fernando es su profesional.
+/// 8. AVES: ni cría ni cura junto al rotor (refugio a ≥ 400 m), ronda, cura y suelta; figuras y dragón solo a demanda, con habituación, y la turbina para igual.
 /// </summary>
 public class EnergyTest : MonoBehaviour, ITestUnit
 {
@@ -158,6 +159,52 @@ public class EnergyTest : MonoBehaviour, ITestUnit
             TestProbe.Check($"el puesto «{st}» está en el parque", PlayerTasks.Resolve(EnergyRule.Area, st, 0, null, null).found);
         TestProbe.Check("las de sitio van al casquete", new[] { "sol_mantenimiento", "ene_eolica", "ene_mareal", "ene_almacen" }.All(i => { Vector3? p = EnergySite.FieldPoint(i, "Prueba"); return p.HasValue && Flat(p.Value, EnergyRule.Center) < EnergyRule.CapHalf + 2f; }));
         TestProbe.Check("Fernando es su profesional", Professions.Practises("Fernando", EnergyRule.Area, "sol_mantenimiento"));
+
+        // ── 8. LAS AVES ──
+        BirdRehabPoint rp = FindAnyObjectByType<BirdRehabPoint>();
+        TestProbe.Check("hay refugio de aves, en el Hospital", rp != null && rp.GetComponentInParent<SanctuaryArea>() != null && rp.GetComponentInParent<SanctuaryArea>().displayName == AreaWork.Hospital);
+        if (rp == null) { TestProbe.End(); yield break; }
+        TestProbe.Greater("el refugio, lejos de todas las turbinas", es.turbines.Min(u => Vector3.Distance(u.transform.position, rp.transform.position)), EnergyRule.RehabMinDistance);
+        TestProbe.Check("en el parque no hay cría ni refugio", es.GetComponentInChildren<BirdRehabPoint>(true) == null);
+        rp.patients.Clear();
+        int rel0 = rp.Released;
+        es.injuredWaiting = 1; es.carcassesWaiting = 1; int car0 = es.Carcasses;
+        TestProbe.Check("la ronda sale cada día", EnergySite.Missions(1).Any(x => x.id == "ene_ronda_aves"));
+        TestProbe.Check("la ronda lleva al ave al refugio y retira los restos", AreaFunctions.Run("ene_ronda_aves", "Prueba") && rp.patients.Count == 1 && es.injuredWaiting == 0 && es.Carcasses == car0 + 1);
+        TestProbe.Check("el ave se ve en su caja", rp.birds[0].activeSelf);
+        TestProbe.Check("sale la misión del Hospital", EnergySite.Missions(1).Any(x => x.id == "hos_aves" && x.area == AreaWork.Hospital));
+        for (int i = 0; i < EnergyRule.RehabDays; i++) AreaFunctions.Run("hos_aves", "Prueba");
+        TestProbe.Check("curada, se suelta", rp.Released == rel0 + 1 && rp.patients.Count == 0 && !rp.birds[0].activeSelf);
+        foreach (string st in new[] { "caja_aves", "hangar" }) TestProbe.Check($"el puesto «{st}» está en el parque", PlayerTasks.Resolve(EnergyRule.Area, st, 0, null, null).found);
+        TestProbe.Check("el puesto del refugio está en el Hospital", PlayerTasks.Resolve(AreaWork.Hospital, "refugio", 0, null, null).found);
+        string[] ids8 = { "ene_ronda_aves", "ene_disuasion", "hos_aves" };
+        var authored8 = PlayerTasks.AuthoredIds.ToList(); var own8 = Performances.OwnMissions.ToList();
+        TestProbe.Check("con pasos con E y actuación", ids8.All(authored8.Contains) && ids8.All(own8.Contains));
+        TestProbe.Check("hos_aves, de veterinaria; las otras, de energía", Uniforms.ForWork("hos_aves", AreaWork.Hospital, "x") == Uniforms.Kind.Veterinaria && Uniforms.ForWork("ene_ronda_aves", EnergyRule.Area, "x") == Uniforms.Kind.Energia);
+
+        TestProbe.Check("las figuras esperan ocultas", es.figures.Count > 0 && es.figureSpots.Count >= es.figures.Count);
+        TestProbe.Check("el dragón tiene sus drones y el cartel de adorno", es.dragon != null && es.dragon.drones.Count > 0);
+        foreach (WindTurbineUnit u in es.turbines) u.ClearForTest();
+        es.habituation = 0.9f;
+        float wait0 = Time.time;
+        while (Time.time - wait0 < 61f) yield return new WaitForSeconds(1f);   // (la disuasión espera 60 s entre salidas)
+        GameObject bird2 = new GameObject("Ave_de_prueba_2"); bird2.transform.position = es.turbines[1].transform.position + new Vector3(50f, 40f, 0f);
+        EnergySite.TestBirds.Add(bird2.transform);
+        int sc0 = es.Scares;
+        es.ScanNow();
+        TestProbe.Check("habituadas: la turbina para igual, sin figuras", es.turbines[1].Stopped && es.Scares == sc0 && !es.figures[0].gameObject.activeSelf);
+        TestProbe.Check("sale la misión de moverlas", EnergySite.Missions(0).Any(x => x.id == "ene_disuasion"));
+        Vector3 was = es.figures[0].position;
+        AreaFunctions.Run("ene_disuasion", "Prueba");
+        TestProbe.Check("moverlas baja la habituación y cambia el sitio", es.habituation < 0.9f && es.figures[0].position != was);
+        es.habituation = 0f; foreach (WindTurbineUnit u in es.turbines) u.ClearForTest();
+        wait0 = Time.time;
+        while (Time.time - wait0 < 61f) yield return new WaitForSeconds(1f);
+        es.ScanNow();
+        TestProbe.Check("sin habituación salen las figuras y sube", es.Scares == sc0 + 1 && es.figures[0].gameObject.activeSelf && es.habituation > 0f);
+        EnergySite.TestBirds.Clear(); Destroy(bird2);
+        foreach (WindTurbineUnit u in es.turbines) u.ClearForTest();
+        es.habituation = 0f;
 
         es.soil = soil0; es.batteryMWh = bat0;
         TestProbe.End();

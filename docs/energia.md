@@ -13,6 +13,7 @@ noroeste con su árbol bajo. Allí van los paneles de todos los pisos, 3 aerogen
 almacenamiento. El **reactor sigue siendo la carga base**: en la noche polar el sol da cero, y por eso no hace falta guardar energía de
 un verano para el invierno. Cada piso declara su demanda y paga su parte en paneles; un validador comprueba que la oferta cubre la demanda.
 La hidráulica sale mal parada: las corrientes reales de McMurdo no llegan ni al arranque de una turbina, así que la mareal es solo un piloto.
+Las ideas de Berón para las aves (pisos de cría, figuras, dragón de drones, aves amaestradas) están en §7.
 
 Código: `Assets/Scripts/World/EnergyRule.cs`, `FloorEnergy.cs`, `EnergySite.cs`, `WindTurbineUnit.cs`, `TidalTurbineUnit.cs`,
 `Assets/Editor/SampleSceneBuilder.Energy.cs`. Prueba: `EnergyTest` (grupo 101).
@@ -127,7 +128,7 @@ La fracción 1/5 no es una norma: es un reparto que deja libres cerca de un terc
 - **Lo que queda sin resolver:** ninguna de estas medidas elimina el riesgo, y ninguna se ha probado con la fauna antártica. Por eso `ene_control` lleva el registro de
   paradas y `ene_eolica` y `ene_mareal` revisan los detectores.
 
-## 3. La regla (T15 y S14 del manual)
+## 3. La regla (T16 y S14 del manual)
 1. **Cada piso declara su demanda** (`FloorEnergy`): área × W/m² de su clase (`EnergyRule.WattsPerM2`) + lo fijo (Informática, 95 kW), y si es esencial. Se pone solo al
    construir (`EnsureFloorEnergy`) y al validar si alguien crea un piso en juego (`EnergyRule.DeclareMissing`).
 2. **Su creación añade paneles:** `EnergyRule.TablesFor(kW)`. Al construir, el campo sale con las mesas de todos los pisos. En juego, un piso nuevo deja mesas
@@ -148,6 +149,9 @@ La fracción 1/5 no es una norma: es un reparto que deja libres cerca de un terc
 | `ene_eolica` | cada 3 días | 1 | Palas, cámaras y radar, con la turbina parada |
 | `ene_mareal` | cada 3 días | 1 | Sonar, anillo y fugas |
 | `ene_almacen` | cada 3 días | 0,5 | Calefacción y temperatura de las baterías, y el silo |
+| `ene_ronda_aves` | cada día | 0,5 | Busca aves heridas y retira restos al pie de torres y mesas (§7) |
+| `ene_disuasion` | si las aves se acostumbran | 1 | Cambia las figuras de sitio y revisa los drones (§7) |
+| `hos_aves` | si hay aves en el refugio | 0,5 | En el Hospital: las cura y las suelta (§7), con uniforme de veterinaria |
 
 Cada una trae sus pasos con E (`PlayerTasks`), su actuación (`Performances`) y el uniforme `Energia` (mono azul, casco, arnés, guantes aislantes). Las de sitio
 (paneles, torres, pontona, baterías) mandan a la persona al casquete (`EnergySite.FieldPoint`), no al piso de control.
@@ -162,6 +166,61 @@ ave → parada → rearme; pala negra; foca → parada de la mareal; punta ≤ 5
 - El HUD de energía (mostrar oferta y demanda en el modal de recursos) es del trabajador de la interfaz.
 - Sin microcosmos propio todavía: la alerta de piso nuevo avisará si alguno encaja.
 
+## 7. Las cuatro ideas de Berón para bajar el riesgo de las aves
+
+Pedido: «¿se podrían colocar pisos al rededor del piso de hélices? entonces dichos pisos serían de crianza de aves con lo cual también podrían sanar a cualquier herida que encuentren? y podrían realizar
+acciones mas originales como crear estructuras aterradoras muy visibles para que las aves rodeen o similar? quizás podrían usar drones para recrear un amenazador dragón? o quizás podrían tener aves
+amaestradas que conocen el riesgo de las turbinas y alertan a las aves que se acercan?»
+
+**Respuesta corta.** Curar sí, pero lejos del rotor; criar no. Las figuras y los drones existen en el juego y salen solo al saltar un detector, sin contar para la seguridad. El dragón es un adorno. Las aves
+amaestradas no se hacen. **Lo que protege sigue siendo parar la turbina.**
+
+| Idea | Lo que dice la evidencia | Veredicto |
+|---|---|---|
+| Pisos de cría y cura alrededor del rotor | Va en contra de su objetivo: atrae aves al peligro | **Cría: no. Cura: sí, en el Hospital** |
+| Estructuras aterradoras | Débil: en la única prueba en un parque eólico que encontré, sin efecto | **Se hacen, a demanda y móviles; no cuentan** |
+| Dragón de drones | Los drones funcionan a corto plazo y en poco espacio; un dragón no está probado | **Adorno del juego, rotulado** |
+| Aves amaestradas que avisan | No hay ninguna prueba de que se pueda | **No** |
+
+### Cría y cura: la atracción es el problema
+- **Atraen:** en Cerdeña, los buitres leonados concentran sus movimientos en dormideros y comederos, y los autores recomiendan alejar los parques de esas zonas y retirar la carroña (**preprint, sin revisión**).
+  No encontré ninguna prueba de campo de que retirar restos baje las colisiones, ni ningún estudio de un centro de recuperación junto a un parque eólico. **Lo de que un refugio atraería aves al rotor es una inferencia de esos datos, no una medida.** Pero es lo que se esperaría, y el coste de equivocarse
+  sería matar a las aves que se quieren salvar.
+- **Soltar cerca es peor:** un ave recién curada puede estar físicamente tocada sin que se note (águilas reales), y en una revisión sistemática las aves carnívoras y diurnas sobreviven mal al principio tras la suelta. Soltarla junto a un rotor es el peor sitio.
+- **Curar funciona, con límites:** un centro de Gran Canaria soltó el 68 % de sus aves marinas. No encontré su supervivencia después.
+- **Criar no hace falta:** las aves del santuario no escasean, y un grupo en cautividad junto a aves salvajes es lo que **no** se quiere con la gripe aviar: la guía de SCAR pide que solo personal formado, con protección, toque aves enfermas. La gripe aviar H5N1 ya se ha citado en la Antártida (fuente de 2026 de poca calidad: confirmar con SCAR o WOAH). No encontré guía específica para aves heridas ni para aves en cautividad.
+- **Y los pisos:** cualquier piso o pared alrededor de un rotor también le quita viento y mete turbulencia (razonamiento de ingeniería, no una cita).
+
+**Lo construido:** la ronda diaria `ene_ronda_aves` busca aves heridas y retira restos al pie de torres y mesas, y deja las heridas en la `Caja_transporte_aves`. El **Refugio de aves** (`BirdRehabPoint`, 6 cajas) está en la planta
+veterinaria del Hospital, a ≥ 400 m de las turbinas (el doble del radio de parada: elección de diseño, lo comprueba `ValidateEnergySite`). `hos_aves` las cura 3 turnos y las suelta allí. Sin comida al aire libre en el parque. La llegada de aves heridas es
+un evento fijo del juego (una cada 9 días): con las turbinas paradas por las aves no habría heridas, y la cifra no es una estimación de nada.
+
+### Estructuras aterradoras
+- **En un parque eólico:** una prueba piloto en Nueva Escocia con búhos de plástico y gritos de alarma no encontró diferencias significativas con los controles (resultados no concluyentes).
+- **Habituación:** una revisión de 2003 para el gobierno británico dice que los métodos sonoros funcionan a corto plazo por la habituación, y que hay poca información. Lo de que un búho de plástico dura días viene de empresas de plagas, no de ensayos.
+- **Lo más prometedor** son pruebas de laboratorio: la mirada fija asusta a las rapaces (Hausberger et al., 2018) y aves cautivas evitan palas rojas, negras y amarillas (2026, sin prueba de campo). Son de otras especies.
+
+**Lo construido:** 4 `Figura_aterradora` con ojos, **ocultas**: salen 30 s cuando un detector para una turbina, porque lo que se sabe de la habituación apunta a no enseñarlas siempre. `ene_disuasion` las cambia de sitio. `EnergySite.habituation` sube un 10 % con
+cada salida, baja un 2 % al día y un 40 % al moverlas; por debajo de 0,25 de fuerza ya no salen. **Ese modelo es del juego, no una medida.**
+
+### Drones
+- **Sí funcionan a corto plazo:** en viñedos (Washington State) hubo 3,5–5 veces menos visitas de aves con dron, sobre todo con gritos de alarma; pero 15 minutos de batería cada vez y con un observador delante. Con un señuelo de cuervo, los cuervos y cacatúas se fueron en ~50 m de radio y tardaron al menos 2 h en volver, y a las aves pequeñas solo las movió un rato (Wang et al., 2019).
+- **Dependen de la especie:** en un aeropuerto, efectivos a corto plazo y en poco espacio. Con gansos no sirvió en Cornell. No se ha medido bien la habituación: que un dron «como un depredador» dure más es una opinión. Lo de «sin habituación» del Robird es de su vendedor. No encontré Egan 2020.
+- **Con fauna antártica sería otra cosa:** ahuyentar aves con un aparato es justo lo que quieren evitar las normas de §1 (Anexo II y la Resolución 2 de 2004). Haría falta permiso, y puede hacer más daño que la turbina. No encontré la guía de drones de la ATCM.
+
+**Lo construido:** el `DroneDragon`, 48 drones que dibujan una serpiente de 45 s alrededor de la turbina parada y esperan 5 min. **Ninguna fuente dice que un dragón ahuyente aves: es un adorno del juego**, y su hangar lo dice en el cartel.
+
+### Aves amaestradas
+- **Cetrería en aeropuertos:** resultados alentadores en unos sitios, pero una evaluación del USDA la llama inviable e ineficaz y dice que las rapaces pueden levantar a las aves y **subir** el riesgo de choque. Además, en la Antártida no hay halcones, y traer especies de fuera va contra el espíritu del Anexo II (no leí el artículo).
+- **Aprender de otras aves es real, pero es otra cosa:** las grullas jóvenes aprenden la ruta de las viejas; basta una experta por grupo, y 7 años de experiencia mejoran la precisión un 38 % (Mueller et al., 2013). Es su misma especie, una ruta y años.
+- **Lo que no existe:** no encontré nada de un ave que conozca el riesgo de una turbina y avise a otras. La búsqueda sobre alarmas entre especies no devolvió nada, así que **no sé** si serviría; que un ave entienda una turbina y la explique es otra cosa.
+
+**No se construye.**
+
+### Pendiente de estas ideas
+- Las figuras y el dragón no mueven a las aves del juego (`BirdBehavior` vuela al azar): se ven y se cuentan, pero no cambian su ruta.
+- El Refugio no recibe animales reales de la escena: son cajas con un ave que se enciende.
+
 ## Fuentes
 - Troll: [pv Europe](https://pveurope.eu/solar-modules/where-trolls-live-pv-panels-installed-antarctic-pilot-solar-power-project-troll-green). Mawson: [Profile Solar](https://profilesolar.com/locations/Antarctica/Mawson-Station/). Antártida: [PV Tech](https://www.pv-tech.org/interviews/how-to-install-solar-in-antarctica), [pv magazine](https://www.pv-magazine.com/?p=33656)
 - Bifaciales: [Pike et al., OSTI](https://www.osti.gov/servlets/purl/1781572), [pv magazine, 2026](https://www.pv-magazine.com/2026/03/31/solar-above-60-north-the-arctic-as-pvs-next-frontier/)
@@ -172,5 +231,9 @@ ave → parada → rearme; pala negra; foca → parada de la mareal; punta ≤ 5
 - Mareal: [ERDC/CRREL TR-16-17](https://apps.dtic.mil/sti/pdfs/AD1025148.pdf), [Onoufriou et al., 2019](https://tethys.pnnl.gov/publications/empirical-determination-severe-trauma-seals-collisions-tidal-turbine-blade), [Sparling y Wilson, Annex IV](https://tethys.pnnl.gov/sites/default/files/Sparling-Wilson-AnnexIV-Mar2016.pdf), [SMRU, MRE2](https://synergy.st-andrews.ac.uk/smru/files/2017/09/MRE2-annual-rep-yr2-V5.pdf), [ABPmer](https://abpmer.co.uk/blog/tidal-stream-energy-what-is-the-impact-on-marine-species), [marea del mar de Ross](https://openpolar.no/Record/crcambridgeupr:10.1017%2Fs0954102003001032), [corrientes de McMurdo, PANGAEA](https://doi.pangaea.de/10.1594/PANGAEA.923753)
 - Focas de Weddell y ruido: [Wildlife Research](https://connectsci.au/wr/article/33/4/275/273950/An-assessment-of-the-audibility-of-sound-from)
 - Almacenar: [pv magazine: arena](https://www.pv-magazine.com/2025/06/11/worlds-largest-1-mw-100-mwh-sand-battery-commissioned-in-finland/), [hoja de contenedor de 5 MWh](https://starcharge.com/am/wp-content/uploads/sites/3/2025/03/5MWh-Datasheet-1-1.pdf), [NFPA 855, resumen](https://www.batterydesign.net/legislation-rules-and-regulations/nfpa-855/), [litio y frío](https://www.practical-sailor.com/systems-propulsion/electrical/lfp-battery-temperature-limits/), [microrredes con hidrógeno](https://iris.unica.it/bitstream/11584/418944/1/1-s2.0-S0360319924025485-main.pdf)
+- Disuasión: [Dorey et al., Nueva Escocia](https://tethys.pnnl.gov/publications/testing-efficacy-bird-deterrents-wind-turbine-facilities-pilot-study-nova-scotia), [Bishop et al., 2003](https://brocku.ca/niagara-community-observatory/wp-content/uploads/sites/117/Review-of-international-research-regarding-the-effectiveness-of-auditory-bird-scaring-techniques-and-potental-alternatives.pdf), [palas de colores, en laboratorio](https://www.pulse.bot/science/news/birds-avoid-wind-turbines-painted-like-venomous-snakes-6b693602-26d8-4dc0-82a8-85b3a3fe3e4a/)
+- Drones: [viñedos, WSU](https://dronexl.co/2020/06/17/washington-state-university-drones-to-deter-birds), [Wang et al., 2019](https://www.neuroscience.ox.ac.uk/publications/1580415), [resumen](https://newatlas.com/drones/drones-birds-crops/), [aeropuerto, FAA](https://birdstrike.org/wp-content/uploads/2025/10/CS1B-P13-Assesing-the-Effectivess-of-Applying-UAS-Hazing-Near-a-U.S.-Part-139.pdf), [gansos, Cornell](https://www.cornellsun.com/article/2017/01/cornell-researchers-use-drones-lasers-firecrackers-to-haze-ithacas-geese)
+- Aves amaestradas: [Flight Safety Foundation](https://flightsafety.org/asw-article/falconry-should-thrive/), [cetrería en aeropuertos](https://escholarship.org/uc/item/4sp906r4), [Mueller et al., 2013, USGS](https://www.usgs.gov/publications/social-learning-migratory-performance)
+- Atraer y curar: [buitres y comederos, preprint](https://ecoevorxiv.org/repository/object/5517/download/10822), [revisión de rehabilitación](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8929655/), [centro de Gran Canaria](https://accedacris.ulpgc.es/bitstream/10553/36035/2/A_long_term.pdf), [gripe aviar en el océano Austral, SCAR](https://ecoevorxiv.org/8jrbu/), [COMNAP](https://www.comnap.aq/s/COMNAP-HPAI-Summary-Page-30August2023.pdf)
 - Normas: [distancias, programa antártico australiano](https://www.antarctica.gov.au/environment/environment-policy-and-management/code-of-conduct/field-work/guidelines-for-animal-approach-distances/), [IAATO](https://assets.contentstack.io/v3/assets/blt0de87ff52d9c34a8/blt2899f1c8f0af6b14/66d6d58870c2e9e630c3a98c/General_Visitor_Guidelines_IAATO.pdf), [aeronaves, UBA](https://www.umweltbundesamt.de/sites/default/files/medien/2875/dokumente/leaflet_operation_of_aircraft_in_the_vicinity_of_animal_concentrations.pdf)
 - Demanda: [CBECS 2018, tabla C22](https://www.eia.gov/consumption/commercial/data/2018/ce/pdf/c22.pdf)

@@ -286,6 +286,16 @@ public static class Performances
         Mi("ene_mareal", "Revisar la turbina mareal",
             Checking("Probar el sonar", P.Tablet, F.Glow, 7f),
             Checking("Buscar fugas", P.Flashlight, F.Water, 7f));
+        Mi("ene_ronda_aves", "Ronda de aves",
+            Checking("Buscar aves heridas", P.Flashlight, F.None, 8f),
+            S("Recoger con cuidado", M.Reach, P.Box, P.None, 6f, F.None, 2f, Fine),
+            Noting("Anotar lo encontrado"));
+        Mi("ene_disuasion", "Cambiar las figuras de sitio",
+            S("Mover la figura", M.Reach, P.Wrench, P.None, 8f, F.Sparks, 1.4f, Strike, atFace: true),
+            Checking("Revisar los drones", P.Tablet, F.Glow, 7f));
+        Mi("hos_aves", "Curar aves",
+            S("Curar el ala", M.Reach, P.Bandage, P.None, 8f, F.None, 2f, Fine),
+            Noting("Anotar la evolución"));
         Mi("ene_almacen", "Revisar el almacén",
             Checking("Medir las baterías", P.Tablet, F.Sparks, 6f),
             Noting("Registrar la temperatura"));

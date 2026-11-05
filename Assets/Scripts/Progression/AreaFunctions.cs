@@ -174,6 +174,9 @@ public static class AreaFunctions
         _prefixEffects.Add(("sol_mantenimiento", (id, who) => EnergySite.Instance?.Maintain(who)));
         _prefixEffects.Add(("sol_instalacion", (id, who) => EnergySite.Instance?.Install(who)));
         _prefixEffects.Add(("sol_reparacion", (id, who) => EnergySite.Instance?.Repair(who)));
+        _prefixEffects.Add(("ene_ronda_aves", (id, who) => EnergySite.Instance?.Patrol(who)));
+        _prefixEffects.Add(("ene_disuasion", (id, who) => EnergySite.Instance?.MoveDeterrents(who)));
+        _prefixEffects.Add(("hos_aves", (id, who) => BirdRehabPoint.Instance?.Treat(who)));
         _prefixEffects.Add(("obra_material_", (id, who) => Obra(id.Substring(14), who, material: true)));
         _prefixEffects.Add(("obra_trabajo_", (id, who) => Obra(id.Substring(13), who, material: false)));
         _prefixEffects.Add(("prep_", (id, who) => KitchenLarder.Instance?.StartPrep(id.Substring(5), who)));

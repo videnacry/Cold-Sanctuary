@@ -142,7 +142,7 @@ la historia), `UniformDirector` llama a `MealRitual.Sweep` y la vajilla desapare
 | `coc_comedor`, `*_limpieza` (no lab), `yog_sala`, `yog_aseos`, `gym_limpieza` | casaca de limpieza y guantes de goma |
 | `hos_quirofano`, `hos_uci`, `hos_urgencias`, `enf_inventario` | pijama verde de quirófano, gorro y guantes |
 | `enf_visita`, `enf_iniciacion` y el resto del hospital | bata blanca con faldones, fonendo y acreditación |
-| `hos_veterinaria`, `enf_animales` | pijama azul de veterinaria y fonendo |
+| `hos_veterinaria`, `enf_animales`, `hos_aves` | pijama azul de veterinaria y fonendo |
 | `hue_*`, `mat_guadua` | peto vaquero, camisa roja, guantes verdes y sombrero de paja |
 | `obra_*`, `con_*`, `mat_bahareque` | chaleco naranja con bandas reflectantes, casco amarillo, guantes, botas y cinturón de herramientas |
 | Entrenamiento en el gimnasio | polo azul con cuello y logo, pantalón corto |

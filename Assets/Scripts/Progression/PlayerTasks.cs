@@ -146,6 +146,9 @@ public static class PlayerTasks
         T("ene_eolica", "Bloquea la turbina al pie de la torre|aerogenerador|Llave", "Revisa cámaras y radar|detector|Tablet", "Comprueba las palas y la pala negra|aerogenerador|Linterna");
         T("ene_mareal", "Sal a la pontona|pontona|Linterna", "Prueba el sonar|sonar|Tablet", "Revisa el anillo y las fugas|pontona|Linterna");
         T("ene_almacen", "Lee la temperatura de las baterías|bateria|Tablet", "Revisa la calefacción|bateria|Linterna", "Mira el silo de arena|silo|Tablet");
+        T("ene_ronda_aves", "Busca aves heridas al pie de la torre|aerogenerador|Linterna", "Busca entre las mesas|panel|Linterna", "Deja al ave en la caja de transporte|caja_aves|Caja");
+        T("ene_disuasion", "Revisa los drones|hangar|Tablet", "Cambia las figuras de sitio|hangar|Llave inglesa", "Anota cuántas veces han salido|consola|Tablet");
+        T("hos_aves", "Ponte guantes y mascarilla|armario|Guantes", "Cura al ave en su caja|refugio|Venda", "Anota cuándo se puede soltar|refugio|Tablet");
     }
 
     // ── LOS PASOS DE UNA MISIÓN ─────────────────────────────────────────────────────────────────────────────────────
@@ -309,6 +312,9 @@ public static class PlayerTasks
         ["sonar"] = new[] { "sonar_mareal" },
         ["bateria"] = new[] { "bateria_lfp" },
         ["silo"] = new[] { "silo_arena" },
+        ["caja_aves"] = new[] { "caja_transporte_aves" },
+        ["hangar"] = new[] { "hangar_drones" },
+        ["refugio"] = new[] { "refugio_aves" },
     };
 
     // (por área y puesto: los candidatos, cacheados unos segundos: el test recorre todas las misiones de golpe)
