@@ -150,6 +150,14 @@ public static partial class MicroStoryMaps
         Stub("Pasadena", Base1, Base2, "Caltech, las San Gabriel y las calles de 1953"),
         Stub("Chernóbil", Base1, Base2, "Prípiat, la central, el estanque de refrigeración (el lavabo como mar) y el bosque rojo"),
         Stub("Palenque", Base1, Base2, "el Palacio, el Templo de las Inscripciones, el río Otolum y la milpa"),
+        // (2026-11-05) Los siete famosos que salieron del mesocosmos (docs/personajes-mesocosmos.md).
+        Stub("Velliangiri", Base1, Base2, "los montes Velliangiri, Coimbatore, el Dhyanalinga y su bosque"),
+        Stub("Hawthorne", Base1, Base2, "la fábrica de SpaceX en Hawthorne, el control de misión y el Falcon 1"),
+        Stub("Aldea de la montaña", Base1, Base2, "la aldea de la montaña (homenaje, ficción): la cabaña, el bosque y el campo de entrenar"),
+        Stub("Albuquerque", Base1, Base2, "Albuquerque en 1975: el garaje de MITS, el Altair y el desierto de Nuevo México"),
+        Stub("Omaha", Base1, Base2, "Omaha: la tienda de la señora B, sus alfombras y las calles de Nebraska"),
+        Stub("Prairie View", Base1, Base2, "Prairie View A&M: el campus, su biblioteca y la pradera de Texas"),
+        Stub("Uagadugú", Base1, Base2, "los huertos antes de las lluvias en Burkina Faso: el karité, el mijo y el agua"),
     };
 
     /// <summary>El mapa de la historia <paramref name="display"/> (o null si ni siquiera tiene esbozo).</summary>

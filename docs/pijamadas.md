@@ -50,7 +50,7 @@ pijamada (`Bedroom.gather`, 8 puntos en dos filas). Los 2 m de paso se mantienen
 - **En la franja**:
   - cada uno va a la casa del anfitrión en alfombra, por la red de la Residencia, y se sienta a charlar delante de la cama-litera
     (`Bedroom.gather`);
-  - al llegar se apunta a dormir allí (`Sleepover.Join`). A cada invitado le toca la primera plaza libre: las de abajo que no usan
+  - al salir hacia la casa (2026-11-05; antes, al llegar, y quien llegaba tarde caía en la plaza del dueño) se apunta a dormir allí (`Sleepover.Join`). A cada invitado le toca la primera plaza libre: las de abajo que no usan
     los que viven allí y luego las de arriba.
 - **Esa noche**: `Bedroom.Of` devuelve la casa del anfitrión. Cuando tienen sueño, van a su plaza (`NeedsDriver`) y duermen allí.
 - **Al despertar**, los que durmieron arriba bajan por el tobogán.

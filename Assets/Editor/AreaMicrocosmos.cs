@@ -357,6 +357,9 @@ public static class AreaMicrocosmos
         Physics.SyncTransforms();   // con colliders, el horneado consulta la física: sin sincronizar, no ve lo recién creado y movido
         // El volumen: el piso y sus muros (los muros no se andan: NavMeshModifier), nada de fuera.
         nav.center = Vector3.up * 15f * K; nav.size = new Vector3(rect.size.x + WallThick * 2f, 60f * K, rect.size.z + WallThick * 2f);
+        // (2026-11-05, ronda 8: el horneado es el 95 % de rehacer un microcosmos: Cocina, 445 de 473 s) El vóxel por defecto es radio/3 (0,167 m) en
+        // un piso de kilómetros. 0,25 m (2 vóxeles por radio, el mínimo que aconseja Unity) cuesta ~44 %; los pasos de 2 m siguen abiertos.
+        nav.overrideVoxelSize = true; nav.voxelSize = MicroNavVoxel;
         nav.BuildNavMesh();
         Phase("NavMesh");
         // (2026-11-03) TREPAR: los insectos-humanos suben por las patas y los costados de los muebles del piso (Berón: «pueden trepar
@@ -1551,7 +1554,8 @@ public static class AreaMicrocosmos
         // luego cae desde el aire sobre su superficie (MicroGround.Drop, en AreaMicrocosmos.Build).
         if (hand)
         {
-            int handFlora = 0, missing = 0;
+            int handFlora = 0, missing = 0, handNoRoom = 0;
+            const float TownHandMaxH = 20f;   // (la prueba: ≤ 25 m; el moriche, 20 m, es de los que más)
             foreach (MicroStoryMaps.Plant hp in map.flora)
             {
                 MicroBiome.Plant? found = FindPlant(biome, hp.plant);
@@ -1564,18 +1568,55 @@ public static class AreaMicrocosmos
                     int before = flora.childCount;
                     if (town)
                     {
-                        float h = Mathf.Max(0.03f, pl.cm / 100f);
+                        // (2026-11-05, ronda 8, Microcosmos_Bolivar: 182/183 flotando, 85 de más de 25 m, 2 en una calle) En un PUEBLO no se cae
+                        // desde el aire: el Drop se quedaba con la cara más alta de debajo, y aquí eso son las capas del piso ×100 (9,5 m
+                        // sobre el suelo del pueblo) o una meseta. Va al suelo libre más cercano a su sitio del mapa, como la flora del
+                        // pueblo (FreeTown, fuera de calles y solares), o a la meseta si el mapa la pone encima («(sobre mueble)», regla 5).
+                        float h = Mathf.Clamp(pl.cm / 100f, 0.03f, TownHandMaxH);
                         TownForm form = FormOf(pl, h);
-                        TownRadii(form, h, out float _, out float spaceR);
-                        AddPt(w, spaceR);
-                        TownPlant(pl, p, h, form, spaceR);
+                        TownRadii(form, h, out float blockR, out float spaceR);
+                        Bounds? mesa = null;
+                        if (tops != null) foreach (Bounds top in tops) if (InsideXZ(top, w, -1f) && !Covered(new Vector3(w.x, top.max.y, w.z))) { mesa = top; break; }
+                        if (mesa.HasValue)
+                        {
+                            AddPt(w, spaceR);
+                            pl.name = found.Value.name + " (sobre mueble)";
+                            TownPlant(pl, new Vector3(p.x, mesa.Value.max.y - center.y, p.z), Mathf.Min(h, 15f), form, spaceR);
+                            pl.name = found.Value.name;
+                        }
+                        else if (HandSpot(w, blockR, out Vector3 free, out float fy))
+                        {
+                            AddPt(free, spaceR);
+                            TownPlant(pl, new Vector3(free.x - center.x, fy - center.y, free.z - center.z), h, form, spaceR);
+                        }
+                        else { handNoRoom++; continue; }
                     }
-                    else NativePlant(pl, p);
-                    for (int c = before; c < flora.childCount; c++) _handPlaced.Add(flora.GetChild(c));
+                    else
+                    {
+                        NativePlant(pl, p);
+                        for (int c = before; c < flora.childCount; c++) _handPlaced.Add(flora.GetChild(c));
+                    }
                     placed0++; handFlora++;
                 }
             }
-            Debug.Log($"[Mapa] {display}: {handFlora} plantas del mapa a mano en su sitio{(missing > 0 ? $"; {missing} rodales sin su planta en el bioma" : "")}.");
+            Debug.Log($"[Mapa] {display}: {handFlora} plantas del mapa a mano en su sitio{(handNoRoom > 0 ? $"; {handNoRoom} sin suelo libre cerca" : "")}{(missing > 0 ? $"; {missing} rodales sin su planta en el bioma" : "")}.");
+        }
+        // El suelo libre del pueblo más cercano a w (en espiral, hasta ~70 m), fuera de calles y solares.
+        bool HandSpot(Vector3 w, float r, out Vector3 free, out float fy)
+        {
+            const float golden = 2.39996323f;
+            for (int k = 0; k <= 24; k++)
+            {
+                float d = 3f * k, a = k * golden;
+                free = ClampXZ(w + new Vector3(Mathf.Cos(a) * d, 0f, Mathf.Sin(a) * d), inner);
+                if (!FreeTown(free, r, out fy)) continue;
+                bool taken = false;
+                foreach (Bounds b in _streets) if (GapXZ(b, free) < r + 1f) { taken = true; break; }
+                if (!taken) foreach (Bounds b in _townFeet) if (GapXZ(b, free) < r + 1f) { taken = true; break; }
+                if (!taken) return true;
+            }
+            free = w; fy = groundY;
+            return false;
         }
         // Una planta DEL LUGAR, a escala de pueblo (sus copas, a escala humana: lo mismo que en las afueras), sobre la cara de arriba
         // de un mueble gigante fuera del pueblo (2026-11-03). Lleva «(sobre mueble)» en el nombre: las pruebas del pueblo no la
@@ -1806,7 +1847,7 @@ public static class AreaMicrocosmos
                 // Cada uno nace junto a lo que usa: la hormiga león en la arena fina, el pelotero junto a una boñiga; el resto, en la
                 // siguiente plaza de fauna del piso y, tomadas todas, en suelo libre DENTRO de los muros (nunca fuera: regla 11).
                 Vector3 p;
-                if (handAt) { Vector3 w = storyOrigin + new Vector3(handSpots[i].x, 0f, handSpots[i].y); p = new Vector3(w.x - center.x, groundY - center.y, w.z - center.z); }
+                if (handAt) { Vector3 w = storyOrigin + new Vector3(handSpots[i].x, 0f, handSpots[i].y); p = new Vector3(w.x - center.x, (town ? FloorNearOr(w, floors, groundY, groundY) : groundY) - center.y, w.z - center.z); }
                 else if (street && _streets.Count > 0)
                 {
                     // Por una calle (a lo largo de un tramo al azar, por su centro: a ≥ 2 m de los solares).
@@ -1847,7 +1888,7 @@ public static class AreaMicrocosmos
                 Transform ins = a.transform.Find("Insecto");
                 if (ins != null && ins.lossyScale.z > 1e-6f) holder.localScale = Vector3.one * (len / ins.lossyScale.z);
                 else if (any) { float now = Mathf.Max(bb.size.x, bb.size.z); if (now > 1e-4f) holder.localScale = Vector3.one * (len / now); }
-                if (handAt) _handPlaced.Add(holder);
+                if (handAt && !town) _handPlaced.Add(holder);   // (en un pueblo, en su suelo: ver la flora del mapa a mano)
                 placed++;
             }
         }
@@ -1910,6 +1951,8 @@ public static class AreaMicrocosmos
     static int _faunaOnSlots;   // cuántos bichos fueron a las plazas de fauna (el último Nature)
     // (2026-11-04) Lo que el último Nature puso desde el MAPA A MANO (MicroStoryMaps): cae desde el aire en Build (MicroGround.Drop).
     static readonly List<Transform> _handPlaced = new List<Transform>();
+    /// <summary>Lado del vóxel del NavMesh de un microcosmos (m). Más grande, más rápido y menos fino en los pasos estrechos: no bajar de 0,25 sin mirar la regla de los 2 m.</summary>
+    const float MicroNavVoxel = 0.25f;
     // La planta del bioma cuyo nombre empieza por <paramref name="name"/> (sus plantas y las del pueblo), o null.
     static MicroBiome.Plant? FindPlant(MicroBiome.Biome b, string name)
     {

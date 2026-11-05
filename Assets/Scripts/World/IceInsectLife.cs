@@ -492,6 +492,7 @@ public class IceInsectLife : MonoBehaviour
     void SpiderLife()
     {
         if (_home == null) return;
+        if (_self != null) _self.busy = false;   // (al final, si queda al acecho)
         _strikeCooldown -= Time.deltaTime;
         SnowBeeBehavior bee = Nearest<SnowBeeBehavior>(transform.position, 1.6f);
         // La REINA no sale a pecorear: la araña caza obreras al acecho, no entra al panal (sin reina la colonia se pierde). Solo corre peligro en su vuelo nupcial.
@@ -532,7 +533,9 @@ public class IceInsectLife : MonoBehaviour
                 return;
             }
         }
-        FlyTo(_perch, 1.2f);   // vuelve al centro de su tela
+        // (2026-11-05, ronda 8: «8 SnowSpider atascadas > 20 s») En el centro de su tela ACECHA, quieta a propósito: ocupada, como la
+        // abeja que trabaja en el panal. Su deseo genérico («explore») no la mueve: el insecto vuela por su cuenta.
+        if (FlyTo(_perch, 1.2f) < 0.3f && _self != null) _self.busy = true;   // vuelve al centro de su tela
         if (web != null) transform.rotation = Quaternion.LookRotation(Vector3.down, web.transform.forward); else transform.rotation = Quaternion.LookRotation(Vector3.down + (transform.position - _home.transform.position).normalized * 0.3f);
     }
 
@@ -581,6 +584,9 @@ public class IceInsectLife : MonoBehaviour
             // Penetración por eje, en metros del mundo; sale por la menor.
             float px = (half.x - Mathf.Abs(local.x)) * Mathf.Abs(s.x) + margin, py = (half.y - Mathf.Abs(local.y)) * Mathf.Abs(s.y) + margin, pz = (half.z - Mathf.Abs(local.z)) * Mathf.Abs(s.z) + margin;
             if (px < 0f || py < 0f || pz < 0f) continue;   // (el radio de la consulta la rozaba por fuera)
+            // (2026-11-05, ronda 8: «SnowBee dentro de Tronco», quieta) El tronco son bloques apilados: salir por arriba o por abajo la
+            // metía en el bloque de al lado y las 3 pasadas se agotaban en ese vaivén. Del tronco se sale siempre de lado.
+            if (box.name.StartsWith("Tronco")) py = float.PositiveInfinity;
             if (px <= py && px <= pz) local.x = Mathf.Sign(local.x == 0f ? 1f : local.x) * (half.x + push / Mathf.Max(1e-4f, Mathf.Abs(s.x)));
             else if (py <= pz) local.y = Mathf.Sign(local.y == 0f ? 1f : local.y) * (half.y + push / Mathf.Max(1e-4f, Mathf.Abs(s.y)));
             else local.z = Mathf.Sign(local.z == 0f ? 1f : local.z) * (half.z + push / Mathf.Max(1e-4f, Mathf.Abs(s.z)));
