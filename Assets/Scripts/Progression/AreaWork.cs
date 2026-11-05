@@ -9,6 +9,7 @@ using System.Collections.Generic;
 public static class AreaWork
 {
     public const string Guard = "Guardia";   // no es un SanctuaryArea: la patrulla, los puestos de vigía y el alimentador
+    public const string Containment = "Laboratorio de contención";   // un sitio, no un SanctuaryArea (docs/contencion-arbol-cazador.md)
     public const string GuardRoom = "Sala de guardia";   // un sitio de la jornada, no un SanctuaryArea (docs/sala-de-guardia.md)
     public const string Hospital = "Hospital";   // la antigua Enfermería (docs/hospital.md)
 
@@ -41,6 +42,7 @@ public static class AreaWork
         l.AddRange(NuclearSite.Missions(day));
         // PARQUE ENERGÉTICO (docs/energia.md): los paneles (mantener, instalar, reparar), las turbinas y el almacén.
         l.AddRange(EnergySite.Missions(day));
+        l.AddRange(HunterCell.Missions(day));   // el árbol cazador (docs/contencion-arbol-cazador.md)
         // COCINA: cada elaboración que hace falta (harina, queso, pasta, masa madre…) es una misión, con su tiempo activo;
         // el reposo (fermentar, madurar) corre solo después.
         KitchenLarder larder = KitchenLarder.Instance;

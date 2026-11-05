@@ -87,6 +87,11 @@ public static class VirtualMissions
             case "nuc_turno": return new[] { "Pasar el control de acceso", "Relevo en la sala de control", "Revisar la conversión de potencia", "Revisar el intercambiador de la calefacción" };
             case "pla_ciclotron": return new[] { "Coger el dosímetro", "Arrancar el haz del ciclotrón", "Parar el haz y mandar el F-18", "Sintetizar la FDG en la celda" };
             case "gua_carnivoros": return new[] { "Coger la linterna", "Patrullar los puestos", "Anotar la ronda" };
+            case HunterCell.RoundId: return new[] { "Leer la presión", "Revisar sellos y filtros", "Firmar la ronda" };
+            case HunterCell.RationId: return new[] { "Coger la ración", "Pasarla por el portillo", "Anotarla" };
+            case HunterCell.SampleId: return new[] { "Meter las manos en los guantes", "Tomar la muestra y podar", "Sacarla por la ducha" };
+            case HunterCell.DrillId: return new[] { "Dar el código de práctica", "Cerrar las compuertas", "Anotar el tiempo" };
+            case HunterCell.RecaptureId: case HunterCell.RecaptureId + "_2": return new[] { "Ponerse el equipo", "Cerrar la celda desde fuera", "Comprobar la presión" };
             case "gua_sala": return new[] { "Leer el muro de pantallas", "Comprobar el radar y el sismógrafo", "Firmar el parte del turno" };
             case "gua_alimentador": case "gua_alimentador_2": return new[] { "Recoger las raciones", "Ver quién falta en la lista compartida", "Seguir al depredador desde lejos", "Evaluar su hambre", "Lanzar la ración o marcarlo" };
             case "hue_transplante": return new[] { "Coger las plantas del vivero", "Comprobar que son nativas", "Abrir el hueco en la tundra", "Plantar y regar", "Incinerar las bolsas de no nativas" };

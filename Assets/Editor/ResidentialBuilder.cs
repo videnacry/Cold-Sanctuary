@@ -51,8 +51,6 @@ public static class ResidentialBuilder
 
     /// <summary>Altura de los árboles de la arboleda (2026-11-05: 46 m, antes 38 y 26, para sostener la quinta casa, a 37–40 m).</summary>
     public const float TreeHeight = 46f;
-    /// <summary>El cazador de la residencia: señuelo corto y sopor solo al pie del tronco; las casas empiezan a 12 m.</summary>
-    public const float LureRadius = 24f, KillRadius = 5f;
     // Casas 0–11: dos por árbol (la 2k a un lado, la 2k+1 al otro); 12–17: la tercera (lado de la primera); 18–23: la cuarta (lado de la segunda); 24–29: la quinta (lado de la primera).
     static int TreeOf(int i) => i < 12 ? i / 2 : (i - 12) % 6;
     static bool OtherSide(int i) => (i < 12 && i % 2 == 1) || (i >= 18 && i < 24);
@@ -74,6 +72,8 @@ public static class ResidentialBuilder
     static readonly System.Collections.Generic.List<(Vector3 pos, Vector3 door)> _houses = new System.Collections.Generic.List<(Vector3, Vector3)>();
     static readonly System.Collections.Generic.List<Vector3> _terraces = new System.Collections.Generic.List<Vector3>();
 
+    /// <summary>LAS CASAS DE ÁRBOL: **fuera del santuario 1** (Berón 2026-11-05: «las casas arbol quedan para otro santuary»; docs/casas-de-arbol.md). Este constructor ya no se llama:
+    /// se conserva entero para ese santuario. Aquí, la residencia son los pisos de <see cref="FurnishRoomFloor"/> y <see cref="FurnishPlaza"/>.</summary>
     public static Transform Build(Transform parent, Vector3 center)
     {
         Transform root = new GameObject("ArboledaResidencial").transform;
@@ -125,14 +125,10 @@ public static class ResidentialBuilder
             Vector3 trunk = trees[TreeOf(i)], away = _houses[i].pos - trunk; away.y = 0f;
             _terraces.Add(_houses[i].pos + away.normalized * (CabinW * 0.5f + 3.5f));   // (el centro de la terraza de 7 m, pegada a la casa)
         }
-        RingSize(Owners.Length + Partners.Count + System.Linq.Enumerable.Sum(Kids.Values, k => k.Length));   // (con los hijos)   // (antes que los árboles: sus ramas esquivan el ring)
+        RingSize(Residents);   // (con los hijos)   // (antes que los árboles: sus ramas esquivan el ring)
         for (int k = 0; k < 6; k++)
         {
-            // (2026-11-05) EL CAZADOR SIGUE AQUÍ (Berón: «árbol-cazador no se perdería, estaría allí no?»; docs/ice-sanctuary-ecology.md §Sin bosque). Con otras medidas: solo caza
-            // animales, al pie del tronco, y no crece, porque sostiene casas.
-            GameObject tree = CubeTree.Build(root, $"ArbolResidencial_{k + 1}", center + trees[k], 7100 + k * 13, TreeHeight, carnivorous: true, blocked: p => Built(root.InverseTransformPoint(p)), maxNests: 1);
-            IceCarnivorousTree hunter = tree.GetComponent<IceCarnivorousTree>();
-            if (hunter != null) { hunter.wildPreyOnly = true; hunter.lureRadius = LureRadius; hunter.killRadius = KillRadius; hunter.lureStrength = 1f; hunter.growthPerKill = 0f; hunter.maxScale = 1f; }
+            CubeTree.Build(root, $"ArbolResidencial_{k + 1}", center + trees[k], 7100 + k * 13, TreeHeight, carnivorous: false, blocked: p => Built(root.InverseTransformPoint(p)));
         }
 
         // Plataforma central (18 × 18) sobre columnas, con sus tres áreas de alfombras.
@@ -154,10 +150,53 @@ public static class ResidentialBuilder
             Beam(root, pos + Vector3.up * -0.35f, trunk);   // viga al tronco que la sostiene
             Beam(root, pos + Vector3.up * -0.35f + Vector3.Cross(Vector3.up, door).normalized * 2.5f, trunk + Vector3.down * 2.5f);   // y su tornapuntas
         }
-        BuildPillowRing(root);   // (2026-11-04) el ring de almohadas sobre la plataforma central (docs/guerra-de-almohadas.md)
+        BuildPillowRing(root, new Vector3(0f, RingY, 0f), CarpetPad.Kind.Edificio, 2, $"{Name}#ring");   // (2026-11-04) el ring de almohadas sobre la plataforma central (docs/guerra-de-almohadas.md)
         SoftGround.Plant(root, center + Vector3.down * 0.1f, new Vector2(64f, 64f), 77);   // colchón de musgo bajo toda la arboleda
         WorldLabel wl = root.gameObject.AddComponent<WorldLabel>(); wl.text = "Arboleda residencial (casas de árbol)"; wl.height = DeckY + 5f;
         return root;
+    }
+
+    // ── LA RESIDENCIA COMO EDIFICIO-ÁRBOL (Berón 2026-11-05; docs/residencia.md) ─────────────────
+    /// <summary>Habitaciones: las 30 de antes (5 libres para quien llegue).</summary>
+    public const int RoomCount = 30;
+    /// <summary>Por piso de 40 × 40 m: 2 columnas y 4 filas de habitación con terraza, menos el sitio de los aseos.</summary>
+    public const int RoomsPerFloor = 7;
+    public static int RoomFloors => Mathf.CeilToInt(RoomCount / (float)RoomsPerFloor);
+    public const string PlazaName = "Residencia_plaza", ReadActivity = "lectura";
+
+    /// <summary>Un piso de habitaciones: las mismas de siempre (cama-litera, esterilla, terraza frutal), sin el árbol. El umbral del tronco (−Z) queda libre.</summary>
+    public static void FurnishRoomFloor(Transform floor, Vector2 s, int index)
+    {
+        float[] rows = { -11.5f, -2.5f, 6.5f, 15.5f };
+        int room = index * RoomsPerFloor;
+        for (int r = 0; r < rows.Length; r++)
+            for (int side = -1; side <= 1; side += 2)
+            {
+                if (r == rows.Length - 1 && side < 0) continue;   // los aseos
+                if (room >= RoomCount) return;
+                Cabin(floor, new Vector3(side * 5.5f, 0f, rows[r]), Vector3.back, room, $"Habitación {room + 1}", side);
+                room++;
+            }
+    }
+
+    /// <summary>La plaza: la red de alfombras de las habitaciones, el ring de almohadas y los bancos de lectura.</summary>
+    public static void FurnishPlaza(Transform floor, Vector2 s)
+    {
+        Solid(floor, new Vector3(0f, 0.05f, 0f), new Vector3(s.x - 0.2f, 0.1f, s.x - 0.2f), new Color(0.72f, 0.66f, 0.56f), "Suelo_plaza");
+        _inTower = true; RingSize(Residents);
+        if (_ringX + 8f > s.x || _ringZ + 8f > s.x) Debug.LogError($"[Residencia] el ring ({_ringX:0.0} × {_ringZ:0.0} m) no cabe en la plaza.");
+        Vector3 ringAt = new Vector3(-5f, 0.05f, 4f);
+        BuildPillowRing(floor, ringAt, CarpetPad.Kind.Habitacion, 1, $"{Name}#plaza");
+        string surface = $"{Name}#plaza";
+        CarpetPad.BuildZone(floor, floor.TransformPoint(new Vector3(9f, 0.2f, -11f)), floor.rotation, CarpetPad.Kind.Residencia, Name, 1, surface, "Plaza", 4, 10.4f, 4.4f);
+        for (int r = 0; r < 4; r++)
+        {
+            Transform row = KitchenProps.Root(floor, $"Banco_lectura_{r + 1}", new Vector3(r < 2 ? 12f : 16f, 0.1f, r % 2 == 0 ? 0f : 10f), 90f);
+            KitchenProps.C(row, new Vector3(0f, 0.225f, 0f), new Vector3(8.4f, 0.45f, 0.5f), Wood, 0f, "Banco");
+            KitchenProps.Fit(row);
+            AreaSeat.Add(row.gameObject, ReadActivity, AreaSeat.Category.Ocio, 12);
+        }
+        WorldLabel wl = floor.gameObject.AddComponent<WorldLabel>(); wl.text = "Plaza de la Residencia"; wl.height = 4f;
     }
 
     // ZONA CONSTRUIDA (coordenadas locales de la arboleda): la plataforma central y las casas de árbol, con altura libre
@@ -295,6 +334,8 @@ public static class ResidentialBuilder
     public const float RingY = DeckY + 8f;
     const float HeadZone = 1.2f, ZoneW = 7.6f, ZoneD = 4.4f, EdgeMargin = 0.3f, FootGap = 3f;
     static int _ringCells = 1, _ringFor;
+    static bool _inTower;
+    static int Residents => Owners.Length + Partners.Count + System.Linq.Enumerable.Sum(Kids.Values, k => k.Length);
     static float _ringX, _ringZ, _bedX, _bedZ;
 
     /// <summary>Las medidas del ring para <paramref name="fighters"/> residentes (la regla: PillowRing.CellsFor). Avisa si ya no cabe
@@ -307,19 +348,20 @@ public static class ResidentialBuilder
         _ringX = Mathf.Max(_bedX, ZoneW) + 2f * PillowRing.Walkway;
         _ringZ = PillowRing.Walkway + _bedZ + PillowRing.Walkway + ZoneD + EdgeMargin;
         float corner = new Vector2(_ringX * 0.5f, _ringZ * 0.5f).magnitude, inner = TreeRing - CabinD * 0.5f - 1f;
-        if (corner > inner) Debug.LogError($"[Residencia] el ring de almohadas para {fighters} residentes ({_ringX:0.0} × {_ringZ:0.0} m) ya no cabe dentro del anillo de casas (esquina a {corner:0.0} m, máximo {inner:0.0}).");
+        if (_inTower) { }
+        else if (corner > inner) Debug.LogError($"[Residencia] el ring de almohadas para {fighters} residentes ({_ringX:0.0} × {_ringZ:0.0} m) ya no cabe dentro del anillo de casas (esquina a {corner:0.0} m, máximo {inner:0.0}).");
         else Debug.Log($"[Residencia] ring de almohadas para {fighters} residentes: colchón de {_ringCells} × {_ringCells} celdas ({S:0.0} m de lado, caben {_ringCells * _ringCells}), plataforma de {_ringX:0.0} × {_ringZ:0.0} m a {RingY:0} m.");
     }
 
-    static void BuildPillowRing(Transform root)
+    static void BuildPillowRing(Transform root, Vector3 at, CarpetPad.Kind padKind, int padFloor, string padSurface)
     {
         Transform ring = new GameObject("RingAlmohadas").transform;
         ring.SetParent(root, false);
-        ring.localPosition = new Vector3(0f, RingY, 0f);
+        ring.localPosition = at;
         float S = _ringCells * PillowRing.CellSize, B = PillowRing.Bumper;
         Color mattressC = new Color(0.97f, 0.95f, 0.91f), soft = new Color(0.93f, 0.76f, 0.83f), quilt = new Color(0.88f, 0.84f, 0.8f);
         Plank(ring, Vector3.zero, new Vector3(_ringX, 0.3f, _ringZ), "Plataforma_ring");   // cara de arriba a +0,15
-        for (int i = 0; i < 4; i++)
+        if (at.y > 1f) for (int i = 0; i < 4; i++)
             Solid(ring, new Vector3((i % 2 == 0 ? -1f : 1f) * (_ringX * 0.5f - 0.4f), -RingY * 0.5f, (i < 2 ? -1f : 1f) * (_ringZ * 0.5f - 0.4f)), new Vector3(0.6f, RingY, 0.6f), Wood, "Columna_ring");
         // La CAMA COLOSAL: el cabecero en +z, el pie hacia la pista de alfombras (−z).
         float headTop = _ringZ * 0.5f - PillowRing.Walkway, bedCz = headTop - _bedZ * 0.5f, matCz = headTop - HeadZone - S * 0.5f;
@@ -354,15 +396,15 @@ public static class ResidentialBuilder
             for (int p = 0; p < PillowRing.PillowsPerFighter; p++)
             {
                 float cx = (c % _ringCells - (_ringCells - 1) * 0.5f) * PillowRing.CellSize, cz = (c / _ringCells - (_ringCells - 1) * 0.5f) * PillowRing.CellSize;
-                Vector3 at = new Vector3(cx + (p == 0 ? -0.65f : 0.65f), 0.43f, matCz + cz + (p == 0 ? 0.55f : -0.55f));
-                Transform pil = Deco(loose, at, new Vector3(0.6f, 0.15f, 0.4f), pastel[(c + p) % pastel.Length], $"Almohada_{c * PillowRing.PillowsPerFighter + p + 1}");
+                Vector3 spot = new Vector3(cx + (p == 0 ? -0.65f : 0.65f), 0.43f, matCz + cz + (p == 0 ? 0.55f : -0.55f));
+                Transform pil = Deco(loose, spot, new Vector3(0.6f, 0.15f, 0.4f), pastel[(c + p) % pastel.Length], $"Almohada_{c * PillowRing.PillowsPerFighter + p + 1}");
                 pil.localRotation = Quaternion.Euler(0f, (float)rnd.NextDouble() * 360f, 0f);
             }
         PillowRing pr = ring.gameObject.AddComponent<PillowRing>();
         pr.cells = _ringCells; pr.builtFor = _ringFor; pr.mattress = mat; pr.pillows = loose;
         // Su PISTA DE ALFOMBRAS (red de edificio de la Residencia: vuela a la plataforma central y al suelo), a 2 m del pie de la cama.
         float zc = -_ringZ * 0.5f + EdgeMargin + ZoneD * 0.5f;
-        CarpetPad.BuildZone(ring, ring.TransformPoint(new Vector3(0f, 0.15f, zc)), ring.rotation, CarpetPad.Kind.Edificio, Name, 2, $"{Name}#ring", "Ring de almohadas", 2, ZoneW, ZoneD);
+        CarpetPad.BuildZone(ring, ring.TransformPoint(new Vector3(0f, 0.15f, zc)), ring.rotation, padKind, Name, padFloor, padSurface, "Ring de almohadas", 2, ZoneW, ZoneD);
         WorldLabel wl = ring.gameObject.AddComponent<WorldLabel>();
         wl.text = $"Ring de almohadas (cama colosal): {_ringCells} × {_ringCells} celdas, caben {cells}"; wl.height = 3f;
     }

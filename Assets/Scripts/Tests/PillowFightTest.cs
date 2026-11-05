@@ -49,7 +49,7 @@ public class PillowFightTest : MonoBehaviour, ITestUnit
         TestProbe.Check($"el colchón tiene ⌈√{residents}⌉ = {PillowRing.CellsFor(residents)} celdas por lado", ring.cells == PillowRing.CellsFor(Mathf.Max(residents, ring.builtFor)), $"{ring.cells} × {ring.cells} ({ring.Side:0.0} m)");
         TestProbe.Check("la regla crece con los residentes (con uno más de lo que cabe, pide más celdas)", PillowRing.CellsFor(ring.Capacity + 1) > ring.cells && PillowRing.CellsFor(ring.Capacity) == ring.cells);
         CarpetPad pad = CarpetPad.All.FirstOrDefault(p => p != null && p.transform.IsChildOf(ring.transform));
-        TestProbe.Check("el ring tiene su pista de alfombras (red de la Residencia)", pad != null && pad.kind == CarpetPad.Kind.Edificio, pad != null ? $"{pad.displayName} ({pad.building}, piso {pad.floor})" : "ninguna");
+        TestProbe.Check("el ring tiene su pista de alfombras (red de la Residencia)", pad != null && pad.kind == CarpetPad.Kind.Habitacion, pad != null ? $"{pad.displayName} ({pad.building}, piso {pad.floor})" : "ninguna");
         if (pad != null)
         {
             Vector3 d = pad.transform.position - ring.Spot(0); d.y = 0f;
@@ -97,7 +97,7 @@ public class PillowFightTest : MonoBehaviour, ITestUnit
     // ── 2. Las camas de 4 ────────────────────────────────────────────────────────────────────────
     void Beds()
     {
-        var rooms = Bedroom.All.Where(b => b != null && b.transform.parent != null && b.transform.parent.name == "ArboledaResidencial").ToList();
+        var rooms = Bedroom.All.Where(b => b != null).ToList();
         TestProbe.Check("hay casas del árbol", rooms.Count > 0, $"{rooms.Count}");
         var small = rooms.Where(b => b.sleeps < 4 || b.laneWidth * b.sleeps < 3.5f).Select(b => b.name).ToList();
         TestProbe.Check("cada cama de la arboleda es de 4 plazas (≥ 3,5 m de ancho)", small.Count == 0, string.Join(", ", small));

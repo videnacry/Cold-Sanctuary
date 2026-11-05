@@ -199,6 +199,11 @@ public static class AreaFunctions
         _prefixEffects.Add(("ene_remolque", (id, who) => Iceberg.TowThreat(IcebergRule.Site.Energy, who)));
         _prefixEffects.Add(("nuc_refuerzo", (id, who) => CavernRock.Instance?.Reinforce(who)));
         _prefixEffects.Add(("gua_sala", (id, who) => GuardWatch.Shift(who)));
+        _prefixEffects.Add((HunterCell.RoundId, (id, who) => HunterCell.Instance?.Round(who)));
+        _prefixEffects.Add((HunterCell.RationId, (id, who) => HunterCell.Instance?.Ration(who)));
+        _prefixEffects.Add((HunterCell.SampleId, (id, who) => HunterCell.Instance?.Sample(who)));
+        _prefixEffects.Add((HunterCell.DrillId, (id, who) => HunterCell.Instance?.Drill(who)));
+        _prefixEffects.Add((HunterCell.RecaptureId, (id, who) => HunterCell.Instance?.Recapture(who)));
         _prefixEffects.Add(("obra_material_", (id, who) => Obra(id.Substring(14), who, material: true)));
         _prefixEffects.Add(("obra_trabajo_", (id, who) => Obra(id.Substring(13), who, material: false)));
         _prefixEffects.Add(("prep_", (id, who) => KitchenLarder.Instance?.StartPrep(id.Substring(5), who)));

@@ -69,7 +69,7 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
 
         // ── 1b. LAS CASAS DE ÁRBOL DE LA RESIDENCIA (2026-11-03, Berón: «los frutales en residencias … para las residencias del santuario»):
         //     cada habitación con su frutal en su terraza, a ≥ 2 m de sus muebles y su alfombra, y en la ronda del jardinero.
-        var rooms = FindObjectsByType<Bedroom>(FindObjectsSortMode.None).Where(b => b.transform.parent != null && b.transform.parent.name == "ArboledaResidencial").ToList();
+        var rooms = FindObjectsByType<Bedroom>(FindObjectsSortMode.None).Where(b => b != null).ToList();
         if (rooms.Count > 0)
         {
             var noFruit = rooms.Where(r => r.GetComponentInChildren<FruitPlant>() == null).Select(r => r.name).ToList();

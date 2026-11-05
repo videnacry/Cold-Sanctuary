@@ -109,7 +109,7 @@ public class TreeOfFieldsTest : MonoBehaviour, ITestUnit
         foreach (Transform tr in FindObjectsByType<Transform>(FindObjectsSortMode.None))
         {
             string n = tr.name;
-            bool growing = n.StartsWith("ArbolResidencial_");   // (2026-11-05: ya no hay bosque de hielo)
+            bool growing = n.StartsWith("ArbolIsla_");   // (2026-11-05: solo los abedules de la isla)
             if (!growing) continue;
             float top = 0f;
             foreach (Renderer r in tr.GetComponentsInChildren<Renderer>()) top = Mathf.Max(top, r.bounds.max.y - tr.position.y);

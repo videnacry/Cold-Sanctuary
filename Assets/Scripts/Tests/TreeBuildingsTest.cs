@@ -84,8 +84,8 @@ public class TreeBuildingsTest : MonoBehaviour, ITestUnit
                 }
             }
             TestProbe.Check($"{b}: el umbral de cada puerta de piso y de anillo, libre de muebles", blocked == 0, blocked == 0 ? $"{floors.Count + rings.Count(r => !r.via.Any())} puertas" : blockedWhy);
-            int padsOnFloors = CarpetPad.All.Count(p => p != null && p.kind != CarpetPad.Kind.Habitacion && t.levels.Any(l => l.deck != null && l.kind != TreeLevel.Kind.Top && p.transform.IsChildOf(l.deck) && !p.building.Contains("esterillas")));
-            var mine = CarpetPad.All.Where(p => p != null && p.building == b).Select(p => p.floor).Distinct().OrderBy(x => x).ToList();
+            int padsOnFloors = CarpetPad.All.Count(p => p != null && p.kind != CarpetPad.Kind.Habitacion && p.kind != CarpetPad.Kind.Residencia && t.levels.Any(l => l.deck != null && l.kind != TreeLevel.Kind.Top && p.transform.IsChildOf(l.deck) && !p.building.Contains("esterillas")));
+            var mine = CarpetPad.All.Where(p => p != null && p.building == b && p.kind != CarpetPad.Kind.Habitacion && p.kind != CarpetPad.Kind.Residencia).Select(p => p.floor).Distinct().OrderBy(x => x).ToList();
             TestProbe.Check($"{b}: se entra solo por el suelo y por el techo (alfombras ahí y en ningún piso)", padsOnFloors == 0 && mine.Count == 2 && mine[0] == 0 && t.Top != null && mine[1] == t.Top.index,
                 $"{padsOnFloors} áreas de alfombras en pisos; pisos con alfombras: {string.Join(", ", mine)}");
         }

@@ -28,7 +28,6 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         Destroy(probe);
         // (Los edificios-árbol no llevan colchón: no tienen nada a poca altura sobre el suelo, que queda para la naturaleza.)
         // (2026-11-05: la central ya es un árbol en el mar; quedan la arboleda residencial y la casa de la guardia.)
-        TestProbe.Greater("hay colchones de musgo bajo lo construido (lo que no es un edificio-árbol: la residencia, la casa de la guardia…)", FindObjectsByType<SoftGround>(FindObjectsSortMode.None).Length, 1f);
 
         // Áreas elevadas.
         GameObject kitchen = GameObject.Find("Kitchen_Area");

@@ -16,29 +16,9 @@ microorganismos que viven **solo de agua y frío**.
 
 ## Sin bosque (Berón 2026-11-05)
 
-> **Ya no hay bosque de hielo ni árbol gigante. Quedan los 6 árboles de la residencia, y esos cazan** (Berón: «hemos dejado los árboles de la residencia por lo cual árbol-cazador no se perdería, estaría allí no?»). Las abejas y las arañas anidan en ellos. §2 describe el diseño original; lo que cambia es esto:
+> **Ya no hay bosque de hielo, árbol gigante ni casas de árbol.** En el suelo quedan abedules de la isla, solo flora, con 6 panales como máximo. El **árbol cazador** vive en una celda: [contencion-arbol-cazador.md](contencion-arbol-cazador.md). §2 describe el diseño original, que sigue valiendo dentro de ella.
 
-| | Bosque (antes) | Residencia (ahora) | Por qué |
-|---|---|---|---|
-| A quién caza | Todo ser vivo | Solo animales: ni personas ni sus abejas y arañas (`wildPreyOnly`) | Duermen encima |
-| Señuelo | 10 m + altura (~70 m) | **24 m** y la mitad de fuerte | Con 70 m atraería depredadores hambrientos a las casas |
-| Sopor letal | ~12 m | **5 m**, al pie del tronco | Las casas empiezan a 12 m |
-| Crecer | Hasta ×1,5 | **Nunca** | Sostiene casas: crecer las atravesaría |
-| Miel | Néctar de cadáveres cercanos | **Igual** | Las abejas buscan el cadáver junto a su árbol |
-
-**Riesgos que quedan**: el señuelo sigue atrayendo animales hambrientos hacia el pie de la arboleda, y las alfombras del suelo están allí. Hay que mirarlo en vivo. Los frutales de las terrazas no se ven afectados: el sopor solo actúa sobre seres.
-
-**Corregido de paso**: el cazador usaba un `OverlapSphere` de 32 huecos; en la residencia se llenaba de cubos y no habría visto a nadie. Las abejas, además, agrandaban su árbol sin límite al recoger un cadáver, y eso habría deformado la arboleda.
-
-| | Antes (estimado) | Ahora |
-|---|---|---|
-| Árboles | ~45 | **6** |
-| Panales | ~207 | **6**: el tope de 1 por árbol se queda, el cazador no necesita más |
-| Familias de abejas | 4 (20 abejas, 8 arañas) | 2 (10 abejas, 4 arañas) |
-
-Las cifras de antes salen del código, no de la escena. El sotobosque vuelve al pie de los 6 árboles, porque `PolarUnderstory` crece alrededor de los cazadores; son las flores de las abejas.
-
-**Lo que se pierde**: el bosque de los casquetes, ya sustituido ([territorio-polar.md](territorio-polar.md) §Casquetes silvestres), la caza en esos casquetes y casi todas las mudanzas largas de colmena.
+**Lo que se pierde**: la caza en el suelo, las mudanzas largas de colmena y la miel de cadáveres junto al cazador, porque la celda no tiene panales.
 
 ## 2. El árbol carnívoro de hielo (la pieza central)
 

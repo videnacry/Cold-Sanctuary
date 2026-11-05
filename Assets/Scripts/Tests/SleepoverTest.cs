@@ -41,7 +41,7 @@ public class SleepoverTest : MonoBehaviour, ITestUnit
     // ── 1. Las casas ──────────────────────────────────────────────────────────────────────────────
     void Houses()
     {
-        var rooms = Bedroom.All.Where(b => b != null && b.transform.parent != null && b.transform.parent.name == "ArboledaResidencial").ToList();
+        var rooms = Bedroom.All.Where(b => b != null).ToList();
         TestProbe.Check("hay casas del árbol", rooms.Count > 0, $"{rooms.Count}");
         var small = rooms.Where(b => b.Capacity < 8).Select(b => $"{b.name} {b.Capacity}").ToList();
         TestProbe.Check("cada casa duerme a 8 (una cama-litera de dos pisos de 4)", small.Count == 0, string.Join(", ", small));

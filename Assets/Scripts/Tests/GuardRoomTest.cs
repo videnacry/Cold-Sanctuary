@@ -11,7 +11,6 @@ using UnityEngine;
 /// </summary>
 public class GuardRoomTest : MonoBehaviour, ITestUnit
 {
-    const float ResidentialDeck = 12f;   // ResidentialBuilder.DeckY (de editor)
     public int Group => 91;
     public bool ParallelSafe => false;
 
@@ -38,8 +37,23 @@ public class GuardRoomTest : MonoBehaviour, ITestUnit
 
         // ── EL CAZADOR ──
         IceCarnivorousTree[] hunters = FindObjectsByType<IceCarnivorousTree>(FindObjectsSortMode.None);
-        TestProbe.Check("solo quedan los 6 de la residencia, y los 6 cazan", FindObjectsByType<NestTree>(FindObjectsSortMode.None).Length == 6 && hunters.Length == 6, $"{hunters.Length} cazadores");
-        TestProbe.Check("ninguno caza personas ni crece, y el sopor no llega a las casas", hunters.All(h => h.wildPreyOnly && h.growthPerKill == 0f && h.maxScale == 1f && h.killRadius < ResidentialDeck));
+        HunterCell hc = HunterCell.Instance;
+        TestProbe.Check("un solo árbol cazador, y en su celda", hunters.Length == 1 && hc != null && hc.tree == hunters[0], $"{hunters.Length} cazadores");
+        if (hc != null && hunters.Length == 1)
+        {
+            IceCarnivorousTree h = hunters[0];
+            TestProbe.Check("conserva sus rasgos: señuelo, sopor y crecimiento", h.lureRadius > 20f && h.killRadius > 4f && h.growthPerKill > 0f && h.maxScale > 1f, $"{h.lureRadius:0} m, {h.killRadius:0.0} m, ×{h.maxScale:0.0}");
+            TestProbe.Check("la celda contiene su mayor tamaño", hc.Contains(h.transform.position + Vector3.up * 2f));
+            TestProbe.Check("sellada, lo sujeta; en brecha, no", hc.Holds(h));
+            hc.Breach("prueba");
+            bool loose = !hc.Holds(h) && GuardWatch.Alert(GuardWatch.Feed.Contencion) && HunterCell.Missions(1).All(m => m.id.StartsWith(HunterCell.RecaptureId));
+            hc.Recapture("Prueba 1"); bool one = hc.Now == HunterCell.State.Brecha; hc.Recapture("Prueba 2");
+            TestProbe.Check("la brecha avisa a la guardia, solo deja la recaptura y pide dos personas", loose && one && hc.Holds(h));
+            TestProbe.Check("cada mañana, su ronda; el simulacro, semanal", HunterCell.Missions(1).Any(m => m.id == HunterCell.RoundId) && HunterCell.Missions(HunterRule.DrillEvery).Any(m => m.id == HunterCell.DrillId));
+        }
+        Bedroom[] rooms = FindObjectsByType<Bedroom>(FindObjectsSortMode.None);
+        TestProbe.Check("la Residencia está en su edificio-árbol: sin casas de árbol en el santuario 1", rooms.Length >= 30 && rooms.All(r => r.GetComponentInParent<TreeFloor>() != null) && GameObject.Find("ArboledaResidencial") == null, $"{rooms.Length} habitaciones");
+        TestProbe.Check("los árboles de la isla son solo flora", FindObjectsByType<NestTree>(FindObjectsSortMode.None).Length >= 3 && FindObjectsByType<NestTree>(FindObjectsSortMode.None).All(n => n.GetComponentInParent<TreeFloor>() == null));
         TestProbe.Check("las abejas de las nieves siguen anidando", FindObjectsByType<IceInsectLife>(FindObjectsSortMode.None).Any(b => b.hive != null));
 
         // ── LOS CASQUETES SILVESTRES ──

@@ -55,7 +55,6 @@ public class LeisureDirector : MonoBehaviour
         public AreaFunctions.AreaFunction fn;    // la función del registro que se hace (microcosmos)
         public AreaFunctions.Kind kind = AreaFunctions.Kind.Rest;
         public int index;                        // para repartir los sitios de varias actividades en la misma área
-        public bool deck;                        // la plataforma central de la arboleda (puntos sobre ella)
         public readonly List<YogaHall> halls = new List<YogaHall>();   // (regla J16) la sala de yoga en todos los pisos de su estilo
         public int capacity;
     }
@@ -169,7 +168,7 @@ public class LeisureDirector : MonoBehaviour
         ("yoga", "Hatha libre y meditación junto al linga", LeisureRoster.Kind.Recuperacion, new[] { YogaVenue + "Hatha tradicional", "Sala de Yoga" }, 8, "meditar"),
         ("ashtanga", "Ashtanga autoguiado (estilo Mysore)", LeisureRoster.Kind.Recuperacion, new[] { YogaVenue + "Ashtanga occidental", "Sala de Yoga" }, 8, "ejercicio"),
         ("huerto", "Pasear y cuidar el huerto", LeisureRoster.Kind.Ocio, new[] { "Huerto" }, 6, "pie"),
-        ("lectura", "Leer en la plataforma de la arboleda", LeisureRoster.Kind.Ocio, new[] { "Residencia" }, 6, "sentado"),
+        ("lectura", "Leer en la plaza de la Residencia", LeisureRoster.Kind.Ocio, new[] { "Residencia" }, 6, "sentado"),
         ("crias", "Jugar con las crías", LeisureRoster.Kind.Cuidado, new[] { "Cría" }, 4, "pie"),
         ("textil", "Manualidades en el estudio textil", LeisureRoster.Kind.Ocio, new[] { "Estudio Textil" }, 4, "sentado"),
         ("tertulia", "Tertulia en el restaurante", LeisureRoster.Kind.Ocio, new[] { "Cocina" }, 8, "sentado"),
@@ -237,8 +236,8 @@ public class LeisureDirector : MonoBehaviour
                 }
                 if (w == "Residencia")
                 {
-                    GameObject r = GameObject.Find("ArboledaResidencial");
-                    if (r != null && r.scene == gr.scene) { v = new Venue { title = "la arboleda residencial", anchor = r.transform, deck = true }; break; }
+                    GameObject r = GameObject.Find("Residencia_plaza");
+                    if (r != null && r.scene == gr.scene) { v = new Venue { title = "la plaza de la Residencia", anchor = r.transform }; break; }
                     continue;
                 }
                 SanctuaryArea a = OpenArea(w, gr.scene);
@@ -532,17 +531,11 @@ public class LeisureDirector : MonoBehaviour
         {
             Bedroom room = g.TryGetComponent(out Anima a) ? Bedroom.Of(a) : null;
             if (room != null && room.bed != null) return OnMesh(room.FootSpot + Vector3.up);   // al pie de su cama (la de 4 es ancha: al lado caía encima)
-            GameObject res = GameObject.Find("ArboledaResidencial");   // sin dormitorio: a la arboleda
+            GameObject res = GameObject.Find("Residencia_plaza");   // sin dormitorio: a la plaza
             if (res == null) return g.transform.position;
-            return OnMesh(res.transform.TransformPoint(new Vector3(-6f + (seat % 3) * 1.6f, ResidentialBuilder_DeckY + 1.15f, -1.6f + (seat / 3) * 1.6f)));
+            return OnMesh(res.transform.TransformPoint(new Vector3(12f + (seat % 3) * 1.6f, 1.15f, -8f + (seat / 3) * 1.6f)));
         }
         if (v.anchor == null) return g.transform.position;
-        if (v.deck)   // la plataforma central (18 × 18): en las dos bandas de los lados (|x| 6 y 7,6 m), lejos de las pistas de alfombras del centro;
-        {             // (regla J16) 4 por fila y 10 filas de 1,6 m: caben 40 (antes, 2 por fila: con todos los miembros se salían del borde)
-            int row = (seat / 4) % 10;
-            float x = (seat % 2 == 0 ? 6f : 7.6f) * (seat % 4 < 2 ? 1f : -1f);
-            return OnMesh(v.anchor.TransformPoint(new Vector3(x, ResidentialBuilder_DeckY + 1.15f, -7.2f + row * 1.6f)));
-        }
         // EL RING DE ALMOHADAS (2026-11-04): cada plaza, una celda del colchón de la cama colosal (PillowRing.Spot).
         if (v.anchor.TryGetComponent(out PillowRing ring)) return ring.Spot(seat) + Vector3.up;
         // LA PIJAMADA (2026-11-04): en la casa del anfitrión, cada plaza un punto delante de la cama-litera.
@@ -572,8 +565,6 @@ public class LeisureDirector : MonoBehaviour
         Vector3 local = new Vector3(zx + ((seat % 3) - 1) * 1.6f, 1f, 1.5f + (seat / 3) * 1.6f - (v.index / 3 % 2) * 4f);
         return OnMesh(v.anchor.TransformPoint(local));
     }
-
-    const float ResidentialBuilder_DeckY = 12f;   // la plataforma central de la arboleda (ResidentialBuilder.DeckY, en el Editor)
 
     static Vector3 OnMesh(Vector3 p)
     {

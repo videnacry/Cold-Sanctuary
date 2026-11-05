@@ -51,14 +51,14 @@ public static partial class SampleSceneBuilder
         Solid(g, new Vector3(0f, -0.05f, 0f), new Vector3(s.x - 0.2f, 0.1f, s.y - 0.2f), new Color(0.34f, 0.36f, 0.4f), "Suelo_de_sala");
         float hx = s.x * 0.5f, hz = s.y * 0.5f;
 
-        // EL MURO DE PANTALLAS (Houston): siete pantallas sueltas sobre postes, no una pared (S6). Un solo tramo.
+        // EL MURO DE PANTALLAS (Houston): una pantalla suelta por lectura sobre postes, no una pared (S6). Un solo tramo.
         Transform wall = new GameObject("Muro_de_pantallas").transform; wall.SetParent(g, false); wall.gameObject.AddComponent<FurnitureLine>();
         wall.localPosition = new Vector3(0f, 0f, 14.5f);
         Material normal = KitchenProps.Mat(GrScreen), alert = KitchenProps.Mat(GrAlert);
         GuardWatch.Feed[] feeds = GuardWatch.Feeds;
         for (int i = 0; i < feeds.Length; i++)
         {
-            Transform sc = KitchenProps.Root(wall, $"Pantalla_{feeds[i]}", new Vector3(-13.2f + i * 4.4f, 0f, 0f));
+            Transform sc = KitchenProps.Root(wall, $"Pantalla_{feeds[i]}", new Vector3((i - (feeds.Length - 1) * 0.5f) * 4.4f, 0f, 0f));
             KitchenProps.C(sc, new Vector3(0f, 0.9f, 0f), new Vector3(0.14f, 1.8f, 0.14f), KitchenProps.DarkSteel, 0f, "Poste");
             Transform panel = KitchenProps.C(sc, new Vector3(0f, 2.5f, 0f), new Vector3(3.6f, 2f, 0.1f), GrScreen, 0f, "Pantalla");
             KitchenProps.Fit(sc);

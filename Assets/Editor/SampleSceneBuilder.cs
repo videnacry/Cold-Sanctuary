@@ -143,7 +143,6 @@ public static partial class SampleSceneBuilder
         BuildMagnate(root.transform);            // LA MAGNATE: maestra-guardiana (estado infinito; pacifica; enseña yoga al rezagado). docs/anyma-factory-and-control.md
         BuildLinduarda(root.transform);          // LINDUARDA (enfermería): guardiana de salud emergente (status→vacuna/analiza al que tenga HealthRecord false, p.ej. Kushal)
         BuildPatrolPosts(root.transform);          // los puestos de vigía de la patrulla
-        ResidentialBuilder.Build(root.transform, new Vector3(-60f, 0f, 95f));   // ARBOLEDA RESIDENCIAL: un dormitorio elevado por persona
         BuildGourmetDining(root.transform);      // RESTAURANTE: el comedor gourmet para 30, en la misma plataforma que la cocina abierta
         RelocateTanks();       // los tanques, donde quedan 2 m libres con todos los muebles ya puestos
         PlaceCarpetAreas();    // alfombras voladoras: un área en cada piso y el piso de alfombras en el techo (ya con los muebles puestos)
@@ -199,9 +198,9 @@ public static partial class SampleSceneBuilder
         }
 
         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
-        var homeTrees = new List<Transform>();   // rendimiento: cada árbol de la residencia, una malla por material
-        foreach (Transform tr in root.GetComponentsInChildren<Transform>(true)) if (tr.name.StartsWith("ArbolResidencial_")) homeTrees.Add(tr);
-        Debug.Log($"[Rendimiento] árboles de la residencia combinados: {MergeTreeMeshes(homeTrees)} cubos ya no se dibujan uno a uno.");
+        var homeTrees = new List<Transform>();   // rendimiento: cada abedul de la isla, una malla por material
+        foreach (Transform tr in root.GetComponentsInChildren<Transform>(true)) if (tr.name.StartsWith(IslandTreePrefix)) homeTrees.Add(tr);
+        Debug.Log($"[Rendimiento] abedules de la isla combinados: {MergeTreeMeshes(homeTrees)} cubos ya no se dibujan uno a uno.");
         Debug.Log("[SampleSceneBuilder] Blockout listo bajo 'LevelDressing_AUTO'. Revisar y ajustar posiciones a mano.");
         // Las ESCENAS DE PRUEBA DE UN ÁREA (sala de yoga, enfermería, cocina) salen de ESTE santuario recién construido: se guarda
         // y cada una se queda solo con su piso (SampleSceneBuilder.TestScenes.cs). Así nunca quedan desfasadas.
@@ -2975,16 +2974,21 @@ public static partial class SampleSceneBuilder
 
     // FLORA DE HIELO (docs/ice-sanctuary-ecology.md): el árbol carnívoro (atrae hambrientos con olor a comida → sopor →
     // muerte → crece) + una colonia de abejas de las nieves que anida cerca. Primitivas (independiente de modelos).
-    /// <summary>(Berón 2026-11-05: «retirar los árboles artificiales dejando solo el gigante y los de la residencia»; docs/ice-sanctuary-ecology.md §Sin bosque.) Ya no hay bosque:
-    /// quedan las abejas y las arañas de las nieves, dos familias en la residencia. Antes eran 4.</summary>
+    public const string IslandTreePrefix = "ArbolIsla_";
+
+    /// <summary>LOS ÁRBOLES DE LA ISLA (Berón 2026-11-05): solo flora, sin sostener nada. Abedul de montaña, el árbol real de los bordes del Ártico (docs/residencia.md §Los árboles de
+    /// la isla). Tienen los panales: una familia de abejas y arañas en dos de ellos.</summary>
     static void BuildIceFlora(Transform parent)
     {
         GameObject root = new GameObject("FloraHielo_AUTO"); root.transform.SetParent(parent);
         var homes = new List<Vector3>();
-        foreach (string tree in new[] { "ArbolResidencial_1", "ArbolResidencial_4" })
+        Vector3 grove = new Vector3(-125f, 0f, -165f);
+        for (int k = 0, n = 0; k < 6; k++)
         {
-            GameObject home = GameObject.Find(tree);
-            if (home != null) homes.Add(home.transform.position + new Vector3(3f, 0f, 0f));
+            Vector3 at = grove + Quaternion.Euler(0f, k * 60f, 0f) * Vector3.forward * 16f;
+            if (!PolarLandscapeBuilder.LandAt(at.x, at.z)) continue;
+            CubeTree.Build(root.transform, $"{IslandTreePrefix}{++n}", at, 7100 + k * 13, 10f, carnivorous: false, maxNests: 1, birch: true);
+            if (k % 3 == 0) homes.Add(at + new Vector3(3f, 0f, 0f));
         }
         GameObject beePrefab = LoadAnimalPrefab("SnowBee"), spiderPrefab = LoadAnimalPrefab("SnowSpider");
         if (beePrefab == null) Debug.LogWarning("[IceFlora] sin prefab SnowBee (genera prefabs — salen cubos si no hay .fbx), se omiten las abejas.");
@@ -3001,7 +3005,7 @@ public static partial class SampleSceneBuilder
                 sg.AddComponent<FamilyGenerator>().families = new[] { new FamilyGenerator.Family { animalPrefab = spiderPrefab, position = homes[h] + new Vector3(-2f, 0f, 1f), quantity = 2, minParentsCount = 1, radius = 2f } };
             }
         }
-        Debug.Log($"[IceFlora] Sin bosque: {homes.Count} colonias, en la residencia.");
+        Debug.Log($"[IceFlora] Abedules de la isla: {homes.Count} colonias.");
     }
 
     // LINDUARDA en la enfermería + un paciente demo (Kushal) con HealthRecord en false → ella, por su pensamiento de
@@ -3462,8 +3466,10 @@ public static partial class SampleSceneBuilder
         //  · PRODUCCIÓN (más baja, junto al Árbol de los Campos): Construcción · Mecánica · Estudio Textil. La maquinaria
         //    pesada, abajo.
         //    Un ÁRBOL: 2 niveles desde 96 m (por encima de Servicios y Ciencias); sus 3 pisos en orden y uno libre; 4 puntas con frutales.
-        BeginTreeTower(areasGroup.transform, TorreProduccion, ProduccionCenter, ProduccionSize, ProduccionYaw, 2, ProduccionFirstY, 4f);
+        BeginTreeTower(areasGroup.transform, TorreProduccion, ProduccionCenter, ProduccionSize, ProduccionYaw, 3, ProduccionFirstY, 4f);   // (2026-11-05: 3 niveles, por el laboratorio de contención)
         Floor(works.transform); Floor(mech.transform); Floor(textile.transform);
+        BuildContainmentLab(areasGroup.transform);   // el árbol cazador: arriba del todo (docs/contencion-arbol-cazador.md)
+        BuildResidenceTower(areasGroup.transform);   // la Residencia: edificio-árbol en la isla (docs/residencia.md)
         // Los EDIFICIOS que juntan varias áreas llevan el nombre de su torre (el de su planta baja diría solo una).
         BuildingNames[kitchen.transform] = TorreServicios; BuildingNames[gym.transform] = TorreEntrenamiento; BuildingNames[works.transform] = TorreProduccion;
         FurnishYogaFloors(hatF, ashF, size[yoga.transform]);   // los pisos de yoga (regla J16: los que pidan los miembros), cada uno con su sala occidental y su sala tradicional

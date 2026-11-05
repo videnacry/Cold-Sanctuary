@@ -19,8 +19,6 @@ public class IceCarnivorousTree : MonoBehaviour
     [Tooltip("Escala máxima: sin tope, crecía sin control.")]
     [Min(1f)] public float maxScale = 3f;
 
-    [Tooltip("Solo caza animales salvajes: ni personas ni los insectos que anidan en él (los árboles de la residencia).")]
-    public bool wildPreyOnly;
     public int Absorbed => _absorbed;
 
     float _next;
@@ -37,12 +35,16 @@ public class IceCarnivorousTree : MonoBehaviour
         float step = 0.5f / Mathf.Max(1f, minuteSecs);
 
         // Señuelo: rastro de "comida" (atrae al Wander que deriva por olor).
-        TraceField.Leave(transform.position, TraceChannel.ScentFood, lureStrength);
+        // (2026-11-05) En su celda el señuelo no sale y el sopor solo alcanza lo de dentro (HunterCell): si se rompe, todo su alcance.
+        HunterCell cell = HunterCell.Instance;
+        bool held = cell != null && cell.Holds(this);
+        if (!held) TraceField.Leave(transform.position, TraceChannel.ScentFood, lureStrength);
 
         // (2026-11-05) Recorre a los seres, no un OverlapSphere: en la residencia, con 70 m de radio, los 32 huecos se llenaban de cubos de las casas y nunca veía a nadie.
         foreach (Anima a in SceneCache.All<Anima>(2f))
         {
-            if (a == null || !Prey(a)) continue;
+            if (a == null || a.GetComponent<IceCarnivorousTree>() != null) continue;
+            if (held && !cell.Contains(a.transform.position)) continue;
             float d = Vector3.Distance(transform.position, a.transform.position);
             if (d > lureRadius) continue;
             if (d <= killRadius)
@@ -65,7 +67,10 @@ public class IceCarnivorousTree : MonoBehaviour
         }
     }
 
-    bool Prey(Anima a) => a.GetComponent<IceCarnivorousTree>() == null && (!wildPreyOnly || (a.GetComponent<Animal>() != null && a.GetComponent<IceInsectLife>() == null));
+    /// <summary>Una ración por el portillo: como una presa, sin morir nadie.</summary>
+    public void Absorb() { _absorbed++; transform.localScale = Vector3.one * Mathf.Min(maxScale, transform.localScale.x + growthPerKill); }
+    /// <summary>La poda de la muestra.</summary>
+    public void Prune() { transform.localScale = Vector3.one * Mathf.Max(1f, transform.localScale.x - growthPerKill); }
 
     void OnDrawGizmosSelected()
     {

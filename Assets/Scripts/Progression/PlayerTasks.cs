@@ -128,6 +128,11 @@ public static class PlayerTasks
         T("nuc_refuerzo", "Cierra las cavernas|panel_roca|Tablet", "Manda reforzar a distancia|panel_roca|Tablet", "Vigila que el ritmo baje|panel_roca|Tablet");
         // ══ GUARDIA ══
         T("gua_carnivoros", "Coge la linterna|almacen|Linterna", "Patrulla los puestos|recinto|Linterna", "Anota la ronda|recinto|Tablet");
+        T(HunterCell.RoundId, "Lee la presión de la celda|consola|Tablet", "Revisa sellos y filtros|consola|Tablet", "Firma la ronda|consola|Tablet");
+        T(HunterCell.RationId, "Coge la ración|consola|Tablet", "Pásala por el portillo|consola|Tablet", "Anótala|consola|Tablet");
+        T(HunterCell.SampleId, "Mete las manos en los guantes|consola|Tablet", "Toma la muestra y poda|consola|Tablet", "Sácala por la ducha|consola|Tablet");
+        T(HunterCell.DrillId, "Da el código verde de práctica|consola|Tablet", "Cierra las compuertas|consola|Tablet", "Anota el tiempo|consola|Tablet");
+        foreach (string rec in new[] { HunterCell.RecaptureId, HunterCell.RecaptureId + "_2" }) T(rec, "Ponte el equipo|consola|Tablet", "Cierra la celda desde fuera|consola|Tablet", "Comprueba la presión|consola|Tablet");
         T("gua_sala", "Lee el muro de pantallas|consola|Tablet", "Comprueba el radar y el sismógrafo|consola|Tablet", "Firma el parte del turno|consola|Tablet");
         foreach (string ali in new[] { "gua_alimentador", "gua_alimentador_2" })
         {

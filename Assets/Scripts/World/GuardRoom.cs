@@ -34,7 +34,7 @@ public static class GuardWatchRule
 
 public static class GuardWatch
 {
-    public enum Feed { Icebergs, Radar, Roca, Sismografo, Mar, Depredadores, Emergencias }
+    public enum Feed { Icebergs, Radar, Roca, Sismografo, Mar, Depredadores, Contencion, Emergencias }
     public static readonly Feed[] Feeds = (Feed[])System.Enum.GetValues(typeof(Feed));
 
     /// <summary>Partes firmados desde que arrancó la escena.</summary>
@@ -52,6 +52,7 @@ public static class GuardWatch
             case Feed.Sismografo: return "Sismógrafo";
             case Feed.Mar: return "Mareógrafo y boya";
             case Feed.Depredadores: return "Depredadores";
+            case Feed.Contencion: return "Árbol cazador";
             default: return "Emergencias";
         }
     }
@@ -68,6 +69,7 @@ public static class GuardWatch
             case Feed.Sismografo: return GuardWatchRule.Magnitude(Day) >= GuardWatchRule.TsunamiWatchMagnitude;
             case Feed.Mar: return GuardWatchRule.SeaState(Day) != GuardWatchRule.Sea.Normal;
             case Feed.Emergencias: return NuclearSite.Evacuating;
+            case Feed.Contencion: return HunterCell.Instance != null && HunterCell.Instance.Now == HunterCell.State.Brecha;
             default: return false;
         }
     }
@@ -101,6 +103,8 @@ public static class GuardWatch
                 int total = PredatorRound.Today().Count;
                 return total == 0 ? "Sin depredadores en la lista" : $"{PredatorRound.Left} de {total} por revisar";
             }
+            case Feed.Contencion:
+                return HunterCell.Instance == null ? "Sin datos: la celda no está en esta escena" : HunterCell.Instance.Now == HunterCell.State.Brecha ? "CÓDIGO VERDE: brecha en la celda" : $"Contenido · {HunterCell.Instance.Rounds} rondas";
             default: return NuclearSite.Evacuating ? "EVACUACIÓN DEL SITIO NUCLEAR" : "Sin emergencias · no hay sensor de fuego";
         }
     }

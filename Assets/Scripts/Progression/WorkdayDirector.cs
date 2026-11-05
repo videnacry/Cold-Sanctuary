@@ -52,6 +52,7 @@ public class WorkdayDirector : MonoBehaviour
         roster.areas.Sort(System.StringComparer.Ordinal);   // orden base estable (día 0)
         if (!roster.areas.Contains(AreaWork.Guard)) roster.areas.Add(AreaWork.Guard);
         if (AreaTransform(AreaWork.GuardRoom) != null && !roster.areas.Contains(AreaWork.GuardRoom)) roster.areas.Add(AreaWork.GuardRoom);
+        if (AreaTransform(AreaWork.Containment) != null && !roster.areas.Contains(AreaWork.Containment)) roster.areas.Add(AreaWork.Containment);
         // LO PRIMERO al empezar: la jornada y cada uno ya en su área (sin pasar unos segundos en su sitio antiguo).
         if (TC != null && !ColdSanctuary.TestRunner.Running && FindAnyObjectByType<ColdSanctuary.TestRunner>() == null) { float h = TC.Hour; if (h >= WorkRoster.StartHour && h < WorkRoster.StartHour + 8f) { PlanDay(TC.Day); Tick(h); } }
     }

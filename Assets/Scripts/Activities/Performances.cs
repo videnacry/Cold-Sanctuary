@@ -331,6 +331,10 @@ public static class Performances
         Mi("aul_estudio", "Estudiar en la biblioteca",
             S("Leer", M.Read, P.Book, P.None, 10f, F.Paper, 3f, Fine),
             S("Tomar apuntes", M.Write, P.Pen, P.Book, 7f, F.Paper, 2.5f, Fine));
+        foreach (string id in new[] { HunterCell.RoundId, HunterCell.RationId, HunterCell.SampleId, HunterCell.DrillId, HunterCell.RecaptureId, HunterCell.RecaptureId + "_2" })
+            Mi(id, "Laboratorio de contención",
+                S("Mirar la celda", M.Patrol, P.Clipboard, P.None, 8f, F.None, 2f, Raise),
+                Noting("Firmar el registro"));
         Mi("gua_sala", "Turno en la sala de guardia",
             S("Mirar las pantallas", M.Patrol, P.Clipboard, P.None, 8f, F.None, 2f, Raise),
             Noting("Firmar el parte del turno"));

@@ -9,7 +9,7 @@ using UnityEngine;
 /// </summary>
 public static class CubeTree
 {
-    static Material _bark, _branch, _leaf, _platform, _nest;
+    static Material _bark, _branch, _leaf, _platform, _nest, _birchBark, _birchBranch, _birchLeaf;
 
     public static Material Mat(ref Material cache, Color c)
     {
@@ -21,7 +21,7 @@ public static class CubeTree
         return cache;
     }
 
-    public static GameObject Build(Transform parent, string name, Vector3 groundPos, int seed, float height = 16f, bool carnivorous = true, System.Func<Vector3, bool> blocked = null, float reachHeight = -1f, int maxNests = -1)
+    public static GameObject Build(Transform parent, string name, Vector3 groundPos, int seed, float height = 16f, bool carnivorous = true, System.Func<Vector3, bool> blocked = null, float reachHeight = -1f, int maxNests = -1, bool birch = false)
     {
         // TAMAÑO BASE ×1,3: las áreas humanas están ahora a 12 m y los árboles deben seguir dominando el bosque (el árbol
         // gigante tiene su propio constructor).
@@ -29,10 +29,11 @@ public static class CubeTree
         var rnd = new System.Random(seed);
         float R(float a, float b) => a + (float)rnd.NextDouble() * (b - a);
 
-        Material bark = Mat(ref _bark, new Color(0.55f, 0.72f, 0.80f));       // hielo opaco azulado
-        Material branchMat = Mat(ref _branch, new Color(0.70f, 0.86f, 0.92f));
-        Material leaf = Mat(ref _leaf, new Color(0.45f, 0.75f, 0.85f));       // "follaje" de escarcha
-        Material platformMat = Mat(ref _platform, new Color(0.85f, 0.94f, 0.98f));
+        // (2026-11-05) El abedul de la isla: corteza blanca y hoja verde.
+        Material bark = birch ? Mat(ref _birchBark, new Color(0.86f, 0.85f, 0.8f)) : Mat(ref _bark, new Color(0.55f, 0.72f, 0.80f));       // hielo opaco azulado
+        Material branchMat = birch ? Mat(ref _birchBranch, new Color(0.42f, 0.34f, 0.28f)) : Mat(ref _branch, new Color(0.70f, 0.86f, 0.92f));
+        Material leaf = birch ? Mat(ref _birchLeaf, new Color(0.46f, 0.62f, 0.3f)) : Mat(ref _leaf, new Color(0.45f, 0.75f, 0.85f));       // "follaje" de escarcha
+        Material platformMat = birch ? leaf : Mat(ref _platform, new Color(0.85f, 0.94f, 0.98f));
         Material nestMat = Mat(ref _nest, new Color(0.90f, 0.78f, 0.35f));    // nidos de miel de las abejas
 
         GameObject root = new GameObject(name);
@@ -226,5 +227,5 @@ public static class CubeTree
     }
 }
 
-/// <summary>Un árbol donde anidan las abejas y las arañas de las nieves, cace o no: el gigante, los de la residencia y el de la escena del ciclo de vida.</summary>
+/// <summary>Un árbol donde anidan las abejas y las arañas de las nieves: los abedules de la isla y el de la escena del ciclo de vida.</summary>
 public class NestTree : MonoBehaviour { }

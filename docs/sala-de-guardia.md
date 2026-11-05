@@ -45,6 +45,7 @@ No encontré cómo son por dentro las salas del Pacífico ni la de la Patrulla d
 
 | Pantalla | Lee | ¿Es real? |
 |---|---|---|
+| Árbol cazador | `HunterCell.Instance` | Sí |
 | Icebergs | `Iceberg.All`, `Iceberg.Threatening` | Sí |
 | Radar | Distancia del iceberg más cercano a un sitio | Sí |
 | Roca de la caverna | `CavernRock.Instance` | Sí |

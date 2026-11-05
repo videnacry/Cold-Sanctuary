@@ -40,7 +40,9 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 > - [x] **Árbol gigante retirado**; sus récords siguen en [`arbol-guardian.md`](arbol-guardian.md).
 > - [x] **El cazador, en los 6 árboles de la residencia**; casquetes silvestres con estructuras para la fauna ([`territorio-polar.md`](territorio-polar.md)).
 > - [x] **Sin bosque** ([`ice-sanctuary-ecology.md`](ice-sanctuary-ecology.md) §Sin bosque).
-> - [ ] **Probar en vivo sala, cazador y casquetes**: Blockout de solo santuario; grupos 91, 61, 28, 53, 77 y GroupAnimals; medir FPS y renderers antes y después.
+> - [x] **Residencia en edificio-árbol** ([`residencia.md`](residencia.md)); casas de árbol guardadas ([`casas-de-arbol.md`](casas-de-arbol.md)); cazador en su celda ([`contencion-arbol-cazador.md`](contencion-arbol-cazador.md)).
+> - [ ] **Probar en vivo sala, residencia, celda y casquetes**: Blockout de solo santuario; grupos 91, 61, 57, 55, 53, 28, 77, y los de pijamadas y almohadas; medir FPS y renderers antes y después.
+> - [ ] **Decidir con Berón**: si bastan los abedules como árboles de la isla.
 > - [ ] Mezcla de las 15 áreas pendientes de S14.
 > - [x] Regla de oro J30 / P11: todos saben hacer de todo. `Mission.owner` ya no es exclusivo.
 > - [x] Berón (2026-11-05): los vivos no políticos conservan sus frases, marcadas (M39).
