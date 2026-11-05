@@ -32,8 +32,7 @@ public static class Professions
         // Consol (2026-11-05): MAESTRA JEFA DE ASHTANGA (AshtangaTeacher). Da la clase de las 14 h y prepara la del día (yog_ashtanga). Las de grupo
         // «clase_yoga» son Hatha: no entran en su profesión.
         new Entry("Consol", "maestra de Ashtanga", "Sala de Yoga:yog_ashtanga"),
-        // Fernando (2026-11-05): PANELES SOLARES. Sus misiones, sol_mantenimiento, sol_instalacion y sol_reparacion, las genera EnergySite en el área
-        // Energía (rama de energía, docs/energia.md §Fernando); hasta que esa rama se integre no hay misiones de esa área y va por la rotación.
+        // Fernando (2026-11-05): PANELES SOLARES. Sus misiones, sol_mantenimiento, sol_instalacion y sol_reparacion, las genera EnergySite en el área Energía (docs/energia.md).
         new Entry("Fernando", "instalador y reparador de paneles solares", "Energía"),
         // Tote: JEFE DE REPARACIONES («rep_») y guardia.
         new Entry("JefeConstruccion", "jefe de reparaciones y guardia", "Construcción:rep_", "Guardia"),

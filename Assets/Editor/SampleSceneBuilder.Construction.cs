@@ -184,7 +184,8 @@ public static partial class SampleSceneBuilder
         Put("Ivelyna", "Infirmary_Area", new Vector3(-3f, 1f, -3f));               // pediatra, en el hospital
         Put("Malena", "Infirmary_Area", new Vector3(-5f, 1f, -3f));                // pediatra, con Ivelyna
         Put("Consol", "YogaRoom_Area", new Vector3(-9f, 1.5f, 0f));                // MAESTRA DE ASHTANGA: sale en el piso de la Sala de Yoga, en la otra sala (las clases de Ashtanga, en su planta)
-        Put("Fernando", "Construction_Area", new Vector3(-3f, 1f, 2.5f));          // paneles solares
+        foreach (SanctuaryArea ea in Object.FindObjectsByType<SanctuaryArea>(FindObjectsInactive.Include, FindObjectsSortMode.None))   // paneles solares: en el taller del Parque Energético (docs/energia.md)
+            if (ea.areaType == SanctuaryAreaType.EnergyPark && GameObject.Find("Fernando") is GameObject fe) fe.transform.position = ea.transform.TransformPoint(new Vector3(-4f, 1f, -5f));
         Put("Luciana", "VehicleWorkshop_Area", new Vector3(-2f, 1f, 2f));          // piloto: la flota de alfombras (y el control de misión)
         Put("Gallarle", "Classroom_Area", new Vector3(-3f, 1f, -1f));              // con su pareja, Ducristin (pendiente de foto y de profesión)
         Put("Neo", "Classroom_Area", new Vector3(-4f, 1f, -2f));                   // su hijo (niño): va con su madre (PersonLife), sin jornada

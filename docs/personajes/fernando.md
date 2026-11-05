@@ -10,7 +10,7 @@ Instala y repara paneles solares.
 
 ## Puesto y su base
 
-**Instalador y reparador de paneles solares**: área Energía, misiones `sol_mantenimiento`, `sol_instalacion` y `sol_reparacion`, que genera `EnergySite` ([energia.md](../energia.md), rama `claude/edif-energia`). Hasta que esa rama se integre va por la rotación. Base: Berón 2026-11-05.
+**Instalador y reparador de paneles solares**: área Energía, misiones `sol_mantenimiento`, `sol_instalacion` y `sol_reparacion`, que genera `EnergySite` ([energia.md](../energia.md)). Sale en su taller del Parque Energético. Base: Berón 2026-11-05.
 
 ## Casa y familia
 

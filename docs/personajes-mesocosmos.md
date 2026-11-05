@@ -42,7 +42,7 @@ Reglas de creación de personajes y auditoría de puestos: [reglas-personajes.md
 | Persona | Profesión | Misiones de su profesión | Sale en |
 |---|---|---|---|
 | **Consol** | **Maestra jefa de Ashtanga** (`WorkdayDirector.AshtangaTeacher`) | Sala de Yoga: `yog_ashtanga` (misión nueva, 0,5 h: preparar la clase). Da la clase de las 14 h de lunes a viernes y guía el Ashtanga autoguiado de las 20 h (`Professions.ClassLeads`) | la Sala de Yoga |
-| **Fernando** | **Instalador y reparador de paneles solares** | Energía: `sol_mantenimiento`, `sol_instalacion` y `sol_reparacion`, que genera `EnergySite` ([energia.md](energia.md), rama `claude/edif-energia`). Hasta que se integre, va por la rotación | Construcción, hasta que exista su taller en el Parque Energético |
+| **Fernando** | **Instalador y reparador de paneles solares** | Energía: `sol_mantenimiento`, `sol_instalacion` y `sol_reparacion`, que genera `EnergySite` ([energia.md](energia.md)) | su taller, en el Parque Energético |
 
 Berón: «ahora que ha llegado Consol el segundo puesto se le pondría a ella siendo que existe documentación de su gran habilidad, de hecho su
 descripción la hace candidata a ser superior a Josedrilo».
@@ -59,7 +59,7 @@ descripción la hace candidata a ser superior a Josedrilo».
 - **Ring**: sigue en 6 × 6 celdas (caben 36).
 - **J16**: ningún centro cambia de pisos. El yoga da 32 esterillas por estilo, el dojo 50, el ballet 40, el Aula 48 y la calistenia 40.
 - **Hay que vigilar**: el gimnasio da 30 y ya está justo. **Con 31 miembros pide un piso más.**
-- **W9**: entran `yog_ashtanga` y, con energía, las `sol_`. El reparto tiene sitio de sobra.
+- **W9**: entran `yog_ashtanga` y las `sol_`. El reparto tiene sitio de sobra.
 
 ## Profesiones y parejas (Berón, 2026-11-04) — lo que vale ahora
 

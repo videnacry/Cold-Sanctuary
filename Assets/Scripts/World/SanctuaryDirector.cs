@@ -175,7 +175,7 @@ public class SanctuaryDirector : MonoBehaviour
         { "David", SanctuaryAreaType.Informatics }, { "Adonis", SanctuaryAreaType.Informatics }, { "Yulo", SanctuaryAreaType.CulturedMeatLab },
         { "Lale", SanctuaryAreaType.CulturedMeatLab }, { "Ivelyna", SanctuaryAreaType.Infirmary }, { "Malena", SanctuaryAreaType.Infirmary }, { "Luciana", SanctuaryAreaType.VehicleWorkshop },
         { "Nesvitor", SanctuaryAreaType.Garden },   // guardia y agricultor (la guardia patrulla: su área de salida, el huerto)
-        { "Consol", SanctuaryAreaType.YogaRoom }, { "Fernando", SanctuaryAreaType.Construction },   // (2026-11-05) maestra de Ashtanga; paneles solares
+        { "Consol", SanctuaryAreaType.YogaRoom }, { "Fernando", SanctuaryAreaType.EnergyPark },   // (2026-11-05) maestra de Ashtanga; paneles solares (su taller, en el Parque Energético)
         // (2026-11-04) Ducristin, gerente de banca y profesor: sale en el Aula (da clase; sus finanzas, en la mesa de cuentas del
         // restaurante); Fausto, mecánico (la mecánica que llevaba Ducristin). Julian, pendiente de foto y de profesión.
     };

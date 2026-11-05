@@ -4,12 +4,12 @@ Tablero para retomar. Última sesión: 2026-08-28. Marca lo que completes.
 Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-planteamiento.md`](gaps-vs-planteamiento.md),
 [`world-topology-and-planes.md`](world-topology-and-planes.md) (visión del mundo grande / los 3 planos).
 
-> **HECHO 2026-11-05 (interfaz y personajes, rama claude/edif-interfaz; solo código, sin probar en vivo):** pila de botones sobre F10 con ventanas de horario (F2), recursos (F3) y misiones y jornada (F4), y el panel de recursos ya no está siempre a la vista ([interfaz-botones.md](interfaz-botones.md)). **Consol**, maestra jefa de Ashtanga, con su clase profunda; **Josedrilo**, jefe de Hatha; **Panterilia** deja el yoga. **Fernando**, paneles solares (sus misiones, con la rama de energía). Quinta casa por árbol. **Reglas de personajes** P1–P10 y una ficha por persona ([reglas-personajes.md](reglas-personajes.md), `docs/personajes/`).
+> **HECHO 2026-11-05 (interfaz y personajes, rama claude/edif-interfaz; solo código, sin probar en vivo):** pila de botones sobre F10 con ventanas de horario (F2), recursos (F3) y misiones y jornada (F4), y el panel de recursos ya no está siempre a la vista ([interfaz-botones.md](interfaz-botones.md)). **Consol**, maestra jefa de Ashtanga, con su clase profunda; **Josedrilo**, jefe de Hatha; **Panterilia** deja el yoga. **Fernando**, paneles solares, con las misiones `sol_` de la rama de energía, ya integrada. Quinta casa por árbol. **Reglas de personajes** P1–P10 y una ficha por persona ([reglas-personajes.md](reglas-personajes.md), `docs/personajes/`).
 > - [ ] Reconstruir SampleScene (solo el santuario) y guardarla: personas, casas y árboles nuevos.
-> - [ ] Probar los grupos 93, 95, 64, 65, 87, 89, 75, 50 y 28.
+> - [ ] Probar los grupos 93, 95, 101, 64, 65, 87, 89, 75, 50 y 28.
 > - [ ] Fotos: la pila de botones y sus 3 ventanas; las 3 variaciones de Consol; la quinta casa.
 > - [ ] **Berón**: fotos de Consol y Fernando, y la lista de puestos sin confirmar de [reglas-personajes.md](reglas-personajes.md).
-> - [ ] Integrar `claude/edif-energia` y comprobar que Fernando coge sus `sol_`.
+> - [ ] Comprobar en vivo que Fernando coge sus `sol_` (rama de energía ya integrada aquí; grupo 101).
 
 > **MANUAL DE DISEÑO (2026-11-04):** todas las reglas de Berón están en [`manual-de-diseno.md`](manual-de-diseno.md): 119 reglas,
 > dónde se comprueba cada una, las 2 que quedan pendientes del 2026-11-04 (M9 y el gancho de §11 para los demás pisos) y la
