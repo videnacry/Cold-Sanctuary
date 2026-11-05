@@ -28,7 +28,7 @@ public static class PolarLandscapeBuilder
     public static readonly (string name, float x, float z, float r)[] Islands =
     {
         // 1 · NORTE (la aldea): cocina, enfermería (una sola, para personas y animales), arboleda residencial,
-        //     casa del árbol de guardia y el bosque comestible.
+        //     y el bosque comestible. (El lóbulo Norte:Guardia queda vacío: no se mueve, por los índices.)
         ("Norte:Cocina",            5f,   95f, 30f),
         ("Norte:Enfermeria",       55f,   97f, 28f),
         ("Norte:Paso",            -28f,   95f, 22f),
@@ -50,7 +50,7 @@ public static class PolarLandscapeBuilder
         ("Este:SalaYoga",         109f,   38f, 0f),
         ("Este:Paso",             114f,   10f, 0f),
         ("Este:Mecanica_Osos",    118f,  -20f, 0f),
-        // 5 · BOSQUE OESTE (salvaje): árboles carnívoros de hielo, abejas y arañas de las nieves.
+        // 5 · BOSQUE OESTE (salvaje; el nombre queda, ya sin bosque): crestas, ventisqueros, roca y descansaderos (SampleSceneBuilder.WildCaps).
         ("BosqueOeste:Bosque_1", -140f,  -30f, 34f),
         ("BosqueOeste:Bosque_2", -150f,    5f, 26f),
         ("BosqueOeste:Bosque_3", -160f,   45f, 32f),
@@ -270,7 +270,7 @@ public static class PolarLandscapeBuilder
     const float LandPlate = 1.5f, RockTop = IceTop - LandPlate, SkirtBottom = -6f;
 
     static Mesh _cube;
-    static Mesh CubeMesh()
+    public static Mesh CubeMesh()
     {
         if (_cube != null) return _cube;
         GameObject t = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -285,7 +285,5 @@ public static class PolarLandscapeBuilder
         NavMeshModifier m = g.GetComponent<NavMeshModifier>() ?? g.AddComponent<NavMeshModifier>();
         m.ignoreFromBuild = true;
     }
-
-    // ── Bosque con edades ───────────────────────────────────────────────────────────────────────
 
 }

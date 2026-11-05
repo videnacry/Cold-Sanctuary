@@ -56,7 +56,24 @@ sentido que estén.
 
 **Limita con:** la lanzadera (a 335 m, regla ≥ 300 m) y el sitio nuclear (a 325 m, regla ≥ 300 m: T14, tras separar los santuarios). Por eso la isla no sigue al sureste.
 
-**(2026-11-05: ya no hay bosques: ver ice-sanctuary-ecology.md §Sin bosque.)** Lo que sigue es histórico. **Los bosques de árboles carnívoros siguen en hielo:** viven de agua y frío. En la isla no crecen árboles de hielo; los de junto a las áreas
+## Casquetes silvestres (Berón 2026-11-05)
+
+«Los casquetes silvestres imagino que ahora en su lugar tendrían las estructuras propias para la fauna polar». Código: `SampleSceneBuilder.WildCaps.cs`. En los 6 lóbulos «Bosque», de los 2 casquetes:
+
+| Estructura | Quién la usa | En el juego |
+|---|---|---|
+| **Cresta de presión** (12 bloques) | Oso y zorro: abrigo | `Shelter` |
+| **Ventisquero** a sotavento (3) | La osa cava allí su guarida | `Den` de oso, solo en Bosque Oeste: en Bosque Norte ya la pone `PolarHabitats` |
+| **Afloramiento de roca** (6) | Petrel de las nieves: anida y se posa | `SnowPetrelNest` y `Perch` |
+| **Hueco de viento** (4) | Herbívoros: el viento limpia la nieve y deja el liquen | `Lichen`. Solo color, sin collider |
+| **Descansadero** (3) | Foca y morsa | `HaulOut` |
+
+- **Son 28 piezas por lóbulo, hasta 168**, en una malla por material: como mucho 8 mallas y 6 colliders de malla. Solo son objetos los puntos que usa la fauna (~35).
+- **Sin duplicar**: no se repiten los frentes de barrera, las cuevas ni los respiraderos. Solo se añade lo que faltaba en estos casquetes.
+- **Límite honesto**: las focas buscan descansadero a 120 m o menos, y estos casquetes están lejos de la laguna, donde viven. Puede que casi no los usen. Los herbívoros de la isla tampoco llegan si no cruzan a nado. Los petreles sí, porque salen de esos nidos.
+- La elección de piezas sale de lo que ya pide cada especie en `Ethogram` y de conocimiento general; no hice búsqueda nueva. **[verificar]**.
+
+(Histórico.) **Los bosques de árboles carnívoros siguen en hielo:** viven de agua y frío. En la isla no crecen árboles de hielo; los de junto a las áreas
 del Sur ya no salen (`BuildIceFlora` pregunta `IceAt`).
 
 ### La isla por dentro

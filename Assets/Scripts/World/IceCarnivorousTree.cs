@@ -19,13 +19,15 @@ public class IceCarnivorousTree : MonoBehaviour
     [Tooltip("Escala máxima: sin tope, crecía sin control.")]
     [Min(1f)] public float maxScale = 3f;
 
+    [Tooltip("Solo caza animales salvajes: ni personas ni los insectos que anidan en él (los árboles de la residencia).")]
+    public bool wildPreyOnly;
+    public int Absorbed => _absorbed;
+
     float _next;
     int _absorbed;
     // Cada cadáver hace crecer el árbol UNA vez. Antes se volvía a contar en cada sondeo (0,5 s) mientras siguiera en
     // el radio, y con cuerpos de cubos cada collider de parte lo contaba otra vez → crecimiento sin límite.
     readonly System.Collections.Generic.HashSet<Anima> _eaten = new System.Collections.Generic.HashSet<Anima>();
-    static readonly Collider[] _hits = new Collider[32];
-    readonly System.Collections.Generic.HashSet<Anima> _seen = new System.Collections.Generic.HashSet<Anima>();
 
     void Update()
     {
@@ -37,13 +39,12 @@ public class IceCarnivorousTree : MonoBehaviour
         // Señuelo: rastro de "comida" (atrae al Wander que deriva por olor).
         TraceField.Leave(transform.position, TraceChannel.ScentFood, lureStrength);
 
-        _seen.Clear();
-        int n = Physics.OverlapSphereNonAlloc(transform.position, lureRadius, _hits);
-        for (int i = 0; i < n; i++)
+        // (2026-11-05) Recorre a los seres, no un OverlapSphere: en la residencia, con 70 m de radio, los 32 huecos se llenaban de cubos de las casas y nunca veía a nadie.
+        foreach (Anima a in SceneCache.All<Anima>(2f))
         {
-            Anima a = _hits[i] != null ? _hits[i].GetComponentInParent<Anima>() : null;
-            if (a == null || a.GetComponent<IceCarnivorousTree>() != null || !_seen.Add(a)) continue;   // una vez por anima aunque tenga varios colliders
+            if (a == null || !Prey(a)) continue;
             float d = Vector3.Distance(transform.position, a.transform.position);
+            if (d > lureRadius) continue;
             if (d <= killRadius)
             {
                 // SOPOR letal: lo adormece y debilita; cuando muere cerca, el árbol lo absorbe y crece.
@@ -63,6 +64,8 @@ public class IceCarnivorousTree : MonoBehaviour
             }
         }
     }
+
+    bool Prey(Anima a) => a.GetComponent<IceCarnivorousTree>() == null && (!wildPreyOnly || (a.GetComponent<Animal>() != null && a.GetComponent<IceInsectLife>() == null));
 
     void OnDrawGizmosSelected()
     {

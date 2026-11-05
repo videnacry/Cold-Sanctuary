@@ -51,6 +51,8 @@ public static class ResidentialBuilder
 
     /// <summary>Altura de los árboles de la arboleda (2026-11-05: 46 m, antes 38 y 26, para sostener la quinta casa, a 37–40 m).</summary>
     public const float TreeHeight = 46f;
+    /// <summary>El cazador de la residencia: señuelo corto y sopor solo al pie del tronco; las casas empiezan a 12 m.</summary>
+    public const float LureRadius = 24f, KillRadius = 5f;
     // Casas 0–11: dos por árbol (la 2k a un lado, la 2k+1 al otro); 12–17: la tercera (lado de la primera); 18–23: la cuarta (lado de la segunda); 24–29: la quinta (lado de la primera).
     static int TreeOf(int i) => i < 12 ? i / 2 : (i - 12) % 6;
     static bool OtherSide(int i) => (i < 12 && i % 2 == 1) || (i >= 18 && i < 24);
@@ -125,7 +127,13 @@ public static class ResidentialBuilder
         }
         RingSize(Owners.Length + Partners.Count + System.Linq.Enumerable.Sum(Kids.Values, k => k.Length));   // (con los hijos)   // (antes que los árboles: sus ramas esquivan el ring)
         for (int k = 0; k < 6; k++)
-            CubeTree.Build(root, $"ArbolResidencial_{k + 1}", center + trees[k], 7100 + k * 13, TreeHeight, carnivorous: false, blocked: p => Built(root.InverseTransformPoint(p)), maxNests: 1);
+        {
+            // (2026-11-05) EL CAZADOR SIGUE AQUÍ (Berón: «árbol-cazador no se perdería, estaría allí no?»; docs/ice-sanctuary-ecology.md §Sin bosque). Con otras medidas: solo caza
+            // animales, al pie del tronco, y no crece, porque sostiene casas.
+            GameObject tree = CubeTree.Build(root, $"ArbolResidencial_{k + 1}", center + trees[k], 7100 + k * 13, TreeHeight, carnivorous: true, blocked: p => Built(root.InverseTransformPoint(p)), maxNests: 1);
+            IceCarnivorousTree hunter = tree.GetComponent<IceCarnivorousTree>();
+            if (hunter != null) { hunter.wildPreyOnly = true; hunter.lureRadius = LureRadius; hunter.killRadius = KillRadius; hunter.lureStrength = 1f; hunter.growthPerKill = 0f; hunter.maxScale = 1f; }
+        }
 
         // Plataforma central (18 × 18) sobre columnas, con sus tres áreas de alfombras.
         Plank(root, new Vector3(0f, DeckY, 0f), new Vector3(CentralSize, 0.3f, CentralSize), "Plataforma central");

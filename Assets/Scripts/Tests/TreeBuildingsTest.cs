@@ -12,7 +12,6 @@ using UnityEngine;
 ///    campo magnético; el umbral de cada puerta, libre de muebles; alfombras SOLO en el suelo y en el techo (ninguna en los pisos).
 /// 3. HOLGURA: entre dos árboles (sus losas, ramas, columnas y troncos) hay ≥ 16 m en 3D; el Árbol de los Campos, girando.
 /// 4. NADAR: un personaje entra por el techo (de frente), baja nadando a un piso, va a otro y sale por el suelo.
-/// 5. EL ÁRBOL DE LA GUARDIA crece tan alto como el edificio más alto (la excepción a «por encima del árbol más alto»).
 /// Se añade solo al orquestador cuando se piden las pruebas.
 /// </summary>
 public class TreeBuildingsTest : MonoBehaviour, ITestUnit
@@ -31,7 +30,7 @@ public class TreeBuildingsTest : MonoBehaviour, ITestUnit
 
     public IEnumerator Run()
     {
-        TestProbe.Begin("Edificios-árbol: hélice, puertas, entradas solo arriba y abajo, holgura entre árboles, nado y el árbol gigante");
+        TestProbe.Begin("Edificios-árbol: hélice, puertas, entradas solo arriba y abajo, holgura entre árboles y nado");
         var all = ArbolCampos.All.Where(t => t != null).ToList();
         var towers = all.Where(t => t.building != TreeSpec.Building).ToList();
         TestProbe.Check("las torres son edificios-árbol", towers.Count > 0, string.Join(", ", towers.Select(t => t.building)));
@@ -183,12 +182,6 @@ public class TreeBuildingsTest : MonoBehaviour, ITestUnit
         }
         Time.timeScale = oldScale;
 
-        // ── 5. EL ÁRBOL GIGANTE ──
-        GameObject guard = GameObject.Find(GuardianTree.ObjectName);
-        float tallest = all.Where(t => t.building != LaunchHeightRule.Building).Select(t => t.rootHeight).DefaultIfEmpty(0f).Max();   // (sin la lanzadera de cohetes: va por encima de todo por su regla)
-        float gh = 0f;
-        if (guard != null) foreach (Collider r in guard.GetComponentsInChildren<Collider>()) if (r.name == "Tronco") gh = Mathf.Max(gh, r.bounds.max.y - guard.transform.position.y);   // (colliders: sus cubos ya no dibujan)
-        TestProbe.Check("el árbol gigante (la excepción: un árbol modificado) crece tan alto como el edificio más alto", guard != null && gh >= tallest - 0.5f, $"tronco {gh:0.0} m, edificio más alto {tallest:0.0} m");
         TestProbe.End();
     }
 

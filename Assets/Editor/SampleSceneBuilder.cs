@@ -142,7 +142,7 @@ public static partial class SampleSceneBuilder
         BuildGoluisKitchen(root.transform);      // GOLUIS, jefe de cocina: inicia a los recién llegados (sígueme→limpiar→recetas). docs/kitchen-simulation.md
         BuildMagnate(root.transform);            // LA MAGNATE: maestra-guardiana (estado infinito; pacifica; enseña yoga al rezagado). docs/anyma-factory-and-control.md
         BuildLinduarda(root.transform);          // LINDUARDA (enfermería): guardiana de salud emergente (status→vacuna/analiza al que tenga HealthRecord false, p.ej. Kushal)
-        BuildGiantTree(root.transform);          // EL ÁRBOL GIGANTE + puestos de vigía de la patrulla
+        BuildPatrolPosts(root.transform);          // los puestos de vigía de la patrulla
         BuildLaunchSite(root.transform);          // LANZADERA DE COHETES: casquete artificial lejos del santuario y su árbol reforzado, por encima de todo (docs/lanzadera-de-cohetes.md)
         // (2026-11-04) La máquina de virtualización del control de misión (Musk en Hawthorne, re-apuntado por la alerta de piso nuevo): la
         // lanzadera se levanta después de BuildMeditationContent, así que su máquina se cablea aquí.
@@ -205,8 +205,9 @@ public static partial class SampleSceneBuilder
         }
 
         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
-        GameObject grove = GameObject.Find(GuardianTree.GroveName);   // rendimiento: el árbol gigante, una malla por material
-        Debug.Log($"[Rendimiento] árbol gigante combinado: {MergeTreeMeshes(grove != null ? grove.transform : null)} cubos ya no se dibujan uno a uno.");
+        var homeTrees = new List<Transform>();   // rendimiento: cada árbol de la residencia, una malla por material
+        foreach (Transform tr in root.GetComponentsInChildren<Transform>(true)) if (tr.name.StartsWith("ArbolResidencial_")) homeTrees.Add(tr);
+        Debug.Log($"[Rendimiento] árboles de la residencia combinados: {MergeTreeMeshes(homeTrees)} cubos ya no se dibujan uno a uno.");
         Debug.Log("[SampleSceneBuilder] Blockout listo bajo 'LevelDressing_AUTO'. Revisar y ajustar posiciones a mano.");
         // Las ESCENAS DE PRUEBA DE UN ÁREA (sala de yoga, enfermería, cocina) salen de ESTE santuario recién construido: se guarda
         // y cada una se queda solo con su piso (SampleSceneBuilder.TestScenes.cs). Así nunca quedan desfasadas.
@@ -2729,18 +2730,9 @@ public static partial class SampleSceneBuilder
         if (spot != null && area != null) spot.transform.position = area.transform.position;
     }
 
-    // EL ÁRBOL GIGANTE, en su isla, y los puestos de vigía de la patrulla (docs/arbol-guardian.md). La guardia ya no vive aquí: BuildGuardRoom.
-    static void BuildGiantTree(Transform parent)
+    // Los puestos de vigía de la patrulla. La guardia está en BuildGuardRoom.
+    static void BuildPatrolPosts(Transform parent)
     {
-        GameObject grove = new GameObject(GuardianTree.GroveName); grove.transform.SetParent(parent);
-        // Lo mayor del récord y del edificio más alto: es la excepción a «los edificios-árbol, por encima del árbol más alto» (T3). Sus ramas esquivan los edificios.
-        GuardianTree.Height = Mathf.Max(GuardianTree.RecordHeight, TallestBuilding());
-        Vector3 at = new Vector3(-20f, 0f, 57f);
-        GameObject giant = GuardianTree.Build(grove.transform, GuardianTree.ObjectName, at, GuardianTree.Height, w => HelixBlockedAt(w, TreeSpec.TreeClearance));
-        SoftGround.Plant(giant.transform, at + Vector3.down * 0.1f, new Vector2(40f, 40f), 11);   // colchón de musgo a su pie
-        WorldLabel tl = giant.AddComponent<WorldLabel>(); tl.text = "El árbol más grande de la historia"; tl.height = 30f;
-        grove.AddComponent<ElevatedElement>().label = "el árbol gigante";   // cuenta para la regla de altura de la lanzadera
-        Debug.Log($"[Árbol gigante] {GuardianTree.Height:0.0} m: lo mayor del récord ({GuardianTree.RecordHeight:0.0} m) y del edificio más alto ({TallestBuilding():0.0} m).");
         GameObject root = new GameObject("PuestosVigia_AUTO"); root.transform.SetParent(parent);
         (string name, Vector3 pos)[] posts =
         {
@@ -2990,14 +2982,16 @@ public static partial class SampleSceneBuilder
     // FLORA DE HIELO (docs/ice-sanctuary-ecology.md): el árbol carnívoro (atrae hambrientos con olor a comida → sopor →
     // muerte → crece) + una colonia de abejas de las nieves que anida cerca. Primitivas (independiente de modelos).
     /// <summary>(Berón 2026-11-05: «retirar los árboles artificiales dejando solo el gigante y los de la residencia»; docs/ice-sanctuary-ecology.md §Sin bosque.) Ya no hay bosque:
-    /// quedan las abejas y las arañas de las nieves, una familia en el gigante y otra en la residencia. Antes eran 4 de cada.</summary>
+    /// quedan las abejas y las arañas de las nieves, dos familias en la residencia. Antes eran 4.</summary>
     static void BuildIceFlora(Transform parent)
     {
         GameObject root = new GameObject("FloraHielo_AUTO"); root.transform.SetParent(parent);
         var homes = new List<Vector3>();
-        GameObject giant = GameObject.Find(GuardianTree.ObjectName), home = GameObject.Find("ArbolResidencial_1");
-        if (giant != null) homes.Add(giant.transform.position + new Vector3(16f, 0f, 0f));
-        if (home != null) homes.Add(home.transform.position + new Vector3(3f, 0f, 0f));
+        foreach (string tree in new[] { "ArbolResidencial_1", "ArbolResidencial_4" })
+        {
+            GameObject home = GameObject.Find(tree);
+            if (home != null) homes.Add(home.transform.position + new Vector3(3f, 0f, 0f));
+        }
         GameObject beePrefab = LoadAnimalPrefab("SnowBee"), spiderPrefab = LoadAnimalPrefab("SnowSpider");
         if (beePrefab == null) Debug.LogWarning("[IceFlora] sin prefab SnowBee (genera prefabs — salen cubos si no hay .fbx), se omiten las abejas.");
         for (int h = 0; h < homes.Count; h++)
@@ -3013,7 +3007,7 @@ public static partial class SampleSceneBuilder
                 sg.AddComponent<FamilyGenerator>().families = new[] { new FamilyGenerator.Family { animalPrefab = spiderPrefab, position = homes[h] + new Vector3(-2f, 0f, 1f), quantity = 2, minParentsCount = 1, radius = 2f } };
             }
         }
-        Debug.Log($"[IceFlora] Sin bosque: {homes.Count} colonias, en el gigante y en la residencia.");
+        Debug.Log($"[IceFlora] Sin bosque: {homes.Count} colonias, en la residencia.");
     }
 
     // LINDUARDA en la enfermería + un paciente demo (Kushal) con HealthRecord en false → ella, por su pensamiento de

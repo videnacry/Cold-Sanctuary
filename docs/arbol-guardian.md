@@ -1,8 +1,6 @@
-# El árbol gigante, el más grande de la historia (2026-11-04; rehecho el 2026-11-05)
+# El árbol gigante: retirado, con su investigación (2026-11-04/05)
 
-Berón (2026-11-05): «el árbol gigante del santuario no debe tener el tunel, solo lo comenté como dato porque quería que dicho arbol se cree con el grosor y altura mas grandes que hayan existido en el mundo ya sea de eras prehistoricas o la actualidad».
-
-Código: `World/GuardianTree.cs`, `SampleSceneBuilder.BuildGiantTree`, `GuardianTreeTest` (grupo 91). **Sin túnel y sin guardia**: la guardia pasó a [sala-de-guardia.md](sala-de-guardia.md).
+**RETIRADO el 2026-11-05.** Berón: «el árbol gigante también se puede quitar mejorando la optimización». No está en el juego. Este doc conserva los récords por si vuelve. El código sigue en la historia del repositorio: `Assets/Scripts/World/GuardianTree.cs` en el commit `540c6ce`.
 
 ## Los récords de verdad, y cuánta seguridad hay
 
@@ -30,28 +28,9 @@ Código: `World/GuardianTree.cs`, `SampleSceneBuilder.BuildGiantTree`, `Guardian
 
 **La respuesta a la pregunta de Berón**: los mayores que conozco no son prehistóricos. Los fósiles encontrados se quedan muy por debajo, aunque los troncos fósiles casi siempre están incompletos, así que eso es «los mayores que conocemos», no «los mayores que hubo».
 
-## Lo construido
+## Lo que se había diseñado
 
-Se toma el mayor valor registrado de cada medida, aunque no sea el más seguro, porque Berón pidió el máximo.
-
-| Medida | Valor | De dónde |
-|---|---|---|
-| Base | 18,4 m de diámetro | El castaño (57,9 m) |
-| Fuste | 7,7 m al empezar (antes 5,2) | General Sherman, a la altura del pecho. A 40 m mide ~7 m; Lindsey Creek, unos 5,8 m |
-| Altura | **142 m**, o el edificio más alto si es mayor | Nooksack (antes 132,6 m). Hoy manda el edificio |
-| Volumen del tronco | ~6000–6800 m³ | Más del doble de Lindsey Creek (calculado, no medido en escena) |
-
-Conserva el tronco acanalado y los 12 contrafuertes del Tule, la copa estrecha de la secuoya, los colores del hielo y sus 8 panales. **No caza.**
-
-## Lo que se quitó
-
-- Los dos túneles de 7 × 7 m y la sala del cruce.
-- La plataforma, la cabaña, las alfombras («Casa del guarda») y el tablero.
-- Se llama `ArbolGigante` (antes `CasaArbolGuardia`).
-
-## Rendimiento
-
-Sus cubos pasan a una malla por material, como antes el bosque. Conservan los colliders. Las pruebas miden el tronco por sus colliders.
+El mayor valor registrado de cada medida, aunque no fuera el más seguro: base de 18,4 m (el castaño), fuste de 7,7 m (General Sherman) y 142 m de alto o el edificio más alto, con unos 6000–6800 m³ de tronco, calculados. Tronco acanalado y contrafuertes del Tule, copa de secuoya y 8 panales. No cazaba.
 
 ## Fuentes
 
@@ -59,7 +38,3 @@ Sus cubos pasan a una malla por material, como antes el bosque. Conservan los co
 - [Nooksack Giant](https://en.wikipedia.org/wiki/Nooksack_Giant) · [Lista de árboles superlativos](https://en.wikipedia.org/wiki/List_of_superlative_trees) · [Lindsay Creek Tree](https://en.wikipedia.org/wiki/Lindsay_Creek_Tree) · [Crannell Creek](https://mdvaden.com/redwood_crannell_creek_giant.shtml)
 - [Tall trees and taller tales (Ferguson)](https://victoriasforestsbushfireheritage.com/2023/12/10/tall-trees-and-taller-tales/)
 - [Araucarioxylon arizonicum](https://en.wikipedia.org/wiki/Araucarioxylon_arizonicum) · [Lepidodendron, Universidad de Waterloo](https://uwaterloo.ca/earth-sciences-museum/educational-resources/fossils/paleozoic-fossils-ontario/lepidodendron-fossils) · [Tronco de Utah, National Geographic](https://www.nationalgeographic.com/science/article/news-petrified-log-utah-angiosperms-flowers-trees)
-
-## Prueba (grupo 91)
-
-Alto ≥ máx(142 m, edificio más alto); base ≥ 18 m; volumen ≥ 2550 m³; base maciza y sin pasadizos; ≥ 4 panales y ≥ 10 posaderos; no caza; T13.

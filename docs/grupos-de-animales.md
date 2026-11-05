@@ -52,7 +52,7 @@ el Ártico, *Cyanea capillata* y *Chrysaora melanaster*. Como el santuario está
 
 ## El enjambre de abejas (`BeeSwarm`)
 
-Cada colmena (`Hive`, en un `NestTree`: el gigante o la residencia, desde el 2026-11-05) crea al empezar su **enjambre de pecoreadoras**: un grupo de ~18 abejas (hasta 24).
+Cada colmena (`Hive`, en un `NestTree`: la residencia, desde el 2026-11-05) crea al empezar su **enjambre de pecoreadoras**: un grupo de ~18 abejas (hasta 24).
 - **De día** vuela de copa en copa entre los árboles a < 80 m de su colmena (a 4 m/s, en arco por encima de las copas), se queda 6 s
   pecoreando en cada una y lleva el néctar a la colmena.
 - **De noche** vuelve a la piquera y se queda allí, en racimo.

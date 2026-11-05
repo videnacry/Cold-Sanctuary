@@ -11,7 +11,7 @@ Código: `World/GuardRoom.cs` (`GuardWatch`, `GuardWatchRule`, `GuardRoom`, `Gua
 | Opción | Por qué sí o no |
 |---|---|
 | **Servicios, nivel 4** | Elegida. Más vista que Producción, junto a la Sala de asambleas y encima del hospital. No añade nivel, así que no cambia la altura de la torre ni T13 |
-| Producción, nivel 2 | Libre, pero a 118 m y lejos de quien responde a una alarma |
+| Producción, nivel 2 | Libre, pero a 86 m y lejos de quien responde a una alarma |
 | Ciencias | Es la más alta, pero está llena: subirla cambiaría T13 y el tronco |
 | Control de misión | Lo está moviendo otra rama |
 
@@ -74,8 +74,8 @@ No encontré cómo son por dentro las salas del Pacífico ni la de la Patrulla d
 
 | Regla | Efecto |
 |---|---|
-| T3 | Ya no habla del árbol guardián como casa de la guardia ni de pasadizos |
-| T13 | Sin cambio: el nivel 4 ya existía y el gigante sigue con `ElevatedElement` |
+| T3 | Sin excepción: el árbol gigante se retiró |
+| T13 | Sin cambio: el nivel 4 ya existía. El gigante se retiró y deja de contar |
 | S6 | Pantallas sobre postes; sin muros |
 | S13 | 14 puestos de vigilancia; lo mira el grupo 91, no el 75, porque no es un área |
 | S14, F14 | Fila nueva en `AreaDesign` |

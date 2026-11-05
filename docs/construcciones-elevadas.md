@@ -24,7 +24,7 @@ Además de la altura:
   - Se apoyan en columnas y se sube por una escalera: una rampa invisible para andar y para la navegación, más peldaños, zancas y pasamanos.
   - Tienen barandilla de 1 m (una barrera invisible y unos balaustres visibles).
 - **Sala de yoga para 30 personas:** 18 × 15 m, con 30 esterillas en 6 × 5 y cojines, la tarima del maestro y un cuenco tibetano.
-- **Casa del árbol de guardia:** el único árbol gigante, de 83 m (el resto de árboles de hielo mide 20–40 m de adulto), que no caza, con su cabaña a 11 m y escalera vertical.
+- (Retirada el 2026-11-05.) **Casa del árbol de guardia:** el único árbol gigante, de 83 m (el resto de árboles de hielo mide 20–40 m de adulto), que no caza, con su cabaña a 11 m y escalera vertical.
 - **Arboleda residencial** (su propia isla, al noroeste), con un dormitorio por persona:
   - una plataforma central a 7 m con su escalera;
   - seis árboles que no cazan;

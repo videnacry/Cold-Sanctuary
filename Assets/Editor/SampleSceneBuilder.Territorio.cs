@@ -94,6 +94,9 @@ public static partial class SampleSceneBuilder
             Swarm.Create<Swarm>(t, $"Bivalvos_{k}", at, SwarmKind.Clam, k % 2 == 0 ? SwarmModels.Species.Clam : SwarmModels.Species.Mya, 30f, 40f, 2.5f);
         }
 
+        // Los casquetes silvestres: lo que la fauna usa donde estaba el bosque (antes de repartir los petreles: sus rocas tienen nidos).
+        BuildWildCaps(t, ice, snow, rock);
+
         // Los petreles de las nieves: parejas, volando desde sus nidos. Son pocos y no usan NavMesh.
         GameObject petrel = LoadAnimalPrefab("SnowPetrel");
         var nests = t.GetComponentsInChildren<SnowPetrelNest>();

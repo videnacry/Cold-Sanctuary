@@ -123,7 +123,7 @@ public static class CubeTree
         Block(root.transform, "Copa", new Vector3(0f, height + 0.8f * girth, 0f), new Vector3(2.6f, 1.6f, 2.6f) * Mathf.Max(0.45f, girth), Quaternion.Euler(0f, 20f, 0f), leaf, false);
         Block(root.transform, "Copa", new Vector3(0f, height + 2.0f * girth, 0f), new Vector3(1.6f, 1.2f, 1.6f) * Mathf.Max(0.45f, girth), Quaternion.Euler(0f, 55f, 0f), leaf, false);
 
-        if (height < 6f || !carnivorous) return root;   // un brote aún no caza (y el árbol de la guardia no caza nunca)
+        if (height < 6f || !carnivorous) return root;   // un brote aún no caza 
         // El árbol depredador, con radios a su escala (señuelo amplio, sopor bajo la copa).
         IceCarnivorousTree t = root.AddComponent<IceCarnivorousTree>();
         t.lureRadius = 10f + height;

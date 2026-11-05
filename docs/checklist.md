@@ -37,9 +37,10 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 > - [x] **M39 en lo que faltaba**: Le Chambon, Sendler, Egina, Sakshi, Ambrosio y Cocina; cuatro frases de la música con fuente en `Quoted`.
 > - [ ] **Huerto y Construcción: probar en vivo**: Blockout de solo santuario; grupos 77, 28; reconstruir Huerto, Palenque, Uagadugú, Egina y Colorado Springs (F6); Música por las frases de Marley y Gabriel.
 > - [x] **Sala de guardia** ([`sala-de-guardia.md`](sala-de-guardia.md)): nivel 4 de Servicios, misión `gua_sala`.
-> - [x] **Árbol gigante sin túnel**, con los récords reales ([`arbol-guardian.md`](arbol-guardian.md)).
+> - [x] **Árbol gigante retirado**; sus récords siguen en [`arbol-guardian.md`](arbol-guardian.md).
+> - [x] **El cazador, en los 6 árboles de la residencia**; casquetes silvestres con estructuras para la fauna ([`territorio-polar.md`](territorio-polar.md)).
 > - [x] **Sin bosque** ([`ice-sanctuary-ecology.md`](ice-sanctuary-ecology.md) §Sin bosque).
-> - [ ] **Probar en vivo sala, gigante y sin bosque**: Blockout de solo santuario; grupos 91, 61, 28, 53, 57, 77 y GroupAnimals; medir FPS y renderers antes y después.
+> - [ ] **Probar en vivo sala, cazador y casquetes**: Blockout de solo santuario; grupos 91, 61, 28, 53, 77 y GroupAnimals; medir FPS y renderers antes y después.
 > - [ ] Mezcla de las 15 áreas pendientes de S14.
 > - [x] Regla de oro J30 / P11: todos saben hacer de todo. `Mission.owner` ya no es exclusivo.
 > - [x] Berón (2026-11-05): los vivos no políticos conservan sus frases, marcadas (M39).
