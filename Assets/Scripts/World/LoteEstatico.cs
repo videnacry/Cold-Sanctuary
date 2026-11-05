@@ -77,7 +77,7 @@ public class LoteEstatico : MonoBehaviour
     {
         public MeshRenderer r; public Transform t; public GameObject go; public Material mat; public Mesh mesh;
         public Matrix4x4 toGroup; public Vector3 localPos; public Quaternion localRot;
-        public bool usePalette; public Vector2 uv; public Group g;
+        public bool usePalette, orphan; public Vector2 uv; public Group g;
     }
 
     sealed class Group
@@ -149,7 +149,7 @@ public class LoteEstatico : MonoBehaviour
 
         var palette = new Dictionary<Color32, int>();
         var tex = new Texture2D(PaletteSize, PaletteSize, TextureFormat.RGBA32, false, false)
-        { name = $"Lote_paleta_{scene.name}", filterMode = FilterMode.Point, wrapMode = TextureWrapMode.Clamp, anisoLevel = 0, hideFlags = HideFlags.DontSave };
+        { name = $"Lote_paleta_{scene.name}", filterMode = FilterMode.Point, wrapMode = TextureWrapMode.Clamp, anisoLevel = 0 };
         var variants = new Dictionary<(int, int, int, Shader), Material>();
         var paints = new Dictionary<Material, PaintInfo>();
         var byKey = new Dictionary<(Transform, Material, int, int, int, bool, ShadowCastingMode, bool, int), Group>();
@@ -261,7 +261,7 @@ public class LoteEstatico : MonoBehaviour
         var key = (Mathf.RoundToInt(m.GetFloat("_Smoothness") * 20f), Mathf.RoundToInt(m.GetFloat("_Metallic") * 20f), m.HasProperty("_Cull") ? (int)m.GetFloat("_Cull") : 2, m.shader);
         if (!variants.TryGetValue(key, out Material drawn))
         {
-            drawn = new Material(m) { name = $"Lote_paleta_{variants.Count}", hideFlags = HideFlags.DontSave };
+            drawn = new Material(m) { name = $"Lote_paleta_{variants.Count}" };
             drawn.SetColor("_BaseColor", Color.white);
             drawn.SetTexture("_BaseMap", tex);
             variants[key] = drawn;
@@ -314,7 +314,7 @@ public class LoteEstatico : MonoBehaviour
         g.mesh = null;
         if (_v.Count > 0)
         {
-            var mesh = new Mesh { name = g.name, hideFlags = HideFlags.DontSave, indexFormat = _v.Count > 65000 ? IndexFormat.UInt32 : IndexFormat.UInt16 };
+            var mesh = new Mesh { name = g.name, indexFormat = _v.Count > 65000 ? IndexFormat.UInt32 : IndexFormat.UInt16 };
             mesh.SetVertices(_v); mesh.SetNormals(_n); mesh.SetUVs(0, _uv); mesh.SetTriangles(_tri, 0, true);
             g.center = mesh.bounds.center; g.radius = mesh.bounds.extents.magnitude;
             mesh.UploadMeshData(true);   // la copia de la CPU no hace falta: rehacer un lote parte de sus piezas
@@ -325,7 +325,7 @@ public class LoteEstatico : MonoBehaviour
             if (g.go == null)
             {
                 if (g.parent == null) { if (old != null) Destroy(old); return; }
-                g.go = new GameObject(g.name) { hideFlags = HideFlags.DontSave, layer = g.layer };
+                g.go = new GameObject(g.name) { layer = g.layer };
                 g.go.transform.SetParent(g.parent, false);
                 g.go.AddComponent<MeshFilter>();
                 g.r = g.go.AddComponent<MeshRenderer>();
@@ -366,10 +366,10 @@ public class LoteEstatico : MonoBehaviour
             if (_cursor >= _all.Count) _cursor = 0;
             Piece p = _all[_cursor];
             looked++;
-            if (StillStatic(p)) _cursor++;
+            if (!p.orphan && StillStatic(p)) _cursor++;
             else
             {
-                Eject(p);
+                if (!p.orphan) Eject(p);
                 _all[_cursor] = _all[_all.Count - 1];
                 _all.RemoveAt(_all.Count - 1);
             }
@@ -402,7 +402,7 @@ public class LoteEstatico : MonoBehaviour
     void Rebuild(Group g)
     {
         if (g.pieces.Count > 0 && (g.go != null)) { Build(g); if (g.mesh != null) return; }
-        foreach (Piece p in g.pieces) { if (p.r != null) p.r.forceRenderingOff = false; _all.Remove(p); }
+        foreach (Piece p in g.pieces) { if (p.r != null) p.r.forceRenderingOff = false; p.orphan = true; }   // (la barrida las quita de la lista)
         g.pieces.Clear();
         if (g.go != null) Destroy(g.go);
         if (g.mesh != null) Destroy(g.mesh);
