@@ -77,7 +77,7 @@ public static class Uniforms
             case "Huerto": return Kind.Huerto;
             case "Construcción": return Kind.Obra;
             case "Mecánica": return Kind.Taller;
-            case "Carne Cultivada": case "Química": case "Biología": case AreaWork.Containment: return Kind.Laboratorio;
+            case "Carne Cultivada": case "Química": case "Biología": return Kind.Laboratorio;
             case "Planta Atómica": case "Central Nuclear": return Kind.Nuclear;
             case "Estudio Textil": return Kind.Textil;
             case "Cría": return Kind.Cria;

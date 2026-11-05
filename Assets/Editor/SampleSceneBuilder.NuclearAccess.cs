@@ -30,6 +30,7 @@ public static partial class SampleSceneBuilder
         KitchenProps.C(st, new Vector3(0f, 1.3f, 3f), new Vector3(3f, 2.6f, 0.2f), yel, 0f, "Esclusa_estacion");
         KitchenProps.C(st, new Vector3(3.8f, 1f, 3.6f), new Vector3(2.2f, 2f, 2.2f), new Color(0.35f, 0.45f, 0.55f), 0f, "Cabrestante_electrico");
         Label(st, $"Línea de las cavernas: {SiteLineRule.OneWay(SiteLineRule.Drop):0} s hasta el Santuario Marino, esclusas incluidas", 4f);
+        line.gameObject.AddComponent<HunterCell>();   // el árbol cazador se lleva desde arriba, como la roca (docs/contencion-arbol-cazador.md)
         // La alfombra llega aquí: una pista más de la red del edificio, en su propio soporte (bajo el casquete entero, OnDeck la tomaría por la de todo el suelo).
         Transform padHolder = new GameObject("Linea_alfombras").transform; padHolder.SetParent(root, false);
         Vector3 padAt = top + side * 7.5f + Vector3.up * 0.01f;

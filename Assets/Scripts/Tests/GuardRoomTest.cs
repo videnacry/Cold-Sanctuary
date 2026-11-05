@@ -30,26 +30,28 @@ public class GuardRoomTest : MonoBehaviour, ITestUnit
             && Enumerable.Range(0, 3650).All(d => GuardWatchRule.SeaState(d) == GuardWatchRule.Sea.Normal || GuardWatchRule.Magnitude(d) >= GuardWatchRule.TsunamiWatchMagnitude));
         TestProbe.Check("la misión de la sala existe, con su efecto", AreaFunctions.Get("gua_sala") != null && AreaFunctions.Get("gua_sala").effect != null);
         TestProbe.Check("la sala cumple la mezcla (S14)", AreaDesign.Of("Sala de guardia")?.state == AreaDesign.State.Cumple);
+        HunterLoop loop = HunterLoop.Start; float top = 0f;
+        for (int d = 0; d < 60; d++) { loop.Day(HunterRule.Spiders, 1.5f); top = Mathf.Max(top, loop.scale); }
+        TestProbe.Check("el ciclo cerrado se sostiene 60 días sin raciones: colonia, miel, polinización y crecimiento", loop.Colony && loop.honey > 0f && loop.pollination > 0f && top > 1f, $"{loop.bees:0.0} abejas, {loop.honey:0.0} kg, {loop.nutrients:0.0} kg de nutrientes, ×{loop.scale:0.00}");
+        HunterLoop poor = HunterLoop.Start; poor.bees = 0f;
+        for (int d = 0; d < 60; d++) poor.Day(HunterRule.Spiders, 1.5f);
+        TestProbe.Check("sin abejas no hay polinización ni crece: las necesita", poor.pollination == 0f && poor.scale == 1f);
         TestProbe.Check("la sala es de los tres guardias, también de Tote", new[] { "Gohageneis", "Nesvitor", "JefeConstruccion" }.All(w => Professions.Practises(w, AreaWork.GuardRoom, "gua_sala")));
         TestProbe.End();
 
         TestProbe.Begin("Sala de guardia, cazador y casquetes silvestres");
 
-        // ── EL CAZADOR ──
-        IceCarnivorousTree[] hunters = FindObjectsByType<IceCarnivorousTree>(FindObjectsSortMode.None);
+        // ── EL CAZADOR: arriba, la lógica; abajo, el árbol ──
         HunterCell hc = HunterCell.Instance;
-        TestProbe.Check("un solo árbol cazador, y en su celda", hunters.Length == 1 && hc != null && hc.tree == hunters[0], $"{hunters.Length} cazadores");
-        if (hc != null && hunters.Length == 1)
+        TestProbe.NotNull("la celda del árbol cazador se lleva desde arriba", hc);
+        TestProbe.Check("ningún árbol cazador en el santuario 1", FindObjectsByType<IceCarnivorousTree>(FindObjectsSortMode.None).All(h => h.gameObject.scene.name == SiteLine.MarineScene));
+        if (hc != null)
         {
-            IceCarnivorousTree h = hunters[0];
-            TestProbe.Check("conserva sus rasgos: señuelo, sopor y crecimiento", h.lureRadius >= HunterRule.LureRadius && h.killRadius >= HunterRule.KillRadius && h.growthPerKill > 0f && h.maxScale > 1f, $"{h.lureRadius:0} m, {h.killRadius:0.0} m, ×{h.maxScale:0.0}");
-            TestProbe.Check("la celda contiene su mayor tamaño", hc.Contains(h.transform.position + Vector3.up * 2f));
-            TestProbe.Check("sellada, lo sujeta; en brecha, no", hc.Holds(h));
             hc.Breach("prueba");
-            bool loose = !hc.Holds(h) && GuardWatch.Alert(GuardWatch.Feed.Contencion) && HunterCell.Missions(1).All(m => m.id.StartsWith(HunterCell.RecaptureId));
+            bool loose = GuardWatch.Alert(GuardWatch.Feed.Contencion) && HunterCell.Missions(1).All(m => m.id == HunterCell.RoundId || m.id.StartsWith(HunterCell.RecaptureId));
             hc.Recapture("Prueba 1"); bool one = hc.Now == HunterCell.State.Brecha; hc.Recapture("Prueba 2");
-            TestProbe.Check("la brecha avisa a la guardia, solo deja la recaptura y pide dos personas", loose && one && hc.Holds(h));
-            TestProbe.Check("cada mañana, su ronda; el simulacro, semanal", HunterCell.Missions(1).Any(m => m.id == HunterCell.RoundId) && HunterCell.Missions(HunterRule.DrillEvery).Any(m => m.id == HunterCell.DrillId));
+            TestProbe.Check("la brecha avisa a la guardia, solo deja la recaptura y pide dos personas", loose && one && hc.Now == HunterCell.State.Contenido);
+            TestProbe.Check("la ronda es remota y lo demás baja por la línea", HunterCell.Missions(1).Any(m => m.id == HunterCell.RoundId && m.area == AreaWork.GuardRoom) && !HunterCell.Rides(HunterCell.RoundId) && HunterCell.Rides(HunterCell.RecaptureId));
         }
         Bedroom[] rooms = FindObjectsByType<Bedroom>(FindObjectsSortMode.None);
         TestProbe.Check("la Residencia está en su edificio-árbol: sin casas de árbol en el santuario 1", rooms.Length >= 30 && rooms.All(r => r.GetComponentInParent<TreeFloor>() != null) && GameObject.Find("ArboledaResidencial") == null, $"{rooms.Length} habitaciones");

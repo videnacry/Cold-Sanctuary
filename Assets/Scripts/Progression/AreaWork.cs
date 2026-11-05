@@ -9,7 +9,6 @@ using System.Collections.Generic;
 public static class AreaWork
 {
     public const string Guard = "Guardia";   // no es un SanctuaryArea: la patrulla, los puestos de vigía y el alimentador
-    public const string Containment = "Laboratorio de contención";   // un sitio, no un SanctuaryArea (docs/contencion-arbol-cazador.md)
     public const string GuardRoom = "Sala de guardia";   // un sitio de la jornada, no un SanctuaryArea (docs/sala-de-guardia.md)
     public const string Hospital = "Hospital";   // la antigua Enfermería (docs/hospital.md)
 

@@ -41,6 +41,7 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 > - [x] **El cazador, en los 6 árboles de la residencia**; casquetes silvestres con estructuras para la fauna ([`territorio-polar.md`](territorio-polar.md)).
 > - [x] **Sin bosque** ([`ice-sanctuary-ecology.md`](ice-sanctuary-ecology.md) §Sin bosque).
 > - [x] **Residencia en edificio-árbol** ([`residencia.md`](residencia.md)); casas de árbol guardadas ([`casas-de-arbol.md`](casas-de-arbol.md)); cazador en su celda ([`contencion-arbol-cazador.md`](contencion-arbol-cazador.md)).
+> - [x] **El cazador, bajo el agua**: Santuario Marino, con abejas y arañas y ciclo cerrado. Producción vuelve a 2 niveles.
 > - [ ] **Probar en vivo sala, residencia, celda y casquetes**: Blockout de solo santuario; grupos 91, 61, 57, 55, 53, 28, 77, y los de pijamadas y almohadas; medir FPS y renderers antes y después.
 > - [ ] **Decidir con Berón**: si bastan los abedules como árboles de la isla.
 > - [ ] Mezcla de las 15 áreas pendientes de S14.

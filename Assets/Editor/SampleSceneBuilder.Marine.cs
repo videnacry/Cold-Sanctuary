@@ -106,7 +106,10 @@ public static partial class SampleSceneBuilder
         Vector3 mid = new Vector3((x0 + x1) * 0.5f, floorY - 0.25f, (z0 + z1) * 0.5f);
         Solid(root, mid, new Vector3(x1 - x0, 0.5f, z1 - z0), new Color(0.32f, 0.33f, 0.34f), "Suelo_marino");
         void Limit(Vector3 c, Vector3 s) { BoxCollider w = new GameObject("Limite_marino").AddComponent<BoxCollider>(); w.transform.SetParent(root, false); w.transform.position = c; w.size = s; }
-        Limit(new Vector3(x0 - 0.5f, floorY + 3f, mid.z), new Vector3(1f, 6f, z1 - z0));
+        // (2026-11-05) El límite oeste, partido: por el hueco se va al laboratorio del árbol cazador.
+        Limit(new Vector3(x0 - 0.5f, floorY + 3f, (z0 + foot.z - 2f) * 0.5f), new Vector3(1f, 6f, foot.z - 2f - z0));
+        Limit(new Vector3(x0 - 0.5f, floorY + 3f, (foot.z + 2f + z1) * 0.5f), new Vector3(1f, 6f, z1 - foot.z - 2f));
+        BuildHunterLab(root, new Vector3(foot.x, floorY, foot.z), x0);
         Limit(new Vector3(x1 + 0.5f, floorY + 3f, mid.z), new Vector3(1f, 6f, z1 - z0));
         Limit(new Vector3(mid.x, floorY + 3f, z0 - 0.5f), new Vector3(x1 - x0, 6f, 1f));
         Limit(new Vector3(mid.x, floorY + 3f, z1 + 0.5f), new Vector3(x1 - x0, 6f, 1f));

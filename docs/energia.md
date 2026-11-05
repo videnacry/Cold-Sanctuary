@@ -144,10 +144,10 @@ La fracción 1/5 no es una norma: es un reparto que deja libres cerca de un terc
    | Residencia, 5 pisos | 30 habitaciones × 1 kW (como antes) | 30 |
    | Residencia, plaza | 40 × 38 m × 18 W/m² | ~27 |
    | Sala de guardia | 40 × 38 m × 16 W/m² + 6 kW | ~30 |
-   | Laboratorio de contención | 26 × 20 m × 45 W/m² | ~23 |
+   | Laboratorio de contención (abajo; lo declara arriba) | 34 × 30 m × 45 W/m² + 30 kW de luz de cultivo | ~76 |
    | Aire de la celda | 40 kW, **esencial** | 40 |
 
-   Suman **~120 kW nuevos**, unas **17 mesas** más (`TablesFor`), que el campo pone solo al construir. Lo fijo son estimaciones propias. El piso de cardio tampoco es un área y sigue sin declarar.
+   Suman **~173 kW nuevos**, unas **24 mesas** más (`TablesFor`), que el campo pone solo al construir. Lo fijo son estimaciones propias. El piso de cardio tampoco es un área y sigue sin declarar.
 5. **Lo nuevo y alto** lleva `ElevatedElement`: las turbinas cuentan para la lanzadera (T13).
 
 ## 4. La jornada (ids acordados con claude/edif-interfaz)

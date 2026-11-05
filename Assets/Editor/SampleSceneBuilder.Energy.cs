@@ -83,10 +83,13 @@ public static partial class SampleSceneBuilder
             if (t.name.StartsWith("Planta_habitaciones_")) FloorEnergy.DeclareFloor(t.gameObject, "Residencia, " + t.name.Replace('_', ' '), 0f, 0f, t.GetComponentsInChildren<Bedroom>(true).Length * EnergyRule.HomeKW);
             else if (t.name == ResidentialBuilder.PlazaName) FloorEnergy.DeclareFloor(t.gameObject, "Residencia, plaza", Area(t, ResidenciaSize), EnergyRule.PlazaW, 0f);
             else if (t.name == GuardRoom.FloorName) FloorEnergy.DeclareFloor(t.gameObject, AreaWork.GuardRoom, Area(t, ServiciosSize), EnergyRule.GuardRoomW, EnergyRule.GuardRoomKW);
-            else if (t.TryGetComponent(out HunterCell cell))
+            else if (t.TryGetComponent(out HunterCell _))
             {
-                FloorEnergy.DeclareFloor(t.gameObject, AreaWork.Containment, Area(t, ProduccionSize), EnergyRule.LabW, 0f);
-                FloorEnergy.DeclareFloor(cell.post.gameObject, "Aire de la celda del árbol cazador", 0f, 0f, EnergyRule.ContainmentKW, essential: true);
+                // (Vive en el Santuario Marino, cargado o no: lo declara arriba, como la roca.)
+                FloorEnergy.DeclareFloor(t.gameObject, "Laboratorio de contención", EnergyRule.LabM2, EnergyRule.LabW, EnergyRule.GrowLightKW);
+                Transform air = t.Find("Aire_celda");
+                if (air == null) { air = new GameObject("Aire_celda").transform; air.SetParent(t, false); }
+                FloorEnergy.DeclareFloor(air.gameObject, "Aire de la celda del árbol cazador", 0f, 0f, EnergyRule.ContainmentKW, essential: true);
             }
         }
         // Las casas de árbol, si algún santuario las construye (no son un piso: las cuelga el parque).

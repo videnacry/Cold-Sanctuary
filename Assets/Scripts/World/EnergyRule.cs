@@ -31,7 +31,9 @@ public static class EnergyRule
     public const float HomeKW = 1f;
     /// <summary>(2026-11-05) Pisos sin SanctuaryArea: W/m² de oficina y de recreación (CBECS, como abajo) y de laboratorio. Lo fijo son estimaciones propias: las 14 consolas y el muro de la
     /// sala de guardia; y los ventiladores y filtros de la celda del árbol cazador, que no se pueden parar.</summary>
-    public const float GuardRoomW = 16f, PlazaW = 18f, LabW = 45f, GuardRoomKW = 6f, ContainmentKW = 40f;
+    public const float GuardRoomW = 16f, PlazaW = 18f, LabW = 45f, GuardRoomKW = 6f, ContainmentKW = 40f, GrowLightKW = 30f;
+    /// <summary>La sala del árbol cazador: abajo no llega el sol, así que paga además sus luces de cultivo.</summary>
+    public const float LabM2 = 34f * 30f;
 
     /// <summary>Vatios MEDIOS por m² de cada clase de piso. CBECS 2018 (tabla C22, en kWh/ft²) × 1,229: restaurante 50,7 → 62; clínica 43,8 → 54; recreación
     /// 15,0 → 18; educación y oficina 12,6–12,8 → 16; servicios 13,2 → 16. El laboratorio (45) es una estimación propia: ~3 oficinas.</summary>

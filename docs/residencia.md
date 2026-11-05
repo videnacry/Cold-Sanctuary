@@ -51,6 +51,5 @@ Son **solo flora**: 6 abedules con hasta 6 panales, en (−125, −165). No sost
 ## Riesgos
 
 - S4 solo se comprobó a mano. Mirar la prueba 57.
-- Producción sube a 3 niveles por el laboratorio: techo a 131 m.
 - Hay vuelos de alfombra dentro de la torre, entre plaza y pisos: comprobar que no atraviesan losas.
 - `FurnitureSpacing` nunca ha visto estos pisos: la prueba 28 lo dirá.

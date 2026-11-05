@@ -3466,9 +3466,8 @@ public static partial class SampleSceneBuilder
         //  · PRODUCCIÓN (más baja, junto al Árbol de los Campos): Construcción · Mecánica · Estudio Textil. La maquinaria
         //    pesada, abajo.
         //    Un ÁRBOL: 2 niveles desde 96 m (por encima de Servicios y Ciencias); sus 3 pisos en orden y uno libre; 4 puntas con frutales.
-        BeginTreeTower(areasGroup.transform, TorreProduccion, ProduccionCenter, ProduccionSize, ProduccionYaw, 3, ProduccionFirstY, 4f);   // (2026-11-05: 3 niveles, por el laboratorio de contención)
+        BeginTreeTower(areasGroup.transform, TorreProduccion, ProduccionCenter, ProduccionSize, ProduccionYaw, 2, ProduccionFirstY, 4f);
         Floor(works.transform); Floor(mech.transform); Floor(textile.transform);
-        BuildContainmentLab(areasGroup.transform);   // el árbol cazador: arriba del todo (docs/contencion-arbol-cazador.md)
         BuildResidenceTower(areasGroup.transform);   // la Residencia: edificio-árbol en la isla (docs/residencia.md)
         // Los EDIFICIOS que juntan varias áreas llevan el nombre de su torre (el de su planta baja diría solo una).
         BuildingNames[kitchen.transform] = TorreServicios; BuildingNames[gym.transform] = TorreEntrenamiento; BuildingNames[works.transform] = TorreProduccion;

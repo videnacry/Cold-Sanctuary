@@ -16,9 +16,9 @@ microorganismos que viven **solo de agua y frío**.
 
 ## Sin bosque (Berón 2026-11-05)
 
-> **Ya no hay bosque de hielo, árbol gigante ni casas de árbol.** En el suelo quedan abedules de la isla, solo flora, con 6 panales como máximo. El **árbol cazador** vive en una celda: [contencion-arbol-cazador.md](contencion-arbol-cazador.md). §2 describe el diseño original, que sigue valiendo dentro de ella.
+> **Ya no hay bosque de hielo, árbol gigante ni casas de árbol.** En el suelo quedan abedules de la isla, solo flora, con 6 panales como máximo. El **árbol cazador** vive en una celda bajo el agua, con sus abejas y arañas: [contencion-arbol-cazador.md](contencion-arbol-cazador.md). §2 describe el diseño original, que sigue valiendo dentro de ella.
 
-**Lo que se pierde**: la caza en el suelo, las mudanzas largas de colmena y la miel de cadáveres junto al cazador, porque la celda no tiene panales.
+**Lo que se pierde**: la caza en el suelo y las mudanzas largas de colmena. El ciclo de cadáveres, miel y polinización sigue, cerrado, dentro de la celda del Santuario Marino.
 
 ## 2. El árbol carnívoro de hielo (la pieza central)
 
