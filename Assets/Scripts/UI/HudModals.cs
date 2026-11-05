@@ -58,6 +58,15 @@ public class HudModals : MonoBehaviour
 
     public static void Close() { Current = Modal.None; }
 
+    /// <summary>Lo que hace Esc: cierra la ventana abierta. Si está abierto el lanzador, Esc se lo queda él (GameKeys lo enmudece); si hay un
+    /// diálogo, primero el diálogo. true = cerró una.</summary>
+    public static bool Escape()
+    {
+        if (Current == Modal.None || GameKeys.DialogOpen) return false;
+        Close();
+        return true;
+    }
+
     static readonly Modal[] Order = { Modal.Horario, Modal.Recursos, Modal.Misiones };
     static string Label(Modal m) => m == Modal.Horario ? "F2: Horario libre" : m == Modal.Recursos ? "F3: Recursos" : "F4: Misiones y jornada";
 
@@ -69,8 +78,7 @@ public class HudModals : MonoBehaviour
     void Update()
     {
         if (ColdSanctuary.TestRunner.Running) return;
-        // Esc: si está abierto el lanzador, se lo queda él (GameKeys lo enmudece); si hay un diálogo, primero el diálogo.
-        if (Current != Modal.None && GameKeys.GetKeyDown(KeyCode.Escape) && !GameKeys.DialogOpen) { Close(); return; }
+        if (GameKeys.GetKeyDown(KeyCode.Escape) && Escape()) return;
         if (GameKeys.GetKeyDown(HorarioKey) && Available(Modal.Horario)) Toggle(Modal.Horario);
         if (GameKeys.GetKeyDown(RecursosKey) && Available(Modal.Recursos)) Toggle(Modal.Recursos);
         if (GameKeys.GetKeyDown(MisionesKey) && Available(Modal.Misiones)) Toggle(Modal.Misiones);

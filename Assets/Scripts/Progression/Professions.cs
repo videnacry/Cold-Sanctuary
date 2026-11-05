@@ -33,7 +33,7 @@ public static class Professions
         // «clase_yoga» son Hatha: no entran en su profesión.
         new Entry("Consol", "maestra de Ashtanga", "Sala de Yoga:yog_ashtanga"),
         // Fernando (2026-11-05): PANELES SOLARES. Sus misiones son las del área Energía: los paneles («sol_») y las revisiones del parque («ene_»; docs/energia.md).
-        new Entry("Fernando", "instalación y reparación de paneles solares", EnergyRule.Area),
+        new Entry("Fernando", "instalador y reparador de paneles solares", EnergyRule.Area),
         // Tote: JEFE DE REPARACIONES («rep_») y guardia.
         new Entry("JefeConstruccion", "jefe de reparaciones y guardia", "Construcción:rep_", "Guardia"),
         // Los guardias: Gohageneis (y las artes marciales), Nesvitor (y agricultor) y Tote.
@@ -94,6 +94,66 @@ public static class Professions
     };
     /// <summary>El maestro de <paramref name="cls"/> el día <paramref name="day"/> (null si no tiene).</summary>
     public static string LeadOn(string cls, int day) => ClassLeads.TryGetValue(cls, out string[] l) && l.Length > 0 ? l[((day % l.Length) + l.Length) % l.Length] : null;
+
+    /// <summary>LAS PERSONAS DEL MESOCOSMOS (docs/reglas-personajes.md, R2): el personal de la jornada, la Magnate y Neo. Cada una con su ficha.</summary>
+    public static IEnumerable<string> Mesocosmos
+    {
+        get
+        {
+            foreach (string s in WorkdayDirector.Staff) yield return s;
+            yield return "Magnate";
+            yield return "Neo";
+        }
+    }
+
+    /// <summary>El nombre de su ficha: docs/personajes/&lt;nombre&gt;.md.</summary>
+    public static string DocName(string who) => who == "Player" ? "kushal" : who == "JefeConstruccion" ? "tote" : who.ToLowerInvariant();
+
+    /// <summary>LA BASE DOCUMENTADA DE CADA PUESTO (Berón 2026-11-05; docs/reglas-personajes.md, R7): de dónde sale.
+    /// Lo que queda por confirmar va en <see cref="Unconfirmed"/>. Al añadir o cambiar un puesto, se cambia aquí y en su ficha.</summary>
+    public static readonly Dictionary<string, string> Basis = new Dictionary<string, string>
+    {
+        { "Josedrilo", "Berón 2026-11-04: «el profesional de yoga es Josedrilo», bioconstrucción y jefe de obra nueva; 2026-11-05: jefe de Hatha" },
+        { "Consol", "Berón 2026-11-05: profesora de yoga, experta en Ashtanga; candidata a superar a Josedrilo. Decisión: jefa de su estilo" },
+        { "Fernando", "Berón 2026-11-05: instala y repara paneles solares" },
+        { "JefeConstruccion", "Berón 2026-11-04: jefe de reparaciones y guardia" },
+        { "Gohageneis", "Berón 2026-11-04: guardia y maestro de baile (las artes marciales, ver Unconfirmed)" },
+        { "Panterilia", "Berón 2026-11-04: enseña baile y lleva finanzas" },
+        { "Julian", "Berón 2026-11-04: dirección de proyectos" },
+        { "Nesvitor", "Berón 2026-11-04: guardia y agricultor" },
+        { "Maite", "Berón 2026-11-04: jefa de cocina con Amykhuz y curandera" },
+        { "Amykhuz", "Berón 2026-11-04: profesional de cocina y química, jefe de cocina con Maite" },
+        { "Shalva", "Berón 2026-11-04: profesional de cultivo y bioconstrucción" },
+        { "Adaguchi", "Berón 2026-11-04: profesional de submarinismo y cocina" },
+        { "Karen", "Berón 2026-11-04: profesional de asuntos legales y lenguas" },
+        { "Alicita", "Berón 2026-11-04: profesional de contabilidad y project manager" },
+        { "Ducristin", "Berón 2026-11-04: gerente de banca y profesor" },
+        { "Fausto", "Berón 2026-11-04: mecánico" },
+        { "Andrea", "Berón 2026-11-04: profesional de comunicación y el de más fuerza, entrenador del gimnasio" },
+        { "Irosene", "Berón 2026-11-04: profesional de letras (poesía y narración); ficha 2026-07-15: destaca en el textil" },
+        { "David", "Berón 2026-11-04: informática" },
+        { "Adonis", "Berón 2026-11-04: informática" },
+        { "Yulo", "Berón 2026-11-04: biotecnología" },
+        { "Lale", "Berón 2026-11-04: biotecnología" },
+        { "Ivelyna", "Berón 2026-11-04: pediatra" },
+        { "Malena", "Berón 2026-11-05: pediatra" },
+        { "Luciana", "Berón 2026-11-04: piloto; 2026-11-05: experta en artes marciales" },
+    };
+
+    /// <summary>LOS PUESTOS O PARTES DE UN PUESTO SIN CONFIRMAR: los dedujimos nosotros; quedan así hasta que Berón diga (docs/reglas-personajes.md §Auditoría).</summary>
+    public static readonly Dictionary<string, string> Unconfirmed = new Dictionary<string, string>
+    {
+        { "Gohageneis", "artes marciales: salió del reparto provisional («ágil y atlético»), sin palabra de Berón; la experta documentada es Luciana" },
+        { "Goluis", "jefe de cocina: lo dice su ficha, pero Berón nombró jefes a Maite y Amykhuz; sin entrada de profesión" },
+        { "Gallarle", "sin profesión" },
+        { "Luciana", "control de misión de la lanzadera: deducido de «piloto»" },
+        { "Maite", "curas del hospital (enf_visita): deducido de «curandera»" },
+        { "Shalva", "jardinero frutal (jar_frutales): deducido de «cultivo»" },
+        { "Yulo", "Biología y fotobiorreactores: deducido de «biotecnología»" },
+        { "Lale", "Biología y fotobiorreactores: deducido de «biotecnología»" },
+        { "Adaguchi", "toda el área de Construcción: deducido de «submarinismo», porque los submarinos salen de allí" },
+        { "Panterilia", "sale en el huerto y su ficha aún dice que dirige la limpieza y la farmacia" },
+    };
 
     static Dictionary<string, Entry> _by;
     public static Entry? Of(string who)

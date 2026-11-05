@@ -184,7 +184,8 @@ public static partial class SampleSceneBuilder
         Put("Ivelyna", "Infirmary_Area", new Vector3(-3f, 1f, -3f));               // pediatra, en el hospital
         Put("Malena", "Infirmary_Area", new Vector3(-5f, 1f, -3f));                // pediatra, con Ivelyna
         Put("Consol", "YogaRoom_Area", new Vector3(-9f, 1.5f, 0f));                // MAESTRA DE ASHTANGA: sale en el piso de la Sala de Yoga, en la otra sala (las clases de Ashtanga, en su planta)
-        Put("Fernando", EnergyFloorName, new Vector3(-3f, 1f, 1f));          // paneles solares
+        foreach (SanctuaryArea ea in Object.FindObjectsByType<SanctuaryArea>(FindObjectsInactive.Include, FindObjectsSortMode.None))   // paneles solares: en el taller del Parque Energético (docs/energia.md)
+            if (ea.areaType == SanctuaryAreaType.EnergyPark && GameObject.Find("Fernando") is GameObject fe) fe.transform.position = ea.transform.TransformPoint(new Vector3(-4f, 1f, -5f));
         Put("Luciana", "VehicleWorkshop_Area", new Vector3(-2f, 1f, 2f));          // piloto: la flota de alfombras (y el control de misión)
         Put("Gallarle", "Classroom_Area", new Vector3(-3f, 1f, -1f));              // con su pareja, Ducristin (pendiente de foto y de profesión)
         Put("Neo", "Classroom_Area", new Vector3(-4f, 1f, -2f));                   // su hijo (niño): va con su madre (PersonLife), sin jornada
@@ -217,7 +218,7 @@ public static partial class SampleSceneBuilder
         ("Malena", "Malena (pediatra)", 68f, new Color(0.86f, 0.74f, 0.62f), 1.0f, 1.0f, 1.0f, 1.0f),
         // (2026-11-05) Pendientes de foto. Consol: «muy flexible» (Berón), de ahí su agilidad y su resistencia; Fernando, neutro.
         ("Consol", "Consol (maestra de Ashtanga; pendiente de foto)", 70f, new Color(0.42f, 0.3f, 0.5f), 1.0f, 1.35f, 1.15f, 0.95f),
-        ("Fernando", "Fernando (paneles solares; pendiente de foto)", 72f, new Color(0.85f, 0.55f, 0.15f), 1.05f, 1.0f, 1.0f, 1.0f),
+        ("Fernando", "Fernando (instalador y reparador de paneles solares; pendiente de foto)", 72f, new Color(0.85f, 0.55f, 0.15f), 1.05f, 1.0f, 1.0f, 1.0f),
     };
 
     /// <summary>LOS FAMOSOS QUE SE FUERON A SUS MICROCOSMOS (Berón 2026-11-04: «los personajes famosos, elon musk, sadhguru, y demás

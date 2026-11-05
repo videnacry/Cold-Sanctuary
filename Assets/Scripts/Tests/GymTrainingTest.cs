@@ -68,14 +68,14 @@ public class GymTrainingTest : MonoBehaviour, ITestUnit
         TestProbe.Check("los días sin gimnasio en su plan, recuperación activa", plans.All(p => Enumerable.Range(0, 7).Where(d => !p.Trains(d)).All(d => GymProgramming.Prescribe(p.who, d).recovery)));
         TestProbe.Check("los humanos-insecto no usan los planes del gimnasio del santuario (tienen los de su época: HistoricTraining)", GymProgramming.For("Obrera de Hormiga") == null && GymProgramming.For("Myrmidon") == null);
         TestProbe.Check($"el entrenador ({GymProgramming.Trainer}) parte con las cargas más altas (el de más fuerza) y Goluis sigue con un plan de fuerza", plans.OrderByDescending(p => p.strength).First().who == GymProgramming.Trainer && GymProgramming.For("Goluis").goal == TrainingGoal.Fuerza);
-        GymProgramming.DayRoutine r = GymProgramming.Prescribe("Amahuz", 0);
+        GymProgramming.DayRoutine r = GymProgramming.Prescribe("Amykhuz", 0);
         TestProbe.Check("la rutina empieza calentando y acaba estirando; series × reps, carga, descanso y RPE en cada ejercicio",
             r.items.First().part == "calentamiento" && r.items.Last().part == "vuelta a la calma" && r.Main.All(x => x.sets > 0 && x.reps > 0 && x.restSec > 0f && x.rpe > 0f),
             string.Join(" · ", r.items.Select(x => x.ToString())));
 
         // Los días del plan en el reparto de las 14 h.
         var roster = new WorkRoster(); roster.areas.Add("Cocina");
-        foreach (string n in new[] { "Amahuz", "Lizmibet", GymProgramming.Trainer, "Karen" }) roster.Add(n);
+        foreach (string n in new[] { "Amykhuz", "Lizmibet", GymProgramming.Trainer, "Karen" }) roster.Add(n);
         var open = new List<string> { GymProgramming.GymArea, "Sala de Yoga" };
         roster.trainingAreas.AddRange(open);
         bool ok = true; string why = "";
@@ -104,7 +104,7 @@ public class GymTrainingTest : MonoBehaviour, ITestUnit
             return l;
         }
         var r = new WorkRoster(); r.areas.Add("Cocina"); r.areas.Add(GymProgramming.GymArea);
-        foreach (string n in new[] { "Amahuz", "Karen", GymProgramming.Trainer }) r.Add(n);
+        foreach (string n in new[] { "Amykhuz", "Karen", GymProgramming.Trainer }) r.Add(n);
         bool always = true;
         for (int d = 0; d < 5; d++)
         {
@@ -114,7 +114,7 @@ public class GymTrainingTest : MonoBehaviour, ITestUnit
         }
         TestProbe.Check($"la misión «{GymProgramming.PlanMissionId}» la hace cada día el entrenador ({GymProgramming.Trainer}) y nadie más", always);
         var r2 = new WorkRoster(); r2.areas.Add("Cocina"); r2.areas.Add(GymProgramming.GymArea);
-        foreach (string n in new[] { "Amahuz", "Karen" }) r2.Add(n);
+        foreach (string n in new[] { "Amykhuz", "Karen" }) r2.Add(n);
         WorkRoster.DayPlan p2 = r2.Plan(0, Day());
         TestProbe.Check("sin el entrenador no la hace otro ni queda pendiente", !p2.work.Any(x => x.mission.id == GymProgramming.PlanMissionId) && !p2.backlog.Any(x => x.id == GymProgramming.PlanMissionId)
             , string.Join(", ", p2.work.Where(x => x.mission.id == GymProgramming.PlanMissionId).Select(x => x.worker.name)));

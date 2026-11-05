@@ -58,7 +58,7 @@ Retratos: menú **Tools > Cold Sanctuary > Character Gallery (familia y amigos d
 | `Karen` | `amahuz_karen.jpg` (izquierda) | **Asuntos legales y lenguas** (su mesa, en el Aula); pareja de Amykhuz | Piel morena cálida; melena larga castaña oscura con pinza de flor rosa y amarilla; pendientes pequeños; blusa blanca sin mangas con volantes; falda berenjena con flores rosas y lilas; reloj negro | 1,58 m |
 | `Alicita` (Alicia) | `alicia.jpg` | **Contabilidad y dirección de proyectos** (las cuentas del santuario y las obras); pareja de Julian, comparten casa | Piel clara morena; melena larga lisa negra; aros pequeños; chaqueta negra con cremallera, cerrada, con el cuello verde fosforito de la camiseta asomando | 1,58 m |
 | `Ducristin` | `dukristy.png` (trabajo) y `semigod.jpg` (informal, retrato `Ducristin_Casual`) | **Gerente de banca y profesor** (finanzas en la mesa de cuentas del restaurante; clases en el Aula; su mecánica pasa a Fausto); pareja de Gallarle, comparten casa | De trabajo: pelo oscuro en tupé, traje azul marino, camisa blanca y corbata azul. Informal: piel morena; pelo corto castaño oscuro levantado delante (`Style.Quiff`); gafas de aviador de cristal degradado; camisa azul clara de cuadros con cuello abierto; muñequera roja | 1,70 m |
-| `Josedrilo` | `cumbaya.jpg` (izquierda, **supuesto**) | **Maestro de yoga** (el profesional; guía la clase), **jefe de obra nueva** y **bioconstrucción**; pareja de Maite, comparten casa | Melena larga castaña oscura recogida atrás (`Style.TiedBack`); chaqueta de cuero negra; pantalón granate | 1,75 m |
+| `Josedrilo` | `cumbaya.jpg` (izquierda, **supuesto**) | **Maestro jefe de Hatha** (guía la clase), **jefe de obra nueva** y **bioconstrucción**; pareja de Maite, comparten casa | Melena larga castaña oscura recogida atrás (`Style.TiedBack`); chaqueta de cuero negra; pantalón granate | 1,75 m |
 | `Maite` | `cumbaya.jpg` (centro, **supuesto**) | **Jefa de cocina** (con Amykhuz) y **curandera** (plantas medicinales); pareja de Josedrilo | Melena larga ondulada castaña; piel clara; parka con capucha verde oliva parduzco sobre camiseta gris | 1,65 m |
 | `Shalva` | `cumbaya.jpg` (derecha, **supuesto**) | **Cultivo y bioconstrucción** (el huerto y las obras) | Pelo corto castaño; jersey grueso de canalé verde oliva; vaqueros azul claro | 1,72 m |
 | `Adaguchi` | `adaguchi.png` | **Submarinismo** (submarino de obra, ambulancia, tareas bajo el agua) y **cocina** | Piel clara morena; pelo corto ondulado castaño oscuro con volumen arriba (`Style.Fade`); un pendiente pequeño; sudadera negra sin mangas con capucha; collar de cuentas oscuras | 1,65 m |
@@ -72,6 +72,8 @@ Retratos: menú **Tools > Cold Sanctuary > Character Gallery (familia y amigos d
 | `Malena` | `ivelyna_malena`, a la derecha | **Pediatra** (en el hospital) | Pelo recogido con gafas de sol sobre la cabeza, abrigo largo beige de botones grandes, blusa blanca de cuello alto y pantalón blanco; `Fem()` | 1,63 m |
 | `Luciana` | `gallarle_luciana`, a la derecha | **Piloto** (alfombras, transporte aéreo y control de misión de la lanzadera) y **artes marciales** (el dojo, con Gohageneis) | Pelo largo liso oscuro, vestido hueso de mangas de farol; `Fem()` | 1,63 m |
 | `Neo` | `neo` | Niño, hijo de `Ducristin` y `Gallarle`; sin jornada | Pelo castaño oscuro, camiseta roja bajo un chaleco beige, sin `Fem()` | ~1,2 m |
+| `Consol` | **pendiente de foto** | **Maestra jefa de Ashtanga**; española, de unos 50, de aspecto joven y muy flexible (Berón 2026-11-05) | Aspecto provisional: media melena oscura, ropa de yoga lisa morada y pantalón oscuro; `Fem()`. Agilidad 1,35 por «muy flexible» | 1,63 m |
+| `Fernando` | **pendiente de foto** | **Instalador y reparador de paneles solares** (Berón 2026-11-05) | Aspecto provisional: pelo corto castaño, chaleco de obra naranja sobre manga larga gris | 1,74 m |
 
 Piezas nuevas de `CubeHair.Look` (reutilizables):
 - **Pelo**: `SweptBack` (hacia atrás), `Quiff` (tupé), `TiedBack` (melena recogida en la nuca).
@@ -82,6 +84,8 @@ Piezas nuevas de `CubeHair.Look` (reutilizables):
 
 Sin hacer: la pose relajada de Tote en su foto (no hay pose propia por persona) y las sonrisas amplias de Karen y Alicita (la cara
 de cubos cambia de expresión según el ánimo, no por persona).
+
+**Fichas**: lo que se sabe de cada persona, con sus huecos, está en `docs/personajes/`. Reglas: [reglas-personajes.md](reglas-personajes.md).
 
 ## Pendiente de confirmar
 

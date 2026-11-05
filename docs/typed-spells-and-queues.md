@@ -45,6 +45,8 @@ Un anima **libre** (no poseída), si sus necesidades están cubiertas, encola ac
 explorar) en un carril **borrable**; al poseerla, el jugador las **vacía** y programa las suyas.
 
 ### 4.1 Colas en PARALELO (yoga, posturas)
+
+(2026-11-05) Posturas añadidas: las variaciones de la clase de Consol, Paschimottanasana B, Baddha Konasana B y Prasarita Padottanasana C (`AshtangaPrimary.Deep`).
 Se pueden tener **varias colas** a la vez para que ejecuten en paralelo — p. ej. una **por parte del cuerpo**:
 `espaldaRecta`, `hombrosAbajo`, `pechoAbierto` → el anima adopta la **postura** enviando señales a sus
 `bodyParts` (`CreatureRig`). Si **no tiene** esa parte, la señal no hace nada y el anima responde **"no tengo
