@@ -637,7 +637,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit
                 float drop = prev.y - p.y;
                 bool flier = tr.animal != null && (tr.animal.AirAffinity >= 0.5f || size < 0.3f);   // (insectos: vuelan o trepan)
                 bool teleport = Flat(p - prev) > 10f;   // eso es un salto (ya contado), no una caída
-                if (drop > 4f && !flier && !teleport && !tr.hist[tr.hist.Count - 2].riding) Add(tr.name, "cae", $"{drop:0.0} m en 1 s, ahora en {Where(p)}", human);
+                if (drop > 4f && !flier && !teleport && !crossing && !tr.hist[tr.hist.Count - 2].riding) Add(tr.name, "cae", $"{drop:0.0} m en 1 s, ahora en {Where(p)}", human);
             }
             if (p.y < -15f && !FlyingCarpet.Riding(tr.g)) Add(tr.name, "bajo el mundo", $"y = {p.y:0}", human);   // (no en la línea de las cavernas, que va a −566 m)
 

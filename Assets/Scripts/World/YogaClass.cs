@@ -38,7 +38,7 @@ public class YogaClass : MonoBehaviour
     /// <summary>La sesión de Consol (<see cref="AshtangaPrimary.Deep"/>).</summary>
     public const string DeepSession = "Ashtanga profundo";
     /// <summary>Cuándo pasa la clase profunda a la relajación final: el entrenamiento acaba a las 16 h.</summary>
-    public const float DeepCloseHour = 15.75f;
+    public const float DeepCloseHour = 14.75f;   // (el entrenamiento de la tarde acaba a las 15:00 desde el 2026-11-05)
     /// <summary>¿Es la clase profunda de Consol?</summary>
     public bool Deep => sessionName == DeepSession;
     public string sessionName = "Saludo al Sol";

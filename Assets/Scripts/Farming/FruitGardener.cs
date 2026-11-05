@@ -21,13 +21,13 @@ public class FruitGardener : MonoBehaviour
 {
     public const string MissionPrefix = "jar_frutales";
     /// <summary>Lo más larga que puede ser una ronda (h de juego): el bloque de la mañana (las misiones no se parten en la comida).</summary>
-    public const float MaxRoundHours = 2f;   // (2026-11-05: eran 3 h; con la mañana nueva, a nadie le quedan 3 h seguidas: 10–11 y 12–14)
+    public const float MaxRoundHours = 2f;   // (2026-11-05: eran 3 h; las franjas de trabajo son 9–11, 12–14 y 15–16)
     /// <summary>Holgura (h de juego) que se guarda al repartir el tiempo de las tareas de la semana. Era 0,15 h; medido en Unity
     /// (2026-10-31) la ronda real va siempre algo por DEBAJO de su estimación (2,25/2,36, 2,81/2,88 y 2,86/2,88 h), y con rondas
     /// de 2,9 h esos 0,15 h se comían todo lo que sobra de las 3 h: ninguna polinización ni poda en todo el día.</summary>
     public const float ExtraMargin = 0.05f;
-    /// <summary>Lo que se apunta a llenar cada ronda (h): deja margen bajo las 3 h de la misión.</summary>
-    public const float RoundTarget = 2.9f;
+    /// <summary>Lo que se apunta a llenar cada ronda (h): deja margen bajo las horas de la misión. (Era 2,9: las rondas salían más largas que su misión de 2 h.)</summary>
+    public const float RoundTarget = MaxRoundHours - 0.1f;
     /// <summary>Segundos reales estimados de un vuelo de techo a techo (llamar la alfombra, subir, volar a ~26 m/s, posarse).</summary>
     public const float FlightSeconds = 45f;
     /// <summary>Entrar en una torre-árbol desde su techo y salir (nadando por el tronco a su primera punta y, al final, de vuelta al
@@ -183,7 +183,7 @@ public class FruitGardener : MonoBehaviour
             }
         }
         // EL REPARTO (2026-11-04): cada tramo cabe ya en una ronda; se llenan las rondas por orden del camino y, si un tramo no cabe en
-        // la ronda en curso, se prueba en las anteriores (con su vuelo) antes de abrir otra: menos jardineros, ninguna ronda > 2,9 h.
+        // la ronda en curso, se prueba en las anteriores (con su vuelo) antes de abrir otra: menos jardineros, ninguna ronda pasa de RoundTarget.
         foreach (Leg u in units)
         {
             Round fit = null; float fitH = 0f;
@@ -194,7 +194,7 @@ public class FruitGardener : MonoBehaviour
                 if (r.hours + h <= RoundTarget) { fit = r; fitH = h; if (afterOwn) break; }
             }
             // Las macetas de un edificio son UN tramo (no se parten si caben solas en una ronda): si el edificio llena la ronda él
-            // solo, se le reserva para la semana lo que quede hasta las 2,9 h.
+            // solo, se le reserva para la semana lo que quede hasta RoundTarget.
             if (fit == null)
             {
                 fit = new Round(); _rounds.Add(fit);

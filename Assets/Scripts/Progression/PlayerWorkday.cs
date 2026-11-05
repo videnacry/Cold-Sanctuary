@@ -155,13 +155,13 @@ public class PlayerWorkday : MonoBehaviour
     {
         WorkRoster.Worker me = wd.roster.Add("Player");
         GivenDay = day;
-        float s = WorkRoster.StartHour, end = s + WorkRoster.WorkHours + WorkRoster.LunchHours + WorkRoster.TrainingHours;
+        float s = WorkRoster.StartHour, end = s + 8f;
         string when;
         if (wd.today != null && wd.plannedDay == day && h < end) { int n = LateJoin(wd, me, day, h); when = n > 0 ? $"se incorpora HOY con {n} misión(es)" : "se incorpora HOY (comida y entrenamiento)"; }
         else if (h < s) when = "empieza HOY a las 8:00";
         else when = "es libre hoy; empieza MAÑANA a las 8:00";
         Debug.Log($"[Jornada] Kushal termina su iniciación (huerto y su microcosmos): entra en la rotación del santuario y {when}.");
-        LessonPrompt.Show($"Ya eres del santuario. Tu jornada: entrenamiento a las 8:00, con la Magnate a las 9:00 si te queda algo por aprender, misiones en las áreas hasta las 14:00 con la comida a las 11:00, y 2 h de entrenamiento a las 14:00; a las 16:00, libre. Tu jornada {when.Replace("se incorpora", "te incorporas").Replace("es libre", "eres libre")}. (Consola: «jornada»)", null, 14f);
+        LessonPrompt.Show($"Ya eres del santuario. Tu jornada: entrenamiento a las 8:00 y a las 14:00, comida a las 11:00 y 5 h de tareas; tu primer día son iniciaciones; a las 16:00, libre. Tu jornada {when.Replace("se incorpora", "te incorporas").Replace("es libre", "eres libre")}. (Consola: «jornada»)", null, 14f);
         KushalVoice.Reply(KushalVoice.Ctx.Mission);   // Kushal acepta su jornada (arriba)
         WorkdayGiven?.Invoke(_player);
         return me;
@@ -171,9 +171,8 @@ public class PlayerWorkday : MonoBehaviour
     /// partirlas en la comida), primero de áreas distintas y que nadie haga ya hoy; y su entrenamiento. Devuelve cuántas.</summary>
     static int LateJoin(WorkdayDirector wd, WorkRoster.Worker me, int day, float h)
     {
-        float s = WorkRoster.StartHour, b1 = WorkRoster.FirstBlock, lunch = WorkRoster.LunchHours;
         float t = Mathf.Ceil(h * 2f - 1e-3f) / 2f;
-        float used = Mathf.Max(WorkRoster.MorningTraining, t <= s ? 0f : t < s + b1 ? t - s : t < s + b1 + lunch ? b1 : t - s - lunch);   // (a las 8, entrenamiento)
+        float used = wd.roster.UsedAt(t);
         var taken = new HashSet<string>(wd.today.work.Select(a => a.mission.id));
         var order = wd.today.areaOrder;
         var pool = AreaWork.Today(day, ConstructionProject.All)
@@ -185,13 +184,11 @@ public class PlayerWorkday : MonoBehaviour
         int n = 0;
         while (used < WorkRoster.WorkHours - 1e-3f)
         {
-            WorkRoster.Mission pick = pool.FirstOrDefault(m => WorkRoster.Fits(used, m.hours) && !areas.Contains(m.area))
-                                   ?? pool.FirstOrDefault(m => WorkRoster.Fits(used, m.hours));
+            WorkRoster.Mission pick = pool.FirstOrDefault(m => wd.roster.Place(used, m.hours, out _) >= 0f && !areas.Contains(m.area))
+                                   ?? pool.FirstOrDefault(m => wd.roster.Place(used, m.hours, out _) >= 0f);
             if (pick == null) break;
             pool.Remove(pick); areas.Add(pick.area);
-            float u = used;
-            if (u + pick.hours > b1 + 1e-4f && u < b1) u = b1;   // no se parte en la comida (como WorkRoster.Assign)
-            float start = u < b1 ? s + u : s + lunch + u;
+            float u = wd.roster.Place(used, pick.hours, out float start);
             wd.today.work.Add(new WorkRoster.Assignment { worker = me, mission = pick, start = start, firstTime = !me.Knows(pick.id) });
             me.count[pick.id] = me.Count(pick.id) + 1; me.lastDay[pick.id] = day;
             used = u + pick.hours; n++;
@@ -270,8 +267,8 @@ public class PlayerWorkday : MonoBehaviour
             if (!AteToday && body != null && _lunchHunger >= 0f && body.hunger < _lunchHunger - 0.15f) Ate("se sacia a mediodía");
         }
 
-        // ENTRENAMIENTO (14–16): en su sala.
-        float t0 = s + WorkRoster.WorkHours + WorkRoster.LunchHours, t1 = t0 + WorkRoster.TrainingHours;
+        // ENTRENAMIENTO (14–15): en su sala.
+        float t0 = s + WorkRoster.WorkHours + WorkRoster.LunchHours, t1 = t0 + WorkRoster.AfternoonTraining;
         if (TrainingArea != null && h >= t0 && h < t1)
         {
             _trainObserved += dt;

@@ -154,7 +154,7 @@ public class LeisureRoster
                 string who = Professions.LeadOn(a.id, day);
                 Person t = who != null ? free.FirstOrDefault(x => x.name == who) : null;
                 if (t == null) continue;
-                free.Remove(t); left[a]--; t.count[a.id] = t.Count(a.id) + 1; t.last[a.id] = g;
+                free.Remove(t); left[a]--;   // (dar la clase es su trabajo de maestro: no cuenta como una vez de ocio, ni en el reparto ni en la uniformidad)
                 plan.entries.Add(new Entry { person = t, activity = a, day = day, slot = slot, lead = true });
             }
         List<Activity> order = Order(g).Where(a => !a.together).ToList();   // (las de todos a la vez solo van en su franja)
@@ -199,14 +199,14 @@ public class LeisureRoster
         {
             if (p.people.Count == 0) break;
             int mx = int.MinValue, mn = int.MaxValue;
-            foreach (Person q in p.people) { int c = p.entries.Count(e => e.person == q && e.activity == a); mx = System.Math.Max(mx, c); mn = System.Math.Min(mn, c); }
+            foreach (Person q in p.people) { int c = p.entries.Count(e => e.person == q && e.activity == a && !e.lead); mx = System.Math.Max(mx, c); mn = System.Math.Min(mn, c); }
             if (mx - mn > s) { s = mx - mn; worst = $"{a.title}: de {mn} a {mx} veces"; }
         }
         foreach (Person q in p.people)
         {
             if (p.activities.Count == 0) break;
             int mx = int.MinValue, mn = int.MaxValue;
-            foreach (Activity a in p.activities) { int c = p.entries.Count(e => e.person == q && e.activity == a); mx = System.Math.Max(mx, c); mn = System.Math.Min(mn, c); }
+            foreach (Activity a in p.activities) { int c = p.entries.Count(e => e.person == q && e.activity == a && !e.lead); mx = System.Math.Max(mx, c); mn = System.Math.Min(mn, c); }
             perPerson = System.Math.Max(perPerson, mx - mn);
         }
         return s;

@@ -38,9 +38,9 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 > - [ ] **Decidir con Berón**: lo que el jugador aún no puede hacer (P11).
 > - [ ] **Revisar la ficha de Pedro Sánchez tras las elecciones del 29-11-2026** (`Historia.PedroSanchez.cs`, último párrafo).
 > - [ ] Repasar los [verificar] del doc (día del clavo de oro, fecha de Lagunillas, número de enfermos de San Pablo y fecha del cruce a nado, cifras de Singapur).
-> **HECHO 2026-11-05 (requisitos y la mañana con la Magnate, rama claude/edif-energia; solo código, sin probar en vivo):** cada misión tiene requisitos (`MissionRequirements`), a las 8 entrenan todos y a las 9 la Magnate enseña una tarea, por grupos, a quien le queda algo. Reglas J31 y J32; auditoría en [`jornada-y-rotacion.md`](jornada-y-rotacion.md) §Auditoría.
-> - [ ] Probar en vivo, sin reconstruir nada: grupos 104 (nuevo), 50, 28, 55, 65, 87, 96 y 97. En el registro, `[Lección]` y el balance: cuántos clones hacen falta los primeros días.
-> - [ ] Mirar si las lecciones llegan a tiempo: el viaje entre árboles se come parte de la hora de las 9.
+> **HECHO 2026-11-05 (requisitos e iniciaciones como tareas, rama claude/edif-energia; solo código, sin probar en vivo):** cada misión tiene requisitos (`MissionRequirements`). Entrenamiento 8–9 y 14–15, 5 h de tareas. Las iniciaciones son tareas: lista diaria, primero a quien menos sabe (recién llegado, 5 h; luego, 2). Hoy inicia la Magnate; `WorkRoster.instructorsTeach` lo pasa a los compañeros. Reglas J31 y J32; auditoría en [`jornada-y-rotacion.md`](jornada-y-rotacion.md) §Auditoría.
+> - [ ] Probar en vivo, sin reconstruir nada: grupos 104, 50, 28, 55, 65, 87, 96 y 97. En el registro, `[Iniciación]` y el balance: cuántos clones hacen falta los primeros días.
+> - [ ] Mirar si llegan a tiempo: el viaje entre árboles se come parte de cada hora, y ahora hay iniciaciones por toda la jornada.
 
 > **HECHO 2026-11-05 (la energía, rama claude/edif-energia; solo código, sin probar en vivo):** el **Parque Energético**, un casquete artificial al noroeste con su árbol bajo:
 > campo solar con las mesas que piden los pisos, 3 aerogeneradores de 330 kW con pala negra, cámaras y radar, turbina mareal piloto con sonar, baterías y silo de arena. Cada piso declara
