@@ -67,7 +67,7 @@ public static class MicroFloors
         M("Onondaga", "Classroom_Area", "la Gran Ley de la Paz: el consejo de las Cinco Naciones", "Sala de asambleas (parlamento)"),
         M("Alejandría de Cleopatra", "Kitchen_Area", "Cleopatra abre los graneros en los años sin crecida: dar de comer a una ciudad, la Cocina"),
         M("Langley", "Informatics_Area", "las calculadoras humanas de Langley y el IBM 7090: el piso de Informática"),
-        M("Viena 1824", "Ballet_Area", "Beethoven y el estreno de la Novena: música y baile, la Sala de Ballet", "Sala de música y conciertos"),
+        M("Viena 1824", "Ballet_Area", "Beethoven y el estreno de la Novena: música y baile, la Sala de Ballet", "Sala de grabación y escenario de conciertos (música)"),
         M("Leiden", "Classroom_Area", "Descartes, el método y la geometría: el Aula"),
         M("San Pablo", "Infirmary_Area", "Guevara y Granado en la colonia de leprosos: el hospital"),
         M("Madrid 2018", "Classroom_Area", "la moción de censura de 2018: cómo funciona un parlamento", "Sala de asambleas (parlamento)"),
