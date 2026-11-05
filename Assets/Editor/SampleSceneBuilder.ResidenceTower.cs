@@ -69,7 +69,7 @@ public static partial class SampleSceneBuilder
         Pane("tapa", new Vector3(0f, H, 0f), new Vector3(size.x, GlassWall.Thick, size.z));
         KitchenProps.C(cell, new Vector3(0f, 0.2f, 0f), new Vector3(9f, 0.4f, 9f), new Color(0.3f, 0.32f, 0.36f), 0f, "Bandeja_de_efluentes");
 
-        // EL ÁRBOL, con todo lo suyo (señuelo, sopor, cualquier presa y crecer): los radios y el tope, los de CubeTree. Sin panales: un enjambre no cabe en una contención.
+        // EL ÁRBOL, con todo lo suyo (señuelo, sopor, cualquier presa y crecer). Sin panales: un enjambre no cabe en una contención.
         Vector3 worldCell = cell.position;
         System.Func<Vector3, bool> outside = w =>
         {
@@ -100,10 +100,11 @@ public static partial class SampleSceneBuilder
         Piece(east, "Ducha_descontaminacion", 8.2f, new Vector3(1.2f, 2.3f, 0.9f), steel, "Ducha de descontaminación");
         Piece(east, "Armario_EPI", 10f, new Vector3(1.2f, 2f, 0.7f), new Color(0.9f, 0.7f, 0.15f), "Equipo de protección");
 
-        Transform post = new GameObject("Puesto_contencion").transform; post.SetParent(floor, false); post.localPosition = new Vector3(0f, 0.1f, -9f);
+        Transform post = new GameObject("Puesto_contencion").transform; post.SetParent(floor, false); post.localPosition = new Vector3(0f, 0.1f, -11.5f);   // (a más de 12 m del tronco: fuera del sopor letal, también en una brecha)
         HunterCell hc = floor.gameObject.AddComponent<HunterCell>();
         hc.cell = new Bounds(new Vector3(c.x, H * 0.5f, c.z) + Vector3.up * 0.1f, size);
         hc.tree = tree.GetComponent<IceCarnivorousTree>();
+        hc.tree.lureRadius = HunterRule.LureRadius; hc.tree.killRadius = HunterRule.KillRadius;   // el alcance entero: el cuerpo es menor, porque no cabe uno de 60 m
         hc.post = post;
         floor.gameObject.AddComponent<WorldLabel>().text = "Laboratorio de contención: el árbol cazador";
         Aseos(floor, new Vector3(hx - 0.9f, 0.1f, 8f), -90f, 1);

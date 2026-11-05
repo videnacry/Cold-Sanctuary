@@ -10,9 +10,13 @@ Código: `World/HunterCell.cs`, `SampleSceneBuilder.BuildContainmentLab`. Regla 
 
 ## Lo que conserva
 
-Un solo árbol, de 13 m. Con todo lo de `CubeTree`: señuelo de 23 m, sopor letal de 5 m, **cualquier presa**, incluidas personas, y crece hasta ×1,5.
+Un solo árbol: **señuelo de 70 m, sopor letal de 12 m, cualquier presa**, incluidas personas, y crece hasta ×1,5.
 
-**Una diferencia**: no tiene panales, porque un enjambre no se puede contener. Y por eso no hay miel de cadáveres.
+- **El alcance es el entero.** En el bosque salía de su altura: los mayores, de ~52 m, llegaban a ~62 m y ~11 m; el ~70 y ~12 de un doc anterior era de un árbol de 60 m, el de la residencia. Se toma ese, el mayor.
+- **El cuerpo es menor**: 13 m en vez de 29–52 m. Uno grande no cabe en un piso, con 22 m entre niveles. Con ×1,5 llega a unos 20 m, y la celda mide 21.
+- **La celda lo aguanta** porque filtra por dentro: el radio no importa mientras esté sellada. En una brecha actúa entero: los 12 m letales llegan a la antesala, así que el puesto de trabajo está a más de 12 m del tronco. El señuelo alcanza los pisos de Producción, no la Residencia.
+
+**Lo que se pierde sin panales** (un enjambre no se puede contener): las abejas y arañas que vivían en él, la miel de los cadáveres cercanos con su bucle de nutrientes, y las mudanzas de colmena a sus ramas. Su caza y su crecimiento no dependen de ellos. Los panales siguen en los abedules de la isla.
 
 ## Las normas, y de dónde salen
 

@@ -72,15 +72,30 @@ public static partial class SampleSceneBuilder
         a.description = "Control de la energía y taller de los paneles solares (docs/energia.md)";
     }
 
-    /// <summary>Cada piso declara su demanda (la residencia, la suya, por casas).</summary>
+    /// <summary>Cada piso declara su demanda.</summary>
     static void EnsureFloorEnergy()
     {
         foreach (SanctuaryArea a in Object.FindObjectsByType<SanctuaryArea>(FindObjectsInactive.Include, FindObjectsSortMode.None)) FloorEnergy.Declare(a);
-        Bedroom[] homes = Object.FindObjectsByType<Bedroom>(FindObjectsInactive.Include, FindObjectsSortMode.None);
-        if (homes.Length > 0)
+        // Los pisos sin área (S15): por habitaciones, por W/m² y lo fijo. Los ventiladores de la celda van aparte: son lo único esencial de ese piso.
+        float Area(Transform t, Vector2 fallback) { Vector2 s = FloorSize(t, fallback); return s.x * s.y; }
+        foreach (Transform t in Object.FindObjectsByType<Transform>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+        {
+            if (t.name.StartsWith("Planta_habitaciones_")) FloorEnergy.DeclareFloor(t.gameObject, "Residencia, " + t.name.Replace('_', ' '), 0f, 0f, t.GetComponentsInChildren<Bedroom>(true).Length * EnergyRule.HomeKW);
+            else if (t.name == ResidentialBuilder.PlazaName) FloorEnergy.DeclareFloor(t.gameObject, "Residencia, plaza", Area(t, ResidenciaSize), EnergyRule.PlazaW, 0f);
+            else if (t.name == GuardRoom.FloorName) FloorEnergy.DeclareFloor(t.gameObject, AreaWork.GuardRoom, Area(t, ServiciosSize), EnergyRule.GuardRoomW, EnergyRule.GuardRoomKW);
+            else if (t.TryGetComponent(out HunterCell cell))
+            {
+                FloorEnergy.DeclareFloor(t.gameObject, AreaWork.Containment, Area(t, ProduccionSize), EnergyRule.LabW, 0f);
+                FloorEnergy.DeclareFloor(cell.post.gameObject, "Aire de la celda del árbol cazador", 0f, 0f, EnergyRule.ContainmentKW, essential: true);
+            }
+        }
+        // Las casas de árbol, si algún santuario las construye (no son un piso: las cuelga el parque).
+        int homes = 0;
+        foreach (Bedroom b in Object.FindObjectsByType<Bedroom>(FindObjectsInactive.Include, FindObjectsSortMode.None)) if (b.GetComponentInParent<TreeFloor>() == null) homes++;
+        if (homes > 0)
         {
             FloorEnergy r = _energyRoot.gameObject.GetOrAdd<FloorEnergy>();
-            r.floor = "Casas del árbol"; r.areaM2 = 0f; r.fixedKW = homes.Length * EnergyRule.HomeKW;   // (no es un piso: lo cuelga el parque, que es quien lo alimenta)
+            r.floor = "Casas del árbol"; r.areaM2 = 0f; r.fixedKW = homes * EnergyRule.HomeKW;
         }
         FloorEnergy.Refresh();
     }

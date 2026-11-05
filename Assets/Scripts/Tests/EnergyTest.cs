@@ -57,6 +57,7 @@ public class EnergyTest : MonoBehaviour, ITestUnit
         EnergyRule.DeclareMissing();
         var areas = FindObjectsByType<SanctuaryArea>(FindObjectsSortMode.None).Where(a => a.gameObject.scene == es.gameObject.scene).ToArray();
         TestProbe.Check("todo piso declara su demanda", areas.All(a => a.GetComponent<FloorEnergy>() != null && a.GetComponent<FloorEnergy>().KW >= 0f));
+        TestProbe.Check("también los pisos sin área: residencia, sala de guardia y laboratorio", new[] { "Residencia, plaza", AreaWork.GuardRoom, AreaWork.Containment, "Aire de la celda del árbol cazador" }.All(n => FloorEnergy.All.Any(f => f.floor == n && f.KW > 0f)) && FloorEnergy.All.Count(f => f.floor.StartsWith("Residencia, Planta")) >= 5 && FloorEnergy.All.Any(f => f.floor.StartsWith("Aire") && f.essential));
         FloorEnergy info = areas.FirstOrDefault(a => a.areaType == SanctuaryAreaType.Informatics)?.GetComponent<FloorEnergy>();
         TestProbe.Check("Informática suma sus 95 kW", info != null && info.fixedKW >= EnergyRule.InformaticsKW);
         TestProbe.Check("los paneles van en proporción a la energía", EnergyRule.TablesFor(200f) >= 2 * EnergyRule.TablesFor(100f) - 1 && EnergyRule.TablesFor(0f) == 0);

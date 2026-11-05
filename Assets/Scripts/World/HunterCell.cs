@@ -17,6 +17,8 @@ public static class HunterRule
     /// <summary>Días hasta que las compuertas cierran solas, sin nadie (a prueba de fallos: la emergencia no dura para siempre).</summary>
     public const int AutoSealDays = 1;
     public const int DrillEvery = 7;
+    /// <summary>Su alcance entero, el del árbol mayor de la antigua arboleda: señuelo y sopor letal (m). Dentro de la celda no sale de ella.</summary>
+    public const float LureRadius = 70f, KillRadius = 12f;
 
     public static bool FailureOn(int day)
     {

@@ -39,6 +39,15 @@ public class FloorEnergy : MonoBehaviour
         return f;
     }
 
+    /// <summary>Declara un piso que no es un SanctuaryArea (la residencia, la sala de guardia, el laboratorio).</summary>
+    public static FloorEnergy DeclareFloor(GameObject g, string name, float areaM2, float wattsPerM2, float fixedKW, bool essential = false)
+    {
+        FloorEnergy f = g.GetComponent<FloorEnergy>();
+        if (f == null) f = g.AddComponent<FloorEnergy>();
+        f.floor = name; f.areaM2 = areaM2; f.wattsPerM2 = wattsPerM2; f.fixedKW = fixedKW; f.essential = essential;
+        return f;
+    }
+
     // El tamaño del piso: el de sus plazas o el de su suelo «Mat».
     static Vector2 SizeOf(Transform area)
     {

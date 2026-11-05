@@ -42,7 +42,7 @@ public class GuardRoomTest : MonoBehaviour, ITestUnit
         if (hc != null && hunters.Length == 1)
         {
             IceCarnivorousTree h = hunters[0];
-            TestProbe.Check("conserva sus rasgos: señuelo, sopor y crecimiento", h.lureRadius > 20f && h.killRadius > 4f && h.growthPerKill > 0f && h.maxScale > 1f, $"{h.lureRadius:0} m, {h.killRadius:0.0} m, ×{h.maxScale:0.0}");
+            TestProbe.Check("conserva sus rasgos: señuelo, sopor y crecimiento", h.lureRadius >= HunterRule.LureRadius && h.killRadius >= HunterRule.KillRadius && h.growthPerKill > 0f && h.maxScale > 1f, $"{h.lureRadius:0} m, {h.killRadius:0.0} m, ×{h.maxScale:0.0}");
             TestProbe.Check("la celda contiene su mayor tamaño", hc.Contains(h.transform.position + Vector3.up * 2f));
             TestProbe.Check("sellada, lo sujeta; en brecha, no", hc.Holds(h));
             hc.Breach("prueba");
