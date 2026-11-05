@@ -32,7 +32,8 @@ public static class HunterRule
 /// <summary>
 /// EL CICLO DE LA CELDA, un día cada vez y sin escena (docs/ice-sanctuary-ecology.md §2; docs/contencion-arbol-cazador.md §El balance). El árbol vive de agua, frío y luz. Sus nutrientes
 /// salen sobre todo de los **cadáveres de sus propios insectos** (Berón): las abejas hacen los nidos con ellos y el árbol absorbe de los nidos. Más nutrientes → más ramas → más nidos.
-/// Se cuenta en kg de nitrógeno, que no se crea: el ciclo no gana nada, solo lo hace circular y pierde un poco en cada vuelta. Para crecer de verdad necesita presas.
+// Se cuenta en kg de nitrógeno. Los insectos no crean nada: lo hacen circular y pierden un poco en cada vuelta. Lo nuevo entra por su SIMBIONTE, el microbio psicrófilo del diseño (Berón: «agrega
+/// dicho microbio»), que fija el N₂ del aire de la sala en sus raíces, como el Frankia de los alisos.
 /// </summary>
 public struct HunterLoop
 {
@@ -43,6 +44,9 @@ public struct HunterLoop
     public const float Recycle = 0.97f;
     /// <summary>Nitrógeno del árbol de 13 m (~300 kg secos), su renovación al año y lo que absorbe de los nidos al día. Estimaciones.</summary>
     public const float TreeN0 = 0.6f, TurnoverPerYear = 1f / 6f, AbsorbPerDay = 0.1f;
+    /// <summary>Lo que fija el simbionte: 11,5 kg de N por hectárea y año, lo medido en alisos de Alaska, la cifra fría que encontré (de 0,1 a más de 100 según el sitio), sobre los 81 m² de su bandeja.
+    /// Crece con la raíz (<see cref="Scale"/>²) y se frena con nitrógeno de sobra en los nidos, como el abono frena los nódulos.</summary>
+    public const float FixKgPerHaYear = 11.5f, RootM2 = 81f, FixStopsAtNestN = 0.3f;
     public const int BeesPerNest = 12, MinNests = 3, MaxNests = 6;
     public const float SpiderBeesPerDay = 0.15f, MaxScale = 1.5f, RationKg = 2f;
 
@@ -61,7 +65,7 @@ public struct HunterLoop
     /// <summary>Un cadáver que llega de fuera: una presa de su miel o una entrega por el portillo.</summary>
     public void Carcass(float kg) { nestN += kg * NShare * Recycle; }
 
-    public void Day(int spiders)
+    public void Day(int spiders, bool symbiont = true)
     {
         float cap = BeesPerNest * Nests;
         pollination = Mathf.Min(1f, bees / cap);
@@ -71,6 +75,11 @@ public struct HunterLoop
         treeN -= litter; nestN += litter * Recycle;
         // Sin abejas no hay nidos que absorber. El tope: lo que cabe en la celda.
         float top = TreeN0 * MaxScale * MaxScale * MaxScale;
+        if (symbiont)
+        {
+            float s = Scale, fix = FixKgPerHaYear / 10000f * RootM2 / 365f * s * s * Mathf.Clamp01(1f - nestN / FixStopsAtNestN);
+            treeN += Mathf.Clamp(fix, 0f, Mathf.Max(0f, top - treeN));
+        }
         float up = Mathf.Min(nestN * AbsorbPerDay * pollination, Mathf.Max(0f, top - treeN));
         nestN -= up; treeN += up;
         bees -= dead;

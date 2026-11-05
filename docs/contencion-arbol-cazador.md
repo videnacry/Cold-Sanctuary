@@ -41,38 +41,58 @@ Berón: el árbol se alimenta sobre todo de «cadáveres de sus pobladores insec
 
 | Diseño original | Lo que había | Ahora |
 |---|---|---|
-| Vive de agua y frío; los nutrientes salen de los muertos | Un ciclo con cifras sueltas | Se cuenta el nitrógeno: lo demás lo da el agua, el frío y la luz |
+| Vive de agua y frío (célula vegetal + psicrófilo); los nutrientes salen de los muertos | Un ciclo con cifras sueltas | Se cuenta el nitrógeno: lo demás lo da el agua, el frío y la luz |
 | La **miel letal** es lo que mata: comer, sueño del que no se despierta | Sopor por cercanía | Quien llega con hambre come y entra en letargo hasta morir. Sin hambre, solo adormece |
 | Las abejas **hacen los nidos con los muertos** y el árbol absorbe de ellos | Nutrientes sueltos | Los muertos van a los nidos y el árbol absorbe de ahí, solo si hay abejas |
 | Más nutrientes → **ramas más largas** → más nidos | Crecía por una cifra diaria | El tamaño sale del nitrógeno del árbol, y los nidos, de 3 a 6, del tamaño: se encienden en la escena |
 | Rastro `Nectar` | `ScentFood` | **Sigue siendo `ScentFood`**: es el canal que siguen los animales |
 
-**Fuente principal**: las muertes de sus abejas y arañas. **Extra**: lo que caza su miel. **Reserva**: `cuar_racion`, restos de un animal muerto, solo si el ciclo pierde demasiado.
+**Fuente principal**: las muertes de sus abejas y arañas, que circulan. **Lo nuevo**: el simbionte, que fija el aire. **Extra**: lo que caza su miel. **Reserva**: `cuar_racion`, solo si el ciclo pierde demasiado.
 
 ### ¿Las muertes sostienen el árbol?
 
-**Sostenerlo, sí, un tiempo. Hacerlo crecer, no.** El nitrógeno no se crea: una abeja muerta devuelve lo que una abeja nacida sacó de los nidos. El ciclo solo lo hace circular, y pierde el 3 % en cada vuelta.
+**Solas, no**: sus insectos hacen circular el nitrógeno y pierden el 3 % en cada vuelta. Sin nada de fuera, en 10 años baja a ×0,92 y en unas décadas se apaga.
 
-Modelo propio, con ~36 abejas de capacidad, 2 arañas y un árbol de 13 m:
+### El simbionte: lo que entra de verdad
 
-| Caso | Resultado |
-|---|---|
-| 1 año, solo sus insectos | 20 abejas, **×1,11** (unos 14,4 m). Crece porque gasta la reserva inicial de los nidos |
-| 10 años, nada de fuera | 12 abejas, **×0,92**, y de 1,0 a 0,54 kg de N |
-| 30 años, nada de fuera | **Se apaga**: sin abejas, ×0,43 |
-| 10 años, con la entrega de reserva | **×1,1 estable, con 10 entregas: 20 kg en 10 años** |
-| Sin abejas, 1 año | ×0,95: nada se absorbe |
-| 60 kg de presas de golpe | ×1,46 en 3 años, 6 nidos |
+Berón: «agrega dicho microbio». Es el psicrófilo del diseño, en nódulos de la raíz. No se inventa nada nuevo: es un *Frankia* de aliso adaptado al frío.
 
-**Respuesta**: una colonia de ~20 abejas mantiene un árbol de unos 14 m si recibe unos 2 kg de restos al año. Sin nada de fuera dura unos 10–20 años, y **no llega al tope de ×1,5**: eso pide ~60 kg de cadáveres. Lo que sí hace la colonia es mover mucho: ~2 kg de N al año, unas 20 veces lo que renueva el árbol.
+| Quién fija | kg N/ha al año | Sobre sus 81 m² | Fuente |
+|---|---|---|---|
+| Musgo con *Nostoc* | 1,5–2 | ~0,016 kg | [DeLuca et al., Nature 2002](https://ideas.repec.org/a/nat/nature/v419y2002i6910d10.1038_nature01051.html) |
+| **Aliso en Alaska, boreal** | 0,06–11,5, más de 100 en vegas | **0,09 kg: la elegida** | [Estudio de alisos](https://par.nsf.gov/servlets/purl/10212884) |
+| Aliso en Quebec | 53 | 0,43 kg | [Revisión](https://www.ejes.cz/index.php/ejes/article/view/1466) |
+| Alisos en general | 40–300 | 0,3–2,4 kg | La misma |
+
+- **Frío**: en la tundra de Groenlandia la fijación máxima se midió [por debajo de 14 °C](https://openpolar.no/Record/crwiley:10.1002%2Fecs2.2117). Los fijadores árticos estudiados son más bien tolerantes que psicrófilos: óptimo sobre 20 °C, lentos a 5 °C.
+- **Energía**: 16 ATP por N₂, y [unos 4 g de carbono por g de N](https://lab.igb.illinois.edu/long/sites/lab.igb.illinois.edu.long/files/2023-09/New%20Phytologist%20-%202023%20-%20Holland.pdf) (2,8–4,8), medido en soja. Son ~0,6 kg de C al año, menos del 1 % de los ~110 kg que estimo que dan sus 30 kW de luz. No hace falta más energía. No encontré esa cifra en fijadores fríos.
+- **De dónde sale el N₂**: del aire. El 78 % del aire de la celda son ~5,9 t de N₂, para miles de años. Sellada no significa sin aire: está llena, y los filtros renuevan el de la sala.
+- El abono frena la fijación: aquí se para con nitrógeno de sobra en los nidos.
+
+### El balance con el simbionte
+
+Modelo propio, sin ninguna entrega y con abejas de 237 g:
+
+| Fijación (kg N/ha al año) | A los 10 años | Tope ×1,5 |
+|---|---|---|
+| 0 | ×0,92, y se apaga | Nunca |
+| 2 (musgo) | ×1,01, y se apaga más tarde | Nunca |
+| **11,5 (la elegida)** | **×1,37, 36 abejas, 5 nidos** | **A los ~15 años** |
+| 30 | ×1,5, 72 abejas | ~4 años |
+| 53 | ×1,5 | ~2 años |
+| 30, reciclando el 90 % | ×1,5 | ~5 años |
+
+**Respuesta**: **sí es autosuficiente** con un fijador tipo aliso frío, llega a ×1,5 (unos 20 m, el tope de la celda) en unos 15 años, con 72 abejas y 6 nidos, sin pedir entregas. Con uno tipo musgo, no.
+
+**Las abejas siguen haciendo falta**: sin ellas no se absorbe de los nidos, y el árbol baja a ×0,57 en 10 años aunque tenga el simbionte.
 
 **Con cuidado**:
 
-- **Son estimaciones**, no datos: ~300 kg secos, 2,5 % de N, el 97 % de reciclado (con el 90 % se apaga en unos 10 años) y 40 días de vida.
-- **El peso de la abeja manda**: uso 237 g, escalando una abeja real a 20 cm. `Physiognomy` dice **1 g**, lo que no cuadra con 20 cm. Con 1 g los muertos dan unos 8 g de N al año: casi nada, y el árbol vive de su propia hojarasca. Hay que decidir ese dato.
-- Un microbio que fijara nitrógeno (el psicrófilo del diseño) cambiaría la respuesta: no está modelado.
-- Las abejas buitre existen y comen carroña: de memoria, **[verificar]**.
-- A esa hondura no llega el sol: tiene luces de cultivo.
+- La incertidumbre es enorme: las cifras reales van de 0,06 a más de 100, y son de un rodal, no de un árbol en una bandeja. El resultado va de «nunca» a «2 años».
+- El resto también son estimaciones: ~300 kg secos, 2,5 % de N, el 97 % de reciclado, 40 días de vida.
+- La abeja pesa 237 g, por decisión de Berón. `Physiognomy` sigue diciendo 1 g.
+- El tope ×1,5 lo pone la celda, no la biología.
+- Las abejas buitre existen y comen carroña: de memoria, **[verificar]**. A esa hondura no llega el sol: tiene luces de cultivo.
 
 ## Las normas
 
@@ -92,7 +112,7 @@ La lógica vive arriba, en `HunterCell`, junto a la línea, como `CavernRock`. S
 | Misión | Dónde | Cuándo |
 |---|---|---|
 | `cuar_ronda` (obligatoria) | **Sala de guardia**, en remoto | Cada día |
-| `cuar_racion` | Línea | **Reserva**: restos de un animal muerto, si el ciclo pierde demasiado (~1 al año) |
+| `cuar_racion` | Línea | **Reserva**: restos de un animal muerto, si el ciclo pierde demasiado. Con el simbionte, casi nunca |
 | `cuar_muestra` | Línea | Semanal: poda |
 | `cuar_simulacro` | Línea | Semanal |
 | `cuar_recaptura` y `_2` | Línea | Solo en una brecha |

@@ -34,11 +34,14 @@ public class GuardRoomTest : MonoBehaviour, ITestUnit
         for (int d = 0; d < 365; d++) loop.Day(HunterRule.Spiders);
         TestProbe.Check("un año solo con sus insectos: colonia viva y árbol que no mengua", loop.Colony && loop.Scale >= 1f, $"{loop.bees:0} abejas, ×{loop.Scale:0.00}, {loop.TotalN:0.00} kg de N");
         HunterLoop alone = HunterLoop.Start;
-        for (int d = 0; d < 3650; d++) alone.Day(HunterRule.Spiders);
-        TestProbe.Check("diez años sin nada de fuera: el ciclo pierde nitrógeno, por eso existe la entrega", alone.TotalN < HunterLoop.Start.TotalN * 0.8f && alone.Hungry, $"{alone.TotalN:0.00} kg de N, ×{alone.Scale:0.00}");
-        HunterLoop fed = HunterLoop.Start; int rations = 0;
-        for (int d = 0; d < 3650; d++) { fed.Day(HunterRule.Spiders); if (fed.Hungry) { fed.Carcass(HunterLoop.RationKg); rations++; } }
-        TestProbe.Check("con la entrega como reserva, se sostiene, y hace falta poco", fed.Colony && fed.Scale >= 0.97f && rations < 30, $"{rations} entregas en 10 años, ×{fed.Scale:0.00}");
+        for (int d = 0; d < 3650; d++) alone.Day(HunterRule.Spiders, symbiont: false);
+        TestProbe.Check("sin su simbionte, diez años: el ciclo pierde nitrógeno", alone.TotalN < HunterLoop.Start.TotalN * 0.8f && alone.Hungry, $"{alone.TotalN:0.00} kg de N, ×{alone.Scale:0.00}");
+        HunterLoop whole = HunterLoop.Start; bool asked = false;
+        for (int d = 0; d < 3650; d++) { whole.Day(HunterRule.Spiders); asked |= d > 365 && whole.Hungry; }
+        TestProbe.Check("con su simbionte, diez años sin nada de fuera: se sostiene y crece, sin pedir restos", !asked && whole.Colony && whole.Scale > 1.2f && whole.Nests > HunterLoop.MinNests, $"{whole.bees:0} abejas, ×{whole.Scale:0.00}, {whole.Nests} nidos");
+        HunterLoop full = HunterLoop.Start;
+        for (int d = 0; d < 36500; d++) full.Day(HunterRule.Spiders);
+        TestProbe.Check("el tope es el de la celda", full.Scale <= HunterLoop.MaxScale + 0.01f, $"×{full.Scale:0.00}");
         HunterLoop poor = HunterLoop.Start; poor.bees = 0f;
         for (int d = 0; d < 365; d++) poor.Day(HunterRule.Spiders);
         TestProbe.Check("sin abejas no se absorbe: el árbol mengua", poor.pollination == 0f && poor.Scale < 1f);
