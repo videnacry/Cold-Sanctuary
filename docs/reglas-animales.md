@@ -6,26 +6,26 @@ demás para que tenga su realismo en apariencia, medidas y ciclo de vida, invest
 **Respuesta: las había repartidas, no escritas en un solo sitio.** Existían la skill `species-sheet` (qué tablas rellenar) y trozos en
 [ice-sanctuary-ecology.md](ice-sanctuary-ecology.md) (patrón de especie), [ciclo-de-vida.md](ciclo-de-vida.md) (calendario y procesos),
 [stats-as-truth.md](stats-as-truth.md) (masa y stats) y [natural-interactions.md](natural-interactions.md) (etograma). Este doc las
-junta. El resumen está en [manual-de-diseno.md §13](manual-de-diseno.md#13-animales-del-santuario).
+junta. El resumen está en [manual-de-diseno.md §13](manual-de-diseno.md#13-animales-y-territorio-polar).
 
 ## Las reglas
 
 | # | Regla | Por qué | Se comprueba en |
 |---|---|---|---|
-| A1 | **Primero investigar, con fuente.** Cada número lleva cita (autor, año, revista o DOI). Si es un valor general sin fuente directa, se marca `[A]`. Si no se pudo confirmar, se dice. | Lo inventado no se distingue luego de lo real. | Solo en docs |
-| A2 | **La especie real manda.** Si el catálogo mezcla dos especies, se separan. Las ficticias (abeja y araña de las nieves) derivan sus datos de parientes reales, citados. | `Penguin` mezclaba al emperador con los guijarros de Adelia. | Grupo 99 |
-| A3 | **Mismas tablas, mismo nombre.** Una especie nueva entra en TODAS las tablas de abajo con la misma clave. Faltar en una no da error: cae en un valor por defecto en silencio (2 meses de gestación, 40 kg). | Fallo silencioso. | Grupo 99 (catálogos) |
-| A4 | **Clase mínima.** `Assets/Animals/<Especie>/<Especie>Behavior.cs` solo lleva `SpeciesArchetype`, `Start` y `ConfigureThreat`. El comportamiento es data. | Composición, no herencia. | Revisión |
-| A5 | **Apariencia: cuerpo de cubos a tamaño real.** Plan de `CubeCreature` (cuadrúpedo, pinnípedo, cetáceo, ave, insecto) con medidas y colores reales en `SpecFor`, y los rasgos que identifican a la especie: colmillos, cuernos, parches, cornamenta en ambos sexos. Si el plan no encaja, se añade un rasgo o un plan, no se deforma. | Se reconoce a la especie sin cartel. | Fotos |
-| A6 | **Medidas: tamaño adulto real respecto al humano** (1,75 m). `SpeciesScaleFix.Real` es el largo de cabeza a cola, o la altura en los erguidos. La cría mide 40 % y el joven 70 %. La masa va en `Physiognomy`. | El oso medía 8 m. | Grupo 99; menú «Auditoría de escala» |
-| A7 | **Nombres sin sorpresas.** `PlanFor` busca subcadenas: el nombre no puede contener «ant», «bee» ni «seal» por accidente, y la especie específica va ANTES que la general en `SpecFor` («reindeer» antes que «deer»). | «panterilia» caía en insecto. | Grupo 99 (plan) |
-| A8 | **Ciclo de vida completo:** agua, celo, cortejo, gestación o huevo, parto, crianza, cría que sigue a su madre, joven, adulto, vejez. Las tablas van en unidades reales (meses, días); el calendario las escala. El parto es siempre 1 cría, aunque la especie tenga camadas: se cuenta en la ficha y se simplifica aquí. | «Que realice todos sus procesos naturales». | Grupo 58, su escena |
-| A9 | **Dieta real.** Lo que no sea presa, pez o krill va en el `Ethogram` como `Feed` sobre un `Affordance` (liquen, sauce, juncia, bayas). Si no existe, se crea. | La morsa no come peces; el reno no come «pasto». | Grupo 99; `[ECO]` |
-| A10 | **Hábitat real.** La especie vive donde vive de verdad: mar y hielo (`MarineLife`, descansaderos), hielo fijo, isla de tierra. Se documenta el sitio y por qué. El mundo se adapta: si necesita una colonia, cueva o tundra, se construye. | Oso sobre pasto: inconsistente. | Grupo 99, fotos |
-| A11 | **Población por humano** (`PopulationPlan.PerHuman`): más presas que depredadores, grupos pequeños y un Animal completo caro. La reproducción respeta el techo de 1,5×. | Rendimiento y equilibrio. | Grupo 99; `[ECO]` |
-| A12 | **Escena de ciclo de vida.** Cada especie tiene `CicloVida_<Escena>`: se añade a `CicloVidaPanel.Species` (con su hábitat) y a `StartScreen.Special`; comida inagotable y pareja adulta. | Comprobar cada proceso. | Grupo 58 en esa escena |
-| A13 | **Polo mezclado, y dicho.** El santuario es artificial y junta los dos polos (morsas árticas y pingüinos antárticos). Se admite, pero cada ficha dice de dónde es la especie. | Para que no pase por dato. | Solo en docs |
-| A14 | **Mente propia.** `Archetypes` (cuerpo, mente, relaciones entre especies) y `PhrasePools` (pensamientos) van con ella. | Todo ser tiene mente. | Grupo 99 (catálogos) |
+| E1 | **Primero investigar, con fuente.** Cada número lleva cita (autor, año, revista o DOI). Si es un valor general sin fuente directa, se marca `[A]`. Si no se pudo confirmar, se dice. | Lo inventado no se distingue luego de lo real. | Solo en docs |
+| E2 | **La especie real manda.** Si el catálogo mezcla dos especies, se separan. Las ficticias (abeja y araña de las nieves) derivan sus datos de parientes reales, citados. | `Penguin` mezclaba al emperador con los guijarros de Adelia. | Grupo 99 |
+| E3 | **Mismas tablas, mismo nombre.** Una especie nueva entra en TODAS las tablas de abajo con la misma clave. Faltar en una no da error: cae en un valor por defecto en silencio (2 meses de gestación, 40 kg). | Fallo silencioso. | Grupo 99 (catálogos) |
+| E4 | **Clase mínima.** `Assets/Animals/<Especie>/<Especie>Behavior.cs` solo lleva `SpeciesArchetype`, `Start` y `ConfigureThreat`. El comportamiento es data. | Composición, no herencia. | Revisión |
+| E5 | **Apariencia: cuerpo de cubos a tamaño real.** Plan de `CubeCreature` (cuadrúpedo, pinnípedo, cetáceo, ave, insecto) con medidas y colores reales en `SpecFor`, y los rasgos que identifican a la especie: colmillos, cuernos, parches, cornamenta en ambos sexos. Si el plan no encaja, se añade un rasgo o un plan, no se deforma. | Se reconoce a la especie sin cartel. | Fotos |
+| E6 | **Medidas: tamaño adulto real respecto al humano** (1,75 m). `SpeciesScaleFix.Real` es el largo de cabeza a cola, o la altura en los erguidos. La cría mide 40 % y el joven 70 %. La masa va en `Physiognomy`. | El oso medía 8 m. | Grupo 99; menú «Auditoría de escala» |
+| E7 | **Nombres sin sorpresas.** `PlanFor` busca subcadenas: el nombre no puede contener «ant», «bee» ni «seal» por accidente, y la especie específica va ANTES que la general en `SpecFor` («reindeer» antes que «deer»). | «panterilia» caía en insecto. | Grupo 99 (plan) |
+| E8 | **Ciclo de vida completo:** agua, celo, cortejo, gestación o huevo, parto, crianza, cría que sigue a su madre, joven, adulto, vejez. Las tablas van en unidades reales (meses, días); el calendario las escala. El parto es siempre 1 cría, aunque la especie tenga camadas: se cuenta en la ficha y se simplifica aquí. | «Que realice todos sus procesos naturales». | Grupo 58, su escena |
+| E9 | **Dieta real.** Lo que no sea presa, pez o krill va en el `Ethogram` como `Feed` sobre un `Affordance` (liquen, sauce, juncia, bayas). Si no existe, se crea. | La morsa no come peces; el reno no come «pasto». | Grupo 99; `[ECO]` |
+| E10 | **Hábitat real.** La especie vive donde vive de verdad: mar y hielo (`MarineLife`, descansaderos), hielo fijo, isla de tierra. Se documenta el sitio y por qué. El mundo se adapta: si necesita una colonia, cueva o tundra, se construye. | Oso sobre pasto: inconsistente. | Grupo 99, fotos |
+| E11 | **Población por humano** (`PopulationPlan.PerHuman`): más presas que depredadores, grupos pequeños y un Animal completo caro. La reproducción respeta el techo de 1,5×. | Rendimiento y equilibrio. | Grupo 99; `[ECO]` |
+| E12 | **Escena de ciclo de vida.** Cada especie tiene `CicloVida_<Escena>`: se añade a `CicloVidaPanel.Species` (con su hábitat) y a `StartScreen.Special`; comida inagotable y pareja adulta. | Comprobar cada proceso. | Grupo 58 en esa escena |
+| E13 | **Polo mezclado, y dicho.** El santuario es artificial y junta los dos polos (morsas árticas y pingüinos antárticos). Se admite, pero cada ficha dice de dónde es la especie. | Para que no pase por dato. | Solo en docs |
+| E14 | **Mente propia.** `Archetypes` (cuerpo, mente, relaciones entre especies) y `PhrasePools` (pensamientos) van con ella. | Todo ser tiene mente. | Grupo 99 (catálogos) |
 
 ### Tablas de una especie
 
@@ -73,7 +73,7 @@ Los números se comprobaron contra fuentes el 2026-11-05; WP = Wikipedia, usada 
 - **Forma:** cabeza negra, parches auriculares amarillos, pecho amarillo pálido, vientre blanco, dorso gris plateado oscuro.
 
 ### Pingüino de Adelia, *Pygoscelis adeliae* (`Penguin`, Antártida)
-- **Por qué cambia:** `Penguin` llevaba el ciclo del emperador y los hábitos de Adelia (guijarros). Al añadir al emperador, se separaron (regla A2).
+- **Por qué cambia:** `Penguin` llevaba el ciclo del emperador y los hábitos de Adelia (guijarros). Al añadir al emperador, se separaron (regla E2).
 - **Medidas:** 3,6–5 kg; ~70 cm de largo, ~61 cm de pie (ADW). **Modelo:** 0,6 m, 4,5 kg.
 - **Reproducción:** nido de guijarros, 2 huevos (aquí 1), incubación 32–37 d; el macho hace el primer turno largo en el 85 % de los nidos (Davis 1988, *Auk* 105:428); emplume ~53 d; primera cría a los 3–6 años. **Modelo:** el primer turno cubre toda la incubación (sin relevos).
 - **Forma:** negro con anillo blanco en el ojo.
@@ -123,7 +123,7 @@ Tope de hoy: 6 especies nuevas más el lobo. Cada Animal completo cuesta, y las 
 | Albatros viajero | 1 550 parejas en Georgia del Sur; anida entre tussac. | Alto (vuelo planeado) |
 | Narval | Solo agua: reutiliza `MarineLife`, pero aporta poco a la isla. | Bajo, poco valor |
 
-Lo que se come a sí mismo por el camino: **el lemming es el primero que falta**, porque el zorro ártico y el lobo hoy solo tienen liebres, renos, carroña y bayas.
+**El lemming es el primero que falta:** hoy el zorro ártico y el lobo solo tienen liebres, renos, carroña y bayas.
 
 ## Fuentes
 

@@ -85,15 +85,15 @@ public class TerritorioTest : MonoBehaviour, ITestUnit
             Animal adult = all.FirstOrDefault(a => a.lifeStage == LifeStage.adult) ?? all[0];
             float want = size * (adult.lifeStage == LifeStage.child ? 0.4f : adult.lifeStage == LifeStage.teen ? 0.7f : 1f);
             TestProbe.Near($"{sp}: tamaño real ({adult.lifeStage})", BodyLength(adult), want, want * 0.2f);
-            Vector3 p = adult.transform.position;
-            bool place;
-            if (where == 1) place = Vector2.Distance(new Vector2(p.x, p.z), new Vector2(MarineLife.Lagoon.x, MarineLife.Lagoon.z)) < 60f;
-            else
+            // (basta uno: hay lobos de prueba en el bosque oeste y un pingüino puede estar nadando)
+            bool Home(Animal a)
             {
+                Vector3 p = a.transform.position;
+                if (where == 1) return Vector2.Distance(new Vector2(p.x, p.z), new Vector2(MarineLife.Lagoon.x, MarineLife.Lagoon.z)) < 60f;
                 bool hit = Physics.Raycast(p + Vector3.up * 3f, Vector3.down, out RaycastHit h, 8f, ~0, QueryTriggerInteraction.Ignore);
-                place = where == 0 ? hit && Territorio.IsLand(h.collider) : hit && !Territorio.IsLand(h.collider);
+                return hit && (where == 0) == Territorio.IsLand(h.collider);
             }
-            TestProbe.Check($"{sp}: en su hábitat", place, $"en ({p.x:0}, {p.z:0})");
+            TestProbe.Check($"{sp}: en su hábitat", all.Any(Home), $"primero en ({all[0].transform.position.x:0}, {all[0].transform.position.z:0})");
         }
 
         // ── 3. CICLO: los datos de su ficha ──

@@ -91,7 +91,16 @@ especie base. Solo la usa la araña de las nieves («SnowSpider»; el resto de t
 - **Lactancia**: ballenato ~1 año (cría 365 días, antes 730) [A]; orca 1–2 años (cría 730) [A].
 - **La cría nada junto a su madre** (`MarineLife`).
 
-### Pingüino emperador (`Penguin`)
+### Pingüino de Adelia (`Penguin`)
+Desde el 2026-11-05 `Penguin` es el pingüino de Adelia y el emperador tiene clave propia (`EmperorPenguin`): el catálogo mezclaba el ciclo del
+uno con los guijarros del otro. El huevo queda en el nido (`LifeHistory.eggNest`) y el macho hace encima su primer turno largo mientras ella
+come en el mar; aquí ese turno vale por toda la incubación, 1,15 meses (32–37 d; Davis 1988, *Auk* 105:428). Emplume a los ~53 d.
+
+### Especies de la isla de tierra y morsa
+Hábitat `Tierra` (suelo `Tierra`, plantas que no se acaban o cuenco de carne, bebedero) y datos en [reglas-animales.md](reglas-animales.md):
+morsa (`Mar`, con bivalvos), reno, lobo ártico, liebre ártica, zorro ártico y buey almizclero. Lobo y zorro paren en guarida (`Den`).
+
+### Pingüino emperador (`EmperorPenguin`)
 - **Agua**: en el mar bebe agua salada; la glándula de la sal supraorbitaria expulsa el exceso (Schmidt-Nielsen 1960,
   *Circulation* 21:955). En tierra come nieve.
 - **Huevo** (`Egg`): de la cópula a la puesta ~0,8 meses (`Calendar`); la hembra pone UN huevo sobre las patas (el emperador

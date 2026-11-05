@@ -99,7 +99,7 @@ public class CarnivoreKeeper : MonoBehaviour
             if (a == null || a.death || a.lifeStage == LifeStage.child || a.Forage == null || !a.Forage.eatsPrey) continue;
             if (a.GetComponent<MarineLife>() != null || a.GetComponent<IceInsectLife>() != null) continue;
             if (Mathf.Abs(a.transform.position.x) > 250f || Mathf.Abs(a.transform.position.z) > 250f) continue;   // escenarios de prueba
-            if (a.SpeciesName == "Wolf" || a.SpeciesName == "ArcticFox") continue;   // los de la isla de tierra cazan por su cuenta: es su sitio (docs/territorio-polar.md)
+            if ((a.SpeciesName == "Wolf" || a.SpeciesName == "ArcticFox") && a.transform.position.z < -70f) continue;   // los de la isla de tierra cazan por su cuenta: es su sitio (docs/territorio-polar.md)
             if (_lastFed.TryGetValue(a, out float t) && Time.time - t < refeedAfter) continue;   // ya comió hace poco: turno de otro
             if (a.hungry > worst) { worst = a.hungry; best = a; }
         }

@@ -74,7 +74,7 @@ analiza y lo vacuna).
 | Grupo / escenas | Qué son | Qué cargan | Constructor |
 |---|---|---|---|
 | Santuario: `SampleScene` | El juego | Todo el santuario | «Build Sample Scene Blockout» |
-| Ciclo de vida: `CicloVida_*` | Una isla por especie: dos adultos de distinto sexo y su comida | Su isla y su explorador | `SampleSceneBuilder.CicloVida.cs` (grupo 58) |
+| Ciclo de vida: `CicloVida_*` | Una isla por especie: dos adultos de distinto sexo y su comida (15 especies: las de tierra, sobre suelo de tundra) | Su isla y su explorador | `SampleSceneBuilder.CicloVida.cs` (grupo 58) |
 | Microcosmos de área: `Microcosmos_Cocina`, `_Hospital`, `_Huerto`, `_Textil`, `_Mecanica` | El microcosmos de cada área (el piso ×10, a escala insecto) al que se entra por su tanque: no son pruebas de la sala | El microcosmos **sobre el Santuario** (se entra desde el tanque, con Kushal) | `MicrocosmosAreaSceneBuilder` (se regeneran con el blockout) |
 | Microcosmos de historias: `Microcosmos_Scene0_SakshiRio`, `_Scene1_Ambrosio`, `_Patanjali`, `_Buda`, `_BruceLee`, `_Nightingale`, `_IrenaSendler`, `_LeChambon`, `_Tregua1914`, `_Wright`, `_Eratostenes`, `_Egina`, `_PlantaAtomica`, `MobWorld_Mesopotamia` | Niveles del microcosmos | Sobre el Santuario | `MicrocosmosSceneBuilder`, `StorySceneBuilder`, `MythSceneBuilder`, `PhysicsSceneBuilder`, `MobWorldSceneBuilder` |
 | Virtual: `Virtual_*` | Las misiones de virtualización de cada área (una por misión) | Sobre el Santuario (se entra por el tanque del área) | `VirtualMissionSceneBuilder` |

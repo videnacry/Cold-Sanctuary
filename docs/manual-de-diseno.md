@@ -31,6 +31,7 @@ en el doc de su tema; aquí no se repite.
 10. [Pruebas y flujo de trabajo](#10-pruebas-y-flujo-de-trabajo)
 11. [Sincronización mesocosmos ↔ microcosmos](#11-sincronización-mesocosmos--microcosmos)
 12. [Recuento y reglas sin comprobación automática](#12-recuento-y-reglas-sin-comprobación-automática)
+13. [Animales y territorio polar](#13-animales-y-territorio-polar)
 
 ---
 
@@ -335,7 +336,7 @@ reconstruir. Vale para TODOS los pisos, no solo el hospital. Cada piso del santu
 ## 12. Recuento y reglas sin comprobación automática
 
 
-**Total: 142 reglas** (S 13 · F 13 · T 14 · C 7 · G 8 · H 8 · M 35 · A 5 · J 29 · W 9 = 141 —W9, la de revisar jornadas y horario al cambiar un piso, va en §11—, más la regla de
+**Total: 163 reglas** (S 13 · F 13 · T 14 · C 7 · G 8 · H 8 · M 35 · A 5 · J 29 · W 9 · E 14 · P 7 = 162 —W9, la de revisar jornadas y horario al cambiar un piso, va en §11—, más la regla de
 sincronización de §11). (Recontado por el probador al integrar actividades, tareasE, entreno, personajes, hospital y cohetes, 2026-11-04:
 las J18 en adelante se renumeraron en una sola secuencia —J18–J21 actividades y uniformes, J22 tareas con «E», J23–J27 entrenamientos
 y entrenador, J28 profesiones, J29 nada en pisos en obras—.)
@@ -351,6 +352,35 @@ uniformes, grupo 97); J22 (tareas con «E», grupo 96); J23–J27 (entrenamiento
 planta), M10 (luz por fecha y lugar), M15 (parte de la fauna salvaje según la época), M22 (tope de 150 edificios), M31 (relieve
 realista), J6 (respeto a las figuras reales), J10 (temas del contexto) y las de proceso W2, W3, W5, W6, W7 y W8.
 
+## 13. Animales y territorio polar
+
+Berón (2026-11-05): «¿tenemos reglas para la creación de animales?». Detalle y fichas en [reglas-animales.md](reglas-animales.md) y
+[territorio-polar.md](territorio-polar.md).
+
+| # | Regla | Por qué | Se comprueba en | Fuente |
+|---|---|---|---|---|
+| E1 | **Investigar antes, con fuente** para cada número; `[A]` si es un valor general; decir lo no confirmado. | Lo inventado no se distingue luego. | solo en docs | [reglas-animales.md](reglas-animales.md) |
+| E2 | **La especie real manda:** si el catálogo mezcla dos, se separan. | `Penguin` mezclaba emperador y Adelia. | 99 | ídem |
+| E3 | **Todas las tablas, misma clave:** faltar en una cae en silencio a un valor por defecto. | Fallo silencioso. | 99 | ídem |
+| E4 | **Clase mínima:** solo arquetipo, `Start` y `ConfigureThreat`; lo demás es data. | Composición. | solo en docs | ídem |
+| E5 | **Apariencia:** cubos a tamaño real, con los rasgos que la identifican. | Se reconoce sin cartel. | fotos; 99 (plan) | ídem |
+| E6 | **Medidas reales** respecto al humano; cría 40 %, joven 70 %. | El oso medía 8 m. | 99 | ídem |
+| E7 | **Nombres sin subcadenas traicioneras** («ant», «bee», «seal»); lo específico antes que lo general. | «panterilia» caía en insecto. | 99 | ídem |
+| E8 | **Ciclo de vida completo** en unidades reales; el parto es 1 cría. | «Todos sus procesos naturales». | 58 | [ciclo-de-vida.md](ciclo-de-vida.md) |
+| E9 | **Dieta real:** lo que no sea presa, pez o kril va en el `Ethogram` sobre un `Affordance`. | La morsa no come peces. | 99 | [reglas-animales.md](reglas-animales.md) |
+| E10 | **Hábitat real:** vive donde vive; si hace falta, el mundo se adapta. | Oso sobre pasto: inconsistente. | 99, fotos | ídem |
+| E11 | **Población por humano**, más presas que depredadores; techo de 1,5×. | Rendimiento y equilibrio. | 99, `[ECO]` | ídem |
+| E12 | **Escena de ciclo de vida** para cada especie. | Comprobar cada proceso. | 58 en su escena | ídem |
+| E13 | **Polos mezclados, y dicho:** cada ficha dice de dónde es. | Para que no pase por dato. | solo en docs | ídem |
+| E14 | **Mente propia:** `Archetypes` y `PhrasePools`. | Todo ser tiene mente. | 99 | ídem |
+| P1 | **Mitad tierra, mitad hielo** (40–60 %). Las distancias entre masas están comprimidas para el juego, y se dice. | Berón: 50/50. | 99 | [territorio-polar.md](territorio-polar.md) |
+| P2 | **`NaturalIce` = suelo firme;** `IceAt` y `LandAt` dicen cuál. Colliders: `Casquete`, `Tierra`, `Tierra_orilla`. | Se usa en decenas de sitios. | 99 | ídem |
+| P3 | **La isla respeta los sitios lejanos:** ≥ 300 m de la lanzadera y ≥ 500 m del sitio nuclear. | Sus reglas de seguridad. | 93, 94 | ídem |
+| P4 | **Cuevas en las que se entra andando:** ≥ 4 × 3 m de boca, techo, NavMesh hasta el fondo. | Si no, son decorado. | 99 | ídem |
+| P5 | **Flora sobre el suelo, de especies reales;** en la isla no crecen árboles de hielo. | Berón: flora de la isla. | 99 | ídem |
+| P6 | **Cada rasgo sale de un lugar real** (Ross, Svalbard, Georgia del Sur); lo que no, se dice. | «Investigar lugares reales». | solo en docs | ídem |
+| P7 | **Antes de mover una torre, mirar qué deja atrás:** alfombras al suelo de su casquete, comedero, horario libre. | Por eso Producción no se movió. | solo en docs | ídem |
+
 ## Docs de cada tema
 
 [reglas-plataformas.md](reglas-plataformas.md) · [construcciones-elevadas.md](construcciones-elevadas.md) ·
@@ -361,5 +391,5 @@ realista), J6 (respeto a las figuras reales), J10 (temas del contexto) y las de 
 [submarinos-medicos.md](submarinos-medicos.md) · [medidas-muebles.md](medidas-muebles.md) · [microcosmos-areas.md](microcosmos-areas.md) ·
 [microcosmos-reglas-edificacion.md](microcosmos-reglas-edificacion.md) · [microcosmos-pueblos-mapas.md](microcosmos-pueblos-mapas.md) ·
 [microcosmos-actividades.md](microcosmos-actividades.md) · [microcosmos-famosos.md](microcosmos-famosos.md) · [luz-microcosmos.md](luz-microcosmos.md) ·
-[grupos-de-animales.md](grupos-de-animales.md) · [jornada-y-rotacion.md](jornada-y-rotacion.md) · [horario-libre.md](horario-libre.md) ·
+[grupos-de-animales.md](grupos-de-animales.md) · [reglas-animales.md](reglas-animales.md) · [territorio-polar.md](territorio-polar.md) · [jornada-y-rotacion.md](jornada-y-rotacion.md) · [horario-libre.md](horario-libre.md) ·
 [personajes-mesocosmos.md](personajes-mesocosmos.md) · [conversaciones.md](conversaciones.md) · [actividades-y-uniformes.md](actividades-y-uniformes.md) · [tareas-del-jugador.md](tareas-del-jugador.md) · [conventions.md](conventions.md) · [checklist.md](checklist.md)

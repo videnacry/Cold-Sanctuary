@@ -670,6 +670,21 @@ Decisión del usuario (2026-09-11): **diseñar a fondo primero** (hecho) → **e
 - [ ] Ver charlas en SampleScene y en Kapilavastu (comida, franjas libres) y que el registro no se llena.
 - [ ] `ConversationContext` con su historia en los microcosmos de historia.
 
+## Animales polares y territorio (2026-11-05; rama `claude/edif-territorio`; [`reglas-animales.md`](reglas-animales.md), [`territorio-polar.md`](territorio-polar.md))
+
+Código y compilación hechos; falta la prueba en vivo.
+
+- [x] Reglas para crear animales, escritas y en el manual (§13, E1–E14 y P1–P7).
+- [x] Morsa, emperador, reno, liebre ártica, zorro ártico y buey almizclero con todas sus tablas, ficha con fuentes y escena de ciclo de vida; lobo ártico activado.
+- [x] `Penguin` separado: pasa a pingüino de Adelia (0,6 m, nido de guijarros); el emperador tiene clave propia.
+- [x] Bivalvos (`SwarmKind.Clam`) para la morsa.
+- [x] Isla de tierra (53 %) con orilla, zócalo, lomas, charcas y tundra; el casquete Sur pasa a tierra. Ninguna torre se mueve.
+- [x] Frentes de barrera, 4 cuevas, acantilados, colonia del emperador, playa de morsas y nidos de Adelia.
+- [x] Prueba: grupo 99 (`TerritorioTest`).
+- [ ] **Probar en vivo:** «Rebuild Animal Prefabs» (el cuerpo de `Penguin` cambia), Blockout, escenas de ciclo de vida y grupos 99 y 58.
+- [ ] Parada de alfombra en la isla; aves en los acantilados; bosque de algas; corro del buey como conducta.
+- [ ] Lemming, la presa que le falta a la tundra (recomendaciones en `reglas-animales.md`).
+
 ## Siguiente (código)
 - [ ] **Alma compartida (resto)**: `HelpRequest` ya hace "ir juntos" (MVP); falta **compartir pensamientos**
       (misma frase → instancia de mente/madre compartida) y que el sí/no lea bond/humores/inclinaciones.
