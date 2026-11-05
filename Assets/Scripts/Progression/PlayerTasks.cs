@@ -118,6 +118,8 @@ public static class PlayerTasks
         T("nuc_simulacro", "Da el aviso del simulacro|consola|Tablet", "Comprueba válvulas y balizas|consola|", "Saca al turno por el acceso|acceso|Credencial");
         T("nuc_roca", "Lee extensómetros y convergencia|panel_roca|Tablet", "Lee bulones, microsismos y aforos|panel_roca|Tablet", "Firma el parte de la roca|panel_roca|Tablet");
         T("nuc_bajada", "Ponte el dosímetro en el andén|anden|Dosímetro", "Revisa el carro y la esclusa|carro|Linterna", "Firma la bajada en la caseta|caseta|Tablet");
+        T("nuc_refugio", "Ponte el dosímetro en el andén|anden|Dosímetro", "Comprueba aire, agua y baterías|carro|Tablet", "Prueba el teléfono del refugio|caseta|Tablet");
+        T("nuc_remolque", "Mira el iceberg en el radar|panel_roca|Tablet", "Da el rumbo al remolcador|panel_roca|Tablet", "Comprueba que se desvía|panel_roca|Tablet");
         T("nuc_refuerzo", "Cierra las cavernas|panel_roca|Tablet", "Manda reforzar a distancia|panel_roca|Tablet", "Vigila que el ritmo baje|panel_roca|Tablet");
         // ══ GUARDIA ══
         T("gua_carnivoros", "Coge las raciones|almacen|Cubo de carne", "Patrulla los recintos|recinto|Linterna", "Da las raciones a los carnívoros|comedero|Cubo de carne");

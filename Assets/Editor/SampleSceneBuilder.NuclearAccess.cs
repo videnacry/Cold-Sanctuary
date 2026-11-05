@@ -142,6 +142,18 @@ public static partial class SampleSceneBuilder
         Shell(0f, view, VirtualizationTank.GlassColor, "Tubo_cristal");
         Shell(view, sea, steel, "Tubo_acero");
         Shell(sea, len, conc, "Tubo_revestido");
+        // EL ESCUDO: hormigón con dientes por donde pueden llegar las quillas. Para trozos, no para un iceberg entero (§14). Compuerta en el lecho: si se pierde lo de arriba, lo de abajo sigue seco.
+        float shieldEnd = Mathf.Min(IcebergRule.KeelBand / Mathf.Max(0.01f, -axis.y), sea), wallT = 2f, ring = LineBore * 0.5f + wallT * 0.5f + 0.3f, shieldMid = (view + shieldEnd) * 0.5f, shieldLen = shieldEnd - view;
+        for (int s = -1; s <= 1; s += 2)
+        {
+            KitchenProps.C(tube, new Vector3(s * ring, 0f, shieldMid), new Vector3(wallT, 2f * ring + wallT, shieldLen), conc, 0f, "Escudo_tubo");
+            KitchenProps.C(tube, new Vector3(0f, s * ring, shieldMid), new Vector3(2f * ring + wallT, wallT, shieldLen), conc, 0f, "Escudo_tubo");
+        }
+        for (float z = view + 20f; z < shieldEnd; z += 40f)
+            for (int s = -1; s <= 1; s += 2) KitchenProps.C(tube, new Vector3(s * (ring + 2f), 0f, z), new Vector3(2f, 2f, 3f), conc, 0f, "Diente_escudo");
+        Transform gate = KitchenProps.C(tube, new Vector3(0f, 0f, sea), new Vector3(LineBore + 0.4f, LineBore + 0.4f, 0.8f), new Color(0.8f, 0.2f, 0.15f), 0f, "Compuerta_lecho");
+        line.seabedGate = gate;
+        KitchenProps.C(tube, new Vector3(0f, 0f, sea + 6f), new Vector3(LineBore + 8f, LineBore + 8f, 12f), conc, 0f, "Collar_lecho");
         for (float z = 3f; z < len; z += 12f)
         {
             float h = LineBore * 0.5f + 0.1f;
@@ -190,6 +202,12 @@ public static partial class SampleSceneBuilder
         Transform eT = new GameObject("Salida_escape").transform; eT.SetParent(root, false); eT.position = eHead;
         KitchenProps.C(root, root.InverseTransformPoint((eFoot + eHead) * 0.5f), new Vector3(2.8f, eHead.y - eFoot.y, 2.8f), conc, 0f, "Pozo_escape");
         KitchenProps.C(eT, new Vector3(0f, 0.4f, 0f), new Vector3(3.2f, 0.8f, 3.2f), green, 0f, "Tapa_escape");
+        float shieldTop = -16f, shieldLow = -Mathf.Min(IcebergRule.KeelBand, -NuclearSiteRule.SeabedY);
+        KitchenProps.C(root, root.InverseTransformPoint(new Vector3(eHead.x, (shieldTop + shieldLow) * 0.5f, eHead.z)), new Vector3(7f, shieldTop - shieldLow, 7f), conc, 0f, "Escudo_escape");
+        // LA DETECCIÓN: radar en un mástil del casquete y sonar de quillas colgado del borde. Lo que no se ve no se remolca.
+        KitchenProps.C(st, new Vector3(-5f, 5f, 3f), new Vector3(0.3f, 10f, 0.3f), steel, 0f, "Mastil_radar");
+        KitchenProps.C(st, new Vector3(-5f, 10.2f, 3f), new Vector3(2.4f, 0.4f, 0.4f), dark, 0f, "Radar_hielo");
+        KitchenProps.C(st, new Vector3(-5f, -6f, 3f), new Vector3(1f, 2f, 1f), yel, 0f, "Sonar_quillas");
         Label(eT, "Salida de escape: pozo propio con jaula a baterías (ni por el tubo ni por el pozo del reactor)", 2.5f);
         Transform cage = new GameObject("Jaula_escape").transform; cage.SetParent(root, false); cage.position = eFoot;
         KitchenProps.C(cage, new Vector3(0f, 1.1f, 0f), new Vector3(2f, 2.2f, 2f), yel, 0f, "Caja_jaula");

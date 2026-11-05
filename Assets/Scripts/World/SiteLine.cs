@@ -57,12 +57,20 @@ public class SiteLine : MonoBehaviour
 
     /// <summary>Línea fuera de servicio (humo en el tubo, avería): solo queda el pozo de escape.</summary>
     public bool OutOfService;
+    /// <summary>Desconectada porque viene un iceberg (<see cref="Iceberg"/>): la compuerta del lecho, cerrada.</summary>
+    public bool Disconnected;
+    /// <summary>El pozo de escape, también fuera de servicio: solo queda el refugio.</summary>
+    public bool EscapeOut;
+    public bool LineClosed => OutOfService || Disconnected;
+    [Tooltip("La compuerta estanca del lecho.")] public Transform seabedGate;
     public bool Busy { get; private set; }
     public int Trips { get; private set; }
     public int Escapes { get; private set; }
     /// <summary>Cómo acabó el último viaje: «línea», «vuelta» (se volvió atrás) o «escape», y lo que tardó.</summary>
     public string LastExit { get; private set; } = "";
     public float LastSeconds { get; private set; }
+    /// <summary>¿Hay alguien esperando en el refugio?</summary>
+    public bool Refuged { get; private set; }
 
     readonly HashSet<string> _rode = new HashSet<string>();
     Vector3 _cageHome;
@@ -74,20 +82,20 @@ public class SiteLine : MonoBehaviour
     public float EscapeWalk => escapeBottom != null && bottom != null ? Vector3.Distance(bottom.position, escapeBottom.position) : 0f;
 
     /// <summary>¿Se puede bajar ahora? No si se evacúa, si la roca está en alarma, si ya va alguien o si la línea está cerrada.</summary>
-    public bool CanRide => !Busy && !OutOfService && !NuclearSite.Evacuating && (CavernRock.Instance == null || !CavernRock.Instance.Closed);
-    bool Recall => NuclearSite.Evacuating || (CavernRock.Instance != null && CavernRock.Instance.Closed);
+    public bool CanRide => !Busy && !LineClosed && !NuclearSite.Evacuating && (CavernRock.Instance == null || !CavernRock.Instance.Closed);
+    bool Recall => NuclearSite.Evacuating || Disconnected || (CavernRock.Instance != null && CavernRock.Instance.Closed);
 
     void Awake() { if (cage != null) _cageHome = cage.position; }
     void OnEnable() { Instance = this; WorkdayDirector.RegisterPlace(AreaName, transform); }
     void OnDisable() { if (Instance == this) Instance = null; }
 
     /// <summary>La jornada: quien tiene la bajada y ya está en la estación, sube (una vez al día). true = va dentro.</summary>
-    public static bool Board(GameObject g)
+    public static bool Board(GameObject g, string mission = MissionId)
     {
         SiteLine l = Instance;
         if (l == null || g == null || FlyingCarpet.Riding(g)) return false;
         if ((g.transform.position - l.transform.position).sqrMagnitude > BoardRadius * BoardRadius) return false;
-        string key = $"{g.name}#{(TimeController.timeController != null ? TimeController.timeController.Day : 0)}";
+        string key = $"{g.name}#{mission}#{(TimeController.timeController != null ? TimeController.timeController.Day : 0)}";
         if (l._rode.Contains(key) || !l.Ride(g, SiteLineRule.InspectSeconds)) return false;
         l._rode.Add(key);
         return true;
@@ -152,7 +160,11 @@ public class SiteLine : MonoBehaviour
             s = len;
             yield return Wait(r, SiteLineRule.LockSeconds, dn, true);
             yield return Wait(r, dwell, dn, true);
-            if (OutOfService) { yield return EscapeUp(r, dn, t0); yield break; }
+            if (LineClosed)
+            {
+                if (EscapeOut) yield return InRefuge(r);
+                if (LineClosed) { yield return EscapeUp(r, dn, t0); yield break; }
+            }
             yield return Wait(r, SiteLineRule.LockSeconds, dn, false);
         }
         // SUBE, desde donde esté.
@@ -166,6 +178,26 @@ public class SiteLine : MonoBehaviour
         yield return Wait(r, SiteLineRule.LockSeconds, up, false);
         Stand(r, up);
         Finish(r, up, back ? "vuelta" : "línea", t0);
+    }
+
+    // AL REFUGIO: la línea y el pozo, cerrados. Espera a que se abra uno, hasta que se acabe el aire (finito: las horas del refugio, en tiempo de juego).
+    IEnumerator InRefuge(Rider r)
+    {
+        Refuge f = Refuge.Instance;
+        Vector3 at = f != null ? f.transform.position : bottom.position;
+        if (r.who != null) r.who.transform.position = at + Vector3.up * (0.12f + r.above);
+        if (f != null) f.Enter();
+        float secondsPerHour = TimeController.timeController != null ? TimeController.timeController.SecondsPerGameDay / 24f : 150f, left = RefugeRule.Hours * secondsPerHour;
+        Refuged = true;
+        while (LineClosed && EscapeOut && left > 0f)
+        {
+            left -= Time.deltaTime;
+            if (f != null) f.Use(Time.deltaTime / secondsPerHour);
+            yield return null;
+        }
+        Refuged = false;
+        if (left <= 0f) EscapeOut = false;   // (acabado el aire, el rescate: nada se queda esperando para siempre)
+        if (f != null) f.Leave();
     }
 
     // POR EL POZO DE ESCAPE: a pie hasta su pie y en la jaula hasta el casquete; otro pozo, otro aire.

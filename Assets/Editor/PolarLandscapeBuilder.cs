@@ -15,7 +15,7 @@ public static class PolarLandscapeBuilder
 {
     public const float Half = 250f;          // el mapa cubre [-250, 250]
     const float Cell = 2.5f;                 // resolución de las islas
-    const float IceTop = 0f, IceThickness = 1.5f;
+    const float IceTop = 0f, IceThickness = SeaRule.ShelfThickness;   // plataforma de hielo flotante (docs/sitio-nuclear.md §13)
     public const float WaterLevel = -0.25f;  // el agua asoma 25 cm bajo el borde del hielo (se sale nadando: un escalón)
 
     /// <summary>

@@ -8,6 +8,9 @@ using UnityEngine;
 public static class SeaRule
 {
     public const float Surface = -0.25f, Depth = 500f;
+    /// <summary>LA PLATAFORMA DE HIELO (docs/sitio-nuclear.md §13): 300 m de hielo bajo cada casquete y 200 de mar debajo. Es lo que calan sus icebergs. No se modela
+    /// su francobordo real (~33 m): el mundo está a ras de y = 0.</summary>
+    public const float ShelfThickness = 300f;
     /// <summary>La cara del lecho marino.</summary>
     public const float FloorY = Surface - Depth;
 }

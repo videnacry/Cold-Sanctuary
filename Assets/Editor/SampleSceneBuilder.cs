@@ -162,6 +162,7 @@ public static partial class SampleSceneBuilder
         { GameObject inf = GameObject.Find("Infirmary_Area"); if (inf != null) inf.AddComponent<InfirmaryGate>(); }   // la iniciación es bloqueante: la Magnate guarda la salida
         PlaceStaff();       // cada personaje nuevo en su área (Andrea en la tarima de yoga, el jefe de obra en Construcción…)
         DressHumanoids();   // Kushal, la Magnate, compañeros y seres de prueba → cuerpo de cubos articulado (sin .fbx)
+        BuildIcebergs(root.transform);   // dos icebergs, lejos de todo (docs/sitio-nuclear.md §14)
         BuildPolarIce(root.transform);   // banquisa: casquetes de hielo con canales y puentes + sotobosque polar
         PlaceGroundCarpetAreas();        // al pie de cada edificio, en el hielo (ya hecho), sus alfombras para subir
         FurnitureSpacing.Report();       // muebles sin su pasillo mínimo (máquinas, mesas, camas…): aviso por consola

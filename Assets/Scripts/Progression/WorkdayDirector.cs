@@ -518,7 +518,7 @@ public class WorkdayDirector : MonoBehaviour
         // EVACUACIÓN DEL SITIO NUCLEAR (docs/sitio-nuclear.md): nadie va a sus pisos, y quien estaba allí, al hospital.
         if (NuclearSite.Evacuating && (NuclearSite.IsSiteArea(area) || area == null && NuclearSiteRule.InZone(g.transform.position)))
         { area = AreaWork.Hospital; doing = EvacuationDoing; missionId = null; alwaysMove = true; }
-        if (missionId == SiteLine.MissionId && SiteLine.Board(g)) return;   // la bajada: ya en la estación, sube al carro (docs/sitio-nuclear.md §8)
+        if ((missionId == SiteLine.MissionId || missionId == Refuge.MissionId) && SiteLine.Board(g, missionId)) return;   // la bajada: ya en la estación, sube al carro (docs/sitio-nuclear.md §8)
         NewcomerInitiator ini = g.GetComponent<NewcomerInitiator>();
         if (ini != null && ini.InProgress) return;   // está iniciando a un recién llegado: lo lleva ella (si no, la jornada la mandaba en alfombra a otro piso)
         Dress(g, area, doing, missionId);   // (2026-11-04) el uniforme de su tarea al llegar; su ropa al acabar

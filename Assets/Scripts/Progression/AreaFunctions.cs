@@ -171,6 +171,8 @@ public static class AreaFunctions
         _prefixEffects.Add(("nuc_simulacro", (id, who) => NuclearSite.Instance?.Drill(who)));
         _prefixEffects.Add(("nuc_roca", (id, who) => CavernRock.Instance?.Read(who)));
         _prefixEffects.Add(("nuc_bajada", (id, who) => CavernRock.Instance?.Inspect(who)));
+        _prefixEffects.Add(("nuc_refugio", (id, who) => Refuge.Instance?.Service(who)));
+        _prefixEffects.Add(("nuc_remolque", (id, who) => Iceberg.TowThreat(who)));
         _prefixEffects.Add(("nuc_refuerzo", (id, who) => CavernRock.Instance?.Reinforce(who)));
         _prefixEffects.Add(("obra_material_", (id, who) => Obra(id.Substring(14), who, material: true)));
         _prefixEffects.Add(("obra_trabajo_", (id, who) => Obra(id.Substring(13), who, material: false)));

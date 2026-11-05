@@ -159,11 +159,16 @@ public class NuclearSite : MonoBehaviour
         int week = ((day % 7) + 7) % 7;
         if (week == 0) l.Add(new WorkRoster.Mission(PowerArea, "nuc_simulacro", "Simulacro de emergencia: parada, válvulas, balizas y salida del turno", 1f));
         // LA ROCA (docs/sitio-nuclear.md §7): se lee a diario; una bajada a la semana, o en cuanto hay AVISO; en ALARMA nadie baja y se refuerza desde arriba.
+        // EL ICEBERG (§14): si viene hacia aquí, remolcarlo es lo primero: es lo único que de verdad para uno.
+        if (Iceberg.Threatening != null) l.Add(new WorkRoster.Mission(PowerArea, Iceberg.TowMission, "Iceberg a la vista: seguirlo por radar y sonar y remolcarlo fuera de la zona", SiteLineRule.MissionHours, true));
         CavernRock rock = CavernRock.Instance;
         if (rock == null) return l;
         l.Add(new WorkRoster.Mission(PowerArea, "nuc_roca", "Leer la roca: extensómetros, convergencia, bulones, microsismos, aforos y asiento del cajón, en el panel", 1f));
         if (rock.Now == CavernRock.Level.Alarma) l.Add(new WorkRoster.Mission(PowerArea, "nuc_refuerzo", "ALARMA en la roca: cerrar las cavernas y reforzar a distancia (bulones e inyección) hasta que pare", SiteLineRule.MissionHours, true));
+        // Sin el refugio listo no se baja a trabajar (§12): primero, revisarlo.
+        else if (Refuge.Instance != null && !Refuge.Instance.Ready(day)) l.Add(new WorkRoster.Mission(SiteLine.AreaName, Refuge.MissionId, "El refugio del fondo pide revisión: sin él no se baja a trabajar", SiteLineRule.MissionHours, true));
         else if (rock.Now == CavernRock.Level.Aviso || week == 3) l.Add(new WorkRoster.Mission(SiteLine.AreaName, SiteLine.MissionId, "Bajar por la línea a las cavernas: mirar la roca, sanear y reforzar lo que pida", SiteLineRule.MissionHours, rock.Now == CavernRock.Level.Aviso));
+        if (week == 5 && Refuge.Instance != null && Refuge.Instance.Ready(day)) l.Add(new WorkRoster.Mission(SiteLine.AreaName, Refuge.MissionId, "Revisar el refugio del fondo: aire, cartuchos de CO₂, agua, baterías y teléfono", SiteLineRule.MissionHours));
         return l;
     }
 }

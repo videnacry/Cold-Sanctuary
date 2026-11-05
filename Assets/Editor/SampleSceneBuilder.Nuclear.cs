@@ -136,7 +136,10 @@ public static partial class SampleSceneBuilder
                 float my = (NuclearSiteRule.SeabedY + by) * 0.5f;
                 KitchenProps.C(root, root.InverseTransformPoint(new Vector3(well.position.x + 3f, my, well.position.z + i * 1.2f)), new Vector3(0.5f, NuclearSiteRule.SeabedY - by, 0.5f), pipe, 0f, "Bucle_termosifon");
             }
-            KitchenProps.C(root, root.InverseTransformPoint(new Vector3(well.position.x + 3f, NuclearSiteRule.SeabedY + 0.8f, well.position.z)), new Vector3(5f, 1.6f, 4f), steel, 0f, "Intercambiador_lecho");
+            // El intercambiador, EN UN HOYO en el lecho, como los pozos de Terra Nova: un iceberg que arase pasa por encima.
+            Vector3 pit = new Vector3(well.position.x + 3f, NuclearSiteRule.SeabedY - 3f, well.position.z);
+            KitchenProps.C(root, root.InverseTransformPoint(pit), new Vector3(5f, 1.6f, 4f), steel, 0f, "Intercambiador_lecho");
+            for (int k = -1; k <= 1; k += 2) { KitchenProps.C(root, root.InverseTransformPoint(pit + new Vector3(k * 5f, 1.5f, 0f)), new Vector3(1f, 7f, 10f), conc, 0f, "Hoyo_lecho"); KitchenProps.C(root, root.InverseTransformPoint(pit + new Vector3(0f, 1.5f, k * 5f)), new Vector3(10f, 7f, 1f), conc, 0f, "Hoyo_lecho"); }
             Vector3 lockA = new Vector3(Mathf.Clamp(well.position.x, site.x - h.waterHalf, site.x + h.waterHalf), -8f, site.z + Mathf.Sign(well.position.z - site.z) * h.OuterHalf), lockB = new Vector3(well.position.x, -8f, well.position.z);
             KitchenProps.C(root, root.InverseTransformPoint((lockA + lockB) * 0.5f), new Vector3(3f, 3f, Mathf.Max(0.5f, (lockB - lockA).magnitude)), steel, Quaternion.LookRotation((lockB - lockA).sqrMagnitude > 0.01f ? lockB - lockA : Vector3.forward), "Esclusa_tronco");
             // LOS RESIDUOS: la caverna de al lado (como el SFR); es lo que más dura, y aquí no toca el agua del mar.
@@ -149,6 +152,7 @@ public static partial class SampleSceneBuilder
             Hull(gal, new Vector3(3f, 3f, CavernRule.PillarM + 2f), 0.3f, conc, "Revestimiento_galeria");
             BuildRockMonitoring(root, cav, waste, root.Find("Cajon_TRIGA"));
             _nuclearLine = BuildCavernLine(root, hx, root.Find("Cajon_TRIGA"), well.position, galleryAt);
+            BuildRefuge(root, _nuclearLine);
             ValidateCavernLine(_nuclearLine);
         }
 

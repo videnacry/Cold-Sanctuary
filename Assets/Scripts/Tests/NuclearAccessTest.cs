@@ -11,7 +11,8 @@ using UnityEngine;
 /// 4. EL MAR Y LA LÍNEA: mar de profundidad real, del casquete a la galería, cruzando el lecho, en menos de un minuto y sin compartir pozo con el reactor; segunda salida aparte.
 /// 5. LA RED: la estación es una pista más de las alfombras, cuenta como zona del sitio y sus misiones tienen pasos para el jugador.
 /// 6. LA JORNADA: el viaje cabe en la misión; aceleración y velocidad dentro de lo que aguanta una persona; se compara con el ascensor.
-/// 7. EL VIAJE, de verdad, con un cuerpo de prueba: ida y vuelta; emergencia a media bajada (vuelve); línea cerrada (sale por el pozo de escape).
+/// 7. REFUGIO, HIELO E ICEBERGS: el refugio con sus cuentas y su revisión; la plataforma de 300 m con los troncos abiertos; escudo, compuerta, detección, remolque y desconexión.
+/// 8. EL VIAJE, de verdad, con un cuerpo de prueba: ida y vuelta; emergencia a media bajada (vuelve); línea cerrada (sale por el pozo de escape).
 /// </summary>
 public class NuclearAccessTest : MonoBehaviour, ITestUnit
 {
@@ -137,7 +138,7 @@ public class NuclearAccessTest : MonoBehaviour, ITestUnit
         TestProbe.Check("se llega en alfombra: la estación es una pista de la red del edificio, a mano del andén", pad != null && ground != null && ground.Destinations().Contains(pad) && pad.Destinations().Contains(ground) && Vector3.Distance(pad.transform.position, top) < 9f, pad != null ? $"a {Vector3.Distance(pad.transform.position, top):0.0} m del andén" : "sin pista");
         TestProbe.Check("la pista de la estación no se adueña del suelo del casquete", ground != null && CarpetPad.For(ground.transform.position + Vector3.up * 0.2f) == ground);
         TestProbe.Check("la jornada la trata como un sitio del casquete, y la evacuación también", WorkdayDirector.AreaTransform(SiteLine.AreaName) == line.transform && NuclearSite.IsSiteArea(SiteLine.AreaName) && WorkdayDirector.InWorkspace(null, SiteLine.AreaName, top + Vector3.right));
-        string[] ids = { "nuc_vigilancia", "nuc_pasivos", "nuc_simulacro", "nuc_roca", SiteLine.MissionId, "nuc_refuerzo" };
+        string[] ids = { "nuc_vigilancia", "nuc_pasivos", "nuc_simulacro", "nuc_roca", SiteLine.MissionId, "nuc_refuerzo", Refuge.MissionId, Iceberg.TowMission };
         var noSteps = ids.Where(i => !PlayerTasks.Authored(i)).ToList();
         TestProbe.Check("las misiones del sitio tienen pasos para el jugador", noSteps.Count == 0, string.Join(", ", noSteps));
 
@@ -157,7 +158,60 @@ public class NuclearAccessTest : MonoBehaviour, ITestUnit
             TestProbe.Check("la bajada cabe en su misión, aun llegando tarde media alfombra", SiteLineRule.RoundTrip(line.Length) + trip * 0.5f <= mission, $"{SiteLineRule.RoundTrip(line.Length):0} s + {trip * 0.5f:0} s de {mission:0} s");
         }
 
-        // ── 7. EL VIAJE ──
+        // ── 7. REFUGIO ──
+        Refuge refuge = Refuge.Instance;
+        Transform foot2 = line.escapeBottom;
+        TestProbe.Check("hay refugio al pie del pozo de escape", refuge != null && foot2 != null && Vector3.Distance(refuge.transform.position, foot2.position) < 8f, refuge != null ? $"a {Vector3.Distance(refuge.transform.position, foot2.position):0.0} m" : "");
+        if (refuge != null)
+        {
+            string[] kit = { "Esclusa_refugio", "Botella_oxigeno", "Deposito_agua", "Depurador_CO2", "Baterias_refugio", "Telefono_fibra", "Radio_traves_roca" };
+            var noKit = kit.Where(k => Named(refuge.transform, k) == null).ToList();
+            TestProbe.Check("esclusa, oxígeno, agua, depurador, baterías y dos comunicaciones", noKit.Count == 0, string.Join(", ", noKit));
+            TestProbe.Check($"las cuentas: {RefugeRule.Capacity} plazas y {RefugeRule.Hours:0} h, más que las 96 h de las minas; suelo y botellas alcanzan", RefugeRule.Hours >= 96f && 8f * 5f >= RefugeRule.Capacity * RefugeRule.FloorM2 && RefugeRule.OxygenM3 <= 8f * 10f, $"{RefugeRule.OxygenM3:0} m³ de O₂, {RefugeRule.WaterLitres:0} l de agua");
+            int t0Day = day + 40;
+            refuge.Service("prueba", t0Day);
+            int serv = refuge.Services;
+            TestProbe.Check("sin revisar se va quedando sin estar listo, y entonces se revisa antes de bajar", refuge.Ready(t0Day + 5) && !refuge.Ready(t0Day + 15) && NuclearSite.Missions(t0Day + 17).Any(m => m.id == Refuge.MissionId && m.mandatory) && !NuclearSite.Missions(t0Day + 17).Any(m => m.id == SiteLine.MissionId));
+            AreaFunctions.Run(Refuge.MissionId, "prueba");
+            TestProbe.Check("la revisión lo deja listo", refuge.Services == serv + 1 && refuge.HoursLeft >= RefugeRule.Hours);
+        }
+
+        // ── 8. HIELO E ICEBERGS ──
+        GameObject floes = GameObject.Find("Banquisa_Casquetes");
+        Transform block = floes != null ? floes.transform.Cast<Transform>().FirstOrDefault(t => t.name == "Casquete") : null;
+        TestProbe.Check($"la plataforma de hielo: {SeaRule.ShelfThickness:0} m bajo el suelo y mar debajo", block != null && Mathf.Abs(block.localScale.y - SeaRule.ShelfThickness) < 1f && SeaRule.ShelfThickness < SeaRule.Depth, block != null ? $"{block.localScale.y:0} m" : "sin bloques");
+        var trees = ArbolCampos.All.Where(a => a != null && a.bottomHole > 0f && a.building != NuclearSiteRule.Building && a.building != LaunchHeightRule.Building).ToList();
+        var blocked = trees.Where(a => Physics.SphereCast(new Vector3(a.transform.position.x, -2f, a.transform.position.z), 0.6f, Vector3.down, out RaycastHit _, SeaRule.ShelfThickness + 5f, ~0, QueryTriggerInteraction.Ignore)).Select(a => a.building).ToList();
+        TestProbe.Check("los troncos siguen abiertos al mar a través de toda la plataforma", trees.Count > 0 && blocked.Count == 0, string.Join(", ", blocked));
+        ConstructionSubmarine csub = ConstructionSubmarine.Instance;
+        TestProbe.Check("el submarino de obra cruza por debajo del hielo", csub == null || csub.seaDepth < -SeaRule.ShelfThickness, csub != null ? $"a {csub.seaDepth:0} m" : "");
+        string[] guard = { "Escudo_tubo", "Diente_escudo", "Escudo_escape", "Compuerta_lecho", "Collar_lecho", "Radar_hielo", "Sonar_quillas", "Hoyo_lecho" };
+        var noGuard = guard.Where(g => Named(site, g) == null).ToList();
+        TestProbe.Check("protección: escudo con dientes, compuerta en el lecho, radar, sonar e intercambiador en su hoyo", noGuard.Count == 0, string.Join(", ", noGuard));
+        Transform pit = Named(site, "Intercambiador_lecho");
+        TestProbe.Check("el intercambiador queda por debajo del lecho", pit != null && pit.position.y + pit.localScale.y * 0.5f < SeaRule.FloorY);
+        Iceberg moving = Iceberg.All.FirstOrDefault(b => b != null && !b.grounded), still = Iceberg.All.FirstOrDefault(b => b != null && b.grounded);
+        TestProbe.Check("dos icebergs: uno varado y otro a la deriva, varios millones de toneladas y lejos de todo", moving != null && still != null && moving.Tonnes > 1e6f && moving.DistanceToSite > IcebergRule.AlertRadius, moving != null ? $"{moving.Tonnes / 1e6f:0.0} Mt" : "");
+        TestProbe.Check("con kril de verdad, aves y focas", moving != null && moving.krill != null && moving.birds != null && Named(moving.transform, "Foca_iceberg") != null);
+        TestProbe.Check("cálado como su plataforma", moving != null && Mathf.Abs(moving.size.y - SeaRule.ShelfThickness) < 1f);
+        TestProbe.Check("un trozo sí lo para el escudo; un iceberg entero, no", moving != null && moving.Tonnes > IcebergRule.ShieldTonnes);
+        if (moving != null)
+        {
+            Vector3 back = moving.transform.position, c = NuclearSiteRule.Center;
+            moving.Place(c + new Vector3(0f, 0f, IcebergRule.AlertRadius - 20f), c);
+            TestProbe.Check("ALERTA: un iceberg que viene pide remolque obligatorio", Iceberg.Threatening == moving && NuclearSite.Missions(1).Any(m => m.id == Iceberg.TowMission && m.mandatory));
+            bool failed = !moving.Tow("prueba", false);
+            TestProbe.Check("el remolque puede fallar, y sigue viniendo", failed && Iceberg.Threatening == moving);
+            moving.Place(c + new Vector3(0f, 0f, IcebergRule.DangerRadius - 20f), c);
+            yield return null; yield return null;
+            TestProbe.Check("PELIGRO: se desconecta la línea", Iceberg.AnyDanger && line.Disconnected && line.LineClosed && !line.CanRide);
+            moving.Tow("prueba", true);
+            moving.Place(back, moving.driftA);
+            yield return null; yield return null;
+            TestProbe.Check("remolcado y lejos, la línea vuelve", !line.Disconnected && Iceberg.Threatening == null, moving.name);
+        }
+
+        // ── 9. EL VIAJE ──
         GameObject body = new GameObject("Prueba_linea");
         body.transform.position = top + Vector3.up;
         float oldTs = Time.timeScale; Time.timeScale = 4f;
@@ -193,6 +247,23 @@ public class NuclearAccessTest : MonoBehaviour, ITestUnit
         yield return Until(() => !line.Busy, 180f);
         TestProbe.Check("con la línea cerrada se sale por el pozo de escape, hasta el casquete", shut && line.LastExit == "escape" && line.Escapes == escapes + 1 && Vector3.Distance(body.transform.position, line.escapeTop.position) < 3f && !FlyingCarpet.Riding(body), $"{line.LastExit}; {line.LastSeconds:0} s");
         line.OutOfService = false;
+        // Línea y pozo cerrados: al refugio, y de ahí fuera en cuanto se abre uno.
+        if (refuge != null)
+        {
+            refuge.Service("prueba");
+            line.Ride(body, 1f);
+            yield return Until(() => body.transform.position.y < foot.y + 2f, 120f);
+            line.OutOfService = true; line.EscapeOut = true;
+            yield return Until(() => line.Refuged, 60f);
+            bool inside = line.Refuged && refuge.Occupants == 1 && Vector3.Distance(body.transform.position, refuge.transform.position) < 3f;
+            float h0 = refuge.HoursLeft;
+            yield return Until(() => refuge.HoursLeft < h0 - 0.05f, 30f);
+            TestProbe.Check("línea y pozo cerrados: espera en el refugio, gastando aire", inside && refuge.HoursLeft < h0, $"quedan {refuge.HoursLeft:0.0} h");
+            line.OutOfService = false;
+            yield return Until(() => !line.Busy, 120f);
+            TestProbe.Check("abierta la línea, sale del refugio", !line.Busy && !line.Refuged && refuge.Occupants == 0 && !FlyingCarpet.Riding(body), line.LastExit);
+            line.EscapeOut = false; refuge.Service("prueba");
+        }
         Time.timeScale = oldTs;
         Destroy(body);
         TestProbe.End();
