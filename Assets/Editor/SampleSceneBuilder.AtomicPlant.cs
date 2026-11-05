@@ -7,13 +7,11 @@ using UnityEngine;
 /// neumático, la purificación del agua, la bomba y el intercambiador; en la sala de control, la consola; la celda
 /// caliente; la torre de refrigeración; y el rincón de enseñanza (cámara de niebla y contador Geiger). La piscina baja
 /// como un pilar de hormigón hasta el suelo: el núcleo está a ~7 m bajo el agua, como en los TRIGA reales (7,3–8,2 m).
-/// Es la PLANTA BAJA de la torre de CIENCIAS (docs/plano-edificios.md): encima, el ciclotrón, la sala de experimentos,
-/// Química y Biología.
+/// Desde el 2026-11-05 está en el SITIO NUCLEAR (docs/sitio-nuclear.md), junto a la Central Nuclear: encima, el ciclotrón y la sala de experimentos.
 /// </summary>
 public static partial class SampleSceneBuilder
 {
-    // Planta baja de la torre de CIENCIAS (docs/plano-edificios.md): su planta es la de la torre (CienciasSize, 32 × 20) y
-    // la distribución, de 24 × 18, va centrada en ella.
+    // Su área mide CienciasSize (32 × 20) y la distribución, de 24 × 18, va centrada en ella.
 
     static readonly Color ApConcrete = new Color(0.72f, 0.72f, 0.7f), ApSteel = new Color(0.62f, 0.66f, 0.7f), ApWater = new Color(0.25f, 0.55f, 0.85f, 0.45f),
         ApLead = new Color(0.38f, 0.4f, 0.44f), ApGlass = new Color(0.75f, 0.85f, 0.75f, 0.35f), ApYellow = new Color(0.95f, 0.8f, 0.2f);
@@ -24,7 +22,7 @@ public static partial class SampleSceneBuilder
         SanctuaryArea a = BuildAreaBox(areasGroup, "AtomicPlant_Area", "Planta Atómica", SanctuaryAreaType.AtomicPlant, 3,
             CienciasCenter, CienciasSize, new Color(0.8f, 0.82f, 0.78f));
         TowerFloor(a.transform);   // la planta baja de la torre (la piscina del reactor baja hasta el suelo)
-        FurnishAtomicPlant(a.transform, HelixDeckOf(a.transform, out _, out _, out _) ? TreeSpec.StrutDrop - 0.1f : ElevatedHeight);   // (en su árbol, la piscina cuelga 4 m bajo la losa, como sus tornapuntas: no baja al suelo, que es de la naturaleza)
+        FurnishAtomicPlant(a.transform, NuclearSiteRule.PoolDepth - 0.1f);   // en el sitio nuclear, la piscina apoya en su pedestal, dentro del recinto de contención (docs/sitio-nuclear.md)
         // PLANTA DE ARRIBA: el CICLOTRÓN médico (Berón, 2026-10-23: un acelerador de partículas). Un piso apilado, como la
         // planta veterinaria del hospital: el F-18 del PET se hace aquí, junto a su celda de síntesis.
         Transform up = InnerFloor(a.transform, "Planta_ciclotron", a.transform);

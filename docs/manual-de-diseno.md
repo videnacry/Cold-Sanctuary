@@ -87,6 +87,7 @@ en el doc de su tema; aquí no se repite.
 | T11 | **Viajes sin teletransportes**: se anda, se vuela o se nada; si alguien se atasca, se queda donde está y avisa. | Que todo movimiento sea visible y creíble. | 53 (viajes a nado sin saltos ni atascos) | [edificio-arbol.md](edificio-arbol.md) §Moverse |
 | T12 | **Un área con anillo lo conserva en U**, abierto al tronco, con su balcón y su puerta; se llega nadando. | Mantener las camas y el comedor de los anillos con el nuevo modelo. | **solo en docs** (lo hace `TowerFloor`; sin prueba propia) | [edificio-arbol.md](edificio-arbol.md) §Migración |
 | T13 | **Regla de altura de la lanzadera de cohetes**: plataforma ≥ máx(lo más alto del santuario —techos de los edificios-árbol con la columna de su puerta y todo `ElevatedElement`—, techo de vuelo de las aves —mín. 152 m—) + 30 m; y a ≥ 300 m de todo edificio e isla. Se valida al construirla y al final del Blockout (si no cumple, error y la corona **sube**); en juego, al aparecer un elemento elevado. Lo nuevo y alto lleva `ElevatedElement`. | Que una explosión o el chorro no afecten a las aves ni a los pisos más altos, aunque los árboles crezcan. | `LaunchSiteTest` (grupo 90) | [lanzadera-de-cohetes.md](lanzadera-de-cohetes.md) |
+| T14 | **Regla del sitio nuclear**: los reactores (Central Nuclear y Planta Atómica) van en su casquete artificial, a ≥ 500 m de todo edificio e isla, a sotavento y en el nivel **más bajo** de su árbol (primer piso a 12 m: excepción a los 50 m del primer piso, porque en el casquete no crece ningún árbol). **No a gran altura**: arriba solo va lo que gana con ella (agua del tronco por gravedad, chimenea filtrada, salas de mando). Contención, válvulas que fallan abiertas, ≥ 72 h de agua pasiva, sumidero de mar con circuito intermedio, vigilancia y simulacro semanal. | Lo que protege de un reactor es la distancia, la contención y el agua; el agua cae hacia abajo. | `ValidateNuclearSite` (al construir); `NuclearSiteTest` (grupo 94) | [sitio-nuclear.md](sitio-nuclear.md) |
 
 ## 4. Alfombras voladoras
 
@@ -334,7 +335,7 @@ reconstruir. Vale para TODOS los pisos, no solo el hospital. Cada piso del santu
 ## 12. Recuento y reglas sin comprobación automática
 
 
-**Total: 141 reglas** (S 13 · F 13 · T 13 · C 7 · G 8 · H 8 · M 35 · A 5 · J 29 · W 9 = 140 —W9, la de revisar jornadas y horario al cambiar un piso, va en §11—, más la regla de
+**Total: 142 reglas** (S 13 · F 13 · T 14 · C 7 · G 8 · H 8 · M 35 · A 5 · J 29 · W 9 = 141 —W9, la de revisar jornadas y horario al cambiar un piso, va en §11—, más la regla de
 sincronización de §11). (Recontado por el probador al integrar actividades, tareasE, entreno, personajes, hospital y cohetes, 2026-11-04:
 las J18 en adelante se renumeraron en una sola secuencia —J18–J21 actividades y uniformes, J22 tareas con «E», J23–J27 entrenamientos
 y entrenador, J28 profesiones, J29 nada en pisos en obras—.)

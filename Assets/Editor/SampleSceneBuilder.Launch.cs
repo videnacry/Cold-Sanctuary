@@ -23,14 +23,7 @@ public static partial class SampleSceneBuilder
         Transform root = new GameObject("Lanzadera_AUTO").transform; root.SetParent(parent, false);
         Vector3 site = LaunchSiteCenter;
         // ── Distancia al santuario ──
-        float nearest = float.MaxValue; string near = "";
-        foreach (Helix o in _helixes) { float d = Vector2.Distance(new Vector2(o.site.x, o.site.z), new Vector2(site.x, site.z)); if (d < nearest) { nearest = d; near = o.building; } }
-        for (float a = 0f; a < 360f; a += 5f)
-            for (float r = 0f; r < LaunchHeightRule.MinDistance + LaunchCapHalf; r += 5f)
-            {
-                Vector3 p = site + TreeSpec.Dir(a) * r;
-                if (PolarLandscapeBuilder.NaturalIce(p.x, p.z)) { float d = r; if (d < nearest) { nearest = d; near = "una isla del santuario"; } break; }
-            }
+        float nearest = NearestToSite(site, LaunchHeightRule.MinDistance + LaunchCapHalf, null, out string near);
         if (nearest < LaunchHeightRule.MinDistance) Debug.LogError($"[Lanzadera] Está a {nearest:0} m de {near}: la regla pide ≥ {LaunchHeightRule.MinDistance:0} m.");
         else Debug.Log($"[Lanzadera] A {nearest:0} m de lo más cercano del santuario ({near}); distancia de edificio habitado {LaunchHeightRule.InhabitedBuildingDistance:0} m (+50 % por cascotes: {LaunchHeightRule.MinDistance:0} m).");
 
@@ -47,14 +40,7 @@ public static partial class SampleSceneBuilder
         Debug.Log($"[Lanzadera] La regla pide la plataforma a {why}: primer piso a {firstY:0} m, techo a {h.RootHeight:0} m, plataforma a {h.RootHeight + LaunchPadRise:0} m.");
 
         // ── El casquete artificial: 110 × 110 m alrededor del hueco del tronco (el submarino entra por debajo) ──
-        Transform cap = new GameObject("Casquete_artificial").transform; cap.SetParent(root, false); cap.position = site;
-        Color capC = new Color(0.82f, 0.85f, 0.88f);
-        float hole = h.waterHalf - 0.2f, H = LaunchCapHalf;
-        foreach (var (x0, x1, z0, z1) in new[] { (-H, -hole, -H, H), (hole, H, -H, H), (-hole, hole, -H, -hole), (-hole, hole, hole, H) })
-            Solid(cap, new Vector3((x0 + x1) * 0.5f, -0.75f, (z0 + z1) * 0.5f), new Vector3(x1 - x0, 1.5f, z1 - z0), capC, "Casquete_artificial");
-        for (int s = 0; s < 4; s++)   // borde de defensa (contra el oleaje y para contener vertidos)
-            KitchenProps.C(cap, Quaternion.Euler(0f, s * 90f, 0f) * new Vector3(0f, 0.6f, H - 0.5f), new Vector3(2f * H, 1.2f, 1f), new Color(0.55f, 0.57f, 0.6f), s * 90f, "Pretil_casquete");
-        hx.ac.bottomHole = hole;
+        BuildArtificialCap(root, hx, site, LaunchCapHalf);
 
         // ── Pisos: Fábrica de cohetes (P1) y Control de misión (P2) ──
         Transform fab = HelixFloor(hx, 1, null, new Vector2(h.floorSize, h.floorSize), "Fabrica_de_cohetes");
@@ -63,6 +49,38 @@ public static partial class SampleSceneBuilder
         FurnishMissionControl(ctl, h.floorSize);
         Transform gar = HelixFloor(hx, 5, null, new Vector2(h.floorSize, h.floorSize), "Garaje_lanzadera");
         SubmarineBay(gar, "Garaje de la lanzadera: el submarino de obra trae las etapas y la carga útil por la vía marina");
+    }
+
+    /// <summary>Lo más cerca de <paramref name="site"/>: los troncos de los edificios-árbol y el hielo de las islas (hasta <paramref name="maxR"/>).</summary>
+    static float NearestToSite(Vector3 site, float maxR, Helix skip, out string near)
+    {
+        float nearest = float.MaxValue; near = "nada";
+        foreach (Helix o in _helixes)
+        {
+            if (o == skip) continue;
+            float d = Vector2.Distance(new Vector2(o.site.x, o.site.z), new Vector2(site.x, site.z));
+            if (d < nearest) { nearest = d; near = o.building; }
+        }
+        for (float a = 0f; a < 360f; a += 5f)
+            for (float r = 0f; r < maxR; r += 5f)
+            {
+                Vector3 p = site + TreeSpec.Dir(a) * r;
+                if (PolarLandscapeBuilder.NaturalIce(p.x, p.z)) { if (r < nearest) { nearest = r; near = "una isla del santuario"; } break; }
+            }
+        return nearest;
+    }
+
+    /// <summary>Un CASQUETE ARTIFICIAL de 2·<paramref name="H"/> m de lado alrededor del hueco del tronco (el submarino entra por debajo), con su pretil.</summary>
+    static void BuildArtificialCap(Transform root, Helix hx, Vector3 site, float H)
+    {
+        Transform cap = new GameObject("Casquete_artificial").transform; cap.SetParent(root, false); cap.position = site;
+        Color capC = new Color(0.82f, 0.85f, 0.88f);
+        float hole = hx.h.waterHalf - 0.2f;
+        foreach (var (x0, x1, z0, z1) in new[] { (-H, -hole, -H, H), (hole, H, -H, H), (-hole, hole, -H, -hole), (-hole, hole, hole, H) })
+            Solid(cap, new Vector3((x0 + x1) * 0.5f, -0.75f, (z0 + z1) * 0.5f), new Vector3(x1 - x0, 1.5f, z1 - z0), capC, "Casquete_artificial");
+        for (int s = 0; s < 4; s++)   // borde de defensa (contra el oleaje y para contener vertidos)
+            KitchenProps.C(cap, Quaternion.Euler(0f, s * 90f, 0f) * new Vector3(0f, 0.6f, H - 0.5f), new Vector3(2f * H, 1.2f, 1f), new Color(0.55f, 0.57f, 0.6f), s * 90f, "Pretil_casquete");
+        hx.ac.bottomHole = hole;
     }
 
     // La FÁBRICA DE COHETES: dos etapas en sus cunas, la carga útil, el puente grúa y la plaza del submarino.

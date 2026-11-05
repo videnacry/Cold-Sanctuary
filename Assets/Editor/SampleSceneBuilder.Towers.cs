@@ -6,9 +6,9 @@ using UnityEngine;
 /// dimensionadas para 30, <see cref="StructuralLimits"/>), cada uno con un tema:
 ///  · SERVICIOS (personas y animales): Restaurante · Hospital (3 plantas) · Cría · Carne Cultivada;
 ///  · ENTRENAMIENTO: Gimnasio · Cardio y zona libre · Calistenia · Sala de Yoga · Sala de Ballet · Dojo;
-///  · CIENCIAS: Física (3 plantas: TRIGA, ciclotrón, sala de experimentos) · Química (2) · Biología (2);
+///  · CIENCIAS: Química (2) · Biología (2) · Informática;
 ///  · PRODUCCIÓN (huertos, jardines y construcción): Huerto · Rotación · Construcción · Mecánica · Estudio Textil.
-/// La Central Nuclear sigue APARTE: un reactor de producción necesita su propio sitio de exclusión.
+/// Los reactores (Central Nuclear y Planta Atómica, con el ciclotrón y la sala de experimentos) van en el SITIO NUCLEAR (docs/sitio-nuclear.md).
 /// Todos los pisos de una torre miden lo mismo (la planta del área más grande de la torre): así las 8 megacolumnas de las
 /// puntas del octógono son continuas de abajo arriba. Cada área amuebla su piso centrada en él. Un área con PLANTAS
 /// PROPIAS (hospital, física, química, biología) las monta como hijas; la siguiente área va encima de la MÁS ALTA de ellas
@@ -78,6 +78,7 @@ public static partial class SampleSceneBuilder
             while (k <= _towerHelix.Platforms && (TreeSpec.Platform(k).tip || _towerHelix.decks[k] != null)) k++;
             if (k > _towerHelix.Platforms) { Debug.LogError($"[Torres] «{_towerHelix.building}» no tiene más pisos para «{floor.name}»: súbele un nivel a su hélice."); return _towerSize; }
             HelixFloor(_towerHelix, k, floor, _towerSize);
+            { Transform b0 = BaseOf(floor); if (b0 != null && !BuildingNames.ContainsKey(b0)) BuildingNames[b0] = _towerHelix.building; }   // (sus anillos ya salen con el nombre de la torre)
             _towerTop = floor;
             return _towerSize;
         }

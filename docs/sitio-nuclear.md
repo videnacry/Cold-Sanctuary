@@ -79,7 +79,7 @@ y los pisos. Lo que teme un reactor es **quedarse sin agua**, y el agua cae haci
 - **Sumidero final:** el mar, por el **fondo abierto** del tronco y la toma de agua, con **intercambiador intermedio**: el agua de mar nunca
   toca el primario.
 - **Vigilancia y plan:** estaciones de radiación en el borde del casquete, boyas de la zona de exclusión, simulacro en la jornada y
-  `NuclearSite.DeclareEmergency` (parada, válvulas abiertas, evacuación).
+  `NuclearSite.DeclareEmergency` (parada, válvulas abiertas, balizas). La evacuación del turno está en el plan y en el simulacro, pero **no mueve a nadie todavía**.
 - **Se mantiene todo:** los pisos, el equipo, las misiones, las máquinas de virtualización y los microcosmos (los nombres de área no
   cambian). El ciclotrón y la sala de experimentos se mudan con la Planta porque son plantas de esa misma área. El F-18 del PET (vida media
   de 110 min) llega al hospital de sobra: unos 40 s en alfombra. La energía y el calor de distrito llegan por una línea submarina señalizada.

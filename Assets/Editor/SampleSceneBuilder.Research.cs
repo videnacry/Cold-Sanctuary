@@ -20,7 +20,6 @@ public static partial class SampleSceneBuilder
 {
     // Química y Biología son pisos de la torre de CIENCIAS (CienciasSize, docs/plano-edificios.md); la central, aparte.
     public static readonly Vector2 NuclearSize = new Vector2(46f, 30f);
-    static readonly Vector3 NuclearCenter = new Vector3(60f, 0f, -162f);
 
     static readonly Color LabWhite = new Color(0.9f, 0.92f, 0.93f), LabSteel = new Color(0.68f, 0.71f, 0.74f), LabDark = new Color(0.22f, 0.24f, 0.27f),
         LabGlass = new Color(0.65f, 0.82f, 0.9f, 0.4f), LabBench = new Color(0.25f, 0.28f, 0.3f), LabYellow = new Color(0.95f, 0.8f, 0.15f),
@@ -318,17 +317,30 @@ public static partial class SampleSceneBuilder
 
     // ── CENTRAL NUCLEAR DE PRODUCCIÓN (microrreactor) ─────────────────────────────────────────────────────────────
 
+    // CÁMARA DE CONTENCIÓN del microrreactor (docs/sitio-nuclear.md): muros gruesos, techo y su puerta.
+    static void ContainmentVault(Transform t, float w, float d, float h, Color wall)
+    {
+        const float th = 0.5f, door = 1.8f;
+        float side = (w - door) * 0.5f;
+        Solid(t, new Vector3(0f, h * 0.5f, d * 0.5f - th * 0.5f), new Vector3(w, h, th), wall, "Muro_contencion");
+        Solid(t, new Vector3(-w * 0.5f + th * 0.5f, h * 0.5f, 0f), new Vector3(th, h, d), wall, "Muro_contencion");
+        Solid(t, new Vector3(w * 0.5f - th * 0.5f, h * 0.5f, 0f), new Vector3(th, h, d), wall, "Muro_contencion");
+        Solid(t, new Vector3(-(door + side) * 0.5f, h * 0.5f, -d * 0.5f + th * 0.5f), new Vector3(side, h, th), wall, "Muro_contencion");
+        Solid(t, new Vector3((door + side) * 0.5f, h * 0.5f, -d * 0.5f + th * 0.5f), new Vector3(side, h, th), wall, "Muro_contencion");
+        KitchenProps.C(t, new Vector3(0f, h + 0.2f, 0f), new Vector3(w, 0.4f, d), LabSteel, 0f, "Techo_contencion");
+    }
+
     static SanctuaryArea BuildNuclearPlant(Transform areasGroup)
     {
-        SanctuaryArea a = BuildAreaBox(areasGroup, "NuclearPower_Area", "Central Nuclear", SanctuaryAreaType.NuclearPower, 4, NuclearCenter, NuclearSize, new Color(0.75f, 0.78f, 0.8f));
-        Elevate(a.transform, NuclearSize, ElevatedHeight);
+        SanctuaryArea a = BuildAreaBox(areasGroup, "NuclearPower_Area", "Central Nuclear", SanctuaryAreaType.NuclearPower, 4, NuclearSiteRule.Center, NuclearSize, new Color(0.75f, 0.78f, 0.8f));
+        TowerFloor(a.transform);   // el primer piso del árbol del sitio nuclear (docs/sitio-nuclear.md)
         Transform g = new GameObject("Planta_central").transform; g.SetParent(a.transform, false); g.localPosition = Vector3.up * 0.1f;
         Color concrete = new Color(0.7f, 0.7f, 0.68f);
         var blocks = new List<LabBlock>
         {
             new LabBlock("Puesto de acceso", 6f, 3f, t => { Room(t, 4f, 3f, concrete, "Garita"); KitchenProps.C(t, new Vector3(1.75f, 1f, -1.6f), new Vector3(2.5f, 0.1f, 0.1f), LabYellow, 0f, "Barrera"); }),
             new LabBlock("Sala de control", 10f, 8f, t => { Room(t, 10f, 8f, concrete, "Sala_control"); for (int i = 0; i < 4; i++) { KitchenProps.C(t, new Vector3(-3.6f + i * 2.4f, 0.45f, 0.5f), new Vector3(1.6f, 0.9f, 0.8f), LabDark, 0f, "Consola_operador"); KitchenProps.C(t, new Vector3(-3.6f + i * 2.4f, 1.15f, 0.75f), new Vector3(1.2f, 0.5f, 0.05f), LabBlue, 0f, "Pantallas"); } KitchenProps.C(t, new Vector3(0f, 1.5f, 3.75f), new Vector3(8f, 1.2f, 0.1f), LabBlue, 0f, "Panel_mimico"); }),
-            new LabBlock("Microrreactor (5 MWe)", 12f, 4.5f, t => { KitchenProps.C(t, new Vector3(0f, 0.3f, 0f), new Vector3(12f, 0.6f, 4.5f), concrete, 0f, "Losa_blindada"); KitchenProps.C(t, new Vector3(0f, 2.1f, 0f), new Vector3(10f, 3f, 3.2f), new Color(0.55f, 0.6f, 0.65f), 0f, "Modulo_reactor"); KitchenProps.C(t, new Vector3(-5.2f, 2.1f, 0f), new Vector3(0.6f, 3.4f, 3.4f), LabYellow, 0f, "Tapa_trebol"); KitchenProps.C(t, new Vector3(0f, 3.8f, 0f), new Vector3(10f, 0.4f, 0.6f), LabSteel, 0f, "Tubos_calor"); }),
+            new LabBlock("Microrreactor (5 MWe)", 15f, 8f, t => { ContainmentVault(t, 15f, 8f, 5.4f, concrete); KitchenProps.C(t, new Vector3(0f, 0.3f, 0f), new Vector3(12f, 0.6f, 4.5f), concrete, 0f, "Losa_blindada"); KitchenProps.C(t, new Vector3(0f, 2.1f, 0f), new Vector3(10f, 3f, 3.2f), new Color(0.55f, 0.6f, 0.65f), 0f, "Modulo_reactor"); KitchenProps.C(t, new Vector3(-5.2f, 2.1f, 0f), new Vector3(0.6f, 3.4f, 3.4f), LabYellow, 0f, "Tapa_trebol"); KitchenProps.C(t, new Vector3(0f, 3.8f, 0f), new Vector3(10f, 0.4f, 0.6f), LabSteel, 0f, "Tubos_calor"); }),
             new LabBlock("Conversión de potencia", 12f, 3.5f, t => { KitchenProps.C(t, new Vector3(0f, 1.6f, 0f), new Vector3(12f, 3.2f, 3.5f), LabSteel, 0f, "Contenedor_turbina"); KitchenProps.C(t, new Vector3(4f, 3.6f, 0f), new Vector3(2.5f, 0.8f, 2.5f), LabDark, 0f, "Aerorrefrigerador"); }),
             new LabBlock("Intercambiador de la calefacción de distrito", 8f, 6f, t => { for (int i = 0; i < 2; i++) Vessel(KitchenProps.Root(t, "Deposito", new Vector3(-2f + i * 4f, 0f, 0f)), 1.2f, 3.5f, new Color(0.8f, 0.5f, 0.3f), "Intercambiador"); KitchenProps.C(t, new Vector3(0f, 2.5f, 0f), new Vector3(7f, 0.3f, 0.3f), new Color(0.8f, 0.3f, 0.25f), 0f, "Tuberia_agua_caliente"); }),
             new LabBlock("Subestación", 6f, 4f, t => { for (int i = 0; i < 2; i++) KitchenProps.C(t, new Vector3(-1.5f + i * 3f, 1.2f, 0f), new Vector3(1.8f, 2.4f, 1.8f), new Color(0.4f, 0.45f, 0.4f), 0f, "Transformador"); KitchenProps.C(t, new Vector3(0f, 1.0f, 2f), new Vector3(6f, 2f, 0.05f), LabSteel, 0f, "Valla_subestacion"); }),

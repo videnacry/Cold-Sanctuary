@@ -311,7 +311,7 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         int maxFloor = CarpetPad.All.Count > 0 ? CarpetPad.All.Max(c => c.floor) : 0;
         TestProbe.Check($"ningún edificio pasa de {StructuralLimits.MaxFloors} pisos (lo que aguantan las columnas)", maxFloor > 0 && maxFloor <= StructuralLimits.MaxFloors, $"el más alto: {maxFloor} pisos");
         // TORRES TEMÁTICAS (Berón 2026-10-29; docs/plano-edificios.md): pocos edificios con muchos pisos: Servicios, Entrenamiento,
-        // Ciencias y Producción (y el Árbol de los Campos); la Central Nuclear va aparte (1 piso). Desde el 2026-10-31 las torres son
+        // Ciencias y Producción (y el Árbol de los Campos); los reactores, en el sitio nuclear. Desde el 2026-10-31 las torres son
         // ÁRBOLES (docs/edificio-arbol.md §Migración): alfombras de edificio SOLO en el suelo (0) y en el techo; entre pisos se nada.
         // Las que aún no se han migrado siguen apiladas (pisos con alfombras = los de la torre + el techo).
         var stackedFloors = new System.Collections.Generic.Dictionary<string, int> { { "Servicios", 7 }, { "Entrenamiento", 7 }, { "Ciencias", 8 }, { "Producción", 4 } };
@@ -329,7 +329,7 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
             int top = t.Top != null ? t.Top.index : -1;
             TestProbe.Check($"«{t.building}» (árbol): alfombras de edificio solo en el suelo y en el techo", fl.Count == 2 && fl[0] == 0 && fl[1] == top, string.Join(", ", fl));
         }
-        TestProbe.Check("la Central Nuclear sigue aparte (su sitio de exclusión), de un piso", CarpetPad.All.Where(c => c.kind == CarpetPad.Kind.Edificio && c.building == "Central Nuclear").Select(c => c.floor).DefaultIfEmpty(0).Max() == 2);
+        TestProbe.Check("la Central Nuclear está en el árbol del sitio nuclear (sin alfombras de edificio propias)", !CarpetPad.All.Any(c => c.kind == CarpetPad.Kind.Edificio && c.building == "Central Nuclear") && treeNames.Contains(NuclearSiteRule.Building));
         // Cada torre: sus áreas, de abajo arriba. Apiladas (mismo x, z, cada una más alta) o, en un árbol, en sus pisos en orden
         // (cada una en un piso de número mayor y nunca más abajo).
         bool Stacked(params string[] names)
@@ -347,7 +347,7 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         }
         TestProbe.Check("las áreas de cada torre van de abajo arriba (apiladas, o en orden en los pisos de su árbol)",
             Stacked("Kitchen_Area", "Infirmary_Area", "CubCare_Area", "CulturedMeatLab_Area") && Stacked("Gym_Area", "Calisthenics_Area", "YogaRoom_Area", "Ballet_Area", "MartialArts_Area")
-            && Stacked("AtomicPlant_Area", "Chemistry_Area", "Biology_Area") && Stacked("Construction_Area", "VehicleWorkshop_Area", "TextileStudio_Area"));
+            && Stacked("NuclearPower_Area", "AtomicPlant_Area") && Stacked("Chemistry_Area", "Biology_Area") && Stacked("Construction_Area", "VehicleWorkshop_Area", "TextileStudio_Area"));
         // La Cría va ENCIMA de la planta más alta del hospital (la veterinaria): apilada, 11 m sobre ella; en el árbol, su piso siguiente.
         GameObject vetFloor = GameObject.Find("Planta_veterinaria"), criaGo = GameObject.Find("CubCare_Area");
         if (vetFloor != null && criaGo != null)

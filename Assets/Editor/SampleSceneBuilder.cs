@@ -152,6 +152,7 @@ public static partial class SampleSceneBuilder
         RelocateTanks();       // los tanques, donde quedan 2 m libres con todos los muebles ya puestos
         PlaceCarpetAreas();    // alfombras voladoras: un área en cada piso y el piso de alfombras en el techo (ya con los muebles puestos)
         FinishLaunchSite();    // la corona de lanzamiento sobre el techo de su árbol, y la regla de altura
+        FinishNuclearSite();   // el sitio nuclear: contención, agua pasiva, chimenea, vigilancia y exclusión (docs/sitio-nuclear.md)
         SpotAtCarpets("CocinaSpot", "Kitchen_Area");   // la Magnate deja al nuevo donde se llega a la cocina: junto a sus alfombras
         PlaceRooftopSolar();   // paneles en el piso más alto de cada edificio, en un borde libre (antes del bosque: sus ramas los esquivan)
         PlaceRooftopOrchards();   // FRUTALES en maceta en el resto de cada techo, con su punto de cuidados (docs/jardines-frutales.md)
@@ -166,6 +167,7 @@ public static partial class SampleSceneBuilder
         FurnitureSpacing.Report();       // muebles sin su pasillo mínimo (máquinas, mesas, camas…): aviso por consola
         EnsureFloorForms();              // cada piso con su forma finalizada y su forma en construcción (FloorForms; los microcosmos, sobre la finalizada)
         ValidateLaunchHeight("al final del Blockout");   // la regla de la lanzadera, con todo lo elevado ya puesto (si algo creció, sube la plataforma)
+        ValidateNuclearSite("al final del Blockout");   // la regla del sitio nuclear, con todo ya puesto
         // (2026-11-04) ALERTA DE PISO NUEVO (manual §11): TODOS los pisos de la escena (también los que no salen de BuildAreaStructures,
         // como el control de misión de la lanzadera) contra los microcosmos «pendiente de piso representativo». Y la REGLA DE CAPACIDAD (S13).
         { var fl = new List<(string, string)>(); foreach (SanctuaryArea sa in Object.FindObjectsByType<SanctuaryArea>(FindObjectsInactive.Include, FindObjectsSortMode.None)) fl.Add((sa.name, sa.displayName)); MicroFloors.AlertFloors(fl); AreaCapacity.LogScene(); }
@@ -3553,18 +3555,21 @@ public static partial class SampleSceneBuilder
         //    investigación va abajo: su piscina baja como un pilar hasta el suelo.
         //    Un ÁRBOL: 4 niveles; sus 7 pisos en orden (el reactor abajo: su piscina cuelga 4 m bajo la losa) y uno libre; 8 puntas con frutales.
         BeginTreeTower(areasGroup.transform, TorreCiencias, CienciasCenter, CienciasSize, CienciasYaw, 4);
-        SanctuaryArea plant = BuildAtomicPlant(areasGroup.transform); areas.Add(plant);
-        BuildingNames[plant.transform] = TorreCiencias;   // (antes de la sala de experimentos: las alfombras de su anillo son de la torre)
-        BuildPhysicsHall(plant.transform);
         SanctuaryArea chem = BuildChemistry(areasGroup.transform); areas.Add(chem);
         SanctuaryArea bio = BuildBiology(areasGroup.transform); areas.Add(bio);
         // (2026-11-04) INFORMÁTICA (docs/piso-informatica.md): el piso libre de Ciencias, encima de Biología: el clúster de IA local.
         SanctuaryArea info = BuildInformatics(areasGroup.transform); areas.Add(info);
-        // CENTRAL NUCLEAR de producción, APARTE: un reactor de producción necesita su propio sitio de exclusión (el límite
-        // pintado alrededor) y no comparte columnas con nadie.
+        // EL SITIO NUCLEAR (Berón 2026-11-05; docs/sitio-nuclear.md): su casquete y su árbol bajo, lejos y a sotavento. Abajo los dos reactores,
+        // encima el ciclotrón y la sala de experimentos, y arriba el Centro de emergencias y el garaje.
+        BeginNuclearTree(areasGroup.transform);
         SanctuaryArea nuc = BuildNuclearPlant(areasGroup.transform); areas.Add(nuc);
+        _towerSize = CienciasSize;
+        SanctuaryArea plant = BuildAtomicPlant(areasGroup.transform); areas.Add(plant);
+        _nuclearPlantArea = plant.transform;
+        BuildPhysicsHall(plant.transform);
+        BuildNuclearUpperFloors();
         // Los EDIFICIOS (sus plantas bajas): sin puentes ni escaleras, cada uno con sus alfombras (docs/alfombras-plan.md).
-        var ground = new List<SanctuaryArea> { nuc };   // (los edificios-árbol, Servicios… y el Árbol de los Campos, llevan sus alfombras en el techo y en el suelo)   // (el Árbol de los Campos lleva sus alfombras: en la copa y en el suelo)
+        var ground = new List<SanctuaryArea>();   // (todos son edificios-árbol: llevan sus alfombras en el techo y en el suelo)
         // Techo de cada edificio: sobre su piso MÁS ALTO (la cadena entera); encima va su techo de alfombras, con sus paneles.
         _roofs.Clear();
         foreach (SanctuaryArea g in ground)
