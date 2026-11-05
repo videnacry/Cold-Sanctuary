@@ -41,6 +41,11 @@ public static class LineTruth
         ("Henriette tiene dieciocho", Veracity.Atestiguada, "Thayer, Life of Beethoven (Unger lo llamó tirano de las voces)"),
         ("Llegué de Rusia sin saber", Veracity.Atestiguada, "Buffett, carta de 1983; obituario de Rose Blumkin, The New York Times (1998)"),
         ("Mucha gente pensaba", Veracity.Recreada, "Space.com (29-9-2008): lo que dijo al equipo, resumido"),
+        // La música: solo lo que tiene fuente, y solo la primera frase (lo demás es recreado). Sin letras de canciones.
+        ("Si pudiera vender la paz", Veracity.Atestiguada, "Lennon, The David Frost Show (14-6-1969) y Canadian Press (mayo de 1969): la paz como un producto, como el jabón; la redacción varía"),
+        ("Dos bellotas a cada jefe de Estado", Veracity.Atestiguada, "Carta de John y Yoko a los jefes de Estado (abril de 1969), parafraseada; Mental Floss"),
+        ("«Para que todo se haga realidad", Veracity.Atestiguada, "Marley en el escenario, One Love Peace Concert (22-4-1978), traducido; sin transcripción comprobada"),
+        ("Lo escribí casi todo en un avión", Veracity.Atestiguada, "Chuck D a Rolling Stone, «Riot on the Set»: el avión sobre Italia"),
     };
 
     /// <summary>Las personas reales que hablan en las historias, con su nombre de «speaker». Lo demás es de juego.</summary>
@@ -85,6 +90,30 @@ public static class LineTruth
             case Veracity.Inventada: return "inventada";
             default: return "sin marcar";
         }
+    }
+
+    /// <summary>Las historias que no usan <see cref="StoryMission"/>: una fila por historia, porque todas sus frases son del mismo nivel (ninguna es una cita).</summary>
+    public static readonly (string story, Veracity v, string what, string source)[] Scripted =
+    {
+        ("Compasión", Veracity.Inventada, "Los avisos de la misión (Le Chambon, Sendler) son voz de juego; los hechos, en esta ficha", "las fuentes de la ficha"),
+        ("Egina", Veracity.Inventada, "Zeus, Éaco y los mirmidones hablan con frases de juego sobre un mito", "el mito, en las fuentes de esta ficha"),
+        ("Sakshi", Veracity.Inventada, "Personajes de ficción del juego", "docs/microcosmos-sakshi-origin.md"),
+        ("Ambrosio", Veracity.Inventada, "Personajes de ficción del juego", "docs/novela.md"),
+        ("Cocina", Veracity.Inventada, "Personajes de ficción del juego", "docs/novela.md, «Cómo nació la cocina»"),
+    };
+
+    /// <summary>La línea de una historia de <see cref="Scripted"/> para su ficha, con el formato de <see cref="Fill"/>.</summary>
+    public static string[] ForStory(string story)
+    {
+        foreach (var r in Scripted) if (r.story == story) return new[] { $"[{Label(r.v)}] {r.what} ({r.source})" };
+        return new string[0];
+    }
+
+    /// <summary>La frase con su nivel, como la nota de <see cref="StoryMission"/>.</summary>
+    public static string Tagged(string story, string line)
+    {
+        foreach (var r in Scripted) if (r.story == story) return $"{line} [{Label(r.v)}]";
+        return line;
     }
 
     /// <summary>Pone la veracidad a toda frase de la misión que no la tenga y escribe la lista en su ficha.</summary>

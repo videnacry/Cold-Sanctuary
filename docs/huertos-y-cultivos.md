@@ -42,6 +42,24 @@ La asociación de cultivos no funciona para cualquier pareja; hay incompatibilid
 
 Cada huerto lleva su **seto cortavientos** al norte, salvo el bosque comestible, que ya se protege con sus árboles.
 
+## Métodos del mundo (S14 y F14, 2026-11-05)
+
+El piso del Huerto (`Piso_arbol_5`) tiene **seis parcelas de 4 × 4 m** en su mitad libre, con el origen en el cartel. Son muestras de la técnica: la cosecha sigue saliendo de `GardenPlot`. Código: `SampleSceneBuilder.WorldMix.cs`.
+
+| Parcela | Origen | Lo que se ve | Fuente |
+|---|---|---|---|
+| **Chinampa** | Xochimilco, México | Tierra sobre esteras entre canales, sauces en las esquinas | [Wikipedia](https://en.wikipedia.org/wiki/Chinampa) |
+| **Zaï** | Burkina Faso | Hoyos de compost a unos 80 cm en suelo seco (Yacouba Sawadogo lo difundió) | [Wikipedia](https://en.wikipedia.org/wiki/Za%C3%AF) |
+| **Andén** | Andes | Tres terrazas con muro de piedra | [Wikipedia](https://en.wikipedia.org/wiki/Andenes) |
+| **Hügelkultur** | Europa central | Montículo de tierra sobre troncos. Tradición sin estudios revisados; la extensión de la Universidad de Washington lo avisa | WSU Extension |
+| **Batdam** | Jeju, Corea | Muretes de basalto de menos de 0,6 m, con paso (Patrimonio agrícola GIAHS, 2014) | [FAO GIAHS](https://www.fao.org/giahs/) |
+| **Subak** | Bali | Acequia partida en dos entre vecinos (UNESCO, 2012) | [UNESCO](https://whc.unesco.org/en/list/1194/) |
+
+- El **waru waru** (campos elevados andinos) y el **satoyama** (Japón) quedaron fuera por sitio.
+- La milpa y el arrozal ya tienen su piso en el árbol.
+- **[verificar]**: el batdam y el partidor del subak están hechos con la descripción general, sin medidas de una fuente. Los enlaces de la tabla son las páginas generales de cada tema; no los abrí todos.
+- **Sin misión**: se ven pero aún no se trabajan.
+
 ## Cobertura de ingredientes de los 24 platillos
 
 **Cultivados (50 plantas, `GardenCrop.Kind`):**
