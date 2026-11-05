@@ -34,6 +34,8 @@ public static partial class SampleSceneBuilder
         FinishLaunchSite();
         BuildEnergyVisuals(b, _energyRoot, _energyHx);
         ValidateLaunchHeight("al construir el Santuario Aéreo");
+        // Las aves frías de territorio, lejos de las turbinas (a un ave que se acerca, paran). El agua es el mar del santuario 1: esta escena siempre se carga encima de él.
+        PlaceAirColdFauna(root, LaunchSiteCenter + new Vector3(0f, 0f, -220f), 120f, SeaRule.Surface);
 
         b.launchArrival = AereoArrival(root, LaunchSiteCenter + new Vector3(LaunchCapHalf - 14f, 0f, 0f), "Andén de la lanzadera: se vuelve al muelle");
         b.energyArrival = AereoArrival(root, EnergyRule.Center + new Vector3(EnergyRule.CapHalf - 12f, 0f, 30f), "Andén del parque: se vuelve al muelle");
@@ -121,6 +123,21 @@ public static partial class SampleSceneBuilder
         es.installed = Mathf.Min(es.tableSlots, r.tablesRequired);
         Debug.Log($"[Energía] Campo solar: {es.installed} mesas de {es.tableSlots} plazas ({es.FieldKWp:0} kWp), en el Santuario Aéreo; llegan por cable ({AereoRule.CableEfficiency:P0}).");
         BuildBirdRehab();
+        BuildEnergyLine(root, site);
         ValidateEnergySite("al terminar el muelle");
+    }
+
+    // LA REGLA DEL CABLE: la línea submarina del parque al santuario, señalizada con boyas. Se queda en el santuario 1: es por donde llega la luz, esté la otra escena cargada o no.
+    static void BuildEnergyLine(Transform root, Vector3 site)
+    {
+        Vector3 to = EntrenamientoCenter;
+        float len = Vector3.Distance(site, to);
+        for (float t = EnergyRule.CapHalf * 1.42f + 20f; t < len; t += 40f)
+        {
+            Vector3 p = Vector3.MoveTowards(site, to, t);
+            if (PolarLandscapeBuilder.NaturalIce(p.x, p.z)) break;
+            Transform b = KitchenProps.C(root, root.InverseTransformPoint(p + Vector3.up * 0.3f), new Vector3(0.6f, 0.8f, 0.6f), new Color(0.2f, 0.55f, 0.9f), 0f, "Boya_linea_energia");
+            PolarLandscapeBuilder.IgnoreForNav(b.gameObject);
+        }
     }
 }

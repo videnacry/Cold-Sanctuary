@@ -11,6 +11,8 @@ Código: `Assets/Scripts/World/LaunchSite.cs` (`LaunchHeightRule`, `ElevatedElem
 `Assets/Editor/SampleSceneBuilder.Launch.cs` (la construye), `ConstructionSubmarine.SendTo` (el submarino a un piso cualquiera),
 `LaunchSiteTest` (grupo 90).
 
+> **2026-11-05:** la lanzadera está en la escena `Santuario_Aereo`, en las mismas coordenadas; se llega por el muelle aéreo ([sitio-nuclear.md](sitio-nuclear.md) §23).
+
 ## 1. Investigación
 
 ### El cohete

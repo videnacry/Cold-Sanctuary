@@ -60,7 +60,7 @@ public class AereoTest : MonoBehaviour, ITestUnit
         TestProbe.Check("un ave cerca para la turbina, sin cargar la escena", es.turbines[0].Stopped);
         EnergySite.TestBirds.Remove(bird.transform); Destroy(bird); es.turbines[0].ClearForTest();
         TestProbe.Check("los petreles del santuario cuentan como aves", SnowPetrelLife.FindObjectsByType<SnowPetrelLife>(FindObjectsSortMode.None).All(p => p.GetComponent<BirdBehavior>() != null || p.GetComponent<Animal>() != null));
-        TestProbe.Check("el cable tiene su pérdida", AereoRule.CableEfficiency < 1f && AereoRule.CableEfficiency > 0.9f);
+        TestProbe.Check("LA REGLA DEL CABLE: pierde lo que dice y se ve la línea en el santuario 1", AereoRule.CableEfficiency < 1f && AereoRule.CableEfficiency > 0.9f && link.GetComponentsInChildren<Transform>(true).Count(t => t.name == "Boya_linea_energia") >= 2);
         int installed0 = es.installed, soilOk = es.Maintained;
         AreaFunctions.Run("sol_mantenimiento", "prueba");
         TestProbe.Check("limpiar el campo funciona sin la escena", es.Maintained == soilOk + 1 && es.installed == installed0);
@@ -85,6 +85,7 @@ public class AereoTest : MonoBehaviour, ITestUnit
             Vector3 launchAt = b.launchArrival.position, energyAt = b.energyArrival.position;
             TestProbe.Check("los andenes, sobre sus casquetes", IcebergRule.FlatDistance(launchAt, IcebergRule.Site.Launch) < 60f && IcebergRule.FlatDistance(energyAt, IcebergRule.Site.Energy) < 150f && AereoRule.InSector(launchAt) && AereoRule.InSector(energyAt));
             TestProbe.Check("sus pisos no se cuentan dos veces", b.GetComponentsInChildren<FloorEnergy>(true).Length == 0);
+            TestProbe.Check("las aves frías, lejos de las turbinas al empezar", b.transform.Find("Fauna_fria_aerea") != null && es.turbines.All(u => Vector3.Distance(u.transform.position, b.transform.Find("Fauna_fria_aerea").GetChild(0).position) > EnergyRule.BirdStopRadius));
         }
         yield return AereoLink.UnloadForTest();
         TestProbe.Check("se descarga limpia y la lógica sigue", AereoBase.Instance == null && es.tables.Count == 0 && es.storage == null && EnergySite.Instance == es);

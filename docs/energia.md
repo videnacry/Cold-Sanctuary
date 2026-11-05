@@ -8,6 +8,8 @@ analiza/investiga y crea la mejor solución, también se puede plantear crear ot
 energética, imagino que podría tener allí los paneles solares y otros mecanismos, quizás podría obtener energía eólica e hidráulica sin
 poner en peligro a los animales? quizás existen normas de seguridad que se pueden seguir».
 
+> **2026-11-05:** lo que se ve del parque está en la escena `Santuario_Aereo`; la lógica sigue en el santuario 1 ([sitio-nuclear.md](sitio-nuclear.md) §23).
+
 **Respuesta corta.** Sí al casquete aparte, no a los paneles en los campos. El **Parque Energético** es un casquete artificial en el
 noroeste con su árbol bajo. Allí van los paneles de todos los pisos, 3 aerogeneradores pequeños, una turbina mareal piloto y el
 almacenamiento. El **reactor sigue siendo la carga base**: en la noche polar el sol da cero, y por eso no hace falta guardar energía de
