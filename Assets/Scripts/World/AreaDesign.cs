@@ -16,6 +16,7 @@ public static class AreaDesign
     public static readonly Row[] All =
     {
         new Row("Sala de asambleas", State.Cumple, "piso-asambleas.md", "cada pieza con su origen", "Islandia (Lögberg)", "Haudenosaunee (círculo y archivo)", "Botsuana (kgotla)", "Mali (toguna)", "Atenas (kleroterion y clepsidra)", "Alemania (cono del Reichstag)", "ONU (cabina de intérpretes)", "Euskadi (roble de Gernika)", "India (panchayat)", "Andes (quipu)"),
+        new Row("Sala de guardia", State.Cumple, "sala-de-guardia.md", "salas de control reales, cada pieza con su origen", "EE. UU. (consolas de Houston, Patrulla del Hielo, boyas DART)", "Japón (sismógrafo y centros gemelos)", "Hong Kong (radar y VHF)"),
         new Row("Cocina", State.Cumple, "cocina-profesional.md", "wok, comal y brigada de cocina", "China (wok)", "México (comal)", "Francia (brigada)"),
         new Row("Dojo (artes marciales)", State.Cumple, "obras-dojo-ballet.md", "tatami, karate, kickboxing y MMA", "Japón (tatami, karate)", "Tailandia y Países Bajos (kickboxing)", "EE. UU. y Brasil (MMA)"),
         new Row("Música", State.Cumple, "piso-musica.md", "acústica investigada; instrumentos del mundo en el banco del técnico (2026-11-05)", "Alemania y Austria (piano)", "India (sitar)", "Andes (charango)", "Mali (kora)", "Japón (shamisen)"),

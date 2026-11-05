@@ -14,6 +14,23 @@ Base alimenticia propuesta: **plancton/kril** (marino) — el resto de la cadena
 **artificial** (obra de la maestra), se justifica **flora especial** adaptada: mutaciones vegetales fusionadas con
 microorganismos que viven **solo de agua y frío**.
 
+## Sin bosque (Berón 2026-11-05)
+
+> **Ya no hay árboles de hielo en el santuario**, salvo el gigante y los 6 de la residencia, y **ninguno caza**. Berón: «se puede plantear retirar los árboles artificiales dejando solo el gigante y los de la residencia de modo que disminuirían los insectos y mejoraría performance?».
+>
+> `IceCarnivorousTree` solo vive ya en la escena del ciclo de vida. Lo que sigue en §2 describe el diseño anterior. Las abejas y las arañas anidan en cualquier `NestTree`.
+
+| | Antes (estimado) | Ahora |
+|---|---|---|
+| Árboles de hielo | 27–45 del bosque, más los de junto a las áreas | **0** |
+| Con ellos, la residencia y el gigante | ~45 | **7** |
+| Panales | ~205 | **14** |
+| Familias de abejas | 4 (20 abejas, 8 arañas) | 2 (10 abejas, 4 arañas) |
+
+Las cifras de antes salen del código, no de la escena: el constructor no guardó ningún registro que pudiera leer.
+
+**Lo que se pierde**: el árbol cazador, su señuelo y su sopor; la miel de los muertos junto a él; el bosque de los casquetes salvajes y su sotobosque; y casi todas las mudanzas de colmena de las 6:00.
+
 ## 2. El árbol carnívoro de hielo (la pieza central)
 
 Un **árbol que sobrevive de agua+frío** (célula vegetal + microorganismo psicrófilo) y que, para conseguir **nutrientes**

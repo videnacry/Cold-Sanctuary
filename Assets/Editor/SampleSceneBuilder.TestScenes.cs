@@ -68,8 +68,8 @@ public static partial class SampleSceneBuilder
         // ── DE SANDBOX: suelo + sistemas + el sandbox (ningún área) ──
         new TestSceneSpec { scene = "Prueba_CocinaPrototipos", purpose = "Prototipos de la cocina en el suelo: manchas y limpieza (paso A), paseo guiado y desayuno (paso B), motor de virtualización y descomposición",
             build = new System.Action<Transform>[] { BuildKitchenSandbox, BuildKitchenOnboarding, BuildVirtualizationSandbox, BuildDecompositionSandbox } },
-        new TestSceneSpec { scene = "Prueba_TorreGuardia", purpose = "Árbol de la guardia (tablero de misiones de vigía) y los puestos de patrulla",
-            build = new System.Action<Transform>[] { BuildGuardTower }, playerAt = () => new Vector3(-20f, 1.2f, 49f) },
+        new TestSceneSpec { scene = "Prueba_TorreGuardia", purpose = "El árbol gigante y los puestos de patrulla (la sala de guardia va en la torre de Servicios)",
+            build = new System.Action<Transform>[] { BuildGiantTree }, playerAt = () => new Vector3(-38f, 1.2f, 65f) },
         new TestSceneSpec { scene = "Prueba_Farming", purpose = "Farming no violento: jugar con criaturas baja su tensión → recursos, XP y comida", build = new System.Action<Transform>[] { BuildFarmingSandbox } },
         new TestSceneSpec { scene = "Prueba_Mente", purpose = "Mente: pensamientos por tono, frases y campo de pensamiento", build = new System.Action<Transform>[] { BuildMindSandbox } },
         new TestSceneSpec { scene = "Prueba_Posesion", purpose = "Posesión: ceder el mando a otro cuerpo (PossessionSpell) y volver", build = new System.Action<Transform>[] { BuildPossessionSandbox } },

@@ -125,7 +125,7 @@ public static class ResidentialBuilder
         }
         RingSize(Owners.Length + Partners.Count + System.Linq.Enumerable.Sum(Kids.Values, k => k.Length));   // (con los hijos)   // (antes que los árboles: sus ramas esquivan el ring)
         for (int k = 0; k < 6; k++)
-            CubeTree.Build(root, $"ArbolResidencial_{k + 1}", center + trees[k], 7100 + k * 13, TreeHeight, carnivorous: false, blocked: p => Built(root.InverseTransformPoint(p)));
+            CubeTree.Build(root, $"ArbolResidencial_{k + 1}", center + trees[k], 7100 + k * 13, TreeHeight, carnivorous: false, blocked: p => Built(root.InverseTransformPoint(p)), maxNests: 1);
 
         // Plataforma central (18 × 18) sobre columnas, con sus tres áreas de alfombras.
         Plank(root, new Vector3(0f, DeckY, 0f), new Vector3(CentralSize, 0.3f, CentralSize), "Plataforma central");

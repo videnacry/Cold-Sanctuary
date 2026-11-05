@@ -21,10 +21,10 @@ public static class CubeTree
         return cache;
     }
 
-    public static GameObject Build(Transform parent, string name, Vector3 groundPos, int seed, float height = 16f, bool carnivorous = true, System.Func<Vector3, bool> blocked = null, float reachHeight = -1f)
+    public static GameObject Build(Transform parent, string name, Vector3 groundPos, int seed, float height = 16f, bool carnivorous = true, System.Func<Vector3, bool> blocked = null, float reachHeight = -1f, int maxNests = -1)
     {
         // TAMAÑO BASE ×1,3: las áreas humanas están ahora a 12 m y los árboles deben seguir dominando el bosque (el árbol
-        // guardián, de 83 m, ya tiene su altura fijada y no se escala).
+        // gigante tiene su propio constructor).
         if (height < 80f) height *= 1.3f;
         var rnd = new System.Random(seed);
         float R(float a, float b) => a + (float)rnd.NextDouble() * (b - a);
@@ -36,6 +36,7 @@ public static class CubeTree
         Material nestMat = Mat(ref _nest, new Color(0.90f, 0.78f, 0.35f));    // nidos de miel de las abejas
 
         GameObject root = new GameObject(name);
+        if (height >= 6f) root.AddComponent<NestTree>();   // (2026-11-05) donde anidan abejas y arañas
         root.transform.SetParent(parent, false);
         root.transform.position = groundPos;
 
@@ -106,7 +107,7 @@ public static class CubeTree
                                         Quaternion.Euler(0f, yaw, 0f), platformMat, true);
                 Block(root.transform, "Escarcha", p + Vector3.up * 0.75f, Vector3.one * R(0.9f, 1.4f),
                       Quaternion.Euler(R(0f, 30f), R(0f, 90f), 0f), leaf, false);
-                if (height >= 12f && (b + tier) % 2 == 0)
+                if (height >= 12f && (b + tier) % 2 == 0 && (maxNests < 0 || nests < maxNests))
                 {
                     Honeycomb(plat.transform.parent, p + new Vector3(0.5f, -0.05f, 0.2f), nestMat, (b * 7 + tier) * 13);
                     nests++;
@@ -224,3 +225,6 @@ public static class CubeTree
         return g;
     }
 }
+
+/// <summary>Un árbol donde anidan las abejas y las arañas de las nieves, cace o no: el gigante, los de la residencia y el de la escena del ciclo de vida.</summary>
+public class NestTree : MonoBehaviour { }

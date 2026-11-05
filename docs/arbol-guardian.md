@@ -1,73 +1,65 @@
-# El árbol guardián, el más grande de la historia (investigación → plan → construcción, Berón 2026-11-04)
+# El árbol gigante, el más grande de la historia (2026-11-04; rehecho el 2026-11-05)
 
-Pedido de Berón: «He escuchado que existen árboles super anchos, de modo que se pueden crear pasadizos en sus troncos. El árbol
-guardián debe ser el árbol más grande de la historia; lo puedes reconstruir con la apariencia del árbol más alto y del más ancho que
-haya existido: sería un injerto, y luego le podrías dar matices de los árboles de hielo, como el color y los panales.»
+Berón (2026-11-05): «el árbol gigante del santuario no debe tener el tunel, solo lo comenté como dato porque quería que dicho arbol se cree con el grosor y altura mas grandes que hayan existido en el mundo ya sea de eras prehistoricas o la actualidad».
 
-Código: `Assets/Scripts/World/GuardianTree.cs` (el árbol), `GuardTower.cs` (la guardia en él), `SampleSceneBuilder.BuildGuardTower`
-(su altura), `GuardianTreeTest` (grupo 91).
+Código: `World/GuardianTree.cs`, `SampleSceneBuilder.BuildGiantTree`, `GuardianTreeTest` (grupo 91). **Sin túnel y sin guardia**: la guardia pasó a [sala-de-guardia.md](sala-de-guardia.md).
 
-## 1. Investigación
+## Los récords de verdad, y cuánta seguridad hay
 
-### El más alto
-- **Vivo**: *Hyperion*, secuoya roja (*Sequoia sempervirens*), Redwood National Park: **116,07 m** (Guinness, 2019; 115,55 m al medirlo
-  Sillett con cinta en 2006). Fuste recto con corteza fibrosa y acanalada, copa **estrecha y cónica** en lo alto (~4,8 m de diámetro a
-  la altura del pecho).
-- **De la historia**: el **árbol de Ferguson**, un fresno de montaña (*Eucalyptus regnans*) caído en 1872 en el río Watts (Victoria,
-  Australia), medido en el suelo con cinta por un inspector forestal: **132,6 m** (se cree que le faltaba la punta). Es el récord que
-  se toma (otros, como el abeto de Douglas de Nooksack, de 141 m, no están comprobados).
+**Altura**
 
-### El más ancho
-- **De la historia**: el **castaño de los cien caballos** (*Castanea sativa*, en las faldas del Etna, Sicilia): **57,9 m de perímetro**
-  medido en 1780 (varios troncos de una misma cepa) → **18,4 m de diámetro**.
-- **Vivo**: el **Árbol del Tule** (ciprés de Moctezuma, *Taxodium mucronatum*, Oaxaca): **42 m de perímetro**, 11,6 m de diámetro con
-  sus contrafuertes (9,4 m de media). Tronco **acanalado** y con **contrafuertes**, de ~35 m de alto.
+| Árbol | Altura | Seguridad |
+|---|---|---|
+| Abeto de **Nooksack** (Washington, 1897) | 142 m | **Discutido.** Medido con cinta tras talarlo; hay quien solo acepta que pasara de 122 m |
+| Fresno de **Ferguson** (Victoria, 1872) | 132,6 m | **El que acepta Guinness.** Medido en el suelo, sin la punta y con un estudio con problemas; pudo pasar de 150 m |
+| **Hyperion** (secuoya roja, viva) | 116,07 m | **Seguro.** El más alto vivo |
+| Fósil: *Araucarioxylon* (Triásico) | ~59 m | **Estimado** por proporciones, no medido |
+| Fósil: *Lepidodendron* (Carbonífero) | ~54 m | Estimado; no es un árbol verdadero |
+| Fósil: *Paraphyllanthoxylon* (Cretácico) | ~50–54 m | Estimado |
 
-### Árboles con pasadizos
-- Las secuoyas con túnel: el **Wawona Tunnel Tree** (secuoya gigante, Yosemite; túnel abierto en 1881 en una herida de fuego, cayó en
-  1969 con una nevada) y el **Chandelier Tree** (secuoya roja, Leggett, California; túnel de ~1,8–2 m de ancho y 2–3 m de alto, abierto en 1937).
-- Los **baobabs huecos**: uno con un bar dentro en Sudáfrica (Sunland) y el «baobab prisión» de Derby (Australia).
+**Grosor y volumen**
 
-### Fuentes
-- [Guinness — Tallest tree living](https://www.guinnessworldrecords.com/world-records/tallest-tree-living) · [Tallest tree ever measured](https://guinnessworldrecords.com/world-records/66377-tallest-tree-ever-measured)
-- [Wikipedia — List of superlative trees](https://www.wikipedia.org/wiki/Tallest_tree)
-- [Victoria's forests — tall trees and taller tales (el árbol de Ferguson)](https://victoriasforestsbushfireheritage.com/2023/12/10/tall-trees-and-taller-tales/)
-- [WorldAtlas — What and where is the Chandelier Tree?](https://www.worldatlas.com/articles/what-and-where-is-the-chandelier-tree.html) · [Drive-Thru Tree Park — FAQ](https://drivethrutree.com/faq.html)
+| Árbol | Medida | Seguridad |
+|---|---|---|
+| **Castaño de los cien caballos** (Sicilia, 1780) | 57,9 m de perímetro | Histórico, y **era una cepa de varios troncos**: no es el fuste más grueso |
+| **Árbol del Tule** (vivo) | ~42 m de perímetro | Seguro |
+| **Lindsey Creek** (secuoya roja, cayó en 1905) | ~2550 m³, 120 m | **Sin comprobar**, y sin fotos. Otra fuente da 1048 m³ |
+| Crannell Creek | Menor que el anterior | El mayor con **fotos y medidas** |
+| **General Sherman** (vivo) | 1591 m³ (2013) | **Seguro.** El mayor vivo de un solo tronco. El doc anterior decía 1487 m³ |
+| Fósil: *Araucarioxylon* «Old Faithful» | 2,9 m de diámetro | Medido |
 
-## 2. Plan (lo elegido)
+**La respuesta a la pregunta de Berón**: los mayores que conozco no son prehistóricos. Los fósiles encontrados se quedan muy por debajo, aunque los troncos fósiles casi siempre están incompletos, así que eso es «los mayores que conocemos», no «los mayores que hubo».
 
-- **El injerto**: la **base del más ancho** (el castaño de los cien caballos: 18,4 m de diámetro), **acanalada y con contrafuertes** como
-  el Tule, que en 26 m se recoge hasta el **fuste de la secuoya** (5,2 m que se estrechan a 1,8 m) con su **copa estrecha y cónica** en el
-  tercio de arriba.
-- **Alto**: lo mayor del récord de la historia (**132,6 m**) y del **edificio-árbol más alto** con la columna de la puerta de su techo
-  (la regla de siempre: el guardián es la excepción a «el primer piso por encima del árbol más alto» y crece tan alto como el edificio más
-  alto). **Hoy manda el edificio** (Ciencias: ~162 m con su columna), así que el guardián mide **~162 m**: el árbol más alto de la historia
-  (132,6 m) queda por debajo del edificio más alto del santuario. Si el santuario fuera más bajo, mediría 132,6 m.
-- **Pasadizos**: dos túneles en cruz (norte–sur y este–oeste) de **7 × 7 m** —cuadrados, como las puertas de los edificios-árbol: caben 8
-  personas a la vez y una alfombra voladora (las de verdad, de ~2 m, solo dejan pasar un coche)—, con una **sala** en el cruce, el suelo
-  pisado y faroles. El NavMesh pasa por dentro. Las alfombras del pie están **frente al pasadizo sur**.
-- **Hielo y panales**: la corteza, las ramas y la escarcha de los árboles de hielo; posaderos en las puntas de las ramas; **panales** de las
-  abejas de las nieves (con su colmena y su enjambre, docs/abejas-y-panal.md) en las ramas bajas de la copa. No caza.
-- **La guardia**: la plataforma (a 11 m) ahora es un **anillo** alrededor del tronco ancho, con la cabaña y su tablero al norte y la zona
-  de alfombras al sur; las alfombras del pie, frente al pasadizo sur. La guardia trabaja igual (W9: sin cambios en su jornada: su punto
-  de trabajo es el mismo objeto `Guardia_AUTO`).
+## Lo construido
 
-## 3. Efectos en lo demás
+Se toma el mayor valor registrado de cada medida, aunque no sea el más seguro, porque Berón pidió el máximo.
 
-- **Lanzadera de cohetes (T13)**: el guardián lleva `ElevatedElement`; la regla lo cuenta y la plataforma queda a máx(~166 m —su copa—,
-  152 m de aves) + 30 m ≈ **196 m** (antes ~192). Al final del Blockout se valida otra vez.
-- **Holguras**: sus ramas siguen esquivando los edificios-árbol (`HelixBlockedAt`, 4 m); la base ancha está en su isla, al noroeste del hub.
-  Lo que estuviera a menos de ~12 m de su eje (contrafuertes) hay que mirarlo en la escena (pendiente de la verificación en vivo).
-- **Pruebas**: la 57 mide el guardián frente al edificio más alto **sin la lanzadera** (que va por encima por su regla).
+| Medida | Valor | De dónde |
+|---|---|---|
+| Base | 18,4 m de diámetro | El castaño (57,9 m) |
+| Fuste | 7,7 m al empezar (antes 5,2) | General Sherman, a la altura del pecho. A 40 m mide ~7 m; Lindsey Creek, unos 5,8 m |
+| Altura | **142 m**, o el edificio más alto si es mayor | Nooksack (antes 132,6 m). Hoy manda el edificio |
+| Volumen del tronco | ~6000–6800 m³ | Más del doble de Lindsey Creek (calculado, no medido en escena) |
 
-## 4. Prueba (grupo 91, `GuardianTreeTest`)
-Alto ≥ máx(132,6 m, edificio más alto); base ≥ 18 m a ras de suelo con contrafuertes; los dos pasadizos libres de 7 × 7 m y el NavMesh de
-boca a boca por dentro; corteza de hielo, ≥ 4 panales y ≥ 10 posaderos, sin cazar; plataforma en anillo, tablero y alfombras; y la regla de
-la lanzadera.
+Conserva el tronco acanalado y los 12 contrafuertes del Tule, la copa estrecha de la secuoya, los colores del hielo y sus 8 panales. **No caza.**
 
-## Rondas 5–6 del probador (2026-11-04)
-- **La base a la altura de los pasadizos** ya no son duelas giradas (sus esquinas pisaban los túneles, se quitaban y la base quedaba de
-  13,4 m): cada cuarto entre los dos túneles se llena con una rejilla de bloques de 1,5 m alineados con ellos hasta el borde del círculo
-  (con acanaladuras en el borde). Por encima, las duelas de siempre.
-- **Panales**: el constructor pone 8 (lo dice su registro), pero en el juego no estaban. `GuardianHives` guarda sus sitios y, si al empezar
-  faltan, los vuelve a poner y lo avisa (`[Guardia] Faltaban los panales…`): queda por encontrar qué los quita.
+## Lo que se quitó
+
+- Los dos túneles de 7 × 7 m y la sala del cruce.
+- La plataforma, la cabaña, las alfombras («Casa del guarda») y el tablero.
+- Se llama `ArbolGigante` (antes `CasaArbolGuardia`).
+
+## Rendimiento
+
+Sus cubos pasan a una malla por material, como antes el bosque. Conservan los colliders. Las pruebas miden el tronco por sus colliders.
+
+## Fuentes
+
+- [Guinness: el más alto medido](https://guinnessworldrecords.com/world-records/66377-tallest-tree-ever-measured) · [el mayor de la historia](https://www.guinnessworldrecords.com/world-records/66381-largest-tree-ever) · [el mayor vivo](https://www.guinnessworldrecords.com/world-records/largest-living-tree-)
+- [Nooksack Giant](https://en.wikipedia.org/wiki/Nooksack_Giant) · [Lista de árboles superlativos](https://en.wikipedia.org/wiki/List_of_superlative_trees) · [Lindsay Creek Tree](https://en.wikipedia.org/wiki/Lindsay_Creek_Tree) · [Crannell Creek](https://mdvaden.com/redwood_crannell_creek_giant.shtml)
+- [Tall trees and taller tales (Ferguson)](https://victoriasforestsbushfireheritage.com/2023/12/10/tall-trees-and-taller-tales/)
+- [Araucarioxylon arizonicum](https://en.wikipedia.org/wiki/Araucarioxylon_arizonicum) · [Lepidodendron, Universidad de Waterloo](https://uwaterloo.ca/earth-sciences-museum/educational-resources/fossils/paleozoic-fossils-ontario/lepidodendron-fossils) · [Tronco de Utah, National Geographic](https://www.nationalgeographic.com/science/article/news-petrified-log-utah-angiosperms-flowers-trees)
+
+## Prueba (grupo 91)
+
+Alto ≥ máx(142 m, edificio más alto); base ≥ 18 m; volumen ≥ 2550 m³; base maciza y sin pasadizos; ≥ 4 panales y ≥ 10 posaderos; no caza; T13.

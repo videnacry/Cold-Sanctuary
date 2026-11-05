@@ -1,32 +1,36 @@
 using UnityEngine;
 
 /// <summary>
-/// EL ÁRBOL GUARDIÁN, EL MÁS GRANDE DE LA HISTORIA (Berón 2026-11-04; docs/arbol-guardian.md): un INJERTO del árbol más ANCHO y del
-/// más ALTO que han existido, con los matices de los árboles de hielo del santuario (su color y sus panales).
-/// - BASE: la del árbol más ancho registrado, el CASTAÑO DE LOS CIEN CABALLOS (Sicilia): 57,9 m de perímetro en 1780 →
-///   <see cref="BaseDiameter"/> 18,4 m, con el tronco ACANALADO y los CONTRAFUERTES del Árbol del Tule (ciprés de Moctezuma, 42 m de
-///   perímetro). Se estrecha en <see cref="BaseHeight"/> m hasta el fuste.
-/// - PASADIZOS: dos túneles en cruz que atraviesan la base (como los secuoyas de los túneles —el Wawona, el Chandelier— y los baobabs
-///   huecos), de <see cref="TunnelWidth"/> × <see cref="TunnelHeight"/> m (cuadrados, como las puertas de los edificios-árbol: caben 8
-///   personas a la vez y una alfombra voladora), con una sala en el cruce.
-/// - FUSTE Y COPA: los de la secuoya roja más alta (Hyperion, 116 m; el récord histórico, el fresno de montaña de Ferguson, 132,6 m):
-///   columna recta que se estrecha y copa estrecha y cónica en el tercio de arriba. La altura la manda el santuario: lo más alto de
-///   [132,6 m, el edificio más alto] (<see cref="GuardTower.TreeHeight"/>).
-/// - MATICES DE HIELO: la corteza, las ramas y la escarcha de los árboles de hielo, posaderos en las ramas y PANALES de las abejas de
-///   las nieves en las ramas bajas de la copa (con su colmena: <see cref="Hive"/>).
+/// EL ÁRBOL GIGANTE, EL MÁS GRANDE DE LA HISTORIA (Berón 2026-11-05; docs/arbol-guardian.md): un INJERTO del árbol más ANCHO y del más ALTO de los que hay registro, con los
+/// matices de los árboles de hielo (su color y sus panales). No tiene túnel ni guardia: es solo el árbol, en su isla. La guardia está en la torre de Servicios (<see cref="GuardRoom"/>).
+/// - BASE: el CASTAÑO DE LOS CIEN CABALLOS (Sicilia): 57,9 m de perímetro en 1780 → <see cref="BaseDiameter"/> 18,4 m, con el tronco ACANALADO y los CONTRAFUERTES del Árbol del Tule.
+///   Era una cepa de varios troncos: el mayor de un solo fuste es mucho menor. Se elige por ser el mayor perímetro registrado, no el más seguro.
+/// - FUSTE: el de la secuoya gigante General Sherman (<see cref="ColumnBottom"/> 7,7 m); a 40 m de altura supera al árbol de Lindsey Creek (5,8 m).
+/// - ALTO: <see cref="RecordHeight"/> 142 m, el abeto de Nooksack (medido con cinta tras talarlo, discutido); el aceptado por Guinness es el de Ferguson, <see cref="AcceptedHeight"/> 132,6 m.
+///   Lo manda lo mayor de ese récord y del edificio más alto. Ningún fósil se acerca: el mayor estimado ronda los 59 m.
+/// - VOLUMEN: el tronco supera los 2550 m³ del árbol de Lindsey Creek, el mayor registrado (<see cref="TrunkVolume"/>).
+/// - MATICES DE HIELO: la corteza, las ramas y la escarcha de los árboles de hielo, posaderos y PANALES de las abejas de las nieves (<see cref="Hive"/>).
 /// </summary>
 public static class GuardianTree
 {
-    /// <summary>El árbol más alto medido de la historia: el fresno de montaña (<i>Eucalyptus regnans</i>) de Ferguson, Victoria, 1872.</summary>
-    public const float RecordHeight = 132.6f;
-    /// <summary>El más alto vivo: Hyperion (<i>Sequoia sempervirens</i>), 116,07 m (2019).</summary>
+    public const string ObjectName = "ArbolGigante", GroveName = "ArbolGigante_AUTO";
+    /// <summary>Lo más alto que se ha afirmado con medición: el abeto de Nooksack, Washington, 1897, a cinta tras talarlo. Discutido.</summary>
+    public const float RecordHeight = 142f;
+    /// <summary>El aceptado por Guinness: el fresno de montaña de Ferguson, Victoria, 1872 (le faltaba la punta).</summary>
+    public const float AcceptedHeight = 132.6f;
+    /// <summary>El más alto vivo: Hyperion (<i>Sequoia sempervirens</i>), 116,07 m.</summary>
     public const float LivingRecordHeight = 116.07f;
+    /// <summary>El fósil más alto que encontré estimado: <i>Araucarioxylon arizonicum</i>, 59 m (por proporciones; no medido).</summary>
+    public const float FossilHeight = 59f;
     /// <summary>Perímetro del castaño de los cien caballos (Etna, Sicilia) en 1780: 57,9 m.</summary>
     public const float RecordGirth = 57.9f;
+    /// <summary>Volumen del árbol de Lindsey Creek (secuoya roja, cayó en 1905): 2550 m³, sin comprobar. General Sherman: 1591 m³ (Guinness, 2013).</summary>
+    public const float RecordVolume = 2550f;
     public static float BaseDiameter => RecordGirth / Mathf.PI;   // 18,4 m
     public const float BaseHeight = 26f;          // hasta aquí, la base ancha (acanalada, con contrafuertes)
-    public const float TunnelWidth = 7f, TunnelHeight = 7f;
-    public const float ColumnBottom = 5.2f, ColumnTop = 1.8f;   // ancho del fuste (la secuoya: ~4,8 m de diámetro a la altura del pecho)
+    public const float ColumnBottom = 7.7f, ColumnTop = 1.8f;   // ancho del fuste: el de General Sherman a la altura del pecho
+    /// <summary>Su altura: la fija el constructor; lo mayor del récord y del edificio más alto.</summary>
+    public static float Height = RecordHeight;
 
     static Material _bark, _branch, _frost, _perch, _nest, _floor, _lamp;
 
@@ -41,18 +45,12 @@ public static class GuardianTree
         return Mathf.Lerp(ColumnBottom, ColumnTop, (y - BaseHeight) / Mathf.Max(1f, height - BaseHeight));
     }
 
-    /// <summary>¿La duela (caja de <paramref name="tw"/> × <paramref name="thick"/> girada <paramref name="yaw"/>° con centro en
-    /// <paramref name="c"/>) pisa alguno de los dos pasillos (|x| &lt; <paramref name="w"/> o |z| &lt; <paramref name="w"/>)?</summary>
-    static bool InCorridor(Vector3 c, float yaw, float tw, float thick, float w)
+    /// <summary>Volumen del tronco (m³), con un círculo del ancho de cada altura.</summary>
+    public static float TrunkVolume(float height)
     {
-        Quaternion q = Quaternion.Euler(0f, yaw, 0f);
-        float x0 = float.MaxValue, x1 = float.MinValue, z0 = float.MaxValue, z1 = float.MinValue;
-        for (int i = 0; i < 4; i++)
-        {
-            Vector3 p = c + q * new Vector3((i & 1) == 0 ? -tw * 0.5f : tw * 0.5f, 0f, (i & 2) == 0 ? -thick * 0.5f : thick * 0.5f);
-            x0 = Mathf.Min(x0, p.x); x1 = Mathf.Max(x1, p.x); z0 = Mathf.Min(z0, p.z); z1 = Mathf.Max(z1, p.z);
-        }
-        return (x0 < w && x1 > -w) || (z0 < w && z1 > -w);
+        float v = 0f;
+        for (float y = 0f; y < height; y += 1f) { float w = WidthAt(y + 0.5f, height); v += Mathf.PI * 0.25f * w * w; }
+        return v;
     }
 
     public static GameObject Build(Transform parent, string name, Vector3 groundPos, float height, System.Func<Vector3, bool> blocked = null)
@@ -68,38 +66,17 @@ public static class GuardianTree
         Material lamp = CubeTree.Mat(ref _lamp, new Color(1f, 0.85f, 0.45f));
 
         GameObject root = new GameObject(name);
+        root.AddComponent<NestTree>();
         root.transform.SetParent(parent, false);
         root.transform.position = groundPos;
         Transform tr = root.transform;
-        float hw = TunnelWidth * 0.5f;
 
         // ── BASE ACANALADA: anillos de 16 duelas alrededor del eje, cada 2 m, que se estrechan; las duelas alternas, metidas hacia dentro
-        // (las acanaladuras del Tule). Por debajo de la altura de los túneles no hay duelas en sus pasillos; dentro, el núcleo macizo en
-        // cuatro cuartos (entre los túneles) y, encima, el techo de la sala. ──
+        // (las acanaladuras del Tule). Dentro, el núcleo macizo. ──
         const int staves = 16; const float layer = 2f;
         for (float y = 0f; y < BaseHeight; y += layer)
         {
             float W = WidthAt(y + layer * 0.5f, height), Rr = W * 0.5f, thick = Mathf.Min(3.2f, Rr * 0.45f);
-            if (y < TunnelHeight + 1f)
-            {
-                // (2026-11-04) A LA ALTURA DE LOS PASADIZOS: cada cuarto de la base, entre los dos túneles, se llena con una rejilla de
-                // bloques de 1,5 m hasta el borde (el círculo de la base), alineados con los túneles. Con duelas giradas, sus esquinas pisaban
-                // el pasillo y se quitaban todas: la base salía de 13,4 m (prueba 91).
-                const float cell = 1.5f;
-                for (float x = hw; x < Rr; x += cell)
-                    for (float z = hw; z < Rr; z += cell)
-                    {
-                        float x1 = Mathf.Min(x + cell, Rr), z1 = Mathf.Min(z + cell, Rr);
-                        if (x * x + z * z > Rr * Rr) continue;                       // del todo fuera del círculo
-                        float cx = (x + x1) * 0.5f, cz = (z + z1) * 0.5f;
-                        if (cx * cx + cz * cz > (Rr + 0.4f) * (Rr + 0.4f)) continue;
-                        bool flute = ((Mathf.RoundToInt(Mathf.Atan2(cz, cx) * Mathf.Rad2Deg / 11.25f)) % 2 == 1) && cx * cx + cz * cz > (Rr - cell) * (Rr - cell);   // acanaladura
-                        for (int qx = -1; qx <= 1; qx += 2)
-                            for (int qz = -1; qz <= 1; qz += 2)
-                                CubeTree.Block(tr, "Tronco", new Vector3(qx * cx, y + layer * 0.5f, qz * cz), new Vector3((x1 - x) * (flute ? 0.8f : 1.02f), layer * 1.02f, (z1 - z) * (flute ? 0.8f : 1.02f)), Quaternion.identity, bark, true);
-                    }
-                continue;
-            }
             for (int s = 0; s < staves; s++)
             {
                 float a = (s + (Mathf.RoundToInt(y / layer) % 2) * 0.5f) * 360f / staves;
@@ -111,25 +88,13 @@ public static class GuardianTree
             float core = Mathf.Max(0f, Rr - thick * 0.9f);
             if (core >= 0.5f) CubeTree.Block(tr, "Tronco", Vector3.up * (y + layer * 0.5f), new Vector3(core * 1.42f, layer * 1.02f, core * 1.42f), Quaternion.Euler(0f, 22.5f, 0f), bark, true);   // (el techo de los pasadizos, el primero)
         }
-        // ── CONTRAFUERTES (raíces tabulares): 12 aletas que bajan al hielo, entre las bocas de los túneles ──
+        // ── CONTRAFUERTES (raíces tabulares): 12 aletas que bajan al hielo ──
         float R0 = BaseDiameter * 0.5f;
         for (int k = 0; k < 12; k++)
         {
             float a = k * 30f + 15f;
             Vector3 d = Quaternion.Euler(0f, a, 0f) * Vector3.forward;
-            if (Mathf.Abs(d.x * R0) < hw + 1.5f || Mathf.Abs(d.z * R0) < hw + 1.5f) continue;   // (no tapan las bocas)
             CubeTree.Block(tr, "Raiz", d * (R0 + 2.2f) + Vector3.up * 1.6f, new Vector3(1.4f, 3.2f, 5f), Quaternion.LookRotation(d) * Quaternion.Euler(22f, 0f, 0f), bark, true);
-        }
-        // ── LOS PASADIZOS: suelo pisado, faroles y la sala del cruce ──
-        Transform tun = new GameObject("Pasadizos").transform; tun.SetParent(tr, false);
-        float len = R0 + 3f;
-        CubeTree.Block(tun, "Pasadizo_NS", new Vector3(0f, 0.03f, 0f), new Vector3(TunnelWidth, 0.06f, 2f * len), Quaternion.identity, floor, false);
-        CubeTree.Block(tun, "Pasadizo_EO", new Vector3(0f, 0.035f, 0f), new Vector3(2f * len, 0.06f, TunnelWidth), Quaternion.identity, floor, false);
-        CubeTree.Block(tun, "Sala_del_cruce", new Vector3(0f, 0.04f, 0f), new Vector3(TunnelWidth, 0.06f, TunnelWidth), Quaternion.identity, lamp, false);
-        for (int s = 0; s < 4; s++)
-        {
-            Quaternion q = Quaternion.Euler(0f, s * 90f, 0f);
-            CubeTree.Block(tun, "Farol_pasadizo", q * new Vector3(hw - 0.3f, TunnelHeight - 1f, R0 * 0.5f), new Vector3(0.3f, 0.4f, 0.3f), q, lamp, false);
         }
         // ── EL FUSTE (secuoya): bloques de 3 m que se estrechan, con un leve giro ──
         for (float y = BaseHeight; y < height; y += 3f)
@@ -183,13 +148,12 @@ public static class GuardianTree
         // La punta.
         CubeTree.Block(tr, "Copa", new Vector3(0f, height + 1.5f, 0f), new Vector3(3f, 3f, 3f), Quaternion.Euler(0f, 20f, 0f), frost, false);
         CubeTree.Block(tr, "Copa", new Vector3(0f, height + 3.6f, 0f), new Vector3(1.6f, 1.6f, 1.6f), Quaternion.Euler(0f, 55f, 0f), frost, false);
-        Debug.Log($"[Guardia] Árbol guardián (injerto): base de {BaseDiameter:0.0} m (el castaño de los cien caballos, {RecordGirth:0.0} m de perímetro), fuste y copa de secuoya hasta {height:0} m " +
-                  $"(récord histórico {RecordHeight:0.0} m; vivo, Hyperion, {LivingRecordHeight:0.00} m), dos pasadizos de {TunnelWidth:0} × {TunnelHeight:0} m y {nests} panales.");
+        Debug.Log($"[Árbol gigante] Base de {BaseDiameter:0.0} m, {height:0.0} m de alto y {TrunkVolume(height):0} m³ (récords: {RecordHeight:0.0} m, {RecordVolume:0} m³); {nests} panales.");
         return root;
     }
 }
 
-/// <summary>Los PANALES del árbol guardián (sitios locales). Al empezar el juego, si no están (prueba 91, 2026-11-04: «0 colmenas en 0
+/// <summary>Los PANALES del árbol gigante (sitios locales). Al empezar el juego, si no están (prueba 91, 2026-11-04: «0 colmenas en 0
 /// nidos» aunque el constructor puso 8: algo los quita entre el Blockout y el juego, aún sin encontrar), los vuelve a poner y lo avisa.</summary>
 public class GuardianHives : MonoBehaviour
 {
@@ -201,6 +165,6 @@ public class GuardianHives : MonoBehaviour
         if (GetComponentsInChildren<Hive>(true).Length > 0 || spots.Count == 0) return;
         Material nest = CubeTree.Mat(ref _nest, new Color(0.90f, 0.78f, 0.35f));
         for (int i = 0; i < spots.Count; i++) CubeTree.Honeycomb(transform, spots[i], nest, 977 + i * 26).stays = true;
-        Debug.LogWarning($"[Guardia] Faltaban los panales del árbol guardián al empezar: se vuelven a poner {spots.Count} (algo los quita después del Blockout).");
+        Debug.LogWarning($"[Árbol gigante] Faltaban los panales al empezar: se vuelven a poner {spots.Count} (algo los quita después del Blockout).");
     }
 }

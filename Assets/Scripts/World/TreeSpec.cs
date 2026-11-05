@@ -99,7 +99,7 @@ public static class TreeSpec
     public static readonly Vector3 Site = new Vector3(-50f, 0f, -84f);
     /// <summary>EL ÁRBOL MÁS ALTO QUE CRECE en el santuario (medido 2026-10-30 en los constructores): un árbol de hielo VIEJO del
     /// bosque mide hasta 40 m (PolarLandscapeBuilder.HeightFor) ×1,3 (CubeTree) = 52 m de tronco, y su copa llega a ~55,5 m.
-    /// (El árbol de la guardia, de 83 m, es único y fijo, en su isla: no crece bajo este árbol.)</summary>
+    /// (2026-11-05: ya no hay bosque; la residencia, ~60 m, queda bajo el primer piso, y el gigante es la excepción de T3. No se baja el primer piso: movería todas las torres.)</summary>
     public const float TallestTree = 55.5f;
     /// <summary>Lo más bajo del árbol (las tornapuntas de los pisos) queda al menos esto sobre la copa más alta.</summary>
     public const float TreeClearance = 4f;

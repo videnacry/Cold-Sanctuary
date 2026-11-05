@@ -62,7 +62,7 @@ Está en `AreaDesign.All`, con su prueba (grupo 77). Criterio: investigado y ≥
 
 | Estado | Áreas |
 |---|---|
-| **Cumple** (7) | Sala de asambleas, Cocina (wok, comal, brigada), Dojo, Música y Aula (estas dos, arregladas ahora), Huerto, Construcción |
+| **Cumple** (8) | Sala de guardia, Sala de asambleas, Cocina (wok, comal, brigada), Dojo, Música y Aula (estas dos, arregladas ahora), Huerto, Construcción |
 | **Parcial** (8) | Sala de Yoga (2 culturas), Gimnasio, Sala de Ballet, Estudio Textil, Planta Atómica, Central Nuclear, Control de misión, Informática |
 | **Falta** (7) | Hospital, Química, Biología, Mecánica, Calistenia, Cría, Carne Cultivada |
 

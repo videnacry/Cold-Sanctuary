@@ -800,7 +800,7 @@ public static partial class SampleSceneBuilder
 {
     /// <summary>¿Choca <paramref name="world"/> (con <paramref name="margin"/> m de holgura) con algún edificio-árbol? Se mide con sus
     /// medidas (aún sin construir el tronco ni las puntas): tronco, pisos con un anillo de 8 m, ramas, puntas con su anillo y techo;
-    /// el Árbol de los Campos, girando (su círculo). Lo usa el árbol de la guardia para que sus ramas los esquiven.</summary>
+    /// el Árbol de los Campos, girando (su círculo). Lo usa el árbol gigante para que sus ramas los esquiven.</summary>
     static bool HelixBlockedAt(Vector3 world, float margin)
     {
         foreach (Helix hx in _helixes)

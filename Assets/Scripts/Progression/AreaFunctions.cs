@@ -137,6 +137,7 @@ public static class AreaFunctions
         S(Def("Biología", "bio_pcr", "Del ADN a la secuencia: extracción, pre-PCR, termociclador y secuenciador", 1f, false, Kind.Study, "mesa_laboratorio"));
         Needs(S(Def("Central Nuclear", "nuc_turno", "Turno de la central: acceso, sala de control, conversión de potencia y calefacción", 1f, false, Kind.Operate, "consola")), Eras.Capability.Nuclear);
         Roles(S(Def(Guard, "gua_carnivoros", "Patrulla de los puestos de vigía", 2f, true, Kind.Guard)), "guardia");
+        S(Def(AreaWork.GuardRoom, "gua_sala", "Turno en la sala de guardia: icebergs, radar, roca, sismos y mar", 2f, true, Kind.Guard, "consola"));
         // EL ALIMENTADOR (docs/alimentador.md): sin papel: por la rotación, como todo. Dos plazas: la lista es compartida y se reparten el trabajo.
         S(Def(Guard, "gua_alimentador", "Alimentador: sigue a los depredadores, evalúa su hambre y les lanza su ración o los marca", 2f, true, Kind.Guard));
         S(Def(Guard, "gua_alimentador_2", "Alimentador (segunda plaza): la misma lista compartida", 2f, false, Kind.Guard));
@@ -197,6 +198,7 @@ public static class AreaFunctions
         _prefixEffects.Add(("lanz_remolque", (id, who) => Iceberg.TowThreat(IcebergRule.Site.Launch, who)));
         _prefixEffects.Add(("ene_remolque", (id, who) => Iceberg.TowThreat(IcebergRule.Site.Energy, who)));
         _prefixEffects.Add(("nuc_refuerzo", (id, who) => CavernRock.Instance?.Reinforce(who)));
+        _prefixEffects.Add(("gua_sala", (id, who) => GuardWatch.Shift(who)));
         _prefixEffects.Add(("obra_material_", (id, who) => Obra(id.Substring(14), who, material: true)));
         _prefixEffects.Add(("obra_trabajo_", (id, who) => Obra(id.Substring(13), who, material: false)));
         _prefixEffects.Add(("prep_", (id, who) => KitchenLarder.Instance?.StartPrep(id.Substring(5), who)));
