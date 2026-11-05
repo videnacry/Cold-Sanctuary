@@ -271,6 +271,7 @@ Berón (2026-11-05): «debe existir una lista de reglas para la creación de per
 | P6 | **Al llegar alguien con más habilidad documentada se reestructura la jerarquía** de ese puesto. | Berón, por Consol. | **solo en docs** | [reglas-personajes.md](reglas-personajes.md) |
 | P7 | **Ningún puesto sin base documentada** (`Professions.Basis`); lo deducido, en `Professions.Unconfirmed`, hasta que Berón confirme. | Irosene y Panterilia fueron segundas maestras de yoga sin base. | 95, `check-personajes.sh` | [reglas-personajes.md](reglas-personajes.md) |
 | P8 | **W9 al llegar o irse alguien**: jornadas, reparto y horario libre. | Que el reparto siga cuadrando. | 28, 50, 65 | [reglas-personajes.md](reglas-personajes.md) |
+| P9 | **La plataforma de hielo y la isla son paredes para la fauna; solo se respira en agua abierta, canales o hielo fijo fino, nunca a través de la plataforma.** Las rutas del submarino llevan túnel por la roca. | Berón, 2026-11-05: «hazlo real». | 107 | [hielo-y-respiraderos.md](hielo-y-respiraderos.md) |
 | P9 | **J16 al llegar alguien**: recuento de centros, ring y camas. | Que quepan todos. | 75, 89 | [reglas-personajes.md](reglas-personajes.md) |
 | P10 | **Los docs van con el cambio**: ficha, personajes, diseño, manual y checklist. | Berón lo pide. | `check-personajes.sh` (la ficha); el resto, **solo en docs** | [reglas-personajes.md](reglas-personajes.md) |
 | P11 | **Regla de oro: todos saben hacer de todo** (= J30). | Berón. | 87 | [reglas-personajes.md](reglas-personajes.md) |
@@ -379,7 +380,7 @@ reconstruir. Vale para TODOS los pisos, no solo el hospital. Cada piso del santu
 ## 12. Recuento y reglas sin comprobación automática
 
 
-**Total: 198 reglas** (S 15 · F 14 · T 22 · C 7 · G 8 · H 8 · M 39 · A 5 · J 32 · P 19 · E 17 · W 11 = 197 —W9, W10 y W11 van en §11; P11 repite J30; P1–P11 son de personajes y P12–P19 de territorio y producción (§13)—, más la regla de
+**Total: 199 reglas** (S 15 · F 14 · T 22 · C 7 · G 8 · H 8 · M 39 · A 5 · J 32 · P 19 · E 17 · W 11 = 197 —W9, W10 y W11 van en §11; P11 repite J30; P1–P11 son de personajes y P12–P19 de territorio y producción (§13)—, más la regla de
 sincronización de §11). (Recontado por el probador al integrar actividades, tareasE, entreno, personajes, hospital y cohetes, 2026-11-04:
 las J18 en adelante se renumeraron en una sola secuencia —J18–J21 actividades y uniformes, J22 tareas con «E», J23–J27 entrenamientos
 y entrenador, J28 profesiones, J29 nada en pisos en obras—.)
@@ -438,5 +439,5 @@ Berón (2026-11-05): «¿tenemos reglas para la creación de animales?». Detall
 [submarinos-medicos.md](submarinos-medicos.md) · [medidas-muebles.md](medidas-muebles.md) · [microcosmos-areas.md](microcosmos-areas.md) ·
 [microcosmos-reglas-edificacion.md](microcosmos-reglas-edificacion.md) · [microcosmos-pueblos-mapas.md](microcosmos-pueblos-mapas.md) ·
 [microcosmos-actividades.md](microcosmos-actividades.md) · [microcosmos-famosos.md](microcosmos-famosos.md) · [microcosmos-historias-3.md](microcosmos-historias-3.md) · [piso-asambleas.md](piso-asambleas.md) · [veracidad-frases.md](veracidad-frases.md) · [microcosmos-musica.md](microcosmos-musica.md) · [piso-musica.md](piso-musica.md) · [luz-microcosmos.md](luz-microcosmos.md) ·
-[grupos-de-animales.md](grupos-de-animales.md) · [reglas-animales.md](reglas-animales.md) · [territorio-polar.md](territorio-polar.md) · [alimentador.md](alimentador.md) · [deshierbe-cuidadoso.md](deshierbe-cuidadoso.md) · [produccion-maquinaria.md](produccion-maquinaria.md) · [jornada-y-rotacion.md](jornada-y-rotacion.md) · [horario-libre.md](horario-libre.md) ·
+[grupos-de-animales.md](grupos-de-animales.md) · [reglas-animales.md](reglas-animales.md) · [territorio-polar.md](territorio-polar.md) · [alimentador.md](alimentador.md) · [deshierbe-cuidadoso.md](deshierbe-cuidadoso.md) · [produccion-maquinaria.md](produccion-maquinaria.md) · [hielo-y-respiraderos.md](hielo-y-respiraderos.md) · [jornada-y-rotacion.md](jornada-y-rotacion.md) · [horario-libre.md](horario-libre.md) ·
 [personajes-mesocosmos.md](personajes-mesocosmos.md) · [conversaciones.md](conversaciones.md) · [actividades-y-uniformes.md](actividades-y-uniformes.md) · [tareas-del-jugador.md](tareas-del-jugador.md) · [conventions.md](conventions.md) · [checklist.md](checklist.md)

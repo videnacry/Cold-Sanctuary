@@ -30,7 +30,8 @@ public class PolarHabitats : MonoBehaviour
 
     public void Generate()
     {
-        Material dark = Mat("Respiradero", new Color(0.05f, 0.12f, 0.18f)), pebble = Mat("Guijarro", new Color(0.42f, 0.42f, 0.45f));
+        Material pebble = Mat("Guijarro", new Color(0.42f, 0.42f, 0.45f));
+        Holes = Affordance.Of(AffordanceKind.BreathingHole).Count;   // los respiraderos van en el hielo fijo (SampleSceneBuilder.Territorio), no en la plataforma
         Material snow = Mat("Ventisquero", new Color(0.95f, 0.97f, 1f)), gravel = Mat("Grava", new Color(0.45f, 0.38f, 0.3f));
         Vector3 lagoon = MarineLife.Lagoon;
         int i = 0;
@@ -40,9 +41,6 @@ public class PolarHabitats : MonoBehaviour
             if (!Shore(lagoon, dir, out Vector3 shore)) continue;
             var h = new GameObject($"Descansadero_{i}"); h.transform.SetParent(transform, false); h.transform.position = shore + dir * 2f;
             Affordance.Put(h, AffordanceKind.HaulOut, 2); HaulOuts++;
-            if (i % 2 != 0 || !Ice(shore + dir * 6f, out Vector3 holeAt)) continue;
-            Transform hole = Box($"Respiradero_{i}", holeAt + Vector3.up * 0.02f, new Vector3(0.9f, 0.03f, 0.9f), dark);
-            Affordance.Put(hole.gameObject, AffordanceKind.BreathingHole, 1); Holes++;
         }
 
         // Playa de guijarros de la colonia (el mar los trae muy despacio).

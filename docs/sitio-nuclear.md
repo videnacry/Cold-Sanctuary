@@ -523,9 +523,9 @@ Berón: «hazlo real».
 | Submarino de obra | Cruzaba a −12, dentro del hielo | **Cruza a −312**: unos 2,5 min más por viaje entre árboles |
 | Submarino-ambulancia y Leviatán | Sobre el hielo van en orugas; en el mar, por canales | Nada |
 | Fauna en lagunas y canales | Nadan en agua abierta | Nada |
-| **Fauna que pasa bajo una placa** | `MarineLife` nada a −1,5 m **bajo** la placa: ahora va **por dentro del hielo** | **Sin arreglar**: no se ve, pero no es real |
+| **Fauna que pasa bajo una placa** | `MarineLife` nadaba a −1,5 m **bajo** la placa: iba **por dentro del hielo** | **Arreglado**: la plataforma es una pared ([hielo-y-respiraderos.md](hielo-y-respiraderos.md)) |
 | Nado del jugador | Ya no se pasa bajo las islas: paredes de hielo | Así es el hielo real |
-| Respiraderos de focas | Agujeros en 300 m de hielo | **Sin arreglar**: en realidad solo los hay en hielo marino fino |
+| Respiraderos de focas | Agujeros en 300 m de hielo | **Arreglado**: van en láminas de hielo fijo de 2 m ([hielo-y-respiraderos.md](hielo-y-respiraderos.md)) |
 | Laguna del ciclo de vida | Tiene su propia placa | Se queda |
 | NavMesh | Cajas de 300 m: **más alto, misma planta** | A vigilar en la primera reconstrucción |
 | Islas de tierra | Las lleva la rama de territorio | No tocado |

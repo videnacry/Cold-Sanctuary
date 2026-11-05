@@ -39,7 +39,10 @@ public class MarineLife : MonoBehaviour
     static int _count;
     // BAJO EL HIELO: las placas de la banquisa («Casquete») van de IceTop (0) a −1,5 m. Nadando a −1 m se metían DENTRO de
     // la placa (respiraderos, orillas, ir a por la pareja): por debajo del hielo se bucea por debajo de su cara inferior.
-    const float IceBottom = -1.5f;
+    /// <summary>La cara inferior del HIELO FIJO (2 m): el único hielo por debajo del cual se nada (docs/hielo-y-respiraderos.md). La plataforma, de 300 m, es una pared.</summary>
+    const float IceBottom = -2f;
+    /// <summary>Nombre de los colisionadores del hielo fijo.</summary>
+    public const string ThinIce = "Hielo_fijo";
     float _halfH = 0.4f, _halfLen;   // medio alto y medio largo del cuerpo (en el mundo)
 
 
@@ -72,6 +75,15 @@ public class MarineLife : MonoBehaviour
         return false;
     }
     static readonly RaycastHit[] _hits = new RaycastHit[8];
+
+    /// <summary>¿Lo que hay encima de (x, z) llega muy abajo (plataforma, isla, un edificio)? Contra eso no se bucea: es una pared. El hielo fijo no cuenta.</summary>
+    public static bool ThickAbove(Vector3 p)
+    {
+        int n = Physics.RaycastNonAlloc(new Vector3(p.x, 8f, p.z), Vector3.down, _hits, 14f, ~0, QueryTriggerInteraction.Ignore);
+        for (int i = 0; i < n; i++)
+            if (_hits[i].point.y > -0.3f && _hits[i].collider.name != ThinIce && _hits[i].collider.GetComponentInParent<Anima>() == null) return true;
+        return false;
+    }
 
     // Profundidad a la que nada por debajo de la placa (el lomo, 15 cm bajo su cara inferior).
     float UnderIceY => IceBottom - _halfH - 0.15f;
@@ -256,11 +268,28 @@ public class MarineLife : MonoBehaviour
             else if (!onIce)
             {
                 np.y = Mathf.Min(np.y, -0.4f);   // nadando: siempre bajo la superficie
-                // Hielo encima (o justo delante): bucea por debajo de la placa; si aún no está lo bastante hondo, baja en el
-                // sitio antes de meterse debajo (nunca atraviesa el hielo).
+                // La PLATAFORMA (300 m) y la isla son paredes: se bordean (docs/hielo-y-respiraderos.md). Bajo el HIELO FIJO (2 m) se bucea.
                 Vector3 flatDir = new Vector3(step.x, 0f, step.z);
                 Vector3 ahead = flatDir.sqrMagnitude > 1e-8f ? np + flatDir.normalized * (_halfH + 1f) : np;
-                if (IceAbove(np) || IceAbove(ahead))
+                Vector3 flatNow = new Vector3(step.x, 0f, step.z);
+                Vector3 nose = flatNow.sqrMagnitude > 1e-8f ? np + flatNow.normalized * (_halfLen + 0.6f) : np;
+                if (ThickAbove(cur))   // (una aparición o un empujón lo dejó dentro: sale hacia la laguna, sin pasar por debajo)
+                {
+                    Vector3 open = Lagoon - cur; open.y = 0f;
+                    np = cur + open.normalized * v * Time.deltaTime; np.y = cur.y;
+                }
+                else if (ThickAbove(np) || ThickAbove(nose))
+                {
+                    bool free = false;
+                    foreach (float turn in new[] { 50f, -50f, 90f, -90f })   // lo bordea
+                    {
+                        Vector3 side = Quaternion.Euler(0f, turn, 0f) * flatNow;
+                        if (side.sqrMagnitude > 1e-8f && !ThickAbove(cur + side + side.normalized * (_halfLen + 0.6f))) { np.x = cur.x + side.x; np.z = cur.z + side.z; free = true; break; }
+                    }
+                    if (!free) { np.x = cur.x; np.z = cur.z; }
+                    dist = 0f; _nextPick = 0f;   // lo que busca queda tras el hielo: ha llegado al borde, y elige otro sitio
+                }
+                else if (IceAbove(np) || IceAbove(ahead))
                 {
                     float under = UnderIceY;
                     // EN PLANTA bajo el hielo: aquí la altura la manda la placa (UnderIceY), así que el paso horizontal no puede
@@ -313,10 +342,11 @@ public class MarineLife : MonoBehaviour
         }
         if (sp == "Seal")
         {
-            // Asoma por el respiradero: si el respiradero está EN la placa de hielo, respira desde debajo (el lomo bajo la
-            // cara inferior; antes se plantaba a −0,25 m, dentro del bloque «Casquete»). Si está en agua abierta, asoma.
-            float y = IceAbove(at) ? UnderIceY : -0.25f;
+            // Asoma por el agujero del hielo fijo, de morro: el agujero es de 1,6 m y la foca mide 1,7 (docs/hielo-y-respiraderos.md).
+            float y = IceAbove(at) ? UnderIceY : -0.45f;
             transform.position = Vector3.MoveTowards(transform.position, new Vector3(at.x, y, at.z), speed * Time.deltaTime);
+            Vector3 head = transform.forward; head.y = 0f; if (head.sqrMagnitude < 1e-4f) head = Vector3.forward;
+            transform.rotation = Quaternion.LookRotation(head.normalized) * Quaternion.Euler(-65f, 0f, 0f);
             _spot.Touch(_a);   // el oso que acecha la oye/ve respirar
         }
         else if (sp == "Whale")

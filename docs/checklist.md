@@ -736,12 +736,13 @@ Código y compilación hechos; falta la prueba en vivo.
 - [x] Deshierbe con raíz: malas hierbas de verdad, vivero, trasplante a la tundra e incinerador para las no nativas (grupo 102, [`deshierbe-cuidadoso.md`](deshierbe-cuidadoso.md)).
 - [x] La lista del alimentador solo se renueva completa; quien no se alcanza vuelve a la cola.
 - [x] Regla P19: maquinaria a la altura de lo que se pide (grupo 103, [`produccion-maquinaria.md`](produccion-maquinaria.md)). Laboratorio ampliado.
-- [x] La isla es roca hasta el lecho; el hielo flota.
-- [ ] Auditar la energía (falta su demanda total) y dar máquinas a las cifras de `AreaProducer`; túneles para el submarino bajo la isla.
+- [x] La isla es roca hasta el lecho; el hielo flota; túneles para el submarino, fauna fuera de la plataforma y respiraderos en hielo fijo (grupo 107, [`hielo-y-respiraderos.md`](hielo-y-respiraderos.md)).
+- [x] `FaunaScale`: la fauna no sigue a la plantilla en Play.
+- [ ] Auditar la energía (falta su demanda total) y dar máquinas a las cifras de `AreaProducer`.
 - [x] Cadena alimenticia (`FoodChain`, regla E15, grupo 85) y especie real para todo pez, crustáceo y medusa: 6 especies nuevas.
 - [x] Frentes de barrera, 5 cuevas, acantilados, colonia del emperador, playa de morsas y nidos de Adelia.
 - [x] Pruebas: grupos 99 (`TerritorioTest`) y 85 (`CadenaAlimenticiaTest`).
-- [ ] **Probar en vivo:** «Rebuild Animal Prefabs» (el cuerpo de `Penguin` cambia), Blockout, escenas de ciclo de vida y grupos 99, 85, 105, 102, 103, 58, 57 y 89.
+- [ ] **Probar en vivo:** «Rebuild Animal Prefabs» (el cuerpo de `Penguin` cambia), Blockout, escenas de ciclo de vida y grupos 99, 85, 105, 102, 103, 107, 58, 57 y 89.
 - [ ] Alimentador de dos en dos con el oso; aves en los acantilados; bosque de algas; corro del buey como conducta.
 - [ ] Lemming, la presa que le falta a la tundra (recomendaciones en `reglas-animales.md`).
 

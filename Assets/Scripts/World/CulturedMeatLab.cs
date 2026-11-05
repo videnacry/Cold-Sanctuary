@@ -29,12 +29,12 @@ public class CulturedMeatLab : MonoBehaviour
     public double seedCells = 1e9;          // un vial del banco
     public double cellsPerGram = 2.5e8;     // músculo: ≈ 2–3·10⁸ células por gramo
     /// <summary>Lo que da cada máquina (regla P19, docs/produccion-maquinaria.md): 10⁷ células/mL ÷ <see cref="cellsPerGram"/> = 40 g por litro.</summary>
-    public const float ReactorLitres = 500f, GramsPerLitre = 40f, ScaffoldKg = 8f;
-    public const int ProductionReactors = 2, Scaffolds = 4;
+    public const float ReactorLitres = 500f, GramsPerLitre = 40f, ScaffoldKg = 12f;   // (perfusión en dos alturas)
+    public const int ProductionReactors = 3, Scaffolds = 6;
     /// <summary>El lote que permite la maquinaria: la etapa más corta.</summary>
     public const float MachineryGrams = (ProductionReactors * ReactorLitres * GramsPerLitre < Scaffolds * ScaffoldKg * 1000f) ? ProductionReactors * ReactorLitres * GramsPerLitre : Scaffolds * ScaffoldKg * 1000f;
     public float batchGrams = MachineryGrams;   // 32 kg por lote → 64 raciones de 500 g
-    public int maxPortionsWaiting = 80;
+    public int maxPortionsWaiting = 160;
     /// <summary>Raciones en el almacén, listas para el alimentador (<see cref="PredatorRound"/>).</summary>
     public int rationsStored;
     [Tooltip("En el santuario el laboratorio NO va solo: iniciar cada lote y cosecharlo son MISIONES de la jornada (alguien tiene que hacerlas). Proliferar y diferenciar sí van solos en el biorreactor.")]
@@ -196,13 +196,16 @@ public class CulturedMeatLab : MonoBehaviour
         L(r.Find("Biorreactor_produccion"), "Biorreactor de producción (500 L · 37 °C · pH 7,3 · O₂)", 2.9f);
         Bioreactor(r, "Biorreactor_produccion_2", new Vector3(5.6f, 0f, -hz + 1.6f), 0.8f, 2.1f, glass, broth, steel, dark);   // regla P19: la demanda pide dos
         L(r.Find("Biorreactor_produccion_2"), "Biorreactor de producción 2 (500 L)", 2.9f);
+        Bioreactor(r, "Biorreactor_produccion_3", new Vector3(-1f, 0f, -4.4f), 0.8f, 2.1f, glass, broth, steel, dark);
+        L(r.Find("Biorreactor_produccion_3"), "Biorreactor de producción 3 (500 L)", 2.9f);
 
         // 5 · Biorreactor de perfusión con andamio (diferenciación en fibras, con estiramiento).
         for (int u = 0; u < Scaffolds; u++)   // regla P19: 8 kg por unidad y la demanda pide cuatro
         {
-        Transform perf = KitchenProps.Root(r, u == 0 ? "Biorreactor_andamio" : $"Biorreactor_andamio_{u + 1}", new Vector3(u % 2 == 0 ? hx - 1.5f : hx - 5.4f, 0f, u < 2 ? -0.4f : -3.6f));
+        Transform perf = KitchenProps.Root(r, u == 0 ? "Biorreactor_andamio" : $"Biorreactor_andamio_{u + 1}", new Vector3(hx - 1.5f - (u % 3) * 3.9f, 0f, u < 3 ? -0.4f : -3.6f));
         KitchenProps.C(perf, new Vector3(0f, 0.45f, 0f), new Vector3(1.8f, 0.9f, 1f), steel, 0f, "Base");
         KitchenProps.C(perf, new Vector3(0f, 1.1f, 0f), new Vector3(1.7f, 0.4f, 0.9f), glass, 0f, "Camara");
+        KitchenProps.C(perf, new Vector3(0f, 1.65f, 0f), new Vector3(1.7f, 0.4f, 0.9f), glass, 0f, "Camara_alta");
         for (int i = 0; i < 6; i++)   // tiras de andamio con el tejido creciendo
             KitchenProps.C(perf, new Vector3(-0.7f + i * 0.28f, 1.05f, 0f), new Vector3(0.12f, 0.06f, 0.75f), new Color(0.85f, 0.55f, 0.5f), 0f, "Andamio_tejido");
         KitchenProps.C(perf, new Vector3(-0.95f, 1.1f, 0f), new Vector3(0.1f, 0.3f, 0.8f), dark, 0f, "Estirador");
@@ -214,17 +217,25 @@ public class CulturedMeatLab : MonoBehaviour
         KitchenProps.C(cen, new Vector3(0f, 0.45f, 0f), new Vector3(0.8f, 0.9f, 0.8f), white, 0f, "Centrifuga");
         KitchenProps.C(cen, new Vector3(0f, 0.92f, 0f), new Vector3(0.6f, 0.04f, 0.6f), dark, 45f, "Tapa");
         L(cen, "Centrífuga (cosecha y lavado)", 1.3f);
+        Transform cen2 = KitchenProps.Root(r, "Centrifuga_2", new Vector3(hx - 7f, 0f, hz - 1.4f));
+        KitchenProps.C(cen2, new Vector3(0f, 0.45f, 0f), new Vector3(0.8f, 0.9f, 0.8f), white, 0f, "Centrifuga");
+        KitchenProps.C(cen2, new Vector3(0f, 0.92f, 0f), new Vector3(0.6f, 0.04f, 0.6f), dark, 45f, "Tapa");
+        L(cen2, "Centrífuga 2", 1.3f);
         Transform form = KitchenProps.Root(r, "Formadora", new Vector3(hx - 4.0f, 0f, hz - 1.3f));
         KitchenProps.C(form, new Vector3(0f, 0.45f, 0f), new Vector3(1f, 0.9f, 0.7f), steel, 0f, "Mesa");
         KitchenProps.C(form, new Vector3(0f, 1.1f, 0f), new Vector3(0.5f, 0.4f, 0.5f), dark, 0f, "Prensa");
         L(form, "Formadora de piezas", 1.6f);
+        Transform form2 = KitchenProps.Root(r, "Formadora_2", new Vector3(hx - 10f, 0f, hz - 1.3f));
+        KitchenProps.C(form2, new Vector3(0f, 0.45f, 0f), new Vector3(1f, 0.9f, 0.7f), steel, 0f, "Mesa");
+        KitchenProps.C(form2, new Vector3(0f, 1.1f, 0f), new Vector3(0.5f, 0.4f, 0.5f), dark, 0f, "Prensa");
+        L(form2, "Formadora de piezas 2", 1.6f);
         Transform cold = KitchenProps.Root(r, "Camara_fria", new Vector3(hx - 0.6f, 0f, 3.5f));
         KitchenProps.C(cold, new Vector3(0f, 1f, 0f), new Vector3(0.9f, 2f, 1.4f), white, 0f, "Camara");
         KitchenProps.C(cold, new Vector3(-0.46f, 1f, 0f), new Vector3(0.02f, 1.8f, 1.2f), steel, 0f, "Puerta");
         L(cold, "Cámara fría (4 °C)", 2.3f);
 
         // Consola de control con el estado del lote.
-        Transform con = KitchenProps.Root(r, "Consola_lote", new Vector3(0.3f, 0f, 0.8f));
+        Transform con = KitchenProps.Root(r, "Consola_lote", new Vector3(0f, 0f, 0.8f));
         KitchenProps.C(con, new Vector3(0f, 0.5f, 0f), new Vector3(1.2f, 1f, 0.5f), white, 0f, "Mueble");
         KitchenProps.C(con, new Vector3(0f, 1.3f, 0f), new Vector3(1.1f, 0.6f, 0.05f), screen, 0f, "Pantalla");
 

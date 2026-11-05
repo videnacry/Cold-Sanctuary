@@ -170,7 +170,7 @@ public static class PredatorRound
 public class PredatorFeeder : MonoBehaviour
 {
     public float speed = 3.2f;
-    public const int Carry = 16;
+    public const int Carry = 24;
     /// <summary>Si en este tiempo no llega, lo devuelve a la cola y va a por otro: no es una salida, sigue pendiente.</summary>
     public const float RequeueAfter = 120f;
 

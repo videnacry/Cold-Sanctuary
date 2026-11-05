@@ -25,7 +25,7 @@ public static class FoodChain
     public const float Margin = 0.8f;
     /// <summary>Tope de subida de una población animal: más sería un santuario lleno de Animal completos (caros).</summary>
     public const float MaxRaise = 2f;
-    public const int MaxBanks = 8;
+    public const int MaxBanks = 12;
     /// <summary>Por debajo de esto una especie pasa hambre (una presa muy menor que se agote no cuenta).</summary>
     public const float Fed = 0.9f;
     public const float MaxPlantFactor = 6f;

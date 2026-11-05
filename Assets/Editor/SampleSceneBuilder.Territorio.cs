@@ -94,6 +94,8 @@ public static partial class SampleSceneBuilder
             Swarm.Create<Swarm>(t, $"Bivalvos_{k}", at, SwarmKind.Clam, k % 2 == 0 ? SwarmModels.Species.Clam : SwarmModels.Species.Mya, 30f, 40f, 2.5f);
         }
 
+        BuildFastIce(t, MakeMaterial("Hielo_fijo_MAT", new Color(0.8f, 0.9f, 0.96f)), MakeMaterial("Grieta_marea_MAT", new Color(0.12f, 0.2f, 0.26f)));
+
         // ── Puntos de la isla para la prueba ──
         var points = new List<Vector3>();
         foreach (var lobe in PolarLandscapeBuilder.Islands)
@@ -110,6 +112,34 @@ public static partial class SampleSceneBuilder
 
     [UnityEditor.MenuItem("Tools/Cold Sanctuary/Cadena alimenticia (evaluar)")]
     static void FoodChainMenu() => FoodChain.Log();
+
+    /// <summary>EL HIELO FIJO (docs/hielo-y-respiraderos.md): láminas de 2 m unidas al frente de la plataforma, sobre la laguna, con su grieta de marea y un agujero de
+    /// verdad para las focas. A través de 300 m no respira nadie: estos son los únicos respiraderos.</summary>
+    static int BuildFastIce(Transform parent, Material thin, Material crack)
+    {
+        const float W = 5f, Back = 4f, Lip = 0.5f, Hole = 0.8f, HoleAt = 2f, Th = 2f;
+        int n = 0;
+        Vector3 lagoon = PolarLandscapeBuilder.Lagoon; lagoon.y = 0f;
+        for (float a = 0f; a < 360f; a += 30f)
+        {
+            Vector3 dir = TreeSpec.Dir(a), shore = Vector3.zero; bool found = false;
+            for (float r = 8f; r < 80f && !found; r += 1f) { Vector3 p = lagoon + dir * r; if (PolarLandscapeBuilder.IceAt(p.x, p.z)) { shore = p; found = true; } }
+            if (!found) continue;
+            Quaternion rot = Quaternion.LookRotation(dir);
+            if (!Clear(shore - dir * 2f + Vector3.down * 1f, new Vector3(W, 1f, Back), rot)) continue;   // (el submarino atracado, un muelle…)
+            Transform sheet = new GameObject($"Lamina_hielo_fijo_{n}").transform; sheet.SetParent(parent, false); sheet.SetPositionAndRotation(shore, rot);
+            // Cuatro piezas alrededor del agujero, en coordenadas de la orilla: +Z, hacia la plataforma.
+            void Piece(float x0, float x1, float z0, float z1) => Block(sheet, MarineLife.ThinIce, sheet.TransformPoint(new Vector3((x0 + x1) * 0.5f, -Th * 0.5f, (z0 + z1) * 0.5f)), new Vector3(x1 - x0, Th, z1 - z0), thin, a, true);
+            Piece(-W, -Hole, -Back, Lip); Piece(Hole, W, -Back, Lip);
+            Piece(-Hole, Hole, -Back, -HoleAt - Hole); Piece(-Hole, Hole, -HoleAt + Hole, Lip);
+            Block(sheet, "Grieta_de_marea", sheet.TransformPoint(new Vector3(0f, 0.012f, -0.2f)), new Vector3(2f * W, 0.02f, 0.25f), crack, a, false);
+            var hole = new GameObject($"Respiradero_{n}"); hole.transform.SetParent(sheet, false); hole.transform.localPosition = new Vector3(0f, 0f, -HoleAt);
+            Affordance.Put(hole, AffordanceKind.BreathingHole, 1);
+            n++;
+        }
+        Debug.Log($"[Territorio] {n} láminas de hielo fijo con su respiradero junto a la laguna.");
+        return n;
+    }
 
     // Un bloque con o sin collider, en coordenadas del mundo.
     static Transform Block(Transform parent, string name, Vector3 center, Vector3 size, Material m, float yaw, bool solid)
