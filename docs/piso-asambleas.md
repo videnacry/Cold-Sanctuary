@@ -61,12 +61,12 @@ Está en `AreaDesign.All`, con su prueba (grupo 77). Criterio: investigado y ≥
 
 | Estado | Áreas |
 |---|---|
-| **Cumple** (5) | Sala de asambleas, Cocina (wok, comal, brigada), Dojo, Música y Aula (estas dos, arregladas ahora) |
+| **Cumple** (7) | Sala de asambleas, Cocina (wok, comal, brigada), Dojo, Música y Aula (estas dos, arregladas ahora), Huerto, Construcción |
 | **Parcial** (8) | Sala de Yoga (2 culturas), Gimnasio, Sala de Ballet, Estudio Textil, Planta Atómica, Central Nuclear, Control de misión, Informática |
-| **Falta** (9) | Hospital, Química, Biología, Construcción, Mecánica, Huerto, Calistenia, Cría, Carne Cultivada |
+| **Falta** (7) | Hospital, Química, Biología, Mecánica, Calistenia, Cría, Carne Cultivada |
 
 **Arreglado (lo barato):** instrumentos del mundo en el banco de Música (sitar, charango, kora, shamisen) y herramientas de saber en la mesa del Aula (ábaco, astrolabio, quipu, esfera). Son piezas dentro de muebles que ya estaban: no cambian los 2 m, pero sí el inventario: reconstruir sus microcosmos (§11).
 
-**Propuesta para lo que falta** (no hecho): Huerto, con chinampa, zaï y terrazas, y Construcción, con bambú, tapia y ensamble japonés: son las que más ganan. El Hospital, con medicina de varias culturas, pide cuidado: solo lo que tenga evidencia.
+**Propuesta para lo que falta** (Huerto y Construcción, ya hechos el 2026-11-05): El Hospital, con medicina de varias culturas, pide cuidado: solo lo que tenga evidencia.
 
 Los microcosmos ya cumplen F14 en lo principal: cada pueblo lleva su estilo y sus fuentes (`MicroStyles`, planos). Los «esbozos» de `MicroStoryMaps` aún no.
