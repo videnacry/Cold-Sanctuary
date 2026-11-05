@@ -192,7 +192,7 @@ public class NuclearAccessTest : MonoBehaviour, ITestUnit
         TestProbe.Check("el intercambiador queda por debajo del lecho", pit != null && pit.position.y + pit.localScale.y * 0.5f < SeaRule.FloorY);
         Iceberg moving = Iceberg.All.FirstOrDefault(b => b != null && !b.grounded), still = Iceberg.All.FirstOrDefault(b => b != null && b.grounded);
         TestProbe.Check("dos icebergs: uno varado y otro a la deriva, varios millones de toneladas y lejos de todo", moving != null && still != null && moving.Tonnes > 1e6f && moving.DistanceToSite > IcebergRule.AlertRadius, moving != null ? $"{moving.Tonnes / 1e6f:0.0} Mt" : "");
-        TestProbe.Check("con kril de verdad, aves y focas", moving != null && moving.krill != null && moving.birds != null && Named(moving.transform, "Foca_iceberg") != null);
+        TestProbe.Check("con kril de verdad, aves y focas", moving != null && moving.krill != null && moving.birds != null && FindObjectsByType<IcebergVisitor>(FindObjectsSortMode.None).Any(v => v.berg == moving));
         TestProbe.Check("cálado como su plataforma", moving != null && Mathf.Abs(moving.size.y - SeaRule.ShelfThickness) < 1f);
         TestProbe.Check("un trozo sí lo para el escudo; un iceberg entero, no", moving != null && moving.Tonnes > IcebergRule.ShieldTonnes);
         if (moving != null)

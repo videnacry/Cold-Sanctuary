@@ -39,6 +39,9 @@ public static class PopulationPlan
     /// <summary><see cref="Target"/> sin pasar por la cadena (la usa la propia cadena).</summary>
     public static int Raw(string species) => PerHuman.TryGetValue(species, out float r) ? Mathf.Max(2, Mathf.RoundToInt(FaunaScale * r)) : 0;
 
+    /// <summary>Los que comen de verdad: el plan más los que viven en los icebergs (fijos: no crían; <see cref="IcebergVisitor"/>).</summary>
+    public static int Census(string species) => Raw(species) + (species == "Seal" ? IcebergVisitor.Seals : species == "Penguin" ? IcebergVisitor.Penguins : 0);
+
     /// <summary>Techo para la reproducción (1,5× el objetivo); 0 = sin plan para esa especie.</summary>
     public static int Cap(string species) { int t = Target(species); return t > 0 ? Mathf.CeilToInt(t * 1.5f) : 0; }
 

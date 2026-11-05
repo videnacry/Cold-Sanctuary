@@ -34,12 +34,30 @@ public static partial class SampleSceneBuilder
         KitchenProps.C(far.transform, new Vector3(0f, -270f, 0f), new Vector3(160f, 60f, 140f), new Color(0.27f, 0.26f, 0.25f), 0f, "Banco_varadero");   // (el fondo no tiene relieve: este es el banco)
         Iceberg drift = BuildIceberg(root, "Iceberg_deriva", new Vector3(530f, 0f, 120f), new Vector3(100f, 300f, 70f), false);
         drift.driftA = new Vector3(530f, 0f, 120f); drift.driftB = new Vector3(530f, 0f, -300f);
+        BuildIcebergVisitors(root, far, 2, 2); BuildIcebergVisitors(root, drift, IcebergVisitor.Seals - 2, IcebergVisitor.Penguins - 2);
         foreach (Iceberg b in new[] { far, drift })
         {
             float nearest = NearestToSite(b.transform.position, 700f, null, out string near);
             if (nearest < IcebergRule.MinFromBuildings) Debug.LogError($"[Iceberg] {b.name}, a {nearest:0} m de {near} (pide ≥ {IcebergRule.MinFromBuildings:0} m).");
             else Debug.Log($"[Iceberg] {b.name}: {b.Tonnes / 1e6f:0.0} Mt, a {nearest:0} m de {near}.");
         }
+    }
+
+    // Sus animales: adultos, nadando frente a la repisa (docs/vida-en-icebergs.md).
+    static void BuildIcebergVisitors(Transform root, Iceberg b, int seals, int penguins)
+    {
+        void Put(string species, int n)
+        {
+            GameObject prefab = LoadAnimalPrefab(species);
+            if (prefab == null) return;
+            for (int i = 0; i < n; i++)
+            {
+                Vector3 at = b.Approach + new Vector3(-6f + i * 4f, 0f, species == "Seal" ? 0f : 4f);
+                Animal a = Adult(prefab, root, at, i % 2 == 0 ? Sex.female : Sex.male, $"{species}_{b.name}_{i + 1}");
+                if (a != null) a.gameObject.AddComponent<IcebergVisitor>().berg = b;
+            }
+        }
+        Put("Seal", seals); Put("Penguin", penguins);
     }
 
     // Un tabular: el cuerpo, un escalón y la quilla bajo el agua (sin colisiones); colisión solo en lo que asoma. Unas pocas cajas.
@@ -55,8 +73,7 @@ public static partial class SampleSceneBuilder
         PolarLandscapeBuilder.IgnoreForNav(t.gameObject);
         Iceberg b = t.gameObject.AddComponent<Iceberg>(); b.grounded = grounded; b.size = size;
         if (!grounded) { Rigidbody rb = t.gameObject.AddComponent<Rigidbody>(); rb.isKinematic = true; rb.useGravity = false; }
-        // Lo que vive alrededor. Las focas y las aves son figuras, no animales con IA; el kril es un enjambre de verdad (pequeño).
-        for (int i = 0; i < 3; i++) KitchenProps.C(t, new Vector3(-size.x * 0.3f + i * 5f, above + 0.25f, size.z * 0.3f - i * 3f), new Vector3(0.7f, 0.5f, 2f), new Color(0.35f, 0.36f, 0.38f), i * 40f, "Foca_iceberg");
+        // Lo que vive alrededor: animales de verdad (BuildIcebergVisitors), bancos de verdad; las aves aún son figuras: no hay especie voladora.
         Transform birds = new GameObject("Aves_iceberg").transform; birds.SetParent(t, false); birds.localPosition = new Vector3(0f, above + 14f, 0f);
         for (int i = 0; i < 8; i++)
         {
@@ -68,6 +85,15 @@ public static partial class SampleSceneBuilder
         MiniSwarm(root, $"Kril_{name}", SwarmKind.Krill, krillAt);
         Transform kr = root.Find($"Kril_{name}");
         if (kr != null) b.krill = kr.GetComponent<Swarm>();
+        MiniSwarm(root, $"Peces_{name}", SwarmKind.Fish, at + new Vector3(-size.x * 0.5f - 12f, -2f, 0f));
+        Transform fi = root.Find($"Peces_{name}");
+        if (fi != null) b.fish = fi.GetComponent<Swarm>();
+        // El pie de hielo: lo único a lo que se sube. Los hielos se mueven: esta pieza no es estática.
+        Transform ledge = Block(t, "Repisa_iceberg", at + new Vector3(0f, -0.05f, size.z * 0.5f + 7f), new Vector3(size.x * 0.6f, 0.8f, 14f), MakeMaterial("Repisa_iceberg_MAT", ice), 0f, true);
+        ledge.gameObject.isStatic = false;
+        PolarLandscapeBuilder.IgnoreForNav(ledge.gameObject);
+        Affordance.Put(ledge.gameObject, AffordanceKind.HaulOut, 6);
+        b.ledge = ledge;
         return b;
     }
 }

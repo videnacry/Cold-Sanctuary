@@ -26,6 +26,8 @@ public static class FoodChain
     /// <summary>Tope de subida de una población animal: más sería un santuario lleno de Animal completos (caros).</summary>
     public const float MaxRaise = 2f;
     public const int MaxBanks = 12;
+    /// <summary>Un banco de peces y otro de kril por iceberg (Smith et al. 2007): además de los de la laguna, que son los que pide <see cref="Banks"/>.</summary>
+    public const int BergBanks = 2;
     /// <summary>Por debajo de esto una especie pasa hambre (una presa muy menor que se agote no cuenta).</summary>
     public const float Fed = 0.9f;
     public const float MaxPlantFactor = 6f;
@@ -121,19 +123,19 @@ public static class FoodChain
     static float Supply(string s, Dictionary<string, float> real)
     {
         if (real != null && real.TryGetValue(s, out float r)) return r;
-        if (s == Fish) return _banks[SwarmKind.Fish] * BankYield(SwarmKind.Fish);
-        if (s == Krill) return _banks[SwarmKind.Krill] * BankYield(SwarmKind.Krill);
+        if (s == Fish) return (_banks[SwarmKind.Fish] + BergBanks) * BankYield(SwarmKind.Fish);
+        if (s == Krill) return (_banks[SwarmKind.Krill] + BergBanks) * BankYield(SwarmKind.Krill);
         if (s == Clam) return _banks[SwarmKind.Clam] * BankYield(SwarmKind.Clam);
         if (s == Jelly) return 200f;
         if (System.Enum.TryParse(s, out AffordanceKind k) && PlannedSpots.TryGetValue(k, out int n))
             return n * PlantYield * (_plants.TryGetValue(k, out float f) ? f : 1f);
-        return PopulationPlan.Groups.ContainsKey(s) ? PopulationPlan.Raw(s) * Mass(s) * Crop(s) : 0f;
+        return PopulationPlan.Groups.ContainsKey(s) ? PopulationPlan.Census(s) * Mass(s) * Crop(s) : 0f;
     }
 
     static float Need(string sp)
     {
         float kg = Intake.TryGetValue(sp, out float i) ? i : Mass(sp) * 0.05f;   // sin dato: 5 % de su masa [A]
-        return PopulationPlan.Raw(sp) * kg * DaysPerYear * (_land.Contains(sp) ? 1f - LabShare : 1f);
+        return PopulationPlan.Census(sp) * kg * DaysPerYear * (_land.Contains(sp) ? 1f - LabShare : 1f);
     }
 
     // Reparte cada hambre entre sus fuentes según lo que ofrecen. Devuelve lo que se le pide a cada fuente.
@@ -241,7 +243,7 @@ public static class FoodChain
         Dictionary<string, float> demand = Demand(real);
         foreach (string sp in PopulationPlan.Groups.Keys)
         {
-            var l = new Line { species = sp, individuals = PopulationPlan.Raw(sp), needs = Need(sp) };
+            var l = new Line { species = sp, individuals = PopulationPlan.Census(sp), needs = Need(sp) };
             float total = 0f, got = 0f;
             foreach (string s in _diet[sp]) total += Supply(s, real);
             foreach (string s in _diet[sp])

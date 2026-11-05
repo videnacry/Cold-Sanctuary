@@ -26,6 +26,9 @@ public class MarineLife : MonoBehaviour
     float _nextPick, _restUntil, _restCooldown;
     bool _onIce;
     Vector3 _beach;
+    IcebergVisitor _visitor;   // vive en un iceberg: es su hogar en vez de la laguna (docs/vida-en-icebergs.md)
+    Transform _parent;
+    Vector3 Home => _visitor != null && _visitor.berg != null ? _visitor.berg.transform.position : Lagoon;
     float _angleSeed, _nextKill, _nextSuckle;
     // Etograma marino (Ethogram, docs/natural-interactions.md): descansadero en el hielo, respiradero, grava para mudar.
     Affordance _haul, _spot;
@@ -54,7 +57,9 @@ public class MarineLife : MonoBehaviour
         _a = GetComponent<Animal>();
         _estrus = GetComponent<EstrusState>();
         string sp = _a != null ? _a.SpeciesName : "";
-        hauls = sp == "Seal" || sp == "Walrus";
+        _visitor = GetComponent<IcebergVisitor>();
+        _parent = transform.parent;
+        hauls = sp == "Seal" || sp == "Walrus" || _visitor != null;
         speed = sp == "Orca" ? 3.2f : sp == "Whale" ? 1.6f : sp == "Walrus" ? 1.8f : 2.2f;
         if (TryGetComponent(out NavMeshAgent nav)) nav.enabled = false;   // nada: no anda por el NavMesh
         if (TryGetComponent(out Rigidbody rb)) { rb.isKinematic = true; rb.useGravity = false; }
@@ -121,14 +126,25 @@ public class MarineLife : MonoBehaviour
                 if (!wake) { Settle(); return; }
                 _onIce = false; _restCooldown = Time.time + Random.Range(40f, 90f);
                 if (_haul != null) { _haul.Release(_a); _haul = null; _beach = Vector3.zero; }
-                _target = Lagoon + Random.insideUnitSphere * 10f; _target.y = SwimY;
+                if (_visitor != null) { transform.SetParent(_parent, true); _target = _visitor.berg.Approach; _target.y = SwimY; }
+                else { _target = Lagoon + Random.insideUnitSphere * 10f; _target.y = SwimY; }
             }
             else if ((night || (_a.hungry < -0.2f && Time.time > _restCooldown)) && _a.lifeStage != LifeStage.child)
             {
                 if (_beach == Vector3.zero) _beach = FindBeach();
+                // Al iceberg se llega por delante de su repisa: la quilla no choca y atravesarla no sería real.
+                if (_visitor != null && Flat(transform.position - _visitor.berg.Approach) > 3f && !SolidAt(transform.position)) { Move(new Vector3(_visitor.berg.Approach.x, SwimY, _visitor.berg.Approach.z), speed, false); return; }
+                if (_visitor != null) _beach = _visitor.berg.HaulSpot(_angleSeed);   // (la repisa deriva: se recalcula)
                 if (_beach != Vector3.zero && Move(_beach, speed * 0.6f, onIce: true) < 0.5f)
                 {
                     _onIce = true; _restUntil = Time.time + Random.Range(60f, 140f);
+                    if (_visitor != null)
+                    {
+                        var (why, hours) = IcebergVisitor.Stay(_a.SpeciesName, _visitor.berg.grounded, TimeController.timeController != null ? TimeController.timeController.Day : 0);
+                        _restUntil = Time.time + hours * (TimeController.timeController != null ? TimeController.timeController.SecondsPerGameDay / 24f : 150f);
+                        transform.SetParent(_visitor.berg.transform, true);   // va con el iceberg
+                        Debug.Log($"[Icebergs] «{name}» sube a {_visitor.berg.name}: {why}, {hours:0} h.");
+                    }
                     Debug.Log($"[Marinos] «{name}» sale a descansar al hielo en ({_beach.x:0},{_beach.z:0}).");
                 }
                 return;
@@ -192,7 +208,8 @@ public class MarineLife : MonoBehaviour
         if (Time.time > _nextPick || new Vector2(transform.position.x - _target.x, transform.position.z - _target.z).sqrMagnitude < 1f)
         {
             Vector2 r = Random.insideUnitCircle * LagoonRadius;
-            _target = new Vector3(Lagoon.x + r.x, SwimY - Random.Range(0f, 2.5f), Lagoon.z + r.y);
+            if (_visitor != null && _visitor.berg != null) r = Random.insideUnitCircle.normalized * _visitor.berg.SwimRadius;   // en corro, fuera de la quilla
+            _target = new Vector3(Home.x + r.x, SwimY - Random.Range(0f, 2.5f), Home.z + r.y);
             _nextPick = Time.time + Random.Range(8f, 18f);
         }
         Move(_target, speed * 0.6f, false);
@@ -252,7 +269,7 @@ public class MarineLife : MonoBehaviour
         // Bajo una placa de hielo y queriendo salir al hielo: primero sale a agua abierta (hacia la laguna); trepar desde
         // debajo la metía dentro de la placa.
         bool underIce = cur.y < -0.3f && IceAbove(cur);
-        if (onIce && underIce) { Vector3 open = Lagoon - cur; open.y = 0f; to = cur + (open.sqrMagnitude > 0.01f ? open.normalized : Vector3.forward) * 3f; to.y = SwimY; onIce = false; }
+        if (onIce && underIce) { Vector3 open = Home - cur; open.y = 0f; to = cur + (open.sqrMagnitude > 0.01f ? open.normalized : Vector3.forward) * 3f; to.y = SwimY; onIce = false; }
         Vector3 d = to - transform.position;
         float dist = d.magnitude;
         if (dist > 0.01f)
@@ -275,7 +292,7 @@ public class MarineLife : MonoBehaviour
                 Vector3 nose = flatNow.sqrMagnitude > 1e-8f ? np + flatNow.normalized * (_halfLen + 0.6f) : np;
                 if (ThickAbove(cur))   // (una aparición o un empujón lo dejó dentro: sale hacia la laguna, sin pasar por debajo)
                 {
-                    Vector3 open = Lagoon - cur; open.y = 0f;
+                    Vector3 open = Home - cur; open.y = 0f;
                     np = cur + open.normalized * v * Time.deltaTime; np.y = cur.y;
                 }
                 else if (ThickAbove(np) || ThickAbove(nose))
@@ -362,10 +379,13 @@ public class MarineLife : MonoBehaviour
         return false;
     }
 
+    static float Flat(Vector3 v) => new Vector2(v.x, v.z).magnitude;
+
     // Un punto de la orilla de la laguna (hielo a ras del agua) en una dirección propia de cada foca, separado de las demás.
     // Primero, un DESCANSADERO (HaulOut) libre del entorno; si no hay, uno propio por su ángulo.
     Vector3 FindBeach()
     {
+        if (_visitor != null && _visitor.berg != null) return _visitor.berg.HaulSpot(_angleSeed);
         _haul = Affordance.Nearest(AffordanceKind.HaulOut, transform.position, 120f, _a);
         if (_haul != null && !SolidAt(_haul.transform.position)) _haul = null;   // (sin hielo debajo no es descansadero: la foca acababa tumbada en el fondo)
         if (_haul != null && _haul.Occupy(_a)) { _haul.Touch(_a); return _haul.transform.position + Vector3.up * 0.25f; }

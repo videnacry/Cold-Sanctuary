@@ -564,7 +564,7 @@ Berón: «el tunnel se puede crear protegido para que los iceberg no afecten? no
 - **Dos icebergs** (`Iceberg`): uno varado en un banco al noroeste (1 Mt) y otro a la deriva por el este (1,9 Mt), a 0,2 m/s, unos 30 m por día de juego. A 500 m de hondo, 240 m de quilla no tocarían fondo: **el banco es una pieza puesta para eso**.
 - **A 300 m del sitio:** misión obligatoria de remolque (`nuc_remolque`). **Falla 1 de cada 10**, fijo por día; se repite al día siguiente, más cerca.
 - **A 190 m:** se **desconecta la línea**: nadie baja, y quien esté abajo sale por el pozo de escape. Vuelve cuando se aleja.
-- **Vida alrededor:** en el mar de Weddell, dos icebergs estudiados tenían más clorofila, kril y aves hasta ~3,7 km, porque sueltan hierro y hacen de refugio. Aquí, un enjambre de kril de verdad por iceberg; **las focas y los petreles son figuras**, sin IA.
+- **Vida alrededor:** en el mar de Weddell, dos icebergs estudiados tenían más clorofila, kril y aves hasta ~3,7 km, porque sueltan hierro y hacen de refugio. Aquí, un enjambre de kril de verdad por iceberg, peces y animales reales ([vida-en-icebergs.md](vida-en-icebergs.md)); **las focas y los petreles son figuras**, sin IA.
 - **Coste para el PC:** unas 15 cajas por iceberg, un enjambre pequeño y un solo giro para las aves; solo se mueve el que deriva.
 
 ## 15. La auditoría de estas reglas (W11)

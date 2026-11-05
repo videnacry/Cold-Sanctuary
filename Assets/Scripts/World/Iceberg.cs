@@ -23,7 +23,7 @@ public static class IcebergRule
 
 /// <summary>
 /// UN ICEBERG (Berón 2026-11-05; docs/sitio-nuclear.md §14): deriva despacio entre dos puntos, o está varado en un banco. Barato: unas pocas cajas, sin luces propias, y solo
-/// se mueve una vez por fotograma. Alrededor, como en los estudios reales, aves, focas y kril. Si se acerca al sitio: ALERTA → misión de remolque (<c>nuc_remolque</c>);
+/// se mueve una vez por fotograma. Alrededor, como en los estudios reales, aves, kril, peces y animales de verdad (<see cref="IcebergVisitor"/>). Si se acerca al sitio: ALERTA → misión de remolque (<c>nuc_remolque</c>);
 /// PELIGRO → se desconecta la línea (<see cref="SiteLine.Disconnected"/>) hasta que se aleja.
 /// </summary>
 public class Iceberg : MonoBehaviour
@@ -36,6 +36,20 @@ public class Iceberg : MonoBehaviour
     [Tooltip("Tamaño total (m): ancho, de arriba abajo, largo.")] public Vector3 size;
     [Tooltip("Las aves que vuelan alrededor: giran juntas.")] public Transform birds;
     [Tooltip("El kril que lo sigue.")] public Swarm krill;
+    [Tooltip("Los peces que lo siguen (docs/vida-en-icebergs.md).")] public Swarm fish;
+    [Tooltip("El pie de hielo a ras de agua: lo único a lo que se puede subir.")] public Transform ledge;
+
+    /// <summary>Dónde nada quien vive aquí: un corro alrededor, fuera del hielo (la quilla no tiene colisión).</summary>
+    public float SwimRadius => Mathf.Max(size.x, size.z) * 0.75f + 10f;
+    /// <summary>El punto del agua frente a la repisa: por ahí se sube.</summary>
+    public Vector3 Approach => ledge != null ? ledge.position + (ledge.position - transform.position).normalized * 12f + Vector3.down : transform.position;
+    /// <summary>Un sitio en la repisa, propio de cada uno.</summary>
+    public Vector3 HaulSpot(float seed)
+    {
+        if (ledge == null) return transform.position;
+        float a = seed * Mathf.Deg2Rad;
+        return ledge.position + new Vector3(Mathf.Cos(a) * size.x * 0.22f, 0.6f, Mathf.Sin(a) * 3f);
+    }
 
     public int Tows { get; private set; }
     public int FailedTows { get; private set; }
@@ -61,7 +75,12 @@ public class Iceberg : MonoBehaviour
         Vector3 p = Vector3.MoveTowards(transform.position, _to, IcebergRule.Speed * Time.deltaTime);
         transform.position = p;
         if ((p - _to).sqrMagnitude < 0.04f) _to = _to == driftB ? driftA : driftB;
-        if (krill != null && Time.time > _nextKrill) { _nextKrill = Time.time + 20f; krill.GoTo(p + Vector3.down * 4f + transform.right * (size.x * 0.5f + 12f)); }
+        if (krill != null && Time.time > _nextKrill)
+        {
+            _nextKrill = Time.time + 20f;
+            krill.GoTo(p + Vector3.down * 4f + transform.right * (size.x * 0.5f + 12f));
+            if (fish != null) fish.GoTo(p + Vector3.down * 2f - transform.right * (size.x * 0.5f + 12f));
+        }
         SiteLine line = SiteLine.Instance;
         if (line != null) line.Disconnected = AnyDanger;
     }
