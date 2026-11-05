@@ -40,7 +40,9 @@ public static class ActivityKit
                 if (t.name != leg && t.name != arm) continue;
                 // La punta más honda del brazo (la de la tibia/tarso); si no tiene, la tibia; si no, el brazo.
                 Transform tip = null;
-                foreach (Transform c in t.GetComponentsInChildren<Transform>(true)) if (c.name == "Punta") tip = c;
+                // (Sin contar las «Punta» de los utensilios que ya lleva: si no, la mano pasaba a ser la punta del utensilio, Held no lo
+                // veía —ronda 7: «insecto: come con cuchara — None»— y los utensilios se apilaban uno dentro de otro.)
+                foreach (Transform c in t.GetComponentsInChildren<Transform>(true)) if (c.name == "Punta" && !InProp(c, t)) tip = c;
                 if (tip == null) foreach (Transform c in t.GetComponentsInChildren<Transform>(true)) if (c.name == "Tibia_art") tip = c;
                 best = tip ?? t;
                 break;
@@ -48,6 +50,13 @@ public static class ActivityKit
             return best;
         }
         return null;
+    }
+
+    // ¿Cuelga <paramref name="c"/> de un utensilio (entre él y el brazo <paramref name="arm"/>)?
+    static bool InProp(Transform c, Transform arm)
+    {
+        for (Transform p = c; p != null && p != arm; p = p.parent) if (p.name.StartsWith(PropPrefix)) return true;
+        return false;
     }
 
     /// <summary>La estatura de <paramref name="g"/> respecto a la del cuerpo de cubos (1,75 m): escala de los utensilios del insecto.</summary>
