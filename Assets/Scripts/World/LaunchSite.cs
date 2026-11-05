@@ -125,6 +125,9 @@ public class LaunchSite : MonoBehaviour
         if (Object.FindAnyObjectByType<LaunchSite>() == null) return l;
         l.Add(new WorkRoster.Mission(ControlArea, "lanz_control", "Control de misión: telemetría, meteorología (viento en altura, techo de nubes) y cuenta atrás de la próxima ventana", 1f));
         l.Add(new WorkRoster.Mission(ControlArea, "lanz_seguridad", "Seguridad de la plataforma: probar el diluvio de agua, limpiar la trinchera de llamas y revisar el escudo y la cubeta de contención", 1f) { roams = true });
+        // ICEBERGS (docs/sitio-nuclear.md §14): remolcarlo; y si aun así llega, vaciar lo que arde. Aquí no hay nada que desconectar.
+        if (Iceberg.Threatening(IcebergRule.Site.Launch) != null) l.Add(new WorkRoster.Mission(ControlArea, Iceberg.LaunchTow, "Iceberg a la vista: seguirlo por radar y sonar y remolcarlo lejos de la plataforma", SiteLineRule.MissionHours, true));
+        if (Iceberg.Danger(IcebergRule.Site.Launch)) l.Add(new WorkRoster.Mission(ControlArea, "lanz_vaciado", "Iceberg encima: vaciar el oxígeno líquido y el RP-1 y asegurar la plataforma", 1f, true));
         l.Add(new WorkRoster.Mission(ControlArea, "lanz_fabrica", "Fábrica de cohetes: integrar etapas y la carga útil (la trae el submarino de obra)", 2f));
         return l;
     }

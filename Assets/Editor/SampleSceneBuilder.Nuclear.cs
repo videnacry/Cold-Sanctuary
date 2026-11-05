@@ -152,7 +152,7 @@ public static partial class SampleSceneBuilder
             Hull(gal, new Vector3(3f, 3f, CavernRule.PillarM + 2f), 0.3f, conc, "Revestimiento_galeria");
             BuildRockMonitoring(root, cav, waste, root.Find("Cajon_TRIGA"));
             _nuclearLine = BuildCavernLine(root, hx, root.Find("Cajon_TRIGA"), well.position, galleryAt);
-            BuildRefuge(root, _nuclearLine);
+            BuildRefuge(root, _nuclearLine, cav.position);
             ValidateCavernLine(_nuclearLine);
         }
 

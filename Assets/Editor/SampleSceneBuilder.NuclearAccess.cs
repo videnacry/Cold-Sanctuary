@@ -129,28 +129,34 @@ public static partial class SampleSceneBuilder
         Transform tube = new GameObject("Tubo_linea").transform; tube.SetParent(root, false); tube.SetPositionAndRotation(top, Quaternion.LookRotation(axis));
         tube.position -= tube.up * (LineBore * 0.5f - 0.1f);   // el piso del tubo, bajo el carro
         float sea = (top.y - NuclearSiteRule.SeabedY) / Mathf.Max(0.01f, -axis.y);   // lo que recorre hasta el lecho
-        void Shell(float z0, float z1, Color c, string name)
+        // EL TRAMO QUE SUELTA: del casquete al conector, por debajo de la banda de las quillas. Lo de abajo (muñón, compuerta, roca) NO se mueve: es lo que el conector protege.
+        Transform upper = new GameObject("Tubo_superior").transform; upper.SetParent(tube, false);
+        float cut = IcebergRule.ConnectorDepth / Mathf.Max(0.01f, -axis.y);
+        line.upperTube = upper;
+        void Shell(Transform tube2, float z0, float z1, Color c, string name)
         {
             float mid = (z0 + z1) * 0.5f, l = z1 - z0, h = LineBore * 0.5f;
             for (int s = -1; s <= 1; s += 2)
             {
-                KitchenProps.C(tube, new Vector3(s * h, 0f, mid), new Vector3(0.1f, LineBore, l), c, 0f, name);
-                KitchenProps.C(tube, new Vector3(0f, s * h, mid), new Vector3(LineBore, 0.1f, l), c, 0f, name);
+                KitchenProps.C(tube2, new Vector3(s * h, 0f, mid), new Vector3(0.1f, LineBore, l), c, 0f, name);
+                KitchenProps.C(tube2, new Vector3(0f, s * h, mid), new Vector3(LineBore, 0.1f, l), c, 0f, name);
             }
         }
         float view = 16f / Mathf.Max(0.01f, -axis.y);   // el cristal, solo arriba, donde se ve el mar: a 50 bar, abajo, va acero
-        Shell(0f, view, VirtualizationTank.GlassColor, "Tubo_cristal");
-        Shell(view, sea, steel, "Tubo_acero");
-        Shell(sea, len, conc, "Tubo_revestido");
+        Shell(upper, 0f, view, VirtualizationTank.GlassColor, "Tubo_cristal");
+        Shell(upper, view, cut, steel, "Tubo_acero");
+        Shell(tube, cut, sea, steel, "Munon_tubo");
+        Shell(tube, sea, len, conc, "Tubo_revestido");
+        KitchenProps.C(tube, new Vector3(0f, 0f, cut + 1f), new Vector3(LineBore + 2f, LineBore + 2f, 2f), new Color(0.95f, 0.8f, 0.2f), 0f, "Conector_rapido");
         // EL ESCUDO: hormigón con dientes por donde pueden llegar las quillas. Para trozos, no para un iceberg entero (§14). Compuerta en el lecho: si se pierde lo de arriba, lo de abajo sigue seco.
         float shieldEnd = Mathf.Min(IcebergRule.KeelBand / Mathf.Max(0.01f, -axis.y), sea), wallT = 2f, ring = LineBore * 0.5f + wallT * 0.5f + 0.3f, shieldMid = (view + shieldEnd) * 0.5f, shieldLen = shieldEnd - view;
         for (int s = -1; s <= 1; s += 2)
         {
-            KitchenProps.C(tube, new Vector3(s * ring, 0f, shieldMid), new Vector3(wallT, 2f * ring + wallT, shieldLen), conc, 0f, "Escudo_tubo");
-            KitchenProps.C(tube, new Vector3(0f, s * ring, shieldMid), new Vector3(2f * ring + wallT, wallT, shieldLen), conc, 0f, "Escudo_tubo");
+            KitchenProps.C(upper, new Vector3(s * ring, 0f, shieldMid), new Vector3(wallT, 2f * ring + wallT, shieldLen), conc, 0f, "Escudo_tubo");
+            KitchenProps.C(upper, new Vector3(0f, s * ring, shieldMid), new Vector3(2f * ring + wallT, wallT, shieldLen), conc, 0f, "Escudo_tubo");
         }
         for (float z = view + 20f; z < shieldEnd; z += 40f)
-            for (int s = -1; s <= 1; s += 2) KitchenProps.C(tube, new Vector3(s * (ring + 2f), 0f, z), new Vector3(2f, 2f, 3f), conc, 0f, "Diente_escudo");
+            for (int s = -1; s <= 1; s += 2) KitchenProps.C(upper, new Vector3(s * (ring + 2f), 0f, z), new Vector3(2f, 2f, 3f), conc, 0f, "Diente_escudo");
         Transform gate = KitchenProps.C(tube, new Vector3(0f, 0f, sea), new Vector3(LineBore + 0.4f, LineBore + 0.4f, 0.8f), new Color(0.8f, 0.2f, 0.15f), 0f, "Compuerta_lecho");
         line.seabedGate = gate;
         KitchenProps.C(tube, new Vector3(0f, 0f, sea + 6f), new Vector3(LineBore + 8f, LineBore + 8f, 12f), conc, 0f, "Collar_lecho");
@@ -159,11 +165,15 @@ public static partial class SampleSceneBuilder
             float h = LineBore * 0.5f + 0.1f;
             for (int s = -1; s <= 1; s += 2)
             {
-                KitchenProps.C(tube, new Vector3(s * h, 0f, z), new Vector3(0.2f, LineBore + 0.4f, 0.3f), steel, 0f, "Marco_tubo");
-                KitchenProps.C(tube, new Vector3(0f, s * h, z), new Vector3(LineBore + 0.4f, 0.2f, 0.3f), steel, 0f, "Marco_tubo");
+                KitchenProps.C(z < cut ? upper : tube, new Vector3(s * h, 0f, z), new Vector3(0.2f, LineBore + 0.4f, 0.3f), steel, 0f, "Marco_tubo");
+                KitchenProps.C(z < cut ? upper : tube, new Vector3(0f, s * h, z), new Vector3(LineBore + 0.4f, 0.2f, 0.3f), steel, 0f, "Marco_tubo");
             }
         }
-        for (int s = -1; s <= 1; s += 2) KitchenProps.C(tube, new Vector3(s * 0.8f, -LineBore * 0.5f + 0.15f, len * 0.5f), new Vector3(0.12f, 0.2f, len), dark, 0f, "Rail_linea");
+        for (int s = -1; s <= 1; s += 2)
+        {
+            KitchenProps.C(upper, new Vector3(s * 0.8f, -LineBore * 0.5f + 0.15f, cut * 0.5f), new Vector3(0.12f, 0.2f, cut), dark, 0f, "Rail_linea");
+            KitchenProps.C(tube, new Vector3(s * 0.8f, -LineBore * 0.5f + 0.15f, (cut + len) * 0.5f), new Vector3(0.12f, 0.2f, len - cut), dark, 0f, "Rail_linea");
+        }
 
         // ── EL CARRO: cabina NIVELADA, con el piso siempre plano aunque el tubo vaya inclinado; abierta hasta el pasamanos, para ver a quien va ──
         Transform car = new GameObject("Carro_linea").transform; car.SetParent(st, true); car.SetPositionAndRotation(top, Quaternion.LookRotation(flat));
@@ -204,10 +214,7 @@ public static partial class SampleSceneBuilder
         KitchenProps.C(eT, new Vector3(0f, 0.4f, 0f), new Vector3(3.2f, 0.8f, 3.2f), green, 0f, "Tapa_escape");
         float shieldTop = -16f, shieldLow = -Mathf.Min(IcebergRule.KeelBand, -NuclearSiteRule.SeabedY);
         KitchenProps.C(root, root.InverseTransformPoint(new Vector3(eHead.x, (shieldTop + shieldLow) * 0.5f, eHead.z)), new Vector3(7f, shieldTop - shieldLow, 7f), conc, 0f, "Escudo_escape");
-        // LA DETECCIÓN: radar en un mástil del casquete y sonar de quillas colgado del borde. Lo que no se ve no se remolca.
-        KitchenProps.C(st, new Vector3(-5f, 5f, 3f), new Vector3(0.3f, 10f, 0.3f), steel, 0f, "Mastil_radar");
-        KitchenProps.C(st, new Vector3(-5f, 10.2f, 3f), new Vector3(2.4f, 0.4f, 0.4f), dark, 0f, "Radar_hielo");
-        KitchenProps.C(st, new Vector3(-5f, -6f, 3f), new Vector3(1f, 2f, 1f), yel, 0f, "Sonar_quillas");
+        KitchenProps.C(root, root.InverseTransformPoint(new Vector3(eHead.x, -IcebergRule.ConnectorDepth, eHead.z)), new Vector3(4f, 2f, 4f), yel, 0f, "Conector_escape");   // el punto débil del pozo: si lo arrastran, rompe aquí y no tira de la roca
         Label(eT, "Salida de escape: pozo propio con jaula a baterías (ni por el tubo ni por el pozo del reactor)", 2.5f);
         Transform cage = new GameObject("Jaula_escape").transform; cage.SetParent(root, false); cage.position = eFoot;
         KitchenProps.C(cage, new Vector3(0f, 1.1f, 0f), new Vector3(2f, 2.2f, 2f), yel, 0f, "Caja_jaula");
