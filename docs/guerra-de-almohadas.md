@@ -156,6 +156,10 @@ Ahora el ring registra su caja (`PillowRing.Box`: plataforma, cama y cabecero, s
   en vertical desde encima y atraviesa la caja del ring porque la pista está dentro. La prueba ya no cuenta la columna de la pista
   (≤ 4,5 m de ella): aterrizar en el ring no es cruzarlo.
 
+## Con 30 residentes (2026-11-05)
+
+- Con Malena y Neo son **30 residentes**: el colchón sigue en 6 × 6 celdas (caben 36).
+
 ## Con 28 residentes (2026-11-04)
 
 - Seis personas más y una cuarta casa por árbol: hay **28 residentes**, así que el colchón pasa a **6 × 6** celdas (15 m de lado,

@@ -19,7 +19,7 @@ public class WorkdayDirector : MonoBehaviour
     public static readonly string[] Staff = { "Player", "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene", "JefeConstruccion", "Andrea",
                                "Nesvitor", "Amykhuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi",   // familia y amigos de Berón (docs/diseno-personajes.md)
                                "Gallarle", "Julian", "Fausto",   // (2026-11-04) parejas: de Ducristin (Gallarle), de Alicita (Julian) y de Irosene (Fausto); pendientes de foto
-                               "David", "Adonis", "Julito", "Ale", "Ivelyna", "Luciana" };   // (2026-11-04) seis nuevos: informática, biotecnología, pediatría y piloto; pendientes de foto
+                               "David", "Adonis", "Yulo", "Lale", "Ivelyna", "Luciana", "Malena" };   // (2026-11-04) seis nuevos y Malena (2026-11-05): informática, biotecnología, pediatría y piloto
     /// <summary>(2026-11-04) La lista del personal, también sin escena: la usan la regla de capacidad (AreaCapacity) y el
     /// constructor del Aula (cuántas plazas y cuántos pisos).</summary>
     [Tooltip("Personal del santuario en su orden FIJO (el de la rotación). El jugador entra cuando ya es miembro.")]
@@ -73,7 +73,7 @@ public class WorkdayDirector : MonoBehaviour
     /// <summary>El GameObject de un miembro del personal (en escena algunos se llaman «Goluis_Post»…).</summary>
     static readonly Dictionary<string, GameObject> _bodies = new Dictionary<string, GameObject>();
     /// <summary>Ids de antes de un cambio de nombre (id nuevo → id viejo), para las escenas sin reconstruir.</summary>
-    public static readonly System.Collections.Generic.Dictionary<string, string> LegacyIds = new System.Collections.Generic.Dictionary<string, string> { { "Amykhuz", "Amahuz" } };
+    public static readonly System.Collections.Generic.Dictionary<string, string> LegacyIds = new System.Collections.Generic.Dictionary<string, string> { { "Amykhuz", "Amahuz" }, { "Lale", "Ale" }, { "Yulo", "Julito" } };
 
     /// <summary>El GameObject de un miembro del personal (en escena algunos se llaman «Goluis_Post»…). Cacheado: buscar por nombre cada frame era lo más caro de la jornada.</summary>
     public static GameObject Body(string n)

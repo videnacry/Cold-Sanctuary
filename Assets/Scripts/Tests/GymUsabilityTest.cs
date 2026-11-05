@@ -162,7 +162,7 @@ public class GymUsabilityTest : MonoBehaviour, ITestUnit
     List<Person> PickPeople()
     {
         string[] names = WorkdayDirector.Instance != null ? WorkdayDirector.Instance.staff
-            : new[] { "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene", "JefeConstruccion", "Andrea", "Nesvitor", "Amykhuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi", "Gallarle", "Julian", "Fausto", "David", "Adonis", "Julito", "Ale", "Ivelyna", "Luciana" };
+            : new[] { "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene", "JefeConstruccion", "Andrea", "Nesvitor", "Amykhuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi", "Gallarle", "Julian", "Fausto", "David", "Adonis", "Yulo", "Lale", "Ivelyna", "Luciana", "Malena" };
         var all = new List<Person>();
         foreach (string n in names)
         {

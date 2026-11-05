@@ -146,9 +146,10 @@ Berón: Panterilia es maestra de baile y de finanzas; Gohageneis, maestro de bai
 |---|---|---|---|
 | **David** | Informática | Informática: el clúster de IA (`ifo_sysadmin`, `ifo_refrigeracion`, `ifo_energia`) | Informática |
 | **Adonis** | Informática | igual que David | Informática |
-| **Julito** | Biotecnología | Carne Cultivada (el laboratorio) y Biología (con el cuidado de los fotobiorreactores del árbol) | Carne Cultivada |
-| **Ale** | Biotecnología | igual que Julito | Carne Cultivada |
+| **Yulo** | Biotecnología | Carne Cultivada (el laboratorio) y Biología (con el cuidado de los fotobiorreactores del árbol) | Carne Cultivada |
+| **Lale** | Biotecnología | igual que Yulo | Carne Cultivada |
 | **Ivelyna** | Pediatra | Hospital: `hos_pediatria` (misión nueva: consulta, vacunas y crecimiento de los niños) y las del hospital `enf_` | el hospital |
+| **Malena** (2026-11-05) | Pediatra | igual que Ivelyna | el hospital |
 | **Luciana** | Piloto | Mecánica: `mec_alfombras` (misión nueva: la flota de alfombras voladoras y el transporte aéreo); Control de misión: `lan_control` (misión nueva: el seguimiento de la lanzadera y de los vuelos) | la Mecánica |
 
 **Por qué así**:
@@ -158,28 +159,22 @@ Berón: Panterilia es maestra de baile y de finanzas; Gohageneis, maestro de bai
 - **Luciana, piloto**: lo que vuela en el santuario son las alfombras (su flota y el transporte aéreo, que se cuida en la Mecánica, junto
   a los vehículos) y la lanzadera (su control de misión). Los submarinos siguen con Adaguchi.
 
-**Aspecto**: provisional y **pendiente de foto**, como Gallarle (`CubeHair.Placeholder`): pelo corto o media melena castaña, piel media
+**Aspecto** (hasta las fotos del 2026-11-05; ver abajo): provisional, pelo corto o media melena castaña, piel media
 y ropa lisa de un color por persona.
-- El rasgo femenino (`Fem`) solo va donde el nombre lo sugiere (Ivelyna, Luciana), y está **pendiente de que Berón lo confirme**.
-- Ale es **hombre** (confirmado por Berón): va sin él.
-- Se reconocen por el nombre **exacto**: David o Ale pueden salir en los microcosmos.
-
-## Neo (2026-11-04)
-
-Neo es un **niño, hijo de Ducristin y Gallarle** (pendiente de foto). Vive en la casa de sus padres (`Bedroom.kids`, `Kids` en `ResidentialBuilder`) y cuenta en el aforo del ring. Lleva el ciclo de vida de los humanos: `PersonLife` en etapa de niño, `BodyAging.growth` 0,35, con `mother` (Gallarle) y `father` (Ducristin) enlazados. **No está en la jornada** (`WorkdayDirector.Staff`): su tiempo es libre y va con su madre (`FollowMother`). Todavía no hay guardería ni juego propio de niños; cuando exista, con Ivelyna (pediatra), irá ahí.
-
-**Por confirmar:** Berón escribió «Dukristin»; se conserva el nombre «Ducristin» hasta que lo confirme.
+- El rasgo femenino (`Fem`) de Ivelyna y Luciana lo confirman sus fotos.
+- Lale es **hombre** (confirmado por Berón): va sin él.
+- Se reconocen por el nombre **exacto**: David o Lale pueden salir en los microcosmos.
 
 **Casas**: llegan seis y quedaban 2 casas libres.
 - Los árboles de la arboleda crecen de 26 a **38 m** y cada uno lleva una **cuarta casa**, del otro lado y 21 m sobre la primera.
-  - Hay **24 casas: 22 ocupadas y 2 libres**.
+  - Hay **24 casas: 22 ocupadas y 2 libres** (23 y 1 con Malena).
   - Duermen allí **28 residentes**: 22 dueños y 6 parejas.
 - El **ring de almohadas** pasa a **6 × 6** celdas (caben 36).
   - Para que siga cabiendo dentro del anillo de casas (esquina ≤ 16,5 m del centro), la franja del cabecero baja de 1,6 a 1,2 m y el
     margen del borde de 0,8 a 0,3. La esquina queda a 16,3 m.
-- `AreaCapacity` sale de la lista del personal: **27 miembros**.
+- `AreaCapacity` sale de la lista del personal: **27 miembros** entonces; 28 con Malena.
 
-**Regla J16 con 27 miembros**:
+**Regla J16 con 27 miembros** (con 28 no cambia nada):
 - El **dojo** (25 por piso) pasa a **2 pisos**, el ballet a 2 y el yoga sigue en 2 + 2.
 - El Aula pide 2 pisos (24 por piso).
 - La torre del Entrenamiento lleva 11 pisos de entrenamiento más 2 del Aula: **7 niveles**, con el techo a unos 219 m.
@@ -188,6 +183,36 @@ Neo es un **niño, hijo de Ducristin y Gallarle** (pendiente de foto). Vive en l
 - **Lanzadera** (regla T13): su plataforma debe quedar ≥ 30 m por encima de lo más alto, así que ≥ ~250 m con el nuevo techo del
   Entrenamiento. La regla la valida al final del Blockout y, si hace falta, la sube sola.
   - **Hay que mirarlo al reconstruir**: el registro `[Lanzadera]` y `LaunchSiteTest` (grupo 90).
+### Neo (2026-11-04)
+
+Neo es un **niño, hijo de Ducristin y Gallarle**. Vive en la casa de sus padres (`Bedroom.kids`, `Kids` en `ResidentialBuilder`) y cuenta en el aforo del ring. Lleva el ciclo de vida de los humanos: `PersonLife` en etapa de niño, `BodyAging.growth` 0,35, con `mother` (Gallarle) y `father` (Ducristin) enlazados. **No está en la jornada** (`WorkdayDirector.Staff`): su tiempo es libre y va con su madre (`FollowMother`). Todavía no hay guardería ni juego propio de niños; cuando exista, con Ivelyna (pediatra), irá ahí.
+
+**Por confirmar:** Berón escribió «Dukristin»; se conserva el nombre «Ducristin» hasta que lo confirme.
+
+### Lale, Yulo, Malena y las fotos (2026-11-05)
+
+- **Nombres nuevos**: Ale pasa a **Lale** y Julito a **Yulo**. Las escenas sin reconstruir siguen funcionando con el id de antes (`WorkdayDirector.LegacyIds` y `CubeHair`), como con Amykhuz.
+- **Malena**, pediatra, como Ivelyna: `Hospital:hos_pediatria,enf_`. Vive en la última casa de la cuarta tanda.
+- **Fotos**: Yulo, Lale, Neo, Gallarle, Luciana, Ivelyna, Malena y Ducristin ya llevan su aspecto (detalle en [`diseno-personajes.md`](diseno-personajes.md)). Siguen **pendientes de foto** David, Adonis, Julian y Fausto, ahora con un aspecto provisional distinto cada uno.
+- **Rasgo femenino** (`Fem`): Gallarle, Luciana, Ivelyna y Malena, confirmado por las fotos de Berón. Lale, hombre.
+- **Por confirmar con Berón**:
+  - en `gallarle_luciana`, que Gallarle sea la de la izquierda (es la madre de Neo);
+  - en `ivelyna_malena`, que Ivelyna sea la de la izquierda (orden supuesto por el nombre del fichero);
+  - la grafía: el fichero se llama «dukristy» y Berón escribió «Dukristin»; se mantiene «Ducristin».
+- **Ducristin** viste de trabajo (traje azul marino, camisa blanca y corbata azul). Su ropa informal (aviador y camisa azul de cuadros) solo sale en la galería, como `Ducristin_Casual`: el cuerpo se viste una vez al construirse, y cambiar de ropa en el juego no es trivial.
+
+**Cuentas con 28 miembros y 30 residentes** (23 dueños, 6 parejas y Neo):
+- **Casas**: 24, 23 ocupadas y 1 libre.
+- **Ring**: 6 × 6 celdas (caben 36): no crece. Su plataforma y su pista de alfombras no cambian.
+- **J16** (`TrainingCentres.FloorsFor`): ningún centro cambia de pisos. Gimnasio 30 y calistenia 40: 1 piso; yoga 16 por estilo: 2; dojo 25 y ballet 20: 2; Aula 24: 2. Las holguras y la lanzadera siguen igual.
+- **Hay que vigilar**: el gimnasio aguanta 30, así que con 31 miembros pide un piso más.
+
+**Ronda 7**:
+- **89**: el salto de reloj de la prueba dejaba hambre y casi todos iban a comer antes del ring: solo quedaba 1 de 26 a quién medir. La prueba repone las necesidades tras el salto y durante la franja, y el fallo dice en qué estaba cada uno.
+- **92**: la alfombra-esterilla pasa a 2,8 × 3,6 m y se aleja de la cama (2,15 m de cálculo). La medida de 1,85 m de la casa 21 no se explica por el plano: **hay que mirarla si se repite**. Lo de «al pie del tobogán» era de la prueba: pedía a todos allí a la vez, y cada uno se va cuando llega.
+- **50**: Panterilia y Lale estaban en la plaza de su cama, en sus casas (no es la geometría de la cuarta casa: Panterilia vive en la primera tanda). Quien descansa tumbado cuenta ahora como quien duerme. No se ha comprobado a ojo si el cuerpo se hunde.
+- **`AreaCapacity`** buscaba el ring en `PillowRing.All`, que se llena en `OnEnable`, y fuera de Play estaba vacía. Ahora lo busca en la escena.
+
 ### Pisos en obras
 
 Berón vio bailar en el piso de ballet sin terminar.

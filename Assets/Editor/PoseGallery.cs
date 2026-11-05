@@ -106,7 +106,11 @@ public static class PoseGallery
     /// <summary>RETRATOS de la familia y los amigos de Berón (2026-11-04, de sus fotos; docs/diseno-personajes.md §Familia y amigos)
     /// en Temp/PoseGallery/Familia.png y FamiliaCaras.png.</summary>
     [MenuItem("Tools/Cold Sanctuary/Character Gallery (familia y amigos de Berón)")]
-    public static void FamilyCharacters() => Portraits(System.Array.ConvertAll(SampleSceneBuilder.FamilyCharacters, c => c.id), "Familia", "FamiliaCaras");
+    public static void FamilyCharacters()
+    {
+        var names = new System.Collections.Generic.List<string>(System.Array.ConvertAll(SampleSceneBuilder.FamilyCharacters, c => c.id)) { "Neo", "Ducristin_Casual" };   // (Neo no va en la tabla; y la ropa informal de Ducristin)
+        Portraits(names.ToArray(), "Familia", "FamiliaCaras");
+    }
 
     static void Portraits(string[] names, string file, string facesFile)
     {

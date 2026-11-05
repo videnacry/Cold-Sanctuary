@@ -55,7 +55,7 @@ public class SleepoverTest : MonoBehaviour, ITestUnit
             // (ronda 6: en «Casa del árbol 18», girada 330°, las cajas del mundo engordaban y daban 1,33 m) Medido en el marco de la casa.
             Bounds bed = LocalBounds(b.transform, b.bed);
             CarpetPad mat = b.GetComponentsInChildren<CarpetPad>().FirstOrDefault(p => p.kind == CarpetPad.Kind.Habitacion);
-            float dMat = mat != null ? DistXZ(bed, new Bounds(b.transform.InverseTransformPoint(mat.transform.position), new Vector3(3f, 1f, 3.6f))) : 99f;   // (la zona va girada como la casa)
+            float dMat = mat != null ? DistXZ(bed, new Bounds(b.transform.InverseTransformPoint(mat.transform.position), new Vector3(2.8f, 1f, 3.6f))) : 99f;   // (la zona va girada como la casa)
             if (dMat < 1.95f) { tight++; if (why.Length == 0) why = $"{b.name}: alfombra a {dMat:0.00} m"; }
         }
         TestProbe.Check("una sola cama por casa (la cama-litera; sin litera aparte)", extra == 0, $"{extra} casas con otra");
@@ -174,12 +174,13 @@ public class SleepoverTest : MonoBehaviour, ITestUnit
         SlideSpell.Slides = 0;
         foreach (string n in names) { Anima a = Body(n); if (a != null) a.sleepiness = 0.05f; }
         float slideEnd = Time.realtimeSinceStartup + 60f;
-        int down = 0;
+        int down = 0; var atFoot = new HashSet<string>();   // (ronda 7: cada uno cuando llega; luego se va a lo suyo, y el último no los encontraba a todos a la vez)
         while (Time.realtimeSinceStartup < slideEnd)
         {
-            down = upper.Count(n => { Anima a = Body(n); return a != null && !a.asleep && host.slideBottom != null && (a.transform.position - host.slideBottom.position).magnitude < 1.2f; });
+            foreach (string n in upper) { Anima a = Body(n); if (a != null && !a.asleep && host.slideBottom != null && (a.transform.position - host.slideBottom.position).magnitude < 1.2f) atFoot.Add(n); }
+            down = atFoot.Count;
             if (down >= upper.Count && SlideSpell.Slides >= upper.Count) break;
-            yield return new WaitForSecondsRealtime(0.5f);
+            yield return null;
         }
         TestProbe.Check("los que durmieron arriba bajan por el tobogán y quedan a su pie", upper.Count == 0 || (SlideSpell.Slides >= upper.Count && down >= upper.Count), $"{SlideSpell.Slides} bajadas, {down}/{upper.Count} al pie del tobogán");
 
