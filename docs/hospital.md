@@ -144,7 +144,7 @@ Código: `Assets/Scripts/World/GlassWall.cs` (`GlassWall.Room`: la sala alrededo
 
 **Cómo es una sala de cristal**:
 - 4 paños de cristal transparente (alfa 0,22, sin sombra) de 2,8 m de alto, con perfil y zócalo de aluminio;
-- una **puerta corredera** abierta: un hueco de 1,8 m con su dintel;
+- una **puerta corredera** abierta: un hueco de 2 m con su dintel (1,8 m hasta el 2026-11-05);
 - caja de colisión en cada paño (no se atraviesa) y el hueco de la puerta libre en el NavMesh;
 - el tamaño sale de sus muebles: **su caja + 2 m a cada lado**, así lo de dentro guarda el paso hasta el cristal.
 

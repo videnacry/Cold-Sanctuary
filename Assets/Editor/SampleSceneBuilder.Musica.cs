@@ -30,10 +30,23 @@ public static partial class SampleSceneBuilder
     static void SoundRoom(Transform g, string name, Vector3 c, Vector2 outer, int doorSide)
     {
         float inset = MusicAcoustics.Cavity + GlassWall.Thick;
-        GlassWall.Box(g, name + "_fuera", c, outer, 0f, doorSide);
-        GlassWall.Box(g, name + "_dentro", c, outer - Vector2.one * (2f * inset), 0f, doorSide);
+        Vector2 inner = outer - Vector2.one * (2f * inset);
+        Leaf(GlassWall.Box(g, name + "_fuera", c, outer, 0f, doorSide), outer, doorSide, -1f);
+        Leaf(GlassWall.Box(g, name + "_dentro", c, inner, 0f, doorSide), inner, doorSide, 1f);
         Transform lid = KitchenProps.C(g, new Vector3(c.x, GlassWall.Height + 0.03f, c.z), new Vector3(outer.x, 0.06f, outer.y), GlassWall.GlassTint, 0f, "Tapa_cristal_" + name);
         lid.GetComponent<Renderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+    }
+
+    // La hoja corredera del hueco de una piel (SoundDoor), dentro de la cámara de aire: <paramref name="toCavity"/> la aparta del plano del paño hacia la cámara.
+    static void Leaf(Transform room, Vector2 size, int side, float toCavity)
+    {
+        bool alongX = side == 0 || side == 2;
+        float sign = side == 0 || side == 1 ? 1f : -1f, half = (alongX ? size.y : size.x) * 0.5f - GlassWall.Thick * 0.5f, offset = half * sign + toCavity * sign * 0.06f;
+        Vector3 at = (alongX ? new Vector3(0f, 0f, offset) : new Vector3(offset, 0f, 0f)) + Vector3.up * (GlassWall.DoorHeight * 0.5f);
+        Vector3 scale = alongX ? new Vector3(GlassWall.DoorWidth, GlassWall.DoorHeight, 0.04f) : new Vector3(0.04f, GlassWall.DoorHeight, GlassWall.DoorWidth);
+        Transform leaf = KitchenProps.C(room, at, scale, GlassWall.GlassTint, 0f, "Hoja_sonica");
+        leaf.GetComponent<Renderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        leaf.gameObject.AddComponent<SoundDoor>().slide = (alongX ? Vector3.right : Vector3.forward) * GlassWall.DoorWidth;
     }
 
     static void Speaker(Transform t, Vector3 at, string label)
@@ -71,20 +84,26 @@ public static partial class SampleSceneBuilder
         KitchenProps.C(t, at + new Vector3(0.7f, 0.55f, 0f), new Vector3(0.36f, 1.1f, 0.09f), StageWood, 0f, "Guitarra_en_su_soporte");
     }
 
-    // Un escenario (un solo mueble): tarima, equipo y altavoces. El grande lleva batería, piano, amplificador y 3 micrófonos; el pequeño, amplificador y 2.
+    // Un escenario (un solo mueble): tarima, equipo, altavoces y su RAMPA (0,6 m en 2,4 m: 14°, sin escalones: S5). El grande lleva batería, piano, amplificador y 3
+    // micrófonos, con la rampa a −X; el pequeño, amplificador y 2 micrófonos, con la rampa hacia el público. La tarima y la rampa se pisan: la caja del mueble no bloquea.
     static Transform BuildStage(Transform g, string name, Vector3 at, Vector2 size, bool large)
     {
         Transform stage = KitchenProps.Root(g, name, at);
-        KitchenProps.C(stage, new Vector3(0f, 0.3f, 0f), new Vector3(size.x, 0.6f, size.y), StageBlack, 0f, "Tarima");
+        KitchenProps.C(stage, new Vector3(0f, 0.3f, 0f), new Vector3(size.x, 0.6f, size.y), StageBlack, 0f, "Tarima").gameObject.AddComponent<BoxCollider>();
+        float slope = Mathf.Atan2(0.6f, 2.4f) * Mathf.Rad2Deg, rampLen = Mathf.Sqrt(2.4f * 2.4f + 0.6f * 0.6f);
+        Transform ramp = large
+            ? KitchenProps.C(stage, new Vector3(-size.x * 0.5f - 1.2f, 0.3f, 0f), new Vector3(rampLen, 0.1f, 1.6f), StageWood, new Vector3(0f, 0f, slope), "Rampa_del_escenario")
+            : KitchenProps.C(stage, new Vector3(size.x * 0.5f - 1f, 0.3f, size.y * 0.5f + 1.2f), new Vector3(1.6f, 0.1f, rampLen), StageWood, new Vector3(slope, 0f, 0f), "Rampa_del_escenario");
+        ramp.gameObject.AddComponent<BoxCollider>();
         KitchenProps.C(stage, new Vector3(0f, 0.61f, 0f), new Vector3(size.x - 0.2f, 0.02f, size.y - 0.2f), StageWood, 0f, "Tablas_de_la_tarima");
         Vector3 up = Vector3.up * 0.62f;
-        float back = size.y * 0.5f - 0.9f, front = -size.y * 0.5f + 0.6f;
-        if (large) { DrumKit(stage, up + new Vector3(0f, 0f, back)); UprightPiano(stage, up + new Vector3(-3.6f, 0f, back - 0.3f)); }
+        float back = -size.y * 0.5f + 0.9f, front = size.y * 0.5f - 0.6f;   // el público se sienta hacia +Z
+        if (large) { DrumKit(stage, up + new Vector3(0f, 0f, back)); UprightPiano(stage, up + new Vector3(-3.6f, 0f, back)); }
         GuitarAmp(stage, up + new Vector3(large ? 3.2f : 0f, 0f, back));
         if (large) for (int k = -1; k <= 1; k++) MicStandAt(stage, up + new Vector3(k * 2.4f, 0f, front));
         else for (int k = -1; k <= 1; k += 2) MicStandAt(stage, up + new Vector3(k * 1.2f, 0f, front));
-        for (int k = -1; k <= 1; k += 2) Speaker(stage, up + new Vector3(k * (size.x * 0.5f - 0.5f), 0f, back + 0.3f), "Altavoz_de_escenario");
-        KitchenProps.Fit(stage);
+        for (int k = -1; k <= 1; k += 2) Speaker(stage, up + new Vector3(k * (size.x * 0.5f - 0.5f), 0f, back - 0.3f), "Altavoz_de_escenario");
+        KitchenProps.Fit(stage, false);
         AreaSeat.Add(stage.gameObject, "tocar en concierto", AreaSeat.Category.Trabajo, large ? 6 : 4);
         WorldLabel wl = stage.gameObject.AddComponent<WorldLabel>(); wl.text = name; wl.height = 3.4f;
         return stage;
@@ -127,7 +146,7 @@ public static partial class SampleSceneBuilder
         // EL SEGUNDO ESCENARIO, en su sala de doble cristal: dos conciertos o dos ensayos generales a la vez, sin pisarse.
         Vector3 hall = new Vector3(10.5f, 0f, -2.2f);
         BuildStage(g, "Segundo escenario", new Vector3(hall.x, 0f, -7.9f), new Vector2(6f, 3f), false);
-        for (int r = 0; r < 2; r++) SeatRow(g, $"Fila de sillas pequeña {r + 1} (8 plazas)", new Vector3(hall.x, 0f, -3.2f + r * 2.8f), 8);
+        for (int r = 0; r < 2; r++) SeatRow(g, $"Fila de sillas pequeña {r + 1} (8 plazas)", new Vector3(hall.x, 0f, -1.2f + r * 2.8f), 8);
         SoundRoom(g, "Sonica_escenario_2", hall, new Vector2(13f, 20.4f), 3);
         // EL BANCO DEL TÉCNICO (cuerdas, cables, válvulas).
         Transform repair = KitchenProps.Root(g, "Banco del técnico de sonido", new Vector3(5.5f, 0f, hz - 2.2f));

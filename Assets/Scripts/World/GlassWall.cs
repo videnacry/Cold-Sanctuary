@@ -14,7 +14,7 @@ public class GlassWall : MonoBehaviour
 {
     public string room;
     public const string Prefix = "Pared_cristal";
-    public const float Height = 2.8f, Thick = 0.08f, DoorWidth = 1.8f;
+    public const float Height = 2.8f, Thick = 0.08f, DoorWidth = 2f, DoorHeight = 2.5f;   // (2026-11-05: 2 m, los del paso de S7; antes 1,8)
     /// <summary>Holgura extra de la sala sobre sus 2 m: cubre el perfil de aluminio (sobresale 0,024 m) con margen.</summary>
     public const float ProfileClear = 0.05f;
     public static readonly Color GlassTint = new Color(0.78f, 0.92f, 1f, 0.22f), Frame = new Color(0.72f, 0.75f, 0.78f);
@@ -22,7 +22,7 @@ public class GlassWall : MonoBehaviour
     /// <summary>
     /// UNA SALA DE CRISTAL alrededor de <paramref name="furniture"/> (en el marco de <paramref name="parent"/>): su caja + 2 m a
     /// cada lado (el paso de la regla, dentro de la sala), cuatro paños de cristal con perfil de aluminio y una PUERTA corredera
-    /// abierta (hueco de 1,8 m) en el lado <paramref name="doorSide"/> (0 = +Z, 1 = +X, 2 = −Z, 3 = −X), centrada (o desplazada
+    /// abierta (hueco de 2 m) en el lado <paramref name="doorSide"/> (0 = +Z, 1 = +X, 2 = −Z, 3 = −X), centrada (o desplazada
     /// <paramref name="doorOffset"/> m). Devuelve la raíz «Sala_cristal_…» (no es un mueble: lo son sus paños).
     /// </summary>
     public static Transform Room(Transform parent, string name, IList<Transform> furniture, int doorSide, float margin = 2f, float doorOffset = 0f, Vector2? minSize = null)
