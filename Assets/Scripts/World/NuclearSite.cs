@@ -6,8 +6,8 @@ using UnityEngine;
 /// lejos y a sotavento, en un árbol BAJO: lo que protege de un reactor es la distancia, la contención y el agua, no la altura.
 /// - Distancia: ≥ <see cref="MinDistance"/> m a todo edificio e isla del santuario (lo más lejos que permite el mapa).
 /// - Viento: el sitio queda a sotavento de <see cref="PrevailingWindTo"/> (el juego no simula viento: es una decisión de diseño fija).
-/// - Altura: los reactores, en el nivel más bajo (<see cref="FirstFloorY"/>); arriba, solo lo que gana con ella: el agua por gravedad
-///   (el tronco), la chimenea filtrada y las salas de mando.
+/// - Altura: los núcleos, BAJO EL MAR (2026-11-05): cada reactor en su cajón sumergido de doble casco, bajo el casquete y por debajo de
+///   <see cref="CaissonTopY"/>; arriba, solo lo que gana con ella: el agua por gravedad (el tronco), la chimenea filtrada y las salas de mando.
 /// - Agua: el agua del tronco sobre los reactores alcanza, sin bombas ni operador, al menos <see cref="ReferenceHours"/> h.
 /// </summary>
 public static class NuclearSiteRule
@@ -25,8 +25,11 @@ public static class NuclearSiteRule
     /// <summary>Cara del primer piso: los reactores. Excepción a <see cref="TreeSpec.FirstFloorMin"/>, que deja sitio a los árboles que crecen
     /// en el suelo: en el casquete no crece ninguno. Bajo el piso caben las tornapuntas y la puerta del suelo.</summary>
     public const float FirstFloorY = 12f;
-    /// <summary>Hondo de la piscina del TRIGA bajo el piso (como los reales: 7,3–8,2 m): el núcleo queda bajo la losa, en el recinto.</summary>
-    public const float PoolDepth = 8f;
+    /// <summary>Hondo de la piscina del TRIGA bajo el piso: baja por el casquete hasta su cajón, con el núcleo bajo el nivel del mar. Los
+    /// reales tienen 7,3–8,2 m de agua sobre el núcleo; aquí son casi 19 m: más blindaje.</summary>
+    public const float PoolDepth = 20f;
+    /// <summary>Cajones sumergidos: el techo (bajo el casquete) y su alto. Nivel del mar: y = 0.</summary>
+    public const float CaissonTopY = -2f, CaissonHeight = 16f;
     /// <summary>Potencia térmica total (MW): el TRIGA (1) y el microrreactor (~15).</summary>
     public const float ThermalMW = 16f;
     /// <summary>La referencia pasiva: 72 h sin operador (el depósito por gravedad del AP1000).</summary>
@@ -49,6 +52,9 @@ public static class NuclearSiteRule
         return (float)System.Math.Min(t / 3600.0, 8760.0);
     }
 
+    /// <summary>¿<paramref name="p"/> está en la zona de exclusión? (nadie va allí en su tiempo libre, y de ahí se evacúa)</summary>
+    public static bool InZone(Vector3 p) { p.y = Center.y; return Vector3.Distance(p, Center) < ExclusionRadius; }
+
     /// <summary>¿El sitio queda a sotavento del santuario? (el coseno entre el viento y la línea santuario → sitio)</summary>
     public static float DownwindCosine(Vector3 site) { site.y = 0f; return Vector3.Dot(site.normalized, PrevailingWindTo); }
 }
@@ -56,7 +62,8 @@ public static class NuclearSiteRule
 /// <summary>
 /// EL SITIO NUCLEAR en juego (docs/sitio-nuclear.md): vigilancia, válvulas pasivas que fallan abiertas y el plan de emergencia. Una EMERGENCIA
 /// para el reactor de investigación, abre las válvulas (el agua del tronco baja sola) y enciende las balizas; el microrreactor se enfría
-/// solo, sin nada que accionar. Un SIMULACRO prueba lo mismo sin parar nada. El sitio no se usa para vivir: la evacuación es del turno.
+/// solo, sin nada que accionar. Mientras dure, quien esté en la zona de exclusión se va al hospital (<see cref="WorkdayDirector.EvacuateSite"/>) y
+/// nadie entra. Un SIMULACRO prueba válvulas y balizas sin parar nada.
 /// </summary>
 public class NuclearSite : MonoBehaviour
 {
@@ -69,6 +76,8 @@ public class NuclearSite : MonoBehaviour
     public List<Transform> valves = new List<Transform>();
     [Tooltip("Estaciones de vigilancia radiológica del borde del casquete.")]
     public List<Transform> monitors = new List<Transform>();
+    [Tooltip("Sondas en el agua de mar alrededor del casquete: un cajón roto se vería aquí antes que en ningún otro sitio.")]
+    public List<Transform> seaProbes = new List<Transform>();
     [Tooltip("Balizas de alarma (apagadas en normal).")]
     public List<GameObject> beacons = new List<GameObject>();
     [Tooltip("Agua (m³) del tronco por encima de los reactores.")]
@@ -78,9 +87,22 @@ public class NuclearSite : MonoBehaviour
     public bool ValvesOpen { get; private set; }
     public int Drills { get; private set; }
     public string LastReason { get; private set; } = "";
+    /// <summary>Quién sigue en la zona de exclusión en esta evacuación (al último recuento).</summary>
+    public int EvacueesLeft { get; private set; }
+    /// <summary>¿Se está evacuando el sitio? (la jornada no manda a nadie allí)</summary>
+    public static bool Evacuating => Instance != null && Instance.State == Alert.Emergencia;
+    public static bool IsSiteArea(string area) => area == PlantArea || area == PowerArea;
+    float _nextCount;
 
     void OnEnable() { Instance = this; }
     void OnDisable() { if (Instance == this) Instance = null; }
+
+    void Update()
+    {
+        if (State != Alert.Emergencia || Time.time < _nextCount) return;
+        _nextCount = Time.time + 2f;
+        EvacueesLeft = WorkdayDirector.Instance != null ? WorkdayDirector.Instance.EvacuateSite() : 0;
+    }
 
     /// <summary>EMERGENCIA: para el reactor, abre las válvulas pasivas y enciende las balizas. No hace falta nadie más.</summary>
     public void DeclareEmergency(string reason)
@@ -90,7 +112,9 @@ public class NuclearSite : MonoBehaviour
         if (rr != null && !rr.scrammed) rr.Scram("emergencia del sitio: " + reason);
         SetValves(true);
         SetBeacons(true);
-        Debug.LogWarning($"[Sitio nuclear] EMERGENCIA: {reason}. Reactor parado, válvulas abiertas: {gravityWaterM3:0} m³ de agua por gravedad ({NuclearSiteRule.PassiveHours(gravityWaterM3):0} h de calor residual). El turno sale por las alfombras del suelo y del techo.");
+        EvacueesLeft = WorkdayDirector.Instance != null ? WorkdayDirector.Instance.EvacuateSite() : 0;
+        _nextCount = Time.time + 2f;
+        Debug.LogWarning($"[Sitio nuclear] EMERGENCIA: {reason}. Reactor parado, válvulas abiertas: {gravityWaterM3:0} m³ de agua por gravedad ({NuclearSiteRule.PassiveHours(gravityWaterM3):0} h de calor residual). Se evacúa a {EvacueesLeft} persona(s) al hospital.");
     }
 
     /// <summary>Vuelve a normal (las válvulas se cierran a mano: el reactor no arranca solo).</summary>

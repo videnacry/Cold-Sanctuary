@@ -1,9 +1,11 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 /// <summary>
 /// EL SITIO NUCLEAR (Berón 2026-11-05; docs/sitio-nuclear.md): un CASQUETE ARTIFICIAL en la esquina sureste del mar, lejos y a sotavento del
-/// santuario, con su EDIFICIO-ÁRBOL bajo. Abajo, los dos reactores (Central Nuclear y Planta Atómica); en medio, el ciclotrón y la sala de
+/// santuario, con su EDIFICIO-ÁRBOL bajo. Abajo, los pisos de los dos reactores (Central Nuclear y Planta Atómica), con los núcleos BAJO EL MAR, en
+/// dos cajones sumergidos de doble casco (<see cref="BuildCaisson"/>); en medio, el ciclotrón y la sala de
 /// experimentos; arriba, el Centro de emergencias y el garaje. Lo que gana con la altura sube (el agua del tronco por gravedad, la chimenea
 /// filtrada, las salas de mando); los núcleos se quedan abajo, en su contención. Mismo casquete y mismas pruebas de sitio que la lanzadera
 /// (<see cref="BuildArtificialCap"/>, <see cref="NearestToSite"/>).
@@ -11,7 +13,7 @@ using UnityEngine;
 public static partial class SampleSceneBuilder
 {
     const float NuclearCapHalf = 85f;
-    static Transform _nuclearRoot, _nuclearPlantArea;
+    static Transform _nuclearRoot, _nuclearPlantArea, _nuclearPowerArea;
     static Helix _nuclearHx;
     public const string EmergencyFloorName = "Centro_emergencias", NuclearGarageName = "Garaje_nuclear";
 
@@ -76,14 +78,14 @@ public static partial class SampleSceneBuilder
         ns.gravityWaterM3 = NuclearSiteRule.GravityWaterM3(h.waterHalf, h.WaterTop);
         Color conc = new Color(0.6f, 0.6f, 0.58f), steel = TreeSteel, pipe = new Color(0.25f, 0.5f, 0.75f), red = new Color(0.8f, 0.2f, 0.15f), yel = new Color(0.95f, 0.8f, 0.2f);
 
-        // ── RECINTO DE CONTENCIÓN del TRIGA: la piscina apoya en un pedestal sobre el casquete, y el núcleo queda bajo la losa, entre muros ──
+        // ── CAJONES SUMERGIDOS: cada reactor en el suyo, bajo el casquete, y entre el piso y el casquete el recinto que rodea la piscina ──
         Transform pool = _nuclearPlantArea != null ? _nuclearPlantArea.Find("Planta/Piscina_reactor") : null;
         if (pool == null) Debug.LogError("[Sitio nuclear] No encuentro la piscina del reactor: sin recinto de contención.");
         else
         {
             Transform rc = new GameObject("Recinto_contencion").transform; rc.SetParent(root, false); rc.position = new Vector3(pool.position.x, 0f, pool.position.z);
-            float bottom = pool.position.y - NuclearSiteRule.PoolDepth, top = pool.parent.position.y - TreeSpec.StrutDrop + 0.5f, half = 4.5f, th = 1.2f;
-            Solid(rc, new Vector3(0f, bottom * 0.5f, 0f), new Vector3(4.6f, bottom, 4.6f), conc, "Pedestal_piscina");
+            float top = pool.parent.position.y - TreeSpec.StrutDrop + 0.5f, half = 4.5f, th = 1.2f;
+            BuildCaisson(root, hx, ns, "Cajon_TRIGA", pool.position, new Vector3(14f, NuclearSiteRule.CaissonHeight, 14f), "Cajón del TRIGA: la piscina, el núcleo y su contención, bajo el nivel del mar");
             for (int s = 0; s < 4; s++)
             {
                 Quaternion q = Quaternion.Euler(0f, s * 90f, 0f);
@@ -91,7 +93,7 @@ public static partial class SampleSceneBuilder
                 Solid(rc, q * new Vector3(0f, top * 0.5f, half), size, conc, "Muro_contencion");
             }
             KitchenProps.C(rc, new Vector3(0f, top + 0.15f, 0f), new Vector3(2f * half + th, 0.3f, 2f * half + th), steel, 0f, "Tapa_contencion");
-            Label(KitchenProps.C(rc, new Vector3(0f, 4f, -half - 0.7f), Vector3.one * 0.1f, yel, 0f, "Cartel_contencion"), "Recinto de contención: el núcleo está aquí dentro, bajo la losa y bajo el agua", 1f);
+            Label(KitchenProps.C(rc, new Vector3(0f, 4f, -half - 0.7f), Vector3.one * 0.1f, yel, 0f, "Cartel_contencion"), "Recinto de la piscina: baja por el casquete hasta el cajón sumergido del núcleo", 1f);
 
             // ── LÍNEAS PASIVAS del tronco a la piscina (dos, redundantes): por gravedad, con válvulas que fallan abiertas ──
             for (int i = 0; i < 2; i++)
@@ -109,6 +111,20 @@ public static partial class SampleSceneBuilder
             KitchenProps.C(rc, off + new Vector3(0f, 1.25f, 0f), new Vector3(3f, 2.5f, 2f), steel, 0f, "Intercambiador_intermedio");
             KitchenProps.C(rc, off + new Vector3(2.5f, -3f, 0f), new Vector3(0.8f, 8f, 0.8f), pipe, 0f, "Toma_agua_mar");
             KitchenProps.C(rc, off + new Vector3(2f, 1.5f, 0f), new Vector3(1.6f, 0.5f, 0.5f), pipe, 0f, "Tuberia_toma");
+        }
+
+        // ── EL MICRORREACTOR, en su propio cajón: del piso solo queda el pozo ──
+        Transform well = _nuclearPowerArea != null ? _nuclearPowerArea.GetComponentsInChildren<Transform>(true).FirstOrDefault(t => t.name == "Brocal_pozo") : null;
+        if (well == null) Debug.LogError("[Sitio nuclear] No encuentro el pozo del microrreactor: sin cajón.");
+        else
+        {
+            Transform box = BuildCaisson(root, hx, ns, "Cajon_microrreactor", well.position, new Vector3(16f, NuclearSiteRule.CaissonHeight, 10f), "Cajón del microrreactor: los tubos de calor le dan su calor al mar por el casco, sin bombas");
+            Color metal = new Color(0.55f, 0.6f, 0.65f);
+            KitchenProps.C(box, new Vector3(0f, -2f, 0f), new Vector3(10f, 3f, 3.2f), metal, 0f, "Modulo_reactor");
+            KitchenProps.C(box, new Vector3(0f, -0.3f, 0f), new Vector3(10f, 0.4f, 0.6f), steel, 0f, "Tubos_calor");
+            KitchenProps.C(box, new Vector3(-5.2f, -2f, 0f), new Vector3(0.6f, 3.4f, 3.4f), yel, 0f, "Tapa_trebol");
+            float wy = well.position.y, by = NuclearSiteRule.CaissonTopY;
+            KitchenProps.C(root, root.InverseTransformPoint(new Vector3(well.position.x, (wy + by) * 0.5f, well.position.z)), new Vector3(2.4f, wy - by, 2.4f), conc, 0f, "Pozo_microrreactor");
         }
 
         // ── CHIMENEA FILTRADA a sotavento, en la esquina del casquete: lo único que se suelta, se suelta en alto y filtrado ──
@@ -136,6 +152,13 @@ public static partial class SampleSceneBuilder
             ns.monitors.Add(m); ns.beacons.Add(b.gameObject);
         }
 
+        // ── SONDAS EN EL AGUA DE MAR: un casco roto se ve aquí primero ──
+        for (int i = 0; i < 4; i++)
+        {
+            Transform p = KitchenProps.C(root, root.InverseTransformPoint(site + Quaternion.Euler(0f, 45f + i * 90f, 0f) * Vector3.forward * (NuclearCapHalf + 8f) + Vector3.down * 6f), new Vector3(0.5f, 2f, 0.5f), yel, 0f, "Sonda_agua_mar");
+            ns.seaProbes.Add(p);
+        }
+
         // ── ZONA DE EXCLUSIÓN: un arco de boyas (hasta el borde del mar) ──
         for (int i = 0; i < 36; i++)
         {
@@ -156,6 +179,36 @@ public static partial class SampleSceneBuilder
             PolarLandscapeBuilder.IgnoreForNav(b.gameObject);
         }
         ValidateNuclearSite("al terminar el sitio");
+    }
+
+    /// <summary>Un CAJÓN SUMERGIDO bajo el casquete (docs/sitio-nuclear.md §3): doble casco de acero con espacio anular, tirantes al fondo y esclusa
+    /// de mantenimiento desde el tronco. Sin colisiones: nadie entra andando y el submarino pasa lejos. Centrado en la vertical de <paramref name="over"/>.</summary>
+    static Transform BuildCaisson(Transform root, Helix hx, NuclearSite ns, string name, Vector3 over, Vector3 size, string sign)
+    {
+        Color outer = new Color(0.32f, 0.36f, 0.4f), inner = new Color(0.62f, 0.64f, 0.66f), line = new Color(0.25f, 0.3f, 0.34f);
+        Transform c = new GameObject(name).transform; c.SetParent(root, false);
+        float top = NuclearSiteRule.CaissonTopY;
+        c.position = new Vector3(over.x, top - size.y * 0.5f, over.z);
+        Hull(c, size, 0.6f, outer, "Casco_exterior");
+        Hull(c, size - Vector3.one * 3f, 0.3f, inner, "Casco_interior");
+        foreach (var (sx, sz) in new[] { (-1f, -1f), (1f, -1f), (-1f, 1f), (1f, 1f) })
+            KitchenProps.C(c, new Vector3(sx * size.x * 0.45f, -size.y * 0.5f - 22f, sz * size.z * 0.45f), new Vector3(0.4f, 44f, 0.4f), line, 0f, "Tirante_anclaje");
+        // Esclusa de mantenimiento: del tronco (abierto al mar) al cajón.
+        Vector3 a = new Vector3(Mathf.Clamp(over.x, hx.site.x - hx.h.waterHalf, hx.site.x + hx.h.waterHalf), c.position.y, hx.site.z + Mathf.Sign(over.z - hx.site.z) * hx.h.OuterHalf), b = c.position;
+        KitchenProps.C(root, root.InverseTransformPoint((a + b) * 0.5f), new Vector3(3f, 3f, (b - a).magnitude), line, Quaternion.LookRotation(b - a), "Esclusa_tronco");
+        Label(c, sign, size.y * 0.5f + 1f);
+        return c;
+    }
+
+    // Una caja hueca de seis planchas.
+    static void Hull(Transform c, Vector3 s, float t, Color col, string name)
+    {
+        for (int k = -1; k <= 1; k += 2)
+        {
+            KitchenProps.C(c, new Vector3(k * s.x * 0.5f, 0f, 0f), new Vector3(t, s.y, s.z), col, 0f, name);
+            KitchenProps.C(c, new Vector3(0f, k * s.y * 0.5f, 0f), new Vector3(s.x, t, s.z), col, 0f, name);
+            KitchenProps.C(c, new Vector3(0f, 0f, k * s.z * 0.5f), new Vector3(s.x, s.y, t), col, 0f, name);
+        }
     }
 
     /// <summary>LA REGLA (docs/sitio-nuclear.md): distancia, sotavento, reactores abajo y agua por gravedad. Si no cumple, error en el registro.</summary>

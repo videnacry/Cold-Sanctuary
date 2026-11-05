@@ -7,7 +7,7 @@ using UnityEngine;
 /// 1. SITIO: en su casquete artificial, a ≥ <see cref="NuclearSiteRule.MinDistance"/> m de todo edificio-árbol y de las islas, a sotavento y
 ///    lejos de la lanzadera.
 /// 2. PISOS: los dos reactores en el nivel más bajo; encima, el ciclotrón y la sala de experimentos; arriba, el Centro de emergencias y el garaje.
-/// 3. CONTENCIÓN: el núcleo del TRIGA bajo la losa, entre los muros del recinto y sobre su pedestal; el microrreactor, en su cámara con techo.
+/// 3. CAJONES: los núcleos bajo el nivel del mar, cada uno en su cajón de doble casco bajo el casquete, con esclusa desde el tronco.
 /// 4. NADA SE PIERDE: el reactor, la consola, el ciclotrón, el equipo, las misiones de sus áreas y sus microcosmos.
 /// 5. AGUA Y PLAN: el agua por gravedad cubre las 72 h de referencia; la emergencia para el reactor, abre las válvulas y enciende las balizas;
 ///    el simulacro no para nada; vigilancia, chimenea filtrada, sumidero y zona de exclusión están.
@@ -73,22 +73,23 @@ public class NuclearSiteTest : MonoBehaviour, ITestUnit
         TestProbe.Check("sus áreas en el árbol del sitio", floorLabels.Contains(NuclearSite.PlantArea) && floorLabels.Contains(NuclearSite.PowerArea), string.Join(", ", floorLabels));
 
         // ── 3. CONTENCIÓN ──
-        Transform rc = Named(site, "Recinto_contencion");
-        Transform core = plant != null ? Named(plant, "Nucleo_UZrH") : null;
-        if (rc == null || core == null) TestProbe.Check("recinto de contención y núcleo", false, $"recinto {rc != null}, núcleo {core != null}");
+        Transform cj = Named(site, "Cajon_TRIGA"), cm = Named(site, "Cajon_microrreactor"), core = plant != null ? Named(plant, "Nucleo_UZrH") : null, mod = cm != null ? Named(cm, "Modulo_reactor") : null;
+        if (cj == null || cm == null || core == null || mod == null) TestProbe.Check("los dos cajones sumergidos, con su reactor", false, $"cajón TRIGA {cj != null}, cajón micro {cm != null}, núcleo {core != null}, módulo {mod != null}");
         else
         {
-            int walls = rc.GetComponentsInChildren<Transform>(true).Count(t => t.name == "Muro_contencion");
-            Vector3 d = core.position - rc.position;
-            TestProbe.Check("el núcleo del TRIGA, bajo la losa y dentro de los muros del recinto", walls == 4 && Mathf.Abs(d.x) < 4f && Mathf.Abs(d.z) < 4f && plant != null && core.position.y < plant.position.y - TreeSpec.StrutDrop,
-                $"{walls} muros; núcleo a {core.position.y - y0:0.0} m, piso a {plant.position.y - y0:0.0} m");
-            Transform ped = Named(rc, "Pedestal_piscina"), bottom = Named(plant, "Fondo");
-            TestProbe.Check("la piscina apoya en su pedestal, sobre el casquete", ped != null && bottom != null && ped.GetComponent<Collider>() != null && ped.position.y + ped.lossyScale.y * 0.5f >= bottom.position.y - 0.5f,
-                ped != null && bottom != null ? $"pedestal hasta {ped.position.y + ped.lossyScale.y * 0.5f:0.0} m, fondo a {bottom.position.y:0.0} m" : "falta");
+            float capBottom = NuclearSiteRule.CaissonTopY;
+            bool Inside(Transform box, Vector3 p, Vector3 half) { Vector3 d = p - box.position; return Mathf.Abs(d.x) < half.x && Mathf.Abs(d.z) < half.z && Mathf.Abs(d.y) < half.y; }
+            TestProbe.Check("el núcleo del TRIGA, bajo el nivel del mar y dentro de su cajón", core.position.y < y0 + capBottom && Inside(cj, core.position, new Vector3(7f, 8f, 7f)), $"núcleo a {core.position.y - y0:0.0} m");
+            TestProbe.Check("el microrreactor, bajo el nivel del mar y dentro de su cajón", mod.position.y < y0 + capBottom && Inside(cm, mod.position, new Vector3(8f, 8f, 5f)), $"módulo a {mod.position.y - y0:0.0} m");
+            foreach (Transform c in new[] { cj, cm })
+            {
+                var names = c.GetComponentsInChildren<Transform>(true).Select(t => t.name).ToList();
+                TestProbe.Check($"«{c.name}»: doble casco y tirantes, sin colisiones", names.Count(n => n == "Casco_exterior") == 6 && names.Count(n => n == "Casco_interior") == 6 && names.Count(n => n == "Tirante_anclaje") == 4 && c.GetComponentsInChildren<Collider>(true).Length == 0);
+            }
+            int locks = site.GetComponentsInChildren<Transform>(true).Count(t => t.name == "Esclusa_tronco");
+            TestProbe.Check("se llega a los dos cajones desde el tronco (esclusas)", locks == 2, $"{locks} esclusas");
+            TestProbe.Check("los cajones no estorban el paso del submarino (fuera del hueco del tronco)", Flat(cj.position, tree.transform.position) > tree.bottomHole + 7f && Flat(cm.position, tree.transform.position) > tree.bottomHole + 5f);
         }
-        Transform mod = central != null ? Named(central, "Modulo_reactor") : null;
-        Transform block = mod != null ? mod.parent : null;
-        TestProbe.Check("el microrreactor, en su cámara de contención con techo", block != null && block.GetComponentsInChildren<Transform>(true).Count(t => t.name == "Muro_contencion") == 5 && Named(block, "Techo_contencion") != null);
 
         // ── 4. NADA SE PIERDE ──
         ResearchReactor rr = ResearchReactor.Instance;
@@ -103,17 +104,35 @@ public class NuclearSiteTest : MonoBehaviour, ITestUnit
         // ── 5. AGUA Y PLAN ──
         float hours = NuclearSiteRule.PassiveHours(ns.gravityWaterM3);
         TestProbe.Check($"el agua del tronco cubre las {NuclearSiteRule.ReferenceHours:0} h de referencia, por gravedad", ns.gravityWaterM3 > 1000f && hours >= NuclearSiteRule.ReferenceHours, $"{ns.gravityWaterM3:0} m³, {hours:0} h (cota)");
-        string[] parts = { "Linea_pasiva_tronco", "Intercambiador_intermedio", "Toma_agua_mar", "Chimenea_filtrada", "Filtros_HEPA_carbon", "Boya_exclusion", "Boya_linea_submarina" };
+        string[] parts = { "Linea_pasiva_tronco", "Intercambiador_intermedio", "Toma_agua_mar", "Pozo_microrreactor", "Sonda_agua_mar", "Chimenea_filtrada", "Filtros_HEPA_carbon", "Boya_exclusion", "Boya_linea_submarina" };
         var miss = parts.Where(p => Named(site, p) == null).ToList();
         TestProbe.Check("líneas pasivas, sumidero con circuito intermedio, chimenea filtrada, zona de exclusión y línea al santuario", miss.Count == 0, miss.Count == 0 ? $"{parts.Length} piezas" : "faltan: " + string.Join(", ", miss));
-        TestProbe.Check("8 estaciones de vigilancia y 2 líneas de válvulas", ns.monitors.Count == 8 && ns.valves.Count == 2 && ns.beacons.Count == 8, $"{ns.monitors.Count} estaciones, {ns.valves.Count} válvulas");
+        TestProbe.Check("8 estaciones de vigilancia y 2 líneas de válvulas", ns.monitors.Count == 8 && ns.valves.Count == 2 && ns.beacons.Count == 8 && ns.seaProbes.Count == 4, $"{ns.monitors.Count} estaciones, {ns.valves.Count} válvulas, {ns.seaProbes.Count} sondas");
         int d0 = ns.Drills;
         bool wasScrammed = rr == null || rr.scrammed;
         ns.Drill("prueba");
         TestProbe.Check("el simulacro prueba el plan sin parar nada y lo deja como estaba", ns.Drills == d0 + 1 && ns.State == NuclearSite.Alert.Normal && !ns.ValvesOpen && (rr == null || rr.scrammed == wasScrammed));
+        // EVACUACIÓN: alguien del personal en la Central; la emergencia lo tiene que sacar de la zona, sin que nadie más lo mueva.
+        WorkdayDirector wd = WorkdayDirector.Instance;
+        GameObject evac = wd != null ? wd.roster.workers.Select(w => WorkdayDirector.Body(w.name)).FirstOrDefault(g => g != null && !g.CompareTag("Player") && !RestaurantService.Drives(g) && g.GetComponent<Anima>() != null) : null;
+        Vector3 back = evac != null ? evac.transform.position : Vector3.zero;
+        if (evac != null && central != null) WorkdayDirector.Teleport(evac.transform, WorkdayDirector.AreaPoint(NuclearSite.PowerArea, evac.name));
         ns.DeclareEmergency("prueba");
         TestProbe.Check("EMERGENCIA: reactor parado, válvulas abiertas y balizas encendidas, sin nadie", ns.State == NuclearSite.Alert.Emergencia && ns.ValvesOpen && (rr == null || rr.scrammed) && ns.beacons.All(b => b.activeSelf));
+        if (evac == null) TestProbe.Check("hay alguien del personal para evacuar", false);
+        else
+        {
+            bool started = ns.EvacueesLeft > 0;
+            float oldTs = Time.timeScale; Time.timeScale = 4f;
+            float te = Time.time, re = Time.realtimeSinceStartup;
+            while (NuclearSiteRule.InZone(evac.transform.position) && Time.time - te < 300f && Time.realtimeSinceStartup - re < 120f) yield return null;
+            Time.timeScale = oldTs;
+            TestProbe.Check("EVACUACIÓN: la emergencia saca de la zona a quien estaba en la Central", started && !NuclearSiteRule.InZone(evac.transform.position), $"«{evac.name}»: {ns.EvacueesLeft} en la zona al último recuento; {Time.time - te:0} s de juego; a {Flat(evac.transform.position, NuclearSiteRule.Center):0} m del sitio");
+        }
         ns.ClearEmergency();
+        if (evac != null) WorkdayDirector.Teleport(evac.transform, back);
+        // TIEMPO LIBRE: el ocio no abre ningún área del sitio.
+        TestProbe.Check("el tiempo libre no va al sitio nuclear", LeisureDirector.OpenArea(NuclearSite.PlantArea, tree.gameObject.scene) == null && LeisureDirector.OpenArea(NuclearSite.PowerArea, tree.gameObject.scene) == null);
         TestProbe.Check("fin de la emergencia: todo vuelve a normal", ns.State == NuclearSite.Alert.Normal && !ns.ValvesOpen && ns.beacons.All(b => !b.activeSelf));
 
         // ── 6. TRANSPORTE ──

@@ -236,6 +236,7 @@ public class LeisureDirector : MonoBehaviour
         foreach (SanctuaryArea a in FindObjectsByType<SanctuaryArea>(FindObjectsSortMode.None))
         {
             if (a == null || a.displayName != name || a.gameObject.scene != scene) continue;
+            if (NuclearSiteRule.InZone(a.transform.position)) continue;   // el sitio nuclear no es para el tiempo libre (docs/sitio-nuclear.md)
             ConstructionProject cp = a.GetComponent<ConstructionProject>();
             if (cp != null && !cp.Finished) continue;
             return a;

@@ -3566,6 +3566,7 @@ public static partial class SampleSceneBuilder
         _towerSize = CienciasSize;
         SanctuaryArea plant = BuildAtomicPlant(areasGroup.transform); areas.Add(plant);
         _nuclearPlantArea = plant.transform;
+        _nuclearPowerArea = nuc.transform;
         BuildPhysicsHall(plant.transform);
         BuildNuclearUpperFloors();
         // Los EDIFICIOS (sus plantas bajas): sin puentes ni escaleras, cada uno con sus alfombras (docs/alfombras-plan.md).
