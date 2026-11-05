@@ -238,7 +238,7 @@ public class IceInsectLife : MonoBehaviour
             if (FlyTo(n, flySpeed) < 0.5f)
             {
                 _carrying = false;
-                { IceCarnivorousTree grows = _home.GetComponent<IceCarnivorousTree>(); if (grows != null && grows.growthPerKill > 0f) _home.transform.localScale = Vector3.Min(_home.transform.localScale * 1.002f, Vector3.one * grows.maxScale); }   // los nutrientes del muerto acaban en el árbol (bucle de nutrientes; los de la residencia no crecen: sostienen casas)
+                { IceCarnivorousTree grows = _home.GetComponent<IceCarnivorousTree>(); if (grows != null && grows.growthPerKill > 0f && (HunterLab.Instance == null || HunterLab.Instance.tree != grows)) _home.transform.localScale = Vector3.Min(_home.transform.localScale * 1.002f, Vector3.one * grows.maxScale); }   // los nutrientes del muerto acaban en el árbol (bucle de nutrientes; los de la residencia no crecen: sostienen casas)
                 Debug.Log($"[Hielo] Una abeja de las nieves deja nutrientes en su nido: el árbol «{_home.name}» crece.");
             }
             return;

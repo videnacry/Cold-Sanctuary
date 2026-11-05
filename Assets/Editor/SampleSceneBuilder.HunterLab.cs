@@ -51,10 +51,11 @@ public static partial class SampleSceneBuilder
 
         // EL ÁRBOL, con todo lo suyo: su alcance entero, sus panales y sus arañas.
         System.Func<Vector3, bool> outside = w => { Vector3 l = cell.InverseTransformPoint(w); return Mathf.Abs(l.x) > box.x * 0.33f || Mathf.Abs(l.z) > box.z * 0.33f; };
-        GameObject tree = CubeTree.Build(lab, "ArbolCazador", cell.position + Vector3.up * 0.4f, 1234, 10f, carnivorous: true, blocked: outside, maxNests: HunterRule.Hives);
+        GameObject tree = CubeTree.Build(lab, "ArbolCazador", cell.position + Vector3.up * 0.4f, 1234, 10f, carnivorous: true, blocked: outside, maxNests: HunterLoop.MaxNests);
         IceCarnivorousTree hunter = tree.GetComponent<IceCarnivorousTree>();
         hunter.lureRadius = HunterRule.LureRadius; hunter.killRadius = HunterRule.KillRadius;
         view.tree = hunter;
+        foreach (Hive h in tree.GetComponentsInChildren<Hive>(true)) view.hives.Add(h.gameObject);
         view.cell = new Bounds(c0 + Vector3.up * box.y * 0.5f, box);
         WorldLabel tl = tree.AddComponent<WorldLabel>(); tl.text = "Árbol cazador, con sus abejas y arañas"; tl.height = 16f;
         Vector3 nest = cell.position + new Vector3(3f, 0f, 0f);

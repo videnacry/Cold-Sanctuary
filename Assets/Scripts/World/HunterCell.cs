@@ -19,8 +19,8 @@ public static class HunterRule
     public const int DrillEvery = 7, SampleEvery = 7;
     /// <summary>Su alcance entero, el del árbol mayor de la antigua arboleda: señuelo y sopor letal (m). Dentro de la celda no sale de ella.</summary>
     public const float LureRadius = 70f, KillRadius = 12f;
-    /// <summary>Panales del árbol y arañas de la celda. Son pocos: una celda no da para más.</summary>
-    public const int Hives = 3, Spiders = 2;
+    /// <summary>Las arañas de la celda. Los panales los manda el ciclo: <see cref="HunterLoop.Nests"/>.</summary>
+    public const int Spiders = 2;
 
     public static bool FailureOn(int day)
     {
@@ -30,36 +30,54 @@ public static class HunterRule
 }
 
 /// <summary>
-/// EL CICLO CERRADO DE LA CELDA, un día cada vez y sin escena: cadáveres → nutrientes → néctar y miel → polinización → crecimiento, y lo que muere vuelve al suelo.
-/// Es un modelo propio, con cifras de juego. Se calcula arriba (como <see cref="CavernRock"/>) y abajo solo se ve.
+/// EL CICLO DE LA CELDA, un día cada vez y sin escena (docs/ice-sanctuary-ecology.md §2; docs/contencion-arbol-cazador.md §El balance). El árbol vive de agua, frío y luz. Sus nutrientes
+/// salen sobre todo de los **cadáveres de sus propios insectos** (Berón): las abejas hacen los nidos con ellos y el árbol absorbe de los nidos. Más nutrientes → más ramas → más nidos.
+/// Se cuenta en kg de nitrógeno, que no se crea: el ciclo no gana nada, solo lo hace circular y pierde un poco en cada vuelta. Para crecer de verdad necesita presas.
 /// </summary>
 public struct HunterLoop
 {
-    public const int MaxBees = 18, MinBees = 4;
-    /// <summary>Lo que se recicla de lo que se gasta. No llega a 1: siempre se pierde algo, y por eso a veces hace falta una ración.</summary>
+    /// <summary>~20 cm de abeja: 237 g escalando una abeja de 0,1 g y 1,5 cm. Physiognomy dice 1 g, que no cuadra con 20 cm. La araña, 175 g (Physiognomy). Días de vida: la abeja, los de una
+    /// obrera de verano; la araña, 3 años. N: 2,5 % del peso fresco.</summary>
+    public const float BeeKg = 0.237f, SpiderKg = 0.175f, BeeLifeDays = 40f, SpiderLifeDays = 1095f, NShare = 0.025f;
+    /// <summary>Lo que vuelve de cada muerte y de cada hoja. No llega a 1.</summary>
     public const float Recycle = 0.97f;
-    public const float NectarPerBee = 0.02f, HoneyPerNectar = 0.5f, HoneyPerBee = 0.004f, RationKg = 2f, LowNutrients = 1f, SpiderBeesPerDay = 0.15f, GrowthPerDay = 0.002f;
+    /// <summary>Nitrógeno del árbol de 13 m (~300 kg secos), su renovación al año y lo que absorbe de los nidos al día. Estimaciones.</summary>
+    public const float TreeN0 = 0.6f, TurnoverPerYear = 1f / 6f, AbsorbPerDay = 0.1f;
+    public const int BeesPerNest = 12, MinNests = 3, MaxNests = 6;
+    public const float SpiderBeesPerDay = 0.15f, MaxScale = 1.5f, RationKg = 2f;
 
-    public float nutrients, honey, bees, pollination, scale;
+    public float treeN, nestN, bees, honey, pollination;
 
-    public static HunterLoop Start => new HunterLoop { nutrients = 4f, honey = 1f, bees = 12f, pollination = 0.5f, scale = 1f };
-    public bool Hungry => nutrients < LowNutrients;
-    public bool Colony => bees >= MinBees;
+    public static HunterLoop Start => new HunterLoop { treeN = TreeN0, nestN = 0.3f, bees = 18f, honey = 1f, pollination = 0.5f };
+    static float BeeN => BeeKg * NShare;
+    public float Scale => Mathf.Pow(treeN / TreeN0, 1f / 3f);
+    /// <summary>Más ramas, más nidos.</summary>
+    public int Nests => Mathf.Clamp(Mathf.FloorToInt(MinNests * Scale * Scale), MinNests, MaxNests);
+    public float TotalN => treeN + nestN + bees * BeeN;
+    /// <summary>El ciclo ha perdido demasiado: hace falta una entrega por el portillo.</summary>
+    public bool Hungry => TotalN < 0.9f * (TreeN0 + 0.3f + 18f * BeeN);
+    public bool Colony => bees >= MinNests;
 
-    public void Day(int spiders, float maxScale)
+    /// <summary>Un cadáver que llega de fuera: una presa de su miel o una entrega por el portillo.</summary>
+    public void Carcass(float kg) { nestN += kg * NShare * Recycle; }
+
+    public void Day(int spiders)
     {
-        float nectar = Mathf.Min(nutrients, bees * NectarPerBee);
-        nutrients -= nectar * (1f - Recycle);
-        honey += nectar * HoneyPerNectar;
-        float eaten = bees * HoneyPerBee;
-        float fed = honey >= eaten ? 1f : honey / Mathf.Max(0.0001f, eaten);
-        honey = Mathf.Max(0f, honey - eaten);
-        float born = bees > 0f && fed > 0.9f ? 1f : 0f, lost = spiders * SpiderBeesPerDay + (1f - fed) * bees * 0.2f;
-        lost = Mathf.Min(lost, bees + born);
-        bees = Mathf.Clamp(bees + born - lost, 0f, MaxBees);
-        nutrients += lost * 0.01f * Recycle;   // las abejas muertas vuelven al suelo
-        pollination = bees / MaxBees;
-        scale = Mathf.Clamp(scale + GrowthPerDay * pollination * (Hungry ? 0f : 1f), 1f, maxScale);
+        float cap = BeesPerNest * Nests;
+        pollination = Mathf.Min(1f, bees / cap);
+        float dead = Mathf.Min(bees, bees / BeeLifeDays + spiders * SpiderBeesPerDay);
+        nestN += dead * BeeN * Recycle + spiders / SpiderLifeDays * SpiderKg * NShare * Recycle;
+        float litter = treeN * TurnoverPerYear / 365f;
+        treeN -= litter; nestN += litter * Recycle;
+        // Sin abejas no hay nidos que absorber. El tope: lo que cabe en la celda.
+        float top = TreeN0 * MaxScale * MaxScale * MaxScale;
+        float up = Mathf.Min(nestN * AbsorbPerDay * pollination, Mathf.Max(0f, top - treeN));
+        nestN -= up; treeN += up;
+        bees -= dead;
+        float born = bees <= 0f ? 0f : Mathf.Min(Mathf.Max(0f, cap - bees), cap / BeeLifeDays * 1.2f);
+        born = Mathf.Min(born, nestN / BeeN);
+        nestN -= born * BeeN; bees += born;
+        honey = Mathf.Max(0f, honey + Nests * 0.05f * pollination - bees * 0.004f);
     }
 }
 
@@ -84,7 +102,6 @@ public class HunterCell : MonoBehaviour
     public int CrewSigned { get; private set; }
 
     int _missed, _lastDay = int.MinValue, _breachDay;
-    const float MaxScale = 1.5f;
 
     static int Today => TimeController.timeController != null ? TimeController.timeController.Day : 0;
 
@@ -107,8 +124,8 @@ public class HunterCell : MonoBehaviour
     /// <summary>Un día: el ciclo sigue, se vea o no.</summary>
     public void NextDay(int d)
     {
-        loop.Day(HunterRule.Spiders, MaxScale);
-        if (HunterLab.Instance != null) HunterLab.Instance.Show(loop.scale);
+        loop.Day(HunterRule.Spiders);
+        Show();
         if (Now == State.Brecha)
         {
             if (d - _breachDay >= HunterRule.AutoSealDays) Seal("las compuertas, solas");
@@ -133,11 +150,14 @@ public class HunterCell : MonoBehaviour
     }
 
     public void Round(string who) { Rounds++; _missed = 0; Debug.Log($"[Contención] {who}: lectura remota de sellos, presión, colonia y filtros."); }
-    public void Ration(string who) { Rations++; loop.nutrients += HunterLoop.RationKg; Debug.Log($"[Contención] {who}: ración por el portillo."); }
+    void Show() { if (HunterLab.Instance != null) HunterLab.Instance.Show(loop.Scale, loop.Nests); }
+    public void Ration(string who) { Rations++; loop.Carcass(HunterLoop.RationKg); Debug.Log($"[Contención] {who}: restos de un animal muerto, por el portillo."); }
+    /// <summary>Una presa de su miel letal: un extra.</summary>
+    public void Prey(float kg) { loop.Carcass(kg); Debug.Log($"[Contención] El árbol absorbe una presa de {kg:0.#} kg."); }
     public void Sample(string who)
     {
-        Samples++; loop.scale = Mathf.Max(1f, loop.scale - 0.05f);
-        if (HunterLab.Instance != null) HunterLab.Instance.Show(loop.scale);
+        Samples++; float cutN = loop.treeN * 0.03f; loop.treeN -= cutN; loop.nestN += cutN * 0.9f;   // casi todo lo podado vuelve
+        Show();
         Debug.Log($"[Contención] {who}: muestra por los guantes y poda.");
     }
     public void Drill(string who) { Drills++; Debug.Log($"[Contención] {who}: simulacro de escape."); }
@@ -165,7 +185,7 @@ public class HunterCell : MonoBehaviour
             l.Add(new WorkRoster.Mission(a, RecaptureId + "_2", "Código verde: segunda persona de la recaptura", 1f, true));
             return l;
         }
-        if (Instance.loop.Hungry) l.Add(new WorkRoster.Mission(a, RationId, "Bajar una ración al árbol cazador: el ciclo se ha quedado corto de nutrientes", 1f));
+        if (Instance.loop.Hungry) l.Add(new WorkRoster.Mission(a, RationId, "Bajar restos de un animal muerto al árbol cazador: el ciclo de sus insectos ha perdido demasiado", 1f));
         if (day % HunterRule.SampleEvery == 3) l.Add(new WorkRoster.Mission(a, SampleId, "Bajar a tomar muestras y podar por los guantes de la celda", 1f));
         if (day % HunterRule.DrillEvery == 0) l.Add(new WorkRoster.Mission(a, DrillId, "Simulacro de escape del árbol cazador", 1f));
         return l;
@@ -177,15 +197,22 @@ public class HunterLab : MonoBehaviour
 {
     public static HunterLab Instance { get; private set; }
     public IceCarnivorousTree tree;
+    public List<GameObject> hives = new List<GameObject>();
     [Tooltip("La caja de la celda, en coordenadas de este objeto.")] public Bounds cell;
 
     void OnEnable()
     {
         Instance = this;
-        if (HunterCell.Instance != null) Show(HunterCell.Instance.loop.scale);
+        if (HunterCell.Instance != null) Show(HunterCell.Instance.loop.Scale, HunterCell.Instance.loop.Nests);
     }
     void OnDisable() { if (Instance == this) Instance = null; }
 
     public bool Contains(Vector3 world) => cell.Contains(transform.InverseTransformPoint(world));
-    public void Show(float scale) { if (tree != null) tree.transform.localScale = Vector3.one * scale; }
+    /// <summary>Más nutrientes, más ramas y más nidos.</summary>
+    public void Show(float scale, int nests)
+    {
+        if (tree == null) return;
+        tree.transform.localScale = Vector3.one * scale;
+        for (int i = 0; i < hives.Count; i++) if (hives[i] != null) hives[i].SetActive(i < nests);
+    }
 }

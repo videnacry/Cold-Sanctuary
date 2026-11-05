@@ -104,7 +104,7 @@ public static class GuardWatch
                 return total == 0 ? "Sin depredadores en la lista" : $"{PredatorRound.Left} de {total} por revisar";
             }
             case Feed.Contencion:
-                return HunterCell.Instance == null ? "Sin datos: la celda no está en esta escena" : HunterCell.Instance.Now == HunterCell.State.Brecha ? "CÓDIGO VERDE: brecha en la celda" : $"Contenido · {HunterCell.Instance.loop.bees:0} abejas · {HunterCell.Instance.loop.honey:0.0} kg de miel · polinización {HunterCell.Instance.loop.pollination:P0}";
+                return HunterCell.Instance == null ? "Sin datos: la celda no está en esta escena" : HunterCell.Instance.Now == HunterCell.State.Brecha ? "CÓDIGO VERDE: brecha en la celda" : $"Contenido · {HunterCell.Instance.loop.bees:0} abejas · {HunterCell.Instance.loop.Nests} nidos · {HunterCell.Instance.loop.TotalN:0.00} kg de N · ×{HunterCell.Instance.loop.Scale:0.00}";
             default: return NuclearSite.Evacuating ? "EVACUACIÓN DEL SITIO NUCLEAR" : "Sin emergencias · no hay sensor de fuego";
         }
     }

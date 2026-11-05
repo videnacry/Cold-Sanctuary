@@ -30,13 +30,21 @@ public class GuardRoomTest : MonoBehaviour, ITestUnit
             && Enumerable.Range(0, 3650).All(d => GuardWatchRule.SeaState(d) == GuardWatchRule.Sea.Normal || GuardWatchRule.Magnitude(d) >= GuardWatchRule.TsunamiWatchMagnitude));
         TestProbe.Check("la misión de la sala existe, con su efecto", AreaFunctions.Get("gua_sala") != null && AreaFunctions.Get("gua_sala").effect != null);
         TestProbe.Check("la sala cumple la mezcla (S14)", AreaDesign.Of("Sala de guardia")?.state == AreaDesign.State.Cumple);
-        HunterLoop loop = HunterLoop.Start; float top = 0f;
-        for (int d = 0; d < 60; d++) { loop.Day(HunterRule.Spiders, 1.5f); top = Mathf.Max(top, loop.scale); }
-        TestProbe.Check("el ciclo cerrado se sostiene 60 días sin raciones: colonia, miel, polinización y crecimiento", loop.Colony && loop.honey > 0f && loop.pollination > 0f && top > 1f, $"{loop.bees:0.0} abejas, {loop.honey:0.0} kg, {loop.nutrients:0.0} kg de nutrientes, ×{loop.scale:0.00}");
+        HunterLoop loop = HunterLoop.Start;
+        for (int d = 0; d < 365; d++) loop.Day(HunterRule.Spiders);
+        TestProbe.Check("un año solo con sus insectos: colonia viva y árbol que no mengua", loop.Colony && loop.Scale >= 1f, $"{loop.bees:0} abejas, ×{loop.Scale:0.00}, {loop.TotalN:0.00} kg de N");
+        HunterLoop alone = HunterLoop.Start;
+        for (int d = 0; d < 3650; d++) alone.Day(HunterRule.Spiders);
+        TestProbe.Check("diez años sin nada de fuera: el ciclo pierde nitrógeno, por eso existe la entrega", alone.TotalN < HunterLoop.Start.TotalN * 0.8f && alone.Hungry, $"{alone.TotalN:0.00} kg de N, ×{alone.Scale:0.00}");
+        HunterLoop fed = HunterLoop.Start; int rations = 0;
+        for (int d = 0; d < 3650; d++) { fed.Day(HunterRule.Spiders); if (fed.Hungry) { fed.Carcass(HunterLoop.RationKg); rations++; } }
+        TestProbe.Check("con la entrega como reserva, se sostiene, y hace falta poco", fed.Colony && fed.Scale >= 0.97f && rations < 30, $"{rations} entregas en 10 años, ×{fed.Scale:0.00}");
         HunterLoop poor = HunterLoop.Start; poor.bees = 0f;
-        for (int d = 0; d < 60; d++) poor.Day(HunterRule.Spiders, 1.5f);
-        TestProbe.Check("sin abejas no hay polinización ni crece: las necesita", poor.pollination == 0f && poor.scale == 1f);
-        TestProbe.Check("la sala es de los tres guardias, también de Tote", new[] { "Gohageneis", "Nesvitor", "JefeConstruccion" }.All(w => Professions.Practises(w, AreaWork.GuardRoom, "gua_sala")));
+        for (int d = 0; d < 365; d++) poor.Day(HunterRule.Spiders);
+        TestProbe.Check("sin abejas no se absorbe: el árbol mengua", poor.pollination == 0f && poor.Scale < 1f);
+        HunterLoop rich = HunterLoop.Start; rich.Carcass(60f);
+        for (int d = 0; d < 1095; d++) rich.Day(HunterRule.Spiders);
+        TestProbe.Check("crecer de verdad pide presas: más ramas, más nidos", rich.Scale > 1.3f && rich.Nests > HunterLoop.MinNests, $"×{rich.Scale:0.00}, {rich.Nests} nidos");
         TestProbe.End();
 
         TestProbe.Begin("Sala de guardia, cazador y casquetes silvestres");

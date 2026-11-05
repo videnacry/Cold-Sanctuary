@@ -21,6 +21,8 @@ public class IceCarnivorousTree : MonoBehaviour
 
     public int Absorbed => _absorbed;
 
+    const float PreyKg = 5f;
+    readonly System.Collections.Generic.HashSet<Anima> _torpor = new System.Collections.Generic.HashSet<Anima>();
     float _next;
     int _absorbed;
     // Cada cadáver hace crecer el árbol UNA vez. Antes se volvía a contar en cada sondeo (0,5 s) mientras siguiera en
@@ -50,14 +52,16 @@ public class IceCarnivorousTree : MonoBehaviour
             if (d > lureRadius) continue;
             if (d <= killRadius)
             {
-                // SOPOR letal: lo adormece y debilita; cuando muere cerca, el árbol lo absorbe y crece.
-                a.sleepiness = Mathf.Clamp01(a.sleepiness + 2f * step);
-                a.sickness = Mathf.Clamp01(a.sickness + 1.5f * step);
+                // LA MIEL LETAL (docs/ice-sanctuary-ecology.md §2): quien llega con hambre come, y duerme un sueño del que no despierta. Muere cerca: el árbol lo absorbe.
+                Animal beast = a.GetComponent<Animal>();
+                if (_torpor.Contains(a) || beast == null || beast.hungry > PredatorRound.HungryAt) _torpor.Add(a);
+                if (_torpor.Contains(a)) { a.asleep = true; a.sleepiness = 1f; a.sickness = Mathf.Clamp01(a.sickness + 1.5f * step); }
+                else a.sleepiness = Mathf.Clamp01(a.sleepiness + 2f * step);
                 if (a.death && _eaten.Add(a))
                 {
                     _absorbed++;
-                    float s = Mathf.Min(maxScale, transform.localScale.x + growthPerKill);
-                    transform.localScale = Vector3.one * s;
+                    if (held) cell.Prey(PreyKg);
+                    else transform.localScale = Vector3.one * Mathf.Min(maxScale, transform.localScale.x + growthPerKill);
                 }
             }
             else
