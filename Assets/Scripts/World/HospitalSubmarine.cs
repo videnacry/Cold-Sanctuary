@@ -151,50 +151,53 @@ public class HospitalSubmarine : MonoBehaviour
         return false;
     }
 
-    /// <summary>EL EQUIPO, POR SU PAPEL Y NO POR SU NOMBRE (2026-11-04: con el reparto nuevo de papeles, docs/personajes-mesocosmos.md,
-    /// Andrea pasó a maestro de yoga y la lanzadera salía vacía). Por orden:
-    /// 1. quien tiene HOY una misión del hospital con papel médico o de enfermería (para un animal, primero las veterinarias:
-    ///    hos_veterinaria, enf_animales);
-    /// 2. quien está ahora en el hospital (<see cref="WorkdayDirector.InArea"/>);
-    /// 3. el personal sanitario fijo (Linduarda, la doctora de la iniciación; quien lleve una conducta del hospital);
-    /// 4. si aún falta, el personal más cercano al hospital (un traslado urgente no sale sin nadie).
-    /// Siempre los que estén libres (no en otro vehículo, no dando de comer a un ingresado) y, en cada grupo, los más cercanos.</summary>
+    /// <summary>Tope (s de juego estimados) para contar a alguien «cerca» del hospital: su mismo árbol (<see cref="ArbolCampos.TripSeconds"/>,
+    /// 40 s); desde otro árbol ya son ≥ 85 s y, medido, no llegaba a la puerta en los 120 s de espera (Adonis, 2026-11-05).</summary>
+    public const float CrewNearSeconds = 70f;
+
+    /// <summary>EL EQUIPO: CERCA Y SANITARIO (2026-11-05). Lo primero es que llegue: una urgencia no espera a quien está en otro árbol. Entre
+    /// quienes están cerca, por este orden: el personal sanitario de verdad (<see cref="Professions.Medical"/>); quien tiene HOY una misión
+    /// del hospital (para un animal, primero las veterinarias: hos_veterinaria, enf_animales); quien está ahora en el hospital; quien cuida
+    /// animales ingresados (<see cref="VetCare"/>); y, si aún falta, cualquiera del personal que esté cerca. Si nadie está cerca, UNA
+    /// persona: la más cercana de esos mismos grupos. Siempre gente libre y, en cada grupo, los más cercanos.</summary>
     List<GameObject> PickCrew(bool animal)
     {
         var l = new List<GameObject>();
         Vector3 hosp = FindFloor(HospitalService.Urgencias, out ArbolCampos hac, out TreeLevel hl, out _) ? hac.World(hl.outside) : transform.position;
+        float Trip(GameObject g) => Mathf.Max(ArbolCampos.TripSeconds(g.transform.position, hosp), Vector3.Distance(g.transform.position, hosp) / 3f);
         bool Free(GameObject g) => g != null && !g.CompareTag("Player") && g.GetComponent<Anima>() != null && !Engaged(g) && !(g.GetComponent<VetCare>() is VetCare vc && vc.Busy) && !l.Contains(g);
-        void Take(IEnumerable<GameObject> tier)
-        {
-            var t = new List<GameObject>();
-            foreach (GameObject g in tier) if (Free(g) && !t.Contains(g)) t.Add(g);
-            t.Sort((a, b) => Vector3.Distance(a.transform.position, hosp).CompareTo(Vector3.Distance(b.transform.position, hosp)));
-            foreach (GameObject g in t) { if (l.Count >= 2) return; l.Add(g); }
-        }
+        // Los grupos, en su orden.
+        var tiers = new List<List<GameObject>>();
+        var medical = new List<GameObject>();
+        foreach (string n in Professions.Medical) medical.Add(WorkdayDirector.Body(n));
+        tiers.Add(medical);
         WorkdayDirector wd = WorkdayDirector.Instance;
+        var vets = new List<GameObject>(); var today = new List<GameObject>();
         if (wd != null && wd.today != null)
-        {
-            var vets = new List<GameObject>(); var med = new List<GameObject>();
             foreach (WorkRoster.Assignment a in wd.today.work)
             {
                 if (a?.mission == null || a.worker == null || a.mission.area != AreaWork.Hospital) continue;
-                GameObject g = WorkdayDirector.Body(a.worker.name);
-                AreaFunctions.AreaFunction fn = AreaFunctions.Get(a.mission.id);
                 bool vet = a.mission.id == "hos_veterinaria" || a.mission.id == "enf_animales";
-                bool medical = vet || (fn != null && System.Array.Exists(fn.roles, r => r == "medico" || r == "enfermera")) || a.mission.id.StartsWith("hos_");
-                if (vet) vets.Add(g); else if (medical) med.Add(g);
+                (vet ? vets : today).Add(WorkdayDirector.Body(a.worker.name));
             }
-            if (animal) { Take(vets); Take(med); } else { Take(med); Take(vets); }
-        }
-        if (wd != null) Take(wd.InArea(AreaWork.Hospital));
-        var fixedStaff = new List<GameObject>();
-        foreach (Linduarda lin in FindObjectsByType<Linduarda>(FindObjectsSortMode.None)) fixedStaff.Add(lin.gameObject);
-        foreach (VetCare vc in FindObjectsByType<VetCare>(FindObjectsSortMode.None)) fixedStaff.Add(vc.gameObject);
-        Take(fixedStaff);
+        tiers.Add(animal ? vets : today); tiers.Add(animal ? today : vets);
+        if (wd != null) tiers.Add(wd.InArea(AreaWork.Hospital));
+        var carers = new List<GameObject>();
+        foreach (VetCare vc in FindObjectsByType<VetCare>(FindObjectsSortMode.None)) carers.Add(vc.gameObject);
+        tiers.Add(carers);
         var anyone = new List<GameObject>();
-        foreach (string n in WorkdayDirector.Staff) { GameObject g = WorkdayDirector.Body(n); if (g != null) anyone.Add(g); }
-        Take(anyone);
-        if (l.Count > 0) Debug.Log($"[Submarino] equipo elegido por su papel: {string.Join(", ", l.ConvertAll(g => g.name))}");
+        foreach (string n in WorkdayDirector.Staff) anyone.Add(WorkdayDirector.Body(n));
+        tiers.Add(anyone);
+        void Take(List<GameObject> tier, bool nearOnly, int upTo)
+        {
+            var t = new List<GameObject>();
+            foreach (GameObject g in tier) if (Free(g) && !t.Contains(g) && (!nearOnly || Trip(g) <= CrewNearSeconds)) t.Add(g);
+            t.Sort((a, b) => Trip(a).CompareTo(Trip(b)));
+            foreach (GameObject g in t) { if (l.Count >= upTo) return; l.Add(g); }
+        }
+        foreach (var tier in tiers) Take(tier, true, 2);
+        if (l.Count == 0) foreach (var tier in tiers) Take(tier, false, 1);
+        Debug.Log($"[Submarino] equipo elegido: {(l.Count > 0 ? string.Join(", ", l.ConvertAll(g => $"{g.name} (~{Trip(g):0} s)")) : "nadie libre")}");
         return l;
     }
 

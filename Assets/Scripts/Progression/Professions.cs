@@ -21,6 +21,10 @@ public static class Professions
         public Entry(string w, string t, params string[] a) { who = w; title = t; areas = a; }
     }
 
+    /// <summary>El personal sanitario de verdad (lo primero que busca el equipo de los submarinos): Lizmibet, médica; Linduarda, la doctora
+    /// de la iniciación; Ivelyna, pediatra.</summary>
+    public static readonly string[] Medical = { "Lizmibet", "Linduarda", "Ivelyna" };
+
     public static readonly Entry[] All =
     {
         // Josedrilo: maestro de yoga (YogaTeacher), JEFE DE OBRA NUEVA (las obras: «obra_») y bioconstrucción (el material: «mat_»).
@@ -37,7 +41,9 @@ public static class Professions
         // Maite: jefa de cocina con Amykhuz, y CURANDERA (las plantas medicinales y las curas del hospital).
         new Entry("Maite", "jefa de cocina y curandera", "Cocina", "Hospital:hos_plantas,enf_visita"),
         new Entry("Amykhuz", "jefe de cocina y química", "Cocina", "Química"),
-        new Entry("Shalva", "cultivo y bioconstrucción", "Huerto", "Construcción:mat_"),
+        // Shalva, profesional de cultivo: EL JARDINERO FRUTAL (su misión de profesión en el Huerto es una ronda de frutales; la experta de los
+        // frutales era Irosene, que ahora es de letras y textil). El riego y la cosecha del huerto le llegan por la rotación, como a todos.
+        new Entry("Shalva", "cultivo (jardinero frutal) y bioconstrucción", "Huerto:jar_frutales", "Construcción:mat_"),
         // Submarinismo: los submarinos (el de obra y la ambulancia) y las tareas bajo el agua de los árboles salen de Construcción.
         new Entry("Adaguchi", "submarinismo y cocina", "Construcción", "Cocina"),
         // Asuntos legales y lenguas: aún no hay área propia; su mesa está en la sala de estudio del Aula, donde da clase de lenguas.

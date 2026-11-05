@@ -178,7 +178,7 @@ public static partial class SampleSceneBuilder
             Vector3 c = rc + new Vector3(-0.35f, 0f, 0.33f);         // el del conjunto (la mesa), para que su caja quede centrada
             string sfx = i == 0 ? "" : $" {i + 1}";
             Zone(w1, "Sala_quirofano", rc, new Vector2(7.8f, 8f), zoneQ);
-            Transform otT = Station(InfirmaryProps.OperatingTable(w1, "Quirofano" + sfx, c, 0f), HospitalService.Quirofano, $"Quirófano {i + 1}", 1.6f, true, new Vector3(0.9f, 0f, 0.2f));
+            Transform otT = Station(InfirmaryProps.OperatingTable(w1, "Quirofano" + sfx, c, 0f), HospitalService.Quirofano, $"Quirófano {i + 1}", 1.6f, true, new Vector3(1.45f, 0f, 0.2f));   // (2026-11-05) a 0,6 m del tablero: a 0,9 m quedaba dentro de la caja de la mesa (reposabrazos a 0,85 m)
             Transform otL = InfirmaryProps.SurgicalLight(w1, "Lampara_quirurgica" + sfx, c + new Vector3(-1.4f, 0f, 0f), 90f);
             Transform otA = Station(InfirmaryProps.AnesthesiaMachine(w1, "Anestesia" + sfx, c + new Vector3(0f, 0f, -2.2f), 0f), HospitalService.Anestesia, $"Anestesia {i + 1}", 2f, true, new Vector3(0.9f, 0f, 0f));
             Transform otI = InfirmaryProps.InstrumentTable(w1, "Instrumental" + sfx, c + new Vector3(2f, 0f, 1.6f), 0f);
@@ -262,7 +262,7 @@ public static partial class SampleSceneBuilder
             Vector3 c = rc + new Vector3(-0.1f, 0f, 0f);
             string sfx = i == 0 ? "" : $" {i + 1}";
             Zone(v, "Sala_quirofano_vet", rc, new Vector2(7.4f, 5.4f), zoneQ);
-            Transform vt = Station(InfirmaryProps.VetTable(v, "Quirofano veterinario" + sfx, c, 90f), HospitalService.CirugiaVeterinaria, $"Quirófano veterinario {i + 1}", 1.4f, true, new Vector3(0f, 0f, -1.1f));
+            Transform vt = Station(InfirmaryProps.VetTable(v, "Quirofano veterinario" + sfx, c, 90f), HospitalService.CirugiaVeterinaria, $"Quirófano veterinario {i + 1}", 1.4f, true, new Vector3(1.1f, 0f, 0f));   // (2026-11-05) al lado largo de la mesa: en −Z caía sobre la base de la lámpara
             Transform vl = InfirmaryProps.SurgicalLight(v, "Lampara_quirurgica_vet" + sfx, c + new Vector3(-1.4f, 0f, 0f), 90f);
             Transform va = Station(InfirmaryProps.AnesthesiaMachine(v, "Anestesia veterinaria" + sfx, c + new Vector3(1.6f, 0f, 0f), -90f), HospitalService.Anestesia, $"Anestesia veterinaria {i + 1}", 2f, false, new Vector3(0f, 0f, -0.9f));
             Transform vr = GlassWall.Room(v, $"Quirofano_vet_{i + 1}", new[] { vt, vl, va }, i < 2 ? 2 : 0);

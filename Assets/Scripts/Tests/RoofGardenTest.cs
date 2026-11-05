@@ -124,7 +124,7 @@ public class RoofGardenTest : MonoBehaviour, ITestUnit
             var targets = bed0.Plants;
             foreach (FruitPlant p in targets) { p.nutrients = 0.3f; p.pests = 0.5f; p.health = 0.55f; }
             float before = targets.Average(p => p.Wellbeing);
-            GameObject body = WorkdayDirector.SpawnBodyCopy("Irosene", "Jardinera de la cima (prueba)");
+            GameObject body = WorkdayDirector.SpawnBodyCopy("Shalva", "Jardinero de la cima (prueba)");
             WorkdayDirector.Teleport(body.transform, targets[0].StandPoint(targets[0].transform.position + bed0.transform.forward * 3f));
             float old = Time.timeScale; Time.timeScale = 4f;
             int cared = 0; float t0 = Time.realtimeSinceStartup;
@@ -144,7 +144,7 @@ public class RoofGardenTest : MonoBehaviour, ITestUnit
             }
             Time.timeScale = old;
             float after = targets.Average(p => p.Wellbeing);
-            TestProbe.Check($"una jardinera llega andando a los frutales de «{bed0.name}» ({bed0.building}) y los cuida", cared == targets.Count && after > before + 0.1f,
+            TestProbe.Check($"un jardinero llega andando a los frutales de «{bed0.name}» ({bed0.building}) y los cuida", cared == targets.Count && after > before + 0.1f,
                 $"{cared}/{targets.Count} cuidados en {Time.realtimeSinceStartup - t0:0} s; bienestar {before * 100f:0} % → {after * 100f:0} %");
             Destroy(body);
         }
