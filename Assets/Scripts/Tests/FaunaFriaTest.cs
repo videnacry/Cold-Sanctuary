@@ -8,7 +8,7 @@ using UnityEngine;
 /// </summary>
 public class FaunaFriaTest : MonoBehaviour, ITestUnit
 {
-    public int Group => 110;
+    public int Group => 111;
     public bool ParallelSafe => false;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]

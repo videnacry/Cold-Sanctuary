@@ -381,7 +381,7 @@ reconstruir. Vale para TODOS los pisos, no solo el hospital. Cada piso del santu
 ## 12. Recuento y reglas sin comprobación automática
 
 
-**Total: 201 reglas** (S 15 · F 14 · T 24 · C 7 · G 8 · H 8 · M 39 · A 5 · J 32 · P 21 · E 17 · W 11 = 200 —W9, W10 y W11 van en §11; P11 repite J30; P1–P11 son de personajes y P12–P21 de territorio, producción y fauna (§13)—, más la regla de
+**Total: 202 reglas** (S 15 · F 14 · T 24 · C 7 · G 8 · H 8 · M 39 · A 5 · J 32 · P 21 · E 17 · W 11 = 201 —W9, W10 y W11 van en §11; P11 repite J30; P1–P11 son de personajes y P12–P21 de territorio, producción y fauna (§13)—, más la regla de
 sincronización de §11). (Recontado por el probador al integrar actividades, tareasE, entreno, personajes, hospital y cohetes, 2026-11-04:
 las J18 en adelante se renumeraron en una sola secuencia —J18–J21 actividades y uniformes, J22 tareas con «E», J23–J27 entrenamientos
 y entrenador, J28 profesiones, J29 nada en pisos en obras—.)

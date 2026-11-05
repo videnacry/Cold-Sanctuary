@@ -100,7 +100,7 @@ La profesión da a cada uno su papel sin quitar la rotación (regla J2):
 | Persona | Profesión | Misiones de su profesión | Sale en |
 |---|---|---|---|
 | **Josedrilo** | **Maestro jefe de Hatha** (`YogaTeacher`), **jefe de obra nueva** y bioconstrucción | Sala de Yoga (guía la clase); Construcción: `obra_` (las obras) y `mat_` (el material) | la tarima de Hatha tradicional |
-| **Tote** (`JefeConstruccion`) | **Jefe de reparaciones** y **guardia** | Construcción: `rep_`; Guardia | Construcción |
+| **Tote** (`JefeConstruccion`) | **Jefe de reparaciones** y **guardia** | Construcción: `rep_`; Guardia y Sala de guardia | Construcción |
 | **Gohageneis** | Guardia, artes marciales y **maestro de baile** | Guardia (y su patrulla, `CarnivoreKeeper`); guía el baile (un día de cada dos) | — |
 | **Nesvitor** | **Guardia** y **agricultor** | Guardia; Huerto | el huerto |
 | **Maite** | **Jefa de cocina** (con Amykhuz) y **curandera** | Cocina; Hospital: `hos_plantas` (misión nueva: remedios de plantas medicinales) y `enf_visita` (curas) | el restaurante |

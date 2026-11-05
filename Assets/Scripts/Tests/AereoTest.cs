@@ -81,6 +81,7 @@ public class AereoTest : MonoBehaviour, ITestUnit
             TestProbe.Check("las mesas montadas se ven; las demás, no", es.tables.Take(es.installed).All(t => t.gameObject.activeSelf) && es.tables.Skip(es.installed).All(t => !t.gameObject.activeSelf));
             LaunchSite ls = LaunchSite.Instance;
             TestProbe.Check("T13: la plataforma cumple, contando también el santuario 1", ls != null && ls.PadY >= LaunchHeightRule.RequiredPadHeight(out _) - 0.01f, ls != null ? $"{ls.PadY:0} m; {ls.LastWhy}" : "");
+            TestProbe.Check("T13 ve el árbol gigante del santuario 1 (ElevatedElement), aunque esté en otra escena", GameObject.Find(GuardianTree.GroveName) == null || LaunchHeightRule.TallestTop(out _) >= GuardianTree.Height - 1f, $"{LaunchHeightRule.TallestTop(out string tallest):0} m: {tallest}");
             TestProbe.Check("sin alfombras allí: se sale por los andenes", b.GetComponentsInChildren<CarpetPad>(true).Length == 0 && b.launchArrival != null && b.energyArrival != null);
             Vector3 launchAt = b.launchArrival.position, energyAt = b.energyArrival.position;
             TestProbe.Check("los andenes, sobre sus casquetes", IcebergRule.FlatDistance(launchAt, IcebergRule.Site.Launch) < 60f && IcebergRule.FlatDistance(energyAt, IcebergRule.Site.Energy) < 150f && AereoRule.InSector(launchAt) && AereoRule.InSector(energyAt));

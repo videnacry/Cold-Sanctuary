@@ -33,6 +33,7 @@ public class GuardianTreeTest : MonoBehaviour, ITestUnit
             && Enumerable.Range(0, 3650).All(d => GuardWatchRule.SeaState(d) == GuardWatchRule.Sea.Normal || GuardWatchRule.Magnitude(d) >= GuardWatchRule.TsunamiWatchMagnitude));
         TestProbe.Check("el tronco supera el volumen de Lindsey Creek", GuardianTree.TrunkVolume(GuardianTree.RecordHeight) >= GuardianTree.RecordVolume, $"{GuardianTree.TrunkVolume(GuardianTree.RecordHeight):0} m³");
         TestProbe.Check("la misión de la sala existe, con su efecto", AreaFunctions.Get("gua_sala") != null && AreaFunctions.Get("gua_sala").effect != null);
+        TestProbe.Check("la sala es de los tres guardias, también de Tote", new[] { "Gohageneis", "Nesvitor", "JefeConstruccion" }.All(w => Professions.Practises(w, AreaWork.GuardRoom, "gua_sala")));
         TestProbe.Check("la sala cumple la mezcla (S14)", AreaDesign.Of("Sala de guardia")?.state == AreaDesign.State.Cumple);
         TestProbe.End();
 

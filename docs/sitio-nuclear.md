@@ -792,7 +792,63 @@ Berón: «el refugio sería ideal irlo mejorando al punto que sea posible vivir 
 
 **Regla nueva, T23:** lo de abajo no se referencia desde arriba, y la lógica va arriba.
 
-## 23. Cómo volver a juntar los santuarios en una escena
+## 23. El Santuario Aéreo (Berón 2026-11-05)
+
+Berón: «me parece que el santuario3 es en el aire? entonces podemos mover las edificaciones de cohetes y energía eólica/hidráulica a dicho santuario, con lo que un vuelo a esas áreas desde el santuario1 también pasaría a una carga de escena y asi optimizamos el santuario1». Y: los santuarios están cerca unos de otros, en territorio frío: **nada de una zona de montaña lejana**.
+
+**Decisión: la lanzadera y el parque pasan a la escena `Santuario_Aereo`, con su menú.** Es el Aéreo de [world-topology-and-planes.md](world-topology-and-planes.md) §3.
+
+**Se queda en sus coordenadas de siempre:** lanzadera en (−560, 0), parque en (−470, 470). Al cargarse, se pone sobre el mismo mar. Es, de verdad, **un trozo del mismo mapa que se carga aparte**, no un sitio lejano; por eso casi ninguna regla cambia.
+
+| | Santuario 1 | Santuario Aéreo |
+|---|---|---|
+| Lanzadera | **Nada**; sus misiones siguen | Árbol, corona, cohete, propulsores |
+| Parque | **La lógica**: balance, turbinas sin cuerpo, fauna | Árbol, mesas, torres, mareal, almacén, figuras |
+| Acceso | **Muelle aéreo**, en (−300, 170), pista de la red del santuario | Dos andenes |
+| Fauna | La suya | Aves frías de territorio |
+| Se carga | Siempre | **Solo cuando Kushal va** |
+
+### Por qué la lógica de la energía no se va
+**Da luz a todo el santuario, esté Kushal donde esté.** Así que `EnergySite` se queda, con sus turbinas **sin cuerpo** en las mismas coordenadas. Al cargarse, la escena le **presta** sus piezas (mesas, rotores, figuras, almacén) y al descargarse se las quita.
+
+### Cómo se viaja
+- **Trabajadores, sin cargar nada:** vuelan en alfombra al muelle, el cuerpo se oculta y su misión corre por el reloj hasta que su jornada los lleva a otra parte. Fernando pasa allí casi todo el día de una vez, sin ir y venir.
+- **Kushal, en persona:** en el muelle elige lanzadera o parque; negro, carga aditiva dentro de los 30 s de vuelo, y aparece en el andén. Vuelve pisando el andén, y la escena se descarga. Si no carga en 20 s más, se queda en el muelle.
+- **Sin alfombras allí:** una que volase al santuario desaparecería al descargar. Se entra y se sale por el muelle.
+
+### Revisión de lo que pedías
+| Qué | Resultado |
+|---|---|
+| **T13, altura y distancias** | **Sin cambios**: mismas coordenadas, 300 m y la misma fórmula. Al cargarse, la regla cuenta también lo del santuario 1. **Pero** el constructor solo ve lo que esté abierto: hay que construir con el santuario 1 abierto; si no, la plataforma sube sola al empezar |
+| **T18** | **Sin cambios** |
+| **Sol y viento** | **Sin cambios**: es el mismo lugar. `EnergyRule` no se toca |
+| **Icebergs** | **Sin cambios**: los tres casquetes siguen vigilados por su radio; su radar y su sonar van con ellos |
+| **Tamaño del mapa** | **Sigue en ±600 m.** La escena aérea flota sobre ese mar, y la zona de exclusión nuclear llega a 560. **Encogerlo no ahorra nada**: el mar son 3 objetos |
+| **`[Lanzadera]`** | Ese registro sale ahora en el menú de la escena, no en el Blockout |
+| **Viaje de Fernando** | De ~122 s a **~134 s** (104 hasta el muelle y 30 de vuelo). Lanzadera: de ~116 a ~134. Ajustada la salida anticipada de la jornada |
+| **Aves y turbinas** | **Funciona sin cargar nada**: las turbinas sin cuerpo están donde siempre y los petreles son aves del santuario. Pasa por la lógica, no por la escena |
+| **Grupos 90 y 101** | Cargan la escena al empezar y la descargan al acabar |
+| **Cable** | **Regla:** todo lo que producen llega por cable, con un 2 % de pérdida (estimación mía). Las boyas de la línea se quedan en el santuario 1 |
+| **Hawthorne** | **Rotura evitada:** su microcosmos copia el piso de control, que ya no estaba; el constructor abre la escena aérea. **Puede avisar** de que faltan plazas reservadas |
+
+### Fauna fría
+La escena lleva las aves de `PlaceAirColdFauna` (de la rama de territorio): 12 aves como mucho, con islotes y bancos de peces y kril, a 220 m al sur de la lanzadera. **El agua es el mar del santuario 1**: la escena siempre se carga encima de él, y por eso no necesita mar propio. **Solo existen con la escena cargada.** Se colocaron lejos de las turbinas para que no las paren sin motivo, aunque al volar pueden acercarse.
+
+### Lo que cuesta
+- **Se pierde:** el huerto del techo del parque y su parte de los paneles de techo.
+- **Nadie anda allí salvo Kushal:** las actuaciones de los trabajadores no se ven, y la escena no lleva NavMesh.
+- **Sin submarino en juego:** las etapas ya no llegan de verdad; la misión es un texto, como antes. El grupo 90 lo sigue probando con la escena cargada.
+
+### Memoria: lo que sé y lo que no
+- **Medido:** `SampleScene.unity` pesa **116,3 MB** hoy, y es binario: no se pueden contar objetos sin Unity.
+- **Calculado:** salen unos **3000 objetos** (~1500 de ~180 mesas y lo demás de dos árboles; estimación mía sobre el código).
+- **No sé qué parte del total es**, y por tanto **no doy un porcentaje**.
+- **La cifra de verdad saldrá de tres sitios:** el registro `[Aéreo]` del menú, el grupo 110 (`MEDIDO`: segundos, MB, objetos) y el tamaño de `SampleScene.unity` tras reconstruir.
+- **Dibujar:** la niebla ya ocultaba estos sitios a lo lejos, así que **la ganancia en imágenes por segundo puede ser pequeña**.
+
+**Regla nueva, T24.** **W11:** T13, T18 y T22 anotadas; grupos 90, 101, 110; Hawthorne y Fernando corregidos. Ninguna regla de microcosmos nueva: Hawthorne ya estaba en la lista.
+
+## 24. Cómo volver a juntar los santuarios en una escena
 
 Berón (2026-11-05): dejar escrita la lógica que se quitó, por si algún día los dos santuarios vuelven a ser uno. **Hoy no hace falta y no se ha hecho.** Todo el código está en git: el último estado de una sola escena es el commit **`8e8fb57`** (rama `claude/edif-nuclear`), y `git show 8e8fb57:<ruta>` da cada archivo. El commit de la separación es `501ee5e`. La lista de abajo basta para rehacerlo a mano si ese código ya no encaja.
 
@@ -875,61 +931,12 @@ Lo que pesa no es la profundidad en sí, sino todo a la vez. Se puede **juntar e
 ### 8. Pruebas
 100 sola, y luego 94 107 73 90 96 50 53 108 85. Devolver a la 100 el control `moving.size.y ≈ ShelfThickness` y quitar las de «sin nada hondo en esta escena». Volver a mirar `[Sitio nuclear] Línea:` (> 60 s es error) y, con hielo de 300 m, la memoria al hornear el NavMesh.
 
-## 23. El Santuario Aéreo (Berón 2026-11-05)
-
-Berón: «me parece que el santuario3 es en el aire? entonces podemos mover las edificaciones de cohetes y energía eólica/hidráulica a dicho santuario, con lo que un vuelo a esas áreas desde el santuario1 también pasaría a una carga de escena y asi optimizamos el santuario1». Y: los santuarios están cerca unos de otros, en territorio frío: **nada de una zona de montaña lejana**.
-
-**Decisión: la lanzadera y el parque pasan a la escena `Santuario_Aereo`, con su menú.** Es el Aéreo de [world-topology-and-planes.md](world-topology-and-planes.md) §3.
-
-**Se queda en sus coordenadas de siempre:** lanzadera en (−560, 0), parque en (−470, 470). Al cargarse, se pone sobre el mismo mar. Es, de verdad, **un trozo del mismo mapa que se carga aparte**, no un sitio lejano; por eso casi ninguna regla cambia.
-
-| | Santuario 1 | Santuario Aéreo |
-|---|---|---|
-| Lanzadera | **Nada**; sus misiones siguen | Árbol, corona, cohete, propulsores |
-| Parque | **La lógica**: balance, turbinas sin cuerpo, fauna | Árbol, mesas, torres, mareal, almacén, figuras |
-| Acceso | **Muelle aéreo**, en (−300, 170), pista de la red del santuario | Dos andenes |
-| Fauna | La suya | Aves frías de territorio |
-| Se carga | Siempre | **Solo cuando Kushal va** |
-
-### Por qué la lógica de la energía no se va
-**Da luz a todo el santuario, esté Kushal donde esté.** Así que `EnergySite` se queda, con sus turbinas **sin cuerpo** en las mismas coordenadas. Al cargarse, la escena le **presta** sus piezas (mesas, rotores, figuras, almacén) y al descargarse se las quita.
-
-### Cómo se viaja
-- **Trabajadores, sin cargar nada:** vuelan en alfombra al muelle, el cuerpo se oculta y su misión corre por el reloj hasta que su jornada los lleva a otra parte. Fernando pasa allí casi todo el día de una vez, sin ir y venir.
-- **Kushal, en persona:** en el muelle elige lanzadera o parque; negro, carga aditiva dentro de los 30 s de vuelo, y aparece en el andén. Vuelve pisando el andén, y la escena se descarga. Si no carga en 20 s más, se queda en el muelle.
-- **Sin alfombras allí:** una que volase al santuario desaparecería al descargar. Se entra y se sale por el muelle.
-
-### Revisión de lo que pedías
-| Qué | Resultado |
-|---|---|
-| **T13, altura y distancias** | **Sin cambios**: mismas coordenadas, 300 m y la misma fórmula. Al cargarse, la regla cuenta también lo del santuario 1. **Pero** el constructor solo ve lo que esté abierto: hay que construir con el santuario 1 abierto; si no, la plataforma sube sola al empezar |
-| **T18** | **Sin cambios** |
-| **Sol y viento** | **Sin cambios**: es el mismo lugar. `EnergyRule` no se toca |
-| **Icebergs** | **Sin cambios**: los tres casquetes siguen vigilados por su radio; su radar y su sonar van con ellos |
-| **Tamaño del mapa** | **Sigue en ±600 m.** La escena aérea flota sobre ese mar, y la zona de exclusión nuclear llega a 560. **Encogerlo no ahorra nada**: el mar son 3 objetos |
-| **`[Lanzadera]`** | Ese registro sale ahora en el menú de la escena, no en el Blockout |
-| **Viaje de Fernando** | De ~122 s a **~134 s** (104 hasta el muelle y 30 de vuelo). Lanzadera: de ~116 a ~134. Ajustada la salida anticipada de la jornada |
-| **Aves y turbinas** | **Funciona sin cargar nada**: las turbinas sin cuerpo están donde siempre y los petreles son aves del santuario. Pasa por la lógica, no por la escena |
-| **Grupos 90 y 101** | Cargan la escena al empezar y la descargan al acabar |
-| **Cable** | **Regla:** todo lo que producen llega por cable, con un 2 % de pérdida (estimación mía). Las boyas de la línea se quedan en el santuario 1 |
-| **Hawthorne** | **Rotura evitada:** su microcosmos copia el piso de control, que ya no estaba; el constructor abre la escena aérea. **Puede avisar** de que faltan plazas reservadas |
-
-### Fauna fría
-La escena lleva las aves de `PlaceAirColdFauna` (de la rama de territorio): 12 aves como mucho, con islotes y bancos de peces y kril, a 220 m al sur de la lanzadera. **El agua es el mar del santuario 1**: la escena siempre se carga encima de él, y por eso no necesita mar propio. **Solo existen con la escena cargada.** Se colocaron lejos de las turbinas para que no las paren sin motivo, aunque al volar pueden acercarse.
-
-### Lo que cuesta
-- **Se pierde:** el huerto del techo del parque y su parte de los paneles de techo.
-- **Nadie anda allí salvo Kushal:** las actuaciones de los trabajadores no se ven, y la escena no lleva NavMesh.
-- **Sin submarino en juego:** las etapas ya no llegan de verdad; la misión es un texto, como antes. El grupo 90 lo sigue probando con la escena cargada.
-
-### Memoria: lo que sé y lo que no
-- **Medido:** `SampleScene.unity` pesa **116,3 MB** hoy, y es binario: no se pueden contar objetos sin Unity.
-- **Calculado:** salen unos **3000 objetos** (~1500 de ~180 mesas y lo demás de dos árboles; estimación mía sobre el código).
-- **No sé qué parte del total es**, y por tanto **no doy un porcentaje**.
-- **La cifra de verdad saldrá de tres sitios:** el registro `[Aéreo]` del menú, el grupo 110 (`MEDIDO`: segundos, MB, objetos) y el tamaño de `SampleScene.unity` tras reconstruir.
-- **Dibujar:** la niebla ya ocultaba estos sitios a lo lejos, así que **la ganancia en imágenes por segundo puede ser pequeña**.
-
-**Regla nueva, T24.** **W11:** T13, T18 y T22 anotadas; grupos 90, 101, 110; Hawthorne y Fernando corregidos. Ninguna regla de microcosmos nueva: Hawthorne ya estaba en la lista.
+### 9. El Santuario Aéreo
+Es lo más fácil de juntar: la lanzadera y el parque están **en sus coordenadas de siempre**, así que la escena ya cae en su sitio. El último estado con todo en el santuario 1 es `origin/claude/ronda10` (`dab7e54`).
+- Volver a llamar en el Blockout a `BuildLaunchSite` y `BeginEnergyTree`, con `BuildEnergyVisuals`, y quitar `BuildAereoDock`, `AereoBase` y `AereoLink`.
+- **El orden importa:** `BuildLaunchSite` va después de `BuildGiantTree`, y a continuación el cableado del control de misión (`WireMeditationArea` de «Control_de_mision»).
+- Las turbinas vuelven a tener cuerpo, y deja de hacer falta la pérdida del cable. El huerto del techo del parque vuelve.
+- **T24** deja de tener sentido. Es el camino inverso de §23: lo que allí costaba carga, aquí cuesta memoria siempre.
 
 ## Fuentes
 - [10 CFR 100.11](https://www.law.cornell.edu/cfr/text/10/100.11), [10 CFR 100.3](https://www.law.cornell.edu/cfr/text/10/100.3), [10 CFR 53.530](https://www.law.cornell.edu/cfr/text/10/53.530)

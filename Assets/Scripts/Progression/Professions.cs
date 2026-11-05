@@ -35,7 +35,7 @@ public static class Professions
         // Fernando (2026-11-05): PANELES SOLARES. Sus misiones son las del área Energía: los paneles («sol_») y las revisiones del parque («ene_»; docs/energia.md).
         new Entry("Fernando", "instalador y reparador de paneles solares", EnergyRule.Area),
         // Tote: JEFE DE REPARACIONES («rep_») y guardia.
-        new Entry("JefeConstruccion", "jefe de reparaciones y guardia", "Construcción:rep_", "Guardia"),
+        new Entry("JefeConstruccion", "jefe de reparaciones y guardia", "Construcción:rep_", "Guardia", AreaWork.GuardRoom),
         // Los guardias: Gohageneis (y las artes marciales), Nesvitor (y agricultor) y Tote.
         new Entry("Gohageneis", "guardia, artes marciales y maestro de baile", "Guardia", AreaWork.GuardRoom),
         // Panterilia: MAESTRA DE BAILE y FINANZAS (la mesa de cuentas del restaurante). Dejó de ser segunda maestra de yoga (2026-11-05: sin base documentada).
