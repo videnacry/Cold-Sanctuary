@@ -23,7 +23,7 @@ public static partial class StorySceneBuilder
 
     [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias 3/Eloy Alfaro (Chimbacalle, 1908)")] public static void BuildEloyAlfaro() => BuildOne("Microcosmos_EloyAlfaro");
     [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias 3/Galvarino (Arauco, 1557)")] public static void BuildGalvarino() => BuildOne("Microcosmos_Galvarino");
-    [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias 3/Atahualpa (Cajamarca, 1533)")] public static void BuildAtahualpa() => BuildOne("Microcosmos_Atahualpa");
+    [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias 3/Atahualpa (Cajamarca, 1532)")] public static void BuildAtahualpa() => BuildOne("Microcosmos_Atahualpa");
     [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias 3/Gran Ley de la Paz (Onondaga)")] public static void BuildGranLey() => BuildOne("Microcosmos_GranLeyDeLaPaz");
     [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias 3/Cleopatra (Alejandría, 42 a. C.)")] public static void BuildCleopatra() => BuildOne("Microcosmos_Cleopatra");
     [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias 3/Las calculadoras de Langley (1962)")] public static void BuildLangley() => BuildOne("Microcosmos_Langley");

@@ -63,7 +63,7 @@ public static class MicroFloors
         // Las historias de la tanda 3 (docs/microcosmos-historias-3.md)
         M("Chimbacalle", "VehicleWorkshop_Area", "Alfaro y el tren Guayaquil–Quito: locomotoras y mecánica", "Estación de ferrocarril y transporte"),
         M("Lagunillas", "Infirmary_Area", "Galvarino: curarse, volver con los suyos y seguir; la machi y el lawen, el hospital"),
-        M("Cajamarca", "TextileStudio_Area", "Atahualpa: los quipus, el cumbi y las colcas del Estado inca, el Estudio Textil", "Almacén y contaduría (qollqas y quipus)"),
+        M("Cajamarca", "TextileStudio_Area", "cómo vivían los incas: el cumbi, los quipus y las colcas, el Estudio Textil", "Almacén y contaduría (qollqas y quipus)"),
         M("Onondaga", "Classroom_Area", "la Gran Ley de la Paz: el consejo de las Cinco Naciones", "Sala de asambleas (parlamento)"),
         M("Alejandría de Cleopatra", "Kitchen_Area", "Cleopatra abre los graneros en los años sin crecida: dar de comer a una ciudad, la Cocina"),
         M("Langley", "Informatics_Area", "las calculadoras humanas de Langley y el IBM 7090: el piso de Informática"),

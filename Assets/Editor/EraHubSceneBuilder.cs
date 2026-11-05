@@ -39,7 +39,7 @@ public static class EraHubSceneBuilder
         // La tanda 3 (docs/microcosmos-historias-3.md)
         ("Microcosmos_EloyAlfaro", "Chimbacalle", "Eloy Alfaro y el tren de Guayaquil a Quito (1908)"),
         ("Microcosmos_Galvarino", "Lagunillas", "Galvarino vuelve con su gente (1557)"),
-        ("Microcosmos_Atahualpa", "Cajamarca", "Atahualpa y el rescate de Cajamarca (1533)"),
+        ("Microcosmos_Atahualpa", "Cajamarca", "Atahualpa y los incas: cómo vivían (1532)"),
         ("Microcosmos_GranLeyDeLaPaz", "Onondaga", "La Gran Ley de la Paz de los Haudenosaunee"),
         ("Microcosmos_Cleopatra", "Alejandría de Cleopatra", "Cleopatra y los años sin crecida (42 a. C.)"),
         ("Microcosmos_Langley", "Langley", "Johnson, Vaughan y Jackson: las calculadoras de Langley (1962)"),

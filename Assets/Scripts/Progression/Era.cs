@@ -116,7 +116,7 @@ public static class Eras
             // La tanda 3 (docs/microcosmos-historias-3.md)
             case "Chimbacalle":           return (1908, "Chimbacalle, Quito (Eloy Alfaro y la llegada del tren de Guayaquil)");
             case "Lagunillas":            return (1557, "Tierras de Arauco, Chile (Galvarino vuelve con su gente)");
-            case "Cajamarca":             return (1533, "Cajamarca, Perú (Atahualpa y el rescate)");
+            case "Cajamarca":             return (1532, "Cajamarca, Perú (cómo vivían los incas; Atahualpa recibe a los enviados)");
             case "Onondaga":              return (1450, "El lago Onondaga, Nueva York (la Gran Ley de la Paz; fecha tradicional discutida)");
             case "Alejandría de Cleopatra": return (-42, "Alejandría, Egipto (Cleopatra y los años sin crecida del Nilo)");
             case "Langley":               return (1962, "Langley, Hampton, Virginia (Johnson, Vaughan, Jackson y el vuelo de Glenn)");

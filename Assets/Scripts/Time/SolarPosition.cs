@@ -126,7 +126,7 @@ public static class SolarPosition
             ("Palenque", 17.48f, -92.05f, 240f),   // Palenque, 28 de agosto de 683 (la muerte de Pakal; temporada de lluvias)
             ("Chimbacalle", -0.25f, -78.52f, 177f),   // Quito, 25 de junio de 1908
             ("Lagunillas", -37.1f, -73.3f, 320f),   // Arauco, noviembre de 1557 (primavera austral; fecha representativa)
-            ("Cajamarca", -7.16f, -78.51f, 105f),   // abril de 1533 (fecha representativa)
+            ("Cajamarca", -7.16f, -78.51f, 319f),   // 15 de noviembre de 1532
             ("Onondaga", 43.08f, -76.2f, 244f),   // finales de agosto (la fecha tradicional no es segura)
             ("Langley", 37.08f, -76.38f, 51f),   // Hampton, 20 de febrero de 1962
             ("Viena", 48.21f, 16.37f, 128f),   // 7 de mayo de 1824

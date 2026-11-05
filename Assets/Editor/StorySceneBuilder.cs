@@ -98,7 +98,7 @@ public static partial class StorySceneBuilder
         ["Palenque"] = ("28 de agosto de 683 (9.12.11.5.18 en la Cuenta Larga)", 7.0f),   // el amanecer del día en que muere Pakal
         ["Chimbacalle"] = ("25 de junio de 1908", 10.0f),   // la mañana en que llega el tren (hora representativa)
         ["Lagunillas"] = ("noviembre de 1557 (primavera austral)", 9.0f),   // antes de Millarapue; hora representativa
-        ["Cajamarca"] = ("abril de 1533", 10.0f),   // el rescate va llegando; fecha y hora representativas
+        ["Cajamarca"] = ("15 de noviembre de 1532", 15.0f),   // la tarde en que los enviados llegan a Pultumarca
         ["Onondaga"] = ("hacia 1450 (fecha tradicional discutida)", 9.0f),   // el día del consejo junto al lago
         ["Alejandría de Cleopatra"] = ("verano del 42 a. C.", 8.0f),   // la mañana en el puerto
         ["Langley"] = ("del 19 al 20 de febrero de 1962", 9.78f),   // 9:47: Friendship 7 despega

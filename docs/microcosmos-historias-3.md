@@ -27,7 +27,7 @@ toca. Reglas: [manual de diseño](manual-de-diseno.md) §7 y J6, y [microcosmos-
 |---|---|---|---|---|
 | **Eloy Alfaro** (`Microcosmos_EloyAlfaro`, «Chimbacalle») | Llega el primer tren de Durán a Quito el día de su cumpleaños; la cuadrilla jamaicana, la escuela laica, el clavo de oro | Chimbacalle, Quito, 25-6-1908, 10:00 | **Mecánica**, **pendiente**: «Estación de ferrocarril y transporte» | Hormiga: abre un sendero y por él pasa la colonia |
 | **Galvarino** (`Microcosmos_Galvarino`, «Lagunillas») | Vuelve a su lof; la machi, el lawen, su gente lo cuida; habla en el koyag | Un lof de Arauco, noviembre de 1557, 9:00 | **Hospital**, representativo (curarse y seguir) | Grillo: suelta una pata y sigue saltando |
-| **Atahualpa** (`Microcosmos_Atahualpa`, «Cajamarca») | El rescate: quipus, colcas, cumbi, chasquis: el Estado inca sigue funcionando | Cajamarca, abril de 1533, 10:00 | **Estudio Textil**, **pendiente**: «Almacén y contaduría (qollqas y quipus)» | Termita: una ciudad de barro sin rueda ni hierro |
+| **Atahualpa** (`Microcosmos_Atahualpa`, «Cajamarca») | Cómo vivían los incas: ayni, mit'a, colcas, quipus, caminos, comida y tela; un muro sin terminar; la bienvenida de Tumbes y la chicha a los enviados. Rehecho el 2026-11-05 | Cajamarca, 15-11-1532, 15:00 | **Estudio Textil**, **pendiente**: «Almacén y contaduría (qollqas y quipus)» | Termita: una ciudad de barro sin rueda ni hierro |
 | **La Gran Ley de la Paz** (`Microcosmos_GranLeyDeLaPaz`, «Onondaga») | Jigonsaseh, Ayenwatha, el Pacificador y Tadodaho: cinco naciones, una casa larga | Lago Onondaga, hacia 1450 (fecha discutida), 9:00 | **Aula**, **pendiente**: «Sala de asambleas (parlamento)» | Abeja: el enjambre decide por consenso |
 | **Cleopatra** (`Microcosmos_Cleopatra`, «Alejandría de Cleopatra») | Dos años sin crecida: abre los graneros y habla a cada barrio en su lengua | Alejandría, verano del 42 a. C., 8:00 | **Cocina**, representativo (dar de comer a la ciudad) | Abeja: el signo del rey del Bajo Egipto |
 | **Las calculadoras de Langley** (`Microcosmos_Langley`, «Langley») | Johnson comprueba a mano la órbita de Glenn; Vaughan y FORTRAN; Jackson y el instituto | Hampton (Virginia), 19–20-2-1962, 9:47 | **Informática**, representativo | Pelotero (Johnson: las estrellas), hormiga (Vaughan), tijereta (Jackson) |
@@ -42,6 +42,40 @@ Cada una lleva sus edificios de la historia con su actividad, su plano, su relle
 recuperación). Ninguna tiene `Milicia`.
 
 ## Las decisiones
+
+### Atahualpa: la bienvenida, en claro (Berón 2026-11-05)
+
+Berón: «la amistosa bienvenida que ofrecieron a los recién llegados, ¿o no fue así?». **Fue amistosa en 1528 y ya no del todo en 1532.**
+- **Tumbes, 1528: sí.** Cieza de León, que habló con testigos, cuenta asombro y alegría: llevaron comida al barco y el gobernador les ofreció bajar a por agua y lo que quisieran sin temor. Luego avisó a Huayna Cápac.
+- **1532: diplomacia con desconfianza.** Tumbes estaba en ruinas por la guerra civil. Atahualpa envió mensajeros y regalos «como amigo» (Hernando Pizarro), los dejó llegar y los hizo vigilar. Recibió a Soto y a Hernando Pizarro tras hacerlos esperar, con frialdad y mejor al segundo; les ofreció chicha (Titu Cusi: gesto de hospitalidad y quizá de superioridad); y les reclamó lo que habían quitado. Un mensajero avisó a las mujeres que servían a los españoles de que huyeran (Hernando Pizarro: fuente de parte). Parece que pensaba capturarlos; ellos a él, seguro.
+
+**Obras sin terminar: sí hay registro.** El Templo del Sol de Ollantaytambo, inconcluso, con bloques abandonados camino de la cantera de Kachiqhata; la causa no se sabe (la guerra entre hermanos, la conquista o Manco Inca: Protzen 1993). Y la piedra «cansada» de Sacsayhuamán en Garcilaso (VII, 29). El muro de la escena es una recreación, y la ficha lo dice. [verificar] la fuente de estas dos: leí a Protzen y a Garcilaso solo por citas secundarias.
+
+### Regla W10: lo bello primero (Berón 2026-11-05)
+
+Manual §11. Decisión por defecto (del coordinador): lo inventado se permite con figuras históricas y va marcado en la ficha; a las personas vivas no se les inventa ningún acto. Revisión de las 12:
+
+| Historia | Su momento | Cambio |
+|---|---|---|
+| Alfaro | Los serranos salvan al capataz jamaicano | **Añadido, recreación** |
+| Galvarino | El lof lo cuida; «nadie sobra» | Ya estaba (recreación marcada) |
+| Atahualpa | Ayni, la viuda, dar de beber a quien llega | **Rehecho** |
+| Gran Ley | Consolar antes de la paz; curar al enemigo | Ya estaba |
+| Cleopatra | La reina funde su vajilla por pan | **Añadido, recreación** |
+| Langley | Vaughan enseña FORTRAN a las suyas; Mann y el cartel | Ya estaba |
+| Beethoven | Umlauf le cubre; Unger lo gira | Ya estaba |
+| Descartes | Enseña gratis a un hijo de zapatero | **Añadido, recreación** |
+| Guevara | Sin guantes; la balsa de los enfermos | Ya estaba |
+| Sánchez | El saliente le da la mano al que llega (hecho público) | **Sin cambio: persona viva** |
+| Lincoln | Biggs y Thorn entierran a los soldados | Ya estaba |
+| Feria | Dejar el poder, la venganza o el dinero | Ya estaba |
+
+### Microcosmos anteriores sin ese momento (lista; no se han tocado)
+
+Leí los pasos de 15 historias dudosas; las demás se juzgan por su tema (Nightingale, Sendler, Le Chambon, Tregua, Chernóbil, Jenner, Scott, Buda, Wright… lo tienen claramente).
+- **Sin él:** Heródoto (Menfis), Eratóstenes (Alejandría), Newton (Woolsthorpe), Nietzsche (Sils Maria), al-Juarismi (Bagdad): son de saber; ninguna acción por otros.
+- **Flojo:** Einstein (Berna: la amistad con Besso), Tesla (paga la avería), Bill Gates (Albuquerque: superación técnica), Warren Buffett (Omaha: honradez de la señora B), Traoré (Uagadugú: acto de Estado), Pitágoras (la vida común y Milón), Pakal (la madre que gobierna).
+- Con **vivos** (Gates, Buffett, Traoré) solo valdría un hecho público real.
 
 ### Lincoln: sí
 
@@ -117,7 +151,7 @@ Las de cada historia están en su ficha (`sources` de la misión); las de plano 
 
 - **Alfaro.** Clark (1998); Ayala Mora (1994); El Telégrafo (2013); Vicepresidencia de Ecuador (2018); Wikipedia, «Empresa de Ferrocarriles Ecuatorianos» (contrato de 1897). [verificar] el día del clavo de oro (17 o ~18 de junio: las fuentes difieren; la ficha lo dice) y el decreto de los empleos para mujeres.
 - **Galvarino.** Ercilla; Góngora Marmolejo; Bengoa (2003); biografiasyvidas.com. [verificar] la fecha de Lagunillas (septiembre u 8 de noviembre) y la forma de su muerte: difieren, y la ficha lo dice. No se pudo leer Memoria Chilena.
-- **Atahualpa.** Hemming (1970); Xerez (1534); Betanzos (1551); D'Altroy (2014); Urton (2003); Boletín de Arqueología PUCP (2023). [verificar] la altura de la línea y las cifras del rescate, según autores; el ajedrez viene del Inca Garcilaso.
+- **Atahualpa.** Cieza (por PBS, Conquistadors, leído); Hernando Pizarro, carta de 1533 (leída); Titu Cusi; Xerez (1534); Garcilaso VII, 29; Protzen (1993); D'Altroy (2014); Murra (1980); Hemming (1970); Urton (2003). [verificar] Protzen, Garcilaso y Titu Cusi, leídos solo por citas; Xerez y la cifra de 15 jinetes de Soto; las colcas para viudas y huérfanos (cronistas, y discutido).
 - **Haudenosaunee.** Oneida Indian Nation; NYSED; Onondaga Nation; Skä•noñh; Mann y Fields (1997); Parker (1916); Snow (1994).
 - **Cleopatra.** Plutarco, *Antonio* 27; Séneca, *NQ* IV a 2.16; Plinio XVIII 57; Josefo, *Contra Apión* II 60; Roller (2010); Tyldesley (2008); Estela de Calímaco; Fraser (1972). No se pudo comprobar en la web el pasaje de Plutarco ni el de Séneca (de memoria: [verificar] número exacto). Reparto y gestos son recreación, y lo dice la ficha.
 - **Langley.** NASA (biografías de Johnson, Vaughan y Jackson, leídas); Shetterly (2016); Space.com (2017), Skopinski y Johnson (1960). La anécdota de Miriam Mann es de Shetterly.
@@ -134,7 +168,7 @@ Las de cada historia están en su ficha (`sources` de la misión); las de plano 
    Orden: Galvarino, San Pablo (Hospital, ya probado) → Descartes, Madrid, Gettysburg, Feria, Onondaga (Aula) → Cajamarca (Textil) → Langley (Informática) → Chimbacalle (Mecánica) → Alejandría (Cocina: el piso más grande) → **Viena al final** (la Sala de Ballet nunca se ha montado como microcosmos).
 2. Consola: `[Pueblos] <pueblo>: …`, `[Reglas] Microcosmos_X: OK`, `[Pisos] …: OK` (o «PENDIENTE»), `[Mapa] X: mapa a mano (…)` sin «no está en su bioma».
 3. Grupos **78** (datos, sin escenas), **79** (las 12), y si hay tiempo 43, 63 y 87.
-4. Fotos: el protagonista; el sitio clave de cada historia (la Sala del rescate y su línea, el Árbol de la Paz, el hemiciclo con su marcador, el estrado de Gettysburg, la rejilla de Leiden); el pueblo llenando el piso; ningún muro ni techo; nada flotando; el río de San Pablo y el golfo de Arauco sin tapar edificios.
+4. Fotos: el protagonista; el sitio clave de cada historia (el muro sin terminar y la piedra cansada, Pultumarca con sus vasos, el Árbol de la Paz, el hemiciclo con su marcador, el estrado de Gettysburg, la rejilla de Leiden); el pueblo llenando el piso; ningún muro ni techo; nada flotando; el río de San Pablo y el golfo de Arauco sin tapar edificios.
 
 ## Riesgos
 

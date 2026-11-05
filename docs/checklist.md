@@ -13,7 +13,10 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 > Ley de la Paz, Cleopatra, las calculadoras de Langley, Beethoven, Descartes, Ernesto Guevara, Pedro Sánchez, Lincoln y la Feria de las Hazañas. Lincoln, decidido: C-SPAN 1.º,
 > Siena 2.º. Pruebas: grupos 78 y 79.
 > - [ ] **Probar en vivo** (probador): reconstruir de una en una, en el orden del doc, y «Build Sala de Eras»; grupos 78, 79, 43, 63 y 87; fotos.
-> - [ ] **Berón**: confirmar que el líder asiático es Lee Kuan Yew (fue primer ministro, no presidente).
+> - [x] **Berón** (2026-11-05): el líder asiático es Lee Kuan Yew, confirmado.
+> - [x] Atahualpa rehecho: cómo vivían los incas, obras sin terminar y la bienvenida (el día antes de la captura, 1532).
+> - [x] Regla W10 (manual §11): revelar lo altruista, bello o de superación; lo inventado, marcado; nada inventado de personas vivas. Las 12 revisadas.
+> - [ ] **W10 en las anteriores**: decidir con Berón si se retocan las de la lista de [`microcosmos-historias-3.md`](microcosmos-historias-3.md) §W10 (Heródoto, Newton, Eratóstenes…).
 > - [ ] **Revisar la ficha de Pedro Sánchez tras las elecciones del 29-11-2026** (`Historia.PedroSanchez.cs`, último párrafo).
 > - [ ] Repasar los [verificar] del doc (día del clavo de oro, fecha de Lagunillas, número de enfermos de San Pablo y fecha del cruce a nado, cifras de Singapur).
 
