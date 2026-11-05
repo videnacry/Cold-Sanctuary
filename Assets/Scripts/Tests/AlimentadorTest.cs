@@ -61,6 +61,38 @@ public class AlimentadorTest : MonoBehaviour, ITestUnit
         }
         PredatorRound.NewRound();
 
+        // ── Nadie sale de la lista sin estar hecho (Berón: «eso no es admisible») ──
+        {
+            var all = PredatorRound.Today();
+            int total = all.Count;
+            var first = PredatorRound.Claim("Uno", Vector3.zero);
+            if (first != null)
+            {
+                PredatorRound.Requeue(first, "prueba");
+                TestProbe.Check("el no alcanzado vuelve a la cola", first.state == PredatorRound.State.Pending && first.misses == 1 && PredatorRound.Left == total);
+                var next = PredatorRound.Claim("Dos", first.animal.transform.position);
+                TestProbe.Check("…detrás de los demás", total < 2 || next != first);
+                if (next != null) PredatorRound.Requeue(next, "prueba");
+                // Con hambre y sin raciones sigue pendiente.
+                int stored = 0; foreach (CulturedMeatLab l in CulturedMeatLab.All) { stored += l.rationsStored; l.rationsStored = 0; }
+                float old = first.animal.hungry; first.animal.hungry = 0.5f;
+                var p = new GameObject("Jugador_prueba"); p.transform.position = first.animal.transform.position;
+                PredatorRound.PlayerVisit(p); Destroy(p);
+                first.animal.hungry = old;
+                TestProbe.Check("con hambre y sin raciones no se da por hecho", !PredatorRound.Today().Any(e => e.animal == first.animal && PredatorRound.Done(e)));
+                if (CulturedMeatLab.All.Count > 0) CulturedMeatLab.All[0].rationsStored = stored;
+            }
+            // Se renueva solo cuando está completa: con uno sin hacer, la misma lista.
+            var keep = PredatorRound.Today();
+            for (int i = 1; i < keep.Count; i++) keep[i].state = PredatorRound.State.Checked;
+            keep[0].state = PredatorRound.State.Pending;
+            yield return new WaitForSeconds(0.5f);
+            TestProbe.Check("mientras falte uno, la lista no se renueva", PredatorRound.Today().Count(PredatorRound.Done) == keep.Count - 1);
+            keep[0].state = PredatorRound.State.Fed;
+            TestProbe.Check("completa, se renueva", PredatorRound.Today().All(e => e.state == PredatorRound.State.Pending));
+        }
+        PredatorRound.NewRound();
+
         // ── Un alimentador de verdad ──
         var runner = new GameObject("Alimentador_prueba");
         PredatorFeeder pf = runner.AddComponent<PredatorFeeder>();

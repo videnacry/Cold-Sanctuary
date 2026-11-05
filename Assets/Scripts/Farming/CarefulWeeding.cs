@@ -6,7 +6,7 @@ using UnityEngine;
 /// docs/deshierbe-cuidadoso.md). Las malas hierbas de los bancales son plantas de verdad (<see cref="GardenWeed"/>). Se levantan con su cepellón, vivas.
 ///   · NATIVAS de la tundra: al vivero húmedo y, en la misión de trasplante, a la isla de tierra. Sobreviven según su ficha, y las supervivientes
 ///     dan comida como cualquier otra planta de la tundra.
-///   · NO NATIVAS: a la compostera cerrada del huerto, nunca al suelo. Es la regla que protege a los sitios polares (Tratado Antártico, Anexo II,
+///   · NO NATIVAS: raíz y tierra en bolsa cerrada y al INCINERADOR del huerto, nunca al suelo ni al compost (Berón: «hazlo real»: es lo que se hace en la Antártida). Es la regla que protege a los sitios polares (Tratado Antártico, Anexo II,
 ///     art. 4; Ley de Medio Ambiente de Svalbard, s. 26) y es de lo poco que no se puede deshacer: *Poa annua* dejó banco de semillas en el suelo.
 /// </summary>
 public static class WildPlants
@@ -101,7 +101,9 @@ public static class WeedBench
     /// <summary>Plazas húmedas del vivero. Lleno, las nativas se dejan donde están: mejor en el bancal que secas en una bandeja.</summary>
     public const int NurseryCap = 16;
     public static readonly List<WildPlants.Species> Nursery = new List<WildPlants.Species>();
-    public static int Composted { get; private set; }
+    /// <summary>Bolsas cerradas con la planta y la tierra de su raíz, esperando al incinerador.</summary>
+    public static int Bags { get; private set; }
+    public static int Incinerated { get; private set; }
     public static int Transplanted { get; private set; }
     public static int Failed { get; private set; }
     static int _tries;
@@ -112,11 +114,11 @@ public static class WeedBench
         if (w == null || w.species == null) return false;
         WildPlants.Species s = w.species;
         if (s.native && Nursery.Count >= NurseryCap) return false;
-        if (s.native) Nursery.Add(s); else Composted++;
+        if (s.native) Nursery.Add(s); else Bags++;
         Object.Destroy(w.gameObject);
         Debug.Log(s.native
             ? $"[Deshierbe] {who} levanta {s.name} ({s.scientific}) con su cepellón: al vivero húmedo."
-            : $"[Deshierbe] {who} levanta {s.name} ({s.scientific}), no nativa: a la compostera cerrada, nunca a la tierra.");
+            : $"[Deshierbe] {who} levanta {s.name} ({s.scientific}), no nativa: a la bolsa cerrada, con la tierra de su raíz, para el incinerador.");
         return true;
     }
 
@@ -133,6 +135,14 @@ public static class WeedBench
         int n = 0;
         foreach (GardenWeed w in GardenWeed.All.ToArray())
             if (w != null && w.plot == plot && n < most && Lift(w, who)) n++;
+        return n;
+    }
+
+    /// <summary>Quema las bolsas de plantas no nativas. Devuelve cuántas.</summary>
+    public static int IncinerateBags(string who)
+    {
+        int n = Bags; Incinerated += n; Bags = 0;
+        if (n > 0) Debug.Log($"[Deshierbe] {who} incinera {n} bolsas de plantas no nativas con su tierra.");
         return n;
     }
 
@@ -187,5 +197,5 @@ public static class WeedBench
     }
 
     /// <summary>Deja las cuentas a cero (pruebas).</summary>
-    public static void ResetCounts() { Nursery.Clear(); Composted = Transplanted = Failed = 0; _tries = 0; }
+    public static void ResetCounts() { Nursery.Clear(); Bags = Incinerated = Transplanted = Failed = 0; _tries = 0; }
 }

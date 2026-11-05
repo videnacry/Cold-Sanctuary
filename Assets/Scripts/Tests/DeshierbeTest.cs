@@ -4,11 +4,11 @@ using UnityEngine;
 
 /// <summary>
 /// PRUEBA DEL DESHIERBE CON CUIDADO (Berón 2026-11-05; docs/deshierbe-cuidadoso.md): hay malas hierbas de verdad; se levantan con raíz; las nativas van al
-/// vivero y de ahí a la tundra; las no nativas, a la compostera y nunca a la tierra.
+/// vivero y de ahí a la tundra; las no nativas, a bolsa cerrada e incinerador, nunca a la tierra.
 /// </summary>
 public class DeshierbeTest : MonoBehaviour, ITestUnit
 {
-    public int Group => 100;
+    public int Group => 102;
     public bool ParallelSafe => false;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -20,7 +20,7 @@ public class DeshierbeTest : MonoBehaviour, ITestUnit
 
     public IEnumerator Run()
     {
-        TestProbe.Begin("Deshierbe con cuidado: con raíz, las nativas a la tundra y las foráneas a la compostera");
+        TestProbe.Begin("Deshierbe con cuidado: con raíz, las nativas a la tundra y las foráneas al incinerador");
         if (FindAnyObjectByType<Territorio>() == null) { Debug.Log("[TEST] SKIP · Deshierbe — esta escena no es el santuario"); TestProbe.End(); yield break; }
         yield return new WaitForSeconds(1f);
         TestProbe.Check("cada bancal tiene sus malas hierbas", GardenWeed.All.Count > 0, $"{GardenWeed.All.Count}");
@@ -40,7 +40,9 @@ public class DeshierbeTest : MonoBehaviour, ITestUnit
         TestProbe.Check("la nativa se levanta entera", WeedBench.Lift(nat, "Prueba"));
         TestProbe.Check("…y queda viva en el vivero", WeedBench.Nursery.Count == 1);
         TestProbe.Check("la foránea se levanta", WeedBench.Lift(alien, "Prueba"));
-        TestProbe.Check("…y va a la compostera, no al vivero", WeedBench.Composted == 1 && WeedBench.Nursery.Count == 1);
+        TestProbe.Check("…y va a bolsa cerrada, no al vivero", WeedBench.Bags == 1 && WeedBench.Nursery.Count == 1);
+        TestProbe.Check("hay incinerador en el huerto", GameObject.Find("Incinerador_maleza") != null);
+        TestProbe.Check("la bolsa se incinera", WeedBench.IncinerateBags("Prueba") == 1 && WeedBench.Bags == 0 && WeedBench.Incinerated == 1);
         yield return null;
 
         int planted = WeedBench.TransplantAll("Prueba");

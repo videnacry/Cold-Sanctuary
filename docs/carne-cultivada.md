@@ -46,7 +46,7 @@ pescado para focas y pingüinos.
 | Medio | Depósito con agitador, filtro de 0,2 µm, autoclave | 15 s |
 | Proliferación | Biorreactor de semilla (50 L) y de producción (500 L) con sondas | 12 s por duplicación (≈ 9 duplicaciones) |
 | Diferenciación | Biorreactor de perfusión con andamio y estirador | 30 s |
-| Cosecha | Centrífuga, formadora, cámara fría | 10 s → 32 raciones de 500 g al almacén (16 kg por lote) |
+| Cosecha | Centrífuga, formadora, cámara fría | 10 s → 64 raciones de 500 g al almacén (32 kg por lote: [produccion-maquinaria.md](produccion-maquinaria.md)) |
 
 La consola del laboratorio muestra en vivo la fase, las células, la glucosa, el pH y el O₂. El almacén acumula como
 máximo 6 raciones; son `FoodItem` de carne que los carnívoros encuentran y comen.

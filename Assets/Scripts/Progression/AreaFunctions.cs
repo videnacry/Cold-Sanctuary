@@ -141,7 +141,7 @@ public static class AreaFunctions
         S(Def(Guard, "gua_alimentador", "Alimentador: sigue a los depredadores, evalúa su hambre y les lanza su ración o los marca", 2f, true, Kind.Guard));
         S(Def(Guard, "gua_alimentador_2", "Alimentador (segunda plaza): la misma lista compartida", 2f, false, Kind.Guard));
         // EL TRASPLANTE (docs/deshierbe-cuidadoso.md): lo nativo del vivero, a la tundra de la isla.
-        S(Effect(Def("Huerto", "hue_transplante", "Trasplantar a la tundra las plantas nativas del vivero", 1f, false, Kind.Tend, "bancal"), who => WeedBench.TransplantAll(who)));
+        S(Effect(Def("Huerto", "hue_transplante", "Trasplantar a la tundra las plantas nativas del vivero", 1f, false, Kind.Tend, "bancal"), who => { WeedBench.TransplantAll(who); WeedBench.IncinerateBags(who); }));
         // (2026-11-04) LOS PISOS NUEVOS (docs/piso-informatica.md, docs/piso-aula.md): el clúster de IA de Informática y el Aula.
         Roles(S(Effect(Def("Informática", "ifo_sysadmin", "Administrar el clúster de IA: colas, copias, parches y alertas (puesto de monitorización)", 1f, false, Kind.Operate, "consola"), who => AiCluster.Instance?.Sysadmin(who))), "informatico");
         Roles(S(Effect(Def("Informática", "ifo_refrigeracion", "Mantener la refrigeración líquida: filtros, fugas, bombas e intercambiadores", 1f, false, Kind.Make, "banco_taller"), who => AiCluster.Instance?.CoolingService(who))), "informatico");

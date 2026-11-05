@@ -280,7 +280,7 @@ public static class Performances
         Mi("hue_transplante", "Trasplante a la tundra",
             S("Abrir el hueco", M.Hammer, P.Hoe, P.None, 8f, F.Soil, 0.9f, Strike, atFace: true),
             S("Plantar el cepellón", M.Stoop, P.None, P.None, 8f, F.Soil, 1.2f, atFace: true, act: g => WeedBench.TransplantAll(g.name)),
-            S("Regar", M.Water, P.WateringCan, P.None, 6f, F.Water, 0.8f, atFace: true));
+            S("Regar", M.Water, P.WateringCan, P.None, 6f, F.Water, 0.8f, atFace: true, act: g => WeedBench.IncinerateBags(g.name)));
         // Las del día (material para las obras).
         Mi("mat_guadua", "Cortar guadua",
             S("Cortar la caña con el machete", M.Hammer, P.Machete, P.None, 8f, F.Leaves, 0.7f, Strike, atFace: true),

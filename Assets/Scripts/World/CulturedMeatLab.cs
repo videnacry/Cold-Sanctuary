@@ -28,8 +28,13 @@ public class CulturedMeatLab : MonoBehaviour
     [Header("Lote")]
     public double seedCells = 1e9;          // un vial del banco
     public double cellsPerGram = 2.5e8;     // músculo: ≈ 2–3·10⁸ células por gramo
-    public float batchGrams = 16000f;       // 16 kg por lote (biorreactor piloto) → 32 raciones de 500 g: la cadena alimenticia cuenta con ellas (FoodChain.LabKgPerDay)
-    public int maxPortionsWaiting = 40;
+    /// <summary>Lo que da cada máquina (regla P8, docs/produccion-maquinaria.md): 10⁷ células/mL ÷ <see cref="cellsPerGram"/> = 40 g por litro.</summary>
+    public const float ReactorLitres = 500f, GramsPerLitre = 40f, ScaffoldKg = 8f;
+    public const int ProductionReactors = 2, Scaffolds = 4;
+    /// <summary>El lote que permite la maquinaria: la etapa más corta.</summary>
+    public const float MachineryGrams = (ProductionReactors * ReactorLitres * GramsPerLitre < Scaffolds * ScaffoldKg * 1000f) ? ProductionReactors * ReactorLitres * GramsPerLitre : Scaffolds * ScaffoldKg * 1000f;
+    public float batchGrams = MachineryGrams;   // 32 kg por lote → 64 raciones de 500 g
+    public int maxPortionsWaiting = 80;
     /// <summary>Raciones en el almacén, listas para el alimentador (<see cref="PredatorRound"/>).</summary>
     public int rationsStored;
     [Tooltip("En el santuario el laboratorio NO va solo: iniciar cada lote y cosecharlo son MISIONES de la jornada (alguien tiene que hacerlas). Proliferar y diferenciar sí van solos en el biorreactor.")]
@@ -189,15 +194,20 @@ public class CulturedMeatLab : MonoBehaviour
         L(r.Find("Biorreactor_semilla"), "Biorreactor semilla (50 L, microportadores)", 1.9f);
         Bioreactor(r, "Biorreactor_produccion", new Vector3(1.4f, 0f, -hz + 1.6f), 0.8f, 2.1f, glass, broth, steel, dark);
         L(r.Find("Biorreactor_produccion"), "Biorreactor de producción (500 L · 37 °C · pH 7,3 · O₂)", 2.9f);
+        Bioreactor(r, "Biorreactor_produccion_2", new Vector3(5.6f, 0f, -hz + 1.6f), 0.8f, 2.1f, glass, broth, steel, dark);   // regla P8: la demanda pide dos
+        L(r.Find("Biorreactor_produccion_2"), "Biorreactor de producción 2 (500 L)", 2.9f);
 
         // 5 · Biorreactor de perfusión con andamio (diferenciación en fibras, con estiramiento).
-        Transform perf = KitchenProps.Root(r, "Biorreactor_andamio", new Vector3(hx - 1.5f, 0f, -0.4f));
+        for (int u = 0; u < Scaffolds; u++)   // regla P8: 8 kg por unidad y la demanda pide cuatro
+        {
+        Transform perf = KitchenProps.Root(r, u == 0 ? "Biorreactor_andamio" : $"Biorreactor_andamio_{u + 1}", new Vector3(u % 2 == 0 ? hx - 1.5f : hx - 5.4f, 0f, u < 2 ? -0.4f : -3.6f));
         KitchenProps.C(perf, new Vector3(0f, 0.45f, 0f), new Vector3(1.8f, 0.9f, 1f), steel, 0f, "Base");
         KitchenProps.C(perf, new Vector3(0f, 1.1f, 0f), new Vector3(1.7f, 0.4f, 0.9f), glass, 0f, "Camara");
         for (int i = 0; i < 6; i++)   // tiras de andamio con el tejido creciendo
             KitchenProps.C(perf, new Vector3(-0.7f + i * 0.28f, 1.05f, 0f), new Vector3(0.12f, 0.06f, 0.75f), new Color(0.85f, 0.55f, 0.5f), 0f, "Andamio_tejido");
         KitchenProps.C(perf, new Vector3(-0.95f, 1.1f, 0f), new Vector3(0.1f, 0.3f, 0.8f), dark, 0f, "Estirador");
         L(perf, "Perfusión con andamio comestible (fibras musculares)", 1.8f);
+        }
 
         // 6 · Cosecha: centrífuga, formadora y cámara fría.
         Transform cen = KitchenProps.Root(r, "Centrifuga", new Vector3(hx - 1.0f, 0f, hz - 1.4f));
@@ -220,6 +230,7 @@ public class CulturedMeatLab : MonoBehaviour
 
         CulturedMeatLab lab = r.gameObject.AddComponent<CulturedMeatLab>();
         lab.feeder = feeder;
+        lab.batchGrams = MachineryGrams;
         lab.console = con.gameObject.AddComponent<WorldLabel>(); lab.console.height = 2f; lab.console.text = "Carne cultivada";
         return lab;
     }

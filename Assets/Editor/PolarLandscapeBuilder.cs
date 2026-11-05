@@ -216,6 +216,7 @@ public static class PolarLandscapeBuilder
         root.transform.SetParent(ground, false);
         bool[,] used = new bool[n, n];
         int boxes = 0;
+        var rockPieces = new List<CombineInstance>();
         for (int j = 0; j < n; j++)
             for (int i = 0; i < n; i++)
             {
@@ -240,19 +241,37 @@ public static class PolarLandscapeBuilder
                 g.GetComponent<Renderer>().sharedMaterial = here == 1 ? ice : here == 2 ? soil : gravel;
                 if (here == 3 && rock != null)
                 {
-                    // El zócalo de roca de la orilla: se ve desde el agua y no estorba (sin collider: los submarinos pasan a −12 m, y los peces, por debajo).
-                    GameObject z = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                    z.name = "Zocalo_rocoso"; z.transform.SetParent(root.transform, false);
-                    z.transform.position = new Vector3((x0 + x1) * 0.5f, -3.75f, (z0 + z1) * 0.5f);
-                    z.transform.localScale = new Vector3(x1 - x0, 4.5f, z1 - z0);
-                    z.GetComponent<Renderer>().sharedMaterial = rock;
-                    Object.DestroyImmediate(z.GetComponent<Collider>());
-                    IgnoreForNav(z);
+                    // La roca de la isla, hasta el lecho (Berón 2026-11-05: el hielo flota; la isla es roca que llega al fondo). Se juntan en una sola malla al final.
+                    rockPieces.Add(new CombineInstance { mesh = CubeMesh(), transform = Matrix4x4.TRS(new Vector3((x0 + x1) * 0.5f, (RockTop + SeabedY) * 0.5f, (z0 + z1) * 0.5f), Quaternion.identity, new Vector3(x1 - x0, RockTop - SeabedY, z1 - z0)) });
                 }
                 g.isStatic = true;
                 boxes++;
             }
+        if (rockPieces.Count > 0 && rock != null)
+        {
+            // UNA malla y un collider: es un anillo de roca bajo la orilla (el interior no se dibuja: no se ve). Rendimiento: 1 draw call; sin NavMesh.
+            Mesh m = new Mesh { name = "Roca_isla", indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 };
+            m.CombineMeshes(rockPieces.ToArray(), true, true);
+            m.RecalculateBounds();
+            GameObject z = new GameObject("Zocalo_rocoso"); z.transform.SetParent(root.transform, false); z.isStatic = true;
+            z.AddComponent<MeshFilter>().sharedMesh = m;
+            z.AddComponent<MeshRenderer>().sharedMaterial = rock;
+            z.AddComponent<MeshCollider>().sharedMesh = m;
+            IgnoreForNav(z);
+        }
         return boxes;
+    }
+
+    // La cara de abajo de la placa de la isla y el lecho marino. Igual que SeaRule.FloorY de la rama del sitio nuclear (500 m): al fusionarla, usar SeaRule.
+    const float RockTop = IceTop - IceThickness, SeabedY = -500.25f;
+    static Mesh _cube;
+    static Mesh CubeMesh()
+    {
+        if (_cube != null) return _cube;
+        GameObject t = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        _cube = t.GetComponent<MeshFilter>().sharedMesh;
+        Object.DestroyImmediate(t);
+        return _cube;
     }
 
     /// <summary>Que la navegación ignore este objeto (agua, fondo, flora decorativa): si no, se andaría sobre el mar.</summary>

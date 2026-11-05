@@ -66,7 +66,7 @@ public static class PlayerTasks
         T("coc_comedor", "Recoge las mesas|mesa|Bandeja", "Friega el suelo del comedor|mesa|Fregona", "Limpia los aseos|aseos|Cepillo");
         // ══ HUERTO ══
         T("hue_riego", "Coge la regadera|bancal|Regadera", "Riega el bancal|bancal|Regadera", "Levanta las malas hierbas con su raíz|bancal|Almocafre");
-        T("hue_transplante", "Coge las plantas del vivero|bancal|Bandeja de cepellones", "Mira cuáles son nativas|bancal|Tablet", "Llévalas a la tundra y plántalas|bancal|Bandeja de cepellones");
+        T("hue_transplante", "Coge las plantas del vivero|bancal|Bandeja de cepellones", "Mira cuáles son nativas|bancal|Tablet", "Llévalas a la tundra y plántalas|bancal|Bandeja de cepellones", "Quema las bolsas de no nativas|incinerador|Bolsa cerrada");
         T("hue_cosecha", "Coge la cesta|bancal|Cesta", "Cosecha lo maduro|bancal|Cesta", "Lleva la cosecha a la cocina|mesa|Cesta"); Elsewhere("hue_cosecha", 2, "Cocina");
         T("hue_visitantes", "Coge el pienso|bancal|Saco de pienso", "Llena los comederos|comedero|Saco de pienso", "Rellena el agua|comedero|Cubo");
         T("mat_guadua", "Coge el machete|almacen|Machete", "Corta las guaduas maduras del bambusal|bancal|Machete", "Deja las cañas a curar con bórax|almacen|Guaduas");
@@ -227,6 +227,7 @@ public static class PlayerTasks
         Step step = new Step { action = c[0], station = c.Length > 1 && c[1] != "" ? c[1] : "area", item = c.Length > 2 && c[2] != "" ? c[2] : null, gesture = kind };
         // Lo que estos pasos hacen de verdad en el mundo: el alimentador atiende a uno de la lista; el deshierbe levanta las plantas del bancal.
         if (step.station == "depredador") step.effect = p => LessonPrompt.Show(PredatorRound.PlayerVisit(p), null, 8f);
+        if (step.station == "incinerador") step.effect = p => WeedBench.IncinerateBags("Kushal");
         if (step.action.StartsWith("Levanta las malas hierbas")) step.effect = p => WeedBench.LiftNear(p.transform.position, "Kushal", 3);
         return step;
     }
@@ -276,6 +277,7 @@ public static class PlayerTasks
         ["recinto"] = new[] { "recinto", "corral", "cercado", "paja", "nido" },
         ["comedero"] = new[] { "comedero", "bebedero" },
         ["maquina"] = new[] { "maquina", "prensa", "polea" },
+        ["incinerador"] = new[] { "incinerador" },
         ["aseos"] = new[] { "aseo", "retrete", "lavabo", "bano" },
         ["obra"] = new[] { "obra", "estructura" },
         ["barro"] = new[] { "barro", "bahareque", "material" },

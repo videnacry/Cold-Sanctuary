@@ -48,7 +48,9 @@ public static class FoodChain
     };
 
     /// <summary>Lo que da el laboratorio al día para los depredadores de tierra: un lote por jornada (<see cref="CulturedMeatLab.batchGrams"/>).</summary>
-    public const float LabKgPerDay = 16f;
+    public const float LabKgPerDay = CulturedMeatLab.MachineryGrams / 1000f;
+    /// <summary>Lo que necesitan al día los depredadores de tierra, según el plan (lo que se le pide al laboratorio: regla P8).</summary>
+    public static float LandNeedKgPerDay { get { Evaluate(); return _landNeed / DaysPerYear; } }
     /// <summary>Parte de lo que necesitan los depredadores de tierra que cubre el alimentador: lo que da el laboratorio entre lo que necesitan todos.</summary>
     public static float LabShare { get; private set; }
 
@@ -72,6 +74,7 @@ public static class FoodChain
     static readonly List<string> _changes = new List<string>();
     static readonly HashSet<string> _land = new HashSet<string>();   // los que atiende el alimentador (PredatorRound.Served)
     static bool _done, _busy;
+    static float _landNeed;
     static int _speciesSeen;
 
     /// <summary>Bancos del santuario que pide la cadena (peces, kril, bivalvos). El constructor pone esos.</summary>
@@ -179,6 +182,7 @@ public static class FoodChain
                 // El alimentador: lo que da el laboratorio se reparte entre todos los depredadores de tierra (cambia si suben las poblaciones).
                 float land = 0f;
                 foreach (string sp in _land) land += PopulationPlan.Raw(sp) * (Intake.TryGetValue(sp, out float i) ? i : Mass(sp) * 0.05f) * DaysPerYear;
+                _landNeed = land;
                 LabShare = land > 0f ? Mathf.Clamp01(LabKgPerDay * DaysPerYear / land) : 0f;
                 // Primero bancos y plantas (no cuestan Animal completos); las presas, solo si con eso no basta.
                 bool changed = false;

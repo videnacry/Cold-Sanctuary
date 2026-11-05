@@ -61,8 +61,8 @@ del Sur ya no salen (`BuildIceFlora` pregunta `IceAt`).
 
 ### La isla por dentro
 
-- **Suelo:** tundra en el interior, orilla de grava de 5 m y zócalo de roca hasta −6 m, solo visual: sin collider, para que el submarino de obra
-  (−12 m) y los peces pasen por debajo. La placa mide 1,5 m como el hielo.
+- **Suelo:** tundra en el interior y orilla de grava de 5 m. La placa mide 1,5 m, como el hielo.
+- **Roca:** el hielo flota; la isla es roca que llega al lecho (Berón, 2026-11-05). Bajo la orilla hay un anillo de roca hasta −500,25 m, en una sola malla con su collider. Por dentro es hueco, y ahí quedan los fondos abiertos de los troncos: una cavidad inundada. El submarino de obra no usa física, así que no choca, pero **se le verá cruzar la roca**: falta decidir túneles.
 - **Relieve:** cuatro lomas de 3 terrazas de 25 cm, por las que se anda.
 - **Charcas:** cuatro, con `WaterSource`; los animales que beben van a ellas.
 - **Flora (`PolarUnderstory.Tundra`):** por comunidades, según un ruido suave:

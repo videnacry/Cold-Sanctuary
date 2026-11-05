@@ -135,7 +135,7 @@ equilibrar el número de poblaciones y también puede incrementar el número de 
 
 ### Cumplimiento de E15 (revisado el 2026-11-05)
 
-Berón: al cambiar una regla, se comprueba todo lo que ya existe.
+Berón: al cambiar una regla, se comprueba todo lo que ya existe (regla W11 del manual).
 
 | Lo existente | Cómo cumple |
 |---|---|

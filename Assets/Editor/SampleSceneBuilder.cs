@@ -171,6 +171,7 @@ public static partial class SampleSceneBuilder
         // (2026-11-04) ALERTA DE PISO NUEVO (manual §11): TODOS los pisos de la escena (también los que no salen de BuildAreaStructures,
         // como el control de misión de la lanzadera) contra los microcosmos «pendiente de piso representativo». Y la REGLA DE CAPACIDAD (S13).
         { var fl = new List<(string, string)>(); foreach (SanctuaryArea sa in Object.FindObjectsByType<SanctuaryArea>(FindObjectsInactive.Include, FindObjectsSortMode.None)) fl.Add((sa.name, sa.displayName)); MicroFloors.AlertFloors(fl); AreaCapacity.LogScene(); }
+        ProductionAudit.Log();   // la maquinaria de cada área de producción contra lo que se le pide (regla P8)
         FoodChain.Log();   // la cadena alimenticia, con todo ya puesto: quién come qué y si a alguien le falta (docs/reglas-animales.md, regla E15)
         BakeNavMesh();
 
@@ -3583,7 +3584,7 @@ public static partial class SampleSceneBuilder
         s2 = size[works.transform]; Aseos(works.transform, new Vector3(s2.x * 0.5f - 0.2f - 1.9f, 0.1f, s2.y * 0.5f - 0.9f), 180f, 1);   // construcción
         // El ALMACÉN DE RACIONES del alimentador, en el piso del laboratorio (Berón 2026-11-05: «retira el comedero»; docs/alimentador.md).
         GameObject feeder = new GameObject("Almacen_raciones"); feeder.transform.SetParent(meat.transform, false);
-        feeder.transform.localPosition = new Vector3(-criaLayout.x * 0.5f + 1.2f, 0f, -criaLayout.y * 0.5f + 0.9f);
+        feeder.transform.localPosition = new Vector3(7.5f, 0f, 4.5f);   // libre: 2 m de la cámara fría y de la formadora
         KitchenProps.C(feeder.transform, new Vector3(0f, 0.7f, 0f), new Vector3(1.4f, 1.4f, 0.7f), KitchenProps.DarkSteel, 0f, "Camara_raciones");
         WorldLabel fwl = feeder.AddComponent<WorldLabel>(); fwl.text = "Raciones para el alimentador"; fwl.height = 1.8f;
         CulturedMeatLab.Build(meat.transform, criaLayout, feeder.transform);

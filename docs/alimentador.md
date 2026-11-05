@@ -8,10 +8,10 @@ saben que depredador ya fue checkeado/alimentado».
 
 - **No hay comedero.** El laboratorio guarda las raciones en `Almacen_raciones`, en su piso, y no al aire: una ración suelta atraía a los carnívoros.
 - **Misiones:** `gua_alimentador` (obligatoria) y `gua_alimentador_2`, en el área Guardia. Sin papel exigido: entran por la rotación, como todo. El uniforme es el de guardia.
-- **La ronda (`PredatorRound`, cada 8 h de juego):** la lista son todos los carnívoros de tierra del santuario, sin crías, sin marinos y sin los de la Cría.
+- **La lista (`PredatorRound`):** todos los carnívoros de tierra del santuario, sin crías, sin marinos y sin los de la Cría. **Solo se renueva cuando está completa** (Berón: un depredador con hambre pone en peligro a los herbívoros). Puede durar varios días y pasa de una jornada a otra.
 - **El reparto:** cada alimentador se reserva el pendiente más cercano. Nadie más va a por él, así un grupo se reparte el trabajo solo. Si alguien deja la misión, su reserva vuelve a la lista.
 - **Al llegar (`PredatorFeeder`):** evalúa `hungry`. Con hambre lanza su ración; sin hambre, lo marca. Sin raciones, lo apunta y va a por más.
-- **Límite:** 90 s siguiendo a uno; luego «no alcanzado» y al siguiente.
+- **Nadie sale sin estar hecho.** Solo cuenta como hecho «sin hambre» o «ha recibido su ración». Si no se le alcanza en 120 s, si se acerca demasiado o si no quedan raciones, **sigue pendiente** y vuelve a la cola, detrás de los demás. A la tercera vez, aviso en el log. Sin raciones, el alimentador espera en el almacén al próximo lote.
 - **Jugador:** recoge en el almacén y va a los pendientes de la lista; cada E atiende a uno. Si el animal se ha movido, atiende al pendiente más cercano.
 - **El guardia** (`CarnivoreKeeper`, `gua_carnivoros`) solo patrulla los puestos.
 
@@ -29,7 +29,7 @@ saben que depredador ya fue checkeado/alimentado».
 la regla de los zoos: nunca el mismo espacio. No hay vehículo porque el mapa no lo tiene a ras de suelo; hay distancia:
 - **Oso 18 m, lobo 10 m, resto 5 m (`SafeDistance`).** Los 300 m reales no caben en un mapa de 500 m. La escala es del juego, no una recomendación.
 - **La ración se lanza** y cae a 3 m del animal, del lado del alimentador. Nunca se da en la mano.
-- **Si se le acerca a menos de la mitad de su distancia,** se retira, sin ración, y lo apunta.
+- **Si se le acerca a menos de la mitad de su distancia,** se retira, sin ración, y el animal vuelve a la cola.
 - **Pendiente:** ir de dos en dos con el oso, y una alfombra como plataforma. Se reparten la lista, pero no van juntos.
 
 **Riesgo de diseño, y Berón debe saberlo:** lanzar comida cerca de personas es justo lo que crea osos habituados. El juego no modela la habituación. Si algún día
@@ -39,5 +39,5 @@ lo hace, la ronda debería pasar a dejar la comida sin que el animal vea quién.
 
 - Sin punto fijo se reparten por su territorio y no se concentran en un sitio: el alimentador los sigue.
 - Con hambre y sin ración, cazan (`Forager`), como cualquier depredador.
-- **El laboratorio pasa de 2 a 16 kg por lote** (`batchGrams`; 32 raciones) y el almacén admite 40. Con 2 kg no alcanzaba: un oso come 6 kg al día. Se supone un lote al día.
-- **`FoodChain` ya no supone el 80 %:** `LabShare` = lo que da el laboratorio entre lo que necesitan los depredadores de tierra. Estimación a mano: ~58 % con 3 osos, 3 lobos y 2 zorros. El resto lo cazan o lo pescan, y suben las presas si hace falta. El número real sale en el log `[Cadena]`.
+- **El laboratorio da 32 kg por lote**, con su maquinaria ampliada ([produccion-maquinaria.md](produccion-maquinaria.md)). Se supone un lote al día.
+- **`FoodChain` ya no supone el 80 %:** `LabShare` = lo que da el laboratorio entre lo que necesitan los depredadores de tierra. Con 3 osos, 3 lobos y 2 zorros (27,5 kg al día) es el 100 % del plan. El número real sale en el log `[Cadena]`.
