@@ -41,15 +41,15 @@ public static partial class SampleSceneBuilder
     }
 
     // Personal del santuario (WorkdayDirector.staff sin el jugador): la clase de yoga y el servicio del restaurante lo toman de aquí.
-    static readonly string[] Staff = { "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene", "JefeConstruccion", "Andrea", "Nesvitor", "Amykhuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi", "Gallarle", "Julian", "Fausto", "David", "Adonis", "Yulo", "Lale", "Ivelyna", "Luciana", "Malena" };
-    static readonly string[] YogaSessions = { "Upa-yoga de cuello", "Yoga Namaskar", "Saludo al Sol", "Ashtanga Primaria" };
+    static readonly string[] Staff = { "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene", "JefeConstruccion", "Andrea", "Nesvitor", "Amykhuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi", "Gallarle", "Julian", "Fausto", "David", "Adonis", "Yulo", "Lale", "Ivelyna", "Luciana", "Malena", "Consol", "Fernando" };
+    static readonly string[] YogaSessions = { "Upa-yoga de cuello", "Yoga Namaskar", "Saludo al Sol", "Ashtanga Primaria", YogaClass.DeepSession };
 
     static readonly TestSceneSpec[] TestScenes =
     {
         // ── DE ÁREA: un piso del santuario actual ──
         new TestSceneSpec { scene = "Prueba_Yoga", keep = new[] { "YogaRoom_Area" },
-            purpose = "Pisos de yoga (Hatha y Ashtanga, salas occidental y tradicional con su kund): la clase (Andrea, el maestro, en la tarima y cada practicante en su esterilla), la iniciación de upa-yoga de cuello y el minijuego de upa-yoga por teclas",
-            people = new[] { "Andrea", "Panterilia", "Gohageneis", "Irosene", "Goluis", "Lizmibet", "Magnate" },
+            purpose = "Pisos de yoga (Hatha y Ashtanga, salas occidental y tradicional con su kund): las clases (Josedrilo, Hatha; Consol, Ashtanga; en la tarima, y cada practicante en su esterilla), la iniciación de upa-yoga de cuello y el minijuego de upa-yoga por teclas",
+            people = new[] { "Josedrilo", "Consol", "Andrea", "Panterilia", "Gohageneis", "Irosene", "Goluis", "Lizmibet", "Magnate" },
             groups = new[] { 15, 42, 51, 64 }, build = new System.Action<Transform>[] { BuildUpaYogaSandbox } },
         new TestSceneSpec { scene = "Prueba_YogaSesiones", keep = new[] { "YogaRoom_Area" },
             purpose = "Sesiones de yoga en bucle, una por esterilla (Upa-yoga de cuello, Yoga Namaskar, Saludo al Sol, Ashtanga primaria), para revisar cada postura",

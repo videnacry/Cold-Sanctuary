@@ -27,14 +27,19 @@ public static class Professions
 
     public static readonly Entry[] All =
     {
-        // Josedrilo: maestro de yoga (YogaTeacher), JEFE DE OBRA NUEVA (las obras: «obra_») y bioconstrucción (el material: «mat_»).
-        new Entry("Josedrilo", "maestro de yoga, jefe de obra nueva y bioconstrucción", "Sala de Yoga", "Construcción:obra_,mat_"),
+        // Josedrilo: MAESTRO JEFE DE HATHA (YogaTeacher), JEFE DE OBRA NUEVA (las obras: «obra_») y bioconstrucción (el material: «mat_»).
+        new Entry("Josedrilo", "maestro de Hatha, jefe de obra nueva y bioconstrucción", "Sala de Yoga", "Construcción:obra_,mat_"),
+        // Consol (2026-11-05): MAESTRA JEFA DE ASHTANGA (AshtangaTeacher). Da la clase de las 14 h y prepara la del día (yog_ashtanga). Las de grupo
+        // «clase_yoga» son Hatha: no entran en su profesión.
+        new Entry("Consol", "maestra de Ashtanga", "Sala de Yoga:yog_ashtanga"),
+        // Fernando (2026-11-05): PANELES SOLARES. Sus misiones llevan el prefijo «sol_»; los paneles los pone la rama de energía (docs/energia.md).
+        new Entry("Fernando", "instalación y reparación de paneles solares", "Construcción:sol_"),
         // Tote: JEFE DE REPARACIONES («rep_») y guardia.
         new Entry("JefeConstruccion", "jefe de reparaciones y guardia", "Construcción:rep_", "Guardia"),
         // Los guardias: Gohageneis (y las artes marciales), Nesvitor (y agricultor) y Tote.
         new Entry("Gohageneis", "guardia, artes marciales y maestro de baile", "Guardia"),
-        // Panterilia: MAESTRA DE BAILE y FINANZAS (la mesa de cuentas del restaurante), y segunda maestra de yoga (SecondYogaTeacher).
-        new Entry("Panterilia", "maestra de baile, finanzas y segunda maestra de yoga", "Cocina:coc_cuentas"),
+        // Panterilia: MAESTRA DE BAILE y FINANZAS (la mesa de cuentas del restaurante). Dejó de ser segunda maestra de yoga (2026-11-05: sin base documentada).
+        new Entry("Panterilia", "maestra de baile y finanzas", "Cocina:coc_cuentas"),
         // Julian: DIRECCIÓN DE PROYECTOS, con Alicita (con_proyectos y con_proyectos2: uno cada uno).
         new Entry("Julian", "dirección de proyectos", "Construcción:con_proyectos"),
         new Entry("Nesvitor", "guardia y agricultor", "Guardia", "Huerto"),
@@ -83,6 +88,9 @@ public static class Professions
         // (2026-11-05) Las ARTES MARCIALES: Gohageneis y Luciana, los días contrarios a los del baile de Gohageneis (no le coinciden las dos).
         { "Dojo (artes marciales)", new[] { "Gohageneis", "Luciana" } },
         { "artes", new[] { "Gohageneis", "Luciana" } },
+        // (2026-11-05) El ASHTANGA: Consol da la clase de las 14 h (entrenamiento de la Sala de Yoga) y guía el autoguiado de las 20 h.
+        { "Sala de Yoga", new[] { WorkdayDirector.AshtangaTeacher } },
+        { "ashtanga", new[] { WorkdayDirector.AshtangaTeacher } },
     };
     /// <summary>El maestro de <paramref name="cls"/> el día <paramref name="day"/> (null si no tiene).</summary>
     public static string LeadOn(string cls, int day) => ClassLeads.TryGetValue(cls, out string[] l) && l.Length > 0 ? l[((day % l.Length) + l.Length) % l.Length] : null;

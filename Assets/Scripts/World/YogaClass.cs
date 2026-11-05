@@ -12,6 +12,9 @@ using UnityEngine;
 /// tolerancia, como <see cref="TeachingSession.PoseMatch"/>) antes del siguiente, con un tope para no atascarse nunca. Al acabar
 /// todos se ponen de pie y la clase desaparece. Cada sala tiene como mucho una clase (<see cref="On"/>): el Hatha y el Ashtanga
 /// pueden darse a la vez, cada uno en su piso.
+/// LA CLASE DE CONSOL (2026-11-05, Berón: clases profundas, posturas largas, con variaciones y secuencias como en Ashtanga): cuando la maestra de
+/// Ashtanga (<see cref="WorkdayDirector.AshtangaTeacher"/>) da la Primaria, da en su lugar <see cref="DeepSession"/>: pocas posturas, sostenidas
+/// más que en la Primaria, cada una con su variación. Como no caben todas en las 2 h, a las 15:45 pasa a la relajación final (<see cref="Deep"/>).
 /// </summary>
 public class YogaClass : MonoBehaviour
 {
@@ -32,6 +35,12 @@ public class YogaClass : MonoBehaviour
 
     public Anima teacher;
     public YogaHall hall;
+    /// <summary>La sesión de Consol (<see cref="AshtangaPrimary.Deep"/>).</summary>
+    public const string DeepSession = "Ashtanga profundo";
+    /// <summary>Cuándo pasa la clase profunda a la relajación final: el entrenamiento acaba a las 16 h.</summary>
+    public const float DeepCloseHour = 15.75f;
+    /// <summary>¿Es la clase profunda de Consol?</summary>
+    public bool Deep => sessionName == DeepSession;
     public string sessionName = "Saludo al Sol";
     [Tooltip("Lo mínimo que dura un paso (s): el maestro lo demuestra aunque todos lo hagan ya.")]
     public float minStep = 4f;
@@ -59,7 +68,7 @@ public class YogaClass : MonoBehaviour
 
     List<AsanaPoseSpell> _teacherSteps;
     YogaSession _session;
-    int _i = -1;
+    int _i = -1, _closeStep = int.MaxValue;   // (_closeStep: el primer paso de la relajación final de la clase profunda)
     float _stepStart, _since;
     /// <summary>Hasta cuándo espera a los que vienen (2026-11-01): <see cref="gatherTimeout"/> o, si alguien viene de otro árbol,
     /// su viaje estimado (<see cref="ArbolCampos.TripSeconds"/>, ×1,3 + 20 s; en la tradicional, + el kund). Con todos los
@@ -77,6 +86,8 @@ public class YogaClass : MonoBehaviour
     public float TeachingSince { get; private set; } = -1f;
 
     static float WalkSpeed => WorkdayDirector.Instance != null ? WorkdayDirector.Instance.walkSpeed : 2.6f;
+    /// <summary>¿Es hora de cerrar la clase profunda? Solo en el último cuarto de hora del entrenamiento.</summary>
+    static bool ClosingTime { get { TimeController tc = TimeController.timeController; return tc != null && tc.Hour >= DeepCloseHour && tc.Hour < WorkRoster.StartHour + 8f; } }
 
     // ── La sala ──────────────────────────────────────────────────────────────────────────────────
 
@@ -133,11 +144,15 @@ public class YogaClass : MonoBehaviour
         if (hall == null || hall.tarima == null) return null;
         YogaClass there = On(hall);
         if (there != null) return there;
+        // La maestra de Ashtanga no da la Primaria de corrido: da su clase profunda.
+        if (session == WorkdayDirector.AshtangaSession && teacher.name.Replace("_Post", "") == WorkdayDirector.AshtangaTeacher && YogaLibrary.Find(DeepSession) != null) session = DeepSession;
         var go = new GameObject("Clase de yoga");
         go.transform.SetParent(hall.transform, false);
         YogaClass c = go.AddComponent<YogaClass>();
         c.teacher = teacher; c.hall = hall; c.sessionName = session; c._session = YogaLibrary.Find(session);
         c._teacherSteps = OnlyPoses(c._session.Build());
+        if (c.Deep) c._closeStep = c._teacherSteps.FindIndex(s => s.asanaName.StartsWith("Savasana"));
+        if (c._closeStep < 0) c._closeStep = int.MaxValue;
         c._since = Time.time;
         IdleBehavior idle = teacher.GetComponent<IdleBehavior>();
         c._teacherIdleWas = idle != null && idle.enabled; if (idle != null) idle.enabled = false;
@@ -266,6 +281,7 @@ public class YogaClass : MonoBehaviour
         // ── Guiando: el maestro demuestra el paso; los de su esterilla lo repiten un instante después ──
         AsanaPoseSpell step = CurrentStep;
         if (step == null) { End(); return; }
+        if (_i < _closeStep && _closeStep < StepCount && ClosingTime) { _i = _closeStep - 1; Next(); return; }   // la clase profunda siempre cierra con la relajación
         float t = Time.time - _stepStart;
         if (TeacherOnTarima) step.Tick(teacher);
         bool allMatch = true;

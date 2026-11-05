@@ -64,6 +64,40 @@ public static class AshtangaPrimary
         return seq;
     }
 
+    /// <summary>Respiraciones de la clase de Consol: cada postura se sostiene 8 (5 en la Primaria) y después su variación, 5.</summary>
+    public const int DeepHoldBreaths = 8, DeepVariationBreaths = 5;
+
+    /// <summary>LA CLASE PROFUNDA DE CONSOL (Berón 2026-11-05: posturas largas, con variaciones y secuencias como en Ashtanga; docs/ashtanga-primary-series.md
+    /// §Clase profunda): el Surya Namaskara A de apertura y tres posturas de la Primaria, cada una sostenida <see cref="DeepHoldBreaths"/> respiraciones y
+    /// seguida de su variación, y la relajación final. El orden cambia con el día (<paramref name="day"/>): la que abre hoy es la que más tiempo se trabaja,
+    /// porque la clase pasa a la relajación a las 15:45 aunque no haya acabado (<see cref="YogaClass.DeepCloseHour"/>).</summary>
+    public static List<QueuedSpell> Deep(int day = 0, float breath = Breath)
+    {
+        var seq = new List<QueuedSpell>(SunSalutation.AshtangaA(breath));
+        var thighsSeated = new[] { J(BodyPart.ThighLeft, -90), J(BodyPart.ThighRight, -90) };
+        (string name, float root, float stance, (BodyPart, Vector3)[] set, (BodyPart, Vector3)[] reaches,
+         string varName, (BodyPart, Vector3)[] varSet, (BodyPart, Vector3)[] varReaches)[] focus =
+        {
+            ("Paschimottanasana (pinza sentada)", Seat, 0.12f, Join(thighsSeated, Spine(80), HandsDown(80)), null,
+             "Paschimottanasana B · variación (más profunda, agarre de las plantas)", Join(thighsSeated, Spine(105), HandsDown(100), new[] { J(BodyPart.Head, 15) }), null),
+            ("Baddha Konasana (ángulo atado)", Seat, 0.12f,
+             new[] { J(BodyPart.ThighLeft, new Vector3(-50, 0, 35)), J(BodyPart.ThighRight, new Vector3(-50, 0, -35)), J(BodyPart.ShinLeft, 120), J(BodyPart.ShinRight, 120), J(BodyPart.Back, new Vector3(10, 0, 0)) }, null,
+             "Baddha Konasana B · variación (la frente hacia el suelo)",
+             Join(new[] { J(BodyPart.ThighLeft, new Vector3(-40, 0, 50)), J(BodyPart.ThighRight, new Vector3(-40, 0, -50)), J(BodyPart.ShinLeft, 125), J(BodyPart.ShinRight, 125), J(BodyPart.Head, 20) }, Spine(75), HandsDown(60)), null),
+            ("Prasarita Padottanasana A (piernas abiertas)", Stand, 0.9f, Join(SunSalutation.Hinge(105f), Spine(40), HandsDown(140), new[] { J(BodyPart.Head, 15) }), SunSalutation.FloorHands(0.16f, 0.05f),
+             "Prasarita Padottanasana C · variación (manos entrelazadas a la espalda, brazos sobre la cabeza)", Join(SunSalutation.Hinge(105f), Spine(40), new[] { J(BodyPart.ShoulderLeft, 100), J(BodyPart.ShoulderRight, 100), J(BodyPart.Head, 15) }), null),
+        };
+        int n = focus.Length, first = ((day % n) + n) % n, phase = 0;
+        for (int i = 0; i < n; i++)
+        {
+            var f = focus[(first + i) % n];
+            Posture(seq, ref phase, breath, DeepHoldBreaths * 2, f.name, f.root, f.stance, f.set, f.reaches);
+            Posture(seq, ref phase, breath, DeepVariationBreaths * 2, f.varName, f.root, f.stance, f.varSet, f.varReaches);
+        }
+        for (int i = 0; i < 4; i++) seq.Add(Pose(i == 0 ? "Savasana (relajación final) · exhala" : "Savasana · respira", breath, 1f, Lie, new[] { J(BodyPart.Hips, -90) }));
+        return seq;
+    }
+
     /// <summary>Duración aproximada (para quien la imita).</summary>
     public static float Duration(float breath = Breath, int holdBreaths = 5)
         => SunSalutation.AshtangaA(breath).Count * breath + (10 * (1 + holdBreaths * 2) + 15) * breath;

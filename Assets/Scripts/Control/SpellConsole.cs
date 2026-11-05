@@ -272,6 +272,8 @@ public class SpellConsole : MonoBehaviour
         ("arbol",     "arbol({vueltaHoras:6})"),   // el Árbol de los Campos: horas del juego por vuelta (0 = quieto)
         ("piso",      "piso({n:5})"),   // subir o bajar a un piso del Árbol de los Campos (0–8, anillo1–4, techo): andando a su puerta y nadando por el tronco
         ("progreso",  "progreso()"),   // checklist de la historia y las misiones (ProgressPanel)
+        ("recursos",  "recursos()"),   // ventana de recursos (también F3; HudModals)
+        ("misiones",  "misiones()"),   // ventana de misiones aceptadas y jornada de hoy (también F4; HudModals)
         ("walkTo",    "walkTo({destiny:\"\", maxSpeed:false, distance:1})"),
         ("use",       "use({destiny:\"Nevera\"})"),
         ("take",      "take({item:\"Huevos\"})"),
@@ -579,6 +581,12 @@ public class SpellConsole : MonoBehaviour
                 break;
             case "rutina": case "routine":   // RUTINA DEL GIMNASIO (docs/gimnasio-maquinas.md §15): el plan y la rutina de hoy de una persona; rutina(Nombre)
                 Log(GymRoutinePanel.Toggle(args.TryGetValue("destiny", out string rw) ? Clean(rw) : null));
+                break;
+            case "recursos": case "resources":   // VENTANA DE RECURSOS (F3; docs/interfaz-botones.md)
+                if (HudModals.Available(HudModals.Modal.Recursos)) { HudModals.Toggle(HudModals.Modal.Recursos); Log(HudModals.Current == HudModals.Modal.Recursos ? "Recursos: abierto." : "Recursos: cerrado."); } else Log("No hay recursos en esta escena.");
+                break;
+            case "misiones": case "missions":   // VENTANA DE MISIONES ACEPTADAS Y JORNADA (F4; docs/interfaz-botones.md)
+                if (HudModals.Available(HudModals.Modal.Misiones)) { HudModals.Toggle(HudModals.Modal.Misiones); Log(HudModals.Current == HudModals.Modal.Misiones ? "Misiones y jornada: abierto." : "Misiones y jornada: cerrado."); } else Log("No hay misiones en esta escena.");
                 break;
             case "horario": case "ocio":   // HORARIO LIBRE de la semana (docs/horario-libre.md): abre o cierra el panel y escribe el de hoy
                 Log(HorarioPanel.Toggle());
