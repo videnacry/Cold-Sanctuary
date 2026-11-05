@@ -71,14 +71,15 @@ esterilla) y la E allí lo lanza; es lo mismo que escribir `step` o el asana, qu
 
 ## Misiones cubiertas
 
-Con pasos escritos (`PlayerTasks.AuthoredIds`): **todo el catálogo de la jornada** (`AreaFunctions.SanctuaryMissions`, 55)
-— hospital (8), cocina (6), huerto (3), sala de yoga (6), mecánica (3), estudio textil (3), carne cultivada (4), construcción,
-cría (3), gimnasio (2), planta atómica (5), química (2), biología (2), central nuclear, guardia, informática (3) y aula (2) —,
+Con pasos escritos (`PlayerTasks.AuthoredIds`): **todo el catálogo de la jornada** (`AreaFunctions.SanctuaryMissions`, 66)
+— hospital (10), cocina (8), huerto (3), sala de yoga (6), mecánica (4), estudio textil (3), carne cultivada (4), construcción (3),
+cría (3), gimnasio (2), planta atómica (5), química (2), biología (2), central nuclear, guardia, informática (3), aula (5) y control de misión (1) —,
 las del **material** (`mat_guadua`, `mat_bahareque`, `mat_micelio`, `mat_cuerda`), los **fotobiorreactores**
 (`bio_fotobio`) y la **lanzadera** (`lanz_control`, `lanz_seguridad`, `lanz_fabrica`). Por prefijo: las **elaboraciones**
 (`prep_*`), las **obras** (`obra_material_*`, `obra_trabajo_*`), las **reparaciones** (`rep_*`, el paso de reparar va al área
 rota) y la **ronda de frutales** (`jar_frutales*`). Cualquier otra (las de los edificios de los microcosmos) sale con tres
-pasos genéricos de su clase y su puesto: nunca sin pasos.
+pasos genéricos de su clase y su puesto: nunca sin pasos. Una misión nueva del santuario debe traer sus pasos escritos: si no, la
+prueba 96 falla y la nombra (id, título y área).
 
 Iniciaciones: **cocina, huerto y sala de yoga**.
 

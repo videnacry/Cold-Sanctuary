@@ -7,8 +7,8 @@ using UnityEngine;
 /// Ambrosio, de modo que se pueden resolver pulsando "E" en los lugares indicados»; docs/tareas-del-jugador.md). Simula la E
 /// (<see cref="PlayerTaskRunner.Press"/>, lo mismo que llama la tecla) con el jugador en cada sitio:
 ///  1. CATÁLOGO Y MARCADORES: toda misión que puede tocarle (el catálogo de la jornada, las del día, las obras, las
-///     elaboraciones, las reparaciones) tiene pasos (≥ 2, con acción) y un marcador «E — acción» por paso; las del catálogo,
-///     con pasos escritos.
+///     elaboraciones, las reparaciones) tiene pasos (≥ 2, con acción) y un marcador «E — acción» por paso; todas,
+///     con pasos escritos (la que no los tenga sale por su nombre).
 ///  2. TRES MISIONES EN TRES ÁREAS (Construcción: barro con paja; Estudio Textil: cuerda; Huerto: guadua): la E lejos del
 ///     marcador no hace nada; en cada sitio hace el paso (gesto, objeto en la mano y en el inventario) y pasa al siguiente;
 ///     al último, la misión se cierra y su efecto llega al almacén de material.
@@ -70,14 +70,13 @@ public class PlayerTasksTest : MonoBehaviour, ITestUnit
         missions.Add(new WorkRoster.Mission("Construcción", "obra_trabajo_Prueba", "Trabajar la obra «Prueba»", 2f) { site = "Prueba" });
         missions.Add(new WorkRoster.Mission("Construcción", "rep_Gimnasio", "Reparación en Gimnasio: foco fundido", 1f) { also = new[] { "Gimnasio" } });
 
-        var catalogIds = new HashSet<string>(); foreach (WorkRoster.Mission m in AreaFunctions.SanctuaryMissions()) catalogIds.Add(m.id);
         var bad = new List<string>(); var notAuthored = new List<string>(); var noMarker = new List<string>();
         int found = 0, spots = 0;
         foreach (WorkRoster.Mission m in missions)
         {
             PlayerTasks.Plan p = PlayerTasks.For(m);
             if (p == null || p.steps.Count < 2 || p.steps.Exists(s => string.IsNullOrEmpty(s.action))) { bad.Add(m.id); continue; }
-            if ((catalogIds.Contains(m.id) || m.id.StartsWith("mat_")) && !p.authored) notAuthored.Add(m.id);
+            if (!p.authored) { notAuthored.Add($"{m.id} «{m.title}» ({m.area})"); Debug.LogWarning($"[PlayerTasksTest] sin pasos escritos: {m.id} «{m.title}» ({m.area}). Añádela con T(...) en PlayerTasks."); }   // (una a una en el registro: la lista de abajo es larga)
             PlayerTasks.Spot[] sp = PlayerTaskRunner.Spots(p, _player.transform);
             List<GameObject> marks = PlayerTaskRunner.BuildMarkers(p, sp);
             bool ok = marks.Count == p.steps.Count;
@@ -91,7 +90,7 @@ public class PlayerTasksTest : MonoBehaviour, ITestUnit
             foreach (GameObject g in marks) if (g != null) Destroy(g);
         }
         TestProbe.Check($"las {missions.Count} misiones que pueden tocarle tienen pasos (≥ 2, con acción)", bad.Count == 0, bad.Count > 0 ? string.Join(", ", bad) : "");
-        TestProbe.Check("las del catálogo de la jornada y las del material tienen pasos escritos (no genéricos)", notAuthored.Count == 0, notAuthored.Count > 0 ? string.Join(", ", notAuthored) : $"{catalogIds.Count} del catálogo");
+        TestProbe.Check("TODAS las misiones que pueden tocarle (catálogo, material, las del día) tienen pasos escritos, no genéricos", notAuthored.Count == 0, notAuthored.Count > 0 ? $"{notAuthored.Count} sin pasos (añadirlas con T en PlayerTasks): {string.Join(" · ", notAuthored)}" : $"{missions.Count} misiones");
         TestProbe.Check("cada paso de cada misión tiene su marcador «E — acción» en un sitio", noMarker.Count == 0, noMarker.Count > 0 ? string.Join(", ", noMarker) : $"{spots} marcadores; {found} en un mueble del puesto, {spots - found} en un punto del área");
         yield return null;
     }

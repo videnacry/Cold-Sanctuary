@@ -646,7 +646,7 @@ Decisión del usuario (2026-09-11): **diseñar a fondo primero** (hecho) → **e
 
 ## Tareas e iniciaciones del jugador con «E» (2026-11-04; rama `claude/edif-tareasE`; [`tareas-del-jugador.md`](tareas-del-jugador.md), manual J18)
 - [x] Estudiado el modelo de Ambrosio (`AmbrosioStory.Act`: una E que hace lo que toca según el sitio) y generalizado: `PlayerTasks` (catálogo de pasos «acción · puesto · objeto · gesto» y localizador de sitios) y `PlayerTaskRunner` (marcadores «E — acción», aviso en el sitio, pista de ruta, progreso, gesto 2,5 s, objeto en la mano, efecto al cerrar).
-- [x] Las 55 misiones del catálogo de la jornada, las del material, fotobiorreactores y lanzadera con pasos escritos; elaboraciones, obras, reparaciones y frutales por prefijo; el resto, pasos genéricos de su clase.
+- [x] Las 66 misiones del catálogo de la jornada, las del material, fotobiorreactores y lanzadera con pasos escritos; elaboraciones, obras, reparaciones y frutales por prefijo; el resto, pasos genéricos de su clase.
 - [x] Jornada de Kushal: al empezar la hora de su misión salen los marcadores y la pista; hecha solo con todos los pasos (o virtualizada); si la ignora caduca sin efecto; `WorkdayDirector.Finish` ya no aplica el efecto de sus misiones; el piloto de `JornadaTest` pulsa la E en su puesto.
 - [x] Iniciaciones de cocina, huerto y sala de yoga: cada paso pedido sale como «E — paso» en el sitio del alumno (`PlayerTaskRunner.Live`); `step` y el asana siguen valiendo.
 - [x] Prueba `PlayerTasksTest` (grupo 96).

@@ -121,6 +121,18 @@ public static class PlayerTasks
         T("ifo_energia", "Revisa la acometida|cuadro|Linterna", "Prueba el SAI y las baterías|sai|Tablet");
         T("aul_clase", "Prepara la pizarra|pizarra|Tiza", "Da o sigue la clase|pizarra|Libro", "Recoge los apuntes|mesa|Libro");
         T("aul_estudio", "Coge un libro|estante|Libro", "Estudia en la mesa|mesa|Libro", "Devuelve el libro|estante|Libro");
+        T("aul_legal", "Saca los contratos y los permisos|estante|Carpeta", "Revisa las normas y los acuerdos en la mesa|mesa|Contrato", "Archiva lo firmado|estante|Carpeta");
+        T("aul_lenguas", "Reúne los documentos por traducir|mesa|Diccionario", "Tradúcelos|mesa|Diccionario", "Da la clase de idiomas|pizarra|Tiza");
+        T("aul_letras", "Prepara la lectura|estante|Libro", "Da la clase de poesía y narración|pizarra|Tiza", "Lee en voz alta en la sala de estudio|mesa|Libro");
+        // ══ LOS PUESTOS NUEVOS DEL PERSONAL (2026-11-04, docs/personajes-mesocosmos.md) ══
+        T("coc_cuentas", "Recoge los ingresos del restaurante|barra|Libro de cuentas", "Anota las compras|mesa|Libro de cuentas", "Cuadra el presupuesto|mesa|Tablet");
+        T("coc_avisos", "Prepara los avisos del santuario|mesa|Hoja de avisos", "Dalos en el comedor|mesa|Hoja de avisos", "Haz el programa de radio|mesa|Micrófono");
+        T("con_proyectos", "Revisa el plan y los plazos|almacen|Planos", "Comprueba el material|almacen|Tablet", "Asigna los equipos en la obra|obra|Planos");
+        T("con_proyectos2", "Sigue las obras en curso|obra|Planos", "Coordina a los equipos|obra|Tablet", "Pasa los avisos de la obra|almacen|Tablet");
+        T("hos_plantas", "Coge las plantas medicinales|armario|Plantas medicinales", "Prepara infusiones, cataplasmas y ungüentos|mesa|Mortero", "Llévaselos a los pacientes|cama|Infusión");
+        T("hos_pediatria", "Prepara la consulta y las vacunas|armario|Jeringa", "Pesa y mide al niño en la camilla|camilla|Tablet", "Vacúnalo y anota su crecimiento|camilla|Jeringa");
+        T("mec_alfombras", "Revisa los circuitos y los LED|banco_taller|Tablet", "Repara el tejido|banco_taller|Aguja", "Reparte las alfombras por las pistas|pista|Alfombra");
+        T("lan_control", "Sigue la lanzadera en las pantallas|consola|Tablet", "Comprueba el tiempo|consola|Tablet", "Sigue los vuelos|consola|");
         // ══ LANZADERA DE COHETES ══
         T("lanz_control", "Revisa la telemetría|consola|Tablet", "Mira el viento en altura y el techo de nubes|consola|Tablet", "Lleva la cuenta atrás|consola|");
         T("lanz_seguridad", "Prueba el diluvio de agua|plataforma|Llave", "Limpia la trinchera de llamas|trinchera|Escoba", "Revisa el escudo y la cubeta|plataforma|Linterna");
@@ -278,6 +290,7 @@ public static class PlayerTasks
         ["trinchera"] = new[] { "trinchera", "llamas" },
         ["etapa"] = new[] { "etapa", "cohete" },
         ["carga"] = new[] { "carga", "cofia" },
+        ["pista"] = new[] { "alfombras_", "pista" },
     };
 
     // (por área y puesto: los candidatos, cacheados unos segundos: el test recorre todas las misiones de golpe)
