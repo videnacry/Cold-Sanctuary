@@ -1,4 +1,5 @@
 # Plano de edificios: cuatro torres temáticas
+n> **2026-11-05:** Física (TRIGA, ciclotrón, sala de experimentos) y la Central Nuclear se mudaron al [sitio nuclear](sitio-nuclear.md); Ciencias queda con Química, Biología, Informática y 3 pisos libres.
 
 > Decisión de Berón del 2026-10-29: «lo ideal son POCOS edificios con MUCHOS pisos — para eso se prepararon las columnas
 > para 30 pisos». Sustituye al plano del 2026-10-27 (9 edificios por producción e investigación).

@@ -76,11 +76,11 @@ propulsante). Es lo que cabe en un santuario: un lanzador mediano (Falcon 9, ~50
   - **P5 «Garaje de la lanzadera»** (`Garaje_lanzadera`): plaza del submarino de obra.
   - Los demás pisos y las puntas, libres (miradores). Con sus máscaras, su fondo abierto y sus alfombras al suelo y al techo, como todos.
 - **Corona de lanzamiento** (`Corona_lanzamiento`, 12 m sobre el techo, sobre 4 pilares de hormigón armado de 3 × 3 m):
-  - **plataforma** de 24 × 24 × 2 m con el **hueco de la llama** (4 × 4 m) en el centro y el **cohete** en su mesa con 4 pinzas;
+  - **plataforma** de 24 × 24 × 2 m con el **hueco de la llama** (4 × 4 m) en el centro y el **cohete** en su mesa (4 vigas y 4 pinzas): modelo low-poly de revolución (`RocketModel`): 9 toberas, faldón, 4 aletas, primera etapa a franjas, interetapa, segunda etapa y cofia ojival con punta roja; al lado, la **torre umbilical** de celosía;
   - **deflector** de acero a 45° bajo el hueco y **trinchera de llamas** de 4 × 4 m que saca el chorro hacia el oeste (mar abierto);
   - **diluvio de agua**: depósito elevado, bajante y 8 rociadores alrededor del hueco (supresión de sonido y refrigeración);
   - **cubeta de contención**: pretil de 1,5 m en todo el borde (recoge combustible y agua; no cae nada al mar);
-  - **escudo contra cascotes** de 10 m del lado del santuario (este);
+  - **escudo contra cascotes** de 10 m del lado del santuario (este), con contrafuertes, zunchos y remate de acero;
   - **torre umbilical** de 22 m; una zona de alfombras en la plataforma (no hay escaleras).
 - **Trabajos** (`LaunchSite.Missions`, en la jornada, no obligatorios): control de misión (1 h), seguridad de la plataforma (diluvio,
   trinchera, escudo y cubeta, 1 h, recorre) y la fábrica (integrar etapas y carga útil, 2 h).

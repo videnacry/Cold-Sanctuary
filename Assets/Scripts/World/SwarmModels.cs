@@ -61,8 +61,8 @@ public static class SwarmModels
                 Part(g.transform, "Tentaculos", Get("des_tent", () => JellyTentacles(0.42f, 3.2f, 24)), new Color(0.85f, 0.6f, 0.5f, 0.4f));
                 break;
             default:
-                Part(g.transform, "Cuerpo", Get("abeja_cuerpo", BeeBody), new Color(0.6f, 0.6f, 0.57f));
-                Part(g.transform, "Bandas", Get("abeja_bandas", BeeBands), new Color(0.1f, 0.09f, 0.08f));
+                Part(g.transform, "Cuerpo", Get("abeja_cuerpo", BeeBody), new Color(0.72f, 0.72f, 0.69f));
+                Part(g.transform, "Bandas", Get("abeja_bandas", BeeBands), new Color(0.4f, 0.38f, 0.35f));
                 Transform wl = Part(g.transform, "Ala_izq", Get("abeja_ala", BeeWing), new Color(0.62f, 0.66f, 0.7f, 0.3f));
                 Transform wr = Part(g.transform, "Ala_der", Get("abeja_ala", BeeWing), new Color(0.62f, 0.66f, 0.7f, 0.3f));
                 wl.localPosition = new Vector3(-0.015f, 0.035f, 0.01f); wr.localPosition = new Vector3(0.015f, 0.035f, 0.01f);
@@ -90,9 +90,14 @@ public static class SwarmModels
     /// <summary>Lo más claro que puede ser un individuo (luminancia): con el sol del hielo y el posprocesado, un cuerpo casi blanco y
     /// liso se ve como una luz.</summary>
     public const float MaxLuminance = 0.55f;
+    /// <summary>LUZ PROPIA SUAVE (ronda 7, 2026-11-05): sin ella, a contraluz las abejas salían casi negras y las medusas, negras sobre
+    /// el agua oscura. Es el suelo de brillo, en fracción del color (los translúcidos, más: el alfa la reduce); muy por debajo del
+    /// umbral del posprocesado, así que no deslumbra.</summary>
+    public const float SoftGlow = 0.3f, SoftGlowTranslucent = 0.8f;
 
-    /// <summary>Un material MATE para <paramref name="c"/>: sin emisión, casi sin brillo especular (también los translúcidos: alas,
-    /// medusas, kril) y, si es muy claro, oscurecido hasta <see cref="MaxLuminance"/>.</summary>
+    /// <summary>Un material MATE para <paramref name="c"/>: sin brillo especular ni reflejos (también los translúcidos: alas,
+    /// medusas, kril), con una luz propia suave para no verse negro a contraluz y, si es muy claro, oscurecido hasta
+    /// <see cref="MaxLuminance"/>.</summary>
     public static Material Matte(Color c)
     {
         if (_matte.TryGetValue(c, out Material m) && m != null) return m;
@@ -105,8 +110,13 @@ public static class SwarmModels
         m.EnableKeyword("_SPECULARHIGHLIGHTS_OFF");
         if (m.HasProperty("_EnvironmentReflections")) m.SetFloat("_EnvironmentReflections", 0f);
         m.EnableKeyword("_ENVIRONMENTREFLECTIONS_OFF");
-        m.DisableKeyword("_EMISSION");
-        if (m.HasProperty("_EmissionColor")) m.SetColor("_EmissionColor", Color.black);
+        if (m.HasProperty("_EmissionColor"))
+        {
+            float glow = t.a < 0.99f ? SoftGlowTranslucent : SoftGlow;
+            m.EnableKeyword("_EMISSION");
+            m.SetColor("_EmissionColor", new Color(t.r * glow, t.g * glow, t.b * glow, 1f));
+            m.globalIlluminationFlags = MaterialGlobalIlluminationFlags.EmissiveIsBlack;   // no ilumina nada: solo que no se vea negro
+        }
         return _matte[c] = m;
     }
 

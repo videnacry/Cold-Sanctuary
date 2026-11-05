@@ -46,7 +46,8 @@ public class TreeBuildingsTest : MonoBehaviour, ITestUnit
             var rings = t.levels.Where(l => l.kind == TreeLevel.Kind.Ring).ToList();
             // ── 1. FORMA ──
             float lowest = floors.Count > 0 ? floors.Min(l => l.deck.position.y - root.position.y) : 0f;
-            TestProbe.Check($"{b}: el primer piso a ≥ {minFirst:0} m (50 m y por encima del árbol más alto que crece)", floors.Count > 0 && lowest >= minFirst - 0.1f, $"{lowest:0.0} m, {floors.Count} pisos, {tips.Count} puntas, {rings.Count} anillos");
+            float minHere = b == NuclearSiteRule.Building ? NuclearSiteRule.FirstFloorY : minFirst;   // (en el casquete nuclear no crece ningún árbol, y los reactores van abajo: docs/sitio-nuclear.md)
+            TestProbe.Check($"{b}: el primer piso a ≥ {minHere:0} m (50 m y por encima del árbol más alto que crece)", floors.Count > 0 && lowest >= minHere - 0.1f, $"{lowest:0.0} m, {floors.Count} pisos, {tips.Count} puntas, {rings.Count} anillos");
             bool helix = true; string why = "";
             foreach (var g in floors.GroupBy(l => l.level))
             {

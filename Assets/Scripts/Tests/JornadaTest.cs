@@ -197,6 +197,25 @@ public class JornadaTest : MonoBehaviour, ITestUnit
         return true;
     }
 
+    // Un punto del suelo, transitable y fuera del espacio de la misión, alrededor de los árboles (Vector3.zero si no hay).
+    static Vector3 OutsideBuildings(WorkRoster.Mission m)
+    {
+        foreach (ArbolCampos a in ArbolCampos.All)
+        {
+            if (a == null) continue;
+            for (int i = 0; i < 8; i++)
+            {
+                Vector3 p = a.transform.position + Quaternion.Euler(0f, i * 45f, 0f) * Vector3.forward * 70f;
+                p.y = 600f;
+                if (!Physics.Raycast(p, Vector3.down, out RaycastHit hit, 1200f, ~0, QueryTriggerInteraction.Ignore)) continue;
+                if (!UnityEngine.AI.NavMesh.SamplePosition(hit.point, out UnityEngine.AI.NavMeshHit nh, 3f, UnityEngine.AI.NavMesh.AllAreas)) continue;
+                Vector3 pt = nh.position + Vector3.up;
+                if (!WorkdayDirector.InWorkspace(m, m.area, pt)) return pt;
+            }
+        }
+        return Vector3.zero;
+    }
+
     IEnumerator Stray(string post)
     {
         WorkRoster.Worker me = _wd.roster.Find("Player");
@@ -210,11 +229,14 @@ public class JornadaTest : MonoBehaviour, ITestUnit
             float d = Vector3.Distance(pt, _player.transform.position);
             if (d > best) { best = d; far = a; }
         }
-        if (far == null) { TestProbe.Check("prueba de escaparse: hay otra torre adonde irse", false); yield break; }
+        // Una misión que RECORRE todas las áreas (ronda de frutales, reparar maquinaria: Mission.roams) tiene por puesto cualquier piso:
+        // ninguna torre es «escaparse». Entonces se va al hielo, fuera de todo edificio.
+        Vector3 goal = far != null ? WorkdayDirector.AreaPoint(far.displayName, "Player") : OutsideBuildings(cur.mission);
+        if (goal == Vector3.zero) { TestProbe.Check("prueba de escaparse: hay adonde irse fuera de su puesto", false, $"«{cur.mission.title}» (recorre áreas: {cur.mission.roams})"); yield break; }
         _pw.autopilot = false;
         int before = MagnateWarden.Returned;
-        Log($"{_tc.Hour:00.00} h · Kushal se escapa de {post} a «{far.displayName}» ({best:0} m).");
-        Place(_player, WorkdayDirector.AreaPoint(far.displayName, "Player"));
+        Log($"{_tc.Hour:00.00} h · Kushal se escapa de {post} a {(far != null ? $"«{far.displayName}»" : "el hielo, fuera de los edificios")} ({Vector3.Distance(goal, _player.transform.position):0} m).");
+        Place(_player, goal);
         _watch.IgnorePlayerJump();
         float t0 = Time.time;
         yield return Until(() => { DriveDirector(); _watch.Frame(); return MagnateWarden.Returned > before; }, 40f);

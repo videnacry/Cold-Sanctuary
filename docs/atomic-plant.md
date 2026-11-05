@@ -1,4 +1,5 @@
 # Planta atómica (Mesocosmos) y su microcosmos de la física
+n> **2026-11-05:** la Planta Atómica ya no está en la torre de Ciencias: con la Central Nuclear, en el [sitio nuclear](sitio-nuclear.md). La piscina vuelve a bajar 8 m y apoya en un pedestal.
 
 > Hilo de la planta atómica, 2026-10-22. Código: `Assets/Scripts/AtomicPlant/`, builders
 > `Assets/Editor/SampleSceneBuilder.AtomicPlant.cs` (área) y `Assets/Editor/PhysicsSceneBuilder.cs` (microcosmos).

@@ -36,6 +36,8 @@ public static class AreaWork
         l.AddRange(FotobioFacade.Missions());
         // LANZADERA DE COHETES (docs/lanzadera-de-cohetes.md): control de misión, seguridad de la plataforma y la fábrica.
         l.AddRange(LaunchSite.Missions());
+        // SITIO NUCLEAR (docs/sitio-nuclear.md): vigilancia, revisión de lo pasivo y el simulacro semanal.
+        l.AddRange(NuclearSite.Missions(day));
         // COCINA: cada elaboración que hace falta (harina, queso, pasta, masa madre…) es una misión, con su tiempo activo;
         // el reposo (fermentar, madurar) corre solo después.
         KitchenLarder larder = KitchenLarder.Instance;

@@ -19,6 +19,7 @@ public class IceInsectLife : MonoBehaviour
     public enum Role { Reina, Limpiadora, Nodriza, Procesadora, Guardiana, Pecoreadora, Zangano }
     public Hive hive;
     public bool isQueen;
+    bool _queenDeathLogged;
     // REPRODUCCIÓN DE LA COLONIA (docs/ciclo-de-vida.md §Abeja): como en Apis mellifera, la reina joven sale en VUELO NUPCIAL a
     // la zona de congregación de zánganos y se aparea en el aire (en la naturaleza con 10–20; aquí con los que haya); guarda
     // el esperma de por vida y ya no vuelve a salir. Huevo fecundado → obrera; sin fecundar → ZÁNGANO (24 días). El zángano no
@@ -136,7 +137,11 @@ public class IceInsectLife : MonoBehaviour
         if (kind == Kind.Spider && _self != null && _self.lifeStage != LifeStage.adult) { if (transform.localScale.x < 0.05f) transform.localScale = Vector3.one * 0.05f; }
         else if (transform.localScale.x < 0.6f) transform.localScale = Vector3.one;
         if (kind == Kind.Bee && Time.time >= _nextSizeCheck) { _nextSizeCheck = Time.time + 2f; KeepBeeSize(); }
-        if (_self != null && _self.death) { FallDead(); return; }
+        if (_self != null && _self.death)
+        {
+            if (isQueen && !_queenDeathLogged) { _queenDeathLogged = true; Debug.LogWarning($"[Colmena] Ha muerto la reina de «{(hive != null ? hive.name : "?")}» a {(hive != null ? Vector3.Distance(transform.position, hive.combCenter) : -1f):0.0} m del panal: {Doing}, edad {ageDays:0} días, hambre {_self.hungry:0.00}."); }
+            FallDead(); return;
+        }
         // La REINA vive años (2–5 en la abeja melífera [A]); las obreras de invierno, meses (StageProfile «SnowBee»).
         if (isQueen && !_queenLongevity && _self != null && _self.AdultStage != null) { _self.AdultStage.stageDays = 3 * 365; _queenLongevity = true; }
         if (kind == Kind.Bee)
@@ -489,7 +494,9 @@ public class IceInsectLife : MonoBehaviour
         if (_home == null) return;
         _strikeCooldown -= Time.deltaTime;
         SnowBeeBehavior bee = Nearest<SnowBeeBehavior>(transform.position, 1.6f);
-        if (web != null)   // primero, la que está pegada en SU tela
+        // La REINA no sale a pecorear: la araña caza obreras al acecho, no entra al panal (sin reina la colonia se pierde). Solo corre peligro en su vuelo nupcial.
+        if (bee != null && bee.TryGetComponent(out IceInsectLife ql) && ql.isQueen && !ql.OnNuptialFlight) bee = null;
+        if (web != null)  // primero, la que está pegada en SU tela
             foreach (IceInsectLife o in Cached<IceInsectLife>())
                 if (o != null && o.kind == Kind.Bee && o.Stuck && web.Catches(o.transform.position) && o.TryGetComponent(out SnowBeeBehavior sb)) { bee = sb; break; }
         if (bee != null && !bee.death && _strikeCooldown <= 0f)
