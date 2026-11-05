@@ -17,6 +17,14 @@ public static class AereoRule
     public const float LoadLimit = 20f;
     /// <summary>Tope (s de juego) de la estancia de un trabajador: un día. Después vuelve, por lo que sea.</summary>
     public const float AwayLimit = 3600f;
+    /// <summary>EL ASCENSOR DEL TRONCO (<see cref="AereoLift"/>): 10 m/s y 1,5 m/s² (valores del juego, la mitad de la línea de las cavernas), y sus puertas a cada lado (s).</summary>
+    public const float LiftSpeed = 10f, LiftAccel = 1.5f, LiftDoorSeconds = 4f;
+    /// <summary>Hasta dónde sube el trabajador de cada área (m), sin cargar la escena: lo más alto de sus pisos (la prueba 110 lo mide en la escena). La regla de altura puede subir la lanzadera: entonces, subir esto.</summary>
+    public const float LaunchFloorsRise = 260f, EnergyFloorRise = 34f;
+    public static float LiftSeconds(float rise) => SiteLineRule.Run(rise, LiftSpeed, LiftAccel) + 2f * LiftDoorSeconds;
+    public static float LiftRise(string area) => area == EnergyRule.Area ? EnergyFloorRise : LaunchFloorsRise;
+    /// <summary>El viaje de un trabajador, cada sentido: el vuelo y, si su área está allí, el ascensor.</summary>
+    public static float TripSeconds(string area) => FlightSeconds + (IsArea(area) ? LiftSeconds(LiftRise(area)) : 0f);
     /// <summary>¿Esta área está allí? La misma lista arriba y abajo.</summary>
     public static bool IsArea(string area) => area == EnergyRule.Area || area == LaunchSite.ControlArea || area == LaunchSite.FactoryFloor;
     /// <summary>¿Este punto es de allí? (coordenadas de la lanzadera o del parque)</summary>
@@ -75,10 +83,10 @@ public class AereoLink : MonoBehaviour
         if (agent != null) agent.enabled = false;
         var off = new List<Renderer>();
         foreach (Renderer r in g.GetComponentsInChildren<Renderer>()) if (r.enabled) { r.enabled = false; off.Add(r); }
-        float t0 = Time.time;
-        yield return new WaitForSeconds(AereoRule.FlightSeconds);
+        float t0 = Time.time, trip = AereoRule.TripSeconds(_wanted.TryGetValue(g, out string there) ? there : null);   // el vuelo y el ascensor, como número: la escena no se carga
+        yield return new WaitForSeconds(trip);
         while (g != null && Time.time - t0 < AereoRule.AwayLimit && _wanted.TryGetValue(g, out string area) && AereoRule.IsArea(area)) yield return null;
-        yield return new WaitForSeconds(AereoRule.FlightSeconds);
+        yield return new WaitForSeconds(trip);
         foreach (Renderer r in off) if (r != null) r.enabled = true;
         _away.Remove(g);
         FlyingCarpet.Carry(g, false);
@@ -96,14 +104,14 @@ public class AereoLink : MonoBehaviour
             i => { if (i < 2) StartCoroutine(Go(p, i == 0)); }, null, transform, 5f);
     }
 
-    IEnumerator Black()
+    public static IEnumerator Black()
     {
         bool done = false; float w = 0f;
         ScreenFader.Get().FadeToBlack(() => done = true);
         while (!done && w < 5f) { w += Time.unscaledDeltaTime; yield return null; }
     }
 
-    static void Put(GameObject p, Vector3 at)
+    public static void Put(GameObject p, Vector3 at)
     {
         CharacterController cc = p.GetComponent<CharacterController>();
         bool was = cc != null && cc.enabled;

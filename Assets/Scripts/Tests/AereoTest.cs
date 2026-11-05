@@ -49,7 +49,9 @@ public class AereoTest : MonoBehaviour, ITestUnit
         TestProbe.Check("vuela sin cargar nada, oculto, y se queda mientras trabaja allí", went && hidden && carried && AereoLink.IsAway(body) && AereoBase.Instance == null);
         AereoLink.Note(body, "Cocina");
         t0 = Time.time; r0 = Time.realtimeSinceStartup;
-        while (AereoLink.IsAway(body) && Time.time - t0 < AereoRule.FlightSeconds + 30f && Time.realtimeSinceStartup - r0 < 30f) yield return null;
+        float trip = AereoRule.TripSeconds(EnergyRule.Area);
+        TestProbe.Check("su viaje cuenta el ascensor: hay subida aunque la escena no esté cargada", trip > AereoRule.FlightSeconds && AereoRule.TripSeconds(LaunchSite.ControlArea) > trip && AereoRule.TripSeconds("Cocina") == AereoRule.FlightSeconds, $"{trip:0} s");
+        while (AereoLink.IsAway(body) && Time.time - t0 < trip + 30f && Time.realtimeSinceStartup - r0 < trip + 30f) yield return null;
         TestProbe.Check("cuando su jornada lo lleva a otra parte, vuelve al muelle", !AereoLink.IsAway(body) && r.enabled && !FlyingCarpet.Riding(body));
         Time.timeScale = oldTs;
         Destroy(body);
@@ -81,13 +83,34 @@ public class AereoTest : MonoBehaviour, ITestUnit
             TestProbe.Check("las mesas montadas se ven; las demás, no", es.tables.Take(es.installed).All(t => t.gameObject.activeSelf) && es.tables.Skip(es.installed).All(t => !t.gameObject.activeSelf));
             LaunchSite ls = LaunchSite.Instance;
             TestProbe.Check("T13: la plataforma cumple, contando también el santuario 1", ls != null && ls.PadY >= LaunchHeightRule.RequiredPadHeight(out _) - 0.01f, ls != null ? $"{ls.PadY:0} m; {ls.LastWhy}" : "");
-            TestProbe.Check("sin alfombras allí: se sale por los andenes", b.GetComponentsInChildren<CarpetPad>(true).Length == 0 && b.launchArrival != null && b.energyArrival != null);
+            TestProbe.Check("sin alfombras allí: se sale por los andenes", b.GetComponentsInChildren<CarpetPad>(true).Length == 0 && b.GetComponentsInChildren<FlyingCarpet>(true).Length == 0 && b.launchArrival != null && b.energyArrival != null);
             // LA DETECCIÓN se fue con sus casquetes: un radar y un sonar en cada uno (el del sitio nuclear lo cuenta NuclearAccessTest).
             Transform[] parts = b.GetComponentsInChildren<Transform>(true);
             System.Func<string, IcebergRule.Site, int> onCap = (name, s) => parts.Count(t => t.name == name && IcebergRule.FlatDistance(t.position, s) < IcebergRule.DangerRadius(s));
             int rl1 = onCap("Radar_hielo", IcebergRule.Site.Launch), re1 = onCap("Radar_hielo", IcebergRule.Site.Energy), sl1 = onCap("Sonar_quillas", IcebergRule.Site.Launch), se1 = onCap("Sonar_quillas", IcebergRule.Site.Energy);
             TestProbe.Check("radar y sonar en los casquetes de la lanzadera y del parque", rl1 == 1 && re1 == 1 && sl1 == 1 && se1 == 1, $"lanzadera {rl1}+{sl1}, parque {re1}+{se1}");
             Vector3 launchAt = b.launchArrival.position, energyAt = b.energyArrival.position;
+            // EL ASCENSOR: del andén a todos los pisos, al techo y, en la lanzadera, a la plataforma; todo dentro de la escena.
+            AereoLift[] lifts = b.GetComponentsInChildren<AereoLift>(true);
+            AereoLift upL = lifts.FirstOrDefault(x => x.building == LaunchHeightRule.Building), upE = lifts.FirstOrDefault(x => x.building == EnergyRule.Building);
+            System.Func<AereoLift, Transform, bool> serves = (x, arrival) =>
+            {
+                ArbolCampos tree = x != null ? ArbolCampos.All.FirstOrDefault(a => a != null && a.building == x.building) : null;
+                if (tree == null || x.stops.Count == 0 || x.stops[0] != arrival || x.stops.Any(st => st == null || !st.IsChildOf(b.transform)) || x.stops.Count != x.labels.Count) return false;
+                return tree.levels.Where(l => l.kind == TreeLevel.Kind.Floor || l.kind == TreeLevel.Kind.Top).All(l => x.stops.Any(st => st.IsChildOf(l.deck)));
+            };
+            TestProbe.Check("ascensor en los dos troncos: del andén a cada piso y al techo", lifts.Length == 2 && serves(upL, b.launchArrival) && serves(upE, b.energyArrival), $"{upL?.stops.Count} y {upE?.stops.Count} paradas");
+            TestProbe.Check("llega a la plataforma de lanzamiento", ls != null && upL != null && upL.stops[upL.stops.Count - 1].IsChildOf(ls.deck));
+            System.Func<string, Transform> named = name => parts.FirstOrDefault(t => t.name == name);
+            Transform fabT = named("Fabrica_de_cohetes"), ctlT = named("Control_de_mision"), eneT = named("Control_de_energia");
+            TestProbe.Check("lo que cuenta la jornada cubre la altura medida de cada piso", fabT != null && ctlT != null && eneT != null && fabT.position.y <= AereoRule.LiftRise(LaunchSite.FactoryFloor) && ctlT.position.y <= AereoRule.LiftRise(LaunchSite.ControlArea) && eneT.position.y <= AereoRule.LiftRise(EnergyRule.Area), $"{fabT?.position.y:0}, {ctlT?.position.y:0} y {eneT?.position.y:0} m");
+            if (upL != null && ls != null)
+            {
+                GameObject rider = new GameObject("Prueba_ascensor");
+                upL.PlaceForTest(rider, upL.stops[upL.stops.Count - 1]);
+                TestProbe.Check("deja en la plataforma, sin alfombra", Mathf.Abs(rider.transform.position.y - ls.PadY) < 2f && !FlyingCarpet.Riding(rider), $"a {rider.transform.position.y:0} m");
+                Destroy(rider);
+            }
             TestProbe.Check("los andenes, sobre sus casquetes", IcebergRule.FlatDistance(launchAt, IcebergRule.Site.Launch) < 60f && IcebergRule.FlatDistance(energyAt, IcebergRule.Site.Energy) < 150f && AereoRule.InSector(launchAt) && AereoRule.InSector(energyAt));
             TestProbe.Check("sus pisos no se cuentan dos veces", b.GetComponentsInChildren<FloorEnergy>(true).Length == 0);
             TestProbe.Check("las aves frías, lejos de las turbinas al empezar", b.transform.Find("Fauna_fria_aerea") != null && es.turbines.All(u => Vector3.Distance(u.transform.position, b.transform.Find("Fauna_fria_aerea").GetChild(0).position) > EnergyRule.BirdStopRadius));

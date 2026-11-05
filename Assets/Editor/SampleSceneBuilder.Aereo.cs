@@ -29,6 +29,7 @@ public static partial class SampleSceneBuilder
         WireMeditationArea(root, "Control_de_mision", LaunchSite.ControlArea, new Color(0.45f, 0.55f, 0.7f), MissionKind.Channel, null, virtualOnly: true);
         BeginEnergyTree(root);
         FinishHelixes();
+        Helix launchHx = _launchHx;
         FinishLaunchSite();
         BuildEnergyVisuals(b, _energyRoot, _energyHx);
         // Sin alfombras aquí: se sale por el andén. (Una alfombra de allí que volase al santuario desaparecería al descargar la escena.)
@@ -40,6 +41,11 @@ public static partial class SampleSceneBuilder
 
         b.launchArrival = AereoArrival(root, LaunchSiteCenter + new Vector3(LaunchCapHalf - 14f, 0f, 0f), "Andén de la lanzadera: se vuelve al muelle");
         b.energyArrival = AereoArrival(root, EnergyRule.Center + new Vector3(EnergyRule.CapHalf - 12f, 0f, 30f), "Andén del parque: se vuelve al muelle");
+
+        // Sin alfombras, el ascensor del tronco lleva del andén a cada piso, al techo y a la plataforma; no sale nunca de la escena.
+        LaunchSite launchSite = root.GetComponentInChildren<LaunchSite>(true);
+        BuildAereoLift(root, launchHx, b.launchArrival, launchSite != null ? launchSite.deck : null);
+        BuildAereoLift(root, _energyHx, b.energyArrival, null);
 
         EditorSceneManager.SaveScene(scene, AereoScenePath);
         var bs = new List<EditorBuildSettingsScene>(EditorBuildSettings.scenes);
@@ -61,6 +67,32 @@ public static partial class SampleSceneBuilder
         t.gameObject.AddComponent<AereoGate>();
         Label(t, sign, 3f);
         return t;
+    }
+
+    // EL ASCENSOR DEL TRONCO: una parada junto a la puerta de cada piso (ese sitio siempre está libre), otra en el techo y, en la lanzadera, otra donde iba la alfombra de la plataforma.
+    static void BuildAereoLift(Transform root, Helix hx, Transform arrival, Transform launchDeck)
+    {
+        if (hx == null || hx.ac == null || arrival == null) { Debug.LogError($"[Aéreo] Sin ascensor en {hx?.building}: falta el árbol o el andén."); return; }
+        Transform t = new GameObject($"Ascensor_{hx.rootName}").transform; t.SetParent(root, false);
+        AereoLift lift = t.gameObject.AddComponent<AereoLift>();
+        lift.building = hx.building;
+        lift.stops.Add(arrival); lift.labels.Add("Andén");
+        arrival.GetComponent<AereoGate>().lift = lift;
+        foreach (TreeLevel l in hx.ac.levels.FindAll(x => x.kind == TreeLevel.Kind.Floor))
+            AddLiftStop(lift, l.deck, hx.ac.World(l.outside), l.deck.rotation, char.ToUpper(l.name[0]) + l.name.Substring(1));
+        AddLiftStop(lift, hx.ac.Top.deck, hx.ac.World(hx.ac.Top.outside), hx.ac.Top.deck.rotation, "El techo");
+        if (launchDeck != null) AddLiftStop(lift, launchDeck, launchDeck.TransformPoint(new Vector3(-7f, 0.03f, -7f)), launchDeck.rotation, "Plataforma de lanzamiento");
+        Debug.Log($"[Aéreo] Ascensor de {hx.building}: {lift.stops.Count} paradas, hasta {lift.stops[lift.stops.Count - 1].position.y:0} m.");
+    }
+
+    static void AddLiftStop(AereoLift lift, Transform deck, Vector3 at, Quaternion rot, string label)
+    {
+        Transform s = new GameObject("Parada_ascensor").transform; s.SetParent(deck, true); s.SetPositionAndRotation(at, rot);
+        PolarLandscapeBuilder.IgnoreForNav(KitchenProps.C(s, new Vector3(0f, 0.01f, 0f), new Vector3(2.4f, 0.02f, 2.4f), new Color(0.3f, 0.5f, 0.6f), 0f, "Piso_parada").gameObject);
+        BoxCollider trig = s.gameObject.AddComponent<BoxCollider>(); trig.isTrigger = true; trig.center = Vector3.up; trig.size = new Vector3(2.4f, 2f, 2.4f);
+        s.gameObject.AddComponent<AereoLiftStop>().lift = lift;
+        Label(s, $"Ascensor: {label}", 2.6f);
+        lift.stops.Add(s); lift.labels.Add(label);
     }
 
     // Lo que se ve del parque: el campo, las turbinas (sin su lógica: la tienen abajo), la mareal, el almacén y las figuras.

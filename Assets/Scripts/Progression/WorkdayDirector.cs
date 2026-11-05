@@ -471,7 +471,7 @@ public class WorkdayDirector : MonoBehaviour
         Vector3 to = WorkPoint(next.mission.area, g.name);
         if (to == Vector3.zero) return null;
         float perHour = TC.SecondsPerGameDay / 24f;
-        float lead = (ArbolCampos.TripSeconds(g.transform.position, to) + (AereoRule.IsArea(next.mission.area) ? AereoRule.FlightSeconds : 0f)) * 1.15f / Mathf.Max(1f, perHour) * share;
+        float lead = (ArbolCampos.TripSeconds(g.transform.position, to) + (AereoRule.IsArea(next.mission.area) ? AereoRule.TripSeconds(next.mission.area) : 0f)) * 1.15f / Mathf.Max(1f, perHour) * share;
         if (end - h > lead) return null;
         _heading[w] = next;
         Debug.Log($"[Jornada] {h:00.0} h · {w.name} sale ya hacia «{next.mission.title}» ({next.mission.area}, a las {next.start:00.0} h): el viaje es de {lead / share * perHour:0} s.");
