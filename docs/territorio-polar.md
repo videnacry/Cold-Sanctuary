@@ -35,15 +35,15 @@ artificial, obra de la maestra, y por eso junta morsas árticas con pingüinos a
 
 | Suelo | Masas | Área |
 |---|---|---|
-| **Hielo** (`Casquete`) | Norte, Centro, Este, Bosque Oeste y Bosque Norte | ~40 650 m² (47 %) |
-| **Tierra** (`Tierra`, `Tierra_orilla`) | el antiguo casquete Sur y 8 lóbulos `Isla:` | ~45 800 m² (53 %) |
+| **Hielo** (`Casquete`) | Norte, Centro, Bosque Oeste y Bosque Norte | ~33 200 m² (42 %) |
+| **Tierra** (`Tierra`, `Tierra_orilla`) | el antiguo casquete Sur y 8 lóbulos `Isla:`; reemplaza al Sur y al Este | ~45 800 m² (58 %) |
 
 ```
   z
  200          oooo                       o hielo
  100    oooo   oo ooo  ooo               # tierra
-   0   oooo    oooooooo     oooooooo
- -50   oooo        ooo        oooo
+   0   oooo    oooooooo
+ -50   oooo        ooo
 -100 ####### ##########################
 -150  ###########################
 -200 ##########################
@@ -75,33 +75,32 @@ del Sur ya no salen (`BuildIceFlora` pregunta `IceAt`).
 
 ### Los casquetes
 
-- **Frentes de barrera:** bloques de hielo de 4–10 m en las orillas que dan al mar abierto (Este, Bosque Oeste, Bosque Norte). Este gana una
-  plataforma nueva, `Este:Barrera`.
-- **Cuevas:** `Cueva_hielo_Este` (guarida de oso), `Cueva_hielo_Oeste`, `Cueva_hielo_Norte` y `Cueva_roca_Poniente` (guarida de lobos). Boca de
+- **Frentes de barrera:** bloques de hielo de 4–8 m en las orillas que dan al mar abierto (Bosque Oeste, Bosque Norte y Centro:Textil).
+- **Cuevas:** `Cueva_hielo_Centro`, `Cueva_hielo_Oeste`, `Cueva_hielo_Norte`, `Cueva_roca_Poniente` (guarida de lobos) y `Cueva_roca_Valle` (guarida de osa). Boca de
   4,4 × 3,2 m y 11 m de fondo, con techo y carámbanos. Dentro hay `Shelter`.
 - **Acantilados de aves:** roca de 6–12 m con repisas y guano en el sur de la isla. **Aún sin aves:** son el sitio reservado para el frailecillo.
-- **Colonia del emperador:** `Colonia_emperador`, en hielo fijo (lóbulo Este:SalaYoga, a unos 50 m de los bancos de la laguna), al abrigo de cuatro
-  icebergs varados. Sin nidos.
+- **Colonia del emperador:** `Colonia_emperador`, en hielo fijo (lóbulo Centro:Textil, a unos 75 m de los bancos de la laguna), al abrigo de cuatro
+  icebergs varados y de su frente de hielo. Sin nidos.
 - **Colonia de Adelia:** la playa de guijarros de siempre, ahora con nidos en anillo.
 - **Playa de morsas:** `Playa_morsas`, grava junto a la laguna con 6 plazas, y bivalvos en los bajíos de grava.
 
 ## Qué se movió
 
-**Ninguna torre.** Se estudió llevar Producción a la isla (huertos y construcción sobre tierra) y se descartó:
-- Este se quedaría sin alfombras al suelo, y el guardia ya no llegaría al comedero de los osos.
-- Las torres lejanas ya son las que peor llegan al horario libre (grupo 89, ronda 6).
-- Ciencias y el Árbol de los Campos ya quedan sobre tierra sin moverse.
+Berón, 2026-11-05: «en la isla debe haber alguno de los edificios con eso ya tendríamos transporte aéreo, la idea de la isla era que reemplace a uno o
+más casquetes... mueve el que menos se vería afectado o uno random». Esto cambia lo decidido antes (no mover ninguna torre).
 
-Como ninguna torre se mueve, `mig/Clear.cs` no hace falta: las holguras son las de siempre.
+- **Torre:** Producción, de (113, −15) a **(−180, −140)**, lóbulo Isla:Tundra, con su giro y altura de siempre. Da alfombras a la mitad oeste de la isla, que no tenía.
+- **Por qué esa:** es la más baja (2 niveles) y la única cuyo casquete no sostiene nada más que los osos. Ciencias y el Árbol de los Campos ya estaban sobre tierra; Servicios y Entrenamiento llevan el hospital, el gimnasio y la residencia al lado.
+- **Casquete retirado:** Este entero. Sus tres lóbulos quedan con radio 0 para no mover los índices, que dan forma a las orillas.
+- **Se van con la torre:** el comedero de los depredadores (a los mismos 20 m del tronco) y los osos, a 19 m. Así la ruta del guardia sigue igual: comedero al pie de su torre. La osa tiene `Cueva_roca_Valle`; en la isla de Wrangel hay cientos de guaridas sobre tierra.
+- **Holguras (`mig/Clear.cs`):** Árbol de los Campos–Producción 28,1 m (regla ≥ 16); Entrenamiento 109,6; Servicios 207,1. Lanzadera a unos 400 m y sitio nuclear a más de 700: T13 y T14 no cambian.
+- **Horario libre:** `TogetherLead` pasa de 20 a 25 min de juego, porque el vuelo a la arboleda es unos 90 m más largo.
 
-**Lo que cambia de sitio:** nada construido. Solo cambia el suelo bajo el Sur, y desaparecen los árboles de hielo junto a sus áreas.
-
-**El guardia** no da de comer a lobos y zorros de la isla: cazan por su cuenta.
+También cambian: la colonia del emperador va a Centro:Textil y los frentes de Este a otros casquetes. Los árboles de hielo ya no salen junto a las áreas del Sur, y **el guardia** no da de comer a lobos y zorros de la isla: cazan por su cuenta.
 
 ## Pendiente
 
-- **Parada de alfombra en la isla:** hoy se llega a pie desde el pie del Árbol de los Campos o de Ciencias (120–250 m). Una estación en la tundra
-  evitaría el paseo.
+- **Respiraderos para los osos:** en la isla no hay hielo con focas, así que comen del comedero, de presas y de peces de la costa.
 - **Bosque de algas** (Beagle) bajo la orilla sur, y aves en los acantilados.
 - **Corro del buey** como conducta real.
 - **Isla en el mapa del jugador,** si hay.

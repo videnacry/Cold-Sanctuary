@@ -98,7 +98,7 @@ public class PolarHabitats : MonoBehaviour
             Affordance.Put(den.gameObject, AffordanceKind.Den, 1); dens++;
         }
 
-        for (int k = 0; k < 2; k++)
+        for (int k = 0, nb = FoodChain.Banks(SwarmKind.Clam); k < nb; k++)   // un bajío por banco de bivalvos
         {
             Vector3 at = lagoon + Quaternion.Euler(0f, 70f + k * 150f, 0f) * Vector3.forward * 16f; at.y = -3.2f;
             Transform bank = Box($"Banco_grava_{k}", at, new Vector3(6f, 0.6f, 4f), gravel);

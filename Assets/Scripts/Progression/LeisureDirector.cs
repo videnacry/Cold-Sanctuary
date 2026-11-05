@@ -399,7 +399,7 @@ public class LeisureDirector : MonoBehaviour
 
     /// <summary>Lo que se sale antes hacia una actividad de todos a la vez (horas de juego): 20 min, lo que tarda el vuelo más largo
     /// (de la torre de Producción o de Ciencias a la arboleda y al ring, con sus tres alfombras).</summary>
-    public const float TogetherLead = 0.33f;
+    public const float TogetherLead = 0.42f;   // (0,33 hasta 2026-11-05: Producción, ya en la isla de tierra, vuela unos 90 m más)
 
     /// <summary>La franja que empieza dentro de las próximas <paramref name="lead"/> horas (−1 si ninguna).</summary>
     public static int NextSlotWithin(float h, float lead)

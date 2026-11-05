@@ -336,7 +336,7 @@ reconstruir. Vale para TODOS los pisos, no solo el hospital. Cada piso del santu
 ## 12. Recuento y reglas sin comprobación automática
 
 
-**Total: 163 reglas** (S 13 · F 13 · T 14 · C 7 · G 8 · H 8 · M 35 · A 5 · J 29 · W 9 · E 14 · P 7 = 162 —W9, la de revisar jornadas y horario al cambiar un piso, va en §11—, más la regla de
+**Total: 164 reglas** (S 13 · F 13 · T 14 · C 7 · G 8 · H 8 · M 35 · A 5 · J 29 · W 9 · E 15 · P 7 = 163 —W9, la de revisar jornadas y horario al cambiar un piso, va en §11—, más la regla de
 sincronización de §11). (Recontado por el probador al integrar actividades, tareasE, entreno, personajes, hospital y cohetes, 2026-11-04:
 las J18 en adelante se renumeraron en una sola secuencia —J18–J21 actividades y uniformes, J22 tareas con «E», J23–J27 entrenamientos
 y entrenador, J28 profesiones, J29 nada en pisos en obras—.)
@@ -373,13 +373,14 @@ Berón (2026-11-05): «¿tenemos reglas para la creación de animales?». Detall
 | E12 | **Escena de ciclo de vida** para cada especie. | Comprobar cada proceso. | 58 en su escena | ídem |
 | E13 | **Polos mezclados, y dicho:** cada ficha dice de dónde es. | Para que no pase por dato. | solo en docs | ídem |
 | E14 | **Mente propia:** `Archetypes` y `PhrasePools`. | Todo ser tiene mente. | 99 | ídem |
-| P1 | **Mitad tierra, mitad hielo** (40–60 %). Las distancias entre masas están comprimidas para el juego, y se dice. | Berón: 50/50. | 99 | [territorio-polar.md](territorio-polar.md) |
+| E15 | **Cadena alimenticia:** `FoodChain` lee dietas y poblaciones y sube bancos, plantas o presas para que nadie pase hambre; si falta una presa, se crea. Todo pez, crustáceo y medusa lleva especie real. | Berón: «para que nadie muera de hambre». | 85, `[Cadena]` | ídem |
+| P1 | **Mitad tierra, mitad hielo** (40–60 %); la isla reemplaza casquetes (Sur y Este) y tiene un edificio con alfombras. Las distancias entre masas están comprimidas para el juego, y se dice. | Berón: 50/50 y «reemplace a uno o más casquetes». | 99 | [territorio-polar.md](territorio-polar.md) |
 | P2 | **`NaturalIce` = suelo firme;** `IceAt` y `LandAt` dicen cuál. Colliders: `Casquete`, `Tierra`, `Tierra_orilla`. | Se usa en decenas de sitios. | 99 | ídem |
 | P3 | **La isla respeta los sitios lejanos:** ≥ 300 m de la lanzadera y ≥ 500 m del sitio nuclear. | Sus reglas de seguridad. | 90, 94 | ídem |
 | P4 | **Cuevas en las que se entra andando:** ≥ 4 × 3 m de boca, techo, NavMesh hasta el fondo. | Si no, son decorado. | 99 | ídem |
 | P5 | **Flora sobre el suelo, de especies reales;** en la isla no crecen árboles de hielo. | Berón: flora de la isla. | 99 | ídem |
 | P6 | **Cada rasgo sale de un lugar real** (Ross, Svalbard, Georgia del Sur); lo que no, se dice. | «Investigar lugares reales». | solo en docs | ídem |
-| P7 | **Antes de mover una torre, mirar qué deja atrás:** alfombras al suelo de su casquete, comedero, horario libre. | Por eso Producción no se movió. | solo en docs | ídem |
+| P7 | **Al mover una torre, se lleva lo que depende de ella:** alfombras al suelo, comedero, osos, horario libre; holguras con `mig/Clear.cs`. | Producción y sus osos a la isla. | 99, 57 | ídem |
 
 ## Docs de cada tema
 

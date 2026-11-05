@@ -48,9 +48,10 @@ public static class PolarLandscapeBuilder
         ("Sur:Milpa",             -45f,  -80f, 24f),
         ("Sur:Andina",            -10f, -118f, 22f),
         // 4 · ESTE: sala de yoga, mecánica y el territorio de los osos.
-        ("Este:SalaYoga",         109f,   38f, 24f),
-        ("Este:Paso",             114f,   10f, 20f),
-        ("Este:Mecanica_Osos",    118f,  -20f, 30f),
+        //     RETIRADO el 2026-11-05: la isla de tierra lo reemplaza (radio 0: la entrada se queda para no mover los índices, que dan forma a las orillas).
+        ("Este:SalaYoga",         109f,   38f, 0f),
+        ("Este:Paso",             114f,   10f, 0f),
+        ("Este:Mecanica_Osos",    118f,  -20f, 0f),
         // 5 · BOSQUE OESTE (salvaje): árboles carnívoros de hielo, abejas y arañas de las nieves.
         ("BosqueOeste:Bosque_1", -140f,  -30f, 34f),
         ("BosqueOeste:Bosque_2", -150f,    5f, 26f),
@@ -64,8 +65,6 @@ public static class PolarLandscapeBuilder
         ("Sur:Quimica",            52f, -110f, 24f),
         ("Sur:Biologia",           92f, -112f, 26f),
         ("Sur:Central",            60f, -162f, 34f),
-        // 4 · ESTE: plataforma de hielo al mar abierto, con su frente de barrera (docs/territorio-polar.md).
-        ("Este:Barrera",          158f,   18f, 28f),
         // LA ISLA DE TIERRA: tundra al suroeste, unida a Sur por el istmo y la meseta. Fuera de los 300 m de la lanzadera y de los 500 m del
         // sitio nuclear (lo comprueban sus reglas al construir).
         ("Isla:Tundra",          -168f, -168f, 66f),
@@ -152,6 +151,7 @@ public static class PolarLandscapeBuilder
         for (int i = 0; i < Islands.Length; i++)
             for (int j = i + 1; j < Islands.Length; j++)
             {
+                if (Islands[i].r <= 0f || Islands[j].r <= 0f) continue;   // lóbulo retirado
                 Vector3 a = new Vector3(Islands[i].x, 0f, Islands[i].z), b = new Vector3(Islands[j].x, 0f, Islands[j].z);
                 float d = Vector3.Distance(a, b), gap = d - Islands[i].r - Islands[j].r;
                 if (gap > maxGap || gap < -Mathf.Min(Islands[i].r, Islands[j].r)) continue;

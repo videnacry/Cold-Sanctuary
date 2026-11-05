@@ -9,8 +9,8 @@ using UnityEngine;
 /// </summary>
 public static partial class SampleSceneBuilder
 {
-    /// <summary>Colonia del emperador: en el lóbulo Este:SalaYoga (hielo libre, a ~50 m de los bancos de la laguna: hasta donde pesca).</summary>
-    public static readonly Vector3 EmperorColony = new Vector3(114f, 0f, 44f);
+    /// <summary>Colonia del emperador: en el lóbulo Centro:Textil (hielo libre, a unos 75 m de los bancos de la laguna: hasta donde pesca).</summary>
+    public static readonly Vector3 EmperorColony = new Vector3(50f, 0f, -55f);
     const float TrunkMargin = 36f;   // lo que se deja al pie de cada árbol: su puerta y sus alfombras del suelo
 
     static Territorio BuildTerritorio(Transform root)
@@ -34,7 +34,7 @@ public static partial class SampleSceneBuilder
         ter.landArea = landCells * 6.25f; ter.iceArea = iceCells * 6.25f;
 
         // ── Frentes de barrera: de cara al mar abierto, como el frente de la plataforma de Ross ──
-        ter.cliffs += CliffArc(t, "Este:Barrera", 10f, 170f, 6f, 10f, ice, snow, true);
+        ter.cliffs += CliffArc(t, "Centro:Textil", 90f, 250f, 4f, 7f, ice, snow, true);
         ter.cliffs += CliffArc(t, "BosqueOeste:Bosque_3", 200f, 320f, 5f, 8f, ice, snow, true);
         ter.cliffs += CliffArc(t, "BosqueNorte:Bosque_4", 300f, 400f, 4f, 7f, ice, snow, true);
         ter.cliffs += CliffArc(t, "BosqueNorte:Bosque_6", 340f, 470f, 5f, 8f, ice, snow, true);
@@ -50,19 +50,20 @@ public static partial class SampleSceneBuilder
             Transform c = Cave(t, lobe, name, m, inner, den, label);
             if (c != null) caves.Add(c); else Debug.LogWarning($"[Territorio] No cabe la cueva «{name}» en {lobe}.");
         }
-        Add("Este:Paso", "Cueva_hielo_Este", ice, deep, "Bear", "Cueva de hielo (la osa puede parir aquí)");
+        Add("Centro:Arrozal", "Cueva_hielo_Centro", ice, deep, "", "Cueva de hielo");
         Add("BosqueOeste:Bosque_1", "Cueva_hielo_Oeste", ice, deep, "", "Cueva de hielo");
         Add("BosqueNorte:Bosque_5", "Cueva_hielo_Norte", ice, deep, "", "Cueva de hielo");
         Add("Isla:Poniente", "Cueva_roca_Poniente", rock, rock, "Wolf", "Cueva de roca (guarida de los lobos)");
+        Add("Isla:Valle", "Cueva_roca_Valle", rock, rock, "Bear", "Cueva de roca (la osa pare aquí; en la isla de Wrangel hay cientos de guaridas)");
         ter.caves = caves.ToArray();
 
         // ── La isla: lomas, charcas y madriguera ──
-        Hill(t, new Vector3(-208f, 0f, -125f), 26f, soil);
-        Hill(t, new Vector3(-140f, 0f, -130f), 30f, soil);
+        Hill(t, new Vector3(-222f, 0f, -118f), 26f, soil);
+        Hill(t, new Vector3(-140f, 0f, -103f), 30f, soil);
         Hill(t, new Vector3(-55f, 0f, -178f), 24f, soil);
         Hill(t, new Vector3(-165f, 0f, -190f), 34f, soil);
         Material pond = MakeWaterMaterial("Charca_MAT", new Color(0.32f, 0.5f, 0.6f, 0.75f));
-        foreach (Vector3 p in new[] { new Vector3(-180f, 0f, -150f), new Vector3(-105f, 0f, -190f), new Vector3(-20f, 0f, -165f), new Vector3(-200f, 0f, -200f) })
+        foreach (Vector3 p in new[] { new Vector3(-150f, 0f, -175f), new Vector3(-105f, 0f, -190f), new Vector3(-20f, 0f, -165f), new Vector3(-200f, 0f, -200f) })
         {
             Transform c = Block(t, "Charca", p + Vector3.up * 0.02f, new Vector3(9f, 0.03f, 6f), pond, 0f, false);
             c.gameObject.AddComponent<WaterSource>();
@@ -81,16 +82,16 @@ public static partial class SampleSceneBuilder
         ter.emperorColony = EmperorColony;
         for (int i = 0; i < 4; i++)
         {
-            Vector3 at = EmperorColony + Quaternion.Euler(0f, 40f + i * 34f, 0f) * Vector3.forward * 19f;
+            Vector3 at = EmperorColony + Quaternion.Euler(0f, 110f + i * 34f, 0f) * Vector3.forward * 11f;
             if (!PolarLandscapeBuilder.IceAt(at.x, at.z)) continue;
             Block(t, "Iceberg_varado", at + Vector3.up * (2.5f + i * 0.4f), new Vector3(7f, 5f + i * 0.8f, 5f), ice, 20f * i, true);
         }
 
         // ── Bivalvos de la morsa: en los bajíos de grava de la laguna (PolarHabitats pone la grava) ──
-        for (int k = 0; k < 2; k++)
+        for (int k = 0, n = FoodChain.Banks(SwarmKind.Clam); k < n; k++)   // tantos como pide la cadena
         {
             Vector3 at = PolarLandscapeBuilder.Lagoon + Quaternion.Euler(0f, 70f + k * 150f, 0f) * Vector3.forward * 16f; at.y = -2.8f;
-            Swarm.Create<Swarm>(t, $"Bivalvos_{k}", at, SwarmKind.Clam, SwarmModels.Species.Clam, 30f, 40f, 2.5f);
+            Swarm.Create<Swarm>(t, $"Bivalvos_{k}", at, SwarmKind.Clam, k % 2 == 0 ? SwarmModels.Species.Clam : SwarmModels.Species.Mya, 30f, 40f, 2.5f);
         }
 
         // ── Puntos de la isla para la prueba ──
@@ -106,6 +107,9 @@ public static partial class SampleSceneBuilder
         Debug.Log($"[Territorio] Tierra {ter.landArea:0} m² · hielo {ter.iceArea:0} m² ({100f * ter.landArea / Mathf.Max(1f, ter.landArea + ter.iceArea):0} % tierra); {ter.cliffs} bloques de barrera y acantilado ({birds} de aves); {caves.Count} cuevas.");
         return ter;
     }
+
+    [UnityEditor.MenuItem("Tools/Cold Sanctuary/Cadena alimenticia (evaluar)")]
+    static void FoodChainMenu() => FoodChain.Log();
 
     // Un bloque con o sin collider, en coordenadas del mundo.
     static Transform Block(Transform parent, string name, Vector3 center, Vector3 size, Material m, float yaw, bool solid)

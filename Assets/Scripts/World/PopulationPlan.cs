@@ -17,11 +17,22 @@ public static class PopulationPlan
         { "Walrus", 0.3f }, { "EmperorPenguin", 0.8f }, { "Reindeer", 0.6f }, { "MuskOx", 0.3f }, { "ArcticHare", 0.5f }, { "ArcticFox", 0.2f },
     };
 
+    /// <summary>Quién vive en el santuario y en cuántos grupos (lo reparte el constructor). Una especie nueva entra aquí y la cadena alimenticia
+    /// (<see cref="FoodChain"/>) la evalúa sola: nada más hace falta para que nadie pase hambre.</summary>
+    public static readonly Dictionary<string, int> Groups = new Dictionary<string, int>
+    {
+        { "Bear", 1 }, { "Seal", 3 }, { "Whale", 2 }, { "Penguin", 2 }, { "Orca", 1 },
+        { "Walrus", 2 }, { "EmperorPenguin", 2 }, { "Reindeer", 2 }, { "MuskOx", 1 }, { "ArcticHare", 2 }, { "ArcticFox", 1 }, { "Wolf", 1 },
+    };
+
     /// <summary>Humanos del santuario (el personal + la Magnate). Lo actualiza la jornada al cambiar el personal.</summary>
     public static int Humans = 11;
 
     /// <summary>Cuántos individuos le tocan a la especie (mínimo 2, para que pueda haber pareja).</summary>
-    public static int Target(string species) => PerHuman.TryGetValue(species, out float r) ? Mathf.Max(2, Mathf.RoundToInt(Humans * r)) : 0;
+    public static int Target(string species) { FoodChain.Evaluate(); return Raw(species); }
+
+    /// <summary><see cref="Target"/> sin pasar por la cadena (la usa la propia cadena).</summary>
+    public static int Raw(string species) => PerHuman.TryGetValue(species, out float r) ? Mathf.Max(2, Mathf.RoundToInt(Humans * r)) : 0;
 
     /// <summary>Techo para la reproducción (1,5× el objetivo); 0 = sin plan para esa especie.</summary>
     public static int Cap(string species) { int t = Target(species); return t > 0 ? Mathf.CeilToInt(t * 1.5f) : 0; }

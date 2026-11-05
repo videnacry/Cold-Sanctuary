@@ -678,11 +678,13 @@ Código y compilación hechos; falta la prueba en vivo.
 - [x] Morsa, emperador, reno, liebre ártica, zorro ártico y buey almizclero con todas sus tablas, ficha con fuentes y escena de ciclo de vida; lobo ártico activado.
 - [x] `Penguin` separado: pasa a pingüino de Adelia (0,6 m, nido de guijarros); el emperador tiene clave propia.
 - [x] Bivalvos (`SwarmKind.Clam`) para la morsa.
-- [x] Isla de tierra (53 %) con orilla, zócalo, lomas, charcas y tundra; el casquete Sur pasa a tierra. Ninguna torre se mueve.
-- [x] Frentes de barrera, 4 cuevas, acantilados, colonia del emperador, playa de morsas y nidos de Adelia.
-- [x] Prueba: grupo 99 (`TerritorioTest`).
-- [ ] **Probar en vivo:** «Rebuild Animal Prefabs» (el cuerpo de `Penguin` cambia), Blockout, escenas de ciclo de vida y grupos 99 y 58.
-- [ ] Parada de alfombra en la isla; aves en los acantilados; bosque de algas; corro del buey como conducta.
+- [x] Isla de tierra (58 %) con orilla, zócalo, lomas, charcas y tundra; reemplaza a los casquetes Sur y Este.
+- [x] Producción, con su comedero y los osos, en la isla (−180, −140); holgura 28,1 m.
+- [x] Cadena alimenticia (`FoodChain`, regla E15, grupo 85) y especie real para todo pez, crustáceo y medusa: 6 especies nuevas.
+- [x] Frentes de barrera, 5 cuevas, acantilados, colonia del emperador, playa de morsas y nidos de Adelia.
+- [x] Pruebas: grupos 99 (`TerritorioTest`) y 85 (`CadenaAlimenticiaTest`).
+- [ ] **Probar en vivo:** «Rebuild Animal Prefabs» (el cuerpo de `Penguin` cambia), Blockout, escenas de ciclo de vida y grupos 99, 85, 58, 57 y 89.
+- [ ] Aves en los acantilados; bosque de algas; corro del buey como conducta.
 - [ ] Lemming, la presa que le falta a la tundra (recomendaciones en `reglas-animales.md`).
 
 ## Siguiente (código)

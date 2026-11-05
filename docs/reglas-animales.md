@@ -25,6 +25,7 @@ junta. El resumen está en [manual-de-diseno.md §13](manual-de-diseno.md#13-ani
 | E11 | **Población por humano** (`PopulationPlan.PerHuman`): más presas que depredadores, grupos pequeños y un Animal completo caro. La reproducción respeta el techo de 1,5×. | Rendimiento y equilibrio. | Grupo 99; `[ECO]` |
 | E12 | **Escena de ciclo de vida.** Cada especie tiene `CicloVida_<Escena>`: se añade a `CicloVidaPanel.Species` (con su hábitat) y a `StartScreen.Special`; comida inagotable y pareja adulta. | Comprobar cada proceso. | Grupo 58 en esa escena |
 | E13 | **Polo mezclado, y dicho.** El santuario es artificial y junta los dos polos (morsas árticas y pingüinos antárticos). Se admite, pero cada ficha dice de dónde es la especie. | Para que no pase por dato. | Solo en docs |
+| E15 | **Cadena alimenticia.** Al añadir una especie se pone en `PopulationPlan.Groups` y `FoodChain` la evalúa: lee dietas y poblaciones, calcula lo que necesita cada depredador y sube bancos, plantas o presas para que nadie pase hambre. Si hace falta una presa que no existe, se crea. | Berón: «para que nadie muera de hambre». | Grupo 85; `[Cadena]` al final del Blockout; menú «Cadena alimenticia (evaluar)» |
 | E14 | **Mente propia.** `Archetypes` (cuerpo, mente, relaciones entre especies) y `PhrasePools` (pensamientos) van con ella. | Todo ser tiene mente. | Grupo 99 (catálogos) |
 
 ### Tablas de una especie
@@ -105,6 +106,52 @@ Los números se comprobaron contra fuentes el 2026-11-05; WP = Wikipedia, usada 
 - **Dieta:** juncia y gramíneas en verano; sauce, abedul, musgo y liquen en invierno. Depredadores: lobo y osos.
 - **Forma:** lana oscura hasta media pata, silla clara, patas claras, cuernos color crema con punta negra.
 - **Sin modelar:** el corro defensivo como conducta. Hoy es `packFactor` alto: el grupo se defiende mejor, pero no forma el círculo.
+
+## Cadena alimenticia (`FoodChain`)
+
+Berón (2026-11-05): «también debe existir la regla de mantener la cadena alimenticia la cual evalúa a los animales existentes y su alimentación para
+equilibrar el número de poblaciones y también puede incrementar el número de plantas o peces o crustáceos».
+
+- **Lee lo que hay:** quién vive (`PopulationPlan.Groups`), qué come (`Forager`, `Ethogram`), de quién es presa (`Archetypes`: la presa teme al que la caza) y cuánto cría (`Reproduction.Calendar`).
+- **Cuenta por año del santuario (28 días de juego):** un animal come su ración de un día real cada día de juego, y sus presas crían un año real en esos 28 días.
+- **Necesidad:** ración × 28 × individuos. Al oso se le descuenta el 80 % que le lleva el guardia.
+- **Oferta:** una presa da individuos × masa × ¼ de las crías anuales por hembra (la mitad son hembras y se come sobre todo a jóvenes). Un banco y una planta dan lo que rebrotan.
+- **Margen:** cada fuente solo puede dar el 80 %. Es un valor de diseño; en la realidad los lobos se llevan el 3–7 % de una manada al año y las morsas el 25 % de la producción de almejas.
+- **Qué sube, en este orden:** bancos (hasta 8) y plantas (hasta ×6), que no cuestan Animal completos; luego presas, hasta ×2. Si no basta, avisa.
+- **Cuándo corre:** la primera vez que se pide una población, sola, también si hay especies nuevas; al final del Blockout escribe el informe `[Cadena]`.
+- **Límite:** es un balance de cada año, no una simulación. El test de verdad es `[ECO]` en vivo.
+
+| Ración diaria (kg) | Fuente |
+|---|---|
+| Morsa 60 | ~6 % de la masa (Born & Acquarone; Fay 4–8 %) |
+| Foca 5 | 3,4–9 kg (Nilssen; Markussen & Øritsland) |
+| Oso 6 | 43 focas al año; una adulta cada 10–12 días (Pagano et al. 2018, *Science* 359:568) |
+| Orca 120, ballena 65 | ~3 % y ~5 % de la masa del catálogo (Sergeant 1969; Savoca et al. 2021, doi 10.1038/s41586-021-03991-5) |
+| Emperador 3, Adelia 0,6 | 1,8–6,3 kg (Robertson & Newgrain 1996); 0,55–0,65 kg |
+| Lobo 3 | 2,5–6 kg (Fuller 1989, *Wildl. Monogr.* 105) |
+| Reno 3, buey 3 | 1–3,7 y 2,6–2,8 kg de materia seca |
+| Zorro 0,25, liebre 0,3 | `[A]`: las fuentes dan kcal, no gramos |
+
+## Peces, crustáceos, bivalvos y medusas
+
+Grupos sin ciclo de vida (`Swarm`). Todos con especie real; los bancos se turnan. La masa por individuo de `Swarm` es una ración de juego, no la real.
+
+| Especie | Clave | Polo | Talla | Notas |
+|---|---|---|---|---|
+| Pez plateado, *Pleuragramma antarcticum* | `SilverFish` | Antártida | 15 cm (máx. 26,6) | Nombre aceptado en WoRMS; se cambió *antarctica*. Pelágico en la plataforma; lo comen Adelia y emperador. |
+| Bacalao ártico, *Boreogadus saida* | `ArcticCod` | Ártico | 25 cm (máx. 40) | **Nuevo.** Bajo el hielo; focas, belugas y aves; cardúmenes de 72–307 peces/m³ (Crawford & Jorgenson 1996). |
+| Capelán, *Mallotus villosus* | `Capelin` | Subártico | 15 cm (máx. 25) | **Nuevo.** Lo comen ballenas jorobadas y bacalaos. |
+| Kril antártico, *Euphausia superba* | `Krill` | Antártida | 5–6 cm | Producción 342–536 Mt/año (Atkinson et al. 2009). |
+| Kril de hielo, *Euphausia crystallorophias* | `IceKrill` | Antártida | hasta 4,2 cm | **Nuevo.** De plataforma; lo comen Adelia y emperador. |
+| *Themisto libellula* | `Themisto` | Ártico | ~2,6 cm (máx. 5,7) | **Nuevo.** Anfípodo; aves y foca arpa. |
+| *Diplulmaris antarctica* | `Diplulmaris` | Antártida | 10–18 cm | |
+| *Desmonema glaciale* | `Desmonema` | Antártida | hasta 120 cm | Datos solo de compilaciones. |
+| Melena de león, *Cyanea capillata* | `Cyanea` | Ártico | 30–50 cm | **Nueva.** |
+| *Serripes groenlandicus* | `Clam` | Ártico | 7 cm (máx. 11) | Presa principal de la morsa (Sheffield, Fay & Kelly 1999). |
+| *Mya truncata* | `Mya` | Ártico | 5 cm (máx. 8) | **Nueva.** 81 % de la energía en Foxe Basin (Fisher & Stewart 1997). |
+
+**Sin dato:** no se encontró P/B de capelán, pez plateado, kril de hielo, *Themisto* ni medusas: por eso los bancos usan todos el mismo rebrote.
+**Descartados:** *Trematomus bernacchii*, *Thysanoessa inermis*, *Gammarus wilkitzkii* y *Aglantha digitale* se investigaron y no hacen falta para el balance.
 
 ## Especies recomendadas para más adelante
 

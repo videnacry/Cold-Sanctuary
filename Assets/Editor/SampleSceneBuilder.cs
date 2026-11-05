@@ -171,6 +171,7 @@ public static partial class SampleSceneBuilder
         // (2026-11-04) ALERTA DE PISO NUEVO (manual §11): TODOS los pisos de la escena (también los que no salen de BuildAreaStructures,
         // como el control de misión de la lanzadera) contra los microcosmos «pendiente de piso representativo». Y la REGLA DE CAPACIDAD (S13).
         { var fl = new List<(string, string)>(); foreach (SanctuaryArea sa in Object.FindObjectsByType<SanctuaryArea>(FindObjectsInactive.Include, FindObjectsSortMode.None)) fl.Add((sa.name, sa.displayName)); MicroFloors.AlertFloors(fl); AreaCapacity.LogScene(); }
+        FoodChain.Log();   // la cadena alimenticia, con todo ya puesto: quién come qué y si a alguien le falta (docs/reglas-animales.md, regla E15)
         BakeNavMesh();
 
         // Genera también las ESCENAS HERMANAS del MICROCOSMOS (cada una es su propia .unity, no van en el mesocosmos):
@@ -2296,7 +2297,7 @@ public static partial class SampleSceneBuilder
         ph.pebbleBeach = pc + toLagoon.normalized * (penguins.r - 4f);   // la orilla de la colonia que da a la laguna
         var dens = new System.Collections.Generic.List<Vector3>();
         foreach (var lobe in PolarLandscapeBuilder.Islands)
-            if (lobe.name == "Este:Mecanica_Osos" || lobe.name.StartsWith("BosqueNorte")) dens.Add(new Vector3(lobe.x + lobe.r * 0.4f, 0f, lobe.z - lobe.r * 0.3f));
+            if (lobe.name.StartsWith("BosqueNorte")) dens.Add(new Vector3(lobe.x + lobe.r * 0.4f, 0f, lobe.z - lobe.r * 0.3f));
         ph.denSites = dens.ToArray();
         ph.emperorColony = EmperorColony;
         Territorio ter = BuildTerritorio(root);   // barreras, cuevas, acantilados, lomas, charcas y bivalvos (docs/territorio-polar.md)
@@ -2475,8 +2476,7 @@ public static partial class SampleSceneBuilder
         var nests = new System.Collections.Generic.List<NestSpec>();
         var families = new System.Collections.Generic.List<FamilyGenerator.Family>();
         // EQUILIBRIO con los humanos (PopulationPlan): cada especie reparte su objetivo entre sus grupos.
-        var groupsOf = new System.Collections.Generic.Dictionary<string, int> { { "Bear", 1 }, { "Seal", 3 }, { "Whale", 2 }, { "Penguin", 2 }, { "Orca", 1 },
-            { "Walrus", 2 }, { "EmperorPenguin", 2 }, { "Reindeer", 2 }, { "MuskOx", 1 }, { "ArcticHare", 2 }, { "ArcticFox", 1 }, { "Wolf", 1 } };
+        var groupsOf = PopulationPlan.Groups;
         var used = new System.Collections.Generic.Dictionary<string, int>();
         void AddFamily(string species, Vector3 pos, float radius, NestKind kind, float height = 0f)
         {
@@ -2500,7 +2500,7 @@ public static partial class SampleSceneBuilder
         //   Reservados (santuario templado): Bunny×4, Deer×2, Wolf, Fox — ver git para las posiciones previas.
 
         // Oso Polar — apex del hielo; junto al borde de agua/hielo para cazar focas (homeRadius amplio ~300).
-        AddFamily("Bear", new Vector3(132f, 0f, -15f), 12f, NestKind.Predator);   // "Bear" = el prefab/catálogo real (el oso del hielo)
+        AddFamily("Bear", ProduccionCenter + new Vector3(19f, 0f, 0f), 12f, NestKind.Predator);   // "Bear" = el prefab/catálogo real (el oso del hielo)
 
         ValidateNestSeparation(nests);
 
@@ -2523,7 +2523,7 @@ public static partial class SampleSceneBuilder
         AddFamily("Walrus", new Vector3(70f, -1f, 12f), 8f, NestKind.Prey, -1f);
         AddFamily("EmperorPenguin", EmperorColony + new Vector3(-3f, 0f, 2f), 5f, NestKind.Prey, 0f);
         AddFamily("EmperorPenguin", EmperorColony + new Vector3(3f, 0f, -2f), 5f, NestKind.Prey, 0f);
-        AddFamily("Reindeer", new Vector3(-150f, 0f, -150f), 10f, NestKind.Prey, 0f);
+        AddFamily("Reindeer", new Vector3(-100f, 0f, -148f), 10f, NestKind.Prey, 0f);
         AddFamily("Reindeer", new Vector3(-62f, 0f, -150f), 10f, NestKind.Prey, 0f);
         AddFamily("MuskOx", new Vector3(-112f, 0f, -205f), 10f, NestKind.Prey, 0f);
         AddFamily("ArcticHare", new Vector3(-205f, 0f, -112f), 8f, NestKind.Prey, 0f);
@@ -2599,14 +2599,33 @@ public static partial class SampleSceneBuilder
     {
         GameObject group = new GameObject("Swarms_AUTO");
         group.transform.SetParent(parent);
-        Vector3[] positions = { new Vector3(56f, -2f, 22f), new Vector3(66f, -2f, 30f) };
+        // Tantos bancos como pide la cadena alimenticia (FoodChain). Cada banco, de una especie real: el Ártico y la Antártida se mezclan en la laguna,
+        // como todo el santuario (docs/reglas-animales.md §Peces, crustáceos y medusas).
+        Vector3[] positions = LagoonRing(new Vector3(56f, -2f, 22f), new Vector3(66f, -2f, 30f), FoodChain.Banks(SwarmKind.Fish));
         for (int i = 0; i < positions.Length; i++)
-            Swarm.Create<Swarm>(group.transform, $"Swarm_Fish_{i}", positions[i], SwarmKind.Fish, SwarmModels.Species.SilverFish, 24f, 40f, 4f);
+            Swarm.Create<Swarm>(group.transform, $"Swarm_Fish_{i}", positions[i], SwarmKind.Fish, FishOf(i), 24f, 40f, 4f);
+        // Los mares de la isla de tierra: bacalao ártico y capelán, frente a sus costas (el Ártico, el mar de los osos y las morsas).
+        Swarm.Create<Swarm>(group.transform, "Swarm_Fish_Isla_Norte", new Vector3(-195f, -2f, -65f), SwarmKind.Fish, SwarmModels.Species.ArcticCod, 24f, 40f, 4f);
+        Swarm.Create<Swarm>(group.transform, "Swarm_Fish_Isla_Sur", new Vector3(-20f, -2f, -228f), SwarmKind.Fish, SwarmModels.Species.Capelin, 24f, 40f, 4f);
         // MEDUSAS de McMurdo (mar de Ross): Diplulmaris antarctica (pequeña, anaranjada) y Desmonema glaciale (la grande).
         GameObject jelly = new GameObject("Medusas_AUTO"); jelly.transform.SetParent(parent);
         Swarm.Create<Swarm>(jelly.transform, "Medusas_Diplulmaris_0", new Vector3(58f, -4f, 14f), SwarmKind.Jellyfish, SwarmModels.Species.Diplulmaris, 10f, 14f, 3.5f);
         Swarm.Create<Swarm>(jelly.transform, "Medusas_Desmonema_0", new Vector3(70f, -6f, 24f), SwarmKind.Jellyfish, SwarmModels.Species.Desmonema, 4f, 6f, 5f);
+        Swarm.Create<Swarm>(jelly.transform, "Medusas_Cyanea_0", new Vector3(46f, -5f, 30f), SwarmKind.Jellyfish, SwarmModels.Species.Cyanea, 4f, 6f, 5f);   // melena de león, la del Ártico
     }
+
+    // Los dos sitios de siempre y, si la cadena pide más bancos, repartidos en corro por la laguna.
+    static Vector3[] LagoonRing(Vector3 a, Vector3 b, int n)
+    {
+        var p = new Vector3[Mathf.Max(2, n)]; p[0] = a; p[1] = b;
+        for (int i = 2; i < p.Length; i++) p[i] = PolarLandscapeBuilder.Lagoon + Quaternion.Euler(0f, 25f + i * 137f, 0f) * Vector3.forward * 17f + Vector3.down * 2f;
+        return p;
+    }
+
+    /// <summary>La especie real del banco de peces número <paramref name="i"/>: se turnan.</summary>
+    public static SwarmModels.Species FishOf(int i) => i % 3 == 0 ? SwarmModels.Species.SilverFish : i % 3 == 1 ? SwarmModels.Species.ArcticCod : SwarmModels.Species.Capelin;
+    /// <summary>La especie real del banco de crustáceos número <paramref name="i"/>: se turnan.</summary>
+    public static SwarmModels.Species KrillOf(int i) => i % 3 == 0 ? SwarmModels.Species.Krill : i % 3 == 1 ? SwarmModels.Species.IceKrill : SwarmModels.Species.Themisto;
 
     // Krill: enjambre de clase Krill (dieta propia). Pasta el FITOPLANCTON para crecer; comido por pez (proximidad) y por
     // ballena/pingüino (mordisco-por-colisión). Sembrado en las mismas aguas, entre el fitoplancton y los peces.
@@ -2614,9 +2633,9 @@ public static partial class SampleSceneBuilder
     {
         GameObject group = new GameObject("Krill_AUTO");
         group.transform.SetParent(parent);
-        Vector3[] positions = { new Vector3(62f, -2f, 20f), new Vector3(52f, -2f, 28f) };
+        Vector3[] positions = LagoonRing(new Vector3(62f, -2f, 20f), new Vector3(52f, -2f, 28f), FoodChain.Banks(SwarmKind.Krill));
         for (int i = 0; i < positions.Length; i++)
-            Swarm.Create<Swarm>(group.transform, $"Swarm_Krill_{i}", positions[i], SwarmKind.Krill, SwarmModels.Species.Krill, 40f, 60f, 3f);
+            Swarm.Create<Swarm>(group.transform, $"Swarm_Krill_{i}", positions[i], SwarmKind.Krill, KrillOf(i), 40f, 60f, 3f);
     }
 
     // Fitoplancton: el PRODUCTOR base de la cadena marina ("césped del mar", vive de agua+luz, se autoregenera).

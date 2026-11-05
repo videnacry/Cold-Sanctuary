@@ -146,7 +146,8 @@ public class PolarUnderstory : MonoBehaviour
     {
         var spot = new GameObject($"Planta_{k}");
         spot.transform.SetParent(transform, false); spot.transform.position = p;
-        Affordance.Put(spot, k, stock, stock, 0.0005f);
+        float s = stock * FoodChain.PlantFactor(k);   // la cadena alimenticia pide más si hay muchos que comer
+        Affordance.Put(spot, k, stock, s, 0.0005f);
     }
 
     void SetChunk(Vector3 p)

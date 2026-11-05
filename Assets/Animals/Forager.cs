@@ -68,7 +68,7 @@ public class Forager : MonoBehaviour
             case "Whale": case "Seal":               eatsFish = true; break;                    // consumidores marinos (beluga/foca: pescan)
             case "Penguin":                          eatsFish = true; eatsKrill = true; shoreFishingReach = 60f; break;  // pesca peces Y krill; se zambulle y nada hasta el banco (bucea decenas de metros)
             case "Orca":                             eatsPrey = true; eatsFish = true; break;   // apex: caza focas, y también come peces (como las orcas residentes)
-            case "EmperorPenguin":                   eatsFish = true; eatsKrill = true; shoreFishingReach = 60f; break;  // peces, kril y calamar; bucea (récord 564 m)
+            case "EmperorPenguin":                   eatsFish = true; eatsKrill = true; shoreFishingReach = 85f; break;  // peces, kril y calamar; bucea (récord 564 m)
             case "Walrus":                           eatsClams = true; break;                   // ~97 % invertebrados del fondo (bivalvos, por succión)
             case "Reindeer": case "MuskOx": case "ArcticHare": eatsGrass = true; break;         // lo que comen de verdad va en su Ethogram (liquen, sauce, juncia)
             case "ArcticFox":                        eatsPrey = true; eatsPlants = true; break; // caza y carroña; en verano, bayas
