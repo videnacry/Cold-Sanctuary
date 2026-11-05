@@ -137,7 +137,7 @@ Se vuelve a repartir al cambiar la semana o la gente.
 
 ### Panel y consola
 
-Botón «Horario libre» abajo a la izquierda, o en la consola `horario` (también escribe el horario de hoy). El panel muestra:
+Botón «F2: Horario libre» en la pila de la derecha, encima del de F10 (2026-11-05: estaba abajo a la izquierda, sobre el lanzador de hechizos), la tecla F2 o la consola `horario` (que también escribe el horario de hoy). Se cierra con Esc, con el botón, con F2 o con «cerrar» ([interfaz-botones.md](interfaz-botones.md)). El panel muestra:
 - la semana de la escena, con un selector de día y otro de escena;
 - por personaje, las franjas del día;
 - en la franja de ahora:

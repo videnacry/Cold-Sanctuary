@@ -287,6 +287,31 @@ public static class Performances
         Mi("son_equipo", "Revisar instrumentos y sonido",
             S("Cambiar cuerdas y cables", M.Reach, P.Wrench, P.None, 8f, F.None, 1.6f),
             Checking("Probar los micrófonos", P.Tablet, F.None, 6f));
+        Mi("sol_mantenimiento", "Mantener los paneles solares",
+            S("Quitar la escarcha", M.Sweep, P.Brush, P.None, 9f, F.Dust, 1.2f),
+            Checking("Revisar los módulos", P.Tablet, F.Glow, 6f),
+            Noting("Anotar las mesas revisadas"));
+        Mi("sol_instalacion", "Instalar paneles solares",
+            S("Subir el módulo a la mesa", M.Reach, P.Box, P.None, 8f, F.Dust, 1.5f, Raise, atFace: true),
+            S("Apretar las fijaciones", M.Reach, P.Wrench, P.None, 8f, F.Sparks, 1.4f, Strike, atFace: true),
+            Checking("Probar la cadena", P.Tablet, F.Sparks, 6f));
+        Mi("sol_reparacion", "Reparar paneles solares",
+            Checking("Buscar la avería", P.Flashlight, F.None, 6f),
+            S("Cambiar el módulo", M.Reach, P.Screwdriver, P.None, 8f, F.Sparks, 1.2f, Strike, atFace: true),
+            Noting("Anotar la reparación"));
+        Mi("ene_control", "Llevar la energía",
+            Console("Repartir las cargas", 9f),
+            Noting("Anotar las paradas por fauna"));
+        Mi("ene_eolica", "Revisar los aerogeneradores",
+            Checking("Revisar cámaras y radar", P.Tablet, F.Glow, 7f),
+            Checking("Mirar las palas", P.Flashlight, F.None, 7f),
+            Noting("Anotar la revisión"));
+        Mi("ene_mareal", "Revisar la turbina mareal",
+            Checking("Probar el sonar", P.Tablet, F.Glow, 7f),
+            Checking("Buscar fugas", P.Flashlight, F.Water, 7f));
+        Mi("ene_almacen", "Revisar el almacén",
+            Checking("Medir las baterías", P.Tablet, F.Sparks, 6f),
+            Noting("Registrar la temperatura"));
         Mi("aul_clase", "Dar o recibir una clase",
             S("Explicar en la pizarra", M.Teach, P.Chalk, P.Book, 9f, F.Chalk, 1.2f, Raise, atFace: true),
             S("Tomar apuntes", M.Write, P.Pen, P.Book, 7f, F.Paper, 2.5f, Fine));

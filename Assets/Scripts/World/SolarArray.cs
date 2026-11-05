@@ -1,9 +1,10 @@
 using UnityEngine;
 
 /// <summary>
-/// PANELES SOLARES (el santuario no usa gas ni combustibles: toda su energía es solar). Una fila de paneles inclinados
-/// sobre postes —elevados, como todo lo construido, para no quitar suelo— que de DÍA genera energía para el santuario
-/// (SanctuaryResources.Energy), más al mediodía y nada de noche. Alimenta cocinas de inducción, hornos, máquinas de la
+/// PANELES SOLARES (el santuario no usa gas ni combustibles). Una fila de paneles inclinados sobre postes —elevados, como todo lo
+/// construido, para no quitar suelo— que con sol genera energía para el santuario (SanctuaryResources.Energy): con el sol REAL de 78° S
+/// (docs/energia.md): mucho en verano, también a medianoche, y nada en la noche polar. El grueso va en el Parque Energético (EnergySite).
+/// Alimenta cocinas de inducción, hornos, máquinas de la
 /// enfermería y los tanques de virtualización. Todo de cubos (marco, células, postes, caja del inversor y baterías).
 /// </summary>
 public class SolarArray : MonoBehaviour
@@ -17,9 +18,8 @@ public class SolarArray : MonoBehaviour
     void Update()
     {
         TimeController tc = TimeController.timeController;
-        float hour = tc != null ? tc.Hour : 12f;
-        // Curva solar: 0 de noche, máximo a las 12 h (seno entre las 6 y las 18).
-        float sun = hour > 6f && hour < 18f ? Mathf.Sin((hour - 6f) / 12f * Mathf.PI) : 0f;
+        // El sol de verdad (2026-11-05, docs/energia.md): antes, una curva de 6 a 18 h todo el año, también en la noche polar.
+        float sun = tc != null ? EnergyRule.SolarAt(SolarPosition.SanctuaryDayOfYear(tc), tc.Hour) : 1f;
         if (sun <= 0f) return;
         _acc += peakWatts * sun * Time.deltaTime;
         if (_acc < 1000f) return;   // abona por kJ para no saturar el registro

@@ -137,6 +137,7 @@ public static class PlayerTasks
         T("coc_avisos", "Prepara los avisos del santuario|mesa|Hoja de avisos", "Dalos en el comedor|mesa|Hoja de avisos", "Haz el programa de radio|mesa|Micrófono");
         T("con_proyectos", "Revisa el plan y los plazos|almacen|Planos", "Comprueba el material|almacen|Tablet", "Asigna los equipos en la obra|obra|Planos");
         T("con_proyectos2", "Sigue las obras en curso|obra|Planos", "Coordina a los equipos|obra|Tablet", "Pasa los avisos de la obra|almacen|Tablet");
+        T("yog_ashtanga", "Elige la secuencia del día|esterilla|Tablet", "Prepara las variaciones y los ajustes de cada alumno|esterilla|Tablet", "Deja la sala lista|esterilla|");
         T("hos_plantas", "Coge las plantas medicinales|armario|Plantas medicinales", "Prepara infusiones, cataplasmas y ungüentos|mesa|Mortero", "Llévaselos a los pacientes|cama|Infusión");
         T("hos_pediatria", "Prepara la consulta y las vacunas|armario|Jeringa", "Pesa y mide al niño en la camilla|camilla|Tablet", "Vacúnalo y anota su crecimiento|camilla|Jeringa");
         T("mec_alfombras", "Revisa los circuitos y los LED|banco_taller|Tablet", "Repara el tejido|banco_taller|Aguja", "Reparte las alfombras por las pistas|pista|Alfombra");
@@ -145,6 +146,14 @@ public static class PlayerTasks
         T("lanz_control", "Revisa la telemetría|consola|Tablet", "Mira el viento en altura y el techo de nubes|consola|Tablet", "Lleva la cuenta atrás|consola|");
         T("lanz_seguridad", "Prueba el diluvio de agua|plataforma|Llave", "Limpia la trinchera de llamas|trinchera|Escoba", "Revisa el escudo y la cubeta|plataforma|Linterna");
         T("lanz_fabrica", "Integra la primera etapa|etapa|Llave inglesa", "Integra la segunda etapa|etapa|Llave inglesa", "Monta la carga útil|carga|Tablet");
+        // ══ EL PARQUE ENERGÉTICO (2026-11-05, docs/energia.md) ══
+        T("sol_mantenimiento", "Coge el cepillo del taller|banco_taller|Cepillo", "Quita la escarcha de las mesas|panel|Cepillo", "Revisa los módulos y el cableado|panel|Tablet");
+        T("sol_instalacion", "Prepara los módulos en el taller|banco_taller|Panel solar", "Monta la mesa|panel|Llave inglesa", "Conéctala y prueba la cadena|panel|Tablet");
+        T("sol_reparacion", "Coge los repuestos|estante|Panel solar", "Cambia el módulo roto|panel|Destornillador", "Comprueba que la baliza se apaga|panel|Tablet");
+        T("ene_control", "Mira el balance de oferta y demanda|consola|Tablet", "Anota las paradas por fauna|consola|Tablet");
+        T("ene_eolica", "Bloquea la turbina al pie de la torre|aerogenerador|Llave", "Revisa cámaras y radar|detector|Tablet", "Comprueba las palas y la pala negra|aerogenerador|Linterna");
+        T("ene_mareal", "Sal a la pontona|pontona|Linterna", "Prueba el sonar|sonar|Tablet", "Revisa el anillo y las fugas|pontona|Linterna");
+        T("ene_almacen", "Lee la temperatura de las baterías|bateria|Tablet", "Revisa la calefacción|bateria|Linterna", "Mira el silo de arena|silo|Tablet");
     }
 
     // ── LOS PASOS DE UNA MISIÓN ─────────────────────────────────────────────────────────────────────────────────────
@@ -236,6 +245,8 @@ public static class PlayerTasks
         if (id.StartsWith("obra_") || id.StartsWith("mat_")) return AreaFunctions.Kind.Build;
         if (id.StartsWith("rep_")) return AreaFunctions.Kind.Make;
         if (id.StartsWith("lanz_")) return AreaFunctions.Kind.Operate;
+        if (id.StartsWith("sol_") || id == "ene_eolica" || id == "ene_mareal") return AreaFunctions.Kind.Make;
+        if (id.StartsWith("ene_")) return AreaFunctions.Kind.Operate;
         if (id.StartsWith("bio_")) return AreaFunctions.Kind.Study;
         if (FruitGardener.IsRound(id)) return AreaFunctions.Kind.Tend;
         return AreaFunctions.Kind.Care;
@@ -299,6 +310,13 @@ public static class PlayerTasks
         ["etapa"] = new[] { "etapa", "cohete" },
         ["carga"] = new[] { "carga", "cofia" },
         ["pista"] = new[] { "alfombras_", "pista" },
+        ["panel"] = new[] { "mesa_solar" },
+        ["aerogenerador"] = new[] { "aerogenerador" },
+        ["detector"] = new[] { "detector_aves" },
+        ["pontona"] = new[] { "pontona_mareal" },
+        ["sonar"] = new[] { "sonar_mareal" },
+        ["bateria"] = new[] { "bateria_lfp" },
+        ["silo"] = new[] { "silo_arena" },
     };
 
     // (por área y puesto: los candidatos, cacheados unos segundos: el test recorre todas las misiones de golpe)
@@ -371,6 +389,7 @@ public static class PlayerTasks
         if (l.Count == 0) { Transform t = WorkdayDirector.AreaTransform(area); if (t != null) l.Add(t); }
         if (area == "Huerto") { GameObject g = GameObject.Find("Garden_Area"); if (g != null && !l.Contains(g.transform)) l.Add(g.transform); }
         if (area == "Cocina") { RestaurantKitchen rk = Object.FindAnyObjectByType<RestaurantKitchen>(); if (rk != null && !l.Contains(rk.transform)) l.Add(rk.transform); }
+        if (area == EnergyRule.Area && EnergySite.Instance != null) l.Add(EnergySite.Instance.transform);   // el campo, las torres y el almacén, en el casquete
         return l;
     }
 

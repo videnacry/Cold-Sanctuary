@@ -19,7 +19,8 @@ public class WorkdayDirector : MonoBehaviour
     public static readonly string[] Staff = { "Player", "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene", "JefeConstruccion", "Andrea",
                                "Nesvitor", "Amykhuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi",   // familia y amigos de Berón (docs/diseno-personajes.md)
                                "Gallarle", "Julian", "Fausto",   // (2026-11-04) parejas: de Ducristin (Gallarle), de Alicita (Julian) y de Irosene (Fausto); pendientes de foto
-                               "David", "Adonis", "Yulo", "Lale", "Ivelyna", "Luciana", "Malena" };   // (2026-11-04) seis nuevos y Malena (2026-11-05): informática, biotecnología, pediatría y piloto
+                               "David", "Adonis", "Yulo", "Lale", "Ivelyna", "Luciana", "Malena",   // (2026-11-04) seis nuevos y Malena (2026-11-05): informática, biotecnología, pediatría y piloto
+                               "Consol", "Fernando" };   // (2026-11-05) Consol, maestra de Ashtanga, y Fernando, paneles solares (docs/personajes/)
     /// <summary>(2026-11-04) La lista del personal, también sin escena: la usan la regla de capacidad (AreaCapacity) y el
     /// constructor del Aula (cuántas plazas y cuántos pisos).</summary>
     [Tooltip("Personal del santuario en su orden FIJO (el de la rotación). El jugador entra cuando ya es miembro.")]
@@ -558,7 +559,7 @@ public class WorkdayDirector : MonoBehaviour
         if (!needing && yogaTime && YogaTraining(g)) { if (idle != null) idle.enabled = false; return; }
         if (idle != null && idle.enabled) idle.enabled = false;
         if (OwnNeeds(g, area, doing)) return;   // [Jornada] comer, el baño y dormir van antes; a mediodía, a comer
-        Vector3 to = WorkPoint(area, g.name);
+        Vector3 to = EnergySite.FieldPoint(missionId, g.name) ?? WorkPoint(area, g.name);   // (los paneles y las torres se revisan en el casquete, no en el piso de control)
         if ((g.transform.position - to).sqrMagnitude > 4f)
         {
             if (g.GetComponent<Anima>() != null && CarpetPad.Route(g, ref to)) return;   // otro grupo de plataformas: en alfombra voladora
@@ -595,7 +596,7 @@ public class WorkdayDirector : MonoBehaviour
         Uniforms.Kind k = Uniforms.ForWork(missionId, area, doing);
         if (k == Uniforms.Kind.None) { UniformWearer.Want(g, k); return; }
         Vector3 pos = g.transform.position;
-        bool there = area == AreaWork.Guard || FruitGardener.IsRound(missionId) || InAreaNamed(area, pos)
+        bool there = area == AreaWork.Guard || FruitGardener.IsRound(missionId) || EnergySite.IsField(missionId) || InAreaNamed(area, pos)
                      || (WorkPoint(area, g.name) - pos).sqrMagnitude < 36f;
         if (there) UniformWearer.Want(g, k);
     }
@@ -660,16 +661,30 @@ public class WorkdayDirector : MonoBehaviour
     // Dos pisos (Hatha y Ashtanga) con dos salas cada uno (occidental y tradicional; YogaHall); la de cada día la da
     // YogaHall.VersionOn (tradicional los pares, occidental los impares). La CLASE DE HATHA (misión de grupo «clase_yoga»): el
     // guía hace la secuencia en la tarima de su sala, el demostrador la hace entre los alumnos y los correctores van de
-    // esterilla en esterilla. El ENTRENAMIENTO de las 14 h es la CLASE DE ASHTANGA, en el piso de Ashtanga: la da el primero que
+    // esterilla en esterilla. El ENTRENAMIENTO de las 14 h es la CLASE DE ASHTANGA, en el piso de Ashtanga: la da su maestra (Consol) y, si no está, el primero que
     // llega. En su tiempo libre, el MAESTRO DE YOGA ('YogaTeacher': Josedrilo, el profesional de yoga; antes Andrea y Sadhguru) medita en la tarima de la sala de Hatha tradicional, junto al linga.
     const string YogaArea = "Sala de Yoga";
-    /// <summary>MAESTRO DE YOGA del santuario (Hatha y Ashtanga; medita junto al linga en su tiempo libre): JOSEDRILO, el profesional de
-    /// yoga (Berón 2026-11-04: «el profesional de yoga es Josedrilo»; Professions). Antes, Andrea (que pasa a entrenador del gimnasio) y
-    /// Sadhguru (que se fue a su microcosmos). La SEGUNDA MAESTRA, para dar las dos clases a la vez, es PANTERILIA (2026-11-04: la de la
-    /// percepción, la que observa; corregir posturas es mirar): Irosene, que lo fue, pasa a las letras en el Aula, como sugirió Berón.</summary>
-    public const string YogaTeacher = "Josedrilo", SecondYogaTeacher = "Panterilia";
+    /// <summary>LOS DOS MAESTROS JEFES DE YOGA (Berón 2026-11-05, docs/reglas-personajes.md): <see cref="AshtangaTeacher"/>, CONSOL, experta en
+    /// Ashtanga, dirige ese estilo; <see cref="YogaTeacher"/>, JOSEDRILO, dirige el Hatha y medita junto al linga en su tiempo libre.
+    /// Ya no hay segunda maestra: Panterilia, que lo fue sin base documentada, se queda con el baile y las finanzas. Historia: el maestro fue
+    /// primero Sadhguru (se fue a su microcosmos), luego Andrea (pasó a entrenador del gimnasio) y luego JOSEDRILO, el profesional de
+    /// yoga (Berón 2026-11-04: «el profesional de yoga es Josedrilo»).</summary>
+    public const string YogaTeacher = "Josedrilo", AshtangaTeacher = "Consol";
     /// <summary>La sesión de cada clase: Hatha (la guiada, misión «yog_guia») y Ashtanga (el entrenamiento de las 14 h).</summary>
     public const string HathaSession = "Saludo al Sol", AshtangaSession = "Ashtanga Primaria";
+
+    /// <summary>La maestra de Ashtanga, si hoy da la clase de las 14 h y está libre para abrirla (despierta, sin necesidades en marcha y sin
+    /// otra clase); si no, null, y la abre el primero que llega.</summary>
+    static Anima AshtangaHead()
+    {
+        WorkdayDirector wd = Instance;
+        WorkRoster.Worker w = wd != null ? wd.roster.Find(AshtangaTeacher) : null;
+        if (w == null || wd.today == null || !wd.today.training.TryGetValue(w, out string tr) || tr != YogaArea) return null;
+        GameObject g = Body(AshtangaTeacher);
+        Anima a = g != null ? g.GetComponent<Anima>() : null;
+        if (a == null || a.asleep || global::YogaClass.ClassOf(a) != null || NeedsDriver.Attending(g.GetComponent<ActionQueue>())) return null;
+        return a;
+    }
 
     /// <summary>Entrenamiento de yoga: a la CLASE DE ASHTANGA de hoy (<see cref="global::YogaClass"/>, en su sala del piso de
     /// Ashtanga). Si no hay ninguna, la da el primero que llega; los demás van cada uno a su esterilla (en la tradicional, antes
@@ -686,7 +701,7 @@ public class WorkdayDirector : MonoBehaviour
         foreach (YogaHall h in YogaHall.Ordered(YogaHall.Style.Ashtanga, YogaHall.VersionOn(YogaHall.Today)))
         {
             global::YogaClass c = global::YogaClass.On(h);
-            if (c == null) { c = global::YogaClass.Begin(a, AshtangaSession, h); if (c != null && (c.teacher == a || c.Join(a))) return true; continue; }
+            if (c == null) { c = global::YogaClass.Begin(AshtangaHead() ?? a, AshtangaSession, h); if (c != null && (c.teacher == a || c.Join(a))) return true; continue; }
             if (c.Join(a)) return true;
         }
         return false;
@@ -1066,17 +1081,26 @@ public class WorkdayDirector : MonoBehaviour
     }
 
     // ── HUD del jugador: su itinerario de hoy ──
-    void OnGUI()
+    /// <summary>El itinerario de hoy del jugador (null si no tiene jornada): lo que sale en el recuadro de arriba a la derecha y en la
+    /// ventana «Misiones y jornada» (<see cref="HudModals"/>), de la misma fuente. <paramref name="marks"/>: cada misión con ✓ o ☐.</summary>
+    public List<string> Itinerary(bool marks = false)
     {
-        if (today == null || TC == null) return;
-        WorkRoster.Worker me = roster.Find("Player"); if (me == null) return;
+        if (today == null || TC == null) return null;
+        WorkRoster.Worker me = roster.Find("Player"); if (me == null) return null;
         float h = TC.Hour;
         string now = Where(me, h, out string doing) != null ? doing : (h >= WorkRoster.StartHour + 8f ? "Tiempo libre" : "Antes de la jornada");
         var lines = new List<string> { $"Jornada · día {today.day} · {Mathf.Floor(h):00}:{(h % 1f) * 60f:00}", $"Ahora: {now}" };
-        foreach (var a in today.Of(me)) lines.Add($"{a.start:00}:00  {a.mission.title}");
+        foreach (var a in today.Of(me)) lines.Add($"{(marks ? (PlayerWorkday.Done(a) ? "✓ " : "☐ ") : "")}{a.start:00}:00  {a.mission.title}");
         lines.Add("11:00  Comida (restaurante)");
         if (today.training.TryGetValue(me, out string tr)) lines.Add($"14:00  Entrenamiento: {tr}");
         lines.Add("16:00  Libre");
+        return lines;
+    }
+
+    void OnGUI()
+    {
+        List<string> lines = Itinerary();
+        if (lines == null) return;
         GUI.Box(new Rect(Screen.width - 330, 10, 320, 22 + lines.Count * 18), "");
         for (int i = 0; i < lines.Count; i++) GUI.Label(new Rect(Screen.width - 322, 14 + i * 18, 310, 20), lines[i]);
     }

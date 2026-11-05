@@ -107,7 +107,7 @@ su `mood`. Líneas de ejemplo:
 
 **2026-11-04 (Berón):** Irosene es **profesional de letras**: profesora de **poesía y narración**. Tiene su puesto en la sala de estudio
 del **Aula** (clases y lecturas, misión `aul_letras`) y sigue con su **textil**. Su pareja es **Fausto**, mecánico, y comparten casa del
-árbol. Deja de ser la segunda maestra de yoga, que pasa a ser Panterilia
+árbol. Deja de ser la segunda maestra de yoga, una plaza que tampoco tenía base documentada y que desapareció el 2026-11-05
 ([personajes-mesocosmos.md](personajes-mesocosmos.md) §Profesiones y parejas).
 
 - **Ubicación actual:** nivel **submarino** (Tier 4). **Visita a Panterilia** (Cleaning, Tier 1) y

@@ -20,6 +20,7 @@ public static class YogaLibrary
         new YogaSession("Yoga Namaskar",      () => YogaNamaskar.Sequence()),
         new YogaSession("Saludo al Sol",      () => SunSalutation.Sequence()),
         new YogaSession("Ashtanga Primaria",  () => AshtangaPrimary.Sequence()),
+        new YogaSession(YogaClass.DeepSession, () => AshtangaPrimary.Deep(YogaHall.Today)),   // (2026-11-05) la clase de Consol: la secuencia cambia cada día
         // Futuras (una línea c/u cuando se implementen): Ashtanga nivel 2–4, Shambhavi, upa-yoga de brazos…
     };
 

@@ -104,6 +104,14 @@ public static class VirtualMissions
             case "asa_acta": return new[] { "Escribir lo acordado", "Guardarlo en el archivo" };
             case "asa_mediar": return new[] { "Escuchar a una parte", "Escuchar a la otra", "Apuntar el acuerdo" };
             case "son_equipo": return new[] { "Revisar cuerdas y cables", "Probar micrófonos y altavoces" };
+            // (2026-11-05) El Parque Energético (docs/energia.md).
+            case "sol_mantenimiento": return new[] { "Quitar la escarcha de las mesas", "Revisar los módulos", "Anotar las mesas revisadas" };
+            case "sol_instalacion": return new[] { "Preparar los módulos", "Montar la mesa", "Conectarla y probar la cadena" };
+            case "sol_reparacion": return new[] { "Encontrar la mesa averiada", "Cambiar el módulo roto", "Comprobar la baliza" };
+            case "ene_control": return new[] { "Mirar el balance", "Repartir las cargas", "Anotar las paradas por fauna" };
+            case "ene_eolica": return new[] { "Bloquear la turbina", "Revisar cámaras y radar", "Comprobar las palas" };
+            case "ene_mareal": return new[] { "Salir a la pontona", "Probar el sonar", "Revisar el anillo" };
+            case "ene_almacen": return new[] { "Leer la temperatura de las baterías", "Revisar la calefacción", "Mirar el silo de arena" };
             case "aul_clase": return new[] { "Preparar la pizarra y la pantalla", "Dar la clase desde la tarima", "Resolver dudas en las filas" };
             case "aul_estudio": return new[] { "Buscar el libro en la biblioteca", "Consultarlo en el catálogo", "Estudiar en la mesa" };
             default: return new[] { "Preparar", "Hacer la tarea", "Recoger" };
@@ -170,6 +178,7 @@ public static class VirtualMissions
             case "Biología": return new Color(0.78f, 0.9f, 0.78f);
             case "Central Nuclear": return new Color(0.75f, 0.78f, 0.8f);
             case "Informática": return new Color(0.55f, 0.65f, 0.8f);   // (2026-11-04) los pisos nuevos (docs/piso-informatica.md, docs/piso-aula.md)
+            case EnergyRule.Area: return new Color(0.55f, 0.75f, 0.6f);
             case "Aula": return new Color(0.85f, 0.8f, 0.65f);
             case "Sala de asambleas": return new Color(0.62f, 0.48f, 0.34f);
             case "Música": return new Color(0.62f, 0.5f, 0.72f);

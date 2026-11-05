@@ -3,7 +3,7 @@
 Berón (2026-11-05): «debe existir una lista de reglas para la creación de personajes en el mesocosmos, entre ellos estaría la
 reestructuración de puestos … recopilar información de cada personaje al detalle en un .md y la regla de actualizar los docs».
 
-Son las reglas **P1–P10** del [manual de diseño](manual-de-diseno.md) (§9.1). La comprobación automática es
+Son las reglas **P1–P11** del [manual de diseño](manual-de-diseno.md) (§9.1). La comprobación automática es
 `PersonajesReglasTest` (grupo 95) y `tools/check-personajes.sh`, que no necesita Unity.
 
 ## Las reglas
@@ -19,8 +19,8 @@ Son las reglas **P1–P10** del [manual de diseño](manual-de-diseno.md) (§9.1)
 | P7 | **Ningún puesto sin base documentada**: cada puesto tiene su frase de origen en `Professions.Basis`. Lo deducido por nosotros va en `Professions.Unconfirmed` hasta que Berón lo confirme. Quien no tiene base deja el puesto. | 95 |
 | P8 | **W9 al llegar o irse alguien**: se revisan jornadas, reparto y horario libre (`WorkdayDirector.Staff`, `LeisureDirector.DefaultStaff`, listas de las pruebas y `SampleSceneBuilder.TestScenes.Staff`). | 28, 50, 65 |
 | P9 | **J16 al llegar alguien**: se recuentan miembros y residentes frente a cada centro (`AreaCapacity`, `TrainingCentres.FloorsFor`), el ring y la cama-litera; si no llegan, se añade un piso o se agranda. | 75, 89 |
-| P11 | **REGLA DE ORO: todos saben hacer de todo** (= J30 del manual; Berón 2026-11-05: «las tareas de todas las áreas van por rotación normal, los puestos de nivel son un extra pero la regla de oro es que todos los personajes del santuario (mesocosmos) saben hacer de todo»). Toda misión va por rotación normal. Un puesto da prioridad o el papel que dirige, nunca exclusividad: si falta quien lo tiene, lo hace otro. | `WorkRoster.AssignOwned`; 87 |
 | P10 | **Los docs van con el cambio**: su ficha, [personajes-mesocosmos.md](personajes-mesocosmos.md), [diseno-personajes.md](diseno-personajes.md), el manual, el checklist y los docs del área que toca. Un cambio de personaje sin docs no está terminado. | `check-personajes.sh` |
+| P11 | **REGLA DE ORO: todos saben hacer de todo** (= J30 del manual; Berón 2026-11-05: «las tareas de todas las áreas van por rotación normal, los puestos de nivel son un extra pero la regla de oro es que todos los personajes del santuario (mesocosmos) saben hacer de todo»). Toda misión va por rotación normal. Un puesto da prioridad o el papel que dirige, nunca exclusividad: si falta quien lo tiene, lo hace otro. | `WorkRoster.AssignOwned`; 87 |
 
 ## Lista para añadir a alguien
 

@@ -148,7 +148,7 @@ prueba lo pide a 0.
 - **La inmersión** (tradicional): cada practicante anda a su sitio en el kund, se sienta en el agua 8 s (`YogaHall.ImmersionSeconds`)
   y sale de pie hacia su esterilla; el maestro espera a que lleguen (la espera crece con el kund). Si no llega al kund a tiempo
   (viaje × 1,3 + 60 s), va a su esterilla sin bañarse y lo dice en el registro. Cada inmersión queda en `YogaClass.Immersions`.
-- **El maestro de yoga** (`WorkdayDirector.YogaTeacher`: Josedrilo, el profesional de yoga; antes Andrea y Sadhguru) medita en su tiempo libre en la tarima de la sala de Hatha tradicional, junto al linga (si hay clase en ella, en la
+- **Los maestros** (2026-11-05): Consol (`AshtangaTeacher`) dirige el Ashtanga, con su clase profunda ([ashtanga-primary-series.md](ashtanga-primary-series.md)), y Josedrilo el Hatha. **El maestro de Hatha** (`WorkdayDirector.YogaTeacher`: Josedrilo; antes Andrea y Sadhguru) medita en su tiempo libre en la tarima de la sala de Hatha tradicional, junto al linga (si hay clase en ella, en la
   occidental).
 - **Ocio** (`LeisureDirector.SanctuaryActivities`): «Hatha libre y meditación junto al linga» (sala de Hatha tradicional) y
   «Ashtanga autoguiado (estilo Mysore)» (sala de Ashtanga occidental); cada plaza es una esterilla de esa sala.

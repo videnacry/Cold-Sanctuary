@@ -108,6 +108,7 @@ public static class MicroFloors
     /// <summary>Palabras que describen cada piso del santuario (además de su nombre), para buscar sus pendientes.</summary>
     public static readonly Dictionary<string, string[]> FloorKeywords = new Dictionary<string, string[]>
     {
+        ["Control_de_energia"] = new[] { "energía", "electricidad", "solar", "eólica", "viento", "ingeniería eléctrica" },
         ["Informatics_Area"] = new[] { "informática", "ordenador", "programación", "computación", "servidor", "cálculo" },
         ["Classroom_Area"] = new[] { "aula", "biblioteca", "universidad", "universitaria", "estudio", "clase", "archivo" },
         ["Assembly_Area"] = new[] { "asamblea", "asambleas", "parlamento", "consejo" },

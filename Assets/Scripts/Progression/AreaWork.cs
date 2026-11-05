@@ -38,6 +38,8 @@ public static class AreaWork
         l.AddRange(LaunchSite.Missions());
         // SITIO NUCLEAR (docs/sitio-nuclear.md): vigilancia, revisión de lo pasivo y el simulacro semanal.
         l.AddRange(NuclearSite.Missions(day));
+        // PARQUE ENERGÉTICO (docs/energia.md): los paneles (mantener, instalar, reparar), las turbinas y el almacén.
+        l.AddRange(EnergySite.Missions(day));
         // COCINA: cada elaboración que hace falta (harina, queso, pasta, masa madre…) es una misión, con su tiempo activo;
         // el reposo (fermentar, madurar) corre solo después.
         KitchenLarder larder = KitchenLarder.Instance;

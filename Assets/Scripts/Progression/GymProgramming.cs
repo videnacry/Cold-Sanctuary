@@ -208,14 +208,15 @@ public static class GymProgramming
         { "JefeConstruccion", P(TrainingSplit.TorsoPierna, TrainingGoal.Resistencia, 1.15f, "Tote, robusto, jornadas de obra: torso/pierna 4 d de resistencia.", 1, 2, 4, 5) },
         { "Andrea", P(TrainingSplit.TorsoPierna, TrainingGoal.Fuerza, 1.5f, "El de más fuerza y entrenador del gimnasio; corre 25 km: torso/pierna 4 d de fuerza (la fuerza pesada mejora la economía de carrera).", 0, 2, 3, 5) },
         { "Nesvitor", P(TrainingSplit.CuerpoEntero, TrainingGoal.Salud, 0.6f, "El mayor de las cuentas: salud, 2 d en máquinas guiadas.", 0, 3) },
-        { "Amahuz", P(TrainingSplit.TorsoPierna, TrainingGoal.Hipertrofia, 0.85f, "Delgado: torso/pierna 4 d para ganar masa.", 0, 1, 3, 4) },
-        { "Karen", P(TrainingSplit.CuerpoEntero, TrainingGoal.Resistencia, 0.6f, "Entrena con Amahuz los lunes: cuerpo entero 3 d de resistencia.", 0, 2, 4) },
+        { "Amykhuz", P(TrainingSplit.TorsoPierna, TrainingGoal.Hipertrofia, 0.85f, "Delgado: torso/pierna 4 d para ganar masa.", 0, 1, 3, 4) },
+        { "Karen", P(TrainingSplit.CuerpoEntero, TrainingGoal.Resistencia, 0.6f, "Entrena con Amykhuz los lunes: cuerpo entero 3 d de resistencia.", 0, 2, 4) },
         { "Alicita", P(TrainingSplit.EmpujeTironPierna, TrainingGoal.Hipertrofia, 0.65f, "Huerto (cargar cajas): empuje/tirón/pierna 3 d.", 1, 3, 5) },
         { "Ducristin", P(TrainingSplit.TorsoPierna, TrainingGoal.Fuerza, 1f, "Mecánico (levantar piezas): torso/pierna 4 d de fuerza.", 0, 2, 3, 5) },
         { "Josedrilo", P(TrainingSplit.EmpujeTironPierna, TrainingGoal.Hipertrofia, 1f, "El profesional del yoga (y la bioconstrucción): empuje/tirón/pierna 3 d; los demás días, el yoga.", 1, 3, 5) },
         { "Maite", P(TrainingSplit.CuerpoEntero, TrainingGoal.Resistencia, 0.65f, "Registros y vacunación (mucho de pie): cuerpo entero 3 d de resistencia.", 1, 3, 5) },
         { "Shalva", P(TrainingSplit.TorsoPierna, TrainingGoal.Hipertrofia, 0.9f, "Personal general: torso/pierna 4 d.", 1, 2, 4, 5) },
         { "Adaguchi", P(TrainingSplit.Weider, TrainingGoal.Hipertrofia, 0.9f, "Sudadera sin mangas, estilo culturista: Weider 5 d (un grupo por día; cada músculo 1×/sem).", 0, 1, 2, 3, 4) },
+        { "Consol", P(TrainingSplit.CuerpoEntero, TrainingGoal.Salud, 0.7f, "Maestra de Ashtanga: da la clase de las 14 h de lunes a viernes; sábado y domingo, gimnasio suave.", 5, 6) },
     };
 
     /// <summary>¿Puede tener plan de gimnasio? Los humanos del santuario sí; los humanos-insecto de los microcosmos no: en sus

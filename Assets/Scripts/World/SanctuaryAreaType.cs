@@ -46,4 +46,5 @@ public enum SanctuaryAreaType
     Classroom,            // Aula universitaria — aula de clases y sala de estudio para todos a la vez (docs/piso-aula.md)
     Assembly,             // Sala de asambleas — lo mejor de las asambleas del mundo, para todos a la vez (docs/piso-asambleas.md)
     Music,                // Música — sala de grabación y escenario de conciertos, para todos a la vez (docs/piso-musica.md)
+    EnergyPark,           // Parque Energético: control y taller de los paneles (docs/energia.md)
 }

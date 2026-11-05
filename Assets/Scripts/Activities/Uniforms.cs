@@ -11,7 +11,7 @@ using UnityEngine;
 /// </summary>
 public static class Uniforms
 {
-    public enum Kind { None, Cocina, Sala, Quirofano, BataMedica, Veterinaria, Huerto, Obra, Gimnasio, Laboratorio, Neopreno, Limpieza, Taller, Guardia, Textil, Nuclear, Informatica, Cria, Musica, Asamblea }
+    public enum Kind { None, Cocina, Sala, Quirofano, BataMedica, Veterinaria, Huerto, Obra, Gimnasio, Laboratorio, Neopreno, Limpieza, Taller, Guardia, Textil, Nuclear, Informatica, Cria, Musica, Asamblea, Energia }
 
     public static string Title(Kind k)
     {
@@ -36,6 +36,7 @@ public static class Uniforms
             case Kind.Asamblea: return "camisa clara con la insignia de la asamblea";
             case Kind.Musica: return "camiseta y pantalón negros de técnico de escenario";
             case Kind.Cria: return "camisa caqui y delantal de cuidador";
+            case Kind.Energia: return "mono azul, casco, arnés y guantes aislantes";
             default: return "su ropa";
         }
     }
@@ -66,6 +67,7 @@ public static class Uniforms
         if (id.StartsWith("ifo_")) return Kind.Informatica;
         if (id.StartsWith("asa_")) return Kind.Asamblea;
         if (id.StartsWith("son_")) return Kind.Musica;
+        if (id.StartsWith("sol_") || id.StartsWith("ene_")) return Kind.Energia;
         if (id.StartsWith("yog_") || id.StartsWith("aul_")) return Kind.None;   // (el maestro de yoga y el aula, con su ropa)
         // Sin misión con nombre: por el área.
         switch (area)
@@ -83,6 +85,7 @@ public static class Uniforms
             case "Informática": return Kind.Informatica;
             case "Sala de asambleas": return Kind.Asamblea;
             case "Música": return Kind.Musica;
+            case EnergyRule.Area: return Kind.Energia;
         }
         return Kind.None;
     }
@@ -148,6 +151,7 @@ public static class Uniforms
             case Kind.Asamblea: return new Spec { top = H("D9D2C2"), sleeves = H("D9D2C2"), shortSleeves = false, pants = H("4A4440"), shoes = black, badge = true };
             case Kind.Musica: return new Spec { top = H("1E1E22"), sleeves = H("1E1E22"), shortSleeves = true, pants = H("1E1E22"), shoes = black, badge = true };
             case Kind.Cria: return new Spec { top = khaki, sleeves = khaki, shortSleeves = true, pants = H("5B6B3A"), shoes = H("5A4632"), apron = true, apronColor = H("6B8E5A") };
+            case Kind.Energia: return new Spec { top = H("2F6DB5"), sleeves = H("2F6DB5"), pants = H("2F6DB5"), shoes = black, hat = Hat.Helmet, hatColor = H("F2C230"), gloves = H("E8A317"), hiVis = true, toolBelt = true };
             default: return new Spec();
         }
     }

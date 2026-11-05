@@ -22,12 +22,16 @@ public static class ResidentialBuilder
         "Nesvitor", "Amykhuz", "Alicita", "Ducristin", "Josedrilo", "Shalva", "Adaguchi",
         // (2026-11-04) Los seis nuevos y Malena (2026-11-05), en la CUARTA casa de cada árbol: 23 casas ocupadas de 24.
         "David", "Adonis", "Yulo", "Lale", "Ivelyna", "Luciana", "Malena",
+        // (2026-11-05) Consol, en la última casa de la cuarta tanda; Fernando, en la primera de la QUINTA (25 ocupadas de 30).
+        "Consol", "Fernando",
     };
     static readonly string[] Shown =
     {
         "Kushal", "la Magnate", "Linduarda", "Goluis", "Panterilia", "Gohageneis", "Irosene y Fausto", "Lizmibet y Tote", "Andrea",
         "Nesvitor", "Amykhuz y Karen", "Alicita y Julian", "Ducristin y Gallarle", "Josedrilo y Maite", "Shalva", "Adaguchi",
         "David", "Adonis", "Yulo", "Lale", "Ivelyna", "Luciana", "Malena",
+        // (2026-11-05) Consol, en la última casa de la cuarta tanda; Fernando, en la primera de la QUINTA (25 ocupadas de 30).
+        "Consol", "Fernando",
     };
     /// <summary>La pareja con la que comparte casa cada dueño (manual M18, J14), si la tiene.</summary>
     static readonly System.Collections.Generic.Dictionary<string, string> Partners = new System.Collections.Generic.Dictionary<string, string>
@@ -45,9 +49,9 @@ public static class ResidentialBuilder
         { "Ducristin", new[] { "Neo" } },
     };
 
-    /// <summary>Altura de los árboles de la arboleda (2026-11-04: 38 m, antes 26, para sostener la cuarta casa, a 30–33 m).</summary>
-    public const float TreeHeight = 38f;
-    // Casas 0–11: dos por árbol (la 2k a un lado, la 2k+1 al otro); 12–17: la tercera (lado de la primera); 18–23: la cuarta (lado de la segunda).
+    /// <summary>Altura de los árboles de la arboleda (2026-11-05: 46 m, antes 38 y 26, para sostener la quinta casa, a 37–40 m).</summary>
+    public const float TreeHeight = 46f;
+    // Casas 0–11: dos por árbol (la 2k a un lado, la 2k+1 al otro); 12–17: la tercera (lado de la primera); 18–23: la cuarta (lado de la segunda); 24–29: la quinta (lado de la primera).
     static int TreeOf(int i) => i < 12 ? i / 2 : (i - 12) % 6;
     static bool OtherSide(int i) => (i < 12 && i % 2 == 1) || (i >= 18 && i < 24);
 
@@ -103,6 +107,14 @@ public static class ResidentialBuilder
             float a = (30f + 60f * k) * Mathf.Deg2Rad;
             Vector3 dir = new Vector3(Mathf.Cos(a), 0f, Mathf.Sin(a)), side = Vector3.Cross(Vector3.up, dir).normalized;
             _houses.Add((trees[k] - side * HouseOut + Vector3.up * (DeckY - 3f + (k % 3) * 1.5f + 21f), -dir));
+        }
+        // (2026-11-05, Fernando no cabía en las 24) UNA QUINTA CASA por árbol, del lado de la primera y 14 m sobre la tercera (28 m sobre la
+        // primera): 30 casas, 5 libres para quien llegue. Los árboles crecen a 46 m (TreeHeight).
+        for (int k = 0; k < 6; k++)
+        {
+            float a = (30f + 60f * k) * Mathf.Deg2Rad;
+            Vector3 dir = new Vector3(Mathf.Cos(a), 0f, Mathf.Sin(a)), side = Vector3.Cross(Vector3.up, dir).normalized;
+            _houses.Add((trees[k] + side * HouseOut + Vector3.up * (DeckY - 3f + (k % 3) * 1.5f + 28f), -dir));
         }
         // (2026-11-03) Las TERRAZAS FRUTALES de cada casa (7 m más allá de su centro, del lado contrario al tronco): las ramas las esquivan.
         _terraces.Clear();
