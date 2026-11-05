@@ -14,7 +14,7 @@ public static partial class SampleSceneBuilder
     static Helix _energyHx;
 
     /// <summary>Empieza el parque: su casquete, su árbol y sus pisos (el campo y las máquinas, al final: <see cref="FinishEnergySite"/>).</summary>
-    static void BeginEnergyTree(Transform parent)
+    static SanctuaryArea BeginEnergyTree(Transform parent)
     {
         _energyRoot = new GameObject("Parque_energetico_AUTO").transform; _energyRoot.SetParent(parent, false);
         Vector3 site = EnergyRule.Center;
@@ -30,6 +30,7 @@ public static partial class SampleSceneBuilder
         FurnishEnergyFloor(f, h.floorSize);
         Transform gar = HelixFloor(hx, 2, null, new Vector2(h.floorSize, h.floorSize), EnergyGarageName);
         SubmarineBay(gar, "Garaje del parque: el submarino de obra trae las mesas solares y las palas por la vía marina");
+        return f.GetComponent<SanctuaryArea>();
     }
 
     // Las puntas: miradores con las cámaras que vigilan la fauna del parque.
@@ -95,7 +96,7 @@ public static partial class SampleSceneBuilder
         Bedroom[] homes = Object.FindObjectsByType<Bedroom>(FindObjectsInactive.Include, FindObjectsSortMode.None);
         if (homes.Length > 0)
         {
-            FloorEnergy r = _energyRoot.GetComponent<FloorEnergy>() ?? _energyRoot.gameObject.AddComponent<FloorEnergy>();
+            FloorEnergy r = _energyRoot.gameObject.GetOrAdd<FloorEnergy>();
             r.floor = "Casas del árbol"; r.areaM2 = 0f; r.fixedKW = homes.Length * EnergyRule.HomeKW;   // (no es un piso: lo cuelga el parque, que es quien lo alimenta)
         }
         FloorEnergy.Refresh();

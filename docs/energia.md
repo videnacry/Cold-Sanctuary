@@ -105,7 +105,7 @@ hospital usa el valor de clínica y el laboratorio es **una estimación mía** (
   agua pasiva de T14, sin contar con el viento. No están para pasar el invierno.
 - **Silo de arena (30 MWh térmicos):** lo que sobra en verano va al calor de distrito en vez de tirarse.
 
-La fracción 1/5 no es una norma: es lo que cabe en el casquete dejando reserva para ~6 pisos más. Subirla pide un casquete mayor.
+La fracción 1/5 no es una norma: es un reparto que deja libres cerca de un tercio de las ~170 plazas del casquete para los pisos que vengan. Con todas llenas, el validador avisa y hace falta un casquete mayor.
 
 ### El sitio
 - **Centro (−470, 0, 470)**, esquina noroeste: a **≥ 300 m** de todo edificio e isla (la distancia de la lanzadera, para que un fallo de cohete no le llegue).
@@ -137,11 +137,7 @@ La fracción 1/5 no es una norma: es lo que cabe en el casquete dejando reserva 
 4. **Lo nuevo y alto** lleva `ElevatedElement`: las turbinas cuentan para la lanzadera (T13).
 
 ## 4. La jornada (ids acordados con claude/edif-interfaz)
-**Área de las misiones: `Energía`** (`EnergyRule.Area`). **Personaje: `Fernando`.** Al añadirlo a `WorkdayDirector.Staff`, su profesión es:
-
-```csharp
-new Entry("Fernando", "instalador y reparador de paneles solares", "Energía"),
-```
+**Área de las misiones: `Energía`** (`EnergyRule.Area`). **Fernando** llegó de claude/edif-interfaz. Allí traía `sol_instalar` y `sol_reparar` en Construcción; al unir las ramas quedaron sustituidas por las de abajo: su profesión es el área `Energía` entera, empieza en el piso de control y su casa no cambia.
 
 | Id | Cuándo | Horas | Qué hace |
 |---|---|---|---|

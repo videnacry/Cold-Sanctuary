@@ -37,6 +37,7 @@ anda hasta el punto del área (`WorkdayDirector.WorkPoint`) y se queda de pie si
 | `pla_*`, `nuc_turno`, `fis_experimentos` | jornada | Llega y se queda | **Hace**: consola, indicadores, dosímetro, ronda con linterna, láser, montaje |
 | `qui_sintesis`, `qui_residuos`, `bio_cultivo`, `bio_pcr` | jornada | Llega y se queda | **Hace**: pesar, remover, pipetear, microscopio, termociclador, bidones |
 | `ifo_sysadmin`, `ifo_refrigeracion`, `ifo_energia` | jornada (+ efecto en `AiCluster`) | Llega y se queda | **Hace**: consola, paneles, fugas con linterna, filtros, baterías |
+| `sol_*`, `ene_*` (2026-11-05, Fernando) | `EnergySite` (en el casquete: `FieldPoint`) | (nuevas) | **Hace**: cepillar la escarcha, subir y apretar módulos, cambiar el roto, consola, tablet y linterna |
 | `aul_clase`, `aul_estudio` | jornada | Llega y se queda | **Hace**: pizarra con tiza, apuntes, leer |
 | `gua_carnivoros` | `CarnivoreKeeper` (patrulla y raciones) | **Hace** (anda y lleva raciones; sin gesto) | igual; en sus pausas, vigilar con linterna |
 | Comida 11–12 | `DineSpell` | Pide, se sienta… **y se queda sentado** | **Orquesta de la comida** (§2) |
@@ -152,6 +153,7 @@ la historia), `UniformDirector` llama a `MealRitual.Sweep` y la vajilla desapare
 | `cri_*` | camisa caqui y delantal de cuidador |
 | `gua_*` | camisa caqui y gorra |
 | `ifo_*` | polo oscuro con acreditación |
+| `sol_*`, `ene_*` | mono azul con bandas, casco amarillo, guantes aislantes y cinturón de herramientas |
 | Nadar | neopreno negro con franjas azules |
 | Comida, yoga, aula, libre | su ropa |
 

@@ -361,6 +361,7 @@ public class WorkdayDirector : MonoBehaviour
     public static bool InWorkspace(WorkRoster.Mission m, string area, Vector3 pos)
     {
         if (InAreaNamed(area, pos)) return true;
+        if (area == EnergyRule.Area && EnergySite.OnCap(pos)) return true;   // (los paneles, las torres y el almacén están en el casquete)
         if (m == null) return false;
         foreach (string x in m.also) if (InAreaNamed(x, pos)) return true;
         if (m.roams && SceneCache.All<SanctuaryArea>(2f).Any(a => a != null && a.InBuilding(pos))) return true;

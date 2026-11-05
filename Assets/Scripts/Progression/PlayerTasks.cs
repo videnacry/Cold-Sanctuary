@@ -130,8 +130,6 @@ public static class PlayerTasks
         T("con_proyectos", "Revisa el plan y los plazos|almacen|Planos", "Comprueba el material|almacen|Tablet", "Asigna los equipos en la obra|obra|Planos");
         T("con_proyectos2", "Sigue las obras en curso|obra|Planos", "Coordina a los equipos|obra|Tablet", "Pasa los avisos de la obra|almacen|Tablet");
         T("yog_ashtanga", "Elige la secuencia del día|esterilla|Tablet", "Prepara las variaciones y los ajustes de cada alumno|esterilla|Tablet", "Deja la sala lista|esterilla|");
-        T("sol_instalar", "Coge los paneles del almacén|almacen|Panel solar", "Instala los paneles en la obra|obra|Panel solar", "Conecta y comprueba la instalación|obra|Tablet");
-        T("sol_reparar", "Revisa los paneles|obra|Tablet", "Limpia los paneles|obra|Paño", "Repara o cambia el panel averiado|obra|Destornillador");
         T("hos_plantas", "Coge las plantas medicinales|armario|Plantas medicinales", "Prepara infusiones, cataplasmas y ungüentos|mesa|Mortero", "Llévaselos a los pacientes|cama|Infusión");
         T("hos_pediatria", "Prepara la consulta y las vacunas|armario|Jeringa", "Pesa y mide al niño en la camilla|camilla|Tablet", "Vacúnalo y anota su crecimiento|camilla|Jeringa");
         T("mec_alfombras", "Revisa los circuitos y los LED|banco_taller|Tablet", "Repara el tejido|banco_taller|Aguja", "Reparte las alfombras por las pistas|pista|Alfombra");
@@ -363,7 +361,7 @@ public static class PlayerTasks
             foreach (Transform root in Roots(area))
                 foreach (Transform t in root.GetComponentsInChildren<Transform>())
                 {
-                    if (t == root || t.GetComponent<Anima>() != null || t.GetComponentInParent<Anima>() != null || t.name.StartsWith(PlayerTaskRunner.MarkerPrefix)) continue;
+                    if (t == root || t.GetComponent<SanctuaryArea>() != null || t.GetComponent<Anima>() != null || t.GetComponentInParent<Anima>() != null || t.name.StartsWith(PlayerTaskRunner.MarkerPrefix)) continue;
                     string n = Norm(t.name);
                     foreach (string k in words) if (k.Length > 0 && n.Contains(k)) { l.Add(t); break; }
                     if (l.Count >= 24) break;

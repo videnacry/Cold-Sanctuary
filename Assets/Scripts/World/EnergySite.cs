@@ -210,6 +210,9 @@ public class EnergySite : MonoBehaviour
     }
 
     /// <summary>¿Se hace en el casquete y no en el piso de control?</summary>
+    /// <summary>¿Está en el casquete del parque (y sus pontonas)? Para la jornada, es su puesto: la Magnate no lo devuelve.</summary>
+    public static bool OnCap(Vector3 p) => Mathf.Abs(p.x - EnergyRule.Center.x) <= EnergyRule.CapHalf + 16f && Mathf.Abs(p.z - EnergyRule.Center.z) <= EnergyRule.CapHalf + 2f;
+
     public static bool IsField(string missionId) => missionId != null && (missionId.StartsWith("sol_") || missionId == "ene_eolica" || missionId == "ene_mareal" || missionId == "ene_almacen");
 
     /// <summary>Dónde se pone a trabajar <paramref name="who"/> en esa misión: junto a la mesa que toca, la torre, la pontona o el almacén. Null si no es de campo.</summary>
