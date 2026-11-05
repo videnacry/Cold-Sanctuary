@@ -375,7 +375,7 @@ Berón (2026-11-05): «¿tenemos reglas para la creación de animales?». Detall
 | E14 | **Mente propia:** `Archetypes` y `PhrasePools`. | Todo ser tiene mente. | 99 | ídem |
 | P1 | **Mitad tierra, mitad hielo** (40–60 %). Las distancias entre masas están comprimidas para el juego, y se dice. | Berón: 50/50. | 99 | [territorio-polar.md](territorio-polar.md) |
 | P2 | **`NaturalIce` = suelo firme;** `IceAt` y `LandAt` dicen cuál. Colliders: `Casquete`, `Tierra`, `Tierra_orilla`. | Se usa en decenas de sitios. | 99 | ídem |
-| P3 | **La isla respeta los sitios lejanos:** ≥ 300 m de la lanzadera y ≥ 500 m del sitio nuclear. | Sus reglas de seguridad. | 93, 94 | ídem |
+| P3 | **La isla respeta los sitios lejanos:** ≥ 300 m de la lanzadera y ≥ 500 m del sitio nuclear. | Sus reglas de seguridad. | 90, 94 | ídem |
 | P4 | **Cuevas en las que se entra andando:** ≥ 4 × 3 m de boca, techo, NavMesh hasta el fondo. | Si no, son decorado. | 99 | ídem |
 | P5 | **Flora sobre el suelo, de especies reales;** en la isla no crecen árboles de hielo. | Berón: flora de la isla. | 99 | ídem |
 | P6 | **Cada rasgo sale de un lugar real** (Ross, Svalbard, Georgia del Sur); lo que no, se dice. | «Investigar lugares reales». | solo en docs | ídem |
