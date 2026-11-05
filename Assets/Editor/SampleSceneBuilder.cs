@@ -155,6 +155,7 @@ public static partial class SampleSceneBuilder
         FinishNuclearSite();   // el sitio nuclear: contención, agua pasiva, chimenea, vigilancia y exclusión (docs/sitio-nuclear.md)
         SpotAtCarpets("CocinaSpot", "Kitchen_Area");   // la Magnate deja al nuevo donde se llega a la cocina: junto a sus alfombras
         PlaceRooftopSolar();   // paneles en el piso más alto de cada edificio, en un borde libre (antes del bosque: sus ramas los esquivan)
+        FinishEnergySite();   // el Parque Energético: las demandas de los pisos, el campo solar en proporción, viento, mareal y almacén (docs/energia.md)
         PlaceRooftopOrchards();   // FRUTALES en maceta en el resto de cada techo, con su punto de cuidados (docs/jardines-frutales.md)
         BuildMedicalSubmarines(root.transform);   // SUBMARINO-AMBULANCIA anfibio y LEVIATÁN de animales gigantes (docs/submarinos-medicos.md)
         BuildIceFlora(root.transform);           // FLORA de hielo: árbol carnívoro (señuelo+sopor) + abejas de las nieves — docs/ice-sanctuary-ecology.md
@@ -168,6 +169,7 @@ public static partial class SampleSceneBuilder
         EnsureFloorForms();              // cada piso con su forma finalizada y su forma en construcción (FloorForms; los microcosmos, sobre la finalizada)
         ValidateLaunchHeight("al final del Blockout");   // la regla de la lanzadera, con todo lo elevado ya puesto (si algo creció, sube la plataforma)
         ValidateNuclearSite("al final del Blockout");   // la regla del sitio nuclear, con todo ya puesto
+        ValidateEnergySite("al final del Blockout");   // oferta ≥ demanda, con todos los pisos ya puestos (docs/energia.md)
         // (2026-11-04) ALERTA DE PISO NUEVO (manual §11): TODOS los pisos de la escena (también los que no salen de BuildAreaStructures,
         // como el control de misión de la lanzadera) contra los microcosmos «pendiente de piso representativo». Y la REGLA DE CAPACIDAD (S13).
         { var fl = new List<(string, string)>(); foreach (SanctuaryArea sa in Object.FindObjectsByType<SanctuaryArea>(FindObjectsInactive.Include, FindObjectsSortMode.None)) fl.Add((sa.name, sa.displayName)); MicroFloors.AlertFloors(fl); AreaCapacity.LogScene(); }
@@ -3568,6 +3570,8 @@ public static partial class SampleSceneBuilder
         _nuclearPlantArea = plant.transform;
         BuildPhysicsHall(plant.transform);
         BuildNuclearUpperFloors();
+        // EL PARQUE ENERGÉTICO (Berón 2026-11-05; docs/energia.md): su casquete y su árbol bajo; el campo, las turbinas y el almacén, al final (FinishEnergySite).
+        BeginEnergyTree(areasGroup.transform);
         // Los EDIFICIOS (sus plantas bajas): sin puentes ni escaleras, cada uno con sus alfombras (docs/alfombras-plan.md).
         var ground = new List<SanctuaryArea>();   // (todos son edificios-árbol: llevan sus alfombras en el techo y en el suelo)
         // Techo de cada edificio: sobre su piso MÁS ALTO (la cadena entera); encima va su techo de alfombras, con sus paneles.
@@ -4169,6 +4173,7 @@ public static partial class SampleSceneBuilder
         WireMeditationArea(parent, "NuclearPower_Area", "Central Nuclear", new Color(0.75f, 0.78f, 0.8f), MissionKind.Channel, null, virtualOnly: true);
         // (2026-11-04) Los pisos nuevos: Informática (Bill Gates en Albuquerque) y el Aula (MacKenzie Scott en Prairie View).
         WireMeditationArea(parent, "Informatics_Area", "Informática", new Color(0.55f, 0.65f, 0.8f), MissionKind.Channel, null, virtualOnly: true);
+        WireMeditationArea(parent, EnergyFloorName, EnergyRule.Area, new Color(0.55f, 0.75f, 0.6f), MissionKind.Channel, null, virtualOnly: true);   // (2026-11-05) el Parque Energético
         WireMeditationArea(parent, "Classroom_Area", "Aula", new Color(0.85f, 0.8f, 0.65f), MissionKind.Channel, null, virtualOnly: true);
 
         // Segunda vía de entrada: el hechizo de loto (arranca bloqueado; se activa al aprenderlo).
