@@ -31,7 +31,7 @@ internal static partial class CivicBuilder
             case "Omaha": return OmahaTown(t);
             case "Prairie View": return PrairieViewTown(t);
             case "Uagadugú": return OuagadougouTown(t);
-            default: return MusicTown(t, display);   // la música (CivicBuilder.Musica.cs), o 0
+            default: { int music = MusicTown(t, display); return music != 0 ? music : HistoTown(t, display); }   // la música (CivicBuilder.Musica.cs), la tanda 3 (Assets/Editor/Historias/), o 0
         }
     }
 

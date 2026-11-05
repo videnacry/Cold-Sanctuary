@@ -115,6 +115,7 @@ public static class SolarPosition
         if (string.IsNullOrEmpty(display)) return false;
         (string key, float la, float lo, float d)[] table =
         {
+            ("Cleopatra", 31.20f, 29.92f, 215f),   // Alejandría, el agosto de la crecida que no llega (antes que «Alejandría»: Eratóstenes)
             ("Sakshi", 60f, 60f, 121f), ("Ambrosio", 60f, 60f, 182f), ("Enfermer", 60f, 60f, 182f), ("Hospital", 60f, 60f, 182f),
             ("Cocina", 32.10f, 34.97f, 288f), ("Huerto", 31.87f, 35.44f, 91f), ("Textil", 48.88f, 16.65f, 288f),
             ("Mecánica", 48.88f, 16.65f, 182f), ("Mesopotamia", 31.32f, 45.64f, 91f), ("Patanjali", 25.32f, 83.01f, 15f),
@@ -123,6 +124,16 @@ public static class SolarPosition
             ("Chambon", 45.06f, 4.30f, 288f), ("Sendler", 52.25f, 21.00f, 288f), ("Atómica", 52.81f, -0.63f, 253f),
             ("Bruce Lee", 22.28f, 114.17f, 258f),   // Hong Kong, mediados de septiembre (empieza en la escuela de Yip Man)
             ("Palenque", 17.48f, -92.05f, 240f),   // Palenque, 28 de agosto de 683 (la muerte de Pakal; temporada de lluvias)
+            ("Chimbacalle", -0.25f, -78.52f, 177f),   // Quito, 25 de junio de 1908
+            ("Lagunillas", -37.1f, -73.3f, 320f),   // Arauco, noviembre de 1557 (primavera austral; fecha representativa)
+            ("Cajamarca", -7.16f, -78.51f, 105f),   // abril de 1533 (fecha representativa)
+            ("Onondaga", 43.08f, -76.2f, 244f),   // finales de agosto (la fecha tradicional no es segura)
+            ("Langley", 37.08f, -76.38f, 51f),   // Hampton, 20 de febrero de 1962
+            ("Viena", 48.21f, 16.37f, 128f),   // 7 de mayo de 1824
+            ("Leiden", 52.16f, 4.49f, 159f),   // 8 de junio de 1637
+            ("San Pablo", -3.68f, -72.2f, 166f),   // San Pablo de Loreto, 14 de junio de 1952
+            ("Madrid", 40.42f, -3.70f, 152f),   // 1 de junio de 2018
+            ("Gettysburg", 39.83f, -77.23f, 323f),   // 19 de noviembre de 1863
             ("Velliangiri", 10.97f, 76.74f, 175f),   // Isha Yoga Center, 24 de junio de 1999
             ("Hawthorne", 33.92f, -118.33f, 272f),   // la sede de SpaceX, 28 de septiembre de 2008
             ("Albuquerque", 35.08f, -106.6f, 95f),   // primavera de 1975 (Micro-Soft, 4 de abril)

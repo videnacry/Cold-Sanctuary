@@ -60,7 +60,7 @@ public static partial class MicroBiome
     /// <summary>El bioma del microcosmos llamado <paramref name="display"/> (o null: el genérico).</summary>
     public static Biome For(string display)
     {
-        Biome famous = FamousBiome(display);   // los famosos (MicroBiome.Famosos.cs, docs/microcosmos-famosos.md)
+        Biome famous = FamousBiome(display) ?? HistoBiome(display);   // los famosos (MicroBiome.Famosos.cs, docs/microcosmos-famosos.md) y la tanda 3 (Assets/Editor/Historias/)
         if (famous != null) return famous;
         Biome music = MusicBiome(display);   // la música (MicroBiome.Musica.cs, docs/microcosmos-musica.md)
         if (music != null) return music;

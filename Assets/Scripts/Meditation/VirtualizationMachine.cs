@@ -149,6 +149,20 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
         ("Gimnasio",     "Simulación del Dojo: Bruce Lee, del Wing Chun al Jeet Kune Do (1957–1971)", "Microcosmos_BruceLee"),
         // PAKAL DE PALENQUE (docs/microcosmos-maya-pakal.md): pendiente de su piso representativo (un templo de los antepasados); hoy, el Huerto (la milpa).
         ("Huerto", "Simulación: Pakal de Palenque, el rey que renace como el maíz (683)", "Microcosmos_Pakal"),
+        // LA TANDA 3 (docs/microcosmos-historias-3.md). Viena va en la Sala de Ballet, que sigue en obras: mientras, también desde el Gimnasio.
+        ("Mecánica", "Simulación: Eloy Alfaro y el tren de Guayaquil a Quito (1908)", "Microcosmos_EloyAlfaro"),
+        (AreaWork.Hospital, "Simulación: Galvarino vuelve con su gente (Arauco, 1557)", "Microcosmos_Galvarino"),
+        ("Estudio Textil", "Simulación: Atahualpa en Cajamarca: el rescate (1533)", "Microcosmos_Atahualpa"),
+        ("Aula", "Simulación: la Gran Ley de la Paz de los Haudenosaunee (lago Onondaga)", "Microcosmos_GranLeyDeLaPaz"),
+        ("Cocina", "Simulación: Cleopatra en Alejandría: los años sin crecida (42 a. C.)", "Microcosmos_Cleopatra"),
+        ("Informática", "Simulación: las calculadoras de Langley: Johnson, Vaughan y Jackson (1962)", "Microcosmos_Langley"),
+        ("Sala de Ballet", "Simulación: Beethoven en Viena: el estreno de la Novena (1824)", "Microcosmos_Beethoven"),
+        ("Gimnasio", "Simulación de la Sala de Ballet: Beethoven en Viena (1824)", "Microcosmos_Beethoven"),
+        ("Aula", "Simulación: Descartes en Leiden: el Discurso del método (1637)", "Microcosmos_Descartes"),
+        (AreaWork.Hospital, "Simulación: Ernesto Guevara y Alberto Granado en San Pablo (1952)", "Microcosmos_CheGuevara"),
+        ("Aula", "Simulación: el Congreso de los Diputados: la moción de censura de 2018", "Microcosmos_PedroSanchez"),
+        ("Aula", "Simulación: Lincoln en Gettysburg (1863)", "Microcosmos_Lincoln"),
+        ("Aula", "Simulación: la Feria de las Hazañas de presidentes", "Microcosmos_Hazanas"),
         // LOS FAMOSOS (docs/microcosmos-famosos.md): una historia de su vida pública, en su pueblo real.
         ("Sala de Yoga", "Simulación: Sadhguru en Velliangiri: el Dhyanalinga (1999)", "Microcosmos_Sadhguru"),
         (LaunchSite.ControlArea, "Simulación: Elon Musk en Hawthorne: el Falcon 1 llega a órbita (2008)", "Microcosmos_ElonMusk"),

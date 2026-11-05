@@ -154,6 +154,7 @@ public static partial class MicroStoryMaps
     {
         foreach (Map m in All) if (m.display == display) return m;
         foreach (Map m in Music) if (m.display == display) return m;   // la música (MicroStoryMaps.Musica.cs)
+        foreach (Map m in Historias3) if (m.display == display) return m;   // la tanda 3 (MicroStoryMaps.Historias.cs)
         return null;
     }
 
