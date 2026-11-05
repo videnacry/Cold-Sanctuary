@@ -11,7 +11,7 @@ using UnityEngine;
 /// 2. SALA DE CUIDADOS: la de la experta en Servicios con sus equipos; un punto de cuidados en cada techo.
 /// 3. ESTADO VISIBLE: cada maceta con sus tres barras (agua, abono, salud) y su etiqueta.
 /// 4. BIENESTAR: sin cuidar, el agua y la salud bajan; tras la revisión (<see cref="FruitPlant.Care"/>) el bienestar sube.
-/// 5. RONDAS: cada maceta en una sola ronda, cada ronda ≤ 3 h, y la jornada las tiene como misiones obligatorias.
+/// 5. RONDAS: cada maceta en una sola ronda, cada ronda ≤ 2 h, y la jornada las tiene como misiones obligatorias.
 /// 6. EL JARDINERO: un cuerpo de prueba hace la ronda que cruza más techos (a ×4): revisa todas sus macetas, vuela de un
 ///    techo al siguiente y termina; el bienestar medio de esas plantas sube. Se mide su tiempo frente al estimado.
 /// Se añade solo al orquestador cuando se piden las pruebas.
@@ -131,7 +131,7 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
         // UNA PERSONA POR EDIFICIO CON FRUTALES, como mucho (2026-11-01): antes «unas 3 personas al día», con los frutales en
         // techos planos a un vuelo uno de otro. Con todos los edificios hechos árboles, entrar en uno y salir (nadando a sus
         // puntas) ya son ~1,15 h y saltar de punta a punta cuesta minutos por maceta: 4 árboles y el techo de la Central no caben
-        // en 3 rondas de 3 h (≥ 12 h de trabajo). Cada edificio va entero en una ronda (no se parte si cabe en una).
+        // en 3 rondas de 2 h (≥ 12 h de trabajo). Cada edificio va entero en una ronda (no se parte si cabe en una).
         // (2026-11-03) Y LAS TAREAS DEL ÁRBOL (máscaras de oxígeno y fitoplancton): una unidad por edificio-árbol, detrás de sus macetas
         // (en la misma ronda si cabe; si no, otra ronda del mismo edificio). Como mucho una ronda por edificio con frutales MÁS una por
         // árbol cuyas tareas no quepan con sus macetas.
@@ -180,7 +180,7 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
         TestProbe.Check("el bienestar medio de sus plantas sube tras la ronda", wellAfter > wellBefore + 0.15f, $"{wellBefore * 100f:0}% → {wellAfter * 100f:0}%");
         float gameH = g.RoundSeconds / (TimeController.timeController.SecondsPerGameDay / 24f);
         TestProbe.Check("la ronda medida cabe en las horas de su misión", g.Finished && gameH <= FruitGardener.MaxRoundHours + 0.25f, $"medida {gameH:0.00} h de juego (revisión estimada {round.hours:0.00} h; el resto, tareas de la semana)");
-        TestProbe.Check("con lo que sobra de las 3 h, poliniza y poda (tareas de la semana)", g.Pollinated + g.Pruned > 0, $"{g.Pollinated} polinizadas, {g.Pruned} podadas");
+        TestProbe.Check("con lo que sobra de su misión, poliniza y poda (tareas de la semana)", g.Pollinated + g.Pruned > 0, $"{g.Pollinated} polinizadas, {g.Pruned} podadas");
         Debug.Log($"[Frutales] Medida: «{round.id}» {rp.Count} macetas en {roofsIn} techos: {g.RoundSeconds:0} s de juego = {gameH:0.00} h (estimada {round.hours:0.00} h); total del día {rounds.Sum(r => r.hours):0.0} h → {rounds.Count} persona(s).");
         Destroy(body);
 

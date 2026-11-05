@@ -27,7 +27,7 @@ using static GymFit;
 /// </summary>
 public class GymUsabilityTest : MonoBehaviour, ITestUnit
 {
-    public int Group => 50;   // tras todo lo demás (las iniciaciones y los microcosmos llegan hasta el 44)
+    public int Group => 49;   // tras las iniciaciones y los microcosmos, justo antes de la jornada (50)
     public bool ParallelSafe => false;
     [Tooltip("Velocidad del tiempo durante la prueba (el paso de la cinta, 0,35 s, aún se mide bien a ×3).")]
     public float speed = 3f;

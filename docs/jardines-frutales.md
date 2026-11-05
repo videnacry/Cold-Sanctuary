@@ -237,8 +237,8 @@ Quien la tiene:
    - El tiempo que sobra se reparte por macetas entre lo que queda de la ronda; lo que no cabe, se deja para otro día.
      Se guarda una holgura de 0,05 h (`FruitGardener.ExtraMargin`; era 0,15 h, pero medida en Unity la ronda real va siempre
      algo por debajo de su estimación, y con rondas de 2,9 h esa holgura se comía todo: ni una polinización en el día).
-     **Pendiente**: las tareas de la semana piden ~1,5 h al día (≈ 54 polinizaciones y ≈ 15 podas) y a las 3 rondas solo
-     les sobran ~0,1 h cada una: se hace una parte cada día. Para hacerlas todas haría falta una cuarta ronda (o techos más
+     **Pendiente**: las tareas de la semana piden ~1,5 h al día (≈ 54 polinizaciones y ≈ 15 podas) y a las 5 rondas de ≤ 2 h solo
+     les sobra ~1 h entre todas (10 h − 9,0 h): se hace una parte cada día. Para hacerlas todas haría falta una ronda más (o techos más
      juntos, que bajan lo que se anda).
 5. **Vuela en alfombra al techo siguiente.**
 
@@ -275,8 +275,8 @@ preparación (si salen más, sube la meta hasta 2,95 h).
 | Producción | 21 min | 124 m ≈ 19 min | 0,7 h |
 | Central Nuclear | 54 min | 364 m ≈ 56 min | 1,8 h |
 
-Con los vuelos y las preparaciones, **≈ 8,4 h de juego → 3 rondas de ~2,8 h**: **tres personas al día**. Cada una tiene
-una misión de ≤ 2 h (las cuentas de esta tabla son de cuando eran 3 h): la revisión de su tramo y, con lo que sobra, las tareas de la semana. El resto de su jornada (2 h) va
+Con los vuelos y las preparaciones, **≈ 8,4 h de juego**: eran 3 rondas de ~2,8 h; con el tope de 2 h serían **5 rondas** (8,4 ÷ 2 = 4,2, y cada corte paga otro vuelo). Cada una tiene
+una misión de ≤ 2 h: la revisión de su tramo y, con lo que sobra, las tareas de la semana. El resto de su jornada va
 a otras misiones. Andar pesa ahora casi la mitad: con menos macetas por techo, o techos más juntos, bajaría.
 
 **Con los edificios-árbol (2026-11-01): UN JARDINERO POR EDIFICIO.** Desde la migración (docs/edificio-arbol.md) los frutales
@@ -295,9 +295,9 @@ pagaba otra vez el vuelo y el nado; y las especies saltaban de punta en punta. A
 
 Resultado: **9,0 h → 5 rondas**, una por edificio: Servicios 1,9 h · Entrenamiento 1,9 h · Producción 1,5 h · Ciencias 1,6 h
 · Central Nuclear 2,1 h (medidas: Producción 1,81 h con sus tareas de la semana, Ciencias 1,41 h). **Cinco personas al
-día**, una por edificio con frutales: cada una conoce sus puntas y le sobra ~1 h para polinizar y podar (lo que con 3
-rondas no cabía, ver «Pendiente» arriba). La prueba (grupo 55) ya no pide «unas 3 personas»: con 4 árboles (≥ 1 h de nado
-cada uno) y el techo de la Central eso no cabe en 3 rondas de 3 h; pide **como mucho una ronda por edificio con frutales y
+día**, una por edificio con frutales: cada una conoce sus puntas. Con misiones de 2 h a cada una le sobran 0,1–0,5 h para polinizar y podar (~1 h entre todas, ver «Pendiente» arriba), y la Central, con 2,1 h, se pasa del tope por 0,1 h (estimación anterior a las 2 h: **hay que volver a medir**; `FruitGardener.RoundTarget` sigue en 2,9 h).
+ La prueba (grupo 55) ya no pide «unas 3 personas»: con 4 árboles (≥ 1 h de nado
+cada uno) y el techo de la Central eso no cabe en 3 rondas de 2 h; pide **como mucho una ronda por edificio con frutales y
 ningún edificio partido**.
 - Se reparte sola: si se añaden o quitan macetas o cambia la duración del día, el reparto se recalcula.
 - En el registro: `[Frutales] … ronda completa X h → N personas`.
@@ -319,12 +319,12 @@ techo, su punto de cuidados con el cabezal y la red de goteo.
 6. Las barras y la etiqueta se ven en cada maceta.
 7. Sin revisar un día, el goteo le da el agua, pero pierde abono y salud; con la revisión, el bienestar sube (y la salud
    sigue subiendo al día siguiente).
-8. Cada maceta está en una sola ronda, cada ronda dura ≤ 3 h y hay **como mucho una ronda por edificio con frutales**, sin partir ninguno (2026-11-01: antes, ≤ 3 rondas).
-9. La jornada las tiene como misiones obligatorias de 3 h y `roams`.
+8. Cada maceta está en una sola ronda, cada ronda dura ≤ 2 h y hay **como mucho una ronda por edificio con frutales**, sin partir ninguno (2026-11-01: antes, ≤ 3 rondas).
+9. La jornada las tiene como misiones obligatorias de 2 h y `roams`.
 10. **Un cuerpo de prueba hace la ronda que cruza más techos (a ×4)**:
     - revisa ≥ 95 % de sus macetas;
     - pasa de un techo a otro;
-    - termina dentro de las 3 h de su misión;
+    - termina dentro de las 2 h de su misión;
     - con lo que sobra, poliniza o poda alguna;
     - el bienestar medio sube.
 

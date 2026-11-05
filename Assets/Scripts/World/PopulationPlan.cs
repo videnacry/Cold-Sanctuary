@@ -25,8 +25,8 @@ public static class PopulationPlan
         { "Walrus", 2 }, { "EmperorPenguin", 2 }, { "Reindeer", 2 }, { "MuskOx", 1 }, { "ArcticHare", 2 }, { "ArcticFox", 1 }, { "Wolf", 1 },
     };
 
-    /// <summary>Humanos del santuario (el personal + la Magnate). Lo actualiza la jornada al cambiar el personal.</summary>
-    public static int Humans = 11;
+    /// <summary>Humanos del santuario: el personal, la Magnate y el recién llegado, también al construir (antes, 11 fijos). La jornada lo sube si cambia el personal.</summary>
+    public static int Humans = WorkdayDirector.Staff.Length + 2;
 
     /// <summary>Cuántos individuos le tocan a la especie (mínimo 2, para que pueda haber pareja).</summary>
     public static int Target(string species) { FoodChain.Evaluate(); return Raw(species); }

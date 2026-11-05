@@ -236,8 +236,9 @@ public static class PolarLandscapeBuilder
                 GameObject g = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 g.name = here == 1 ? "Casquete" : here == 2 ? "Tierra" : "Tierra_orilla";
                 g.transform.SetParent(root.transform, false);
-                g.transform.position = new Vector3((x0 + x1) * 0.5f, IceTop - IceThickness * 0.5f, (z0 + z1) * 0.5f);
-                g.transform.localScale = new Vector3(x1 - x0, IceThickness, z1 - z0);
+                float thick = here == 1 ? IceThickness : LandPlate;   // el hielo flota con sus 300 m (T21); la tierra es una placa fina sobre la roca de la isla
+                g.transform.position = new Vector3((x0 + x1) * 0.5f, IceTop - thick * 0.5f, (z0 + z1) * 0.5f);
+                g.transform.localScale = new Vector3(x1 - x0, thick, z1 - z0);
                 g.GetComponent<Renderer>().sharedMaterial = here == 1 ? ice : here == 2 ? soil : gravel;
                 if (here == 3 && rock != null)
                 {
@@ -262,8 +263,8 @@ public static class PolarLandscapeBuilder
         return boxes;
     }
 
-    // La cara de abajo de la placa de la isla y el lecho marino. Igual que SeaRule.FloorY de la rama del sitio nuclear (500 m): al fusionarla, usar SeaRule.
-    const float RockTop = IceTop - IceThickness, SeabedY = -500.25f;
+    // La placa de tierra de la isla (la plataforma de hielo de 300 m es solo para los casquetes), la cara de abajo de esa placa y el lecho marino.
+    const float LandPlate = 1.5f, RockTop = IceTop - LandPlate, SeabedY = SeaRule.FloorY;
     static Mesh _cube;
     static Mesh CubeMesh()
     {

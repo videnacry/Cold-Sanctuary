@@ -296,7 +296,7 @@ public class FruitGardener : MonoBehaviour
     {
         var l = new List<WorkRoster.Mission>();
         foreach (Round r in Rounds())
-            l.Add(new WorkRoster.Mission("Huerto", r.id, r.title, MaxRoundHours, true) { roams = true });   // 3 h: lo que sobra de la revisión, para polinizar y podar
+            l.Add(new WorkRoster.Mission("Huerto", r.id, r.title, MaxRoundHours, true) { roams = true });   // ≤ 2 h: lo que sobra de la revisión, para polinizar y podar
         return l;
     }
 

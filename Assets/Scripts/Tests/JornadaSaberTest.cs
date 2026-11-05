@@ -13,7 +13,7 @@ using UnityEngine;
 /// </summary>
 public class JornadaSaberTest : MonoBehaviour, ITestUnit
 {
-    public int Group => 102;
+    public int Group => 104;
     public bool ParallelSafe => false;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]

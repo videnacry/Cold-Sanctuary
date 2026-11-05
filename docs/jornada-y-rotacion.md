@@ -72,7 +72,7 @@ Es un **primer juego de requisitos**: la lista de tareas con riesgo es decisión
 | Qué | Impacto | Hecho |
 |---|---|---|
 | Horas de trabajo | Bajan de 5 h a 4 (3 con lección): unas 31 personas dan unas 93 h con lección y 124 sin ella | `Plan`, `Balance`. **Quedan menos manos: más clones al principio** |
-| Tope de 5 h (J2) | Se mantiene, contando la mañana | Prueba 102 |
+| Tope de 5 h (J2) | Se mantiene, contando la mañana | Prueba 104 |
 | Comida, 14–16 y libre | No se mueven | `LeisureRoster` sigue desde las 16 h |
 | Misiones de 3 h | No cabían: 3 h seguidas ya no existen | Las rondas de frutales bajan a ≤ 2 h: **más rondas al día** |
 | Misiones de 2 h | Solo por la tarde con lección (9–11 sin ella) | Por la rotación |
@@ -83,7 +83,7 @@ Es un **primer juego de requisitos**: la lista de tareas con riesgo es decisión
 | Kushal | Entrena y aprende como todos; lección con E; la incorporación tardía respeta las 8 y los requisitos | `PlayerWorkday`, `PlayerTasks` |
 | Microcosmos (`MicroJornada`) | **No cambia**: su horario sigue 8–11. Berón habló del santuario | — |
 | Iniciaciones de llegada (J5) | No cambian | Manual |
-| Pruebas | `JornadaTest` y otras leen del plan real; solo las de la rotación pura van sin la mañana nueva | Grupo 102 |
+| Pruebas | `JornadaTest` y otras leen del plan real; solo las de la rotación pura van sin la mañana nueva | Grupo 104 |
 
 ## Reparto (rotación)
 
@@ -98,7 +98,7 @@ Es un **primer juego de requisitos**: la lista de tareas con riesgo es decisión
    Desde el 2026-11-04, **el gimnasio va por los días del plan de cada uno** (`GymProgramming.ApplyGymDays`; el entrenador, Andrea,
    siempre): quien tiene gimnasio ese día en su plan va; a quien la rotación mandaba un día sin gimnasio en su plan, se le da el
    siguiente entrenamiento abierto ([gimnasio-maquinas.md](gimnasio-maquinas.md) §15).
-9. **Misiones de puesto** (`Mission.owner`; regla de oro J30, 2026-11-05: antes solo las hacía su dueño y sin él no se hacían): se le ofrecen primero a su dueño; sin él, siguen por rotación, y la Magnate también las enseña (J32).  Texto antiguo: sin él, ese
+9. **Misiones de puesto** (`Mission.owner`; regla de oro J30, 2026-11-05: antes solo las hacía su dueño y sin él no se hacían): se le ofrecen primero a su dueño; sin él, siguen por rotación, y la Magnate también las enseña (J32). Texto antiguo: sin él, ese
    día no se hacen ni quedan pendientes. Hoy: «gym_planes», del entrenador del gimnasio.
 
 **Equilibrio** (`WorkRoster.Balance`, en el log y en `jornada`) avisa de tres cosas:

@@ -15,6 +15,10 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 > dónde se comprueba cada una, las 2 que quedan pendientes del 2026-11-04 (M9 y el gancho de §11 para los demás pisos) y la
 > tabla piso → microcosmos para revisarlos cuando cambia un piso. Al recibir una regla nueva, añadirla allí.
 
+> **HECHO 2026-11-05 (ronda 9, rama claude/ronda9; integra histo, interfaz, energía, nuclear y territorio; solo compilación, sin probar en vivo):** reglas renumeradas: S15 (energía), T18 (Parque), P12–P19 (territorio y producción); pruebas: `AlimentadorTest` 105, `JornadaSaberTest` 104, `GardenInitiationTest` 46, `GymUsabilityTest` 49, `InsectOnlyTest` 106. `PopulationPlan.Humans` ya no es 11: personal + 2. La isla: placa de 1,5 m y roca hasta el lecho; los 300 m son del hielo.
+> - [ ] **Probar en vivo** (probador): reconstruir y correr los grupos de la lista de la ronda 9.
+> - [ ] **Revisar con 32 humanos:** el grupo 103 (carne, cocina) y cuánta fauna sale al construir.
+
 > **HECHO 2026-11-05 (tanda 3 de historias, rama claude/edif-histo; solo código y compilación, sin probar en vivo):** 12 microcosmos con su historia de
 > 8 pasos, su pueblo, sus cuatro categorías y su mapa a mano HECHO ([`microcosmos-historias-3.md`](microcosmos-historias-3.md)): Eloy Alfaro, Galvarino, Atahualpa, la Gran
 > Ley de la Paz, Cleopatra, las calculadoras de Langley, Beethoven, Descartes, Ernesto Guevara, Pedro Sánchez, Lincoln y la Feria de las Hazañas. Lincoln, decidido: C-SPAN 1.º,
@@ -35,7 +39,7 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 > - [ ] **Revisar la ficha de Pedro Sánchez tras las elecciones del 29-11-2026** (`Historia.PedroSanchez.cs`, último párrafo).
 > - [ ] Repasar los [verificar] del doc (día del clavo de oro, fecha de Lagunillas, número de enfermos de San Pablo y fecha del cruce a nado, cifras de Singapur).
 > **HECHO 2026-11-05 (requisitos y la mañana con la Magnate, rama claude/edif-energia; solo código, sin probar en vivo):** cada misión tiene requisitos (`MissionRequirements`), a las 8 entrenan todos y a las 9 la Magnate enseña una tarea, por grupos, a quien le queda algo. Reglas J31 y J32; auditoría en [`jornada-y-rotacion.md`](jornada-y-rotacion.md) §Auditoría.
-> - [ ] Probar en vivo, sin reconstruir nada: grupos 102 (nuevo), 50, 28, 55, 65, 87, 96 y 97. En el registro, `[Lección]` y el balance: cuántos clones hacen falta los primeros días.
+> - [ ] Probar en vivo, sin reconstruir nada: grupos 104 (nuevo), 50, 28, 55, 65, 87, 96 y 97. En el registro, `[Lección]` y el balance: cuántos clones hacen falta los primeros días.
 > - [ ] Mirar si las lecciones llegan a tiempo: el viaje entre árboles se come parte de la hora de las 9.
 
 > **HECHO 2026-11-05 (la energía, rama claude/edif-energia; solo código, sin probar en vivo):** el **Parque Energético**, un casquete artificial al noroeste con su árbol bajo:
@@ -728,7 +732,7 @@ Código y compilación hechos; falta la prueba en vivo.
 - [x] Bivalvos (`SwarmKind.Clam`) para la morsa.
 - [x] Isla de tierra (58 %) con orilla, zócalo, lomas, charcas y tundra; reemplaza a los casquetes Sur y Este.
 - [x] Producción y los osos en la isla (−180, −140); holgura 28,1 m.
-- [x] Comedero retirado; alimentador por rotación con lista compartida y distancia segura; `LabShare` en vez del 80 % (grupo 77, [`alimentador.md`](alimentador.md)).
+- [x] Comedero retirado; alimentador por rotación con lista compartida y distancia segura; `LabShare` en vez del 80 % (grupo 105, [`alimentador.md`](alimentador.md)).
 - [x] Deshierbe con raíz: malas hierbas de verdad, vivero, trasplante a la tundra e incinerador para las no nativas (grupo 102, [`deshierbe-cuidadoso.md`](deshierbe-cuidadoso.md)).
 - [x] La lista del alimentador solo se renueva completa; quien no se alcanza vuelve a la cola.
 - [x] Regla P19: maquinaria a la altura de lo que se pide (grupo 103, [`produccion-maquinaria.md`](produccion-maquinaria.md)). Laboratorio ampliado.
@@ -737,7 +741,7 @@ Código y compilación hechos; falta la prueba en vivo.
 - [x] Cadena alimenticia (`FoodChain`, regla E15, grupo 85) y especie real para todo pez, crustáceo y medusa: 6 especies nuevas.
 - [x] Frentes de barrera, 5 cuevas, acantilados, colonia del emperador, playa de morsas y nidos de Adelia.
 - [x] Pruebas: grupos 99 (`TerritorioTest`) y 85 (`CadenaAlimenticiaTest`).
-- [ ] **Probar en vivo:** «Rebuild Animal Prefabs» (el cuerpo de `Penguin` cambia), Blockout, escenas de ciclo de vida y grupos 99, 85, 77, 102, 103, 58, 57 y 89.
+- [ ] **Probar en vivo:** «Rebuild Animal Prefabs» (el cuerpo de `Penguin` cambia), Blockout, escenas de ciclo de vida y grupos 99, 85, 105, 102, 103, 58, 57 y 89.
 - [ ] Alimentador de dos en dos con el oso; aves en los acantilados; bosque de algas; corro del buey como conducta.
 - [ ] Lemming, la presa que le falta a la tundra (recomendaciones en `reglas-animales.md`).
 

@@ -6,7 +6,7 @@ Berón (2026-11-05): «recuerda que la maquinaria debe actualizarse para poder a
 
 ## Auditoría del 2026-11-05 (regla W11)
 
-Los resultados vienen de leer el código con 11 humanos; **los medirá el grupo 103**. Las capacidades por máquina son valores de diseño `[A]`, salvo la carne.
+Los resultados vienen de leer el código con 11 humanos, y desde la ronda 9 el plan usa el personal real (32): **hay que volver a medir con el grupo 103**. Las capacidades por máquina son valores de diseño `[A]`, salvo la carne.
 
 | Área | Pide al día | Da | Resultado |
 |---|---|---|---|
@@ -16,7 +16,7 @@ Los resultados vienen de leer el código con 11 humanos; **los medirá el grupo 
 | Estudio Textil | 0,18 prendas | 2 telares: 1 prenda | Bien |
 | Mecánica | Servicio | Puestos | Exenta: la mide S13 |
 | Hospital, Química, Biología, Planta Atómica | Investigación | — | Exentas |
-| Energía | **Sin dato de demanda total** | 5 MWe | **Sin auditar:** depende del trabajo de paneles y energía |
+| Energía | La punta de los pisos (`EnergyRule.DemandKW` × 1,6) × 24 h | 5 MWe × 24 h | Por medir (línea en `ProductionAudit`; el balance completo es `EnergyRule.Check`) |
 
 Además, las cifras de `AreaProducer` (recursos por minuto de juego) son valores provisionales y no salen de las máquinas: esa parte de la regla sigue sin cumplirse. Convertirlas es un trabajo aparte.
 

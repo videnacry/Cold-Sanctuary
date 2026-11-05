@@ -507,7 +507,7 @@ Berón: «se debe crear el refugio del fondo».
 
 Berón: «hazlo real».
 
-**Hecho: cada casquete de hielo mide 300 m de grosor** (`SeaRule.ShelfThickness`, antes 1,5), con 200 m de mar debajo. **Lo que no es real: el hielo sigue asomando 25 cm.**
+**Hecho: cada casquete de hielo mide 300 m de grosor** (`SeaRule.ShelfThickness`, antes 1,5), con 200 m de mar debajo. La isla de tierra no: su placa sigue en 1,5 m y debajo va la roca hasta el lecho ([territorio-polar.md](territorio-polar.md)). **Lo que no es real: el hielo sigue asomando 25 cm.**
 
 ### Lo investigado
 - **Plataforma de Ross:** varios cientos de metros; unos 330 m hacia 79°S y más de 700 tierra adentro *(fuente floja)*; Scott calculó unos 274. Frente de 15–50 m sobre el agua, y ~90 % bajo ella.

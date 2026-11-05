@@ -24,6 +24,7 @@ public static class ProductionAudit
         public Stage[] stages;
         /// <summary>Capacidad medida de otra forma que contando piezas (la superficie de los bancales).</summary>
         public System.Func<float> custom;
+        public string customLabel = "superficie";
     }
 
     public class Result
@@ -54,15 +55,16 @@ public static class ProductionAudit
         new Line { area = "Cocina", product = "comidas", unit = "comidas", demand = () => PopulationPlan.Humans * 3f, stages = new[] { new Stage("equipos de cocina", "Equipo_", 10f) } },
         new Line { area = "Huerto", product = "verdura", unit = "kg", demand = () => PopulationPlan.Humans * 0.8f, custom = () => Object.FindObjectsByType<GardenPlot>(FindObjectsInactive.Include, FindObjectsSortMode.None).Sum(p => p.size.x * p.size.y) * 3f / 365f },
         new Line { area = "Estudio Textil", product = "prendas", unit = "prendas", demand = () => PopulationPlan.Humans * 6f / 365f, stages = new[] { new Stage("telares", "Telar_", 0.5f) } },
+        // Lo que el reactor da todo el día contra lo que piden los pisos en su punta (FloorEnergy; la regla completa, con paneles y baterías, es EnergyRule.Check).
+        new Line { area = "Energía", product = "electricidad en punta", unit = "kWh", demand = () => EnergyRule.DemandKW() * EnergyRule.PeakFactor * 24f, custom = () => EnergyRule.ReactorKW * 24f, customLabel = "reactor de 5 MWe" },
     };
 
-    /// <summary>Áreas con <see cref="AreaProducer"/> que no hacen un producto físico que se pueda contar, o cuya demanda lleva otra rama. Con su porqué.</summary>
+    /// <summary>Áreas con <see cref="AreaProducer"/> que no hacen un producto físico que se pueda contar. Con su porqué.</summary>
     public static readonly Dictionary<string, string> Exempt = new Dictionary<string, string>
     {
         { "VehicleWorkshop_Area", "repara: da servicio, no un producto; sus puestos los mide la regla S13" },
         { "Infirmary_Area", "investigación y salud; los puestos los mide H2" },
         { "AtomicPlant_Area", "investigación" }, { "Chemistry_Area", "investigación" }, { "Biology_Area", "investigación" },
-        { "NuclearPower_Area", "energía: 5 MWe; falta la demanda total, que depende del trabajo de paneles y energía" },
     };
 
     static int Count(string prefix) => Object.FindObjectsByType<Transform>(FindObjectsInactive.Include, FindObjectsSortMode.None).Count(t => t.name.StartsWith(prefix) && t.GetComponentInParent<Animal>() == null);
@@ -70,7 +72,7 @@ public static class ProductionAudit
     public static Result Check(Line l)
     {
         var r = new Result { area = l.area, product = l.product, unit = l.unit, demand = l.demand() };
-        if (l.custom != null) { r.capacity = l.custom(); r.bottleneck = "superficie"; return r; }
+        if (l.custom != null) { r.capacity = l.custom(); r.bottleneck = l.customLabel; return r; }
         r.capacity = float.MaxValue;
         foreach (Stage s in l.stages)
         {
@@ -85,7 +87,7 @@ public static class ProductionAudit
     /// <summary>Áreas de producción sin línea ni exención: un área nueva no se queda sin revisar.</summary>
     public static List<string> Unlisted()
     {
-        var known = new HashSet<string> { "Kitchen_Area", "Garden_Area", "TextileStudio_Area", "CulturedMeatLab_Area" };
+        var known = new HashSet<string> { "Kitchen_Area", "Garden_Area", "TextileStudio_Area", "CulturedMeatLab_Area", "NuclearPower_Area" };
         var l = new List<string>();
         foreach (AreaProducer p in Object.FindObjectsByType<AreaProducer>(FindObjectsInactive.Include, FindObjectsSortMode.None))
             if (!known.Contains(p.name) && !Exempt.ContainsKey(p.name)) l.Add(p.name);

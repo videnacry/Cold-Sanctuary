@@ -14,7 +14,7 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class InsectOnlyTest : MonoBehaviour, ITestUnit
 {
-    public int Group => 61;
+    public int Group => 106;
     public bool ParallelSafe => false;   // crea y descarga una escena
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]

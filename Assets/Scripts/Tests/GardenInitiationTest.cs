@@ -13,7 +13,7 @@ using UnityEngine;
 /// </summary>
 public class GardenInitiationTest : MonoBehaviour, ITestUnit
 {
-    public int Group => 43;   // tras la cocina (41) y la sala de yoga (42)
+    public int Group => 46;   // tras la cocina (41) y la sala de yoga (42)
     public bool ParallelSafe => false;
     public float speed = 6f;
 

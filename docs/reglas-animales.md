@@ -26,7 +26,7 @@ junta. El resumen está en [manual-de-diseno.md §13](manual-de-diseno.md#13-ani
 | E12 | **Escena de ciclo de vida.** Cada especie tiene `CicloVida_<Escena>`: se añade a `CicloVidaPanel.Species` (con su hábitat) y a `StartScreen.Special`; comida inagotable y pareja adulta. | Comprobar cada proceso. | Grupo 58 en esa escena |
 | E13 | **Polo mezclado, y dicho.** El santuario es artificial y junta los dos polos (morsas árticas y pingüinos antárticos). Se admite, pero cada ficha dice de dónde es la especie. | Para que no pase por dato. | Solo en docs |
 | E15 | **Cadena alimenticia.** Al añadir una especie se pone en `PopulationPlan.Groups` y `FoodChain` la evalúa: lee dietas y poblaciones, calcula lo que necesita cada depredador y sube bancos, plantas o presas para que nadie pase hambre. Si hace falta una presa que no existe, se crea. | Berón: «para que nadie muera de hambre». | Grupo 85; `[Cadena]` al final del Blockout; menú «Cadena alimenticia (evaluar)» |
-| E16 | **Sin comederos fijos para depredadores.** Los atiende el alimentador, a distancia segura y sin compartir espacio. | Comodidad de la guardia y riesgo real. | Grupo 77; [alimentador.md](alimentador.md) |
+| E16 | **Sin comederos fijos para depredadores.** Los atiende el alimentador, a distancia segura y sin compartir espacio. | Comodidad de la guardia y riesgo real. | Grupo 105; [alimentador.md](alimentador.md) |
 | E14 | **Mente propia.** `Archetypes` (cuerpo, mente, relaciones entre especies) y `PhrasePools` (pensamientos) van con ella. | Todo ser tiene mente. | Grupo 99 (catálogos) |
 
 ### Tablas de una especie

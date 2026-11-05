@@ -75,7 +75,7 @@ Regla: **en un microcosmos solo hay cuerpos de insecto**. Un único guardián, `
 - Lo llaman: `MobWorldLoader` (el jugador al entrar y al salir), `MicroEra` (la raíz de todo microcosmos: al cargar y cada
   2 s convierte a cualquier humano que aparezca —personajes de historia, spawners, copias de la jornada—) y los builders
   (`AreaMicrocosmos.Build` revisa la escena antes de guardarla, así ninguna escena se guarda con humanos).
-- Prueba: `InsectOnlyTest` (grupo **61**).
+- Prueba: `InsectOnlyTest` (grupo **106**).
 
 ## 4. Bruce Lee como insecto
 
@@ -222,7 +222,7 @@ Hecho en código (builders y componentes; compila). **Sin generar ni probar aún
 
 - Generar: «Tools/Cold Sanctuary/Build Microcosmos de historias» (todas) o «…: Bruce Lee (Dojo)» (con la escena principal
   abierta) y «Build Sala de Eras».
-- Pruebas: grupo **61** (`InsectOnlyTest`, `AreaFunctionRegistryTest`), grupo **62** (`CivilizedErasTest`: las 7 escenas de
+- Pruebas: grupo **61** (`AreaFunctionRegistryTest`), grupo **106** (`InsectOnlyTest`), grupo **62** (`CivilizedErasTest`: las 7 escenas de
   historia, edificios, jornadas, especies, estaturas y familias) y grupo **60** (`BruceLeeStoryTest`, ahora con Bruce
   mantis). Las del santuario (jornada, grupos 50–58) deben seguir igual: el catálogo es el mismo.
 - Menús de las eras añadidas: «Build Planta Atómica (Newton, Curie, Einstein)», «Build simulaciones de compasión», «Build MobWorld

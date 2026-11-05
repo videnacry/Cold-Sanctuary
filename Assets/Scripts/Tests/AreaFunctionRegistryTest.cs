@@ -26,8 +26,10 @@ public class AreaFunctionRegistryTest : MonoBehaviour, ITestUnit
         "bio_cultivo", "bio_pcr", "nuc_turno", "gua_carnivoros", "gua_alimentador", "gua_alimentador_2", "hue_transplante",
         // (2026-11-04) los pisos nuevos: Informática (el clúster de IA) y el Aula (docs/piso-informatica.md, docs/piso-aula.md)
         "ifo_sysadmin", "ifo_refrigeracion", "ifo_energia", "aul_clase", "aul_estudio",
-        // (2026-11-05) la música (docs/piso-musica.md)
-        "son_grabar", "son_ensayo", "son_equipo",
+        // (2026-11-05) la asamblea y la música (docs/piso-asambleas.md, docs/piso-musica.md)
+        "asa_orden", "asa_acta", "asa_mediar", "son_grabar", "son_ensayo", "son_equipo",
+        // (2026-11-04/05) las profesiones (docs/personajes-mesocosmos.md §Profesiones)
+        "aul_legal", "aul_lenguas", "coc_cuentas", "con_proyectos", "con_proyectos2", "coc_avisos", "yog_ashtanga", "aul_letras", "hos_plantas", "hos_pediatria", "mec_alfombras", "lan_control",
     };
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -44,8 +46,8 @@ public class AreaFunctionRegistryTest : MonoBehaviour, ITestUnit
         string order = "";
         for (int i = 0; i < Mathf.Max(c.Length, Ids.Length); i++)
             if (i >= c.Length || i >= Ids.Length || c[i].id != Ids[i]) { order = $"posición {i + 1}: «{(i < c.Length ? c[i].id : "—")}» en vez de «{(i < Ids.Length ? Ids[i] : "—")}»"; break; }
-        TestProbe.Check("mismas 58 misiones (50 de antes + 5 de Informática y el Aula + 3 del alimentador y el trasplante) y en el mismo orden", order.Length == 0 && c.Length == Ids.Length, order.Length > 0 ? order : $"{c.Length}");
-        TestProbe.Near("mismas horas en total (64,5 h: 60 de antes + 4,5 de los pisos nuevos)", c.Sum(m => m.hours), 64.5f, 0.01f);
+        TestProbe.Check("mismas 76 misiones (50 de antes + 5 de Informática y el Aula + 3 del alimentador y el trasplante + 3 de la asamblea + 3 de la música + 12 de las profesiones; las de energía y nuclear salen por día, no aquí) y en el mismo orden", order.Length == 0 && c.Length == Ids.Length, order.Length > 0 ? order : $"{c.Length}");
+        TestProbe.Near("mismas horas en total (85 h)", c.Sum(m => m.hours), 85f, 0.01f);
         TestProbe.Check("mismas obligatorias (19)", c.Count(m => m.mandatory) == 19, $"{c.Count(m => m.mandatory)}");
         TestProbe.Check("dirigen: iniciación, quirófano, guiar y demostrar la clase", c.Where(m => m.lead).Select(m => m.id).OrderBy(x => x).SequenceEqual(new[] { "enf_iniciacion", "hos_quirofano", "yog_demo", "yog_guia" }));
         TestProbe.Check("la clase de yoga es un grupo de 4", c.Count(m => m.group == "clase_yoga") == 4);
