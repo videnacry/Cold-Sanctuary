@@ -72,25 +72,6 @@ public static partial class SampleSceneBuilder
         a.description = "Control de la energía y taller de los paneles solares (docs/energia.md)";
     }
 
-    /// <summary>Con todos los pisos puestos: declara sus demandas, levanta el campo con sus mesas, las turbinas, la mareal, el almacén y la línea al santuario.</summary>
-    static void FinishEnergySite()
-    {
-        if (_energyRoot == null || _energyHx == null) return;
-        Transform root = _energyRoot; Helix hx = _energyHx;
-        EnergySite es = root.gameObject.AddComponent<EnergySite>();
-        EnsureFloorEnergy();
-        BuildSolarField(es, root, hx);
-        float H = EnergyRule.CapHalf - 16f;
-        (Vector3 p, string n)[] corners = { (new Vector3(-H, 0f, H), "noroeste"), (new Vector3(H, 0f, H), "noreste"), (new Vector3(-H, 0f, -H), "suroeste") };
-        for (int i = 0; i < EnergyRule.Turbines; i++) es.turbines.Add(BuildTurbine(root, hx.site + corners[i].p, i + 1));
-        for (int i = 0; i < EnergyRule.TidalUnits; i++) es.tidal.Add(BuildTidalUnit(root, hx.site + new Vector3(-EnergyRule.CapHalf - 7f, 0f, -30f + i * 60f), i + 1));
-        es.storage = BuildEnergyStorage(root, hx.site + new Vector3(EnergyRule.CapHalf - 60f, 0f, -EnergyRule.CapHalf + 60f));
-        BuildDeterrents(es, root, hx.site);
-        BuildBirdRehab();
-        BuildEnergyLine(root, hx.site);
-        ValidateEnergySite("al terminar el parque");
-    }
-
     /// <summary>Cada piso declara su demanda (la residencia, la suya, por casas).</summary>
     static void EnsureFloorEnergy()
     {
@@ -104,11 +85,10 @@ public static partial class SampleSceneBuilder
         FloorEnergy.Refresh();
     }
 
-    // El CAMPO SOLAR: la rejilla de plazas fuera del pie del árbol, de las torres y del almacén, de dentro hacia fuera; las primeras, montadas, y las demás, a la espera.
-    static void BuildSolarField(EnergySite es, Transform root, Helix hx)
+    // Las plazas del campo: la rejilla fuera del pie del árbol, de las torres y del almacén, de dentro hacia fuera. La usan las dos escenas: arriba, para las mesas; abajo, para contarlas.
+    static List<Vector3> SolarSpots(HelixTower h)
     {
-        Transform field = new GameObject("Campo_solar").transform; field.SetParent(root, false); field.position = hx.site;
-        float H = EnergyRule.CapHalf, L = EnergyRule.TableLength, keep = hx.h.OuterHalf + 23f;   // el tronco, sus tornapuntas y las alfombras del suelo (bajo los pisos caben: la sombra ya la descuenta el rendimiento)
+        float H = EnergyRule.CapHalf, L = EnergyRule.TableLength, keep = h.OuterHalf + 23f;   // el tronco, sus tornapuntas y las alfombras del suelo
         var spots = new List<Vector3>();
         for (float x = -H + 6f + L * 0.5f; x + L * 0.5f <= H - 6f; x += L + EnergyRule.TableGap)
             for (float z = -H + 6f; z <= H - 6f; z += EnergyRule.RowPitch)
@@ -119,6 +99,15 @@ public static partial class SampleSceneBuilder
                 spots.Add(new Vector3(x, 0f, z));
             }
         spots.Sort((a, b) => a.sqrMagnitude.CompareTo(b.sqrMagnitude));
+        return spots;
+    }
+
+    // El CAMPO SOLAR: todas las mesas, apagadas; al cargarse la escena, la lógica enciende las montadas (EnergySite.Attach).
+    static void BuildSolarField(AereoBase es, Transform root, Helix hx)
+    {
+        Transform field = new GameObject("Campo_solar").transform; field.SetParent(root, false); field.position = hx.site;
+        float L = EnergyRule.TableLength;
+        List<Vector3> spots = SolarSpots(hx.h);
         Color cell = new Color(0.14f, 0.22f, 0.42f), rail = new Color(0.72f, 0.74f, 0.78f), post = new Color(0.55f, 0.56f, 0.6f), red = new Color(0.9f, 0.2f, 0.15f);
         for (int i = 0; i < spots.Count; i++)
         {
@@ -131,10 +120,7 @@ public static partial class SampleSceneBuilder
             BoxCollider bc = t.gameObject.AddComponent<BoxCollider>(); bc.center = new Vector3(0f, 0.3f + h * 0.5f, 0f); bc.size = new Vector3(L, h + 0.6f, 0.2f);
             es.tables.Add(t);
         }
-        EnergyRule.Report r = EnergyRule.Check(0f, 0, spots.Count);
-        es.installed = Mathf.Min(spots.Count, r.tablesRequired);
-        for (int i = es.installed; i < spots.Count; i++) es.tables[i].gameObject.SetActive(false);
-        Debug.Log($"[Energía] Campo solar: {es.installed} mesas montadas de {spots.Count} plazas ({es.FieldKWp:0} kWp): las que piden {r.floors} pisos.");
+        foreach (Transform t in es.tables) t.gameObject.SetActive(false);
     }
 
     // Un AEROGENERADOR: la E-33 de Ross Island, con su pala negra, sus cámaras y su radar.
@@ -225,7 +211,7 @@ public static partial class SampleSceneBuilder
     }
 
     // LA DISUASIÓN (docs/energia.md §7): figuras con ojos, ocultas hasta que salta un detector, el dragón de drones en su hangar y la caja para las aves heridas. Ni las figuras ni el dragón cuentan para la seguridad.
-    static void BuildDeterrents(EnergySite es, Transform root, Vector3 site)
+    static void BuildDeterrents(AereoBase es, Transform root, Vector3 site)
     {
         float H = EnergyRule.CapHalf - 3f;
         for (int i = 0; i < 8; i++)
@@ -302,29 +288,15 @@ public static partial class SampleSceneBuilder
         Label(rp, "Refugio de aves: se curan y se sueltan aquí, lejos de las turbinas. Con guantes y mascarilla: gripe aviar", 2f);
     }
 
-    // La LÍNEA SUBMARINA al santuario, señalizada con boyas (como la del sitio nuclear).
-    static void BuildEnergyLine(Transform root, Vector3 site)
-    {
-        Vector3 to = EntrenamientoCenter;
-        float len = Vector3.Distance(site, to);
-        for (float t = EnergyRule.CapHalf * 1.42f + 20f; t < len; t += 40f)
-        {
-            Vector3 p = Vector3.MoveTowards(site, to, t);
-            if (PolarLandscapeBuilder.NaturalIce(p.x, p.z)) break;
-            Transform b = KitchenProps.C(root, root.InverseTransformPoint(p + Vector3.up * 0.3f), new Vector3(0.6f, 0.8f, 0.6f), new Color(0.2f, 0.55f, 0.9f), 0f, "Boya_linea_energia");
-            PolarLandscapeBuilder.IgnoreForNav(b.gameObject);
-        }
-    }
-
     /// <summary>LA REGLA (docs/energia.md): distancia, turbinas lejos de las islas y del árbol, y oferta ≥ demanda. Si no cumple, error en el registro.</summary>
     static void ValidateEnergySite(string when)
     {
-        if (_energyHx == null || _energyRoot == null) return;
-        Helix hx = _energyHx;
+        if (_energyRoot == null) return;
         EnergySite es = _energyRoot.GetComponent<EnergySite>();
         if (es == null) return;
         EnsureFloorEnergy();
-        float nearest = NearestToSite(hx.site, EnergyRule.MinDistance + EnergyRule.CapHalf, hx, out string near);
+        Vector3 siteAt = EnergyRule.Center;
+        float nearest = NearestToSite(siteAt, EnergyRule.MinDistance + EnergyRule.CapHalf, null, out string near);
         var bad = new List<string>();
         if (nearest < EnergyRule.MinDistance) bad.Add($"a {nearest:0} m de {near} (pide ≥ {EnergyRule.MinDistance:0} m)");
         foreach (WindTurbineUnit u in es.turbines)
@@ -336,13 +308,13 @@ public static partial class SampleSceneBuilder
                     Vector3 q = p + TreeSpec.Dir(a) * r;
                     if (PolarLandscapeBuilder.NaturalIce(q.x, q.z)) { bad.Add($"{u.name} a {r:0} m de una isla"); a = 360f; break; }
                 }
-            float toTree = Vector2.Distance(new Vector2(p.x, p.z), new Vector2(hx.site.x, hx.site.z));
+            float toTree = Vector2.Distance(new Vector2(p.x, p.z), new Vector2(siteAt.x, siteAt.z));
             if (toTree < EnergyRule.IceThrowRadius) bad.Add($"{u.name} a {toTree:0} m del árbol (el hielo llega a {EnergyRule.IceThrowRadius:0} m)");
         }
         BirdRehabPoint rehab = Object.FindAnyObjectByType<BirdRehabPoint>(FindObjectsInactive.Include);
         if (rehab == null) bad.Add("no hay refugio de aves");
         else foreach (WindTurbineUnit u in es.turbines) if (Vector3.Distance(u.transform.position, rehab.transform.position) < EnergyRule.RehabMinDistance) bad.Add($"el refugio de aves está a menos de {EnergyRule.RehabMinDistance:0} m de {u.name}");
-        EnergyRule.Report rep = EnergyRule.Check(es.FieldKWp + EnergyRule.RooftopKWp(), es.installed, es.tables.Count - es.installed);
+        EnergyRule.Report rep = EnergyRule.Check(es.FieldKWp + EnergyRule.RooftopKWp(), es.installed, es.tableSlots - es.installed);
         bad.AddRange(rep.problems);
         if (bad.Count > 0) Debug.LogError($"[Energía] Regla ({when}): {string.Join("; ", bad)}.");
         else Debug.Log($"[Energía] Regla ({when}): a {nearest:0} m de {near}; {rep}. Sol ~{EnergyRule.YearYield():0} kWh/kWp, viento {EnergyRule.Turbines * EnergyRule.WindMeanKW():0} kW de media, mareal piloto.");

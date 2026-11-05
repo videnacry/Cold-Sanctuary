@@ -328,6 +328,7 @@ public class WorkdayDirector : MonoBehaviour
         if (_player == null) _player = GameObject.FindGameObjectWithTag("Player");
         GameObject p = _player; if (p == null) return;
         if (NuclearSite.Evacuating) { _transitSince = -1f; return; }   // se está evacuando: nadie lo devuelve a un puesto del sitio
+        if (AereoLink.PlayerThere) { _transitSince = -1f; return; }   // en el Santuario Aéreo: tiene su andén para volver
         if (MagnateWarden.Blocked(p)) { _transitSince = -1f; return; }   // fuera de su alcance: en alfombra, en el microcosmos…
         if (!MagnateWarden.GuardPosts) { _transitSince = -1f; return; }   // casilla de Inicio quitada: explora libre
         if (!InfirmaryGate.Cleared(p)) return;   // recién llegado: hasta terminar la iniciación su sitio es el hospital (InfirmaryGate)
@@ -378,6 +379,7 @@ public class WorkdayDirector : MonoBehaviour
     // Todas las áreas con ese nombre (y, para el Huerto, sus parcelas y el bambusal, que están en el suelo).
     static bool InAreaNamed(string name, Vector3 pos)
     {
+        if (AereoRule.IsArea(name)) { if (AereoRule.InSector(pos) || AereoLink.PlayerThere) return true; AereoLink l = AereoLink.Instance; if (l != null && (pos - l.transform.position).sqrMagnitude < 400f) return true; }
         if (name == SiteLine.AreaName) return SiteLine.Instance != null && (pos - SiteLine.Instance.transform.position).sqrMagnitude < 225f;   // la estación no es un área: a 15 m del andén
         foreach (SanctuaryArea a in SceneCache.All<SanctuaryArea>(2f))
             if (a != null && a.displayName == name && a.InBuilding(pos)) return true;
@@ -468,7 +470,7 @@ public class WorkdayDirector : MonoBehaviour
         Vector3 to = WorkPoint(next.mission.area, g.name);
         if (to == Vector3.zero) return null;
         float perHour = TC.SecondsPerGameDay / 24f;
-        float lead = ArbolCampos.TripSeconds(g.transform.position, to) * 1.15f / Mathf.Max(1f, perHour) * share;
+        float lead = (ArbolCampos.TripSeconds(g.transform.position, to) + (AereoRule.IsArea(next.mission.area) ? AereoRule.FlightSeconds : 0f)) * 1.15f / Mathf.Max(1f, perHour) * share;
         if (end - h > lead) return null;
         _heading[w] = next;
         Debug.Log($"[Jornada] {h:00.0} h · {w.name} sale ya hacia «{next.mission.title}» ({next.mission.area}, a las {next.start:00.0} h): el viaje es de {lead / share * perHour:0} s.");
@@ -524,6 +526,8 @@ public class WorkdayDirector : MonoBehaviour
         // EVACUACIÓN DEL SITIO NUCLEAR (docs/sitio-nuclear.md): nadie va a sus pisos, y quien estaba allí, al hospital.
         if (NuclearSite.Evacuating && (NuclearSite.IsSiteArea(area) || area == null && NuclearSiteRule.InZone(g.transform.position)))
         { area = AreaWork.Hospital; doing = EvacuationDoing; missionId = null; alwaysMove = true; }
+        AereoLink.Note(g, area);   // SANTUARIO AÉREO (docs/sitio-nuclear.md §23): quien trabaja allí vuela desde el muelle y su misión corre por el reloj
+        if (AereoRule.IsArea(area) && (AereoLink.IsAway(g) || AereoLink.Board(g))) return;
         if ((missionId == SiteLine.MissionId || missionId == Refuge.MissionId) && SiteLine.Board(g, missionId)) return;   // la bajada: ya en la estación, sube al carro (docs/sitio-nuclear.md §8)
         NewcomerInitiator ini = g.GetComponent<NewcomerInitiator>();
         if (ini != null && ini.InProgress) return;   // está iniciando a un recién llegado: lo lleva ella (si no, la jornada la mandaba en alfombra a otro piso)

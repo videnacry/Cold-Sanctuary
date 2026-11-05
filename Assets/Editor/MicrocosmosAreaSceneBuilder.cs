@@ -175,6 +175,7 @@ public static class MicrocosmosAreaSceneBuilder
     internal static void Finish(Scene scene, string path, Scene prev)
     {
         var sw = System.Diagnostics.Stopwatch.StartNew();
+        { Scene aereo = SceneManager.GetSceneByPath(SampleSceneBuilder.AereoScenePath); if (aereo.isLoaded) EditorSceneManager.CloseScene(aereo, removeScene: true); }   // (si la abrió AreaMicrocosmos)
         MicroWater.SurroundScene(scene);
         Debug.Log($"[Tiempo] {scene.name} · agua alrededor: {sw.Elapsed.TotalSeconds:0.0} s"); sw.Restart();
         EditorSceneManager.SaveScene(scene, path);

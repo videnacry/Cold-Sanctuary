@@ -30,9 +30,10 @@ public class EnergyTest : MonoBehaviour, ITestUnit
     public IEnumerator Run()
     {
         TestProbe.Begin("Parque Energético: cada piso con sus paneles, oferta ≥ demanda, sol polar, fauna a salvo, almacén y jornada");
+        yield return AereoLink.LoadForTest();   // (lo que se ve del parque está en el Santuario Aéreo; la lógica, en el santuario 1)
         EnergySite es = FindAnyObjectByType<EnergySite>();
         ArbolCampos tree = ArbolCampos.All.FirstOrDefault(a => a != null && a.building == EnergyRule.Building);
-        if (es == null || tree == null) { TestProbe.Check("hay un Parque Energético (su árbol y su casquete)", false); TestProbe.End(); yield break; }
+        if (es == null || tree == null) { TestProbe.Check("hay un Parque Energético (su árbol y su casquete): Build Santuario Aéreo", false); TestProbe.End(); yield break; }
         float soil0 = es.soil, bat0 = es.batteryMWh;
         int inst0 = es.installed;
 
@@ -40,7 +41,7 @@ public class EnergyTest : MonoBehaviour, ITestUnit
         var others = ArbolCampos.All.Where(a => a != null && a != tree).ToList();
         float nearest = others.Min(a => Flat(a.transform.position, tree.transform.position));
         TestProbe.Greater("a ≥ 300 m del edificio-árbol más cercano", nearest, EnergyRule.MinDistance - 0.5f);
-        TestProbe.Check("tiene su casquete artificial", es.GetComponentsInChildren<Transform>(true).Any(t => t.name == "Casquete_artificial"));
+        TestProbe.Check("tiene su casquete artificial", tree.transform.parent != null && tree.transform.parent.GetComponentsInChildren<Transform>(true).Any(t => t.name == "Casquete_artificial"));
         TestProbe.Check("árbol bajo: primer piso a 12 m", Mathf.Abs(tree.GetComponentsInChildren<TreeFloor>(true).Min(f => f.transform.position.y) - EnergyRule.FirstFloorY) < 1f);
         GameObject floes = GameObject.Find("Banquisa_Casquetes");
         float toIce = 9999f;
@@ -54,7 +55,7 @@ public class EnergyTest : MonoBehaviour, ITestUnit
 
         // ── 2. DEMANDA Y REGLA ──
         EnergyRule.DeclareMissing();
-        var areas = FindObjectsByType<SanctuaryArea>(FindObjectsSortMode.None);
+        var areas = FindObjectsByType<SanctuaryArea>(FindObjectsSortMode.None).Where(a => a.gameObject.scene == es.gameObject.scene).ToArray();
         TestProbe.Check("todo piso declara su demanda", areas.All(a => a.GetComponent<FloorEnergy>() != null && a.GetComponent<FloorEnergy>().KW >= 0f));
         FloorEnergy info = areas.FirstOrDefault(a => a.areaType == SanctuaryAreaType.Informatics)?.GetComponent<FloorEnergy>();
         TestProbe.Check("Informática suma sus 95 kW", info != null && info.fixedKW >= EnergyRule.InformaticsKW);
@@ -163,7 +164,7 @@ public class EnergyTest : MonoBehaviour, ITestUnit
         // ── 8. LAS AVES ──
         BirdRehabPoint rp = FindAnyObjectByType<BirdRehabPoint>();
         TestProbe.Check("hay refugio de aves, en el Hospital", rp != null && rp.GetComponentInParent<SanctuaryArea>() != null && rp.GetComponentInParent<SanctuaryArea>().displayName == AreaWork.Hospital);
-        if (rp == null) { TestProbe.End(); yield break; }
+        if (rp == null) { yield return AereoLink.UnloadForTest(); TestProbe.End(); yield break; }
         TestProbe.Greater("el refugio, lejos de todas las turbinas", es.turbines.Min(u => Vector3.Distance(u.transform.position, rp.transform.position)), EnergyRule.RehabMinDistance);
         TestProbe.Check("en el parque no hay cría ni refugio", es.GetComponentInChildren<BirdRehabPoint>(true) == null);
         rp.patients.Clear();
@@ -207,6 +208,7 @@ public class EnergyTest : MonoBehaviour, ITestUnit
         es.habituation = 0f;
 
         es.soil = soil0; es.batteryMWh = bat0;
+        yield return AereoLink.UnloadForTest();
         TestProbe.End();
     }
 }

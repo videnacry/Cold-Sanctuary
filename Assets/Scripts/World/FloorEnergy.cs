@@ -27,6 +27,7 @@ public class FloorEnergy : MonoBehaviour
     /// <summary>Declara el área <paramref name="a"/>: su superficie por la de su clase, y lo fijo de Informática.</summary>
     public static FloorEnergy Declare(SanctuaryArea a)
     {
+        if (a.gameObject.scene.name == AereoRule.Scene) return null;   // (los pisos del Santuario Aéreo los declara el muelle, cargados o no: AereoRule.FloorsKW)
         FloorEnergy f = a.GetComponent<FloorEnergy>();
         if (f == null) f = a.gameObject.AddComponent<FloorEnergy>();
         f.floor = a.displayName;

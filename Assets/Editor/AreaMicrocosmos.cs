@@ -54,6 +54,12 @@ public static class AreaMicrocosmos
         //    en montañas, y NADA MÁS (regla 11, Berón 2026-10-29): ni sus anillos, ni lo que asoma fuera de su borde, ni bosque
         //    alrededor. Los otros pisos del edificio son hermanos del área y no se copian.
         GameObject src = GameObject.Find(areaGo), giant = null;
+        // (El control de misión está en el Santuario Aéreo: su microcosmos, Hawthorne, necesita esa escena abierta. Se cierra en Finish.)
+        if (src == null && System.IO.File.Exists(SampleSceneBuilder.AereoScenePath))
+        {
+            UnityEditor.SceneManagement.EditorSceneManager.OpenScene(SampleSceneBuilder.AereoScenePath, UnityEditor.SceneManagement.OpenSceneMode.Additive);
+            src = GameObject.Find(areaGo);
+        }
         // Sus POSICIONES RESERVADAS (regla 8, PlatformSlots): la historia, los personajes, la fauna y la flora del microcosmos
         // van a las plazas que el piso dejó libres al construirse. Están en locales del área: en el área ×10 (clonada en el
         // origen de la raíz, sin girar), plaza × AreaScale.
