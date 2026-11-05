@@ -160,6 +160,7 @@ public static class PlayerTasks
     public static Plan For(string id, string area, string title, string site = null, string[] also = null)
     {
         var p = new Plan { id = id, area = area, title = title ?? id, site = site };
+        id = WorkRoster.LessonBase(id);   // (la lección: los pasos y el gesto de la tarea que aprende; su efecto no, porque la misión es otra)
         AreaFunctions.AreaFunction f = AreaFunctions.Get(id);
         AreaFunctions.Kind kind = f != null ? f.kind : KindOf(id);
         if (id != null && _table.TryGetValue(id, out string[] rows))

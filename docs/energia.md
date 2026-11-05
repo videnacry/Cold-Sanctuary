@@ -128,7 +128,7 @@ La fracción 1/5 no es una norma: es un reparto que deja libres cerca de un terc
 - **Lo que queda sin resolver:** ninguna de estas medidas elimina el riesgo, y ninguna se ha probado con la fauna antártica. Por eso `ene_control` lleva el registro de
   paradas y `ene_eolica` y `ene_mareal` revisan los detectores.
 
-## 3. La regla (T16 y S14 del manual)
+## 3. La regla (T18 y S14 del manual)
 1. **Cada piso declara su demanda** (`FloorEnergy`): área × W/m² de su clase (`EnergyRule.WattsPerM2`) + lo fijo (Informática, 95 kW), y si es esencial. Se pone solo al
    construir (`EnsureFloorEnergy`) y al validar si alguien crea un piso en juego (`EnergyRule.DeclareMissing`).
 2. **Su creación añade paneles:** `EnergyRule.TablesFor(kW)`. Al construir, el campo sale con las mesas de todos los pisos. En juego, un piso nuevo deja mesas

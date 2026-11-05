@@ -15,10 +15,14 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 > dónde se comprueba cada una, las 2 que quedan pendientes del 2026-11-04 (M9 y el gancho de §11 para los demás pisos) y la
 > tabla piso → microcosmos para revisarlos cuando cambia un piso. Al recibir una regla nueva, añadirla allí.
 
+> **HECHO 2026-11-05 (requisitos y la mañana con la Magnate, rama claude/edif-energia; solo código, sin probar en vivo):** cada misión tiene requisitos (`MissionRequirements`), a las 8 entrenan todos y a las 9 la Magnate enseña una tarea, por grupos, a quien le queda algo. Reglas J31 y J32; auditoría en [`jornada-y-rotacion.md`](jornada-y-rotacion.md) §Auditoría.
+> - [ ] Probar en vivo, sin reconstruir nada: grupos 102 (nuevo), 50, 28, 55, 65, 87, 96 y 97. En el registro, `[Lección]` y el balance: cuántos clones hacen falta los primeros días.
+> - [ ] Mirar si las lecciones llegan a tiempo: el viaje entre árboles se come parte de la hora de las 9.
+
 > **HECHO 2026-11-05 (la energía, rama claude/edif-energia; solo código, sin probar en vivo):** el **Parque Energético**, un casquete artificial al noroeste con su árbol bajo:
 > campo solar con las mesas que piden los pisos, 3 aerogeneradores de 330 kW con pala negra, cámaras y radar, turbina mareal piloto con sonar, baterías y silo de arena. Cada piso declara
 > su demanda (`FloorEnergy`) y paga sus paneles; el validador comprueba oferta ≥ demanda. Las misiones `sol_*` y `ene_*` son de Fernando. Investigación y decisión en [`energia.md`](energia.md);
-> reglas S14 y T16 del manual. Prueba nueva `EnergyTest` (grupo 101).
+> reglas S14 y T18 del manual. Prueba nueva `EnergyTest` (grupo 101).
 > - [ ] **Probar en vivo:** reconstruir SampleScene con «Build Sample Scene Blockout (solo el santuario, sin microcosmos)», guardarla, y mirar el registro `[Energía]` (la regla debe cumplir, con los kW de verdad).
 > - [ ] Grupos 101, 96 (pasos con E), 97 (actuación y uniforme), 61 (catálogo: quité `sol_instalar` y `sol_reparar`), 57 (primer piso a 12 m), 90 (turbinas en T13), 75 (capacidad) y 50 (jornada).
 > - [ ] Fotos: el campo desde el techo del árbol, una torre con la pala negra y su detector, la pontona y el rotor bajo el agua, el almacén, Fernando con el uniforme en una mesa.
