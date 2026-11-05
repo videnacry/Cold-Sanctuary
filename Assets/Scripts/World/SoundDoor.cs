@@ -41,7 +41,7 @@ public class SoundDoor : MonoBehaviour
         {
             _bodiesAt = Time.time;
             Bodies.Clear();
-            foreach (Anima a in FindObjectsByType<Anima>(FindObjectsSortMode.None)) Bodies.Add(a.transform);
+            foreach (Anima a in SceneCache.All<Anima>(4f)) if (a != null) Bodies.Add(a.transform);
         }
         Vector3 at = transform.parent != null ? transform.parent.TransformPoint(_closed) : _closed;
         foreach (Transform b in Bodies)

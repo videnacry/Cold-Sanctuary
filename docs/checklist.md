@@ -9,8 +9,8 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 > - [ ] Reconstruir SampleScene (solo el santuario) y el Santuario Aéreo.
 > - [ ] Probar los grupos 100, 110, 73, 94 y 28.
 > **HECHO 2026-11-05 (rendimiento, rama claude/rendimiento; solo código, sin probar en vivo):** lote estático en Play sin reconstruir nada (las piezas siguen con nombre, collider y `enabled`), detalle apagado a más de 120 m, cuerpos y grupos sin dibujar a más de 130 m, sonda con A/B y renderers por builder, menú con los ajustes de URP. Detalle y riesgos: [rendimiento.md](rendimiento.md).
-> - [ ] Medir en SampleScene: `rendimiento-ab`, antes y después de *Aplicar ajustes ligeros*; luego el Resident Drawer aparte.
-> - [ ] Probar los grupos 112, 28, 43, 71, 80, 84, 99 y 110 (el lote y las pruebas que miden piezas por `r.enabled` y `r.bounds`).
+> - [ ] Medir en SampleScene: *Perfilar scripts* (da el coste por tipo), `rendimiento-ab` y el build de medida (`tools/build-perf.sh`).
+> - [ ] Probar los grupos 112, 28, 43, 53, 71, 80, 84, 99 y 110 (lote, árbol que gira y las pruebas que miden piezas).
 > - [ ] Fotos: colores de la paleta contra sin lotes; una torre vista a 100 y 140 m; un perchero tras coger máscaras.
 
 > **HECHO 2026-11-05 (interfaz y personajes, rama claude/edif-interfaz; solo código, sin probar en vivo):** pila de botones sobre F10 con ventanas de horario (F2), recursos (F3) y misiones y jornada (F4), y el panel de recursos ya no está siempre a la vista ([interfaz-botones.md](interfaz-botones.md)). **Consol**, maestra jefa de Ashtanga, con su clase profunda; **Josedrilo**, jefe de Hatha; **Panterilia** deja el yoga. **Fernando**, paneles solares, con las misiones `sol_` de la rama de energía, ya integrada. Quinta casa por árbol. **Reglas de personajes** P1–P10 y una ficha por persona ([reglas-personajes.md](reglas-personajes.md), `docs/personajes/`).

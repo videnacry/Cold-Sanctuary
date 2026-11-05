@@ -42,6 +42,7 @@ public class MaskStation : MonoBehaviour
     int _lastDay = -1;
     void Update()
     {
+        if ((Time.frameCount + GetHashCode()) % 16 != 0) return;   // (350 instancias para mirar si cambió el día)
         int day = TimeController.timeController != null ? TimeController.timeController.Day : 0;
         if (_lastDay < 0) _lastDay = day;
         if (day != _lastDay) { condition = Mathf.Max(0f, condition - DecayPerDay * (day - _lastDay)); _lastDay = day; Light(); Rebalance(building, day); }

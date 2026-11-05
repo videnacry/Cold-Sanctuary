@@ -16,6 +16,24 @@ public class PerfProbe : MonoBehaviour
     public static PerfProbe Instance { get; private set; }
     void OnEnable() { Instance = this; }
 
+    // BUILD DE MEDIDA (tools/build-perf.sh): con «-perf» en la línea de órdenes mide sola y cierra. Espera acotada.
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+    static void FromCommandLine()
+    {
+        if (System.Array.IndexOf(System.Environment.GetCommandLineArgs(), "-perf") < 0) return;
+        var g = new GameObject("PerfProbe");
+        DontDestroyOnLoad(g);
+        PerfProbe p = g.AddComponent<PerfProbe>();
+        p.StartCoroutine(p.BuildRun());
+    }
+
+    IEnumerator BuildRun()
+    {
+        yield return new WaitForSecondsRealtime(45f);
+        yield return MeasureAB(240);
+        Application.Quit();
+    }
+
     public void Run(int frames = 240) => StartCoroutine(Measure(frames));
 
     /// <summary>MEDIDA A/B (docs/rendimiento.md): mide con los lotes estáticos, sin ellos y otra vez con ellos, en el mismo sitio. La
@@ -67,14 +85,29 @@ public class PerfProbe : MonoBehaviour
         {
             var d = ProfilerRecorderHandle.GetDescription(h);
             string n = d.Name;
-            if (n.EndsWith(".Update()") || n.EndsWith(".LateUpdate()") || n.EndsWith(".FixedUpdate()") || n.EndsWith(".OnGUI()") || n.StartsWith("Coroutine:") || n.EndsWith(".MoveNext"))
+            if (n.Contains(".Update()") || n.Contains(".LateUpdate()") || n.Contains(".FixedUpdate()") || n.Contains(".OnGUI()") || n.StartsWith("Coroutine:") || n.EndsWith(".MoveNext"))
                 scripts.Add((n, ProfilerRecorder.StartNew(d.Category, n, frames)));
         }
+        // Sin perfilador los marcadores por script no siempre existen: si esto sale vacío, el menú «Perfilar scripts» los da de verdad.
+        var logs = new Dictionary<string, int>();
+        int logCount = 0;
+        void OnLog(string msg, string stack, LogType type)
+        {
+            logCount++;
+            int end = msg.IndexOf(']');
+            string key = msg.StartsWith("[") && end > 0 ? msg.Substring(0, end + 1) : "(otros)";
+            logs.TryGetValue(key, out int c); logs[key] = c + 1;
+        }
+        Application.logMessageReceived += OnLog;
+        ProfilerRecorder gc = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "GC Allocated In Frame", frames);
         float t0 = Time.realtimeSinceStartup;
         for (int i = 0; i < frames; i++) yield return null;
         float secs = Time.realtimeSinceStartup - t0;
+        Application.logMessageReceived -= OnLog;
 
         Debug.Log($"[Rendimiento] {frames} frames en {secs:0.0} s → {frames / secs:0.0} FPS ({secs / frames * 1000f:0.0} ms/frame).");
+        Debug.Log($"[Rendimiento] Debug.Log: {logCount / (float)frames:0.0} por frame ({string.Join(", ", logs.OrderByDescending(k => k.Value).Take(6).Select(k => $"{k.Key} {k.Value}"))}); memoria GC {(gc.Valid ? Avg(gc) / 1024.0 : 0):0} KB por frame");
+        gc.Dispose();
         foreach (var (n, r) in recorders) if (r.Valid && r.Count > 0) Debug.Log($"[Rendimiento] fase {n}: {Avg(r) / 1e6:0.00} ms/frame");
         foreach (var (n, r) in render) if (r.Valid && r.Count > 0) Debug.Log($"[Rendimiento] dibujado {n}: {AvgRaw(r):0}");
         var top = scripts.Where(s => s.Item2.Valid && s.Item2.Count > 0).Select(s => (s.Item1, ms: Avg(s.Item2) / 1e6)).OrderByDescending(s => s.ms).Take(25).ToList();

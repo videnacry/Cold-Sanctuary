@@ -74,6 +74,7 @@ public class WorkdayDirector : MonoBehaviour
 
     /// <summary>El GameObject de un miembro del personal (en escena algunos se llaman «Goluis_Post»…).</summary>
     static readonly Dictionary<string, GameObject> _bodies = new Dictionary<string, GameObject>();
+    static readonly Dictionary<string, float> _missing = new Dictionary<string, float>();
     /// <summary>Ids de antes de un cambio de nombre (id nuevo → id viejo), para las escenas sin reconstruir.</summary>
     public static readonly System.Collections.Generic.Dictionary<string, string> LegacyIds = new System.Collections.Generic.Dictionary<string, string> { { "Amykhuz", "Amahuz" }, { "Lale", "Ale" }, { "Yulo", "Julito" } };
 
@@ -81,10 +82,13 @@ public class WorkdayDirector : MonoBehaviour
     public static GameObject Body(string n)
     {
         if (_bodies.TryGetValue(n, out GameObject g) && g != null) return g;
+        // Quien no está en la escena no se vuelve a buscar en un rato: GameObject.Find recorre todos los objetos.
+        if (!ColdSanctuary.TestRunner.Running && _missing.TryGetValue(n, out float retry) && Time.unscaledTime < retry) return null;
         g = GameObject.Find(n) ?? GameObject.Find(n + "_Post");
         // (2026-11-04) NOMBRES ANTIGUOS: las escenas sin reconstruir guardan el id de antes (Amahuz → Amykhuz).
         if (g == null && LegacyIds.TryGetValue(n, out string old)) g = GameObject.Find(old) ?? GameObject.Find(old + "_Post");
         _bodies[n] = g;
+        if (g == null) _missing[n] = Time.unscaledTime + 3f; else _missing.Remove(n);
         return g;
     }
 

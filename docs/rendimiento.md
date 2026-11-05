@@ -21,9 +21,23 @@ El renderer de PC multiplica ese número:
 - Sombras a 50 m con **4 cascadas** y sombra suave.
 - Niebla exp² de 0,008: a 120 m ya tapa el 60 %, a 280 m casi todo. Cámara con recorte a 1 000 m.
 
-Los scripts no parecen la causa principal, aunque falta medirlo. Unos 2 000 tienen `Update`, pero casi todos van con
-temporizador. Había uno sin él (`EmotionReader`, ya arreglado). Bajar de 93 951 a 65 545 renderers dobló los FPS con los mismos
-scripts, y eso apunta al dibujado.
+## Medida en vivo (ronda 13, editor)
+
+**La primera lectura de este doc era errónea: el coste principal son los scripts, no el dibujo.**
+
+- Frame: unos 230 ms. `BehaviourUpdate` 125–137 ms, `LateBehaviourUpdate` 20–24 ms.
+- El lote funciona: el dibujo baja de 40,6 a 8,3 ms y los renderers dibujados de 66 360 a 18 975. Los FPS apenas cambian (4–6),
+  porque el dibujo ya no era lo que limitaba. Con tanto ruido, el A/B de FPS no distingue los ajustes de URP.
+- Escena en Play: 85 257 objetos, 14 277 scripts, 131 animas, 1 549 etiquetas.
+- El log tuvo **5 `Debug.Log` por frame** (588 en 120 frames; 217 de `[Mente]`), cada uno con su pila.
+
+Por leer el código, sin nombres medidos todavía, los sospechosos son:
+
+- **`TreeRotator`:** con pocos FPS quitaba y ponía el NavMesh del árbol en cada frame. Corregido.
+- **Búsquedas por toda la escena** repetidas por persona: `WorkdayDirector.Body` con un nombre que falta, `DailyLife`. Corregido.
+- **El goteo:** unos 40 scripts por anima × 131, ninguno caro por sí solo, en código de depuración del editor.
+
+Para el reparto real está el menú *Perfilar scripts*.
 
 ## Lo que se hizo
 
@@ -35,6 +49,12 @@ scripts, y eso apunta al dibujado.
 | **SSAO sin prepaso, 2 cascadas, 40 m** | menú *Aplicar ajustes ligeros* | **estimada**: fuera una pasada entera; el marcador `DepthNormalPrepass` debe desaparecer | medir antes y después, con *Restaurar* para volver |
 | **GPU Resident Drawer** | menú *Activar…* (compila sombreadores la 1.ª vez) | sin estimar: instancia lo que queda fuera de lotes | medir antes y después; ver el riesgo de abajo |
 | `EmotionReader` | nada | pequeña | `script EmotionReader.Update()` en la sonda |
+| `TreeRotator`: el NavMesh se recoloca cada 0,5° (antes 0,05°) | nada | sin medir; sospechoso principal | `coste TreeRotator.Update()` en *Perfilar scripts* |
+| `WorkdayDirector.Body`, `DailyLife`, `SoundDoor`: sin búsquedas repetidas por toda la escena | nada | sin medir | ídem |
+| Figura pausada en cuerpos lejanos (`CubeGait`, `CubeWalkCycle`, `BodyPartReactor`, `CubeFace`) | nada | sin medir; 105 de 131 cuerpos estaban lejos | sus líneas `coste` |
+| Etiquetas en rejilla: 9 celdas cada 0,25 s, no 1 549 en cada repintado | nada | sin medir | `AnimaNameplate.OnGUI()` |
+| Pila desactivada en `Debug.Log` (avisos y errores la conservan) | nada | sin medir | línea `Debug.Log:` de la sonda |
+| `MaskStation`, `CampoMagnetico`, `TreeDoorExit`: una de cada N veces, o un solo chequeo por frame | nada | pequeña | sus líneas `coste` |
 
 No se hizo, y por qué:
 
@@ -69,11 +89,36 @@ Lo nuevo que aparezca después de la pasada no entra en lotes; se dibuja como si
 
 ## Apagarlo y medirlo
 
+- Menú *Perfilar scripts (40 frames, con nombres)*: enciende el perfilador en Play y da `coste Clase.Update()` por tipo y `propio`,
+  lo más caro por tiempo propio. Es la medida que nombra scripts; `PerfProbe` sin perfilador puede salir vacía.
 - Consola: `rendimiento` (una medida) y `rendimiento-ab` (con lotes, sin lotes y con lotes otra vez).
 - Menú `Tools/Cold Sanctuary/Rendimiento/`: *Medir A y B*, ajustes ligeros, Resident Drawer y lotes en este equipo.
 - La sonda escribe `[Rendimiento]` en el log: FPS, hilo principal y de render, pasadas de URP, scripts más caros, renderers
   por builder y por pieza, y el estado del lote.
 - Comparar la 1.ª medida con la 3.ª da el ruido. La cámara no debe moverse durante la medida.
+
+## Lo que solo cuesta en el editor
+
+Un juego construido no tiene esto, así que los FPS del editor no son los del jugador:
+
+- **C# en modo depuración** y con los marcadores de cada llamada. Es lo que más pesa en un goteo de 14 000 scripts.
+- **Ventanas del editor:** Hierarchy con 85 000 objetos, Inspector, Console, Scene si está abierta, y el puente MCP y el buzón.
+- **`Debug.Log` hacia Console**, con pila y volcado al log.
+- **Comprobaciones de seguridad** nativas y de colecciones.
+
+Se ahorra poco de lo que es trabajo de verdad: el NavMesh, las búsquedas y la física cuestan igual en un build.
+
+## FPS fuera del editor
+
+`tools/build-perf.sh`, solo con SampleScene (las 300 escenas no caben en memoria):
+
+1. `tools/build-perf.sh build final`, con el editor **cerrado** y licencia válida. Con el editor abierto, el menú *Build de medida (final)*.
+   Estará parado mientras tanto, y la primera vez compila variantes de sombreadores: pueden ser decenas de minutos.
+2. `tools/build-perf.sh run final`: abre una ventana de 1280 × 720, a los 45 s mide con y sin lotes y se cierra. Resultado en `Builds/Perf/perf.log`.
+3. Para nombres de scripts: `build dev` y `run dev`, o conectar el Profiler al build de desarrollo. Sus FPS no son los finales.
+
+Sin comprobar: que `LoteEstatico` encuentre legible el cubo primitivo en un build. Si el log dice 0 piezas, hay que resolver eso antes
+de comparar. También puede faltar alguna variante de URP/Lit para materiales creados en Play.
 
 ## Riesgos
 
@@ -87,3 +132,8 @@ Lo nuevo que aparezca después de la pasada no entra en lotes; se dibuja como si
 - **Memoria:** unos 60 MB de mallas en GPU, y sin copia en CPU.
 - **Luz:** cada lote toma una sola muestra de sondas de luz y reflexión.
 - **Piezas ocultas con `r.enabled = false`:** se detecta en la barrida, no al instante.
+- **Figura pausada de lejos:** al volver, un cuerpo retoma la pose del momento en que se alejó, y el TestRunner desactiva el recorte, salvo en
+  el grupo 112. Una prueba que mire la figura de un cuerpo lejano sin TestRunner la verá parada.
+- **Pila apagada en los `Debug.Log`:** si hace falta para depurar, `Application.SetStackTraceLogType`.
+- **Etiquetas:** aparecen con hasta 0,25 s de retraso, y las nuevas con hasta 5 s.
+- **NavMesh del árbol:** va hasta 0,5° por detrás del piso (35 cm a 40 m del eje).

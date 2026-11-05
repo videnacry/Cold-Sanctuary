@@ -25,6 +25,7 @@ using Debug = UnityEngine.Debug;
 ///   nadie previó siguen funcionando; solo tardan un momento.
 /// - CUERPOS LEJANOS: animas y grupos de animales a más de <see cref="BodyDistance"/> m dejan de dibujarse, también con
 ///   forceRenderingOff (no pisa los <c>r.enabled</c> de InsectForm ni de AereoLink).
+///   Además se pausan sus scripts que solo mueven la figura (<see cref="VisualOnly"/>). Mientras corre el TestRunner no se recorta.
 /// Apagar: <c>PlayerPrefs "ColdSanctuary.Lote" = 0</c> o, en vivo, <see cref="SetLive"/>.
 /// </summary>
 public class LoteEstatico : MonoBehaviour
@@ -48,6 +49,10 @@ public class LoteEstatico : MonoBehaviour
     const float TransparentMaxSize = 1.5f;   // un cristal grande se ordena mejor solo; un visor pequeño, no importa
     const int PaletteSize = 256;
     const string LitShader = "Universal Render Pipeline/Lit";
+    /// <summary>Solo mueven la figura: en un cuerpo que no se dibuja no hacen nada útil.</summary>
+    static readonly System.Type[] VisualOnly = { typeof(CubeGait), typeof(CubeWalkCycle), typeof(BodyPartReactor), typeof(CubeFace) };
+    /// <summary>Prueba: recorta de lejos aunque corra el TestRunner (que normalmente lo impide: las pruebas miran cuerpos desde lejos).</summary>
+    public static bool FarInTests;
 
     public static LoteEstatico Instance { get; private set; }
     /// <summary>¿Está permitido en este equipo? (se lee al cargar cada escena).</summary>
@@ -93,7 +98,7 @@ public class LoteEstatico : MonoBehaviour
 
     sealed class MeshData { public Vector3[] v, n; public Vector2[] uv; public int[] tri; }
     sealed class PaintInfo { public bool palette; public Material drawn; public Vector2 uv; public bool small; }
-    sealed class Body { public Transform root; public bool hidden; public Renderer[] rs; public int children; }
+    sealed class Body { public Transform root; public bool hidden; public Renderer[] rs; public int children; public readonly List<Behaviour> paused = new List<Behaviour>(); }
 
     readonly List<Group> _groups = new List<Group>();
     readonly List<Group> _detail = new List<Group>();
@@ -116,6 +121,8 @@ public class LoteEstatico : MonoBehaviour
         if (Instance != null) return;
         GameObject g = new GameObject("LoteEstatico_AUTO");
         DontDestroyOnLoad(g);
+        // Los Debug.Log van a ~5 por frame: capturar la pila de cada uno es caro. Avisos y errores la conservan.
+        Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
         Instance = g.AddComponent<LoteEstatico>();
         for (int i = 0; i < SceneManager.sceneCount; i++) Instance.StartCoroutine(Instance.AfterLoad(SceneManager.GetSceneAt(i)));
     }
@@ -440,7 +447,7 @@ public class LoteEstatico : MonoBehaviour
         Camera cam = Camera.main;
         if (cam == null) return;
         Vector3 at = cam.transform.position;
-        bool all = Swarm.AnimateAll;
+        bool all = Swarm.AnimateAll || (ColdSanctuary.TestRunner.Running && !FarInTests);
         int hidden = 0;
         _gone.Clear();
         foreach (var kv in _bodies)
@@ -468,7 +475,16 @@ public class LoteEstatico : MonoBehaviour
         if (b.rs != null && !off) foreach (Renderer r in b.rs) if (r != null) r.forceRenderingOff = false;
         b.rs = b.root.GetComponentsInChildren<Renderer>(true);
         foreach (Renderer r in b.rs) r.forceRenderingOff = off;
-        if (!off) b.rs = null;
+        if (!off)
+        {
+            b.rs = null;
+            foreach (Behaviour v in b.paused) if (v != null) v.enabled = true;
+            b.paused.Clear();
+            return;
+        }
+        foreach (System.Type t in VisualOnly)
+            foreach (Component c in b.root.GetComponentsInChildren(t, false))
+                if (c is Behaviour v && v.enabled) { v.enabled = false; b.paused.Add(v); }
     }
 
     /// <summary>Medida A/B en vivo: false enseña las piezas de siempre y apaga lotes y recortes; true lo vuelve a poner.</summary>

@@ -21,15 +21,24 @@ public class TreeDoorExit : MonoBehaviour
     public static int Exits { get; private set; }
     static readonly List<PlayerController> _swimmers = new List<PlayerController>();
     static float _scanAt;
+    static int _frame = -1;
+    static bool _anyone;
 
     void Update()
     {
         if (landing == null) return;
-        if (Time.time >= _scanAt)
+        if (_frame != Time.frameCount)   // (175 salidas: se mira una vez por frame si hay alguien nadando)
         {
-            _scanAt = Time.time + 0.5f;
-            _swimmers.Clear(); _swimmers.AddRange(FindObjectsByType<PlayerController>(FindObjectsSortMode.None));
+            _frame = Time.frameCount;
+            if (Time.time >= _scanAt)
+            {
+                _scanAt = Time.time + 0.5f;
+                _swimmers.Clear(); _swimmers.AddRange(FindObjectsByType<PlayerController>(FindObjectsSortMode.None));
+            }
+            _anyone = false;
+            for (int i = 0; i < _swimmers.Count && !_anyone; i++) _anyone = _swimmers[i] != null && _swimmers[i].IsSwimming;
         }
+        if (!_anyone) return;
         for (int i = 0; i < _swimmers.Count; i++)
         {
             PlayerController pc = _swimmers[i];

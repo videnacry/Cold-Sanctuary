@@ -185,7 +185,7 @@ public class DineSpell : QueuedSpell
     static Vector3 ReturnPoint(Anima self)
     {
         FoodContainer fc = NearestFood(self.transform.position);
-        if (fc == null) foreach (RestaurantKitchen rk in Object.FindObjectsByType<RestaurantKitchen>(FindObjectsSortMode.None))
+        if (fc == null) foreach (RestaurantKitchen rk in SceneCache.All<RestaurantKitchen>(2f))
             if (rk != null && rk.dishes != null) foreach (RestaurantKitchen.DishStock d in rk.dishes) if (d != null && d.container != null) { fc = d.container; break; }
         Transform pass = fc != null ? fc.transform.parent : null;
         if (pass == null || !pass.name.StartsWith("Barra")) return self.transform.position;
@@ -266,7 +266,7 @@ public class DineSpell : QueuedSpell
     {
         FoodContainer best = null; float bestSq = float.MaxValue;
         bool restaurant = false;
-        foreach (RestaurantKitchen rk in Object.FindObjectsByType<RestaurantKitchen>(FindObjectsSortMode.None))
+        foreach (RestaurantKitchen rk in SceneCache.All<RestaurantKitchen>(2f))
         {
             if (rk == null || rk.dishes == null) continue;
             foreach (RestaurantKitchen.DishStock d in rk.dishes)
@@ -280,7 +280,7 @@ public class DineSpell : QueuedSpell
             }
         }
         if (restaurant) return best;
-        foreach (FoodContainer fc in Object.FindObjectsByType<FoodContainer>(FindObjectsSortMode.None))   // sin restaurante: donde haya comida
+        foreach (FoodContainer fc in SceneCache.All<FoodContainer>(2f))   // sin restaurante: donde haya comida
         {
             if (fc == null || !fc.HasFood) continue;
             float sq = (fc.transform.position - from).sqrMagnitude;
@@ -343,9 +343,10 @@ public class DineSpell : QueuedSpell
 
     // Una silla libre del comedor («Asiento» de una «Mesa_»), la más cercana a las alfombras del anillo (por donde se llega):
     // ni la de otro del personal ni la mesa de un turista.
+    static GameObject _dining;
     static Transform FreeSeat()
     {
-        GameObject dining = GameObject.Find("Comedor_Gourmet");
+        GameObject dining = _dining != null ? _dining : _dining = GameObject.Find("Comedor_Gourmet");
         if (dining == null) return null;
         Vector3 from = dining.transform.position;
         Transform area = dining.transform.parent;
@@ -440,11 +441,18 @@ public class ToiletSpell : QueuedSpell
     // de desnivel), solo valen aquellos a los que el camino del NavMesh termina junto al inodoro (a ≤ 1,4 m, la parada de
     // CarpetWalkSpell: la puerta de la cabina); los de otro piso los lleva la red de alfombras y el árbol. Si ninguno vale, el
     // más cercano, como antes. Tope: 10 caminos por búsqueda (una vez por viaje al baño).
+    static readonly List<Transform> _toilets = new List<Transform>();
+    static float _toiletsUntil;
     static Transform Nearest(Vector3 from, float pivotHeight)
     {
         var all = new List<(Transform t, float sq)>();
-        foreach (Transform t in Object.FindObjectsByType<Transform>(FindObjectsSortMode.None))
-            if (t.name == "Inodoro_seco") all.Add((t, (t.position - from).sqrMagnitude));
+        if (_toilets.Count == 0 || _toilets.Exists(x => x == null) || Time.unscaledTime >= _toiletsUntil)   // (recorrer 85 000 objetos por viaje al baño)
+        {
+            _toiletsUntil = Time.unscaledTime + 30f;
+            _toilets.Clear();
+            foreach (Transform t in Object.FindObjectsByType<Transform>(FindObjectsSortMode.None)) if (t.name == "Inodoro_seco") _toilets.Add(t);
+        }
+        foreach (Transform t in _toilets) all.Add((t, (t.position - from).sqrMagnitude));
         if (all.Count == 0) return null;
         all.Sort((a, b) => a.sq.CompareTo(b.sq));
         Vector3 feet = from - Vector3.up * pivotHeight;

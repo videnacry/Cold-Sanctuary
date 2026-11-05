@@ -20,6 +20,9 @@ public class TreeRotator : MonoBehaviour
     public float hoursPerTurn = 6f;
     [Tooltip("Cada cuánto (s) se recoloca el NavMesh del árbol.")]
     public float navRefresh = 0.25f;
+    /// <summary>Grados girados antes de recolocar el NavMesh (quitarlo y ponerlo cuesta lo suyo). A 0,4 °/s, una vez cada ~1,2 s; a 40 m del
+    /// eje, el NavMesh va como mucho 35 cm por detrás del piso. Antes, 0,05°: a pocos FPS, en cada frame.</summary>
+    public const float NavRefreshDegrees = 0.5f;
 
     /// <summary>Grados girados desde que empezó (con signo).</summary>
     public float TotalDegrees { get; private set; }
@@ -86,7 +89,7 @@ public class TreeRotator : MonoBehaviour
         if (_surface != null && Time.time >= _navAt)
         {
             _navAt = Time.time + navRefresh;
-            if (Quaternion.Angle(_navRot, transform.rotation) > 0.05f)
+            if (Quaternion.Angle(_navRot, transform.rotation) > NavRefreshDegrees)
             {
                 _surface.RemoveData(); _surface.AddData();
                 _navRot = transform.rotation; NavRefreshes++;

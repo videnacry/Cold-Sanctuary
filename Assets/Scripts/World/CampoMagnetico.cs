@@ -14,6 +14,7 @@ public class CampoMagnetico : MonoBehaviour
     void Update()
     {
         if (_r == null) return;
+        if ((Time.frameCount + GetHashCode()) % 4 != 0) return;   // (175 campos: el parpadeo es lento)
         if (_mpb == null) _mpb = new MaterialPropertyBlock();   // (tras recargar el código en Play no se conserva)
         float k = 0.75f + 0.25f * Mathf.Sin(Time.time * 2.3f + _phase) * Mathf.Sin(Time.time * 0.7f + _phase * 2f);
         Color c = _base; c.a = _base.a * k;

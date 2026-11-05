@@ -10,6 +10,7 @@ using UnityEngine;
 /// 3. lo que se mueve o tiene vida propia no entra (cuerpos de animas, grupos de animales, colmenas);
 /// 4. AUTOCURACIÓN: una máscara que se coge del perchero y una pieza que se mueve salen del lote y vuelven a dibujarse solas;
 /// 5. apagar y encender en vivo (la medida A/B) deja las piezas como estaban.
+/// 6. un cuerpo lejano deja de dibujarse, pausa sus scripts de figura y vuelve entero.
 /// </summary>
 public class LoteEstaticoTest : MonoBehaviour, ITestUnit
 {
@@ -84,6 +85,23 @@ public class LoteEstaticoTest : MonoBehaviour, ITestUnit
         LoteEstatico.SetLive(true);
         yield return null;
         TestProbe.Check("y al volver, las piezas vuelven a sus lotes", batched.Count(r => r != null && r.forceRenderingOff) > 0 && LoteEstatico.Live);
+        // CUERPO LEJANO: se deja de dibujar, sus scripts de figura se pausan y vuelve entero (el TestRunner lo impide salvo aquí).
+        Anima far = null;
+        Vector3 cam = Camera.main != null ? Camera.main.transform.position : Vector3.zero;
+        foreach (Anima a in FindObjectsByType<Anima>(FindObjectsSortMode.None))
+            if ((a.transform.position - cam).sqrMagnitude > 200f * 200f && a.GetComponentInChildren<CubeWalkCycle>() != null) { far = a; break; }
+        if (far == null) TestProbe.Check("(sin cuerpo a más de 200 m: el recorte lejano no se comprueba aquí)", true);
+        else
+        {
+            CubeWalkCycle walk = far.GetComponentInChildren<CubeWalkCycle>();
+            Renderer body = far.GetComponentInChildren<Renderer>();
+            LoteEstatico.FarInTests = true;
+            yield return Until(() => !walk.enabled, 12f);
+            TestProbe.Check("un cuerpo lejano no se dibuja y pausa su figura", !walk.enabled && body.forceRenderingOff && body.enabled, far.name);
+            LoteEstatico.FarInTests = false;
+            yield return Until(() => walk.enabled, 12f);
+            TestProbe.Check("y al acabar vuelve entero", walk.enabled && !body.forceRenderingOff, far.name);
+        }
         TestProbe.End();
     }
 }
