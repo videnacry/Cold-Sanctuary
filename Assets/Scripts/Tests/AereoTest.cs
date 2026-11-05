@@ -82,6 +82,11 @@ public class AereoTest : MonoBehaviour, ITestUnit
             LaunchSite ls = LaunchSite.Instance;
             TestProbe.Check("T13: la plataforma cumple, contando también el santuario 1", ls != null && ls.PadY >= LaunchHeightRule.RequiredPadHeight(out _) - 0.01f, ls != null ? $"{ls.PadY:0} m; {ls.LastWhy}" : "");
             TestProbe.Check("sin alfombras allí: se sale por los andenes", b.GetComponentsInChildren<CarpetPad>(true).Length == 0 && b.launchArrival != null && b.energyArrival != null);
+            // LA DETECCIÓN se fue con sus casquetes: un radar y un sonar en cada uno (el del sitio nuclear lo cuenta NuclearAccessTest).
+            Transform[] parts = b.GetComponentsInChildren<Transform>(true);
+            System.Func<string, IcebergRule.Site, int> onCap = (name, s) => parts.Count(t => t.name == name && IcebergRule.FlatDistance(t.position, s) < IcebergRule.DangerRadius(s));
+            int rl1 = onCap("Radar_hielo", IcebergRule.Site.Launch), re1 = onCap("Radar_hielo", IcebergRule.Site.Energy), sl1 = onCap("Sonar_quillas", IcebergRule.Site.Launch), se1 = onCap("Sonar_quillas", IcebergRule.Site.Energy);
+            TestProbe.Check("radar y sonar en los casquetes de la lanzadera y del parque", rl1 == 1 && re1 == 1 && sl1 == 1 && se1 == 1, $"lanzadera {rl1}+{sl1}, parque {re1}+{se1}");
             Vector3 launchAt = b.launchArrival.position, energyAt = b.energyArrival.position;
             TestProbe.Check("los andenes, sobre sus casquetes", IcebergRule.FlatDistance(launchAt, IcebergRule.Site.Launch) < 60f && IcebergRule.FlatDistance(energyAt, IcebergRule.Site.Energy) < 150f && AereoRule.InSector(launchAt) && AereoRule.InSector(energyAt));
             TestProbe.Check("sus pisos no se cuentan dos veces", b.GetComponentsInChildren<FloorEnergy>(true).Length == 0);

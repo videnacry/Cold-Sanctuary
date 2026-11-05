@@ -24,6 +24,7 @@ public static partial class SampleSceneBuilder
         Vector3 site = NuclearSiteRule.Center;
         HelixTower h = TowerHelix(new Vector2(NuclearSize.x, NuclearSize.x), 3, 0f, 10f);
         h.firstY = NuclearSiteRule.FirstFloorY;   // (después de TowerHelix: su mínimo es por los árboles que crecen en el suelo, y aquí no hay)
+        h.chordD = StructuralLimits.ChordFor(h);   // (sus pisos de 46 m alargan la rama: con los cordones de siempre, al 100 %)
         Helix hx = BeginHelix(_nuclearRoot, NuclearSiteRule.Building, TowerRoot(NuclearSiteRule.Building), site, 0f, h, rotates: false);
         hx.pickDoors = true;
         hx.tipContent = NuclearTip;

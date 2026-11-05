@@ -525,8 +525,9 @@ public class WorkdayDirector : MonoBehaviour
     void Drive(GameObject g, string area, string doing, string missionId, bool alwaysMove = false)
     {
         // EVACUACIÓN DEL SITIO NUCLEAR (docs/sitio-nuclear.md): nadie va a sus pisos, y quien estaba allí, al hospital.
-        if (NuclearSite.Evacuating && (NuclearSite.IsSiteArea(area) || area == null && NuclearSiteRule.InZone(g.transform.position)))
-        { area = AreaWork.Hospital; doing = EvacuationDoing; missionId = null; alwaysMove = true; }
+        // Quien está en la zona se va, sea cual sea su misión: la jornada lo pide cada fotograma y la evacuación solo cada 2 s (ronda 12: a Linduarda, de obra, la dejaba allí).
+        bool evacuating = NuclearSite.Evacuating && (NuclearSite.IsSiteArea(area) || NuclearSiteRule.InZone(g.transform.position));
+        if (evacuating) { area = AreaWork.Hospital; doing = EvacuationDoing; missionId = null; alwaysMove = true; }
         AereoLink.Note(g, area);   // SANTUARIO AÉREO (docs/sitio-nuclear.md §23): quien trabaja allí vuela desde el muelle y su misión corre por el reloj
         if (AereoRule.IsArea(area) && (AereoLink.IsAway(g) || AereoLink.Board(g))) return;
         if ((missionId == SiteLine.MissionId || missionId == Refuge.MissionId || HunterCell.Rides(missionId)) && SiteLine.Board(g, missionId)) return;   // la bajada: ya en la estación, sube al carro (docs/sitio-nuclear.md §8)
@@ -563,7 +564,7 @@ public class WorkdayDirector : MonoBehaviour
         if (vetDuty && vet == null) vet = g.AddComponent<VetCare>();
         if (vet != null) vet.enabled = vetDuty;
         if (vet != null && vet.Busy) { if (idle != null) idle.enabled = false; SetStatus(g, vet.Doing ?? doing); return; }
-        if (lin != null) lin.enabled = area == null || area == AreaWork.Hospital || NewcomerWaiting();
+        if (lin != null) lin.enabled = !evacuating && (area == null || area == AreaWork.Hospital || NewcomerWaiting());   // (con su conducta encendida, Drive no la mueve: en la evacuación tiene que irse como los demás)
         if (lin != null && lin.enabled && NewcomerWaiting() && idle != null) idle.enabled = false;   // con un recién llegado, Linduarda no merodea: lo atiende
         if (RestaurantService.Drives(g)) { if (idle != null) idle.enabled = false; return; }   // la brigada del restaurante: la mueve el servicio (puesto, pase, obrador, limpieza)
         if (area == null)

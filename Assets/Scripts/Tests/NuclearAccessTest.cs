@@ -185,8 +185,10 @@ public class NuclearAccessTest : MonoBehaviour, ITestUnit
         TestProbe.Check("un trozo sí lo para el escudo; un iceberg entero, no", moving != null && moving.Tonnes > IcebergRule.ShieldTonnes);
         ArbolCampos launchTree = ArbolCampos.All.FirstOrDefault(a => a != null && a.building == LaunchHeightRule.Building), energyTree = ArbolCampos.All.FirstOrDefault(a => a != null && a.building == EnergyRule.Building);
         TestProbe.Check("los tres casquetes vigilados están donde dice la regla", (launchTree == null || Flat(launchTree.transform.position, IcebergRule.Center(IcebergRule.Site.Launch)) < 1f) && (energyTree == null || Flat(energyTree.transform.position, IcebergRule.Center(IcebergRule.Site.Energy)) < 1f));
-        int radars = FindObjectsByType<Transform>(FindObjectsSortMode.None).Count(t => t.name == "Radar_hielo"), sonars = FindObjectsByType<Transform>(FindObjectsSortMode.None).Count(t => t.name == "Sonar_quillas");
-        TestProbe.Check("radar y sonar en cada casquete artificial", radars >= 2 && radars == sonars, $"{radars} radares");
+        // Solo el casquete nuclear sigue en el santuario 1: los de la lanzadera y el parque viajaron al Santuario Aéreo, y allí los cuenta AereoTest.
+        System.Func<string, int> onCap = n => FindObjectsByType<Transform>(FindObjectsSortMode.None).Count(t => t.name == n && IcebergRule.FlatDistance(t.position, IcebergRule.Site.Nuclear) < IcebergRule.DangerRadius(IcebergRule.Site.Nuclear));
+        int radars = onCap("Radar_hielo"), sonars = onCap("Sonar_quillas");
+        TestProbe.Check("radar y sonar en el casquete del sitio nuclear", radars == 1 && sonars == 1, $"{radars} radares, {sonars} sonares");
         if (moving != null)
         {
             Vector3 back = moving.transform.position, c = NuclearSiteRule.Center, lc = IcebergRule.Center(IcebergRule.Site.Launch);
@@ -217,6 +219,7 @@ public class NuclearAccessTest : MonoBehaviour, ITestUnit
 
         // ── 5. EL SANTUARIO MARINO ──
         if (!Application.CanStreamedLevelBeLoaded(SiteLine.MarineScene)) { TestProbe.Check("el Santuario Marino está construido y en Build Settings", false, "Tools/Cold Sanctuary/Build Santuario Marino"); TestProbe.End(); yield break; }
+        Scene active0 = SceneManager.GetActiveScene();   // (no gameObject.scene: la prueba puede correr en un objeto DontDestroyOnLoad)
         float mem0 = UnityEngine.Profiling.Profiler.GetTotalAllocatedMemoryLong() / (1024f * 1024f), rl = Time.realtimeSinceStartup;
         AsyncOperation op = SceneManager.LoadSceneAsync(SiteLine.MarineScene, LoadSceneMode.Additive);
         while (op != null && !op.isDone && Time.realtimeSinceStartup - rl < 30f) yield return null;
@@ -250,7 +253,7 @@ public class NuclearAccessTest : MonoBehaviour, ITestUnit
             var noKit = rf != null ? kit.Where(k => Named(rf, k) == null).ToList() : kit.ToList();
             TestProbe.Check("el refugio, entero y centrado en el pilar", rf != null && noKit.Count == 0 && Mathf.Abs(rf.position.z - Named(m, "Estacion_inferior").position.z) < 0.5f, string.Join(", ", noKit));
             TestProbe.Check("pocas piezas: la escena no pesa", m.GetComponentsInChildren<Transform>(true).Length < 2000, $"{m.GetComponentsInChildren<Transform>(true).Length} objetos");
-            TestProbe.Check("no toca nada de arriba: el santuario 1 sigue igual", ns != null && SiteLine.Instance == line && SceneManager.GetActiveScene() == gameObject.scene);
+            TestProbe.Check("no toca nada de arriba: el santuario 1 sigue igual", ns != null && SiteLine.Instance == line && SceneManager.GetActiveScene() == active0 && ns.gameObject.scene == active0);
             AsyncOperation un = SceneManager.UnloadSceneAsync(SiteLine.MarineScene);
             float ru = Time.realtimeSinceStartup;
             while (un != null && !un.isDone && Time.realtimeSinceStartup - ru < 30f) yield return null;

@@ -56,12 +56,16 @@ public class SubmarineTest : MonoBehaviour, ITestUnit
 
         // ── 3. ENTREGA ──
         ArbolCampos home = ArbolCampos.At(sub.transform.position + Vector3.up * 0.5f, out _, out _, false);
-        ConstructionProject job = ConstructionProject.All.Where(p => p != null && !p.Finished)
-            .OrderByDescending(p => ArbolCampos.At(p.transform.position + Vector3.up * 0.5f, out _, out _, false) != home)
+        // Las obras se guardan: en una partida con todas terminadas (ronda 12: las 4 en 6/6) no queda ninguna abierta. La prueba prepara la suya, sin tocar lo guardado, y la deja como estaba.
+        ConstructionProject job = ConstructionProject.All.Where(p => p != null).OrderBy(p => p.Finished)
+            .ThenByDescending(p => ArbolCampos.At(p.transform.position + Vector3.up * 0.5f, out _, out _, false) != home)
             .FirstOrDefault(p => ArbolCampos.At(p.transform.position + Vector3.up * 0.5f, out _, out _, false) != null);
         if (job == null) { TestProbe.Check("hay una obra en un edificio-árbol a la que llevar material", false); TestProbe.End(); yield break; }
         ArbolCampos dest = ArbolCampos.At(job.transform.position + Vector3.up * 0.5f, out TreeLevel dl, out _, false);
         if (MaterialStore.Instance != null) foreach (var k in MaterialStore.DayKit) if (MaterialStore.Instance.Have(k.item) < k.n) MaterialStore.Instance.Add(k.item, k.n);
+        int jobDays = job.daysDone; bool jobMaterial = job.materialOnSite, jobPersist = job.persist;
+        job.persist = false;
+        if (job.Finished) job.Restore(0, false);
         job.materialOnSite = false; job.Refresh();
         // Animales en su camino: un banco de peces y un grupo de medusas bajo el árbol de la obra y en su tronco.
         Swarm fish = Swarm.All.FirstOrDefault(s => s != null && s.kind == SwarmKind.Fish);
@@ -92,6 +96,7 @@ public class SubmarineTest : MonoBehaviour, ITestUnit
         // ── 4. VUELTA ──
         { float t1 = Time.time, r1 = Time.realtimeSinceStartup; while (sub.Now != ConstructionSubmarine.State.Parked && Time.time - t1 < 600f && Time.realtimeSinceStartup - r1 < 300f) yield return null; }
         Time.timeScale = oldScale;
+        job.Restore(jobDays, jobMaterial); job.persist = jobPersist;
         TestProbe.Check("vuelve al garaje y aparca en su plaza", sub.Now == ConstructionSubmarine.State.Parked && Vector3.Distance(sub.transform.position, sub.home.position) < 2f,
             $"a {Vector3.Distance(sub.transform.position, sub.home.position):0.0} m de su plaza; holgura mínima con los animales en todo el viaje {sub.MinClearance:0.0} m");
         TestProbe.End();

@@ -101,6 +101,20 @@ public static class StructuralLimits
         return n;
     }
 
+    /// <summary>(2026-11-05, «Sitio Nuclear»: pisos de 46 m, rama más larga, 3602/3592 MN·m = 100 %) Ø de los cordones de la rama que la deja
+    /// bajo <see cref="RootWarnUse"/>: desde el de <paramref name="h"/>, de 0,2 en 0,2 m. El momento de la rama no depende de los pisos ni de las puntas que lleve el tronco.</summary>
+    public static float ChordFor(HelixTower h)
+    {
+        float keep = h.chordD, d = keep;
+        for (; d < 2.4f; d += 0.2f)
+        {
+            h.chordD = d;
+            if (RootCheck(h, 0, 0).TipUse <= RootWarnUse) break;
+        }
+        h.chordD = keep;
+        return d;
+    }
+
     public static RootReport RootCheck(HelixTower h, int floors, int tips, float height = 92f, int ribs = 24,
                                        float hoopSpacing = 6f, float hoopArea = 0.09f, float strutDrop = 4f, float ribD = 0.8f)
     {

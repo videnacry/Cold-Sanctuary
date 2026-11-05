@@ -29,10 +29,11 @@ public static partial class SampleSceneBuilder
         WireMeditationArea(root, "Control_de_mision", LaunchSite.ControlArea, new Color(0.45f, 0.55f, 0.7f), MissionKind.Channel, null, virtualOnly: true);
         BeginEnergyTree(root);
         FinishHelixes();
-        // Sin alfombras aquí: se sale por el andén. (Una alfombra de allí que volase al santuario desaparecería al descargar la escena.)
-        foreach (CarpetPad pad in root.GetComponentsInChildren<CarpetPad>(true)) Object.DestroyImmediate(pad.gameObject);
         FinishLaunchSite();
         BuildEnergyVisuals(b, _energyRoot, _energyHx);
+        // Sin alfombras aquí: se sale por el andén. (Una alfombra de allí que volase al santuario desaparecería al descargar la escena.)
+        // Después de FinishLaunchSite, que pone la de la plataforma: antes de él, esa sobrevivía (prueba 110, ronda 12).
+        foreach (CarpetPad pad in root.GetComponentsInChildren<CarpetPad>(true)) Object.DestroyImmediate(pad.gameObject);
         ValidateLaunchHeight("al construir el Santuario Aéreo");
         // Las aves frías de territorio, lejos de las turbinas (a un ave que se acerca, paran). El agua es el mar del santuario 1: esta escena siempre se carga encima de él.
         PlaceAirColdFauna(root, LaunchSiteCenter + new Vector3(0f, 0f, -220f), 120f, SeaRule.Surface);

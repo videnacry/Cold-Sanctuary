@@ -4,6 +4,10 @@ Tablero para retomar. Última sesión: 2026-08-28. Marca lo que completes.
 Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-planteamiento.md`](gaps-vs-planteamiento.md),
 [`world-topology-and-planes.md`](world-topology-and-planes.md) (visión del mundo grande / los 3 planos).
 
+> **HECHO 2026-11-05 (ronda 12, rama claude/fix-ronda12; solo código, sin probar en vivo):** alfombra de la plataforma fuera del Santuario Aéreo, evacuación de todos los de la zona (Linduarda incluida), cordones de Ø 1,8 m en las ramas del Sitio Nuclear, y pruebas 100, 110, 73 y 94 al día con la separación de escenas.
+> - [ ] Reconstruir SampleScene (solo el santuario) y el Santuario Aéreo.
+> - [ ] Probar los grupos 100, 110, 73, 94 y 28.
+
 > **HECHO 2026-11-05 (interfaz y personajes, rama claude/edif-interfaz; solo código, sin probar en vivo):** pila de botones sobre F10 con ventanas de horario (F2), recursos (F3) y misiones y jornada (F4), y el panel de recursos ya no está siempre a la vista ([interfaz-botones.md](interfaz-botones.md)). **Consol**, maestra jefa de Ashtanga, con su clase profunda; **Josedrilo**, jefe de Hatha; **Panterilia** deja el yoga. **Fernando**, paneles solares, con las misiones `sol_` de la rama de energía, ya integrada. Quinta casa por árbol. **Reglas de personajes** P1–P10 y una ficha por persona ([reglas-personajes.md](reglas-personajes.md), `docs/personajes/`).
 > - [ ] Reconstruir SampleScene (solo el santuario) y guardarla: personas, casas y árboles nuevos.
 > - [ ] Probar los grupos 93, 95, 101, 64, 65, 87, 89, 75, 50 y 28.

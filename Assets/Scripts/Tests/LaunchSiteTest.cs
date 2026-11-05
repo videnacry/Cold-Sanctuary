@@ -10,7 +10,7 @@ using UnityEngine;
 ///    a mano a su altura de antes.
 /// 4. CONTENCIÓN: deflector y trinchera de llamas, diluvio de agua, cubeta de contención y escudo contra cascotes; el cohete en su mesa.
 /// 5. PISOS: «Fábrica de cohetes», «Control de misión» (con su área, puestos y misiones de la jornada) y el garaje del submarino.
-/// 6. ACCESO: el submarino de obra llega por la vía marina al garaje de la lanzadera, con alfombras en el suelo, el techo y la plataforma.
+/// 6. ACCESO: se llega por el muelle aéreo y se vuelve por el andén (sin alfombras allí), y el submarino de obra llega por la vía marina al garaje de la lanzadera.
 /// </summary>
 public class LaunchSiteTest : MonoBehaviour, ITestUnit
 {

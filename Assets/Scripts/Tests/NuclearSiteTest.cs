@@ -125,7 +125,7 @@ public class NuclearSiteTest : MonoBehaviour, ITestUnit
             bool started = ns.EvacueesLeft > 0;
             float oldTs = Time.timeScale; Time.timeScale = 4f;
             float te = Time.time, re = Time.realtimeSinceStartup;
-            while (NuclearSiteRule.InZone(evac.transform.position) && Time.time - te < 300f && Time.realtimeSinceStartup - re < 120f) yield return null;
+            while (NuclearSiteRule.InZone(evac.transform.position) && Time.time - te < 300f && Time.realtimeSinceStartup - re < 300f) yield return null;   // (a 3 FPS el juego va a ~1 s por s real, sea cual sea timeScale: 120 s reales dejaban 113 de los 300 s de juego)
             Time.timeScale = oldTs;
             TestProbe.Check("EVACUACIÓN: la emergencia saca de la zona a quien estaba en la Central", started && !NuclearSiteRule.InZone(evac.transform.position), $"«{evac.name}»: {ns.EvacueesLeft} en la zona al último recuento; {Time.time - te:0} s de juego; a {Flat(evac.transform.position, NuclearSiteRule.Center):0} m del sitio");
         }

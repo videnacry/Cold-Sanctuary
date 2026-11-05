@@ -136,6 +136,7 @@ toma el sumidero de Flexblue y la protección de la caverna, sigue a mano y, si 
 - **Acceso:** una **esclusa** va del tronco (abierto al mar) a cada cajón, para mantenimiento. **Nadie del personal baja en la jornada**: el
   cajón no tiene colisiones, y el trabajo se hace desde los pisos.
 - **Evacuación real:** con `DeclareEmergency`, cada 2 s `WorkdayDirector.EvacuateSite` manda al hospital a quien siga en la zona de exclusión;
+- **Todos, sea cual sea su misión (ronda 12):** `WorkdayDirector.Drive` manda al hospital a quien esté en la zona aunque su misión sea de otra área, y apaga la conducta propia de Linduarda mientras tanto: con ella encendida, `Drive` no la movía y se quedaba en la zona.
   a Kushal lo saca la Magnate. Mientras dure, la jornada no manda a nadie a esos pisos.
 - **Tiempo libre:** el ocio no abre ningún área de la zona, y quien acaba allí su turno se va.
 
@@ -815,6 +816,8 @@ Berón: «me parece que el santuario3 es en el aire? entonces podemos mover las 
 - **Trabajadores, sin cargar nada:** vuelan en alfombra al muelle, el cuerpo se oculta y su misión corre por el reloj hasta que su jornada los lleva a otra parte. Fernando pasa allí casi todo el día de una vez, sin ir y venir.
 - **Kushal, en persona:** en el muelle elige lanzadera o parque; negro, carga aditiva dentro de los 30 s de vuelo, y aparece en el andén. Vuelve pisando el andén, y la escena se descarga. Si no carga en 20 s más, se queda en el muelle.
 - **Sin alfombras allí:** una que volase al santuario desaparecería al descargar. Se entra y se sale por el muelle.
+- **Detección:** los radares y sonares de la lanzadera y del parque viajan con sus casquetes: en el santuario 1 solo queda el del sitio nuclear (lo cuenta `NuclearAccessTest`; los otros dos, `AereoTest`). La retirada de alfombras va **después** de `FinishLaunchSite`, que pone la de la plataforma.
+- **Ramas del sitio:** sus pisos de 46 m alargan la rama (3602 MN·m). Con los cordones de Ø 1,6 m iba al 100 %; `StructuralLimits.ChordFor` le da Ø 1,8 m, 79 %.
 
 ### Revisión de lo que pedías
 | Qué | Resultado |
