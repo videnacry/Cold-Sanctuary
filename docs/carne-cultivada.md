@@ -5,7 +5,7 @@ El santuario tiene un área propia para esto, el **Laboratorio de carne cultivad
 La enfermería solo aporta la **biopsia**: unos gramos de músculo de un animal vivo, con anestesia local. El laboratorio
 produce carne para los osos y los demás carnívoros **sin matar a ningún animal**.
 
-Está en el casquete Este, entre la sala de yoga y la mecánica. Las raciones salen al **comedero de los depredadores**,
+Está en su piso de la torre de Servicios. Las raciones salen al **almacén del alimentador** ([alimentador.md](alimentador.md)),
 junto al territorio de los osos. Funciona con la energía solar del santuario. Código: `Assets/Scripts/World/CulturedMeatLab.cs`.
 
 ## Cómo se hace la carne cultivada (proceso real)
@@ -46,9 +46,9 @@ pescado para focas y pingüinos.
 | Medio | Depósito con agitador, filtro de 0,2 µm, autoclave | 15 s |
 | Proliferación | Biorreactor de semilla (50 L) y de producción (500 L) con sondas | 12 s por duplicación (≈ 9 duplicaciones) |
 | Diferenciación | Biorreactor de perfusión con andamio y estirador | 30 s |
-| Cosecha | Centrífuga, formadora, cámara fría | 10 s → 4 raciones de 500 g al comedero |
+| Cosecha | Centrífuga, formadora, cámara fría | 10 s → 32 raciones de 500 g al almacén (16 kg por lote) |
 
-La consola del laboratorio muestra en vivo la fase, las células, la glucosa, el pH y el O₂. El comedero acumula como
+La consola del laboratorio muestra en vivo la fase, las células, la glucosa, el pH y el O₂. El almacén acumula como
 máximo 6 raciones; son `FoodItem` de carne que los carnívoros encuentran y comen.
 
 **Pendiente:**

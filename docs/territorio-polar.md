@@ -92,7 +92,7 @@ más casquetes... mueve el que menos se vería afectado o uno random». Esto cam
 - **Torre:** Producción, de (113, −15) a **(−180, −140)**, lóbulo Isla:Tundra, con su giro y altura de siempre. Da alfombras a la mitad oeste de la isla, que no tenía.
 - **Por qué esa:** es la más baja (2 niveles) y la única cuyo casquete no sostiene nada más que los osos. Ciencias y el Árbol de los Campos ya estaban sobre tierra; Servicios y Entrenamiento llevan el hospital, el gimnasio y la residencia al lado.
 - **Casquete retirado:** Este entero. Sus tres lóbulos quedan con radio 0 para no mover los índices, que dan forma a las orillas.
-- **Se van con la torre:** el comedero de los depredadores (a los mismos 20 m del tronco) y los osos, a 19 m. Así la ruta del guardia sigue igual: comedero al pie de su torre. La osa tiene `Cueva_roca_Valle`; en la isla de Wrangel hay cientos de guaridas sobre tierra.
+- **Se van con la torre:** los osos, a 19 m. El comedero se retiró después: los atiende el alimentador ([alimentador.md](alimentador.md)). La osa tiene `Cueva_roca_Valle`; en la isla de Wrangel hay cientos de guaridas sobre tierra.
 - **Holguras (`mig/Clear.cs`):** Árbol de los Campos–Producción 28,1 m (regla ≥ 16); Entrenamiento 109,6; Servicios 207,1. Lanzadera a unos 400 m y sitio nuclear a más de 700: T13 y T14 no cambian.
 - **Horario libre:** `TogetherLead` pasa de 20 a 25 min de juego, porque el vuelo a la arboleda es unos 90 m más largo.
 
@@ -100,7 +100,7 @@ También cambian: la colonia del emperador va a Centro:Textil y los frentes de E
 
 ## Pendiente
 
-- **Respiraderos para los osos:** en la isla no hay hielo con focas, así que comen del comedero, de presas y de peces de la costa.
+- **Respiraderos para los osos:** en la isla no hay hielo con focas, así que comen lo que les lleva el alimentador, presas y peces de la costa.
 - **Bosque de algas** (Beagle) bajo la orilla sur, y aves en los acantilados.
 - **Corro del buey** como conducta real.
 - **Isla en el mapa del jugador,** si hay.

@@ -26,6 +26,7 @@ junta. El resumen está en [manual-de-diseno.md §13](manual-de-diseno.md#13-ani
 | E12 | **Escena de ciclo de vida.** Cada especie tiene `CicloVida_<Escena>`: se añade a `CicloVidaPanel.Species` (con su hábitat) y a `StartScreen.Special`; comida inagotable y pareja adulta. | Comprobar cada proceso. | Grupo 58 en esa escena |
 | E13 | **Polo mezclado, y dicho.** El santuario es artificial y junta los dos polos (morsas árticas y pingüinos antárticos). Se admite, pero cada ficha dice de dónde es la especie. | Para que no pase por dato. | Solo en docs |
 | E15 | **Cadena alimenticia.** Al añadir una especie se pone en `PopulationPlan.Groups` y `FoodChain` la evalúa: lee dietas y poblaciones, calcula lo que necesita cada depredador y sube bancos, plantas o presas para que nadie pase hambre. Si hace falta una presa que no existe, se crea. | Berón: «para que nadie muera de hambre». | Grupo 85; `[Cadena]` al final del Blockout; menú «Cadena alimenticia (evaluar)» |
+| E16 | **Sin comederos fijos para depredadores.** Los atiende el alimentador, a distancia segura y sin compartir espacio. | Comodidad de la guardia y riesgo real. | Grupo 77; [alimentador.md](alimentador.md) |
 | E14 | **Mente propia.** `Archetypes` (cuerpo, mente, relaciones entre especies) y `PhrasePools` (pensamientos) van con ella. | Todo ser tiene mente. | Grupo 99 (catálogos) |
 
 ### Tablas de una especie
@@ -114,7 +115,7 @@ equilibrar el número de poblaciones y también puede incrementar el número de 
 
 - **Lee lo que hay:** quién vive (`PopulationPlan.Groups`), qué come (`Forager`, `Ethogram`), de quién es presa (`Archetypes`: la presa teme al que la caza) y cuánto cría (`Reproduction.Calendar`).
 - **Cuenta por año del santuario (28 días de juego):** un animal come su ración de un día real cada día de juego, y sus presas crían un año real en esos 28 días.
-- **Necesidad:** ración × 28 × individuos. Al oso se le descuenta el 80 % que le lleva el guardia.
+- **Necesidad:** ración × 28 × individuos. A los depredadores de tierra se les descuenta `LabShare`: lo que da el laboratorio entre lo que necesitan todos. Antes era un 80 % supuesto para el oso.
 - **Oferta:** una presa da individuos × masa × ¼ de las crías anuales por hembra (la mitad son hembras y se come sobre todo a jóvenes). Un banco y una planta dan lo que rebrotan.
 - **Margen:** cada fuente solo puede dar el 80 %. Es un valor de diseño; en la realidad los lobos se llevan el 3–7 % de una manada al año y las morsas el 25 % de la producción de almejas.
 - **Qué sube, en este orden:** bancos (hasta 8) y plantas (hasta ×6), que no cuestan Animal completos; luego presas, hasta ×2. Si no basta, avisa.
@@ -131,6 +132,20 @@ equilibrar el número de poblaciones y también puede incrementar el número de 
 | Lobo 3 | 2,5–6 kg (Fuller 1989, *Wildl. Monogr.* 105) |
 | Reno 3, buey 3 | 1–3,7 y 2,6–2,8 kg de materia seca |
 | Zorro 0,25, liebre 0,3 | `[A]`: las fuentes dan kcal, no gramos |
+
+### Cumplimiento de E15 (revisado el 2026-11-05)
+
+Berón: al cambiar una regla, se comprueba todo lo que ya existe.
+
+| Lo existente | Cómo cumple |
+|---|---|
+| Las 12 especies de `PopulationPlan.Groups` | Las evalúa `FoodChain` (grupo 85) |
+| Las 15 escenas de ciclo de vida | Comida inagotable; el grupo 58 ahora comprueba que hay la suya. Su cuenco de carne se queda: es el banco de pruebas de la regla E12, no un comedero del santuario |
+| Abeja y araña de las nieves | Fuera de `FoodChain`: dependen de la colmena (la miel y las propias abejas), con su equilibrio en `Hive`. Grupo 58 comprueba el panal |
+| Malamute y crías de la Cría | Fuera: las alimenta el personal (`CriaFeeder`) |
+| Animales ingresados | Fuera: `VetCare` |
+| Humanos, insectos de los microcosmos | Fuera de la regla: es para el mesocosmos |
+| Peces y kril bajo los árboles | Suman a la oferta real del grupo 85, pero no a la planeada |
 
 ## Peces, crustáceos, bivalvos y medusas
 

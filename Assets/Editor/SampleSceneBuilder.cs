@@ -3397,7 +3397,7 @@ public static partial class SampleSceneBuilder
         gohaMood.anchors.Add(new ThoughtAnchor("hide_pain", 0.7f, 0.005f));
         gohaMood.anchors.Add(new ThoughtAnchor("trust_joy", 0.8f, 0.001f));
         gohageneis.AddComponent<Gohageneis>();
-        gohageneis.AddComponent<CarnivoreKeeper>();   // GUARDIA: patrulla y alimenta a los carnívoros para que no cacen
+        gohageneis.AddComponent<CarnivoreKeeper>();   // GUARDIA: patrulla (alimentar a los depredadores es la misión del alimentador)
         gohageneis.AddComponent<WorldCharacter>().characterName = "Gohageneis";
 
         GameObject goluis = MakePlaceholderPerson("Goluis_Post", new Vector3(-5f, 1f, -5f), new Color(0.4f, 0.4f, 0.55f));
@@ -3581,12 +3581,11 @@ public static partial class SampleSceneBuilder
         s2 = size[textile.transform]; Aseos(textile.transform, new Vector3(3.5f, 0.1f, -s2.y * 0.5f + 0.9f), 0f, 1);   // textil (al fondo, junto a los ovillos)
         s2 = criaLayout; Aseos(meat.transform, new Vector3(s2.x * 0.5f - 0.2f - 1.9f, 0.1f, -s2.y * 0.5f + 0.9f), 0f, 1);   // laboratorio
         s2 = size[works.transform]; Aseos(works.transform, new Vector3(s2.x * 0.5f - 0.2f - 1.9f, 0.1f, s2.y * 0.5f - 0.9f), 180f, 1);   // construcción
-        // Comedero de los depredadores junto a los osos: ahí deja el laboratorio las raciones de carne cultivada (viajan en alfombra).
-        // A 9 m de la cara Este del tronco de Producción (2026-11-01): estaba en (126, −6), a 1 m de la pared (de cuando Producción
-        // estaba en otro sitio), dentro del margen del NavMesh al pie del tronco: el guardia daba vueltas al tronco sin llegar.
-        GameObject feeder = new GameObject("Comedero_depredadores"); feeder.transform.SetParent(areasGroup.transform, false); feeder.transform.position = ProduccionCenter + new Vector3(20f, 0f, -6f);
-        KitchenProps.C(feeder.transform, new Vector3(0f, 0.08f, 0f), new Vector3(1.6f, 0.16f, 1.6f), KitchenProps.DarkSteel, 0f, "Bandeja");
-        WorldLabel fwl = feeder.AddComponent<WorldLabel>(); fwl.text = "Comedero (carne cultivada)"; fwl.height = 1f;
+        // El ALMACÉN DE RACIONES del alimentador, en el piso del laboratorio (Berón 2026-11-05: «retira el comedero»; docs/alimentador.md).
+        GameObject feeder = new GameObject("Almacen_raciones"); feeder.transform.SetParent(meat.transform, false);
+        feeder.transform.localPosition = new Vector3(-criaLayout.x * 0.5f + 1.2f, 0f, -criaLayout.y * 0.5f + 0.9f);
+        KitchenProps.C(feeder.transform, new Vector3(0f, 0.7f, 0f), new Vector3(1.4f, 1.4f, 0.7f), KitchenProps.DarkSteel, 0f, "Camara_raciones");
+        WorldLabel fwl = feeder.AddComponent<WorldLabel>(); fwl.text = "Raciones para el alimentador"; fwl.height = 1.8f;
         CulturedMeatLab.Build(meat.transform, criaLayout, feeder.transform);
         //  · CIENCIAS (docs/edificios-investigacion.md): Física (reactor TRIGA, ciclotrón y la sala de experimentos con su anillo
         //    y la torre de Foucault) · Química (síntesis y análisis) · Biología (cultivo y molecular). El reactor de

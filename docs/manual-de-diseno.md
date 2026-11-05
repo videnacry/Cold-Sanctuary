@@ -251,6 +251,7 @@ en el doc de su tema; aquí no se repite.
 | W6 | **Guardar SampleScene tras construir** (el Blockout no la guarda: «save» al buzón del editor). | Se perdía lo construido. | **solo en docs** | memoria «Save SampleScene» |
 | W7 | **Toda espera acotada** (sin bucles `until`) y avisar en una línea si algo se cuelga. | Un script esperó 40 minutos a una línea que no llegaba. | **solo en docs** | memoria «No stalls» |
 | W8 | **Al terminar una implementación, los docs y [checklist.md](checklist.md) quedan al día**, y este manual si hay regla nueva. | Berón lo exige. | **solo en docs** | memoria 2026-11-03 (segunda tanda) |
+| W10 | **Al cambiar una regla, se comprueba que todo lo que ya existe la cumple** (también las escenas de prueba), y se anota qué queda fuera y por qué. | Berón, 2026-11-05. | **solo en docs**; ejemplo en [reglas-animales.md](reglas-animales.md) | Berón |
 
 ## 11. Sincronización mesocosmos ↔ microcosmos
 
@@ -336,7 +337,7 @@ reconstruir. Vale para TODOS los pisos, no solo el hospital. Cada piso del santu
 ## 12. Recuento y reglas sin comprobación automática
 
 
-**Total: 164 reglas** (S 13 · F 13 · T 14 · C 7 · G 8 · H 8 · M 35 · A 5 · J 29 · W 9 · E 15 · P 7 = 163 —W9, la de revisar jornadas y horario al cambiar un piso, va en §11—, más la regla de
+**Total: 167 reglas** (S 13 · F 13 · T 14 · C 7 · G 8 · H 8 · M 35 · A 5 · J 29 · W 10 · E 17 · P 7 = 166 —W9, la de revisar jornadas y horario al cambiar un piso, va en §11—, más la regla de
 sincronización de §11). (Recontado por el probador al integrar actividades, tareasE, entreno, personajes, hospital y cohetes, 2026-11-04:
 las J18 en adelante se renumeraron en una sola secuencia —J18–J21 actividades y uniformes, J22 tareas con «E», J23–J27 entrenamientos
 y entrenador, J28 profesiones, J29 nada en pisos en obras—.)
@@ -374,13 +375,15 @@ Berón (2026-11-05): «¿tenemos reglas para la creación de animales?». Detall
 | E13 | **Polos mezclados, y dicho:** cada ficha dice de dónde es. | Para que no pase por dato. | solo en docs | ídem |
 | E14 | **Mente propia:** `Archetypes` y `PhrasePools`. | Todo ser tiene mente. | 99 | ídem |
 | E15 | **Cadena alimenticia:** `FoodChain` lee dietas y poblaciones y sube bancos, plantas o presas para que nadie pase hambre; si falta una presa, se crea. Todo pez, crustáceo y medusa lleva especie real. | Berón: «para que nadie muera de hambre». | 85, `[Cadena]` | ídem |
+| E16 | **Sin comederos fijos para depredadores:** los atiende el alimentador por rotación, con lista compartida, a distancia segura y sin compartir espacio. | «Retira el comedero». | 77 | [alimentador.md](alimentador.md) |
+| E17 | **Deshierbe con raíz:** lo nativo al vivero y a la tundra; lo no nativo a compostera cerrada, nunca al suelo. | Anexo II del Tratado Antártico; riesgo irreversible. | 100 | [deshierbe-cuidadoso.md](deshierbe-cuidadoso.md) |
 | P1 | **Mitad tierra, mitad hielo** (40–60 %); la isla reemplaza casquetes (Sur y Este) y tiene un edificio con alfombras. Las distancias entre masas están comprimidas para el juego, y se dice. | Berón: 50/50 y «reemplace a uno o más casquetes». | 99 | [territorio-polar.md](territorio-polar.md) |
 | P2 | **`NaturalIce` = suelo firme;** `IceAt` y `LandAt` dicen cuál. Colliders: `Casquete`, `Tierra`, `Tierra_orilla`. | Se usa en decenas de sitios. | 99 | ídem |
 | P3 | **La isla respeta los sitios lejanos:** ≥ 300 m de la lanzadera y ≥ 500 m del sitio nuclear. | Sus reglas de seguridad. | 90, 94 | ídem |
 | P4 | **Cuevas en las que se entra andando:** ≥ 4 × 3 m de boca, techo, NavMesh hasta el fondo. | Si no, son decorado. | 99 | ídem |
 | P5 | **Flora sobre el suelo, de especies reales;** en la isla no crecen árboles de hielo. | Berón: flora de la isla. | 99 | ídem |
 | P6 | **Cada rasgo sale de un lugar real** (Ross, Svalbard, Georgia del Sur); lo que no, se dice. | «Investigar lugares reales». | solo en docs | ídem |
-| P7 | **Al mover una torre, se lleva lo que depende de ella:** alfombras al suelo, comedero, osos, horario libre; holguras con `mig/Clear.cs`. | Producción y sus osos a la isla. | 99, 57 | ídem |
+| P7 | **Al mover una torre, se lleva lo que depende de ella:** alfombras al suelo, animales, horario libre; holguras con `mig/Clear.cs`. | Producción y sus osos a la isla. | 99, 57 | ídem |
 
 ## Docs de cada tema
 
@@ -392,5 +395,5 @@ Berón (2026-11-05): «¿tenemos reglas para la creación de animales?». Detall
 [submarinos-medicos.md](submarinos-medicos.md) · [medidas-muebles.md](medidas-muebles.md) · [microcosmos-areas.md](microcosmos-areas.md) ·
 [microcosmos-reglas-edificacion.md](microcosmos-reglas-edificacion.md) · [microcosmos-pueblos-mapas.md](microcosmos-pueblos-mapas.md) ·
 [microcosmos-actividades.md](microcosmos-actividades.md) · [microcosmos-famosos.md](microcosmos-famosos.md) · [luz-microcosmos.md](luz-microcosmos.md) ·
-[grupos-de-animales.md](grupos-de-animales.md) · [reglas-animales.md](reglas-animales.md) · [territorio-polar.md](territorio-polar.md) · [jornada-y-rotacion.md](jornada-y-rotacion.md) · [horario-libre.md](horario-libre.md) ·
+[grupos-de-animales.md](grupos-de-animales.md) · [reglas-animales.md](reglas-animales.md) · [territorio-polar.md](territorio-polar.md) · [alimentador.md](alimentador.md) · [deshierbe-cuidadoso.md](deshierbe-cuidadoso.md) · [jornada-y-rotacion.md](jornada-y-rotacion.md) · [horario-libre.md](horario-libre.md) ·
 [personajes-mesocosmos.md](personajes-mesocosmos.md) · [conversaciones.md](conversaciones.md) · [actividades-y-uniformes.md](actividades-y-uniformes.md) · [tareas-del-jugador.md](tareas-del-jugador.md) · [conventions.md](conventions.md) · [checklist.md](checklist.md)

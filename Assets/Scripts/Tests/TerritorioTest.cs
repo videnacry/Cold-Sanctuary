@@ -111,8 +111,6 @@ public class TerritorioTest : MonoBehaviour, ITestUnit
         TestProbe.Check("en torno a mitad de tierra y mitad de hielo", share > 0.4f && share < 0.6f, $"{share:P0} tierra ({ter.landArea:0} m² y {ter.iceArea:0} m²)");
         ArbolCampos prod = ArbolCampos.All.FirstOrDefault(a => a != null && a.building == "Producción");
         TestProbe.Check("la torre de Producción está en la isla: transporte aéreo", prod != null && Physics.Raycast(prod.transform.position + new Vector3(24f, 6f, 0f), Vector3.down, out RaycastHit prodHit, 12f, ~0, QueryTriggerInteraction.Ignore) && Territorio.IsLand(prodHit.collider));
-        GameObject feeder = GameObject.Find("Comedero_depredadores");
-        TestProbe.Check("el comedero de los osos sigue al pie de su torre", feeder != null && prod != null && Vector3.Distance(feeder.transform.position, prod.transform.position) < 30f);
         TestProbe.Check("el casquete Este ya no está: la isla lo reemplaza", !Physics.Raycast(new Vector3(118f, 8f, -20f), Vector3.down, 12f, ~0, QueryTriggerInteraction.Ignore));
         TestProbe.Check("la isla tiene sus lóbulos apuntados", ter.landPoints.Length >= 6, $"{ter.landPoints.Length} puntos");
         for (int i = 1; i < ter.landPoints.Length; i++)

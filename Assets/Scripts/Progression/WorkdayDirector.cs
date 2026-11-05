@@ -507,6 +507,12 @@ public class WorkdayDirector : MonoBehaviour
         bool guardDuty = missionId == "gua_carnivoros";
         if (guardDuty && keeper == null && g.GetComponent<Anima>() != null) keeper = g.AddComponent<CarnivoreKeeper>();
         if (keeper != null) keeper.enabled = guardDuty;
+        // EL ALIMENTADOR (docs/alimentador.md): quien tiene la misión sigue la lista compartida, sea quien sea.
+        bool feederDuty = missionId != null && missionId.StartsWith("gua_alimentador");
+        PredatorFeeder predatorFeeder = g.GetComponent<PredatorFeeder>();
+        if (feederDuty && predatorFeeder == null && g.GetComponent<Anima>() != null) predatorFeeder = g.AddComponent<PredatorFeeder>();
+        if (predatorFeeder != null) predatorFeeder.enabled = feederDuty;
+        if (feederDuty && predatorFeeder != null && idle != null) idle.enabled = false;
         // LA RONDA DE FRUTALES (docs/jardines-frutales.md): quien la tiene recorre los techos con su conducta propia.
         bool gardenDuty = FruitGardener.IsRound(missionId);
         FruitGardener gardener = g.GetComponent<FruitGardener>();
@@ -544,7 +550,7 @@ public class WorkdayDirector : MonoBehaviour
             return;
         }
         SetStatus(g, lin != null && lin.enabled && lin.Doing != null ? lin.Doing : doing);
-        if ((guardDuty && keeper != null) || (lin != null && lin.enabled)) { LeaveGym(g); return; }   // su conducta propia hace ESTA misión
+        if ((feederDuty && predatorFeeder != null) || (guardDuty && keeper != null) || (lin != null && lin.enabled)) { LeaveGym(g); return; }   // su conducta propia hace ESTA misión
         if (gardenDuty && gardener != null) { if (idle != null) idle.enabled = false; SetStatus(g, gardener.Doing ?? doing); return; }   // la ronda la lleva FruitGardener (y sus necesidades van antes, dentro de ella)
         // LAS NECESIDADES VAN ANTES QUE LA CLASE DE YOGA (2026-11-02): con «ir al baño» o «pedir en la barra» en marcha en su carril
         // propio, la clase (su papel de guía, demostrador o corrector, o la esterilla del entrenamiento de las 14 h) lo seguía

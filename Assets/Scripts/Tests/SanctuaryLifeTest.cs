@@ -84,7 +84,7 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
             TestProbe.Check("…y se cierra (campo apagado)", !tank.HatchOpen && !tank.FieldOn);
         }
 
-        // Carne cultivada: el laboratorio pasa por todas las fases y deja raciones de carne en el comedero de los depredadores.
+        // Carne cultivada: el laboratorio pasa por todas las fases y deja raciones de carne en el almacén del alimentador.
         CulturedMeatLab lab = CulturedMeatLab.All.Count > 0 ? CulturedMeatLab.All[0] : null;
         TestProbe.Check("hay laboratorio de carne cultivada", lab != null);
         if (lab != null)
@@ -221,7 +221,7 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         string famous = string.Join(" ", new[] { "Sadhguru", "ElonMusk", "Goku", "BillGates", "WarrenBuffett", "MacKenzieScott", "IbrahimTraore" }.Where(n => WorkdayDirector.Body(n) != null && WorkdayDirector.Body(n).scene == UnityEngine.SceneManagement.SceneManager.GetActiveScene()));
         TestProbe.Check("ningún famoso (Sadhguru ni los seis del mesocosmos) sigue en el santuario", famous.Length == 0, famous);
         CarnivoreKeeper keeper = FindAnyObjectByType<CarnivoreKeeper>();
-        TestProbe.Check("un guardia patrulla y alimenta a los carnívoros", keeper != null, keeper != null ? keeper.name : "ninguno");
+        TestProbe.Check("un guardia patrulla los puestos", keeper != null, keeper != null ? keeper.name : "ninguno");
 
         // Cocina profesional: recetario coherente, equipo instalado, cultivos plantados y obrador que encadena elaboraciones.
         var missingEq = new System.Collections.Generic.List<string>();

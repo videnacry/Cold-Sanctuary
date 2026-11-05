@@ -65,7 +65,8 @@ public static class PlayerTasks
         T("coc_atender", "Atiende en la barra|barra|Comanda", "Sirve el pedido|barra|Bandeja", "Limpia la barra|barra|Bayeta");
         T("coc_comedor", "Recoge las mesas|mesa|Bandeja", "Friega el suelo del comedor|mesa|Fregona", "Limpia los aseos|aseos|Cepillo");
         // ══ HUERTO ══
-        T("hue_riego", "Coge la regadera|bancal|Regadera", "Riega el bancal|bancal|Regadera", "Arranca las malas hierbas|bancal|Azada");
+        T("hue_riego", "Coge la regadera|bancal|Regadera", "Riega el bancal|bancal|Regadera", "Levanta las malas hierbas con su raíz|bancal|Almocafre");
+        T("hue_transplante", "Coge las plantas del vivero|bancal|Bandeja de cepellones", "Mira cuáles son nativas|bancal|Tablet", "Llévalas a la tundra y plántalas|bancal|Bandeja de cepellones");
         T("hue_cosecha", "Coge la cesta|bancal|Cesta", "Cosecha lo maduro|bancal|Cesta", "Lleva la cosecha a la cocina|mesa|Cesta"); Elsewhere("hue_cosecha", 2, "Cocina");
         T("hue_visitantes", "Coge el pienso|bancal|Saco de pienso", "Llena los comederos|comedero|Saco de pienso", "Rellena el agua|comedero|Cubo");
         T("mat_guadua", "Coge el machete|almacen|Machete", "Corta las guaduas maduras del bambusal|bancal|Machete", "Deja las cañas a curar con bórax|almacen|Guaduas");
@@ -114,7 +115,12 @@ public static class PlayerTasks
         T("bio_fotobio", "Toma una muestra|fotobiorreactor|Vial", "Mide densidad y pH|mesa_laboratorio|Tablet", "Cosecha la espirulina|fotobiorreactor|Malla");
         T("nuc_turno", "Pasa el control de acceso|acceso|Credencial", "Vigila la sala de control|consola|Tablet", "Revisa la calefacción|intercambiador|Linterna");
         // ══ GUARDIA ══
-        T("gua_carnivoros", "Coge las raciones|almacen|Cubo de carne", "Patrulla los recintos|recinto|Linterna", "Da las raciones a los carnívoros|comedero|Cubo de carne");
+        T("gua_carnivoros", "Coge la linterna|almacen|Linterna", "Patrulla los puestos|recinto|Linterna", "Anota la ronda|recinto|Tablet");
+        foreach (string ali in new[] { "gua_alimentador", "gua_alimentador_2" })
+        {
+            T(ali, "Coge las raciones del almacén|almacen|Cubo de carne", "Busca al primero de la lista, desde lejos|depredador|Prismáticos", "Evalúa y lanza su ración o márcalo|depredador|Cubo de carne", "Ve a por el siguiente|depredador|Cubo de carne");
+            Elsewhere(ali, 0, "Carne Cultivada");
+        }
         // ══ INFORMÁTICA Y AULA ══
         T("ifo_sysadmin", "Revisa las colas y las alertas|consola|Tablet", "Lanza las copias y los parches|consola|", "Firma el parte|consola|Tablet");
         T("ifo_refrigeracion", "Coge las herramientas|banco_taller|Llave inglesa", "Cambia los filtros y busca fugas|rack|Filtro", "Revisa bombas e intercambiadores|rack|Linterna");
@@ -218,7 +224,11 @@ public static class PlayerTasks
     static Step Parse(string row, AreaFunctions.Kind kind)
     {
         string[] c = row.Split('|');
-        return new Step { action = c[0], station = c.Length > 1 && c[1] != "" ? c[1] : "area", item = c.Length > 2 && c[2] != "" ? c[2] : null, gesture = kind };
+        Step step = new Step { action = c[0], station = c.Length > 1 && c[1] != "" ? c[1] : "area", item = c.Length > 2 && c[2] != "" ? c[2] : null, gesture = kind };
+        // Lo que estos pasos hacen de verdad en el mundo: el alimentador atiende a uno de la lista; el deshierbe levanta las plantas del bancal.
+        if (step.station == "depredador") step.effect = p => LessonPrompt.Show(PredatorRound.PlayerVisit(p), null, 8f);
+        if (step.action.StartsWith("Levanta las malas hierbas")) step.effect = p => WeedBench.LiftNear(p.transform.position, "Kushal", 3);
+        return step;
     }
 
     static AreaFunctions.Kind KindOf(string id)
@@ -301,6 +311,16 @@ public static class PlayerTasks
     /// área no lo tiene, un punto del área; si el área no está en la escena, junto a <paramref name="near"/>.</summary>
     public static Spot Resolve(string area, string station, int nth, string site, Transform near)
     {
+        // El alimentador va a donde esté el depredador: el pendiente enésimo de la lista compartida, y a su distancia, no a su lado.
+        if (station == "depredador")
+        {
+            var open = PredatorRound.Today().FindAll(e => e.animal != null && e.state == PredatorRound.State.Pending);
+            if (open.Count > 0)
+            {
+                Animal a = open[Mathf.Abs(nth) % open.Count].animal;
+                return new Spot { pos = Ground(PredatorRound.StandOff(a, near != null ? near.position : Vector3.zero)), label = $"lejos de {a.name}", found = true };
+            }
+        }
         List<Transform> c = Candidates(area, station, site);
         if (c.Count > 0)
         {

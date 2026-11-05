@@ -28,8 +28,10 @@ public class CulturedMeatLab : MonoBehaviour
     [Header("Lote")]
     public double seedCells = 1e9;          // un vial del banco
     public double cellsPerGram = 2.5e8;     // músculo: ≈ 2–3·10⁸ células por gramo
-    public float batchGrams = 2000f;        // 2 kg por lote → 4 raciones de 500 g
-    public int maxPortionsWaiting = 6;
+    public float batchGrams = 16000f;       // 16 kg por lote (biorreactor piloto) → 32 raciones de 500 g: la cadena alimenticia cuenta con ellas (FoodChain.LabKgPerDay)
+    public int maxPortionsWaiting = 40;
+    /// <summary>Raciones en el almacén, listas para el alimentador (<see cref="PredatorRound"/>).</summary>
+    public int rationsStored;
     [Tooltip("En el santuario el laboratorio NO va solo: iniciar cada lote y cosecharlo son MISIONES de la jornada (alguien tiene que hacerlas). Proliferar y diferenciar sí van solos en el biorreactor.")]
     public bool requiresStaff = true;
     bool _startOrdered, _harvestOrdered;
@@ -38,7 +40,7 @@ public class CulturedMeatLab : MonoBehaviour
     public void OrderStart(string who) { _startOrdered = true; Debug.Log($"[Carne cultivada] {who} inicia el lote de {Line} (vial del banco, medio y siembra en el biorreactor)."); }
     /// <summary>Misión «Cosechar el lote»: cosecha y formado (si aún no está listo, queda encargado).</summary>
     public void OrderHarvest(string who) { _harvestOrdered = true; Debug.Log($"[Carne cultivada] {who} cosecha y da forma al lote de {Line}."); }
-    [Tooltip("Raciones de cada lote que van a la cocina del restaurante (el resto, al comedero de los depredadores).")]
+    [Tooltip("Raciones de cada lote que van a la cocina del restaurante (el resto, al almacén del alimentador).")]
     public int kitchenPortions = 4;
 
     /// <summary>Líneas celulares del banco: cada lote cultiva la siguiente. Los mamíferos y aves desde células satélite
@@ -47,7 +49,7 @@ public class CulturedMeatLab : MonoBehaviour
     public string Line => Lines[batches % Lines.Length];
 
     [Header("Destino")]
-    public Transform feeder;                // comedero de los depredadores
+    public Transform feeder;                // el almacén de raciones (docs/alimentador.md): ya no hay comedero
     public WorldLabel console;              // pantalla de la consola (estado del lote)
 
     public Stage stage { get; private set; } = Stage.Biopsia;
@@ -102,24 +104,11 @@ public class CulturedMeatLab : MonoBehaviour
     {
         batches++;
         int n = Mathf.Max(1, Mathf.RoundToInt(batchGrams / 500f));
-        int waiting = 0;
-        if (feeder != null) foreach (Transform c in feeder) if (c.GetComponent<FoodItem>() != null) waiting++;
-        n = Mathf.Min(n, maxPortionsWaiting - waiting);
-        for (int i = 0; i < n; i++)
-        {
-            Vector3 p = feeder != null ? feeder.position + new Vector3((i % 2) * 0.6f - 0.3f, 0.15f, (i / 2) * 0.6f - 0.3f) : transform.position;
-            GameObject g = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            g.name = "Carne_cultivada";
-            Object.Destroy(g.GetComponent<Collider>());
-            if (feeder != null) g.transform.SetParent(feeder, true);
-            g.transform.position = p; g.transform.localScale = new Vector3(0.22f, 0.08f, 0.16f);
-            g.GetComponent<Renderer>().sharedMaterial = KitchenProps.Mat(new Color(0.72f, 0.3f, 0.3f));
-            FoodItem fi = g.AddComponent<FoodItem>(); fi.material = OrganicMaterial.Meat; fi.grams = 500f;
-            portionsMade++;
-        }
+        n = Mathf.Max(0, Mathf.Min(n, maxPortionsWaiting - rationsStored));
+        rationsStored += n; portionsMade += n;   // (en cajas: una ración suelta atraía a los carnívoros por el olor)
         string line = Lines[(batches - 1) % Lines.Length];
         if (KitchenLarder.Instance != null) KitchenLarder.Instance.ReceiveMeat(MeatItem(line), kitchenPortions);
-        Debug.Log($"[Carne cultivada] lote {batches} ({line}) cosechado: {n} raciones de 500 g al comedero de los depredadores{(KitchenLarder.Instance != null ? $" y {kitchenPortions} a la cocina" : "")}.");
+        Debug.Log($"[Carne cultivada] lote {batches} ({line}) cosechado: {n} raciones de 500 g al almacén del alimentador{(KitchenLarder.Instance != null ? $" y {kitchenPortions} a la cocina" : "")}.");
         cells = 0;
     }
 

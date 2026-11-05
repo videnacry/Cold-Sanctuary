@@ -161,7 +161,7 @@ public static class Performances
             Mopping());
         Mi("hue_riego", "Riego y deshierbe",
             S("Regar los bancales", M.Water, P.WateringCan, P.None, 9f, F.Water, 0.7f, atFace: true),
-            S("Arrancar las malas hierbas", M.Stoop, P.None, P.None, 9f, F.Leaves, 1.2f, atFace: true),
+            S("Levantar las malas hierbas con su raíz", M.Stoop, P.None, P.None, 9f, F.Soil, 1.2f, atFace: true, act: g => WeedBench.LiftNear(g.transform.position, g.name)),
             S("Cavar con la azada", M.Hammer, P.Hoe, P.None, 7f, F.Soil, 0.9f, Strike, atFace: true));
         Mi("hue_cosecha", "Cosecha para la cocina",
             S("Cortar la cosecha", M.Stoop, P.Shears, P.None, 9f, F.Leaves, 1.1f, Fine, atFace: true),
@@ -270,9 +270,17 @@ public static class Performances
         Mi("aul_estudio", "Estudiar en la biblioteca",
             S("Leer", M.Read, P.Book, P.None, 10f, F.Paper, 3f, Fine),
             S("Tomar apuntes", M.Write, P.Pen, P.Book, 7f, F.Paper, 2.5f, Fine));
-        Mi("gua_carnivoros", "Patrulla y raciones",   // (la lleva CarnivoreKeeper; esto, en sus pausas)
+        Mi("gua_carnivoros", "Patrulla",   // (la lleva CarnivoreKeeper; esto, en sus pausas)
             S("Vigilar", M.Patrol, P.Flashlight, P.None, 8f, F.None, 2f, Raise),
-            S("Preparar la ración", M.Chop, P.Knife, P.None, 6f, F.None, 1f, Strike));
+            Noting("Anotar la ronda"));
+        foreach (string ali in new[] { "gua_alimentador", "gua_alimentador_2" })
+            Mi(ali, "Alimentador",   // (la lleva PredatorFeeder; esto, en sus pausas)
+                S("Mirar la lista compartida", M.Patrol, P.Clipboard, P.None, 6f, F.None, 2f, Raise),
+                S("Preparar la ración", M.Chop, P.Knife, P.None, 6f, F.None, 1f, Strike));
+        Mi("hue_transplante", "Trasplante a la tundra",
+            S("Abrir el hueco", M.Hammer, P.Hoe, P.None, 8f, F.Soil, 0.9f, Strike, atFace: true),
+            S("Plantar el cepellón", M.Stoop, P.None, P.None, 8f, F.Soil, 1.2f, atFace: true, act: g => WeedBench.TransplantAll(g.name)),
+            S("Regar", M.Water, P.WateringCan, P.None, 6f, F.Water, 0.8f, atFace: true));
         // Las del día (material para las obras).
         Mi("mat_guadua", "Cortar guadua",
             S("Cortar la caña con el machete", M.Hammer, P.Machete, P.None, 8f, F.Leaves, 0.7f, Strike, atFace: true),

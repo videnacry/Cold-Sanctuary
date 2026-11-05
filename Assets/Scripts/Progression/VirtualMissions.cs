@@ -57,7 +57,7 @@ public static class VirtualMissions
             case "coc_sala": return new[] { "Recibir a los turistas", "Llevarles a su mesa", "Tomar nota", "Servir" };
             case "coc_atender": return new[] { "Tomar el pedido en la barra", "Recoger el plato del pase", "Servirlo" };
             case "coc_comedor": return new[] { "Recoger las mesas", "Limpiar el comedor", "Limpiar los aseos" };
-            case "hue_riego": return new[] { "Abrir el riego", "Regar las filas", "Quitar las malas hierbas" };
+            case "hue_riego": return new[] { "Abrir el riego", "Regar las filas", "Levantar las malas hierbas con su raíz", "Vivero o compostera" };
             case "hue_cosecha": return new[] { "Cosechar lo maduro", "Llenar las cestas", "Llevarlas a la cocina" };
             case "hue_visitantes": return new[] { "Ver qué animal tiene hambre", "Darle de comer", "Proteger el cultivo" };
             case "yog_guia": return new[] { "Subir a la tarima de la sala", "Guiar el saludo al sol", "Guiar las posturas", "Cerrar con la meditación" };
@@ -71,7 +71,7 @@ public static class VirtualMissions
             case "tex_coser": return new[] { "Revisar la ropa rota", "Cortar el remiendo", "Coser" };
             case "lab_biorreactor": return new[] { "Medir la glucosa", "Medir el pH", "Medir el oxígeno", "Ajustar el biorreactor" };
             case "lab_iniciar": return new[] { "Sacar un vial del banco", "Preparar el medio", "Sembrar el biorreactor" };
-            case "lab_cosechar": return new[] { "Cosechar el lote", "Dar forma a la carne", "Llevarla a la cocina y al comedero" };
+            case "lab_cosechar": return new[] { "Cosechar el lote", "Dar forma a la carne", "Llevarla a la cocina y al almacén del alimentador" };
             case "lab_limpieza": return new[] { "Limpiar las superficies", "Esterilizar el material", "Ordenar el laboratorio" };
             case "con_almacen": return new[] { "Contar el material", "Contar las herramientas", "Apuntar lo que falta" };
             case "gym_mantener": return new[] { "Revisar las máquinas", "Engrasar y ajustar", "Probarlas" };
@@ -86,7 +86,9 @@ public static class VirtualMissions
             case "bio_pcr": return new[] { "Extraer el ADN de la muestra", "Preparar la mezcla en la estación pre-PCR", "Amplificar en el termociclador", "Secuenciar" };
             case "nuc_turno": return new[] { "Pasar el control de acceso", "Relevo en la sala de control", "Revisar la conversión de potencia", "Revisar el intercambiador de la calefacción" };
             case "pla_ciclotron": return new[] { "Coger el dosímetro", "Arrancar el haz del ciclotrón", "Parar el haz y mandar el F-18", "Sintetizar la FDG en la celda" };
-            case "gua_carnivoros": return new[] { "Recoger las raciones", "Patrullar el perímetro", "Dar las raciones a los carnívoros" };
+            case "gua_carnivoros": return new[] { "Coger la linterna", "Patrullar los puestos", "Anotar la ronda" };
+            case "gua_alimentador": case "gua_alimentador_2": return new[] { "Recoger las raciones", "Ver quién falta en la lista compartida", "Seguir al depredador desde lejos", "Evaluar su hambre", "Lanzar la ración o marcarlo" };
+            case "hue_transplante": return new[] { "Coger las plantas del vivero", "Comprobar que son nativas", "Abrir el hueco en la tundra", "Plantar y regar" };
             case "obra_material": return new[] { "Cargar el material en el almacén", "Llevarlo a la obra", "Descargarlo a pie de obra" };
             case "obra_trabajo": return new[] { "Montar la estructura de guadua", "Rellenar con bahareque", "Colocar los paneles" };
             case "rep": return new[] { "Encontrar la avería", "Traer las herramientas", "Repararla", "Comprobarla" };

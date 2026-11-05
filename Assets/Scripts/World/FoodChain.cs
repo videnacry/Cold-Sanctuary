@@ -10,7 +10,7 @@ using UnityEngine;
 /// <see cref="Forager"/> y <see cref="Ethogram"/> (qué come cada uno), <see cref="Archetypes.RelationValue"/> (quién teme a quién: sus presas) y
 /// <see cref="Reproduction.Calendar"/> (cuánto cría). Cuenta en kg por AÑO DEL SANTUARIO (28 días de juego): un animal come su ración de un día real
 /// cada día de juego, y sus presas crían un año real en 28 días. Por eso salen números jugables sin inventar ninguno:
-///   · Lo que necesita: <see cref="Intake"/> × 28 × individuos (menos lo que le da el guardia: <see cref="Rationed"/>).
+///   · Lo que necesita: <see cref="Intake"/> × 28 × individuos (menos lo que le lleva el alimentador: <see cref="LabShare"/>).
 ///   · Lo que da una presa: individuos × masa × (crías al año por hembra × ½ hembras × ½ de la masa adulta, porque se come sobre todo a los jóvenes).
 ///   · Lo que da un banco o una planta: lo que rebrota en ese año (ver <see cref="BankYield"/> y <see cref="PlantYield"/>).
 /// Con eso reparte el hambre de cada consumidor entre sus fuentes según lo que ofrece cada una y, si una fuente no da para lo que le piden con
@@ -47,8 +47,10 @@ public static class FoodChain
         { "ArcticHare", 0.3f }, // 133–262 kcal; la masa es una estimación [A]
     };
 
-    /// <summary>Parte de la ración que no sale del ecosistema: el guardia lleva carne cultivada al oso (<see cref="CarnivoreKeeper"/>).</summary>
-    public static readonly Dictionary<string, float> Rationed = new Dictionary<string, float> { { "Bear", 0.8f } };
+    /// <summary>Lo que da el laboratorio al día para los depredadores de tierra: un lote por jornada (<see cref="CulturedMeatLab.batchGrams"/>).</summary>
+    public const float LabKgPerDay = 16f;
+    /// <summary>Parte de lo que necesitan los depredadores de tierra que cubre el alimentador: lo que da el laboratorio entre lo que necesitan todos.</summary>
+    public static float LabShare { get; private set; }
 
     const string Fish = "peces", Krill = "kril", Clam = "bivalvos", Jelly = "medusas";
 
@@ -68,6 +70,7 @@ public static class FoodChain
     static readonly Dictionary<string, float> _base = new Dictionary<string, float>();
     static readonly Dictionary<string, List<string>> _diet = new Dictionary<string, List<string>>();
     static readonly List<string> _changes = new List<string>();
+    static readonly HashSet<string> _land = new HashSet<string>();   // los que atiende el alimentador (PredatorRound.Served)
     static bool _done, _busy;
     static int _speciesSeen;
 
@@ -127,7 +130,7 @@ public static class FoodChain
     static float Need(string sp)
     {
         float kg = Intake.TryGetValue(sp, out float i) ? i : Mass(sp) * 0.05f;   // sin dato: 5 % de su masa [A]
-        return PopulationPlan.Raw(sp) * kg * DaysPerYear * (1f - (Rationed.TryGetValue(sp, out float r) ? r : 0f));
+        return PopulationPlan.Raw(sp) * kg * DaysPerYear * (_land.Contains(sp) ? 1f - LabShare : 1f);
     }
 
     // Reparte cada hambre entre sus fuentes según lo que ofrecen. Devuelve lo que se le pide a cada fuente.
@@ -167,11 +170,16 @@ public static class FoodChain
                 if (!_base.ContainsKey(sp)) _base[sp] = PopulationPlan.PerHuman[sp];
                 f.eatsFish = f.eatsKrill = f.eatsClams = f.eatsPrey = f.eatsGrass = f.eatsPlants = false;
                 _diet[sp] = DietOf(sp, f);
+                if (f.eatsPrey && sp != "Orca") _land.Add(sp);
             }
             if (Application.isPlaying) Object.Destroy(probe); else Object.DestroyImmediate(probe);
 
             for (int pass = 0; pass < 12; pass++)
             {
+                // El alimentador: lo que da el laboratorio se reparte entre todos los depredadores de tierra (cambia si suben las poblaciones).
+                float land = 0f;
+                foreach (string sp in _land) land += PopulationPlan.Raw(sp) * (Intake.TryGetValue(sp, out float i) ? i : Mass(sp) * 0.05f) * DaysPerYear;
+                LabShare = land > 0f ? Mathf.Clamp01(LabKgPerDay * DaysPerYear / land) : 0f;
                 // Primero bancos y plantas (no cuestan Animal completos); las presas, solo si con eso no basta.
                 bool changed = false;
                 Dictionary<string, float> demand = Demand(null);
@@ -257,6 +265,7 @@ public static class FoodChain
             if (l.covered < Fed) hungry++;
             sb.AppendLine($"  {l.species} ×{l.individuals}: necesita {l.needs:0}, encuentra {l.covered:P0} ({string.Join(", ", l.sources)})");
         }
+        sb.AppendLine($"  El alimentador cubre {LabShare:P0} de lo que necesitan los depredadores de tierra (laboratorio: {LabKgPerDay:0} kg al día).");
         sb.AppendLine(_changes.Count > 0 ? "  Subió: " + string.Join(" · ", _changes) : "  No hubo que subir nada.");
         if (hungry > 0) Debug.LogWarning(sb + $"  {hungry} especies pasarían hambre: revisar sus fuentes."); else Debug.Log(sb.ToString());
         return hungry;
