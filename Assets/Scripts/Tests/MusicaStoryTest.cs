@@ -61,14 +61,24 @@ public class MusicaStoryTest : MonoBehaviour, ITestUnit
         }
         TestProbe.Check("ningún microcosmos sigue pendiente de sala de grabación", !System.Array.Exists(MicroFloors.Table, m => m.pending.Contains("grabación")));
         TestProbe.Check("Viena 1824 está en el piso de Música", MicroFloors.Of("Viena 1824") != null && MicroFloors.Of("Viena 1824").platform == "Music_Area");
+        // La cuenta acústica (docs/piso-musica.md §Acústica): sin tapa o con la puerta abierta, el cristal casi no aísla.
+        var cell = new Vector2(8.4f, 6.2f);
+        TestProbe.Check("sala cerrada de doble cristal: ≥ 40 dB", MusicAcoustics.Room(cell, false) >= 40f, $"{MusicAcoustics.Room(cell, false):0} dB");
+        TestProbe.Check("entre dos salas vecinas llega a la meta", MusicAcoustics.BetweenRooms(cell) >= MusicAcoustics.TargetBetweenRooms, $"{MusicAcoustics.BetweenRooms(cell):0} dB");
+        TestProbe.Check("con la puerta abierta o sin tapa se pierde casi todo", MusicAcoustics.Room(cell, true) < 20f && MusicAcoustics.Room(cell, false, false) < 10f, $"{MusicAcoustics.Room(cell, true):0} y {MusicAcoustics.Room(cell, false, false):0} dB");
         SanctuaryArea area = null;
         foreach (SanctuaryArea a in FindObjectsByType<SanctuaryArea>(FindObjectsInactive.Include, FindObjectsSortMode.None)) if (a.name == "Music_Area") area = a;
         if (area == null) { TestProbe.Check("el piso está en la escena (reconstruye SampleScene)", false); TestProbe.End(); return; }
         TestProbe.Check("es del tipo Music", area.areaType == SanctuaryAreaType.Music);
         var lines = AreaCapacity.Check(new[] { area.transform }, AreaCapacity.Members(), out _);
-        foreach (string act in new[] { "concierto", "grabar", "mezcla", "ensayar", "sonido" })
+        foreach (string act in new[] { "concierto", "tocar en concierto", "grabar", "mezcla", "ensayar", "sonido" })
             TestProbe.Check($"capacidad: {act}", lines.Exists(l => l.area == "Música" && l.activity == act && l.ok), string.Join(" · ", lines.ConvertAll(l => l.ToString())));
-        TestProbe.Check("la cabina es de cristal (GlassWall)", area.GetComponentsInChildren<GlassWall>(true).Length > 0);
+        int rooms = 0, lids = 0; foreach (Transform t in area.GetComponentsInChildren<Transform>(true)) { if (t.name.StartsWith("Sala_cristal_Sonica_") && t.name.EndsWith("_fuera")) rooms++; if (t.name.StartsWith("Tapa_cristal_")) lids++; }
+        TestProbe.Check("cada sala aislada lleva doble cristal y tapa", rooms >= 9 && lids == rooms, $"{rooms} salas, {lids} tapas");
+        int stages = 0, studios = 0, bands = 0; foreach (Transform t in area.GetComponentsInChildren<Transform>(true)) { if (t.name == "Escenario de conciertos" || t.name == "Segundo escenario") stages++; if (t.name.StartsWith("Cabina de grabación")) studios++; if (t.name.StartsWith("Banda de ensayo")) bands++; }
+        TestProbe.Check("más de un escenario y de un estudio, y varias salas de ensayo a la vez", stages >= 2 && studios >= 2 && bands * 5 >= AreaCapacity.Members(), $"{stages} escenarios, {studios} estudios, {bands} salas");
+        var spacing = FurnitureSpacing.Violations(area.transform);
+        TestProbe.Check("2 m de paso, también con el cristal, dentro y fuera", spacing.Count == 0, $"{spacing.Count} pares");
         TestProbe.End();
     }
 

@@ -3512,7 +3512,7 @@ public static partial class SampleSceneBuilder
         var entFloors = new List<Transform>();
         entFloors.AddRange(gymF); entFloors.Add(cardio); entFloors.AddRange(calF); entFloors.AddRange(hatF); entFloors.AddRange(ashF); entFloors.AddRange(balF); entFloors.AddRange(dojF);
         // Dos pisos por nivel; encima, los del Aula (AulaFloors, docs/piso-aula.md: la sala de estudio, con la misma regla).
-        int entLevels = Mathf.CeilToInt((entFloors.Count + AulaFloors() + 1) / 2f);   // + 1: el piso de Música (docs/piso-musica.md), encima del Aula
+        int entLevels = Mathf.CeilToInt((entFloors.Count + AulaFloors() + MusicFloors()) / 2f);   // + los pisos de Música (docs/piso-musica.md), encima del Aula
         Debug.Log($"[Centros] {members} miembros: Gimnasio {gymF.Count}, Calistenia {calF.Count}, Yoga Hatha {hatF.Count}, Yoga Ashtanga {ashF.Count}, Ballet {balF.Count}, Dojo {dojF.Count} pisos; la torre del Entrenamiento, {entFloors.Count} pisos en {entLevels} niveles.");
         BeginTreeTower(areasGroup.transform, TorreEntrenamiento, EntrenamientoCenter, GymSize, EntrenamientoYaw, entLevels);
         foreach (Transform t in entFloors) Floor(t);
