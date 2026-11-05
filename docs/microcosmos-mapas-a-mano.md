@@ -49,6 +49,12 @@ flor y lajas de granito del escudo guayanés; el Orinoco al norte, el cerro El Z
   (4) y arañas de seda dorada en el morichal (2).
 - **Los edificios** (del plano): la Plaza (0, −70), la Casa del Congreso, la Catedral, el Puerto, el Mercado y el fortín del Zamuro.
 
+## Las doce de la tanda 3 (2026-11-05)
+
+Eloy Alfaro, Galvarino, Atahualpa, la Gran Ley de la Paz, Cleopatra, Langley, Beethoven, Descartes, Guevara, Sánchez, Lincoln y la Feria: los doce, **Hecho**
+(`MicroStoryMaps.Historias*.cs`, [microcosmos-historias-3.md](microcosmos-historias-3.md)). Dos cosas nuevas: `Natural(...)` añade a las historias anteriores a la máquina las órdenes
+que hacen roca de las máquinas, antenas y estaciones del piso; y como con un mapa hecho no se siembra nada, **los animales del pueblo (perros, burros, llamas) van también en el mapa**.
+
 ## Los esbozos
 
 Todas las demás historias de `MicroFloors.Table` tienen su esbozo con lo que les falta: colocar a mano su flora y fauna, ordenar los

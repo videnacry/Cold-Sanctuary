@@ -8,6 +8,15 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 > dónde se comprueba cada una, las 2 que quedan pendientes del 2026-11-04 (M9 y el gancho de §11 para los demás pisos) y la
 > tabla piso → microcosmos para revisarlos cuando cambia un piso. Al recibir una regla nueva, añadirla allí.
 
+> **HECHO 2026-11-05 (tanda 3 de historias, rama claude/edif-histo; solo código y compilación, sin probar en vivo):** 12 microcosmos con su historia de
+> 8 pasos, su pueblo, sus cuatro categorías y su mapa a mano HECHO ([`microcosmos-historias-3.md`](microcosmos-historias-3.md)): Eloy Alfaro, Galvarino, Atahualpa, la Gran
+> Ley de la Paz, Cleopatra, las calculadoras de Langley, Beethoven, Descartes, Ernesto Guevara, Pedro Sánchez, Lincoln y la Feria de las Hazañas. Lincoln, decidido: C-SPAN 1.º,
+> Siena 2.º. Pruebas: grupos 78 y 79.
+> - [ ] **Probar en vivo** (probador): reconstruir de una en una, en el orden del doc, y «Build Sala de Eras»; grupos 78, 79, 43, 63 y 87; fotos.
+> - [ ] **Berón**: confirmar que el líder asiático es Lee Kuan Yew (fue primer ministro, no presidente).
+> - [ ] **Revisar la ficha de Pedro Sánchez tras las elecciones del 29-11-2026** (`Historia.PedroSanchez.cs`, último párrafo).
+> - [ ] Repasar los [verificar] del doc (día del clavo de oro, fecha de Lagunillas, número de enfermos de San Pablo y fecha del cruce a nado, cifras de Singapur).
+
 > **HECHO 2026-11-04 (entrenamientos reales en el gimnasio, rama claude/edif-entreno; solo código, sin probar en vivo):** cada
 > humano del personal tiene un **plan semanal** (reparto, días, objetivo) y en sus días de gimnasio sigue la rutina del día en
 > orden: calentamiento, series × repeticiones contadas en cada máquina, descanso entre series, cambio de máquina si está ocupada

@@ -51,6 +51,18 @@ Cada pieza del sistema está en este sitio:
 
 `sala_esgrima` (floretes y espadas) existe en la lista de aparatos, pero ningún pueblo la usa todavía.
 
+## La tanda 3 (2026-11-05, [microcosmos-historias-3.md](microcosmos-historias-3.md))
+
+| Clase | Época y lugar | Nombre | Aparatos | Por qué |
+|---|---|---|---|---|
+| `palin` | Mapuche | Paliwe (cancha de palín) | campo (paliwe), armero (wiño), balon (pali) | El palín, con su palo curvo y su bola de cuero, se juega por equipos en una cancha larga; es juego y rito (Revista Patrimonio; Univ. de Chile; López von Vriessen). |
+| `warachikuy` | Inca | Campo del warachikuy | pista_carreras, diana (honda), armero | Las pruebas de los jóvenes (carrera al cerro Huanacauri, honda) y los relevos de chasquis (Markham; cronistas; efdeportes). |
+| `tewaarathon` | Haudenosaunee | Campo de tewaarathon | campo, armero (palos de nogal), balon | El lacrosse, el «juego del Creador» (Two Row Times; Vennum 1994). |
+| `pelota_nacional` | Andes republicanos | Cancha de pelota nacional | campo, armario (tablas), balon | La pelota de tabla ecuatoriana; su antigüedad es dudosa (de la fuente: [verificar] que se jugaba en Quito en 1908). |
+
+Reutilizan: `gimnasio_griego` (Alejandría de Cleopatra: el Gimnasio de Estrabón), `sala_esgrima` (Viena y Leiden, cuya Universidad tuvo escuela de esgrima), `estadio` (San Pablo: el fútbol que
+cuentan los diarios), `gimnasio_moderno` (Langley, Madrid, la Feria) y `turnhalle` (Gettysburg, en un patio de gimnasia propio: los Turnverein llegaron a EE. UU. en 1848).
+
 ## Qué falta (para la investigación siguiente)
 
 - Las posiciones marcadas como «posición aproximada» en [microcosmos-pueblos-mapas.md](microcosmos-pueblos-mapas.md) hay que afinarlas con el mapa (OpenStreetMap) cuando se haga el mapa a mano de cada historia (manual M9).
