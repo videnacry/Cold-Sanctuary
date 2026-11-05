@@ -6,8 +6,8 @@ using UnityEngine;
 /// lejos y a sotavento, en un árbol BAJO: lo que protege de un reactor es la distancia, la contención y el agua, no la altura.
 /// - Distancia: ≥ <see cref="MinDistance"/> m a todo edificio e isla del santuario (lo más lejos que permite el mapa).
 /// - Viento: el sitio queda a sotavento de <see cref="PrevailingWindTo"/> (el juego no simula viento: es una decisión de diseño fija).
-/// - Altura: los núcleos, BAJO EL MAR (2026-11-05): cada reactor en su cajón sumergido de doble casco, bajo el casquete y por debajo de
-///   <see cref="CaissonTopY"/>; arriba, solo lo que gana con ella: el agua por gravedad (el tronco), la chimenea filtrada y las salas de mando.
+/// - Altura: abajo, según quién lo atiende (2026-11-05, §4 del doc): el microrreactor, sin operadores, y los residuos, en cavernas en la roca
+///   BAJO EL LECHO MARINO (<see cref="RockCover"/> m de roca); el TRIGA, que atiende gente a diario, en su cajón de doble casco apoyado en el lecho; arriba, solo lo que gana con ella: el agua por gravedad (el tronco), la chimenea filtrada y las salas de mando.
 /// - Agua: el agua del tronco sobre los reactores alcanza, sin bombas ni operador, al menos <see cref="ReferenceHours"/> h.
 /// </summary>
 public static class NuclearSiteRule
@@ -28,8 +28,14 @@ public static class NuclearSiteRule
     /// <summary>Hondo de la piscina del TRIGA bajo el piso: baja por el casquete hasta su cajón, con el núcleo bajo el nivel del mar. Los
     /// reales tienen 7,3–8,2 m de agua sobre el núcleo; aquí son casi 19 m: más blindaje.</summary>
     public const float PoolDepth = 20f;
-    /// <summary>Cajones sumergidos: el techo (bajo el casquete) y su alto. Nivel del mar: y = 0.</summary>
-    public const float CaissonTopY = -2f, CaissonHeight = 16f;
+    /// <summary>El cajón del TRIGA: el techo (bajo el casquete) y su alto, hasta apoyar en el lecho. Nivel del mar: y = 0.</summary>
+    public const float CaissonTopY = -2f, CaissonHeight = 14f;
+    /// <summary>La cara del lecho marino (la del colisionador «FondoMarino»: el agua, a −0,25 m, y 16 m de hondo).</summary>
+    public const float SeabedY = -16.25f;
+    /// <summary>Roca sobre las cavernas: 60 m, como el SFR de Forsmark bajo el Báltico (Halden tiene 100 m; el túnel del Canal, unos 40).</summary>
+    public const float RockCover = 60f, CavernHeight = 10f;
+    /// <summary>Centro (y) de una caverna bajo el lecho.</summary>
+    public static float CavernCenterY => SeabedY - RockCover - CavernHeight * 0.5f;
     /// <summary>Potencia térmica total (MW): el TRIGA (1) y el microrreactor (~15).</summary>
     public const float ThermalMW = 16f;
     /// <summary>La referencia pasiva: 72 h sin operador (el depósito por gravedad del AP1000).</summary>

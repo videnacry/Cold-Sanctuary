@@ -7,7 +7,8 @@ using UnityEngine;
 /// 1. SITIO: en su casquete artificial, a ≥ <see cref="NuclearSiteRule.MinDistance"/> m de todo edificio-árbol y de las islas, a sotavento y
 ///    lejos de la lanzadera.
 /// 2. PISOS: los dos reactores en el nivel más bajo; encima, el ciclotrón y la sala de experimentos; arriba, el Centro de emergencias y el garaje.
-/// 3. CAJONES: los núcleos bajo el nivel del mar, cada uno en su cajón de doble casco bajo el casquete, con esclusa desde el tronco.
+/// 3. BAJO EL MAR: el TRIGA en su cajón de doble casco apoyado en el lecho; el microrreactor y los residuos en cavernas con 60 m de roca encima, con
+///    su bucle de termosifón al mar y esclusas desde el tronco.
 /// 4. NADA SE PIERDE: el reactor, la consola, el ciclotrón, el equipo, las misiones de sus áreas y sus microcosmos.
 /// 5. AGUA Y PLAN: el agua por gravedad cubre las 72 h de referencia; la emergencia para el reactor, abre las válvulas y enciende las balizas;
 ///    el simulacro no para nada; vigilancia, chimenea filtrada, sumidero y zona de exclusión están.
@@ -73,22 +74,25 @@ public class NuclearSiteTest : MonoBehaviour, ITestUnit
         TestProbe.Check("sus áreas en el árbol del sitio", floorLabels.Contains(NuclearSite.PlantArea) && floorLabels.Contains(NuclearSite.PowerArea), string.Join(", ", floorLabels));
 
         // ── 3. CONTENCIÓN ──
-        Transform cj = Named(site, "Cajon_TRIGA"), cm = Named(site, "Cajon_microrreactor"), core = plant != null ? Named(plant, "Nucleo_UZrH") : null, mod = cm != null ? Named(cm, "Modulo_reactor") : null;
-        if (cj == null || cm == null || core == null || mod == null) TestProbe.Check("los dos cajones sumergidos, con su reactor", false, $"cajón TRIGA {cj != null}, cajón micro {cm != null}, núcleo {core != null}, módulo {mod != null}");
+        Transform cj = Named(site, "Cajon_TRIGA"), cm = Named(site, "Caverna_microrreactor"), core = plant != null ? Named(plant, "Nucleo_UZrH") : null, mod = cm != null ? Named(cm, "Modulo_reactor") : null;
+        if (cj == null || cm == null || core == null || mod == null) TestProbe.Check("el cajón del TRIGA y la caverna del microrreactor", false, $"cajón {cj != null}, caverna {cm != null}, núcleo {core != null}, módulo {mod != null}");
         else
         {
             float capBottom = NuclearSiteRule.CaissonTopY;
             bool Inside(Transform box, Vector3 p, Vector3 half) { Vector3 d = p - box.position; return Mathf.Abs(d.x) < half.x && Mathf.Abs(d.z) < half.z && Mathf.Abs(d.y) < half.y; }
             TestProbe.Check("el núcleo del TRIGA, bajo el nivel del mar y dentro de su cajón", core.position.y < y0 + capBottom && Inside(cj, core.position, new Vector3(7f, 8f, 7f)), $"núcleo a {core.position.y - y0:0.0} m");
-            TestProbe.Check("el microrreactor, bajo el nivel del mar y dentro de su cajón", mod.position.y < y0 + capBottom && Inside(cm, mod.position, new Vector3(8f, 8f, 5f)), $"módulo a {mod.position.y - y0:0.0} m");
-            foreach (Transform c in new[] { cj, cm })
-            {
-                var names = c.GetComponentsInChildren<Transform>(true).Select(t => t.name).ToList();
-                TestProbe.Check($"«{c.name}»: doble casco y tirantes, sin colisiones", names.Count(n => n == "Casco_exterior") == 6 && names.Count(n => n == "Casco_interior") == 6 && names.Count(n => n == "Tirante_anclaje") == 4 && c.GetComponentsInChildren<Collider>(true).Length == 0);
-            }
+            float rock = NuclearSiteRule.SeabedY - (cm.position.y + NuclearSiteRule.CavernHeight * 0.5f - y0);
+            TestProbe.Check($"el microrreactor, en su caverna, con ≥ {NuclearSiteRule.RockCover:0} m de roca encima", rock >= NuclearSiteRule.RockCover - 0.1f && Inside(cm, mod.position, new Vector3(10f, 5f, 6f)), $"{rock:0} m de roca; módulo a {mod.position.y - y0:0.0} m");
+            var cjn = cj.GetComponentsInChildren<Transform>(true).Select(t => t.name).ToList();
+            TestProbe.Check("el cajón del TRIGA: doble casco, sobre su zapata en el lecho y sin colisiones", cjn.Count(n => n == "Casco_exterior") == 6 && cjn.Count(n => n == "Casco_interior") == 6 && cjn.Contains("Zapata_lecho") && cj.GetComponentsInChildren<Collider>(true).Length == 0 && Mathf.Abs(NuclearSiteRule.CaissonTopY - NuclearSiteRule.CaissonHeight - NuclearSiteRule.SeabedY) < 0.5f);
+            string[] rockParts = { "Lecho_marino", "Caverna_residuos", "Galeria_cavernas", "Bucle_termosifon", "Intercambiador_lecho", "Sumidero_caverna" };
+            var noRock = rockParts.Where(p => Named(site, p) == null).ToList();
+            TestProbe.Check("el lecho a la vista, la caverna de residuos, el bucle de termosifón al mar y el sumidero", noRock.Count == 0, string.Join(", ", noRock));
+            Transform loop = Named(site, "Bucle_termosifon");
+            TestProbe.Check("el reactor queda más abajo que su sumidero de calor: el agua sube sola", loop != null && mod.position.y < Named(site, "Intercambiador_lecho").position.y);
             int locks = site.GetComponentsInChildren<Transform>(true).Count(t => t.name == "Esclusa_tronco");
-            TestProbe.Check("se llega a los dos cajones desde el tronco (esclusas)", locks == 2, $"{locks} esclusas");
-            TestProbe.Check("los cajones no estorban el paso del submarino (fuera del hueco del tronco)", Flat(cj.position, tree.transform.position) > tree.bottomHole + 7f && Flat(cm.position, tree.transform.position) > tree.bottomHole + 5f);
+            TestProbe.Check("se llega al cajón y al pozo de la caverna desde el tronco (esclusas)", locks == 2, $"{locks} esclusas");
+            TestProbe.Check("los cajones no estorban el paso del submarino (fuera del hueco del tronco)", Flat(cj.position, tree.transform.position) > tree.bottomHole + 7f );
         }
 
         // ── 4. NADA SE PIERDE ──

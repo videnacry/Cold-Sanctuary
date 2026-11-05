@@ -81,6 +81,7 @@ propulsante). Es lo que cabe en un santuario: un lanzador mediano (Falcon 9, ~50
   - **diluvio de agua**: depósito elevado, bajante y 8 rociadores alrededor del hueco (supresión de sonido y refrigeración);
   - **cubeta de contención**: pretil de 1,5 m en todo el borde (recoge combustible y agua; no cae nada al mar);
   - **escudo contra cascotes** de 10 m del lado del santuario (este), con contrafuertes, zunchos y remate de acero;
+  - **depósitos de oxígeno líquido y RP-1** al aire en el casquete, a más de 80 m entre sí, y **polvorín** de las cargas de separación en otra esquina ([sitio-nuclear.md](sitio-nuclear.md) §6);
   - **torre umbilical** de 22 m; una zona de alfombras en la plataforma (no hay escaleras).
 - **Trabajos** (`LaunchSite.Missions`, en la jornada, no obligatorios): control de misión (1 h), seguridad de la plataforma (diluvio,
   trinchera, escudo y cubeta, 1 h, recorre) y la fábrica (integrar etapas y carga útil, 2 h).

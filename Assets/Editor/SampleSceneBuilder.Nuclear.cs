@@ -4,8 +4,8 @@ using UnityEngine;
 
 /// <summary>
 /// EL SITIO NUCLEAR (Berón 2026-11-05; docs/sitio-nuclear.md): un CASQUETE ARTIFICIAL en la esquina sureste del mar, lejos y a sotavento del
-/// santuario, con su EDIFICIO-ÁRBOL bajo. Abajo, los pisos de los dos reactores (Central Nuclear y Planta Atómica), con los núcleos BAJO EL MAR, en
-/// dos cajones sumergidos de doble casco (<see cref="BuildCaisson"/>); en medio, el ciclotrón y la sala de
+/// santuario, con su EDIFICIO-ÁRBOL bajo. Abajo, los pisos de los dos reactores (Central Nuclear y Planta Atómica); el TRIGA, en su cajón de doble
+/// casco apoyado en el lecho (<see cref="BuildCaisson"/>), y el microrreactor y los residuos, en cavernas en la roca bajo el lecho (<see cref="BuildCavern"/>); en medio, el ciclotrón y la sala de
 /// experimentos; arriba, el Centro de emergencias y el garaje. Lo que gana con la altura sube (el agua del tronco por gravedad, la chimenea
 /// filtrada, las salas de mando); los núcleos se quedan abajo, en su contención. Mismo casquete y mismas pruebas de sitio que la lanzadera
 /// (<see cref="BuildArtificialCap"/>, <see cref="NearestToSite"/>).
@@ -113,18 +113,37 @@ public static partial class SampleSceneBuilder
             KitchenProps.C(rc, off + new Vector3(2f, 1.5f, 0f), new Vector3(1.6f, 0.5f, 0.5f), pipe, 0f, "Tuberia_toma");
         }
 
-        // ── EL MICRORREACTOR, en su propio cajón: del piso solo queda el pozo ──
+        // ── EL LECHO MARINO visible bajo el sitio (el colisionador «FondoMarino» ya estaba; no se veía) ──
+        KitchenProps.C(root, root.InverseTransformPoint(new Vector3(site.x, NuclearSiteRule.SeabedY - 0.5f, site.z)), new Vector3(2f * NuclearCapHalf + 80f, 1f, 2f * NuclearCapHalf + 80f), new Color(0.27f, 0.26f, 0.25f), 0f, "Lecho_marino");
+
+        // ── EL MICRORREACTOR, en su caverna bajo el lecho: nadie lo atiende a diario. Del piso solo queda el pozo. Al lado, la caverna de residuos ──
         Transform well = _nuclearPowerArea != null ? _nuclearPowerArea.GetComponentsInChildren<Transform>(true).FirstOrDefault(t => t.name == "Brocal_pozo") : null;
-        if (well == null) Debug.LogError("[Sitio nuclear] No encuentro el pozo del microrreactor: sin cajón.");
+        if (well == null) Debug.LogError("[Sitio nuclear] No encuentro el pozo del microrreactor: sin caverna.");
         else
         {
-            Transform box = BuildCaisson(root, hx, ns, "Cajon_microrreactor", well.position, new Vector3(16f, NuclearSiteRule.CaissonHeight, 10f), "Cajón del microrreactor: los tubos de calor le dan su calor al mar por el casco, sin bombas");
+            Vector3 at = new Vector3(well.position.x, NuclearSiteRule.CavernCenterY, well.position.z);
+            Transform cav = BuildCavern(root, "Caverna_microrreactor", at, new Vector3(20f, NuclearSiteRule.CavernHeight, 12f), "Caverna del microrreactor: 60 m de roca encima");
             Color metal = new Color(0.55f, 0.6f, 0.65f);
-            KitchenProps.C(box, new Vector3(0f, -2f, 0f), new Vector3(10f, 3f, 3.2f), metal, 0f, "Modulo_reactor");
-            KitchenProps.C(box, new Vector3(0f, -0.3f, 0f), new Vector3(10f, 0.4f, 0.6f), steel, 0f, "Tubos_calor");
-            KitchenProps.C(box, new Vector3(-5.2f, -2f, 0f), new Vector3(0.6f, 3.4f, 3.4f), yel, 0f, "Tapa_trebol");
-            float wy = well.position.y, by = NuclearSiteRule.CaissonTopY;
+            KitchenProps.C(cav, new Vector3(0f, -2f, 0f), new Vector3(10f, 3f, 3.2f), metal, 0f, "Modulo_reactor");
+            KitchenProps.C(cav, new Vector3(0f, -0.3f, 0f), new Vector3(10f, 0.4f, 0.6f), steel, 0f, "Tubos_calor");
+            KitchenProps.C(cav, new Vector3(-5.2f, -2f, 0f), new Vector3(0.6f, 3.4f, 3.4f), yel, 0f, "Tapa_trebol");
+            KitchenProps.C(cav, new Vector3(7f, -4.4f, 4f), new Vector3(2f, 0.6f, 2f), pipe, 0f, "Sumidero_caverna");
+            float wy = well.position.y, by = at.y + NuclearSiteRule.CavernHeight * 0.5f;
             KitchenProps.C(root, root.InverseTransformPoint(new Vector3(well.position.x, (wy + by) * 0.5f, well.position.z)), new Vector3(2.4f, wy - by, 2.4f), conc, 0f, "Pozo_microrreactor");
+            // El reactor está MÁS ABAJO que su sumidero: el agua caliente sube sola por este bucle hasta el mar (la roca sola no se lleva el calor).
+            for (int i = -1; i <= 1; i += 2)
+            {
+                float my = (NuclearSiteRule.SeabedY + by) * 0.5f;
+                KitchenProps.C(root, root.InverseTransformPoint(new Vector3(well.position.x + 3f, my, well.position.z + i * 1.2f)), new Vector3(0.5f, NuclearSiteRule.SeabedY - by, 0.5f), pipe, 0f, "Bucle_termosifon");
+            }
+            KitchenProps.C(root, root.InverseTransformPoint(new Vector3(well.position.x + 3f, NuclearSiteRule.SeabedY + 0.8f, well.position.z)), new Vector3(5f, 1.6f, 4f), steel, 0f, "Intercambiador_lecho");
+            Vector3 lockA = new Vector3(Mathf.Clamp(well.position.x, site.x - h.waterHalf, site.x + h.waterHalf), -8f, site.z + Mathf.Sign(well.position.z - site.z) * h.OuterHalf), lockB = new Vector3(well.position.x, -8f, well.position.z);
+            KitchenProps.C(root, root.InverseTransformPoint((lockA + lockB) * 0.5f), new Vector3(3f, 3f, Mathf.Max(0.5f, (lockB - lockA).magnitude)), steel, Quaternion.LookRotation((lockB - lockA).sqrMagnitude > 0.01f ? lockB - lockA : Vector3.forward), "Esclusa_tronco");
+            // LOS RESIDUOS: la caverna de al lado (como el SFR); es lo que más dura, y aquí no toca el agua del mar.
+            Vector3 wasteAt = at + new Vector3(0f, 0f, 26f);
+            Transform waste = BuildCavern(root, "Caverna_residuos", wasteAt, new Vector3(20f, NuclearSiteRule.CavernHeight, 12f), "Caverna de residuos y combustible gastado: se puede sacar todo (como exigió el Tratado Antártico con el PM-3A)");
+            for (int i = 0; i < 6; i++) KitchenProps.C(waste, new Vector3(-7f + (i % 3) * 7f, -3f, i < 3 ? -3f : 3f), new Vector3(2f, 2.5f, 2f), new Color(0.72f, 0.5f, 0.3f), 0f, "Contenedor_residuos");
+            KitchenProps.C(root, root.InverseTransformPoint((at + wasteAt) * 0.5f), new Vector3(3f, 3f, 14f), conc, 0f, "Galeria_cavernas");
         }
 
         // ── CHIMENEA FILTRADA a sotavento, en la esquina del casquete: lo único que se suelta, se suelta en alto y filtrado ──
@@ -191,11 +210,20 @@ public static partial class SampleSceneBuilder
         c.position = new Vector3(over.x, top - size.y * 0.5f, over.z);
         Hull(c, size, 0.6f, outer, "Casco_exterior");
         Hull(c, size - Vector3.one * 3f, 0.3f, inner, "Casco_interior");
-        foreach (var (sx, sz) in new[] { (-1f, -1f), (1f, -1f), (-1f, 1f), (1f, 1f) })
-            KitchenProps.C(c, new Vector3(sx * size.x * 0.45f, -size.y * 0.5f - 22f, sz * size.z * 0.45f), new Vector3(0.4f, 44f, 0.4f), line, 0f, "Tirante_anclaje");
+        KitchenProps.C(c, new Vector3(0f, -size.y * 0.5f - 0.3f, 0f), new Vector3(size.x + 2f, 0.6f, size.z + 2f), line, 0f, "Zapata_lecho");
         // Esclusa de mantenimiento: del tronco (abierto al mar) al cajón.
         Vector3 a = new Vector3(Mathf.Clamp(over.x, hx.site.x - hx.h.waterHalf, hx.site.x + hx.h.waterHalf), c.position.y, hx.site.z + Mathf.Sign(over.z - hx.site.z) * hx.h.OuterHalf), b = c.position;
         KitchenProps.C(root, root.InverseTransformPoint((a + b) * 0.5f), new Vector3(3f, 3f, (b - a).magnitude), line, Quaternion.LookRotation(b - a), "Esclusa_tronco");
+        Label(c, sign, size.y * 0.5f + 1f);
+        return c;
+    }
+
+    /// <summary>Una CAVERNA en la roca bajo el lecho: revestimiento de hormigón y su forro de acero. Sin colisiones: nadie entra en la jornada.</summary>
+    static Transform BuildCavern(Transform root, string name, Vector3 center, Vector3 size, string sign)
+    {
+        Transform c = new GameObject(name).transform; c.SetParent(root, false); c.position = center;
+        Hull(c, size, 0.8f, new Color(0.55f, 0.55f, 0.53f), "Revestimiento_caverna");
+        Hull(c, size - Vector3.one * 1.2f, 0.1f, new Color(0.62f, 0.64f, 0.66f), "Forro_caverna");
         Label(c, sign, size.y * 0.5f + 1f);
         return c;
     }

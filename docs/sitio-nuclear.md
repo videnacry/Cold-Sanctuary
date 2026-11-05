@@ -7,7 +7,7 @@ santuario en caso de fallos?»
 **Respuesta corta.** Ya eran pisos de árbol (la Planta Atómica) o un piso aparte (la Central Nuclear), pero al lado de la gente. Se mudan
 a su propio casquete artificial y a su propio árbol, como la lanzadera; **pero no a gran altura**. Lo que protege de un reactor es la
 **distancia, la contención y el agua**, no estar en alto. Los reactores van **abajo** y lo que sube es lo que sí gana con la altura: el
-agua de emergencia (por gravedad), la chimenea filtrada y las salas de mando. **Actualizado:** los núcleos van además bajo el mar, en cajones sumergidos (§3).
+agua de emergencia (por gravedad), la chimenea filtrada y las salas de mando. **Actualizado:** el TRIGA, en un cajón apoyado en el lecho; el microrreactor y los residuos, en cavernas bajo el lecho (§3 y §4).
 
 ## 1. Lo investigado
 
@@ -91,6 +91,8 @@ y los pisos. Lo que teme un reactor es **quedarse sin agua**, y el agua cae haci
 Pedido: «crea la planta atómica siguiendo la investigación para que sea lo más segura posible, quizás se debería crear al fondo del mar?
 bajo tierra? de ser así la puedes crear así».
 
+*(Corregida por §4: esta sección queda como razonamiento; el microrreactor pasó a la roca y el cajón del TRIGA apoya en el lecho.)*
+
 **Decisión: ni al fondo ni bajo tierra, sino BAJO EL MAR Y BAJO EL CASQUETE.** Cada núcleo va en su **cajón sumergido de doble casco**, de 2 a
 18 m bajo el nivel del mar, colgado del casquete y atirantado al fondo. Sustituye al recinto sobre el casquete y al pedestal de §2: es la
 parte de esa decisión que cambia. **Todo lo demás sigue**: la distancia, el sotavento, el árbol bajo, el agua del tronco, la chimenea y T14.
@@ -142,6 +144,96 @@ toma el sumidero de Flexblue y la protección de la caverna, sigue a mano y, si 
 - Bajo tierra: [Aerospace Corp., 1975](https://inis.iaea.org/records/ns5eq-acp87), [Concept of underground siting](https://www.osti.gov/biblio/6277078), [Myers, *Mines to Megawatts*](https://nuclear.mst.edu/media/academic/nuclear/images/minestomegawatts/Mines%20to%20Megawatts%20-%20WesMyers.pdf)
 - Lucens: [Swissinfo](https://www.swissinfo.ch/eng/history/historic-nuclear-accident-dashed-swiss-atomic-dreams/44696398), [Wikipedia](https://en.wikipedia.org/wiki/Lucens_reactor)
 - Deep Fission: [IEEE Spectrum](https://spectrum.ieee.org/underground-nuclear-reactor-deep-fission)
+
+## 4. Bajo la roca del fondo del mar (corrección de Berón, 2026-11-05)
+
+Berón: «la opción de bajo tierra era bajo tierra en el fondo del mar, supongo que el mar tendrá un fondo y allí habrá tierra y se podría construir
+sobre la tierra o debajo o una parte enterrada y otra no según convenga».
+
+**Tiene razón y cambia el diseño de §3.** Yo descarté «bajo tierra» porque bajo el casquete solo había mar, pero el fondo existe (el colisionador
+«FondoMarino», a −16,25 m; ni se veía) y debajo puede haber roca. **Decisión: una parte enterrada y otra no, según quién la atienda.**
+
+| Pieza | Dónde | Por qué |
+|---|---|---|
+| **Microrreactor** (~15 MW térmicos) | **Caverna con 60 m de roca encima** (a unos −81 m) | Es el mayor inventario y nadie lo atiende a diario: enterrarlo no cuesta nada |
+| **Residuos y combustible gastado** | **Caverna de al lado** | Lo que más dura; que no toque el agua, y que se pueda sacar |
+| **TRIGA** (1 MW) | **Cajón de doble casco apoyado en el lecho** | 15 veces menos potencia y gente a diario en la consola y el puente: enterrarlo alarga la salida justo a quien trabaja ahí |
+
+### Lo investigado
+- **Bajo el mar se puede excavar y se trabaja a diario:** el SFR de Forsmark guarda residuos a **60 m bajo el fondo del Báltico** desde 1988; el túnel del
+  Canal va a unos 40 m bajo el lecho durante 37,9 km; la mina de Boulby (1100–1400 m) se extiende kilómetros bajo el mar del Norte.
+- **Reactores en la roca:** Halden (25 MW térmicos, **a 100 m de roca**, en servicio 1958–2018) y Ågesta (Estocolmo, 1964–74, calor de distrito); ambos
+  funcionaron años. Lucens (§3) es la otra cara: la caverna contuvo la fuga, pero no estaba bien sellada.
+- **Onkalo (Finlandia):** a unos 430 m, en roca cristalina. Es para siempre; aquí no hace falta tanto, y sería irrecuperable.
+
+### Cajón frente a caverna
+| | Cajón | Caverna bajo el lecho |
+|---|---|---|
+| **Blindaje** | Agua y dos cascos | **60 m de roca** |
+| **Si hay fuga** | Dos cascos y luego el mar, directo a la cadena del kril | **La roca retiene y retrasa**; sale, si sale, por fisuras y por el pozo |
+| **El punto débil** | La corrosión del casco por fuera | **El pozo y las fisuras**: son el camino del agua y de cualquier fuga; por eso va sellado y se vigila |
+| **Agua que entra** | No debería | Siempre entra algo: el túnel del Canal lleva revestimiento y bombas; aquí, **sumidero** |
+| **Sumidero de calor** | El mar, tocando el casco | **La roca no se lleva el calor: hace falta un bucle de agua** |
+| **Tiempo de acceso** | Minutos, por la esclusa | Un pozo de ~90 m; reparar es lento |
+| **Retirada** | Se remolca | Hay que subirlo por el pozo |
+
+**El calor era la pega, y tiene solución pasiva:** la caverna queda **más abajo** que su intercambiador del lecho, así que el agua caliente sube sola
+por el **bucle de termosifón** hasta el mar, sin bomba. Es el mismo argumento de §1: el agua fría cae y la caliente sube.
+
+**Lo que no sé:** el juego no tiene geología, así que «roca buena» es un supuesto. En la realidad, antes de excavar habría que estudiar la roca, y
+ninguna central moderna se ha construido bajo el mar: esto combina precedentes por separado, no copia uno.
+
+### Cómo queda
+Lecho visible bajo el sitio (`Lecho_marino`); pozo del microrreactor desde su piso hasta la caverna, con una esclusa desde el tronco; galería entre las
+dos cavernas; `Bucle_termosifon`, `Intercambiador_lecho` y `Sumidero_caverna`. El cajón del TRIGA baja hasta el lecho y apoya en su zapata (ya no lleva
+tirantes). Nadie baja a las cavernas en la jornada: no tienen colisiones y la roca no se ve por dentro.
+
+## 5. ¿Energía de los movimientos sísmicos?
+
+**No.** Es la respuesta honesta, aunque la idea sea bonita.
+
+- **Cuánta hay:** con la fórmula de Gutenberg-Richter (log E = 1,5 M + 4,8, en joules), un terremoto de magnitud 9 radia ~2×10¹⁸ J, y la media mundial queda del
+  orden de 10¹⁷–10¹⁸ J al año (estimación mía; no encontré una fuente primaria con esa cifra). El mundo usa ~6×10²⁰ J al año: **todos los terremotos del planeta,
+  captados al 100 %, serían menos del 0,2 %.**
+- **Por qué no se capta:** llega de golpe, sin avisar, repartida en una región enorme y casi toda en terremotos grandes y raros. Cinco expertos consultados
+  lo llamaron «concebible» pero «totalmente impracticable» (HowStuffWorks); un estudio de Irán (2025) tampoco lo justifica en la práctica.
+- **Lo que sí hay bajo el suelo es calor, no temblor:** el planeta pierde **47 TW** (Davies y Davies, 2010): ~1,5×10²¹ J al año, **más de mil veces** la energía
+  sísmica. Pero es muy difuso: 91,6 mW/m² de media. Bajo todo el casquete (170 × 170 m) son **2,6 kW**, cuando la central da 5 MW eléctricos.
+- **Geotermia real:** un pozo típico da 5–8 MW, pero **en zonas volcánicas**. El IDDP de Islandia llegó a ~25 MW porque topó con magma. Con el gradiente normal (~25–30 °C/km,
+  dato de memoria) harían falta kilómetros de perforación para agua templada.
+- **Las fuentes hidrotermales, ni tocarlas:** son ecosistemas únicos (más del 95 % de sus especies eran nuevas para la ciencia, muchas de un solo campo), las Azores ya protegen Lucky Strike y hay fuentes en el océano Austral (East Scotia, con su langosta yeti). El juego no tiene ninguna.
+
+**Recomendación:** nada de sísmica; y **no paso nada a `docs/energia.md`**: el santuario no tiene volcanes, la geotermia aquí daría poco y el reactor ya es la carga base. Si un día se
+quiere calor de distrito sin depender del reactor, lo que encajaría sería un pozo **cerrado**, sin extraer agua: no afecta a animales ni plantas. Eso sí respondería a su
+pregunta de «sin afectar a los animales».
+
+## 6. Materiales de cohetes y centros de investigación: según su peligro
+
+Regla (manual **T15**): **cada cosa va donde lo pide su peligro, no su tema**. No se mueve lo que no lo necesita.
+
+| Qué | Peligro | Dónde | Cambia |
+|---|---|---|---|
+| Oxígeno líquido y RP-1 | Fuego y explosión si se mezclan | **Al aire**, en el casquete de la lanzadera, a más de 80 m entre sí, con cubeta | **Nuevo:** no existían |
+| Cargas de separación de etapas | Explosivo | **Polvorín** en otra esquina del casquete | **Nuevo** |
+| Fábrica de cohetes | Baja: etapas **vacías** | Sigue en su piso | No |
+| Control de misión | Ninguno | Sigue en su piso | No |
+| Química | Armarios con cantidades de laboratorio | Sigue en Ciencias | No |
+| Biología, Informática y demás | Bajo | Siguen | No |
+| Ciclotrón y sala de experimentos | Bajo | Siguen en el sitio nuclear | No |
+| Residuos y combustible gastado | Alto y duradero | **Caverna bajo el lecho** | Sí |
+
+**Por qué los propulsores NO van bajo tierra**, aunque la pregunta invitaba a ello: bajo tierra el oxígeno y los vapores se acumulan, y una explosión confinada es peor
+que una al aire (razonamiento mío de ingeniería). Es el contrario exacto del reactor: el reactor quiere encierro; el explosivo, aire libre y distancia. La norma de EE. UU. (14 CFR 420) mide por
+kilos netos y separa lo incompatible; desde 2012 hasta exime de distancias a LOX y RP-1 almacenados por separado, salvo cerca de un incompatible o juntos en el vehículo. Por eso van
+separados y lejos, no enterrados. **No encontré normas sobre almacenes de propulsor en caverna**: si los hubiera, habría que revisarlo.
+
+### Fuentes de §4–§6
+- [SFR, Forsmark (World Nuclear News)](https://world-nuclear-news.org/articles/expansion-of-swedish-repository-under-way), [Onkalo](https://xenospectrum.com/en/onkalo-deposition-hole-drilling/), [Boulby](https://en.wikipedia.org/wiki/Boulby_Mine), [Túnel del Canal (Vinci)](https://www.vinci-construction-projets.com/es/realisations/tunnel-sous-la-manche/)
+- [Halden](https://en.wikipedia.org/wiki/Halden_Reactor), [Ågesta (Vattenfall)](https://history.vattenfall.com/agesta-power-plant)
+- [HowStuffWorks](https://science.howstuffworks.com/environmental/energy/harvest-energy-from-earthquake.htm), [Physics World](https://physicsworld.com/a/could-we-generate-useful-energy-from-earthquakes/), [Scientific American](https://www.scientificamerican.com/article/could-we-harness-energy-from-earthquakes/), [Irán (2025)](https://civilica.com/doc/2670044/)
+- [Davies y Davies, 2010](https://se.copernicus.org/articles/1/5/2010/), [IDDP (Smithsonian)](https://www.smithsonianmag.com/innovation/deep-heart-iceland-theres-new-way-tap-earths-energy-180961030/), [UC Davis](https://www.ucdavis.edu/news/magma-power-geothermal-energy)
+- [Marine Policy: proteger las fuentes activas](https://dukespace.lib.duke.edu/server/api/core/bitstreams/d3f5fcd7-4c15-4ae7-819f-c0d9e10b9bfe/content), [Lucky Strike](https://emso.eu/2026/03/30/life-in-a-patchwork-habitat-mosaics-and-biodiversity-patterns-at-hydrothermal-vents-and-periphery/)
+- [FAA: Explosive Siting Requirements, 2012](https://www.federalregister.gov/documents/2012/09/07/2012-21922/explosive-siting-requirements)
 
 ## Fuentes
 - [10 CFR 100.11](https://www.law.cornell.edu/cfr/text/10/100.11), [10 CFR 100.3](https://www.law.cornell.edu/cfr/text/10/100.3), [10 CFR 53.530](https://www.law.cornell.edu/cfr/text/10/53.530)

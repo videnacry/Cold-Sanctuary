@@ -214,6 +214,22 @@ public static partial class SampleSceneBuilder
         KitchenProps.C(um, new Vector3(0f, 22.2f, 0f), new Vector3(1.9f, 0.4f, 1.9f), red, 0f, "Remate_torre");
         foreach (float y in new[] { 13f, 8f }) KitchenProps.C(um, new Vector3(-2f, y, 2f), new Vector3(0.3f, 0.3f, 5f), steel, -45f, "Brazo_umbilical");
         Label(KitchenProps.C(deck, new Vector3(0f, 24f, 0f), Vector3.one * 0.1f, red, 0f, "Cartel_plataforma"), "Plataforma de lanzamiento (regla de altura: docs/lanzadera-de-cohetes.md)", 2f);
+        // LOS PROPULSORES Y LOS PIROTÉCNICOS (docs/sitio-nuclear.md §6): al aire, en el casquete y lejos del árbol y entre sí. Bajo tierra no:
+        // el oxígeno y los vapores se acumulan y una explosión confinada es peor. La fábrica se queda arriba: allí las etapas están vacías.
+        Vector3 cc = tree.position;
+        Mesh sphere = RocketModel.Lathe("Deposito_esfera", new[] { (0f, 0f), (2.6f, 0.7f), (3.8f, 2.4f), (4.2f, 4.5f), (3.8f, 6.6f), (2.6f, 8.3f), (0f, 9f) }, 12);
+        foreach (var (n, x, z, c) in new[] { ("Deposito_LOX", -42f, 42f, new Color(0.82f, 0.86f, 0.9f)), ("Deposito_RP1", -42f, -42f, new Color(0.7f, 0.62f, 0.45f)) })
+        {
+            Transform d = new GameObject(n).transform; d.SetParent(site, false); d.position = cc + new Vector3(x, 0.3f, z);
+            d.gameObject.AddComponent<MeshFilter>().sharedMesh = sphere;
+            d.gameObject.AddComponent<MeshRenderer>().sharedMaterial = KitchenProps.Mat(c);
+            for (int s = 0; s < 4; s++) KitchenProps.C(d, Quaternion.Euler(0f, s * 90f, 0f) * new Vector3(0f, 0.5f, 6f), new Vector3(13f, 1f, 0.5f), conc, s * 90f, "Cubeta_deposito");
+            Label(d, n == "Deposito_LOX" ? "Oxígeno líquido, al aire y aparte del RP-1" : "Queroseno RP-1, al aire y aparte del oxígeno", 10.5f);
+        }
+        Transform mag = new GameObject("Polvorin_pirotecnicos").transform; mag.SetParent(site, false); mag.position = cc + new Vector3(42f, 0f, 42f);
+        KitchenProps.C(mag, new Vector3(0f, 1.3f, 0f), new Vector3(6f, 2.6f, 4f), conc, 0f, "Bunker_polvorin");
+        KitchenProps.C(mag, new Vector3(0f, 1f, -3.5f), new Vector3(7f, 2f, 0.8f), conc, 0f, "Muro_polvorin");
+        Label(mag, "Polvorín: las cargas de separación de etapas, lejos de todo", 3.5f);
         // Alfombras a la plataforma (no hay escaleras).
         CarpetPad.BuildZone(deck, deck.TransformPoint(new Vector3(-7f, 0.03f, -7f)), deck.rotation, CarpetPad.Kind.Edificio, hx.building, hx.Platforms + 1, $"{hx.building}#plataforma", "Plataforma de lanzamiento", 2);
         foreach (Transform t in deck.GetComponentsInChildren<Transform>(true)) if (t.name.StartsWith("Trinchera") || t.name.StartsWith("Deflector") || t.name.StartsWith("Cortina")) PolarLandscapeBuilder.IgnoreForNav(t.gameObject);
