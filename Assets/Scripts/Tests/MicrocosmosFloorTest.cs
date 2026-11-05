@@ -28,7 +28,7 @@ public class MicrocosmosFloorTest : MonoBehaviour, ITestUnit
     public float tolerance = 1.5f;
     [Tooltip("Cargar también los microcosmos de Build Settings que no estén cargados.")]
     public bool loadFromBuildSettings = true;
-    public int maxScenes = 45;   // (2026-11-04) ya hay ~31 microcosmos y 7 más de los famosos (docs/microcosmos-famosos.md): con 30 se saltaba los últimos
+    public int maxScenes = 70;   // (2026-11-04) ya hay ~31 microcosmos y 7 más de los famosos (docs/microcosmos-famosos.md): con 30 se saltaba los últimos
     public float loadTimeout = 120f;   // (2026-11-03) los pueblos ×60 tardan más en cargar (40 s no bastaban: Bagdad, Berkeley, Angostura, Palenque)
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]

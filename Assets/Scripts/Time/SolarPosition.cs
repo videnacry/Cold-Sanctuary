@@ -129,6 +129,7 @@ public static class SolarPosition
             ("Omaha", 41.25f, -96.03f, 242f),   // 30 de agosto de 1983
             ("Prairie View", 30.09f, -95.99f, 350f),   // 15 de diciembre de 2020
             ("Uagadugú", 12.37f, -1.52f, 127f),   // 6 de mayo de 2024
+            ("Barranquilla", 11.03f, -74.87f, 32f),   // La Playa, principios de 2009 (fecha representativa: empieza el año escolar)
         };
         foreach (var e in table)
             if (display.IndexOf(e.key, System.StringComparison.OrdinalIgnoreCase) >= 0) { lat = e.la; lon = e.lo; doy = e.d; return true; }

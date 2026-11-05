@@ -25,8 +25,8 @@ public static partial class MicroStyles
 
     static bool Is(Entry e, params string[] ids) { foreach (string i in ids) if (e.id == i) return true; return false; }
     static bool Europe(Entry e) => Is(e, "europa_medieval", "alpino", "estuardo", "georgiano", "europa_romantica", "belle_epoque", "entreguerras", "francia_rural");
-    static bool Modern(Entry e) => Is(e, "norteamerica_moderna", "sovietico", "occidental_moderna", "hongkong_tonglau", "norteamerica_interior", "india_moderna", "sahel_moderno");
-    static bool UsaModern(Entry e) => Is(e, "norteamerica_victoriana", "norteamerica_moderna", "norteamerica_interior");
+    static bool Modern(Entry e) => Is(e, "norteamerica_moderna", "sovietico", "occidental_moderna", "hongkong_tonglau", "norteamerica_interior", "india_moderna", "sahel_moderno", "caribe_hispano", "jamaica_moderna", "corea_moderna", "britanico_moderno", "norteamerica_norte", "sudafrica_moderna");
+    static bool UsaModern(Entry e) => Is(e, "norteamerica_victoriana", "norteamerica_moderna", "norteamerica_interior", "norteamerica_norte");
 
     /// <summary>El nombre del edificio <paramref name="c"/> en el estilo <paramref name="e"/> y el año <paramref name="year"/>; null
     /// si en esa época y lugar no existía.</summary>
@@ -189,7 +189,7 @@ public static partial class MicroStyles
             case "francia_rural": return year >= 1910 ? "hebert" : "turnhalle";
             case "frente_1914": return "futbol_tregua";
             case "sovietico": return "club_deportivo";
-            case "sahel_moderno": return "estadio";
+            case "sahel_moderno": case "caribe_hispano": case "jamaica_moderna": case "sudafrica_moderna": return "estadio";
             default: return "gimnasio_moderno";
         }
     }
@@ -230,6 +230,13 @@ public static partial class MicroStyles
             case "india_moderna": return new[] { new Fruit("Mango (Mangifera indica)", 8f, dark, F(0.95f, 0.65f, 0.15f)), new Fruit("Cocotero (Cocos nucifera)", 12f, F(0.3f, 0.5f, 0.25f), F(0.55f, 0.4f, 0.2f), palm: true), new Fruit("Banano (Musa)", 4f, F(0.3f, 0.55f, 0.25f), F(0.9f, 0.85f, 0.3f), palm: true), new Fruit("Yaca (Artocarpus heterophyllus)", 9f, dark, F(0.6f, 0.65f, 0.25f)) };   // los huertos del pie de Velliangiri
             case "sahel_moderno": return new[] { new Fruit("Mango (Mangifera indica)", 8f, dark, F(0.95f, 0.65f, 0.15f)), new Fruit("Papayo (Carica papaya)", 4f, F(0.3f, 0.55f, 0.25f), F(0.95f, 0.6f, 0.15f), palm: true), new Fruit("Guayabo (Psidium guajava)", 4f, leaf, F(0.85f, 0.85f, 0.4f)), new Fruit("Karité (Vitellaria paradoxa)", 9f, dark, F(0.5f, 0.55f, 0.3f)) };   // el mango de las cours y el karité de la sabana
             case "norteamerica_interior": return new[] { new Fruit("Manzano (Malus domestica)", 4.5f, leaf, F(0.75f, 0.15f, 0.12f)), new Fruit("Melocotonero (Prunus persica)", 3.5f, leaf, F(0.95f, 0.6f, 0.4f)), new Fruit("Albaricoquero (Prunus armeniaca)", 4f, leaf, F(0.95f, 0.65f, 0.3f)), new Fruit("Pacano (Carya illinoinensis)", 12f, leaf, F(0.5f, 0.38f, 0.22f)) };   // los albaricoques de Albuquerque, los manzanos de Omaha, los pacanos de Texas
+            // (2026-11-05) La música (docs/microcosmos-musica.md).
+            case "caribe_hispano": return new[] { new Fruit("Mango (Mangifera indica)", 8f, dark, F(0.95f, 0.65f, 0.15f)), new Fruit("Guanábana (Annona muricata)", 5f, dark, F(0.45f, 0.6f, 0.3f)), new Fruit("Aguacate (Persea americana)", 8f, dark, F(0.2f, 0.35f, 0.15f)), new Fruit("Quenepa (Melicoccus bijugatus)", 9f, leaf, F(0.5f, 0.6f, 0.25f)) };   // el mamón de Barranquilla es la quenepa de Puerto Rico
+            case "jamaica_moderna": return new[] { new Fruit("Ackee (Blighia sapida)", 9f, dark, F(0.85f, 0.25f, 0.15f)), new Fruit("Árbol del pan (Artocarpus altilis)", 10f, dark, F(0.55f, 0.65f, 0.25f)), new Fruit("Mango (Mangifera indica)", 8f, dark, F(0.95f, 0.65f, 0.15f)) };   // el mango de Second Street bajo el que ensayaban los Wailers
+            case "corea_moderna": return new[] { new Fruit("Caqui (Diospyros kaki)", 5f, leaf, F(0.95f, 0.5f, 0.1f)), new Fruit("Peral de Corea (Pyrus pyrifolia)", 5f, leaf, F(0.8f, 0.7f, 0.35f)), new Fruit("Azufaifo (Ziziphus jujuba)", 5f, leaf, F(0.6f, 0.2f, 0.12f)) };
+            case "britanico_moderno": return new[] { new Fruit("Manzano (Malus domestica)", 4.5f, leaf, F(0.75f, 0.15f, 0.12f)), new Fruit("Ciruelo (Prunus domestica)", 4f, leaf, F(0.4f, 0.2f, 0.45f)), new Fruit("Peral (Pyrus communis)", 5f, leaf, F(0.8f, 0.75f, 0.3f)) };
+            case "norteamerica_norte": return new[] { new Fruit("Manzano (Malus domestica)", 4.5f, leaf, F(0.75f, 0.15f, 0.12f)), new Fruit("Cerezo ácido (Prunus cerasus)", 4f, leaf, F(0.7f, 0.05f, 0.1f)), new Fruit("Ciruelo (Prunus domestica)", 4f, leaf, F(0.4f, 0.2f, 0.45f)) };   // la McIntosh de Quebec, los manzanos de los patios de Gary y de Long Island
+            case "sudafrica_moderna": return new[] { new Fruit("Melocotonero (Prunus persica)", 3.5f, leaf, F(0.95f, 0.6f, 0.4f)), new Fruit("Limonero (Citrus limon)", 3.5f, dark, F(0.95f, 0.9f, 0.25f)) };
             case "norteamerica_victoriana": return new[] { new Fruit("Manzano (Malus domestica)", 4.5f, leaf, F(0.75f, 0.15f, 0.12f)), new Fruit("Melocotonero (Prunus persica)", 3.5f, leaf, F(0.95f, 0.6f, 0.4f)) };
             case "norteamerica_moderna": return new[] { new Fruit("Naranjo (Citrus sinensis)", 4f, dark, F(0.95f, 0.55f, 0.1f)), new Fruit("Limonero (Citrus limon)", 3.5f, dark, F(0.95f, 0.9f, 0.25f)), new Fruit("Aguacate (Persea americana)", 7f, dark, F(0.2f, 0.35f, 0.15f)) };   // Pasadena: los naranjos del Valle de San Gabriel
             case "sovietico": return new[] { new Fruit("Manzano (Malus domestica)", 4.5f, leaf, F(0.75f, 0.15f, 0.12f)), new Fruit("Cerezo ácido (Prunus cerasus)", 4f, leaf, F(0.7f, 0.05f, 0.1f)) };   // los frutales de los patios de Prípiat

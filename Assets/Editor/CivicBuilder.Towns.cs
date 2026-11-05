@@ -36,6 +36,9 @@ internal static partial class CivicBuilder
         { this.name = name; this.template = template; this.title = title; size = new Vector2(w, d); style = st; this.stations = stations; }
         /// <summary>(2026-11-03) Un edificio de VARIAS PLANTAS en terraza (CivicBuilder.Storeys): los puestos de cada planta.</summary>
         public (string key, Vector2 at, Vector2 size, string label)[][] floors;
+        /// <summary>(2026-11-05) Un edificio de OTRA ÉPOCA Y LUGAR dentro del pueblo (los rincones de «Grandes aportes de las canciones»): su año y su región.</summary>
+        public int year; public string region;
+        public Lot Era(int y, string r) { year = y; region = r; return this; }
     }
 
     const float ClearingRadius = 26f;   // el claro de la historia (docs/microcosmos-reglas-edificacion.md, receta 2)
@@ -138,7 +141,10 @@ internal static partial class CivicBuilder
         for (int i = 0; i < named.Length; i++)
         {
             Lot l = named[i];
+            int yearWas = Year; string regionWas = Region;
+            if (l.year != 0) { Year = l.year; Region = l.region; }
             AreaFunctionSite s = l.floors != null ? Storeys(t, l.name, l.template, l.title, l.style, l.floors) : Building(t, l.name, l.template, l.title, Vector3.zero, 0f, l.size, l.style, l.stations);
+            Year = yearWas; Region = regionWas;
             Vector2 near = _plan.hitos.TryGetValue(i, out Vector2 h) ? PlanPoint(h) : new Vector2(0f, 40f);
             if (!PlaceOn(lots, s, near)) { Debug.LogWarning($"[Pueblos] {town}: no cabe «{l.name}»."); Object.DestroyImmediate(s.gameObject); sites.Add(null); continue; }
             sites.Add(s);

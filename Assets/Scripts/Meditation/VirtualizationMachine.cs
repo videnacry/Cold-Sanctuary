@@ -158,6 +158,7 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
         ("Estudio Textil", "Simulación: Warren Buffett y la señora B en Omaha: un apretón de manos (1983)", "Microcosmos_WarrenBuffett"),
         ("Aula", "Simulación: MacKenzie Scott y Prairie View A&M: dar sin condiciones (2020)", "Microcosmos_MacKenzieScott"),
         ("Huerto", "Simulación: Uagadugú 2024: tractores para los productores (Ibrahim Traoré)", "Microcosmos_IbrahimTraore"),
+        ("Aula", "Simulación: Shakira en Barranquilla: el colegio Pies Descalzos de La Playa (2009)", "Microcosmos_Shakira"),
         // Científicos e históricos (docs/microcosmos-cientificos.md): el pueblo donde ocurrió, sobre el área que mejor lo cuenta.
         ("Aula", "Simulación: Pitágoras en Crotona: el número, la música y Milón (~530 a. C.)", "Microcosmos_Pitagoras"),
         ("Aula", "Simulación: Heródoto en Egipto: «el don del río» (~450 a. C.)", "Microcosmos_Herodoto"),

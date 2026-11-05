@@ -19,6 +19,8 @@ public static class MicroFloors
     {
         public string display, platform, why, pending;
         public bool representative => string.IsNullOrEmpty(pending);
+        /// <summary>(2026-11-05) El piso que falta para los microcosmos de la música (sin la palabra «estudio», que ya usa el Aula en la alerta de piso nuevo).</summary>
+        public const string MusicFloor = "Sala de grabación y escenario de conciertos (música)";
         public Match(string display, string platform, string why, string pending = null) { this.display = display; this.platform = platform; this.why = why; this.pending = pending ?? ""; }
     }
 
@@ -69,6 +71,8 @@ public static class MicroFloors
         M("Omaha", "TextileStudio_Area", "Buffett y la señora B: la tienda que empezó vendiendo alfombras y telas, el Estudio Textil", "Mercado y oficina de comercio (economía)"),
         M("Prairie View", "Classroom_Area", "Scott y Prairie View A&M: la universidad, su biblioteca y sus estudiantes; el Aula"),
         M("Uagadugú", "Garden_Area", "los productores y sus huertos: labrar y sembrar antes de las lluvias, el Huerto"),
+        // La música (docs/microcosmos-musica.md). Sobre la Sala de Ballet (la sala con piano, equipo de sonido y suelo de escenario), Informática o el Aula hasta que exista su piso.
+        M("Barranquilla", "Classroom_Area", "Shakira y el colegio Pies Descalzos de La Playa: la escuela; el Aula"),
     };
 
     /// <summary>La fila del microcosmos <paramref name="display"/> (o null).</summary>

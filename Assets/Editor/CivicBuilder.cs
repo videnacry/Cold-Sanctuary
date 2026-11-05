@@ -688,7 +688,7 @@ internal static partial class CivicBuilder
     }
 
     /// <summary>Muebles de las necesidades básicas que no son puestos del registro (no tienen función propia).</summary>
-    internal static bool NotStation(string key) => key == "inodoro" || key == "lavabo" || key == "banco" || key == "silla";
+    internal static bool NotStation(string key) => key == "inodoro" || key == "lavabo" || key == "banco" || key == "silla" || MicroFurniture.IsMusic(key);   // (los instrumentos acompañan al puesto: no son puestos)
 
     static int Rank(string key) => key == "cama" ? 0 : key == "fogon" ? 1 : key == "mesa" ? 2 : 3;
 

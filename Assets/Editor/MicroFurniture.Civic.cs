@@ -32,7 +32,7 @@ internal static partial class MicroFurniture
             case "carro": Cart(t, e, year); return true;
             case "caballete": Sawhorse(t, e); return true;
             case "material": BuildingMaterial(t, e); return true;
-            default: if (FillTraining(t, key, e, year, seed, ref walk)) return true; break;
+            default: if (FillTraining(t, key, e, year, seed, ref walk) || FillMusic(t, key, e, year, ref walk)) return true; break;
         }
         return false;
     }

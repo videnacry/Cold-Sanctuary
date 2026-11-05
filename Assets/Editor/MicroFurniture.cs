@@ -41,6 +41,8 @@ internal static partial class MicroFurniture
         "frutal", "estatua", "fuente", "vitrina", "piscina", "pista", "consola", "cuna", "armero", "anden", "carro", "caballete", "material", "temazcal",
         // (2026-11-04) los aparatos de entrenar de cada época (MicroFurniture.Training.cs)
         "foso_lucha", "pista_carreras", "campo", "pista_esgrima", "halteres", "piedras", "mazas", "pesas", "saco", "makiwara", "barra_fija", "paralelas", "potro", "anillas", "diana", "balon",
+        // (2026-11-05) la música (MicroFurniture.Music.cs)
+        "piano", "bateria", "amplificador", "microfono", "mesa_mezclas", "tarima",
     };
 
     /// <summary>El cuerpo para el que se hace un mueble cuando no se dice (lo pone CivicBuilder: en un microcosmos, un

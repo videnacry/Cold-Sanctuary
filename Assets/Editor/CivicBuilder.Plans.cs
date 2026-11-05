@@ -893,7 +893,7 @@ relleno | 40 | 0 120",
     /// <summary>El plano de <paramref name="display"/> (null si no tiene o el piso no da para un pueblo: &lt; 500 m).</summary>
     static TownPlan PlanOf(string display, Rect floor)
     {
-        if ((!PlanText.TryGetValue(display, out string txt) && !FamousPlans.TryGetValue(display, out txt)) || floor.width < 500f || floor.height < 500f) return null;
+        if ((!PlanText.TryGetValue(display, out string txt) && !FamousPlans.TryGetValue(display, out txt) && !MusicPlans.TryGetValue(display, out txt)) || floor.width < 500f || floor.height < 500f) return null;
         var p = new TownPlan { town = display };
         var ci = CultureInfo.InvariantCulture;
         Vector2 V(string s) { var x = s.Trim().Split(new[] { ' ' }, System.StringSplitOptions.RemoveEmptyEntries); return new Vector2(float.Parse(x[0], ci), float.Parse(x[1], ci)); }

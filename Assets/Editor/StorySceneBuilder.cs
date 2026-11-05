@@ -48,6 +48,8 @@ public static partial class StorySceneBuilder
         ("TextileStudio_Area", "Omaha", "Microcosmos_WarrenBuffett", new Color(0.7f, 0.6f, 0.5f), new System.Func<Transform, int>(WarrenBuffett)),
         ("Classroom_Area", "Prairie View", "Microcosmos_MacKenzieScott", new Color(0.62f, 0.72f, 0.85f), new System.Func<Transform, int>(MacKenzieScott)),
         ("Garden_Area", "Uagadugú", "Microcosmos_IbrahimTraore", new Color(0.8f, 0.55f, 0.35f), new System.Func<Transform, int>(IbrahimTraore)),
+        // LA MÚSICA (StorySceneBuilder.Musica.cs, docs/microcosmos-musica.md): una historia de cada artista o banda en su pueblo real, y las canciones que cambiaron el mundo.
+        ("Classroom_Area", "Barranquilla", "Microcosmos_Shakira", new Color(0.95f, 0.8f, 0.45f), new System.Func<Transform, int>(Shakira)),
     };
 
     // La PLANTILLA (MicrocosmTemplate): la fecha y la hora de cada historia.
@@ -80,6 +82,7 @@ public static partial class StorySceneBuilder
         ["Omaha"] = ("30 de agosto de 1983 (el 53 cumpleaños de Buffett)", 10.0f),   // la mañana en la tienda (hora representativa)
         ["Prairie View"] = ("15 de diciembre de 2020", 10.0f),   // la mañana del anuncio
         ["Uagadugú"] = ("6 de mayo de 2024", 9.0f),   // la mañana de la entrega (hora representativa)
+        ["Barranquilla"] = ("2009 (abre el colegio de La Playa)", 8.0f),   // la entrada al colegio (hora representativa; el día exacto no consta)
     };
 
     // Las historias son de ERAS CIVILIZADAS (docs/microcosmos-civilizaciones.md §8): tras la historia, los EDIFICIOS REALES de su era

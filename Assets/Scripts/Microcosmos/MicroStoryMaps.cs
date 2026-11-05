@@ -18,7 +18,7 @@ using UnityEngine;
 /// DESDE EL AIRE sobre la superficie más alta de debajo (<see cref="MicroGround.Drop"/>). Sin mapa hecho, siembra al azar como RESPALDO
 /// y lo registra («[Mapa] … SIN mapa a mano»).
 /// </summary>
-public static class MicroStoryMaps
+public static partial class MicroStoryMaps
 {
     public enum Status { Hecho, Esbozo }
 
@@ -153,6 +153,7 @@ public static class MicroStoryMaps
     public static Map For(string display)
     {
         foreach (Map m in All) if (m.display == display) return m;
+        foreach (Map m in Music) if (m.display == display) return m;   // la música (MicroStoryMaps.Musica.cs)
         return null;
     }
 

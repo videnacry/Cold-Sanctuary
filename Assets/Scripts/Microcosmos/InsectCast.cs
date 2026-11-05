@@ -62,6 +62,7 @@ public static class InsectCast
         ("lizmibet",      "Ladybug",     "médica: la mariquita protege el huerto"),
         ("jefeconstruccion", "Termite",  "las termitas construyen montículos"),
         ("jefe_construccion", "Termite", "las termitas construyen montículos"),
+        ("shakira",       "SnowBee",     "la abeja baila para contar a la colmena dónde hay comida: baila y da"),
         ("sadhguru",      "Cicada",      "la muda, el canto que medita"),
         ("andrea",        "Ladybug",     "elegante, de colores"),
         ("goluis",        "DungBeetle",  "fuerza (y cocina)"),

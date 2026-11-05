@@ -62,6 +62,8 @@ public static partial class MicroBiome
     {
         Biome famous = FamousBiome(display);   // los famosos (MicroBiome.Famosos.cs, docs/microcosmos-famosos.md)
         if (famous != null) return famous;
+        Biome music = MusicBiome(display);   // la música (MicroBiome.Musica.cs, docs/microcosmos-musica.md)
+        if (music != null) return music;
         switch (display)
         {
             // ── Kapilavastu / Lumbini (Terai del Nepal), s. V a. C., tras el monzón (oct–nov) ──

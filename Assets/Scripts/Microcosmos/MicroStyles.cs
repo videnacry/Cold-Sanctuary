@@ -23,6 +23,9 @@ public static partial class MicroStyles
         // (2026-11-04) Los famosos (docs/microcosmos-famosos.md): el Sahel (Uagadugú) y el interior de Norteamérica (Albuquerque,
         // Omaha, Prairie View: frutales de clima continental, no los naranjos de California).
         Sahel, NorteamericaInterior,
+        // (2026-11-05) La música (docs/microcosmos-musica.md): el Caribe hispano (Barranquilla, Vega Baja), Jamaica, Corea, las islas
+        // Británicas (Belfast, Ascot), el noreste de Norteamérica y los Grandes Lagos (Montreal, Gary, Long Island) y Sudáfrica.
+        CaribeHispano, Jamaica, Corea, IslasBritanicas, NorteamericaNorte, Sudafrica,
     }
 
     public enum Bed { Estera, LechoJuncos, Reposacabezas, Kline, Lectus, Charpai, Kang, Futon, Minder, Jergon, Dosel, Madera, Hierro, Litera, Hamaca, Moderna, SofaCama }
@@ -137,6 +140,25 @@ public static partial class MicroStyles
         E("norteamerica_interior", "Norteamérica interior (1920–)", 1920, 2100, R(Region.NorteamericaInterior),
           Bed.Moderna, Seat.Cromado, Table.Formica, Hearth.Gas, Toilet.CisternaBaja, Basin.Pedestal, Storage.Alacena, Light.Bombilla,
           "8A6A44", "6E9CC0", "C0C4C8", "Cama con colcha, mesa de cocina de fórmica y sillas de cromo, cocina de gas o eléctrica, inodoro de tanque bajo y lavabo de pie (las casas de posguerra de Albuquerque, Omaha y el este de Texas)"),
+        // (2026-11-05) LA MÚSICA (docs/microcosmos-musica.md).
+        E("caribe_hispano", "Caribe hispano (Barranquilla, Vega Baja, 1950–)", 1950, 2100, R(Region.CaribeHispano),
+          Bed.Moderna, Seat.Butaca, Table.Formica, Hearth.Gas, Toilet.CisternaBaja, Basin.Pedestal, Storage.Alacena, Light.Bombilla,
+          "8A6A44", "E8B04A", "C0C4C8", "La casa de bloque del Caribe: cama con ventilador, mecedora o butaca en la terraza, mesa de fórmica, cocina de gas de bombona, inodoro y lavadero en el patio (Barranquilla, Vega Baja)"),
+        E("jamaica_moderna", "Jamaica (Kingston, 1950–)", 1950, 2100, R(Region.Jamaica),
+          Bed.Hierro, Seat.Banco, Table.Caballete, Hearth.Brasero, Toilet.Comunal, Basin.Cantaro, Storage.Estanteria, Light.Bombilla,
+          "7A5232", "3E7A4E", "8C857A", "Los Government Yards de Trench Town: cama de hierro, bancos y mesa de tablas, el coal pot (brasero de carbón) en la cocina común, baños comunes en el patio y agua del grifo del patio"),
+        E("corea_moderna", "Corea del Sur (Seúl, 1980–)", 1980, 2100, R(Region.Corea),
+          Bed.Moderna, Seat.Banqueta, Table.Baja, Hearth.Gas, Toilet.CisternaBaja, Basin.Pedestal, Storage.Estanteria, Light.Bombilla,
+          "8A6A44", "E4D8C8", "C0C4C8", "El piso de Seúl: cama o colchón yo sobre el suelo radiante (ondol), mesa baja, cocina de gas y baño con ducha"),
+        E("britanico_moderno", "Islas Británicas (1945–)", 1945, 2100, R(Region.IslasBritanicas),
+          Bed.Moderna, Seat.Butaca, Table.Formica, Hearth.Electrica, Toilet.CisternaBaja, Basin.Pedestal, Storage.Comoda, Light.Bombilla,
+          "6E4B2E", "8A5A44", "C0C4C8", "La casa adosada de ladrillo de Belfast y de Inglaterra: butaca junto a la chimenea, cocina eléctrica, cómoda y aseo con cisterna"),
+        E("norteamerica_norte", "Norteamérica del noreste y Grandes Lagos (1920–)", 1920, 2100, R(Region.NorteamericaNorte),
+          Bed.Moderna, Seat.Cromado, Table.Formica, Hearth.Gas, Toilet.CisternaBaja, Basin.Pedestal, Storage.Alacena, Light.Bombilla,
+          "8A6A44", "6E9CC0", "C0C4C8", "Casa de madera o de ladrillo con sótano, dinette de cromo y fórmica, cocina de gas (Montreal, Gary, Long Island)"),
+        E("sudafrica_moderna", "Sudáfrica (1950–)", 1950, 2100, R(Region.Sudafrica),
+          Bed.Hierro, Seat.Banco, Table.Caballete, Hearth.Brasero, Toilet.Caseta, Basin.Cantaro, Storage.Alacena, Light.Vela,
+          "7A5232", "C8A24A", "8C857A", "La casa de cuatro habitaciones de un township de los años del apartheid: cama de hierro, mesa de tablas, brasero de carbón, letrina en el patio y velas o parafina"),
         E("norteamerica_victoriana", "Norteamérica (1840–1919)", 1840, 1919, R(Region.Norteamerica),
           Bed.Hierro, Seat.Windsor, Table.Redonda, Hearth.Hierro, Toilet.Caseta, Basin.Aguamanil, Storage.Comoda, Light.Quinque,
           "6E4B2E", "D9D2C2", "2F2F33", "Cama de hierro o de latón, sillas de respaldo prensado, cocina de hierro de leña o carbón; la caseta (outhouse) y el lavamanos de jarra y palangana; lámpara de queroseno (casa de los Wright, Dayton)"),
@@ -175,6 +197,12 @@ public static partial class MicroStyles
         [Region.SurAsia] = new[] { Region.Islam },
         [Region.NorteamericaInterior] = new[] { Region.Norteamerica },
         [Region.Sahel] = new[] { Region.Islam },
+        [Region.CaribeHispano] = new[] { Region.Hispanoamerica },
+        [Region.Jamaica] = new[] { Region.CaribeHispano, Region.Hispanoamerica },
+        [Region.Corea] = new[] { Region.Japon, Region.China },
+        [Region.IslasBritanicas] = new[] { Region.EuropaNorte, Region.EuropaUrbana },
+        [Region.NorteamericaNorte] = new[] { Region.NorteamericaInterior, Region.Norteamerica },
+        [Region.Sudafrica] = new[] { Region.EuropaUrbana },
     };
 
     /// <summary>
@@ -235,6 +263,13 @@ public static partial class MicroStyles
             case "Aldea de la montaña": return Region.China;
             case "Albuquerque": case "Omaha": case "Prairie View": return Region.NorteamericaInterior;
             case "Uagadugú": return Region.Sahel;
+            // La música (docs/microcosmos-musica.md)
+            case "Barranquilla": case "Vega Baja": return Region.CaribeHispano;
+            case "Kingston": return Region.Jamaica;
+            case "Seúl": return Region.Corea;
+            case "Belfast": return Region.IslasBritanicas;
+            case "Montreal": case "Gary": case "Long Island": return Region.NorteamericaNorte;
+            case "Grandes aportes de las canciones": return Region.Hispanoamerica;   // el pueblo inventado; cada rincón lleva la suya (CivicBuilder.Musica)
             default: return Region.Prehistoria;   // las áreas del santuario: Sakshi, Ambrosio, Cocina, Huerto, Yoga, Textil, Mecánica
         }
     }
