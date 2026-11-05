@@ -85,6 +85,11 @@ public static partial class SampleSceneBuilder
         for (int a = -1; a <= 1; a += 2)
             for (int b = -1; b <= 1; b += 2)
                 PolarLandscapeBuilder.IgnoreForNav(KitchenProps.C(cap, new Vector3(a * (H - 6f), -tendon * 0.5f - 1f, b * (H - 6f)), new Vector3(0.8f, tendon, 0.8f), new Color(0.3f, 0.32f, 0.35f), 0f, "Tendon_casquete").gameObject);
+        // LA DETECCIÓN (docs/sitio-nuclear.md §14): radar en un mástil y sonar de quillas bajo el borde, en cada casquete. Lo que no se ve no se remolca.
+        Vector3 mast = new Vector3(H - 8f, 0f, 0f);
+        KitchenProps.C(cap, mast + new Vector3(0f, 5f, 0f), new Vector3(0.3f, 10f, 0.3f), TreeSteel, 0f, "Mastil_radar");
+        KitchenProps.C(cap, mast + new Vector3(0f, 10.2f, 0f), new Vector3(2.4f, 0.4f, 0.4f), new Color(0.25f, 0.27f, 0.3f), 0f, "Radar_hielo");
+        KitchenProps.C(cap, mast + new Vector3(0f, -6f, 0f), new Vector3(1f, 2f, 1f), new Color(0.95f, 0.8f, 0.2f), 0f, "Sonar_quillas");
         hx.ac.bottomHole = hole;
     }
 

@@ -18,6 +18,8 @@ public static class SiteLineRule
     public const float EscapeSpeed = 6f, EscapeAccel = 0.5f, WalkSpeed = 1.4f;
     /// <summary>Tiempo de inspección abajo (s reales) y la misión que lo contiene (h de juego).</summary>
     public const float InspectSeconds = 90f, MissionHours = 2f;
+    /// <summary>DESCONEXIÓN (docs §17): en emergencia, 90 s (lo que pide API a una desconexión de riser); volver a conectar, las 4 h de una maniobra planificada (600 s de juego).</summary>
+    public const float DisconnectSeconds = 90f, ReconnectSeconds = 600f, SwingDeg = 1.5f;
 
     /// <summary>Tiempo (s) de recorrer <paramref name="len"/> m arrancando y frenando.</summary>
     public static float Run(float len, float v, float a) => len >= v * v / a ? len / v + v / a : 2f * Mathf.Sqrt(len / a);
@@ -61,7 +63,13 @@ public class SiteLine : MonoBehaviour
     public bool Disconnected;
     /// <summary>El pozo de escape, también fuera de servicio: solo queda el refugio.</summary>
     public bool EscapeOut;
-    public bool LineClosed => OutOfService || Disconnected;
+    public bool LineClosed => OutOfService || Disconnected || Separation > 0.001f;
+    [Tooltip("El tramo de tubo que suelta: del casquete al conector. Gira desde arriba y se aparta del muñón.")] public Transform upperTube;
+    /// <summary>0 = conectado; 1 = suelto y apartado.</summary>
+    public float Separation { get; private set; }
+    public void SetSeparation(float s) { Separation = Mathf.Clamp01(s); ApplySwing(); }
+    bool _inTube;
+    Quaternion _upperHome = Quaternion.identity;
     [Tooltip("La compuerta estanca del lecho.")] public Transform seabedGate;
     public bool Busy { get; private set; }
     public int Trips { get; private set; }
@@ -85,7 +93,19 @@ public class SiteLine : MonoBehaviour
     public bool CanRide => !Busy && !LineClosed && !NuclearSite.Evacuating && (CavernRock.Instance == null || !CavernRock.Instance.Closed);
     bool Recall => NuclearSite.Evacuating || Disconnected || (CavernRock.Instance != null && CavernRock.Instance.Closed);
 
-    void Awake() { if (cage != null) _cageHome = cage.position; }
+    void Awake() { if (cage != null) _cageHome = cage.position; if (upperTube != null) _upperHome = upperTube.localRotation; }
+
+    // LA DESCONEXIÓN: suelta en cuanto el carro no está en el tramo que se aparta; vuelve despacio, con el peligro ya pasado.
+    void Update()
+    {
+        if (upperTube == null) return;
+        float s = Separation;
+        if (Disconnected) { if (!_inTube) s = Mathf.MoveTowards(s, 1f, Time.deltaTime / SiteLineRule.DisconnectSeconds); }
+        else s = Mathf.MoveTowards(s, 0f, Time.deltaTime / SiteLineRule.ReconnectSeconds);
+        if (s != Separation) { Separation = s; ApplySwing(); }
+    }
+
+    void ApplySwing() { if (upperTube != null) upperTube.localRotation = _upperHome * Quaternion.Euler(SiteLineRule.SwingDeg * Separation, 0f, 0f); }
     void OnEnable() { Instance = this; WorkdayDirector.RegisterPlace(AreaName, transform); }
     void OnDisable() { if (Instance == this) Instance = null; }
 
@@ -146,6 +166,7 @@ public class SiteLine : MonoBehaviour
         float len = Length, s = 0f, t = 0f, run = SiteLineRule.Run(len, SiteLineRule.CarSpeed, SiteLineRule.CarAccel);
         yield return Wait(r, SiteLineRule.LockSeconds, up, true);
         bool back = Recall;
+        _inTube = !back;
         // BAJA. Si en el camino se declara la emergencia o la roca entra en alarma, frena y vuelve desde donde esté.
         while (!back && t < run)
         {
@@ -157,7 +178,7 @@ public class SiteLine : MonoBehaviour
         }
         if (!back)
         {
-            s = len;
+            s = len; _inTube = false;
             yield return Wait(r, SiteLineRule.LockSeconds, dn, true);
             yield return Wait(r, dwell, dn, true);
             if (LineClosed)
@@ -168,6 +189,7 @@ public class SiteLine : MonoBehaviour
             yield return Wait(r, SiteLineRule.LockSeconds, dn, false);
         }
         // SUBE, desde donde esté.
+        _inTube = true;
         run = SiteLineRule.Run(s, SiteLineRule.CarSpeed, SiteLineRule.CarAccel);
         for (float u = 0f; u < run; u += Time.deltaTime)
         {
@@ -175,6 +197,7 @@ public class SiteLine : MonoBehaviour
             Stand(r, Vector3.Lerp(up, dn, d / len));
             yield return null;
         }
+        _inTube = false;
         yield return Wait(r, SiteLineRule.LockSeconds, up, false);
         Stand(r, up);
         Finish(r, up, back ? "vuelta" : "línea", t0);
@@ -187,7 +210,7 @@ public class SiteLine : MonoBehaviour
         Vector3 at = f != null ? f.transform.position : bottom.position;
         if (r.who != null) r.who.transform.position = at + Vector3.up * (0.12f + r.above);
         if (f != null) f.Enter();
-        float secondsPerHour = TimeController.timeController != null ? TimeController.timeController.SecondsPerGameDay / 24f : 150f, left = RefugeRule.Hours * secondsPerHour;
+        float secondsPerHour = TimeController.timeController != null ? TimeController.timeController.SecondsPerGameDay / 24f : 150f, left = (f != null ? f.HoursLeft : RefugeRule.StoredHours) * secondsPerHour;
         Refuged = true;
         while (LineClosed && EscapeOut && left > 0f)
         {

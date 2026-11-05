@@ -160,7 +160,7 @@ public class NuclearSite : MonoBehaviour
         if (week == 0) l.Add(new WorkRoster.Mission(PowerArea, "nuc_simulacro", "Simulacro de emergencia: parada, válvulas, balizas y salida del turno", 1f));
         // LA ROCA (docs/sitio-nuclear.md §7): se lee a diario; una bajada a la semana, o en cuanto hay AVISO; en ALARMA nadie baja y se refuerza desde arriba.
         // EL ICEBERG (§14): si viene hacia aquí, remolcarlo es lo primero: es lo único que de verdad para uno.
-        if (Iceberg.Threatening != null) l.Add(new WorkRoster.Mission(PowerArea, Iceberg.TowMission, "Iceberg a la vista: seguirlo por radar y sonar y remolcarlo fuera de la zona", SiteLineRule.MissionHours, true));
+        if (Iceberg.Threatening(IcebergRule.Site.Nuclear) != null) l.Add(new WorkRoster.Mission(PowerArea, Iceberg.TowMission, "Iceberg a la vista: seguirlo por radar y sonar y remolcarlo fuera de la zona", SiteLineRule.MissionHours, true));
         CavernRock rock = CavernRock.Instance;
         if (rock == null) return l;
         l.Add(new WorkRoster.Mission(PowerArea, "nuc_roca", "Leer la roca: extensómetros, convergencia, bulones, microsismos, aforos y asiento del cajón, en el panel", 1f));

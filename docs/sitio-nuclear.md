@@ -481,6 +481,8 @@ Regla de Berón: cambiar una regla obliga a revisar lo que ya existe. Lo que toc
 
 ## 12. El refugio del fondo (Berón 2026-11-05)
 
+*(Ampliado por §16: ahora aguanta un mes con corriente, en 20 × 8 m; lo de abajo son los 7 días con lo guardado.)*
+
 Berón: «se debe crear el refugio del fondo».
 
 **Por qué:** la salida de escape tarda unos 2 min y depende de que su pozo siga entero. Si se pierden la línea y el pozo a la vez, quien esté abajo necesita un sitio donde **esperar**.
@@ -561,9 +563,10 @@ Berón: «el tunnel se puede crear protegido para que los iceberg no afecten? no
 - **`Escudo_tubo` y `Escudo_escape`:** hormigón con dientes de −16 a −400 m, la banda de las quillas actuales.
 - **`Compuerta_lecho`** en el tubo y `Collar_lecho` en la roca. **`Intercambiador_lecho` en un hoyo** de 6 m, como en Terra Nova.
 - **`Radar_hielo`** y **`Sonar_quillas`** en la estación.
-- **Dos icebergs** (`Iceberg`): uno varado en un banco al noroeste (1 Mt) y otro a la deriva por el este (1,9 Mt), a 0,2 m/s, unos 30 m por día de juego. A 500 m de hondo, 240 m de quilla no tocarían fondo: **el banco es una pieza puesta para eso**.
-- **A 300 m del sitio:** misión obligatoria de remolque (`nuc_remolque`). **Falla 1 de cada 10**, fijo por día; se repite al día siguiente, más cerca.
-- **A 190 m:** se **desconecta la línea**: nadie baja, y quien esté abajo sale por el pozo de escape. Vuelve cuando se aleja.
+- **Dos icebergs** (`Iceberg`): uno varado en un banco al suroeste (1 Mt) y otro a la deriva por el este (1,9 Mt), a 0,2 m/s, unos 30 m por día de juego. A 500 m de hondo, 240 m de quilla no tocarían fondo: **el banco es una pieza puesta para eso**.
+- **A 300 m del sitio nuclear** (y su equivalente en la lanzadera y el parque): misión obligatoria de remolque. **Falla 1 de cada 10**, fijo por día; se repite al día siguiente, más cerca.
+- **A 190 m del sitio nuclear:** se **desconecta la línea** (§17): nadie baja, y quien esté abajo sale por el pozo de escape. **En la lanzadera** se vacían oxígeno y RP-1; **en el parque** se paran molinos y turbina. Allí no hay nada que desconectar.
+- **Radar y sonar en los tres casquetes**; tendones, ya los tenían.
 - **Vida alrededor:** en el mar de Weddell, dos icebergs estudiados tenían más clorofila, kril y aves hasta ~3,7 km, porque sueltan hierro y hacen de refugio. Aquí, un enjambre de kril de verdad por iceberg; **las focas y los petreles son figuras**, sin IA.
 - **Coste para el PC:** unas 15 cajas por iceberg, un enjambre pequeño y un solo giro para las aves; solo se mueve el que deriva.
 
@@ -575,7 +578,7 @@ La regla W11 de Berón (cambiar una regla obliga a comprobar lo que ya hay) se a
 |---|---|---|
 | T20 refugio | La línea, el pozo y las misiones | Cumplen |
 | T21 plataforma | Troncos, submarinos, fauna, nado | **2 sin arreglar**: fauna bajo las placas y respiraderos (§13) |
-| T22 icebergs | Sitio y lanzadera | La lanzadera **no tiene** protección contra icebergs: uno que derive hacia el oeste no pediría remolque. Los dos de ahora no van allí |
+| T22 icebergs | Sitio y lanzadera | Ampliada a los tres casquetes: §19 |
 | Microcosmos | No dependen del mar del santuario | **Ninguna regla nueva** |
 
 ### Fuentes de §12–§15
@@ -584,6 +587,114 @@ La regla W11 de Berón (cambiar una regla obliga a comprobar lo que ya hay) se a
 - Plataforma: [Ross Ice Shelf](https://en.wikipedia.org/wiki/Ross_Ice_Shelf), [cerca de Scott Base](https://www.cambridge.org/core/services/aop-cambridge-core/content/view/8D495F8CBF459582040371156FE1775C/S0022143000027234a.pdf/movement-of-the-ross-ice-shelf-near-scott-base.pdf), [Halley VI](https://en.wikipedia.com/wiki/Halley_VI)
 - Icebergs: [Hibernia y Hebron](https://explorer.aapg.org/story/articleid/46580/grand-banks-thrives-in-iceberg-alley), [Terra Nova: hoyos y desconexión](https://offshore-mag.com/production/article/16756420/terra-nova-system-designed-for-quick-release-iceberg-scouring), [POAC 2025: remolque](https://www.poac.com/Papers/2025/pdf/POAC25_paper_149.pdf), [30 años de gestión de icebergs](https://openpolar.no/Record/ftnrccanada:oai:cisti-icist.nrc-cnrc.ca:cistinparc:12327552), [C-CORE SIMS](https://c-core.ca/wp-content/uploads/sites/5/2020/10/SIMS-article-in-JOT-Oct2020.pdf)
 - Vida: [Smith et al., 2007](https://data-ww3.ifremer.fr/BIB/Smith_etal_SCIENCE2007.pdf), [Vernet et al., 2012](https://tos.org/oceanography/assets/docs/25-3_vernet.pdf)
+
+## 16. Un refugio para un mes (Berón 2026-11-05)
+
+Berón: «se puede preparar el refugio para 1 mes? podría tener maquinaria para procesar agua salada en dulce y extracción de aire de burbujas? podría tener maquinaria de excavación para evitar perdida de contacto con el agua del mar? podría extraer minerales del mar para generación de comestibles? podría tener huerto que pueda sostenerse a base de los minerales y agua conseguible? podría tener gallinas u otro animal que consuman cultivos o minerales para producción de huevos? u otro tipo de material nutritivo?»
+
+**Respuesta corta: un mes, sí, y con menos de lo que parece.** Agua y aire de la mar, sí; comida, **guardada**: es lo único que aguanta las cuentas en 30 días. El caso real es Chile, 2010: 33 mineros pasaron **17 días** sin contacto y 69 bajo tierra.
+
+### Pregunta por pregunta
+| Pregunta | Veredicto | Por qué |
+|---|---|---|
+| ¿Agua dulce de la mar? | **Sí, construido** | Ósmosis inversa: ~3 kWh/m³. Y a 566 m el mar empuja a **57 bar**, más que lo que pide una membrana (razonamiento mío): casi no gasta |
+| ¿Aire de burbujas? | **No; electrólisis sí** | Para 0,84 kg de O₂ al día, con ~10 mg/l disueltos (dato de memoria), harían falta **84 m³ de agua al día con extracción perfecta**, y devolverla a 57 bar cuesta ~130 kWh. La electrólisis: **~6,5 kWh** (7,7 kWh/kg), 20 veces menos. Es lo que hacen los submarinos |
+| ¿Máquina de excavar? | **Sí, construido, y mejor prevenir** | **Dos sondeos ya hechos** a la mar y una perforadora para abrir otro (~5 días por 60 m, estimación mía). Hay que perforar a 57 bar: lleva **preventor**, o el sondeo inunda el refugio |
+| ¿Comida de minerales del mar? | **No** | El agua da sales. **La comida es carbono y energía**, y el agua de mar casi no tiene nitrógeno ni fósforo. Las sales sirven de abono, nada más |
+| ¿Huerto? | **Solo verduras frescas, construido** | Comida completa: ~23 m² por persona (Lunar Palace 1: 69 m² para 3), **unos 276 m² y ~60 kW**, y los cereales tardan más de un mes. Lo que da en 30 días son hojas: vitaminas y ánimo |
+| ¿Gallinas? | **No** | **1,5 kg de pienso por docena.** Doce gallinas gastan 45 kg al mes y dan un **20 %** de esas calorías (estimación mía): comerse el pienso da cinco veces más. Y ponen amoníaco y polvo en un aire cerrado |
+| ¿Otro alimento? | **Espirulina, construida** | 22 m² de paneles, a unos 10 g/m²/día (lo mejor medido al sol, 30), dan ~140 g de proteína al día: **~12 g por persona, un quinto de lo necesario**. Suplemento, no comida. Pide abono guardado y luz |
+
+### Balance por persona, 30 días
+| | Por persona | 12 personas, 30 días |
+|---|---|---|
+| Oxígeno por electrólisis | 6,5 kWh/día | 302 kg de O₂ |
+| Depurar CO₂ (estimación) | 2 kWh/día | — |
+| Clima y luz (estimación) | 3 kWh/día | — |
+| Agua (6 l/día) | 0,02 kWh/día | 2,2 m³ |
+| **Total sin cultivos** | **11,5 kWh/día (0,5 kW)** | **~6 kW, 4,1 MWh** |
+| Espirulina y hojas | ~1,0 kW (estimación) | ~12 kW en total |
+| Comida guardada | 0,6 kg/día | **216 kg** |
+| Suelo | 13 m² | **160 m²**, en el pilar |
+
+Un huerto completo añadiría 60 kW y una sala de 276 m²: posible con el reactor, pero **no en esta sala** y sin dar de comer a tiempo.
+
+**La corriente es la clave.** 6 kW no son nada para 5 MWe, y son demasiado para unas baterías durante un mes (4,1 MWh). Por eso va un **cable propio por la roca** desde la central, sin pasar por los tubos. **Sin ese cable, o sin reactor, lo guardado da 7 días**, y los números vuelven a ser los de una mina.
+
+**Lo que faltaría en la realidad** (razonamiento mío): el hidrógeno de la electrólisis hay que sacarlo fuera a 57 bar, y es explosivo en una sala cerrada; los cartuchos y las membranas caducan; un mes encerrados pesa más que el aire.
+
+## 17. ¿Un túnel movible? (Berón 2026-11-05)
+
+Berón: «el tunnel podría ser movible? de ese modo sería mas seguro no?»
+
+**Respuesta corta: la parte de arriba puede soltarse, y conviene; el conjunto no puede irse. Y soltarse no lo salva: salva lo de abajo.**
+
+### Lo investigado
+| | Qué se suelta | Tiempo | Lo que enseña |
+|---|---|---|---|
+| **Terra Nova** | El barco, de su torreta; una boya de 20 m y 1300 t aguanta los tubos a 35–40 m | Planificado, ~4 h; emergencia, ~15 min (teórico). Soltar en sí, casi instantáneo | **Lo que tarda es dejarlo seguro antes**, no soltar |
+| **Riser de perforación** | El tubo, de la válvula del fondo | **API pide ≤ 90 s** | Primero **se cierra** y luego se suelta. En 2000, un desenganche fuera de orden dejó sin cerrar las válvulas |
+| **Punto débil** | Si arrastran el tubo, debe romper **por encima** de la válvula | — | Se elige dónde rompe |
+
+**Por qué no puede irse todo:** el barco de Terra Nova se va porque lo que importa va a bordo y flota. Aquí el reactor está en la roca y el TRIGA cuelga del casquete con su árbol encima: **eso no se aparta en minutos**.
+
+### Cómo queda
+- **El tubo son dos tramos.** Arriba, del casquete a −420 m (`Tubo_superior`): se suelta. Abajo, de −420 m al lecho (`Munon_tubo`): **fijo**, por debajo de las quillas actuales, con su compuerta. La roca **no se mueve**.
+- **La desconexión:** primero cierra, luego suelta: 90 s, y el tramo se aparta 1,5° (~11 m al pie). No sale hasta que el carro está fuera del tramo. **Volver a conectar, 4 h de juego.**
+- **El pozo de escape no se suelta:** lleva un punto débil a −420 m, para que si lo arrastran rompa ahí y no tire de la roca. **Queda fijo a propósito**: es la salida de quien está abajo.
+
+**Qué se gana:** que un iceberg no tire del fondo; la compuerta y la roca siguen intactas. **Qué cuesta:** un conector es **un sitio más por donde fallar**, y cada falsa alarma son 4 h sin línea. El casquete y el tubo de arriba **pueden seguir perdiéndose**.
+
+## 18. ¿Por qué tanto hielo y tanta tierra? (Berón 2026-11-05)
+
+Berón: «porque se ha tenido que engrosar tanto el ancho de hielo y tierra?»
+
+**La verdad: nada obligaba.** Lo hice porque dijiste «hazlo real» y copié el grosor real de la plataforma de Ross. **Ninguna mecánica del juego necesita 300 m.** Solo son visibles desde debajo del agua.
+
+- **Hielo, 300 m:** decisión mía para parecerse a Ross, y para que los icebergs calaran lo mismo. **Sirve uno más fino.**
+- **Tierra:** no se engrosó. La placa sigue en **1,5 m**. Lo que baja hasta el lecho es **un anillo de roca bajo la orilla**, que hizo la rama de territorio, porque una isla es roca que llega al fondo; es una sola malla, con el interior vacío.
+
+| Grosor | Submarino de obra | Asoma en la realidad | Observaciones |
+|---|---|---|---|
+| 1,5 m (antes) | Sin cambio | ~0,17 m | Es hielo marino, no plataforma |
+| 2,5 m | Sin cambio | **0,25 m, como en la escena** | El único coherente con lo que se ve |
+| **50 m** | +25 s por viaje | ~5,5 m | Plataforma fina, de borde. **Mi recomendación** si no te importa el número |
+| 300 m (hoy) | **+150 s por viaje** | ~33 m | Como el Ross |
+
+**Por qué 50 m:** sigue siendo una plataforma de verdad y devuelve dos minutos por viaje de obra. **Cambiarlo es un número** (`SeaRule.ShelfThickness`); la prueba del calado de los icebergs habría que ajustarla. La fauna seguiría atravesando el hielo con cualquier grosor mayor que 1,5 m. **No lo he cambiado: decide Berón.**
+
+## 19. Coste de reconstruir en el PC de 16 GB, y auditoría (W11)
+
+**No se puede medir sin abrir Unity**; esto es lo calculado leyendo el código.
+
+| Qué | Cuánto | Efecto |
+|---|---|---|
+| Piezas nuevas del sitio y los icebergs | ~700 cubos, con la misma malla | Un pueblo ×100 tiene 35 000–76 000 objetos: **~2 % de uno**. Inapreciable |
+| Hielo de 300 m | **Mismas cajas**, más altas | La planta del NavMesh no cambia (estimación mía). **Es lo único que hay que vigilar** |
+| Roca de la isla | Una malla, fuera del NavMesh | Nada |
+| Dos enjambres de kril | ~60 modelos | Nada |
+
+**Conclusión:** la reconstrucción del santuario solo no debería notarse. **Regla de siempre:** menú «solo el santuario», sin microcosmos, y Unity por debajo de 11 GB. Si el horneado sube, bajar `ShelfThickness` lo arregla sin tocar nada más.
+
+### Auditoría W11
+| Regla | Lo existente | Resultado |
+|---|---|---|
+| T22, a los tres casquetes | Sitio, lanzadera y **parque energético** (llegó con ronda 9) | Tendones (ya los daba el constructor común), radar y sonar. Cada uno con su remolque; lanzadera: vaciar; parque: parar |
+| Icebergs a ≥ 250 m | **El varado estaba encima del parque** (−500, 500) | **Movido** a (−500, −500) |
+| T20, un mes | Sala de 8 × 5 m | 20 × 8 m, **centrada en el pilar**: 8 m de roca a cada sala |
+| T14 y pilar de roca | Refugio y sondeos cruzan roca | Dos sondeos más por los 60 m de techo: **dos caminos nuevos para el agua**; llevan válvula |
+| T17, el minuto | Conector nuevo | No cambia el tiempo |
+| Fauna bajo las placas, respiraderos | Pendientes | **Siguen sin arreglar** |
+| Microcosmos | No dependen de esto | Ninguna regla nueva |
+
+### Fuentes de §16–§19
+- Agua: [Gold Coast y RO](https://buildingenergy.cx-associates.com/2012/06/energy-efficiency-in-seawater-desalination), [límites de ahorro en RO](https://www.ultrapurewater.com/articles/misc/part-1-limits-of-energy-savings-in-seawater-ro)
+- Oxígeno: [electrólisis: 2,18 kW y 6,82 kg/día](https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/5338412), [electrolizadores de submarinos](https://www.militaryaerospace.com/articles/2016/07/submarines-electrolyzers-oxygen.html), [consumo](https://www.marineinsight.com/submarines-get-oxygen/)
+- Cultivo cerrado: [Lunar Palace 365](https://www.biorxiv.org/content/10.1101/2021.01.12.426282.full.pdf), [Wheeler, 2017](https://sciences.ucf.edu/class/wp-content/uploads/sites/23/2017/02/Wheeler_AgricultureForSpace_PeoplePlaces_OpenAgriculture_2017.pdf)
+- Espirulina: [revisión](https://pmc.ncbi.nlm.nih.gov/articles/PMC9368457)
+- Gallinas: [Hy-Line](https://www.hyline.com/filesimages/Hy-Line-Products/Hy-Line-Product-PDFs/Brown/BRN%20PERF%20ENG.pdf)
+- Chile: [accidente de Copiapó](https://en.wikipedia.org/wiki/2010_Copiap%C3%B3_mining_accident)
+- Desconexión: [Terra Nova: tiempos](https://offshore-mag.com/production/article/16756420/terra-nova-system-designed-for-quick-release-iceberg-scouring), [conexión de Terra Nova](https://www.offshore-mag.com/production/article/16763498/shallow-water-big-seas-connection-challenge-for-terra-nova-floater), [BSEE: EDS en 90 s](https://www.bsee.gov/sites/bsee.gov/files/technical-presentations/standards/fleece-eds-presentation-final-draft.pdf), [desconexiones accidentales](https://www.ogj.com/home/article/17215672/deepwater-drillers-mms-tackle-issues-of-accidental-riser-disconnects), [punto débil](https://drillingcontractor.org/?p=14604)
 
 ## Fuentes
 - [10 CFR 100.11](https://www.law.cornell.edu/cfr/text/10/100.11), [10 CFR 100.3](https://www.law.cornell.edu/cfr/text/10/100.3), [10 CFR 53.530](https://www.law.cornell.edu/cfr/text/10/53.530)

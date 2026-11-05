@@ -121,6 +121,10 @@ public static class PlayerTasks
         T("nuc_bajada", "Ponte el dosímetro en el andén|anden|Dosímetro", "Revisa el carro y la esclusa|carro|Linterna", "Firma la bajada en la caseta|caseta|Tablet");
         T("nuc_refugio", "Ponte el dosímetro en el andén|anden|Dosímetro", "Comprueba aire, agua y baterías|carro|Tablet", "Prueba el teléfono del refugio|caseta|Tablet");
         T("nuc_remolque", "Mira el iceberg en el radar|panel_roca|Tablet", "Da el rumbo al remolcador|panel_roca|Tablet", "Comprueba que se desvía|panel_roca|Tablet");
+        T("lanz_remolque", "Mira el iceberg en el radar|consola|Tablet", "Da el rumbo al remolcador|consola|Tablet", "Comprueba que se desvía|consola|Tablet");
+        T("lanz_vaciado", "Da la orden de vaciar|consola|Tablet", "Comprueba que los tanques se vacían|consola|Tablet");
+        T("ene_remolque", "Mira el iceberg en el radar|consola|Tablet", "Da el rumbo al remolcador|consola|Tablet", "Comprueba que se desvía|consola|Tablet");
+        T("ene_parada", "Para los aerogeneradores|consola|Tablet", "Para la turbina mareal|consola|Tablet");
         T("nuc_refuerzo", "Cierra las cavernas|panel_roca|Tablet", "Manda reforzar a distancia|panel_roca|Tablet", "Vigila que el ritmo baje|panel_roca|Tablet");
         // ══ GUARDIA ══
         T("gua_carnivoros", "Coge la linterna|almacen|Linterna", "Patrulla los puestos|recinto|Linterna", "Anota la ronda|recinto|Tablet");

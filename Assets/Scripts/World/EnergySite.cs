@@ -275,6 +275,9 @@ public class EnergySite : MonoBehaviour
         if (d == 2) l.Add(new WorkRoster.Mission(EnergyRule.Area, "ene_almacen", "Revisar el almacén: calefacción de las baterías y silo de arena", 0.5f));
         l.Add(new WorkRoster.Mission(EnergyRule.Area, "ene_ronda_aves", "Ronda de aves: buscar heridas y retirar restos al pie de torres, mástiles y mesas", 0.5f));
         if (s.DeterrentStrength < 0.7f) l.Add(new WorkRoster.Mission(EnergyRule.Area, "ene_disuasion", "Cambiar de sitio las figuras y revisar los drones, para que las aves no se acostumbren", 1f));
+        // ICEBERGS (docs/sitio-nuclear.md §14): remolcarlo; y si aun así llega, parar lo que gira.
+        if (Iceberg.Threatening(IcebergRule.Site.Energy) != null) l.Add(new WorkRoster.Mission(EnergyRule.Area, Iceberg.EnergyTow, "Iceberg a la vista: seguirlo por radar y sonar y remolcarlo lejos del parque", SiteLineRule.MissionHours, true));
+        if (Iceberg.Danger(IcebergRule.Site.Energy)) l.Add(new WorkRoster.Mission(EnergyRule.Area, "ene_parada", "Iceberg encima: parar y bloquear aerogeneradores y turbina mareal", 1f, true));
         BirdRehabPoint rp = BirdRehabPoint.Instance;
         if (rp != null && rp.patients.Count > 0) l.Add(new WorkRoster.Mission(AreaWork.Hospital, "hos_aves", $"Refugio de aves: curar a {rp.patients.Count} y soltar a las que estén listas, lejos de las turbinas", 0.5f));
         return l;
