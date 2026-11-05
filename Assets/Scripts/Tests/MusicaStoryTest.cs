@@ -77,6 +77,11 @@ public class MusicaStoryTest : MonoBehaviour, ITestUnit
         TestProbe.Check("cada sala aislada lleva doble cristal y tapa", rooms >= 9 && lids == rooms, $"{rooms} salas, {lids} tapas");
         int stages = 0, studios = 0, bands = 0; foreach (Transform t in area.GetComponentsInChildren<Transform>(true)) { if (t.name == "Escenario de conciertos" || t.name == "Segundo escenario") stages++; if (t.name.StartsWith("Cabina de grabación")) studios++; if (t.name.StartsWith("Banda de ensayo")) bands++; }
         TestProbe.Check("más de un escenario y de un estudio, y varias salas de ensayo a la vez", stages >= 2 && studios >= 2 && bands * 5 >= AreaCapacity.Members(), $"{stages} escenarios, {studios} estudios, {bands} salas");
+        int leaves = area.GetComponentsInChildren<SoundDoor>(true).Length;
+        TestProbe.Check("cada sala cierra sus dos puertas correderas (SoundDoor)", leaves == rooms * 2, $"{leaves} hojas en {rooms} salas");
+        int ramps = 0; foreach (Transform t in area.GetComponentsInChildren<Transform>(true)) if (t.name == "Rampa_del_escenario") ramps++;
+        TestProbe.Check("cada escenario tiene su rampa", ramps == stages, $"{ramps}/{stages}");
+        TestProbe.Check("los huecos de las salas de cristal miden los 2 m de paso", GlassWall.DoorWidth >= FurnitureSpacing.Standard);
         var spacing = FurnitureSpacing.Violations(area.transform);
         TestProbe.Check("2 m de paso, también con el cristal, dentro y fuera", spacing.Count == 0, $"{spacing.Count} pares");
         TestProbe.End();

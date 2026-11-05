@@ -40,15 +40,14 @@ Aplicando la ley de la pared compuesta a una sala de 8,4 × 6,2 m:
 
 | Caso | Aislamiento |
 |---|---|
-| Sala cerrada, tapa y puerta | **~45 dB** |
+| Sala cerrada, tapa y puertas | **~45 dB** |
 | Entre dos salas vecinas (dos paredes dobles; se suman +8 a la baja) | **~53 dB**: cumple STC 50, no STC 55 |
-| Con la puerta abierta | ~15 dB |
+| Con la puerta abierta | ~14 dB |
 | Sin tapa | ~4 dB |
 
-**Conclusiones:** sirve para que varias bandas ensayen a la vez, pero **una batería seguirá oyéndose bajito en la sala de al lado**: el grave es lo que peor para el cristal, y un estudio serio pide más (STC 55–65).
-Grabar en una sala y tocar batería en la contigua no sería limpio. Hay dos límites del modelo:
-- **Las puertas son huecos abiertos** (1,8 m), como en todo `GlassWall`: en el juego nadie las cierra, y la tabla supone que sí. El juego no simula el sonido: `MusicAcoustics` es una cuenta.
-- **La tapa de cristal es un techo.** La regla S6 dice «sin muros ni techos» y solo permite paredes de cristal. Sin tapa no hay aislamiento (4 dB). **Decide Berón**: se ha puesto porque no tapa la vista.
+**Conclusiones:** sirve para que varias bandas ensayen a la vez, pero **una batería seguirá oyéndose bajito en la sala de al lado**: el grave es lo que peor para el cristal, y un estudio serio pide más (STC 55–65). Grabar en una sala y tocar batería en la contigua no sería limpio.
+
+**Puertas y tapas (Berón, «hazlo real»):** cada piel tiene una hoja corredera (`SoundDoor`) que cierra el hueco de 2 m y se abre sola cuando alguien está a 1,8 m; no lleva colisión, así que nadie queda encerrado. Las tapas de cristal las permite ya S6. El juego no simula el sonido: `MusicAcoustics` es una cuenta.
 
 ## Vida en el santuario
 
@@ -65,12 +64,12 @@ Grabar en una sala y tocar batería en la contigua no sería limpio. Hay dos lí
 | S1, T3 elevado, ≥ 50 m | Por diseño | Piso de la hélice (`TowerFloor`) | 57 |
 | S2 torre temática | Por diseño | Va en Entrenamiento | 28 |
 | S3, T1, T2 edificio-árbol | Por diseño | Mismo `HelixFloor` | 57 |
-| S4 ≥ 16 m entre torres | **Sin comprobar: riesgo** | La torre sube hasta 2 niveles; la holgura con el Árbol era 16,3 m | 57 |
-| S5 sin escaleras | **Falla en parte** | Las tarimas miden 0,6 m y no tienen rampa: nadie sube | fotos; hay que añadir rampa |
-| S6 sin muros ni techos | **Excepción pedida** | Paredes de cristal, permitidas; **las tapas son techo**: decide Berón | — |
+| S4 ≥ 16 m entre torres | **Resuelta por cálculo** (ver abajo) | Sube de 7 a 8 niveles; la huella en planta no cambia y lo nuevo queda sobre todo vecino | 57 |
+| S5 sin escaleras | Por cálculo | Rampas de 2,4 m (14°) en los 2 escenarios; tarima y rampa se pisan | fotos; NavMesh sin ver |
+| S6 sin muros ni techos | Cumple | S6 permite ya el techo de cristal donde una función lo necesita | 86 |
 | S7 2 m de paso | Por cálculo | Medido a mano: 2,04 m el más justo (banda–cristal) | 28; también la prueba 86 |
 | S8 medida humana | Por cálculo | Butaca a 0,45 m | solo en docs |
-| S9 30 pisos | Sin comprobar | Suma 3 pisos; el total de la torre no se contó | 28, `StructuralLimits` |
+| S9 30 pisos | Por cálculo | 16 pisos en la torre (28 miembros) | 28, `StructuralLimits` |
 | S10 plazas reservadas | **Sin comprobar** | Las calcula `Slots`; las salas de cristal le quitan sitio | 28, 40 |
 | S11 energía solar | Pendiente | `FloorEnergy` no ha llegado a `claude/edificios` | energía (ver abajo) |
 | S13 = J16 capacidad | Por cálculo | Ensayo 40 ≥ 28, concierto 66 ≥ 28, trabajo ≥ 2 | 75, 86 |
@@ -79,8 +78,9 @@ Grabar en una sala y tocar batería en la contigua no sería limpio. Hay dos lí
 | F5 umbrales | Por cálculo | Zona de 7,4 × 4,4 m libre: x −4,1…3,3 en conciertos; franja de 4,6 m en estudios | 57 |
 | F6, §11 revisar microcosmos | Hecho | Tabla del manual actualizada | 43, 67 |
 | T4 alfombras | Por diseño | No se añade ninguna | 57 |
-| T6 puertas | Tronco 7 × 7 m, por diseño. **Salas de cristal: 1,8 m**, el mismo valor de `GlassWall` en el hospital | **Menos que los 2 m de S7**: dos personas pasan justas | 84 solo mira el hospital |
+| T6 puertas | Tronco 7 × 7 m, por diseño. Salas de cristal: **2 m** en todo el santuario (`GlassWall.DoorWidth`; antes 1,8) | También cambia el hospital | 84, 86 |
 | T8 máscaras | Por diseño | Por nivel, automático | 70 |
+| T13 lanzadera | Por cálculo | El techo sube ~22 m; `RequiredPadHeight` lo usa al construir, así que la plataforma sube ~22 m | 90 |
 | H5 cristal solo donde aísla | Cumple | Salas de sonido | — |
 | J3 horario libre | Por lectura de código | «concierto» en `SanctuaryActivities` | 65 |
 | J16 ocio para todos | Por lectura | En `AllMembers` | 89, 75 |
@@ -92,10 +92,16 @@ Grabar en una sala y tocar batería en la contigua no sería limpio. Hay dos lí
 | M9 mapas de sus microcosmos | Parcial | Las órdenes `pared` y `mesa` usan el catálogo; no se han visto | 68, fotos |
 | W9 revisar jornadas | Hecho | Sin puestos fijos ni profesión | 50, 65 |
 
+## S4 y T13: la cuenta
+
+Con 28 miembros: gimnasio 1, cardio 1, calistenia 1, Hatha 2, Ashtanga 2, ballet 2, dojo 2, Aula 2 = 13 pisos: 7 niveles. Con los 3 de Música, 16: **8 niveles** (dos pisos por nivel). Un nivel más: 22 m.
+
+- **En planta nada cambia:** `TreeSpec.Platform` reparte caras y puntas según nivel par o impar, y el nivel 8 repite la huella del 6; los niveles 6 y 7 ya cubrían esa planta. La distancia en planta de cada par de piezas es la misma.
+- **En altura, solo se aleja:** el nivel 6 está a 174 m (`LevelY`: 64 + 22 por nivel). Los techos vecinos quedan por debajo: Ciencias 4 niveles, ~153 m; Servicios 3 niveles, ~131 m; Árbol de los Campos y Producción 2 niveles, ~109 m. El árbol guardián llega a 132,6 m.
+- **Conclusión:** toda pieza nueva está a más distancia 3D de sus vecinos que su gemela del nivel 6. El mínimo medido (16,3 m) no baja. Falta confirmarlo con el grupo 57. Queda fuera de la cuenta un vecino nuevo que aún no esté en `claude/edificios`.
+
 ## Qué falta
 
-1. **Rampas de las tarimas** (S5), o decidir que el concierto se toca delante de ellas.
-2. **Berón decide las tapas** (S6).
-3. Al unir `claude/edif-energia`: `SanctuaryAreaType.Music` en la línea de 18 W/m² de `EnergyRule.WattsPerM2` (sin eso, 16). `FloorEnergy.Declare` recorre todas las áreas y calcula las mesas solares sola: estos pisos piden unos 2800 m² × 18 W/m² ≈ 50 kW de media, sin contrastar con las mesas libres.
-4. Reconstruir SampleScene y pasar: 86, 75, 57, 28, 40, 84, 50, 65, 89, 96, 97, 67, 68, 70.
-5. `AreaFunctionRegistryTest`: sus cuentas fijas («55 misiones», 64,5 h) parecen desfasadas ya antes de esto; sin ejecutar.
+1. Al unir `claude/edif-energia`: `SanctuaryAreaType.Music` en la línea de 18 W/m² de `EnergyRule.WattsPerM2` (sin eso, 16). `FloorEnergy.Declare` recorre todas las áreas y calcula las mesas solares sola: estos pisos piden unos 2800 m² × 18 W/m² ≈ 50 kW de media, sin contrastar con las mesas libres.
+2. Reconstruir SampleScene y pasar: 86, 75, 57, 28, 40, 84, 90, 50, 65, 89, 96, 97, 67, 68, 70.
+3. `AreaFunctionRegistryTest`: sus cuentas fijas («55 misiones», 64,5 h) parecen desfasadas ya antes de esto; sin ejecutar.

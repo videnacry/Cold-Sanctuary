@@ -8,7 +8,7 @@ using UnityEngine;
 /// 1. las salas que deben aislarse de los hospitales del santuario tienen su sala de cristal: los 4 quirófanos, la UCI, los 4
 ///    aislamientos y su esclusa (hospital de personas) y los 4 quirófanos veterinarios, la sala fría de los pingüinos y el
 ///    aislamiento veterinario;
-/// 2. el cristal es transparente (no tapa la vista) y cada sala tiene su puerta (hueco de ≥ 1,8 m);
+/// 2. el cristal es transparente (no tapa la vista) y cada sala tiene su puerta (hueco de ≥ 2 m);
 /// 3. GUARDAN LOS 2 m: ningún mueble (de dentro ni de fuera) a menos de 2 m de un paño (FurnitureSpacing, en todo el hospital);
 /// 4. las reglas de los microcosmos (MicroBuildRules) dejan pasar el cristal (no es «muro») pero le miden el paso de 2 m.
 /// </summary>
@@ -50,7 +50,7 @@ public class GlassWallTest : MonoBehaviour, ITestUnit
             if (kv.Value.Find("Dintel_cristal") != null || kv.Key == "Esclusa_aislamiento" && ps.Count >= 3) doors++;
         }
         TestProbe.Check("el cristal es transparente (alfa < 0,5) en todas", clear == rooms.Count, $"{clear}/{rooms.Count} salas, {panes} paños");
-        TestProbe.Check("cada sala tiene su puerta (hueco de 1,8 m con dintel)", doors == rooms.Count, $"{doors}/{rooms.Count}");
+        TestProbe.Check("cada sala tiene su puerta (hueco de 2 m con dintel)", doors == rooms.Count, $"{doors}/{rooms.Count}");
 
         // ── 3. LOS 2 m ──
         var bad = FurnitureSpacing.Violations(hosp.transform).Where(v => v.a.name.StartsWith(GlassWall.Prefix) || v.b.name.StartsWith(GlassWall.Prefix)).ToList();

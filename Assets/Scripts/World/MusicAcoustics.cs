@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// CUÁNTO SONIDO PARA EL CRISTAL (Berón 2026-11-05: «se pueden aprovechar las paredes transparentes para bloquear sonido»; docs/piso-musica.md §Acústica).
 /// El juego no simula el sonido: esto es la CUENTA con la que se dimensionaron las salas, y la prueba 86 la comprueba. Un paño suelto, con la puerta abierta
-/// y sin tapa no aísla casi nada: por eso cada sala lleva DOBLE cristal laminado con cámara y tapa de cristal, y hay que grabar con la puerta cerrada.
+/// y sin tapa no aísla casi nada: por eso cada sala lleva DOBLE cristal laminado con cámara y tapa de cristal, y sus puertas se cierran solas (<see cref="SoundDoor"/>).
 /// Cifras (Rw, dB): cristal laminado de 12,5 mm ~40; doble acristalamiento acústico de catálogo 44–52, y en obra hasta 8 menos; la meta entre salas de ensayo
 /// es ~STC 50 (55 para uso silencioso) y STC 40 en las puertas de sala de música. La ley de masas de la pared compuesta es física de libro.
 /// </summary>
@@ -33,7 +33,7 @@ public static class MusicAcoustics
     /// Sin <paramref name="lid"/>, la abertura de arriba cuenta como un hueco.</summary>
     public static float Room(Vector2 size, bool doorOpen, bool lid = true)
     {
-        float door = GlassWall.DoorWidth * 2.4f, walls = 2f * (size.x + size.y) * GlassWall.Height - door, top = size.x * size.y;
+        float door = GlassWall.DoorWidth * GlassWall.DoorHeight, walls = 2f * (size.x + size.y) * GlassWall.Height - door, top = size.x * size.y;
         return Composite((walls, DoubleGlassRw), (door, doorOpen ? 0f : DoorRw), (top, lid ? DoubleGlassRw : 0f));
     }
 
