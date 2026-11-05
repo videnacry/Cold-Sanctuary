@@ -32,6 +32,7 @@ public static partial class MicroStyles
     /// si en esa época y lugar no existía.</summary>
     public static string CivicName(Civic c, Entry e, int year)
     {
+        if (HistoNames.TryGetValue(e.id, out var hn)) return hn.TryGetValue(c, out string hs) ? hs : null;   // la tanda 3 (MicroStyles.Historias.cs): lo que no está, no existía
         bool pre = Is(e, "prehistoria");
         switch (c)
         {
@@ -171,6 +172,14 @@ public static partial class MicroStyles
         switch (e.id)
         {
             case "prehistoria": return null;
+            // (2026-11-05) La tanda 3 (docs/microcosmos-historias-3.md, docs/microcosmos-entrenamiento-eras.md).
+            case "andes_republicano": return "pelota_nacional";
+            case "mapuche": return "palin";
+            case "inca": return "warachikuy";
+            case "haudenosaunee": return "tewaarathon";
+            case "egipto_ptolemaico": return "gimnasio_griego";
+            case "viena_biedermeier": case "provincias_1600": return "sala_esgrima";
+            case "amazonia_1950": return "estadio";
             case "egeo": return year < -700 ? "juegos_heroicos" : "gimnasio_griego";   // los juegos de la Ilíada (XXIII) antes del gimnasio (s. VI a. C.)
             case "roma": return "palestra_romana";
             case "egipto": return "patio_lucha_egipcio";
@@ -208,6 +217,8 @@ public static partial class MicroStyles
     public static Fruit[] Fruits(Entry e)
     {
         Color leaf = F(0.25f, 0.45f, 0.22f), dark = F(0.18f, 0.36f, 0.18f), grey = F(0.45f, 0.52f, 0.4f);
+        Fruit[] histo = HistoFruits(e, leaf, dark, grey);   // la tanda 3 (MicroStyles.Historias.cs)
+        if (histo != null) return histo;
         switch (e.id)
         {
             case "prehistoria": return new[] { new Fruit("Higuera silvestre (Ficus carica)", 4f, leaf, F(0.45f, 0.3f, 0.4f)), new Fruit("Almendro silvestre (Prunus amygdalus)", 4f, grey, F(0.7f, 0.75f, 0.5f)) };   // Gilgal I (higos, ~9400 a. C.)

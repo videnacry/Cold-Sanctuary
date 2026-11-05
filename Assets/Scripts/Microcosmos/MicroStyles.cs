@@ -20,6 +20,8 @@ public static partial class MicroStyles
         Prehistoria, Mesopotamia, Egipto, Egeo, Roma, SurAsia, China, HongKong, Japon, Islam, Otomano,
         EuropaMedieval, EuropaNorte, Alpes, EuropaUrbana, FranciaRural, Norteamerica, Hispanoamerica, Sovietico, Frente,
         Maya,   // (2026-11-03) Mesoamérica maya clásica (Palenque)
+        // (2026-11-05) Las historias de la tanda 3 (docs/microcosmos-historias-3.md; nombres y frutales en MicroStyles.Historias.cs).
+        Andes, Mapuche, Inca, Haudenosaunee, EgiptoPtolemaico, VirginiaTidewater, Viena, ProvinciasUnidas, Amazonia, EspanaActual, Exposicion,
         // (2026-11-04) Los famosos (docs/microcosmos-famosos.md): el Sahel (Uagadugú) y el interior de Norteamérica (Albuquerque,
         // Omaha, Prairie View: frutales de clima continental, no los naranjos de California).
         Sahel, NorteamericaInterior,
@@ -127,6 +129,40 @@ public static partial class MicroStyles
         E("maya_clasico", "Maya clásico (Palenque, 250–900)", 250, 900, R(Region.Maya),
           Bed.Estera, Seat.Banco, Table.Baja, Hearth.Topias, Toilet.Pozo, Basin.Cantaro, Storage.Tinaja, Light.Fuego,
           "8A5A3A", "C8B48A", "6E8A7A", "Banca de mampostería enlucida con petate (estera de palma) para dormir y sentarse; el k'oben (fogón de tres piedras) con su comal; ollas y cántaros de barro; tinajas; tea de ocote. Letrinas y baños de vapor en el Palacio de Palenque (Barnhart 2001; Stuart y Stuart 2008)"),
+        // (2026-11-05) LAS HISTORIAS DE LA TANDA 3 (docs/microcosmos-historias-3.md; sus nombres de edificios y frutales, en MicroStyles.Historias.cs).
+        E("andes_republicano", "Andes republicanos (Quito, 1820–1960)", 1820, 1960, R(Region.Andes),
+          Bed.Hierro, Seat.Butaca, Table.Refectorio, Hearth.Topias, Toilet.Caseta, Basin.Aguamanil, Storage.Arcon, Light.Quinque,
+          "6E4B2E", "B5462F", "8C857A", "Casa quiteña de patio: cama de hierro, sillas de cuero, mesa larga; tulpa (fogón de tres piedras) en la cocina del fondo; letrina del patio, palangana y jarra; lámpara de queroseno"),
+        E("mapuche", "Mapuche (ruka, 1000–1900)", 1000, 1900, R(Region.Mapuche),
+          Bed.Estera, Seat.Taburete, Table.EsteraDeComer, Hearth.Suelo, Toilet.Pozo, Basin.Cantaro, Storage.Cesto, Light.Fuego,
+          "6B4F35", "7A2E2A", "B8BDC2", "La ruka de paja y coligüe con el kütral (fuego) en el centro; esteras y mantas de lana (makuñ); wanco (taburete de una pieza de madera); metawe (cántaro de barro); chaiwe y llepü (cestos) (Museo Chileno de Arte Precolombino; Bengoa 2000)"),
+        E("inca", "Inca (Tawantinsuyu, 1400–1572)", 1400, 1572, R(Region.Inca),
+          Bed.Estera, Seat.Taburete, Table.EsteraDeComer, Hearth.Chulha, Toilet.Pozo, Basin.Cantaro, Storage.Tinaja, Light.Fuego,
+          "7A5232", "C23B22", "C9A24A", "Mantas de qompi y awasqa sobre esteras; tiana (asiento bajo de la nobleza); q'oncha (fogón de barro); urpu o aríbalo y qero; colcas y tinajas (D'Altroy 2014, The Incas; Morris y Thompson 1985)"),
+        E("haudenosaunee", "Haudenosaunee (casa larga, 1000–1700)", 1000, 1700, R(Region.Haudenosaunee),
+          Bed.Estera, Seat.Banco, Table.EsteraDeComer, Hearth.Suelo, Toilet.Pozo, Basin.Cantaro, Storage.Cesto, Light.Fuego,
+          "6E5238", "8A6A44", "8C857A", "Casa larga de corteza de olmo: plataformas corridas con esteras y pieles, fuegos en fila por el pasillo central; ollas de barro; cestos y trenzas de maíz colgadas (Snow 1994, The Iroquois; Ganondagan State Historic Site)"),
+        E("egipto_ptolemaico", "Egipto ptolemaico (Alejandría, −332 a −30)", -332, -30, R(Region.EgiptoPtolemaico),
+          Bed.Kline, Seat.Klismos, Table.Trapeza, Hearth.Brasero, Toilet.Vasija, Basin.Louterion, Storage.Arcon, Light.Lucerna,
+          "7A5232", "2F5E7A", "C9A24A", "Casa griega en tierra egipcia: kliné y klismós, trapeza, brasero y fogón portátil, jarra y louterion, lucerna de barro de Alejandría (Fraser 1972, Ptolemaic Alexandria)"),
+        E("virginia_1960", "Virginia (costa, 1945–1979)", 1945, 1979, R(Region.VirginiaTidewater),
+          Bed.Moderna, Seat.Cromado, Table.Formica, Hearth.Electrica, Toilet.CisternaBaja, Basin.Pedestal, Storage.Alacena, Light.Bombilla,
+          "8A6A44", "6E9CC0", "C0C4C8", "La casa de clase media de Hampton y Newport News: dinette de fórmica y cromo, cocina eléctrica, inodoro de tanque bajo (Shetterly 2016, Hidden Figures)"),
+        E("viena_biedermeier", "Viena (1780–1848)", 1780, 1848, R(Region.Viena),
+          Bed.Madera, Seat.Butaca, Table.Redonda, Hearth.Kachelofen, Toilet.Bacinilla, Basin.Aguamanil, Storage.Comoda, Light.Vela,
+          "8A5A32", "B5A27A", "C9A24A", "Biedermeier: cama de cerezo, sillas tapizadas, mesa redonda, estufa de azulejos (Kachelofen); orinal y aguamanil; velas de sebo y de cera"),
+        E("provincias_1600", "Provincias Unidas (1580–1700)", 1580, 1700, R(Region.ProvinciasUnidas),
+          Bed.Madera, Seat.Banco, Table.Refectorio, Hearth.Caldero, Toilet.Bacinilla, Basin.Aguamanil, Storage.Alacena, Light.Vela,
+          "5A3A22", "3A4A6A", "B8A070", "Casa holandesa de ladrillo: cama-armario (bedstede), banco y mesa de roble, hogar con caldero y azulejos, kast (armario grande), orinal y jarra (Rijksmuseum)"),
+        E("amazonia_1950", "Amazonía peruana (1900–1980)", 1900, 1980, R(Region.Amazonia),
+          Bed.Hamaca, Seat.Banco, Table.Caballete, Hearth.Topias, Toilet.Caseta, Basin.Tinajero, Storage.Estanteria, Light.Quinque,
+          "6E4B2E", "D9C9A0", "8C857A", "Casas de madera sobre pilotes con techo de hojas de palma: hamaca y mosquitero, banco de tablas, fogón de tres piedras, letrina aparte, tinaja de agua y lámpara de queroseno (colonia de San Pablo, Loreto)"),
+        E("espana_actual", "España actual (2000–)", 2000, 2100, R(Region.EspanaActual),
+          Bed.Moderna, Seat.Cromado, Table.Formica, Hearth.Electrica, Toilet.CisternaBaja, Basin.Pedestal, Storage.Alacena, Light.Bombilla,
+          "A08058", "6E8EA0", "C0C4C8", "Piso de Madrid: mobiliario de serie, vitrocerámica, baño completo"),
+        E("exposicion_mundial", "Feria internacional (2000–)", 2000, 2100, R(Region.Exposicion),
+          Bed.Moderna, Seat.Cromado, Table.Formica, Hearth.Electrica, Toilet.CisternaBaja, Basin.Pedestal, Storage.Estanteria, Light.Bombilla,
+          "A08058", "D9A441", "C0C4C8", "Pabellones de una feria inventada: cada uno lleva el aire de su país; el mobiliario de servicio es el de cualquier feria"),
         // (2026-11-04) LOS FAMOSOS (docs/microcosmos-famosos.md).
         E("india_moderna", "India moderna (Tamil Nadu, 1900–)", 1900, 2100, R(Region.SurAsia),
           Bed.Charpai, Seat.Suelo, Table.Baja, Hearth.Gas, Toilet.Turca, Basin.Cantaro, Storage.Estanteria, Light.Bombilla,
@@ -235,6 +271,19 @@ public static partial class MicroStyles
             case "Aldea de la montaña": return Region.China;
             case "Albuquerque": case "Omaha": case "Prairie View": return Region.NorteamericaInterior;
             case "Uagadugú": return Region.Sahel;
+            // Las historias de la tanda 3 (docs/microcosmos-historias-3.md)
+            case "Chimbacalle": return Region.Andes;
+            case "Lagunillas": return Region.Mapuche;
+            case "Cajamarca": return Region.Inca;
+            case "Onondaga": return Region.Haudenosaunee;
+            case "Alejandría de Cleopatra": return Region.EgiptoPtolemaico;
+            case "Langley": return Region.VirginiaTidewater;
+            case "Viena 1824": return Region.Viena;
+            case "Leiden": return Region.ProvinciasUnidas;
+            case "San Pablo": return Region.Amazonia;
+            case "Madrid 2018": return Region.EspanaActual;
+            case "Gettysburg": return Region.Norteamerica;
+            case "Feria de las Hazañas": return Region.Exposicion;
             default: return Region.Prehistoria;   // las áreas del santuario: Sakshi, Ambrosio, Cocina, Huerto, Yoga, Textil, Mecánica
         }
     }

@@ -273,6 +273,33 @@ public static class HistoricTraining
             "Fútbol y atletismo; y la lutte traditionnelle.",
             S("carrera_suave"), S("estirar"), S("pase con el interior del pie", "brazos activos al correr"),
             ("Campo y pista", S("pases", "regate", "velocidad_pista", "tiro_puerta", "lutte")));
+        // (2026-11-05) Los juegos de la tanda 3 (docs/microcosmos-entrenamiento-eras.md).
+        X("wino_golpes", "Golpes con el wiño a la pali", "wiño y pali", "hombros y tronco", DrillMotion.Golpear, compound: false);
+        X("palin_partido", "Partido de palín por la cancha", "wiño y pali", "piernas", DrillMotion.Correr);
+        X("carrera_cerro", "Carrera de la ladera al cerro", null, "piernas", DrillMotion.Correr);
+        X("honda_waraka", "Tiro con honda (waraka)", "honda de lana y piedras", "hombros", DrillMotion.Lanzar);
+        X("relevo_chasqui", "Relevos de chasqui con el mensaje", "quipu y pututu", "piernas", DrillMotion.Correr);
+        X("tewa_pases", "Pases con el palo y su red", "palo de nogal y pelota de piel", "hombros y tronco", DrillMotion.Lanzar, compound: false);
+        X("tewa_tiro", "Tiro a la meta", "palo de nogal y pelota de piel", "hombros y tronco", DrillMotion.Lanzar, compound: false);
+        X("tewa_carrera", "Carreras por el campo", null, "piernas", DrillMotion.Correr);
+        X("tabla_saque", "Saque con la tabla de pelota nacional", "tabla y pelota de caucho", "hombros y tronco", DrillMotion.Golpear, compound: false);
+        X("tabla_volea", "Volea con la tabla", "tabla y pelota de caucho", "hombros", DrillMotion.Golpear, compound: false);
+        Add("palin", "Paliwe (cancha de palín)", "Lonko de la cancha", S("palin"),
+            "El palín mapuche: dos equipos llevan la pali con el wiño de un extremo a otro de la cancha; también se juega entre comunidades.",
+            S("carrera_suave"), S("estirar"), S("wiño bajo, a dos manos", "levanta la vista antes de golpear"),
+            ("Palín", S("wino_golpes", "palin_partido", "carrera_estadio")));
+        Add("warachikuy", "Campo del warachikuy", "Orejón maestro de los jóvenes", S("warachikuy"),
+            "Las pruebas de los jóvenes incas: la carrera al cerro, la honda y los relevos de los chasquis.",
+            S("carrera_suave"), S("estirar"), S("pasos cortos en la cuesta", "el relevo se da corriendo"),
+            ("Pruebas", S("carrera_cerro", "honda_waraka", "relevo_chasqui")));
+        Add("tewaarathon", "Campo de tewaarathon", "Corredor mayor", S("tewaarathon"),
+            "El juego del Creador (lacrosse): palo de nogal con red, pelota de piel de ciervo y mucho correr.",
+            S("carrera_suave"), S("estirar"), S("muñecas sueltas al recibir", "la cabeza alta al correr"),
+            ("Juego", S("tewa_pases", "tewa_tiro", "tewa_carrera")));
+        Add("pelota_nacional", "Cancha de pelota nacional", "Capitán de la cuadrilla", S("pelota_nacional"),
+            "La pelota de tabla de Ecuador: se saca y se devuelve con una tabla pesada, en una cancha larga de tierra.",
+            S("carrera_suave"), S("estirar"), S("brazada larga, con la cadera", "la vista en la pelota"),
+            ("Partido", S("tabla_saque", "tabla_volea", "carrera_estadio")));
         Add("moderno", "Gimnasio", "Entrenador", S("gimnasio_moderno"),
             "Barra y discos, saco, barra fija y balón; desde 1970, máquinas de placas.",
             S("carrera_suave"), S("estirar"), S("escápulas atrás en la banca", "espalda neutra en el peso muerto"),

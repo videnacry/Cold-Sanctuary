@@ -104,6 +104,19 @@ public static class Eras
             case "Omaha":                 return (1983, "Omaha, Nebraska (Warren Buffett compra la Nebraska Furniture Mart a Rose Blumkin)");
             case "Prairie View":          return (2020, "Prairie View A&M University, Texas (la donación de MacKenzie Scott)");
             case "Uagadugú":              return (2024, "Uagadugú, Burkina Faso (la entrega de tractores a los productores)");
+            // La tanda 3 (docs/microcosmos-historias-3.md)
+            case "Chimbacalle":           return (1908, "Chimbacalle, Quito (Eloy Alfaro y la llegada del tren de Guayaquil)");
+            case "Lagunillas":            return (1557, "Tierras de Arauco, Chile (Galvarino vuelve con su gente)");
+            case "Cajamarca":             return (1533, "Cajamarca, Perú (Atahualpa y el rescate)");
+            case "Onondaga":              return (1450, "El lago Onondaga, Nueva York (la Gran Ley de la Paz; fecha tradicional discutida)");
+            case "Alejandría de Cleopatra": return (-42, "Alejandría, Egipto (Cleopatra y los años sin crecida del Nilo)");
+            case "Langley":               return (1962, "Langley, Hampton, Virginia (Johnson, Vaughan, Jackson y el vuelo de Glenn)");
+            case "Viena 1824":            return (1824, "Viena (Beethoven y el estreno de la Novena)");
+            case "Leiden":                return (1637, "Leiden, Provincias Unidas (Descartes publica el Discurso del método)");
+            case "San Pablo":             return (1952, "La colonia de San Pablo, Loreto, Perú (Ernesto Guevara y Alberto Granado)");
+            case "Madrid 2018":           return (2018, "El Congreso de los Diputados, Madrid (la moción de censura de 2018)");
+            case "Gettysburg":            return (1863, "Gettysburg, Pensilvania (Lincoln y el cementerio nacional)");
+            case "Feria de las Hazañas":  return (2026, "Una feria inventada (grandes hazañas de presidentes y primeros ministros)");
             case "Planta Atómica":        return (1905, "Woolsthorpe, París y Berna (Newton, Curie, Einstein)");
             default: return null;
         }

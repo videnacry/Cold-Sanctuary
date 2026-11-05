@@ -40,6 +40,19 @@ public static partial class StorySceneBuilder
         // LA HISTORIA MAYA (StorySceneBuilder.Maya.cs, docs/microcosmos-maya-pakal.md): Pakal de Palenque, sobre el Huerto (la milpa) mientras
         // falta su piso representativo (MicroFloors: «Templo de los antepasados»).
         ("Garden_Area", "Palenque", "Microcosmos_Pakal", new Color(0.55f, 0.7f, 0.45f), new System.Func<Transform, int>(Pakal)),
+        // LA TANDA 3 (Assets/Editor/Historias/, docs/microcosmos-historias-3.md): cada historia en su archivo, con su pueblo y su bioma.
+        ("VehicleWorkshop_Area", "Chimbacalle", "Microcosmos_EloyAlfaro", new Color(0.6f, 0.55f, 0.5f), new System.Func<Transform, int>(EloyAlfaro)),
+        ("Infirmary_Area", "Lagunillas", "Microcosmos_Galvarino", new Color(0.55f, 0.65f, 0.45f), new System.Func<Transform, int>(Galvarino)),
+        ("TextileStudio_Area", "Cajamarca", "Microcosmos_Atahualpa", new Color(0.8f, 0.6f, 0.35f), new System.Func<Transform, int>(Atahualpa)),
+        ("Classroom_Area", "Onondaga", "Microcosmos_GranLeyDeLaPaz", new Color(0.5f, 0.62f, 0.5f), new System.Func<Transform, int>(GranLeyDeLaPaz)),
+        ("Kitchen_Area", "Alejandría de Cleopatra", "Microcosmos_Cleopatra", new Color(0.8f, 0.7f, 0.5f), new System.Func<Transform, int>(Cleopatra)),
+        ("Informatics_Area", "Langley", "Microcosmos_Langley", new Color(0.55f, 0.62f, 0.75f), new System.Func<Transform, int>(Langley)),
+        ("Ballet_Area", "Viena 1824", "Microcosmos_Beethoven", new Color(0.72f, 0.65f, 0.6f), new System.Func<Transform, int>(Beethoven)),
+        ("Classroom_Area", "Leiden", "Microcosmos_Descartes", new Color(0.6f, 0.55f, 0.6f), new System.Func<Transform, int>(Descartes)),
+        ("Infirmary_Area", "San Pablo", "Microcosmos_CheGuevara", new Color(0.45f, 0.65f, 0.5f), new System.Func<Transform, int>(CheGuevara)),
+        ("Classroom_Area", "Madrid 2018", "Microcosmos_PedroSanchez", new Color(0.65f, 0.6f, 0.55f), new System.Func<Transform, int>(PedroSanchez)),
+        ("Classroom_Area", "Gettysburg", "Microcosmos_Lincoln", new Color(0.6f, 0.58f, 0.55f), new System.Func<Transform, int>(Lincoln)),
+        ("Classroom_Area", "Feria de las Hazañas", "Microcosmos_Hazanas", new Color(0.75f, 0.68f, 0.5f), new System.Func<Transform, int>(Hazanas)),
         // LOS FAMOSOS (StorySceneBuilder.Famosos.cs, docs/microcosmos-famosos.md): una historia de su vida pública en su pueblo real.
         ("YogaRoom_Area", "Velliangiri", "Microcosmos_Sadhguru", new Color(0.8f, 0.7f, 0.55f), new System.Func<Transform, int>(Sadhguru)),
         ("Control_de_mision", "Hawthorne", "Microcosmos_ElonMusk", new Color(0.7f, 0.72f, 0.78f), new System.Func<Transform, int>(ElonMusk)),
@@ -73,6 +86,18 @@ public static partial class StorySceneBuilder
         ["Pasadena"] = ("1953", 10.0f),   // la mañana en el laboratorio limpio
         ["Chernóbil"] = ("principios de mayo de 1986", 22.0f),   // de noche, en el sótano del bloque 4
         ["Palenque"] = ("28 de agosto de 683 (9.12.11.5.18 en la Cuenta Larga)", 7.0f),   // el amanecer del día en que muere Pakal
+        ["Chimbacalle"] = ("25 de junio de 1908", 10.0f),   // la mañana en que llega el tren (hora representativa)
+        ["Lagunillas"] = ("noviembre de 1557 (primavera austral)", 9.0f),   // antes de Millarapue; hora representativa
+        ["Cajamarca"] = ("abril de 1533", 10.0f),   // el rescate va llegando; fecha y hora representativas
+        ["Onondaga"] = ("hacia 1450 (fecha tradicional discutida)", 9.0f),   // el día del consejo junto al lago
+        ["Alejandría de Cleopatra"] = ("verano del 42 a. C.", 8.0f),   // la mañana en el puerto
+        ["Langley"] = ("del 19 al 20 de febrero de 1962", 9.78f),   // 9:47: Friendship 7 despega
+        ["Viena 1824"] = ("7 de mayo de 1824", 19.0f),   // el concierto, a las 7 de la tarde
+        ["Leiden"] = ("8 de junio de 1637", 10.0f),   // el día en que se termina de imprimir el Discurso
+        ["San Pablo"] = ("14 de junio de 1952", 9.0f),   // los 24 años de Ernesto
+        ["Madrid 2018"] = ("1 de junio de 2018", 11.0f),   // la votación de la moción, por la mañana
+        ["Gettysburg"] = ("19 de noviembre de 1863", 11.0f),   // la mañana de la ceremonia
+        ["Feria de las Hazañas"] = ("un día de hoy (feria inventada)", 10.0f),   // no es un día real
         ["Velliangiri"] = ("24 de junio de 1999", 6.0f),   // el amanecer del día en que termina la consagración del Dhyanalinga
         ["Hawthorne"] = ("28 de septiembre de 2008", 16.25f),   // 23:15 UTC: las 16:15 en California, la hora del cuarto lanzamiento
         ["Aldea de la montaña"] = ("un amanecer de primavera (homenaje a Dragon Ball; sin fecha real)", 6.0f),   // ficción: el entrenamiento empieza al amanecer

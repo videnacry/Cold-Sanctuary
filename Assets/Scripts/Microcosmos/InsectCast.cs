@@ -11,6 +11,23 @@ public static class InsectCast
     /// caen en el personaje histórico antes que en el alma renacida.</summary>
     public static readonly (string match, string species, string why)[] Table =
     {
+        // La tanda 3 (docs/microcosmos-historias-3.md): las escenas pasan la especie explícita; aquí queda el porqué.
+        ("alfaro",        "Ant",         "la hormiga abre un sendero y por él pasa toda la colonia: el tren de Quito"),
+        ("galvarino",     "Cricket",     "el grillo puede soltar una pata (autotomía) y sigue saltando y cantando"),
+        ("caupolic",      "DungBeetle",  "el escarabajo más fuerte por su peso: la prueba del tronco de La Araucana"),
+        ("atahualpa",     "Termite",     "el termitero levanta una ciudad de barro sin rueda ni hierro, y todo se reparte desde el centro"),
+        ("pacificador",   "SnowBee",     "el enjambre decide por consenso (Seeley 2010): la Gran Ley de la Paz"),
+        ("cleopatra",     "SnowBee",     "la abeja era el signo del rey del Bajo Egipto, y la colmena guarda para los años malos"),
+        ("katherine johnson", "DungBeetle", "el pelotero se orienta por la Vía Láctea (Dacke et al. 2013): la que calculó la órbita con las estrellas"),
+        ("dorothy vaughan", "Ant",       "la colonia reparte el cálculo en pasos: dirigió a las calculadoras y dominó FORTRAN"),
+        ("mary jackson",  "Earwig",      "la tijereta cuida a las suyas: abrió camino a otras mujeres en la NASA"),
+        ("beethoven",     "Cricket",     "el grillo oye por las patas: la música por la vibración"),
+        ("descartes",     "Spider",      "teje solo una red de líneas rectas: las coordenadas"),
+        ("guevara",       "Grasshopper", "la langosta cruza un continente entero"),
+        ("pedro sánchez", "SnowBee",     "la colmena decide contando apoyos: el pleno cuenta votos"),
+        ("lincoln",       "Mantis",      "alto, delgado y paciente"),
+        ("lee kuan yew",  "Ant",         "la hormiga tejedora de Singapur levanta una ciudad de hojas donde no había nada"),
+        ("mandela",       "Cicada",      "años bajo tierra y una muda: 27 años de cárcel y una voz sin rencor"),
         ("bruce lee",     "Mantis",      "el estilo de la mantis es kung fu real; espera inmóvil y golpea primero (intercepta), delgada y explosiva; nativa de Hong Kong (Hierodula patellifera)"),
         ("yip man",       "Mantis",      "el maestro de Bruce Lee: el mismo linaje, una mantis vieja"),
         ("nightingale",   "Firefly",     "la dama de la lámpara: la ronda de noche con su luz"),

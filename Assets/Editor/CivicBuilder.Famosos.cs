@@ -31,7 +31,7 @@ internal static partial class CivicBuilder
             case "Omaha": return OmahaTown(t);
             case "Prairie View": return PrairieViewTown(t);
             case "Uagadugú": return OuagadougouTown(t);
-            default: return 0;
+            default: return HistoTown(t, display);   // la tanda 3 (Assets/Editor/Historias/), o 0
         }
     }
 
