@@ -323,7 +323,7 @@ Detalle en [mascaras-de-oxigeno.md](mascaras-de-oxigeno.md). **Estas medidas man
   las puertas: caben 8 nadadores en fila con margen).
 - **Máscaras**: un perchero fuera de cada puerta y una estación dentro, en el agua, junto a ella (una por nivel). Con la máscara
   puesta el aliento no se gasta; se coge al entrar y se deja al salir; quien acaba en el agua sin máscara nada a la estación más cercana.
-- **Sin suelo**: el agua del tronco baja hasta −1,6 m y el hielo de debajo tiene un hueco (14 × 14 m en el Árbol de los Campos, que
+- **Sin suelo** (desde 2026-11-05 el hielo mide 300 m y el hueco es un pozo: [sitio-nuclear.md](sitio-nuclear.md) §13): el agua del tronco baja hasta −1,6 m y el hielo de debajo tiene un hueco (14 × 14 m en el Árbol de los Campos, que
   gira; 19,6 × 19,6 m en las torres): se baja nadando al mar y entran peces, kril y medusas (docs/grupos-de-animales.md). En el hueco
   cuelgan 4 cortinas de fitoplancton que cuida el jardinero del edificio.
 

@@ -91,7 +91,7 @@ los números de cada día salen en el registro: `[Frutales] … tareas de N árb
 ## Sin suelo
 
 - El tronco ya no tiene `Fondo_raiz`: el agua del tronco (`Agua_raiz`) baja hasta −1,6 m (la cara de abajo del hielo es −1,5) y el
-  hielo de debajo tiene un **hueco** (`CutIceUnder`: los bloques de la banquisa que lo pisan se parten en los trozos de alrededor).
+  hielo de debajo tiene un **hueco** (`CutIceUnder`: los bloques de la banquisa que lo pisan se parten en los trozos de alrededor). Desde 2026-11-05 ese hueco es un pozo de 300 m por la plataforma de hielo.
   Cuadrado y alineado con el mundo: en el Árbol de los Campos, que gira, de 14 × 14 m (siempre dentro del agua del tronco, gire como
   gire); en las torres (giro de 0° o 90°), de 19,6 × 19,6 m. Debajo, el mar (500 m de agua hasta el fondo marino, desde 2026-11-05; el nado sigue cerca de la superficie).
 - El cimiento (`Encepado_raiz`) es ahora un marco alrededor del hueco.

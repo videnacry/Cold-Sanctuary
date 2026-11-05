@@ -419,14 +419,14 @@ El recorrido son **566 m de desnivel** (500 de mar, 60 de roca y la altura de la
 A la pendiente máxima (110 %) harían falta **más de 500 m de recorrido horizontal**, y el casquete mide 170. Sale casi vertical, **unos 10° de la vertical**, con la cabina nivelada: del borde del casquete (lejos de pisos y tronco) a la galería por el pilar. Un ascensor a plomo solo ahorra ~0,5 s. El tubo tiene **5,2 m de hueco**: el módulo (3 × 3,2 m de sección) sigue cabiendo a lo largo, que es lo que justificaba la línea.
 El tubo es **de cristal solo en los primeros 16 m**; más abajo son hasta **50 bar**, y va de acero hasta el lecho. Sigue siendo un «tren acuático» donde se ve.
 
-**La salida de escape** no entra en el minuto: es otro pozo, con jaula a baterías a 6 m/s, **unos 2 min**. Debería acompañarla un refugio abajo (como en las minas): no está construido.
+**La salida de escape** no entra en el minuto: es otro pozo, con jaula a baterías a 6 m/s, **unos 2 min**. Abajo, el refugio de §12.
 
 **Con la jornada:** ida y vuelta ~206 s de los 300 de su misión de 2 h, o ~268 s con media alfombra de retraso. Cabe.
 
 ### Lo que no resuelve
-- **Las quillas de iceberg:** los tubos cruzan los 400 m de agua a los que los icebergs actuales sí pueden llegar. En el juego no hay icebergs; en la realidad sería **el riesgo principal de esta decisión**.
+- **Las quillas de iceberg:** los tubos cruzan los 400 m de agua a los que los icebergs actuales sí pueden llegar. Sigue siendo **el riesgo principal de esta decisión**: §14 dice qué se hizo y qué no se puede hacer.
 - **Nadie ha hecho esto:** no encontré ningún tubo de 500 m de mar con pasajeros. Los túneles bajo el mar son otra cosa: van por la roca.
-- **Los árboles sobre las islas:** el santuario entero está sobre hielo, y ese hielo ya no toca fondo. El juego no le da grosor y **no lo he revisado**: Berón debería decidir si es plataforma de hielo (la del Ross tiene cientos de metros, dato de memoria).
+- **Los árboles sobre las islas:** el santuario está sobre hielo que ya no toca fondo. Berón decidió que sea una plataforma flotante: §13.
 - **La fauna no aprovecha el mar:** nada nuevo bucea. Si se quiere que las ballenas bajen, es trabajo aparte.
 
 ## 10. Columnas y techo: grande y espacioso (Berón 2026-11-05)
@@ -469,7 +469,7 @@ Regla de Berón: cambiar una regla obliga a revisar lo que ya existe. Lo que toc
 | §4, §7, §8 | — | Corregidos o marcados como superados |
 | Documentos sueltos | 16 m en máscaras; «apoyado en el lecho» en la planta | Corregidos |
 
-**Sigue aquí como historia:** §3 y §8 razonan con otras cifras, a propósito. **Sin revisar:** el hielo de las islas (§9).
+**Sigue aquí como historia:** §3 y §8 razonan con otras cifras, a propósito.
 
 ### Fuentes de §9–§11
 - Mar de Ross: [Springer: la plataforma](https://rd.springer.com/chapter/10.1007/978-94-011-5820-6_16), [Wikiversity](https://en.wikiversity.org/wiki/Continental_shelves/Antarctic)
@@ -478,6 +478,112 @@ Regla de Berón: cambiar una regla obliga a revisar lo que ya existe. Lo que toc
 - Ascensores: [Mitsubishi Electric, 2016](https://mitsubishielectric.com/news/2016/0510.html), [CTBUH](https://www.bdcnetwork.com/building-sector-reports/high-rise-construction/news/55161204/ctbuh-determines-fastest-elevators-and-longest-runs-in-the-world-in-new-tbin-study), [Design Challenges of High-Speed Elevators](https://elevatorworld.com/?p=36361), [Taipei 101](https://elevatorworld.com/?p=34049)
 - Hyperloop: [Big Think](https://bigthink.com/starts-with-a-bang/elon-musk-hyperloop/), [ERA](https://www.era.europa.eu/system/files/2022-10/Hyperloop%20an%20Innovation%20for%20Global%20Transportation.pdf)
 - Cámaras y pilares: [NIOSH: pilares en minas de piedra](https://stacks.cdc.gov/view/cdc/9341/cdc_9341_DS1.pdf), [NIOSH: diseño](https://cdc.gov/Niosh/mining/UserFiles/works/pdfs/psadm.pdf), [ejemplo de diseño, 2024](https://scindeks-clanci.ceon.rs/data/pdf/proc-0026/2024/proc-00262401166J.pdf)
+
+## 12. El refugio del fondo (Berón 2026-11-05)
+
+Berón: «se debe crear el refugio del fondo».
+
+**Por qué:** la salida de escape tarda unos 2 min y depende de que su pozo siga entero. Si se pierden la línea y el pozo a la vez, quien esté abajo necesita un sitio donde **esperar**.
+
+### Lo investigado
+| | Mina (EE. UU.) | Submarino hundido | Aquí |
+|---|---|---|---|
+| Aguantar | **96 h** (48 con suministro preparado desde fuera) | Primer rescate en 96 h; se estudian escenarios de 172 h | **168 h (7 días)** |
+| Espacio | ≥ 1,4 m² por persona | — | 40 m² para 12: 3,3 m² |
+| Oxígeno | ~37 l/h por persona; 18,5–23 % de O₂, CO₂ ≤ 1 % *(fuente secundaria)* | Generar O₂ y quitar CO₂ | 75 m³ en 8 botellas |
+| Agua | 2,1 l al día por persona | — | 180 l |
+| Suministro desde fuera | Perforación desde superficie | Cápsulas por la esclusa, con buzos o ROV | Por el pozo de escape, si queda algo |
+
+**Por qué 7 días y no 4:** una mina tiene equipos de rescate cerca; aquí hay 566 m entre medias y el rescate tendría que abrir un pozo. La cifra es **decisión mía**, no una norma.
+
+### Cómo queda
+- **`Refugio_fondo`**, al pie del pozo de escape, en el pilar de roca y fuera de las dos salas: el camino de salida pasa por la puerta.
+- **12 plazas:** el carro lleno y algo más (también decisión mía; en la jornada baja una persona).
+- **Dentro:** esclusa, 8 botellas de oxígeno, depósito de agua, depurador de CO₂, baterías, bancos y **dos comunicaciones**: teléfono por fibra y radio a través de la roca.
+- **Mantenimiento:** se revisa cada semana (`nuc_refugio`, 2 h, por la línea). Sin revisar pierde un 2 % al día; **por debajo del 80 % no se baja a trabajar** y la revisión pasa a ser obligatoria, como en las minas.
+- **En juego:** con la línea y el pozo cerrados, quien está abajo espera aquí gastando aire y sale en cuanto se abre uno. Si se acaba el aire, el rescate se da por hecho: la espera es finita, pero **ese rescate no se simula**.
+
+## 13. El hielo es una plataforma flotante (Berón 2026-11-05)
+
+Berón: «hazlo real».
+
+**Hecho: cada casquete de hielo mide 300 m de grosor** (`SeaRule.ShelfThickness`, antes 1,5), con 200 m de mar debajo. **Lo que no es real: el hielo sigue asomando 25 cm.**
+
+### Lo investigado
+- **Plataforma de Ross:** varios cientos de metros; unos 330 m hacia 79°S y más de 700 tierra adentro *(fuente floja)*; Scott calculó unos 274. Frente de 15–50 m sobre el agua, y ~90 % bajo ella.
+- **El matiz:** en McMurdo el frente se adelgaza hasta unos 3 m (medido en 1957–58). Una plataforma puede ser fina en su borde.
+- **Sobre el hielo se construye así:** Halley VI va sobre patas hidráulicas con esquís, deriva ~500 m al año y hubo que moverla por una grieta. Neumayer III sube con la nieve.
+
+**Por qué 300:** es lo que calan los icebergs de estas plataformas (250–300 m), y deja el mar debajo. **Lo que falta:** 300 m de hielo asoman **unos 33 m**, y aquí 0,25 m (con eso flotarían ~2,5 m). Arreglarlo es subir el mundo entero: todos los pisos, alfombras y puertas. **Queda así, a sabiendas.**
+
+### Qué cambia (W11)
+| Qué | Efecto | Qué se hizo |
+|---|---|---|
+| Troncos abiertos al mar | El hueco ya cortaba los bloques: ahora es un **pozo de 300 m** | Automático; la prueba lo comprueba |
+| Submarino de obra | Cruzaba a −12, dentro del hielo | **Cruza a −312**: unos 2,5 min más por viaje entre árboles |
+| Submarino-ambulancia y Leviatán | Sobre el hielo van en orugas; en el mar, por canales | Nada |
+| Fauna en lagunas y canales | Nadan en agua abierta | Nada |
+| **Fauna que pasa bajo una placa** | `MarineLife` nada a −1,5 m **bajo** la placa: ahora va **por dentro del hielo** | **Sin arreglar**: no se ve, pero no es real |
+| Nado del jugador | Ya no se pasa bajo las islas: paredes de hielo | Así es el hielo real |
+| Respiraderos de focas | Agujeros en 300 m de hielo | **Sin arreglar**: en realidad solo los hay en hielo marino fino |
+| Laguna del ciclo de vida | Tiene su propia placa | Se queda |
+| NavMesh | Cajas de 300 m: **más alto, misma planta** | A vigilar en la primera reconstrucción |
+| Islas de tierra | Las lleva la rama de territorio | No tocado |
+
+**Lo que aquí no se simula** (razonamiento mío): una plataforma **se mueve**, y los árboles irían con ella, mientras la isla de roca se queda; **se agrieta y se parte**; y un pozo de 300 m **se volvería a cerrar** si no se calienta. Un árbol de 361 MN sobre hielo flotante pediría cimientos que aquí no hay.
+
+## 14. Icebergs: proteger el tubo y tener alguno (Berón 2026-11-05)
+
+Berón: «el tunnel se puede crear protegido para que los iceberg no afecten? nos convendría crear un iceberg?»
+
+**Respuesta corta. Protegerlo, solo en parte: nada de lo que quepa alrededor de un tubo para un iceberg entero. Lo que protege es verlo venir, desviarlo y, si falla, cerrar y salir. Y sí, conviene tener alguno: son reales y atraen vida.**
+
+### Lo investigado
+| Sitio | Qué hace | Lo que enseña |
+|---|---|---|
+| **Hibernia** | Base de gravedad sobre el fondo, con 16 dientes de hormigón de 1,5 m; diseñada para **6 millones de toneladas** | Funciona porque es **achaparrada y está en 80 m** (dato de memoria), no porque sea un muro: nuestro tubo es lo contrario |
+| **Terra Nova** | Pozos en **hoyos** dragados en el fondo; el barco **se desconecta y se va** en ~15 min ante un iceberg de más de 100 000 t, y solo aguanta trozos | Lo que no puede resistir, se esconde o se aparta |
+| **Grand Banks** | Radar, y más de 1500 operaciones de remolque registradas: funciona el **85–95 %** | **Puede fallar**; casi siempre, solo se conoce lo que asoma |
+
+### Qué para qué
+| Medida | Un trozo (hasta 100 000 t) | Un iceberg de varios millones de toneladas |
+|---|---|---|
+| Escudo con dientes | **Sí** | **No**: columna esbelta de 400 m. A solo 0,2 m/s, parar 2 Mt en 1 m son ~38 MN a media altura (cálculo mío) |
+| Compuerta en el lecho | Sí | **Sí**: si se pierde lo de arriba, lo de abajo sigue seco |
+| Hoyo en el lecho | Sí | **Sí, para lo que hay abajo**: un iceberg que arase pasa por encima |
+| Radar y sonar | Sí | **Sí**: sin verlo no hay nada más |
+| Remolque | Sí | **Sí, el 90 %** |
+| Desconectar y salir | Sí | **Sí**: es lo que salva a la gente; el tubo se puede perder |
+
+**Y lo que no protege nada de esto:** el casquete y el árbol. Un iceberg entero que llegue se lleva lo de arriba. Lo que está en la roca y lo que está cerrado sigue ahí.
+
+### Cómo queda
+- **`Escudo_tubo` y `Escudo_escape`:** hormigón con dientes de −16 a −400 m, la banda de las quillas actuales.
+- **`Compuerta_lecho`** en el tubo y `Collar_lecho` en la roca. **`Intercambiador_lecho` en un hoyo** de 6 m, como en Terra Nova.
+- **`Radar_hielo`** y **`Sonar_quillas`** en la estación.
+- **Dos icebergs** (`Iceberg`): uno varado en un banco al noroeste (1 Mt) y otro a la deriva por el este (1,9 Mt), a 0,2 m/s, unos 30 m por día de juego. A 500 m de hondo, 240 m de quilla no tocarían fondo: **el banco es una pieza puesta para eso**.
+- **A 300 m del sitio:** misión obligatoria de remolque (`nuc_remolque`). **Falla 1 de cada 10**, fijo por día; se repite al día siguiente, más cerca.
+- **A 190 m:** se **desconecta la línea**: nadie baja, y quien esté abajo sale por el pozo de escape. Vuelve cuando se aleja.
+- **Vida alrededor:** en el mar de Weddell, dos icebergs estudiados tenían más clorofila, kril y aves hasta ~3,7 km, porque sueltan hierro y hacen de refugio. Aquí, un enjambre de kril de verdad por iceberg; **las focas y los petreles son figuras**, sin IA.
+- **Coste para el PC:** unas 15 cajas por iceberg, un enjambre pequeño y un solo giro para las aves; solo se mueve el que deriva.
+
+## 15. La auditoría de estas reglas (W11)
+
+La regla W11 de Berón (cambiar una regla obliga a comprobar lo que ya hay) se aplicó a todo lo anterior: las tablas de §9, §11 y §13 son esa comprobación.
+
+| Regla | Lo existente | Resultado |
+|---|---|---|
+| T20 refugio | La línea, el pozo y las misiones | Cumplen |
+| T21 plataforma | Troncos, submarinos, fauna, nado | **2 sin arreglar**: fauna bajo las placas y respiraderos (§13) |
+| T22 icebergs | Sitio y lanzadera | La lanzadera **no tiene** protección contra icebergs: uno que derive hacia el oeste no pediría remolque. Los dos de ahora no van allí |
+| Microcosmos | No dependen del mar del santuario | **Ninguna regla nueva** |
+
+### Fuentes de §12–§15
+- Refugios: [normas de minas (Mining Monthly)](https://miningmonthly.com/markets/international-coal-news/1305106/refuge-alternatives-final-rules-official), [MineARC](https://minearc.com/?p=10660), [orden de MSHA: agua](https://www.msha.gov/petition-docket-no-m-2024-002-m), [resumen de cifras](https://heavyvehicleinspection.com/industries/mining/mining-equipment-guarding-inspection-compliance) (secundaria)
+- Rescate de submarinos: [SRDRS](https://www.globalsecurity.org/military/systems/ship/systems/srdrs.htm), [Navy Medicine: 172 h](https://www.dvidshub.net/news/337024/nmrc-seeks-improve-disabled-submarine-rescue-survival), [Semaphore](https://seapower.navy.gov.au/sites/default/files/documents/Semaphore_2008_7.pdf)
+- Plataforma: [Ross Ice Shelf](https://en.wikipedia.org/wiki/Ross_Ice_Shelf), [cerca de Scott Base](https://www.cambridge.org/core/services/aop-cambridge-core/content/view/8D495F8CBF459582040371156FE1775C/S0022143000027234a.pdf/movement-of-the-ross-ice-shelf-near-scott-base.pdf), [Halley VI](https://en.wikipedia.com/wiki/Halley_VI)
+- Icebergs: [Hibernia y Hebron](https://explorer.aapg.org/story/articleid/46580/grand-banks-thrives-in-iceberg-alley), [Terra Nova: hoyos y desconexión](https://offshore-mag.com/production/article/16756420/terra-nova-system-designed-for-quick-release-iceberg-scouring), [POAC 2025: remolque](https://www.poac.com/Papers/2025/pdf/POAC25_paper_149.pdf), [30 años de gestión de icebergs](https://openpolar.no/Record/ftnrccanada:oai:cisti-icist.nrc-cnrc.ca:cistinparc:12327552), [C-CORE SIMS](https://c-core.ca/wp-content/uploads/sites/5/2020/10/SIMS-article-in-JOT-Oct2020.pdf)
+- Vida: [Smith et al., 2007](https://data-ww3.ifremer.fr/BIB/Smith_etal_SCIENCE2007.pdf), [Vernet et al., 2012](https://tos.org/oceanography/assets/docs/25-3_vernet.pdf)
 
 ## Fuentes
 - [10 CFR 100.11](https://www.law.cornell.edu/cfr/text/10/100.11), [10 CFR 100.3](https://www.law.cornell.edu/cfr/text/10/100.3), [10 CFR 53.530](https://www.law.cornell.edu/cfr/text/10/53.530)
