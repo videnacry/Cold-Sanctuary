@@ -290,6 +290,8 @@ Berón (2026-11-05): «debe existir una lista de reglas para la creación de per
 | W6 | **Guardar SampleScene tras construir** (el Blockout no la guarda: «save» al buzón del editor). | Se perdía lo construido. | **solo en docs** | memoria «Save SampleScene» |
 | W7 | **Toda espera acotada** (sin bucles `until`) y avisar en una línea si algo se cuelga. | Un script esperó 40 minutos a una línea que no llegaba. | **solo en docs** | memoria «No stalls» |
 | W8 | **Al terminar una implementación, los docs y [checklist.md](checklist.md) quedan al día**, y este manual si hay regla nueva. | Berón lo exige. | **solo en docs** | memoria 2026-11-03 (segunda tanda) |
+| W12 | **Una clase que mueva u oculte piezas hijas por script va en `LoteEstatico.Blocked`** (o en `Anchors` si se mueve entera y rígida); sin eso funciona, pero la pieza tarda hasta una vuelta de barrida en reaccionar. | Las piezas quietas se dibujan en lotes en Play. | 112 | [rendimiento.md](rendimiento.md) |
+| W13 | **Nada recorre la escena en cada frame** (`FindObjects…`, `GameObject.Find`): con temporizador o `SceneCache`. Con 63 000 objetos, una búsqueda cuesta milisegundos. | `EmotionReader` lo hacía. | **solo en docs** | ídem |
 
 ## 11. Sincronización mesocosmos ↔ microcosmos
 
@@ -382,7 +384,7 @@ reconstruir. Vale para TODOS los pisos, no solo el hospital. Cada piso del santu
 ## 12. Recuento y reglas sin comprobación automática
 
 
-**Total: 202 reglas** (S 15 · F 14 · T 24 · C 7 · G 8 · H 8 · M 39 · A 5 · J 32 · P 21 · E 17 · W 11 = 201 —W9, W10 y W11 van en §11; P11 repite J30; P1–P11 son de personajes y P12–P21 de territorio, producción y fauna (§13)—, más la regla de
+**Total: 204 reglas** (S 15 · F 14 · T 24 · C 7 · G 8 · H 8 · M 39 · A 5 · J 32 · P 21 · E 17 · W 13 = 203 —W9, W10 y W11 van en §11; P11 repite J30; P1–P11 son de personajes y P12–P21 de territorio, producción y fauna (§13)—, más la regla de
 sincronización de §11). (Recontado por el probador al integrar actividades, tareasE, entreno, personajes, hospital y cohetes, 2026-11-04:
 las J18 en adelante se renumeraron en una sola secuencia —J18–J21 actividades y uniformes, J22 tareas con «E», J23–J27 entrenamientos
 y entrenador, J28 profesiones, J29 nada en pisos en obras—.)
@@ -435,7 +437,7 @@ Berón (2026-11-05): «¿tenemos reglas para la creación de animales?». Detall
 
 ## Docs de cada tema
 
-[reglas-plataformas.md](reglas-plataformas.md) · [construcciones-elevadas.md](construcciones-elevadas.md) ·
+[rendimiento.md](rendimiento.md) · [reglas-plataformas.md](reglas-plataformas.md) · [construcciones-elevadas.md](construcciones-elevadas.md) ·
 [plano-edificios.md](plano-edificios.md) · [edificio-arbol.md](edificio-arbol.md) · [mascaras-de-oxigeno.md](mascaras-de-oxigeno.md) ·
 [submarino-de-obra.md](submarino-de-obra.md) · [alfombras-plan.md](alfombras-plan.md) (sustituye a
 [transporte-alfombras.md](transporte-alfombras.md), que tenía puentes) · [jardines-frutales.md](jardines-frutales.md) ·

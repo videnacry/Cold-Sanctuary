@@ -195,9 +195,9 @@ public class Swarm : MonoBehaviour, ITarget, IEdible
     void AnimateIndividuals()
     {
         float t = Time.time;
-        // (2026-11-04) Lejos de la cámara (> 150 m) no se anima a cada individuo: son muchos y no se ven (la escena va más ligera).
+        // (2026-11-04) Lejos de la cámara (donde tampoco se dibuja: LoteEstatico.BodyDistance) no se anima a cada individuo: son muchos y no se ven (la escena va más ligera).
         Camera cam = Camera.main;
-        if (!AnimateAll && cam != null && (cam.transform.position - transform.position).sqrMagnitude > 150f * 150f) return;
+        if (!AnimateAll && cam != null && (cam.transform.position - transform.position).sqrMagnitude > LoteEstatico.BodyDistance * LoteEstatico.BodyDistance) return;
         float sc = SwarmModels.DisplayScale(species);
         for (int i = 0; i < _children.Count; i++)
         {
