@@ -1098,6 +1098,7 @@ internal static partial class MicroFurniture
         foreach (var (x, z) in new[] { (-1, -1), (1, -1), (-1, 1), (1, 1) }) C(s, new Vector3(x * 0.18f, 0.22f, z * 0.18f), new Vector3(0.04f, 0.44f, 0.04f), WoodDark, 0f, "Pata");
         C(s, new Vector3(0f, 0.72f, 0.19f), new Vector3(0.42f, 0.5f, 0.04f), Wood, 0f, "Respaldo");
         var mp = s.gameObject.AddComponent<MicroPiece>(); mp.kind = "silla"; mp.need = "sentarse";
+        AddSeat(s, false, default, null);   // (toda silla es utilizable: regla 13, MicroSeat)
     }
 
     static void Bench(Transform parent, Vector3 at, float len)
@@ -1106,6 +1107,7 @@ internal static partial class MicroFurniture
         C(s, new Vector3(0f, 0.44f, 0f), new Vector3(len, 0.05f, 0.32f), Wood, 0f, "Asiento");
         for (int k = -1; k <= 1; k += 2) C(s, new Vector3(k * (len * 0.5f - 0.1f), 0.21f, 0f), new Vector3(0.06f, 0.42f, 0.28f), WoodDark, 0f, "Pata");
         var mp = s.gameObject.AddComponent<MicroPiece>(); mp.kind = "banco"; mp.need = "sentarse";
+        AddSeat(s, true, default, null);   // (todo banco es utilizable: regla 13, MicroSeat)
     }
 
     static void LabBench(Transform t)
