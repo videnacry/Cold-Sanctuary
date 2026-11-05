@@ -2,8 +2,6 @@ using UnityEngine;
 // STUBS temporales mientras se escriben las historias (se borra al terminar).
 public static partial class StorySceneBuilder
 {
-    static int GranLeyDeLaPaz(Transform t)=>0;
-    static int Cleopatra(Transform t)=>0;
     static int Langley(Transform t)=>0;
     static int Beethoven(Transform t)=>0;
     static int Descartes(Transform t)=>0;
@@ -14,8 +12,6 @@ public static partial class StorySceneBuilder
 }
 internal static partial class CivicBuilder
 {
-    const string PlanOnondaga="";
-    const string PlanAlejandria="";
     const string PlanLangley="";
     const string PlanViena="";
     const string PlanLeiden="";
@@ -23,8 +19,6 @@ internal static partial class CivicBuilder
     const string PlanMadrid="";
     const string PlanGettysburg="";
     const string PlanFeria="";
-    static int OnondagaTown(Transform t)=>0;
-    static int AlejandriaTown(Transform t)=>0;
     static int LangleyTown(Transform t)=>0;
     static int VienaTown(Transform t)=>0;
     static int LeidenTown(Transform t)=>0;
@@ -35,8 +29,6 @@ internal static partial class CivicBuilder
 }
 public static partial class MicroBiome
 {
-    static Biome OnondagaBiome()=>null;
-    static Biome AlejandriaBiome()=>null;
     static Biome LangleyBiome()=>null;
     static Biome VienaBiome()=>null;
     static Biome LeidenBiome()=>null;

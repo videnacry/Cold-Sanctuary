@@ -15,7 +15,7 @@ public static partial class MicroStoryMaps
     /// <summary>LOS MAPAS DE LA TANDA 3, en el orden de la tabla de pisos.</summary>
     public static readonly Map[] Historias3 =
     {
-        MapChimbacalle(), MapLagunillas(), MapCajamarca(),
+        MapChimbacalle(), MapLagunillas(), MapCajamarca(), MapOnondaga(), MapAlejandriaCleopatra(),
     };
 
     // ══ CHIMBACALLE, 25 de junio de 1908 (Eloy Alfaro): sobre Mecánica (pendiente de su estación) ══════════════════════════════
