@@ -25,8 +25,9 @@ public static class PopulationPlan
         { "Walrus", 2 }, { "EmperorPenguin", 2 }, { "Reindeer", 2 }, { "MuskOx", 1 }, { "ArcticHare", 2 }, { "ArcticFox", 1 }, { "Wolf", 1 },
     };
 
-    /// <summary>Humanos del santuario: el personal, la Magnate y el recién llegado, también al construir (antes, 11 fijos). La jornada lo sube si cambia el personal.</summary>
-    public static int Humans = WorkdayDirector.Staff.Length + 2;
+    /// <summary>Humanos para escalar la fauna al construir: 11 (el equipo real son 30 o más; ver el comentario siguiente). La jornada puede subirlo en juego.</summary>
+    // Escala de la fauna, no el censo de personas: atada a 11 para no triplicar animales al crecer el equipo (límite de memoria del PC).
+    public static int Humans = 11;
 
     /// <summary>Cuántos individuos le tocan a la especie (mínimo 2, para que pueda haber pareja).</summary>
     public static int Target(string species) { FoodChain.Evaluate(); return Raw(species); }
