@@ -12,11 +12,11 @@ Diseño de Berón (2026-10-18). Código:
 | Hora | Qué |
 |---|---|
 | 8:00–9:00 | **Entrenamiento** (1 h), para todos (Berón 2026-11-05) |
-| 9:00–10:00 | **Lección con la Magnate**, si le queda algo por aprender; si no, trabajo |
-| 10:00–11:00 | Trabajo |
+| 9:00–11:00 | Tareas (2 h): iniciaciones y santuario |
 | 11:00–12:00 | Comida, en el restaurante |
-| 12:00–14:00 | Trabajo (2 h) |
-| 14:00–16:00 | Entrenamiento (2 h): virtualizaciones de yoga, gimnasio… |
+| 12:00–14:00 | Tareas (2 h) |
+| 14:00–15:00 | Entrenamiento (1 h): virtualizaciones de yoga, gimnasio… |
+| 15:00–16:00 | Tareas (1 h) |
 | 16:00 → | **Libre**: cada uno va donde quiere y hace lo que quiere (el jugador también) |
 
 Durante las 8 h los personajes van al área de su misión y se quedan allí. **Nadie queda encerrado** (2026-10-22): si alguien abandona su puesto, la **Magnate** (que conoce todos los hechizos, también teletransportarse) aparece de pronto delante de él, le dice que vuelva y lo teletransporta de vuelta dentro del área (`World/MagnateWarden.cs`). El jugador ve su itinerario en pantalla. Consola: `jornada` (plan del día y equilibrio).
@@ -36,22 +36,26 @@ Durante las 8 h los personajes van al área de su misión y se quedan allí. **N
 - **De camino**: en un puente, una pista, una alfombra o una escalera se le deja pasar hasta 90 s. Quedarse ahí no es trabajar.
 - **Fuera de su alcance** (`MagnateWarden.Blocked`, Berón 2026-10-23): mientras vuela en alfombra o está en el microcosmos (o entrando/saliendo), la Magnate no trae a nadie. Cualquier sistema puede bloquear su alcance para todos con `MagnateWarden.Lock(clave, true)` y quitar su bloqueo con `Lock(clave, false)`.
 
-## La mañana (Berón 2026-11-05)
+## Iniciaciones (Berón 2026-11-05)
 
-«la primera hora del día se debe cambiar a entrenamiento y la segunda a entrenamiento, la segunda es opcional solo se asigna si al personaje le quedan tareas por aprender, entonces en dicha hora la magnate les enseña una de las tareas que les falta por conocer».
+«son 2 horas de entrenamiento de modo que una de las 2 de final de jornada sería movida; … se crea una lista diaria y se distribuye como tareas a los personajes que sepan iniciar, aqui también se aplica la regla de oro de que todos los personajes deben saber/aprender a iniciar, … con lo que un personaje nuevo podría tener toda su jornada con horas de entrenamiento el primer día … luego estará restringido a solo la mitad de horas disponibles … primero completar las jornadas de los personajes que menos habilidades tienen».
 
-- **Lo leí así:** la tarde no cambia (14–16 sigue siendo entrenamiento). Berón pudo querer mover ese bloque a la mañana; no lo hice porque el gimnasio, las clases de yoga y los planes semanales dependen de las 14 h. Entrenar pasa a ser 3 h al día. **Si quería mover el bloque, hay que preguntárselo.**
-- **8:00:** entrenamiento en el sitio, 1 h, con otra rotación que el de las 14 h. Sin clase: la del gimnasio y la de yoga siguen a las 14 h (`Performances.ForTraining`).
-- **9:00, la lección** (`WorkRoster.PlanLessons`): entre lo de hoy que no sabe. Va en el área de la tarea, con su actuación y su uniforme, y sin efecto en el santuario (`Assignment.lesson`, id `aprender_<id>`, para que la clase de yoga, la brigada o las rondas no la tomen por la de verdad). Lo aprendido se puede hacer ese mismo día.
-- **Grupos:** ≤ 6 por clase y ≤ 6 clases, una por cuerpo de la Magnate (`Magnate (lección N)`); 36 personas, hay unas 31. Si no caben, trabajan y lo cuenta el balance. Orden: lo que nadie sabe, lo que tiene riesgo, lo obligatorio, lo que más gente necesita.
-- **Su tiempo:** enseñar no le quita nada: ya se dividía en clones. Cada clase es un cuerpo más durante 1 h. Con el catálogo actual, unas 80 tareas a una por día son unos 80 días de juego por persona (casi 3 años de 28 días).
+- **Hora movida:** de las dos de la tarde, 15–16 vuelve a ser trabajo, y la que pasa a la mañana es la de las 8. Quedan 5 h de tareas y 2 h de entrenamiento. Elegí 15–16 porque el gimnasio, el yoga y sus clases empiezan a las 14.
+- **«Horas de entrenamiento» en la frase del recién llegado** significa horas de iniciación: son tareas, no el entrenamiento físico, que sigue a las 8 y a las 14.
+- **Ya no hay hora fija de lección.** La iniciación es una tarea (`aprender_<id>`), en el área de la tarea, con su actuación y su uniforme, sin efecto en el santuario.
+- **La lista** (`WorkRoster.PlanInitiations`): entre lo que hay hoy, lo que cada uno no sabe. Se reparte antes que nada, hora a hora desde las 9, de quien menos sabe a quien más.
+- **Cuánto:** su primer día (entró después del primer reparto), las 5 h; luego, 2 h; luego, lo que falte. El personal de siempre no cuenta como recién llegado el primer día del juego: si no, nadie haría el santuario ese día.
+- **Clases:** ≤ 6 personas y ≤ 6 por hora. Quien pueda entra en una clase que ya exista. Prioridad: lo que nadie sabe, lo que tiene riesgo, lo obligatorio, lo que más gente necesita.
+- **Después, las del santuario,** también de quien menos sabe a quien más (`order`). Con 5 h de iniciaciones no le cabe nada más; con 2, sigue con lo que sabe.
+- **Quién inicia:** hoy, un cuerpo de la Magnate por clase. **`WorkRoster.instructorsTeach = true` es todo el cambio**: entonces cada clase busca a alguien libre a esa hora que sepa la tarea y sepa iniciar (`instruir_<id>`, una tarea para él), y ella si no hay nadie.
+- **Saber iniciar** (`instruir`) es una tarea más de la lista, para quien ya sabe ≥ 3 tareas. Se enseña ya, aunque hoy no se use: así el cambio encuentra gente preparada.
 - **Lo que sabe cada uno** (`Worker.taught`, `WorkRoster.Learned`): lo hecho, lo enseñado y lo de su profesión. **No se guarda en la partida**, igual que las cuentas de la rotación.
-- **La iniciación del primer turno** de una tarea (el clon que aparece a su lado) ya no sale si se la enseñaron: sale con las que nadie le ha enseñado.
+- **La iniciación del primer turno** (el clon que aparece a su lado) sigue para lo que nadie le enseñó y no pide lección.
 
 ### La regla de oro y quién enseña
-- **J30 (rama claude/edif-histo): todos saben hacer de todo.** La leo como **el destino y una prohibición de exclusivas**: todos acaban sabiéndolo todo y ninguna tarea es propiedad de nadie. Hasta entonces decide el requisito. Si se leyera literal («ya saben todo hoy»), no quedaría nada que enseñar y la orden de Berón no tendría sentido.
-- Para que no se pare el santuario: solo piden lección las tareas con riesgo. Las demás se siguen aprendiendo haciéndolas, y una obligatoria sin nadie que sepa la hace un clon de la Magnate.
-- **Solo enseña la Magnate** (y sus divisiones). Las iniciaciones de llegada de la cocina, el huerto y el yoga siguen con el trabajador de turno (J5): son otra cosa, la primera vez en un área. **Si Berón las quiere también con ella, es un cambio aparte.**
+- **J30: todos saben hacer de todo.** La leo como **el destino y una prohibición de exclusivas**: todos acaban sabiéndolo todo, también iniciar, y ninguna tarea es de nadie. Hasta entonces decide el requisito. Si se leyera literal («ya lo saben hoy»), no habría lista de iniciaciones.
+- Solo piden iniciación las tareas con riesgo. Las demás se siguen aprendiendo haciéndolas, y una obligatoria sin nadie que sepa la hace un clon de la Magnate.
+- **Iniciaciones de llegada** (cocina, huerto y yoga, `AreaInitiator`): **las dejo con el trabajador de turno (J5)**. Moverlas a la Magnate ahora sería ir y volver: Berón quiere que a futuro inicie quien pueda, y ellas ya funcionan así. Además son una orquesta con pasos del recién llegado y `SpawnMagnateBody` da un cuerpo sin conducta. Si Berón las quiere con ella hoy, es un cambio aparte.
 
 ## Requisitos (Berón 2026-11-05)
 
@@ -71,19 +75,22 @@ Es un **primer juego de requisitos**: la lista de tareas con riesgo es decisión
 
 | Qué | Impacto | Hecho |
 |---|---|---|
-| Horas de trabajo | Bajan de 5 h a 4 (3 con lección): unas 31 personas dan unas 93 h con lección y 124 sin ella | `Plan`, `Balance`. **Quedan menos manos: más clones al principio** |
-| Tope de 5 h (J2) | Se mantiene, contando la mañana | Prueba 104 |
-| Comida, 14–16 y libre | No se mueven | `LeisureRoster` sigue desde las 16 h |
-| Misiones de 3 h | No cabían: 3 h seguidas ya no existen | Las rondas de frutales bajan a ≤ 2 h: **más rondas al día** |
-| Misiones de 2 h | Solo por la tarde con lección (9–11 sin ella) | Por la rotación |
-| Grupos (yoga, obras) | Antes a las 8; ahora a las **10**, cuando todos han acabado | `AssignGroups`. Quien no tenía lección pierde 9–10 si le toca grupo |
+| Horas de trabajo | 5 h en 9–11, 12–14 y 15–16 (`WorkRoster.Place`) | Las iniciaciones van dentro: unas 31 personas dan 155 h, y al principio 62 h son iniciaciones. **Habrá clones los primeros días** |
+| Tope de 5 h (J2) | Se mantiene | Prueba 104 |
+| Comida y libre | No se mueven | `LeisureRoster` sigue desde las 16 h |
+| Entrenamiento de tarde | 14–15 | `GymEndMin` 55, `GymCoachRoundsEnd` 35, `DeepCloseHour` 14,75. **La rutina del gimnasio tiene la mitad de tiempo** |
+| Misiones de 3 h | No caben | Rondas de frutales: `MaxRoundHours` 2 y `RoundTarget` 1,9 (era 2,9: salían rondas más largas que su misión). **Más rondas, y un edificio grande ya se parte** |
+| Misiones de 2 h | Solo 9–11 o 12–14 | Por `Place` |
+| Grupos (yoga, obras) | A las 9 si hay gente libre; si no, a las 12 o a las 15, todos a la vez | `AssignGroups`. Una clase de yoga puede cambiar de hora de un día a otro |
+| Reparto del santuario | De quien menos sabe a quien más | Corrige que **el último de la lista se quedara sin nada** (el caso de Kushal) |
 | Papel fijo (`gym_planes`) | Igual | — |
 | Gimnasio y yoga | Sus clases siguen a las 14 h | `Drive` solo las lanza de tarde |
 | Uniformes, actuaciones y sitios | Las lecciones usan los de la tarea | `LessonBase` |
-| Kushal | Entrena y aprende como todos; lección con E; la incorporación tardía respeta las 8 y los requisitos | `PlayerWorkday`, `PlayerTasks` |
+| Kushal | Entrena y aprende como todos; su primer día completo son 5 h de iniciaciones con E; la incorporación tardía usa las franjas nuevas | `PlayerWorkday`, `PlayerTasks` |
+| Horario libre | El maestro del baile ya no suma esa clase como ocio suyo | `LeisureRoster` |
 | Microcosmos (`MicroJornada`) | **No cambia**: su horario sigue 8–11. Berón habló del santuario | — |
-| Iniciaciones de llegada (J5) | No cambian | Manual |
-| Pruebas | `JornadaTest` y otras leen del plan real; solo las de la rotación pura van sin la mañana nueva | Grupo 104 |
+| Iniciaciones de llegada (J5) | No cambian (ver arriba) | Manual |
+| Pruebas | `JornadaTest` y otras leen del plan real; solo las de la rotación pura van sin el modelo nuevo | Grupo 104 |
 
 ## Reparto (rotación)
 

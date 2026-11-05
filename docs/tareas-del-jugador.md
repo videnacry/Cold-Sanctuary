@@ -58,7 +58,7 @@ Huerto también en `Garden_Area`; la Cocina también en el restaurante):
 - El **piloto de las pruebas** (`PlayerWorkday.autopilot`, `JornadaTest`) es el jugador simulado: ya en su puesto, pulsa la E
   de cada paso (`PlayerTaskRunner.PressAnywhere`, sin ir a cada marcador).
 
-**Su lección de las 9:00** (J32) también se hace con E: los pasos de la tarea que aprende (`aprender_<id>`), sin efecto en el santuario.
+**Sus iniciaciones** (J32) también se hacen con E: los pasos de la tarea que aprende (`aprender_<id>`), sin efecto en el santuario. Su primer día completo son las 5 h.
 
 ## Las iniciaciones de área
 

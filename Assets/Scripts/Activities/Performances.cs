@@ -309,6 +309,9 @@ public static class Performances
         Mi("ene_mareal", "Revisar la turbina mareal",
             Checking("Probar el sonar", P.Tablet, F.Glow, 7f),
             Checking("Buscar fugas", P.Flashlight, F.Water, 7f));
+        Mi("instruir", "Aprender a iniciar a otros",
+            S("Explicar la tarea", M.Teach, P.None, P.Book, 9f, F.None, 2f, Raise),
+            Noting("Anotar lo aprendido"));
         Mi("ene_ronda_aves", "Ronda de aves",
             Checking("Buscar aves heridas", P.Flashlight, F.None, 8f),
             S("Recoger con cuidado", M.Reach, P.Box, P.None, 6f, F.None, 2f, Fine),

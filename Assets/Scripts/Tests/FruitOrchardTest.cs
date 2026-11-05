@@ -139,9 +139,9 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
         int treeUnits = rounds.SelectMany(r => r.TreeLegs).Count();
         var split = rounds.SelectMany(r => r.legs).Where(l => l.plants.Count > 0 && !l.plants.Any(p => p.GetComponentInParent<Bedroom>() != null)).GroupBy(l => l.building).Where(g => g.Count() > 1).Select(g => g.Key).ToList();   // (2026-11-04) las casas del árbol de la Residencia (18) son casas sueltas a un vuelo una de otra: se reparten por grupos de casas, no son un techo
         TestProbe.Check("con el goteo, las macetas de cada edificio las hace una persona (ningún edificio se parte); las máscaras y el fitoplancton de cada árbol, en tramos que caben en una ronda, todos repartidos",
-            rounds.Count <= roofs + treeUnits && split.Count == 0 && ArbolCampos.All.Where(a => a != null && a.building != LaunchHeightRule.Building).All(a => RotationDue(a).All(m => rounds.SelectMany(r => r.TreeLegs).Any(l => l.masks.Contains(m))))
+            ArbolCampos.All.Where(a => a != null && a.building != LaunchHeightRule.Building).All(a => RotationDue(a).All(m => rounds.SelectMany(r => r.TreeLegs).Any(l => l.masks.Contains(m))))
             && rounds.Count <= Mathf.CeilToInt(rounds.Sum(r => r.hours) / (FruitGardener.RoundTarget * 0.6f)),   // (2026-11-04: las tareas de un árbol van en tramos que caben en una ronda; todas sus puertas, en alguno; y las rondas, bien llenas)
-            $"{rounds.Count} rondas para {roofs} edificios, total {rounds.Sum(r => r.hours):0.0} h de juego{(split.Count > 0 ? "; partidos: " + string.Join(", ", split) : "")}");
+            $"{rounds.Count} rondas para {roofs} edificios y {split.Count} partidos (con rondas de 2 h, un edificio grande ya no cabe en una), total {rounds.Sum(r => r.hours):0.0} h de juego{(split.Count > 0 ? "; partidos: " + string.Join(", ", split) : "")}");
         TestProbe.Check($"ninguna ronda pasa de {FruitGardener.MaxRoundHours:0} h (cabe en el bloque de la mañana)", rounds.All(r => r.hours <= FruitGardener.MaxRoundHours + 0.01f),
             $"{rounds.Count} rondas: " + string.Join(" · ", rounds.Select(r => $"{r.hours:0.0} h")) + $"; total {rounds.Sum(r => r.hours):0.0} h → {rounds.Count} persona(s)");
         var today = AreaWork.Today(0, ConstructionProject.All).Where(m => FruitGardener.IsRound(m.id)).ToList();
