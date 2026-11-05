@@ -194,13 +194,13 @@ public class CulturedMeatLab : MonoBehaviour
         L(r.Find("Biorreactor_semilla"), "Biorreactor semilla (50 L, microportadores)", 1.9f);
         Bioreactor(r, "Biorreactor_produccion", new Vector3(1.4f, 0f, -hz + 1.6f), 0.8f, 2.1f, glass, broth, steel, dark);
         L(r.Find("Biorreactor_produccion"), "Biorreactor de producción (500 L · 37 °C · pH 7,3 · O₂)", 2.9f);
-        Bioreactor(r, "Biorreactor_produccion_2", new Vector3(5.6f, 0f, -hz + 1.6f), 0.8f, 2.1f, glass, broth, steel, dark);   // regla P19: la demanda pide dos
+        Bioreactor(r, "Biorreactor_produccion_2", new Vector3(5.6f, 0f, -hz + 1.6f), 0.8f, 2.1f, glass, broth, steel, dark);   // regla P19: la demanda pide tres
         L(r.Find("Biorreactor_produccion_2"), "Biorreactor de producción 2 (500 L)", 2.9f);
         Bioreactor(r, "Biorreactor_produccion_3", new Vector3(-1f, 0f, -4.4f), 0.8f, 2.1f, glass, broth, steel, dark);
         L(r.Find("Biorreactor_produccion_3"), "Biorreactor de producción 3 (500 L)", 2.9f);
 
         // 5 · Biorreactor de perfusión con andamio (diferenciación en fibras, con estiramiento).
-        for (int u = 0; u < Scaffolds; u++)   // regla P19: 8 kg por unidad y la demanda pide cuatro
+        for (int u = 0; u < Scaffolds; u++)   // regla P19: seis unidades, en dos alturas
         {
         Transform perf = KitchenProps.Root(r, u == 0 ? "Biorreactor_andamio" : $"Biorreactor_andamio_{u + 1}", new Vector3(hx - 1.5f - (u % 3) * 3.9f, 0f, u < 3 ? -0.4f : -3.6f));
         KitchenProps.C(perf, new Vector3(0f, 0.45f, 0f), new Vector3(1.8f, 0.9f, 1f), steel, 0f, "Base");

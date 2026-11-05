@@ -271,7 +271,6 @@ Berón (2026-11-05): «debe existir una lista de reglas para la creación de per
 | P6 | **Al llegar alguien con más habilidad documentada se reestructura la jerarquía** de ese puesto. | Berón, por Consol. | **solo en docs** | [reglas-personajes.md](reglas-personajes.md) |
 | P7 | **Ningún puesto sin base documentada** (`Professions.Basis`); lo deducido, en `Professions.Unconfirmed`, hasta que Berón confirme. | Irosene y Panterilia fueron segundas maestras de yoga sin base. | 95, `check-personajes.sh` | [reglas-personajes.md](reglas-personajes.md) |
 | P8 | **W9 al llegar o irse alguien**: jornadas, reparto y horario libre. | Que el reparto siga cuadrando. | 28, 50, 65 | [reglas-personajes.md](reglas-personajes.md) |
-| P9 | **La plataforma de hielo y la isla son paredes para la fauna; solo se respira en agua abierta, canales o hielo fijo fino, nunca a través de la plataforma.** Las rutas del submarino llevan túnel por la roca. | Berón, 2026-11-05: «hazlo real». | 107 | [hielo-y-respiraderos.md](hielo-y-respiraderos.md) |
 | P9 | **J16 al llegar alguien**: recuento de centros, ring y camas. | Que quepan todos. | 75, 89 | [reglas-personajes.md](reglas-personajes.md) |
 | P10 | **Los docs van con el cambio**: ficha, personajes, diseño, manual y checklist. | Berón lo pide. | `check-personajes.sh` (la ficha); el resto, **solo en docs** | [reglas-personajes.md](reglas-personajes.md) |
 | P11 | **Regla de oro: todos saben hacer de todo** (= J30). | Berón. | 87 | [reglas-personajes.md](reglas-personajes.md) |
@@ -380,7 +379,7 @@ reconstruir. Vale para TODOS los pisos, no solo el hospital. Cada piso del santu
 ## 12. Recuento y reglas sin comprobación automática
 
 
-**Total: 199 reglas** (S 15 · F 14 · T 22 · C 7 · G 8 · H 8 · M 39 · A 5 · J 32 · P 19 · E 17 · W 11 = 197 —W9, W10 y W11 van en §11; P11 repite J30; P1–P11 son de personajes y P12–P19 de territorio y producción (§13)—, más la regla de
+**Total: 199 reglas** (S 15 · F 14 · T 22 · C 7 · G 8 · H 8 · M 39 · A 5 · J 32 · P 20 · E 17 · W 11 = 198 —W9, W10 y W11 van en §11; P11 repite J30; P1–P11 son de personajes y P12–P19 de territorio y producción (§13)—, más la regla de
 sincronización de §11). (Recontado por el probador al integrar actividades, tareasE, entreno, personajes, hospital y cohetes, 2026-11-04:
 las J18 en adelante se renumeraron en una sola secuencia —J18–J21 actividades y uniformes, J22 tareas con «E», J23–J27 entrenamientos
 y entrenador, J28 profesiones, J29 nada en pisos en obras—.)
@@ -428,6 +427,7 @@ Berón (2026-11-05): «¿tenemos reglas para la creación de animales?». Detall
 | P17 | **Cada rasgo sale de un lugar real** (Ross, Svalbard, Georgia del Sur); lo que no, se dice. | «Investigar lugares reales». | solo en docs | ídem |
 | P18 | **Al mover una torre, se lleva lo que depende de ella:** alfombras al suelo, animales, horario libre; holguras con `mig/Clear.cs`. | Producción y sus osos a la isla. | 99, 57 | ídem |
 | P19 | **Las áreas de producción escalan su maquinaria a lo que se les pide:** cada una tiene su línea en `ProductionAudit` (demanda, máquinas por etapa, cuello de botella); se comprueba al crear el área, al subir la demanda y al final del Blockout. Un número sin máquinas no vale. | Berón, 2026-11-05. | 103, `[Producción]` | [produccion-maquinaria.md](produccion-maquinaria.md) |
+| P20 | **La plataforma de hielo y la isla son paredes para la fauna; solo se respira en agua abierta, canales o hielo fijo fino, nunca a través de la plataforma.** Las rutas del submarino llevan túnel por la roca. | Berón, 2026-11-05: «hazlo real». | 107 | [hielo-y-respiraderos.md](hielo-y-respiraderos.md) |
 
 ## Docs de cada tema
 
