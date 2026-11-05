@@ -296,8 +296,21 @@ public class GymTrainingTest : MonoBehaviour, ITestUnit
         if (coach != null)
         {
             TestProbe.Check($"el entrenador ({coach.g.name}) da la clase de calentamiento", coach.attended >= 1 && coach.classReps >= 2, $"{coach.attended} alumnos, {coach.classReps} repeticiones");
+            TestProbe.Check("el entrenador da la clase en el gimnasio, no donde estaba (ronda 7: Andrea, parada en Cría)", coach.classAtPoint, $"a {Vector3.Distance(trainer.transform.position, cp):0.0} m del punto de la clase al acabar");
             TestProbe.Check($"el entrenador corrige o hace de spotter en las máquinas", coach.corrections + coach.spots >= 1, $"{coach.corrections} correcciones, {coach.spots} de spotter · {string.Join(" | ", coach.notes.Take(5))}");
             coach.Stop("fin de la prueba");
+            // SIN NADIE A QUIEN CORREGIR Y LEJOS DEL GIMNASIO (lo que pasó en la ronda 7): vuelve andando; no se queda parado donde está.
+            Held th = held.First(h => h.g == trainer);
+            if (Vector3.Distance(th.pos, cp) > 5f)
+            {
+                WorkdayDirector.Teleport(trainer.transform, th.pos); PathMover.Of(trainer.transform).Restart();
+                var idle = new GymCoach(trainer, cp, Quaternion.identity, 0f, 99999f, null, 0f);
+                float d0 = Vector3.Distance(trainer.transform.position, cp), idleEnd = Time.time + 120f, idleReal = Time.realtimeSinceStartup + 60f;
+                var none = new List<GymTrainingSession>();
+                while (Time.time < idleEnd && Time.realtimeSinceStartup < idleReal && Vector3.Distance(trainer.transform.position, cp) > 2.5f) { idle.Tick(none); yield return null; }
+                float d1 = Vector3.Distance(trainer.transform.position, cp);
+                TestProbe.Check("sin nadie a quien corregir, el entrenador vuelve andando al gimnasio", d1 < d0 - 3f || d1 <= 2.5f, $"de {d0:0.0} m a {d1:0.0} m");
+            }
         }
         foreach (GymTrainingSession s in sessions) s.Stop("fin de la prueba");
         foreach (Held h in held) Restore(h);
@@ -423,6 +436,7 @@ public class GymTrainingTest : MonoBehaviour, ITestUnit
         HistoricCoach c = cls.coach;
         TestProbe.Check($"pueblo: el maestro ({cls.tradition.trainer}) da la clase de calentamiento y corrige", c.attended >= 1 && c.classReps >= 2 && c.corrections >= 1,
             $"{c.attended} alumnos, {c.classReps} repeticiones, {c.corrections} correcciones · {string.Join(" | ", c.notes.Take(4))}");
+        TestProbe.Check("pueblo: el maestro da la clase en su edificio, no donde estaba", c.classAtSite);
         Time.timeScale = oldScale; HistoricSession.MaxWait = waitWas;
         foreach (GameObject g in people) Object.Destroy(g);
         Object.Destroy(dummyGo); Object.Destroy(root);

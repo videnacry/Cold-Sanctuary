@@ -12,7 +12,7 @@ using UnityEngine;
 ///     la técnica (<see cref="GymProgramming.Cue"/>) y, en banca y sentadilla pesadas, hace de SPOTTER hasta que acaba la serie.
 ///  3. Los días con gimnasio en su propio plan, la última parte del bloque hace SU rutina.
 /// Lo de escribir y ajustar los planes es su misión de la jornada («gym_planes», <see cref="GymProgramming.Review"/>).
-/// Todas las esperas están acotadas (andar 25 s, corregir 5 s, hacer de spotter 20 s).
+/// Todas las esperas están acotadas (reunirse 75 s, andar 60 s, corregir 5 s, hacer de spotter 20 s).
 /// </summary>
 public class GymCoach
 {
@@ -23,13 +23,16 @@ public class GymCoach
     public Phase phase { get; private set; }
     public Vector3 classPoint; public Quaternion classFacing;
     public float walkSpeed = 2.6f;
-    public const float MoveHalf = 0.8f, WalkLimit = 25f, CorrectFor = 5f, SpotLimit = 20f;
+    public const float MoveHalf = 0.8f, WalkLimit = 60f, CorrectFor = 5f, SpotLimit = 20f;
 
     public int classReps, corrections, spots, attended;
+    /// <summary>¿Empezó la clase de verdad en su punto del gimnasio? (No donde estuviera: JornadaTest, ronda 7.)</summary>
+    public bool classAtPoint;
     public readonly List<string> notes = new List<string>();
     public GymTrainingSession own;
 
-    float _classUntil, _roundsUntil, _ownBudget, _phaseAt;
+    float _classSec, _hardEnd, _classUntil, _roundsUntil, _ownBudget, _phaseAt;
+    readonly HashSet<GymTrainingSession> _inPlace = new HashSet<GymTrainingSession>();
     readonly GymProgramming.DayRoutine _ownRoutine;
     readonly List<GymTrainingSession> _attendees = new List<GymTrainingSession>();
     readonly Dictionary<GymTrainingSession, (int key, AsanaPoseSpell pose)> _attPose = new Dictionary<GymTrainingSession, (int, AsanaPoseSpell)>();
@@ -39,19 +42,25 @@ public class GymCoach
 
     /// <summary><paramref name="classSec"/>, <paramref name="roundsSec"/>: duración (s) de la clase y de las rondas;
     /// <paramref name="own"/> (puede ser null): su rutina de hoy, con <paramref name="ownBudget"/> s para hacerla.</summary>
-    public GymCoach(GameObject g, Vector3 classPoint, Quaternion facing, float classSec, float roundsSec, GymProgramming.DayRoutine own, float ownBudget)
+    public GymCoach(GameObject g, Vector3 classPoint, Quaternion facing, float classSec, float roundsSec, GymProgramming.DayRoutine own, float ownBudget, float gatherSec = 75f)
     {
         this.g = g; a = g.GetComponent<Anima>();
         this.classPoint = classPoint; classFacing = facing;
-        _classUntil = Time.time + Mathf.Max(0f, classSec);
-        _roundsUntil = _classUntil + Mathf.Max(0f, roundsSec);
+        // LA CLASE EMPIEZA CUANDO ÉL LLEGA, NO A LAS 14:00: de otra torre se tarda 35–95 s y la clase dura 25 s. Antes el reloj corría
+        // desde el principio: a los 25 s «daba la clase» donde estuviera y se quedaba allí (Andrea, parada en Cría a las 14:17, sin
+        // alumnos: JornadaTest, ronda 7). Tope de todo: duración + gatherSec para reunirse.
+        _classSec = Mathf.Max(0f, classSec);
+        _hardEnd = _classUntil = Time.time + _classSec + Mathf.Max(0f, gatherSec);
+        _roundsUntil = Time.time + _classSec + Mathf.Max(0f, roundsSec);
         _ownRoutine = own; _ownBudget = ownBudget;
         phase = classSec > 0f ? Phase.ToClass : Phase.Rounds; _phaseAt = Time.time;
         Note(classSec > 0f ? "abre la clase de calentamiento" : "empieza las rondas por las máquinas");
     }
 
     /// <summary>¿Hay clase ahora? (acotada por su hora de fin: si el entrenador se va a comer, los alumnos no esperan para siempre)</summary>
-    public bool ClassRunning => (phase == Phase.ToClass || phase == Phase.Class) && Time.time < _classUntil;
+    public bool ClassRunning => (phase == Phase.ToClass || phase == Phase.Class) && Time.time < _hardEnd;
+    /// <summary>¿Está en ese punto? En el MISMO PISO: los pisos de una torre comparten x y z.</summary>
+    static bool At(Transform t, Vector3 to, float r) { Vector3 d = to - t.position; bool floor = Mathf.Abs(d.y) < 1.5f; d.y = 0f; return floor && d.sqrMagnitude <= r * r; }
     public string Status => phase == Phase.ToClass || phase == Phase.Class ? $"Entrenador: clase de calentamiento ({_attendees.Count})"
         : phase == Phase.Rounds ? (_target != null ? $"Entrenador: {(_spotting ? "hace de spotter a" : "corrige a")} {_target.Who}" : "Entrenador: rondas por las máquinas")
         : phase == Phase.Own ? (own != null ? own.Status() : "Su rutina") : "Entrenador";
@@ -65,7 +74,7 @@ public class GymCoach
         float t = Mathf.Max(0f, Time.time - _phaseAt);
         int k = Mathf.FloorToInt(t / MoveHalf);
         b = k % 2 == 1;
-        float total = Mathf.Max(1f, _classUntil - _phaseAt);
+        float total = Mathf.Max(1f, _classSec);   // (los movimientos se reparten en lo que dura; si espera a los que llegan tarde, sigue con el último)
         return t < total * 0.5f ? 0 : 1;
     }
 
@@ -99,9 +108,11 @@ public class GymCoach
         int k = _attendees.IndexOf(s);
         if (k < 0) { _attendees.Add(s); k = _attendees.Count - 1; attended++; }
         Vector3 to = Slot(k);
-        Vector3 d = to - s.g.transform.position; d.y = 0f;
-        if (d.sqrMagnitude > 0.35f * 0.35f && phase == Phase.Class && Time.time - _phaseAt < WalkLimit) { PathMover.Of(s.g.transform).StepToward(to, walkSpeed); return; }
-        if (phase != Phase.Class) { if (d.sqrMagnitude > 0.35f * 0.35f) PathMover.Of(s.g.transform).StepToward(to, walkSpeed); return; }
+        // Anda hasta su sitio todo lo que haga falta (viene de otra torre); la clase ya está acotada por _hardEnd. Solo repite los
+        // movimientos en su sitio: antes, a los 25 s, hacía sentadillas donde estuviera.
+        if (!At(s.g.transform, to, 0.6f)) { _inPlace.Remove(s); PathMover.Of(s.g.transform).StepToward(to, walkSpeed); return; }
+        _inPlace.Add(s);
+        if (phase != Phase.Class) return;   // ya en su sitio, espera a que llegue el entrenador
         Vector3 look = classPoint - s.g.transform.position; look.y = 0f;
         if (look.sqrMagnitude > 0.01f) s.g.transform.rotation = Quaternion.LookRotation(look);
         int key = Move(out bool b) * 2 + (b ? 1 : 0);
@@ -119,15 +130,17 @@ public class GymCoach
         {
             case Phase.ToClass:
                 {
-                    Vector3 d = classPoint - g.transform.position; d.y = 0f;
-                    if (d.sqrMagnitude > 0.5f * 0.5f && Time.time - _phaseAt < WalkLimit && Time.time < _classUntil) { PathMover.Of(g.transform).StepToward(classPoint, walkSpeed); return true; }
-                    phase = Phase.Class; _phaseAt = Time.time;
+                    if (Time.time >= _hardEnd) { Note("no llega a tiempo: hoy no hay clase de calentamiento"); EndClass(); return true; }
+                    if (!At(g.transform, classPoint, 1f)) { PathMover.Of(g.transform).StepToward(classPoint, walkSpeed); return true; }
+                    phase = Phase.Class; _phaseAt = Time.time; classAtPoint = true;
+                    _classUntil = Mathf.Min(_hardEnd, Time.time + _classSec);   // desde que llega
                     Note("dirige el calentamiento: sentadillas con peso corporal y saltos de tijera");
                     return true;
                 }
             case Phase.Class:
                 {
-                    if (Time.time >= _classUntil) { EndClass(); return true; }
+                    // Dura lo suyo desde que él llega y espera a quien viene de camino (hasta el tope): los alumnos salen de otras torres.
+                    if (Time.time >= _hardEnd || (Time.time >= _classUntil && _attendees.All(s => _inPlace.Contains(s)))) { EndClass(); return true; }
                     g.transform.rotation = Quaternion.LookRotation(classFacing * Vector3.forward);
                     int key = Move(out bool b) * 2 + (b ? 1 : 0);
                     if (key != _poseKey) { if (_poseKey >= 0 && (_poseKey & 1) == 1 && !b) classReps++; _poseKey = key; _pose = ClassPose(key / 2, b); }
@@ -168,7 +181,13 @@ public class GymCoach
                 float score = (GymProgramming.NeedsSpotter(s.Station.type, s.Current.rpe) ? 100f : 0f) - Vector3.Distance(s.g.transform.position, g.transform.position);
                 if (score > bs) { bs = score; best = s; }
             }
-            if (best == null) { if (a != null && _poseKey != -2) { DailyPoses.Stand().ApplyFinal(a); _poseKey = -2; } return; }
+            if (best == null)
+            {
+                // SIN NADIE A QUIEN CORREGIR: al gimnasio, no parado donde esté (en Cría, si la clase no se dio; JornadaTest, ronda 7).
+                if (a != null && _poseKey != -2) { DailyPoses.Stand().ApplyFinal(a); _poseKey = -2; }
+                if (!At(g.transform, classPoint, 1.5f)) PathMover.Of(g.transform).StepToward(classPoint, walkSpeed);
+                return;
+            }
             _target = best; _targetSt = best.Station; _targetSince = Time.time; _atTargetSince = -1f; _visited[best] = Time.time;
         }
         Vector3 to = WorkdayDirector.GymApproach(_targetSt);

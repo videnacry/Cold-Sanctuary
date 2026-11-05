@@ -803,11 +803,13 @@ Si la rotación manda a alguien al gimnasio un día sin gimnasio en su plan (sol
   - Al terminarla (`GymProgramming.Review`): escribe el plan de quien no lo tenía, mantiene la carga de lo que quedó sin acabar,
     avisa de la semana de descarga y deja escrita la rutina de mañana de cada uno.
 - **En el bloque de las 14 h** (`GymCoach`), con los mismos datos de rutina:
-  1. **Clase de calentamiento** (14:00–14:10): en la zona libre, sentadillas con peso corporal y saltos de tijera. Quien llega a
-     calentar se pone en filas de 4 delante de él y repite cada movimiento a su compás.
+  1. **Clase de calentamiento** (10 min de juego desde que **él llega** a la zona libre, no desde las 14:00; de otra torre se tarda
+     35–95 s reales y la clase dura 25 s). Sentadillas con peso corporal y saltos de tijera. Quien va a calentar anda hasta su sitio,
+     en filas de 4 delante de él, y repite cada movimiento a su compás. La clase espera a los que vienen de camino; tope: 30 min de
+     juego más para reunirse. Si la clase acaba tarde, cada uno reajusta el ritmo de sus repeticiones para acabar la rutina.
   2. **Rondas**: va a quien está en plena serie y le **corrige** la técnica (`GymProgramming.Cue`: «escápulas atrás y codos a
      unos 45°», «rodillas alineadas con los pies»…). En banca y sentadilla con RPE ≥ 7,5 hace de **spotter** hasta que acaba la
-     serie. Como mucho: andar 25 s, corregir 5 s y hacer de spotter 20 s.
+     serie. Como mucho: andar 60 s, corregir 5 s y hacer de spotter 20 s. Sin nadie a quien corregir, vuelve andando al gimnasio.
   3. Los días de su propio plan (torso/pierna de fuerza, lun-mié-jue-sáb), de 15:00 a 15:55 hace **su rutina**.
 
 ### 15.6 Los planes asignados
