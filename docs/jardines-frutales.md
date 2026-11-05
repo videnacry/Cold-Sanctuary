@@ -170,7 +170,7 @@ Tamaños (variedades enanas en maceta):
 
 Cada punto es una línea de equipos (`FurnitureLine`, que van juntos) contra un borde libre, mirando hacia dentro, con su
 zona de trabajo delante.
-- **Servicios: «Sala de cuidados de los frutales · experta: Irosene».**
+- **Servicios: «Sala de cuidados de los frutales · jardinero: Shalva».**
   - Banco de trasplante con macetas y sustrato.
   - Depósito de fertirriego de 1000 L con dosificador y manguera.
   - Cabezal del riego por goteo (filtro, electroválvula, regulador de presión y programador).
@@ -185,7 +185,7 @@ zona de trabajo delante.
 - **Los demás techos: punto de cuidados** con depósito de 500 L con dosificador, carro de fertirriego y armario de
   herramientas, y el cabezal de su goteo.
 
-### La experta
+### La experta (hasta el 2026-11-05; ahora el jardinero es **Shalva**, ver §Ronda 7)
 
 **Irosene** (docs/character-irosene.md): «tuvo grandes momentos en el huerto/jardinería» (Garden, Tier 2), y su energía
 tras la transformación encaja con el trabajo físico.
@@ -512,9 +512,14 @@ Residencia no acababa en su tiempo. La prueba 55 elige para su jardinero una ron
 personal nuevo, la jornada del jardinero subía a **52 h y 19 rondas**: cada maceta de casa es un vuelo en alfombra (~45 s reales), más
 que su revisión. **Decisión: la maceta de la terraza de cada casa la cuida su residente** (`FruitPlant.HomeTended` y `HomeCare`). Al
 levantarse (desde las 7:30), una vez al día, la revisa y, si le toca, la poliniza y la poda.
-- **Por qué**: duerme allí, no tiene que volar, le cuesta un minuto y es lo que se hace con una planta de casa. El jardinero (la
-  experta, Irosene) sigue con lo que pide oficio: los techos, las puntas, los bancales y las tareas del árbol.
+- **Por qué**: duerme allí, no tiene que volar, le cuesta un minuto y es lo que se hace con una planta de casa. El jardinero (el jardinero
+  frutal, Shalva) sigue con lo que pide oficio: los techos, las puntas, los bancales y las tareas del árbol.
 - Las rondas del jardinero ya **no incluyen** esas macetas, y la prueba 55 comprueba que las cuida su residente.
 - Además, **la ronda tiene tope**: a las 3,2 h se da por terminada, salvo en mitad de unas tareas del árbol, y lo que falte se queda
   para el día siguiente. Las tareas de la semana tampoco pasan de su tiempo reservado (+5 min): una maceta que no se alcanzaba dejaba
   al jardinero de prueba polinizando y podando sin acabar.
+
+**Ronda 7 (2026-11-05): el jardinero es Shalva.** Irosene ya no lleva ese papel (es de letras y textil). Shalva, profesional de cultivo,
+hace cada día una ronda de frutales (`Professions`: «Huerto:jar_frutales») y el resto se reparte por la rotación. **Kushal no recibe
+rondas**: las hace la conducta `FruitGardener`, que no mueve al jugador, y esas macetas se quedaban sin revisar. La prueba 55 mira las
+puertas que tocan por rotación y deja fuera la torre de la lanzadera, que no entra en las rondas.

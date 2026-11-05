@@ -155,3 +155,9 @@ en este orden:
 4. y, si aún falta, el personal más cercano.
 
 Siempre elige gente libre y, en cada grupo, a los más cercanos. El registro dice a quién eligió.
+
+**Ronda 7 (2026-11-05): el equipo, cerca y sanitario.** El reparto por papel elegía a quien tuviera hoy una misión del hospital aunque
+estuviera en otro árbol, y Adonis no llegaba a la puerta en 120 s. Ahora `PickCrew` mira primero **quién está cerca** (en el árbol del
+hospital, ~40 s: `CrewNearSeconds`) y, entre ellos, prefiere al **personal sanitario** (`Professions.Medical`: Lizmibet, Linduarda e
+Ivelyna), luego a quien tiene misión del hospital y luego a cualquiera del personal. Si no hay nadie cerca, va una sola persona, la más
+cercana.

@@ -6,7 +6,7 @@ using UnityEngine;
 /// en el juego (<see cref="GardenCrop.Kind"/>), lo que necesita para estar bien en una MACETA GRANDE del techo de una
 /// torre, dentro del clima controlado del santuario (latitud −77,85°: fuera, −18 °C de media y 4 meses de noche polar):
 /// agua, luz, temperatura, sustrato, nutrientes, poda, plagas, cosecha y polinización, con su fuente. Es el saber de la
-/// experta en frutales (Irosene) y lo que mira el jardinero en su ronda diaria (<see cref="FruitGardener"/>).
+/// jardinero frutal (Shalva, profesional de cultivo) y lo que mira el jardinero en su ronda diaria (<see cref="FruitGardener"/>).
 /// Los números de la SIMULACIÓN (cuánta agua y abono gasta al día, cuánto tarda la revisión) salen de esas fichas:
 /// - <see cref="Ficha.aguaDia"/>: fracción del agua de la maceta que gasta en un día de juego (plátano y coco, mucha;
 ///   olivo, dátil y piña, poca);

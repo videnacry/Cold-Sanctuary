@@ -139,7 +139,7 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
         int treeUnits = rounds.SelectMany(r => r.TreeLegs).Count();
         var split = rounds.SelectMany(r => r.legs).Where(l => l.plants.Count > 0 && !l.plants.Any(p => p.GetComponentInParent<Bedroom>() != null)).GroupBy(l => l.building).Where(g => g.Count() > 1).Select(g => g.Key).ToList();   // (2026-11-04) las casas del árbol de la Residencia (18) son casas sueltas a un vuelo una de otra: se reparten por grupos de casas, no son un techo
         TestProbe.Check("con el goteo, las macetas de cada edificio las hace una persona (ningún edificio se parte); las máscaras y el fitoplancton de cada árbol, en tramos que caben en una ronda, todos repartidos",
-            rounds.Count <= roofs + treeUnits && split.Count == 0 && ArbolCampos.All.Where(a => a != null).All(a => FruitGardener.TreeTaskList(a).masks.All(m => rounds.SelectMany(r => r.TreeLegs).Any(l => l.masks.Contains(m))))
+            rounds.Count <= roofs + treeUnits && split.Count == 0 && ArbolCampos.All.Where(a => a != null && a.building != LaunchHeightRule.Building).All(a => RotationDue(a).All(m => rounds.SelectMany(r => r.TreeLegs).Any(l => l.masks.Contains(m))))
             && rounds.Count <= Mathf.CeilToInt(rounds.Sum(r => r.hours) / (FruitGardener.RoundTarget * 0.6f)),   // (2026-11-04: las tareas de un árbol van en tramos que caben en una ronda; todas sus puertas, en alguno; y las rondas, bien llenas)
             $"{rounds.Count} rondas para {roofs} edificios, total {rounds.Sum(r => r.hours):0.0} h de juego{(split.Count > 0 ? "; partidos: " + string.Join(", ", split) : "")}");
         TestProbe.Check($"ninguna ronda pasa de {FruitGardener.MaxRoundHours:0} h (cabe en el bloque de la mañana)", rounds.All(r => r.hours <= FruitGardener.MaxRoundHours + 0.01f),
@@ -147,6 +147,13 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
         var today = AreaWork.Today(0, ConstructionProject.All).Where(m => FruitGardener.IsRound(m.id)).ToList();
         TestProbe.Check("la jornada tiene cada ronda como misión obligatoria que recorre los edificios", today.Count == rounds.Count && today.All(m => m.mandatory && m.roams && Mathf.Approximately(m.hours, FruitGardener.MaxRoundHours)),
             string.Join("; ", today.Select(m => $"{m.id} {m.hours:0.#} h")));
+        // (2026-11-05) EL JARDINERO FRUTAL ES SHALVA, profesional de cultivo. Kushal no: la ronda la hace una conducta que no mueve al jugador.
+        WorkRoster.DayPlan plan = WorkdayDirector.Instance != null ? WorkdayDirector.Instance.today : null;
+        if (plan != null && plan.work.Any(a => FruitGardener.IsRound(a.mission.id)))
+        {
+            var who = plan.work.Where(a => FruitGardener.IsRound(a.mission.id)).Select(a => a.worker.name).ToList();
+            TestProbe.Check("Shalva hace una ronda de frutales y Kushal ninguna", who.Contains("Shalva") && !who.Contains("Player"), string.Join(", ", who));
+        }
 
         // ── 6. EL JARDINERO ──
         FruitGardener.Round round = rounds.OrderBy(r => r.Plants.Any(p => p.GetComponentInParent<Bedroom>() != null) ? 1 : 0)   // (2026-11-04) mejor una ronda de techos: la de las casas del árbol va en alfombra casa a casa
@@ -154,7 +161,7 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
         var rp = round.Plants.ToList();
         foreach (FruitPlant p in rp) { p.water = 0.3f; p.nutrients = 0.3f; p.pests = 0.4f; p.health = 0.55f; }
         float wellBefore = rp.Average(p => p.Wellbeing);
-        GameObject body = WorkdayDirector.SpawnBodyCopy("Irosene", "Jardinera (prueba)");
+        GameObject body = WorkdayDirector.SpawnBodyCopy("Shalva", "Jardinero (prueba)");
         Vector3? start = FruitGardener.StartPoint(round.id);
         if (start.HasValue) WorkdayDirector.Teleport(body.transform, start.Value);
         FruitGardener g = body.AddComponent<FruitGardener>();
@@ -193,7 +200,7 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
                 var (masks, beds) = FruitGardener.TreeTaskList(tree);
                 var rot = masks.Where(m => !notDue.Contains(m)).ToList();
                 foreach (Phytoplankton b in beds) b.condition = 0.3f;
-                GameObject gb = WorkdayDirector.SpawnBodyCopy("Irosene", "Jardinera de máscaras (prueba)");
+                GameObject gb = WorkdayDirector.SpawnBodyCopy("Shalva", "Jardinero de máscaras (prueba)");
                 if (tree.Top != null) WorkdayDirector.Teleport(gb.transform, tree.World(tree.Top.outside) + Vector3.up);
                 FruitGardener tg = gb.AddComponent<FruitGardener>();
                 float sc0 = Time.timeScale; Time.timeScale = 4f;
@@ -218,6 +225,13 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
         }
         probe.water = Mathf.Max(probe.water, w0); probe.health = Mathf.Max(probe.health, h0);
         TestProbe.End();
+    }
+
+    // Las puertas que hoy tocan por ROTACIÓN (no las que se hayan puesto en rojo después de repartir las rondas del día).
+    static List<MaskStation> RotationDue(ArbolCampos t)
+    {
+        var all = FruitGardener.TreeStations(t); int r = MaskStation.RotationDays, d = TimeController.timeController != null ? TimeController.timeController.Day : 0;
+        return Enumerable.Range(0, all.Count).Where(i => i % r == ((d % r) + r) % r).Select(i => all[i]).ToList();
     }
 
     static Bounds Box(Transform t)

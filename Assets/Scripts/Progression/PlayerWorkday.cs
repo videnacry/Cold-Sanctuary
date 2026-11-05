@@ -177,7 +177,7 @@ public class PlayerWorkday : MonoBehaviour
         var taken = new HashSet<string>(wd.today.work.Select(a => a.mission.id));
         var order = wd.today.areaOrder;
         var pool = AreaWork.Today(day, ConstructionProject.All)
-            .Where(m => string.IsNullOrEmpty(m.group) && m.site == null && m.id != "enf_iniciacion")
+            .Where(m => string.IsNullOrEmpty(m.group) && m.site == null && m.id != "enf_iniciacion" && !FruitGardener.IsRound(m.id))
             .OrderBy(m => taken.Contains(m.id) ? 1 : 0)
             .ThenBy(m => { int i = order.IndexOf(m.area); return i < 0 ? 99 : i; })
             .ToList();

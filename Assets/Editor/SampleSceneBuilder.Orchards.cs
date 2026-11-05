@@ -271,7 +271,7 @@ public static partial class SampleSceneBuilder
             Object.DestroyImmediate(mat.GetComponent<Collider>());
         }
         WorldLabel wl = line.gameObject.AddComponent<WorldLabel>();
-        wl.text = main ? "Sala de cuidados de los frutales · experta: Irosene" : "Punto de cuidados de los frutales";
+        wl.text = main ? "Sala de cuidados de los frutales · jardinero: Shalva" : "Punto de cuidados de los frutales";
         wl.height = 2.6f;
         // Bordes candidatos (en el marco del techo): centro de la línea y su giro (su +Z, hacia dentro).
         float hx = size.x * 0.5f, hz = size.y * 0.5f, back = 0.5f + 0.45f;

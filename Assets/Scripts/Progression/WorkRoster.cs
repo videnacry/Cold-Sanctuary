@@ -263,6 +263,7 @@ public class WorkRoster
         foreach (Mission m in pool)
         {
             if (!Fits(used, m.hours)) continue;
+            if (w.name == "Player" && FruitGardener.IsRound(m.id)) continue;   // (2026-11-05) la ronda de frutales la hace la conducta FruitGardener, que no mueve al jugador: con Kushal, ese día se quedaba sin hacer
             if (best == null) { best = m; continue; }
             int cm = w.Count(m.id), cb = w.Count(best.id);
             if (cm < cb || (cm == cb && w.Last(m.id) < w.Last(best.id))) best = m;

@@ -79,7 +79,7 @@ La profesión da a cada uno su papel sin quitar la rotación (regla J2):
 | **Nesvitor** | **Guardia** y **agricultor** | Guardia; Huerto | el huerto |
 | **Maite** | **Jefa de cocina** (con Amykhuz) y **curandera** | Cocina; Hospital: `hos_plantas` (misión nueva: remedios de plantas medicinales) y `enf_visita` (curas) | el restaurante |
 | **Amykhuz** | **Jefe de cocina** (con Maite) y química | Cocina; Química | el restaurante |
-| Shalva | Cultivo y bioconstrucción | Huerto; Construcción: `mat_` | el huerto |
+| Shalva | Cultivo (jardinero frutal) y bioconstrucción | Huerto: `jar_frutales` (cada día, una ronda de frutales); Construcción: `mat_` | el huerto |
 | Adaguchi | Submarinismo (submarino de obra, ambulancia, tareas bajo el agua) y cocina | Construcción; Cocina | Construcción |
 | Karen | Asuntos legales y lenguas | Aula: `aul_legal`, `aul_lenguas` | el Aula |
 | Alicita | Contabilidad y dirección de proyectos | Cocina: `coc_cuentas`; Construcción: `con_proyectos` | Construcción |
