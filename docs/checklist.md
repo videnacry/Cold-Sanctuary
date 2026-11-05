@@ -740,6 +740,8 @@ Código y compilación hechos; falta la prueba en vivo.
 - [x] Regla P19: maquinaria a la altura de lo que se pide (grupo 103, [`produccion-maquinaria.md`](produccion-maquinaria.md)). Laboratorio ampliado.
 - [x] La isla es roca hasta el lecho; el hielo flota; túneles para el submarino, fauna fuera de la plataforma y respiraderos en hielo fijo (grupo 107, [`hielo-y-respiraderos.md`](hielo-y-respiraderos.md)).
 - [x] `FaunaScale`: la fauna no sigue a la plantilla en Play.
+- [x] Icebergs con focas y pingüinos de verdad, con su motivo y su estancia (grupo 108, [`vida-en-icebergs.md`](vida-en-icebergs.md)).
+- [x] Petrel de las nieves real: vuela, se posa en icebergs y anida en la roca (grupo 109).
 - [ ] Auditar la energía (falta su demanda total) y dar máquinas a las cifras de `AreaProducer`.
 - [x] Cadena alimenticia (`FoodChain`, regla E15, grupo 85) y especie real para todo pez, crustáceo y medusa: 6 especies nuevas.
 - [x] Frentes de barrera, 5 cuevas, acantilados, colonia del emperador, playa de morsas y nidos de Adelia.

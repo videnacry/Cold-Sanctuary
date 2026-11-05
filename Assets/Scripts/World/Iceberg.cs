@@ -33,7 +33,7 @@ public static class IcebergRule
 
 /// <summary>
 /// UN ICEBERG (Berón 2026-11-05; docs/sitio-nuclear.md §14): deriva despacio entre dos puntos, o está varado en un banco. Barato: unas pocas cajas, sin luces propias, y solo
-/// se mueve una vez por fotograma. Alrededor, como en los estudios reales, aves, focas y kril. Si se acerca a un casquete: ALERTA → misión de remolque de ese sitio; PELIGRO → en el
+/// se mueve una vez por fotograma. Alrededor, como en los estudios reales, aves, kril, peces y animales de verdad (<see cref="IcebergVisitor"/>). Si se acerca a un casquete: ALERTA → misión de remolque de ese sitio; PELIGRO → en el
 /// nuclear se desconecta la línea (<see cref="SiteLine.Disconnected"/>); en la lanzadera, vaciar los propulsores; en el parque, parar molinos y turbina.
 /// </summary>
 public class Iceberg : MonoBehaviour
@@ -44,8 +44,24 @@ public class Iceberg : MonoBehaviour
     [Tooltip("Varado en un banco: no deriva.")] public bool grounded;
     [Tooltip("Extremos de la deriva (mundo). Empieza yendo hacia driftB.")] public Vector3 driftA, driftB;
     [Tooltip("Tamaño total (m): ancho, de arriba abajo, largo.")] public Vector3 size;
-    [Tooltip("Las aves que vuelan alrededor: giran juntas.")] public Transform birds;
     [Tooltip("El kril que lo sigue.")] public Swarm krill;
+    [Tooltip("Los peces que lo siguen (docs/vida-en-icebergs.md).")] public Swarm fish;
+    [Tooltip("El pie de hielo a ras de agua: lo único a lo que se puede subir.")] public Transform ledge;
+
+    /// <summary>Dónde nada quien vive aquí: un corro alrededor, fuera del hielo (la quilla no tiene colisión).</summary>
+    public float SwimRadius => Mathf.Max(size.x, size.z) * 0.75f + 10f;
+    /// <summary>El punto del agua frente a la repisa: por ahí se sube.</summary>
+    public Vector3 Approach => ledge != null ? ledge.position + (ledge.position - transform.position).normalized * 12f + Vector3.down : transform.position;
+    /// <summary>Dónde se posa un ave: arriba, en el escalón del hielo. Se mueve con él.</summary>
+    public Vector3 PerchSpot(float seed) => transform.TransformPoint(new Vector3(-size.x * 0.3f + Mathf.Repeat(seed * 7f, size.x * 0.25f), size.y * 0.1f + 0.1f, size.z * 0.3f));
+
+    /// <summary>Un sitio en la repisa, propio de cada uno.</summary>
+    public Vector3 HaulSpot(float seed)
+    {
+        if (ledge == null) return transform.position;
+        float a = seed * Mathf.Deg2Rad;
+        return ledge.position + new Vector3(Mathf.Cos(a) * size.x * 0.22f, 0.6f, Mathf.Sin(a) * 3f);
+    }
 
     public int Tows { get; private set; }
     public int FailedTows { get; private set; }
@@ -65,13 +81,17 @@ public class Iceberg : MonoBehaviour
 
     void Update()
     {
-        if (birds != null) birds.Rotate(0f, 12f * Time.deltaTime, 0f);
         if (grounded) return;
         if (!_started) { _started = true; if (_to == Vector3.zero) _to = driftB; }
         Vector3 p = Vector3.MoveTowards(transform.position, _to, IcebergRule.Speed * Time.deltaTime);
         transform.position = p;
         if ((p - _to).sqrMagnitude < 0.04f) _to = _to == driftB ? driftA : driftB;
-        if (krill != null && Time.time > _nextKrill) { _nextKrill = Time.time + 20f; krill.GoTo(p + Vector3.down * 4f + transform.right * (size.x * 0.5f + 12f)); }
+        if (krill != null && Time.time > _nextKrill)
+        {
+            _nextKrill = Time.time + 20f;
+            krill.GoTo(p + Vector3.down * 4f + transform.right * (size.x * 0.5f + 12f));
+            if (fish != null) fish.GoTo(p + Vector3.down * 2f - transform.right * (size.x * 0.5f + 12f));
+        }
         SiteLine line = SiteLine.Instance;
         if (line != null) line.Disconnected = Danger(IcebergRule.Site.Nuclear);
     }

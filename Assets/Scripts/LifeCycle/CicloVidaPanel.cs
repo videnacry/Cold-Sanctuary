@@ -28,6 +28,7 @@ public class CicloVidaPanel : MonoBehaviour
         ("Whale", "Ballena", "Ballena", Habitat.Mar),
         ("Penguin", "Pinguino", "Pingüino de Adelia", Habitat.Costa),
         ("EmperorPenguin", "PinguinoEmperador", "Pingüino emperador", Habitat.Costa),
+        ("SnowPetrel", "PetrelNieves", "Petrel de las nieves", Habitat.Costa),
         ("Walrus", "Morsa", "Morsa", Habitat.Mar),
         ("Reindeer", "Reno", "Reno", Habitat.Tierra),
         ("Wolf", "LoboArtico", "Lobo ártico", Habitat.Tierra),

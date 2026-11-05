@@ -108,6 +108,13 @@ Los números se comprobaron contra fuentes el 2026-11-05; WP = Wikipedia, usada 
 - **Forma:** lana oscura hasta media pata, silla clara, patas claras, cuernos color crema con punta negra.
 - **Sin modelar:** el corro defensivo como conducta. Hoy es `packFactor` alto: el grupo se defiende mejor, pero no forma el círculo.
 
+### Petrel de las nieves, *Pagodroma nivea* (`SnowPetrel`, Antártida)
+- **Medidas:** 30–41 cm según la fuente (hay dos subespecies); envergadura 76–79 cm; ~317 g (macho 341, hembra 293). **Modelo:** 36 cm, 0,78 m de envergadura, 0,32 kg.
+- **Reproducción:** un huevo en grieta, cueva pequeña o repisa sin nieve; incubación 41–49 d por los dos padres; pollo ~46 d. Hembra madura ~10,75 años; hasta 20 años ([WorldSpecies](https://worldspecies.org/ntaxa/828904), [BirdForum](https://birdforum.net/opus/Snow_Petrel)). **Modelo:** el macho hace un turno que vale por todos.
+- **Dieta:** ~60 % invertebrados, 30 % peces, 10 % vertebrados, según un estudio de la isla Laurie citado allí. **Modelo:** kril y peces de la superficie; ración 60 g `[A]`.
+- **Conducta:** bandadas posadas en icebergs; asociado a hielo y témpanos ([Australian Antarctic Program](https://www.antarctica.gov.au/about-antarctica/animals/flying-birds/petrels-and-shearwaters/snow-petrel/)). **Sin confirmar:** el aceite de estómago, por eso no se modela.
+- **Licencia:** vive en una isla mezcla de polos, como todo el santuario, y usa los acantilados de aves de la isla.
+
 ## Cadena alimenticia (`FoodChain`)
 
 Berón (2026-11-05): «también debe existir la regla de mantener la cadena alimenticia la cual evalúa a los animales existentes y su alimentación para

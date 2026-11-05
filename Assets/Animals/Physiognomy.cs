@@ -54,6 +54,7 @@ public class Physiognomy
             { "ArcticHare", new Physiognomy(Vector3.one, 4f, 0.13f, 0.18f, 0.07f) },
             { "ArcticFox", new Physiognomy(Vector3.one, 3.3f, 0.09f, 0.2f, 0.05f) },
             { "MuskOx",   new Physiognomy(Vector3.one, 300f, 0.07f, 0.25f, 0.1f) },
+            { "SnowPetrel", new Physiognomy(Vector3.one, 0.32f, 0.2f, 0.3f, 0.05f) },   // 317 g
 
             // Insectos — escala de prefab ajustada al suelo del Microcosmos
             { "Ant",     new Physiognomy(new Vector3(0.003f, 0.003f, 0.003f), 0.002f, 0.10f, 0.15f, 0.05f) },

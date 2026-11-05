@@ -146,6 +146,16 @@ public class LifeHistory
             eggLabel = "La hembra forma el huevo (cópula → puesta)", layLabel = "Pone el huevo en el nido de guijarros",
             incubateLabel = "El macho hace el primer turno largo en el nido (ella se va al mar)", hatchLabel = "Eclosión (nace el polluelo)",
             sources = "Davis 1988 (Auk 105:428); NZ Birds Online (Adelie penguin); Animal Diversity Web" } },
+        // PETREL DE LAS NIEVES (Pagodroma nivea). Un huevo en grieta o repisa de roca, incubación 41–49 d por los dos (aquí el macho hace el turno que vale por todos,
+        // como en Adelia), pollo ~46 d, primera cría a los ~11 años (WorldSpecies; BirdForum).
+        { "SnowPetrel", new LifeHistory {
+            water = Water.SeaOrSnow, drinkHours = 8f, waterLabel = "Bebe agua de mar o come nieve",
+            care = Care.Regurgitation, biparental = true, careLabel = "Crianza: los padres van y vienen a alimentar al pollo",
+            youngFollow = true, followDistance = 1.5f, followLabel = "El pollo, en el nido, con sus padres",
+            eggs = true, incubationMonths = 1.5f, incubator = Incubator.Male, eggNest = true, eggChillHours = 4f,
+            eggLabel = "La hembra forma el huevo", layLabel = "Pone un huevo en su grieta de roca",
+            incubateLabel = "El macho hace el turno en el nido", hatchLabel = "Eclosión (nace el pollo)",
+            sources = "Australian Antarctic Program; WorldSpecies (Pagodroma nivea); BirdForum Opus" } },
         // MORSA (Odobenus rosmarus). No bebe: agua de la presa (Ortiz 2001). Gestación ~15 meses con 4–5 de implantación diferida, una
         // cría cada ~2,6 años (BMC Zoology 2022, doi 10.1186/s40850-022-00158-1), lactancia 12–36 meses (ADW): la cría nada con la madre.
         { "Walrus", new LifeHistory {

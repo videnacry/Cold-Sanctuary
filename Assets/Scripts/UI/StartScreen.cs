@@ -103,7 +103,7 @@ public class StartScreen : MonoBehaviour
         { "Microcosmos_Scene0_SakshiRio", "Sakshi (el río)" }, { "Microcosmos_Scene1_Ambrosio", "Ambrosio (nivel 1)" },
         { "Sala_de_Eras", "Sala de Eras" }, { "Galeria_InsectosHumanos", "Galería de insectos humanos" },
         { "CicloVida_OsoPolar", "Oso polar" }, { "CicloVida_Foca", "Foca" }, { "CicloVida_Ballena", "Ballena" },
-        { "CicloVida_Pinguino", "Pingüino de Adelia" }, { "CicloVida_PinguinoEmperador", "Pingüino emperador" }, { "CicloVida_Morsa", "Morsa" },
+        { "CicloVida_Pinguino", "Pingüino de Adelia" }, { "CicloVida_PinguinoEmperador", "Pingüino emperador" }, { "CicloVida_Morsa", "Morsa" }, { "CicloVida_PetrelNieves", "Petrel de las nieves" },
         { "CicloVida_Reno", "Reno" }, { "CicloVida_LoboArtico", "Lobo ártico" }, { "CicloVida_LiebreArtica", "Liebre ártica" }, { "CicloVida_ZorroArtico", "Zorro ártico" }, { "CicloVida_BueyAlmizclero", "Buey almizclero" },
         { "CicloVida_Orca", "Orca" }, { "CicloVida_Malamute", "Malamute (perro de trineo)" },
         { "CicloVida_AbejaNieves", "Abeja de las nieves" }, { "CicloVida_AranaNieves", "Araña de las nieves" },
