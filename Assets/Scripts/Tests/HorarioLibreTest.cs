@@ -66,6 +66,23 @@ public class HorarioLibreTest : MonoBehaviour, ITestUnit
         TestProbe.Check("lógica: ninguna actividad pasa de sus plazas", LeisureRoster.OverCapacity(w0).Count == 0 && LeisureRoster.OverCapacity(w1).Count == 0, string.Join("; ", LeisureRoster.OverCapacity(w0)));
         TestProbe.Check("lógica: cada actividad repartida por igual entre las 16 (Δ ≤ 1 por semana)", s0 <= 1 && s1 <= 1, $"semana 0: Δ={s0} ({worst0}), por persona Δ={pp0}; semana 1: Δ={s1}");
         TestProbe.Check("lógica: el orden del catálogo rota una posición por franja", r.Order(1)[0] == r.activities[r.activities.Count - 1] && r.Order(0)[0] == r.activities[0]);
+        // LAS SESIONES SEMANALES (la asamblea y el concierto): todos a la vez, una vez, y solo en su franja.
+        var weekly = new LeisureRoster();
+        foreach (var d in LeisureDirector.SanctuaryActivities)
+        {
+            var act = new LeisureRoster.Activity(d.id, d.title, d.kind, d.where[0], LeisureDirector.AllMembers.Contains(d.id) ? 16 : d.cap, d.pose);
+            LeisureDirector.ApplyWeekly(act);
+            weekly.activities.Add(act);
+        }
+        for (int i = 0; i < 16; i++) weekly.Add("W" + i);
+        LeisureRoster.WeekPlan wk = weekly.Plan(0);
+        foreach (var kv in LeisureDirector.WeeklySessions)
+        {
+            var at = wk.entries.Where(e => e.activity.id == kv.Key).ToList();
+            TestProbe.Check($"lógica: «{kv.Key}» es de todos, una vez a la semana y en su franja", at.Count == 16 && at.Select(e => e.person).Distinct().Count() == 16 && at.All(e => e.day == wk.firstDay + kv.Value.day && e.slot == kv.Value.slot), $"{at.Count} plazas");
+        }
+        LeisureDirector.MarkAttendance("asamblea", -7, "A"); LeisureDirector.MarkAttendance("asamblea", -7, "A"); LeisureDirector.MarkAttendance("asamblea", -7, "B");
+        TestProbe.Check("lógica: la asistencia cuenta a cada persona una vez", LeisureDirector.Attendance("asamblea", -7) == 2);
         var tight = new LeisureRoster();
         foreach (var d in LeisureDirector.SanctuaryActivities) tight.activities.Add(new LeisureRoster.Activity(d.id, d.title, d.kind, d.where[0], d.cap, d.pose));
         for (int i = 0; i < 40; i++) tight.Add("Q" + i);
@@ -256,6 +273,11 @@ public class HorarioLibreTest : MonoBehaviour, ITestUnit
         TestProbe.Check($"{tag}: todas las horas libres de la semana llenas ({p.people.Count} personas × {slots} franjas)", p.people.Count >= minPeople && missing == 0, missing > 0 ? $"{missing} vacías: {miss}" : $"{p.entries.Count} franjas");
         var over = LeisureRoster.OverCapacity(p);
         TestProbe.Check($"{tag}: ninguna actividad pasa de sus plazas", over.Count == 0, string.Join("; ", over.Take(5)));
+        foreach (LeisureRoster.Activity wa in p.activities.Where(x => x.together && LeisureDirector.WeeklySessions.ContainsKey(x.id)))
+        {
+            int n = p.entries.Count(e => e.activity == wa);
+            TestProbe.Check($"{tag}: a «{wa.title}» van todos los miembros", n == p.people.Count, $"{n} de {p.people.Count}");
+        }
         int sp = LeisureRoster.Spread(p, out int pp, out string worst);
         TestProbe.Check($"{tag}: reparto uniforme de cada actividad entre los personajes (Δ ≤ 2)", sp <= 2, $"Δ={sp} ({worst}) · por persona Δ={pp} · {p.people.Count} personas, {p.activities.Count} actividades");
         Log($"{tag}: uniformidad medida Δ={sp} ({worst}), por persona Δ={pp}");
