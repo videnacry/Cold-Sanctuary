@@ -2275,14 +2275,16 @@ public static partial class SampleSceneBuilder
         Object.DestroyImmediate(ground.GetComponent<MeshRenderer>());
         Object.DestroyImmediate(ground.GetComponent<MeshFilter>());
         ground.transform.localScale = Vector3.one;
-        int boxes = PolarLandscapeBuilder.BuildFloes(ground.transform, MakeMaterial("Ice_Floe_MAT", new Color(0.86f, 0.91f, 0.95f)));
+        int boxes = PolarLandscapeBuilder.BuildFloes(ground.transform, MakeMaterial("Ice_Floe_MAT", new Color(0.86f, 0.91f, 0.95f)),
+            MakeMaterial("Tierra_tundra_MAT", new Color(0.44f, 0.45f, 0.3f)), MakeMaterial("Orilla_grava_MAT", new Color(0.46f, 0.44f, 0.42f)), MakeMaterial("Zocalo_roca_MAT", new Color(0.3f, 0.29f, 0.28f)));
         CutIceUnderAll();   // los troncos de los edificios-árbol no tienen suelo: su hueco en el hielo (los árboles se hicieron antes)
         int links = PolarLandscapeBuilder.BuildSwimLinks(ground.transform);
-        Debug.Log($"[Islas] {PolarLandscapeBuilder.CapCount} casquetes ({PolarLandscapeBuilder.Islands.Length} lóbulos, {boxes} placas de hielo) alrededor de la laguna central; {links} enlaces de nado para la IA.");
+        Debug.Log($"[Islas] {PolarLandscapeBuilder.CapCount} masas: 5 casquetes y la isla de tierra ({PolarLandscapeBuilder.Islands.Length} lóbulos, {boxes} placas) alrededor de la laguna central; {links} enlaces de nado para la IA.");
 
         GameObject under = new GameObject("SotobosquePolar_AUTO");
         under.transform.SetParent(root, false);
-        under.AddComponent<PolarUnderstory>();
+        PolarUnderstory understory = under.AddComponent<PolarUnderstory>();
+        understory.tundraArea = new Rect(-PolarLandscapeBuilder.Half, -PolarLandscapeBuilder.Half, 2f * PolarLandscapeBuilder.Half, PolarLandscapeBuilder.Half);   // la mitad sur del mapa: ahí está la isla de tierra
 
         // Lo que la fauna polar USA (docs/natural-interactions.md): descansaderos y respiraderos de foca, guijarros de la
         // colonia de pingüinos, guaridas de nieve de los osos y grava de las ballenas.
@@ -2296,6 +2298,9 @@ public static partial class SampleSceneBuilder
         foreach (var lobe in PolarLandscapeBuilder.Islands)
             if (lobe.name == "Este:Mecanica_Osos" || lobe.name.StartsWith("BosqueNorte")) dens.Add(new Vector3(lobe.x + lobe.r * 0.4f, 0f, lobe.z - lobe.r * 0.3f));
         ph.denSites = dens.ToArray();
+        ph.emperorColony = EmperorColony;
+        Territorio ter = BuildTerritorio(root);   // barreras, cuevas, acantilados, lomas, charcas y bivalvos (docs/territorio-polar.md)
+        ph.walrusBeachAngle = 205f;
     }
 
     static void BakeNavMesh()
@@ -2470,7 +2475,8 @@ public static partial class SampleSceneBuilder
         var nests = new System.Collections.Generic.List<NestSpec>();
         var families = new System.Collections.Generic.List<FamilyGenerator.Family>();
         // EQUILIBRIO con los humanos (PopulationPlan): cada especie reparte su objetivo entre sus grupos.
-        var groupsOf = new System.Collections.Generic.Dictionary<string, int> { { "Bear", 1 }, { "Seal", 3 }, { "Whale", 2 }, { "Penguin", 2 }, { "Orca", 1 } };
+        var groupsOf = new System.Collections.Generic.Dictionary<string, int> { { "Bear", 1 }, { "Seal", 3 }, { "Whale", 2 }, { "Penguin", 2 }, { "Orca", 1 },
+            { "Walrus", 2 }, { "EmperorPenguin", 2 }, { "Reindeer", 2 }, { "MuskOx", 1 }, { "ArcticHare", 2 }, { "ArcticFox", 1 }, { "Wolf", 1 } };
         var used = new System.Collections.Generic.Dictionary<string, int>();
         void AddFamily(string species, Vector3 pos, float radius, NestKind kind, float height = 0f)
         {
@@ -2511,6 +2517,19 @@ public static partial class SampleSceneBuilder
         AddFamily("Penguin", new Vector3(60f, 0f, -22f), 6f, NestKind.Prey, 0f);      // colonia en el borde hielo/agua; presa de foca/orca
         AddFamily("Penguin", new Vector3(66f, 0f, -19f), 6f, NestKind.Prey, 0f);
         AddFamily("Orca", new Vector3(72f, -1f, 32f), 12f, NestKind.Predator, -1f);  // apex marino; caza focas/ballenas
+        // TERRITORIO POLAR (docs/territorio-polar.md, docs/reglas-animales.md). Morsas en la laguna (sus bivalvos, en los bajíos) y emperadores en
+        // su colonia; en la isla de tierra, los herbívoros repartidos y los lobos en su punta, junto a su cueva.
+        AddFamily("Walrus", new Vector3(52f, -1f, 34f), 8f, NestKind.Prey, -1f);
+        AddFamily("Walrus", new Vector3(70f, -1f, 12f), 8f, NestKind.Prey, -1f);
+        AddFamily("EmperorPenguin", EmperorColony + new Vector3(-3f, 0f, 2f), 5f, NestKind.Prey, 0f);
+        AddFamily("EmperorPenguin", EmperorColony + new Vector3(3f, 0f, -2f), 5f, NestKind.Prey, 0f);
+        AddFamily("Reindeer", new Vector3(-150f, 0f, -150f), 10f, NestKind.Prey, 0f);
+        AddFamily("Reindeer", new Vector3(-62f, 0f, -150f), 10f, NestKind.Prey, 0f);
+        AddFamily("MuskOx", new Vector3(-112f, 0f, -205f), 10f, NestKind.Prey, 0f);
+        AddFamily("ArcticHare", new Vector3(-205f, 0f, -112f), 8f, NestKind.Prey, 0f);
+        AddFamily("ArcticHare", new Vector3(-28f, 0f, -178f), 8f, NestKind.Prey, 0f);
+        AddFamily("ArcticFox", new Vector3(-118f, 0f, -132f), 6f, NestKind.Predator, 0f);
+        AddFamily("Wolf", new Vector3(-205f, 0f, -190f), 8f, NestKind.Predator, 0f);
 
         // NOTA (2026-09-01): los 5 insectos (Ant/Aphid/Ladybug/Spider/Cricket) NO van aquí — se crearon para el
         // Microcosmos Nivel 1 (mundo insecto), no para este bioma. Su generación irá en la escena del Microcosmos con
@@ -2557,7 +2576,7 @@ public static partial class SampleSceneBuilder
         int i = 0;
         foreach (NestSpec nest in nests)
         {
-            if (nest.kind != NestKind.Prey || nest.height < 0f) continue;
+            if (nest.kind != NestKind.Prey || nest.height < 0f || nest.species.Contains("Penguin") || nest.species == "ArcticHare") continue;   // (en el hielo no hay musgo; la liebre tiene sus sauces)
 
             GameObject patch = GameObject.CreatePrimitive(PrimitiveType.Cube);
             patch.name = $"GrassPatch_{i}";
@@ -3051,8 +3070,8 @@ public static partial class SampleSceneBuilder
                 if (Mathf.Sin(ang) > 0.85f) ang += 0.6f;
                 Vector3 p = c + new Vector3(Mathf.Cos(ang), 0f, Mathf.Sin(ang)) * (reach + (float)rndF.NextDouble() * 4f);
                 bool ice = true;   // con hielo alrededor (las raíces no cuelgan sobre el agua)
-                for (int q = 0; q < 8 && ice; q++) ice = PolarLandscapeBuilder.NaturalIce(p.x + Mathf.Cos(q * 0.785f) * 5f, p.z + Mathf.Sin(q * 0.785f) * 5f);
-                if (!ice || !PolarLandscapeBuilder.NaturalIce(p.x, p.z) || InsideArea(p)) continue;
+                for (int q = 0; q < 8 && ice; q++) ice = PolarLandscapeBuilder.IceAt(p.x + Mathf.Cos(q * 0.785f) * 5f, p.z + Mathf.Sin(q * 0.785f) * 5f);   // (en la isla de tierra no crecen árboles de hielo)
+                if (!ice || !PolarLandscapeBuilder.IceAt(p.x, p.z) || InsideArea(p)) continue;
                 // Ni junto al ÁRBOL DE LOS CAMPOS (2026-10-31): el Huerto está en su piso 5, y sus árboles de hielo crecían a 16 m
                 // del eje con la copa DENTRO del tronco transparente (un nido de abejas a 5 m del eje, a 38 m), tapando a los que
                 // nadan. Lejos: la esquina del tronco al girar (con su fachada de fotobiorreactores, 16,5 m) + 2 m + lo que abre la copa

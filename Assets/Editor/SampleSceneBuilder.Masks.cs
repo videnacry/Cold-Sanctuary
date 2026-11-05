@@ -90,7 +90,7 @@ public static partial class SampleSceneBuilder
         foreach (Transform b in floes.transform) pieces.Add(b);
         foreach (Transform b in pieces)
         {
-            if (b == null || b.name != "Casquete") continue;
+            if (b == null || (b.name != "Casquete" && !b.name.StartsWith("Tierra"))) continue;
             Vector3 p = b.position, s = b.localScale;
             Rect r = new Rect(p.x - s.x * 0.5f, p.z - s.z * 0.5f, s.x, s.z);
             if (!r.Overlaps(hole)) continue;
@@ -98,7 +98,7 @@ public static partial class SampleSceneBuilder
             {
                 if (x1 - x0 < 0.05f || z1 - z0 < 0.05f) return;
                 GameObject g = Object.Instantiate(b.gameObject, floes.transform);
-                g.name = "Casquete";
+                g.name = b.name;
                 g.transform.position = new Vector3((x0 + x1) * 0.5f, p.y, (z0 + z1) * 0.5f);
                 g.transform.localScale = new Vector3(x1 - x0, s.y, z1 - z0);
             }

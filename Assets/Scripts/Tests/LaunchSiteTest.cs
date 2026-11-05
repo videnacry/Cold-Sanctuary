@@ -38,7 +38,7 @@ public class LaunchSiteTest : MonoBehaviour, ITestUnit
         if (floes != null)
             foreach (Transform b in floes.transform)
             {
-                if (b.name != "Casquete") continue;
+                if (b.name != "Casquete" && !b.name.StartsWith("Tierra")) continue;
                 Vector3 p = b.position, s = b.localScale, c = lt.transform.position;
                 float dx = Mathf.Max(0f, Mathf.Abs(c.x - p.x) - s.x * 0.5f), dz = Mathf.Max(0f, Mathf.Abs(c.z - p.z) - s.z * 0.5f);
                 nearestIce = Mathf.Min(nearestIce, Mathf.Sqrt(dx * dx + dz * dz));
