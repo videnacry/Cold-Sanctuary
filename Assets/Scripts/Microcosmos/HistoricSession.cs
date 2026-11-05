@@ -195,18 +195,20 @@ public class HistoricCoach
     public float speed = 2.4f;
     public int classReps, corrections, attended;
     public readonly List<string> notes = new List<string>();
-    float _classUntil, _phaseAt, _atSince = -1f, _targetSince; bool _inClass = true; int _key = -1;
+    float _classSec, _classUntil, _arriveBy, _phaseAt, _atSince = -1f, _targetSince; bool _inClass, _arrived; int _key = -1;
+    /// <summary>¿Empezó la clase en el edificio? (No donde estuviera; como el gimnasio del santuario, ronda 7.)</summary>
+    public bool classAtSite => _arrived;
     HistoricSession _target; readonly Dictionary<HistoricSession, float> _visited = new Dictionary<HistoricSession, float>();
     readonly List<HistoricSession> _att = new List<HistoricSession>();
     readonly CubeInsect _ci; readonly Anima _a;
 
     public HistoricCoach(GameObject g, HistoricClass cls, float classSec)
     {
-        this.g = g; _cls = cls; _classUntil = Time.time + classSec; _phaseAt = Time.time; _ci = g.GetComponent<CubeInsect>(); _a = g.GetComponent<Anima>();
+        this.g = g; _cls = cls; _classSec = classSec; _inClass = classSec > 0f; _arriveBy = Time.time + 45f; _phaseAt = Time.time; _ci = g.GetComponent<CubeInsect>(); _a = g.GetComponent<Anima>();
         Note($"abre la clase de calentamiento de {cls.tradition.place}");
     }
 
-    public bool ClassRunning => _inClass && Time.time < _classUntil;
+    public bool ClassRunning => _inClass && (!_arrived || Time.time < _classUntil);
     void Note(string s) { string l = $"[Entreno micro] {g.name} ({_cls.tradition.trainer}) {s}"; notes.Add(l); Debug.Log(l); HistoricSession.Recent.Add(l); }
 
     DrillMotion ClassMotion => HistoricTraining.D(_cls.tradition.warmup.FirstOrDefault() ?? "carrera_suave")?.motion ?? DrillMotion.Correr;
@@ -215,9 +217,10 @@ public class HistoricCoach
     public void Attend(HistoricSession s)
     {
         int i = _att.IndexOf(s); if (i < 0) { _att.Add(s); i = _att.Count - 1; attended++; }
-        Vector3 to = g.transform.position + g.transform.forward * (2f + 2f * (i / 4)) + g.transform.right * (((i % 4) - 1.5f) * 2f);   // filas de 4, a 2 m
-        if (!MicroMove.Step(s.g.transform, to, s.speed, 0.4f)) return;
-        Vector3 look = g.transform.position - s.g.transform.position; look.y = 0f;
+        Vector3 home = _cls.Home, f = _cls.site.transform.forward, r = _cls.site.transform.right;
+        Vector3 to = home + f * (2f + 2f * (i / 4)) + r * (((i % 4) - 1.5f) * 2f);   // filas de 4, a 2 m, delante de su sitio (no de donde esté él ahora)
+        if (!MicroMove.Step(s.g.transform, to, s.speed, 0.4f) || !_arrived) return;
+        Vector3 look = home - s.g.transform.position; look.y = 0f;
         if (look.sqrMagnitude > 0.01f) s.g.transform.rotation = Quaternion.LookRotation(look);
         bool b = Beat(out float k); s.Animate(ClassMotion, b, k);
     }
@@ -226,6 +229,14 @@ public class HistoricCoach
     {
         if (_inClass)
         {
+            // Primero va a su sitio del edificio (acotado: 45 s); la clase cuenta desde que llega.
+            if (!_arrived)
+            {
+                if (!MicroMove.Step(g.transform, _cls.Home, speed, 0.6f) && Time.time < _arriveBy) return;
+                _arrived = true; _phaseAt = Time.time; _classUntil = Time.time + _classSec;
+                g.transform.rotation = Quaternion.LookRotation(_cls.site.transform.forward);
+                return;
+            }
             if (Time.time >= _classUntil) { _inClass = false; Note($"termina la clase: {_att.Count} alumnos, {classReps} repeticiones"); return; }
             bool b = Beat(out float k); int key = b ? 1 : 0;
             if (key != _key) { if (_key == 1 && key == 0) classReps++; _key = key; }
@@ -238,7 +249,7 @@ public class HistoricCoach
                                      && (!_visited.TryGetValue(s, out float at) || Time.time - at > 20f))
                                .OrderBy(s => (s.g.transform.position - g.transform.position).sqrMagnitude).FirstOrDefault();
             _atSince = -1f; _targetSince = Time.time;
-            if (_target == null) return;
+            if (_target == null) { MicroMove.Step(g.transform, _cls.Home, speed, 1f); return; }   // sin nadie a quien corregir: a su sitio del edificio
             _visited[_target] = Time.time;
         }
         Vector3 to = _target.g.transform.position + _target.g.transform.right * 1.2f;
@@ -302,6 +313,8 @@ public class HistoricClass
     }
 
     public Vector3 SpotPos(int i) => _spots[Mathf.Clamp(i, 0, _spots.Count - 1)];
+    /// <summary>Donde se pone el maestro: el primer sitio de suelo (si no hay, el primero).</summary>
+    public Vector3 Home { get { for (int i = 0; i < _spots.Count; i++) if (HistoricTraining.FloorKeys.Contains(_keys[i])) return _spots[i]; return _spots[0]; } }
     public HistoricSession OccupantOf(int i) => i >= 0 && i < _occ.Count ? _occ[i] : null;
 
     /// <summary>Los sitios que valen para <paramref name="d"/>: los de sus claves (<see cref="HistoricTraining.KeysOf"/>); si el edificio

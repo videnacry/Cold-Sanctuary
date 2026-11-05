@@ -42,7 +42,7 @@ public class GymTrainingSession
     public Phase phase { get; private set; }
     public WorkdayDirector.GymUse use;
     public float walkSpeed = 2.6f;
-    public float half;                       // s por mitad de repetición (A → B)
+    public float half = 1f;                  // s por mitad de repetición (A → B)
     public string stopReason;
     float _phaseAt, _until, _waitSince, _walkSince;
     readonly HashSet<Prescription> _deferred = new HashSet<Prescription>();
@@ -67,13 +67,8 @@ public class GymTrainingSession
         this.g = g; a = g != null ? g.GetComponent<Anima>() : null; routine = r;
         queue = r.items.Select(x => x).ToList();
         foreach (Prescription x in queue) if (x.timed) x.origin = x.station;   // (la máquina del plan; en los de por tiempo no viene puesta)
-        float ms = MinuteSecs, rest = 0f, timed = 0f; int halves = 0, main = 0;
-        foreach (Prescription x in queue)
-        {
-            if (x.timed) { timed += TimedSeconds(x); continue; }
-            main++; halves += (x.sets + x.rampSets) * x.reps * 2; rest += (x.sets + x.rampSets - 1) * RestSeconds(x);
-        }
-        half = halves > 0 ? Mathf.Clamp((budget - rest - timed - main * 8f) / halves, MinHalf, 1.5f) : 1f;
+        _endAt = Time.time + budget;
+        Pace();
         phase = Phase.Warmup; _phaseAt = Time.time;
         Note($"empieza «{r.name}» (semana {r.week + 1}{(r.deload ? ", descarga" : "")}): {string.Join(" → ", r.Main.Select(x => $"{x.Name} {x.sets}×{x.reps}"))}");
     }
@@ -229,11 +224,26 @@ public class GymTrainingSession
         _until = Time.time + TimedSeconds(x); phase = Phase.InPlace;
     }
 
+    /// <summary>El ritmo de las repeticiones para que lo que FALTA quepa en lo que queda (la clase puede acabar tarde: se recalcula en cada ejercicio).</summary>
+    void Pace()
+    {
+        float rest = 0f, timed = 0f; int halves = 0, main = 0;
+        for (int i = idx; i < queue.Count; i++)
+        {
+            Prescription x = queue[i];
+            if (x.timed) { timed += TimedSeconds(x); continue; }
+            main++; halves += (x.sets + x.rampSets) * x.reps * 2; rest += (x.sets + x.rampSets - 1) * RestSeconds(x);
+        }
+        if (halves > 0) half = Mathf.Clamp((_endAt - Time.time - rest - timed - main * 8f) / halves, MinHalf, 1.5f);
+    }
+    float _endAt;
+
     void Next()
     {
         Release();
         idx++; set = 0; rep = 0;
         if (idx >= queue.Count) { Finish(); return; }
+        Pace();
         phase = Phase.Walk; _walkSince = Time.time;
     }
 
