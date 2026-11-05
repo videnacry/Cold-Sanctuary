@@ -136,7 +136,7 @@ public static class CubeTree
     // paralelas (panales) separadas por un "paso de abeja"; cada lámina tiene celdillas hexagonales a ambos lados (aquí,
     // en filas alternas desplazadas medio hueco), unas OPERCULADAS (tapadas de cera clara, con miel) y otras abiertas
     // (oscuras, con cría o néctar). Arriba, la cera que las pega a la rama; abajo, la piquera por donde entran.
-    static Material _wax, _honey, _cellDark, _capped, _propolis;
+    static Material _wax, _honey, _cellDark, _capped, _propolis, _hiveShell, _hiveBand;
     public static Hive Honeycomb(Transform parent, Vector3 localTop, Material nestMat, int seed)
     {
         var rnd = new System.Random(seed);
@@ -173,8 +173,11 @@ public static class CubeTree
         // CAVIDAD que protege el panal (como el hueco de un árbol donde anidan las abejas melíferas): paredes de corteza
         // alrededor de las láminas, techo pegado a la rama y suelo con UNA sola abertura (la piquera) por donde entran y
         // salen. Las abejas sellan las rendijas con propóleo; dentro mantienen la cría a ~35 °C aunque fuera hiele.
-        Material barkM = Mat(ref _bark, new Color(0.55f, 0.72f, 0.80f));
+        // (2026-11-05, ronda 8: «las colmenas no se distinguen» de los cubos de escarcha de la punta de las ramas: la cavidad era del azul
+        // del tronco) La colmena se ve MIEL por fuera, con aros de propóleo y cúpula de cera: lo único cálido y escalonado de la copa.
+        Material barkM = Mat(ref _hiveShell, new Color(0.86f, 0.56f, 0.14f));
         Material prop = Mat(ref _propolis, new Color(0.4f, 0.26f, 0.12f));
+        Material band = Mat(ref _hiveBand, new Color(0.42f, 0.25f, 0.09f));
         float cw = 0.95f, cd = 1.05f, ch = 0.95f, wall = 0.08f;
         Block(root.transform, "Cavidad", new Vector3(0f, 0.12f, 0f), new Vector3(cw + wall * 2f, 0.1f, cd + wall * 2f), Quaternion.identity, barkM, false);   // techo
         for (int s = -1; s <= 1; s += 2)
@@ -187,6 +190,13 @@ public static class CubeTree
         Block(root.transform, "Cavidad", new Vector3(0f, floorY, hole * 0.5f + (cd * 0.5f - hole * 0.5f) * 0.5f + 0.02f), new Vector3(cw, wall, cd * 0.5f - hole * 0.5f + 0.04f), Quaternion.identity, barkM, false);    // suelo (delante)
         for (int s = -1; s <= 1; s += 2) Block(root.transform, "Cavidad", new Vector3(s * (hole * 0.5f + (cw * 0.5f - hole * 0.5f) * 0.5f + 0.01f), floorY, 0f), new Vector3(cw * 0.5f - hole * 0.5f, wall, hole), Quaternion.identity, barkM, false);
         Block(root.transform, "Propoleo", new Vector3(0f, floorY - wall * 0.5f - 0.005f, 0f), new Vector3(hole + 0.06f, 0.01f, hole + 0.06f), Quaternion.identity, prop, false);   // borde de propóleo de la piquera
+        for (int a = 0; a < 3; a++)   // aros oscuros alrededor de la cavidad
+            Block(root.transform, "Aro_colmena", new Vector3(0f, -0.14f - a * 0.26f, 0f), new Vector3(cw + wall * 2f + 0.06f, 0.07f, cd + wall * 2f + 0.06f), Quaternion.identity, band, false);
+        for (int a = 0; a < 3; a++)   // la cúpula, en escalones que se estrechan
+        {
+            float k = 1f - (a + 1) * 0.24f;
+            Block(root.transform, "Cupula_colmena", new Vector3(0f, 0.22f + a * 0.12f, 0f), new Vector3((cw + wall * 2f) * k, 0.12f, (cd + wall * 2f) * k), Quaternion.identity, a == 2 ? wax : barkM, false);
+        }
         return root.AddComponent<Hive>();   // la colmena: estados de las celdillas (cría, néctar, miel, polen) que trabajan las abejas
     }
     // ¿Algún punto de la rama (cadena de segmentos y su plataforma de la punta, con margen) cae en zona bloqueada?

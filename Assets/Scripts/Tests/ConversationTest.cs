@@ -59,7 +59,7 @@ public class ConversationTest : MonoBehaviour, ITestUnit
         foreach (Anima a in cast) { a.stress = 0.4f; a.sleepiness = 0f; }
         dir.EndAll("prueba"); dir.ResetCooldowns();
         int recFrom = ConversationDirector.Records.Count;
-        int drawn0 = ConversationDirector.BubblesDrawn;
+        int drawn0 = ConversationDirector.BubblesDrawn, ready0 = ConversationDirector.BubblesReady;
 
         _watch = true;
         StartCoroutine(Watch(cast, dir));
@@ -103,7 +103,9 @@ public class ConversationTest : MonoBehaviour, ITestUnit
         TestProbe.Check("hablan por turnos (A, B, A, B…)", turns, string.Join(" · ", bad));
         TestProbe.Check("cada charla dice todo su guion (4–6 frases)", lines, string.Join(" · ", bad));
         TestProbe.Check("cada frase tiene texto y se muestra con su tema", shown && done.TrueForAll(c => !string.IsNullOrEmpty(c.topicTitle)));
-        TestProbe.Check("los bocadillos se pintan en pantalla (OnGUI)", ConversationDirector.BubblesDrawn > drawn0, $"{ConversationDirector.BubblesDrawn - drawn0} bocadillos");
+        // (2026-11-05, ronda 8) OnGUI solo corre si la vista Game repinta, y eso no lo decide el juego: la prueba mira que cada frase tenga
+        // su bocadillo colocado ante la cámara; lo pintado, si la vista estaba a la vista, va en el detalle y en la foto.
+        TestProbe.Check("cada charla lleva bocadillos ante la cámara", ConversationDirector.BubblesReady > ready0, $"{ConversationDirector.BubblesReady - ready0} listos, {ConversationDirector.BubblesDrawn - drawn0} pintados por OnGUI");
         TestProbe.Check("el vínculo sube en los dos sentidos", bond, string.Join(" · ", bad));
         TestProbe.Check("la emoción cambia (estrés de los dos)", mood, string.Join(" · ", bad));
         var topics = new HashSet<string>(); foreach (Conversation c in done) topics.Add(c.topic);

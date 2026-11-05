@@ -28,7 +28,7 @@ Las posiciones van en **metros desde el origen de la «Historia»**, x al este y
 ## Cómo lo usa el constructor
 
 `AreaMicrocosmos.Nature`: con un mapa `Hecho`, NO siembra al azar (ni las plazas de flora, ni las rejillas, ni el pueblo); pone cada
-planta y cada bicho del mapa en su sitio y los apunta. `AreaMicrocosmos.Build` los **deja caer desde el aire** (`MicroGround.Drop`:
+planta y cada bicho del mapa en su sitio y los apunta. (2026-11-05) En un **pueblo** no caen: cada planta va al suelo libre más cercano a su sitio del mapa, hasta ~70 m, fuera de calles y solares; si el mapa la pone sobre una meseta, se queda allí con «(sobre mueble)»; porte máximo, 20 m. Fuera de los pueblos, `AreaMicrocosmos.Build` los **deja caer desde el aire** (`MicroGround.Drop`:
 desde justo bajo la tapa de los muros, sobre la superficie más alta de debajo: suelo, alfombra, losa, la meseta de un mueble, la tierra
 si está encendida), y luego `MicroGround.Settle` apoya y revisa todo lo demás (ninguna planta bajo una superficie ni dentro de un
 collider). Las mesetas de los muebles gigantes siguen poblándose por la regla 4 (`floraOnTops`/`faunaOnTops`), también con mapa.

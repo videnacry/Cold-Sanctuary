@@ -34,6 +34,13 @@ public class CapacidadPisosTest : MonoBehaviour, ITestUnit
         TestProbe.Check("dos puestos de la misma tarea: cumple", L("soldar").ok && L("soldar").have == 2);
         TestProbe.Check("un solo puesto: no cumple (varias personas a la vez)", !L("pintar").ok);
         TestProbe.Check("estudio para 12 con 18 miembros: no cumple (caben todos)", !L("estudio").ok && L("estudio").need == 18);
+        // (2026-11-05) Un centro de dos pisos con uno aún en obras: da servicio el terminado y, para la regla, cuenta también el otro.
+        var obra = new GameObject("Piso_en_obras"); obra.transform.SetParent(root.transform, false);
+        obra.AddComponent<ConstructionProject>().persist = false;
+        void Dojo(Transform parent) { var g = new GameObject("Puesto"); g.transform.SetParent(parent, false); AreaSeat.Add(g, "dojo", AreaSeat.Category.Entrenamiento, 10); }
+        Dojo(root.transform); Dojo(obra.transform);
+        lines = AreaCapacity.Check(new[] { root.transform }, 18, out _);
+        TestProbe.Check("un centro de dos pisos con uno en obras: cumple, y solo da servicio el terminado", L("dojo").ok && L("dojo").have == 10 && L("dojo").planned == 10, L("dojo").ToString());
         Destroy(root);
         TestProbe.End();
         yield return null;
@@ -45,7 +52,7 @@ public class CapacidadPisosTest : MonoBehaviour, ITestUnit
         int members = AreaCapacity.Members();
         var all = AreaCapacity.Check(areas, members, out var pending);
         foreach (AreaCapacity.Line l in all)
-            TestProbe.Check($"{l.area} · {l.activity} ({l.category}): {l.have} puestos para {l.need}", l.ok);
+            TestProbe.Check($"{l.area} · {l.activity} ({l.category}): {l.have} puestos{(l.planned > 0 ? $" y {l.planned} en obras" : "")} para {l.need}", l.ok);
         TestProbe.Check("el Aula: clase y estudio para todos", all.Exists(l => l.area == "Aula" && l.activity == "clase" && l.ok) && all.Exists(l => l.area == "Aula" && l.activity == "estudio" && l.ok));
         TestProbe.Check("Informática: sistemas, refrigeración y energía, varias personas a la vez",
             all.Exists(l => l.area == "Informática" && l.activity == "sysadmin" && l.ok) && all.Exists(l => l.area == "Informática" && l.activity == "refrigeración" && l.ok) && all.Exists(l => l.area == "Informática" && l.activity == "energía" && l.ok));

@@ -93,6 +93,13 @@ public class MarineLife : MonoBehaviour
     // Profundidad a la que nada por debajo de la placa (el lomo, 15 cm bajo su cara inferior).
     float UnderIceY => IceBottom - _halfH - 0.15f;
 
+    // ¿Hay hielo sobre el cuerpo, no solo sobre su pivote? Una orca mide 6–8 m: con el pivote en agua abierta, el cuerpo entra en la placa.
+    bool IceOverBody(Vector3 p)
+    {
+        float r = _halfLen * 0.6f;
+        return IceAbove(p) || (r > 0.5f && (IceAbove(p + Vector3.right * r) || IceAbove(p + Vector3.left * r) || IceAbove(p + Vector3.forward * r) || IceAbove(p + Vector3.back * r)));
+    }
+
     void LateUpdate()   // después de la IA genérica (que intentaba moverlos por el NavMesh)
     {
         if (_a == null || _a.death) return;
@@ -306,7 +313,7 @@ public class MarineLife : MonoBehaviour
                     if (!free) { np.x = cur.x; np.z = cur.z; }
                     dist = 0f; _nextPick = 0f;   // lo que busca queda tras el hielo: ha llegado al borde, y elige otro sitio
                 }
-                else if (IceAbove(np) || IceAbove(ahead))
+                else if (IceOverBody(np) || IceAbove(ahead))
                 {
                     float under = UnderIceY;
                     // EN PLANTA bajo el hielo: aquí la altura la manda la placa (UnderIceY), así que el paso horizontal no puede
@@ -356,6 +363,13 @@ public class MarineLife : MonoBehaviour
             if (sp != "Orca" && !_spot.Occupy(_a)) { _spot = null; return false; }
             _spotUntil = Time.time + (sp == "Seal" ? Random.Range(10f, 18f) : Random.Range(15f, 30f));
             Debug.Log($"[Marinos] «{name}» {(sp == "Seal" ? "sale a respirar por su respiradero" : sp == "Whale" ? "se frota contra la grava para mudar la piel" : "patrulla junto a los témpanos de las focas")}.");
+        }
+        // (2026-11-05, ronda 8: «Orca dentro de Casquete (47, −2, 4)», en su hábitat) Patrullando junto a los témpanos ya no la lleva Move: se
+        // queda a SwimY con el cuerpo bajo el borde de la placa. Si tiene hielo encima, baja por debajo de su cara inferior.
+        if (sp == "Orca" && IceOverBody(transform.position))
+        {
+            Vector3 here = transform.position; here.y = Mathf.MoveTowards(here.y, UnderIceY, 2.5f * Time.deltaTime);
+            transform.position = here;
         }
         if (sp == "Seal")
         {

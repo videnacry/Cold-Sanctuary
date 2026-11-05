@@ -163,9 +163,18 @@ public static partial class SampleSceneBuilder
         float S = h.floorSize, half = S * 0.5f, fx = h.FloorCenterS.x;
         Transform s = new GameObject("Estructura_Elevada").transform; s.SetParent(f, false);
         Solid(s, new Vector3(0f, -0.15f, margin), new Vector3(S + 2f * margin, 0.3f, S + 2f * margin), TreeSlab, "Losa_arbol");
-        foreach (float xs in new[] { -9f, -3f, 3f, 9f })
+        // (2026-11-05) Las tornapuntas que pide el voladizo (StructuralLimits.FloorStruts): 4 en los pisos de 36 m y más en los anchos
+        // (Sitio Nuclear, 46 m). Pie a lo ancho de la cara del tronco; cabeza, abriéndose hacia el lado libre del piso.
+        int struts = StructuralLimits.FloorStruts(S, TreeSpec.StrutDrop);
+        var pairs = new List<(float x0, float x1)> { (-9f, -8f), (-3f, 2f), (3f, 10f), (9f, 18f) };
+        if (struts != 4)
+        {
+            pairs.Clear();
+            for (int i = 0; i < struts; i++) { float u = i / (struts - 1f); pairs.Add((Mathf.Lerp(-9f, 9f, u), Mathf.Lerp(-8f, 18f, u))); }
+        }
+        foreach (var (xs, _) in pairs)
             KitchenProps.C(s, new Vector3(xs - fx, -0.6f, -half + 5f), new Vector3(0.35f, 0.6f, 10f), TreeSteel, 0f, "Mensula");
-        foreach (var (x0, x1) in new[] { (-9f, -8f), (-3f, 2f), (3f, 10f), (9f, 18f) })
+        foreach (var (x0, x1) in pairs)
         {
             Vector3 a = new Vector3(x0 - fx, -TreeSpec.StrutDrop, -half + 0.3f), b = new Vector3(x1 - fx, -0.35f, -half + 0.625f * S);
             KitchenProps.C(s, (a + b) * 0.5f, new Vector3(0.45f, 0.45f, (b - a).magnitude), TreeSteel, Quaternion.LookRotation(b - a), "Tornapunta");

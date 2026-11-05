@@ -120,7 +120,7 @@ urgente; humanos sentados), el explorador y el orquestador (solo el grupo 88). F
 1. Reparto: 3 humanos y 3 insectos-humanos, todos personas; insectos de especies distintas.
 2. Surge una charla **humano-humano**, **insecto-insecto** y **humano-insecto** en menos de **30 min de juego** cada una.
 3. Al menos tres terminan su guion; **por turnos** (A, B, A, B…); dicen todo su guion (4–6 frases); cada frase con texto y tema; los
-   **bocadillos se pintan** (OnGUI; necesita la vista Game abierta).
+   **bocadillos se colocan ante la cámara** (`BubblesReady`; lo pintado por OnGUI va en el detalle, porque solo sube si la vista Game repinta).
 4. El **vínculo sube** en los dos sentidos y el **estrés cambia** (emoción).
 5. Con una charla en marcha, al insecto-humano se le pone **hambre urgente** (0,95; si no hay insecto, sueño al humano): la charla se
    **corta** (motivo «necesidad: hambre») y no vuelve a charlar.

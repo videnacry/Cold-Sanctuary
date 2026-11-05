@@ -127,7 +127,7 @@ inscrito del tronco (11,8 m) no se anda. Los muebles se miden en el marco del pi
 4 pisos, 4 puntas con sus ramas y columnas, el techo y la pared: **174 MN** sobre 24 nervios (921 MN) → **19 %**. El agua
 (361 MN) apoya en el fondo y va al cimiento. El agua tira de cada cara p·a en el fondo (9,0 MN/m) contra el acrílico y los
 zunchos (15,3) → **59 %**. El acrílico, como placa entre nervios (3,7 m) y zunchos: 7,3 MPa de 10 → **73 %** (lo que manda:
-por eso 24 nervios). **Voladizo** de un piso (su peso a 16 m de la cara): 185 MN·m contra 4 tornapuntas CFST Ø 0,7 m →
+por eso 24 nervios). **Tornapuntas** (2026-11-05): 4, y de 2 en 2 mientras el voladizo pase del 80 % (`StructuralLimits.FloorStruts`; el Sitio Nuclear, pisos de 46 m, lleva 8; `HelixSlab` pone las mismas). **Voladizo** de un piso (su peso a 16 m de la cara): 185 MN·m contra 4 tornapuntas CFST Ø 0,7 m →
 **41 %**. **Rama** (punta, columna y tubo a ~30 m): (con los tubos de 5 × 5 m) contra su celosía de ~6,4 m de canto con cordones CFST Ø 1 m (ver el registro de la construcción). Avisa por encima
 del 80 % (con 30 niveles de hélice, avisa) y da error por encima del 100 %.
 

@@ -27,7 +27,8 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         TestProbe.Check("saltar un escalón no hace daño", fi.Land(1f, 0f) == 0f);
         Destroy(probe);
         // (Los edificios-árbol no llevan colchón: no tienen nada a poca altura sobre el suelo, que queda para la naturaleza.)
-        TestProbe.Greater("hay colchones de musgo bajo lo construido (lo que no es un edificio-árbol: la central, la residencia, la casa de la guardia…)", FindObjectsByType<SoftGround>(FindObjectsSortMode.None).Length, 2f);
+        // (2026-11-05: la central ya es un árbol en el mar; quedan la arboleda residencial y la casa de la guardia.)
+        TestProbe.Greater("hay colchones de musgo bajo lo construido (lo que no es un edificio-árbol: la residencia, la casa de la guardia…)", FindObjectsByType<SoftGround>(FindObjectsSortMode.None).Length, 1f);
 
         // Áreas elevadas.
         GameObject kitchen = GameObject.Find("Kitchen_Area");
@@ -296,6 +297,7 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
             ConstructionProject site = ConstructionProject.All.FirstOrDefault(p => !p.Finished);
             if (site != null)
             {
+                Restock(MaterialStore.Instance);
                 int before = site.daysDone;
                 WorkdayDirector.Apply(new WorkRoster.Mission("Construcción", "obra_material_" + site.title, "", 1f), "test");
                 for (int k = 0; k < site.crewNeeded - 1; k++) WorkdayDirector.Apply(new WorkRoster.Mission("Construcción", $"obra_trabajo_{site.title}#{k + 2}", "", 2f), $"test{k}");
@@ -364,6 +366,7 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         TestProbe.Check("hay almacén de material de construcción", ms != null);
         if (ms != null)
         {
+            Restock(ms);
             int g0 = ms.Have(MaterialStore.Guadua), grove0 = ms.groveMature;
             bool kit = ms.TakeDayKit("test", "prueba");
             TestProbe.Check("un día de obra gasta guadua, bahareque, micelio y cuerda", kit && ms.Have(MaterialStore.Guadua) == g0 - 4, ms.Summary());
@@ -531,6 +534,14 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
             TestProbe.Check("el hechizo «progreso» abre el checklist de historias y misiones", open && said.StartsWith("Progreso:") && !ProgressPanel.Open, said);
         }
         TestProbe.End();
+    }
+
+    /// <summary>Repone lo que falte para un día de obra. Aquí se prueba el equipo y el gasto, no las existencias: el almacén empieza
+    /// con 3 días de obra (12 guaduas) y las obras de la jornada ya pudieron gastarlos.</summary>
+    static void Restock(MaterialStore ms)
+    {
+        if (ms == null) return;
+        foreach (var k in MaterialStore.DayKit) if (ms.Have(k.item) < k.n) ms.Add(k.item, k.n - ms.Have(k.item));
     }
 
     static bool FindByPrefix(string prefix)
