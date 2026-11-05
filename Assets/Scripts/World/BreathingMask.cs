@@ -70,7 +70,7 @@ public class BreathingMask : MonoBehaviour
     {
         get
         {
-            if (Worn) return false;
+            if (Worn || FlyingCarpet.Riding(gameObject)) return false;   // (en el tubo de la línea va seco, aunque pase bajo el mar)
             SwimBody s = Swim;
             Vector3 head = s != null ? s.HeadPosition : transform.position + Vector3.up * 0.7f;
             if (!WaterZone.Underwater(head)) return false;

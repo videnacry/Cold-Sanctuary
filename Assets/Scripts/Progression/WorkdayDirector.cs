@@ -327,6 +327,7 @@ public class WorkdayDirector : MonoBehaviour
         WorkRoster.Worker me = roster.Find("Player"); if (me == null) return;
         if (_player == null) _player = GameObject.FindGameObjectWithTag("Player");
         GameObject p = _player; if (p == null) return;
+        if (NuclearSite.Evacuating) { _transitSince = -1f; return; }   // se está evacuando: nadie lo devuelve a un puesto del sitio
         if (MagnateWarden.Blocked(p)) { _transitSince = -1f; return; }   // fuera de su alcance: en alfombra, en el microcosmos…
         if (!MagnateWarden.GuardPosts) { _transitSince = -1f; return; }   // casilla de Inicio quitada: explora libre
         if (!InfirmaryGate.Cleared(p)) return;   // recién llegado: hasta terminar la iniciación su sitio es el hospital (InfirmaryGate)
@@ -377,6 +378,7 @@ public class WorkdayDirector : MonoBehaviour
     // Todas las áreas con ese nombre (y, para el Huerto, sus parcelas y el bambusal, que están en el suelo).
     static bool InAreaNamed(string name, Vector3 pos)
     {
+        if (name == SiteLine.AreaName) return SiteLine.Instance != null && (pos - SiteLine.Instance.transform.position).sqrMagnitude < 225f;   // la estación no es un área: a 15 m del andén
         foreach (SanctuaryArea a in SceneCache.All<SanctuaryArea>(2f))
             if (a != null && a.displayName == name && a.InBuilding(pos)) return true;
         if (name == "Huerto")
@@ -497,8 +499,32 @@ public class WorkdayDirector : MonoBehaviour
     // TODOS SIGUEN SU MISIÓN: las conductas propias (Linduarda en la enfermería, el guardia que lleva raciones) solo
     // funcionan cuando la misión de ese momento es la suya; si no, se apagan y el personaje va al área que le toca.
     // El que tenga la misión «Patrulla y raciones a los carnívoros» recibe la conducta de guardia, sea quien sea.
+    public const string EvacuationDoing = "Evacuación del sitio nuclear: control de contaminación";
+
+    /// <summary>EVACÚA la zona de exclusión del sitio nuclear: el personal va al hospital en alfombra y a Kushal lo saca la Magnate. Devuelve
+    /// cuántos siguen dentro. La jornada solo mueve a la gente en horario de trabajo: por eso <see cref="NuclearSite"/> lo repite mientras dura.</summary>
+    public int EvacuateSite()
+    {
+        int left = 0;
+        foreach (WorkRoster.Worker w in roster.workers)
+        {
+            GameObject g = Body(w.name);
+            if (g == null || !NuclearSiteRule.InZone(g.transform.position)) continue;
+            left++;
+            if (g.CompareTag("Player")) { MagnateWarden.Bring(g, AreaPoint(AreaWork.Hospital, "Player"), "Emergencia en el sitio nuclear: te saco de aquí. Vamos al hospital, al control de contaminación."); continue; }
+            if (!OnOwnDuty(g)) Drive(g, AreaWork.Hospital, EvacuationDoing, null, true);
+        }
+        foreach (var kv in _clones)
+            if (kv.Value != null && NuclearSiteRule.InZone(kv.Value.transform.position)) { left++; if (!OnOwnDuty(kv.Value)) Drive(kv.Value, AreaWork.Hospital, EvacuationDoing, null, true); }
+        return left;
+    }
+
     void Drive(GameObject g, string area, string doing, string missionId, bool alwaysMove = false)
     {
+        // EVACUACIÓN DEL SITIO NUCLEAR (docs/sitio-nuclear.md): nadie va a sus pisos, y quien estaba allí, al hospital.
+        if (NuclearSite.Evacuating && (NuclearSite.IsSiteArea(area) || area == null && NuclearSiteRule.InZone(g.transform.position)))
+        { area = AreaWork.Hospital; doing = EvacuationDoing; missionId = null; alwaysMove = true; }
+        if ((missionId == SiteLine.MissionId || missionId == Refuge.MissionId) && SiteLine.Board(g, missionId)) return;   // la bajada: ya en la estación, sube al carro (docs/sitio-nuclear.md §8)
         NewcomerInitiator ini = g.GetComponent<NewcomerInitiator>();
         if (ini != null && ini.InProgress) return;   // está iniciando a un recién llegado: lo lleva ella (si no, la jornada la mandaba en alfombra a otro piso)
         Dress(g, area, doing, missionId);   // (2026-11-04) el uniforme de su tarea al llegar; su ropa al acabar
@@ -533,6 +559,8 @@ public class WorkdayDirector : MonoBehaviour
         {
             // EL HORARIO LIBRE (docs/horario-libre.md): en sus horas libres lo lleva a su actividad de ocio o cuidado de la semana.
             if (LeisureDirector.Drives(g)) { if (idle != null) idle.enabled = false; if (lin != null && !NewcomerWaiting()) lin.enabled = false; return; }
+            // El sitio nuclear no es para el tiempo libre: quien acaba allí su turno, se va.
+            if (NuclearSiteRule.InZone(g.transform.position)) { Drive(g, GymArea, "Sale del sitio nuclear al acabar su turno", null, true); return; }
             if (g.name == YogaTeacher) { if (idle != null) idle.enabled = false; TeacherMeditates(g); SetStatus(g, "Meditando en la sala de yoga"); return; }   // su tiempo libre: meditar
             // HUECO DENTRO DEL TURNO (p. ej. la obra acaba a las 10 y lo siguiente es a las 12): no es tiempo libre. Antes esta
             // rama le encendía el merodeo ANTES de llegar a OwnNeeds (que es donde se quita el merodeo en turno), y JefeConstruccion
@@ -959,6 +987,9 @@ public class WorkdayDirector : MonoBehaviour
     /// <summary>Un punto del área (repartidos por persona para que no se amontonen).</summary>
     static readonly Dictionary<string, Transform> _areas = new Dictionary<string, Transform>();
     /// <summary>El área por su nombre visible (cacheada).</summary>
+    /// <summary>Un sitio de trabajo que no es un área de la escena (la estación de la línea de las cavernas): la jornada lo trata como a un área.</summary>
+    public static void RegisterPlace(string name, Transform t) { _areas[name] = t; }
+
     public static Transform AreaTransform(string area)
     {
         if (area == null) return null;

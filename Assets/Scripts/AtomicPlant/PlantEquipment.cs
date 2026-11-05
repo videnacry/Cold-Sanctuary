@@ -2,7 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// LOS EQUIPOS DE LA PLANTA que no son la consola, cada uno con su trabajo real (F):
-/// - <b>Puente de la piscina</b>: miras al núcleo, 7 m bajo el agua. El brillo azul es la radiación de CHERENKOV:
+/// - <b>Puente de la piscina</b>: miras al núcleo, 19 m bajo el agua. El brillo azul es la radiación de CHERENKOV:
 ///   electrones más rápidos que la luz EN EL AGUA (c/1,33). Brilla según la potencia. El agua es refrigerante,
 ///   moderador y blindaje a la vez.
 /// - <b>Purificación</b>: cambiar las resinas de intercambio iónico cuando la conductividad pasa de 2 µS/cm (el agua
@@ -56,7 +56,7 @@ public class PlantEquipment : MonoBehaviour, IInteractable
         {
             case Kind.PoolBridge:
                 if (NeedsDosimeter() || R == null) return;
-                if (R.power < 100f) PlantNotice.Say($"El núcleo, a 7 m bajo el agua, apenas se ve ({ResearchReactor.FormatPower(R.power)}). El agua lo enfría, frena los neutrones (moderador) y te protege (blindaje).");
+                if (R.power < 100f) PlantNotice.Say($"El núcleo, a 19 m bajo el agua y bajo el nivel del mar, apenas se ve ({ResearchReactor.FormatPower(R.power)}). El agua lo enfría, frena los neutrones (moderador) y te protege (blindaje).");
                 else PlantNotice.Say($"Brillo AZUL a {ResearchReactor.FormatPower(R.power)}: radiación de Cherenkov. Los electrones van más rápido que la luz EN EL AGUA (que allí va a c/1,33) y emiten luz, como un avión supersónico emite su estampido.");
                 if (Random.value < 0.15f) { PersonalDosimeter d = Player != null ? Player.GetComponent<PersonalDosimeter>() : null; if (d != null) d.contaminated = true; }
                 return;

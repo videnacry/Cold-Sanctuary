@@ -113,6 +113,14 @@ public static class PlayerTasks
         T("bio_pcr", "Extrae el ADN|mesa_laboratorio|Pipeta", "Prepara la PCR en el termociclador|termociclador|Tubos", "Carga el secuenciador|secuenciador|Tubos");
         T("bio_fotobio", "Toma una muestra|fotobiorreactor|Vial", "Mide densidad y pH|mesa_laboratorio|Tablet", "Cosecha la espirulina|fotobiorreactor|Malla");
         T("nuc_turno", "Pasa el control de acceso|acceso|Credencial", "Vigila la sala de control|consola|Tablet", "Revisa la calefacción|intercambiador|Linterna");
+        T("nuc_vigilancia", "Lee las estaciones del casquete|consola|Tablet", "Comprueba tu dosímetro|acceso|Dosímetro", "Revisa los filtros de la chimenea|consola|Linterna");
+        T("nuc_pasivos", "Revisa la toma de agua de mar|intercambiador|Linterna", "Prueba las válvulas del tronco|consola|Tablet");
+        T("nuc_simulacro", "Da el aviso del simulacro|consola|Tablet", "Comprueba válvulas y balizas|consola|", "Saca al turno por el acceso|acceso|Credencial");
+        T("nuc_roca", "Lee extensómetros y convergencia|panel_roca|Tablet", "Lee bulones, microsismos y aforos|panel_roca|Tablet", "Firma el parte de la roca|panel_roca|Tablet");
+        T("nuc_bajada", "Ponte el dosímetro en el andén|anden|Dosímetro", "Revisa el carro y la esclusa|carro|Linterna", "Firma la bajada en la caseta|caseta|Tablet");
+        T("nuc_refugio", "Ponte el dosímetro en el andén|anden|Dosímetro", "Comprueba aire, agua y baterías|carro|Tablet", "Prueba el teléfono del refugio|caseta|Tablet");
+        T("nuc_remolque", "Mira el iceberg en el radar|panel_roca|Tablet", "Da el rumbo al remolcador|panel_roca|Tablet", "Comprueba que se desvía|panel_roca|Tablet");
+        T("nuc_refuerzo", "Cierra las cavernas|panel_roca|Tablet", "Manda reforzar a distancia|panel_roca|Tablet", "Vigila que el ritmo baje|panel_roca|Tablet");
         // ══ GUARDIA ══
         T("gua_carnivoros", "Coge las raciones|almacen|Cubo de carne", "Patrulla los recintos|recinto|Linterna", "Da las raciones a los carnívoros|comedero|Cubo de carne");
         // ══ INFORMÁTICA Y AULA ══
@@ -248,7 +256,7 @@ public static class PlayerTasks
         if (id.StartsWith("prep_")) return AreaFunctions.Kind.Cook;
         if (id.StartsWith("obra_") || id.StartsWith("mat_")) return AreaFunctions.Kind.Build;
         if (id.StartsWith("rep_")) return AreaFunctions.Kind.Make;
-        if (id.StartsWith("lanz_")) return AreaFunctions.Kind.Operate;
+        if (id.StartsWith("lanz_") || id.StartsWith("nuc_")) return AreaFunctions.Kind.Operate;
         if (id.StartsWith("sol_") || id == "ene_eolica" || id == "ene_mareal") return AreaFunctions.Kind.Make;
         if (id.StartsWith("ene_")) return AreaFunctions.Kind.Operate;
         if (id.StartsWith("bio_")) return AreaFunctions.Kind.Study;

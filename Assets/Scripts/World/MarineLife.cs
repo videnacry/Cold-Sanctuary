@@ -208,7 +208,7 @@ public class MarineLife : MonoBehaviour
         {
             if (t == null) continue;
             Vector3 l = t.transform.InverseTransformPoint(p);
-            if (Mathf.Max(Mathf.Abs(l.x), Mathf.Abs(l.z)) < t.waterHalf + margin && l.y > -16f) return true;
+            if (Mathf.Max(Mathf.Abs(l.x), Mathf.Abs(l.z)) < t.waterHalf + margin && l.y > SeaRule.FloorY) return true;
         }
         return false;
     }

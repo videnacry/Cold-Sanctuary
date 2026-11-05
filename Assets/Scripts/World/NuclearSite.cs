@@ -6,8 +6,8 @@ using UnityEngine;
 /// lejos y a sotavento, en un árbol BAJO: lo que protege de un reactor es la distancia, la contención y el agua, no la altura.
 /// - Distancia: ≥ <see cref="MinDistance"/> m a todo edificio e isla del santuario (lo más lejos que permite el mapa).
 /// - Viento: el sitio queda a sotavento de <see cref="PrevailingWindTo"/> (el juego no simula viento: es una decisión de diseño fija).
-/// - Altura: los reactores, en el nivel más bajo (<see cref="FirstFloorY"/>); arriba, solo lo que gana con ella: el agua por gravedad
-///   (el tronco), la chimenea filtrada y las salas de mando.
+/// - Altura: abajo, según quién lo atiende (2026-11-05, §4 del doc): el microrreactor, sin operadores, y los residuos, en cavernas en la roca
+///   BAJO EL LECHO MARINO (<see cref="RockCover"/> m de roca); el TRIGA, que atiende gente a diario, en su cajón de doble casco colgado del casquete con tendones al lecho; arriba, solo lo que gana con ella: el agua por gravedad (el tronco), la chimenea filtrada y las salas de mando.
 /// - Agua: el agua del tronco sobre los reactores alcanza, sin bombas ni operador, al menos <see cref="ReferenceHours"/> h.
 /// </summary>
 public static class NuclearSiteRule
@@ -25,8 +25,17 @@ public static class NuclearSiteRule
     /// <summary>Cara del primer piso: los reactores. Excepción a <see cref="TreeSpec.FirstFloorMin"/>, que deja sitio a los árboles que crecen
     /// en el suelo: en el casquete no crece ninguno. Bajo el piso caben las tornapuntas y la puerta del suelo.</summary>
     public const float FirstFloorY = 12f;
-    /// <summary>Hondo de la piscina del TRIGA bajo el piso (como los reales: 7,3–8,2 m): el núcleo queda bajo la losa, en el recinto.</summary>
-    public const float PoolDepth = 8f;
+    /// <summary>Hondo de la piscina del TRIGA bajo el piso: baja por el casquete hasta su cajón, con el núcleo bajo el nivel del mar. Los
+    /// reales tienen 7,3–8,2 m de agua sobre el núcleo; aquí son casi 19 m: más blindaje.</summary>
+    public const float PoolDepth = 20f;
+    /// <summary>El cajón del TRIGA: el techo (bajo el casquete) y su alto. Cuelga: el lecho queda a cientos de metros, y lo atan tendones, como una plataforma de patas tensadas. Nivel del mar: y = 0.</summary>
+    public const float CaissonTopY = -2f, CaissonHeight = 14f;
+    /// <summary>La cara del lecho marino (la del colisionador «FondoMarino»): ver <see cref="SeaRule"/>.</summary>
+    public const float SeabedY = SeaRule.FloorY;
+    /// <summary>Roca sobre las cavernas: 60 m, como el SFR de Forsmark bajo el Báltico (Halden tiene 100 m; el túnel del Canal, unos 40).</summary>
+    public const float RockCover = 60f, CavernHeight = 10f;
+    /// <summary>Centro (y) de una caverna bajo el lecho.</summary>
+    public static float CavernCenterY => SeabedY - RockCover - CavernHeight * 0.5f;
     /// <summary>Potencia térmica total (MW): el TRIGA (1) y el microrreactor (~15).</summary>
     public const float ThermalMW = 16f;
     /// <summary>La referencia pasiva: 72 h sin operador (el depósito por gravedad del AP1000).</summary>
@@ -49,6 +58,9 @@ public static class NuclearSiteRule
         return (float)System.Math.Min(t / 3600.0, 8760.0);
     }
 
+    /// <summary>¿<paramref name="p"/> está en la zona de exclusión? (nadie va allí en su tiempo libre, y de ahí se evacúa)</summary>
+    public static bool InZone(Vector3 p) { p.y = Center.y; return Vector3.Distance(p, Center) < ExclusionRadius; }
+
     /// <summary>¿El sitio queda a sotavento del santuario? (el coseno entre el viento y la línea santuario → sitio)</summary>
     public static float DownwindCosine(Vector3 site) { site.y = 0f; return Vector3.Dot(site.normalized, PrevailingWindTo); }
 }
@@ -56,7 +68,8 @@ public static class NuclearSiteRule
 /// <summary>
 /// EL SITIO NUCLEAR en juego (docs/sitio-nuclear.md): vigilancia, válvulas pasivas que fallan abiertas y el plan de emergencia. Una EMERGENCIA
 /// para el reactor de investigación, abre las válvulas (el agua del tronco baja sola) y enciende las balizas; el microrreactor se enfría
-/// solo, sin nada que accionar. Un SIMULACRO prueba lo mismo sin parar nada. El sitio no se usa para vivir: la evacuación es del turno.
+/// solo, sin nada que accionar. Mientras dure, quien esté en la zona de exclusión se va al hospital (<see cref="WorkdayDirector.EvacuateSite"/>) y
+/// nadie entra. Un SIMULACRO prueba válvulas y balizas sin parar nada.
 /// </summary>
 public class NuclearSite : MonoBehaviour
 {
@@ -69,6 +82,8 @@ public class NuclearSite : MonoBehaviour
     public List<Transform> valves = new List<Transform>();
     [Tooltip("Estaciones de vigilancia radiológica del borde del casquete.")]
     public List<Transform> monitors = new List<Transform>();
+    [Tooltip("Sondas en el agua de mar alrededor del casquete: un cajón roto se vería aquí antes que en ningún otro sitio.")]
+    public List<Transform> seaProbes = new List<Transform>();
     [Tooltip("Balizas de alarma (apagadas en normal).")]
     public List<GameObject> beacons = new List<GameObject>();
     [Tooltip("Agua (m³) del tronco por encima de los reactores.")]
@@ -78,9 +93,22 @@ public class NuclearSite : MonoBehaviour
     public bool ValvesOpen { get; private set; }
     public int Drills { get; private set; }
     public string LastReason { get; private set; } = "";
+    /// <summary>Quién sigue en la zona de exclusión en esta evacuación (al último recuento).</summary>
+    public int EvacueesLeft { get; private set; }
+    /// <summary>¿Se está evacuando el sitio? (la jornada no manda a nadie allí)</summary>
+    public static bool Evacuating => Instance != null && Instance.State == Alert.Emergencia;
+    public static bool IsSiteArea(string area) => area == PlantArea || area == PowerArea || area == SiteLine.AreaName;
+    float _nextCount;
 
     void OnEnable() { Instance = this; }
     void OnDisable() { if (Instance == this) Instance = null; }
+
+    void Update()
+    {
+        if (State != Alert.Emergencia || Time.time < _nextCount) return;
+        _nextCount = Time.time + 2f;
+        EvacueesLeft = WorkdayDirector.Instance != null ? WorkdayDirector.Instance.EvacuateSite() : 0;
+    }
 
     /// <summary>EMERGENCIA: para el reactor, abre las válvulas pasivas y enciende las balizas. No hace falta nadie más.</summary>
     public void DeclareEmergency(string reason)
@@ -90,7 +118,9 @@ public class NuclearSite : MonoBehaviour
         if (rr != null && !rr.scrammed) rr.Scram("emergencia del sitio: " + reason);
         SetValves(true);
         SetBeacons(true);
-        Debug.LogWarning($"[Sitio nuclear] EMERGENCIA: {reason}. Reactor parado, válvulas abiertas: {gravityWaterM3:0} m³ de agua por gravedad ({NuclearSiteRule.PassiveHours(gravityWaterM3):0} h de calor residual). El turno sale por las alfombras del suelo y del techo.");
+        EvacueesLeft = WorkdayDirector.Instance != null ? WorkdayDirector.Instance.EvacuateSite() : 0;
+        _nextCount = Time.time + 2f;
+        Debug.LogWarning($"[Sitio nuclear] EMERGENCIA: {reason}. Reactor parado, válvulas abiertas: {gravityWaterM3:0} m³ de agua por gravedad ({NuclearSiteRule.PassiveHours(gravityWaterM3):0} h de calor residual). Se evacúa a {EvacueesLeft} persona(s) al hospital.");
     }
 
     /// <summary>Vuelve a normal (las válvulas se cierran a mano: el reactor no arranca solo).</summary>
@@ -126,7 +156,19 @@ public class NuclearSite : MonoBehaviour
         if (Object.FindAnyObjectByType<NuclearSite>() == null) return l;
         l.Add(new WorkRoster.Mission(PowerArea, "nuc_vigilancia", "Vigilancia radiológica: leer las estaciones del casquete, dosímetros y filtros de la chimenea", 1f));
         l.Add(new WorkRoster.Mission(PowerArea, "nuc_pasivos", "Revisar lo pasivo: válvulas del tronco a la piscina, toma de agua de mar y recinto de contención", 1f) { also = new[] { PlantArea } });
-        if (((day % 7) + 7) % 7 == 0) l.Add(new WorkRoster.Mission(PowerArea, "nuc_simulacro", "Simulacro de emergencia: parada, válvulas, balizas y salida del turno", 1f));
+        int week = ((day % 7) + 7) % 7;
+        if (week == 0) l.Add(new WorkRoster.Mission(PowerArea, "nuc_simulacro", "Simulacro de emergencia: parada, válvulas, balizas y salida del turno", 1f));
+        // LA ROCA (docs/sitio-nuclear.md §7): se lee a diario; una bajada a la semana, o en cuanto hay AVISO; en ALARMA nadie baja y se refuerza desde arriba.
+        // EL ICEBERG (§14): si viene hacia aquí, remolcarlo es lo primero: es lo único que de verdad para uno.
+        if (Iceberg.Threatening != null) l.Add(new WorkRoster.Mission(PowerArea, Iceberg.TowMission, "Iceberg a la vista: seguirlo por radar y sonar y remolcarlo fuera de la zona", SiteLineRule.MissionHours, true));
+        CavernRock rock = CavernRock.Instance;
+        if (rock == null) return l;
+        l.Add(new WorkRoster.Mission(PowerArea, "nuc_roca", "Leer la roca: extensómetros, convergencia, bulones, microsismos, aforos y asiento del cajón, en el panel", 1f));
+        if (rock.Now == CavernRock.Level.Alarma) l.Add(new WorkRoster.Mission(PowerArea, "nuc_refuerzo", "ALARMA en la roca: cerrar las cavernas y reforzar a distancia (bulones e inyección) hasta que pare", SiteLineRule.MissionHours, true));
+        // Sin el refugio listo no se baja a trabajar (§12): primero, revisarlo.
+        else if (Refuge.Instance != null && !Refuge.Instance.Ready(day)) l.Add(new WorkRoster.Mission(SiteLine.AreaName, Refuge.MissionId, "El refugio del fondo pide revisión: sin él no se baja a trabajar", SiteLineRule.MissionHours, true));
+        else if (rock.Now == CavernRock.Level.Aviso || week == 3) l.Add(new WorkRoster.Mission(SiteLine.AreaName, SiteLine.MissionId, "Bajar por la línea a las cavernas: mirar la roca, sanear y reforzar lo que pida", SiteLineRule.MissionHours, rock.Now == CavernRock.Level.Aviso));
+        if (week == 5 && Refuge.Instance != null && Refuge.Instance.Ready(day)) l.Add(new WorkRoster.Mission(SiteLine.AreaName, Refuge.MissionId, "Revisar el refugio del fondo: aire, cartuchos de CO₂, agua, baterías y teléfono", SiteLineRule.MissionHours));
         return l;
     }
 }

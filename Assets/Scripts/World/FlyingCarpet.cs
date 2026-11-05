@@ -14,6 +14,8 @@ public class FlyingCarpet : MonoBehaviour
     public static readonly List<FlyingCarpet> All = new List<FlyingCarpet>();
     static readonly HashSet<GameObject> _riders = new HashSet<GameObject>();
     public static bool Riding(GameObject g) => g != null && _riders.Contains(g);
+    /// <summary>Otro vehículo que lleva a alguien (la línea de las cavernas, <see cref="SiteLine"/>): cuenta como ir en alfombra, y así nada más lo mueve.</summary>
+    public static void Carry(GameObject g, bool on) { if (g == null) return; if (on) _riders.Add(g); else _riders.Remove(g); }
     public static int Trips { get; private set; }
 
     public CarpetPad pad;

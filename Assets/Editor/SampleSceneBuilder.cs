@@ -163,6 +163,7 @@ public static partial class SampleSceneBuilder
         { GameObject inf = GameObject.Find("Infirmary_Area"); if (inf != null) inf.AddComponent<InfirmaryGate>(); }   // la iniciación es bloqueante: la Magnate guarda la salida
         PlaceStaff();       // cada personaje nuevo en su área (Andrea en la tarima de yoga, el jefe de obra en Construcción…)
         DressHumanoids();   // Kushal, la Magnate, compañeros y seres de prueba → cuerpo de cubos articulado (sin .fbx)
+        BuildIcebergs(root.transform);   // dos icebergs, lejos de todo (docs/sitio-nuclear.md §14)
         BuildPolarIce(root.transform);   // banquisa: casquetes de hielo con canales y puentes + sotobosque polar
         PlaceGroundCarpetAreas();        // al pie de cada edificio, en el hielo (ya hecho), sus alfombras para subir
         FurnitureSpacing.Report();       // muebles sin su pasillo mínimo (máquinas, mesas, camas…): aviso por consola
@@ -2382,17 +2383,17 @@ public static partial class SampleSceneBuilder
         // cada uno ignora los objetos que no tienen su componente requerido.
         GameObject swimZone = new GameObject("Sea_SwimZone");
         swimZone.transform.SetParent(parent);
-        swimZone.transform.position = new Vector3(0f, PolarLandscapeBuilder.WaterLevel - 8f, 0f);
+        swimZone.transform.position = new Vector3(0f, SeaRule.Surface - SeaRule.Depth * 0.5f, 0f);
         BoxCollider swimCollider = swimZone.AddComponent<BoxCollider>();
         swimCollider.isTrigger = true;
-        swimCollider.size = new Vector3(1200f, 16f, 1200f); // todo el mar: bajo la banquisa, en los canales y alrededor
+        swimCollider.size = new Vector3(1200f, SeaRule.Depth, 1200f); // todo el mar: bajo la banquisa, en los canales y alrededor
         swimZone.AddComponent<WaterZone>();
         swimZone.AddComponent<MediumZone>().medium = Medium.Water;
 
         // Fondo marino: sin él, quien cae a un canal se hundiría para siempre. Invisible y fuera del NavMesh.
         GameObject seabed = new GameObject("FondoMarino");
         seabed.transform.SetParent(parent);
-        seabed.transform.position = new Vector3(0f, PolarLandscapeBuilder.WaterLevel - 17f, 0f);
+        seabed.transform.position = new Vector3(0f, SeaRule.FloorY - 1f, 0f);
         seabed.AddComponent<BoxCollider>().size = new Vector3(1200f, 2f, 1200f);
         PolarLandscapeBuilder.IgnoreForNav(seabed);
 
@@ -3571,6 +3572,7 @@ public static partial class SampleSceneBuilder
         _towerSize = CienciasSize;
         SanctuaryArea plant = BuildAtomicPlant(areasGroup.transform); areas.Add(plant);
         _nuclearPlantArea = plant.transform;
+        _nuclearPowerArea = nuc.transform;
         BuildPhysicsHall(plant.transform);
         BuildNuclearUpperFloors();
         // EL PARQUE ENERGÉTICO (Berón 2026-11-05; docs/energia.md): su casquete y su árbol bajo; el campo, las turbinas y el almacén, al final (FinishEnergySite).

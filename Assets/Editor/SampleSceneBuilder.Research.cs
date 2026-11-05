@@ -317,19 +317,6 @@ public static partial class SampleSceneBuilder
 
     // ── CENTRAL NUCLEAR DE PRODUCCIÓN (microrreactor) ─────────────────────────────────────────────────────────────
 
-    // CÁMARA DE CONTENCIÓN del microrreactor (docs/sitio-nuclear.md): muros gruesos, techo y su puerta.
-    static void ContainmentVault(Transform t, float w, float d, float h, Color wall)
-    {
-        const float th = 0.5f, door = 1.8f;
-        float side = (w - door) * 0.5f;
-        Solid(t, new Vector3(0f, h * 0.5f, d * 0.5f - th * 0.5f), new Vector3(w, h, th), wall, "Muro_contencion");
-        Solid(t, new Vector3(-w * 0.5f + th * 0.5f, h * 0.5f, 0f), new Vector3(th, h, d), wall, "Muro_contencion");
-        Solid(t, new Vector3(w * 0.5f - th * 0.5f, h * 0.5f, 0f), new Vector3(th, h, d), wall, "Muro_contencion");
-        Solid(t, new Vector3(-(door + side) * 0.5f, h * 0.5f, -d * 0.5f + th * 0.5f), new Vector3(side, h, th), wall, "Muro_contencion");
-        Solid(t, new Vector3((door + side) * 0.5f, h * 0.5f, -d * 0.5f + th * 0.5f), new Vector3(side, h, th), wall, "Muro_contencion");
-        KitchenProps.C(t, new Vector3(0f, h + 0.2f, 0f), new Vector3(w, 0.4f, d), LabSteel, 0f, "Techo_contencion");
-    }
-
     static SanctuaryArea BuildNuclearPlant(Transform areasGroup)
     {
         SanctuaryArea a = BuildAreaBox(areasGroup, "NuclearPower_Area", "Central Nuclear", SanctuaryAreaType.NuclearPower, 4, NuclearSiteRule.Center, NuclearSize, new Color(0.75f, 0.78f, 0.8f));
@@ -340,13 +327,14 @@ public static partial class SampleSceneBuilder
         {
             new LabBlock("Puesto de acceso", 6f, 3f, t => { Room(t, 4f, 3f, concrete, "Garita"); KitchenProps.C(t, new Vector3(1.75f, 1f, -1.6f), new Vector3(2.5f, 0.1f, 0.1f), LabYellow, 0f, "Barrera"); }),
             new LabBlock("Sala de control", 10f, 8f, t => { Room(t, 10f, 8f, concrete, "Sala_control"); for (int i = 0; i < 4; i++) { KitchenProps.C(t, new Vector3(-3.6f + i * 2.4f, 0.45f, 0.5f), new Vector3(1.6f, 0.9f, 0.8f), LabDark, 0f, "Consola_operador"); KitchenProps.C(t, new Vector3(-3.6f + i * 2.4f, 1.15f, 0.75f), new Vector3(1.2f, 0.5f, 0.05f), LabBlue, 0f, "Pantallas"); } KitchenProps.C(t, new Vector3(0f, 1.5f, 3.75f), new Vector3(8f, 1.2f, 0.1f), LabBlue, 0f, "Panel_mimico"); }),
-            new LabBlock("Microrreactor (5 MWe)", 15f, 8f, t => { ContainmentVault(t, 15f, 8f, 5.4f, concrete); KitchenProps.C(t, new Vector3(0f, 0.3f, 0f), new Vector3(12f, 0.6f, 4.5f), concrete, 0f, "Losa_blindada"); KitchenProps.C(t, new Vector3(0f, 2.1f, 0f), new Vector3(10f, 3f, 3.2f), new Color(0.55f, 0.6f, 0.65f), 0f, "Modulo_reactor"); KitchenProps.C(t, new Vector3(-5.2f, 2.1f, 0f), new Vector3(0.6f, 3.4f, 3.4f), LabYellow, 0f, "Tapa_trebol"); KitchenProps.C(t, new Vector3(0f, 3.8f, 0f), new Vector3(10f, 0.4f, 0.6f), LabSteel, 0f, "Tubos_calor"); }),
+            new LabBlock("Microrreactor (5 MWe)", 12f, 4.5f, t => { KitchenProps.C(t, new Vector3(0f, 0.3f, 0f), new Vector3(12f, 0.6f, 4.5f), concrete, 0f, "Losa_blindada"); KitchenProps.C(t, new Vector3(0f, 0.9f, 0f), new Vector3(3f, 0.6f, 3f), LabSteel, 0f, "Brocal_pozo"); KitchenProps.C(t, new Vector3(0f, 1.25f, 0f), new Vector3(2.4f, 0.1f, 2.4f), LabYellow, 0f, "Tapa_trebol"); Label(t, "Pozo del microrreactor: el reactor está abajo, en su cajón sumergido", 2.5f); }),
             new LabBlock("Conversión de potencia", 12f, 3.5f, t => { KitchenProps.C(t, new Vector3(0f, 1.6f, 0f), new Vector3(12f, 3.2f, 3.5f), LabSteel, 0f, "Contenedor_turbina"); KitchenProps.C(t, new Vector3(4f, 3.6f, 0f), new Vector3(2.5f, 0.8f, 2.5f), LabDark, 0f, "Aerorrefrigerador"); }),
             new LabBlock("Intercambiador de la calefacción de distrito", 8f, 6f, t => { for (int i = 0; i < 2; i++) Vessel(KitchenProps.Root(t, "Deposito", new Vector3(-2f + i * 4f, 0f, 0f)), 1.2f, 3.5f, new Color(0.8f, 0.5f, 0.3f), "Intercambiador"); KitchenProps.C(t, new Vector3(0f, 2.5f, 0f), new Vector3(7f, 0.3f, 0.3f), new Color(0.8f, 0.3f, 0.25f), 0f, "Tuberia_agua_caliente"); }),
             new LabBlock("Subestación", 6f, 4f, t => { for (int i = 0; i < 2; i++) KitchenProps.C(t, new Vector3(-1.5f + i * 3f, 1.2f, 0f), new Vector3(1.8f, 2.4f, 1.8f), new Color(0.4f, 0.45f, 0.4f), 0f, "Transformador"); KitchenProps.C(t, new Vector3(0f, 1.0f, 2f), new Vector3(6f, 2f, 0.05f), LabSteel, 0f, "Valla_subestacion"); }),
             new LabBlock("Diésel de respaldo", 6f, 3f, t => { KitchenProps.C(t, new Vector3(0f, 1.3f, 0f), new Vector3(6f, 2.6f, 3f), new Color(0.3f, 0.5f, 0.35f), 0f, "Grupo_electrogeno"); KitchenProps.C(t, new Vector3(2.4f, 3f, 0f), new Vector3(0.3f, 1f, 0.3f), LabDark, 0f, "Escape"); }),
             new LabBlock("Losa de contenedores del núcleo", 15f, 6f, t => { KitchenProps.C(t, new Vector3(0f, 0.15f, 0f), new Vector3(15f, 0.3f, 6f), concrete, 0f, "Losa"); for (int i = 0; i < 2; i++) KitchenProps.C(t, new Vector3(-4f + i * 8f, 1.6f, 0f), new Vector3(6f, 2.6f, 2.6f), new Color(0.5f, 0.52f, 0.55f), 0f, "Contenedor_transporte"); }),
             new LabBlock("Almacén", 6f, 4f, t => Room(t, 6f, 4f, concrete, "Almacen")),
+            new LabBlock("Panel de la roca", 6f, 2f, t => { KitchenProps.C(t, new Vector3(0f, 1.2f, 0.6f), new Vector3(5.6f, 2.4f, 0.3f), LabDark, 0f, "Panel_roca"); KitchenProps.C(t, new Vector3(0f, 0.4f, -0.2f), new Vector3(2.4f, 0.8f, 0.8f), LabSteel, 0f, "Pupitre_roca"); }),
         };
         LogLeft("Central nuclear", PackFloor(g, NuclearSize, blocks, CarpetKeepOut(NuclearSize)));
         // El límite del sitio (la zona de exclusión del juego) va PINTADO en el suelo, no con valla: en el santuario no hay

@@ -69,7 +69,7 @@ public class LaunchSiteTest : MonoBehaviour, ITestUnit
         TestProbe.Check("sin ese elemento, la plataforma vuelve a cumplir a su altura de antes", ls.PadY >= LaunchHeightRule.RequiredPadHeight(out _) - 0.01f, $"{ls.PadY:0} m");
 
         // ── 4. CONTENCIÓN ──
-        string[] parts = { "Deflector_llamas", "Trinchera_llamas_suelo", "Deposito_diluvio", "Rociador_diluvio", "Cubeta_contencion", "Escudo_cascotes", "Cohete", "Torre_umbilical" };
+        string[] parts = { "Deflector_llamas", "Trinchera_llamas_suelo", "Deposito_diluvio", "Rociador_diluvio", "Cubeta_contencion", "Escudo_cascotes", "Cohete", "Torre_umbilical", "Deposito_LOX", "Deposito_RP1", "Polvorin_pirotecnicos" };
         var names = ls.GetComponentsInChildren<Transform>(true).Select(t => t.name).ToHashSet();
         var missing = parts.Where(p => !names.Contains(p)).ToList();
         Transform rk = ls.GetComponentsInChildren<Transform>(true).FirstOrDefault(t => t.name == "Cohete");
