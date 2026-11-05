@@ -227,7 +227,7 @@ public class EnergySite : MonoBehaviour
         else if (s.installed > 0) t = s.tables[hash % s.installed];
         if (t == null) return null;
         Vector3 toCentre = EnergyRule.Center - t.position; toCentre.y = 0f;
-        Vector3 p = t.position + toCentre.normalized * 3f + Vector3.forward * 2f; p.y = 0f;
+        Vector3 p = t.position + toCentre.normalized * 6f + Vector3.forward * 2f; p.y = 0f;
         return p + Vector3.up;
     }
 }

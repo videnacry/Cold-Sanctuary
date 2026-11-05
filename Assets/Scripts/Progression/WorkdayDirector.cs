@@ -558,7 +558,7 @@ public class WorkdayDirector : MonoBehaviour
         if (!needing && yogaTime && YogaTraining(g)) { if (idle != null) idle.enabled = false; return; }
         if (idle != null && idle.enabled) idle.enabled = false;
         if (OwnNeeds(g, area, doing)) return;   // [Jornada] comer, el baño y dormir van antes; a mediodía, a comer
-        Vector3 to = WorkPoint(area, g.name);
+        Vector3 to = EnergySite.FieldPoint(missionId, g.name) ?? WorkPoint(area, g.name);   // (los paneles y las torres se revisan en el casquete, no en el piso de control)
         if ((g.transform.position - to).sqrMagnitude > 4f)
         {
             if (g.GetComponent<Anima>() != null && CarpetPad.Route(g, ref to)) return;   // otro grupo de plataformas: en alfombra voladora
@@ -595,7 +595,7 @@ public class WorkdayDirector : MonoBehaviour
         Uniforms.Kind k = Uniforms.ForWork(missionId, area, doing);
         if (k == Uniforms.Kind.None) { UniformWearer.Want(g, k); return; }
         Vector3 pos = g.transform.position;
-        bool there = area == AreaWork.Guard || FruitGardener.IsRound(missionId) || InAreaNamed(area, pos)
+        bool there = area == AreaWork.Guard || FruitGardener.IsRound(missionId) || EnergySite.IsField(missionId) || InAreaNamed(area, pos)
                      || (WorkPoint(area, g.name) - pos).sqrMagnitude < 36f;
         if (there) UniformWearer.Want(g, k);
     }

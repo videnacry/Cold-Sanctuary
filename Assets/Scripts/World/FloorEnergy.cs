@@ -21,6 +21,9 @@ public class FloorEnergy : MonoBehaviour
     void OnEnable() { if (!All.Contains(this)) All.Add(this); }
     void OnDisable() { All.Remove(this); }
 
+    /// <summary>(Editor) Fuera de Play no corre OnEnable: rehace la lista con lo que hay en la escena.</summary>
+    public static void Refresh() { All.Clear(); All.AddRange(FindObjectsByType<FloorEnergy>(FindObjectsInactive.Include, FindObjectsSortMode.None)); }
+
     /// <summary>Declara el área <paramref name="a"/>: su superficie por la de su clase, y lo fijo de Informática.</summary>
     public static FloorEnergy Declare(SanctuaryArea a)
     {

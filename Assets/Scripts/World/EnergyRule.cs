@@ -192,7 +192,7 @@ public static class EnergyRule
     public static float EssentialKW() { float s = 0f; foreach (FloorEnergy f in FloorEnergy.All) if (f != null && f.essential) s += f.KW; return s; }
 
     /// <summary>Los paneles fuera del casquete (los techos y el hub) también cuentan.</summary>
-    public static float RooftopKWp() { float s = 0f; foreach (SolarArray a in SceneCache.All<SolarArray>(2f)) if (a != null) s += a.peakWatts / 1000f; return s; }
+    public static float RooftopKWp() { float s = 0f; foreach (SolarArray a in Object.FindObjectsByType<SolarArray>(FindObjectsSortMode.None)) if (a != null) s += a.peakWatts / 1000f; return s; }
 
     /// <summary>Todo piso sin declarar se declara por su clase: así un piso nuevo entra solo en el balance. Devuelve cuántos.</summary>
     public static int DeclareMissing()

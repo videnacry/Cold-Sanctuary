@@ -169,6 +169,9 @@ public static class AreaFunctions
         Effect(Also(Def("Estudio Textil", "mat_cuerda", "Trenzar cuerda de fibra de cáñamo", 1f, true, Kind.Make), "Construcción"), who => MaterialStore.Instance?.TwistRope(who));
         // Las de prefijo (una por obra o por elaboración).
         _prefixEffects.Add(("nuc_simulacro", (id, who) => NuclearSite.Instance?.Drill(who)));
+        _prefixEffects.Add(("sol_mantenimiento", (id, who) => EnergySite.Instance?.Maintain(who)));
+        _prefixEffects.Add(("sol_instalacion", (id, who) => EnergySite.Instance?.Install(who)));
+        _prefixEffects.Add(("sol_reparacion", (id, who) => EnergySite.Instance?.Repair(who)));
         _prefixEffects.Add(("obra_material_", (id, who) => Obra(id.Substring(14), who, material: true)));
         _prefixEffects.Add(("obra_trabajo_", (id, who) => Obra(id.Substring(13), who, material: false)));
         _prefixEffects.Add(("prep_", (id, who) => KitchenLarder.Instance?.StartPrep(id.Substring(5), who)));
