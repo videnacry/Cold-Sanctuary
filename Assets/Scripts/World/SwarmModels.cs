@@ -166,7 +166,7 @@ public static class SwarmModels
     /// <summary>LUZ PROPIA SUAVE (ronda 7, 2026-11-05): sin ella, a contraluz las abejas salían casi negras y las medusas, negras sobre
     /// el agua oscura. Es el suelo de brillo, en fracción del color (los translúcidos, más: el alfa la reduce); muy por debajo del
     /// umbral del posprocesado, así que no deslumbra.</summary>
-    public const float SoftGlow = 0.3f, SoftGlowTranslucent = 0.8f;
+    public const float SoftGlow = 0.3f, SoftGlowTranslucent = 0.3f;
 
     /// <summary>Un material MATE para <paramref name="c"/>: sin brillo especular ni reflejos (también los translúcidos: alas,
     /// medusas, kril), con una luz propia suave para no verse negro a contraluz y, si es muy claro, oscurecido hasta

@@ -2158,7 +2158,7 @@ public static partial class SampleSceneBuilder
             m.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
             m.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
             m.SetFloat("_ZWrite", 0f);
-            m.SetFloat("_Smoothness", 0.9f);
+            m.SetFloat("_Smoothness", 0.6f);
             m.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
             m.SetOverrideTag("RenderType", "Transparent");
             m.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
