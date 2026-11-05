@@ -2,6 +2,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
+/// <summary>LAS AVES FRÍAS QUE VUELAN con <see cref="SnowPetrelLife"/> (docs/fauna-fria-santuarios.md), y las del santuario aéreo: pocas, por memoria.</summary>
+public static class ColdBirds
+{
+    public static readonly Dictionary<string, int> AirBudget = new Dictionary<string, int> { { "PolarSkua", 2 }, { "CapePetrel", 4 }, { "WanderingAlbatross", 2 }, { "ArcticTern", 2 } };
+    public static bool Is(string species) => species == "SnowPetrel" || (species != null && AirBudget.ContainsKey(species));
+}
+
 /// <summary>Un nido de petrel de las nieves: una repisa de roca de la isla (grietas y repisas sin nieve). Lo pone el constructor; lo reparten dos por nido.</summary>
 public class SnowPetrelNest : MonoBehaviour
 {

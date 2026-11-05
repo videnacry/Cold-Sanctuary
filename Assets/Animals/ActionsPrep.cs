@@ -43,6 +43,10 @@ public class ActionsPrep
         { "ArcticFox", new ActionsPrep(new ActionPrep("IdleArcticFox", 0f, 1f, -2f), new ActionPrep("WalkArcticFox", 3f, 3f, 0.5f), new ActionPrep("RunArcticFox", 14f, 5f, 2f)) },
         { "MuskOx", new ActionsPrep(new ActionPrep("IdleMuskOx", 0f, 1f, -2f), new ActionPrep("WalkMuskOx", 3f, 2f, 0.5f), new ActionPrep("RunMuskOx", 15f, 4f, 2f)) },
         { "SnowPetrel", new ActionsPrep(new ActionPrep("IdleSnowPetrel", 0f, 1f, -2f), new ActionPrep("WalkSnowPetrel", 2f, 2f, 0.5f), new ActionPrep("RunSnowPetrel", 12f, 4f, 2f)) },
+        { "ArcticTern", new ActionsPrep(new ActionPrep("IdleArcticTern", 0f, 1f, -2f), new ActionPrep("WalkArcticTern", 2f, 2f, 0.5f), new ActionPrep("RunArcticTern", 12f, 4f, 2f)) },
+        { "WanderingAlbatross", new ActionsPrep(new ActionPrep("IdleWanderingAlbatross", 0f, 1f, -2f), new ActionPrep("WalkWanderingAlbatross", 2f, 2f, 0.5f), new ActionPrep("RunWanderingAlbatross", 12f, 4f, 2f)) },
+        { "CapePetrel", new ActionsPrep(new ActionPrep("IdleCapePetrel", 0f, 1f, -2f), new ActionPrep("WalkCapePetrel", 2f, 2f, 0.5f), new ActionPrep("RunCapePetrel", 12f, 4f, 2f)) },
+        { "PolarSkua", new ActionsPrep(new ActionPrep("IdlePolarSkua", 0f, 1f, -2f), new ActionPrep("WalkPolarSkua", 2f, 2f, 0.5f), new ActionPrep("RunPolarSkua", 12f, 4f, 2f)) },
 
         // Especies de las eras del microcosmos (docs/era-species-behavior.md): velocidades RELATIVAS a la hormiga (andar 3,
         // correr 10). El caracol, la babosa y la lombriz no "corren" (reptan por ondas del pie/peristaltismo); el solífugo,
