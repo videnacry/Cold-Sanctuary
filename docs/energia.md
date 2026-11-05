@@ -93,7 +93,7 @@ hospital usa el valor de clínica y el laboratorio es **una estimación mía** (
 | Casquete de energía aparte | **Sí** | 57 600 m² sin competir con nada, todo el mantenimiento en un sitio, lejos de las islas, y las turbinas fuera del paso de las aves. |
 | Un parque sin reactor | **No** | El sol da cero 3 meses. Haría falta guardar estaciones enteras. El reactor ya existe y cubre la noche polar. |
 | Eólica | **Sí, pequeña** | 3 turbinas de 330 kW, las de Ross Island: lo probado a esta latitud. Rotor de 33 m. Cubren cerca de la mitad de la demanda y funcionan de noche. |
-| Mareal | **Solo piloto** | No hay corriente: ~10 kW entre las dos. Se hace porque Berón la pidió y deja medido su efecto, y va lenta a propósito. **No cuenta para cubrir la demanda firme.** |
+| Mareal | **Solo piloto** | No hay corriente: ~5 kW de media entre las dos (28 de pico). Se hace porque Berón la pidió y deja medido su efecto, y va lenta a propósito. **No cuenta para cubrir la demanda firme.** |
 | Bombeo | **No** | Ver las cuentas de arriba. |
 
 ### El reparto (las cuentas con ~800 kW de demanda media, unos 7 GWh al año)
