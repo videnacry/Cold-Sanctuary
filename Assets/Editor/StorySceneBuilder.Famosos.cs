@@ -330,6 +330,7 @@ public static partial class StorySceneBuilder
                 "Gates y Allen escribieron un intérprete de BASIC para el Altair en unas ocho semanas, en Harvard, sin tener ninguno: Allen programó un simulador del procesador Intel 8080 en un ordenador grande de la universidad (y Monte Davidoff escribió las rutinas de cálculo con decimales). Allen voló a Albuquerque con el programa en una cinta perforada; según su relato, escribió el cargador de la cinta en el avión. En MITS funcionó a la primera.",
                 "Allen entró en MITS como director de software el 1 de marzo de 1975 y la sociedad Micro-Soft se fundó en Albuquerque el 4 de abril de 1975 (el nombre fue idea de Allen). El 22 de julio firmaron la licencia del BASIC con MITS. Microsoft se quedó en Albuquerque hasta 1979, cuando se mudó a Bellevue (Washington).",
                 "Las fechas exactas de la demostración (entre febrero y marzo) y algunos detalles cambian según quién lo cuente. Años después, Gates y su entonces esposa crearon una fundación que financia, entre otras cosas, vacunas para los países más pobres.",
+                "Hechos públicos posteriores: desde 2000 la Fundación Gates financia vacunas y salud; en 2010 lanzó con Warren Buffett el Giving Pledge, y ese año fue a ver a Ed Roberts, muy enfermo, a su hospital de Georgia.",
             },
             new[]
             {
@@ -385,7 +386,7 @@ public static partial class StorySceneBuilder
             {
                 Talk("En su despacho, habla con Warren Buffett", buffett.transform, "Warren Buffett", "Hoy cumplo 53 años y quiero hacerme un regalo: comprar la mejor tienda de Omaha. Pero solo si la señora B quiere venderla."),
                 Reach("Ve a la Nebraska Furniture Mart", store, "Cliente de Omaha", "Aquí compra media ciudad. Lo tienen todo, y más barato que nadie."),
-                Talk("Habla con Rose Blumkin, la señora B", mrsB.transform, "Rose Blumkin", "Llegué de Rusia sin saber inglés y sin ir a la escuela. En 1937 abrí esto con 500 dólares en un sótano. Mi regla: vende barato y di la verdad."),
+                Talk("Habla con Rose Blumkin, la señora B", mrsB.transform, "Rose Blumkin", "Llegué de Rusia sin saber inglés y sin ir a la escuela. Ahorré vendiendo ropa usada y traje a mis padres y a mis hermanos, uno a uno. En 1937 abrí esto con 500 dólares en un sótano. Mi regla: vende barato y di la verdad."),
                 Visit("Recorre la tienda: alfombras, muebles y electrodomésticos", sections, "Vendedora de alfombras", "La señora B se sabe el precio de cada alfombra de memoria, y lo que nos costó."),
                 Talk("Habla con Louie, su hijo", louie.transform, "Louie Blumkin", "Mi madre no sabe leer un balance, pero sabe exactamente lo que vale cada cosa. Y nunca miente a un cliente."),
                 Collect("Lleva el contrato de una página a la mesa de la señora B", contract, desk, "Warren Buffett", "No necesito auditores ni abogados. Conozco esta tienda como cliente desde hace años, y me fío de ella."),
@@ -399,6 +400,7 @@ public static partial class StorySceneBuilder
                 "Rose Blumkin (1893–1998), «la señora B», nació cerca de Minsk, llegó a Estados Unidos en 1917 tras cruzar Siberia, China y Japón, y nunca fue a la escuela. En 1937 abrió la Nebraska Furniture Mart en el sótano de la tienda de su marido, en Omaha, con 500 dólares; su lema era «vende barato y di la verdad».",
                 "El 30 de agosto de 1983, el día de su cumpleaños, Buffett le llevó una propuesta de compra de poco más de una página. La cerraron con un apretón de manos y sin auditoría: no revisó el inventario ni las cuentas. Las cifras varían según la fuente (unos 55 millones de dólares por el 80–90 % de la tienda; la familia se quedó el resto). Buffett lo contó en su carta a los accionistas de 1983.",
                 "La señora B siguió trabajando en la tienda, en un carrito eléctrico, hasta pasados los 100 años. En 2006 Buffett se comprometió a dar casi toda su fortuna a la filantropía, y en 2010 lanzó con Bill y Melinda Gates el Giving Pledge.",
+                "Rose Blumkin trajo de Rusia a sus padres y hermanos con lo que ahorró vendiendo ropa usada. Hecho público posterior: desde 2006 Buffett dona la mayor parte de su fortuna a fundaciones, sobre todo a la Fundación Gates.",
             },
             new[]
             {
@@ -528,12 +530,12 @@ public static partial class StorySceneBuilder
             {
                 Talk("En los huertos del barrage, habla con la horticultora", grower.transform, "Horticultora", "Riego con la regadera y cavo con la daba, como mi madre. Las lluvias llegan en unas semanas: quien no tenga la tierra lista, siembra tarde."),
                 Reach("6 de mayo: ve a la explanada de la entrega", ground, "Horticultora", "Dicen que han traído tractores para labrar los campos de la gente. Vamos a verlo."),
-                Talk("Habla con Ibrahim Traoré", traore.transform, "Ibrahim Traoré", "Estas máquinas las ha comprado el Estado para los productores. Que la tierra que trabajamos nos dé de comer a todos."),
+                Talk("Habla con Ibrahim Traoré", traore.transform, "Funcionaria del acto", "El capitán Traoré preside la entrega: estas máquinas las ha comprado el Estado para los productores."),
                 Visit("Mira el equipo: el tractor, el motocultor y la motobomba", machines, "Tractorista de la brigada", "El tractor para los campos grandes, el motocultor para las parcelas pequeñas y la motobomba para regar los huertos en la estación seca."),
-                Talk("Habla con el ministro de Agricultura", minister.transform, "Ismaël Sombié", "En cada comuna habrá una brigada de mecanización. El labrado será gratuito para los productores, antes de las lluvias."),
+                Talk("Habla con el ministro de Agricultura", minister.transform, "Funcionaria del acto", "El ministro lo ha anunciado: en cada comuna habrá una brigada de mecanización. El labrado será gratuito para los productores, antes de las lluvias."),
                 Collect("Lleva las semillas de maíz, sorgo y niébé al campo", seeds, field, "Agrónoma de extensión", "Maíz, sorgo y niébé: lo que se come aquí. El niébé, además, devuelve nitrógeno a la tierra."),
                 Hold("Labra un surco con el tractorista", field, 8f, "Tractorista de la brigada", "Lo que con la daba es una semana, con el tractor es una mañana."),
-                Talk("Habla con la agrónoma", agro.transform, "Agrónoma de extensión", "Con tractor o sin él, la tierra hay que cuidarla. Mira estos hoyos: es el zaï, una técnica de aquí. Se cava, se echa estiércol y guarda el agua de la lluvia junto a la semilla."),
+                Talk("Habla con la agrónoma", agro.transform, "Agrónoma de extensión", "Con tractor o sin él, la tierra hay que cuidarla. Yacouba Sawadogo, un campesino de Gourga, plantó un bosque en tierra muerta y enseñó el zaï a quien quiso aprender. Mira estos hoyos: es el zaï, una técnica de aquí. Se cava, se echa estiércol y guarda el agua de la lluvia junto a la semilla."),
             },
             "Uagadugú (Burkina Faso), el 6 de mayo de 2024, al final de la estación seca, sobre el Huerto del santuario a escala de hormiga. El gobierno entrega tractores, motocultores y motobombas para labrar gratis los campos de los productores antes de las lluvias. Acompaña a una horticultora del barrage a ver las máquinas, a sembrar y a aprender el zaï. E para hablar, mirar y recoger; para labrar, quédate quieto.",
             new[]
@@ -542,6 +544,7 @@ public static partial class StorySceneBuilder
                 "El capitán Ibrahim Traoré preside la transición de Burkina Faso desde finales de septiembre de 2022, cuando llegó al poder por un golpe militar; su gobierno despierta opiniones muy distintas dentro y fuera del país. Este microcosmos no trata de política ni de asuntos militares: cuenta un acto civil y agrícola.",
                 "Su gobierno lanzó la «Ofensiva agropastoral y haliéutica 2023–2025», con el objetivo de que el país produzca su propia comida. El 6 de mayo de 2024, en Uagadugú, Traoré entregó al ministro de Agricultura, Ismaël Sombié, equipos agrícolas comprados por el Estado: 400 tractores, además de motocultores, motobombas, semillas y abonos (las cifras de estos últimos varían según la fuente). Desde el 30 de mayo, brigadas de mecanización empezaron a labrar gratis los campos de los productores. No hemos encontrado una evaluación independiente de sus resultados.",
                 "El zaï es una técnica tradicional del norte de Burkina Faso: hoyos con estiércol que recogen el agua de la lluvia junto a la semilla. El campesino Yacouba Sawadogo la mejoró y la enseñó durante décadas para recuperar tierras degradadas (Premio Right Livelihood 2018).",
+                "Yacouba Sawadogo (hacia 1946–2023), campesino de Gourga, recuperó tierras con el zaï, plantó un bosque y enseñó la técnica; recibió el premio Right Livelihood en 2018. Las palabras del acto las dice aquí una funcionaria inventada: a un político vivo no se le inventan frases.",
             },
             new[]
             {

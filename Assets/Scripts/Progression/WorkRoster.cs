@@ -34,7 +34,7 @@ public class WorkRoster
         public string site;      // título de la obra (ConstructionProject) donde se trabaja
         public bool roams;
         public bool lead;        // DIRIGE (guiar la clase, demostrar, operar, iniciar a otros): no se le da a un recién llegado
-        public string owner;     // PAPEL FIJO: solo la hace esta persona (el entrenador del gimnasio y sus planes); sin ella, no se hace
+        public string owner;     // PUESTO (regla de oro, J30): se le ofrece primero a esta persona (el entrenador y sus planes); sin ella, va por rotación, no se hace
         public Mission(string area, string id, string title, float hours, bool mandatory = false) { this.area = area; this.id = id; this.title = title; this.hours = hours; this.mandatory = mandatory; }
         public Mission Copy() => new Mission(area, id, title, hours, mandatory) { group = group, also = also, site = site, roams = roams, lead = lead, owner = owner };
         public override string ToString() => $"{area}: {title} ({hours:0.#} h)";
@@ -117,7 +117,7 @@ public class WorkRoster
         plan.hoursStaff = workers.Count * WorkHours;
 
         var used = workers.ToDictionary(w => w, w => 0f);
-        AssignOwned(plan, pools, used);    // las de papel fijo, a su dueño (antes que nada: si no, la rotación le llenaba la jornada)
+        AssignOwned(plan, pools, used);    // las de puesto, primero a su dueño (si no, la rotación le llenaba la jornada); sin él, por rotación
         AssignGroups(plan, pools, used);   // primero las de grupo: todas a la misma hora, cada una a una persona distinta
         ProfessionRound(plan, pools, used);   // (2026-11-04) luego, a cada profesional una misión de cada área de su profesión
         RunRounds(plan, pools, workers, used);
@@ -154,16 +154,17 @@ public class WorkRoster
     }
 
 
-    // MISIONES DE PAPEL FIJO (2026-11-04): las que tienen dueño (Mission.owner) solo las hace él; si no está en el personal, ese
-    // día no se hacen (no pasan a pendientes ni a otro).
+    // MISIONES DE PUESTO (Mission.owner): se le dan primero a su dueño, como un extra. REGLA DE ORO (Berón 2026-11-05, J30): todos saben hacer de
+    // todo; si el dueño no está o no le cabe, la misión sigue en su área y la hace la rotación normal (antes, ese día no se hacía).
     void AssignOwned(DayPlan plan, Dictionary<string, List<Mission>> pools, Dictionary<Worker, float> used)
     {
         foreach (var pool in pools.Values)
             foreach (Mission m in pool.Where(x => !string.IsNullOrEmpty(x.owner)).ToList())
             {
-                pool.Remove(m);
                 Worker w = Find(m.owner);
-                if (w != null && Fits(used[w], m.hours)) Assign(plan, w, m, used);
+                if (w == null || !Fits(used[w], m.hours)) continue;
+                pool.Remove(m);
+                Assign(plan, w, m, used);
             }
     }
 

@@ -88,7 +88,7 @@ public static partial class StorySceneBuilder
                 Visit("En la playa: tensa la cuerda de 12 nudos entre las tres estacas (3, 4 y 5 tramos)", stakes, "Acusmático", "¡Sale un ángulo recto! 3 × 3 + 4 × 4 = 5 × 5. Los babilonios ya lo usaban mil años antes."),
                 Talk("Pregunta a Pitágoras por qué es así", pyth.transform, "Pitágoras", "En todo triángulo con un ángulo recto, el cuadrado del lado mayor es la suma de los cuadrados de los otros dos. Saberlo no basta: hay que demostrarlo para todos los triángulos."),
                 Talk("En la palestra, habla con Milón", milo.transform, "Milón", "Cada día cargo al mismo ternero sobre los hombros. Crece un poco y yo con él: hoy es un toro. Así se entrena: poco a poco, cada día un poco más."),
-                Hold("Carga con Milón: aguanta firme en la arena", palestra, 8f, "Milón", "La fuerza también es un número que crece despacio."),
+                Hold("Carga con Milón: aguanta firme en la arena", palestra, 8f, "Milón", "La fuerza también es un número que crece despacio. Y un día, cuando cedió el techo de la sala, sostuve la viga hasta que salieron todos."),
             },
             "Crotona (sur de Italia), hacia el 530 a. C., sobre el gimnasio del santuario a escala de hormiga. Pitágoras ha fundado aquí una comunidad que estudia el número, la música y el cuerpo; Milón, el luchador más famoso de Grecia, entrena con ellos. Recorre la ciudad: la escuela, la herrería, el monocordio, la playa y la palestra. E para hablar y tocar; en los pasos de práctica, quédate quieto.",
             new[]
@@ -97,6 +97,7 @@ public static partial class StorySceneBuilder
                 "La música de las razones (2:1 la octava, 3:2 la quinta, 4:3 la cuarta) es cierta para las cuerdas: se comprueba con un monocordio. La leyenda de los martillos de la herrería (Nicómaco, s. II d. C.) es falsa como física: el tono de un martillo no es proporcional a su peso; Vincenzo Galilei, el padre de Galileo, lo demostró en el s. XVI.",
                 "El «teorema de Pitágoras» se conocía mucho antes: la tablilla babilónica Plimpton 322 (~1800 a. C.) lista ternas como 3-4-5, y los Śulbasūtra de la India lo usan para construir altares. No sabemos si Pitágoras lo demostró; la primera demostración que conservamos es la de Euclides (Elementos I.47, ~300 a. C.).",
                 "Milón de Crotona ganó la lucha en seis Juegos Olímpicos (desde el 540 a. C.) y fue, según la tradición, discípulo de Pitágoras. La historia del ternero que cargaba cada día hasta que fue toro (Quintiliano, Institutio I.9) es la imagen más antigua de la sobrecarga progresiva del entrenamiento. Hacia el 450 a. C. una revuelta quemó la casa de Milón, donde se reunían los pitagóricos (Polibio II.39).",
+                "La viga que sostiene Milón es una leyenda antigua que recoge Estrabón (VI, 1, 12).",
             },
             new[]
             {
@@ -140,7 +141,7 @@ public static partial class StorySceneBuilder
                 Talk("En el muelle, habla con Heródoto", hero.transform, "Heródoto", "Soy de Halicarnaso. Escribo esta investigación para que el tiempo no borre lo que hicieron los hombres. He venido a Egipto a ver y a preguntar."),
                 Talk("Pregunta a los sacerdotes de Ptah por los primeros hombres", priest.transform, "Sacerdote", "El faraón Psamético crió a dos niños sin que nadie les hablara, para ver qué lengua decían primero. Dijeron «bekos»: pan en frigio. Desde entonces aceptamos que los frigios son más antiguos."),
                 Visit("Historíē es investigar: pregunta al sacerdote, al barquero y a la campesina por qué crece el Nilo", informants, "Heródoto", "Unos dicen que lo empujan los vientos, otros que viene del Océano, otros que es nieve que se funde. Ninguna me convence. Anoto las tres y digo cuál creo: así el lector puede juzgar."),
-                Hold("En los campos: mira el limo nuevo que ha dejado la crecida", fields, 8f, "Campesina", "Cada verano el río sube, lo cubre todo y se va dejando esta tierra negra. Por eso decimos que Egipto es un don del río."),
+                Hold("En los campos: mira el limo nuevo que ha dejado la crecida", fields, 8f, "Campesina", "Cada verano el río sube, lo cubre todo y se va dejando esta tierra negra. Por eso decimos que Egipto es un don del río. A mi hijo se lo llevó una crecida. El griego me ha preguntado cómo se llamaba y lo ha escrito en su rollo. Nadie había escrito nunca el nombre de un campesino."),
                 Collect("Lleva el grano a los campos para la siembra", sacks, fields, "Campesina", "Aquí no hace falta arar como en Grecia: se siembra en el barro y se deja que los animales pisen la semilla."),
                 Reach("Ve al mirador de las pirámides con el intérprete", pyramids, "Intérprete", "Esa es la del rey Keops. Me han dicho que la hicieron cien mil hombres en turnos de tres meses, durante veinte años."),
                 Talk("Pregunta a Heródoto si se lo cree", hero.transform, "Heródoto", "Cuento lo que me dicen; no estoy obligado a creerlo todo, pero sí a contarlo. Lo que vi con mis ojos lo digo; lo que oí, lo digo como oído."),
@@ -152,6 +153,7 @@ public static partial class StorySceneBuilder
                 "El libro II es Egipto, que visitó hacia los años 450. Allí dice que Egipto es «don del río» (II.5) y discute tres explicaciones de la crecida del Nilo (II.20–27): los vientos etesios, el Océano y la nieve que se funde; rechaza las tres y propone otra (el sol). La causa real son las lluvias del monzón de verano en las montañas de Etiopía, que alimentan el Nilo Azul.",
                 "Cuenta el experimento del faraón Psamético para saber cuál era la lengua más antigua (II.2) y que en Egipto se sembraba en el barro y se dejaba a los cerdos pisar la semilla (II.14). Sobre las pirámides (II.124) dice que trabajaron 100 000 hombres por turnos de tres meses durante 20 años. La arqueología (el poblado de los trabajadores de Guiza) muestra cuadrillas de trabajadores pagados y alimentados, de unos miles a la vez, no esclavos.",
                 "Su método, aunque imperfecto, es el comienzo de la historia y la geografía: viajar, preguntar a varias fuentes, comparar, decir qué parece verdad y por qué.",
+                "La campesina y el nombre de su hijo son una recreación: no constan. Heródoto dijo que escribía para que no se perdiera la memoria de lo que hicieron las personas, y esta escena lo lleva a quien nadie anotaba.",
             },
             new[]
             {
@@ -196,7 +198,7 @@ public static partial class StorySceneBuilder
             {
                 Talk("Habla con al-Juarismi en la Casa de la Sabiduría", kh.transform, "al-Juarismi", "El califa al-Mamún me ha pedido un libro breve de cálculo para lo que la gente necesita a diario: herencias, testamentos, repartos, comercio, medir la tierra y cavar canales."),
                 Talk("En el tribunal: escucha al cadí", qadi.transform, "El cadí", "Un hombre deja 100 dinares a sus dos hijos y su hija. Por la ley, cada hijo recibe el doble que la hija. ¿Cuánto es cada parte?"),
-                Collect("Reparte la herencia: la hija es «la cosa» (x); cada hijo, 2x. x + 2x + 2x = 100", dinars, court, "La heredera", "5x = 100, así que x = 20: veinte para mí y cuarenta para cada hermano. ¡Y suma cien!"),
+                Collect("Reparte la herencia: la hija es «la cosa» (x); cada hijo, 2x. x + 2x + 2x = 100", dinars, court, "La heredera", "5x = 100, así que x = 20: veinte para mí y cuarenta para cada hermano. ¡Y suma cien! Mis hermanos decían que no me tocaba nada. Él me lo ha enseñado gratis, en la arena, para que nadie me engañe nunca."),
                 Hold("Al-jabr y al-muqābala: completa el cuadrado de x² + 10x = 39", square, 12f, "al-Juarismi", "Parte las 10x en cuatro rectángulos de 2,5x alrededor del cuadrado. Faltan cuatro esquinas de 2,5 × 2,5: añade 25 a los dos lados (eso es al-jabr, «restaurar»). Queda un cuadrado de 64: su lado es 8, y x = 8 − 5 = 3."),
                 Talk("En el zoco: habla con el cambista", changer.transform, "El cambista", "Con los números de la India cuento en un momento: diez cifras y un círculo, ṣifr, para el vacío. Con él, el 105 no se confunde con el 15."),
                 Visit("Mide el canal con el capataz: comprueba las tres estacas", stakes, "Capataz", "Cada tramo, seis codos de largo; con tu cuenta sé cuánta tierra sacar y cuántos jornales pagar."),
@@ -209,6 +211,7 @@ public static partial class StorySceneBuilder
                 "Hacia el 820 escribió «al-Kitāb al-mukhtaṣar fī ḥisāb al-jabr wa-l-muqābala» (el libro breve del cálculo por restauración y comparación). De «al-jabr» viene la palabra álgebra. Clasifica las ecuaciones de primer y segundo grado en seis tipos y las resuelve con recetas en palabras (sin símbolos) y con figuras geométricas, como el cuadrado completado de x² + 10x = 39. Más de la mitad del libro trata de herencias y testamentos.",
                 "Otro libro suyo explicaba el cálculo con los numerales indios (con el cero, que Brahmagupta ya usaba en 628). Su traducción latina empezaba «Dixit Algoritmi…» («dijo al-Juarismi»): de su nombre viene la palabra algoritmo. Escribió también tablas astronómicas (zīj) y una geografía.",
                 "Bagdad, fundada en 762 por al-Mansur como una ciudad redonda con cuatro puertas, tenía hacia el 794 uno de los primeros molinos de papel del mundo islámico: el papel abarató los libros y ayudó al auge de las traducciones.",
+                "Es una recreación que enseñara gratis a una heredera: no consta. Su libro sí se escribió, según su prólogo, para los repartos y herencias de la gente.",
             },
             new[]
             {
@@ -254,7 +257,7 @@ public static partial class StorySceneBuilder
                 Visit("Lee la hora en los relojes de sol que talló de niño", dials, "Newton", "La sombra del palo gira 15 grados cada hora: la Tierra gira y el Sol parece moverse."),
                 Collect("Lleva los dos prismas al cuarto de Newton", prisms, room, "Newton", "Los compré en la feria de Stourbridge. Ahora, cierra la contraventana."),
                 Hold("El experimento crucial: mira cómo el primer prisma abre la luz en colores y el segundo no cambia el rojo", room, 12f, "Newton", "La luz blanca no es pura: es la mezcla de todos los colores. Cada color se desvía un poco distinto, y un color solo ya no se divide."),
-                Reach("Ve al huerto de manzanos", orchard, "Criado", "Ha caído otra manzana. Siempre caen hacia abajo, nunca de lado."),
+                Reach("Ve al huerto de manzanos", orchard, "Criado", "Ha caído otra manzana. Siempre caen hacia abajo, nunca de lado. Y esta mañana el señor ha dejado sus prismas y ha llevado leña y pan a la puerta de la viuda del molinero, que tiene la peste en casa. No quiere que se sepa."),
                 Hold("Quédate bajo el manzano y mira hacia la Luna", orchard, 10f, "Newton", "¿Y si la misma fuerza que tira de la manzana llega hasta la Luna, debilitada por la distancia? La Luna está a 60 radios de la Tierra: debería caer 60 × 60 = 3600 veces menos. Hago la cuenta… y casi cuadra."),
             },
             "Woolsthorpe (Lincolnshire, Inglaterra), 1666, sobre la planta atómica del santuario a escala de hormiga: el siguiente tramo de la escalera de la física tras Eratóstenes. La peste ha cerrado la universidad y el joven Isaac Newton está en la granja de su madre. Ayúdale con los prismas y piensa con él bajo el manzano. E para hablar y recoger; para mirar, quédate quieto.",
@@ -264,6 +267,7 @@ public static partial class StorySceneBuilder
                 "Con prismas comprados en una feria hizo pasar un rayo de sol por una rendija: el primer prisma abría la luz en un espectro de colores, y un segundo prisma no cambiaba el color de un rayo ya separado. Concluyó que la luz blanca es una mezcla de colores (Philosophical Transactions, 1672).",
                 "La historia de la manzana la contó el propio Newton, ya anciano, a William Stukeley en 1726 (Memoirs of Sir Isaac Newton's Life, 1752): no le cayó en la cabeza, la vio caer y se preguntó si la misma fuerza alcanzaba la Luna. Comparó la caída de la Luna (a unos 60 radios terrestres) con la de una manzana y vio que encajaba con una fuerza que disminuye con el cuadrado de la distancia. Lo publicó en los «Principia» (1687).",
                 "Newton era solitario, desconfiado y obsesivo con su trabajo (por eso su insecto es una araña): también dedicó años a la alquimia y a la teología.",
+                "Es una recreación que Newton llevara leña y pan a una viuda: no consta, y él era más bien huraño. Se ha añadido para mostrar una peste que también fue vecindad.",
             },
             new[]
             {
@@ -309,7 +313,7 @@ public static partial class StorySceneBuilder
                 Collect("Lleva la lanceta y la linfa de la mano de Sarah a la consulta", tools, study, "Jenner", "Con esta lanceta tomo un poco del líquido de la ampolla."),
                 Talk("14 de mayo: habla con James, el hijo del jardinero, de ocho años", james.transform, "James", "El doctor me ha hecho dos rasguñitos en el brazo. Me ha salido una ampolla y he tenido algo de fiebre un día. Ya estoy bien."),
                 Hold("1 de julio, seis semanas después: espera en el jardín mientras Jenner le inocula viruela de verdad", wait, 12f, "Jenner", "No ha enfermado. Ni ahora ni en las pruebas siguientes: está protegido."),
-                Reach("Ve a la mesa de notas", notes, "Jenner", "Lo llamaré variolae vaccinae, viruela de la vaca. Pero un caso no basta: repetiré la prueba con más personas antes de publicarlo."),
+                Reach("Ve a la mesa de notas", notes, "Jenner", "Lo llamaré variolae vaccinae, viruela de la vaca. Pero un caso no basta: repetiré la prueba con más personas antes de publicarlo. Y no la patentaré: que sea de todos."),
             },
             "Berkeley (Gloucestershire, Inglaterra), primavera de 1796, sobre el laboratorio de biología del santuario a escala de hormiga (las vacas de la granja son pulgones, como en todo el microcosmos). El médico rural Edward Jenner pone a prueba lo que cuentan las ordeñadoras. Acompáñale del establo a la consulta. E para hablar y recoger; para esperar, quédate quieto.",
             new[]
@@ -318,6 +322,7 @@ public static partial class StorySceneBuilder
                 "El 14 de mayo de 1796 Jenner tomó líquido de las lesiones de viruela vacuna (cowpox) de la mano de la ordeñadora Sarah Nelmes, que se había contagiado de la vaca Blossom, y lo inoculó a James Phipps, de 8 años, hijo de su jardinero. El 1 de julio le inoculó viruela y el niño no enfermó. En 1798 publicó «An Inquiry into the Causes and Effects of the Variolae Vaccinae» con más casos. De «vacca» (vaca) viene la palabra vacuna.",
                 "No fue el primero en intentarlo (el granjero Benjamin Jesty vacunó a su familia en 1774), pero sí quien lo estudió, lo publicó y lo difundió. Hoy un experimento así con un niño sería inaceptable: la ética médica exige consentimiento y comités de revisión.",
                 "La vacunación se extendió por el mundo (la expedición Balmis, 1803–1806, la llevó a América y Asia con niños que portaban la vacuna de brazo a brazo). La OMS declaró erradicada la viruela el 8 de mayo de 1980: la única enfermedad humana erradicada. La piel de Blossom se conserva en la biblioteca de St George's (Londres).",
+                "Jenner no patentó la vacuna, la dio a conocer y vacunó gratis a los pobres en una cabaña de su jardín, el «templo de Vaccinia».",
             },
             new[]
             {
@@ -411,7 +416,7 @@ public static partial class StorySceneBuilder
             new[]
             {
                 Talk("Habla con Nietzsche en su cuarto de la casa Durisch", fn.transform, "Nietzsche", "Dejé mi cátedra de Basilea: las jaquecas y los ojos ya no me dejaban leer. Aquí, a 1800 metros, el aire me deja pensar. Escribo caminando: seis, ocho horas al día."),
-                Talk("Habla con Gian Durisch, que le alquila el cuarto", durisch.transform, "Durisch", "Paga poco y pide poco: silencio y su cuarto a oscuras por los ojos. Sale con el cuaderno temprano y vuelve al anochecer."),
+                Talk("Habla con Gian Durisch, que le alquila el cuarto", durisch.transform, "Durisch", "Paga poco y pide poco: silencio y su cuarto a oscuras por los ojos. Sale con el cuaderno temprano y vuelve al anochecer. Medio ciego, con esas jaquecas, y ayer se paró a llevarle la leña a mi mujer hasta casa. A mi niña le guarda higos. Dirán lo que quieran de sus libros: es el hombre más amable que ha pasado por aquí."),
                 Collect("Llévale sus cuadernos de paseo", notebooks, room, "Nietzsche", "No me fío de ningún pensamiento que no haya nacido al aire libre y en movimiento."),
                 Visit("Camina con él por el sendero de la orilla, mojón a mojón", path, "Nietzsche", "Paso, paso, respiración. El cuerpo piensa: la cabeza solo pone en limpio lo que el cuerpo ya sabía."),
                 Hold("Junto a la roca de Surlej, quédate quieto con él", rock, 12f, "Nietzsche", "¿Y si un demonio te dijera que esta vida, tal como la vives, la vivirás otra vez, e innumerables veces, sin nada nuevo? ¿Lo maldecirías… o le dirías: nunca oí nada más divino? Lo anoto: «a 6000 pies más allá del hombre y del tiempo»."),
@@ -425,6 +430,7 @@ public static partial class StorySceneBuilder
                 "A principios de agosto de 1881, paseando por la orilla del lago de Silvaplana, junto a una gran roca piramidal cerca de Surlej, tuvo la idea del «eterno retorno»: la anotó en un papel con la frase «6000 pies más allá del hombre y del tiempo». La publicó en «La gaya ciencia» (1882, §341, «El peso más pesado») y la desarrolló en «Así habló Zaratustra» (1883–1885).",
                 "Daba mucha importancia a caminar: «Solo los pensamientos que se tienen caminando tienen valor» (El ocaso de los ídolos, 1889). En enero de 1889 sufrió un colapso mental en Turín y no se recuperó.",
                 "Su hermana Elisabeth, que controló sus escritos tras su muerte, los manipuló y los acercó al nacionalismo y al antisemitismo, que él había despreciado. Por eso conviene leerlo en ediciones críticas (Colli y Montinari).",
+                "Son una recreación la leña y los higos: no constan. Quienes lo trataron en Sils lo recuerdan como un huésped amable y discreto, y en Turín, en 1889, cuentan que abrazó a un caballo maltratado (el relato es dudoso).",
             },
             new[]
             {
@@ -470,7 +476,7 @@ public static partial class StorySceneBuilder
                 Collect("Ayuda al carretero a llevar los sacos de residuos de pechblenda al patio", sacks, cauldron, "Carretero", "Vienen de las minas de Joachimsthal, en Bohemia. Toneladas de esto, ¿y para sacar qué?"),
                 Hold("Remueve el caldero con la barra de hierro", cauldron, 12f, "Marie", "Disuelvo, filtro, precipito y vuelvo a cristalizar, una y otra vez. Cada vez la fracción que guardo es más activa. Es un trabajo agotador."),
                 Talk("Habla con Pierre", pierre.transform, "Pierre", "En julio encontramos el primero y Marie lo llamó polonio, por su Polonia. Y el 26 de diciembre anunciamos el segundo, con Bémont: el radio."),
-                Hold("De noche, mira los tubos que brillan en el estante", shelf, 8f, "Marie", "Una de nuestras alegrías era entrar de noche y ver, por todas partes, las siluetas débilmente luminosas de los frascos."),
+                Hold("De noche, mira los tubos que brillan en el estante", shelf, 8f, "Marie", "Una de nuestras alegrías era entrar de noche y ver, por todas partes, las siluetas débilmente luminosas de los frascos. Y no patentaremos el método: el radio es de todos."),
             },
             "París, diciembre de 1898, sobre el laboratorio de química del santuario a escala de hormiga. En un cobertizo de la Escuela de Física y Química, con goteras y una estufa, Marie y Pierre Curie buscan un elemento desconocido dentro de la pechblenda. Mide, carga y remueve con ellos. E para hablar y recoger; en los pasos de trabajo, quédate quieto.",
             new[]
@@ -479,6 +485,7 @@ public static partial class StorySceneBuilder
                 "En 1898 anunciaron el polonio (julio) y el radio (26 de diciembre, con Gustave Bémont), separados de residuos de pechblenda de Joachimsthal. Trabajaron en un cobertizo de la ESPCI, en la rue Lhomond. En 1902 Marie obtuvo una décima de gramo de cloruro de radio puro a partir de toneladas de mineral y midió su masa atómica.",
                 "Recibió el Nobel de Física en 1903 (con Pierre y Becquerel) y el de Química en 1911: la primera persona con dos premios Nobel y la única en dos ciencias distintas. Pierre murió atropellado por un carro en 1906.",
                 "No sabían lo peligrosa que era la radiación: llevaban muestras en los bolsillos. Marie murió en 1934 de anemia aplásica, probablemente por la radiación. Sus cuadernos siguen siendo radiactivos y se guardan en cajas de plomo en la Biblioteca Nacional de Francia. Por eso hoy se trabaja con dosímetro, blindaje y distancia.",
+                "Marie y Pierre Curie no patentaron su método de aislar el radio y lo compartieron con quien se lo pidió.",
             },
             new[]
             {
@@ -523,7 +530,7 @@ public static partial class StorySceneBuilder
                 Talk("Pregunta a Czito por la bobina", czito.transform, "Czito", "La bobina primaria da pulsos; la secundaria resuena a la misma frecuencia y sube la tensión a millones de voltios. Todo es resonancia: como empujar un columpio en el momento justo."),
                 Visit("Comprueba las tres lámparas clavadas en el campo: se encienden sin cables", lamps, "Tesla", "La energía llega por el campo y por el suelo, resonando. A unos metros, mis lámparas brillan sin tocar ningún hilo."),
                 Hold("Lejos de la bobina, mira el rayo artificial", coil, 12f, "Periodista", "¡Descargas de decenas de metros y un trueno que se oye en la ciudad! Los caballos echan chispas por las herraduras."),
-                Talk("En la central, habla con el maquinista", engineer.transform, "Maquinista", "Con su prueba ha quemado nuestro generador y ha dejado a oscuras Colorado Springs. Ha pagado él la reparación."),
+                Talk("En la central, habla con el maquinista", engineer.transform, "Maquinista", "Con su prueba ha quemado nuestro generador y ha dejado a oscuras Colorado Springs. Ha pagado él la reparación. Dicen que una vez rompió su contrato con Westinghouse y renunció a una fortuna para salvar a quien creyó en él."),
                 Hold("3 de julio: en la loma, mide la tormenta con Tesla", hill, 10f, "Tesla", "La tormenta se aleja, y mis aparatos marcan subidas y bajadas regulares: ondas estacionarias. Creo que la Tierra entera resuena, como un instrumento."),
             },
             "Colorado Springs (Colorado, EE. UU.), julio de 1899, sobre la construcción del santuario a escala de hormiga (su área lleva la electricidad). Nikola Tesla, el inventor del motor y el sistema de corriente alterna, ha montado una estación al pie de las Montañas Rocosas para hacer rayos y enviar energía sin cables. E para hablar y tocar; para mirar, quédate quieto y lejos de la bobina.",
@@ -533,6 +540,7 @@ public static partial class StorySceneBuilder
                 "De mayo de 1899 a enero de 1900 trabajó en Colorado Springs con un «transmisor amplificador»: una bobina resonante enorme con un mástil y una bola de cobre. Produjo descargas de decenas de metros (sus notas hablan de más de 40 m; probablemente menos), encendió lámparas a distancia y, al sobrecargar el generador de la compañía local, dejó la ciudad a oscuras.",
                 "El 3 de julio de 1899, midiendo una tormenta que se alejaba, creyó detectar ondas estacionarias en la Tierra y concluyó que se podría transmitir energía por todo el planeta. Lo intentó en la torre de Wardenclyffe (Nueva York), que quedó sin terminar por falta de dinero. Algunas de sus afirmaciones (señales de Marte) no se confirmaron.",
                 "Murió pobre en un hotel de Nueva York. La unidad de inducción magnética del Sistema Internacional, el tesla (T), lleva su nombre desde 1960.",
+                "Que rompiera su contrato con Westinghouse lo cuentan sus biógrafos, y otros historiadores lo discuten: se da como relato, no como hecho seguro.",
             },
             new[]
             {
@@ -577,7 +585,7 @@ public static partial class StorySceneBuilder
                 Hold("Mira el reloj de la torre desde el tranvía que se aleja", tower, 10f, "Einstein", "Si me alejara de la torre a la velocidad de la luz, la luz de las agujas no me alcanzaría: para mí, el reloj parecería parado. ¿Qué significa entonces «al mismo tiempo»?"),
                 Visit("En la oficina, revisa tres solicitudes de patente", patents, "Besso", "Aquí llegan muchos aparatos para sincronizar relojes de estaciones lejanas con señales eléctricas. Saber qué hora es «a la vez» en dos sitios es un problema práctico."),
                 Talk("Habla con su amigo Michele Besso", besso.transform, "Besso", "Ayer le di vueltas al problema con él y se fue a casa abatido. Hoy ha venido y me ha dicho: «Gracias, lo he resuelto». El tiempo no es absoluto."),
-                Hold("En la mesa de la Academia Olimpia, discute con Solovine y Habicht", table, 10f, "Solovine", "Leemos a Hume, a Mach, a Poincaré, y discutimos hasta las tantas con salchicha, queso y té. Lo llamamos, en broma, la Academia Olimpia."),
+                Hold("En la mesa de la Academia Olimpia, discute con Solovine y Habicht", table, 10f, "Solovine", "Leemos a Hume, a Mach, a Poincaré, y discutimos hasta las tantas con salchicha, queso y té. Lo llamamos, en broma, la Academia Olimpia. Yo vine por un anuncio, a pagarle clases de física. Pronto dejó de cobrarme: dijo que prefería charlar."),
                 Talk("En casa, habla con Mileva", mileva.transform, "Mileva", "Estudiamos física juntos en Zúrich. Ahora tenemos a Hans Albert, de un año, y él escribe por las noches en esta mesa."),
                 Reach("Vuelve a la mesa de la Kramgasse", home, "Einstein", "Cuatro artículos este año: la luz en cuantos, el movimiento browniano, la relatividad especial y, en septiembre, una nota corta: la masa es energía, E = mc²."),
             },
@@ -588,6 +596,7 @@ public static partial class StorySceneBuilder
                 "En 1905, su «año milagroso», publicó en «Annalen der Physik» cuatro artículos: la luz formada por cuantos de energía (efecto fotoeléctrico, por el que recibió el Nobel de 1921), el movimiento browniano (la prueba de que existen los átomos), la relatividad especial («Sobre la electrodinámica de los cuerpos en movimiento», junio) y la equivalencia entre masa y energía (septiembre), E = mc².",
                 "Contó (Kioto, 1922) que la clave le vino tras una conversación con su amigo Michele Besso: la simultaneidad depende del observador y el tiempo no es absoluto. El historiador Peter Galison señala que en la oficina de patentes pasaban muchos aparatos para sincronizar relojes con señales eléctricas: un problema práctico de la época.",
                 "Con sus amigos Maurice Solovine y Conrad Habicht leía y discutía filosofía y física en la «Academia Olimpia». La historia de que miró la Torre del Reloj desde el tranvía es una anécdota muy repetida, sin documento que la confirme.",
+                "Según contó Maurice Solovine, llegó por un anuncio de clases y Einstein pronto dejó de cobrarle. Se da como recuerdo de Solovine.",
             },
             new[]
             {

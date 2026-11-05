@@ -116,7 +116,7 @@ public class GymTrainingTest : MonoBehaviour, ITestUnit
         var r2 = new WorkRoster(); r2.areas.Add("Cocina"); r2.areas.Add(GymProgramming.GymArea);
         foreach (string n in new[] { "Amahuz", "Karen" }) r2.Add(n);
         WorkRoster.DayPlan p2 = r2.Plan(0, Day());
-        TestProbe.Check("sin el entrenador no la hace otro ni queda pendiente", !p2.work.Any(x => x.mission.id == GymProgramming.PlanMissionId) && !p2.backlog.Any(x => x.id == GymProgramming.PlanMissionId)
+        TestProbe.Check("regla de oro (J30): sin el entrenador, la misión sigue por rotación (la hace otro o queda pendiente, no se pierde)", p2.work.Any(x => x.mission.id == GymProgramming.PlanMissionId) || p2.backlog.Any(x => x.id == GymProgramming.PlanMissionId)
             , string.Join(", ", p2.work.Where(x => x.mission.id == GymProgramming.PlanMissionId).Select(x => x.worker.name)));
         GymProgramming.ResetAll();
         List<string> lines = GymProgramming.Review(GymProgramming.Trainer, 0, WorkdayDirector.Staff);

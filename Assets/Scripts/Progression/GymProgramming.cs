@@ -34,7 +34,7 @@ public static class GymProgramming
     /// <summary>Misión de la jornada del entrenador: revisar el registro de series y ajustar los planes (1 h, solo él).</summary>
     public const string PlanMissionId = "gym_planes";
 
-    /// <summary>Las misiones de papel fijo del gimnasio (la de los planes, con dueño: <see cref="WorkRoster.Mission.owner"/>).</summary>
+    /// <summary>La misión del puesto de entrenador (la de los planes: primero para él, <see cref="WorkRoster.Mission.owner"/>; sin él, por rotación: J30).</summary>
     public static List<WorkRoster.Mission> Missions() => new List<WorkRoster.Mission>
     {
         new WorkRoster.Mission(GymArea, PlanMissionId, "Entrenador: revisar el registro de series y ajustar los planes", 1f) { owner = Trainer, lead = true },

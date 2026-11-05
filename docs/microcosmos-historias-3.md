@@ -70,12 +70,41 @@ Manual §11. Decisión por defecto (del coordinador): lo inventado se permite co
 | Lincoln | Biggs y Thorn entierran a los soldados | Ya estaba |
 | Feria | Dejar el poder, la venganza o el dinero | Ya estaba |
 
-### Microcosmos anteriores sin ese momento (lista; no se han tocado)
+### Microcosmos anteriores: W10 aplicada (2026-11-05)
 
-Leí los pasos de 15 historias dudosas; las demás se juzgan por su tema (Nightingale, Sendler, Le Chambon, Tregua, Chernóbil, Jenner, Scott, Buda, Wright… lo tienen claramente).
-- **Sin él:** Heródoto (Menfis), Eratóstenes (Alejandría), Newton (Woolsthorpe), Nietzsche (Sils Maria), al-Juarismi (Bagdad): son de saber; ninguna acción por otros.
-- **Flojo:** Einstein (Berna: la amistad con Besso), Tesla (paga la avería), Bill Gates (Albuquerque: superación técnica), Warren Buffett (Omaha: honradez de la señora B), Traoré (Uagadugú: acto de Estado), Pitágoras (la vida común y Milón), Pakal (la madre que gobierna).
-- Con **vivos** (Gates, Buffett, Traoré) solo valdría un hecho público real.
+Leídos los pasos de las historias con misión. **Cambiadas** (una frase en un paso y su nota en la ficha):
+
+| Historia | Su momento | Qué es |
+|---|---|---|
+| Pitágoras | Milón sostiene la viga para que salgan todos | Leyenda antigua (Estrabón) |
+| Heródoto | Escribe el nombre del hijo de una campesina | Recreación |
+| Eratóstenes | Pone en su libro al bematista que caminó | Recreación |
+| Newton | Deja leña y pan a una viuda en la peste, sin decirlo | Recreación |
+| Nietzsche | Lleva la leña y guarda higos a la niña de Durisch | Recreación |
+| al-Juarismi | Enseña gratis a la heredera para que no la engañen | Recreación |
+| Einstein | Deja de cobrar las clases a Solovine | Según Solovine; [verificar] |
+| Tesla | Rompe su contrato con Westinghouse | Relato discutido |
+| Jenner, Curie | No patentan | Hecho |
+| Gates (vivo) | Solo en la ficha: su fundación, la visita a Ed Roberts en 2010, Giving Pledge | Hecho público |
+| Buffett (vivo) | La señora B trae a su familia de Rusia; en la ficha, sus donaciones | Hecho público |
+| Traoré (vivo) | Yacouba Sawadogo enseña el zaï | Hecho público |
+
+**Ya lo tenían:** Tregua, Nightingale, Buda, Wright, Bruce Lee, Patterson, Chernóbil, Bolívar (la libertad de los esclavos), Patanjali, Pakal, Sadhguru (seva), Musk (el equipo), Goku, Scott, Sendler y Le Chambon. **Sin misión ni ficha**, no se tocan: Mesopotamia, Egina, las tribus (Textil, Mecánica, Sala de Yoga), Planta Atómica y las historias guionizadas de Sakshi, Ambrosio, Cocina y Huerto, que ya van de cuidar y compartir. La música la lleva su rama.
+
+### Regla W11: la primera auditoría (2026-11-05)
+
+Se auditaron las reglas de §11 (W9, W10, sincronización, alerta de piso nuevo) contra lo que hay.
+- **W10:** arriba. **Encontrado de paso:** Traoré y su ministro decían frases inventadas, contra J6 («a un político vivo no se le inventan frases»): corregido; ahora lo cuenta una funcionaria inventada.
+- **Tabla de §11 frente a `MicroFloors.Table`:** faltaba Barranquilla (Shakira) en la fila del Aula: añadida. Las demás están, algunas con otro rótulo.
+- **Alerta de piso nuevo:** Música ya recogió a Viena (rama de música). Sigue sin piso propio la Sala de asambleas, con 5 historias.
+
+**Reglas añadidas:** M36 (fichas con fecha de caducidad), M37 (antes de la máquina, el piso es roca), M38 (los animales del pueblo van en el mapa), W11 misma.
+
+**Propuestas, sin hacer (para Berón):**
+1. W10 en los vivos no políticos: Sadhguru, Musk, Gates, Buffett y Scott dicen frases de juego (marcadas en su ficha). W10 solo prohíbe actos; ¿se les quitan también las frases, como a los políticos?
+2. Una prueba que compare la tabla de §11 con `MicroFloors.Table`, y otra que mire los nombres de planta de cada mapa (hoy solo avisa la consola).
+3. Aplicar M37 a las historias antiguas cuando su mapa pase de esbozo a hecho.
+4. Crear el piso «Sala de asambleas (parlamento)»: lo piden Angostura, Onondaga, Madrid, Gettysburg y la Feria.
 
 ### Lincoln: sí
 

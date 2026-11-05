@@ -601,7 +601,7 @@ public static partial class StorySceneBuilder
                 Talk("Habla con Eratóstenes en la biblioteca", era.transform, "Eratóstenes", "Dicen que en Siena, al mediodía del día más largo, el Sol ilumina el fondo de los pozos. Aquí, en Alejandría, los palos sí dan sombra. ¿Por qué?"),
                 Reach("Viaja al sur, al pozo de Siena", well, "Momo", "¡Mira dentro! El Sol se ve en el agua del fondo."),
                 Hold("Mediodía del solsticio en Siena: mira el palo, sin sombra", well, 8f, "Eratóstenes", "El Sol está justo encima de Siena: sus rayos caen rectos."),
-                Talk("Pregunta al bematista Atlas cuánto hay hasta Alejandría", bematist.transform, "Atlas", "Lo he medido a pasos: 5000 estadios."),
+                Talk("Pregunta al bematista Atlas cuánto hay hasta Alejandría", bematist.transform, "Atlas", "Lo he medido a pasos: 5000 estadios. Y me ha dicho que en su libro pondrá que fueron mis pies, no solo su cabeza. Nadie pone en los libros a los que caminan."),
                 Reach("Vuelve al norte, al gnomon de Alejandría", gnomon, "Medea", "Hoy es el mismo día, y este palo sí da sombra."),
                 Hold("Mide el ángulo de la sombra del gnomon", gnomon, 8f, "Eratóstenes", "La sombra marca 7,2°: una cincuentava parte del círculo."),
                 Talk("Haz la cuenta con Eratóstenes", era.transform, "Eratóstenes", "Si 5000 estadios son 1/50 de la vuelta, la Tierra entera mide 50 × 5000 = 250 000 estadios."),
@@ -613,6 +613,7 @@ public static partial class StorySceneBuilder
                 "Supo que en Siena (hoy Asuán), al mediodía del solsticio de verano, el Sol iluminaba el fondo de los pozos: estaba en el cenit. El mismo día, en Alejandría, un gnomon daba una sombra que marcaba 1/50 de círculo (7,2°). Como el Sol está tan lejos que sus rayos llegan casi paralelos, ese ángulo es también el que separa las dos ciudades medido desde el centro de la Tierra.",
                 "Con 5000 estadios entre Siena y Alejandría, la circunferencia sale 50 × 5000 = 250 000 estadios (luego usó 252 000). No sabemos con seguridad cuánto medía su estadio: según el valor, el resultado queda entre unos 39 000 y 46 000 km. La circunferencia real es de unos 40 000 km.",
                 "Es geometría y observación: dos sombras, una distancia y una regla de tres. La misma manera de pensar llevó, siglos después, a Galileo, a Newton y al átomo.",
+                "Es una recreación que Eratóstenes reconociera al bematista: no consta. Los bematistas, medidores a pie, existían, y sin ellos no había cuenta.",
             },
             new[]
             {

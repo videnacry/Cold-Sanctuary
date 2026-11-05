@@ -47,7 +47,7 @@ Durante las 8 h los personajes van al área de su misión y se quedan allí. **N
    Desde el 2026-11-04, **el gimnasio va por los días del plan de cada uno** (`GymProgramming.ApplyGymDays`; el entrenador, Andrea,
    siempre): quien tiene gimnasio ese día en su plan va; a quien la rotación mandaba un día sin gimnasio en su plan, se le da el
    siguiente entrenamiento abierto ([gimnasio-maquinas.md](gimnasio-maquinas.md) §15).
-9. **Misiones de papel fijo** (`Mission.owner`, 2026-11-04): solo las hace su dueño y se le asignan antes que nada; sin él, ese
+9. **Misiones de puesto** (`Mission.owner`; regla de oro J30, 2026-11-05: antes solo las hacía su dueño y sin él no se hacían): se le ofrecen primero a su dueño; sin él, siguen por rotación. Texto antiguo: sin él, ese
    día no se hacen ni quedan pendientes. Hoy: «gym_planes», del entrenador del gimnasio.
 
 **Equilibrio** (`WorkRoster.Balance`, en el log y en `jornada`) avisa de tres cosas:
