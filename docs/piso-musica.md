@@ -24,10 +24,10 @@ Total: **2 escenarios, 4 estudios, 8 salas de ensayo** con 40 plazas: pueden ens
 |---|---|---|
 | Un cristal acústico de 12,5 mm | ~Rw 40 | glassatwork.co.uk (catálogo) |
 | Doble acristalamiento estándar, cámara térmica | Rw 30–33 | ídem |
-| Doble cristal de mampara acústica | Rw 44–52 (laboratorio) | Tenon Vitrage dB, Indeglas FG2 (catálogos) |
+| Doble cristal de mampara acústica | Rw 44–52 (laboratorio) | catálogos de mamparas (Indeglas FG2: 44 dB; el resto, sin atribución verificada) |
 | Pérdida en obra | hasta 8 dB | glassonweb.com |
 | Cámara de aire | ≥ 50 mm; 2–3 dB por cada doblado | glassatwork; foros de John Sayers |
-| Ventana de control clásica | dos cristales con 200 mm de aire y marcos separados: ~40 dB | *Home & Studio Recording* (1984), vía muzines.co.uk |
+| Ventana de control clásica | dos cristales con 200 mm de aire y marcos separados: ~40 dB | artículo de revista de 1984, en muzines.co.uk |
 | Meta entre salas de ensayo | STC 50 (uso normal), 55 (silencioso) | guía del sector en build-construct.com |
 | Meta en puertas de sala de música | STC 40 | ANSI, citado en esa búsqueda |
 | Estudio serio | STC 55–65 («room within a room», ~55–60 dB) | studiomatrx, secondskinaudio (vendedores), sonicscoop |
