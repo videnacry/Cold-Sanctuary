@@ -13,7 +13,8 @@ public class SpeciesScaleFix : MonoBehaviour
     // Largo real del adulto (m), cabeza a cola; en los erguidos (pingüino), la altura. [A] aproximaciones de manual.
     public static readonly Dictionary<string, float> Real = new Dictionary<string, float>
     {
-        ["Bear"] = 2.2f, ["PolarBear"] = 2.2f, ["Seal"] = 1.6f, ["Penguin"] = 1.1f, ["Whale"] = 15f, ["Orca"] = 7f,
+        ["Bear"] = 2.2f, ["PolarBear"] = 2.2f, ["Seal"] = 1.6f, ["Penguin"] = 0.6f, ["Whale"] = 15f, ["Orca"] = 7f,
+        ["EmperorPenguin"] = 1.0f, ["Walrus"] = 3.0f, ["Reindeer"] = 2.0f, ["MuskOx"] = 2.3f, ["ArcticHare"] = 0.62f, ["ArcticFox"] = 0.85f,
         ["Wolf"] = 1.4f, ["Malamute"] = 1.0f, ["Fox"] = 0.65f, ["Bunny"] = 0.6f, ["Deer"] = 1.9f,
     };
 

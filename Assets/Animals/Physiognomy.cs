@@ -45,8 +45,16 @@ public class Physiognomy
             { "Deer",     new Physiognomy(new Vector3(0.219f, 0.219f, 0.219f),90f, 0.07f, 0.25f, 0.1f) },
             { "Whale",    new Physiognomy(new Vector3(1.157f, 1.157f, 1.157f),1300f, 0.04f, 0.3f, 0.12f) },
             // Fauna de hielo (escala placeholder; el compañero la ajusta al mesh real — ver Measure Raw Animal Sizes)
-            { "Penguin",  new Physiognomy(new Vector3(0.5f, 0.5f, 0.5f),       30f, 0.06f, 0.3f, 0.1f) },
+            { "Penguin",  new Physiognomy(new Vector3(0.5f, 0.5f, 0.5f),       4.5f, 0.06f, 0.3f, 0.1f) },   // pingüino de Adelia (el emperador es EmperorPenguin)
             { "Orca",     new Physiognomy(new Vector3(2.5f, 2.5f, 2.5f),     4000f, 0.04f, 0.3f, 0.12f) },
+            // Territorio polar: cuerpo de cubos a tamaño real (escala 1); masa de la ficha (docs/reglas-animales.md).
+            { "Walrus",   new Physiognomy(Vector3.one, 1000f, 0.03f, 0.08f, 0.01f) },   // ~25 kg/día
+            { "EmperorPenguin", new Physiognomy(Vector3.one, 30f, 0.06f, 0.3f, 0.1f) },
+            { "Reindeer", new Physiognomy(Vector3.one, 140f, 0.07f, 0.25f, 0.1f) },
+            { "ArcticHare", new Physiognomy(Vector3.one, 4f, 0.13f, 0.18f, 0.07f) },
+            { "ArcticFox", new Physiognomy(Vector3.one, 3.3f, 0.09f, 0.2f, 0.05f) },
+            { "MuskOx",   new Physiognomy(Vector3.one, 300f, 0.07f, 0.25f, 0.1f) },
+
             // Insectos — escala de prefab ajustada al suelo del Microcosmos
             { "Ant",     new Physiognomy(new Vector3(0.003f, 0.003f, 0.003f), 0.002f, 0.10f, 0.15f, 0.05f) },
             { "Aphid",   new Physiognomy(new Vector3(0.004f, 0.003f, 0.004f), 0.001f, 0.05f, 0.10f, 0.03f) },

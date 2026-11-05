@@ -12,7 +12,9 @@ public static class PopulationPlan
     public static readonly Dictionary<string, float> PerHuman = new Dictionary<string, float>
     {
         { "Bear", 0.3f }, { "PolarBear", 0.3f }, { "Penguin", 1.2f }, { "Seal", 0.6f }, { "Whale", 0.2f }, { "Orca", 0.1f },
-        { "Fox", 0.2f }, { "Wolf", 0.2f },
+        { "Fox", 0.2f }, { "Wolf", 0.3f },
+        // Territorio polar (docs/reglas-animales.md): en la isla, más herbívoros que depredadores.
+        { "Walrus", 0.3f }, { "EmperorPenguin", 0.8f }, { "Reindeer", 0.6f }, { "MuskOx", 0.3f }, { "ArcticHare", 0.5f }, { "ArcticFox", 0.2f },
     };
 
     /// <summary>Humanos del santuario (el personal + la Magnate). Lo actualiza la jornada al cambiar el personal.</summary>

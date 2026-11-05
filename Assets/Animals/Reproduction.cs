@@ -204,9 +204,11 @@ public class Reproduction : MonoBehaviour
     /// (doi 10.1111/j.1365-2656.2007.01318.x).</summary>
     public static (float gestationMonths, float intervalMonths) Calendar(string sp) => sp switch
     {
-        // Pingüino emperador: la «gestación» es de la cópula a la PUESTA (~1 mes; la pareja se forma en abril y el huevo sale en
+        // (Penguin = pingüino de Adelia: llega al nido y pone en ~2 semanas [A].) Pingüino emperador: la «gestación» es de la cópula a la PUESTA (~1 mes; la pareja se forma en abril y el huevo sale en
         // mayo–junio, Prévost 1961 [A]); luego el macho incuba el huevo 2,1 meses (LifeHistory/Egg).
-        "Seal" => (10.5f, 12f), "Penguin" => (0.8f, 12f), "Bear" => (8f, 29f), "PolarBear" => (8f, 36f),
+        "Seal" => (10.5f, 12f), "EmperorPenguin" => (0.8f, 12f), "Penguin" => (0.5f, 12f), "Bear" => (8f, 29f), "PolarBear" => (8f, 36f),
+        // Territorio polar (fuentes en docs/reglas-animales.md).
+        "Walrus" => (15f, 31f), "Reindeer" => (7.6f, 12f), "MuskOx" => (8f, 15f), "ArcticHare" => (1.7f, 12f), "ArcticFox" => (1.7f, 12f),
         "Whale" => (11.5f, 30f), "Orca" => (17f, 60f), "Fox" => (1.7f, 12f), "Wolf" => (2.1f, 12f),
         "Malamute" => (2.1f, 7f), "Deer" => (7.3f, 12f), "Bunny" => (1f, 1.5f), "Meerkat" => (2.3f, 4f),
         // INSECTOS (docs/insect-biology-audit.md): "gestación" = del apareamiento a que sale la cría (incubación del

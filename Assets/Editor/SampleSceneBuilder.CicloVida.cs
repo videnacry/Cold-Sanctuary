@@ -91,7 +91,9 @@ public static partial class SampleSceneBuilder
         island.transform.position = I;
         Material snow = MakeMaterial("CicloVida_Nieve_MAT", new Color(0.86f, 0.9f, 0.93f));
         Material ice = MakeMaterial("CicloVida_Hielo_MAT", new Color(0.7f, 0.84f, 0.92f));
-        var slab = GameObject.CreatePrimitive(PrimitiveType.Cylinder); slab.name = "Casquete";
+        bool land = habitat == CicloVidaPanel.Habitat.Tierra;   // especies de la isla de tierra: suelo de tundra en vez de hielo
+        if (land) { snow = MakeMaterial("CicloVida_Tundra_MAT", new Color(0.42f, 0.44f, 0.3f)); ice = MakeMaterial("CicloVida_Roca_MAT", new Color(0.4f, 0.38f, 0.36f)); }
+        var slab = GameObject.CreatePrimitive(PrimitiveType.Cylinder); slab.name = land ? "Tierra" : "Casquete";
         slab.transform.SetParent(island.transform, false);
         slab.transform.localPosition = new Vector3(0f, -0.75f, 0f); slab.transform.localScale = new Vector3(2f * R, 0.75f, 2f * R);
         slab.GetComponent<Renderer>().sharedMaterial = snow;
@@ -100,7 +102,7 @@ public static partial class SampleSceneBuilder
         for (int i = 0; i < 7; i++)   // bloques y montículos de hielo (paisaje; los animales los rodean)
         {
             float a = (float)rnd.NextDouble() * Mathf.PI * 2f, d = R * (0.55f + 0.35f * (float)rnd.NextDouble());
-            var b = GameObject.CreatePrimitive(PrimitiveType.Cube); b.name = "Bloque_hielo";
+            var b = GameObject.CreatePrimitive(PrimitiveType.Cube); b.name = land ? "Roca" : "Bloque_hielo";
             b.transform.SetParent(island.transform, false);
             float s = 0.8f + 1.6f * (float)rnd.NextDouble();
             b.transform.localPosition = new Vector3(Mathf.Cos(a) * d, s * 0.35f, Mathf.Sin(a) * d);
@@ -134,14 +136,32 @@ public static partial class SampleSceneBuilder
                 WaterBowl(island.transform, I + new Vector3(5f, 0f, -3f));   // el malamute BEBE (Hydration)
             }
         }
+        if (land)
+        {
+            if (sp == "Wolf" || sp == "ArcticFox")
+            {
+                Bowl(island.transform, I + new Vector3(4f, 0f, 2f), "carne");
+                Den(island.transform, I + new Vector3(-6f, 0f, 5f), ice, sp == "Wolf" ? "Guarida de roca\n(la loba pare dentro)" : "Madriguera\n(la zorra pare dentro)", sp == "Wolf" ? 1.8f : 1.2f, sp);
+                food = "carne (cuenco)";
+            }
+            else
+            {
+                // Sus plantas, que no se acaban: lo que su ficha dice que come (Ethogram).
+                TundraPatch(island.transform, I + new Vector3(4f, 0f, 2f), AffordanceKind.Willow, "Sauce ártico");
+                if (sp != "ArcticHare") TundraPatch(island.transform, I + new Vector3(-4f, 0f, 3f), sp == "Reindeer" ? AffordanceKind.Lichen : AffordanceKind.Grass, sp == "Reindeer" ? "Liquen de reno" : "Juncia");
+                food = sp == "ArcticHare" ? "sauce ártico (inagotable)" : sp == "Reindeer" ? "liquen y sauce (inagotables)" : "juncia y sauce (inagotables)";
+            }
+            WaterBowl(island.transform, I + new Vector3(5f, 0f, -3f));   // la charca de la tundra
+        }
         if (habitat == CicloVidaPanel.Habitat.Costa || habitat == CicloVidaPanel.Habitat.Mar)
         {
             bool shore = habitat == CicloVidaPanel.Habitat.Costa;
             // El banco junto a la orilla (el pingüino pesca desde el borde y bucea hasta él) o en el centro de la laguna.
             Vector3 at = shore ? new Vector3(I.x, -2f, I.z - R - 6f) : new Vector3(CvLagoon.x, -2f, CvLagoon.z + 4f);
-            School(at, SwarmKind.Fish, "Fish", new Color(0.35f, 0.55f, 0.65f, 0.6f));
-            if (sp == "Penguin" || sp == "Whale") School(at + new Vector3(8f, 0f, -3f), SwarmKind.Krill, "Krill", new Color(0.75f, 0.45f, 0.4f, 0.6f));
-            food = sp == "Penguin" || sp == "Whale" ? "peces y krill (bancos inagotables)" : "peces (banco inagotable)";
+            if (sp == "Walrus") School(at, SwarmKind.Clam, "Almejas", new Color(0.7f, 0.62f, 0.5f, 0.6f));   // su fondo de bivalvos
+            School(at + (sp == "Walrus" ? new Vector3(-10f, 0f, 0f) : Vector3.zero), SwarmKind.Fish, "Fish", new Color(0.35f, 0.55f, 0.65f, 0.6f));
+            if (sp == "Penguin" || sp == "EmperorPenguin" || sp == "Whale") School(at + new Vector3(8f, 0f, -3f), SwarmKind.Krill, "Krill", new Color(0.75f, 0.45f, 0.4f, 0.6f));
+            food = sp == "Walrus" ? "bivalvos del fondo (banco inagotable)" : sp == "Penguin" || sp == "EmperorPenguin" || sp == "Whale" ? "peces y krill (bancos inagotables)" : "peces (banco inagotable)";
         }
         GameObject cubeTree = null;
         if (tree)
@@ -288,11 +308,22 @@ public static partial class SampleSceneBuilder
     static void School(Vector3 at, SwarmKind kind, string unit, Color c)
     {
         bool krill = kind == SwarmKind.Krill;
-        Swarm s = Swarm.Create<Swarm>(null, $"Banco_inagotable_{unit}", at, kind, krill ? SwarmModels.Species.Krill : SwarmModels.Species.SilverFish, krill ? 60f : 40f, krill ? 60f : 40f, krill ? 3f : 3.5f);
+        Swarm s = Swarm.Create<Swarm>(null, $"Banco_inagotable_{unit}", at, kind, kind == SwarmKind.Clam ? SwarmModels.Species.Clam : krill ? SwarmModels.Species.Krill : SwarmModels.Species.SilverFish, krill ? 60f : 40f, krill ? 60f : 40f, krill ? 3f : 3.5f);
         s.wanderRadius = 5f;
         GameObject school = s.gameObject;
         school.AddComponent<BottomlessFood>().leash = 6f;
-        WorldLabel wl = school.AddComponent<WorldLabel>(); wl.text = kind == SwarmKind.Fish ? "Banco de peces inagotable" : "Krill inagotable"; wl.height = 3.5f;
+        WorldLabel wl = school.AddComponent<WorldLabel>(); wl.text = kind == SwarmKind.Clam ? "Bivalvos inagotables" : kind == SwarmKind.Fish ? "Banco de peces inagotable" : "Krill inagotable"; wl.height = 3.5f;
+    }
+
+    // Una mancha de planta que no se acaba (Affordance con existencias enormes): comen de ella los herbívoros de la isla de tierra.
+    static void TundraPatch(Transform parent, Vector3 at, AffordanceKind kind, string text)
+    {
+        var p = GameObject.CreatePrimitive(PrimitiveType.Cube); p.name = "Mancha_" + kind; p.transform.SetParent(parent, true);
+        p.transform.position = at + Vector3.up * 0.1f; p.transform.localScale = new Vector3(3f, 0.2f, 3f);
+        p.GetComponent<Renderer>().sharedMaterial = MakeMaterial("CicloVida_Mancha_" + kind + "_MAT", kind == AffordanceKind.Lichen ? new Color(0.72f, 0.76f, 0.66f) : new Color(0.4f, 0.55f, 0.32f));
+        Object.DestroyImmediate(p.GetComponent<Collider>());
+        Affordance.Put(p, kind, 8, 1000000f, 1f);
+        WorldLabel wl = p.AddComponent<WorldLabel>(); wl.text = text; wl.height = 1.2f;
     }
 
     // Guarida/caseta: tres bloques en arco (techo y dos paredes), abierta por delante.

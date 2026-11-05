@@ -26,7 +26,7 @@ public static class CubeBody
         if (s.Contains("ant") || s.Contains("aphid") || s.Contains("ladybug") || s.Contains("spider") || s.Contains("cricket") ||
             s.Contains("termite") || s.Contains("beetle") || s.Contains("antlion") || s.Contains("mantis") || s.Contains("grasshopper") ||
             s.Contains("bee")) return Plan.Insect;
-        if (s.Contains("whale") || s.Contains("seal") || s.Contains("orca") || s.Contains("fish")) return Plan.Fish;
+        if (s.Contains("whale") || s.Contains("seal") || s.Contains("walrus") || s.Contains("orca") || s.Contains("fish")) return Plan.Fish;
         if (s.Contains("penguin") || s.Contains("bird") || s.Contains("gallina")) return Plan.Bird;
         return Plan.Quadruped;   // wolf/bunny/fox/deer/bear/malamute…
     }

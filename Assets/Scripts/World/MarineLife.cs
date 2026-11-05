@@ -51,8 +51,8 @@ public class MarineLife : MonoBehaviour
         _a = GetComponent<Animal>();
         _estrus = GetComponent<EstrusState>();
         string sp = _a != null ? _a.SpeciesName : "";
-        hauls = sp == "Seal";
-        speed = sp == "Orca" ? 3.2f : sp == "Whale" ? 1.6f : 2.2f;
+        hauls = sp == "Seal" || sp == "Walrus";
+        speed = sp == "Orca" ? 3.2f : sp == "Whale" ? 1.6f : sp == "Walrus" ? 1.8f : 2.2f;
         if (TryGetComponent(out NavMeshAgent nav)) nav.enabled = false;   // nada: no anda por el NavMesh
         if (TryGetComponent(out Rigidbody rb)) { rb.isKinematic = true; rb.useGravity = false; }
         if (transform.position.y > -0.3f && !hauls) transform.position = new Vector3(transform.position.x, SwimY, transform.position.z);
@@ -165,7 +165,8 @@ public class MarineLife : MonoBehaviour
         }
         if (_a.hungry >= 0f)
         {
-            Swarm fish = OpenWaterSwarm(transform.position);
+            // (la morsa baja a los bivalvos del fondo; los demás, al banco en agua abierta)
+            Swarm fish = _a.Forage != null && _a.Forage.eatsClams ? Swarm.Nearest(transform.position, SwarmKind.Clam) : OpenWaterSwarm(transform.position);
             if (fish != null) { Vector3 f = fish.transform.position; f.y = Mathf.Min(f.y, SwimY); Move(f, speed * 1.2f, false); return; }
         }
         if (_estrus != null && _estrus.InEstrus && _a.sex == Sex.female && _a.lifeStage == LifeStage.adult)
@@ -289,6 +290,7 @@ public class MarineLife : MonoBehaviour
     bool Habitat()
     {
         string sp = _a.SpeciesName;
+        if (sp == "Walrus") return false;   // su hábito es el descanso en la orilla (hauls)
         if (_spot == null)
         {
             if (Time.time < _nextSpot) return false;

@@ -25,6 +25,9 @@ public class Forager : MonoBehaviour
     public float shoreFishingReach = 25f;
     [Tooltip("Come KRILL (Swarm de clase Krill) — dieta propia distinta del pez.")]
     public bool eatsKrill;
+    [Tooltip("Come BIVALVOS del fondo (Swarm de clase Clam): la morsa.")]
+    public bool eatsClams;
+
     [Tooltip("Come EXCREMENTO (coprófago: escarabajo pelotero). Lo prefiere a cualquier otra fuente que perciba.")]
     public bool eatsDung;
     [Tooltip("CARROÑERO puro: de las presas solo come las MUERTAS (cucaracha, cochinilla). No caza: la presa viva no cuenta.")]
@@ -65,6 +68,11 @@ public class Forager : MonoBehaviour
             case "Whale": case "Seal":               eatsFish = true; break;                    // consumidores marinos (beluga/foca: pescan)
             case "Penguin":                          eatsFish = true; eatsKrill = true; shoreFishingReach = 60f; break;  // pesca peces Y krill; se zambulle y nada hasta el banco (bucea decenas de metros)
             case "Orca":                             eatsPrey = true; eatsFish = true; break;   // apex: caza focas, y también come peces (como las orcas residentes)
+            case "EmperorPenguin":                   eatsFish = true; eatsKrill = true; shoreFishingReach = 60f; break;  // peces, kril y calamar; bucea (récord 564 m)
+            case "Walrus":                           eatsClams = true; break;                   // ~97 % invertebrados del fondo (bivalvos, por succión)
+            case "Reindeer": case "MuskOx": case "ArcticHare": eatsGrass = true; break;         // lo que comen de verdad va en su Ethogram (liquen, sauce, juncia)
+            case "ArcticFox":                        eatsPrey = true; eatsPlants = true; break; // caza y carroña; en verano, bayas
+
             // Insectos
             case "Ant":                              eatsPrey = true; break;                    // carnívora; caza invertebrados pequeños
             case "Aphid":                            eatsGrass = true; break;                   // savia de plantas
@@ -139,7 +147,8 @@ public class Forager : MonoBehaviour
             if (dung != null) return dung;
         }
         if (meat != null) return meat;   // una ración servida es comida «gratis»: el oportunista la prefiere a cazar (por eso los guardias se la acercan)
-        return Nearest(pos, prey, grass, fish, krill, meat);
+        GameObject clam = eatsClams ? Swarm.Nearest(pos, SwarmKind.Clam)?.gameObject : null;
+        return Nearest(pos, prey, grass, fish, krill, meat, clam);
     }
 
     /// <summary>PRESA por PROXIMIDAD + STATS (reemplaza la `Diet`): `OverlapSphere` busca `Anima`s comestibles

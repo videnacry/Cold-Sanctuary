@@ -35,6 +35,14 @@ public class ActionsPrep
         // Fauna de hielo — pingüino torpe en tierra (lento); orca nadadora veloz
         { "Penguin", new ActionsPrep(new ActionPrep("IdlePenguin", 0f, 1f, -2f), new ActionPrep("WalkPenguin", 2f, 2f, 0.5f), new ActionPrep("RunPenguin", 6f, 4f, 2f)) },
         { "Orca", new ActionsPrep(new ActionPrep("IdleOrca", 0f, 1f, -2f), new ActionPrep("WalkOrca", 4f, 2f, 0.5f), new ActionPrep("RunOrca", 14f, 3f, 2f)) },
+        // Territorio polar: andar y correr en proporción a sus parientes del catálogo (docs/reglas-animales.md).
+        { "Walrus", new ActionsPrep(new ActionPrep("IdleWalrus", 0f, 1f, -2f), new ActionPrep("WalkWalrus", 2f, 2f, 0.5f), new ActionPrep("RunWalrus", 6f, 3f, 2f)) },
+        { "EmperorPenguin", new ActionsPrep(new ActionPrep("IdleEmperorPenguin", 0f, 1f, -2f), new ActionPrep("WalkEmperorPenguin", 2f, 2f, 0.5f), new ActionPrep("RunEmperorPenguin", 5f, 4f, 2f)) },
+        { "Reindeer", new ActionsPrep(new ActionPrep("IdleReindeer", 0f, 1f, -2f), new ActionPrep("WalkReindeer", 5f, 2f, 0.5f), new ActionPrep("RunReindeer", 18f, 4f, 2f)) },
+        { "ArcticHare", new ActionsPrep(new ActionPrep("IdleArcticHare", 0f, 1f, -2f), new ActionPrep("RunArcticHare", 8f, 4f, 1f), new ActionPrep("RunArcticHare", 22f, 10f, 2f)) },
+        { "ArcticFox", new ActionsPrep(new ActionPrep("IdleArcticFox", 0f, 1f, -2f), new ActionPrep("WalkArcticFox", 3f, 3f, 0.5f), new ActionPrep("RunArcticFox", 14f, 5f, 2f)) },
+        { "MuskOx", new ActionsPrep(new ActionPrep("IdleMuskOx", 0f, 1f, -2f), new ActionPrep("WalkMuskOx", 3f, 2f, 0.5f), new ActionPrep("RunMuskOx", 15f, 4f, 2f)) },
+
         // Especies de las eras del microcosmos (docs/era-species-behavior.md): velocidades RELATIVAS a la hormiga (andar 3,
         // correr 10). El caracol, la babosa y la lombriz no "corren" (reptan por ondas del pie/peristaltismo); el solífugo,
         // la cucaracha y el cangrejo fantasma están entre los artrópodos más rápidos (Burrows & Hoyle 1973; Full & Tu 1991).

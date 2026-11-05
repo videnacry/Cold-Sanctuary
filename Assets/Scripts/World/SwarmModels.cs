@@ -17,7 +17,7 @@ using UnityEngine;
 /// </summary>
 public static class SwarmModels
 {
-    public enum Species { SilverFish, Krill, Diplulmaris, Desmonema, SnowBee }
+    public enum Species { SilverFish, Krill, Diplulmaris, Desmonema, SnowBee, Clam }
 
     /// <summary>Escala de visualización sobre la talla real (la talla real va en la malla).</summary>
     public static float DisplayScale(Species s) => s == Species.SilverFish ? 1.4f : s == Species.Krill ? 2f : 1f;
@@ -28,6 +28,7 @@ public static class SwarmModels
         Species.Krill => "Kril antártico (Euphausia superba)",
         Species.Diplulmaris => "Medusa Diplulmaris antarctica",
         Species.Desmonema => "Medusa Desmonema glaciale",
+        Species.Clam => "Almeja de Groenlandia (Serripes groenlandicus)",
         _ => "Abeja de las nieves",
     };
 
@@ -49,6 +50,10 @@ public static class SwarmModels
                 Part(g.transform, "Cuerpo", Get("kril_cuerpo", KrillBody), new Color(0.95f, 0.42f, 0.32f, 0.82f));
                 Part(g.transform, "Patas", Get("kril_patas", KrillLegs), new Color(0.98f, 0.55f, 0.45f, 0.7f));
                 Part(g.transform, "Ojos", Get("kril_ojos", KrillEyes), new Color(0.04f, 0.04f, 0.04f));
+                break;
+            case Species.Clam:   // dos valvas (la campana de la medusa, aplastada), de ~10 cm
+                Part(g.transform, "Valva", Get("almeja_valva", () => JellyBell(0.06f, 0.025f)), new Color(0.72f, 0.64f, 0.52f));
+                Part(g.transform, "Valva_baja", Get("almeja_valva", () => JellyBell(0.06f, 0.025f)), new Color(0.6f, 0.52f, 0.42f)).localScale = new Vector3(1f, -1f, 1f);
                 break;
             case Species.Diplulmaris:
                 Part(g.transform, "Umbrela", Get("dip_umbrela", () => JellyBell(0.07f, 0.045f)), new Color(0.98f, 0.66f, 0.3f, 0.55f));
