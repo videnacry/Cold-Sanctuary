@@ -115,7 +115,7 @@ public class RoofGardenTest : MonoBehaviour, ITestUnit
         var legs = rounds.SelectMany(r => r.legs).Where(l => l.plants.Any(p => p.bed != null)).ToList();
         int firstRoof = legs.Count(l => l.plants[0].bed != null);
         TestProbe.Check("en cada edificio, la cima va primero (se llega al techo en alfombra)", firstRoof == legs.Count, $"{firstRoof}/{legs.Count} tramos empiezan por los bancales");
-        TestProbe.Check("ninguna ronda pasa de 3 h con los bancales", rounds.All(r => r.hours <= FruitGardener.MaxRoundHours + 0.01f), string.Join(" · ", rounds.Select(r => $"{r.id} {r.hours:0.00} h")));
+        TestProbe.Check("ninguna ronda pasa de su tope con los bancales", rounds.All(r => r.hours <= FruitGardener.MaxRoundHours + 0.01f), string.Join(" · ", rounds.Select(r => $"{r.id} {r.hours:0.00} h")));
 
         // ── 6. UN JARDINERO EN LA CIMA ──
         GardenBed bed0 = GardenBed.All.Where(b => b != null && b.Plants.Count > 0).OrderBy(b => b.Plants.Count).FirstOrDefault();

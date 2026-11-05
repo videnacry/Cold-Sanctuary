@@ -21,7 +21,7 @@ public class FruitGardener : MonoBehaviour
 {
     public const string MissionPrefix = "jar_frutales";
     /// <summary>Lo más larga que puede ser una ronda (h de juego): el bloque de la mañana (las misiones no se parten en la comida).</summary>
-    public const float MaxRoundHours = 3f;
+    public const float MaxRoundHours = 2f;   // (2026-11-05: eran 3 h; con la mañana nueva, a nadie le quedan 3 h seguidas: 10–11 y 12–14)
     /// <summary>Holgura (h de juego) que se guarda al repartir el tiempo de las tareas de la semana. Era 0,15 h; medido en Unity
     /// (2026-10-31) la ronda real va siempre algo por DEBAJO de su estimación (2,25/2,36, 2,81/2,88 y 2,86/2,88 h), y con rondas
     /// de 2,9 h esos 0,15 h se comían todo lo que sobra de las 3 h: ninguna polinización ni poda en todo el día.</summary>

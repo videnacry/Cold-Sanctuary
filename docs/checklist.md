@@ -34,6 +34,18 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 > - [ ] **Decidir con Berón**: lo que el jugador aún no puede hacer (P11).
 > - [ ] **Revisar la ficha de Pedro Sánchez tras las elecciones del 29-11-2026** (`Historia.PedroSanchez.cs`, último párrafo).
 > - [ ] Repasar los [verificar] del doc (día del clavo de oro, fecha de Lagunillas, número de enfermos de San Pablo y fecha del cruce a nado, cifras de Singapur).
+> **HECHO 2026-11-05 (requisitos y la mañana con la Magnate, rama claude/edif-energia; solo código, sin probar en vivo):** cada misión tiene requisitos (`MissionRequirements`), a las 8 entrenan todos y a las 9 la Magnate enseña una tarea, por grupos, a quien le queda algo. Reglas J31 y J32; auditoría en [`jornada-y-rotacion.md`](jornada-y-rotacion.md) §Auditoría.
+> - [ ] Probar en vivo, sin reconstruir nada: grupos 102 (nuevo), 50, 28, 55, 65, 87, 96 y 97. En el registro, `[Lección]` y el balance: cuántos clones hacen falta los primeros días.
+> - [ ] Mirar si las lecciones llegan a tiempo: el viaje entre árboles se come parte de la hora de las 9.
+
+> **HECHO 2026-11-05 (la energía, rama claude/edif-energia; solo código, sin probar en vivo):** el **Parque Energético**, un casquete artificial al noroeste con su árbol bajo:
+> campo solar con las mesas que piden los pisos, 3 aerogeneradores de 330 kW con pala negra, cámaras y radar, turbina mareal piloto con sonar, baterías y silo de arena. Cada piso declara
+> su demanda (`FloorEnergy`) y paga sus paneles; el validador comprueba oferta ≥ demanda. Las misiones `sol_*` y `ene_*` son de Fernando. Investigación y decisión en [`energia.md`](energia.md);
+> reglas S15 y T18 del manual. Prueba nueva `EnergyTest` (grupo 101).
+> - [ ] **Probar en vivo:** reconstruir SampleScene con «Build Sample Scene Blockout (solo el santuario, sin microcosmos)», guardarla, y mirar el registro `[Energía]` (la regla debe cumplir, con los kW de verdad).
+> - [ ] Grupos 101, 96 (pasos con E), 97 (actuación y uniforme), 61 (catálogo: quité `sol_instalar` y `sol_reparar`), 57 (primer piso a 12 m), 90 (turbinas en T13), 75 (capacidad) y 50 (jornada).
+> - [ ] Fotos: el campo desde el techo del árbol, una torre con la pala negra y su detector, la pontona y el rotor bajo el agua, el almacén, Fernando con el uniforme en una mesa.
+> - [ ] Aves (Berón, 4 ideas, [`energia.md`](energia.md) §7): el refugio en la planta veterinaria (mirar en `[Refugio de aves]` que no cayó sobre un mueble); la ronda; las figuras y el dragón de drones al saltar un detector (el dragón es un adorno del juego, sin pruebas).
 
 > **HECHO 2026-11-04 (entrenamientos reales en el gimnasio, rama claude/edif-entreno; solo código, sin probar en vivo):** cada
 > humano del personal tiene un **plan semanal** (reparto, días, objetivo) y en sus días de gimnasio sigue la rutina del día en

@@ -14,7 +14,7 @@ public static partial class SampleSceneBuilder
     static Helix _energyHx;
 
     /// <summary>Empieza el parque: su casquete, su árbol y sus pisos (el campo y las máquinas, al final: <see cref="FinishEnergySite"/>).</summary>
-    static void BeginEnergyTree(Transform parent)
+    static SanctuaryArea BeginEnergyTree(Transform parent)
     {
         _energyRoot = new GameObject("Parque_energetico_AUTO").transform; _energyRoot.SetParent(parent, false);
         Vector3 site = EnergyRule.Center;
@@ -30,6 +30,7 @@ public static partial class SampleSceneBuilder
         FurnishEnergyFloor(f, h.floorSize);
         Transform gar = HelixFloor(hx, 2, null, new Vector2(h.floorSize, h.floorSize), EnergyGarageName);
         SubmarineBay(gar, "Garaje del parque: el submarino de obra trae las mesas solares y las palas por la vía marina");
+        return f.GetComponent<SanctuaryArea>();
     }
 
     // Las puntas: miradores con las cámaras que vigilan la fauna del parque.
@@ -84,6 +85,8 @@ public static partial class SampleSceneBuilder
         for (int i = 0; i < EnergyRule.Turbines; i++) es.turbines.Add(BuildTurbine(root, hx.site + corners[i].p, i + 1));
         for (int i = 0; i < EnergyRule.TidalUnits; i++) es.tidal.Add(BuildTidalUnit(root, hx.site + new Vector3(-EnergyRule.CapHalf - 7f, 0f, -30f + i * 60f), i + 1));
         es.storage = BuildEnergyStorage(root, hx.site + new Vector3(EnergyRule.CapHalf - 60f, 0f, -EnergyRule.CapHalf + 60f));
+        BuildDeterrents(es, root, hx.site);
+        BuildBirdRehab();
         BuildEnergyLine(root, hx.site);
         ValidateEnergySite("al terminar el parque");
     }
@@ -95,7 +98,7 @@ public static partial class SampleSceneBuilder
         Bedroom[] homes = Object.FindObjectsByType<Bedroom>(FindObjectsInactive.Include, FindObjectsSortMode.None);
         if (homes.Length > 0)
         {
-            FloorEnergy r = _energyRoot.GetComponent<FloorEnergy>() ?? _energyRoot.gameObject.AddComponent<FloorEnergy>();
+            FloorEnergy r = _energyRoot.gameObject.GetOrAdd<FloorEnergy>();
             r.floor = "Casas del árbol"; r.areaM2 = 0f; r.fixedKW = homes.Length * EnergyRule.HomeKW;   // (no es un piso: lo cuelga el parque, que es quien lo alimenta)
         }
         FloorEnergy.Refresh();
@@ -221,6 +224,84 @@ public static partial class SampleSceneBuilder
         return s;
     }
 
+    // LA DISUASIÓN (docs/energia.md §7): figuras con ojos, ocultas hasta que salta un detector, el dragón de drones en su hangar y la caja para las aves heridas. Ni las figuras ni el dragón cuentan para la seguridad.
+    static void BuildDeterrents(EnergySite es, Transform root, Vector3 site)
+    {
+        float H = EnergyRule.CapHalf - 3f;
+        for (int i = 0; i < 8; i++)
+        {
+            Vector3 d = Quaternion.Euler(0f, i * 45f + 22.5f, 0f) * Vector3.forward;
+            es.figureSpots.Add(site + d * (H / Mathf.Max(Mathf.Abs(d.x), Mathf.Abs(d.z))));
+        }
+        Color black = new Color(0.07f, 0.07f, 0.08f), yellow = new Color(0.98f, 0.8f, 0.1f), steel = TreeSteel;
+        for (int i = 0; i < 4; i++)
+        {
+            Transform f = new GameObject($"Figura_aterradora_{i + 1}").transform; f.SetParent(root, false); f.position = es.figureSpots[i * 2];
+            f.rotation = Quaternion.LookRotation(f.position - site);
+            KitchenProps.C(f, new Vector3(0f, 6f, 0f), new Vector3(0.3f, 12f, 0.3f), steel, 0f, "Mastil_figura");
+            KitchenProps.C(f, new Vector3(0f, 12f, 0f), new Vector3(9f, 3f, 0.2f), black, 0f, "Alas");
+            KitchenProps.C(f, new Vector3(0f, 12.5f, 0f), new Vector3(3.6f, 3.6f, 0.2f), black, 0f, "Cabeza");
+            foreach (float x in new[] { -0.9f, 0.9f })
+            {
+                KitchenProps.C(f, new Vector3(x, 13f, 0.15f), new Vector3(1.2f, 1.2f, 0.1f), yellow, 0f, "Ojo");
+                KitchenProps.C(f, new Vector3(x, 13f, 0.22f), new Vector3(0.5f, 0.5f, 0.06f), black, 0f, "Pupila");
+            }
+            f.gameObject.SetActive(false);
+            es.figures.Add(f);
+        }
+        Transform pad = new GameObject("Hangar_drones").transform; pad.SetParent(root, false); pad.position = site + new Vector3(52f, 0f, -98f);
+        KitchenProps.C(pad, new Vector3(0f, 0.1f, 0f), new Vector3(14f, 0.2f, 10f), new Color(0.3f, 0.32f, 0.35f), 0f, "Plataforma_drones");
+        Label(pad, "Dragón de drones: adorno del juego, sin pruebas de que ahuyente aves. Las turbinas paran igual", 3f);
+        DroneDragon dd = pad.gameObject.AddComponent<DroneDragon>();
+        const int n = 48;
+        Color head = new Color(0.9f, 0.15f, 0.1f), tail = new Color(0.95f, 0.6f, 0.15f);
+        for (int i = 0; i < n; i++)
+        {
+            float k = i / (n - 1f), s = Mathf.Lerp(i == 0 ? 2.4f : 1.2f, 0.4f, k);
+            Transform dr = KitchenProps.C(pad, new Vector3(-6f + (i % 8) * 1.7f, 0.6f, -4f + (i / 8) * 1.5f), Vector3.one * s, Color.Lerp(head, tail, k), 0f, $"Dron_{i + 1}");
+            dd.drones.Add(dr);
+        }
+        es.dragon = dd;
+        Transform box = KitchenProps.C(root, root.InverseTransformPoint(site + new Vector3(40f, 0.5f, -60f)), new Vector3(1.2f, 1f, 0.9f), new Color(0.75f, 0.85f, 0.78f), 0f, "Caja_transporte_aves");
+        Label(box, "Caja para aves heridas: van al refugio del Hospital, no se quedan aquí", 1.4f);
+    }
+
+    // EL REFUGIO DE AVES: 6 cajas en la planta veterinaria, donde quede libre, lejos de las turbinas.
+    static void BuildBirdRehab()
+    {
+        Transform up = null;
+        foreach (Transform t in Object.FindObjectsByType<Transform>(FindObjectsInactive.Include, FindObjectsSortMode.None)) if (t.name == "Planta_veterinaria") { up = t; break; }
+        if (up == null) { Debug.LogError("[Refugio de aves] No encuentro la planta veterinaria."); return; }
+        const float w = 8.4f, d = 2.2f, need = 2f;
+        var blockers = new List<Bounds>();
+        foreach (Renderer r in up.GetComponentsInChildren<Renderer>()) if (r.enabled && r.bounds.size.y < 20f && r.bounds.max.y > up.position.y + 0.3f) blockers.Add(r.bounds);
+        float half = 15f; Vector3? spot = null;
+        for (float z = -half; z <= half && spot == null; z += 1f)
+            for (float x = -half; x <= half && spot == null; x += 1f)
+            {
+                Vector3 c = up.TransformPoint(new Vector3(x, 1f, z));
+                var box = new Bounds(c, new Vector3(w + 2f * need, 2f, d + 2f * need));
+                if (!blockers.Exists(b => b.Intersects(box))) spot = new Vector3(x, 0.1f, z);
+            }
+        if (spot == null) { spot = new Vector3(0f, 0.1f, -half); Debug.LogWarning("[Refugio de aves] Sin sitio con 2 m libres en la planta veterinaria: va al fondo."); }
+        Transform rp = new GameObject("Refugio_aves").transform; rp.SetParent(up, false); rp.localPosition = spot.Value;
+        BirdRehabPoint bp = rp.gameObject.AddComponent<BirdRehabPoint>();
+        Color wood = new Color(0.62f, 0.5f, 0.36f), straw = new Color(0.85f, 0.75f, 0.45f), bird = new Color(0.55f, 0.45f, 0.38f);
+        for (int i = 0; i < 6; i++)
+        {
+            Transform c = new GameObject($"Caja_recuperacion_{i + 1}").transform; c.SetParent(rp, false); c.localPosition = new Vector3(-3.5f + i * 1.4f, 0f, 0f);
+            KitchenProps.C(c, new Vector3(0f, 0.4f, 0f), new Vector3(1.2f, 0.8f, 1.2f), wood, 0f, "Caja");
+            KitchenProps.C(c, new Vector3(0f, 0.82f, 0f), new Vector3(1.05f, 0.04f, 1.05f), straw, 0f, "Paja");
+            Transform b = new GameObject("Ave_en_recuperacion").transform; b.SetParent(c, false); b.localPosition = new Vector3(0f, 0.95f, 0f);
+            KitchenProps.C(b, Vector3.zero, new Vector3(0.3f, 0.2f, 0.45f), bird, 0f, "Cuerpo_ave");
+            KitchenProps.C(b, new Vector3(0f, 0.14f, 0.2f), new Vector3(0.14f, 0.14f, 0.16f), bird, 0f, "Cabeza_ave");
+            KitchenProps.C(b, new Vector3(0.2f, 0.02f, 0f), new Vector3(0.1f, 0.05f, 0.3f), new Color(0.95f, 0.95f, 0.92f), 0f, "Venda_ala");
+            b.gameObject.SetActive(false);
+            bp.birds.Add(b.gameObject);
+        }
+        Label(rp, "Refugio de aves: se curan y se sueltan aquí, lejos de las turbinas. Con guantes y mascarilla: gripe aviar", 2f);
+    }
+
     // La LÍNEA SUBMARINA al santuario, señalizada con boyas (como la del sitio nuclear).
     static void BuildEnergyLine(Transform root, Vector3 site)
     {
@@ -258,6 +339,9 @@ public static partial class SampleSceneBuilder
             float toTree = Vector2.Distance(new Vector2(p.x, p.z), new Vector2(hx.site.x, hx.site.z));
             if (toTree < EnergyRule.IceThrowRadius) bad.Add($"{u.name} a {toTree:0} m del árbol (el hielo llega a {EnergyRule.IceThrowRadius:0} m)");
         }
+        BirdRehabPoint rehab = Object.FindAnyObjectByType<BirdRehabPoint>(FindObjectsInactive.Include);
+        if (rehab == null) bad.Add("no hay refugio de aves");
+        else foreach (WindTurbineUnit u in es.turbines) if (Vector3.Distance(u.transform.position, rehab.transform.position) < EnergyRule.RehabMinDistance) bad.Add($"el refugio de aves está a menos de {EnergyRule.RehabMinDistance:0} m de {u.name}");
         EnergyRule.Report rep = EnergyRule.Check(es.FieldKWp + EnergyRule.RooftopKWp(), es.installed, es.tables.Count - es.installed);
         bad.AddRange(rep.problems);
         if (bad.Count > 0) Debug.LogError($"[Energía] Regla ({when}): {string.Join("; ", bad)}.");

@@ -161,7 +161,7 @@ public class PlayerWorkday : MonoBehaviour
         else if (h < s) when = "empieza HOY a las 8:00";
         else when = "es libre hoy; empieza MAÑANA a las 8:00";
         Debug.Log($"[Jornada] Kushal termina su iniciación (huerto y su microcosmos): entra en la rotación del santuario y {when}.");
-        LessonPrompt.Show($"Ya eres del santuario. Tu jornada: 5 h de misiones en las áreas, comida a las 11:00 y 2 h de entrenamiento a las 14:00; a las 16:00, libre. Tu jornada {when.Replace("se incorpora", "te incorporas").Replace("es libre", "eres libre")}. (Consola: «jornada»)", null, 14f);
+        LessonPrompt.Show($"Ya eres del santuario. Tu jornada: entrenamiento a las 8:00, con la Magnate a las 9:00 si te queda algo por aprender, misiones en las áreas hasta las 14:00 con la comida a las 11:00, y 2 h de entrenamiento a las 14:00; a las 16:00, libre. Tu jornada {when.Replace("se incorpora", "te incorporas").Replace("es libre", "eres libre")}. (Consola: «jornada»)", null, 14f);
         KushalVoice.Reply(KushalVoice.Ctx.Mission);   // Kushal acepta su jornada (arriba)
         WorkdayGiven?.Invoke(_player);
         return me;
@@ -173,11 +173,11 @@ public class PlayerWorkday : MonoBehaviour
     {
         float s = WorkRoster.StartHour, b1 = WorkRoster.FirstBlock, lunch = WorkRoster.LunchHours;
         float t = Mathf.Ceil(h * 2f - 1e-3f) / 2f;
-        float used = t <= s ? 0f : t < s + b1 ? t - s : t < s + b1 + lunch ? b1 : t - s - lunch;
+        float used = Mathf.Max(WorkRoster.MorningTraining, t <= s ? 0f : t < s + b1 ? t - s : t < s + b1 + lunch ? b1 : t - s - lunch);   // (a las 8, entrenamiento)
         var taken = new HashSet<string>(wd.today.work.Select(a => a.mission.id));
         var order = wd.today.areaOrder;
         var pool = AreaWork.Today(day, ConstructionProject.All)
-            .Where(m => string.IsNullOrEmpty(m.group) && m.site == null && m.id != "enf_iniciacion" && !FruitGardener.IsRound(m.id))
+            .Where(m => string.IsNullOrEmpty(m.group) && m.site == null && m.id != "enf_iniciacion" && !FruitGardener.IsRound(m.id) && wd.roster.Qualified(me, m) && MissionRequirements.Blocked(m) == null)
             .OrderBy(m => taken.Contains(m.id) ? 1 : 0)
             .ThenBy(m => { int i = order.IndexOf(m.area); return i < 0 ? 99 : i; })
             .ToList();
@@ -207,7 +207,7 @@ public class PlayerWorkday : MonoBehaviour
         _plan = wd.today;
         if (PlayerTaskRunner.Instance != null) foreach (Record r in _records) PlayerTaskRunner.Instance.Lapse(r, "día nuevo");
         _records.Clear();
-        foreach (WorkRoster.Assignment a in _plan.Of(me)) _records.Add(new Record { a = a });
+        foreach (WorkRoster.Assignment a in _plan.Of(me)) _records.Add(new Record { a = a });   // (su lección también: la practica con E, con los pasos de la tarea y sin efecto)
         AteToday = TrainingDone = _dayClosed = _dineQueued = _lunchSeen = false; _dineTries = 0;
         _lunchHunger = -1f; _trainPresent = _trainObserved = 0f; _eating = null;
         TrainingArea = _plan.training.TryGetValue(me, out string tr) ? tr : null;

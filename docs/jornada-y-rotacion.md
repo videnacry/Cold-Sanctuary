@@ -11,7 +11,9 @@ Diseño de Berón (2026-10-18). Código:
 
 | Hora | Qué |
 |---|---|
-| 8:00–11:00 | Trabajo (3 h) |
+| 8:00–9:00 | **Entrenamiento** (1 h), para todos (Berón 2026-11-05) |
+| 9:00–10:00 | **Lección con la Magnate**, si le queda algo por aprender; si no, trabajo |
+| 10:00–11:00 | Trabajo |
 | 11:00–12:00 | Comida, en el restaurante |
 | 12:00–14:00 | Trabajo (2 h) |
 | 14:00–16:00 | Entrenamiento (2 h): virtualizaciones de yoga, gimnasio… |
@@ -34,6 +36,55 @@ Durante las 8 h los personajes van al área de su misión y se quedan allí. **N
 - **De camino**: en un puente, una pista, una alfombra o una escalera se le deja pasar hasta 90 s. Quedarse ahí no es trabajar.
 - **Fuera de su alcance** (`MagnateWarden.Blocked`, Berón 2026-10-23): mientras vuela en alfombra o está en el microcosmos (o entrando/saliendo), la Magnate no trae a nadie. Cualquier sistema puede bloquear su alcance para todos con `MagnateWarden.Lock(clave, true)` y quitar su bloqueo con `Lock(clave, false)`.
 
+## La mañana (Berón 2026-11-05)
+
+«la primera hora del día se debe cambiar a entrenamiento y la segunda a entrenamiento, la segunda es opcional solo se asigna si al personaje le quedan tareas por aprender, entonces en dicha hora la magnate les enseña una de las tareas que les falta por conocer».
+
+- **Lo leí así:** la tarde no cambia (14–16 sigue siendo entrenamiento). Berón pudo querer mover ese bloque a la mañana; no lo hice porque el gimnasio, las clases de yoga y los planes semanales dependen de las 14 h. Entrenar pasa a ser 3 h al día. **Si quería mover el bloque, hay que preguntárselo.**
+- **8:00:** entrenamiento en el sitio, 1 h, con otra rotación que el de las 14 h. Sin clase: la del gimnasio y la de yoga siguen a las 14 h (`Performances.ForTraining`).
+- **9:00, la lección** (`WorkRoster.PlanLessons`): entre lo de hoy que no sabe. Va en el área de la tarea, con su actuación y su uniforme, y sin efecto en el santuario (`Assignment.lesson`, id `aprender_<id>`, para que la clase de yoga, la brigada o las rondas no la tomen por la de verdad). Lo aprendido se puede hacer ese mismo día.
+- **Grupos:** ≤ 6 por clase y ≤ 6 clases, una por cuerpo de la Magnate (`Magnate (lección N)`); 36 personas, hay unas 31. Si no caben, trabajan y lo cuenta el balance. Orden: lo que nadie sabe, lo que tiene riesgo, lo obligatorio, lo que más gente necesita.
+- **Su tiempo:** enseñar no le quita nada: ya se dividía en clones. Cada clase es un cuerpo más durante 1 h. Con el catálogo actual, unas 80 tareas a una por día son unos 80 días de juego por persona (casi 3 años de 28 días).
+- **Lo que sabe cada uno** (`Worker.taught`, `WorkRoster.Learned`): lo hecho, lo enseñado y lo de su profesión. **No se guarda en la partida**, igual que las cuentas de la rotación.
+- **La iniciación del primer turno** de una tarea (el clon que aparece a su lado) ya no sale si se la enseñaron: sale con las que nadie le ha enseñado.
+
+### La regla de oro y quién enseña
+- **J30 (rama claude/edif-histo): todos saben hacer de todo.** La leo como **el destino y una prohibición de exclusivas**: todos acaban sabiéndolo todo y ninguna tarea es propiedad de nadie. Hasta entonces decide el requisito. Si se leyera literal («ya saben todo hoy»), no quedaría nada que enseñar y la orden de Berón no tendría sentido.
+- Para que no se pare el santuario: solo piden lección las tareas con riesgo. Las demás se siguen aprendiendo haciéndolas, y una obligatoria sin nadie que sepa la hace un clon de la Magnate.
+- **Solo enseña la Magnate** (y sus divisiones). Las iniciaciones de llegada de la cocina, el huerto y el yoga siguen con el trabajador de turno (J5): son otra cosa, la primera vez en un área. **Si Berón las quiere también con ella, es un cambio aparte.**
+
+## Requisitos (Berón 2026-11-05)
+
+`MissionRequirements`, consultado en `WorkRoster.Plan` antes de repartir. Lo que falla queda en `plan.blocked` con su motivo y en el balance.
+
+| Clase | Qué | Hoy |
+|---|---|---|
+| Conocimiento | Las de riesgo piden saberlas | `hos_` de quirófano, UCI, urgencias, veterinaria y aves; `enf_visita`, `enf_iniciacion`, `enf_animales`; `pla_`, `nuc_`, `fis_`, `qui_`, `bio_`, `lab_`, `ifo_`, `lanz_`, `lan_`, `sol_`, `ene_`, `mec_`, `gua_` |
+| Estado del área | Nada en un piso en obras (J29) | Todas, salvo las obras |
+| Seguridad | Sin emergencia en el sitio nuclear | `pla_operar`, `pla_isotopos`, `pla_ciclotron`, `nuc_turno` |
+| Herramientas | Su equipo existe | `ifo_` (el clúster), `lab_` (un biorreactor) |
+| Materiales | Hay qué usar | `sol_instalacion` (mesas por montar) |
+
+Es un **primer juego de requisitos**: la lista de tareas con riesgo es decisión mía, y herramientas y materiales son pocos. Añadir uno es una línea en `MissionRequirements.Of`. No se usa «el mueble existe», porque hoy una tarea sin mueble cae en un punto del área y bloquearla la dejaría sin hacer.
+
+## Auditoría (W11, regla de auditar lo que ya existe al cambiar una regla)
+
+| Qué | Impacto | Hecho |
+|---|---|---|
+| Horas de trabajo | Bajan de 5 h a 4 (3 con lección): unas 31 personas dan unas 93 h con lección y 124 sin ella | `Plan`, `Balance`. **Quedan menos manos: más clones al principio** |
+| Tope de 5 h (J2) | Se mantiene, contando la mañana | Prueba 102 |
+| Comida, 14–16 y libre | No se mueven | `LeisureRoster` sigue desde las 16 h |
+| Misiones de 3 h | No cabían: 3 h seguidas ya no existen | Las rondas de frutales bajan a ≤ 2 h: **más rondas al día** |
+| Misiones de 2 h | Solo por la tarde con lección (9–11 sin ella) | Por la rotación |
+| Grupos (yoga, obras) | Antes a las 8; ahora a las **10**, cuando todos han acabado | `AssignGroups`. Quien no tenía lección pierde 9–10 si le toca grupo |
+| Papel fijo (`gym_planes`) | Igual | — |
+| Gimnasio y yoga | Sus clases siguen a las 14 h | `Drive` solo las lanza de tarde |
+| Uniformes, actuaciones y sitios | Las lecciones usan los de la tarea | `LessonBase` |
+| Kushal | Entrena y aprende como todos; lección con E; la incorporación tardía respeta las 8 y los requisitos | `PlayerWorkday`, `PlayerTasks` |
+| Microcosmos (`MicroJornada`) | **No cambia**: su horario sigue 8–11. Berón habló del santuario | — |
+| Iniciaciones de llegada (J5) | No cambian | Manual |
+| Pruebas | `JornadaTest` y otras leen del plan real; solo las de la rotación pura van sin la mañana nueva | Grupo 102 |
+
 ## Reparto (rotación)
 
 1. Cada día hay una **lista de misiones por área**. Primero van las que quedaron **pendientes** ayer, luego las **obligatorias** del día y después el resto.
@@ -47,7 +98,7 @@ Durante las 8 h los personajes van al área de su misión y se quedan allí. **N
    Desde el 2026-11-04, **el gimnasio va por los días del plan de cada uno** (`GymProgramming.ApplyGymDays`; el entrenador, Andrea,
    siempre): quien tiene gimnasio ese día en su plan va; a quien la rotación mandaba un día sin gimnasio en su plan, se le da el
    siguiente entrenamiento abierto ([gimnasio-maquinas.md](gimnasio-maquinas.md) §15).
-9. **Misiones de puesto** (`Mission.owner`; regla de oro J30, 2026-11-05: antes solo las hacía su dueño y sin él no se hacían): se le ofrecen primero a su dueño; sin él, siguen por rotación. Texto antiguo: sin él, ese
+9. **Misiones de puesto** (`Mission.owner`; regla de oro J30, 2026-11-05: antes solo las hacía su dueño y sin él no se hacían): se le ofrecen primero a su dueño; sin él, siguen por rotación, y la Magnate también las enseña (J32).  Texto antiguo: sin él, ese
    día no se hacen ni quedan pendientes. Hoy: «gym_planes», del entrenador del gimnasio.
 
 **Equilibrio** (`WorkRoster.Balance`, en el log y en `jornada`) avisa de tres cosas:
@@ -73,7 +124,7 @@ Las marcadas con * son obligatorias cada día.
   - Riego y deshierbe* (2 h)
   - Cosecha (1 h)
   - Alimentar a los visitantes (1 h)
-  - **Ronda de frutales de los techos*** (`jar_frutales_N`, 3 h cada una; recorre varias torres): con riego por goteo, unas 3 al día para revisar y abonar las ~204 macetas y, con lo que sobra, polinizar y podar (docs/jardines-frutales.md). Desde el 2026-11-03 también los **bancales de tierra de la cima** de cada edificio-árbol: van primero en la ronda de su edificio (se llega al techo en alfombra). Desde el 2026-11-04 cada ronda reserva el tiempo de polinizar y podar, y las tareas de un árbol (máscaras, fitoplancton) van en tramos de ≤ 2,9 h: hay tantos jardineros como pida el trabajo del día (docs/jardines-frutales.md §Rondas que caben en 3 h)
+  - **Ronda de frutales de los techos*** (`jar_frutales_N`, ≤ 2 h cada una desde el 2026-11-05; recorre varias torres): con riego por goteo, unas 3 al día para revisar y abonar las ~204 macetas y, con lo que sobra, polinizar y podar (docs/jardines-frutales.md). Desde el 2026-11-03 también los **bancales de tierra de la cima** de cada edificio-árbol: van primero en la ronda de su edificio (se llega al techo en alfombra). Desde el 2026-11-04 cada ronda reserva el tiempo de polinizar y podar, y las tareas de un árbol (máscaras, fitoplancton) van en tramos de ≤ 2,9 h: hay tantos jardineros como pida el trabajo del día (docs/jardines-frutales.md §Rondas que caben en 3 h)
 - **Sala de Yoga**:
   - Clase para turistas* (1 h)
   - Preparar la sala (1 h)

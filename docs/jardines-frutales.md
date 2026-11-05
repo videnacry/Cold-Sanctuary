@@ -215,7 +215,7 @@ En la simulación, `FruitPlant.drip`:
 ### El jardinero del día: la ronda
 
 Es una misión de la jornada (`AreaWork.Today` → `FruitGardener.Missions`): **obligatoria** (una maceta no aguanta días
-sin revisar), de **3 h** y **`roams`** (recorre varias torres; la Magnate no la devuelve). La reparte la rotación como las
+sin revisar), de **≤ 2 h** (3 h hasta el 2026-11-05: con la mañana nueva, nadie tiene 3 h seguidas) y **`roams`** (recorre varias torres; la Magnate no la devuelve). La reparte la rotación como las
 demás: cualquiera del personal puede ser el jardinero del día, y la Magnate inicia al que la hace por primera vez.
 
 Quien la tiene:
@@ -228,7 +228,7 @@ Quien la tiene:
    - Abona y trata la plaga.
    - `FruitPlant.Care`: +50 % de abono si está por debajo del 60 %, plaga −80 %, salud +10 % (y desatasca el gotero si hace falta).
 4. Al acabar las macetas de un techo, hace allí las **tareas de la semana** (el tiempo que libera el goteo) mientras
-   quepan en su parte del tiempo que sobra de las 3 h:
+   quepan en su parte del tiempo que sobra de las horas de su ronda:
    - **polinizar a pincel** (o sacudir, o vibrar) cada 2 días las que lo necesitan: mango, aguacate, guanábana, cacao,
      almendro, olivo, dátil, frutilla, sandía y mortiño (`FruitCare.Polinizar`; 1 min). Sube el **cuajado** de la planta,
      que se ve en su etiqueta y baja si nadie poliniza;
@@ -276,7 +276,7 @@ preparación (si salen más, sube la meta hasta 2,95 h).
 | Central Nuclear | 54 min | 364 m ≈ 56 min | 1,8 h |
 
 Con los vuelos y las preparaciones, **≈ 8,4 h de juego → 3 rondas de ~2,8 h**: **tres personas al día**. Cada una tiene
-una misión de 3 h: la revisión de su tramo y, con lo que sobra, las tareas de la semana. El resto de su jornada (2 h) va
+una misión de ≤ 2 h (las cuentas de esta tabla son de cuando eran 3 h): la revisión de su tramo y, con lo que sobra, las tareas de la semana. El resto de su jornada (2 h) va
 a otras misiones. Andar pesa ahora casi la mitad: con menos macetas por techo, o techos más juntos, bajaría.
 
 **Con los edificios-árbol (2026-11-01): UN JARDINERO POR EDIFICIO.** Desde la migración (docs/edificio-arbol.md) los frutales

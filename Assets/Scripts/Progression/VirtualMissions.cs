@@ -112,6 +112,9 @@ public static class VirtualMissions
             case "ene_eolica": return new[] { "Bloquear la turbina", "Revisar cámaras y radar", "Comprobar las palas" };
             case "ene_mareal": return new[] { "Salir a la pontona", "Probar el sonar", "Revisar el anillo" };
             case "ene_almacen": return new[] { "Leer la temperatura de las baterías", "Revisar la calefacción", "Mirar el silo de arena" };
+            case "ene_ronda_aves": return new[] { "Buscar aves heridas", "Retirar los restos", "Dejar al ave en la caja" };
+            case "ene_disuasion": return new[] { "Revisar los drones", "Cambiar las figuras de sitio", "Anotar las salidas" };
+            case "hos_aves": return new[] { "Ponerse guantes y mascarilla", "Curar al ave", "Anotar cuándo soltarla" };
             case "aul_clase": return new[] { "Preparar la pizarra y la pantalla", "Dar la clase desde la tarima", "Resolver dudas en las filas" };
             case "aul_estudio": return new[] { "Buscar el libro en la biblioteca", "Consultarlo en el catálogo", "Estudiar en la mesa" };
             default: return new[] { "Preparar", "Hacer la tarea", "Recoger" };

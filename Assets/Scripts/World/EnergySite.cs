@@ -17,6 +17,13 @@ public class EnergySite : MonoBehaviour
     public List<TidalTurbineUnit> tidal = new List<TidalTurbineUnit>();
     [Tooltip("Los contenedores de baterías y el silo (sitios de la misión del almacén).")]
     public Transform storage;
+    [Tooltip("Las figuras aterradoras (ocultas hasta que salta un detector) y sus sitios: se cambian de sitio para que las aves no se acostumbren.")]
+    public List<Transform> figures = new List<Transform>();
+    public List<Vector3> figureSpots = new List<Vector3>();
+    public DroneDragon dragon;
+    [Tooltip("Lo acostumbradas que están las aves a las figuras y a los drones (0–1).")]
+    public float habituation;
+    public int injuredWaiting, carcassesWaiting;
 
     /// <summary>La suciedad del campo (escarcha y nieve): de 0 a <see cref="EnergyRule.MaxSoil"/>.</summary>
     public float soil;
@@ -34,6 +41,11 @@ public class EnergySite : MonoBehaviour
     public int Installs { get; private set; }
     public int Repairs { get; private set; }
     public EnergyRule.Report Last { get; private set; }
+    public int Scares { get; private set; }
+    public int Carcasses { get; private set; }
+    public int Moves { get; private set; }
+    /// <summary>Fuerza de la disuasión ahora: baja con la habituación. NO cuenta para la seguridad: la turbina para igual.</summary>
+    public float DeterrentStrength => 1f - habituation;
 
     /// <summary>(Pruebas) Puntos que el sitio trata como un ave y como un animal en el agua.</summary>
     public static readonly List<Transform> TestBirds = new List<Transform>(), TestSwimmers = new List<Transform>();
@@ -41,6 +53,8 @@ public class EnergySite : MonoBehaviour
     readonly HashSet<int> _faults = new HashSet<int>();
     float _next;
     int _day = int.MinValue;
+    int _figureSpot;
+    float _figuresUntil = -1f, _scareAt = -999f;
 
     public int Pending { get { Report(); return Mathf.Clamp(Last.tablesRequired - installed, 0, tables.Count - installed); } }
     public int Faults => _faults.Count;
@@ -81,6 +95,7 @@ public class EnergySite : MonoBehaviour
         if (tc == null) return;
         float hours = Mathf.Clamp(dt, 0f, 5f) * 24f / Mathf.Max(1f, tc.SecondsPerGameDay);
         NewDay(tc.Day);
+        if (_figuresUntil > 0f && Time.time >= _figuresUntil) ShowFigures(false);
         Scan();
         Step(tc.Day * 24f + tc.Hour, SolarPosition.SanctuaryDayOfYear(tc), tc.Hour, hours);
     }
@@ -91,6 +106,10 @@ public class EnergySite : MonoBehaviour
         bool first = _day == int.MinValue; _day = day;
         if (first) return;
         soil = Mathf.Min(EnergyRule.MaxSoil, soil + EnergyRule.SoilPerDay);
+        habituation = Mathf.Max(0f, habituation - EnergyRule.HabituationDecay);
+        int d9 = ((day % 9) + 9) % 9;
+        if (d9 == 4) injuredWaiting++;   // aves heridas y restos al pie de lo que se levanta: torres, mástiles y mesas
+        if (d9 == 7) carcassesWaiting++;
         if (((day % 5) + 5) % 5 == 2 && installed > 0) Fail(Mathf.Abs(day * 37) % installed);
         Validate($"día {day}");
     }
@@ -161,7 +180,36 @@ public class EnergySite : MonoBehaviour
 
     const float PolarSeaLevel = -0.25f;
 
-    void Bird(Vector3 p, string why) { foreach (WindTurbineUnit u in turbines) if (u != null && Flat(p, u.transform.position) <= EnergyRule.BirdStopRadius) u.Hold(why); }
+    void Bird(Vector3 p, string why)
+    {
+        foreach (WindTurbineUnit u in turbines)
+        {
+            if (u == null || Flat(p, u.transform.position) > EnergyRule.BirdStopRadius) continue;
+            bool first = !u.Stopped;
+            u.Hold(why);   // LA SEGURIDAD: para siempre, haya o no disuasión
+            if (first) Scare(u.transform.position);
+        }
+    }
+
+    // LA DISUASIÓN: solo cuando salta un detector (no enseñarla siempre es lo que apunta la habituación). Las figuras y el dragón son del juego: docs/energia.md §7.
+    void Scare(Vector3 at)
+    {
+        if (Time.time - _scareAt < 60f) return;
+        _scareAt = Time.time;
+        if (DeterrentStrength < EnergyRule.MinDeterrent) { Debug.Log("[Energía] Las aves ya no hacen caso a las figuras: toca ene_disuasion."); return; }
+        Scares++;
+        habituation = Mathf.Min(1f, habituation + EnergyRule.HabituationPerScare);
+        ShowFigures(true);
+        _figuresUntil = Time.time + EnergyRule.ResumeSeconds;
+        if (dragon != null) dragon.Launch(at);
+    }
+
+    void ShowFigures(bool on)
+    {
+        foreach (Transform f in figures) if (f != null) f.gameObject.SetActive(on);
+        if (!on) _figuresUntil = -1f;
+    }
+
     void Swimmer(Vector3 p, string why) { foreach (TidalTurbineUnit u in tidal) if (u != null && Flat(p, u.transform.position) <= EnergyRule.MarineStopRadius) u.Hold(why); }
     static float Flat(Vector3 a, Vector3 b) => Vector2.Distance(new Vector2(a.x, a.z), new Vector2(b.x, b.z));
 
@@ -192,6 +240,25 @@ public class EnergySite : MonoBehaviour
         return n;
     }
 
+    /// <summary>«ene_ronda_aves»: busca aves heridas y restos al pie de torres y mesas. Las heridas van al refugio del Hospital; los restos se retiran para no atraer a los carroñeros.</summary>
+    public void Patrol(string who)
+    {
+        Carcasses += carcassesWaiting; carcassesWaiting = 0;
+        BirdRehabPoint rp = BirdRehabPoint.Instance;
+        while (injuredWaiting > 0 && rp != null && rp.Admit(injuredWaiting % 2 == 0 ? "petrel de las nieves" : "págalo")) injuredWaiting--;   // (acotado: baja o sale)
+        Debug.Log($"[Energía] {who} hace la ronda de aves: {Carcasses} restos retirados en total.");
+    }
+
+    /// <summary>«ene_disuasion»: cambia las figuras de sitio y revisa los drones: lo nuevo vuelve a contar. Baja la habituación, no la borra.</summary>
+    public void MoveDeterrents(string who)
+    {
+        habituation = Mathf.Max(0f, habituation - EnergyRule.HabituationReset); Moves++;
+        if (figureSpots.Count == 0) return;
+        _figureSpot = (_figureSpot + 1) % figureSpots.Count;
+        for (int i = 0; i < figures.Count; i++)
+            if (figures[i] != null) figures[i].position = figureSpots[(_figureSpot + i * figureSpots.Count / Mathf.Max(1, figures.Count)) % figureSpots.Count];
+    }
+
     /// <summary>Las misiones de la jornada en el parque (si existe). Instalar y reparar, solo si hay qué.</summary>
     public static List<WorkRoster.Mission> Missions(int day)
     {
@@ -206,11 +273,18 @@ public class EnergySite : MonoBehaviour
         if (d == 0) l.Add(new WorkRoster.Mission(EnergyRule.Area, "ene_eolica", "Revisar los aerogeneradores con la turbina parada: palas, cámaras y radar", 1f));
         if (d == 1) l.Add(new WorkRoster.Mission(EnergyRule.Area, "ene_mareal", "Revisar la turbina mareal: sonar, anillo y fugas", 1f));
         if (d == 2) l.Add(new WorkRoster.Mission(EnergyRule.Area, "ene_almacen", "Revisar el almacén: calefacción de las baterías y silo de arena", 0.5f));
+        l.Add(new WorkRoster.Mission(EnergyRule.Area, "ene_ronda_aves", "Ronda de aves: buscar heridas y retirar restos al pie de torres, mástiles y mesas", 0.5f));
+        if (s.DeterrentStrength < 0.7f) l.Add(new WorkRoster.Mission(EnergyRule.Area, "ene_disuasion", "Cambiar de sitio las figuras y revisar los drones, para que las aves no se acostumbren", 1f));
+        BirdRehabPoint rp = BirdRehabPoint.Instance;
+        if (rp != null && rp.patients.Count > 0) l.Add(new WorkRoster.Mission(AreaWork.Hospital, "hos_aves", $"Refugio de aves: curar a {rp.patients.Count} y soltar a las que estén listas, lejos de las turbinas", 0.5f));
         return l;
     }
 
     /// <summary>¿Se hace en el casquete y no en el piso de control?</summary>
-    public static bool IsField(string missionId) => missionId != null && (missionId.StartsWith("sol_") || missionId == "ene_eolica" || missionId == "ene_mareal" || missionId == "ene_almacen");
+    /// <summary>¿Está en el casquete del parque (y sus pontonas)? Para la jornada, es su puesto: la Magnate no lo devuelve.</summary>
+    public static bool OnCap(Vector3 p) => Mathf.Abs(p.x - EnergyRule.Center.x) <= EnergyRule.CapHalf + 16f && Mathf.Abs(p.z - EnergyRule.Center.z) <= EnergyRule.CapHalf + 2f;
+
+    public static bool IsField(string missionId) => missionId != null && (missionId.StartsWith("sol_") || missionId == "ene_eolica" || missionId == "ene_mareal" || missionId == "ene_almacen" || missionId == "ene_ronda_aves" || missionId == "ene_disuasion");
 
     /// <summary>Dónde se pone a trabajar <paramref name="who"/> en esa misión: junto a la mesa que toca, la torre, la pontona o el almacén. Null si no es de campo.</summary>
     public static Vector3? FieldPoint(string missionId, string who)
@@ -219,9 +293,9 @@ public class EnergySite : MonoBehaviour
         if (s == null || !IsField(missionId)) return null;
         Transform t = null;
         int hash = Mathf.Abs((who ?? "").GetHashCode());
-        if (missionId == "ene_eolica" && s.turbines.Count > 0) t = s.turbines[hash % s.turbines.Count].transform;
+        if ((missionId == "ene_eolica" || missionId == "ene_ronda_aves") && s.turbines.Count > 0) t = s.turbines[hash % s.turbines.Count].transform;
         else if (missionId == "ene_mareal" && s.tidal.Count > 0) t = s.tidal[hash % s.tidal.Count].transform.parent;
-        else if (missionId == "ene_almacen") t = s.storage;
+        else if (missionId == "ene_almacen" || missionId == "ene_disuasion") t = s.storage;
         else if (missionId == "sol_instalacion" && s.installed < s.tables.Count) t = s.tables[s.installed];
         else if (missionId == "sol_reparacion" && s._faults.Count > 0) foreach (int i in s._faults) { t = s.tables[i]; break; }
         else if (s.installed > 0) t = s.tables[hash % s.installed];

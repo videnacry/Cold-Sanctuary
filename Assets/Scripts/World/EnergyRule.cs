@@ -40,7 +40,7 @@ public static class EnergyRule
             case SanctuaryAreaType.Infirmary: case SanctuaryAreaType.VeterinaryClinic: case SanctuaryAreaType.SupplementsPharmacy: return 54f;
             case SanctuaryAreaType.AlchemyLab: case SanctuaryAreaType.FuelLab: case SanctuaryAreaType.CulturedMeatLab:
             case SanctuaryAreaType.AtomicPlant: case SanctuaryAreaType.Chemistry: case SanctuaryAreaType.Biology: return 45f;
-            case SanctuaryAreaType.Gym: case SanctuaryAreaType.Calisthenics: case SanctuaryAreaType.YogaRoom: case SanctuaryAreaType.Ballet: case SanctuaryAreaType.MartialArts: return 18f;
+            case SanctuaryAreaType.Gym: case SanctuaryAreaType.Calisthenics: case SanctuaryAreaType.YogaRoom: case SanctuaryAreaType.Ballet: case SanctuaryAreaType.MartialArts: case SanctuaryAreaType.Music: case SanctuaryAreaType.Assembly: return 18f;
             case SanctuaryAreaType.Garden: case SanctuaryAreaType.UnderwaterGarden: return 5f;   // bombas de riego; la luz es del sol
             default: return 16f;   // oficinas, aulas, talleres, control (Informática: 16 + lo fijo)
         }
@@ -118,6 +118,12 @@ public static class EnergyRule
     public const float IslandBuffer = 200f;
     /// <summary>Cribado del lanzamiento de hielo (Seifert/DEWI): 1,5 × (buje + rotor).</summary>
     public static float IceThrowRadius => 1.5f * (HubH + RotorD);
+    /// <summary>El refugio de aves, a ≥ el doble del radio de parada de las turbinas: el alimento y los animales concentrados atraen a otras aves (docs/energia.md §7). Elección de diseño.</summary>
+    public const float RehabMinDistance = 2f * BirdStopRadius;
+    /// <summary>Turnos de cura antes de soltarla.</summary>
+    public const int RehabDays = 3;
+    /// <summary>HABITUACIÓN: cuánto se acostumbran las aves a las figuras y a los drones con cada salida, cuánto olvidan al día y por debajo de qué fuerza ya no salen. Modelo del juego.</summary>
+    public const float HabituationPerScare = 0.1f, HabituationDecay = 0.02f, MinDeterrent = 0.25f, HabituationReset = 0.4f;
     /// <summary>Alguien a esta distancia del pie de la torre la para (la revisión se hace parada).</summary>
     public const float TowerLockout = 30f;
     public static float TurbineTop => HubH + RotorD * 0.5f;

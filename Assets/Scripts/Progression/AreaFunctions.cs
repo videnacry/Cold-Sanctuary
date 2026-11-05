@@ -161,7 +161,7 @@ public static class AreaFunctions
         // (2026-11-04, más profesiones) La COMUNICACIÓN (Andrea: los avisos y la radio, en el comedor), las LETRAS (Irosene: poesía,
         // narración y lecturas en el Aula) y la CURANDERA (Maite: plantas medicinales en la farmacia del hospital).
         S(Def("Cocina", "coc_avisos", "Comunicación: preparar y dar los avisos del santuario y el programa de radio en el comedor", 0.5f, false, Kind.Trade, "mesa"));
-        // (2026-11-05) Consol prepara la clase de Ashtanga. (Las de Fernando, «sol_», las genera EnergySite, en el área Energía: docs/energia.md.)
+        // (2026-11-05) Consol prepara la clase de Ashtanga. Las misiones de Fernando (paneles solares) las añade EnergySite.Missions (docs/energia.md).
         S(Def("Sala de Yoga", "yog_ashtanga", "Preparar la clase de Ashtanga: la secuencia del día, las variaciones y los ajustes de cada alumno", 0.5f, false, Kind.Teach, "esterilla"));
         Roles(S(Def("Aula", "aul_letras", "Letras: clase de poesía y narración, y lecturas en la sala de estudio", 1f, false, Kind.Teach, "pizarra")), "maestro", "alumno");
         Roles(S(Def("Hospital", "hos_plantas", "Curandera: remedios de plantas medicinales (infusiones, cataplasmas y ungüentos) para los pacientes", 1f, false, Kind.Heal, "armario")), "enfermera");
@@ -182,6 +182,9 @@ public static class AreaFunctions
         _prefixEffects.Add(("sol_mantenimiento", (id, who) => EnergySite.Instance?.Maintain(who)));
         _prefixEffects.Add(("sol_instalacion", (id, who) => EnergySite.Instance?.Install(who)));
         _prefixEffects.Add(("sol_reparacion", (id, who) => EnergySite.Instance?.Repair(who)));
+        _prefixEffects.Add(("ene_ronda_aves", (id, who) => EnergySite.Instance?.Patrol(who)));
+        _prefixEffects.Add(("ene_disuasion", (id, who) => EnergySite.Instance?.MoveDeterrents(who)));
+        _prefixEffects.Add(("hos_aves", (id, who) => BirdRehabPoint.Instance?.Treat(who)));
         _prefixEffects.Add(("obra_material_", (id, who) => Obra(id.Substring(14), who, material: true)));
         _prefixEffects.Add(("obra_trabajo_", (id, who) => Obra(id.Substring(13), who, material: false)));
         _prefixEffects.Add(("prep_", (id, who) => KitchenLarder.Instance?.StartPrep(id.Substring(5), who)));

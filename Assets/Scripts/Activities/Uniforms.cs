@@ -50,7 +50,7 @@ public static class Uniforms
         if (doing == "Comida") return Kind.None;
         string id = missionId ?? "";
         if (id == "hos_quirofano" || id == "hos_uci" || id == "hos_urgencias" || id == "enf_inventario") return Kind.Quirofano;
-        if (id == "hos_veterinaria" || id == "enf_animales") return Kind.Veterinaria;
+        if (id == "hos_veterinaria" || id == "enf_animales" || id == "hos_aves") return Kind.Veterinaria;
         if (id.StartsWith("enf_") || id.StartsWith("hos_")) return Kind.BataMedica;
         if (id == "coc_sala" || id == "coc_atender") return Kind.Sala;
         if (id == "coc_comedor") return Kind.Limpieza;

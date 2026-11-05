@@ -309,6 +309,16 @@ public static class Performances
         Mi("ene_mareal", "Revisar la turbina mareal",
             Checking("Probar el sonar", P.Tablet, F.Glow, 7f),
             Checking("Buscar fugas", P.Flashlight, F.Water, 7f));
+        Mi("ene_ronda_aves", "Ronda de aves",
+            Checking("Buscar aves heridas", P.Flashlight, F.None, 8f),
+            S("Recoger con cuidado", M.Reach, P.Box, P.None, 6f, F.None, 2f, Fine),
+            Noting("Anotar lo encontrado"));
+        Mi("ene_disuasion", "Cambiar las figuras de sitio",
+            S("Mover la figura", M.Reach, P.Wrench, P.None, 8f, F.Sparks, 1.4f, Strike, atFace: true),
+            Checking("Revisar los drones", P.Tablet, F.Glow, 7f));
+        Mi("hos_aves", "Curar aves",
+            S("Curar el ala", M.Reach, P.Bandage, P.None, 8f, F.None, 2f, Fine),
+            Noting("Anotar la evolución"));
         Mi("ene_almacen", "Revisar el almacén",
             Checking("Medir las baterías", P.Tablet, F.Sparks, 6f),
             Noting("Registrar la temperatura"));
@@ -347,6 +357,11 @@ public static class Performances
             S("Amasar o moldear", M.Reach, P.None, P.None, 8f, F.Dust, 1.2f, atFace: true),
             S("Llevar al reposo", M.Carry, P.Tray, P.None, 5f, F.None));
         // ══ ENTRENAMIENTOS de las 14 h que no llevan su propio sistema (el gimnasio y el yoga sí lo llevan) ══
+        // (2026-11-05) El entrenamiento de las 8:00: en el gimnasio y en yoga no hay clase a esa hora, así que entrena cada uno en su sitio.
+        _training["Gimnasio"] = new ActivityPerformer.Performance("ent_gimnasio", "Entrenar por su cuenta",
+            S("Sentadillas y flexiones", M.Lift, P.None, P.None, 8f, F.Sweat, 2f), S("Estiramientos", M.Reach, P.None, P.None, 6f, F.None));
+        _training["Sala de Yoga"] = new ActivityPerformer.Performance("ent_yoga", "Saludos al sol",
+            S("Saludo al sol", M.Reach, P.None, P.None, 8f, F.None, 2f, Raise), S("Respirar", M.Teach, P.None, P.None, 6f, F.None, 2f, Raise));
         _training["Sala de Ballet"] = new ActivityPerformer.Performance("ent_ballet", "Barra de ballet",
             S("Pliés en la barra", M.Reach, P.None, P.None, 8f, F.Sweat, 3f), S("Port de bras", M.Teach, P.None, P.None, 6f, F.None, 2f, Raise));
         _training["Calistenia"] = new ActivityPerformer.Performance("ent_calistenia", "Calistenia",

@@ -110,6 +110,7 @@ public class WorkdayDirector : MonoBehaviour
         _clones.Clear(); _done.Clear(); _started.Clear();
         _lunched.Clear(); _lunchStocked = false; _heading.Clear();   // [Jornada] la comida de hoy
         ReleaseGym(); _coachDay = int.MinValue;   // las sesiones de gimnasio de ayer
+        roster.dailyLearning = true; roster.worldCheck = MissionRequirements.Blocked;   // la mañana nueva y los requisitos (docs/jornada-y-rotacion.md)
         List<WorkRoster.Mission> todays = AreaWork.Today(day, ConstructionProject.All);
         todays.AddRange(GymProgramming.Missions());   // la del entrenador (papel fijo: revisar el registro y ajustar los planes)
         today = roster.Plan(day, todays);
@@ -117,6 +118,8 @@ public class WorkdayDirector : MonoBehaviour
         if (gymDays > 0) Debug.Log($"[Gimnasio] Día {day}: {gymDays} cambios en el entrenamiento de las 14 h por los días de cada plan; al gimnasio: {string.Join(", ", today.training.Where(kv => kv.Value == GymArea).Select(kv => kv.Key.name))}.");
         plannedDay = day;
         foreach (WorkRoster.Worker c in today.clones) _clones[c] = SpawnMagnateBody(c.name);
+        _taughtToday.Clear();
+        foreach (WorkRoster.Lesson l in today.lessons) Debug.Log($"[Lección] {l}.");
         Debug.Log($"[Jornada] Día {day}: {today.work.Count} misiones para {roster.workers.Count} personas · orden de áreas: {string.Join(" → ", today.areaOrder)}" +
                   (today.clones.Count > 0 ? $" · la Magnate se divide en {today.clones.Count}" : "") + (today.backlog.Count > 0 ? $" · {today.backlog.Count} pendientes para mañana" : ""));
         foreach (string s in WorkRoster.Balance(today, roster.workers.Count)) Debug.Log("[Jornada] " + s);
@@ -361,6 +364,7 @@ public class WorkdayDirector : MonoBehaviour
     public static bool InWorkspace(WorkRoster.Mission m, string area, Vector3 pos)
     {
         if (InAreaNamed(area, pos)) return true;
+        if (area == EnergyRule.Area && EnergySite.OnCap(pos)) return true;   // (los paneles, las torres y el almacén están en el casquete)
         if (m == null) return false;
         foreach (string x in m.also) if (InAreaNamed(x, pos)) return true;
         if (m.roams && SceneCache.All<SanctuaryArea>(2f).Any(a => a != null && a.InBuilding(pos))) return true;
@@ -405,6 +409,7 @@ public class WorkdayDirector : MonoBehaviour
         foreach (WorkRoster.Assignment a in today.work)
             if (a.worker == w && h >= a.start && h < a.start + a.mission.hours) { doing = a.mission.title; return a.mission.area; }
         if (h >= s + WorkRoster.FirstBlock && h < s + WorkRoster.FirstBlock + WorkRoster.LunchHours) { doing = "Comida"; return "Cocina"; }
+        if (h < s + WorkRoster.MorningTraining && today.morning.TryGetValue(w, out string mt)) { doing = $"Entrenamiento de la mañana: {mt}"; return mt; }
         if (h >= s + 6f) { doing = today.training.TryGetValue(w, out string t) ? $"Entrenamiento: {t}" : "Entrenamiento"; return today.training.TryGetValue(w, out string ta) ? ta : "Sala de Yoga"; }
         doing = "Sin tarea asignada (disponible)";
         return null;
@@ -497,9 +502,10 @@ public class WorkdayDirector : MonoBehaviour
         NewcomerInitiator ini = g.GetComponent<NewcomerInitiator>();
         if (ini != null && ini.InProgress) return;   // está iniciando a un recién llegado: lo lleva ella (si no, la jornada la mandaba en alfombra a otro piso)
         Dress(g, area, doing, missionId);   // (2026-11-04) el uniforme de su tarea al llegar; su ropa al acabar
-        bool gymTime = !alwaysMove && area == GymArea && missionId == null && doing != null && doing.StartsWith("Entrenamiento");
+        bool afternoon = _hour >= WorkRoster.StartHour + 6f;   // (las clases del gimnasio y de yoga son de las 14 h; a las 8 se entrena en el sitio, una hora)
+        bool gymTime = afternoon && !alwaysMove && area == GymArea && missionId == null && doing != null && doing.StartsWith("Entrenamiento");
         if (!gymTime) LeaveGym(g);   // deja libre su máquina del gimnasio (si tenía)
-        bool yogaTime = !alwaysMove && area == YogaArea && missionId == null && doing != null && doing.StartsWith("Entrenamiento");
+        bool yogaTime = afternoon && !alwaysMove && area == YogaArea && missionId == null && doing != null && doing.StartsWith("Entrenamiento");
         if (!yogaTime && missionId != "yog_guia") LeaveYogaClass(g);   // deja la clase de yoga (si estaba en ella)
         if (missionId != "yog_guia" && missionId != "yog_demo") DropClassSequence(g);   // la secuencia de la clase, solo mientras la clase es su misión
         IdleBehavior idle = g.GetComponent<IdleBehavior>();
@@ -559,7 +565,7 @@ public class WorkdayDirector : MonoBehaviour
         if (!needing && yogaTime && YogaTraining(g)) { if (idle != null) idle.enabled = false; return; }
         if (idle != null && idle.enabled) idle.enabled = false;
         if (OwnNeeds(g, area, doing)) return;   // [Jornada] comer, el baño y dormir van antes; a mediodía, a comer
-        Vector3 to = EnergySite.FieldPoint(missionId, g.name) ?? WorkPoint(area, g.name);   // (los paneles y las torres se revisan en el casquete, no en el piso de control)
+        Vector3 to = EnergySite.FieldPoint(WorkRoster.LessonBase(missionId), g.name) ?? WorkPoint(area, g.name);   // (los paneles y las torres se revisan en el casquete, no en el piso de control)
         if ((g.transform.position - to).sqrMagnitude > 4f)
         {
             if (g.GetComponent<Anima>() != null && CarpetPad.Route(g, ref to)) return;   // otro grupo de plataformas: en alfombra voladora
@@ -576,7 +582,7 @@ public class WorkdayDirector : MonoBehaviour
     static void Perform(GameObject g, string area, string doing, string missionId)
     {
         if (g == null || g.GetComponent<Anima>() == null) return;   // (los clones de la Magnate no tienen esqueleto que mover)
-        ActivityPerformer.Performance p = missionId != null ? Performances.ForMission(missionId)
+        ActivityPerformer.Performance p = missionId != null ? Performances.ForMission(WorkRoster.LessonBase(missionId))
             : doing != null && doing.StartsWith("Entrenamiento") ? Performances.ForTraining(area) : null;
         if (p == null) return;
         Vector3 face = AreaTransform(area) != null ? AreaTransform(area).position : g.transform.position + g.transform.forward;
@@ -593,10 +599,10 @@ public class WorkdayDirector : MonoBehaviour
         if (g == null || g.GetComponent<Anima>() == null) return;
         if (_dressAt.TryGetValue(g, out float at) && Time.time < at) return;
         _dressAt[g] = Time.time + 1f;
-        Uniforms.Kind k = Uniforms.ForWork(missionId, area, doing);
+        Uniforms.Kind k = Uniforms.ForWork(WorkRoster.LessonBase(missionId), area, doing);
         if (k == Uniforms.Kind.None) { UniformWearer.Want(g, k); return; }
         Vector3 pos = g.transform.position;
-        bool there = area == AreaWork.Guard || FruitGardener.IsRound(missionId) || EnergySite.IsField(missionId) || InAreaNamed(area, pos)
+        bool there = area == AreaWork.Guard || FruitGardener.IsRound(missionId) || EnergySite.IsField(WorkRoster.LessonBase(missionId)) || InAreaNamed(area, pos)
                      || (WorkPoint(area, g.name) - pos).sqrMagnitude < 36f;
         if (there) UniformWearer.Want(g, k);
     }
@@ -992,6 +998,7 @@ public class WorkdayDirector : MonoBehaviour
         if (a.mission.id != null && a.mission.id.StartsWith("obra_trabajo_") && a.mission.site != null)
             foreach (ConstructionProject cp in ConstructionProject.All)
                 if (cp != null && cp.title == a.mission.site) cp.BeginShift(a.worker.name, Body(a.worker.name), a.start, a.mission.hours);
+        if (a.lesson) { TeachLesson(a); return; }
         if (a.firstTime && !a.worker.clone)
         {
             // INICIACIÓN: la Magnate (un clon suyo) aparece junto a quien hace la misión por primera vez y lo inicia.
@@ -1004,9 +1011,25 @@ public class WorkdayDirector : MonoBehaviour
         }
     }
 
+    // LA LECCIÓN: un cuerpo de la Magnate por clase, en el área de la tarea, durante la hora. Es ella quien enseña: la máxima autoridad de todas las áreas.
+    readonly HashSet<WorkRoster.Lesson> _taughtToday = new HashSet<WorkRoster.Lesson>();
+    public int LessonsGiven { get; private set; }
+    void TeachLesson(WorkRoster.Assignment a)
+    {
+        WorkRoster.Lesson l = today.lessons.FirstOrDefault(x => x.mission == a.mission);
+        if (l == null || !_taughtToday.Add(l)) return;
+        LessonsGiven++;
+        GameObject m = SpawnMagnateBody(l.teacher);
+        Vector3 at = EnergySite.FieldPoint(WorkRoster.LessonBase(l.mission.id), l.teacher) ?? WorkPoint(l.mission.area, l.teacher);
+        if (m != null && at != Vector3.zero) m.transform.position = at;
+        if (m != null) _initiators.Add((m, a.start + WorkRoster.LessonHours));
+        Debug.Log($"[Lección] {a.start:00.0} h · {l}.");
+    }
+
     void Finish(WorkRoster.Assignment a)
     {
         Debug.Log($"[Jornada] {a.worker.name} termina «{a.mission.title}».");
+        if (a.lesson) return;   // una lección no cambia nada en el santuario: el efecto es del trabajo de verdad
         // (2026-11-04) LA DE KUSHAL NO LA HACE NADIE POR ÉL: su efecto lo aplica su tarea con E al hacer el último paso
         // (PlayerTaskRunner) o la máquina de virtualización; si la ignora, caduca sin efecto (PlayerWorkday).
         if (!a.worker.clone && a.worker.name == "Player") return;

@@ -3574,7 +3574,7 @@ public static partial class SampleSceneBuilder
         BuildPhysicsHall(plant.transform);
         BuildNuclearUpperFloors();
         // EL PARQUE ENERGÉTICO (Berón 2026-11-05; docs/energia.md): su casquete y su árbol bajo; el campo, las turbinas y el almacén, al final (FinishEnergySite).
-        BeginEnergyTree(areasGroup.transform);
+        areas.Add(BeginEnergyTree(areasGroup.transform));
         // Los EDIFICIOS (sus plantas bajas): sin puentes ni escaleras, cada uno con sus alfombras (docs/alfombras-plan.md).
         var ground = new List<SanctuaryArea>();   // (todos son edificios-árbol: llevan sus alfombras en el techo y en el suelo)
         // Techo de cada edificio: sobre su piso MÁS ALTO (la cadena entera); encima va su techo de alfombras, con sus paneles.

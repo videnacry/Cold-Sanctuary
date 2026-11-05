@@ -154,6 +154,9 @@ public static class PlayerTasks
         T("ene_eolica", "Bloquea la turbina al pie de la torre|aerogenerador|Llave", "Revisa cámaras y radar|detector|Tablet", "Comprueba las palas y la pala negra|aerogenerador|Linterna");
         T("ene_mareal", "Sal a la pontona|pontona|Linterna", "Prueba el sonar|sonar|Tablet", "Revisa el anillo y las fugas|pontona|Linterna");
         T("ene_almacen", "Lee la temperatura de las baterías|bateria|Tablet", "Revisa la calefacción|bateria|Linterna", "Mira el silo de arena|silo|Tablet");
+        T("ene_ronda_aves", "Busca aves heridas al pie de la torre|aerogenerador|Linterna", "Busca entre las mesas|panel|Linterna", "Deja al ave en la caja de transporte|caja_aves|Caja");
+        T("ene_disuasion", "Revisa los drones|hangar|Tablet", "Cambia las figuras de sitio|hangar|Llave inglesa", "Anota cuántas veces han salido|consola|Tablet");
+        T("hos_aves", "Ponte guantes y mascarilla|armario|Guantes", "Cura al ave en su caja|refugio|Venda", "Anota cuándo se puede soltar|refugio|Tablet");
     }
 
     // ── LOS PASOS DE UNA MISIÓN ─────────────────────────────────────────────────────────────────────────────────────
@@ -165,6 +168,7 @@ public static class PlayerTasks
     public static Plan For(string id, string area, string title, string site = null, string[] also = null)
     {
         var p = new Plan { id = id, area = area, title = title ?? id, site = site };
+        id = WorkRoster.LessonBase(id);   // (la lección: los pasos y el gesto de la tarea que aprende; su efecto no, porque la misión es otra)
         AreaFunctions.AreaFunction f = AreaFunctions.Get(id);
         AreaFunctions.Kind kind = f != null ? f.kind : KindOf(id);
         if (id != null && _table.TryGetValue(id, out string[] rows))
@@ -317,6 +321,9 @@ public static class PlayerTasks
         ["sonar"] = new[] { "sonar_mareal" },
         ["bateria"] = new[] { "bateria_lfp" },
         ["silo"] = new[] { "silo_arena" },
+        ["caja_aves"] = new[] { "caja_transporte_aves" },
+        ["hangar"] = new[] { "hangar_drones" },
+        ["refugio"] = new[] { "refugio_aves" },
     };
 
     // (por área y puesto: los candidatos, cacheados unos segundos: el test recorre todas las misiones de golpe)
@@ -369,7 +376,7 @@ public static class PlayerTasks
             foreach (Transform root in Roots(area))
                 foreach (Transform t in root.GetComponentsInChildren<Transform>())
                 {
-                    if (t == root || t.GetComponent<Anima>() != null || t.GetComponentInParent<Anima>() != null || t.name.StartsWith(PlayerTaskRunner.MarkerPrefix)) continue;
+                    if (t == root || t.GetComponent<SanctuaryArea>() != null || t.GetComponent<Anima>() != null || t.GetComponentInParent<Anima>() != null || t.name.StartsWith(PlayerTaskRunner.MarkerPrefix)) continue;
                     string n = Norm(t.name);
                     foreach (string k in words) if (k.Length > 0 && n.Contains(k)) { l.Add(t); break; }
                     if (l.Count >= 24) break;
