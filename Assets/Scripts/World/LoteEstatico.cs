@@ -44,6 +44,8 @@ public class LoteEstatico : MonoBehaviour
     const float Hysteresis = 8f;
     /// <summary>Tiempo máximo (ms por frame) de la barrida de autocuración.</summary>
     public const float SweepMs = 1f;
+    /// <summary>Paso de física en Play (s).</summary>
+    public const float FixedStep = 0.04f;
     const float MaxPieceSize = 60f;   // lo enorme (hielo, mar) se queda como está: son pocos y no hay nada que ganar
     const int MaxPieceVerts = 4096, RebuildsPerFrame = 3;
     const float TransparentMaxSize = 1.5f;   // un cristal grande se ordena mejor solo; un visor pequeño, no importa
@@ -124,6 +126,9 @@ public class LoteEstatico : MonoBehaviour
         // Los Debug.Log van a ~5 por frame: capturar la pila de cada uno es caro. Avisos y errores la conservan.
         Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
         LogQuieto.Install();
+        // Nada del juego usa FixedUpdate: la física solo sirve a triggers grandes y a dos Rigidbody. A 0,02 s, un frame de 100 ms pagaba
+        // 5 pasos de PhysX con sus eventos de trigger; a 0,04 s, la mitad. Solo en Play: el ajuste del proyecto no cambia.
+        Time.fixedDeltaTime = FixedStep;
         Instance = g.AddComponent<LoteEstatico>();
         for (int i = 0; i < SceneManager.sceneCount; i++) Instance.StartCoroutine(Instance.AfterLoad(SceneManager.GetSceneAt(i)));
     }

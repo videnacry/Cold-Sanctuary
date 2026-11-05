@@ -117,6 +117,16 @@ Scripts que mandan: `Mind.Update` 52 ms (31 llamadas, casi todo tiempo propio), 
 `Time.deltaTime` acumulado. Con TestRunner toca en cada frame, así que las pruebas de conducta no prueban el reparto; lo prueba el grupo 112 con
 dt conocidos. `SenseSurroundings` sigue en cada frame con su dt, para no cambiar su efecto.
 
+## Fuera de Update (9 FPS en ronda 13: hilo principal 107 ms, `BehaviourUpdate` 41 ms)
+
+El perfil ahora da `hilo A > B > C` (reparto del hilo principal hasta 4 niveles) y `total X` (física, transformaciones, recorte, GC).
+
+- **Física:** ningún script usa `FixedUpdate`, y `PxScene.simulate` iba a 8 pasos por frame durante el perfil. `Time.fixedDeltaTime` pasa a 0,04 s en Play.
+- **Árbol que gira:** cada giro mueve miles de transformaciones y colliders (`UpdateRendererBoundingVolumes`, `TransformChangeSystem`, sincronización de física). Ahora se aplica a saltos de 0,1°, unas 4 veces por segundo.
+- `autoSyncTransforms` ya está apagado.
+- **Búsquedas:** `Magnate.FindSpot` hacía dos `GameObject.Find` por frame; `AreaTransform` buscaba todas las áreas si un nombre faltaba.
+- **`TreeDoorExit`:** solo las puertas a menos de 12 m de un nadador. **`VisualAttention`:** escanea hasta 8 veces menos lejos del jugador. **Abejas:** salen de las ramas 1 de cada 3 frames.
+
 ## Lo que solo cuesta en el editor
 
 Un juego construido no tiene esto, así que los FPS del editor no son los del jugador:
@@ -157,3 +167,5 @@ de comparar. También puede faltar alguna variante de URP/Lit para materiales cr
 - **Pila apagada en los `Debug.Log`:** si hace falta para depurar, `Application.SetStackTraceLogType`.
 - **Etiquetas:** aparecen con hasta 0,25 s de retraso, y las nuevas con hasta 5 s.
 - **NavMesh del árbol:** va hasta 0,5° por detrás del piso (35 cm a 40 m del eje).
+- **Árbol a saltos de 0,1°:** 7 cm a 40 m del eje; hay que mirar si se nota, sobre todo desde dentro. Quien está encima salta con él.
+- **Física a 25 Hz:** un trigger pequeño cruzado a mucha velocidad puede fallar; los del juego son grandes, pero está sin probar en vivo.

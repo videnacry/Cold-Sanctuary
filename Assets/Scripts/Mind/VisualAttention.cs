@@ -76,7 +76,9 @@ public class VisualAttention : MonoBehaviour
         if (conscious && Time.time < _holdUntil) return;
         conscious = false;
         if (Time.time < _next) return;
-        _next = Time.time + 0.25f + Random.Range(0f, 0.1f);   // escalonado: no escanean todos en el mismo frame
+        // Lejos del jugador mira menos a menudo (Lod): cada mirada son rayos contra quienes tiene delante.
+        float slow = ColdSanctuary.TestRunner.Running ? 1f : Lod.SlowFactor(transform.position);
+        _next = Time.time + (0.25f + Random.Range(0f, 0.1f)) * slow;   // escalonado: no escanean todos en el mismo frame
         if (_a != null && _a.asleep) { focus = null; return; }   // dormido no se ve nada
         var best = Scan(out float s);
         if (best != focus && best != null) Focused?.Invoke(best);   // enfoca (sin pensarlo)

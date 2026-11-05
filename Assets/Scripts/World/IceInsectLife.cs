@@ -202,6 +202,7 @@ public class IceInsectLife : MonoBehaviour
     Renderer[] _rends;
     void KeepBodyOutOfBranches()
     {
+        if (!ColdSanctuary.TestRunner.Running && (Time.frameCount + GetHashCode()) % 3 != 0) return;   // (mide todo el cuerpo: 1 de cada 3 frames basta)
         if (_rends == null) _rends = GetComponentsInChildren<Renderer>();
         Bounds b = new Bounds(transform.position, Vector3.zero); bool any = false;
         foreach (Renderer r in _rends) { if (r == null || !r.enabled || r is ParticleSystemRenderer || r is LineRenderer) continue; if (!any) { b = r.bounds; any = true; } else b.Encapsulate(r.bounds); }

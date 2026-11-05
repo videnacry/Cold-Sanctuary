@@ -23,6 +23,9 @@ public class TreeRotator : MonoBehaviour
     /// <summary>Grados girados antes de recolocar el NavMesh (quitarlo y ponerlo cuesta lo suyo). A 0,4 °/s, una vez cada ~1,2 s; a 40 m del
     /// eje, el NavMesh va como mucho 35 cm por detrás del piso. Antes, 0,05°: a pocos FPS, en cada frame.</summary>
     public const float NavRefreshDegrees = 0.5f;
+    /// <summary>Giro mínimo que se aplica de una vez (a 0,4 °/s, 4 veces por segundo).</summary>
+    public const float StepDegrees = 0.1f;
+    float _pendingDeg;
 
     /// <summary>Grados girados desde que empezó (con signo).</summary>
     public float TotalDegrees { get; private set; }
@@ -78,13 +81,20 @@ public class TreeRotator : MonoBehaviour
         float dps = DegreesPerSecond;
         if (Mathf.Abs(dps) > 1e-6f && Time.deltaTime > 0f)
         {
-            float deg = dps * Time.deltaTime;
-            Quaternion dq = Quaternion.AngleAxis(deg, Vector3.up);
-            Vector3 pivot = transform.position;
-            transform.rotation = dq * transform.rotation;
-            TotalDegrees += deg;
-            Physics.SyncTransforms();
-            Carry(dq, pivot);
+            // Girar el árbol mueve miles de piezas y colliders: se acumula hasta StepDegrees (a 40 m del eje, 7 cm) y se aplica de una vez,
+            // con los cuerpos que van encima. El total girado no cambia.
+            _pendingDeg += dps * Time.deltaTime;
+            if (Mathf.Abs(_pendingDeg) >= StepDegrees)
+            {
+                float deg = _pendingDeg;
+                _pendingDeg = 0f;
+                Quaternion dq = Quaternion.AngleAxis(deg, Vector3.up);
+                Vector3 pivot = transform.position;
+                transform.rotation = dq * transform.rotation;
+                TotalDegrees += deg;
+                Physics.SyncTransforms();
+                Carry(dq, pivot);
+            }
         }
         if (_surface != null && Time.time >= _navAt)
         {

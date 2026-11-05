@@ -22,6 +22,10 @@ public class TreeDoorExit : MonoBehaviour
     static readonly List<PlayerController> _swimmers = new List<PlayerController>();
     static float _scanAt;
     static int _frame = -1;
+    static readonly List<Vector3> _swimAt = new List<Vector3>();
+    const float NearDoor = 12f;
+    Vector3 _at;
+    bool _placed;
     static bool _anyone;
 
     void Update()
@@ -36,9 +40,16 @@ public class TreeDoorExit : MonoBehaviour
                 _swimmers.Clear(); _swimmers.AddRange(FindObjectsByType<PlayerController>(FindObjectsSortMode.None));
             }
             _anyone = false;
-            for (int i = 0; i < _swimmers.Count && !_anyone; i++) _anyone = _swimmers[i] != null && _swimmers[i].IsSwimming;
+            _swimAt.Clear();
+            for (int i = 0; i < _swimmers.Count; i++)
+                if (_swimmers[i] != null && _swimmers[i].IsSwimming) { _anyone = true; _swimAt.Add(_swimmers[i].transform.position); }
         }
         if (!_anyone) return;
+        // Solo si un nadador anda cerca de esta puerta, que casi no se mueve (se relee su sitio cada 64 frames).
+        if ((Time.frameCount + GetHashCode()) % 64 == 0 || !_placed) { _placed = true; _at = transform.position; }
+        bool near = false;
+        for (int i = 0; i < _swimAt.Count && !near; i++) near = (_swimAt[i] - _at).sqrMagnitude < NearDoor * NearDoor;
+        if (!near) return;
         for (int i = 0; i < _swimmers.Count; i++)
         {
             PlayerController pc = _swimmers[i];

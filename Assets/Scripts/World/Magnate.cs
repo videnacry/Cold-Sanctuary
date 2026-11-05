@@ -262,7 +262,17 @@ public class Magnate : MonoBehaviour
     static ActionQueue Queue(Anima t) => t.GetOrAdd<ActionQueue>();
     static float Flat(Vector3 v) { v.y = 0f; return v.magnitude; }
 
-    static Transform FindSpot(string n) { GameObject g = GameObject.Find(n); return g != null ? g.transform : null; }
+    // (GoPresent lo pedía en cada frame: GameObject.Find recorre toda la escena.)
+    static readonly System.Collections.Generic.Dictionary<string, Transform> _spots = new System.Collections.Generic.Dictionary<string, Transform>();
+    static float _spotRetry;
+    static Transform FindSpot(string n)
+    {
+        if (_spots.TryGetValue(n, out Transform t) && t != null) return t;
+        if (Time.unscaledTime < _spotRetry && !ColdSanctuary.TestRunner.Running) return null;
+        GameObject g = GameObject.Find(n);
+        if (g == null) { _spotRetry = Time.unscaledTime + 2f; return null; }
+        return _spots[n] = g.transform;
+    }
 
     // Proteger la vida: a su alrededor lanza PACIFICACIÓN (quita humores negativos, sube positivos, quita `aware`) →
     // el depredador suelta a su presa. Throttled (~0.5 s) para no castear cada frame sobre muchos.

@@ -1015,10 +1015,14 @@ public class WorkdayDirector : MonoBehaviour
     /// <summary>Un sitio de trabajo que no es un área de la escena (la estación de la línea de las cavernas): la jornada lo trata como a un área.</summary>
     public static void RegisterPlace(string name, Transform t) { _areas[name] = t; }
 
+    static float _areasRetry;
     public static Transform AreaTransform(string area)
     {
         if (area == null) return null;
         if (_areas.TryGetValue(area, out Transform t) && t != null) return t;
+        // Un área que no está en esta escena no se busca en cada llamada (se pide por persona y por frame).
+        if (Time.unscaledTime < _areasRetry && !ColdSanctuary.TestRunner.Running) return null;
+        _areasRetry = Time.unscaledTime + 3f;
         foreach (SanctuaryArea a in FindObjectsByType<SanctuaryArea>(FindObjectsSortMode.None)) _areas[a.displayName] = a.transform;
         return _areas.TryGetValue(area, out t) ? t : null;
     }
