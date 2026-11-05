@@ -42,6 +42,7 @@ public class ActionsPrep
         { "ArcticHare", new ActionsPrep(new ActionPrep("IdleArcticHare", 0f, 1f, -2f), new ActionPrep("RunArcticHare", 8f, 4f, 1f), new ActionPrep("RunArcticHare", 22f, 10f, 2f)) },
         { "ArcticFox", new ActionsPrep(new ActionPrep("IdleArcticFox", 0f, 1f, -2f), new ActionPrep("WalkArcticFox", 3f, 3f, 0.5f), new ActionPrep("RunArcticFox", 14f, 5f, 2f)) },
         { "MuskOx", new ActionsPrep(new ActionPrep("IdleMuskOx", 0f, 1f, -2f), new ActionPrep("WalkMuskOx", 3f, 2f, 0.5f), new ActionPrep("RunMuskOx", 15f, 4f, 2f)) },
+        { "SnowPetrel", new ActionsPrep(new ActionPrep("IdleSnowPetrel", 0f, 1f, -2f), new ActionPrep("WalkSnowPetrel", 2f, 2f, 0.5f), new ActionPrep("RunSnowPetrel", 12f, 4f, 2f)) },
 
         // Especies de las eras del microcosmos (docs/era-species-behavior.md): velocidades RELATIVAS a la hormiga (andar 3,
         // correr 10). El caracol, la babosa y la lombriz no "corren" (reptan por ondas del pie/peristaltismo); el solífugo,

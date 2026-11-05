@@ -29,7 +29,7 @@ public class IcebergVidaTest : MonoBehaviour, ITestUnit
             if (b == null) continue;
             var here = visitors.Where(v => v.berg == b).Select(v => v.GetComponent<Animal>()).Where(a => a != null).ToList();
             TestProbe.Check($"{b.name}: tiene focas y pingüinos de verdad", here.Any(a => a.SpeciesName == "Seal") && here.Any(a => a.SpeciesName == "Penguin"), $"{here.Count}");
-            TestProbe.Check($"{b.name}: ya no tiene figuras", !b.GetComponentsInChildren<Transform>().Any(t => t.name.StartsWith("Foca_iceberg")));
+            TestProbe.Check($"{b.name}: ya no tiene figuras", !b.GetComponentsInChildren<Transform>().Any(t => t.name.StartsWith("Foca_iceberg") || t.name.StartsWith("Petrel_nival")));
             TestProbe.Check($"{b.name}: tiene repisa a ras de agua y descansadero", b.ledge != null && b.ledge.GetComponentInChildren<Affordance>() != null && b.ledge.GetComponentInChildren<Collider>().bounds.max.y < 1f);
             TestProbe.Check($"{b.name}: tiene peces y kril cerca", b.fish != null && b.krill != null);
             TestProbe.Check($"{b.name}: no crían aquí y nadan con MarineLife", here.All(a => a.GetComponent<MarineLife>() != null));

@@ -428,7 +428,7 @@ Berón (2026-11-05): «¿tenemos reglas para la creación de animales?». Detall
 | P18 | **Al mover una torre, se lleva lo que depende de ella:** alfombras al suelo, animales, horario libre; holguras con `mig/Clear.cs`. | Producción y sus osos a la isla. | 99, 57 | ídem |
 | P19 | **Las áreas de producción escalan su maquinaria a lo que se les pide:** cada una tiene su línea en `ProductionAudit` (demanda, máquinas por etapa, cuello de botella); se comprueba al crear el área, al subir la demanda y al final del Blockout. Un número sin máquinas no vale. | Berón, 2026-11-05. | 103, `[Producción]` | [produccion-maquinaria.md](produccion-maquinaria.md) |
 | P20 | **La plataforma de hielo y la isla son paredes para la fauna; solo se respira en agua abierta, canales o hielo fijo fino, nunca a través de la plataforma.** Las rutas del submarino llevan túnel por la roca. | Berón, 2026-11-05: «hazlo real». | 107 | [hielo-y-respiraderos.md](hielo-y-respiraderos.md) |
-| P21 | **Quien usa un iceberg tiene su motivo:** por qué va, cuánto se queda y por qué se va, según la especie y la estación; nada de figuras; contado en la cadena alimenticia. | Berón, 2026-11-05. | 108 | [vida-en-icebergs.md](vida-en-icebergs.md) |
+| P21 | **Quien usa un iceberg tiene su motivo:** por qué va, cuánto se queda y por qué se va, según la especie y la estación; nada de figuras, también en las aves; contado en la cadena alimenticia. | Berón, 2026-11-05. | 108 | [vida-en-icebergs.md](vida-en-icebergs.md) |
 
 ## Docs de cada tema
 

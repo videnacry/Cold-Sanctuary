@@ -32,5 +32,5 @@ Berón (2026-11-05): «los iceberges deben poderse poblar por animales reales, i
 
 - **No crían aquí.** Con el motivo «cuidado de crías» solo se queda más: no hay parto. Evita ciclos de vida lejos de todo.
 - **Sin depredadores en los icebergs:** las orcas siguen en la laguna, así que nadie huye. Por eso el motivo «refugio» no está.
-- **Los petreles siguen siendo figuras.** No hay especie voladora en el catálogo. Crearla es trabajo aparte: recomendado, porque son los que de verdad se posan en ellos.
+- **Los petreles ya son reales.** `SnowPetrel` vuela (`SnowPetrelLife`), se posa unas horas arriba del iceberg y va con él; anida en la roca de la isla, nunca en el hielo.
 - **Coste:** 8 `Animal` más, 2 bancos más y 2 repisas, sin NavMesh, y `Lod` los trata como lejanos. Se puede vigilar en la primera reconstrucción.

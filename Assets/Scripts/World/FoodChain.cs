@@ -40,6 +40,7 @@ public static class FoodChain
         { "Bear", 6f },         // 43 focas anilladas al año (Pagano et al. 2018: una adulta cada 10–12 días)
         { "Orca", 120f },       // ~3 % de la masa del catálogo (4–6 % Sergeant 1969; 2 % en cautividad)
         { "Whale", 65f },       // ~5 % de la masa del catálogo (Savoca et al. 2021: 5–30 % los días que come)
+        { "SnowPetrel", 0.06f }, // [A] ~20 % de su masa
         { "Penguin", 0.6f },    // Adelia: 0,55–0,65 kg
         { "EmperorPenguin", 3f }, // 1,8–6,3 kg (Robertson & Newgrain 1996)
         { "Wolf", 3f },         // 2,5–6 kg (Fuller 1989)

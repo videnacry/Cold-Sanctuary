@@ -87,14 +87,7 @@ public static partial class SampleSceneBuilder
         PolarLandscapeBuilder.IgnoreForNav(t.gameObject);
         Iceberg b = t.gameObject.AddComponent<Iceberg>(); b.grounded = grounded; b.size = size;
         if (!grounded) { Rigidbody rb = t.gameObject.AddComponent<Rigidbody>(); rb.isKinematic = true; rb.useGravity = false; }
-        // Lo que vive alrededor: animales de verdad (BuildIcebergVisitors), bancos de verdad; las aves aún son figuras: no hay especie voladora.
-        Transform birds = new GameObject("Aves_iceberg").transform; birds.SetParent(t, false); birds.localPosition = new Vector3(0f, above + 14f, 0f);
-        for (int i = 0; i < 8; i++)
-        {
-            Vector3 p = Quaternion.Euler(0f, i * 45f, 0f) * Vector3.forward * (size.x * 0.6f + (i % 3) * 8f) + Vector3.up * ((i % 4) * 3f);
-            KitchenProps.C(birds, p, new Vector3(0.9f, 0.08f, 0.35f), Color.white, i * 45f, "Petrel_nival");
-        }
-        b.birds = birds;
+        // Lo que vive alrededor: animales de verdad (BuildIcebergVisitors), bancos de verdad.
         Vector3 krillAt = at + new Vector3(size.x * 0.5f + 12f, -4f, 0f);
         MiniSwarm(root, $"Kril_{name}", SwarmKind.Krill, krillAt);
         Transform kr = root.Find($"Kril_{name}");

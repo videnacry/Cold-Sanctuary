@@ -160,8 +160,16 @@ public static partial class SampleSceneBuilder
             Vector3 at = shore ? new Vector3(I.x, -2f, I.z - R - 6f) : new Vector3(CvLagoon.x, -2f, CvLagoon.z + 4f);
             if (sp == "Walrus") School(at, SwarmKind.Clam, "Almejas", new Color(0.7f, 0.62f, 0.5f, 0.6f));   // su fondo de bivalvos
             School(at + (sp == "Walrus" ? new Vector3(-10f, 0f, 0f) : Vector3.zero), SwarmKind.Fish, "Fish", new Color(0.35f, 0.55f, 0.65f, 0.6f));
-            if (sp == "Penguin" || sp == "EmperorPenguin" || sp == "Whale") School(at + new Vector3(8f, 0f, -3f), SwarmKind.Krill, "Krill", new Color(0.75f, 0.45f, 0.4f, 0.6f));
-            food = sp == "Walrus" ? "bivalvos del fondo (banco inagotable)" : sp == "Penguin" || sp == "EmperorPenguin" || sp == "Whale" ? "peces y krill (bancos inagotables)" : "peces (banco inagotable)";
+            if (sp == "SnowPetrel")   // su roca, con su nido: no cría en el hielo
+            {
+                var rockN = GameObject.CreatePrimitive(PrimitiveType.Cube); rockN.name = "Acantilado"; rockN.transform.SetParent(island.transform, false);
+                rockN.transform.position = I + new Vector3(0f, 1f, 3f); rockN.transform.localScale = new Vector3(6f, 2f, 3f);
+                rockN.GetComponent<Renderer>().sharedMaterial = MakeMaterial("CicloVida_Roca_MAT", new Color(0.4f, 0.38f, 0.36f));
+                var nestN = new GameObject("Nido_petrel"); nestN.transform.SetParent(island.transform, false); nestN.transform.position = I + new Vector3(0f, 2.1f, 3f);
+                nestN.AddComponent<SnowPetrelNest>();
+            }
+            if (sp == "SnowPetrel" || sp == "Penguin" || sp == "EmperorPenguin" || sp == "Whale") School(at + new Vector3(8f, 0f, -3f), SwarmKind.Krill, "Krill", new Color(0.75f, 0.45f, 0.4f, 0.6f));
+            food = sp == "Walrus" ? "bivalvos del fondo (banco inagotable)" : sp == "SnowPetrel" || sp == "Penguin" || sp == "EmperorPenguin" || sp == "Whale" ? "peces y krill (bancos inagotables)" : "peces (banco inagotable)";
         }
         GameObject cubeTree = null;
         if (tree)

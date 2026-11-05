@@ -16,7 +16,7 @@ using UnityEngine;
 /// </summary>
 public static class CubeCreature
 {
-    public enum Plan { Quadruped, Cetacean, Pinniped, Bird, Insect }
+    public enum Plan { Quadruped, Cetacean, Pinniped, Bird, Insect, FlyingBird }
 
     public class Spec
     {
@@ -44,6 +44,7 @@ public static class CubeCreature
         if (s.Contains("whale")) return new Spec { plan = Plan.Cetacean, length = 12f, height = 2.6f, width = 2.4f, head = new Vector3(2.2f, 2.2f, 3f), snout = 0f, fur = C(0.48f, 0.58f, 0.68f), belly = C(0.86f, 0.9f, 0.92f), tail = 0f };
         if (s.Contains("orca")) return new Spec { plan = Plan.Cetacean, length = 7f, height = 1.6f, width = 1.4f, head = new Vector3(1.3f, 1.3f, 1.6f), snout = 0f, fur = C(0.16f, 0.17f, 0.2f), belly = C(0.96f, 0.96f, 0.96f), tallDorsal = true };
         // TERRITORIO POLAR (medidas y colores de su ficha, docs/reglas-animales.md).
+        if (s.Contains("snowpetrel")) return new Spec { plan = Plan.FlyingBird, length = 0.36f, height = 0.11f, width = 0.78f, head = new Vector3(0.06f, 0.06f, 0.07f), snout = 0.025f, ear = Vector2.zero, fur = C(0.97f, 0.97f, 0.98f), belly = C(0.98f, 0.98f, 0.99f), eye = C(0.05f, 0.05f, 0.06f), accent = C(0.08f, 0.08f, 0.1f) };   // blanco entero, ojo y pico negros; envergadura 76–79 cm
         if (s.Contains("walrus")) return new Spec { plan = Plan.Pinniped, length = 3.0f, height = 1.0f, width = 1.05f, head = new Vector3(0.42f, 0.4f, 0.44f), snout = 0.16f, ear = Vector2.zero, fur = C(0.62f, 0.46f, 0.38f), belly = C(0.52f, 0.38f, 0.32f), patch = C(0.82f, 0.72f, 0.6f), tusks = true, noSpots = true };
         if (s.Contains("emperorpenguin")) return new Spec { plan = Plan.Bird, length = 0.42f, height = 1.0f, width = 0.46f, head = new Vector3(0.18f, 0.18f, 0.2f), snout = 0.12f, ear = Vector2.zero, fur = C(0.24f, 0.26f, 0.31f), headFur = C(0.07f, 0.07f, 0.09f), belly = C(0.97f, 0.97f, 0.95f), accent = C(0.98f, 0.9f, 0.62f), patch = C(0.98f, 0.8f, 0.2f), earPatch = true };
         if (s.Contains("reindeer")) return new Spec { length = 1.9f, height = 1.15f, width = 0.46f, head = new Vector3(0.24f, 0.26f, 0.38f), snout = 0.18f, neck = 0.42f, ear = new Vector2(0.07f, 0.1f), tail = 0.14f, tailThick = 0.09f, bulk = 0.42f, fur = C(0.55f, 0.47f, 0.4f), belly = C(0.92f, 0.9f, 0.86f), antlers = true };
@@ -126,6 +127,7 @@ public static class CubeCreature
             case Plan.Cetacean: Cetacean(body, sp, rig); break;
             case Plan.Pinniped: Pinniped(body, sp, rig); break;
             case Plan.Bird: Bird(body, sp, rig); break;
+            case Plan.FlyingBird: FlyingBird(body, sp, rig); break;
             case Plan.Insect: Insect(body, sp, rig); break;
             default: Quadruped(body, sp, rig); break;
         }
@@ -292,6 +294,23 @@ public static class CubeCreature
             CubeJoint th = J(tail.transform, left ? BodyPart.ThighLeft : BodyPart.ThighRight, new Vector3(W * 0.12f * s, 0f, -L * 0.16f), new Vector3(0.08f * k, 0.04f * k, L * 0.1f), new Vector3(0f, 0f, -L * 0.05f), sp.fur, rig);
             th.transform.localRotation = Quaternion.Euler(0f, 15f * s, 0f);
             J(th.transform, left ? BodyPart.FootLeft : BodyPart.FootRight, new Vector3(0f, 0f, -L * 0.1f), new Vector3(0.14f * k, 0.02f * k, L * 0.08f), new Vector3(0f, 0f, -L * 0.04f), sp.fur * 0.85f + new Color(0, 0, 0, 1), rig);
+        }
+    }
+
+    // Ave voladora: cuerpo horizontal y dos alas largas que bate SnowPetrelLife desde el hombro.
+    static void FlyingBird(Transform body, Spec sp, CreatureRig rig)
+    {
+        float L = sp.length, H = sp.height, span = sp.width;
+        CubeJoint chest = J(body, BodyPart.Chest, new Vector3(0f, H * 0.5f + 0.03f, 0f), new Vector3(H * 0.9f, H, L * 0.6f), Vector3.zero, sp.fur, rig);
+        J(chest.transform, BodyPart.Tail, new Vector3(0f, 0f, -L * 0.3f), new Vector3(H * 0.8f, H * 0.2f, L * 0.3f), new Vector3(0f, 0f, -L * 0.14f), sp.fur, rig);
+        CubeJoint neck = J(chest.transform, BodyPart.Neck, new Vector3(0f, H * 0.2f, L * 0.28f), new Vector3(H * 0.55f, H * 0.55f, L * 0.1f), new Vector3(0f, 0f, L * 0.04f), sp.fur, rig);
+        Head(neck.transform, new Vector3(0f, 0f, L * 0.09f), Quaternion.identity, sp, rig);
+        for (int s = -1; s <= 1; s += 2)
+        {
+            bool left = s < 0;
+            float half = span * 0.5f - H * 0.4f;
+            J(chest.transform, left ? BodyPart.ShoulderLeft : BodyPart.ShoulderRight, new Vector3(H * 0.45f * s, H * 0.3f, 0f), new Vector3(half, 0.012f, L * 0.3f), new Vector3(half * 0.5f * s, 0f, 0f), sp.fur, rig);
+            J(chest.transform, left ? BodyPart.FootLeft : BodyPart.FootRight, new Vector3(H * 0.25f * s, -H * 0.5f, -L * 0.05f), new Vector3(0.012f, 0.03f, 0.03f), new Vector3(0f, -0.015f, 0f), sp.accent, rig);
         }
     }
 

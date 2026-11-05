@@ -33,7 +33,7 @@ public class SpeciesBody : MonoBehaviour
         { "Whale", 400f }, { "Bear", 300f }, { "Deer", 250f }, { "Wolf", 200f },
         { "Fox", 150f }, { "Seal", 150f }, { "Malamute", 100f }, { "Bunny", 20f },
         { "Orca", 400f }, { "Penguin", 120f }, { "EmperorPenguin", 120f }, { "Walrus", 150f },
-        { "Reindeer", 250f }, { "MuskOx", 200f }, { "ArcticHare", 60f }, { "ArcticFox", 150f },
+        { "SnowPetrel", 800f }, { "Reindeer", 250f }, { "MuskOx", 200f }, { "ArcticHare", 60f }, { "ArcticFox", 150f },
     };
 
     // Bases evolutivas por especie (data; antes eran overrides BaseAgility/BasePerception por clase).
@@ -43,7 +43,7 @@ public class SpeciesBody : MonoBehaviour
         { "Fox",  (1.4f, 1.5f) }, { "Bear",     (0.7f, 1.1f) }, { "Whale", (0.6f, 1.0f) }, { "Bunny", (1.5f, 1.6f) },
         { "Wolf", (1.2f, 1.4f) }, { "Malamute", (1.1f, 1.1f) }, { "Deer",  (1.4f, 1.5f) }, { "Seal",  (1.1f, 1.2f) },
         { "Orca", (1.3f, 1.4f) }, { "Penguin",  (0.9f, 1.1f) }, { "EmperorPenguin", (0.8f, 1.1f) }, { "Walrus", (0.7f, 1.1f) },
-        { "Reindeer", (1.4f, 1.5f) }, { "MuskOx", (0.9f, 1.2f) }, { "ArcticHare", (1.6f, 1.5f) }, { "ArcticFox", (1.4f, 1.6f) },
+        { "SnowPetrel", (1.6f, 1.5f) }, { "Reindeer", (1.4f, 1.5f) }, { "MuskOx", (0.9f, 1.2f) }, { "ArcticHare", (1.6f, 1.5f) }, { "ArcticFox", (1.4f, 1.6f) },
     };
 
     /// <summary>Escribe en el `Anima` las aptitudes NO-evolutivas del arquetipo (fuerza/masa/mentales) y siembra los

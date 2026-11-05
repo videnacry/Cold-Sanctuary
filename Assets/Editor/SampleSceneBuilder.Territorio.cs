@@ -94,6 +94,13 @@ public static partial class SampleSceneBuilder
             Swarm.Create<Swarm>(t, $"Bivalvos_{k}", at, SwarmKind.Clam, k % 2 == 0 ? SwarmModels.Species.Clam : SwarmModels.Species.Mya, 30f, 40f, 2.5f);
         }
 
+        // Los petreles de las nieves: parejas, volando desde sus nidos. Son pocos y no usan NavMesh.
+        GameObject petrel = LoadAnimalPrefab("SnowPetrel");
+        var nests = t.GetComponentsInChildren<SnowPetrelNest>();
+        if (petrel != null && nests.Length > 0)
+            for (int i = 0, n = PopulationPlan.Target("SnowPetrel"); i < n; i++)
+                Adult(petrel, t, nests[(i / 2) % nests.Length].transform.position + Vector3.up * 3f + Vector3.right * (i % 2), i % 2 == 0 ? Sex.female : Sex.male, $"Petrel_nieves_{i + 1}");
+
         BuildFastIce(t, MakeMaterial("Hielo_fijo_MAT", new Color(0.8f, 0.9f, 0.96f)), MakeMaterial("Grieta_marea_MAT", new Color(0.12f, 0.2f, 0.26f)));
 
         // ── Puntos de la isla para la prueba ──
@@ -197,7 +204,16 @@ public static partial class SampleSceneBuilder
             Block(arc, ice ? "Barrera" : "Acantilado", at + Vector3.up * h * 0.5f, new Vector3(w, h, d), body, a, true);
             // Encima: la nieve del hielo o el guano y las repisas del acantilado de aves.
             Block(arc, ice ? "Barrera_nieve" : "Repisa", at + Vector3.up * (h + 0.15f), new Vector3(w + 0.2f, 0.3f, d + 0.2f), cap, a, false);
-            if (!ice) Block(arc, "Repisa", at + rot * new Vector3(0f, h * 0.6f, d * 0.5f + 0.25f), new Vector3(w * 0.9f, 0.25f, 0.5f), cap, a, false);
+            if (!ice)
+            {
+                Block(arc, "Repisa", at + rot * new Vector3(0f, h * 0.6f, d * 0.5f + 0.25f), new Vector3(w * 0.9f, 0.25f, 0.5f), cap, a, false);
+                if (n % 2 == 0)   // un nido de petrel de las nieves cada dos bloques: repisas sin nieve (ver SnowPetrelLife)
+                {
+                    var nest = new GameObject("Nido_petrel"); nest.transform.SetParent(arc, false);
+                    nest.transform.position = at + rot * new Vector3(0f, h * 0.6f + 0.2f, d * 0.5f + 0.25f);
+                    nest.AddComponent<SnowPetrelNest>();
+                }
+            }
             n++;
         }
         return n;

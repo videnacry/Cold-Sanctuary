@@ -14,7 +14,7 @@ public static class PopulationPlan
         { "Bear", 0.3f }, { "PolarBear", 0.3f }, { "Penguin", 1.2f }, { "Seal", 0.6f }, { "Whale", 0.2f }, { "Orca", 0.1f },
         { "Fox", 0.2f }, { "Wolf", 0.3f },
         // Territorio polar (docs/reglas-animales.md): en la isla, más herbívoros que depredadores.
-        { "Walrus", 0.3f }, { "EmperorPenguin", 0.8f }, { "Reindeer", 0.6f }, { "MuskOx", 0.3f }, { "ArcticHare", 0.5f }, { "ArcticFox", 0.2f },
+        { "SnowPetrel", 0.55f }, { "Walrus", 0.3f }, { "EmperorPenguin", 0.8f }, { "Reindeer", 0.6f }, { "MuskOx", 0.3f }, { "ArcticHare", 0.5f }, { "ArcticFox", 0.2f },
     };
 
     /// <summary>Quién vive en el santuario y en cuántos grupos (lo reparte el constructor). Una especie nueva entra aquí y la cadena alimenticia
@@ -22,7 +22,7 @@ public static class PopulationPlan
     public static readonly Dictionary<string, int> Groups = new Dictionary<string, int>
     {
         { "Bear", 1 }, { "Seal", 3 }, { "Whale", 2 }, { "Penguin", 2 }, { "Orca", 1 },
-        { "Walrus", 2 }, { "EmperorPenguin", 2 }, { "Reindeer", 2 }, { "MuskOx", 1 }, { "ArcticHare", 2 }, { "ArcticFox", 1 }, { "Wolf", 1 },
+        { "SnowPetrel", 1 }, { "Walrus", 2 }, { "EmperorPenguin", 2 }, { "Reindeer", 2 }, { "MuskOx", 1 }, { "ArcticHare", 2 }, { "ArcticFox", 1 }, { "Wolf", 1 },
     };
 
     /// <summary>Humanos para escalar la fauna al construir: 11 (el equipo real son 30 o más; ver el comentario siguiente). La jornada puede subirlo en juego.</summary>

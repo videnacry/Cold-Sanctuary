@@ -167,7 +167,7 @@ public class BloodBank : MonoBehaviour
         {
             case "Bear": kg = 350f; break; case "PolarBear": kg = 450f; break; case "Wolf": kg = 40f; break; case "Fox": kg = 6f; break;
             case "Reindeer": kg = 140f; break; case "Seal": kg = 150f; break; case "Penguin": kg = 4.5f; break; case "EmperorPenguin": kg = 30f; break;
-            case "Walrus": kg = 1000f; break; case "MuskOx": kg = 300f; break; case "ArcticHare": kg = 4f; break; case "ArcticFox": kg = 3.3f; break;
+            case "SnowPetrel": kg = 0.32f; break; case "Walrus": kg = 1000f; break; case "MuskOx": kg = 300f; break; case "ArcticHare": kg = 4f; break; case "ArcticFox": kg = 3.3f; break;
             case "Orca": kg = 4000f; break; case "Whale": kg = 1200f; break; default: kg = 40f; break;
         }
         return kg * 0.07f;

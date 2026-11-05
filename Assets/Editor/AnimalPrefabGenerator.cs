@@ -39,6 +39,7 @@ public static class AnimalPrefabGenerator
         ("ArcticHare",     "ArcticHareBehavior"),
         ("ArcticFox",      "ArcticFoxBehavior"),
         ("MuskOx",         "MuskOxBehavior"),
+        ("SnowPetrel",     "SnowPetrelBehavior"),
 
         // Insectos del Microcosmos (las clases YA existían; aquí se registran para que el generador los produzca).
         // Necesitan un .fbx en Assets/Animals/{Especie}/Models/ (si no, se saltan con log, como el resto).

@@ -136,6 +136,8 @@ public static class Ethogram
         { "EmperorPenguin", new[] {
             new EthoAct(AffordanceKind.HaulOut, 0.6f, 30f, HabitEffect.Huddle, "se apiña con la colonia", "Gilbert et al. 2006, Physiol Behav 88:479 (huddling del pingüino emperador)"),
             new EthoAct(AffordanceKind.HaulOut, 0.3f, 25f, HabitEffect.Rest, "se acicala en el hielo fijo", "") } },
+        { "SnowPetrel", new[] {
+            new EthoAct(AffordanceKind.Perch, 0.3f, 30f, HabitEffect.Rest, "se posa en la roca", "Australian Antarctic Program: bandadas posadas en icebergs; anida en grietas") } },
         { "Walrus", new[] {
             new EthoAct(AffordanceKind.HaulOut, 0.6f, 90f, HabitEffect.Rest, "sale a descansar en grupo", "Jay, Farley & Garner 2001, Mar Mamm Sci 17:617 (~77 % del tiempo en el agua)") } },
         { "Reindeer", new[] {

@@ -44,7 +44,6 @@ public class Iceberg : MonoBehaviour
     [Tooltip("Varado en un banco: no deriva.")] public bool grounded;
     [Tooltip("Extremos de la deriva (mundo). Empieza yendo hacia driftB.")] public Vector3 driftA, driftB;
     [Tooltip("Tamaño total (m): ancho, de arriba abajo, largo.")] public Vector3 size;
-    [Tooltip("Las aves que vuelan alrededor: giran juntas.")] public Transform birds;
     [Tooltip("El kril que lo sigue.")] public Swarm krill;
     [Tooltip("Los peces que lo siguen (docs/vida-en-icebergs.md).")] public Swarm fish;
     [Tooltip("El pie de hielo a ras de agua: lo único a lo que se puede subir.")] public Transform ledge;
@@ -53,6 +52,9 @@ public class Iceberg : MonoBehaviour
     public float SwimRadius => Mathf.Max(size.x, size.z) * 0.75f + 10f;
     /// <summary>El punto del agua frente a la repisa: por ahí se sube.</summary>
     public Vector3 Approach => ledge != null ? ledge.position + (ledge.position - transform.position).normalized * 12f + Vector3.down : transform.position;
+    /// <summary>Dónde se posa un ave: arriba, en el escalón del hielo. Se mueve con él.</summary>
+    public Vector3 PerchSpot(float seed) => transform.TransformPoint(new Vector3(-size.x * 0.3f + Mathf.Repeat(seed * 7f, size.x * 0.25f), size.y * 0.1f + 0.1f, size.z * 0.3f));
+
     /// <summary>Un sitio en la repisa, propio de cada uno.</summary>
     public Vector3 HaulSpot(float seed)
     {
@@ -79,7 +81,6 @@ public class Iceberg : MonoBehaviour
 
     void Update()
     {
-        if (birds != null) birds.Rotate(0f, 12f * Time.deltaTime, 0f);
         if (grounded) return;
         if (!_started) { _started = true; if (_to == Vector3.zero) _to = driftB; }
         Vector3 p = Vector3.MoveTowards(transform.position, _to, IcebergRule.Speed * Time.deltaTime);

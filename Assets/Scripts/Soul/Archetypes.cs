@@ -146,6 +146,7 @@ public static class Archetypes
             { "Penguin",  MakeBody(0.60f, 1.0f, 1.1f, 0.5f, 0.5f, 1.2f) },   // pequeño, ágil nadando, débil, resistente al frío
             { "Orca",     MakeBody(2.60f, 1.2f, 1.4f, 2.6f, 2.8f, 2.2f) },   // apex: grande, fuerte, rápido, gran percepción
             // Territorio polar (docs/reglas-animales.md): altura relativa al humano; fuerza y masa, en proporción a los del catálogo.
+            { "SnowPetrel", MakeBody(0.20f, 1.6f, 1.4f, 0.1f, 0.1f, 1.3f) },
             { "Walrus",   MakeBody(1.80f, 0.6f, 1.0f, 2.4f, 2.8f, 1.8f) },
             { "EmperorPenguin", MakeBody(0.70f, 1.0f, 1.1f, 0.7f, 0.8f, 1.5f) },   // el mayor pingüino: aguanta el ayuno y −40 °C
             { "Reindeer", MakeBody(1.40f, 1.4f, 1.5f, 1.1f, 1.5f, 1.7f) },
@@ -175,6 +176,7 @@ public static class Archetypes
             { "Seal",     MakeMind(ElementalTone.Agua,   1.1f, 0.9f, 1.0f, 0.9f, 1.2f, 0.8f) },   // juguetón
             { "Penguin",  MakeMind(ElementalTone.Agua,   0.8f, 0.8f, 0.9f, 0.7f, 1.5f, 1.0f) },   // gregario (colonia), poco individualista
             { "Orca",     MakeMind(ElementalTone.Agua,   1.6f, 1.4f, 1.6f, 1.3f, 1.6f, 1.4f) },   // muy inteligente y social (pod, cultura)
+            { "SnowPetrel", MakeMind(ElementalTone.Viento, 0.9f, 0.8f, 1.1f, 0.7f, 1.2f, 0.8f) },   // vuelve a su grieta de por vida
             { "Walrus",   MakeMind(ElementalTone.Agua,   1.2f, 0.9f, 1.0f, 0.7f, 1.4f, 0.9f) },   // gregaria, tranquila hasta que se la molesta
             { "EmperorPenguin", MakeMind(ElementalTone.Agua, 1.2f, 0.8f, 1.0f, 0.7f, 1.6f, 1.5f) },   // aguante y disciplina de colonia
             { "Reindeer", MakeMind(ElementalTone.Viento, 1.0f, 0.8f, 1.1f, 0.6f, 1.4f, 1.0f) },   // manada migradora
@@ -224,6 +226,7 @@ public static class Archetypes
         _bodies["Seal"].waterAffinity  = 1.0f; _bodies["Seal"].landAffinity  = 0.6f;   // anfibia
         _bodies["Orca"].waterAffinity  = 1.0f; _bodies["Orca"].landAffinity  = 0.05f;  // varada e indefensa en tierra
         _bodies["EmperorPenguin"].waterAffinity = 1.0f; _bodies["EmperorPenguin"].landAffinity = 0.7f;
+        _bodies["SnowPetrel"].airAffinity = 1.0f; _bodies["SnowPetrel"].landAffinity = 0.6f;
         _bodies["Walrus"].waterAffinity = 1.0f; _bodies["Walrus"].landAffinity = 0.5f;   // anfibia: ~77 % del tiempo en el agua
         _bodies["Penguin"].waterAffinity = 1.0f; _bodies["Penguin"].landAffinity = 0.7f;   // anfibio: cómodo en hielo
         // VOLADORES: la abeja de las nieves vuela (IceInsectLife la mueve por el aire, sin NavMesh); con el default terrestre

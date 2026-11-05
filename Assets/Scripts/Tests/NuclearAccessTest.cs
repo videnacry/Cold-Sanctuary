@@ -202,7 +202,7 @@ public class NuclearAccessTest : MonoBehaviour, ITestUnit
         TestProbe.Check("los tres casquetes vigilados están donde dice la regla", (launchTree == null || Flat(launchTree.transform.position, IcebergRule.Center(IcebergRule.Site.Launch)) < 1f) && (energyTree == null || Flat(energyTree.transform.position, IcebergRule.Center(IcebergRule.Site.Energy)) < 1f));
         int radars = FindObjectsByType<Transform>(FindObjectsSortMode.None).Count(t => t.name == "Radar_hielo"), sonars = FindObjectsByType<Transform>(FindObjectsSortMode.None).Count(t => t.name == "Sonar_quillas");
         TestProbe.Check("radar y sonar en cada casquete artificial", radars >= 2 && radars == sonars, $"{radars} radares");
-        TestProbe.Check("con kril de verdad, aves y focas", moving != null && moving.krill != null && moving.birds != null && FindObjectsByType<IcebergVisitor>(FindObjectsSortMode.None).Any(v => v.berg == moving));
+        TestProbe.Check("con kril de verdad, aves y focas", moving != null && moving.krill != null && FindObjectsByType<IcebergVisitor>(FindObjectsSortMode.None).Any(v => v.berg == moving));
         TestProbe.Check("cálado como su plataforma", moving != null && Mathf.Abs(moving.size.y - SeaRule.ShelfThickness) < 1f);
         TestProbe.Check("un trozo sí lo para el escudo; un iceberg entero, no", moving != null && moving.Tonnes > IcebergRule.ShieldTonnes);
         if (moving != null)

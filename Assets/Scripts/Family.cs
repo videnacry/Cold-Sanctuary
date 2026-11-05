@@ -43,7 +43,7 @@ public class Family
         // Territorio polar (docs/reglas-animales.md): el parto es siempre 1 cría; grupos pequeños para no multiplicar Animal completos.
         { "Walrus", new Family(3, 0.3f, maternal) }, { "EmperorPenguin", new Family(4, 0.3f, biparental) },
         { "Reindeer", new Family(5, 0.3f, maternal) }, { "MuskOx", new Family(4, 0.35f, maternal) },
-        { "ArcticHare", new Family(4, 0.4f, maternal) }, { "ArcticFox", new Family(4, 0.4f, biparental) },
+        { "SnowPetrel", new Family(2, 1f, biparental) }, { "ArcticHare", new Family(4, 0.4f, maternal) }, { "ArcticFox", new Family(4, 0.4f, biparental) },
 
         // Insectos
         { "Ant",     new Family(6, 0.8f, maternal) },  // colonia; reinas = parents
