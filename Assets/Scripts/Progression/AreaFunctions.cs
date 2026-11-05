@@ -153,6 +153,10 @@ public static class AreaFunctions
         // (2026-11-04, más profesiones) La COMUNICACIÓN (Andrea: los avisos y la radio, en el comedor), las LETRAS (Irosene: poesía,
         // narración y lecturas en el Aula) y la CURANDERA (Maite: plantas medicinales en la farmacia del hospital).
         S(Def("Cocina", "coc_avisos", "Comunicación: preparar y dar los avisos del santuario y el programa de radio en el comedor", 0.5f, false, Kind.Trade, "mesa"));
+        // (2026-11-05) Consol prepara la clase de Ashtanga. Fernando: los paneles solares («sol_»; la rama de energía, docs/energia.md, pone los paneles).
+        S(Def("Sala de Yoga", "yog_ashtanga", "Preparar la clase de Ashtanga: la secuencia del día, las variaciones y los ajustes de cada alumno", 0.5f, false, Kind.Teach, "esterilla"));
+        S(Def("Construcción", "sol_instalar", "Paneles solares: instalar los paneles nuevos de los pisos", 1f, false, Kind.Build));
+        S(Def("Construcción", "sol_reparar", "Paneles solares: revisar, limpiar y reparar los paneles", 1f, false, Kind.Build));
         Roles(S(Def("Aula", "aul_letras", "Letras: clase de poesía y narración, y lecturas en la sala de estudio", 1f, false, Kind.Teach, "pizarra")), "maestro", "alumno");
         Roles(S(Def("Hospital", "hos_plantas", "Curandera: remedios de plantas medicinales (infusiones, cataplasmas y ungüentos) para los pacientes", 1f, false, Kind.Heal, "armario")), "enfermera");
         // (2026-11-04, los seis nuevos) PEDIATRÍA (Ivelyna), la FLOTA DE ALFOMBRAS y el transporte aéreo (Luciana, en la Mecánica) y el

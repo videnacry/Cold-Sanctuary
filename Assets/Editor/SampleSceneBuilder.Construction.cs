@@ -165,7 +165,7 @@ public static partial class SampleSceneBuilder
         Put("JefeConstruccion", "Construction_Area", new Vector3(-1.5f, 1f, -0.3f)); // junto al banco de trabajo y la pizarra de avisos
         // La familia y los amigos de Berón (2026-11-04; docs/diseno-personajes.md §Familia y amigos), cada uno en el área de su PROFESIÓN
         // (Professions; docs/personajes-mesocosmos.md §Profesiones). Los que no tienen (Nesvitor, consejero; Gallarle, pendiente), repartidos.
-        Put("Josedrilo", "YogaRoom_Area", new Vector3(9f, 1.5f, 0f));             // MAESTRO DE YOGA: en la tarima de la sala de Hatha tradicional, junto al linga
+        Put("Josedrilo", "YogaRoom_Area", new Vector3(9f, 1.5f, 0f));             // MAESTRO DE HATHA: en la tarima de la sala de Hatha tradicional, junto al linga
         Put("Maite", "Kitchen_Area", new Vector3(0f, 1f, 9f));                     // cocina
         Put("Amykhuz", "Kitchen_Area", new Vector3(-1.5f, 1f, 9f));                 // cocina y química
         Put("Nesvitor", "Garden_Area", new Vector3(-2f, 1f, 3f));                  // guardia y agricultor: en el huerto
@@ -183,6 +183,8 @@ public static partial class SampleSceneBuilder
         Put("Lale", "CulturedMeatLab_Area", new Vector3(-2f, 1f, 2f));
         Put("Ivelyna", "Infirmary_Area", new Vector3(-3f, 1f, -3f));               // pediatra, en el hospital
         Put("Malena", "Infirmary_Area", new Vector3(-5f, 1f, -3f));                // pediatra, con Ivelyna
+        Put("Consol", "YogaRoom_Area", new Vector3(-9f, 1.5f, 0f));                // MAESTRA DE ASHTANGA: sale en el piso de la Sala de Yoga, en la otra sala (las clases de Ashtanga, en su planta)
+        Put("Fernando", "Construction_Area", new Vector3(-3f, 1f, 2.5f));          // paneles solares
         Put("Luciana", "VehicleWorkshop_Area", new Vector3(-2f, 1f, 2f));          // piloto: la flota de alfombras (y el control de misión)
         Put("Gallarle", "Classroom_Area", new Vector3(-3f, 1f, -1f));              // con su pareja, Ducristin (pendiente de foto y de profesión)
         Put("Neo", "Classroom_Area", new Vector3(-4f, 1f, -2f));                   // su hijo (niño): va con su madre (PersonLife), sin jornada
@@ -198,7 +200,7 @@ public static partial class SampleSceneBuilder
         ("Karen", "Karen (asuntos legales y lenguas)", 34f, new Color(0.97f, 0.96f, 0.95f), 0.9f, 1.05f, 1.0f, 0.95f),
         ("Alicita", "Alicita · Alicia (contabilidad y dirección de proyectos)", 36f, new Color(0.12f, 0.13f, 0.15f), 0.9f, 1.0f, 1.05f, 0.95f),
         ("Ducristin", "Ducristin (gerente de banca y profesor)", 38f, new Color(0.6f, 0.78f, 0.95f), 1.0f, 1.0f, 1.0f, 1.05f),
-        ("Josedrilo", "Josedrilo (maestro de yoga, jefe de obra nueva y bioconstrucción)", 40f, new Color(0.1f, 0.09f, 0.09f), 1.05f, 1.0f, 1.0f, 1.0f),
+        ("Josedrilo", "Josedrilo (maestro de Hatha, jefe de obra nueva y bioconstrucción)", 40f, new Color(0.1f, 0.09f, 0.09f), 1.05f, 1.0f, 1.0f, 1.0f),
         ("Maite", "Maite (jefa de cocina y curandera)", 42f, new Color(0.36f, 0.33f, 0.24f), 0.9f, 1.05f, 1.0f, 0.95f),
         ("Shalva", "Shalva (cultivo y bioconstrucción)", 44f, new Color(0.3f, 0.33f, 0.15f), 1.05f, 1.0f, 1.05f, 1.0f),
         ("Adaguchi", "Adaguchi (submarinismo y cocina)", 46f, new Color(0.08f, 0.08f, 0.09f), 1.05f, 1.0f, 1.0f, 1.05f),
@@ -213,6 +215,9 @@ public static partial class SampleSceneBuilder
         ("Ivelyna", "Ivelyna (pediatra)", 62f, new Color(0.55f, 0.5f, 0.42f), 1.0f, 1.0f, 1.0f, 1.0f),
         ("Luciana", "Luciana (piloto y artes marciales)", 64f, new Color(0.38f, 0.42f, 0.5f), 1.0f, 1.0f, 1.0f, 1.0f),
         ("Malena", "Malena (pediatra)", 68f, new Color(0.86f, 0.74f, 0.62f), 1.0f, 1.0f, 1.0f, 1.0f),
+        // (2026-11-05) Pendientes de foto. Consol: «muy flexible» (Berón), de ahí su agilidad y su resistencia; Fernando, neutro.
+        ("Consol", "Consol (maestra de Ashtanga; pendiente de foto)", 70f, new Color(0.42f, 0.3f, 0.5f), 1.0f, 1.35f, 1.15f, 0.95f),
+        ("Fernando", "Fernando (paneles solares; pendiente de foto)", 72f, new Color(0.85f, 0.55f, 0.15f), 1.05f, 1.0f, 1.0f, 1.0f),
     };
 
     /// <summary>LOS FAMOSOS QUE SE FUERON A SUS MICROCOSMOS (Berón 2026-11-04: «los personajes famosos, elon musk, sadhguru, y demás

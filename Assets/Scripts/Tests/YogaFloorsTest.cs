@@ -116,7 +116,7 @@ public class YogaFloorsTest : MonoBehaviour, ITestUnit
         int per = Mathf.Max(1, Mathf.Min(perClass, people.Count / 2 - 1));
         Anima tH = people.FirstOrDefault(p => p.name.Replace("_Post", "") == WorkdayDirector.YogaTeacher) ?? people[0];
         people.Remove(tH);
-        Anima tA = people.FirstOrDefault(p => p.name.Replace("_Post", "") == WorkdayDirector.SecondYogaTeacher) ?? people[0]; people.Remove(tA);   // la segunda maestra (Panterilia)
+        Anima tA = people.FirstOrDefault(p => p.name.Replace("_Post", "") == WorkdayDirector.AshtangaTeacher) ?? people[0]; people.Remove(tA);   // la maestra de Ashtanga (Consol)
         List<Anima> sH = people.Take(per).ToList(), sA = people.Skip(per).Take(per).ToList();
 
         WorkdayDirector wd = WorkdayDirector.Instance;
@@ -170,7 +170,7 @@ public class YogaFloorsTest : MonoBehaviour, ITestUnit
     static List<Anima> People()
     {
         WorkdayDirector wd = WorkdayDirector.Instance;
-        string[] names = wd != null ? wd.staff : new[] { "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene", "JefeConstruccion", "Andrea", "Nesvitor", "Amykhuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi", "Gallarle", "Julian", "Fausto", "David", "Adonis", "Yulo", "Lale", "Ivelyna", "Luciana", "Malena" };
+        string[] names = wd != null ? wd.staff : new[] { "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene", "JefeConstruccion", "Andrea", "Nesvitor", "Amykhuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi", "Gallarle", "Julian", "Fausto", "David", "Adonis", "Yulo", "Lale", "Ivelyna", "Luciana", "Malena", "Consol", "Fernando" };
         var people = new List<Anima>();
         foreach (string n in names)
         {

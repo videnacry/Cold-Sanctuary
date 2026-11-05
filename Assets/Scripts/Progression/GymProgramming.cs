@@ -216,6 +216,7 @@ public static class GymProgramming
         { "Maite", P(TrainingSplit.CuerpoEntero, TrainingGoal.Resistencia, 0.65f, "Registros y vacunación (mucho de pie): cuerpo entero 3 d de resistencia.", 1, 3, 5) },
         { "Shalva", P(TrainingSplit.TorsoPierna, TrainingGoal.Hipertrofia, 0.9f, "Personal general: torso/pierna 4 d.", 1, 2, 4, 5) },
         { "Adaguchi", P(TrainingSplit.Weider, TrainingGoal.Hipertrofia, 0.9f, "Sudadera sin mangas, estilo culturista: Weider 5 d (un grupo por día; cada músculo 1×/sem).", 0, 1, 2, 3, 4) },
+        { "Consol", P(TrainingSplit.CuerpoEntero, TrainingGoal.Salud, 0.7f, "Maestra de Ashtanga: da la clase de las 14 h de lunes a viernes; sábado y domingo, gimnasio suave.", 5, 6) },
     };
 
     /// <summary>¿Puede tener plan de gimnasio? Los humanos del santuario sí; los humanos-insecto de los microcosmos no: en sus
