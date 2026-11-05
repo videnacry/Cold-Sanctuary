@@ -3118,10 +3118,10 @@ public static partial class SampleSceneBuilder
         // de la rotación; cinco llevan además un papel de los famosos que se fueron. Entran en la jornada, el horario libre y la arboleda.
         foreach (var (id, label, x, clothes, s, ag, en, m) in FamilyCharacters)
             MakeCharacter(root.transform, id, label, new Vector3(x, 1f, 8f), clothes, s, ag, en, m);
-        // (2026-11-04) NEO, niño, hijo de Ducristin y Gallarle (Berón; pendiente de foto). Con el ciclo de vida de los humanos (PersonLife:
+        // (2026-11-04) NEO, niño, hijo de Ducristin y Gallarle (Berón). Con el ciclo de vida de los humanos (PersonLife:
         // etapa de niño, crece comiendo y durmiendo) y sus padres enlazados: de niño va con Gallarle (FollowMother) y vive en su casa del
         // árbol (Bedroom.kids). No está en la jornada (no trabaja). Sus padres llevan el mismo ciclo de vida, sin embarazos (female = false).
-        GameObject neo = MakeCharacter(root.transform, "Neo", "Neo (niño; pendiente de foto)", new Vector3(66f, 1f, 8f), new Color(0.3f, 0.55f, 0.75f), 0.5f, 1.1f, 0.8f, 0.45f);
+        GameObject neo = MakeCharacter(root.transform, "Neo", "Neo (niño)", new Vector3(66f, 1f, 8f), new Color(0.3f, 0.55f, 0.75f), 0.5f, 1.1f, 0.8f, 0.45f);
         GameObject duc = root.transform.Find("Ducristin")?.gameObject, gal = root.transform.Find("Gallarle")?.gameObject;
         PersonLife neoLife = PersonLife.Equip(neo, false, newborn: true);
         if (neo.TryGetComponent(out BodyAging neoAge)) neoAge.growth = 0.35f;   // un niño (niño < 0,6 de crecimiento; BodyAging)

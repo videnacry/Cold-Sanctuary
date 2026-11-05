@@ -98,7 +98,7 @@ public static class AreaCapacity
             }
         }
         // El RING DE ALMOHADAS (ocio de todos a la vez; docs/guerra-de-almohadas.md): su capacidad, la de su colchón.
-        foreach (PillowRing r in PillowRing.All)
+        foreach (PillowRing r in Object.FindObjectsByType<PillowRing>(FindObjectsInactive.Include, FindObjectsSortMode.None))   // (no PillowRing.All: se llena en OnEnable, y esta regla corre también fuera de Play)
         {
             if (r == null) continue;
             lines.Add(new Line { area = "Ring de almohadas", activity = PillowRing.ActivityId, category = AreaSeat.Category.Ocio, have = r.Capacity, need = members });

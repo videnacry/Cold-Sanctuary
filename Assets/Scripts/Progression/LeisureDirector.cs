@@ -85,7 +85,7 @@ public class LeisureDirector : MonoBehaviour
     // ── Participantes ────────────────────────────────────────────────────────────────────────────
 
     static readonly string[] DefaultStaff = { "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene", "JefeConstruccion", "Andrea",
-                                              "Nesvitor", "Amykhuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi", "Gallarle", "Julian", "Fausto", "David", "Adonis", "Julito", "Ale", "Ivelyna", "Luciana" };
+                                              "Nesvitor", "Amykhuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi", "Gallarle", "Julian", "Fausto", "David", "Adonis", "Yulo", "Lale", "Ivelyna", "Luciana", "Malena" };
 
     /// <summary>Vuelve a mirar quién hay en cada escena (cada 2 s, o ya si <paramref name="now"/>) y reparte la semana si cambió
     /// la gente o la semana.</summary>
@@ -174,7 +174,7 @@ public class LeisureDirector : MonoBehaviour
         ("textil", "Manualidades en el estudio textil", LeisureRoster.Kind.Ocio, new[] { "Estudio Textil" }, 4, "sentado"),
         ("tertulia", "Tertulia en el restaurante", LeisureRoster.Kind.Ocio, new[] { "Cocina" }, 8, "sentado"),
         ("baile", "Bailar", LeisureRoster.Kind.Ocio, new[] { "Sala de Ballet", "Calistenia", "Gimnasio" }, 6, "baile"),
-        ("artes", "Artes marciales con Gohageneis",   // (2026-11-04: antes con Goku, que se fue a su microcosmos)
+        ("artes", "Artes marciales con Gohageneis y Luciana",   // (2026-11-04: antes con Goku, que se fue a su microcosmos; 2026-11-05: y Luciana)
           LeisureRoster.Kind.Ocio, new[] { "Dojo (artes marciales)", "Gimnasio" }, 6, "ejercicio"),
         ("descanso", "Descansar en casa", LeisureRoster.Kind.Descanso, new[] { "casa" }, 0, "tumbado"),
     };
@@ -348,6 +348,9 @@ public class LeisureDirector : MonoBehaviour
         Run r = Instance.RunOf(g);
         return r != null && r.blockedBy == null;
     }
+
+    /// <summary>¿Está tumbado en su cama con el horario libre (Descansar en casa)? Como quien duerme, no cuenta como «dentro de un mueble».</summary>
+    public static bool OnBed(GameObject g) { Run r = Instance != null ? Instance.RunOf(g) : null; return r != null && r.onBed; }
 
     /// <summary>Qué hace ahora en su tiempo libre (o null).</summary>
     public static string StatusOf(GameObject g)

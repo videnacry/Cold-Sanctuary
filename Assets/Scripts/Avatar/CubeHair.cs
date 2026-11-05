@@ -56,6 +56,10 @@ public static class CubeHair
         public bool rolledSleeves, collar, openCollar;       // mangas remangadas; cuello de camisa (abierto)
         public Color hangingGlasses; public bool hasHangingGlasses;   // gafas colgadas de la camisa
         public bool beads;                                   // collar de cuentas de un solo color
+        // (2026-11-05, de las fotos de Berón) Piezas nuevas: mochila, bolsa de tela, estampado en el pecho, corbata, mangas de farol,
+        // falda de volantes o vestido liso, abrigo largo con botones grandes, cuello alto y gafas de sol sobre la cabeza.
+        public Color backpack, tote, totePrint, logo, logoDetail, tie, headFrame, headLens;
+        public bool hasBackpack, hasTote, hasLogo, hasTie, puffSleeves, tieredSkirt, plainSkirt, longCoat, highNeck, hasHeadShades;
         public Look(Style s, Color h, Color sk, Color e, bool b = false)
         {
             this = default;
@@ -111,6 +115,16 @@ public static class CubeHair
         public Look Collar(bool open = false) { collar = true; openCollar = open; return this; }
         public Look HangingGlasses(Color c) { hangingGlasses = c; hasHangingGlasses = true; return this; }
         public Look Beads(Color c) { necklace = c; hasNecklace = true; necklaceCross = false; beads = true; return this; }
+        public Look Backpack(Color c) { backpack = c; hasBackpack = true; return this; }
+        public Look Tote(Color c, Color print) { tote = c; totePrint = print; hasTote = true; return this; }
+        public Look Logo(Color c, Color detail) { logo = c; logoDetail = detail; hasLogo = true; return this; }
+        public Look Tie(Color c) { tie = c; hasTie = true; return this; }
+        public Look PuffSleeves() { puffSleeves = true; return this; }
+        public Look TieredSkirt(Color c) { tieredSkirt = true; return Skirt(c, c); }
+        public Look Dress(Color c) { plainSkirt = true; return Skirt(c, c); }
+        public Look LongCoat() { longCoat = true; return this; }
+        public Look HighNeck() { highNeck = true; return this; }
+        public Look HeadShades(Color frame, Color lens) { headFrame = frame; headLens = lens; hasHeadShades = true; return this; }
         public Look Extras(bool upperTat = false, bool band = false, bool walletChain = false, bool backRifle = false) { upperTattoo = upperTat; wristband = band; chain = walletChain; rifle = backRifle; return this; }
     }
 
@@ -184,6 +198,9 @@ public static class CubeHair
         // Alicita (Alicia): piel clara morena, melena larga lisa negra, ARETES de aro pequeños; chaqueta negra con cremallera
         // (cerrada) y el cuello verde fosforito de la camiseta asomando. Sonriente.
         if (n.Contains("alicita")) return new Look(Style.Long, C(0.06f, 0.05f, 0.06f), C(0.88f, 0.7f, 0.58f), C(0.18f, 0.12f, 0.08f)).Fem().Face(0.8f, 0.55f).Lips(C(0.75f, 0.45f, 0.45f)).Earrings(true).Wear(C(0.12f, 0.13f, 0.15f), 1.58f).Jacket(C(0.62f, 0.95f, 0.15f), null, true).Pants(C(0.12f, 0.12f, 0.15f)).Shoes(C(0.1f, 0.1f, 0.11f));
+        // Ducristin (foto dukristy), gerente de banca: traje azul
+        // marino, camisa blanca y corbata azul, pelo oscuro en tupé. Su ropa informal (la de abajo) es la del retrato «Ducristin_Casual».
+        if (n.Contains("ducristin") && !n.Contains("casual")) return new Look(Style.Quiff, C(0.1f, 0.08f, 0.09f), C(0.78f, 0.58f, 0.45f), C(0.2f, 0.13f, 0.08f)).Face(0.86f, 0.5f).Wear(C(0.1f, 0.13f, 0.25f), 1.7f).Jacket(C(0.96f, 0.96f, 0.97f)).Tie(C(0.25f, 0.5f, 0.85f)).Pants(C(0.1f, 0.13f, 0.25f)).Shoes(C(0.05f, 0.05f, 0.06f));
         // Ducristin («semigod»): piel morena, pelo corto castaño oscuro LEVANTADO por delante (tupé), GAFAS DE AVIADOR de cristal
         // degradado; camisa azul clara de CUADROS con cuello abierto y MUÑEQUERA roja.
         if (n.Contains("ducristin")) return new Look(Style.Quiff, C(0.2f, 0.13f, 0.09f), C(0.78f, 0.58f, 0.45f), C(0.2f, 0.13f, 0.08f)).Face(0.86f, 0.5f).Shades(C(0.75f, 0.75f, 0.78f), C(0.36f, 0.22f, 0.26f), true).Wear(C(0.6f, 0.78f, 0.95f), 1.7f).Sleeves(C(0.6f, 0.78f, 0.95f)).Pattern(C(0.42f, 0.6f, 0.88f), Weave.Checks).Collar(true).Band(C(0.85f, 0.15f, 0.2f)).Pants(C(0.25f, 0.27f, 0.32f)).Shoes(C(0.15f, 0.12f, 0.1f));
@@ -199,21 +216,27 @@ public static class CubeHair
         // Adaguchi (confirmado por Berón el 2026-11-04): piel clara morena, pelo corto ondulado
         // castaño oscuro con volumen arriba, un PENDIENTE pequeño; sudadera negra SIN MANGAS con capucha y COLLAR de cuentas oscuras.
         if (n.Contains("adaguchi")) return new Look(Style.Fade, C(0.16f, 0.1f, 0.07f), C(0.88f, 0.7f, 0.58f), C(0.2f, 0.13f, 0.08f)).Face(0.84f, 0.5f).Earring().Wear(C(0.08f, 0.08f, 0.09f), 1.65f).Sleeveless().Hood(C(0.08f, 0.08f, 0.09f)).Beads(C(0.25f, 0.2f, 0.26f)).Pants(C(0.12f, 0.12f, 0.14f)).Shoes(C(0.1f, 0.1f, 0.1f));
-        // Gallarle (2026-11-04, pareja de Ducristin): PENDIENTE DE FOTO. Aspecto neutro provisional, sin rasgos inventados ni género:
-        // pelo corto castaño, piel media, camiseta gris azulada y pantalón oscuro, 1,70 m. Se cambia cuando Berón mande la foto.
-        if (n.Contains("gallarle")) return new Look(Style.Short, C(0.3f, 0.22f, 0.15f), C(0.84f, 0.66f, 0.52f), C(0.25f, 0.18f, 0.12f)).Face(0.8f, 0.45f).Wear(C(0.45f, 0.5f, 0.55f), 1.7f).Pants(C(0.18f, 0.18f, 0.22f)).Shoes(C(0.15f, 0.13f, 0.12f));
-        // Julian (pareja de Alicita; búlgaro) y Fausto (pareja de Irosene; mecánico), 2026-11-04: PENDIENTES DE FOTO. Aspecto neutro
-        // provisional como el de Gallarle (sin rasgos inventados ni género); Fausto con ropa de taller.
-        if (n.Contains("julian")) return new Look(Style.Short, C(0.28f, 0.2f, 0.14f), C(0.9f, 0.76f, 0.66f), C(0.3f, 0.24f, 0.18f)).Face(0.8f, 0.45f).Wear(C(0.4f, 0.45f, 0.52f), 1.75f).Pants(C(0.2f, 0.2f, 0.24f)).Shoes(C(0.15f, 0.13f, 0.12f));
-        if (n.Contains("fausto")) return new Look(Style.Short, C(0.25f, 0.2f, 0.16f), C(0.82f, 0.64f, 0.5f), C(0.25f, 0.18f, 0.12f)).Face(0.84f, 0.45f).Wear(C(0.35f, 0.38f, 0.42f), 1.72f).Sleeves(C(0.35f, 0.38f, 0.42f)).Pants(C(0.3f, 0.32f, 0.36f)).Shoes(C(0.12f, 0.1f, 0.09f));
-        // LOS SEIS NUEVOS (Berón 2026-11-04): David y Adonis (informática), Julito y Ale (biotecnología), Ivelyna (pediatra) y Luciana
-        // (piloto). PENDIENTES DE FOTO: aspecto neutro provisional, como Gallarle, sin rasgos inventados. El rasgo femenino (Fem) solo
-        // donde el nombre lo sugiere (Ivelyna, Luciana), PENDIENTE DE CONFIRMAR con Berón; Ale es HOMBRE (confirmado por Berón), sin él. Por nombre
-        // EXACTO (David, Ale… son nombres que pueden salir en los microcosmos).
-        if (n == "david" || n == "adonis" || n == "julito" || n == "ale" || n == "ivelyna" || n == "luciana") return Placeholder(n);
-        // NEO (2026-11-04), niño, hijo de Ducristin y Gallarle: PENDIENTE DE FOTO. Aspecto neutro de niño (~1,2 m; su cuerpo crece
-        // con PersonLife/BodyAging), sin Fem; por nombre EXACTO.
-        if (n == "neo") return new Look(Style.Short, C(0.28f, 0.2f, 0.14f), C(0.86f, 0.7f, 0.58f), C(0.25f, 0.18f, 0.12f)).Face(0.84f, 0.45f).Wear(C(0.3f, 0.55f, 0.75f), 1.2f).Pants(C(0.2f, 0.22f, 0.3f)).Shoes(C(0.2f, 0.15f, 0.12f));
+        // (2026-11-05, DE LAS FOTOS de Berón; solo rasgos visibles, con respeto). Por nombre EXACTO (David, Lale… pueden salir en los
+        // microcosmos); Lale y Yulo responden también a su nombre de antes en las escenas sin reconstruir.
+        // Yulo (antes Julito), biotecnología: pelo oscuro rizado y revuelto, gafas redondas de montura fina, camisa blanca de lino de manga corta.
+        if (n == "yulo" || n == "julito") return new Look(Style.Curly, C(0.12f, 0.09f, 0.08f), C(0.9f, 0.74f, 0.62f), C(0.2f, 0.14f, 0.1f)).Face(0.8f, 0.45f).Glasses(C(0.72f, 0.68f, 0.6f)).Wear(C(0.96f, 0.95f, 0.92f), 1.74f).Collar(true).Pants(C(0.35f, 0.33f, 0.3f)).Shoes(C(0.2f, 0.18f, 0.16f));
+        // Lale (antes Ale; hombre, confirmado), biotecnología: pelo oscuro corto, chaqueta de carreras negra y blanca con logo, mochila negra, vaqueros oscuros y bolsa blanca de tela.
+        if (n == "lale" || n == "ale") return new Look(Style.Short, C(0.08f, 0.07f, 0.07f), C(0.86f, 0.68f, 0.55f), C(0.2f, 0.13f, 0.08f)).Face(0.8f, 0.45f).Wear(C(0.07f, 0.07f, 0.08f), 1.72f).Jacket(C(0.95f, 0.95f, 0.96f)).Logo(C(0.95f, 0.95f, 0.96f), C(0.1f, 0.1f, 0.12f)).Backpack(C(0.07f, 0.07f, 0.08f)).Tote(C(0.95f, 0.95f, 0.93f), C(0.55f, 0.75f, 0.85f)).Pants(C(0.12f, 0.14f, 0.2f)).Shoes(C(0.1f, 0.1f, 0.1f));
+        // Neo, niño, hijo de Ducristin y Gallarle: pelo castaño oscuro, camiseta roja bajo un chaleco beige (~1,2 m; su cuerpo crece con PersonLife).
+        if (n == "neo") return new Look(Style.Short, C(0.18f, 0.11f, 0.07f), C(0.92f, 0.78f, 0.66f), C(0.2f, 0.13f, 0.08f)).Face(0.84f, 0.45f).Wear(C(0.82f, 0.74f, 0.6f), 1.2f).Jacket(C(0.8f, 0.12f, 0.14f)).Pants(C(0.2f, 0.22f, 0.3f)).Shoes(C(0.2f, 0.15f, 0.12f));
+        // Gallarle, pareja de Ducristin (foto gallarle_luciana, a la IZQUIERDA; confirmado): melena oscura a los hombros, pendientes oscuros, americana negra sobre blusa crema.
+        if (n.Contains("gallarle")) return new Look(Style.Medium, C(0.07f, 0.06f, 0.06f), C(0.93f, 0.76f, 0.66f), C(0.2f, 0.13f, 0.08f)).Fem().Face(0.8f, 0.55f).Lips(C(0.75f, 0.45f, 0.45f)).Earrings().Wear(C(0.06f, 0.06f, 0.07f), 1.62f).Jacket(C(0.95f, 0.92f, 0.82f)).Pants(C(0.07f, 0.07f, 0.08f)).Shoes(C(0.06f, 0.06f, 0.07f));
+        // Luciana, piloto y experta en artes marciales (a la DERECHA de la misma foto): pelo largo liso oscuro, vestido hueso de mangas de farol.
+        if (n == "luciana") return new Look(Style.Long, C(0.12f, 0.08f, 0.06f), C(0.93f, 0.78f, 0.68f), C(0.2f, 0.13f, 0.08f)).Fem().Face(0.74f, 0.55f).Wear(C(0.95f, 0.93f, 0.86f), 1.63f).PuffSleeves().Dress(C(0.95f, 0.93f, 0.86f)).Shoes(C(0.8f, 0.75f, 0.68f));
+        // Ivelyna, pediatra (foto ivelyna_malena, a la IZQUIERDA; confirmado): pelo largo negro ondulado, camiseta blanca con un coche rojo estampado, falda blanca de volantes, pulsera de cuentas.
+        if (n == "ivelyna") return new Look(Style.LongWavy, C(0.05f, 0.05f, 0.06f), C(0.85f, 0.66f, 0.54f), C(0.18f, 0.12f, 0.08f)).Fem().Face(0.76f, 0.55f).Wear(C(0.96f, 0.96f, 0.96f), 1.6f).Logo(C(0.85f, 0.12f, 0.12f), C(0.08f, 0.08f, 0.1f)).TieredSkirt(C(0.96f, 0.96f, 0.95f)).Band(C(0.25f, 0.25f, 0.28f)).Shoes(C(0.9f, 0.9f, 0.9f));
+        // Malena, pediatra (a la DERECHA de la misma foto): pelo recogido con gafas de sol sobre la cabeza, abrigo largo beige de botones grandes, blusa blanca de cuello alto y pantalón blanco.
+        if (n == "malena") return new Look(Style.Bun, C(0.1f, 0.08f, 0.08f), C(0.82f, 0.63f, 0.5f), C(0.18f, 0.12f, 0.08f)).Fem().Face(0.8f, 0.55f).HeadShades(C(0.1f, 0.1f, 0.1f), C(0.22f, 0.22f, 0.25f)).Wear(C(0.86f, 0.74f, 0.62f), 1.63f).Jacket(C(0.96f, 0.96f, 0.94f)).HighNeck().LongCoat().Pants(C(0.96f, 0.95f, 0.93f)).Shoes(C(0.92f, 0.92f, 0.9f));
+        // PENDIENTES DE FOTO (2026-11-05): aspecto provisional, pero distinto de persona en persona (pelo, piel y ropa), para reconocerlos en la galería.
+        if (n.Contains("julian")) return new Look(Style.SweptBack, C(0.42f, 0.3f, 0.18f), C(0.92f, 0.78f, 0.68f), C(0.3f, 0.24f, 0.18f)).Face(0.8f, 0.45f).Wear(C(0.3f, 0.42f, 0.62f), 1.76f).Collar().Pants(C(0.25f, 0.24f, 0.22f)).Shoes(C(0.25f, 0.17f, 0.11f));
+        if (n.Contains("fausto")) return new Look(Style.Curly, C(0.3f, 0.17f, 0.1f), C(0.8f, 0.61f, 0.47f), C(0.25f, 0.18f, 0.12f)).Face(0.86f, 0.45f).Wear(C(0.3f, 0.34f, 0.3f), 1.7f).Sleeves(C(0.3f, 0.34f, 0.3f)).Pants(C(0.3f, 0.34f, 0.3f)).Shoes(C(0.12f, 0.1f, 0.09f));
+        if (n == "david") return new Look(Style.Spiky, C(0.13f, 0.1f, 0.08f), C(0.8f, 0.6f, 0.47f), C(0.22f, 0.15f, 0.1f)).Face(0.84f, 0.45f).Wear(C(0.1f, 0.5f, 0.52f), 1.75f).Pants(C(0.16f, 0.18f, 0.26f)).Shoes(C(0.85f, 0.85f, 0.85f));
+        if (n == "adonis") return new Look(Style.Fade, C(0.04f, 0.04f, 0.05f), C(0.66f, 0.46f, 0.34f), C(0.15f, 0.1f, 0.07f)).Face(0.78f, 0.5f).Wear(C(0.48f, 0.15f, 0.25f), 1.8f).Sleeves(C(0.48f, 0.15f, 0.25f)).Pants(C(0.5f, 0.45f, 0.36f)).Shoes(C(0.12f, 0.1f, 0.09f));
         // BRUCE LEE (docs/microcosmos-bruce-lee.md): figura histórica del microcosmos del Dojo. Sin parecido de cine: un hombre
         // delgado y atlético de ~1,72 m, pelo negro corto, ropa sencilla de entrenamiento negra (chaqueta de cuello chino, pantalón
         // y zapatillas de tela). La complexión delgada y fibrosa sale de sus stats (BodyShape), que pone su builder.
@@ -239,16 +262,6 @@ public static class CubeHair
 
     static Color Pick(string n, params Color[] c) => c[Mathf.Abs(n.GetHashCode() / 3) % c.Length];
 
-    // Aspecto provisional de los pendientes de foto: pelo corto o media melena castaña, piel media, ropa lisa de un color por persona.
-    static int Sum(string n) { int h = 0; foreach (char ch in n) h += ch; return h; }
-    static Look Placeholder(string n)
-    {
-        Color[] wear = { C(0.4f, 0.45f, 0.52f), C(0.45f, 0.4f, 0.35f), C(0.35f, 0.45f, 0.4f), C(0.5f, 0.45f, 0.55f), C(0.55f, 0.5f, 0.42f), C(0.38f, 0.42f, 0.5f) };
-        bool fem = n == "ivelyna" || n == "luciana";   // (por el nombre; pendiente de confirmar)
-        Look l = new Look(fem ? Style.Medium : Style.Short, C(0.28f, 0.2f, 0.14f), C(0.86f, 0.7f, 0.58f), C(0.25f, 0.18f, 0.12f)).Face(fem ? 0.76f : 0.82f, 0.45f)
-            .Wear(wear[Sum(n) % wear.Length], fem ? 1.63f : 1.74f).Pants(C(0.2f, 0.2f, 0.24f)).Shoes(C(0.15f, 0.13f, 0.12f));
-        return fem ? l.Fem() : l;
-    }
 
     /// <summary>Pone el pelo sobre la articulación de la cabeza (su cubo: <paramref name="size"/> centrado en <paramref name="center"/>).</summary>
     public static void Build(Transform head, Vector3 center, Vector3 size, Look look)
@@ -491,6 +504,13 @@ public static class CubeHair
             disc.localRotation = Quaternion.Euler(0f, 0f, 9f);
             P(h, new Vector3(0f, top + 0.004f, center.z - 0.005f), new Vector3(w + 0.02f, 0.025f, d + 0.02f), new Color(0.12f, 0.08f, 0.06f));
             P(h, new Vector3(size.x * 0.22f, top + 0.03f, front + 0.008f), new Vector3(0.035f, 0.04f, 0.006f), new Color(0.85f, 0.72f, 0.3f));   // insignia
+        }
+
+        if (look.hasHeadShades)   // GAFAS DE SOL sobre la cabeza
+        {
+            float gy = center.y + size.y * 0.5f + 0.045f, gz = center.z + size.z * 0.18f, gx = size.x * 0.22f, gr = size.x * 0.16f;
+            for (int s = -1; s <= 1; s += 2) P(h, new Vector3(s * gx, gy, gz), new Vector3(gr * 2f, 0.02f, gr * 1.4f), look.headLens);
+            P(h, new Vector3(0f, gy + 0.004f, gz), new Vector3(size.x * 0.84f, 0.012f, 0.014f), look.headFrame);
         }
 
         if (look.hasShades)   // GAFAS DE SOL: cristales rellenos (envolventes: una banda que rodea las sienes; de aviador: gota con montura fina)

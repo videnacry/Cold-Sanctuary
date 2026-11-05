@@ -20,14 +20,14 @@ public static class ResidentialBuilder
         // Tote, Amykhuz y Karen, Ducristin y Gallarle, Josedrilo y Maite, Alicita y Julian, Irosene y Fausto.
         // 16 casas ocupadas de 18: dos libres para recién llegados.
         "Nesvitor", "Amykhuz", "Alicita", "Ducristin", "Josedrilo", "Shalva", "Adaguchi",
-        // (2026-11-04) Los seis nuevos (pendientes de foto), en la CUARTA casa de cada árbol: 22 casas ocupadas de 24.
-        "David", "Adonis", "Julito", "Ale", "Ivelyna", "Luciana",
+        // (2026-11-04) Los seis nuevos y Malena (2026-11-05), en la CUARTA casa de cada árbol: 23 casas ocupadas de 24.
+        "David", "Adonis", "Yulo", "Lale", "Ivelyna", "Luciana", "Malena",
     };
     static readonly string[] Shown =
     {
         "Kushal", "la Magnate", "Linduarda", "Goluis", "Panterilia", "Gohageneis", "Irosene y Fausto", "Lizmibet y Tote", "Andrea",
         "Nesvitor", "Amykhuz y Karen", "Alicita y Julian", "Ducristin y Gallarle", "Josedrilo y Maite", "Shalva", "Adaguchi",
-        "David", "Adonis", "Julito", "Ale", "Ivelyna", "Luciana",
+        "David", "Adonis", "Yulo", "Lale", "Ivelyna", "Luciana", "Malena",
     };
     /// <summary>La pareja con la que comparte casa cada dueño (manual M18, J14), si la tiene.</summary>
     static readonly System.Collections.Generic.Dictionary<string, string> Partners = new System.Collections.Generic.Dictionary<string, string>
@@ -237,9 +237,9 @@ public static class ResidentialBuilder
                          new Vector3(-3.0f, 0.25f, -1.2f), new Vector3(-2.2f, 0.25f, -1.2f), new Vector3(-1.4f, 0.25f, -1.2f), new Vector3(-0.6f, 0.25f, -1.2f) };
         for (int k = 0; k < gp.Length; k++) { Transform gt = new GameObject($"Pijamada_{k + 1}").transform; gt.SetParent(t, false); gt.localPosition = gp[k]; gather.Add(gt); }
         // SU ALFOMBRA, que es también su ESTERILLA DE YOGA: lleva a la plataforma central (y se hace yoga encima). Zona de 3 × 3,6 m
-        // de x 1,15 a 4,15 y de z −3,45 a 0,15: a 2,15 m de la cama y a 2,8 m del armario.
+        // (2,8 × 3,6 m desde la ronda 7) de x 1,4 a 4,2 y de z −3,45 a 0,15: a 2,15 m de la cama y a 2,8 m del armario.
         string who = ownerIdx < Shown.Length ? $"Habitación de {Shown[ownerIdx]}" : $"Habitación libre {ownerIdx + 1}";
-        CarpetPad.BuildZone(t, t.TransformPoint(new Vector3(2.65f, 0.27f, -1.65f)), t.rotation, CarpetPad.Kind.Habitacion, Name, 2, $"{Name}#hab{ownerIdx}", who, 1, 3f, 3.6f);
+        CarpetPad.BuildZone(t, t.TransformPoint(new Vector3(2.8f, 0.27f, -1.65f)), t.rotation, CarpetPad.Kind.Habitacion, Name, 2, $"{Name}#hab{ownerIdx}", who, 1, 2.8f, 3.6f);
         // (2026-11-03) SU TERRAZA FRUTAL (Berón: «los frutales en residencias que te pedí era para las residencias del santuario»; docs/
         // jardines-frutales.md §Residencia): una plataforma de 7 × 7 m (7 × 6 hasta el 2026-11-04) pegada a la habitación por el lado contrario al tronco, con un
         // frutal en maceta en su centro (a ≥ 2 m de la cama, el armario y la alfombra). Es una maceta del jardinero (FruitPlant,

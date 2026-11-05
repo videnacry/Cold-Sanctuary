@@ -124,6 +124,7 @@ public class PillowFightTest : MonoBehaviour, ITestUnit
         float start = LeisureRoster.SlotHours[PillowRing.Slot];
         Rest(wd != null ? wd.staff : new string[0]);
         tc.SetClock(day, start - LeisureDirector.TogetherLead - 0.02f);   // (se sale con tiempo hacia las de todos a la vez)
+        Rest(wd != null ? wd.staff : new string[0]);   // (ronda 7: el salto de reloj les deja hambre, casi todos iban a comer y quedaba 1 de 26 a quién medir)
         if (wd != null) wd.PlanDay(day);
         ld.Scan(true);
         GameObject any = WorkdayDirector.Body("Linduarda") ?? WorkdayDirector.Body("Goluis");
@@ -158,6 +159,7 @@ public class PillowFightTest : MonoBehaviour, ITestUnit
         int maxOn = 0, maxHolding = 0;
         while (tc.Hour < start + 0.95f && tc.Day == day && Time.realtimeSinceStartup < end)
         {
+            Rest(names);   // (el reloj va ×speed: sin esto, el hambre vuelve a pasar delante de la franja)
             int on = names.Count(n => { Anima a = Body(n); return a != null && ring.OnMattress(a.transform.position); });
             maxOn = Mathf.Max(maxOn, on);
             maxHolding = Mathf.Max(maxHolding, PillowFight.Fighters.Count(PillowFight.Holding));
@@ -167,7 +169,7 @@ public class PillowFightTest : MonoBehaviour, ITestUnit
         var recs = LeisureDirector.Records.Skip(rec0).Concat(ld.Snapshot()).Where(x => !x.micro && x.day == day && x.slot == PillowRing.Slot && x.activity == act.title).ToList();
         var free = recs.Where(r => r.blocked < r.since * 0.5f).ToList();
         int arrived = free.Count(r => r.arrived), walked = free.Count(r => r.arrived && !r.fallback), jumps = recs.Sum(r => r.jumps);
-        TestProbe.Check("van todos al ring (≥ 80 % de los que no atendían una necesidad)", free.Count > 0 && arrived >= 0.8f * free.Count, $"{arrived}/{free.Count}; sin llegar: {string.Join(", ", free.Where(r => !r.arrived).Select(r => r.who))}");
+        TestProbe.Check("van todos al ring (≥ 80 % de los que no atendían una necesidad)", free.Count > 0 && arrived >= 0.8f * free.Count, $"{arrived}/{free.Count} (de {recs.Count}); sin llegar: {string.Join(", ", free.Where(r => !r.arrived).Select(r => r.who))}; ocupados: {string.Join(", ", recs.Except(free).GroupBy(r => r.blockedBy ?? "?").Select(g => $"{g.Key} ×{g.Count()}"))}");
         TestProbe.Check("llegan andando y en alfombra, no puestos allí", arrived == 0 || walked == arrived, $"{walked}/{arrived} · {free.Sum(r => r.flown):0} m en alfombra");
         TestProbe.Check("están a la vez sobre el colchón (≥ 80 %)", maxOn >= 0.8f * Mathf.Max(1, free.Count), $"como mucho {maxOn} a la vez");
         TestProbe.Check("cogen almohada", maxHolding >= 0.8f * Mathf.Max(1, arrived), $"{maxHolding} con almohada a la vez; {PillowFight.PickedUp} cogidas");

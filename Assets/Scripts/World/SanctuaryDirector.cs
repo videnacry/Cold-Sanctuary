@@ -172,8 +172,8 @@ public class SanctuaryDirector : MonoBehaviour
         { "Alicita", SanctuaryAreaType.Construction }, { "Ducristin", SanctuaryAreaType.Classroom }, { "Fausto", SanctuaryAreaType.VehicleWorkshop },
         { "Julian", SanctuaryAreaType.Construction },   // dirección de proyectos, con Alicita
         // (2026-11-04) Los seis nuevos: informática, biotecnología, pediatría (el hospital) y piloto (la flota de alfombras, en la Mecánica).
-        { "David", SanctuaryAreaType.Informatics }, { "Adonis", SanctuaryAreaType.Informatics }, { "Julito", SanctuaryAreaType.CulturedMeatLab },
-        { "Ale", SanctuaryAreaType.CulturedMeatLab }, { "Ivelyna", SanctuaryAreaType.Infirmary }, { "Luciana", SanctuaryAreaType.VehicleWorkshop },
+        { "David", SanctuaryAreaType.Informatics }, { "Adonis", SanctuaryAreaType.Informatics }, { "Yulo", SanctuaryAreaType.CulturedMeatLab },
+        { "Lale", SanctuaryAreaType.CulturedMeatLab }, { "Ivelyna", SanctuaryAreaType.Infirmary }, { "Malena", SanctuaryAreaType.Infirmary }, { "Luciana", SanctuaryAreaType.VehicleWorkshop },
         { "Nesvitor", SanctuaryAreaType.Garden },   // guardia y agricultor (la guardia patrulla: su área de salida, el huerto)
         // (2026-11-04) Ducristin, gerente de banca y profesor: sale en el Aula (da clase; sus finanzas, en la mesa de cuentas del
         // restaurante); Fausto, mecánico (la mecánica que llevaba Ducristin). Julian, pendiente de foto y de profesión.

@@ -288,6 +288,53 @@ public static class CubeHumanoid
             Deco(chest, new Vector3(0f, 0.31f, -0.13f), new Vector3(0.26f, 0.07f, 0.07f), look.hoodColor);
             Deco(chest, new Vector3(0f, 0.22f, -0.138f), new Vector3(0.22f, 0.14f, 0.03f), Color.Lerp(look.hoodColor, Color.black, 0.15f));
         }
+        // (2026-11-05, de las fotos de Berón) PIEZAS NUEVAS de la ropa.
+        float printZ = look.jacket ? 0.1265f : 0.1235f;
+        if (look.hasLogo)   // ESTAMPADO en el pecho
+        {
+            Deco(chest, new Vector3(0f, 0.16f, printZ), new Vector3(0.13f, 0.07f, 0.004f), look.logo);
+            for (int s = -1; s <= 1; s += 2) Deco(chest, new Vector3(s * 0.035f, 0.135f, printZ + 0.002f), new Vector3(0.03f, 0.02f, 0.004f), look.logoDetail);
+        }
+        if (look.hasTie)   // CORBATA
+        {
+            Deco(chest, new Vector3(0f, 0.17f, printZ), new Vector3(0.032f, 0.18f, 0.004f), look.tie);
+            Deco(chest, new Vector3(0f, 0.262f, printZ + 0.002f), new Vector3(0.04f, 0.026f, 0.006f), Color.Lerp(look.tie, Color.black, 0.15f));
+        }
+        if (look.highNeck) Deco(chest, new Vector3(0f, 0.325f, 0.02f), new Vector3(0.13f, 0.05f, 0.13f), look.inner);   // CUELLO ALTO de la blusa
+        if (look.puffSleeves)   // MANGAS DE FAROL
+            foreach (BodyPart arm in new[] { BodyPart.ShoulderLeft, BodyPart.ShoulderRight })
+            {
+                Transform a = Bone(arm); if (a != null) Deco(a, new Vector3(0f, -0.06f, 0f), new Vector3(0.14f, 0.13f, 0.14f), clothes);
+            }
+        if (look.hasBackpack)   // MOCHILA: dos correas por delante y el cuerpo a la espalda
+        {
+            for (int s = -1; s <= 1; s += 2) Deco(chest, new Vector3(s * 0.1f, 0.16f, 0.127f), new Vector3(0.03f, 0.28f, 0.006f), look.backpack);
+            Deco(chest, new Vector3(0f, 0.14f, -0.18f), new Vector3(0.26f, 0.3f, 0.11f), look.backpack);
+            Deco(chest, new Vector3(0f, 0.08f, -0.24f), new Vector3(0.18f, 0.12f, 0.02f), Color.Lerp(look.backpack, Color.white, 0.12f));
+        }
+        Transform pelvis = Bone(BodyPart.Hips);
+        if (look.hasTote && pelvis != null)   // BOLSA DE TELA colgada del hombro
+        {
+            Deco(chest, new Vector3(-0.185f, 0.08f, 0.1f), new Vector3(0.012f, 0.36f, 0.012f), look.tote);
+            Deco(pelvis, new Vector3(-0.22f, -0.16f, 0.03f), new Vector3(0.03f, 0.3f, 0.26f), look.tote);
+            Deco(pelvis, new Vector3(-0.237f, -0.16f, 0.03f), new Vector3(0.004f, 0.12f, 0.12f), look.totePrint);
+        }
+        if (look.longCoat)   // ABRIGO LARGO: faldones abiertos por delante, hasta la rodilla, y botones grandes
+        {
+            Color lap = Color.Lerp(clothes, Color.black, 0.06f), btn = Color.Lerp(clothes, Color.white, 0.12f);
+            Deco(chest, new Vector3(-0.085f, 0.1f, 0.127f), new Vector3(0.028f, 0.028f, 0.008f), btn);
+            Deco(chest, new Vector3(-0.085f, 0.02f, 0.127f), new Vector3(0.028f, 0.028f, 0.008f), btn);
+            if (pelvis != null)
+            {
+                Deco(pelvis, new Vector3(0f, -0.2f, -0.132f), new Vector3(0.38f, 0.56f, 0.03f), lap);
+                for (int s = -1; s <= 1; s += 2)
+                {
+                    Deco(pelvis, new Vector3(s * 0.135f, -0.2f, 0.132f), new Vector3(0.11f, 0.56f, 0.03f), lap);
+                    Deco(pelvis, new Vector3(s * 0.19f, -0.2f, 0f), new Vector3(0.03f, 0.56f, 0.27f), lap);
+                }
+                Deco(pelvis, new Vector3(-0.135f, 0f, 0.15f), new Vector3(0.028f, 0.028f, 0.008f), btn);
+            }
+        }
         if (look.hasHangingGlasses)   // GAFAS colgadas del bolsillo de la camisa
         {
             float gx = look.jacket ? 0.02f : 0.08f, gz = look.jacket ? 0.128f : 0.126f;
@@ -315,7 +362,14 @@ public static class CubeHumanoid
                 Deco(hips, new Vector3(0.237f, -0.02f, 0.02f), new Vector3(0.006f, 0.08f, 0.24f), Color.Lerp(look.bag, Color.white, 0.12f));   // solapa
             }
         }
-        if (look.hasSkirt && hips != null)   // FALDA por encima de la rodilla, con vuelo y flores estampadas
+        if (look.hasSkirt && hips != null && look.tieredSkirt)   // FALDA DE VOLANTES, en tres pisos
+            for (int i = 0; i < 3; i++) Deco(hips, new Vector3(0f, -0.05f - i * 0.085f, 0f), new Vector3(0.38f + i * 0.04f, 0.09f, 0.27f + i * 0.04f), Color.Lerp(look.skirt, Color.gray, i * 0.06f));
+        else if (look.hasSkirt && hips != null && look.plainSkirt)   // FALDA LISA del vestido, hasta la rodilla
+        {
+            Deco(hips, new Vector3(0f, -0.18f, 0f), new Vector3(0.4f, 0.4f, 0.28f), look.skirt);
+            Deco(hips, new Vector3(0f, -0.36f, 0f), new Vector3(0.44f, 0.06f, 0.32f), Color.Lerp(look.skirt, Color.gray, 0.08f));
+        }
+        else if (look.hasSkirt && hips != null)   // FALDA por encima de la rodilla, con vuelo y flores estampadas
         {
             Deco(hips, new Vector3(0f, -0.1f, 0f), new Vector3(0.4f, 0.24f, 0.28f), look.skirt);
             Deco(hips, new Vector3(0f, -0.24f, 0f), new Vector3(0.44f, 0.08f, 0.32f), Color.Lerp(look.skirt, Color.white, 0.06f));   // vuelo del bajo

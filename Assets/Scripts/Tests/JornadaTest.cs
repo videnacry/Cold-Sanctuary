@@ -564,7 +564,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit
                 if (!rounds && head != "merodear" && path > 12f && net < 2.5f && reach < path * 0.35f && now - tr.headSince >= 19f)   // (merodear es ir y venir al azar a propósito; ir a algo, hacerlo y volver —la barra, el aseo— cambia lo que hace: eso no es dar vueltas)
                     Add(tr.name, "da vueltas en círculo", $"{path:0} m en 20 s para {net:0.0} m netos en {Where(p)} ({tr.activity})", true);
             }
-            if (!magnate) CheckBody(tr, p, riding, asleep || needs || (status != null && status.Contains("Gimnasio")) || wd.OnGymMachine(tr.g), true);
+            if (!magnate) CheckBody(tr, p, riding, asleep || needs || (status != null && status.Contains("Gimnasio")) || wd.OnGymMachine(tr.g) || LeisureDirector.OnBed(tr.g), true);
         }
 
         void SampleAnimal(Track tr, Vector3 p, bool riding)
