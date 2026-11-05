@@ -324,7 +324,7 @@ public class GymTrainingTest : MonoBehaviour, ITestUnit
     static readonly string[] Micros = { "Mesopotamia", "Kapilavastu", "Patanjali", "Egina", "Alejandría", "Escútari", "Dayton", "Tregua 1914", "Bruce Lee",
         "Irena Sendler", "Le Chambon-sur-Lignon", "Crotona", "Menfis", "Bagdad", "Woolsthorpe", "Berkeley", "Angostura", "Sils Maria", "París 1898",
         "Colorado Springs", "Berna", "Pasadena", "Chernóbil", "Palenque", "Velliangiri", "Hawthorne", "Aldea de la montaña", "Albuquerque", "Omaha",
-        "Prairie View", "Uagadugú", "Planta Atómica", "Huerto", "Cocina", "Sala de Yoga" };
+        "Prairie View", "Uagadugú", "Barranquilla", "Vega Baja", "Montreal", "Gary", "Seúl", "Kingston", "Belfast", "Long Island", "Grandes aportes de las canciones", "Planta Atómica", "Huerto", "Cocina", "Sala de Yoga" };
     static readonly string[] Kinds = { "juegos_heroicos", "gimnasio_griego", "palestra_romana", "patio_lucha_egipcio", "patio_lucha", "akhara", "furusiyya", "zurkhaneh",
         "tekke_guresh", "juego_pelota", "wuguan", "dojo", "sala_armas", "sala_esgrima", "prado_juegos", "garrote_coleo", "turnplatz_schwingen", "turnhalle", "hebert",
         "futbol_tregua", "club_deportivo", "estadio", "gimnasio_moderno" };

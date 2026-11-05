@@ -106,7 +106,7 @@ finalizada, y los microcosmos se crean siempre sobre la forma finalizada».
 6. **Sala de asambleas (parlamento)** — Angostura (Bolívar).
 7. **Sendero de montaña y biblioteca de filosofía** — Sils Maria (Nietzsche). — **cubierto** (2026-11-04: re-apuntado a un piso que ya existe).
 8. **Taller de electricidad (alta tensión)** — Colorado Springs (Tesla).
-9. **Sala de grabación y escenario de conciertos (música)** — los microcosmos de la música ([microcosmos-musica.md](microcosmos-musica.md)).
+14. **Sala de grabación y escenario de conciertos (música)** — los microcosmos de la música ([microcosmos-musica.md](microcosmos-musica.md)).
 9. **Templo de los antepasados (memoria, rito y duelo)** — Palenque (Pakal).
 10. **Fábrica de cohetes y control de misión** — Hawthorne (Elon Musk). — **cubierto** (2026-11-04: re-apuntado a un piso que ya existe).
 11. ~~Sala de informática~~ — **creado** (piso de Informática, 2026-11-04): Albuquerque (Bill Gates) ya está en él.

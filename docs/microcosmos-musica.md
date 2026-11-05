@@ -43,7 +43,7 @@ situaciones del mundo junto al rap» y uno general, **«Grandes aportes de las c
 | **Public Enemy** (`Microcosmos_PublicEnemy`) | Roosevelt y Hempstead, Long Island, primavera de 1989, 16:00 | **Aula**, **pendiente** (nació en una radio universitaria) | Chuck D, escarabajo pelotero: convierte lo que otros tiran (el sampler) |
 | **Grandes aportes de las canciones** (`Microcosmos_GrandesCanciones`) | La Plaza de las Canciones, **lugar inventado**, un 21 de junio, 18:00 | **Aula**, **pendiente** | Cronista, grillo; cada figura, el suyo |
 
-**Piso pendiente nuevo:** «Sala de grabación y escenario de conciertos (música)» (`MicroFloors.Match.MusicFloor`). Es uno mÃ¡s de lalista. Lo piden Vega Baja, Montreal, Gary, Kingston, Belfast, Long Island y Grandes aportes. Si se crea, `AlertFloors` los señala.
+**Piso pendiente nuevo:** «Sala de grabación y escenario de conciertos (música)» (`MicroFloors.Match.MusicFloor`). Es uno más de la lista. Lo piden Vega Baja, Montreal, Gary, Kingston, Belfast, Long Island y Grandes aportes. Si se crea, `AlertFloors` los señala.
 
 ## Las historias (pasos)
 
