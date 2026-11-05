@@ -784,13 +784,96 @@ Berón: «el refugio sería ideal irlo mejorando al punto que sea posible vivir 
 | T19, T21 | Mar y hielo | **Reescritas** |
 | T22 | Icebergs | Corregida: el escudo es lo que se ve |
 | P20 | Rutas del submarino por túnel | **Corregida**: pasa bajo la falda |
-| Fauna y `Hielo_fijo` (territorio) | Las placas siguen siendo pared para la fauna; el hielo fijo, fino | Se queda: sigue cumpliendo |
-| Respiraderos | En hielo fijo de 2 m | Se quedan: con placas finas también son reales |
+| Fauna y `Hielo_fijo` (territorio) | Las placas siguen siendo pared para la fauna, ya por diseño, no por física; el hielo fijo baja a 1,5 m para no ser más grueso que la placa | Se queda, ajustado al integrar (ronda 10) |
+| Respiraderos | En hielo fijo de 1,5 m | Se quedan: con placas finas también son reales |
 | Pruebas 94, 100, 107 y `JornadaTest` | | Reescritas |
 | Documentos sueltos | Submarino, máscaras, árbol, lanzadera, planta, hielo | Corregidos |
 | Microcosmos | No dependen del mar | Ninguna regla nueva |
 
 **Regla nueva, T23:** lo de abajo no se referencia desde arriba, y la lógica va arriba.
+
+## 23. Cómo volver a juntar los santuarios en una escena
+
+Berón (2026-11-05): dejar escrita la lógica que se quitó, por si algún día los dos santuarios vuelven a ser uno. **Hoy no hace falta y no se ha hecho.** Todo el código está en git: el último estado de una sola escena es el commit **`8e8fb57`** (rama `claude/edif-nuclear`), y `git show 8e8fb57:<ruta>` da cada archivo. El commit de la separación es `501ee5e`. La lista de abajo basta para rehacerlo a mano si ese código ya no encaja.
+
+**Antes de empezar:** es el mayor riesgo de memoria del proyecto (§19, §22). La separación se hizo por rendimiento, y una reconstrucción completa ya apagó el PC de 16 GB. Hacerlo con menú «solo el santuario», Unity por debajo de 11 GB, y parar si sube.
+
+### 1. Los números
+| Pieza | Hoy | Una sola escena |
+|---|---|---|
+| `SeaRule.Depth` | 16 | **500**; `FloorY = Surface − Depth` (−500,25) |
+| Hielo | `PlateThickness` = 1,5 | `ShelfThickness` = **300** (opcional: ver el punto 7) |
+| `PolarLandscapeBuilder.IceThickness` | `PlateThickness` | `ShelfThickness` |
+| `ConstructionSubmarine.seaDepth` | −12 | **−312** (`−ShelfThickness − 12`) |
+| `NuclearSiteRule.Center` | (360, −360), ≥ 300 m | (510, −510), ≥ 500 m (T14; la isla más cercana queda a 535 m) |
+| `MinDistance` y P14 | 300 m | 500 m |
+
+Quitar `SeaRule.MarineDepth` y `MarineFloorY`, o dejarlos iguales a `Depth` y `FloorY`.
+
+### 2. El anillo de roca de la isla
+La isla no era maciza: un **anillo bajo la orilla** (celdas `kind == 3`, 2,5 m de lado, unos 5 m de ancho), en **una sola malla y un collider** (`Zocalo_rocoso`, 1 draw call, sin NavMesh). Dentro quedaba una cavidad inundada, con los fondos abiertos de los troncos. El interior no se dibujaba.
+
+En `PolarLandscapeBuilder`:
+```csharp
+const float LandPlate = 1.5f, RockTop = IceTop - LandPlate, SeabedY = SeaRule.FloorY;
+const float TunnelY = -SeaRule.ShelfThickness - 12f, TunnelHalf = 9f;   // 18 × 18 m para un casco de 14 × 5 × 5
+
+static float DistanceToSegment(Vector2 p, Vector2 a, Vector2 b)
+{
+    Vector2 ab = b - a;
+    float t = ab.sqrMagnitude > 1e-4f ? Mathf.Clamp01(Vector2.Dot(p - a, ab) / ab.sqrMagnitude) : 0f;
+    return Vector2.Distance(p, a + ab * t);
+}
+```
+`BuildFloes` recibía un parámetro más, `List<(Vector2 a, Vector2 b)> subRoutes = null`, y en el bucle de la falda, en lugar de `Column(RockTop, SkirtBottom)`:
+```csharp
+bool tunnel = false;
+if (subRoutes != null)
+    foreach (var (a, b) in subRoutes)
+        if (DistanceToSegment(c, a, b) < TunnelHalf) { tunnel = true; break; }
+if (tunnel) { Column(RockTop, TunnelY + TunnelHalf); Column(TunnelY - TunnelHalf, SeabedY); }
+else Column(RockTop, SeabedY);
+```
+
+### 3. Los túneles
+Eran un corte limpio de 18 × 18 m en el anillo, a −312 m, sin revestir, donde cada recta del submarino cruzaba la roca. Las rectas salían de cada árbol a cada árbol, en `SampleSceneBuilder`:
+```csharp
+static List<(Vector2 a, Vector2 b)> SubRoutes()
+{
+    var l = new List<(Vector2, Vector2)>();
+    for (int i = 0; i < _helixes.Count; i++)
+        for (int j = i + 1; j < _helixes.Count; j++)
+            if (_helixes[i].root != null && _helixes[j].root != null)
+                l.Add((new Vector2(_helixes[i].root.position.x, _helixes[i].root.position.z), new Vector2(_helixes[j].root.position.x, _helixes[j].root.position.z)));
+    return l;
+}
+```
+Se pasa como último argumento de `BuildFloes`. **Ojo con el orden:** los árboles (`_helixes`) tienen que existir antes de llamar a `BuildFloes`, o no sale ningún túnel; comprobarlo al rehacerlo. El submarino no usa física, así que sin túneles no choca, pero atravesaría la roca a la vista. La prueba 107 lanza `SphereCastAll` de radio 2,5 m entre cada par de árboles contra `Zocalo_rocoso`; hay que cambiar su cota de −12 a `seaDepth`.
+
+### 4. El sitio nuclear
+- **Volver a poner en el santuario** lo que hoy construye `BuildMarineScene` (`SampleSceneBuilder.Marine.cs`): salas, galería, refugio, muñón, compuerta, `Lecho_marino`, bucle e intercambiador. Las versiones de una sola escena son `BuildCavern`, `BuildCavernLine`, `BuildRockMonitoring`, `ValidateCavernLine` (`SampleSceneBuilder.Nuclear.cs` y `.NuclearAccess.cs`) y `BuildRefuge` (`SampleSceneBuilder.Icebergs.cs`), todas en `8e8fb57`.
+- **`CavernRock`:** vuelven las listas de instrumentos y `clearanceM` medida al construir, en vez de `DesignClearanceM`.
+- **Cajón del TRIGA:** colgado con tendones, no apoyado. Quitar zapata, pilotes e hitos.
+- **Tubo:** 575 m visibles, con su escudo entero y el conector a −420 m.
+- **Patas y tendones:** `tendon = -SeaRule.FloorY` en `SampleSceneBuilder.Launch.cs` se ajusta solo. Revisar que los troncos abiertos sean pozos de 300 m.
+- **Icebergs:** `BuildIceberg` usa `keel = -SeaRule.FloorY`, que daría 500 m: volver a su calado (`size.y − above`). El varado necesita otra vez su banco, porque el fondo no tiene relieve: `KitchenProps.C(far.transform, new Vector3(0f, -270f, 0f), new Vector3(160f, 60f, 140f), new Color(0.27f, 0.26f, 0.25f), 0f, "Banco_varadero")`. Sus animales (`BuildIcebergVisitors`) no cambian.
+
+### 5. Lo que se quita
+- La escena `Santuario_Marino`, su menú, `MarineBase`, `MarineLift` y `BuildMarineScene`.
+- En `SiteLine`: la carga aditiva, el fundido, la vuelta a los 20 s, el cuerpo oculto y `Depth` como número. El viaje vuelve a ser físico por el tubo.
+- **T23** deja de tener sentido. Reescribir T14, T17, T19, T21 y P20, y hacer la auditoría de W11.
+
+### 6. La fauna y el nado
+- **`MarineLife`:** las paredes siguen igual (`ThickAbove` no mira el grosor, mira qué hay). Con 300 m vuelven a ser físicas. Si las placas pasan a 300 m, `IceBottom` debe quedarse en la cara del hielo fijo: ponerle −2 m como número propio, no `PlateThickness`.
+- **`Hielo_fijo`:** en `BuildFastIce`, `Th = 2f` (hoy `PlateThickness`).
+- **`Sea_SwimZone` y `FondoMarino`** bajan solos con `SeaRule`. Quitar la sonda de `SwimBody`, o dejarla para −500 m.
+- **`MarHorizonte`:** el cuenco visual sigue a −16 m, y tubo y salas quedan por debajo. Ese problema quedó **sin resolver** antes de separar.
+
+### 7. Otra forma, más barata
+Lo que pesa no es la profundidad en sí, sino todo a la vez. Se puede **juntar el mar y dejar las placas en 1,5 m**: mar de 500 m, falda de −6 m, submarino a −12 m, sin anillo ni túneles. §18 ya concluyó que ninguna mecánica necesita 300 m de hielo. Se pierde la plataforma real y se mantiene el tubo real. Es el primer paso que convendría probar, y se puede parar ahí.
+
+### 8. Pruebas
+100 sola, y luego 94 107 73 90 96 50 53 108 85. Devolver a la 100 el control `moving.size.y ≈ ShelfThickness` y quitar las de «sin nada hondo en esta escena». Volver a mirar `[Sitio nuclear] Línea:` (> 60 s es error) y, con hielo de 300 m, la memoria al hornear el NavMesh.
 
 ## Fuentes
 - [10 CFR 100.11](https://www.law.cornell.edu/cfr/text/10/100.11), [10 CFR 100.3](https://www.law.cornell.edu/cfr/text/10/100.3), [10 CFR 53.530](https://www.law.cornell.edu/cfr/text/10/53.530)

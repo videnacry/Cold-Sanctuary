@@ -4,9 +4,9 @@ using UnityEngine;
 
 /// <summary>
 /// PRUEBA DE LA VIDA BAJO EL HIELO (Berón 2026-11-05; docs/hielo-y-respiraderos.md):
-/// 1. FAUNA: bajo una plataforma de 300 m no se nada a −1,5 m: ningún marino está dentro del hielo; la plataforma es una pared.
-/// 2. RESPIRADEROS: están en hielo fijo fino (o sea, donde los hay de verdad), abiertos al mar, junto a la grieta de marea, nunca en la plataforma.
-/// 3. TÚNELES: la ruta del submarino de obra entre árboles no cruza la roca de la isla.
+/// 1. FAUNA: ningún marino está dentro de una placa de hielo ni pasa bajo ella: las placas y la isla son paredes (P20).
+/// 2. RESPIRADEROS: están en hielo fijo fino (o sea, donde los hay de verdad), abiertos al mar, junto a la grieta de marea, nunca en las placas.
+/// 3. SUBMARINO: su ruta entre árboles, a −12 m, pasa por debajo de la falda de roca (−6 m).
 /// </summary>
 public class HieloMarinoTest : MonoBehaviour, ITestUnit
 {
@@ -40,7 +40,7 @@ public class HieloMarinoTest : MonoBehaviour, ITestUnit
             }
             yield return new WaitForSeconds(0.5f);
         }
-        TestProbe.Check("ningún marino nada dentro de la plataforma de hielo", samples > 0 && inside == 0, $"{samples} muestras, {inside} dentro {who}");
+        TestProbe.Check("ningún marino nada bajo una placa de hielo ni dentro de ella", samples > 0 && inside == 0, $"{samples} muestras, {inside} dentro {who}");
 
         // ── 2. RESPIRADEROS ──
         var holes = FindObjectsByType<Affordance>(FindObjectsSortMode.None).Where(a => a.kind == AffordanceKind.BreathingHole).ToList();
@@ -50,13 +50,13 @@ public class HieloMarinoTest : MonoBehaviour, ITestUnit
             Vector3 p = h.transform.position;
             TestProbe.Check($"{h.name}: abierto al agua", !MarineLife.IceAbove(p));
             bool thin = Physics.OverlapSphere(p, 2.5f).Any(c => c.name == MarineLife.ThinIce);
-            TestProbe.Check($"{h.name}: en hielo fijo fino", thin);
+            TestProbe.Check($"{h.name}: en hielo fijo", thin);
         }
         Collider sheet = FindObjectsByType<Collider>(FindObjectsSortMode.None).FirstOrDefault(c => c.name == MarineLife.ThinIce);
-        TestProbe.Check("el hielo fijo es fino (≤ 3 m) y un oso puede acechar encima", sheet != null && sheet.bounds.size.y <= 3f && sheet.bounds.max.y > -0.1f);
+        TestProbe.Check("el hielo fijo mide lo que las placas y un oso puede acechar encima", sheet != null && Mathf.Abs(sheet.bounds.size.y - SeaRule.PlateThickness) < 0.1f && sheet.bounds.max.y > -0.1f);
         TestProbe.Check("bajo el hielo fijo sí se nada", sheet != null && MarineLife.IceAbove(sheet.bounds.center) && !MarineLife.ThickAbove(sheet.bounds.center));
 
-        // ── 3. TÚNELES ──
+        // ── 3. SUBMARINO ──
         var trees = ArbolCampos.All.Where(a => a != null).ToList();
         int routes = 0, blocked = 0; string what = "";
         for (int i = 0; i < trees.Count; i++)

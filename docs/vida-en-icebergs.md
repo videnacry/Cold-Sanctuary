@@ -14,10 +14,14 @@ Berón (2026-11-05): «los iceberges deben poderse poblar por animales reales, i
 
 **Indefinidamente, nadie.** Ninguna fuente muestra animales que vivan siempre en un iceberg: se derrite y se mueve. Lo que dura es la zona rica de alrededor. Las horas de estancia son valores de diseño.
 
+## Dónde están
+
+Los dos icebergs y sus animales están en el **santuario 1**, no en el Santuario Marino ([sitio-nuclear.md](sitio-nuclear.md) §20): `Iceberg_varado` en (−500, −500) e `Iceberg_deriva` entre (540, 200) y (520, −260). Con 16 m de mar la quilla se dibuja solo hasta el fondo, así que el varado ya no necesita banco. Los tamaños y las toneladas siguen siendo los de un tabular real (240–300 m de alto): uno así no flotaría en 16 m, y se acepta (§20).
+
 ## Lo que se ha hecho
 
 - **Fuera las figuras de foca.** En su lugar, 4 focas y 4 pingüinos de Adelia de verdad, `Animal` completos, repartidos entre los dos icebergs.
-- **`Repisa_iceberg`:** las paredes miden 24–30 m y nadie las escala, así que cada uno lleva un pie de hielo a ras de agua con su descansadero.
+- **`Repisa_iceberg`:** lo que asoma mide 24–30 m y nadie lo escala, así que cada uno lleva un pie de hielo a ras de agua con su descansadero.
 - **Va:** tras comer o de noche, igual que en la laguna.
 - **Se queda (`IcebergVisitor.Stay`):**
   - foca, en primavera, en el varado: 72 h, cuidado de crías;

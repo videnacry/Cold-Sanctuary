@@ -54,7 +54,7 @@ artificial, obra de la maestra, y por eso junta morsas árticas con pingüinos a
 el Árbol de los Campos y la torre de Ciencias, que estaban sobre el Sur, **quedan sobre tierra sin mover nada**: los cultivos están donde tiene
 sentido que estén.
 
-**Limita con:** la lanzadera (a 335 m, regla ≥ 300 m) y el sitio nuclear (a 535 m, regla ≥ 500 m). Por eso la isla no sigue al sureste.
+**Limita con:** la lanzadera (a 335 m, regla ≥ 300 m) y el sitio nuclear (a 325 m, regla ≥ 300 m: T14, tras separar los santuarios). Por eso la isla no sigue al sureste.
 
 **Los bosques de árboles carnívoros siguen en hielo:** viven de agua y frío. En la isla no crecen árboles de hielo; los de junto a las áreas
 del Sur ya no salen (`BuildIceFlora` pregunta `IceAt`).
@@ -62,7 +62,7 @@ del Sur ya no salen (`BuildIceFlora` pregunta `IceAt`).
 ### La isla por dentro
 
 - **Suelo:** tundra en el interior y orilla de grava de 5 m. La placa mide 1,5 m, como el hielo.
-- **Roca:** el hielo flota; la isla es roca que llega al lecho (Berón, 2026-11-05). La tierra es una placa de 1,5 m (los 300 m de T21 son solo del hielo). Bajo la orilla hay un anillo de roca hasta el lecho (`SeaRule.FloorY`, −500,25 m), en una sola malla con su collider. Por dentro es hueco, y ahí quedan los fondos abiertos de los troncos: una cavidad inundada. El submarino de obra no usa física, así que no choca, pero hay túneles de 18 × 18 m a −312 m donde cada ruta cruza el anillo ([hielo-y-respiraderos.md](hielo-y-respiraderos.md)).
+- **Roca:** la tierra es una placa de 1,5 m, como el hielo, y bajo la orilla hay una **falda de roca hasta −6 m** (`Zocalo_rocoso`), en una sola malla con su collider. No llega al fondo (−16 m): el submarino de obra pasa por debajo, a −12 m, sin túneles. Antes de separar los santuarios ([sitio-nuclear.md](sitio-nuclear.md) §20) era un anillo hasta el lecho con túneles; cómo rehacerlo está en §23 de ese documento.
 - **Relieve:** cuatro lomas de 3 terrazas de 25 cm, por las que se anda.
 - **Charcas:** cuatro, con `WaterSource`; los animales que beben van a ellas.
 - **Flora (`PolarUnderstory.Tundra`):** por comunidades, según un ruido suave:

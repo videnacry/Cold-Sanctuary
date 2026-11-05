@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>Icebergs: cifras y umbrales (docs/sitio-nuclear.md §14). Los tabulares del Ross calan lo que mide el hielo. Remolcar sale bien el 85–95 % de las veces (Grand Banks).</summary>
+/// <summary>Icebergs: cifras y umbrales (docs/sitio-nuclear.md §14). Tamaños de tabular real: en el santuario 1 la quilla solo se dibuja hasta el fondo somero, pero su masa cuenta entera (§20). Remolcar sale bien el 85–95 % de las veces (Grand Banks).</summary>
 public static class IcebergRule
 {
     /// <summary>Los sitios que se vigilan: los tres casquetes artificiales.</summary>

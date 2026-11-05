@@ -47,15 +47,15 @@ Durante las 8 h los personajes van al área de su misión y se quedan allí. **N
 - **Cuánto:** su primer día (entró después del primer reparto), las 5 h; luego, 2 h; luego, lo que falte. El personal de siempre no cuenta como recién llegado el primer día del juego: si no, nadie haría el santuario ese día.
 - **Clases:** ≤ 6 personas y ≤ 6 por hora. Quien pueda entra en una clase que ya exista. Prioridad: lo que nadie sabe, lo que tiene riesgo, lo obligatorio, lo que más gente necesita.
 - **Después, las del santuario,** también de quien menos sabe a quien más (`order`). Con 5 h de iniciaciones no le cabe nada más; con 2, sigue con lo que sabe.
-- **Quién inicia:** hoy, un cuerpo de la Magnate por clase. **`WorkRoster.instructorsTeach = true` es todo el cambio**: entonces cada clase busca a alguien libre a esa hora que sepa la tarea y sepa iniciar (`instruir_<id>`, una tarea para él), y ella si no hay nadie.
-- **Saber iniciar** (`instruir`) es una tarea más de la lista, para quien ya sabe ≥ 3 tareas. Se enseña ya, aunque hoy no se use: así el cambio encuentra gente preparada.
+- **Quién inicia (diseño final, Berón 2026-11-05):** los trabajadores; la Magnate es el último recurso. `WorkRoster.instructorsTeach` está encendido por defecto: cada clase busca a alguien libre a esa hora que sepa la tarea y sepa iniciar (`instruir_<id>`, una tarea para él), y si no hay nadie sale un cuerpo de la Magnate. Kushal no da clases: el jugador no tiene cómo darla. El primer día casi todas serán de ella, porque nadie sabe iniciar aún.
+- **Saber iniciar** (`instruir`) es una tarea más de la lista, para quien ya sabe ≥ 3 tareas. Dar clase no cuenta para el tope de iniciaciones de quien la da.
 - **Lo que sabe cada uno** (`Worker.taught`, `WorkRoster.Learned`): lo hecho, lo enseñado y lo de su profesión. **No se guarda en la partida**, igual que las cuentas de la rotación.
 - **La iniciación del primer turno** (el clon que aparece a su lado) sigue para lo que nadie le enseñó y no pide lección.
 
 ### La regla de oro y quién enseña
 - **J30: todos saben hacer de todo.** La leo como **el destino y una prohibición de exclusivas**: todos acaban sabiéndolo todo, también iniciar, y ninguna tarea es de nadie. Hasta entonces decide el requisito. Si se leyera literal («ya lo saben hoy»), no habría lista de iniciaciones.
 - Solo piden iniciación las tareas con riesgo. Las demás se siguen aprendiendo haciéndolas, y una obligatoria sin nadie que sepa la hace un clon de la Magnate.
-- **Iniciaciones de llegada** (cocina, huerto y yoga, `AreaInitiator`): **las dejo con el trabajador de turno (J5)**. Moverlas a la Magnate ahora sería ir y volver: Berón quiere que a futuro inicie quien pueda, y ellas ya funcionan así. Además son una orquesta con pasos del recién llegado y `SpawnMagnateBody` da un cuerpo sin conducta. Si Berón las quiere con ella hoy, es un cambio aparte.
+- **Iniciaciones de llegada** (cocina, huerto y yoga, `AreaInitiator`): **las dejo con el trabajador de turno (J5)**. Moverlas a la Magnate ahora sería ir y volver: inicia quien pueda, y ellas ya funcionan así. Además son una orquesta con pasos del recién llegado y `SpawnMagnateBody` da un cuerpo sin conducta. Si Berón las quiere con ella hoy, es un cambio aparte.
 
 ## Requisitos (Berón 2026-11-05)
 

@@ -16,8 +16,8 @@ using System.Linq;
 ///     toma 5 h de huecos y desaparece al terminar. Las demás que sobren pasan a PENDIENTES y son las primeras mañana.
 /// DESDE EL 2026-11-05, con <see cref="initiationModel"/> (lo enciende <c>WorkdayDirector</c>): el modelo jornada/tarea. Entrenamiento 8–9 y 14–15; 5 h de tareas (9–11, 12–14, 15–16).
 /// La INICIACIÓN es una tarea más: cada día se hace la lista de quién no sabe qué y se reparte PRIMERO, empezando por quien menos sabe: un recién llegado, toda su primera jornada;
-/// luego, como mucho la mitad de sus horas; luego, lo que le falte. Después, las del santuario, también de quien menos sabe a quien más. Hoy inicia la Magnate; con
-/// <see cref="instructorsTeach"/>, quien sepa la tarea y sepa iniciar, y ella si no hay nadie. Antes de asignar se miran los requisitos (<see cref="MissionRequirements"/>).
+/// luego, como mucho la mitad de sus horas; luego, lo que le falte. Después, las del santuario, también de quien menos sabe a quien más. Inicia quien sepa la tarea y sepa iniciar
+/// (<see cref="instructorsTeach"/>); la Magnate, si no hay nadie libre. Antes de asignar se miran los requisitos (<see cref="MissionRequirements"/>).
 /// Datos puros (sin escena): lo usa <c>WorkdayDirector</c> en el juego y lo prueban los tests.
 /// </summary>
 public class WorkRoster
@@ -113,8 +113,8 @@ public class WorkRoster
 
     /// <summary>(2026-11-05) La mañana nueva y los requisitos. Apagado, el reparto puro de siempre (el que usan las pruebas de la rotación).</summary>
     public bool initiationModel;
-    /// <summary>Apagado (hoy): inicia siempre la Magnate. Encendido: quien sepa la tarea y sepa iniciar; ella, si no hay nadie libre. Cambiar esto es todo el paso.</summary>
-    public bool instructorsTeach;
+    /// <summary>Encendido (Berón 2026-11-05, diseño final): inicia quien sepa la tarea y sepa iniciar; la Magnate, si no hay nadie libre. Apagado: siempre ella.</summary>
+    public bool instructorsTeach = true;
     /// <summary>¿Puede iniciar a otros en esta tarea? La Magnate, siempre (por eso no sale aquí): ella es el último recurso.</summary>
     public bool CanInitiate(Worker w, Mission m) => !w.clone && w.taught.Contains(InstructSkill) && Learned(w, m);
     /// <summary>Lo que le cabe de iniciación hoy: su primer día (entró después del primer reparto), toda la jornada; luego, la mitad.</summary>
@@ -269,11 +269,11 @@ public class WorkRoster
                 used[w] = hour + LessonHours; done[w] += LessonHours;
                 plan.work.Add(new Assignment { worker = w, mission = c.mission, start = clock, lesson = true });
             }
-            // QUIÉN INICIA: hoy, la Magnate; con instructorsTeach, quien sepa y esté libre a esa hora, y ella si no hay nadie.
+            // QUIÉN INICIA: quien sepa y esté libre a esa hora; ella, si no hay nadie. Kushal no: el jugador no tiene cómo dar la clase, y sin él no habría nadie delante.
             int magnates = 0;
             foreach (Lesson c in classes)
             {
-                Worker t = !instructorsTeach ? null : workers.FirstOrDefault(w => System.Math.Abs(used[w] - hour) < 1e-3f && CanInitiate(w, c.real) && !c.learners.Contains(w));
+                Worker t = !instructorsTeach ? null : workers.FirstOrDefault(w => w.name != "Player" && System.Math.Abs(used[w] - hour) < 1e-3f && CanInitiate(w, c.real) && !c.learners.Contains(w));
                 if (t != null)
                 {
                     c.instructor = t; c.teacher = t.name; used[t] = hour + LessonHours;

@@ -180,6 +180,7 @@ public class NuclearAccessTest : MonoBehaviour, ITestUnit
         // ── 4. ICEBERGS ──
         Iceberg moving = Iceberg.All.FirstOrDefault(b => b != null && !b.grounded), still = Iceberg.All.FirstOrDefault(b => b != null && b.grounded);
         TestProbe.Check("dos icebergs, millones de toneladas y fuera de la alerta de los tres casquetes", moving != null && still != null && moving.Tonnes > 1e6f && IcebergRule.Sites.All(s => moving.DistanceTo(s) > IcebergRule.AlertRadius(s) && still.DistanceTo(s) > IcebergRule.DangerRadius(s)), moving != null ? $"{moving.Tonnes / 1e6f:0.0} Mt" : "");
+        TestProbe.Check("el varado sigue en (−500, −500), en el santuario 1", still != null && Flat(still.transform.position, new Vector3(-500f, 0f, -500f)) < 1f);
         TestProbe.Check("con kril de verdad, aves y focas", moving != null && moving.krill != null && FindObjectsByType<IcebergVisitor>(FindObjectsSortMode.None).Any(v => v.berg == moving));
         TestProbe.Check("un trozo sí lo para el escudo; un iceberg entero, no", moving != null && moving.Tonnes > IcebergRule.ShieldTonnes);
         ArbolCampos launchTree = ArbolCampos.All.FirstOrDefault(a => a != null && a.building == LaunchHeightRule.Building), energyTree = ArbolCampos.All.FirstOrDefault(a => a != null && a.building == EnergyRule.Building);

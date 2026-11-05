@@ -1,8 +1,8 @@
-# Vida bajo el hielo, respiraderos y túneles de la isla
+# Vida bajo el hielo y respiraderos
 
-> **2026-11-05:** el santuario se separó en dos ([sitio-nuclear.md](sitio-nuclear.md) §20). Las placas vuelven a 1,5 m y la roca a una falda: **los túneles ya no existen** y el submarino pasa por debajo, a −12 m. Fauna, hielo fijo y respiraderos siguen como aquí.
+> **Estado actual (2026-11-05):** el santuario se separó en dos ([sitio-nuclear.md](sitio-nuclear.md) §20). Las placas miden 1,5 m, la falda de roca llega a −6 m y el mar a −16 m. Esta página describe eso.
 
-Berón (2026-11-05) pidió que el hielo de 300 m fuese real, y eso dejó dos cosas mal ([sitio-nuclear.md](sitio-nuclear.md) §13): la fauna nadaba por dentro de la placa, y las focas tenían respiraderos en 300 m de hielo.
+Berón (2026-11-05) pidió que el hielo de 300 m fuese real, y eso dejó dos cosas mal: la fauna nadaba por dentro de la placa, y las focas tenían respiraderos en 300 m de hielo. Los 300 m ya no existen, pero lo que se investigó y se arregló entonces sigue.
 
 ## Cómo respiran las focas de verdad
 
@@ -14,18 +14,16 @@ Berón (2026-11-05) pidió que el hielo de 300 m fuese real, y eso dejó dos cos
 | La foca anillada mantiene agujeros con las garras en hielo de hasta ~2 m. | [Natural Habitat](https://www.nathab.com/know-before-you-go/alaska-northern-adventures/greenland/wildlife-guide/ringed-seal-facts), [Spitsbergen-Svalbard](https://spitsbergen-svalbard.com/spitsbergen-information/wildlife/ringed-seal.html) |
 | La foca barbuda se queda junto al agua abierta: canales y polinias. | [Meereisportal](https://www.meereisportal.de/en/learn-more/sea-ice-biology/sea-ice-organisms/mammals/seals) |
 
-**Conclusión:** a través de una plataforma de cientos de metros no respira ninguna foca. Respiran en el borde, en agua abierta y en hielo marino fino. No confirmé nada específico de la morsa en esto.
+**Conclusión:** las focas respiran en el borde, en agua abierta y en hielo marino de hasta unos 2 m, que es lo que son hoy las placas y las láminas. No confirmé nada específico de la morsa en esto.
 
-## Lo que se ha hecho
+## Lo que queda tras la separación
 
-- **Hielo fijo (`Hielo_fijo`):** láminas de 2 m unidas al frente de la plataforma, sobre la laguna, como el hielo fijo real. El oso anda encima y acecha; el agua sigue debajo.
-- **Respiraderos:** agujeros reales de 1,6 m en esa lámina, a 2 m del frente, junto a la marca oscura de la grieta de marea. Se ve el agua y la foca asoma de morro.
-- **Fauna (`MarineLife`):** la plataforma y la isla son **paredes**. Nadie pasa por debajo cerca de la superficie: bordea, y si su destino queda detrás, se da por llegado al borde. Bajo el hielo fijo sí se nada, a la profundidad de su cara inferior.
+- **Hielo fijo (`Hielo_fijo`):** se queda. Láminas de 1,5 m (`SeaRule.PlateThickness`; antes 2) unidas al frente de las placas, sobre la laguna. Antes eran el hielo fino frente a una plataforma; hoy miden lo mismo que las placas, y lo que las distingue es su función: **aquí hay agujeros y por debajo se nada**. Se igualó el grosor para que la lámina no sea más gruesa que la placa de la que sale. El oso anda encima y acecha; el agua sigue debajo.
+- **Respiraderos:** se quedan. Agujeros reales de 1,6 m en esa lámina, a 2 m del frente, junto a la marca oscura de la grieta de marea. Se ve el agua y la foca asoma de morro. La foca anillada los mantiene en hielo de hasta unos 2 m, así que 1,5 m entra en lo real.
+- **Fauna (`MarineLife`):** las placas y la isla siguen siendo **paredes** (P20). Nadie pasa por debajo: bordea, y si su destino queda detrás, se da por llegado al borde. **Con 1,5 m esto ya no es física:** un animal real bucearía bajo una placa así, y con 16 m de mar hay sitio. Se deja por diseño: las placas llevan los edificios, los troncos están abiertos al mar por debajo y así la fauna se queda en la laguna y los canales, donde se la ve. Quitarlo es cambiar `ThickAbove` por `IceAbove` en `MarineLife.Move`.
+- **Bajo el hielo fijo** sí se nada, por debajo de su cara inferior. Una orca que roza con el cuerpo el borde de una placa también baja (`IceOverBody`): si no, el cuerpo entra en la placa aunque el pivote esté en agua abierta.
+- **Submarino de obra:** a −12 m, por debajo de la falda de roca (−6 m) y sobre el fondo (−16 m). **Ya no hay túneles;** cómo eran y cómo rehacerlos está en [sitio-nuclear.md](sitio-nuclear.md) §23.
 - **Sin modelar:** que la foca roa el hielo para mantener el agujero, ni que se le gasten los dientes. `Seal` es la foca común del catálogo: hace de la de Weddell en esto.
-
-## Túneles bajo la isla
-
-La isla es un anillo de roca hasta el lecho, y la ruta del submarino de obra es una recta entre árboles a −312 m. `BuildFloes` abre un túnel de 18 m de alto y otros tantos de ancho donde cada recta cruza el anillo. Es un corte limpio en la roca, sin revestir. El interior del anillo sigue siendo una cavidad inundada.
 
 ## La población: personas y fauna son dos números
 

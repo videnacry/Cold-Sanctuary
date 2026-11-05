@@ -119,6 +119,14 @@ public static class VirtualMissions
             case "hos_aves": return new[] { "Ponerse guantes y mascarilla", "Curar al ave", "Anotar cuándo soltarla" };
             case "aul_clase": return new[] { "Preparar la pizarra y la pantalla", "Dar la clase desde la tarima", "Resolver dudas en las filas" };
             case "aul_estudio": return new[] { "Buscar el libro en la biblioteca", "Consultarlo en el catálogo", "Estudiar en la mesa" };
+            case "nuc_roca": return new[] { "Leer extensómetros y convergencia", "Leer bulones, microsismos y aforos", "Anotar el nivel de la roca" };
+            case "nuc_bajada": return new[] { "Ponerse el dosímetro en el andén", "Revisar el carro y la esclusa", "Bajar por la línea y mirar la roca" };
+            case "nuc_refugio": return new[] { "Ponerse el dosímetro en el andén", "Comprobar aire, agua y baterías", "Cambiar lo caducado" };
+            case "nuc_refuerzo": return new[] { "Cerrar las cavernas", "Mandar reforzar a distancia", "Vigilar la lectura" };
+            case "nuc_remolque": case "lanz_remolque": case "ene_remolque": return new[] { "Mirar el iceberg en el radar", "Dar el rumbo al remolcador", "Comprobar que se desvía" };
+            case "lanz_vaciado": return new[] { "Dar la orden de vaciar", "Comprobar que los tanques se vacían" };
+            case "ene_parada": return new[] { "Parar los aerogeneradores", "Parar la turbina mareal" };
+            case "instruir": return new[] { "Observar cómo inicia un compañero", "Iniciar tú a alguien", "Comprobar lo que ha aprendido" };
             default: return new[] { "Preparar", "Hacer la tarea", "Recoger" };
         }
     }

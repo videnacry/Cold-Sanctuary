@@ -33,7 +33,7 @@ public static partial class SampleSceneBuilder
             }
         ter.landArea = landCells * 6.25f; ter.iceArea = iceCells * 6.25f;
 
-        // ── Frentes de barrera: de cara al mar abierto, como el frente de la plataforma de Ross ──
+        // ── Frentes de barrera: de cara al mar abierto, como el frente de la barrera de Ross ──
         ter.cliffs += CliffArc(t, "Centro:Textil", 90f, 250f, 4f, 7f, ice, snow, true);
         ter.cliffs += CliffArc(t, "BosqueOeste:Bosque_3", 200f, 320f, 5f, 8f, ice, snow, true);
         ter.cliffs += CliffArc(t, "BosqueNorte:Bosque_4", 300f, 400f, 4f, 7f, ice, snow, true);
@@ -120,11 +120,11 @@ public static partial class SampleSceneBuilder
     [UnityEditor.MenuItem("Tools/Cold Sanctuary/Cadena alimenticia (evaluar)")]
     static void FoodChainMenu() => FoodChain.Log();
 
-    /// <summary>EL HIELO FIJO (docs/hielo-y-respiraderos.md): láminas de 2 m unidas al frente de la plataforma, sobre la laguna, con su grieta de marea y un agujero de
-    /// verdad para las focas. A través de 300 m no respira nadie: estos son los únicos respiraderos.</summary>
+    /// <summary>EL HIELO FIJO (docs/hielo-y-respiraderos.md): láminas tan finas como las placas (`SeaRule.PlateThickness`) unidas a su frente, sobre la laguna, con su grieta de marea y un agujero de
+    /// verdad para las focas. Son los únicos respiraderos: las placas, que llevan los edificios, son pared para la fauna (P20).</summary>
     static int BuildFastIce(Transform parent, Material thin, Material crack)
     {
-        const float W = 5f, Back = 4f, Lip = 0.5f, Hole = 0.8f, HoleAt = 2f, Th = 2f;
+        const float W = 5f, Back = 4f, Lip = 0.5f, Hole = 0.8f, HoleAt = 2f, Th = SeaRule.PlateThickness;
         int n = 0;
         Vector3 lagoon = PolarLandscapeBuilder.Lagoon; lagoon.y = 0f;
         for (float a = 0f; a < 360f; a += 30f)
@@ -135,7 +135,7 @@ public static partial class SampleSceneBuilder
             Quaternion rot = Quaternion.LookRotation(dir);
             if (!Clear(shore - dir * 2f + Vector3.down * 1f, new Vector3(W, 1f, Back), rot)) continue;   // (el submarino atracado, un muelle…)
             Transform sheet = new GameObject($"Lamina_hielo_fijo_{n}").transform; sheet.SetParent(parent, false); sheet.SetPositionAndRotation(shore, rot);
-            // Cuatro piezas alrededor del agujero, en coordenadas de la orilla: +Z, hacia la plataforma.
+            // Cuatro piezas alrededor del agujero, en coordenadas de la orilla: +Z, hacia la placa.
             void Piece(float x0, float x1, float z0, float z1) => Block(sheet, MarineLife.ThinIce, sheet.TransformPoint(new Vector3((x0 + x1) * 0.5f, -Th * 0.5f, (z0 + z1) * 0.5f)), new Vector3(x1 - x0, Th, z1 - z0), thin, a, true);
             Piece(-W, -Hole, -Back, Lip); Piece(Hole, W, -Back, Lip);
             Piece(-Hole, Hole, -Back, -HoleAt - Hole); Piece(-Hole, Hole, -HoleAt + Hole, Lip);

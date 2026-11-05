@@ -8,7 +8,7 @@ using UnityEngine;
 /// 1. Entrenamiento 8–9 y 14–15; 5 h de tareas en 9–11, 12–14 y 15–16.
 /// 2. Las iniciaciones se reparten primero y de quien menos sabe a quien más: un recién llegado, toda su jornada; después, la mitad; luego, lo que falte.
 /// 3. Lo aprendido se puede hacer a partir de esa hora; una tarea con riesgo no va a quien no la sabe; la obligatoria la cubre la Magnate.
-/// 4. Inicia la Magnate; con instructorsTeach, quien sepa la tarea y sepa iniciar, y ella si no hay nadie. Saber iniciar se aprende.
+/// 4. Inicia quien sepa la tarea y sepa iniciar (por defecto), y la Magnate si no hay nadie. Saber iniciar se aprende, y Kushal no da clases.
 /// 5. Sin sus requisitos no se reparte. Nadie pasa de 5 h, nada cruza la comida ni el entrenamiento, y los grupos van a la vez.
 /// 6. Todos acaban sabiéndolo todo (regla de oro).
 /// </summary>
@@ -32,6 +32,9 @@ public class JornadaSaberTest : MonoBehaviour, ITestUnit
         for (int i = 0; i < people; i++) r.Add("P" + i);
         return r;
     }
+
+    // Aprendiendo, no enseñando: dar una clase no cuenta para el tope de iniciaciones de nadie.
+    static bool Learning(WorkRoster.Assignment a) => a.lesson && !a.mission.id.StartsWith(WorkRoster.InstructorPrefix);
 
     static bool InSlot(WorkRoster.Assignment a)
     {
@@ -62,18 +65,18 @@ public class JornadaSaberTest : MonoBehaviour, ITestUnit
         WorkRoster.DayPlan first = ro.Plan(0, Day());   // (el personal de siempre: el día 0 no es «recién llegado»)
         TestProbe.Check("entrenan a las 8 y a las 14, y nada de trabajo a esas horas", ro.workers.All(w => first.morning.ContainsKey(w) && first.training.ContainsKey(w)) && first.work.All(InSlot), string.Join(" · ", first.work.Where(a => !InSlot(a))));
         TestProbe.Check("nadie pasa de 5 h", ro.workers.All(w => first.Of(w).Sum(a => a.mission.hours) <= WorkRoster.WorkHours + 1e-3f));
-        TestProbe.Check("sin ser nuevo, como mucho la mitad en iniciaciones", ro.workers.All(w => first.Of(w).Count(a => a.lesson) <= WorkRoster.InitiationHalf + 1e-3f));
-        TestProbe.Check("quien lo sabe todo no se inicia en tareas", !first.Of(sabia).Any(a => a.lesson && !a.mission.id.EndsWith(WorkRoster.InstructSkill)));
+        TestProbe.Check("sin ser nuevo, como mucho la mitad en iniciaciones", ro.workers.All(w => first.Of(w).Count(Learning) <= WorkRoster.InitiationHalf + 1e-3f));
+        TestProbe.Check("quien lo sabe todo no se inicia en tareas", !first.Of(sabia).Any(a => Learning(a) && !a.mission.id.EndsWith(WorkRoster.InstructSkill)));
         TestProbe.Check("hay lista de iniciaciones", first.lessons.Count > 0);
         TestProbe.Check("cada iniciación va antes que su tarea", first.work.Where(a => !a.lesson && a.mission.id == "qui_sintesis" && a.worker != sabia).All(a => first.Of(a.worker).Any(x => x.lesson && x.mission.id.EndsWith("qui_sintesis") && x.start < a.start)));
         TestProbe.Check("nadie opera lo que no sabe", first.work.Where(a => !a.lesson && a.mission.id == "pla_operar").All(a => a.worker.clone || ro.Learned(a.worker, a.mission)));
 
         WorkRoster.Worker nuevo = ro.Add("Nuevo");
         WorkRoster.DayPlan day1 = ro.Plan(1, Day());
-        TestProbe.Check("el recién llegado, toda su primera jornada en iniciaciones", day1.Of(nuevo).Count(a => a.lesson) == 5, $"{day1.Of(nuevo).Count(a => a.lesson)}");
+        TestProbe.Check("el recién llegado, toda su primera jornada en iniciaciones", day1.Of(nuevo).Count(Learning) == 5, $"{day1.Of(nuevo).Count(Learning)}");
         TestProbe.Check("él va primero: el que menos sabe", day1.lessons.First().learners.Contains(nuevo));
         WorkRoster.DayPlan day2 = ro.Plan(2, Day(30));
-        int lessons2 = day2.Of(nuevo).Count(a => a.lesson);
+        int lessons2 = day2.Of(nuevo).Count(Learning);
         TestProbe.Check("el segundo día, como mucho la mitad", lessons2 >= 1 && lessons2 <= WorkRoster.InitiationHalf + 1e-3f, $"{lessons2}");
         TestProbe.Check("y sigue con lo que sabe", day2.Of(nuevo).Any(a => !a.lesson));
 
@@ -90,24 +93,28 @@ public class JornadaSaberTest : MonoBehaviour, ITestUnit
         TestProbe.Check("las franjas nuevas: 2 h a las 9, a las 12; 1 h a las 15; 3 h no caben", ro2.Place(0f, 2f, out c) == 0f && c == 9f && ro2.Place(1f, 2f, out c) == 2f && c == 12f && ro2.Place(4f, 1f, out c) == 4f && c == 15f && ro2.Place(0f, 3f, out c) < 0f);
 
         // ── 4. Quién inicia ──
-        WorkRoster ro4 = New(3);
+        WorkRoster ro4 = New(3); ro4.instructorsTeach = false;
         ro4.workers[0].taught.Add("qui_x"); ro4.workers[0].taught.Add(WorkRoster.InstructSkill);
         WorkRoster.DayPlan m0 = ro4.Plan(0, new List<WorkRoster.Mission> { new WorkRoster.Mission("A", "qui_x", "X", 1f) });
-        TestProbe.Check("hoy inicia la Magnate", m0.lessons.Count > 0 && m0.lessons.All(l => l.instructor == null && l.teacher.StartsWith("Magnate")));
-        WorkRoster ro4b = New(3); ro4b.instructorsTeach = true;
+        TestProbe.Check("apagado, inicia la Magnate", m0.lessons.Count > 0 && m0.lessons.All(l => l.instructor == null && l.teacher.StartsWith("Magnate")));
+        WorkRoster ro4b = New(3);
         ro4b.workers[0].taught.Add("qui_x"); ro4b.workers[0].taught.Add(WorkRoster.InstructSkill);
         WorkRoster.DayPlan m1 = ro4b.Plan(0, new List<WorkRoster.Mission> { new WorkRoster.Mission("A", "qui_x", "X", 1f) });
-        TestProbe.Check("encendido, inicia quien sabe y sabe iniciar", m1.lessons.Any(l => l.instructor == ro4b.workers[0]) && m1.Of(ro4b.workers[0]).Any(a => a.lesson && a.mission.id.StartsWith(WorkRoster.InstructorPrefix)));
-        WorkRoster ro4c = New(2); ro4c.instructorsTeach = true;
+        TestProbe.Check("por defecto, inicia quien sabe y sabe iniciar", ro4b.instructorsTeach && m1.lessons.Any(l => l.instructor == ro4b.workers[0]) && m1.Of(ro4b.workers[0]).Any(a => a.lesson && a.mission.id.StartsWith(WorkRoster.InstructorPrefix)));
+        WorkRoster ro4c = New(2);
         WorkRoster.DayPlan m2 = ro4c.Plan(0, new List<WorkRoster.Mission> { new WorkRoster.Mission("A", "qui_x", "X", 1f) });
         TestProbe.Check("sin nadie que sepa, la Magnate", m2.lessons.All(l => l.instructor == null));
+        WorkRoster ro4d = New(2); WorkRoster.Worker yo = ro4d.Add("Player");
+        yo.taught.Add("qui_x"); yo.taught.Add(WorkRoster.InstructSkill);
+        WorkRoster.DayPlan m3 = ro4d.Plan(0, new List<WorkRoster.Mission> { new WorkRoster.Mission("A", "qui_x", "X", 1f) });
+        TestProbe.Check("Kushal no da clases: va la Magnate", m3.lessons.Count > 0 && m3.lessons.All(l => l.instructor == null));
 
         // ── Clases ──
         WorkRoster big = New(WorkRoster.LessonGroupSize * WorkRoster.MaxLessonGroups + 4);
         var many = new List<WorkRoster.Mission>();
         for (int i = 0; i < 12; i++) many.Add(new WorkRoster.Mission("A", "qui_t" + i, "Tarea " + i, 1f));
         WorkRoster.DayPlan bp = big.Plan(0, many);
-        TestProbe.Check("cada clase cabe en una Magnate", bp.lessons.All(l => l.learners.Count <= WorkRoster.LessonGroupSize));
+        TestProbe.Check("cada clase cabe en su maestro", bp.lessons.All(l => l.learners.Count <= WorkRoster.LessonGroupSize));
         TestProbe.Check("por hora, con tope", bp.lessons.GroupBy(l => l.start).All(g => g.Count() <= WorkRoster.MaxLessonGroups));
         TestProbe.Check("nadie en dos sitios a la vez", big.workers.All(w => bp.Of(w).Select(a => a.start).Distinct().Count() == bp.Of(w).Count()));
 

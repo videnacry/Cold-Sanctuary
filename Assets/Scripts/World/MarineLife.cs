@@ -42,8 +42,8 @@ public class MarineLife : MonoBehaviour
     static int _count;
     // BAJO EL HIELO: las placas de la banquisa («Casquete») van de IceTop (0) a −1,5 m. Nadando a −1 m se metían DENTRO de
     // la placa (respiraderos, orillas, ir a por la pareja): por debajo del hielo se bucea por debajo de su cara inferior.
-    /// <summary>La cara inferior del HIELO FIJO (2 m): el único hielo por debajo del cual se nada (docs/hielo-y-respiraderos.md). La plataforma, de 300 m, es una pared.</summary>
-    const float IceBottom = -2f;
+    /// <summary>La cara inferior del hielo (placas y HIELO FIJO: 1,5 m). Solo se nada por debajo del hielo fijo (docs/hielo-y-respiraderos.md): las placas son pared (P20).</summary>
+    const float IceBottom = -SeaRule.PlateThickness;
     /// <summary>Nombre de los colisionadores del hielo fijo.</summary>
     public const string ThinIce = "Hielo_fijo";
     float _halfH = 0.4f, _halfLen;   // medio alto y medio largo del cuerpo (en el mundo)
@@ -81,7 +81,7 @@ public class MarineLife : MonoBehaviour
     }
     static readonly RaycastHit[] _hits = new RaycastHit[8];
 
-    /// <summary>¿Lo que hay encima de (x, z) llega muy abajo (plataforma, isla, un edificio)? Contra eso no se bucea: es una pared. El hielo fijo no cuenta.</summary>
+    /// <summary>¿Lo que hay encima de (x, z) es pared para la fauna (una placa, la isla, un edificio)? Contra eso no se bucea, aunque mida 1,5 m: es una decisión de diseño (P20). El hielo fijo no cuenta.</summary>
     public static bool ThickAbove(Vector3 p)
     {
         int n = Physics.RaycastNonAlloc(new Vector3(p.x, 8f, p.z), Vector3.down, _hits, 14f, ~0, QueryTriggerInteraction.Ignore);
@@ -292,7 +292,7 @@ public class MarineLife : MonoBehaviour
             else if (!onIce)
             {
                 np.y = Mathf.Min(np.y, -0.4f);   // nadando: siempre bajo la superficie
-                // La PLATAFORMA (300 m) y la isla son paredes: se bordean (docs/hielo-y-respiraderos.md). Bajo el HIELO FIJO (2 m) se bucea.
+                // Las PLACAS y la isla son paredes: se bordean (P20, docs/hielo-y-respiraderos.md). Bajo el HIELO FIJO se bucea; una orca que roza el borde con el cuerpo, también (IceOverBody).
                 Vector3 flatDir = new Vector3(step.x, 0f, step.z);
                 Vector3 ahead = flatDir.sqrMagnitude > 1e-8f ? np + flatDir.normalized * (_halfH + 1f) : np;
                 Vector3 flatNow = new Vector3(step.x, 0f, step.z);

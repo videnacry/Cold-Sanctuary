@@ -1048,7 +1048,7 @@ public class WorkdayDirector : MonoBehaviour
         }
     }
 
-    // LA INICIACIÓN: un cuerpo de la Magnate por clase, en el área de la tarea, durante la hora. Es ella quien inicia (máxima autoridad de todas las áreas) hasta que se encienda roster.instructorsTeach.
+    // LA INICIACIÓN: un cuerpo de la Magnate por clase, en el área de la tarea, durante la hora. Solo si ningún compañero puede dar la clase (roster.instructorsTeach): ella es el último recurso, máxima autoridad de todas las áreas.
     readonly HashSet<WorkRoster.Lesson> _taughtToday = new HashSet<WorkRoster.Lesson>();
     public int LessonsGiven { get; private set; }
     void TeachLesson(WorkRoster.Assignment a)
