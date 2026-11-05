@@ -62,7 +62,7 @@ public static class LineTruth
         "Sadhguru", "Elon Musk", "Bill Gates", "Warren Buffett", "MacKenzie Scott", "Ruth Simmons", "Pedro Sánchez", "Ana Pastor", "Ibrahim Traoré",
         // La música
         "John Lennon", "Yoko Ono", "Derek Taylor", "Tim Attwood", "André Perry", "Bob Marley", "Peter Tosh", "Joe Higgs", "Claudie Massop", "Bono", "John Hume", "David Trimble",
-        "Chuck D", "Flavor Flav", "Hank Shocklee", "Bill Stephney", "Benito", "DJ Luian", "Lysaurie", "Shakira", "Katherine", "Mondina", "Michael", "Jermaine", "Tito", "Joe Jackson",
+        "Chuck D", "Flavor Flav", "Hank Shocklee", "Bill Stephney", "Benito", "DJ Luian", "Lysaurie", "Shakira", "Katherine", "Michael", "Jermaine", "Tito", "Joe Jackson",
         "Jennie", "Jisoo", "Rosé", "Lisa", "Susana Baca", "Peter Gabriel", "Guy Carawan",
     };
 
