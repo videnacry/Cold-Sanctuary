@@ -72,6 +72,9 @@ public static class MicroFloors
         M("Prairie View", "Classroom_Area", "Scott y Prairie View A&M: la universidad, su biblioteca y sus estudiantes; el Aula"),
         M("Uagadugú", "Garden_Area", "los productores y sus huertos: labrar y sembrar antes de las lluvias, el Huerto"),
         // La música (docs/microcosmos-musica.md). Sobre la Sala de Ballet (la sala con piano, equipo de sonido y suelo de escenario), Informática o el Aula hasta que exista su piso.
+        M("Gary", "Ballet_Area", "los Jackson: ensayar voces y pasos en casa y subir al escenario del instituto; la sala de baile", Match.MusicFloor),
+        M("Montreal", "Ballet_Area", "Lennon y Ono graban con todos en la habitación del hotel: la sala con piano y equipo de sonido", Match.MusicFloor),
+        M("Vega Baja", "Informatics_Area", "Benito graba en su cuarto con un portátil: la música hecha con ordenador, Informática", Match.MusicFloor),
         M("Barranquilla", "Classroom_Area", "Shakira y el colegio Pies Descalzos de La Playa: la escuela; el Aula"),
     };
 

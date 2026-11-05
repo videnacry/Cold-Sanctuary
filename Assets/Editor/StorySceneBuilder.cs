@@ -49,6 +49,9 @@ public static partial class StorySceneBuilder
         ("Classroom_Area", "Prairie View", "Microcosmos_MacKenzieScott", new Color(0.62f, 0.72f, 0.85f), new System.Func<Transform, int>(MacKenzieScott)),
         ("Garden_Area", "Uagadugú", "Microcosmos_IbrahimTraore", new Color(0.8f, 0.55f, 0.35f), new System.Func<Transform, int>(IbrahimTraore)),
         // LA MÚSICA (StorySceneBuilder.Musica.cs, docs/microcosmos-musica.md): una historia de cada artista o banda en su pueblo real, y las canciones que cambiaron el mundo.
+        ("Ballet_Area", "Gary", "Microcosmos_MichaelJackson", new Color(0.65f, 0.58f, 0.55f), new System.Func<Transform, int>(MichaelJackson)),
+        ("Ballet_Area", "Montreal", "Microcosmos_JohnLennon", new Color(0.8f, 0.82f, 0.9f), new System.Func<Transform, int>(JohnLennon)),
+        ("Informatics_Area", "Vega Baja", "Microcosmos_BadBunny", new Color(0.55f, 0.75f, 0.6f), new System.Func<Transform, int>(BadBunny)),
         ("Classroom_Area", "Barranquilla", "Microcosmos_Shakira", new Color(0.95f, 0.8f, 0.45f), new System.Func<Transform, int>(Shakira)),
     };
 
@@ -82,6 +85,9 @@ public static partial class StorySceneBuilder
         ["Omaha"] = ("30 de agosto de 1983 (el 53 cumpleaños de Buffett)", 10.0f),   // la mañana en la tienda (hora representativa)
         ["Prairie View"] = ("15 de diciembre de 2020", 10.0f),   // la mañana del anuncio
         ["Uagadugú"] = ("6 de mayo de 2024", 9.0f),   // la mañana de la entrega (hora representativa)
+        ["Gary"] = ("1966 (el concurso de talentos de Roosevelt High School)", 17.5f),   // el cambio de turno de la acería y la tarde del concurso (hora representativa)
+        ["Montreal"] = ("1 de junio de 1969", 19.0f),   // el último día del Bed-In: la grabación (hora representativa)
+        ["Vega Baja"] = ("2016 (sube «Diles» a SoundCloud)", 17.0f),   // la tarde en el súper; la historia acaba de noche
         ["Barranquilla"] = ("2009 (abre el colegio de La Playa)", 8.0f),   // la entrada al colegio (hora representativa; el día exacto no consta)
     };
 

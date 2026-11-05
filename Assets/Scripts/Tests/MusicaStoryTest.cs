@@ -26,6 +26,9 @@ public class MusicaStoryTest : MonoBehaviour, ITestUnit
     static readonly (string scene, string display, string hero, int year, string region, string platform, bool rep, string[] fruits)[] Cases =
     {
         ("Microcosmos_Shakira", "Barranquilla", "Shakira", 2009, "CaribeHispano", "Classroom_Area", true, new[] { "Mango", "Guanábana", "Aguacate", "Quenepa" }),
+        ("Microcosmos_BadBunny", "Vega Baja", "Bad Bunny", 2016, "CaribeHispano", "Informatics_Area", false, new[] { "Mango", "Guanábana", "Aguacate", "Quenepa" }),
+        ("Microcosmos_JohnLennon", "Montreal", "John Lennon", 1969, "NorteamericaNorte", "Ballet_Area", false, new[] { "Manzano", "Cerezo", "Ciruelo" }),
+        ("Microcosmos_MichaelJackson", "Gary", "Michael Jackson", 1966, "NorteamericaNorte", "Ballet_Area", false, new[] { "Manzano", "Cerezo", "Ciruelo" }),
         // ══FIN DE LOS CASOS══
     };
 

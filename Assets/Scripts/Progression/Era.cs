@@ -104,6 +104,9 @@ public static class Eras
             case "Omaha":                 return (1983, "Omaha, Nebraska (Warren Buffett compra la Nebraska Furniture Mart a Rose Blumkin)");
             case "Prairie View":          return (2020, "Prairie View A&M University, Texas (la donación de MacKenzie Scott)");
             case "Uagadugú":              return (2024, "Uagadugú, Burkina Faso (la entrega de tractores a los productores)");
+            case "Gary":                  return (1966, "Gary, Indiana (la familia Jackson y el primer concurso de los Jackson 5)");
+            case "Montreal":              return (1969, "Queen Elizabeth Hotel, Montreal (John Lennon y Yoko Ono: el Bed-In y Give Peace a Chance)");
+            case "Vega Baja":             return (2016, "Vega Baja, Puerto Rico (Bad Bunny, del empaque del súper a SoundCloud)");
             case "Barranquilla":          return (2009, "La Playa, Barranquilla (Shakira y el colegio de la Fundación Pies Descalzos)");
             case "Planta Atómica":        return (1905, "Woolsthorpe, París y Berna (Newton, Curie, Einstein)");
             default: return null;

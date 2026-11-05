@@ -129,6 +129,9 @@ public static class SolarPosition
             ("Omaha", 41.25f, -96.03f, 242f),   // 30 de agosto de 1983
             ("Prairie View", 30.09f, -95.99f, 350f),   // 15 de diciembre de 2020
             ("Uagadugú", 12.37f, -1.52f, 127f),   // 6 de mayo de 2024
+            ("Gary", 41.59f, -87.35f, 135f),   // mayo de 1966 (fecha representativa)
+            ("Montreal", 45.50f, -73.57f, 152f),   // 1 de junio de 1969
+            ("Vega Baja", 18.44f, -66.39f, 244f),   // septiembre de 2016 (fecha representativa)
             ("Barranquilla", 11.03f, -74.87f, 32f),   // La Playa, principios de 2009 (fecha representativa: empieza el año escolar)
         };
         foreach (var e in table)
