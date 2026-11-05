@@ -97,6 +97,26 @@ Lo nuevo que aparezca después de la pasada no entra en lotes; se dibuja como si
   por builder y por pieza, y el estado del lote.
 - Comparar la 1.ª medida con la 3.ª da el ruido. La cámara no debe moverse durante la medida.
 
+## Perfil por script (ronda 13, *Perfilar scripts*)
+
+Scripts que mandan: `Mind.Update` 52 ms (31 llamadas, casi todo tiempo propio), `WorkdayDirector.Update` 20 ms y 236 KB por frame, `Swarm` 6,5,
+`SpeciesScaleFix` 6,1 y 275 KB, `TreeTrip` 6, `VisualAttention` 5.
+
+`Mind.Update` solo hace aritmética y un `Debug.Log` por pensamiento. El log tuvo 1,8 `[Mente]` por frame y el tiempo sale como propio, así que
+**el sospechoso es el `Debug.Log`** (hipótesis, sin medir).
+
+| Cambio | Conducta |
+|---|---|
+| `LogQuieto`: 8 etiquetas charlatanas, 1 mensaje cada 5 s por etiqueta | Solo cambia el log; con TestRunner sale todo. Avisos y errores, intactos |
+| `Mind`: humores y campos 1 de cada 6 frames; `ThoughtField.All` en vez de buscar | Mismo tiempo de juego (`GameTick`); un campo nuevo actúa antes, no 1 s después |
+| `WorkdayDirector`: 1/8 del personal por frame | Empezar y acabar misiones sigue en cada frame; alguien tarda hasta 8 frames en recibir su orden |
+| `SpeciesScaleFix`: ya en su talla, mide cada 20–27 s o al cambiar de etapa | Si otro script lo reescala, tarda más en corregirlo |
+| `Swarm`: pasto 1 de cada 6 frames, lista común de cazadores, dueño del collider en caché | Mismo pasto por tiempo de juego |
+
+**`GameTick`** va por frames y no por segundos: a 4 FPS un intervalo de 0,2 s se cumpliría siempre y no ahorraría nada. Entrega todo el
+`Time.deltaTime` acumulado. Con TestRunner toca en cada frame, así que las pruebas de conducta no prueban el reparto; lo prueba el grupo 112 con
+dt conocidos. `SenseSurroundings` sigue en cada frame con su dt, para no cambiar su efecto.
+
 ## Lo que solo cuesta en el editor
 
 Un juego construido no tiene esto, así que los FPS del editor no son los del jugador:

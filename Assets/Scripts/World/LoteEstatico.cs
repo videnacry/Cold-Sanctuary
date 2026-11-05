@@ -123,6 +123,7 @@ public class LoteEstatico : MonoBehaviour
         DontDestroyOnLoad(g);
         // Los Debug.Log van a ~5 por frame: capturar la pila de cada uno es caro. Avisos y errores la conservan.
         Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
+        LogQuieto.Install();
         Instance = g.AddComponent<LoteEstatico>();
         for (int i = 0; i < SceneManager.sceneCount; i++) Instance.StartCoroutine(Instance.AfterLoad(SceneManager.GetSceneAt(i)));
     }

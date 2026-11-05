@@ -11,6 +11,7 @@ using UnityEngine;
 /// 4. AUTOCURACIÓN: una máscara que se coge del perchero y una pieza que se mueve salen del lote y vuelven a dibujarse solas;
 /// 5. apagar y encender en vivo (la medida A/B) deja las piezas como estaban.
 /// 6. un cuerpo lejano deja de dibujarse, pausa sus scripts de figura y vuelve entero.
+/// 7. el ritmo repartido (GameTick) no pierde tiempo de juego: el total y un humor integrado salen iguales.
 /// </summary>
 public class LoteEstaticoTest : MonoBehaviour, ITestUnit
 {
@@ -85,6 +86,21 @@ public class LoteEstaticoTest : MonoBehaviour, ITestUnit
         LoteEstatico.SetLive(true);
         yield return null;
         TestProbe.Check("y al volver, las piezas vuelven a sus lotes", batched.Count(r => r != null && r.forceRenderingOff) > 0 && LoteEstatico.Live);
+        // EL RITMO REPARTIDO: repartir un integrador lineal no cambia el total de tiempo de juego ni el resultado.
+        GameTick tick = default;
+        float every = 0f, sliced = 0f, sum = 0f, h1 = 0.8f, h2 = 0.8f;
+        int fired = 0;
+        for (int fr = 0; fr < 600; fr++)
+        {
+            float d = 0.01f + 0.07f * (fr % 7) / 6f;
+            every += d;
+            h1 = Mathf.MoveTowards(h1, 0.5f, 0.03f * d);
+            if (tick.Step(6, 12345, fr, d, out float due)) { sliced += due; fired++; h2 = Mathf.MoveTowards(h2, 0.5f, 0.03f * due); }
+        }
+        tick.Step(1, 0, 600, 0f, out float rest); sliced += rest; h2 = Mathf.MoveTowards(h2, 0.5f, 0.03f * rest);
+        TestProbe.Check("GameTick: 1 de cada 6 frames, sin perder tiempo de juego", fired == 100 && Mathf.Abs(every - sliced) < 1e-2f, $"{every:0.000} s contra {sliced:0.000} s en {fired} toques");
+        TestProbe.Check("GameTick: un humor llega al mismo valor", Mathf.Abs(h1 - h2) < 1e-3f, $"{h1:0.0000} contra {h2:0.0000}");
+
         // CUERPO LEJANO: se deja de dibujar, sus scripts de figura se pausan y vuelve entero (el TestRunner lo impide salvo aquí).
         Anima far = null;
         Vector3 cam = Camera.main != null ? Camera.main.transform.position : Vector3.zero;

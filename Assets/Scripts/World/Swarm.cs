@@ -74,6 +74,7 @@ public class Swarm : MonoBehaviour, ITarget, IEdible
     /// <summary>Anima a todos los individuos aunque estén lejos de la cámara (pruebas, fotos).</summary>
     public static bool AnimateAll;
 
+    GameTick _grazeTick;
     protected Vector3 _origin;
     protected Vector3 _target;
     Vector3 _via; bool _hasVia;
@@ -132,7 +133,9 @@ public class Swarm : MonoBehaviour, ITarget, IEdible
         float dt = Time.deltaTime;
         byte timeScale = TimeScale;
         // Crece: un individuo nuevo cada cierto tiempo (sin ciclo de vida) + lo que PASTA de su alimento (fitoplancton→kril→pez).
-        count = Mathf.Min(maxCount, count + growthPerSecond * timeScale * dt + GrazeFood(dt, timeScale));
+        // Pastar busca el kril o el fitoplancton más cercano entre todos: 1 de cada 6 frames, con el tiempo acumulado.
+        float grazed = _grazeTick.Due(6, GetHashCode(), out float grazeDt) ? GrazeFood(grazeDt, timeScale) : 0f;
+        count = Mathf.Min(maxCount, count + growthPerSecond * timeScale * dt + grazed);
         if (Time.time >= _nextReconcile) { _nextReconcile = Time.time + 0.5f; ReconcileChildren(); }
         if (Time.time >= _nextNear && count >= 1f) { _nextNear = Time.time + 0.25f; BiteByProximity(); }
         Move(dt);
@@ -302,7 +305,18 @@ public class Swarm : MonoBehaviour, ITarget, IEdible
     }
 
     // MORDISCO-POR-COLISIÓN: el depredador choca con el grupo; si tiene hambre y es su dieta, desaparece UN individuo.
-    void OnTriggerStay(Collider other) => TryBite(other.GetComponentInParent<Animal>());
+    // (932 llamadas por frame: casi todas son hielo y paredes, que no cambian de dueño.)
+    static readonly Dictionary<Collider, Animal> _colliderOwner = new Dictionary<Collider, Animal>();
+    void OnTriggerStay(Collider other)
+    {
+        if (Time.time < _nextBite || count < 1f) return;
+        if (!_colliderOwner.TryGetValue(other, out Animal a))
+        {
+            if (_colliderOwner.Count > 20000) _colliderOwner.Clear();
+            _colliderOwner[other] = a = other.GetComponentInParent<Animal>();
+        }
+        TryBite(a);
+    }
 
     /// <summary>Un mordisco de <paramref name="a"/> si tiene hambre, come lo de este grupo y no acaba de morder (true si mordió). Lo
     /// llaman el choque (trigger) y, por si el animal no tiene un collider que lo dispare (la ballena, 2026-11-04: «0 mordiscos»), la
@@ -387,16 +401,31 @@ public class Swarm : MonoBehaviour, ITarget, IEdible
         }
     }
 
-    Transform NearestPredator()
+    // Los animales que cazan, una lista para todos los grupos (cada grupo miraba toda la población 4 veces por segundo).
+    static readonly List<Transform> _hunters = new List<Transform>();
+    static float _huntersAt = -1f;
+    static void RefreshHunters()
     {
-        Transform best = null;
-        float bestD = fleeRange;
+        if (Time.time >= _huntersAt && Time.time - _huntersAt < 0.25f) return;
+        _huntersAt = Time.time;
+        _hunters.Clear();
         foreach (GameObject go in Animal.wholePopulation)
         {
-            Animal a = go != null ? go.GetComponent<Animal>() : null;
-            if (a == null || a.Forage == null || !a.Forage.eatsPrey) continue;
-            float d = Vector3.Distance(transform.position, go.transform.position);
-            if (d < bestD) { bestD = d; best = go.transform; }
+            if (go == null || !go.TryGetComponent(out Animal a) || a.Forage == null || !a.Forage.eatsPrey) continue;
+            _hunters.Add(go.transform);
+        }
+    }
+
+    Transform NearestPredator()
+    {
+        RefreshHunters();
+        Transform best = null;
+        float bestD = fleeRange;
+        foreach (Transform t in _hunters)
+        {
+            if (t == null) continue;
+            float d = Vector3.Distance(transform.position, t.position);
+            if (d < bestD) { bestD = d; best = t; }
         }
         return best;
     }

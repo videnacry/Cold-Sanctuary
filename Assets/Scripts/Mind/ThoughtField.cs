@@ -26,6 +26,11 @@ public class ThoughtField : MonoBehaviour
     [Tooltip("Cuánto mueve ese humor por segundo (+ sube, − baja) a las mentes dentro del radio.")]
     public float humorPerSecond = 0.05f;
 
+    /// <summary>Los campos activos (antes cada mente los buscaba por toda la escena una vez por segundo).</summary>
+    public static readonly System.Collections.Generic.List<ThoughtField> All = new System.Collections.Generic.List<ThoughtField>();
+    void OnEnable() { All.Add(this); }
+    void OnDisable() { All.Remove(this); }
+
     /// <summary>¿Cubre este campo la posición dada?</summary>
     public bool Covers(Vector3 pos) => (pos - transform.position).sqrMagnitude <= radius * radius;
 

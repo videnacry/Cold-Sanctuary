@@ -167,7 +167,7 @@ public class WorkdayDirector : MonoBehaviour
         if (_breakfastDay != day && h >= BreakfastHour && h < BreakfastEnd) Breakfast(day);
         if (plannedDay != day && h >= PlanFrom && h < WorkRoster.StartHour + 8f) PlanDay(day);
         if (today == null || plannedDay != day) return;
-        Tick(h);
+        Tick(h, true);
     }
 
     /// <summary>Hora a la que se reparte el día: al acabar el desayuno (7:50), para que cada uno salga de casa hacia su primera
@@ -175,9 +175,16 @@ public class WorkdayDirector : MonoBehaviour
     public const float PlanFrom = BreakfastEnd;
 
     /// <summary>Avanza la jornada a la hora <paramref name="h"/>: empieza y termina misiones, mueve a cada uno a su sitio.</summary>
-    public void Tick(float h)
+    /// <summary>Repasar a cada persona busca sus misiones del día: en juego, 1/<see cref="DriveSlices"/> del personal por frame. Empezar y
+    /// acabar misiones sigue siendo en cada frame. Las pruebas llaman a <see cref="Tick(float)"/>, que los repasa a todos.</summary>
+    public const int DriveSlices = 8;
+    public void Tick(float h) => Tick(h, false);
+
+    void Tick(float h, bool sliced)
     {
         _hour = h;
+        int slot = Time.frameCount % DriveSlices, turn = 0;
+        bool Mine() => !sliced || turn++ % DriveSlices == slot;
         if (h < WorkRoster.StartHour)   // (7:50–8:00) desayunados: cada uno sale hacia su primera misión si está en otro árbol
         {
             // (sin colocarlos de golpe a las 8: ya van andando. PlaceAtStart es para cuando el juego EMPIEZA en plena jornada; con
@@ -185,6 +192,7 @@ public class WorkdayDirector : MonoBehaviour
             _placed = true;
             foreach (WorkRoster.Worker w in roster.workers)
             {
+                if (!Mine()) continue;
                 GameObject g = Body(w.name);
                 if (g == null || g.CompareTag("Player") || OnOwnDuty(g)) continue;
                 WorkRoster.Assignment first = HeadingEarly(w, g, h);
@@ -199,7 +207,7 @@ public class WorkdayDirector : MonoBehaviour
             if (h >= end && !_done.Contains(a)) { _done.Add(a); Finish(a); }
         }
         // Clones que ya no tienen trabajo pendiente: desaparecen.
-        foreach (var kv in _clones.ToList())
+        if (!sliced || slot == 0) foreach (var kv in _clones.ToList())
             if (kv.Value != null && today.work.Where(x => x.worker == kv.Key).All(x => _done.Contains(x))) { Destroy(kv.Value); _clones.Remove(kv.Key); Debug.Log($"[Jornada] {kv.Key.name} termina y se disuelve."); }
         for (int i = _initiators.Count - 1; i >= 0; i--) if (_initiators[i].go == null || h >= _initiators[i].until) { if (_initiators[i].go != null) Destroy(_initiators[i].go); _initiators.RemoveAt(i); }
 
@@ -208,6 +216,7 @@ public class WorkdayDirector : MonoBehaviour
         UpdateInitiator(h);
         foreach (WorkRoster.Worker w in roster.workers)
         {
+            if (!Mine()) continue;
             GameObject g = Body(w.name);
             if (g == null || g.CompareTag("Player") || OnOwnDuty(g)) continue;
             string where = Where(w, h, out string doing);
@@ -216,7 +225,7 @@ public class WorkdayDirector : MonoBehaviour
             if (early != null) { where = early.mission.area; doing = early.mission.title; mid = null; }   // ya va hacia lo siguiente (otra torre)
             Drive(g, where, doing, mid);
         }
-        foreach (var kv in _clones)
+        if (!sliced || slot == 1) foreach (var kv in _clones)
             if (kv.Value != null && !OnOwnDuty(kv.Value)) { string where = Where(kv.Key, h, out string doing); string cm = Current(kv.Key, h)?.mission.id; Drive(kv.Value, where, doing, FruitGardener.IsRound(cm) ? cm : null, alwaysMove: true); }
         HoldPlayer(h);
     }
