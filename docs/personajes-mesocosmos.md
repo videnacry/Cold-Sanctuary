@@ -150,7 +150,7 @@ Berón: Panterilia es maestra de baile y de finanzas; Gohageneis, maestro de bai
 | **Lale** | Biotecnología | igual que Yulo | Carne Cultivada |
 | **Ivelyna** | Pediatra | Hospital: `hos_pediatria` (misión nueva: consulta, vacunas y crecimiento de los niños) y las del hospital `enf_` | el hospital |
 | **Malena** (2026-11-05) | Pediatra | igual que Ivelyna | el hospital |
-| **Luciana** | Piloto | Mecánica: `mec_alfombras` (misión nueva: la flota de alfombras voladoras y el transporte aéreo); Control de misión: `lan_control` (misión nueva: el seguimiento de la lanzadera y de los vuelos) | la Mecánica |
+| **Luciana** | Piloto y artes marciales | Artes marciales: da el entrenamiento del dojo cuando esté terminado y guía las artes marciales de las 20 h, en días alternos con Gohageneis (`Professions.ClassLeads`). Mecánica: `mec_alfombras` (misión nueva: la flota de alfombras voladoras y el transporte aéreo); Control de misión: `lan_control` (misión nueva: el seguimiento de la lanzadera y de los vuelos) | la Mecánica |
 
 **Por qué así**:
 - **Ivelyna en el Hospital, no en la Cría**: Berón preguntó si iba en la Cría, pero la Cría es de crías de animales. La pediatría es de
@@ -187,7 +187,6 @@ y ropa lisa de un color por persona.
 
 Neo es un **niño, hijo de Ducristin y Gallarle**. Vive en la casa de sus padres (`Bedroom.kids`, `Kids` en `ResidentialBuilder`) y cuenta en el aforo del ring. Lleva el ciclo de vida de los humanos: `PersonLife` en etapa de niño, `BodyAging.growth` 0,35, con `mother` (Gallarle) y `father` (Ducristin) enlazados. **No está en la jornada** (`WorkdayDirector.Staff`): su tiempo es libre y va con su madre (`FollowMother`). Todavía no hay guardería ni juego propio de niños; cuando exista, con Ivelyna (pediatra), irá ahí.
 
-**Por confirmar:** Berón escribió «Dukristin»; se conserva el nombre «Ducristin» hasta que lo confirme.
 
 ### Lale, Yulo, Malena y las fotos (2026-11-05)
 
@@ -195,10 +194,7 @@ Neo es un **niño, hijo de Ducristin y Gallarle**. Vive en la casa de sus padres
 - **Malena**, pediatra, como Ivelyna: `Hospital:hos_pediatria,enf_`. Vive en la última casa de la cuarta tanda.
 - **Fotos**: Yulo, Lale, Neo, Gallarle, Luciana, Ivelyna, Malena y Ducristin ya llevan su aspecto (detalle en [`diseno-personajes.md`](diseno-personajes.md)). Siguen **pendientes de foto** David, Adonis, Julian y Fausto, ahora con un aspecto provisional distinto cada uno.
 - **Rasgo femenino** (`Fem`): Gallarle, Luciana, Ivelyna y Malena, confirmado por las fotos de Berón. Lale, hombre.
-- **Por confirmar con Berón**:
-  - en `gallarle_luciana`, que Gallarle sea la de la izquierda (es la madre de Neo);
-  - en `ivelyna_malena`, que Ivelyna sea la de la izquierda (orden supuesto por el nombre del fichero);
-  - la grafía: el fichero se llama «dukristy» y Berón escribió «Dukristin»; se mantiene «Ducristin».
+- **Confirmado por Berón**: el orden de izquierda a derecha de las dos fotos dobles y la grafía «Ducristin», que es la definitiva.
 - **Ducristin** viste de trabajo (traje azul marino, camisa blanca y corbata azul). Su ropa informal (aviador y camisa azul de cuadros) solo sale en la galería, como `Ducristin_Casual`: el cuerpo se viste una vez al construirse, y cambiar de ropa en el juego no es trivial.
 
 **Cuentas con 28 miembros y 30 residentes** (23 dueños, 6 parejas y Neo):

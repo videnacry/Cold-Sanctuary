@@ -211,7 +211,7 @@ public static partial class SampleSceneBuilder
         ("Yulo", "Yulo (biotecnología)", 58f, new Color(0.35f, 0.45f, 0.4f), 1.0f, 1.0f, 1.0f, 1.0f),
         ("Lale", "Lale (biotecnología)", 60f, new Color(0.5f, 0.45f, 0.55f), 1.0f, 1.0f, 1.0f, 1.0f),
         ("Ivelyna", "Ivelyna (pediatra)", 62f, new Color(0.55f, 0.5f, 0.42f), 1.0f, 1.0f, 1.0f, 1.0f),
-        ("Luciana", "Luciana (piloto)", 64f, new Color(0.38f, 0.42f, 0.5f), 1.0f, 1.0f, 1.0f, 1.0f),
+        ("Luciana", "Luciana (piloto y artes marciales)", 64f, new Color(0.38f, 0.42f, 0.5f), 1.0f, 1.0f, 1.0f, 1.0f),
         ("Malena", "Malena (pediatra)", 68f, new Color(0.86f, 0.74f, 0.62f), 1.0f, 1.0f, 1.0f, 1.0f),
     };
 

@@ -174,7 +174,7 @@ public class LeisureDirector : MonoBehaviour
         ("textil", "Manualidades en el estudio textil", LeisureRoster.Kind.Ocio, new[] { "Estudio Textil" }, 4, "sentado"),
         ("tertulia", "Tertulia en el restaurante", LeisureRoster.Kind.Ocio, new[] { "Cocina" }, 8, "sentado"),
         ("baile", "Bailar", LeisureRoster.Kind.Ocio, new[] { "Sala de Ballet", "Calistenia", "Gimnasio" }, 6, "baile"),
-        ("artes", "Artes marciales con Gohageneis",   // (2026-11-04: antes con Goku, que se fue a su microcosmos)
+        ("artes", "Artes marciales con Gohageneis y Luciana",   // (2026-11-04: antes con Goku, que se fue a su microcosmos; 2026-11-05: y Luciana)
           LeisureRoster.Kind.Ocio, new[] { "Dojo (artes marciales)", "Gimnasio" }, 6, "ejercicio"),
         ("descanso", "Descansar en casa", LeisureRoster.Kind.Descanso, new[] { "casa" }, 0, "tumbado"),
     };

@@ -63,7 +63,7 @@ public static class Professions
         new Entry("Malena", "pediatría", "Hospital:hos_pediatria,enf_"),
         // Piloto: la flota de alfombras voladoras y el transporte aéreo (en la Mecánica) y el vuelo y el control de misión de la lanzadera.
         // Los submarinos siguen con Adaguchi.
-        new Entry("Luciana", "piloto: alfombras, transporte aéreo y lanzadera", "Mecánica:mec_alfombras", "Control de misión"),
+        new Entry("Luciana", "piloto y artes marciales: alfombras, transporte aéreo y lanzadera", "Mecánica:mec_alfombras", "Control de misión"),
     };
 
     /// <summary>(2026-11-04) Los MAESTROS de una clase de entrenamiento o de ocio que no es misión de grupo: el baile (Berón: «Panterilia y
@@ -74,6 +74,9 @@ public static class Professions
     {
         { "Sala de Ballet", new[] { "Panterilia", "Gohageneis" } },
         { "baile", new[] { "Panterilia", "Gohageneis" } },
+        // (2026-11-05) Las ARTES MARCIALES: Gohageneis y Luciana, los días contrarios a los del baile de Gohageneis (no le coinciden las dos).
+        { "Dojo (artes marciales)", new[] { "Gohageneis", "Luciana" } },
+        { "artes", new[] { "Gohageneis", "Luciana" } },
     };
     /// <summary>El maestro de <paramref name="cls"/> el día <paramref name="day"/> (null si no tiene).</summary>
     public static string LeadOn(string cls, int day) => ClassLeads.TryGetValue(cls, out string[] l) && l.Length > 0 ? l[((day % l.Length) + l.Length) % l.Length] : null;

@@ -642,7 +642,7 @@ Decisión del usuario (2026-09-11): **diseñar a fondo primero** (hecho) → **e
 - [x] Lale y Yulo (antes Ale y Julito), Malena (pediatra; 28 miembros, 23 casas ocupadas) y aspecto de las fotos de Yulo, Lale, Neo, Gallarle, Luciana, Ivelyna, Malena y Ducristin ([`personajes-mesocosmos.md`](personajes-mesocosmos.md) §Lale, Yulo, Malena y las fotos).
 - [x] Ronda 7: 89 (necesidades tras el salto de reloj), 92 (alfombra y tobogán), 50 (tumbado en su cama) y `AreaCapacity` (ring fuera de Play).
 - [ ] Tester: reconstruir el santuario; grupos 89, 92, 50 y 75; galería de la familia.
-- [ ] Berón: confirmar el orden de las fotos `gallarle_luciana` e `ivelyna_malena`, y la grafía de «Ducristin» (escribió «Dukristin»; el fichero, «dukristy»).
+- [x] Berón confirmó el orden de las fotos `gallarle_luciana` e `ivelyna_malena` y la grafía «Ducristin». Luciana, también artes marciales (el dojo, con Gohageneis).
 - [ ] Berón: fotos de David, Adonis, Julian y Fausto.
 - [ ] Guardería o juego de niños para Neo, con Ivelyna (hoy no existe: solo sigue a su madre).
 - [ ] Tester: reconstruir SampleScene; mirar la lanzadera (T13: debe subir con el nuevo techo del Entrenamiento, `LaunchSiteTest` 90), y grupos 28, 50, 55, 65, 75, 89 y 92.
