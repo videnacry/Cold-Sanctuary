@@ -15,7 +15,7 @@ public static class PolarLandscapeBuilder
 {
     public const float Half = 250f;          // el mapa cubre [-250, 250]
     const float Cell = 2.5f;                 // resolución de las islas
-    const float IceTop = 0f, IceThickness = SeaRule.ShelfThickness;   // plataforma de hielo flotante (docs/sitio-nuclear.md §13)
+    const float IceTop = 0f, IceThickness = SeaRule.PlateThickness;
     public const float WaterLevel = -0.25f;  // el agua asoma 25 cm bajo el borde del hielo (se sale nadando: un escalón)
 
     /// <summary>
@@ -169,7 +169,7 @@ public static class PolarLandscapeBuilder
     }
 
     /// <summary>Construye la banquisa (bloques de hielo fusionados en rectángulos) como hijos de <paramref name="ground"/>.</summary>
-    public static int BuildFloes(Transform ground, Material ice, Material soil = null, Material gravel = null, Material rock = null, List<(Vector2 a, Vector2 b)> subRoutes = null)
+    public static int BuildFloes(Transform ground, Material ice, Material soil = null, Material gravel = null, Material rock = null)
     {
         int n = Mathf.RoundToInt(2f * Half / Cell);
         bool[,] land = new bool[n, n];
@@ -236,25 +236,22 @@ public static class PolarLandscapeBuilder
                 GameObject g = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 g.name = here == 1 ? "Casquete" : here == 2 ? "Tierra" : "Tierra_orilla";
                 g.transform.SetParent(root.transform, false);
-                float thick = here == 1 ? IceThickness : LandPlate;   // el hielo flota con sus 300 m (T21); la tierra es una placa fina sobre la roca de la isla
+                float thick = here == 1 ? IceThickness : LandPlate;
                 g.transform.position = new Vector3((x0 + x1) * 0.5f, IceTop - thick * 0.5f, (z0 + z1) * 0.5f);
                 g.transform.localScale = new Vector3(x1 - x0, thick, z1 - z0);
                 g.GetComponent<Renderer>().sharedMaterial = here == 1 ? ice : here == 2 ? soil : gravel;
                 g.isStatic = true;
                 boxes++;
             }
-        // La roca de la isla, hasta el lecho (Berón 2026-11-05: el hielo flota; la isla es roca que llega al fondo): una columna por celda de orilla, partida
-        // donde pasa el submarino de obra (docs/hielo-y-respiraderos.md). Se juntan en una sola malla.
+        // La FALDA de roca de la isla: hasta −6 m, por debajo de lo que se ve desde el agua y por encima del submarino de obra (−12). Una sola malla.
         if (rock != null)
             for (int i = 0; i < n; i++)
                 for (int j = 0; j < n; j++)
                 {
                     if (kind[i, j] != 3) continue;
                     Vector2 c = new Vector2(-Half + (i + 0.5f) * Cell, -Half + (j + 0.5f) * Cell);
-                    bool tunnel = false;
-                    if (subRoutes != null) foreach (var (a, b) in subRoutes) if (DistanceToSegment(c, a, b) < TunnelHalf) { tunnel = true; break; }
                     void Column(float top, float bottom) => rockPieces.Add(new CombineInstance { mesh = CubeMesh(), transform = Matrix4x4.TRS(new Vector3(c.x, (top + bottom) * 0.5f, c.y), Quaternion.identity, new Vector3(Cell, top - bottom, Cell)) });
-                    if (tunnel) { Column(RockTop, TunnelY + TunnelHalf); Column(TunnelY - TunnelHalf, SeabedY); } else Column(RockTop, SeabedY);
+                    Column(RockTop, SkirtBottom);
                 }
         if (rockPieces.Count > 0 && rock != null)
         {
@@ -271,15 +268,8 @@ public static class PolarLandscapeBuilder
         return boxes;
     }
 
-    // La placa de tierra de la isla (la plataforma de hielo de 300 m es solo para los casquetes), la cara de abajo de esa placa y el lecho marino.
-    const float LandPlate = 1.5f, RockTop = IceTop - LandPlate, SeabedY = SeaRule.FloorY;
-    /// <summary>La cota del submarino de obra (<see cref="ConstructionSubmarine.seaDepth"/>) y la mitad del túnel: 18 m de alto y de ancho para un casco de 14 × 5 × 5.</summary>
-    const float TunnelY = -SeaRule.ShelfThickness - 12f, TunnelHalf = 9f;
-    static float DistanceToSegment(Vector2 p, Vector2 a, Vector2 b)
-    {
-        Vector2 ab = b - a; float t = ab.sqrMagnitude > 1e-4f ? Mathf.Clamp01(Vector2.Dot(p - a, ab) / ab.sqrMagnitude) : 0f;
-        return Vector2.Distance(p, a + ab * t);
-    }
+    // La placa de tierra de la isla, la cara de abajo de esa placa y el fin de la falda de roca.
+    const float LandPlate = 1.5f, RockTop = IceTop - LandPlate, SkirtBottom = -6f;
 
     static Mesh _cube;
     static Mesh CubeMesh()

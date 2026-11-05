@@ -22,7 +22,7 @@ public class HieloMarinoTest : MonoBehaviour, ITestUnit
 
     public IEnumerator Run()
     {
-        TestProbe.Begin("Bajo el hielo: fauna fuera de la plataforma, respiraderos reales y túneles bajo la isla");
+        TestProbe.Begin("Bajo el hielo: fauna fuera de las placas, respiraderos reales y paso bajo la isla");
         Territorio ter = FindAnyObjectByType<Territorio>();
         if (ter == null) { Debug.Log("[TEST] SKIP · Hielo marino — esta escena no es el santuario"); TestProbe.End(); yield break; }
 
@@ -62,12 +62,12 @@ public class HieloMarinoTest : MonoBehaviour, ITestUnit
         for (int i = 0; i < trees.Count; i++)
             for (int j = i + 1; j < trees.Count; j++)
             {
-                Vector3 a = trees[i].transform.position + Vector3.down * (SeaRule.ShelfThickness + 12f), b = trees[j].transform.position + Vector3.down * (SeaRule.ShelfThickness + 12f);
+                Vector3 a = trees[i].transform.position + Vector3.down * 12f, b = trees[j].transform.position + Vector3.down * 12f;
                 routes++;
                 foreach (RaycastHit h in Physics.SphereCastAll(a, 2.5f, (b - a).normalized, Vector3.Distance(a, b), ~0, QueryTriggerInteraction.Ignore))
                     if (h.collider.name == "Zocalo_rocoso") { blocked++; what = $"{trees[i].building} → {trees[j].building}"; break; }
             }
-        TestProbe.Check("el submarino de obra no cruza la roca: hay túneles", routes > 0 && blocked == 0, $"{routes} rutas, {blocked} por la roca {what}");
+        TestProbe.Check("el submarino de obra pasa por debajo de la falda de roca", routes > 0 && blocked == 0, $"{routes} rutas, {blocked} por la roca {what}");
         TestProbe.End();
     }
 }

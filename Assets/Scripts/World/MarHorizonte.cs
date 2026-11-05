@@ -11,7 +11,7 @@ using UnityEngine.SceneManagement;
 /// Solo visual, sin colliders (salvo el límite), un objeto por cosa:
 ///  · SUPERFICIE: el plano del mar de la escena («Sea_Placeholder») sigue a la cámara (rejilla de 10 m) y llega hasta casi
 ///    el recorte. El volumen nadable (Sea_SwimZone, WaterZone) y el fondo físico NO se mueven: siguen siendo 1200 m.
-///  · FONDO PROFUNDO: un cuenco opaco azul oscuro bajo el agua (plano a −16 m alrededor de la cámara, solo visual: el lecho real está mucho más abajo, y a esa hondura la niebla lo volvería todo pálido; que sube hasta
+///  · FONDO PROFUNDO: un cuenco opaco azul oscuro bajo el agua (plano a −16 m alrededor de la cámara, que sube hasta
 ///    rozar la superficie en el borde): lo que se ve por los canales es mar hondo y no el cielo.
 ///  · BANDA DEL HORIZONTE: un cilindro sin luz, del color de la niebla, del agua al horizonte y que se desvanece 3° por
 ///    encima: tapa lo que queda entre el fin del mar y el horizonte y funde el mar con el cielo. Como toma la niebla de
@@ -28,7 +28,7 @@ public class MarHorizonte : MonoBehaviour
     public const float PlayHalf = 600f;
     /// <summary>Más lejos que esto del origen la cámara está en un microcosmos o una galería: el mar infinito se apaga.</summary>
     public const float NearWorld = 2500f;
-    const float FadeDeg = 3f, Grid = 10f, Depth = 16f, FlatFraction = 0.25f;   // (Depth: el cuenco visual, no SeaRule.Depth)
+    const float FadeDeg = 3f, Grid = 10f, Depth = 16f, FlatFraction = 0.25f;
 
     /// <summary>Para comparar antes/después (fotos y coste): false lo apaga todo y deja el mar como estaba.</summary>
     public static bool Mostrar = true;
@@ -259,7 +259,7 @@ public class MarHorizonte : MonoBehaviour
     {
         var root = new GameObject("Limite_del_mar"); root.transform.SetParent(transform, false);
         root.layer = 2;   // Ignore Raycast: frena cuerpos (CharacterController, rigidbodies) pero no estorba a rayos ni a la cámara
-        const float th = 4f, lo = SeaRule.FloorY - 4f, hi = 500f;   // hasta el lecho: si no, se pasaría nadando por debajo
+        const float th = 4f, lo = SeaRule.FloorY - 4f, hi = 500f;
         float h = hi - lo, cy = (hi + lo) * 0.5f, L = PlayHalf * 2f + th * 2f;
         (Vector3 c, Vector3 s)[] w =
         {

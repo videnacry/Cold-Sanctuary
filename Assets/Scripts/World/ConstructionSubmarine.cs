@@ -25,7 +25,7 @@ public class ConstructionSubmarine : MonoBehaviour
     [Tooltip("Velocidad nadando (m/s) y por tierra (m/s).")]
     public float swimSpeed = 4f, driveSpeed = 2.5f;
     [Tooltip("Profundidad (y) a la que cruza el mar bajo el hielo.")]
-    public float seaDepth = -SeaRule.ShelfThickness - 12f;
+    public float seaDepth = -12f;
     public const string Who = "Submarino de obra";
 
     [Tooltip("Dónde aparca en el garaje (lo pone el constructor; si no, donde empieza).")]

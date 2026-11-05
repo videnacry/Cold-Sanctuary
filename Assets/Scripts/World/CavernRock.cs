@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -11,6 +10,8 @@ public static class CavernRule
 {
     /// <summary>Holgura mínima (m) entre el forro de una caverna y el equipo principal, por los lados y por arriba.</summary>
     public const float ClearanceM = 3f;
+    /// <summary>La que sale al construir: la comprueba el constructor del Santuario Marino, y su prueba.</summary>
+    public const float DesignClearanceM = 3.5f;
     /// <summary>SALAS CON COLUMNAS (Berón 2026-11-05, docs §10): lo que limita no es el tamaño de la sala sino la LUZ LIBRE entre apoyos, así que con columnas de roca, bulones y
     /// cables se hace grande. Planta (m) de cada sala.</summary>
     public const float ReactorLength = 44f, ReactorSpan = 40f, WasteLength = 44f, WasteSpan = 40f;
@@ -64,10 +65,8 @@ public class CavernRock : MonoBehaviour
 
     public static CavernRock Instance { get; private set; }
 
-    public List<Transform> extensometers = new List<Transform>(), convergence = new List<Transform>(), loadCells = new List<Transform>(),
-        geophones = new List<Transform>(), piezometers = new List<Transform>(), flowMeters = new List<Transform>(), caissonGauges = new List<Transform>();
-    [Tooltip("Holgura medida al construir (m): la menor de las dos cavernas.")]
-    public float clearanceM;
+    /// <summary>Holgura (m): la que mide el constructor del Santuario Marino. Vive aquí, en el santuario 1, para que las misiones sigan sin cargar la escena de abajo.</summary>
+    public float clearanceM = CavernRule.DesignClearanceM;
 
     public float TotalMm { get; private set; }
     public float RateMmDay { get; private set; } = CavernRule.BaseRateMmDay;

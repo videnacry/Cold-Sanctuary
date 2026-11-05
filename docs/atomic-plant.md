@@ -1,5 +1,5 @@
 # Planta atómica (Mesocosmos) y su microcosmos de la física
-n> **2026-11-05:** la Planta Atómica ya no está en la torre de Ciencias: con la Central Nuclear, en el [sitio nuclear](sitio-nuclear.md). La piscina baja 20 m, hasta su cajón, colgado del casquete con tendones al lecho: el núcleo está a −7 m, bajo el nivel del mar.
+n> **2026-11-05:** la Planta Atómica ya no está en la torre de Ciencias: con la Central Nuclear, en el [sitio nuclear](sitio-nuclear.md). La piscina baja 20 m, hasta su cajón, apoyado en el lecho somero: el núcleo está a −7 m, bajo el nivel del mar.
 
 > Hilo de la planta atómica, 2026-10-22. Código: `Assets/Scripts/AtomicPlant/`, builders
 > `Assets/Editor/SampleSceneBuilder.AtomicPlant.cs` (área) y `Assets/Editor/PhysicsSceneBuilder.cs` (microcosmos).

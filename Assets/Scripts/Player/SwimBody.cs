@@ -111,10 +111,16 @@ public class SwimBody : MonoBehaviour
 
     /// <summary>Empieza o acaba de nadar según la profundidad donde está (agua más honda que el pecho → nada; menos → vadea).
     /// Lo llaman quienes mueven al personaje (el jugador cada frame, PathMover en cada paso). Devuelve si nada.</summary>
+    float _nextDeepHint;
     public bool UpdateWater()
     {
         _drivenAt = Time.time;
         if (FlyingCarpet.Riding(gameObject)) { if (Active) End(); return false; }   // en el tubo de la línea, bajo el mar, va seco
+        if (_isPlayer && transform.position.y < SeaRule.FloorY + 3f && Time.time > _nextDeepHint)
+        {
+            _nextDeepHint = Time.time + 120f;   // EL FONDO SOMERO (docs/sitio-nuclear.md §20): más abajo no se llega nadando
+            StorySubtitle.Show("Sonda", "Fin de la plataforma: agua a −1,8 °C y 16 m de fondo. A lo hondo solo se baja por la línea del sitio nuclear.", 6f);
+        }
         Water w = ProbeHere();
         bool swim = ShouldSwim(w);
         if (swim) { Surface = w.surface; Begin(); }

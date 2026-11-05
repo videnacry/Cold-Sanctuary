@@ -7,17 +7,17 @@ using UnityEngine;
 /// - Distancia: ≥ <see cref="MinDistance"/> m a todo edificio e isla del santuario (lo más lejos que permite el mapa).
 /// - Viento: el sitio queda a sotavento de <see cref="PrevailingWindTo"/> (el juego no simula viento: es una decisión de diseño fija).
 /// - Altura: abajo, según quién lo atiende (2026-11-05, §4 del doc): el microrreactor, sin operadores, y los residuos, en cavernas en la roca
-///   BAJO EL LECHO MARINO (<see cref="RockCover"/> m de roca); el TRIGA, que atiende gente a diario, en su cajón de doble casco colgado del casquete con tendones al lecho; arriba, solo lo que gana con ella: el agua por gravedad (el tronco), la chimenea filtrada y las salas de mando.
+///   BAJO EL LECHO MARINO (<see cref="RockCover"/> m de roca); el TRIGA, que atiende gente a diario, en su cajón de doble casco apoyado en el lecho somero; arriba, solo lo que gana con ella: el agua por gravedad (el tronco), la chimenea filtrada y las salas de mando.
 /// - Agua: el agua del tronco sobre los reactores alcanza, sin bombas ni operador, al menos <see cref="ReferenceHours"/> h.
 /// </summary>
 public static class NuclearSiteRule
 {
     public const string Building = "Sitio Nuclear";
-    /// <summary>Centro del casquete: la esquina sureste del mar (el mar llega a ±600 m).</summary>
-    public static readonly Vector3 Center = new Vector3(510f, 0f, -510f);
-    /// <summary>Distancia mínima (m), de tronco a tronco y a cualquier isla: lo más lejos que permite el mapa. Ninguna norma da esta cifra:
+    /// <summary>Centro del casquete, al sureste. Desde que el microrreactor y los residuos están en el Santuario Marino, aquí solo queda el TRIGA de 1 MW.</summary>
+    public static readonly Vector3 Center = new Vector3(360f, 0f, -360f);
+    /// <summary>Distancia mínima (m), de tronco a tronco y a cualquier isla: la misma que la lanzadera. Ninguna norma da esta cifra:
     /// la escala de reactores de investigación va del límite de operaciones (≤ 2 MW) a 800 m (hasta 50 MW).</summary>
-    public const float MinDistance = 500f;
+    public const float MinDistance = 300f;
     /// <summary>Radio de la zona de exclusión (nadie vive ni trabaja sin dosímetro dentro): las boyas.</summary>
     public const float ExclusionRadius = 200f;
     /// <summary>Hacia dónde sopla el viento dominante (sureste, como los catabáticos que bajan al mar).</summary>
@@ -28,14 +28,14 @@ public static class NuclearSiteRule
     /// <summary>Hondo de la piscina del TRIGA bajo el piso: baja por el casquete hasta su cajón, con el núcleo bajo el nivel del mar. Los
     /// reales tienen 7,3–8,2 m de agua sobre el núcleo; aquí son casi 19 m: más blindaje.</summary>
     public const float PoolDepth = 20f;
-    /// <summary>El cajón del TRIGA: el techo (bajo el casquete) y su alto. Cuelga: el lecho queda a cientos de metros, y lo atan tendones, como una plataforma de patas tensadas. Nivel del mar: y = 0.</summary>
+    /// <summary>El cajón del TRIGA: el techo (bajo el casquete) y su alto, hasta apoyar en el lecho somero. Nivel del mar: y = 0.</summary>
     public const float CaissonTopY = -2f, CaissonHeight = 14f;
-    /// <summary>La cara del lecho marino (la del colisionador «FondoMarino»): ver <see cref="SeaRule"/>.</summary>
+    /// <summary>La cara del lecho del santuario 1 (la del colisionador «FondoMarino»).</summary>
     public const float SeabedY = SeaRule.FloorY;
     /// <summary>Roca sobre las cavernas: 60 m, como el SFR de Forsmark bajo el Báltico (Halden tiene 100 m; el túnel del Canal, unos 40).</summary>
     public const float RockCover = 60f, CavernHeight = 10f;
-    /// <summary>Centro (y) de una caverna bajo el lecho.</summary>
-    public static float CavernCenterY => SeabedY - RockCover - CavernHeight * 0.5f;
+    /// <summary>Centro (y) de una sala del Santuario Marino: bajo el lecho hondo.</summary>
+    public static float CavernCenterY => SeaRule.MarineFloorY - RockCover - CavernHeight * 0.5f;
     /// <summary>Potencia térmica total (MW): el TRIGA (1) y el microrreactor (~15).</summary>
     public const float ThermalMW = 16f;
     /// <summary>La referencia pasiva: 72 h sin operador (el depósito por gravedad del AP1000).</summary>

@@ -1,5 +1,7 @@
 # Vida bajo el hielo, respiraderos y túneles de la isla
 
+> **2026-11-05:** el santuario se separó en dos ([sitio-nuclear.md](sitio-nuclear.md) §20). Las placas vuelven a 1,5 m y la roca a una falda: **los túneles ya no existen** y el submarino pasa por debajo, a −12 m. Fauna, hielo fijo y respiraderos siguen como aquí.
+
 Berón (2026-11-05) pidió que el hielo de 300 m fuese real, y eso dejó dos cosas mal ([sitio-nuclear.md](sitio-nuclear.md) §13): la fauna nadaba por dentro de la placa, y las focas tenían respiraderos en 300 m de hielo.
 
 ## Cómo respiran las focas de verdad

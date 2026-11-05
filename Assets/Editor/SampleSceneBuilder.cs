@@ -2281,7 +2281,7 @@ public static partial class SampleSceneBuilder
         Object.DestroyImmediate(ground.GetComponent<MeshFilter>());
         ground.transform.localScale = Vector3.one;
         int boxes = PolarLandscapeBuilder.BuildFloes(ground.transform, MakeMaterial("Ice_Floe_MAT", new Color(0.86f, 0.91f, 0.95f)),
-            MakeMaterial("Tierra_tundra_MAT", new Color(0.44f, 0.45f, 0.3f)), MakeMaterial("Orilla_grava_MAT", new Color(0.46f, 0.44f, 0.42f)), MakeMaterial("Zocalo_roca_MAT", new Color(0.3f, 0.29f, 0.28f)), SubRoutes());
+            MakeMaterial("Tierra_tundra_MAT", new Color(0.44f, 0.45f, 0.3f)), MakeMaterial("Orilla_grava_MAT", new Color(0.46f, 0.44f, 0.42f)), MakeMaterial("Zocalo_roca_MAT", new Color(0.3f, 0.29f, 0.28f)));
         CutIceUnderAll();   // los troncos de los edificios-árbol no tienen suelo: su hueco en el hielo (los árboles se hicieron antes)
         int links = PolarLandscapeBuilder.BuildSwimLinks(ground.transform);
         Debug.Log($"[Islas] {PolarLandscapeBuilder.CapCount} masas: 5 casquetes y la isla de tierra ({PolarLandscapeBuilder.Islands.Length} lóbulos, {boxes} placas) alrededor de la laguna central; {links} enlaces de nado para la IA.");
@@ -2306,17 +2306,6 @@ public static partial class SampleSceneBuilder
         ph.emperorColony = EmperorColony;
         Territorio ter = BuildTerritorio(root);   // barreras, cuevas, acantilados, lomas, charcas y bivalvos (docs/territorio-polar.md)
         ph.walrusBeachAngle = 205f;
-    }
-
-    // Las rectas del submarino de obra: de cada árbol a cada árbol. BuildFloes abre sus túneles en la roca de la isla.
-    static List<(Vector2 a, Vector2 b)> SubRoutes()
-    {
-        var l = new List<(Vector2, Vector2)>();
-        for (int i = 0; i < _helixes.Count; i++)
-            for (int j = i + 1; j < _helixes.Count; j++)
-                if (_helixes[i].root != null && _helixes[j].root != null)
-                    l.Add((new Vector2(_helixes[i].root.position.x, _helixes[i].root.position.z), new Vector2(_helixes[j].root.position.x, _helixes[j].root.position.z)));
-        return l;
     }
 
     static void BakeNavMesh()

@@ -357,6 +357,8 @@ La misión aguanta llegar con media alfombra de retraso (~258 s). Son **unas 9 h
 
 ## 9. Un mar de tamaño real, y todo en menos de un minuto (Berón 2026-11-05)
 
+*(Superada por §20: separado en dos escenas. Se conserva como razonamiento; manda §20.)*
+
 Berón: «haz dicho que el fondo del mar está a 90m? se debe agregar un tamaño mas real que junto al tunnel de super velocidad no supere el minuto?»
 
 **Aclaración.** Los 90 m no eran el mar: eran la bajada hasta la caverna. El mar de la escena tenía **16 m**, un charco para el mar de Ross. **Decisión: 500 m en todo el mapa, y el viaje entero sale en ~58 s.** Cabe, pero **justo**, y solo con cifras de récord.
@@ -507,6 +509,8 @@ Berón: «se debe crear el refugio del fondo».
 
 ## 13. El hielo es una plataforma flotante (Berón 2026-11-05)
 
+*(Superada por §20: separado en dos escenas. Se conserva como razonamiento; manda §20.)*
+
 Berón: «hazlo real».
 
 **Hecho: cada casquete de hielo mide 300 m de grosor** (`SeaRule.ShelfThickness`, antes 1,5), con 200 m de mar debajo. La isla de tierra no: su placa sigue en 1,5 m y debajo va la roca hasta el lecho ([territorio-polar.md](territorio-polar.md)). **Lo que no es real: el hielo sigue asomando 25 cm.**
@@ -625,6 +629,8 @@ Un huerto completo añadiría 60 kW y una sala de 276 m²: posible con el reacto
 
 ## 17. ¿Un túnel movible? (Berón 2026-11-05)
 
+*(Sigue valiendo, repartido en dos escenas: §20. El tramo que se suelta es el que se ve; el conector y el muñón están abajo.)*
+
 Berón: «el tunnel podría ser movible? de ese modo sería mas seguro no?»
 
 **Respuesta corta: la parte de arriba puede soltarse, y conviene; el conjunto no puede irse. Y soltarse no lo salva: salva lo de abajo.**
@@ -646,6 +652,8 @@ Berón: «el tunnel podría ser movible? de ese modo sería mas seguro no?»
 **Qué se gana:** que un iceberg no tire del fondo; la compuerta y la roca siguen intactas. **Qué cuesta:** un conector es **un sitio más por donde fallar**, y cada falsa alarma son 4 h sin línea. El casquete y el tubo de arriba **pueden seguir perdiéndose**.
 
 ## 18. ¿Por qué tanto hielo y tanta tierra? (Berón 2026-11-05)
+
+*(Resuelto por §20: el hielo vuelve a 1,5 m y la roca a una falda.)*
 
 Berón: «porque se ha tenido que engrosar tanto el ancho de hielo y tierra?»
 
@@ -695,6 +703,94 @@ Berón: «porque se ha tenido que engrosar tanto el ancho de hielo y tierra?»
 - Gallinas: [Hy-Line](https://www.hyline.com/filesimages/Hy-Line-Products/Hy-Line-Product-PDFs/Brown/BRN%20PERF%20ENG.pdf)
 - Chile: [accidente de Copiapó](https://en.wikipedia.org/wiki/2010_Copiap%C3%B3_mining_accident)
 - Desconexión: [Terra Nova: tiempos](https://offshore-mag.com/production/article/16756420/terra-nova-system-designed-for-quick-release-iceberg-scouring), [conexión de Terra Nova](https://www.offshore-mag.com/production/article/16763498/shallow-water-big-seas-connection-challenge-for-terra-nova-floater), [BSEE: EDS en 90 s](https://www.bsee.gov/sites/bsee.gov/files/technical-presentations/standards/fleece-eds-presentation-final-draft.pdf), [desconexiones accidentales](https://www.ogj.com/home/article/17215672/deepwater-drillers-mms-tackle-issues-of-accidental-riser-disconnects), [punto débil](https://drillingcontractor.org/?p=14604)
+
+## 20. Dos santuarios: la separación (Berón 2026-11-05)
+
+Berón: «para rendimiento podemos hacer la separación, tendremos el santuario1 el área terrestre y poco profunda y toda la lógica del fondo del mar nos llevamos a santuario2 ... se bloquea nadar muy profundo y se prepara solo una parte del tunnel que va hacia el fondo del mar, de modo que usar el tunnel translada directo al santuario2 ... con eso también ya no haría falta crear las distancias colosales de espacio marino ni tierra ni hielo no? solo se vigilaría hasta una distancia suficiente para las misiones de apartar icebergs».
+
+**Decisión: sí. Esta sección manda sobre §9, §13, §14, §17 y §18 donde difieran.** Es el Santuario Marino de [world-topology-and-planes.md](world-topology-and-planes.md) §3.1.
+
+| | Santuario 1 (`SampleScene`) | Santuario Marino (`Santuario_Marino`) |
+|---|---|---|
+| Mar | **16 m** (`SeaRule.Depth`) | **500 m** (`SeaRule.MarineDepth`) |
+| Hielo | Placas de **1,5 m** | — |
+| Isla | Falda de roca hasta **−6 m** | — |
+| Reactores | TRIGA en su cajón, apoyado en el lecho somero | Microrreactor y residuos en sus salas |
+| Línea | Estación y los primeros 14 m de tubo | Muñón, compuerta, galería, refugio, pie del pozo de escape |
+| Lógica | **Toda**: roca, refugio, línea, icebergs | Solo sitios e instrumentos (`MarineBase`) |
+| Se carga | Siempre | **Solo cuando Kushal baja** |
+
+### Lo que cambia
+| Valor | Antes | Ahora |
+|---|---|---|
+| Mar del santuario 1 | 500 m | **16 m** |
+| Hielo | 300 m | **1,5 m** |
+| Roca de la isla | Anillo hasta el lecho, con túneles | **Falda hasta −6 m**, sin túneles |
+| Submarino de obra | −312 m | **−12 m** (2,5 min menos por viaje) |
+| Cajón del TRIGA | Colgado con tendones | **Apoyado**: zapata, pilotes, hitos de asiento |
+| Patas de los casquetes | 500 m | 16 m |
+| Sitio nuclear | (510, −510), ≥ 500 m | **(360, −360), ≥ 300 m** |
+| Tubo visible | 575 m | **14 m** en el santuario 1 |
+
+### Por qué T13, T14 y T18 quedan así
+- **T14 baja a 300 m, y es honesto:** los 500 m eran «lo más lejos que permite el mapa», no una norma. En esta escena solo queda 1 MW (TRIGA), y hasta 2 MW la escala de reactores de investigación va al límite de operaciones. Se queda 200 m de exclusión. Isla más cercana: 325 m (calculado).
+- **T13 no se toca:** los 300 m de la lanzadera son la distancia de edificio habitado más un 50 %. Reducirlos no sería honesto.
+- **T18 tampoco.** Por eso **el mapa sigue siendo de ±600 m**: lo piden la lanzadera y el parque, no el sitio nuclear.
+- **Icebergs:** se vigila solo hasta el radio de alerta de cada casquete (nuclear 300 m, lanzadera 270, parque 335), no todo el mar. La deriva se acortó para acabar en el peligro del sitio.
+
+### Cómo funciona el viaje
+- **Trabajadores: sin cargar nada.** Suben al carro, bajan los 14 m que se ven y **el cuerpo se oculta**; el viaje sigue como número (`SiteLine.Depth`), con el mismo tiempo, emergencias, escape y refugio. Salen por el mismo andén. **Mismas misiones: `nuc_roca`, `nuc_bajada`, `nuc_refuerzo`, `nuc_refugio`.**
+- **Kushal, en persona.** La escena se carga **aditiva al subir al carro**, como `MobWorldLoader`, así que la carga va dentro del minuto; a los 14 m se funde a negro y aparece abajo. **El santuario 1 sigue vivo arriba**, con la jornada corriendo. Puede andar por las salas; al pisar el andén de abajo elige subir. Al llegar arriba se descarga.
+- **Si no carga en 20 s:** el carro vuelve. Nadie se queda en el vacío.
+- **Viaje:** ~**57,8 s** (28,5 de carro, 13,3 de arrancar y frenar, 16 de esclusas). Ida y vuelta, 206 s de los 300 de la misión.
+- **Estado:** nada de arriba apunta a la escena de abajo. Todo cruza por `CavernRock`, `Refuge` y `MarineBase.Instance`, que solo existe con la escena cargada.
+- **TRIGA y calor:** el TRIGA sigue entero en el santuario 1. El intercambiador del lecho y el bucle están abajo, pero **ninguna lógica dependía de esas piezas**, así que siguen dando la misma energía.
+
+### Nadar a lo hondo
+**Se para con el fondo real, no con una pared invisible:** el colisionador «FondoMarino» a −16 m y el límite del mar. Al acercarse aparece una sonda: agua a −1,8 °C y 16 m de fondo; a lo hondo solo por la línea.
+
+### Lo que no se ve entre medias
+La escena no enseña lo que hay entre −16 y −420 m: el escudo se reduce a 4 dientes alrededor de los 14 m, y el conector y el muñón están abajo. **Arriba hay 16 m de mar y abajo 500**: la geografía no es continua, y es la concesión que da el rendimiento. Los icebergs dibujan su quilla solo hasta el fondo somero; **su masa sigue siendo real** en la regla, y uno de 300 m de calado no podría flotar en 16 m. Se acepta.
+
+## 21. Plan de crecimiento
+
+Berón: «el refugio sería ideal irlo mejorando al punto que sea posible vivir alli y supongo que sería agregar muchas mas areas y mecanismos o no?»
+
+**Sí: muchas más, y por fases. Ahora solo está la fase 1.**
+
+| Fase | Qué es | Áreas | Mecanismos nuevos | Coste |
+|---|---|---|---|---|
+| **1. Refugio** (hecha) | Un mes para 12 en emergencia | Dos salas, galería, refugio | Viaje, soporte vital por reglas | ~400 objetos |
+| **2. Base habitable** | 8–12 personas por turnos de semanas | Dormitorios, comedor, enfermería, taller, **invernadero de 276 m²** (una sala con columnas) | Turnos largos, soporte vital de verdad (aire, agua y comida como cuentas diarias), trabajadores que viven abajo, un NavMesh propio, paredes con colisión | Bajo; hay que simular a quien vive abajo sin cargar la escena |
+| **3. Santuario Marino** | Lo de world-topology §3.1: cúpula, *moon pool* | Niveles a media y gran profundidad, fauna abisal, laboratorios, un edificio-árbol propio, salida al mar con traje o submarino | Bajar por niveles (peligro con la hondura), presión, fauna nueva, jornada y economía propias | Alto: **es un santuario entero**; requiere límite de memoria y descargar el santuario 1 |
+
+**Regla para crecer:** nunca los dos pesados a la vez. A partir de la fase 3 el Marino debería cargarse **en lugar de** el santuario 1, con un estado que se guarde, no aditivo. Eso aún no existe: es el mayor cambio de esa fase.
+
+## 22. Memoria y auditoría de la separación (W11)
+
+**Memoria (calculado, no medido; ver §19):**
+- **El santuario 1 baja:** ~500 cubos menos, sin cajas de 300 m ni anillo hasta el lecho. El NavMesh vuelve a como estaba.
+- **El Marino:** ~400 objetos, sin NavMesh ni luces horneadas: **~1 % de un pueblo ×100**.
+- **Solo se carga con Kushal**, y se descarga al subir.
+- La prueba 100 mide los MB y los segundos de carga: **esa es la cifra de verdad**.
+
+| Regla o pieza | Comprobación | Resultado |
+|---|---|---|
+| T13 | Lanzadera | Sin cambios |
+| T14 | Sitio a 300 m, TRIGA en cajón apoyado | Corregida |
+| T16 | Salas y holgura, en la otra escena | Sin cambios de valores; el constructor comprueba 3,5 m |
+| T17 | Viaje | Corregida; 57,8 s |
+| T18 | Parque | Sin cambios |
+| T19, T21 | Mar y hielo | **Reescritas** |
+| T22 | Icebergs | Corregida: el escudo es lo que se ve |
+| P20 | Rutas del submarino por túnel | **Corregida**: pasa bajo la falda |
+| Fauna y `Hielo_fijo` (territorio) | Las placas siguen siendo pared para la fauna; el hielo fijo, fino | Se queda: sigue cumpliendo |
+| Respiraderos | En hielo fijo de 2 m | Se quedan: con placas finas también son reales |
+| Pruebas 94, 100, 107 y `JornadaTest` | | Reescritas |
+| Documentos sueltos | Submarino, máscaras, árbol, lanzadera, planta, hielo | Corregidos |
+| Microcosmos | No dependen del mar | Ninguna regla nueva |
+
+**Regla nueva, T23:** lo de abajo no se referencia desde arriba, y la lógica va arriba.
 
 ## Fuentes
 - [10 CFR 100.11](https://www.law.cornell.edu/cfr/text/10/100.11), [10 CFR 100.3](https://www.law.cornell.edu/cfr/text/10/100.3), [10 CFR 53.530](https://www.law.cornell.edu/cfr/text/10/53.530)
