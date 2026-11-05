@@ -71,7 +71,7 @@ public class AnimaStatusHUD : MonoBehaviour
             }
         }
 
-        float y = Mathf.Max(origin.y, SanctuaryResourceHUD.Bottom + 8f);   // debajo del HUD de recursos, sin pisarlo
+        float y = origin.y;   // (el panel de recursos ya no está aquí: es la ventana F3, HudModals)
         GUI.Label(new Rect(origin.x, y, 320f, 460f), sb.ToString(), _style);
     }
 

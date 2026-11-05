@@ -125,6 +125,13 @@ public class MissionTracker : MonoBehaviour
         return am?.progress ?? 0;
     }
 
+    /// <summary>Las misiones aceptadas y sin terminar: nombre, progreso y objetivo (la ventana de misiones, HudModals).</summary>
+    public IEnumerable<(string name, int progress, int target)> Accepted()
+    {
+        foreach (var am in _active)
+            if (!am.completed && am.mission != null) yield return (am.mission.missionName, am.progress, am.mission.targetCount);
+    }
+
     // ── Handlers ──────────────────────────────────────────────────────────────
 
     void HandleElementCollected(string symbol, bool isNew)

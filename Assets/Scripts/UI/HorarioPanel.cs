@@ -7,11 +7,17 @@ using UnityEngine;
 /// Progreso (centrado, con su rueda) y el itinerario de la jornada. Filas: los personajes; columnas: las franjas libres del día
 /// (16, 17, 18, 20 y 21 h); la franja de ahora, resaltada, con lo que hace cada uno (✓ ya la hace, → va hacia allí, ‖ espera a
 /// una necesidad). Debajo, el reparto de la semana (uniformidad: diferencia entre quien más y quien menos hizo cada actividad) y el
-/// catálogo con sus plazas. Se abre con el botón «Horario libre» (abajo a la izquierda) o con la consola: <c>horario</c>.
+/// catálogo con sus plazas. Se abre con el botón «Horario libre» de la pila de la derecha, encima del de F10 (2026-11-05: estaba abajo a
+/// la izquierda, sobre el lanzador de hechizos), con F2 o con la consola <c>horario</c>; se cierra además con Esc (<see cref="HudModals"/>).
 /// </summary>
 public class HorarioPanel : MonoBehaviour
 {
-    public static bool Show;
+    /// <summary>¿Está abierto? Es una de las ventanas de <see cref="HudModals"/> (de una en una).</summary>
+    public static bool Show
+    {
+        get => HudModals.Current == HudModals.Modal.Horario;
+        set { if (value) HudModals.Current = HudModals.Modal.Horario; else if (Show) HudModals.Close(); }
+    }
     /// <summary>La escena cuyo horario se muestra (las pruebas la fijan). Vacía: la que se eligió con «otra escena» o, si no, la de
     /// donde está el jugador (en el microcosmos, la del microcosmos; en el santuario, la del santuario).</summary>
     public static string FocusScene = "";
@@ -42,11 +48,7 @@ public class HorarioPanel : MonoBehaviour
             _small = new GUIStyle(GUI.skin.label) { fontSize = 11, richText = true, wordWrap = true };
             _cell = new GUIStyle(GUI.skin.label) { fontSize = 11, richText = true, wordWrap = true, alignment = TextAnchor.UpperLeft };
         }
-        if (!Show)
-        {
-            if (!ColdSanctuary.TestRunner.Running && ld.groups.Count > 0 && GUI.Button(new Rect(10f, Screen.height - 34f, 120f, 24f), "Horario libre")) { Show = true; ld.Scan(true); }
-            return;
-        }
+        if (!Show) return;   // el botón está en la pila de la derecha (HudModals)
         if (ld.groups.Count == 0) ld.Scan(true);
         if (ld.groups.Count == 0) return;
         _groupIdx = Mathf.Clamp(PickGroup(ld), 0, ld.groups.Count - 1);

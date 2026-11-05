@@ -1066,17 +1066,26 @@ public class WorkdayDirector : MonoBehaviour
     }
 
     // ── HUD del jugador: su itinerario de hoy ──
-    void OnGUI()
+    /// <summary>El itinerario de hoy del jugador (null si no tiene jornada): lo que sale en el recuadro de arriba a la derecha y en la
+    /// ventana «Misiones y jornada» (<see cref="HudModals"/>), de la misma fuente. <paramref name="marks"/>: cada misión con ✓ o ☐.</summary>
+    public List<string> Itinerary(bool marks = false)
     {
-        if (today == null || TC == null) return;
-        WorkRoster.Worker me = roster.Find("Player"); if (me == null) return;
+        if (today == null || TC == null) return null;
+        WorkRoster.Worker me = roster.Find("Player"); if (me == null) return null;
         float h = TC.Hour;
         string now = Where(me, h, out string doing) != null ? doing : (h >= WorkRoster.StartHour + 8f ? "Tiempo libre" : "Antes de la jornada");
         var lines = new List<string> { $"Jornada · día {today.day} · {Mathf.Floor(h):00}:{(h % 1f) * 60f:00}", $"Ahora: {now}" };
-        foreach (var a in today.Of(me)) lines.Add($"{a.start:00}:00  {a.mission.title}");
+        foreach (var a in today.Of(me)) lines.Add($"{(marks ? (PlayerWorkday.Done(a) ? "✓ " : "☐ ") : "")}{a.start:00}:00  {a.mission.title}");
         lines.Add("11:00  Comida (restaurante)");
         if (today.training.TryGetValue(me, out string tr)) lines.Add($"14:00  Entrenamiento: {tr}");
         lines.Add("16:00  Libre");
+        return lines;
+    }
+
+    void OnGUI()
+    {
+        List<string> lines = Itinerary();
+        if (lines == null) return;
         GUI.Box(new Rect(Screen.width - 330, 10, 320, 22 + lines.Count * 18), "");
         for (int i = 0; i < lines.Count; i++) GUI.Label(new Rect(Screen.width - 322, 14 + i * 18, 310, 20), lines[i]);
     }
