@@ -43,8 +43,12 @@ public static class AreaCapacity
     public struct Line
     {
         public string area, activity; public AreaSeat.Category category; public int have, need;
-        public bool ok => have >= need;
-        public override string ToString() => $"{area} · {activity} ({category}): {have}/{need}{(ok ? "" : " ✗")}";
+        /// <summary>(2026-11-05) Puestos de los pisos del mismo centro que siguen EN OBRAS: aún no dan servicio (no suman en
+        /// <see cref="have"/>), pero la regla mide el DISEÑO: un centro repartido en dos pisos, con uno terminado y otro en obras,
+        /// cumple. Lo que falta sale en <c>pending</c>.</summary>
+        public int planned;
+        public bool ok => have + planned >= need;
+        public override string ToString() => $"{area} · {activity} ({category}): {have}{(planned > 0 ? $"+{planned} en obras" : "")}/{need}{(ok ? "" : " ✗")}";
     }
 
     /// <summary>Lo que hay y lo que hace falta en cada área (<paramref name="areas"/>: raíces de área). Las líneas que fallan son
@@ -59,18 +63,22 @@ public static class AreaCapacity
             string name = a.GetComponent<SanctuaryArea>() is SanctuaryArea sa ? sa.displayName : a.name;
             // Los AreaSeat del área, por actividad.
             var sum = new Dictionary<string, (AreaSeat.Category c, int n)>();
+            var building = new Dictionary<string, int>();   // los puestos de los pisos en obras, por actividad
             foreach (AreaSeat s in a.GetComponentsInChildren<AreaSeat>(true))
             {
                 // (2026-11-04) Un piso EN OBRAS no da servicio: sus puestos no cuentan hasta que se termine (el ballet, el dojo).
                 ConstructionProject site = s.GetComponentInParent<ConstructionProject>(true);
-                if (site != null && !site.Finished) { string p = $"{name} · {s.activity} (en obras)"; if (!pending.Contains(p)) pending.Add(p); continue; }
+                if (site != null && !site.Finished) { string p = $"{name} · {s.activity} (en obras)"; if (!pending.Contains(p)) pending.Add(p); building.TryGetValue(s.activity, out int b); building[s.activity] = b + s.seats; continue; }
                 sum.TryGetValue(s.activity, out var v);
                 sum[s.activity] = (s.category, v.n + s.seats);
                 if (s.category == AreaSeat.Category.Estudio) study = true;
                 if (s.activity.Contains("almohada")) ring = true;
             }
             foreach (var kv in sum)
-                lines.Add(new Line { area = name, activity = kv.Key, category = kv.Value.c, have = kv.Value.n, need = Need(kv.Value.c, members) });
+            {
+                building.TryGetValue(kv.Key, out int planned);
+                lines.Add(new Line { area = name, activity = kv.Key, category = kv.Value.c, have = kv.Value.n, planned = planned, need = Need(kv.Value.c, members) });
+            }
             // El GIMNASIO: sus máquinas (el piso del gimnasio y el de cardio cuentan juntos: es un mismo centro).
             if (a.name == "Gym_Area")
             {

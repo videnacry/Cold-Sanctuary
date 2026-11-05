@@ -146,7 +146,8 @@ public class SleepoverTest : MonoBehaviour, ITestUnit
         TestProbe.Check("sin saltos ni teletransportes", jumps == 0, $"{jumps}");
         int joined = guests.Count(n => { Anima a = Body(n); return a != null && Bedroom.Of(a) == host; });
         TestProbe.Check("los invitados se apuntan a dormir en la casa del anfitrión", guests.Count > 0 && joined >= 0.8f * guests.Count, $"{joined}/{guests.Count}");
-        var spotIdx = guests.Select(n => { Anima a = Body(n); return a != null ? host.SpotIndex(a) : -1; }).Where(i => i >= 0).ToList();
+        // (Solo las plazas de VERDAD: el SpotIndex de quien no se apuntó daría la del dueño, que es adonde cae LaneOf.)
+        var spotIdx = guests.Select(n => { Anima a = Body(n); return a != null && Sleepover.SpotIn(a, host, out int i) ? i : -1; }).Where(i => i >= 0).ToList();
         TestProbe.Check("cada invitado tiene su plaza (ninguna repetida, ni la de los que viven allí)", spotIdx.Distinct().Count() == spotIdx.Count && !spotIdx.Contains((host.sleeps - 1) / 2), string.Join(", ", spotIdx));
         int own = (host.sleeps - 1) / 2;   // la plaza del dueño (abajo); la de su pareja, la de al lado
         var freeLower = Enumerable.Range(0, host.sleeps).Where(i => i != own && (string.IsNullOrEmpty(host.partner) || i != own + 1)).ToList();

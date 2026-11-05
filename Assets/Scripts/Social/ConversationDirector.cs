@@ -79,8 +79,11 @@ public class ConversationDirector : MonoBehaviour
     public static event System.Action<Conversation, string> OnEvent;
     /// <summary>Lo más que ha habido a la vez (pruebas).</summary>
     public int PeakConcurrent { get; private set; }
-    /// <summary>Bocadillos pintados en pantalla (pruebas: se ven).</summary>
+    /// <summary>Bocadillos pintados en pantalla (pruebas: se ven). Solo sube si la vista Game repinta: con el Editor tapado, 0.</summary>
     public static int BubblesDrawn;
+    /// <summary>(2026-11-05, ronda 8) Frases con su bocadillo listo para pintar: quien habla está cerca de la cámara y delante de ella.
+    /// No depende de que la vista Game repinte (OnGUI): es lo que comprueba la prueba.</summary>
+    public static int BubblesReady;
 
     readonly List<Anima> _people = new List<Anima>();
     readonly Dictionary<Anima, Vector3> _lastPos = new Dictionary<Anima, Vector3>();
@@ -471,22 +474,38 @@ public class ConversationDirector : MonoBehaviour
 
     // ── Bocadillos (como los nombres: OnGUI proyectado, solo los cercanos a la cámara) ─────
 
+    /// <summary>¿Lleva <paramref name="c"/> bocadillo ahora? Dónde va, en coordenadas de pantalla.</summary>
+    bool Bubble(Conversation c, Camera cam, out Vector3 sp)
+    {
+        sp = default;
+        Anima s = c.currentSpeaker;
+        if (s == null || string.IsNullOrEmpty(c.current) || Time.time - c.shownAt > LineSeconds * 1.6f) return false;
+        float h = PersonLife.HeightOf(s.transform);
+        Vector3 w = s.transform.position + Vector3.up * (h + 0.75f * h / 1.75f);
+        if ((w - cam.transform.position).sqrMagnitude > maxDrawDistance * maxDrawDistance) return false;
+        sp = cam.WorldToScreenPoint(w);
+        return sp.z > 0f;
+    }
+
+    void LateUpdate()
+    {
+        if (Active.Count == 0) return;
+        Camera cam = Camera.main;
+        if (cam == null) return;
+        foreach (Conversation c in Active)
+            if (c.readyLine != c.next && Bubble(c, cam, out _)) { c.readyLine = c.next; BubblesReady++; }
+    }
+
     void OnGUI()
     {
         if (Event.current.type != EventType.Repaint || Active.Count == 0) return;
         Camera cam = Camera.main;
         if (cam == null) return;
         if (_style == null) _style = new GUIStyle(GUI.skin.box) { fontSize = 12, wordWrap = true, richText = true, alignment = TextAnchor.MiddleCenter };
-        float linger = LineSeconds * 1.6f;
         foreach (Conversation c in Active)
         {
+            if (!Bubble(c, cam, out Vector3 sp)) continue;
             Anima s = c.currentSpeaker;
-            if (s == null || string.IsNullOrEmpty(c.current) || Time.time - c.shownAt > linger) continue;
-            float h = PersonLife.HeightOf(s.transform);
-            Vector3 w = s.transform.position + Vector3.up * (h + 0.75f * h / 1.75f);
-            if ((w - cam.transform.position).sqrMagnitude > maxDrawDistance * maxDrawDistance) continue;
-            Vector3 sp = cam.WorldToScreenPoint(w);
-            if (sp.z <= 0f) continue;
             Color col = c.positive ? ElementsStatus.ColorOf(ElementLevel.Ideal) : ElementsStatus.ColorOf(ElementLevel.Deficiente);
             var content = new GUIContent($"<size=10><b>{Short(s)}</b> · {c.topicTitle}</size>\n<color=#{ColorUtility.ToHtmlStringRGB(col)}>«{c.current}»</color>");
             float width = 230f, height = _style.CalcHeight(content, width);
@@ -507,7 +526,7 @@ public class Conversation
     public bool positive;                    // el tono (buena charla / quejas)
     public List<string> script;              // el guion (A, B, A, B…)
     public readonly List<Line> said = new List<Line>();
-    public int next;
+    public int next, readyLine = -1;
     public string current; public Anima currentSpeaker; public float shownAt; public int drawn;
     public float startedAt, endedAt, nextLineAt, checkAt;
     public bool over, interrupted; public string endReason;

@@ -145,12 +145,15 @@ public class ActividadesTest : MonoBehaviour, ITestUnit
         {
             Quiet(g);
             ActivityPerformer.Stop(g);
-            float t0 = Time.realtimeSinceStartup, end = t0 + performWithin;
+            // (2026-11-05, ronda 8) La ventana se mide en tiempo de JUEGO, el de la actuación: con la escena grande a ~1 fotograma por
+            // segundo, 2,5 s reales son < 0,6 s de juego (tope de 1/3 s por fotograma) y el primer efecto (0,6 s) no llegaba a salir.
+            float gameEnd = Time.time + performWithin, end = Time.realtimeSinceStartup + 20f; int frames = 0;
             var seen = new HashSet<string>(); int effects = 0; float spread = 0f;
             var firsts = new Dictionary<BodyPart, Quaternion>();
             ActivityKit.Prop held = ActivityKit.Prop.None; ActivityPerformer.Step step = null;
-            while (Time.realtimeSinceStartup < end)
+            while (Time.time < gameEnd && Time.realtimeSinceStartup < end)
             {
+                frames++;
                 WorkdayDirector.PerformForTest(g, f.area, f.title, f.id, dress: false);
                 ActivityPerformer ap = ActivityPerformer.Of(g);
                 if (ap != null)
@@ -175,7 +178,7 @@ public class ActividadesTest : MonoBehaviour, ITestUnit
             bool fx = step == null || step.fx == ActivityKit.Fx.None || effects > 0 || step.fxEvery > performWithin;
             if (Performances.HasOwnSteps(f.id)) own++;
             if (performing && tool && moving && fx) ok++;
-            else bad.Add($"{f.id} (actúa {performing}, herramienta {tool}: {held}, brazo {spread:0}°, efectos {effects})");
+            else bad.Add($"{f.id} (actúa {performing}, herramienta {tool}: {held}, brazo {spread:0}°, efectos {effects}, {frames} fotogramas)");
             Log($"«{f.id}» → {(now != null ? now.performance.title : "nada")}: {string.Join(", ", seen)}; en la mano {held}; brazo {spread:0}°; efectos {effects}.");
         }
         ActivityPerformer.Stop(g);
@@ -269,15 +272,19 @@ public class ActividadesTest : MonoBehaviour, ITestUnit
         TestProbe.Check("insecto: la comida se hace entera y el plato mengua", done && mid >= 0f && mid < 0.7f && meal.Returned, $"{meal.bitesTaken} bocados, a mitad {mid:0.00}, pasos {string.Join(" → ", meal.steps)}");
         // Trabaja: la actuación de cocinar (cucharón en la mano, sus brazos, el vapor) y su delantal.
         ActivityPerformer.Performance cook = Performances.ForKind(AreaFunctions.Kind.Cook);
-        float end = Time.realtimeSinceStartup + performWithin; ActivityKit.Prop held = ActivityKit.Prop.None; int fx = 0; bool martial = false;
+        ActivityKit.Prop held = ActivityKit.Prop.None; int fx = 0, workFrames = 0; bool martial = false;
         UniformWearer.Want(h, Uniforms.Kind.Cocina);
-        while (Time.realtimeSinceStartup < end)
+        // (2026-11-05, ronda 8: «None, 0 efectos» sin un solo fotograma de actuación: el plazo real se agotaba antes de entrar. Se cuenta
+        // en tiempo de juego, después de vestirlo, y al menos un fotograma.)
+        float workEnd = Time.time + performWithin, end = Time.realtimeSinceStartup + 20f;
+        do
         {
             ActivityPerformer ap = ActivityPerformer.Keep(h, cook, table.transform.position);
-            held = ActivityKit.Held(h, true); fx = ap.effects; martial |= ci.InMartial;
+            held = ActivityKit.Held(h, true); fx = ap.effects; martial |= ci.InMartial; workFrames++;
             yield return null;
         }
-        TestProbe.Check("insecto: trabaja con la herramienta en la mano y su efecto", held == ActivityKit.Prop.Ladle && fx > 0, $"{held}, {fx} efectos");
+        while (Time.time < workEnd && Time.realtimeSinceStartup < end);
+        TestProbe.Check("insecto: trabaja con la herramienta en la mano y su efecto", held == ActivityKit.Prop.Ladle && fx > 0, $"{held}, {fx} efectos, {workFrames} fotogramas");
         TestProbe.Check("insecto: se pone el delantal de su oficio", CubeInsect.HasWorkUniform(h) && UniformWearer.Of(h) == Uniforms.Kind.Cocina);
         UniformWearer.Want(h, Uniforms.Kind.None);
         yield return null;

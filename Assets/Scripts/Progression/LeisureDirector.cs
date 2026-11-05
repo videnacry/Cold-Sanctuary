@@ -417,6 +417,9 @@ public class LeisureDirector : MonoBehaviour
         var r = new Run { group = gr, entry = e, venue = gr.venues.TryGetValue(e.activity, out Venue v) ? v : null, since = Time.time, last = g.transform.position };
         if (r.venue != null) r.to = Seat(gr, r, g);
         TravelPlan(gr, r, g);
+        // (2026-11-05) LA PIJAMADA: la plaza se coge al SALIR hacia la casa (y se confirma al llegar): quien llega tarde o se queda por
+        // el camino sigue siendo invitado, y sin plaza caería en la del dueño (Bedroom.LaneOf).
+        if (e.activity.pose == Sleepover.ActivityId && r.venue != null && r.venue.anchor != null && r.venue.anchor.TryGetComponent(out Bedroom host) && g.TryGetComponent(out Anima a)) Sleepover.Join(a, host, e.day);
         return r;
     }
 
