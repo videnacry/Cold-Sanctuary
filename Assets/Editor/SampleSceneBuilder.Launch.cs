@@ -80,6 +80,11 @@ public static partial class SampleSceneBuilder
             Solid(cap, new Vector3((x0 + x1) * 0.5f, -0.75f, (z0 + z1) * 0.5f), new Vector3(x1 - x0, 1.5f, z1 - z0), capC, "Casquete_artificial");
         for (int s = 0; s < 4; s++)   // borde de defensa (contra el oleaje y para contener vertidos)
             KitchenProps.C(cap, Quaternion.Euler(0f, s * 90f, 0f) * new Vector3(0f, 0.6f, H - 0.5f), new Vector3(2f * H, 1.2f, 1f), new Color(0.55f, 0.57f, 0.6f), s * 90f, "Pretil_casquete");
+        // Con el mar a su hondura real, un casquete no se queda solo en su sitio: 4 tendones al lecho, como una plataforma de patas tensadas (docs/sitio-nuclear.md §9).
+        float tendon = -SeaRule.FloorY;
+        for (int a = -1; a <= 1; a += 2)
+            for (int b = -1; b <= 1; b += 2)
+                PolarLandscapeBuilder.IgnoreForNav(KitchenProps.C(cap, new Vector3(a * (H - 6f), -tendon * 0.5f - 1f, b * (H - 6f)), new Vector3(0.8f, tendon, 0.8f), new Color(0.3f, 0.32f, 0.35f), 0f, "Tendon_casquete").gameObject);
         hx.ac.bottomHole = hole;
     }
 

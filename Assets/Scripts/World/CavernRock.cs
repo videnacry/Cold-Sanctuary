@@ -11,17 +11,23 @@ public static class CavernRule
 {
     /// <summary>Holgura mínima (m) entre el forro de una caverna y el equipo principal, por los lados y por arriba.</summary>
     public const float ClearanceM = 3f;
-    /// <summary>Dimensiones (m) en planta. Más luz NO es más seguro en roca: el techo sin apoyo es mayor (Gjøvik: 61 m; aquí, 16 como mucho).</summary>
-    public const float ReactorLength = 20f, ReactorSpan = 12f, WasteLength = 24f, WasteSpan = 16f;
+    /// <summary>SALAS CON COLUMNAS (Berón 2026-11-05, docs §10): lo que limita no es el tamaño de la sala sino la LUZ LIBRE entre apoyos, así que con columnas de roca, bulones y
+    /// cables se hace grande. Planta (m) de cada sala.</summary>
+    public const float ReactorLength = 44f, ReactorSpan = 40f, WasteLength = 44f, WasteSpan = 40f;
+    /// <summary>Luz libre máxima (m) entre apoyos: las gráficas de minas dan ~14 m sin sostener en roca dura (y luego se adopta menos); con bulones sería mucho más (Gjøvik: 61 m).
+    /// Columna de roca sin excavar (m) y su separación: <see cref="ColumnPitch"/> − <see cref="ColumnSize"/> = la luz central.</summary>
+    public const float MaxFreeSpan = 14f, ColumnSize = 4f, ColumnPitch = 18f;
+    /// <summary>Las columnas de cada sala, en local: una rejilla de 2 × 2.</summary>
+    public static readonly Vector2[] Columns = { new Vector2(-9f, -9f), new Vector2(9f, -9f), new Vector2(-9f, 9f), new Vector2(9f, 9f) };
     /// <summary>De centro a centro de las dos cavernas (m): deja un pilar de roca de <see cref="PillarM"/> m.</summary>
-    public const float WasteOffsetZ = 32f;
-    /// <summary>Pilar de roca entre cavernas (m). Regla práctica, de memoria: al menos la luz mayor.</summary>
+    public const float WasteOffsetZ = 64f;
+    /// <summary>Pilar de roca entre salas (m). Regla práctica, de memoria: al menos la luz libre y al menos la mitad del ancho de sala (un panel grande pide más barrera).</summary>
     public const float PillarM = WasteOffsetZ - (ReactorSpan + WasteSpan) * 0.5f;
 
     /// <summary>Ritmo de fondo (mm/día): el mayor del SFR, 0,30 mm en 1997–2006 con 0,02 mm de precisión.</summary>
     public const float BaseRateMmDay = 0.30f / (9f * 365f);
-    /// <summary>Agua de fondo (l/min) de las dos cavernas: en el SFR, cada caverna da de 0 a 9 l/min.</summary>
-    public const float BaseInflowLpm = 12f;
+    /// <summary>Agua de fondo (l/min) de las dos salas: en el SFR, cada caverna da de 0 a 9 l/min a unos 100 m; aquí hay ~5 veces más carga de agua, y por la ley de Darcy, ~5 veces más.</summary>
+    public const float BaseInflowLpm = 60f;
     /// <summary>UMBRALES DEL JUEGO, no de una norma: cada proyecto real fija los suyos. AVISO: varias veces el fondo. ALARMA: lo que en esta roca ya no es
     /// un ajuste (Gjøvik: 7–8 mm con 61 m de luz, al excavar). El ritmo cuenta más que el total: en WIPP, lo que avisó fue la aceleración.</summary>
     public const float AvisoRateMmDay = 0.1f, AlarmaRateMmDay = 1f, AvisoTotalMm = 1f, AlarmaTotalMm = 5f, AvisoInflow = 2f, AlarmaInflow = 5f;

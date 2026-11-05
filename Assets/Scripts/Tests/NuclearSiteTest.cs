@@ -7,7 +7,7 @@ using UnityEngine;
 /// 1. SITIO: en su casquete artificial, a ≥ <see cref="NuclearSiteRule.MinDistance"/> m de todo edificio-árbol y de las islas, a sotavento y
 ///    lejos de la lanzadera.
 /// 2. PISOS: los dos reactores en el nivel más bajo; encima, el ciclotrón y la sala de experimentos; arriba, el Centro de emergencias y el garaje.
-/// 3. BAJO EL MAR: el TRIGA en su cajón de doble casco apoyado en el lecho; el microrreactor y los residuos en cavernas con 60 m de roca encima, con
+/// 3. BAJO EL MAR: el TRIGA en su cajón de doble casco, colgado y atado con tendones al lecho; el microrreactor y los residuos en cavernas con 60 m de roca encima, con
 ///    su bucle de termosifón al mar y esclusas desde el tronco.
 /// 4. NADA SE PIERDE: el reactor, la consola, el ciclotrón, el equipo, las misiones de sus áreas y sus microcosmos.
 /// 5. AGUA Y PLAN: el agua por gravedad cubre las 72 h de referencia; la emergencia para el reactor, abre las válvulas y enciende las balizas;
@@ -84,7 +84,9 @@ public class NuclearSiteTest : MonoBehaviour, ITestUnit
             float rock = NuclearSiteRule.SeabedY - (cm.position.y + NuclearSiteRule.CavernHeight * 0.5f - y0);
             TestProbe.Check($"el microrreactor, en su caverna, con ≥ {NuclearSiteRule.RockCover:0} m de roca encima", rock >= NuclearSiteRule.RockCover - 0.1f && Inside(cm, mod.position, new Vector3(10f, 5f, 6f)), $"{rock:0} m de roca; módulo a {mod.position.y - y0:0.0} m");
             var cjn = cj.GetComponentsInChildren<Transform>(true).Select(t => t.name).ToList();
-            TestProbe.Check("el cajón del TRIGA: doble casco, sobre su zapata en el lecho y sin colisiones", cjn.Count(n => n == "Casco_exterior") == 6 && cjn.Count(n => n == "Casco_interior") == 6 && cjn.Contains("Zapata_lecho") && cj.GetComponentsInChildren<Collider>(true).Length == 0 && Mathf.Abs(NuclearSiteRule.CaissonTopY - NuclearSiteRule.CaissonHeight - NuclearSiteRule.SeabedY) < 0.5f);
+            TestProbe.Check("el cajón del TRIGA: doble casco, colgado con 4 tendones hasta el lecho y sin colisiones", cjn.Count(n => n == "Casco_exterior") == 6 && cjn.Count(n => n == "Casco_interior") == 6 && cjn.Count(n => n == "Tendon_cajon") == 4 && cjn.Count(n => n == "Ancla_lecho") == 4 && cj.GetComponentsInChildren<Collider>(true).Length == 0 && cj.GetComponentsInChildren<Transform>(true).Where(t => t.name == "Ancla_lecho").All(t => Mathf.Abs(t.position.y - (NuclearSiteRule.SeabedY + 1f)) < 0.5f));
+            var capTendons = FindObjectsByType<Transform>(FindObjectsSortMode.None).Count(t => t.name == "Tendon_casquete");
+            TestProbe.Check("los casquetes artificiales, atados al lecho con tendones (el nuclear y el de la lanzadera, 4 cada uno)", capTendons >= 4 && capTendons % 4 == 0, $"{capTendons} tendones");
             string[] rockParts = { "Lecho_marino", "Caverna_residuos", "Galeria_cavernas", "Bucle_termosifon", "Intercambiador_lecho", "Sumidero_caverna" };
             var noRock = rockParts.Where(p => Named(site, p) == null).ToList();
             TestProbe.Check("el lecho a la vista, la caverna de residuos, el bucle de termosifón al mar y el sumidero", noRock.Count == 0, string.Join(", ", noRock));

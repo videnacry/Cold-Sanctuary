@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// EL SITIO NUCLEAR (Berón 2026-11-05; docs/sitio-nuclear.md): un CASQUETE ARTIFICIAL en la esquina sureste del mar, lejos y a sotavento del
 /// santuario, con su EDIFICIO-ÁRBOL bajo. Abajo, los pisos de los dos reactores (Central Nuclear y Planta Atómica); el TRIGA, en su cajón de doble
-/// casco apoyado en el lecho (<see cref="BuildCaisson"/>), y el microrreactor y los residuos, en cavernas en la roca bajo el lecho (<see cref="BuildCavern"/>); en medio, el ciclotrón y la sala de
+/// casco colgado del casquete (<see cref="BuildCaisson"/>), y el microrreactor y los residuos, en cavernas en la roca bajo el lecho (<see cref="BuildCavern"/>); en medio, el ciclotrón y la sala de
 /// experimentos; arriba, el Centro de emergencias y el garaje. Lo que gana con la altura sube (el agua del tronco por gravedad, la chimenea
 /// filtrada, las salas de mando); los núcleos se quedan abajo, en su contención. Mismo casquete y mismas pruebas de sitio que la lanzadera
 /// (<see cref="BuildArtificialCap"/>, <see cref="NearestToSite"/>).
@@ -142,8 +142,8 @@ public static partial class SampleSceneBuilder
             // LOS RESIDUOS: la caverna de al lado (como el SFR); es lo que más dura, y aquí no toca el agua del mar.
             Vector3 wasteAt = at + new Vector3(0f, 0f, CavernRule.WasteOffsetZ);
             Transform waste = BuildCavern(root, "Caverna_residuos", wasteAt, new Vector3(CavernRule.WasteLength, NuclearSiteRule.CavernHeight, CavernRule.WasteSpan), "Caverna de residuos y combustible gastado: se puede sacar todo (como exigió el Tratado Antártico con el PM-3A)");
-            for (int i = 0; i < 6; i++) KitchenProps.C(waste, new Vector3(-7f + (i % 3) * 7f, -3f, i < 3 ? -3f : 3f), new Vector3(2f, 2.5f, 2f), new Color(0.72f, 0.5f, 0.3f), 0f, "Contenedor_residuos");
-            // LA GALERÍA, por el pilar de roca entre las dos: hueca, porque la línea para aquí.
+            for (int i = 0; i < 6; i++) KitchenProps.C(waste, new Vector3(-7f + (i % 3) * 7f, -3f, i < 3 ? -2.5f : 2.5f), new Vector3(2f, 2.5f, 2f), new Color(0.72f, 0.5f, 0.3f), 0f, "Contenedor_residuos");
+            // LA GALERÍA, por el pilar de roca entre las dos salas: hueca, porque la línea para aquí.
             Vector3 galleryAt = at + new Vector3(0f, 0f, CavernRule.ReactorSpan * 0.5f + CavernRule.PillarM * 0.5f);
             Transform gal = new GameObject("Galeria_cavernas").transform; gal.SetParent(root, false); gal.position = galleryAt;
             Hull(gal, new Vector3(3f, 3f, CavernRule.PillarM + 2f), 0.3f, conc, "Revestimiento_galeria");
@@ -203,10 +203,12 @@ public static partial class SampleSceneBuilder
             Transform b = KitchenProps.C(root, root.InverseTransformPoint(p + Vector3.up * 0.3f), new Vector3(0.6f, 0.8f, 0.6f), new Color(0.9f, 0.45f, 0.15f), 0f, "Boya_linea_submarina");
             PolarLandscapeBuilder.IgnoreForNav(b.gameObject);
         }
+        // Lo que queda bajo el mar no se anda: fuera del NavMesh (salas de 44 × 40 m y tubos de 500 m solo gastarían memoria al hornear).
+        foreach (Transform t in root) if (t.position.y < -1f || t.name == "Tubo_linea") PolarLandscapeBuilder.IgnoreForNav(t.gameObject);
         ValidateNuclearSite("al terminar el sitio");
     }
 
-    /// <summary>Un CAJÓN SUMERGIDO bajo el casquete (docs/sitio-nuclear.md §3): doble casco de acero con espacio anular, tirantes al fondo y esclusa
+    /// <summary>Un CAJÓN SUMERGIDO bajo el casquete (docs/sitio-nuclear.md §3): doble casco de acero con espacio anular, tendones al lecho y esclusa
     /// de mantenimiento desde el tronco. Sin colisiones: nadie entra andando y el submarino pasa lejos. Centrado en la vertical de <paramref name="over"/>.</summary>
     static Transform BuildCaisson(Transform root, Helix hx, NuclearSite ns, string name, Vector3 over, Vector3 size, string sign)
     {
@@ -216,7 +218,6 @@ public static partial class SampleSceneBuilder
         c.position = new Vector3(over.x, top - size.y * 0.5f, over.z);
         Hull(c, size, 0.6f, outer, "Casco_exterior");
         Hull(c, size - Vector3.one * 3f, 0.3f, inner, "Casco_interior");
-        KitchenProps.C(c, new Vector3(0f, -size.y * 0.5f - 0.3f, 0f), new Vector3(size.x + 2f, 0.6f, size.z + 2f), line, 0f, "Zapata_lecho");
         // Esclusa de mantenimiento: del tronco (abierto al mar) al cajón.
         Vector3 a = new Vector3(Mathf.Clamp(over.x, hx.site.x - hx.h.waterHalf, hx.site.x + hx.h.waterHalf), c.position.y, hx.site.z + Mathf.Sign(over.z - hx.site.z) * hx.h.OuterHalf), b = c.position;
         KitchenProps.C(root, root.InverseTransformPoint((a + b) * 0.5f), new Vector3(3f, 3f, (b - a).magnitude), line, Quaternion.LookRotation(b - a), "Esclusa_tronco");

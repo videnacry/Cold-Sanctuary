@@ -5,16 +5,17 @@ using UnityEngine;
 /// <summary>Velocidades y tiempos de la línea (docs/sitio-nuclear.md §8). Son valores del juego, sostenidos en precedentes reales.</summary>
 public static class SiteLineRule
 {
-    /// <summary>El funicular: 10 m/s (el Sunnegga Express, en túnel, da 12 m/s); arranca y frena a 1 m/s².</summary>
-    public const float CarSpeed = 10f, CarAccel = 1f;
-    /// <summary>Puertas estancas a cada lado del viaje (s): es lo que más tarda, no el carro.</summary>
-    public const float LockSeconds = 15f;
-    /// <summary>El ascensor rápido con el que se compara: 10 m/s (la norma de EE. UU. topa en ~12,7 m/s con personas).</summary>
-    public const float HoistSpeed = 10f, HoistAccel = 1f;
+    /// <summary>LA LÍNEA DE SÚPER VELOCIDAD (docs §9): 20 m/s, justo bajo el récord de ascensores de pasajeros (20,5 m/s, Shanghái); 1,5 m/s², el tope de confort de los
+    /// ascensores rápidos (≤ 1–1,5 m/s²). Un ascensor de obra de mina va a ~19–20 m/s; ninguno de pasajeros bajo el mar.</summary>
+    public const float CarSpeed = 20f, CarAccel = 1.5f;
+    /// <summary>EL LÍMITE DE BERÓN: de andén a galería, esclusas incluidas, menos de un minuto.</summary>
+    public const float MaxOneWay = 60f;
+    /// <summary>Puertas estancas a cada lado del viaje (s): el carro es estanco y va a presión de cabina, no hay que igualar nada (valor del juego).</summary>
+    public const float LockSeconds = 8f;
+    /// <summary>El ascensor vertical con el que se compara: las mismas cifras, sin los ~10° de inclinación.</summary>
+    public const float HoistSpeed = CarSpeed, HoistAccel = CarAccel;
     /// <summary>La salida de escape: jaula lenta, a baterías, en su propio pozo.</summary>
-    public const float EscapeSpeed = 3f, EscapeAccel = 0.5f, WalkSpeed = 1.4f;
-    /// <summary>Pendiente máxima del funicular (m/m): la de Stoos, la más empinada de su clase, con cabina nivelada (Gelmerbahn, 106 %; Sunnegga, 63 %).</summary>
-    public const float MaxGradient = 1.1f;
+    public const float EscapeSpeed = 6f, EscapeAccel = 0.5f, WalkSpeed = 1.4f;
     /// <summary>Tiempo de inspección abajo (s reales) y la misión que lo contiene (h de juego).</summary>
     public const float InspectSeconds = 90f, MissionHours = 2f;
 
@@ -38,7 +39,7 @@ public static class SiteLineRule
 }
 
 /// <summary>
-/// LA LÍNEA DE LAS CAVERNAS (docs/sitio-nuclear.md §8): un funicular sellado e inclinado, del borde del casquete a la galería entre las dos cavernas (por el pilar de roca),
+/// LA LÍNEA DE LAS CAVERNAS (docs/sitio-nuclear.md §8–§9): un tubo sellado de súper velocidad, del borde del casquete a la galería entre las dos cavernas (por el pilar de roca),
 /// y una SALIDA DE ESCAPE en su propio pozo, sin pasar por el del reactor. A la estación de arriba se llega en alfombra (es una pista más de la red del
 /// edificio). Quien va dentro cuenta como «en alfombra» (<see cref="FlyingCarpet.Carry"/>): lo demás del juego ya sabe no tocarlo. Un viaje con la zona en
 /// emergencia o la roca en alarma vuelve atrás; con la línea cerrada, se sale por el pozo de escape. Todas las esperas son finitas.
@@ -68,7 +69,7 @@ public class SiteLine : MonoBehaviour
 
     public float Length => bottom != null ? Vector3.Distance(transform.position, bottom.position) : 0f;
     public float Drop => bottom != null ? transform.position.y - bottom.position.y : 0f;
-    public float Gradient { get { Vector3 d = bottom.position - transform.position; d.y = 0f; return Drop / Mathf.Max(0.01f, d.magnitude); } }
+    public float AngleDeg { get { Vector3 d = bottom.position - transform.position, f = d; f.y = 0f; return Vector3.Angle(d, f); } }
     public float EscapeDrop => escapeTop != null && escapeBottom != null ? escapeTop.position.y - escapeBottom.position.y : 0f;
     public float EscapeWalk => escapeBottom != null && bottom != null ? Vector3.Distance(bottom.position, escapeBottom.position) : 0f;
 

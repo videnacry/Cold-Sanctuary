@@ -639,7 +639,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit
                 bool teleport = Flat(p - prev) > 10f;   // eso es un salto (ya contado), no una caída
                 if (drop > 4f && !flier && !teleport && !tr.hist[tr.hist.Count - 2].riding) Add(tr.name, "cae", $"{drop:0.0} m en 1 s, ahora en {Where(p)}", human);
             }
-            if (p.y < -15f) Add(tr.name, "bajo el mundo", $"y = {p.y:0}", human);
+            if (p.y < -15f && !FlyingCarpet.Riding(tr.g)) Add(tr.name, "bajo el mundo", $"y = {p.y:0}", human);   // (no en la línea de las cavernas, que va a −566 m)
 
             bool tiltCheck = human || (size > 0.3f && tr.animal != null && tr.animal.AirAffinity < 0.5f);
             float tilt = Vector3.Angle(tr.g.transform.up, Vector3.up);

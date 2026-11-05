@@ -7,7 +7,7 @@ using UnityEngine;
 /// - Distancia: ≥ <see cref="MinDistance"/> m a todo edificio e isla del santuario (lo más lejos que permite el mapa).
 /// - Viento: el sitio queda a sotavento de <see cref="PrevailingWindTo"/> (el juego no simula viento: es una decisión de diseño fija).
 /// - Altura: abajo, según quién lo atiende (2026-11-05, §4 del doc): el microrreactor, sin operadores, y los residuos, en cavernas en la roca
-///   BAJO EL LECHO MARINO (<see cref="RockCover"/> m de roca); el TRIGA, que atiende gente a diario, en su cajón de doble casco apoyado en el lecho; arriba, solo lo que gana con ella: el agua por gravedad (el tronco), la chimenea filtrada y las salas de mando.
+///   BAJO EL LECHO MARINO (<see cref="RockCover"/> m de roca); el TRIGA, que atiende gente a diario, en su cajón de doble casco colgado del casquete con tendones al lecho; arriba, solo lo que gana con ella: el agua por gravedad (el tronco), la chimenea filtrada y las salas de mando.
 /// - Agua: el agua del tronco sobre los reactores alcanza, sin bombas ni operador, al menos <see cref="ReferenceHours"/> h.
 /// </summary>
 public static class NuclearSiteRule
@@ -28,10 +28,10 @@ public static class NuclearSiteRule
     /// <summary>Hondo de la piscina del TRIGA bajo el piso: baja por el casquete hasta su cajón, con el núcleo bajo el nivel del mar. Los
     /// reales tienen 7,3–8,2 m de agua sobre el núcleo; aquí son casi 19 m: más blindaje.</summary>
     public const float PoolDepth = 20f;
-    /// <summary>El cajón del TRIGA: el techo (bajo el casquete) y su alto, hasta apoyar en el lecho. Nivel del mar: y = 0.</summary>
+    /// <summary>El cajón del TRIGA: el techo (bajo el casquete) y su alto. Cuelga: el lecho queda a cientos de metros, y lo atan tendones, como una plataforma de patas tensadas. Nivel del mar: y = 0.</summary>
     public const float CaissonTopY = -2f, CaissonHeight = 14f;
-    /// <summary>La cara del lecho marino (la del colisionador «FondoMarino»: el agua, a −0,25 m, y 16 m de hondo).</summary>
-    public const float SeabedY = -16.25f;
+    /// <summary>La cara del lecho marino (la del colisionador «FondoMarino»): ver <see cref="SeaRule"/>.</summary>
+    public const float SeabedY = SeaRule.FloorY;
     /// <summary>Roca sobre las cavernas: 60 m, como el SFR de Forsmark bajo el Báltico (Halden tiene 100 m; el túnel del Canal, unos 40).</summary>
     public const float RockCover = 60f, CavernHeight = 10f;
     /// <summary>Centro (y) de una caverna bajo el lecho.</summary>

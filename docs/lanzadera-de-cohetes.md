@@ -65,7 +65,7 @@ propulsante). Es lo que cabe en un santuario: un lanzador mediano (Falcon 9, ~50
 
 ## 3. Construcción
 
-- **Casquete artificial** (`Casquete_artificial`): hielo armado de 1,5 m con un pretil de 1,2 m (contra el oleaje y para contener vertidos),
+- **Casquete artificial** (`Casquete_artificial`, atado al lecho con 4 tendones desde que el mar tiene 500 m: [sitio-nuclear.md](sitio-nuclear.md) §9): hielo armado de 1,5 m con un pretil de 1,2 m (contra el oleaje y para contener vertidos),
   con el hueco del tronco en el centro (el árbol tampoco tiene suelo: entra el submarino de obra).
 - **Árbol-lanzadera** (`Lanzadera_cohetes`, edificio «Cohetes»): una torre-árbol de 2 niveles con el primer piso a la altura que haga
   falta para que la corona quede donde pide la regla. Pisos:

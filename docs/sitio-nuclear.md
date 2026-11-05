@@ -7,7 +7,7 @@ santuario en caso de fallos?»
 **Respuesta corta.** Ya eran pisos de árbol (la Planta Atómica) o un piso aparte (la Central Nuclear), pero al lado de la gente. Se mudan
 a su propio casquete artificial y a su propio árbol, como la lanzadera; **pero no a gran altura**. Lo que protege de un reactor es la
 **distancia, la contención y el agua**, no estar en alto. Los reactores van **abajo** y lo que sube es lo que sí gana con la altura: el
-agua de emergencia (por gravedad), la chimenea filtrada y las salas de mando. **Actualizado:** el TRIGA, en un cajón apoyado en el lecho; el microrreactor y los residuos, en cavernas bajo el lecho (§3 y §4).
+agua de emergencia (por gravedad), la chimenea filtrada y las salas de mando. **Actualizado:** el TRIGA, en un cajón colgado del casquete (§9); el microrreactor y los residuos, en cavernas bajo el lecho (§3 y §4).
 
 ## 1. Lo investigado
 
@@ -91,7 +91,7 @@ y los pisos. Lo que teme un reactor es **quedarse sin agua**, y el agua cae haci
 Pedido: «crea la planta atómica siguiendo la investigación para que sea lo más segura posible, quizás se debería crear al fondo del mar?
 bajo tierra? de ser así la puedes crear así».
 
-*(Corregida por §4: esta sección queda como razonamiento; el microrreactor pasó a la roca y el cajón del TRIGA apoya en el lecho.)*
+*(Corregida por §4 y §9: esta sección queda como razonamiento; el microrreactor pasó a la roca, y con el mar a 500 m el cajón del TRIGA vuelve a colgar, como aquí.)*
 
 **Decisión: ni al fondo ni bajo tierra, sino BAJO EL MAR Y BAJO EL CASQUETE.** Cada núcleo va en su **cajón sumergido de doble casco**, de 2 a
 18 m bajo el nivel del mar, colgado del casquete y atirantado al fondo. Sustituye al recinto sobre el casquete y al pedestal de §2: es la
@@ -151,13 +151,13 @@ Berón: «la opción de bajo tierra era bajo tierra en el fondo del mar, supongo
 sobre la tierra o debajo o una parte enterrada y otra no según convenga».
 
 **Tiene razón y cambia el diseño de §3.** Yo descarté «bajo tierra» porque bajo el casquete solo había mar, pero el fondo existe (el colisionador
-«FondoMarino», a −16,25 m; ni se veía) y debajo puede haber roca. **Decisión: una parte enterrada y otra no, según quién la atienda.**
+«FondoMarino», entonces a −16,25 m; ni se veía. **Hoy, a −500 m: §9**) y debajo puede haber roca. **Decisión: una parte enterrada y otra no, según quién la atienda.**
 
 | Pieza | Dónde | Por qué |
 |---|---|---|
-| **Microrreactor** (~15 MW térmicos) | **Caverna con 60 m de roca encima** (a unos −81 m) | Es el mayor inventario y nadie lo atiende a diario: enterrarlo no cuesta nada |
+| **Microrreactor** (~15 MW térmicos) | **Caverna con 60 m de roca encima** (hoy, a unos −566 m: §9) | Es el mayor inventario y nadie lo atiende a diario: enterrarlo no cuesta nada |
 | **Residuos y combustible gastado** | **Caverna de al lado** | Lo que más dura; que no toque el agua, y que se pueda sacar |
-| **TRIGA** (1 MW) | **Cajón de doble casco apoyado en el lecho** | 15 veces menos potencia y gente a diario en la consola y el puente: enterrarlo alarga la salida justo a quien trabaja ahí |
+| **TRIGA** (1 MW) | **Cajón de doble casco** (entonces apoyado en el lecho; hoy colgado, §9) | 15 veces menos potencia y gente a diario en la consola y el puente: enterrarlo alarga la salida justo a quien trabaja ahí |
 
 ### Lo investigado
 - **Bajo el mar se puede excavar y se trabaja a diario:** el SFR de Forsmark guarda residuos a **60 m bajo el fondo del Báltico** desde 1988; el túnel del
@@ -185,7 +185,7 @@ ninguna central moderna se ha construido bajo el mar: esto combina precedentes p
 
 ### Cómo queda
 Lecho visible bajo el sitio (`Lecho_marino`); pozo del microrreactor desde su piso hasta la caverna, con una esclusa desde el tronco; galería entre las
-dos cavernas; `Bucle_termosifon`, `Intercambiador_lecho` y `Sumidero_caverna`. El cajón del TRIGA baja hasta el lecho y apoya en su zapata (ya no lleva
+dos cavernas; `Bucle_termosifon`, `Intercambiador_lecho` y `Sumidero_caverna`. El cajón del TRIGA bajaba hasta el lecho y apoyaba en su zapata (§9 lo deshace: ya no llevaba
 tirantes). *(Actualizado en §8: a la galería se baja por la línea, una vez a la semana o con aviso.)* En las cavernas no se anda: no tienen colisiones y la roca no se ve por dentro.
 
 ## 5. ¿Energía de los movimientos sísmicos?
@@ -242,7 +242,7 @@ impacto de reducciones de terreno dando tiempo a actuar?»
 
 **Respuesta corta.** Depende de la roca. **En sal o en arcilla, sí: la excavación se cierra sola, y el margen de espacio compra décadas. En roca dura como la que el juego supone,
 casi no pasa: ahí lo que puede fallar es que caiga un bloque o suba el agua, y eso no lo para el espacio libre, lo avisa la lectura.** El juego no tiene geología, así que
-«roca dura» es un **supuesto** de diseño. Lo más expuesto a compactarse no era la caverna: era el **cajón del TRIGA**, apoyado en el sedimento.
+«roca dura» es un **supuesto** de diseño. Lo más expuesto a compactarse no era la caverna: era el **cajón del TRIGA**, entonces apoyado en el sedimento (§9 lo cuelga: ya no le afecta).
 
 ### Lo investigado
 | Sitio | Roca | Lo medido | Qué enseña |
@@ -265,17 +265,16 @@ juego no llega a un año: las frecuencias se comprimen.
 | Sal en crisis, como el Panel 7 | ~900 mm/año | ~3 años | Sobre el papel, pero el techo cayó en un mes |
 | Sal honda, primeros años | ~600 mm/año | ~5 años | Poco |
 
-**Y en roca dura el margen tiene un límite:** más luz es más techo sin apoyo (razonamiento mío de ingeniería): hacer la caverna mucho mayor empeora justo lo que se quería arreglar.
+**Y en roca dura el margen tiene un límite, pero es de LUZ LIBRE, no de tamaño:** más luz sin apoyo es más techo sin sostener. Con columnas y techo reforzado la sala puede ser grande: **§10 corrige lo que aquí se decía de «más grande no es más seguro»**.
 
 **Lo que de verdad amenaza esta roca** (razonamiento mío, salvo lo citado): una cuña entre fracturas (el túnel de Forsmark 3 tuvo caídas al cruzar la zona de Singö), el agua, y una
 falla que nadie vio. Sin estudiar la roca antes, una zona así puede estar justo donde va la caverna. El calor del reactor también carga la roca; aquí no se calcula.
 
 ### La decisión
-- **Holgura declarada y medida: ≥ 3 m** entre el forro y el equipo, por los lados y por arriba (`CavernRule.ClearanceM`; la mide el constructor y da error si no llega). El reactor ya tenía
-  3,7 m; los **residuos tenían 1,4 m**: esa caverna crece a **24 × 16 m**, y queda en 3,4 m. La luz sigue siendo modesta (16 m frente a los 61 de Gjøvik).
-- **Pilar de roca de 18 m** entre cavernas, no menor que la luz mayor (regla práctica, **de memoria**). Antes eran 14.
+- **Holgura declarada y medida: ≥ 3 m** entre el forro y el equipo, por los lados y por arriba (`CavernRule.ClearanceM`; la mide el constructor y da error si no llega). El reactor ya tenía 3,7 m y los **residuos, 1,4 m**. *(Hoy las salas son de 44 × 40 m y la holgura se mide también a las columnas: 3,5 m. §10.)*
+- **Pilar de roca** entre salas de **24 m** (§10; antes, 14 y 18): no menor que la luz libre ni que medio ancho de sala (regla práctica, **de memoria**).
 - **Instrumentos** (`CavernRock`): en cada caverna, 4 extensómetros de varilla, 4 dianas de convergencia, 3 células de carga en bulones, 2 geófonos, 2 piezómetros y 1 aforo del sumidero; abajo, un registrador con fibra hasta el **panel de la roca** en la Central.
-- **El cajón del TRIGA:** 4 **pilotes hasta la roca**, 4 hitos de asiento y 2 inclinómetros. Es la pieza donde la pregunta de Berón sí aplica.
+- **El cajón del TRIGA:** 4 células en sus tendones y 2 inclinómetros (§9; había pilotes e hitos de asiento cuando apoyaba en el sedimento).
 - **Niveles** (`CavernRule.Grade`). **Los números son del juego, no de una norma**: no encontré umbrales publicados, cada proyecto fija los suyos.
 
 | Nivel | Convergencia | Ritmo | Agua | Qué se hace |
@@ -288,6 +287,8 @@ falla que nadie vio. Sin estudiar la roca antes, una zona así puede estar justo
 - **Episodios:** alrededor de uno cada 90 días, nunca antes del día 30, fijos para cada día: una cuña (el ritmo se dobla cada día) o agua (sube un 50 % al día). Sin leer, nadie se entera.
 
 ## 8. Un acceso rápido al fondo (Berón 2026-11-05)
+
+*(Superada por §9: con el mar a 500 m ya no cabe un funicular. Queda como razonamiento: Kaprun, la segunda salida y el descarte del tubo desde el santuario siguen valiendo; las cifras, no.)*
 
 Berón: «se podría crear un tunnel tren acuatico para llegar al fondo marino super rápido?»
 
@@ -353,6 +354,130 @@ La misión aguanta llegar con media alfombra de retraso (~258 s). Son **unas 9 h
 - Olkiluoto: [vigilancia de la roca, 2012](https://inis.iaea.org/records/tt1d5-axy41) (0,6 mm verticales sobre el repositorio)
 - [Kaprun](https://en.wikipedia.org/wiki/Kaprun_disaster), [Stoos (Guinness)](https://www.guinnessworldrecords.com/world-records/553751-steepest-funicular), [Gelmerbahn](https://www.wikipedia.com/wiki/Gelmerbahn), [Sunnegga](https://en.wikipedia.org/wiki/Zermatt%E2%80%93Sunnegga_Funicular)
 - [Äspö: evacuación con pozo y rampa](https://www.nap.edu/read/4897/chapter/11), [30 CFR 57.19071: velocidad de izado de personas](https://www.govinfo.gov/content/pkg/CFR-2025-title30-vol1/pdf/CFR-2025-title30-vol1-sec57-19071.pdf)
+
+## 9. Un mar de tamaño real, y todo en menos de un minuto (Berón 2026-11-05)
+
+Berón: «haz dicho que el fondo del mar está a 90m? se debe agregar un tamaño mas real que junto al tunnel de super velocidad no supere el minuto?»
+
+**Aclaración.** Los 90 m no eran el mar: eran la bajada hasta la caverna. El mar de la escena tenía **16 m**, un charco para el mar de Ross. **Decisión: 500 m en todo el mapa, y el viaje entero sale en ~58 s.** Cabe, pero **justo**, y solo con cifras de récord.
+
+### Por qué 500 m
+La plataforma del mar de Ross tiene **más de 500 m de media, de menos de 300 a más de 1200**; la media mundial de las plataformas es de unos 130 m. Es lo más realista que cabe en el minuto, y tiene otra ventaja:
+las marcas de quillas de iceberg **actuales** llegan a unos **400 m** (Prydz Bay; no encontré la cifra del propio mar de Ross), así que el lecho a 500 m queda por debajo. **Lo que cruza el agua, no:** ver «Lo que no resuelve».
+
+**Todo el mapa, no solo el sitio.** Cambiar la hondura solo alrededor del sitio pedía un escalón en el fondo y dos volúmenes de agua; todo el mapa es **un número** (`SeaRule.Depth`). Revisado lo que depende de él:
+
+| Qué | ¿Depende? | Qué se hizo |
+|---|---|---|
+| `Sea_SwimZone`, `FondoMarino` | Sí | Bajan a −500 m |
+| `Limite_del_mar` (paredes) | **Sí**: acababan en −20 y se habría podido pasar nadando por debajo | Bajan al lecho |
+| `Mar_FondoProfundo` (cuenco oscuro) | **No se toca**: es visual. A 500 m la niebla volvería pálido todo el mar | Sigue a −16 m |
+| Nado (`SwimBody.Probe`, rayo de 301 m) | No: sin fondo, «hondura 999» | Nada |
+| Andar y orillas (`PathMover.GroundY`) | No: ignora lo que quede bajo el agua | Nada |
+| Máscaras, respiración | No: miran el volumen de agua | Nada |
+| Ballenas, orcas, focas, peces, kril | No: nadan cerca de la superficie (`SwimY` −1 a −3,5) | Nada: **no bucean más** |
+| Bancos de peces de los troncos | No: dentro de la columna de agua de cada árbol | Nada |
+| Submarino de obra (−12), ambulancia, Leviatán | No: rutas a su hondura; ningún rayo necesita el fondo | Nada |
+| Troncos abiertos al mar | No: su agua empieza en −1,6 m | Nada |
+| `MarineLife.UnderTree` | Decía −16 a mano | Usa `SeaRule.FloorY` |
+| Cajón del TRIGA | **Sí**: ya no llega al lecho | **Cuelga** (abajo) |
+| Intercambiador del lecho, bucle, pozos | Se recalculan solos | Siguen; el reactor sigue más abajo que su sumidero |
+| Casquetes artificiales (nuclear y lanzadera) | **Sí**: ya nada los sujetaría | **4 tendones al lecho** cada uno |
+| Agua en las salas | **Sí**: ~5 veces más carga | Agua de fondo de 12 a 60 l/min (ley de Darcy; estimación mía) |
+| `JornadaTest` | **Fallo mío de antes**: «bajo el mundo» por debajo de −15, y ya se bajaba a −82 | No cuenta a quien va en la línea |
+| Laguna de la escena del ciclo de vida | Tiene su propio fondo | No es este mar: se queda |
+
+### El cajón del TRIGA vuelve a colgar
+Un núcleo a −7 m no puede apoyar en un lecho a −500. Vuelve a §3: **cuelga del casquete, atado al lecho con 4 tendones**, como una plataforma de patas tensadas; las hay a **1580 m** (Big Foot) y 1432 m (Magnolia), bien por encima de lo que se pide aquí.
+Sale ganando: **ya no le afecta el asiento del sedimento**, y otra vez se puede remolcar. Los pilotes y los hitos de asiento (§7) se sustituyen por células en los tendones.
+
+### El tiempo, con números
+El recorrido son **566 m de desnivel** (500 de mar, 60 de roca y la altura de la sala).
+
+| | Cifra | Precedente |
+|---|---|---|
+| Velocidad | **20 m/s** | Récord de pasajeros: 20,5 m/s (Shanghái); 16,8 en Taipei 101. Un ingeniero estima el tope en ~24. Pozos de mina más hondos: 19–20 m/s |
+| Aceleración | **1,5 m/s²** | Guía de ascensores rápidos: ≤ 1–1,5 m/s²; es **el tope**. Se cita ~2 m/s² como límite sin mareo para Hyperloop, que sigue sin existir con pasajeros |
+| Esclusas | **8 + 8 s** | Valor del juego: el carro es estanco y no hay que igualar presión. Antes, 15 + 15 |
+| Carro | 28,8 + 13,3 s | |
+| **Total** | **~58 s** | Berón pedía < 60 |
+
+**Se cumple con 2 s de margen.** Pero no es holgado: una rampa de sobreaceleración de 2,5 m/s³ suma ~0,6 s; con las esclusas de antes serían 72 s; y a 15 m/s y 1 m/s² (cómodo), 69 s. **Una instalación real andaría por 70–75 s** (estimación mía).
+
+| Mar | Viaje |
+|---|---|
+| 200 m | ~43 s |
+| 300 m | ~48 s |
+| **500 m** | **~58 s** |
+| ~540 m | 60 s (el límite con estas cifras) |
+| 880 m | ~77 s |
+| 1200 m | ~93 s |
+
+**Los oídos:** al bajar 566 m de aire la presión sube ~67 mb. Repartidos en el viaje son **1,15 mb/s**, justo por debajo de los **1,26 mb/s** de Taipei 101, que ya controla la presión de cabina con soplantes; por eso aquí también hace falta. Las guías piden ≤ 20 mb sin control y avisan por encima de 7 m/s y 300 m: este viaje pasa de las dos. Esas soplantes no están simuladas.
+
+### Por qué ya no es un funicular
+A la pendiente máxima (110 %) harían falta **más de 500 m de recorrido horizontal**, y el casquete mide 170. Sale casi vertical, **unos 10° de la vertical**, con la cabina nivelada: del borde del casquete (lejos de pisos y tronco) a la galería por el pilar. Un ascensor a plomo solo ahorra ~0,5 s. El tubo tiene **5,2 m de hueco**: el módulo (3 × 3,2 m de sección) sigue cabiendo a lo largo, que es lo que justificaba la línea.
+El tubo es **de cristal solo en los primeros 16 m**; más abajo son hasta **50 bar**, y va de acero hasta el lecho. Sigue siendo un «tren acuático» donde se ve.
+
+**La salida de escape** no entra en el minuto: es otro pozo, con jaula a baterías a 6 m/s, **unos 2 min**. Debería acompañarla un refugio abajo (como en las minas): no está construido.
+
+**Con la jornada:** ida y vuelta ~206 s de los 300 de su misión de 2 h, o ~268 s con media alfombra de retraso. Cabe.
+
+### Lo que no resuelve
+- **Las quillas de iceberg:** los tubos cruzan los 400 m de agua a los que los icebergs actuales sí pueden llegar. En el juego no hay icebergs; en la realidad sería **el riesgo principal de esta decisión**.
+- **Nadie ha hecho esto:** no encontré ningún tubo de 500 m de mar con pasajeros. Los túneles bajo el mar son otra cosa: van por la roca.
+- **Los árboles sobre las islas:** el santuario entero está sobre hielo, y ese hielo ya no toca fondo. El juego no le da grosor y **no lo he revisado**: Berón debería decidir si es plataforma de hielo (la del Ross tiene cientos de metros, dato de memoria).
+- **La fauna no aprovecha el mar:** nada nuevo bucea. Si se quiere que las ballenas bajen, es trabajo aparte.
+
+## 10. Columnas y techo: grande y espacioso (Berón 2026-11-05)
+
+Berón: «en la edificación se pueden poner columnas y techo con lo que es mas fácil crearlo grande y espacioso no?»
+
+**Sí, y corrijo §7:** dije que más grande no era más seguro. **Eso vale para la luz sin apoyo.** Lo que limita no es el tamaño de la sala, sino **cuánto techo queda libre entre apoyos**, y eso se arregla con columnas y refuerzo.
+
+### Lo investigado
+- **Cámaras y pilares:** así se explotan minas enteras: se deja roca en pie como columnas y se saca del **60 al 75 %**, hasta 70–85 % en Elliot Lake.
+- **Luz libre:** en un ejemplo de diseño en roca dura, una gráfica dio **~14 m** sin sostener, y el proyecto adoptó 10.
+- **Gjøvik:** 61 m **con** bulones y cables. El refuerzo puede más que las columnas si la roca acompaña.
+- **El aviso:** en una mina surafricana de roca dura, con pilares de 8,5 m y salas de 9,7, **fallaron cuatro pilares y siguieron casi 100**. Y **no hay un método aceptado** para dimensionar pilares en roca dura: por eso aquí son generosos y se vigilan.
+
+### La decisión
+- **Dos salas de 44 × 40 m** (antes, 20 × 12 y 24 × 16): **más de siete veces la planta** de la del reactor.
+- **4 columnas de roca sin excavar**, de 4 × 4 m (no de hormigón: es roca que se deja), a 18 m entre ejes.
+- **Luz libre máxima: 14 m**, en todas las direcciones (`CavernRule.MaxFreeSpan`).
+- **Techo:** bulones cada 6 m y 4 cables más largos sobre la luz central, además del forro que ya había.
+- **Vigilancia:** una célula de carga en cada columna, porque si un pilar falla, carga a los de al lado.
+- **Pilar entre salas: 24 m** (`CavernRule.PillarM`): no menor que la luz libre ni que medio ancho de sala (regla práctica, de memoria).
+- **Holgura ≥ 3 m:** ahora también a las columnas. Sale a **3,5 m**; los contenedores se acercaron 0,5 m al eje para respetarla.
+
+La sala sigue sin ser para pasear: **no se anda por ella** (no tiene colisiones). El espacio es para el equipo y su margen.
+
+## 11. La revisión que pide cambiar una regla (Berón 2026-11-05)
+
+Regla de Berón: cambiar una regla obliga a revisar lo que ya existe. Lo que tocan estas decisiones:
+
+| Regla o pieza | Antes | Ahora |
+|---|---|---|
+| Hondura del mar | 16 m | 500 m (`SeaRule`, regla T19); tabla de §9 |
+| T14 | Cajón apoyado en el lecho | Colgado, con tendones |
+| T16 | «Más luz no es más seguro» | Luz libre máxima, columnas y refuerzo |
+| T17 | Funicular al 60–105 %, ~53 s | Tubo a ~10°, 20 m/s, 1,5 m/s², **< 60 s por regla** |
+| Casquete de la lanzadera (T13) | Sin sujeción | 4 tendones; **su altura y sus distancias no cambian** |
+| Tubo de cristal | Todo el mar | Solo 16 m: abajo va acero |
+| Agua de fondo | 12 l/min | 60 l/min; los umbrales son proporciones y no cambian |
+| Pasos del jugador y misiones | — | Sin cambios |
+| §4, §7, §8 | — | Corregidos o marcados como superados |
+| Documentos sueltos | 16 m en máscaras; «apoyado en el lecho» en la planta | Corregidos |
+
+**Sigue aquí como historia:** §3 y §8 razonan con otras cifras, a propósito. **Sin revisar:** el hielo de las islas (§9).
+
+### Fuentes de §9–§11
+- Mar de Ross: [Springer: la plataforma](https://rd.springer.com/chapter/10.1007/978-94-011-5820-6_16), [Wikiversity](https://en.wikiversity.org/wiki/Continental_shelves/Antarctic)
+- Icebergs: [Cambridge: quillas y marcas](https://www.repository.cam.ac.uk/handle/1810/276147), [AGU 2015](https://agu.confex.com/agu/fm15/webprogram/Paper85172.html)
+- Patas tensadas: [Wikipedia](https://en.wikipedia.org/wiki/Tension-leg_platform), [Magnolia](https://en.wikipedia.org/wiki/Magnolia_(oil_platform))
+- Ascensores: [Mitsubishi Electric, 2016](https://mitsubishielectric.com/news/2016/0510.html), [CTBUH](https://www.bdcnetwork.com/building-sector-reports/high-rise-construction/news/55161204/ctbuh-determines-fastest-elevators-and-longest-runs-in-the-world-in-new-tbin-study), [Design Challenges of High-Speed Elevators](https://elevatorworld.com/?p=36361), [Taipei 101](https://elevatorworld.com/?p=34049)
+- Hyperloop: [Big Think](https://bigthink.com/starts-with-a-bang/elon-musk-hyperloop/), [ERA](https://www.era.europa.eu/system/files/2022-10/Hyperloop%20an%20Innovation%20for%20Global%20Transportation.pdf)
+- Cámaras y pilares: [NIOSH: pilares en minas de piedra](https://stacks.cdc.gov/view/cdc/9341/cdc_9341_DS1.pdf), [NIOSH: diseño](https://cdc.gov/Niosh/mining/UserFiles/works/pdfs/psadm.pdf), [ejemplo de diseño, 2024](https://scindeks-clanci.ceon.rs/data/pdf/proc-0026/2024/proc-00262401166J.pdf)
 
 ## Fuentes
 - [10 CFR 100.11](https://www.law.cornell.edu/cfr/text/10/100.11), [10 CFR 100.3](https://www.law.cornell.edu/cfr/text/10/100.3), [10 CFR 53.530](https://www.law.cornell.edu/cfr/text/10/53.530)

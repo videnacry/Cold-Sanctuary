@@ -5,12 +5,12 @@ using UnityEngine;
 
 /// <summary>
 /// PRUEBA DE LA ROCA Y LA LÍNEA DE LAS CAVERNAS (Berón 2026-11-05; docs/sitio-nuclear.md §7–§8):
-/// 1. HOLGURA: medida en la escena, ≥ <see cref="CavernRule.ClearanceM"/> m, y un pilar de roca entre las cavernas no menor que la luz mayor.
-/// 2. INSTRUMENTOS: extensómetros, convergencia, bulones, geófonos, piezómetros, aforos, asiento del cajón, pilotes, registrador y panel.
+/// 1. HOLGURA: medida en la escena, ≥ <see cref="CavernRule.ClearanceM"/> m, también a las columnas; luz libre ≤ <see cref="CavernRule.MaxFreeSpan"/> m y pilar de roca suficiente.
+/// 2. INSTRUMENTOS y APOYOS: columnas, bulones, cables; extensómetros, convergencia, geófonos, piezómetros, aforos, tendones del cajón, registrador y panel.
 /// 3. LA ALERTA: leer → AVISO → bajada obligatoria → reforzar → normal; ALARMA → nadie baja, refuerzo a distancia; sin reforzar → emergencia.
-/// 4. LA LÍNEA: del casquete a la galería, cruzando el lecho, con pendiente válida y sin compartir pozo con el reactor; segunda salida aparte.
+/// 4. EL MAR Y LA LÍNEA: mar de profundidad real, del casquete a la galería, cruzando el lecho, en menos de un minuto y sin compartir pozo con el reactor; segunda salida aparte.
 /// 5. LA RED: la estación es una pista más de las alfombras, cuenta como zona del sitio y sus misiones tienen pasos para el jugador.
-/// 6. LA JORNADA: el viaje cabe en la misión, y se compara con el ascensor.
+/// 6. LA JORNADA: el viaje cabe en la misión; aceleración y velocidad dentro de lo que aguanta una persona; se compara con el ascensor.
 /// 7. EL VIAJE, de verdad, con un cuerpo de prueba: ida y vuelta; emergencia a media bajada (vuelve); línea cerrada (sale por el pozo de escape).
 /// </summary>
 public class NuclearAccessTest : MonoBehaviour, ITestUnit
@@ -54,18 +54,33 @@ public class NuclearAccessTest : MonoBehaviour, ITestUnit
         foreach (Transform t in cw.GetComponentsInChildren<Transform>(true).Where(x => x.name == "Contenedor_residuos")) gaps.Add(Gap(cw, sw, t));
         float gap = gaps.Count > 0 ? gaps.Min() : 0f;
         TestProbe.Check($"holgura medida ≥ {CavernRule.ClearanceM:0} m entre el equipo y el forro, en las dos cavernas", gaps.Count == 9 && gap >= CavernRule.ClearanceM, $"{gap:0.0} m en {gaps.Count} piezas");
-        TestProbe.Check("la holgura guardada coincide con la medida", Mathf.Abs(rock.clearanceM - gap) < 0.1f, $"{rock.clearanceM:0.0} m");
+        TestProbe.Check("la holgura guardada no supera la medida", rock.clearanceM <= gap + 0.1f && rock.clearanceM >= CavernRule.ClearanceM, $"{rock.clearanceM:0.0} m");
         float pillar = Mathf.Abs(cw.position.z - cr.position.z) - (CavernRule.ReactorSpan + CavernRule.WasteSpan) * 0.5f;
-        TestProbe.Check("pilar de roca entre cavernas ≥ la luz mayor", pillar >= CavernRule.WasteSpan && Mathf.Abs(pillar - CavernRule.PillarM) < 0.1f, $"{pillar:0} m");
+        TestProbe.Check("pilar de roca entre salas ≥ la luz libre y ≥ medio ancho de sala", pillar >= CavernRule.MaxFreeSpan && pillar >= CavernRule.WasteSpan * 0.5f && Mathf.Abs(pillar - CavernRule.PillarM) < 0.1f, $"{pillar:0} m");
+        // COLUMNAS: la sala es grande porque se apoya; la luz libre es lo que manda, y el equipo guarda su holgura también a ellas.
+        var cols = cr.GetComponentsInChildren<Renderer>(true).Concat(cw.GetComponentsInChildren<Renderer>(true)).Where(r => r.name == "Columna_roca").ToList();
+        float span = CavernRule.ColumnPitch - CavernRule.ColumnSize;
+        TestProbe.Check("salas grandes con columnas: 4 por sala, y ninguna luz libre pasa del máximo", cols.Count == 8 && span <= CavernRule.MaxFreeSpan && Mathf.Max(CavernRule.ReactorLength, CavernRule.WasteLength) * 0.5f - CavernRule.ColumnPitch * 0.5f - CavernRule.ColumnSize * 0.5f <= CavernRule.MaxFreeSpan, $"{cols.Count} columnas, {span:0} m de luz central");
+        TestProbe.Check("la sala de 44 × 40 m tiene más planta que las de antes, sin perder holgura", CavernRule.ReactorLength * CavernRule.ReactorSpan >= 5f * 240f);
+        float toCol = float.MaxValue;
+        foreach (Transform t in cr.GetComponentsInChildren<Transform>(true).Concat(cw.GetComponentsInChildren<Transform>(true)).Where(x => x.name == "Modulo_reactor" || x.name == "Tapa_trebol" || x.name == "Tubos_calor" || x.name == "Contenedor_residuos"))
+            foreach (Renderer k in cols.Where(k => k.transform.parent == t.parent))
+            {
+                Bounds a = t.GetComponent<Renderer>().bounds, b = k.bounds;
+                toCol = Mathf.Min(toCol, Mathf.Max(Mathf.Max(a.min.x - b.max.x, b.min.x - a.max.x), Mathf.Max(a.min.z - b.max.z, b.min.z - a.max.z)));
+            }
+        TestProbe.Check("el equipo guarda la holgura también a las columnas", toCol >= CavernRule.ClearanceM, $"{toCol:0.0} m");
         TestProbe.Check("con el ritmo del SFR la holgura dura > 10 000 años; con el de la sal de WIPP (~100 mm/año), décadas", CavernRule.YearsToClose(gap, CavernRule.BaseRateMmDay * 365f) > 10000f && CavernRule.YearsToClose(gap, 100f) >= 25f,
             $"{CavernRule.YearsToClose(gap, CavernRule.BaseRateMmDay * 365f):0} años; {CavernRule.YearsToClose(gap, 100f):0} años");
 
         // ── 2. INSTRUMENTOS ──
-        TestProbe.Check("instrumentos en las dos cavernas", rock.extensometers.Count == 8 && rock.convergence.Count == 8 && rock.loadCells.Count == 6 && rock.geophones.Count == 4 && rock.piezometers.Count == 4 && rock.flowMeters.Count == 2,
+        TestProbe.Check("instrumentos en las dos cavernas", rock.extensometers.Count == 8 && rock.convergence.Count == 8 && rock.loadCells.Count == 14 && rock.geophones.Count == 4 && rock.piezometers.Count == 4 && rock.flowMeters.Count == 2,
             $"{rock.extensometers.Count} extensómetros, {rock.convergence.Count} dianas, {rock.loadCells.Count} células, {rock.geophones.Count} geófonos, {rock.piezometers.Count} piezómetros, {rock.flowMeters.Count} aforos");
         Transform cj = Named(site, "Cajon_TRIGA");
-        int piles = cj != null ? cj.GetComponentsInChildren<Transform>(true).Count(t => t.name == "Pilote_roca") : 0;
-        TestProbe.Check("el cajón, sobre el sedimento: pilotes a la roca, hitos de asiento e inclinómetros", piles == 4 && rock.caissonGauges.Count == 6, $"{piles} pilotes, {rock.caissonGauges.Count} sensores");
+        int piles = cj != null ? cj.GetComponentsInChildren<Transform>(true).Count(t => t.name == "Tendon_cajon") : 0;
+        int bolts = cr.GetComponentsInChildren<Transform>(true).Count(t => t.name == "Bulon_techo"), cables = cr.GetComponentsInChildren<Transform>(true).Count(t => t.name == "Cable_anclaje");
+        TestProbe.Check("techo sostenido: bulones y cables en cada sala", bolts >= 40 && cables == 4, $"{bolts} bulones, {cables} cables");
+        TestProbe.Check("el cajón cuelga: tendones al lecho, con su célula, e inclinómetros", piles == 4 && rock.caissonGauges.Count == 6, $"{piles} tendones, {rock.caissonGauges.Count} sensores");
         GameObject central = GameObject.Find("NuclearPower_Area");
         TestProbe.Check("el panel de la roca, en la Central, y el registrador abajo", central != null && Named(central.transform, "Panel_roca") != null && Named(site, "Registrador_roca") != null);
 
@@ -102,9 +117,14 @@ public class NuclearAccessTest : MonoBehaviour, ITestUnit
         Vector3 top = line.transform.position, foot = line.bottom.position;
         Vector3 local = top - NuclearSiteRule.Center;
         TestProbe.Check("arriba, en el casquete; abajo, en la galería entre las cavernas", Mathf.Abs(top.y) < 0.5f && Mathf.Abs(local.x) < 85f && Mathf.Abs(local.z) < 85f && Flat(foot, Named(site, "Galeria_cavernas").position) < 1f, $"de {top.y:0} m a {foot.y:0} m");
-        TestProbe.Check("cruza el mar y entra en la roca: cristal y revestimiento", Named(site, "Tubo_cristal") != null && Named(site, "Tubo_revestido") != null && top.y > NuclearSiteRule.SeabedY && foot.y < NuclearSiteRule.SeabedY - NuclearSiteRule.RockCover);
-        TestProbe.Check($"pendiente de funicular (≤ {SiteLineRule.MaxGradient:P0})", line.Gradient <= SiteLineRule.MaxGradient, $"{line.Length:0} m al {line.Gradient:P0}");
-        float MinToAxis(Vector3 p) { float b = float.MaxValue; for (int i = 0; i <= 40; i++) { Vector3 q = Vector3.Lerp(top, foot, i / 40f); if (q.y < p.y + 90f) b = Mathf.Min(b, Flat(q, p)); } return b; }
+        TestProbe.Check("cruza el mar y entra en la roca: cristal arriba, acero hasta el lecho y revestimiento", Named(site, "Tubo_cristal") != null && Named(site, "Tubo_acero") != null && Named(site, "Tubo_revestido") != null && top.y > NuclearSiteRule.SeabedY && foot.y < NuclearSiteRule.SeabedY - NuclearSiteRule.RockCover);
+        GameObject bed = GameObject.Find("FondoMarino"), zone = GameObject.Find("Sea_SwimZone");
+        BoxCollider bedC = bed != null ? bed.GetComponent<BoxCollider>() : null, zoneC = zone != null ? zone.GetComponent<BoxCollider>() : null;
+        TestProbe.Check($"el mar tiene {SeaRule.Depth:0} m, como el mar de Ross: el fondo y el agua nadable llegan abajo", bedC != null && zoneC != null && Mathf.Abs(bedC.bounds.max.y - SeaRule.FloorY) < 0.5f && Mathf.Abs(zoneC.bounds.min.y - SeaRule.FloorY) < 0.5f && Mathf.Abs(zoneC.bounds.max.y - SeaRule.Surface) < 0.5f, zoneC != null ? $"agua de {zoneC.bounds.max.y:0.0} a {zoneC.bounds.min.y:0.0} m" : "");
+        Transform limit = GameObject.Find("Limite_del_mar")?.transform;
+        TestProbe.Check("el límite del mar llega al lecho: no se pasa nadando por debajo", limit == null || limit.GetComponentsInChildren<Collider>(true).All(c => c.bounds.min.y <= SeaRule.FloorY));
+        TestProbe.Check("a la línea le basta el recorrido entero: del casquete a la galería", line.Drop >= SeaRule.Depth + NuclearSiteRule.RockCover, $"{line.Length:0} m a {line.AngleDeg:0}°, {line.Drop:0} m de desnivel");
+        float MinToAxis(Vector3 p) { float b = float.MaxValue; for (int i = 0; i <= 40; i++) { Vector3 q = Vector3.Lerp(top, foot, i / 40f); b = Mathf.Min(b, Flat(q, p)); } return b; }
         Transform shaft = Named(site, "Pozo_escape");
         TestProbe.Check("el tubo no pasa por el pozo del reactor", MinToAxis(well.position) >= 3f, $"{MinToAxis(well.position):0.0} m");
         TestProbe.Check("segunda salida: pozo propio, lejos del tubo y del pozo del reactor, hasta el casquete", shaft != null && Flat(shaft.position, well.position) >= 5f && MinToAxis(shaft.position) >= 5f && Mathf.Abs(line.escapeTop.position.y) < 0.5f && Named(site, "Jaula_escape") != null,
@@ -123,9 +143,12 @@ public class NuclearAccessTest : MonoBehaviour, ITestUnit
 
         // ── 6. LA JORNADA ──
         float one = SiteLineRule.OneWay(line.Length), hoist = SiteLineRule.HoistOneWay(line.Drop), esc = SiteLineRule.EscapeSeconds(line.EscapeDrop, line.EscapeWalk);
-        TestProbe.Check("un viaje, en menos de un minuto y medio; las esclusas tardan más que el carro", one <= 90f && 2f * SiteLineRule.LockSeconds > SiteLineRule.Run(line.Length, SiteLineRule.CarSpeed, SiteLineRule.CarAccel), $"{one:0} s");
-        TestProbe.Check("el ascensor no gana casi nada: las esclusas son las mismas", hoist < one && one - hoist < 30f, $"ascensor {hoist:0} s, línea {one:0} s");
-        TestProbe.Check("el pozo de escape saca a la gente en menos de 2 min", esc < 120f, $"{esc:0} s");
+        TestProbe.Check($"LÍMITE DE BERÓN: un viaje, esclusas incluidas, en menos de {SiteLineRule.MaxOneWay:0} s", one < SiteLineRule.MaxOneWay, $"{one:0.0} s");
+        TestProbe.Check("dentro de lo que aguanta una persona: ≤ 20,5 m/s (el récord) y ≤ 1,5 m/s² (el tope de confort)", SiteLineRule.CarSpeed <= 20.5f && SiteLineRule.CarAccel <= 1.5f, $"{SiteLineRule.CarSpeed:0} m/s, {SiteLineRule.CarAccel:0.0} m/s²");
+        float mbPerSecond = 1.2f * 9.8f * line.Drop / 100f / one;
+        TestProbe.Check("los oídos: repartida en el viaje, la presión cambia menos que en Taipei 101 (1,26 mb/s)", mbPerSecond <= 1.26f, $"{mbPerSecond:0.00} mb/s");
+        TestProbe.Check("un ascensor a plomo no gana casi nada", hoist < one && one - hoist < 3f, $"ascensor {hoist:0.0} s, línea {one:0.0} s");
+        TestProbe.Check("el pozo de escape saca a la gente en menos de 2 min y medio (no está en el minuto: es otro ascensor, a baterías)", esc < 150f, $"{esc:0} s");
         TimeController tc = TimeController.timeController;
         if (tc != null)
         {

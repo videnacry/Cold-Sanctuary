@@ -1,5 +1,17 @@
 using System.Collections.Generic;
 using UnityEngine;
+/// <summary>
+/// EL MAR DEL SANTUARIO (Berón 2026-11-05; docs/sitio-nuclear.md §9): profundidad REAL de la plataforma del mar de Ross, de más de 500 m de media
+/// (de menos de 300 a más de 1200). Antes eran 16 m. Es un solo número: lo usan el volumen nadable, el colisionador del fondo, el límite del mar y el sitio nuclear.
+/// La fauna y los submarinos siguen nadando cerca de la superficie: lo que cambia es lo que hay debajo.
+/// </summary>
+public static class SeaRule
+{
+    public const float Surface = -0.25f, Depth = 500f;
+    /// <summary>La cara del lecho marino.</summary>
+    public const float FloorY = Surface - Depth;
+}
+
 
 /// <summary>
 /// VOLUMEN DE AGUA NADABLE: un Collider (trigger) que abarca el agua bajo su superficie (el mar bajo la banquisa, la

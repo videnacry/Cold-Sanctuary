@@ -3,12 +3,12 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// EL ACCESO Y LA VIGILANCIA DE LAS CAVERNAS (docs/sitio-nuclear.md §7–§8): los instrumentos de la roca, la LÍNEA (funicular sellado del borde del
+/// EL ACCESO Y LA VIGILANCIA DE LAS CAVERNAS (docs/sitio-nuclear.md §7–§8): los instrumentos de la roca, la LÍNEA (tubo de súper velocidad del borde del
 /// casquete a la galería) y la SALIDA DE ESCAPE, en su propio pozo. Sin colisiones, como las cavernas: quien va dentro lo lleva <see cref="SiteLine"/>.
 /// </summary>
 public static partial class SampleSceneBuilder
 {
-    const float LineBore = 3.4f;
+    const float LineBore = 5.2f;   // cabe el módulo (3 × 3,2 m de sección, 4,4 de diagonal): lo que se sacaría por aquí
     static SiteLine _nuclearLine;
 
     /// <summary>La vigilancia: instrumentos en las dos cavernas y en el cajón, y la holgura MEDIDA (si no llega a la regla, error).</summary>
@@ -39,34 +39,59 @@ public static partial class SampleSceneBuilder
         }
         Instruments(reactor, new Vector3(CavernRule.ReactorLength, NuclearSiteRule.CavernHeight, CavernRule.ReactorSpan));
         Instruments(waste, new Vector3(CavernRule.WasteLength, NuclearSiteRule.CavernHeight, CavernRule.WasteSpan));
-        // EL CAJÓN apoya en el sedimento: es lo único del sitio que de verdad puede asentarse. Pilotes a la roca, hitos de asiento e inclinómetros.
+        // LAS SALAS, grandes porque tienen en qué apoyarse: columnas de roca sin excavar, bulones y cables en el techo.
+        Vector3 hallR = new Vector3(CavernRule.ReactorLength, NuclearSiteRule.CavernHeight, CavernRule.ReactorSpan), hallW = new Vector3(CavernRule.WasteLength, NuclearSiteRule.CavernHeight, CavernRule.WasteSpan);
+        BuildHallSupport(rock, reactor, hallR);
+        BuildHallSupport(rock, waste, hallW);
+        // EL CAJÓN ya no apoya en nada: con el lecho a 500 m cuelga del casquete y lo atan tendones, como una plataforma de patas tensadas. Así tampoco le afecta que el sedimento se asiente.
         if (caisson != null)
         {
-            float half = 8f, foot = -NuclearSiteRule.CaissonHeight * 0.5f - 0.6f;
+            float half = 8f, under = -NuclearSiteRule.CaissonHeight * 0.5f, len = caisson.position.y + under - NuclearSiteRule.SeabedY;
             for (int a = -1; a <= 1; a += 2)
                 for (int b = -1; b <= 1; b += 2)
                 {
-                    KitchenProps.C(caisson, new Vector3(a * half * 0.8f, foot - 5f, b * half * 0.8f), new Vector3(0.8f, 10f, 0.8f), steel, 0f, "Pilote_roca");
-                    rock.caissonGauges.Add(KitchenProps.C(caisson, new Vector3(a * (half + 1f), foot + 0.5f, b * (half + 1f)), new Vector3(0.35f, 1f, 0.35f), yel, 0f, "Hito_asiento"));
+                    KitchenProps.C(caisson, new Vector3(a * half * 0.8f, under - len * 0.5f, b * half * 0.8f), new Vector3(0.6f, len, 0.6f), steel, 0f, "Tendon_cajon");
+                    KitchenProps.C(caisson, new Vector3(a * half * 0.8f, under - len + 1f, b * half * 0.8f), new Vector3(3f, 2f, 3f), dark, 0f, "Ancla_lecho");
+                    rock.caissonGauges.Add(KitchenProps.C(caisson, new Vector3(a * half * 0.8f, under - 0.5f, b * half * 0.8f), new Vector3(0.9f, 1f, 0.9f), yel, 0f, "Celula_tendon"));
                 }
             for (int s = -1; s <= 1; s += 2) rock.caissonGauges.Add(KitchenProps.C(caisson, new Vector3(s * 4f, NuclearSiteRule.CaissonHeight * 0.5f + 0.25f, 0f), new Vector3(0.4f, 0.5f, 0.4f), dark, 0f, "Inclinometro_cajon"));
         }
-        float cr = Clearance(reactor, new Vector3(CavernRule.ReactorLength, NuclearSiteRule.CavernHeight, CavernRule.ReactorSpan), "Modulo_reactor", "Tapa_trebol", "Tubos_calor");
-        float cw = Clearance(waste, new Vector3(CavernRule.WasteLength, NuclearSiteRule.CavernHeight, CavernRule.WasteSpan), "Contenedor_residuos");
+        float cr = Clearance(reactor, hallR, "Modulo_reactor", "Tapa_trebol", "Tubos_calor");
+        float cw = Clearance(waste, hallW, "Contenedor_residuos");
         rock.clearanceM = Mathf.Min(cr, cw);
         if (rock.clearanceM < CavernRule.ClearanceM) Debug.LogError($"[Sitio nuclear] Holgura de {rock.clearanceM:0.0} m en las cavernas (pide ≥ {CavernRule.ClearanceM:0} m): reactor {cr:0.0} m, residuos {cw:0.0} m.");
         return rock;
     }
 
-    // La holgura de verdad: del equipo al forro, por los lados y por arriba (el suelo no cuenta: el equipo apoya en él).
+    // Una sala con apoyos: 4 columnas de roca del suelo al techo, cada una con su célula; bulones cada 6 m y cables más largos sobre la luz central.
+    static void BuildHallSupport(CavernRock rock, Transform c, Vector3 size)
+    {
+        Color stone = new Color(0.45f, 0.44f, 0.42f), steel = TreeSteel, dark = new Color(0.2f, 0.22f, 0.25f);
+        float hy = size.y * 0.5f, inner = size.y - 1.2f, cs = CavernRule.ColumnSize;
+        foreach (Vector2 p in CavernRule.Columns)
+        {
+            KitchenProps.C(c, new Vector3(p.x, 0f, p.y), new Vector3(cs, inner, cs), stone, 0f, "Columna_roca");
+            rock.loadCells.Add(KitchenProps.C(c, new Vector3(p.x, 1f, p.y - cs * 0.5f - 0.1f), new Vector3(0.5f, 0.5f, 0.2f), dark, 0f, "Celula_columna"));
+        }
+        for (float x = -size.x * 0.5f + 3f; x < size.x * 0.5f; x += 6f)
+            for (float z = -size.z * 0.5f + 2f; z < size.z * 0.5f; z += 6f)
+                KitchenProps.C(c, new Vector3(x, hy + 1.5f, z), new Vector3(0.06f, 3.6f, 0.06f), steel, 0f, "Bulon_techo");
+        for (int a = -1; a <= 1; a += 2)
+            for (int b = -1; b <= 1; b += 2)
+                KitchenProps.C(c, new Vector3(a * 3.5f, hy + 5f, b * 3.5f), new Vector3(0.1f, 10f, 0.1f), steel, 0f, "Cable_anclaje");
+    }
+
+    // La holgura de verdad: del equipo al forro, por los lados y por arriba (el suelo no cuenta: el equipo apoya en él), y a las columnas.
     static float Clearance(Transform cav, Vector3 size, params string[] pieces)
     {
         Vector3 inner = (size - Vector3.one * 1.2f) * 0.5f;
-        float best = float.MaxValue;
+        float best = float.MaxValue, half = CavernRule.ColumnSize * 0.5f;
         foreach (Transform t in cav.GetComponentsInChildren<Transform>(true).Where(x => pieces.Contains(x.name)))
         {
             Vector3 c = cav.InverseTransformPoint(t.position), h = t.localScale * 0.5f;
             best = Mathf.Min(best, inner.x - Mathf.Abs(c.x) - h.x, inner.z - Mathf.Abs(c.z) - h.z, inner.y - c.y - h.y);
+            foreach (Vector2 k in CavernRule.Columns)
+                best = Mathf.Min(best, Mathf.Max(Mathf.Abs(c.x - k.x) - h.x - half, Mathf.Abs(c.z - k.y) - h.z - half));
         }
         return best;
     }
@@ -77,7 +102,7 @@ public static partial class SampleSceneBuilder
         Vector3 site = hx.site;
         Color conc = new Color(0.6f, 0.6f, 0.58f), steel = TreeSteel, dark = new Color(0.25f, 0.27f, 0.3f), yel = new Color(0.95f, 0.8f, 0.2f), green = new Color(0.25f, 0.7f, 0.4f);
         // ── ARRIBA: en el borde del casquete, a lo largo de X y a la altura de la galería. Las cavernas están a ±Z de ella: el tubo tiene que salir por el PILAR
-        //    de roca (en Z se metería por el techo de una caverna o pasaría por encima del pozo del reactor). Se elige el borde más lejano: la pendiente más tendida ──
+        //    de roca (en Z se metería por el techo de una sala). Con 500 m de mar no hay sitio en el casquete para un funicular: sale casi vertical, unos 10° ──
         float edge = NuclearCapHalf - 9f, gz = Mathf.Clamp(gallery.z - site.z, -edge + 12f, edge - 12f);
         Vector3 top = new Vector3(site.x + (gallery.x >= site.x ? -edge : edge), site.y, site.z + gz);
         Vector3 foot = gallery + Vector3.down * 1.2f;   // (el piso del carro, en la galería)
@@ -100,7 +125,7 @@ public static partial class SampleSceneBuilder
         Vector3 padAt = top + side * 7.5f - flat * 1f + Vector3.up * 0.01f;
         CarpetPad.BuildZone(padHolder, padAt, Quaternion.LookRotation(flat), CarpetPad.Kind.Edificio, hx.building, 0, $"{hx.building}#linea", SiteLine.AreaName, 2);
 
-        // ── EL TUBO: de cristal en los 16 m de mar (se ve el agua) y revestido en la roca. Marcos cada 6 m y dos raíles ──
+        // ── EL TUBO: de cristal en los primeros metros, de acero hasta el lecho y revestido en la roca. Marcos cada 12 m y dos raíles ──
         Transform tube = new GameObject("Tubo_linea").transform; tube.SetParent(root, false); tube.SetPositionAndRotation(top, Quaternion.LookRotation(axis));
         tube.position -= tube.up * (LineBore * 0.5f - 0.1f);   // el piso del tubo, bajo el carro
         float sea = (top.y - NuclearSiteRule.SeabedY) / Mathf.Max(0.01f, -axis.y);   // lo que recorre hasta el lecho
@@ -113,9 +138,11 @@ public static partial class SampleSceneBuilder
                 KitchenProps.C(tube, new Vector3(0f, s * h, mid), new Vector3(LineBore, 0.1f, l), c, 0f, name);
             }
         }
-        Shell(0f, sea, VirtualizationTank.GlassColor, "Tubo_cristal");
+        float view = 16f / Mathf.Max(0.01f, -axis.y);   // el cristal, solo arriba, donde se ve el mar: a 50 bar, abajo, va acero
+        Shell(0f, view, VirtualizationTank.GlassColor, "Tubo_cristal");
+        Shell(view, sea, steel, "Tubo_acero");
         Shell(sea, len, conc, "Tubo_revestido");
-        for (float z = 3f; z < len; z += 6f)
+        for (float z = 3f; z < len; z += 12f)
         {
             float h = LineBore * 0.5f + 0.1f;
             for (int s = -1; s <= 1; s += 2)
@@ -126,7 +153,7 @@ public static partial class SampleSceneBuilder
         }
         for (int s = -1; s <= 1; s += 2) KitchenProps.C(tube, new Vector3(s * 0.8f, -LineBore * 0.5f + 0.15f, len * 0.5f), new Vector3(0.12f, 0.2f, len), dark, 0f, "Rail_linea");
 
-        // ── EL CARRO: cabina NIVELADA, con el piso siempre plano aunque el tubo vaya casi al 100 % (como Stoos); abierta hasta el pasamanos, para ver a quien va ──
+        // ── EL CARRO: cabina NIVELADA, con el piso siempre plano aunque el tubo vaya inclinado; abierta hasta el pasamanos, para ver a quien va ──
         Transform car = new GameObject("Carro_linea").transform; car.SetParent(st, true); car.SetPositionAndRotation(top, Quaternion.LookRotation(flat));
         KitchenProps.C(car, new Vector3(0f, 0.04f, 0f), new Vector3(2.6f, 0.08f, 3f), dark, 0f, "Piso_carro");
         for (int s = -1; s <= 1; s += 2)
@@ -172,14 +199,14 @@ public static partial class SampleSceneBuilder
 
     static float Flat2(Vector3 a, Vector3 b) { a.y = 0f; b.y = 0f; return Vector3.Distance(a, b); }
 
-    /// <summary>La regla de la línea: pendiente y segunda salida.</summary>
+    /// <summary>La regla de la línea: menos de un minuto, esclusas incluidas, y segunda salida.</summary>
     static void ValidateCavernLine(SiteLine l)
     {
         if (l == null) return;
         var bad = new List<string>();
-        if (l.Gradient > SiteLineRule.MaxGradient) bad.Add($"pendiente de {l.Gradient:P0} (máx. {SiteLineRule.MaxGradient:P0})");
+        if (SiteLineRule.OneWay(l.Length) >= SiteLineRule.MaxOneWay) bad.Add($"{SiteLineRule.OneWay(l.Length):0.0} s por viaje (pide < {SiteLineRule.MaxOneWay:0} s)");
         if (l.escapeBottom == null || l.escapeTop == null) bad.Add("sin salida de escape");
         if (bad.Count > 0) Debug.LogError($"[Sitio nuclear] Línea: {string.Join("; ", bad)}.");
-        else Debug.Log($"[Sitio nuclear] Línea: {l.Length:0} m al {l.Gradient:P0}, {SiteLineRule.OneWay(l.Length):0} s por viaje; un ascensor tardaría {SiteLineRule.HoistOneWay(l.Drop):0} s; pozo de escape en {SiteLineRule.EscapeSeconds(l.EscapeDrop, l.EscapeWalk):0} s.");
+        else Debug.Log($"[Sitio nuclear] Línea: {l.Length:0} m a {l.AngleDeg:0}°, {SiteLineRule.OneWay(l.Length):0.0} s por viaje; un ascensor tardaría {SiteLineRule.HoistOneWay(l.Drop):0} s; pozo de escape en {SiteLineRule.EscapeSeconds(l.EscapeDrop, l.EscapeWalk):0} s.");
     }
 }

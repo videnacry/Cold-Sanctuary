@@ -93,7 +93,7 @@ los números de cada día salen en el registro: `[Frutales] … tareas de N árb
 - El tronco ya no tiene `Fondo_raiz`: el agua del tronco (`Agua_raiz`) baja hasta −1,6 m (la cara de abajo del hielo es −1,5) y el
   hielo de debajo tiene un **hueco** (`CutIceUnder`: los bloques de la banquisa que lo pisan se parten en los trozos de alrededor).
   Cuadrado y alineado con el mundo: en el Árbol de los Campos, que gira, de 14 × 14 m (siempre dentro del agua del tronco, gire como
-  gire); en las torres (giro de 0° o 90°), de 19,6 × 19,6 m. Debajo, el mar (16 m de agua hasta el fondo marino).
+  gire); en las torres (giro de 0° o 90°), de 19,6 × 19,6 m. Debajo, el mar (500 m de agua hasta el fondo marino, desde 2026-11-05; el nado sigue cerca de la superficie).
 - El cimiento (`Encepado_raiz`) es ahora un marco alrededor del hueco.
 - NavMesh: el pie del tronco ya no se andaba (el círculo inscrito del tronco era «no andable»); el hueco tampoco. La prueba comprueba
   que no hay NavMesh en el hueco y que sigue llegando a la puerta del suelo de cada árbol.

@@ -2380,17 +2380,17 @@ public static partial class SampleSceneBuilder
         // cada uno ignora los objetos que no tienen su componente requerido.
         GameObject swimZone = new GameObject("Sea_SwimZone");
         swimZone.transform.SetParent(parent);
-        swimZone.transform.position = new Vector3(0f, PolarLandscapeBuilder.WaterLevel - 8f, 0f);
+        swimZone.transform.position = new Vector3(0f, SeaRule.Surface - SeaRule.Depth * 0.5f, 0f);
         BoxCollider swimCollider = swimZone.AddComponent<BoxCollider>();
         swimCollider.isTrigger = true;
-        swimCollider.size = new Vector3(1200f, 16f, 1200f); // todo el mar: bajo la banquisa, en los canales y alrededor
+        swimCollider.size = new Vector3(1200f, SeaRule.Depth, 1200f); // todo el mar: bajo la banquisa, en los canales y alrededor
         swimZone.AddComponent<WaterZone>();
         swimZone.AddComponent<MediumZone>().medium = Medium.Water;
 
         // Fondo marino: sin él, quien cae a un canal se hundiría para siempre. Invisible y fuera del NavMesh.
         GameObject seabed = new GameObject("FondoMarino");
         seabed.transform.SetParent(parent);
-        seabed.transform.position = new Vector3(0f, PolarLandscapeBuilder.WaterLevel - 17f, 0f);
+        seabed.transform.position = new Vector3(0f, SeaRule.FloorY - 1f, 0f);
         seabed.AddComponent<BoxCollider>().size = new Vector3(1200f, 2f, 1200f);
         PolarLandscapeBuilder.IgnoreForNav(seabed);
 
