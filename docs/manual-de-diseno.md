@@ -201,7 +201,7 @@ en el doc de su tema; aquí no se repite.
 | A2 | **Las abejas forman enjambres** que de día vuelan de árbol en árbol y de noche vuelven a la colmena. | Se ven mejor volando en grupo. | 71 (visita ≥ 3 árboles) | [grupos-de-animales.md](grupos-de-animales.md) |
 | A3 | **Los grupos marinos entran en los árboles** por el fondo abierto. | El edificio está unido al mar. | 71 | [grupos-de-animales.md](grupos-de-animales.md) |
 | A4 | **Especies reales del lugar** (mar de Ross, McMurdo): pez plateado antártico, kril antártico, *Diplulmaris* y *Desmonema*. | Fidelidad ecológica. | 71 (de su especie y su talla) | [grupos-de-animales.md](grupos-de-animales.md) |
-| A5 | **Abejas y medusas mates, sin deslumbrar**: sin emisión ni brillo especular (`SwarmModels.Matte`); la abeja de las nieves, de pelusa gris blanquecina. | Brillaban tanto que cegaban a quien miraba (2026-11-04). | **solo en docs** (hecho en código el 2026-11-04, sin prueba propia; se mira en fotos) | [grupos-de-animales.md](grupos-de-animales.md) §2026-11-04 |
+| A5 | **Abejas y medusas mates, sin deslumbrar ni verse negras**: sin brillo especular ni reflejos y con una luz propia suave, muy por debajo del umbral del posprocesado (`SwarmModels.Matte`, `SoftGlow`; ronda 7: a contraluz salían casi negras); la abeja de las nieves, de pelusa gris blanquecina. | Brillaban tanto que cegaban a quien miraba (2026-11-04). | **solo en docs** (hecho en código el 2026-11-04, sin prueba propia; se mira en fotos) | [grupos-de-animales.md](grupos-de-animales.md) §2026-11-04 |
 
 ## 9. Personajes, jornada y horario libre
 

@@ -128,7 +128,7 @@ public class ConstructionProgressTest : MonoBehaviour, ITestUnit
                 var shown = Shown(cp);
                 if (shown.Count < prev) { mono = false; why += $"día {d}: {shown.Count} < {prev}; "; }
                 int expect = pieces.Count(p => p.day <= d);
-                if (shown.Count != expect || pieces.Where(p => p.day > d).Any(p => shown.Contains(p.name))) { noFuture = false; why += $"día {d}: se ven {shown.Count}, tocan {expect}; "; }
+                if (shown.Count != expect || pieces.Where(p => p.day > d).Any(p => p.shown > 0f)) { noFuture = false; why += $"día {d}: se ven {shown.Count}, tocan {expect}; "; }
                 if (Usable(cp).Length > 0 || realDone.gameObject.activeSelf) { noUse = false; why += $"día {d} (fin): usable {Usable(cp)}; "; }
                 prev = shown.Count;
                 if (d == 3) atDay3 = shown;
@@ -154,7 +154,7 @@ public class ConstructionProgressTest : MonoBehaviour, ITestUnit
         yield return null;
         again.Restore(3, false);
         var re = Shown(again);
-        TestProbe.Check("cargar la obra en el día 3 enseña exactamente las piezas de esos días", atDay3 != null && re.Count == atDay3.Count && re.All(atDay3.Contains),
+        TestProbe.Check("cargar la obra en el día 3 enseña exactamente las piezas de esos días", atDay3 != null && re.OrderBy(n => n).SequenceEqual(atDay3.OrderBy(n => n)),
             $"cargada: {string.Join(", ", re)} · simulada: {(atDay3 != null ? string.Join(", ", atDay3) : "—")}");
         TestProbe.Check("cargada a medias: el material del día no está y el acabado sigue apagado", !again.materialOnSite && !again.transform.Find(FloorForms.FinishedName).gameObject.activeSelf && again.MaterialLeft == again.MaterialFull);
 

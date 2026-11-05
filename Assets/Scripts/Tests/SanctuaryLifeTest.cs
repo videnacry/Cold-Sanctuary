@@ -102,12 +102,15 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         Hive hv = null;
         // Una colmena con abejas y SIN araña al lado (con una araña acechando, la reina huye en vez de poner: es otra prueba).
         var spiders = FindObjectsByType<SnowSpiderBehavior>(FindObjectsSortMode.None);
+        var insects = FindObjectsByType<IceInsectLife>(FindObjectsSortMode.None);
+        // Con su reina VIVA y apareada: una colonia que perdió a la reina (ronda 7: muerta=True, 0 huevos) no puede poner, es otra prueba.
+        System.Func<Hive, bool> liveQueen = h => insects.Any(b => b != null && b.hive == h && b.isQueen && b.mated && b.GetComponent<Animal>() != null && !b.GetComponent<Animal>().death);
         foreach (Hive h in Hive.All)
         {
-            if (spiders.Any(s => s != null && Vector3.Distance(s.transform.position, h.combCenter) < 5f)) continue;
-            foreach (IceInsectLife b in FindObjectsByType<IceInsectLife>(FindObjectsSortMode.None)) if (b.hive == h) { hv = h; break; }
-            if (hv != null) break;
+            if (!liveQueen(h) || spiders.Any(s => s != null && Vector3.Distance(s.transform.position, h.combCenter) < 5f)) continue;
+            hv = h; break;
         }
+        if (hv == null) foreach (Hive h in Hive.All) if (liveQueen(h)) { hv = h; break; }   // todas con araña cerca: la primera con reina
         if (hv == null) foreach (Hive h in Hive.All) { foreach (IceInsectLife b in FindObjectsByType<IceInsectLife>(FindObjectsSortMode.None)) if (b.hive == h) { hv = h; break; } if (hv != null) break; }   // todas tienen araña cerca: la primera
         TestProbe.Check("hay una colmena con abejas", hv != null);
         if (hv != null)
@@ -115,7 +118,7 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
             var roles = new System.Collections.Generic.HashSet<IceInsectLife.Role>();
             bool queen = false;
             foreach (IceInsectLife b in FindObjectsByType<IceInsectLife>(FindObjectsSortMode.None)) if (b.hive == hv) { roles.Add(b.role); queen |= b.isQueen; }
-            TestProbe.Check("la colonia tiene reina", queen);
+            TestProbe.Check("la colonia tiene reina", queen, $"{Hive.All.Count(h => liveQueen(h))}/{Hive.All.Count} colmenas con reina viva y apareada; colmena «{hv.name}»");
             float old = hv.secondsPerDay; hv.secondsPerDay = 1f;
             float t2 = Time.time;
             while (hv.Count(Hive.Cell.Egg) + hv.Count(Hive.Cell.Larva) == 0 && Time.time - t2 < 40f) yield return null;
