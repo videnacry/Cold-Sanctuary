@@ -54,12 +54,12 @@ public static partial class MicroStoryMaps
         todo = new[] { "en vivo: que el mar del golfo entre por el oeste y no tape el paliwe" },
     };
 
-    // ══ CAJAMARCA, abril de 1533 (Atahualpa): sobre el Estudio Textil (pendiente de su contaduría) ═════════════════════════════
-    // El valle verde al acabar las lluvias: maizales y papas, alisos en las acequias, ichu en los cerros; la plaza, las kallankas y las
+    // ══ CAJAMARCA, 15 de noviembre de 1532 (Atahualpa): sobre el Estudio Textil (pendiente de su contaduría) ═════════════════════════════
+    // El valle al empezar las lluvias, con la siembra: maizales y papas, alisos en las acequias, ichu en los cerros; la plaza, las kallankas y las
     // colcas; Pultumarca al este. Las mesas de corte son la meseta de los cerros; los rollos de tela, las terrazas de cultivo.
     static Map MapCajamarca() => new Map
     {
-        display = "Cajamarca", place = "Cajamarca, valle del norte del Perú, abril de 1533", status = Status.Hecho,
+        display = "Cajamarca", place = "Cajamarca, valle del norte del Perú, 15 de noviembre de 1532", status = Status.Hecho,
         source = "Xerez 1534; Hyslop 1990, Inka Settlement Planning; Weberbauer 1945; OpenStreetMap, Cajamarca",
         floor = Natural(
             new Piece("alfombra", Apilar, "las alfombras, apiladas: el cerro Santa Apolonia, sobre la plaza"),
@@ -85,7 +85,7 @@ public static partial class MicroStoryMaps
             new Animal("Aphid", "Llama del ganado del Inca (en el microcosmos, un pulgón de lana)", 860f, 620f, 4, 1.8f, 100f),
             new Animal("Woodlouse", "Cuy (en el microcosmos, una cochinilla pequeña)", -60f, -200f, 3, 0.4f, 40f),
         },
-        buildings = new[] { new Building("Haukaypata", 30f, -10f), new Building("Sala del rescate", 40f, 120f), new Building("Colcas", -230f, -160f), new Building("Acllawasi", -360f, 200f), new Building("Pultumarca", 930f, 180f), new Building("Templo del Sol", -480f, -40f) },
+        buildings = new[] { new Building("Haukaypata", 30f, -10f), new Building("Casa de los quipus", 40f, 120f), new Building("Colcas", -230f, -160f), new Building("Acllawasi", -360f, 200f), new Building("Pultumarca", 930f, 180f), new Building("Templo del Sol", -480f, -40f) },
         todo = new[] { "en vivo: la plaza es triangular en Xerez; aquí, rectangular: mirar si se puede dar la forma con las calles" },
     };
 }

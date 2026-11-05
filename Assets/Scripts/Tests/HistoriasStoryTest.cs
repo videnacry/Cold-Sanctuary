@@ -100,6 +100,9 @@ public class HistoriasStoryTest : MonoBehaviour, ITestUnit
         TestProbe.Check("la ficha con su historia y sus fuentes", card != null && card.history.Length >= 3 && card.sources.Length >= 3, card != null ? $"{card.history.Length} párrafos, {card.sources.Length} fuentes" : "sin HistoryCard");
         string text = card != null ? string.Join(" ", card.history) : "";
         if (display == "Lagunillas") TestProbe.Check("la ficha dice que no muestra heridas ni combates", text.Contains("no muestra heridas"));
+        if (display == "Cajamarca") TestProbe.Check("la ficha cuenta la vida inca, las obras sin terminar y la bienvenida", text.Contains("ayni") && text.Contains("Ollantaytambo") && text.Contains("Tumbes"));
+        // Regla W10: lo embellecido, marcado en la ficha (no en Madrid: a los vivos no se les inventan actos).
+        if (display == "Chimbacalle" || display == "Lagunillas" || display == "Cajamarca" || display == "Alejandría de Cleopatra" || display == "Leiden") TestProbe.Check("la ficha marca la recreación (W10)", text.Contains("recreación"));
         if (display == "Feria de las Hazañas") TestProbe.Check("la ficha dice que la feria es inventada y que Lee fue primer ministro", text.Contains("inventada") && text.Contains("PRIMER MINISTRO"));
         if (display == "Madrid 2018") TestProbe.Check("la ficha cita su fecha y no valora la gestión", text.Contains("noviembre de 2026") && text.Contains("no opina"));
         if (display == "Gettysburg") TestProbe.Check("la ficha da las encuestas y las sombras", text.Contains("C-SPAN") && text.Contains("Siena") && text.Contains("dakota"));

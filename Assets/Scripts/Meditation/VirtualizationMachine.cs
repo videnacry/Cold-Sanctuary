@@ -152,7 +152,7 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
         // LA TANDA 3 (docs/microcosmos-historias-3.md). Viena va en la Sala de Ballet, que sigue en obras: mientras, también desde el Gimnasio.
         ("Mecánica", "Simulación: Eloy Alfaro y el tren de Guayaquil a Quito (1908)", "Microcosmos_EloyAlfaro"),
         (AreaWork.Hospital, "Simulación: Galvarino vuelve con su gente (Arauco, 1557)", "Microcosmos_Galvarino"),
-        ("Estudio Textil", "Simulación: Atahualpa en Cajamarca: el rescate (1533)", "Microcosmos_Atahualpa"),
+        ("Estudio Textil", "Simulación: Atahualpa y los incas: cómo vivían, Cajamarca (1532)", "Microcosmos_Atahualpa"),
         ("Aula", "Simulación: la Gran Ley de la Paz de los Haudenosaunee (lago Onondaga)", "Microcosmos_GranLeyDeLaPaz"),
         ("Cocina", "Simulación: Cleopatra en Alejandría: los años sin crecida (42 a. C.)", "Microcosmos_Cleopatra"),
         ("Informática", "Simulación: las calculadoras de Langley: Johnson, Vaughan y Jackson (1962)", "Microcosmos_Langley"),

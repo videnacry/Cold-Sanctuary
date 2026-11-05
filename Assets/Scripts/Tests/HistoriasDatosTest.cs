@@ -17,7 +17,7 @@ public class HistoriasDatosTest : MonoBehaviour, ITestUnit
     {
         ("Chimbacalle", "VehicleWorkshop_Area", false, 1908, "Andes", "andes_republicano", "pelota_nacional"),
         ("Lagunillas", "Infirmary_Area", true, 1557, "Mapuche", "mapuche", "palin"),
-        ("Cajamarca", "TextileStudio_Area", false, 1533, "Inca", "inca", "warachikuy"),
+        ("Cajamarca", "TextileStudio_Area", false, 1532, "Inca", "inca", "warachikuy"),
         ("Onondaga", "Classroom_Area", false, 1450, "Haudenosaunee", "haudenosaunee", "tewaarathon"),
         ("Alejandría de Cleopatra", "Kitchen_Area", true, -42, "EgiptoPtolemaico", "egipto_ptolemaico", "gimnasio_griego"),
         ("Langley", "Informatics_Area", true, 1962, "VirginiaTidewater", "virginia_1960", "gimnasio_moderno"),
