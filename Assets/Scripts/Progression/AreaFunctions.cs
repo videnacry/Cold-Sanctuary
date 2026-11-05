@@ -143,6 +143,10 @@ public static class AreaFunctions
         Roles(S(Effect(Def("Informática", "ifo_energia", "Revisar la acometida, el SAI y las baterías del clúster", 0.5f, false, Kind.Operate, "consola"), who => AiCluster.Instance?.PowerCheck(who))), "informatico");
         Roles(S(Def("Aula", "aul_clase", "Dar o recibir una clase en el aula (un tema de las áreas del santuario)", 1f, false, Kind.Teach, "pizarra")), "maestro", "alumno");
         S(Def("Aula", "aul_estudio", "Estudiar en la sala de estudio (biblioteca)", 1f, false, Kind.Study, "mesa"));
+        // (2026-11-05) LA MÚSICA (docs/piso-musica.md): grabar, ensayar y cuidar el equipo (los id son «son_»: «mus_» es el Museo).
+        S(Def("Música", "son_grabar", "Grabar y mezclar en el estudio (la mesa de mezclas y la cabina de voz)", 1f, false, Kind.Operate, "consola"));
+        S(Def("Música", "son_ensayo", "Preparar y ensayar el concierto de la semana", 1f, false, Kind.Practice, "pista"));
+        S(Def("Música", "son_equipo", "Revisar instrumentos y sonido: cuerdas, cables, micrófonos y altavoces", 0.5f, false, Kind.Make, "banco_taller"));
         // (2026-11-04) LAS PROFESIONES NUEVAS (Berón; docs/personajes-mesocosmos.md §Profesiones): asuntos legales y lenguas (Karen, en
         // una mesa de la sala de estudio del Aula), la contabilidad (Alicita, desde el restaurante) y la dirección de las obras (Alicita).
         S(Def("Aula", "aul_legal", "Asuntos legales: contratos, permisos, normas y acuerdos del santuario (en una mesa de la sala de estudio)", 1f, false, Kind.Study, "mesa"));

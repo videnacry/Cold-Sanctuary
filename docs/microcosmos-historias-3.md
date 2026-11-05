@@ -17,7 +17,7 @@ toca. Reglas: [manual de diseño](manual-de-diseno.md) §7 y J6, y [microcosmos-
 | Estilo de época y lugar | `MicroStyles.cs`, `MicroStyles.Historias.cs` | 11 regiones y 11 entradas nuevas (abajo), y sus nombres de edificios (`HistoNames`: **lo que no está en la tabla no existía** y no se construye) y frutales (`HistoFruits`). |
 | Lugares de entrenar | `HistoricTraining.cs`, `CivicBuilder.Plans.cs` (`TrainingKit`), `MicroStyles.Civic.cs` (`TrainingKind`) | 4 clases nuevas: `palin`, `warachikuy`, `tewaarathon`, `pelota_nacional` ([microcosmos-entrenamiento-eras.md](microcosmos-entrenamiento-eras.md)). |
 | Fecha, lugar, luz, piso | `StorySceneBuilder.Dates`, `Eras.OfMicrocosmos`, `SolarPosition.GeoOf`, `MicroFloors.Table` | Una fila por historia. |
-| Entradas | `VirtualizationMachine.StoryScenes`, `EraHubSceneBuilder.All` | La máquina del área de su piso y la Sala de Eras. Viena, también desde el Gimnasio (la Sala de Ballet sigue en obras). |
+| Entradas | `VirtualizationMachine.StoryScenes`, `EraHubSceneBuilder.All` | La máquina del área de su piso y la Sala de Eras. Viena, desde el piso de Música. |
 | Su insecto | `InsectCast` | El porqué de cada especie (las escenas la pasan explícita). |
 | Pruebas | `HistoriasDatosTest` (**grupo 78**, sin escenas), `HistoriasStoryTest` (**grupo 79**, carga las 12 de una en una) | Ver «Qué probar». `GymTrainingTest` (87) incluye las 12 y las 4 clases; `MicrocosmosFloorTest` sube a 70 escenas. |
 
@@ -31,7 +31,7 @@ toca. Reglas: [manual de diseño](manual-de-diseno.md) §7 y J6, y [microcosmos-
 | **La Gran Ley de la Paz** (`Microcosmos_GranLeyDeLaPaz`, «Onondaga») | Jigonsaseh, Ayenwatha, el Pacificador y Tadodaho: cinco naciones, una casa larga | Lago Onondaga, hacia 1450 (fecha discutida), 9:00 | **Aula**, **pendiente**: «Sala de asambleas (parlamento)» | Abeja: el enjambre decide por consenso |
 | **Cleopatra** (`Microcosmos_Cleopatra`, «Alejandría de Cleopatra») | Dos años sin crecida: abre los graneros y habla a cada barrio en su lengua | Alejandría, verano del 42 a. C., 8:00 | **Cocina**, representativo (dar de comer a la ciudad) | Abeja: el signo del rey del Bajo Egipto |
 | **Las calculadoras de Langley** (`Microcosmos_Langley`, «Langley») | Johnson comprueba a mano la órbita de Glenn; Vaughan y FORTRAN; Jackson y el instituto | Hampton (Virginia), 19–20-2-1962, 9:47 | **Informática**, representativo | Pelotero (Johnson: las estrellas), hormiga (Vaughan), tijereta (Jackson) |
-| **Beethoven** (`Microcosmos_Beethoven`, «Viena 1824») | El estreno de la Novena: hablarle por escrito, las particellas; Unger lo gira | Viena, 7-5-1824, 19:00 | **Sala de Ballet**, **pendiente**: «Sala de grabación y escenario de conciertos (música)» (el mismo piso que espera la música) | Grillo: oye por las patas |
+| **Beethoven** (`Microcosmos_Beethoven`, «Viena 1824») | El estreno de la Novena: hablarle por escrito, las particellas; Unger lo gira | Viena, 7-5-1824, 19:00 | **Música** (`Music_Area`, [piso-musica.md](piso-musica.md)) | Grillo: oye por las patas |
 | **Descartes** (`Microcosmos_Descartes`, «Leiden») | Se imprime el Discurso del método: las cuatro reglas, la rejilla, dudar junto a la estufa | Leiden, 8-6-1637, 10:00 | **Aula**, representativo | Araña: una red de líneas rectas |
 | **Ernesto Guevara** (`Microcosmos_CheGuevara`, «San Pablo») | La colonia de leprosos: curas sin guantes, el brindis, el río, la balsa | San Pablo de Loreto, 14-6-1952, 9:00 | **Hospital**, representativo | Langosta: cruza un continente |
 | **Pedro Sánchez** (`Microcosmos_PedroSanchez`, «Madrid 2018») | Cómo funciona una moción de censura; la votación; la promesa | Congreso, Madrid, 1-6-2018, 11:00 | **Aula**, **pendiente**: «Sala de asambleas (parlamento)» | Abeja: el pleno cuenta apoyos (también Rajoy y Pastor: el insecto es por la institución) |
@@ -138,7 +138,7 @@ Las de cada historia están en su ficha (`sources` de la misión); las de plano 
 
 ## Riesgos
 
-- La **Sala de Ballet** (Viena) no se ha usado nunca de microcosmos y está en obras; el microcosmos pide su «Acabado».
+- Viena va en el piso de Música ([piso-musica.md](piso-musica.md)): hay que reconstruir SampleScene antes.
 - Los Prop con collider de cada historia (los leones, el hemiciclo, el tablado) deben dejar paso a los objetivos: mirar que `Collect` y `Hold` se puedan alcanzar.
 - En **`Natural`**, si una pieza del piso se llama de otra forma, cae a su catálogo: en Onondaga podría quedar una fábrica. Mirar las fotos.
 - El Hospital y el Aula cargan ya con muchas historias: reconstruir de una en una, nunca todas a la vez (W5).

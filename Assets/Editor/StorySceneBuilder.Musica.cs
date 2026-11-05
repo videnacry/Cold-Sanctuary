@@ -111,7 +111,7 @@ public static partial class StorySceneBuilder
                 Talk("Habla con el rector", rector.transform, "Rector del colegio", "Este colegio es público: aquí no se paga. Lo que hemos construido entre todos tiene que aguantar cuando se apaguen las cámaras."),
                 Hold("Quédate mirando el ensayo del grupo de danza", dance, 10f, "Maestra de danza", "Cumbia y mapalé, descalzas, como se bailan aquí. El arte también es materia."),
                 Talk("Habla con la vecina de La Playa", neighbor.transform, "Vecina de La Playa", "Llegué sin nada. Mis hijos andaban todo el día en la orilla. Hoy los vi salir con uniforme, y eso no me lo quita nadie."),
-                Talk("Vuelve con Shakira", sh.transform, "Shakira", "Me dan las gracias por cantar, pero son ellos los que van a cambiar este país. Yo solo quiero que nadie les cierre la puerta."),
+                Talk("Vuelve con Shakira", sh.transform, "Shakira", "Con lo primero que gané fuera, a los veinte años, empecé esto. Me dan las gracias por cantar, pero son ellos los que van a cambiar este país. Yo solo quiero que nadie les cierre la puerta."),
             },
             "El corregimiento de La Playa, junto a la Ciénaga de Mallorquín (Barranquilla, Colombia), en 2009, sobre el Aula del santuario a escala de hormiga. La Fundación Pies Descalzos, que Shakira creó en 1997, abre su primer colegio en la ciudad donde ella nació. E para hablar, recoger y ayudar; para mirar, quédate quieto.",
             new[]
@@ -119,7 +119,7 @@ public static partial class StorySceneBuilder
                 "Shakira Isabel Mebarak Ripoll nació en Barranquilla el 2 de febrero de 1977. Ha contado que de niña, cuando su familia pasaba apuros, su padre la llevó a un parque de la ciudad para que viera a los niños que vivían en la calle, y que aquello la marcó. En 1995 publicó el álbum Pies Descalzos, y la canción del mismo título cuenta con otras palabras esa misma mirada (esta historia los nombra sin reproducir sus letras).",
                 "En 1997, tras su primer éxito internacional, creó la Fundación Pies Descalzos, primero para atender a niños desplazados por la violencia y su nutrición. Desde 2003 se centró en la educación pública de calidad: colegio, alimentación, apoyo psicosocial, ingresos para las familias y trabajo con la comunidad. En 2004 empezó en Quibdó y Soacha; en 2007 compró el terreno de La Playa, hizo el censo educativo y el trabajo con el barrio; en 2009 abrió el colegio, el primero suyo en Barranquilla, para más de 1000 estudiantes al año. Néstor Martínez fue su rector desde el comienzo.",
                 "La fundación cuenta 16 colegios en Colombia en 2024 (entre ellos Lomas del Peyé en Cartagena, 2014, y Nuevo Bosque en Barranquilla, 2023) y más de 124 000 niños y jóvenes al año; las cifras varían según se cuenten colegios construidos o adecuados. Shakira es embajadora de buena voluntad de UNICEF desde 2003.",
-                "No consta el día exacto de la apertura ni una visita suya ese día: la escena junta en una jornada lo que pasó entre 2007 y 2009, y las frases son de juego. Shakira tuvo un pleito fiscal en España que cerró con un acuerdo en noviembre de 2023; esta historia se limita al colegio.",
+                "No consta el día exacto de la apertura ni una visita suya ese día: la escena junta en una jornada lo que pasó entre 2007 y 2009, y las frases son de juego. Shakira tuvo un pleito fiscal en España que cerró con un acuerdo en noviembre de 2023; esta historia se limita al colegio. El momento de esta historia: una cantante de 20 años dedica lo primero que gana a que otros niños tengan escuela; es real, como la fundación y el censo.",
             },
             new[]
             {
@@ -133,7 +133,7 @@ public static partial class StorySceneBuilder
         return n;
     }
 
-    // ══ BAD BUNNY · Vega Baja (Puerto Rico), 2016 · Informática (pendiente: sala de grabación) ═══════════════════════════════════
+    // ══ BAD BUNNY · Vega Baja (Puerto Rico), 2016 · Música ═══════════════════════════════════
 
     static int BadBunny(Transform t)
     {
@@ -190,15 +190,15 @@ public static partial class StorySceneBuilder
                 Visit("Recorre lo que le mueve: la radio, los discos y la carretera", path, "Benito", "Quería ser locutor. Salsa de mami, reguetón de la calle, rock, de todo. Puerto Rico entero cabe en una guagua por la PR-2."),
                 Hold("De noche, en su cuarto: acompáñale mientras sube una canción", desk, 10f, "Benito", "Se llama «Diles». Sin sello ni estudio: una computadora, un micrófono y lo que hay aquí. Le doy a subir y me voy a dormir, que mañana empaco."),
                 Talk("Un mensaje: habla con DJ Luian", luian.transform, "DJ Luian", "Oí tu tema en SoundCloud. ¿Tú sigues trabajando en el súper? Hay que hablar."),
-                Talk("Vuelve con Benito", bb.transform, "Benito", "Si esto funciona, no me voy de aquí. Lo que cante va a sonar a Vega Baja."),
+                Talk("Vuelve con Benito", bb.transform, "Benito", "Si esto funciona, no me voy de aquí. Lo que cante va a sonar a Vega Baja, y lo que gane va a volver: que a ningún chamaco de la isla le falte un instrumento en Navidad."),
             },
-            "Vega Baja, en la costa norte de Puerto Rico, en 2016, sobre el piso de Informática del santuario a escala de hormiga (pendiente de su piso: una sala de grabación). Benito Martínez tiene 22 años, empaca compras en un supermercado, estudia comunicación audiovisual en Arecibo y por la noche hace canciones en su cuarto. E para hablar, recoger y ayudar; para mirar, quédate quieto.",
+            "Vega Baja, en la costa norte de Puerto Rico, en 2016, sobre el piso de Música del santuario a escala de hormiga. Benito Martínez tiene 22 años, empaca compras en un supermercado, estudia comunicación audiovisual en Arecibo y por la noche hace canciones en su cuarto. E para hablar, recoger y ayudar; para mirar, quédate quieto.",
             new[]
             {
                 "Benito Antonio Martínez Ocasio nació el 10 de marzo de 1994 en Bayamón y creció en el barrio Almirante Sur de Vega Baja. Su padre era camionero; su madre, maestra de escuela. Cantó en el coro de su iglesia hasta los 13 años. Se graduó de la escuela superior en 2012 y estudió comunicación audiovisual en la Universidad de Puerto Rico en Arecibo, con la idea de ser locutor, sin terminar la carrera.",
                 "Trabajaba como empacador y cajero en un supermercado Econo de Vega Baja. En 2016 la canción «Diles», que había subido a SoundCloud, llamó la atención del productor DJ Luian, que lo fichó para Hear This Music (esta historia nombra sus canciones sin reproducir sus letras). Su primer álbum, X 100pre, salió el 24 de diciembre de 2018.",
                 "Nunca se fue del todo: en 2018 creó la Good Bunny Foundation, que cada Navidad reparte juguetes, instrumentos y material deportivo a jóvenes de la isla; el 22 de julio de 2019 se unió a las protestas que cerraron el Expreso Las Américas y pidieron la renuncia del gobernador; en 2022 el video de «El Apagón» denunció los cortes de luz y la gentrificación. En 2025, Debí Tirar Más Fotos y una residencia de 30 conciertos en San Juan celebraron Puerto Rico; en 2026 hizo el descanso de la Super Bowl y aquel disco fue el primero enteramente en español en ganar el Grammy al álbum del año.",
-                "Las frases son de juego y el diálogo con DJ Luian resume lo que él ha contado; doña Carmen es inventada y no se sabe en qué cuarto ni con qué equipo grabó exactamente. Algunas de sus letras y gestos públicos han generado debate; esta historia se limita a 2016.",
+                "Las frases son de juego y el diálogo con DJ Luian resume lo que él ha contado; doña Carmen es inventada y no se sabe en qué cuarto ni con qué equipo grabó exactamente. Algunas de sus letras y gestos públicos han generado debate; esta historia se limita a 2016. El momento de esta historia: un empacador que no deja el trabajo ni la isla, y que dos años después reparte juguetes e instrumentos cada Navidad; la promesa es de juego, pero lo que hizo es real.",
             },
             new[]
             {
@@ -211,7 +211,7 @@ public static partial class StorySceneBuilder
         return n;
     }
 
-    // ══ JOHN LENNON · el Bed-In de Montreal, 1 de junio de 1969 · Sala de Ballet (pendiente: escenario y sala de grabación) ════════
+    // ══ JOHN LENNON · el Bed-In de Montreal, 1 de junio de 1969 · Música ════════
     //    Se eligió Montreal y no Liverpool: es un acto público, cívico y bien documentado, hecho a dos con Yoko Ono, y de esa habitación
     //    salió la canción que cantó medio millón de personas en Washington (docs/microcosmos-musica.md, «Lennon: por qué Montreal»).
 
@@ -271,16 +271,16 @@ public static partial class StorySceneBuilder
                 Visit("Atiende a los visitantes: la entrevista, la guitarra y la puerta", visitors, "Derek Taylor", "Periodistas, un poeta, un rabino, una cantante, un cómico, y un dibujante que ha venido a pelearse con ellos. También él entra: esa es la idea."),
                 Talk("Habla con Yoko Ono", yoko.transform, "Yoko Ono", "La idea de quedarse quieto es muy simple. Por eso cuesta tanto que la tomen en serio. La guerra se hace ocupada; la paz también necesita tiempo."),
                 Reach("1 de junio: ve con André Perry a preparar la grabación", rec, "André Perry", "Cuatro micrófonos en el suelo y un magnetófono que he subido yo mismo. No es un estudio: es un cuarto de hotel lleno de gente."),
-                Hold("Graba con todos: quédate cantando en la habitación", rec, 12f, "John Lennon", "Todos a la vez, aunque desafinen. Un estribillo sencillo que pueda cantar cualquiera. Aquel periodista preguntó para qué era esto, y la respuesta se ha convertido en canción."),
+                Hold("Graba con todos: quédate cantando en la habitación", rec, 12f, "John Lennon", "Todos a la vez, aunque desafinen. Un estribillo sencillo que pueda cantar cualquiera. Aquel periodista preguntó para qué era esto, y la respuesta se ha convertido en canción. Mira: hasta la que vino a reírse de nosotros tiene el papel con la letra en la mano."),
                 Talk("Vuelve con John", john.transform, "John Lennon", "Si pudiera vender la paz como se vende un jabón, lo haría. Hoy hemos hecho el anuncio."),
             },
-            "El Queen Elizabeth Hotel de Montreal (Canadá), del 26 de mayo al 1 de junio de 1969, sobre la Sala de Ballet del santuario a escala de hormiga (pendiente de su piso: escenario y sala de grabación). John Lennon y Yoko Ono convierten su cama en una protesta contra la guerra de Vietnam, y el último día graban en la habitación una canción con todos los que están allí. E para hablar, recoger y ayudar; para mirar, quédate quieto.",
+            "El Queen Elizabeth Hotel de Montreal (Canadá), del 26 de mayo al 1 de junio de 1969, sobre el piso de Música del santuario a escala de hormiga. John Lennon y Yoko Ono convierten su cama en una protesta contra la guerra de Vietnam, y el último día graban en la habitación una canción con todos los que están allí. E para hablar, recoger y ayudar; para mirar, quédate quieto.",
             new[]
             {
                 "John Lennon nació en Liverpool en 1940 y fundó allí los Beatles; Yoko Ono, artista conceptual, nació en Tokio en 1933. Se casaron en marzo de 1969 y usaron la expectación de su boda para protestar contra la guerra de Vietnam: del 25 al 31 de marzo recibieron a la prensa en la cama del Hilton de Ámsterdam, cada día de nueve a nueve. En abril enviaron bellotas a jefes de Estado para que plantaran árboles por la paz.",
                 "Querían repetirlo en Nueva York, pero a Lennon no le dejaron entrar en Estados Unidos por una condena por cannabis de 1968. Tras una noche en las Bahamas fueron a Canadá y eligieron Montreal, cerca de la prensa de Nueva York. Del 26 de mayo al 1 de junio ocuparon las habitaciones 1738–1744 del Queen Elizabeth Hotel; pasaron por allí Timothy Leary, Tommy Smothers, Dick Gregory, Allen Ginsberg, Petula Clark, el rabino Abraham Feinberg y Derek Taylor. El dibujante Al Capp discutió con ellos con dureza y no cantó.",
                 "El 1 de junio, André Perry, dueño de un estudio de la ciudad, grabó en la habitación 1742, con cuatro micrófonos y un magnetófono de cuatro pistas, Give Peace a Chance (esta historia la nombra sin reproducir sus letras: el título salió de una respuesta de Lennon a un periodista que le preguntó para qué era aquello). Llegó al n.º 2 en el Reino Unido y al 14 en Estados Unidos. El 15 de noviembre de 1969, en la Moratoria contra la guerra de Vietnam, alrededor de medio millón de personas la cantaron en Washington, guiadas por Pete Seeger. Lennon dijo después que debió acreditarla a Yoko Ono y no a McCartney, que no intervino.",
-                "La prensa de entonces recibió el acto con mucha burla: esa crítica es parte de la historia. Las frases son de juego, salvo la anécdota del título; los detalles de quién estaba en cada momento varían según las fuentes. Lennon reconoció en entrevistas haber sido violento con mujeres en su juventud; esta historia se limita a aquella semana.",
+                "La prensa de entonces recibió el acto con mucha burla: esa crítica es parte de la historia. Las frases son de juego, salvo la anécdota del título; los detalles de quién estaba en cada momento varían según las fuentes. Lennon reconoció en entrevistas haber sido violento con mujeres en su juventud; esta historia se limita a aquella semana. El momento de esta historia: dos personas gastan la atención del mundo en pedir paz, y abren la puerta también a quien viene a burlarse. Recreación: la periodista que acaba cantando es inventada.",
             },
             new[]
             {
@@ -294,7 +294,7 @@ public static partial class StorySceneBuilder
         return n;
     }
 
-    // ══ MICHAEL JACKSON · la familia Jackson en Gary (Indiana), 1966 · Sala de Ballet (pendiente: escenario) ═══════════════════════
+    // ══ MICHAEL JACKSON · la familia Jackson en Gary (Indiana), 1966 · Música ═══════════════════════
     //    La historia es la de una familia obrera de una ciudad del acero y el primer concurso que ganan sus hijos. Michael tiene 7 años: nada
     //    de su vida adulta entra en la escena; la ficha nombra lo discutido en una línea y deja claro que aquí no se juzga.
 
@@ -345,16 +345,16 @@ public static partial class StorySceneBuilder
                 Collect("Lleva los instrumentos a la sala de estar", kit, room, "Jermaine", "La guitarra, las congas y la pandereta. Michael es el pequeño del grupo: empezó dando golpes en las congas y ya canta a mi lado."),
                 Hold("Quédate en la sala durante el ensayo", room, 10f, "Tito", "Una y otra vez, los pasos y las voces, antes de cenar y después del colegio. Los vecinos ya se saben el repertorio."),
                 Talk("Habla con la maestra de Roosevelt High School", teacher.transform, "Maestra", "Este año se apuntan unos hermanos de la calle Jackson. El pequeño es tan bajito que hay que bajarle el micrófono."),
-                Hold("Mira el concurso de talentos desde el patio de butacas", stage, 12f, "Maestra", "Jermaine canta un tema de los Temptations y el pequeño, uno de Robert Parker, bailando descalzo por el escenario. El salón entero se ha puesto de pie."),
-                Talk("Habla con Michael", mj.transform, "Michael", "Hemos ganado. Yo solo quería bailar como en la tele. Mañana hay colegio, pero mamá dice que hoy podemos cenar tarde."),
+                Hold("Mira el concurso de talentos desde el patio de butacas", stage, 12f, "Maestra", "Jermaine canta un tema de los Temptations y el pequeño, uno de Robert Parker, bailando por el escenario. Mira a Tito: se ha agachado a bajarle el micrófono y se ha quedado atrás, para que al pequeño se le vea. El salón entero se ha puesto de pie."),
+                Talk("Habla con Michael", mj.transform, "Michael", "Hemos ganado. Yo solo quería bailar como en la tele. Mañana hay colegio, pero mamá dice que hoy podemos cenar tarde. Tito dice que el premio es de todos, y yo también."),
             },
-            "Gary (Indiana, Estados Unidos), en 1966, sobre la Sala de Ballet del santuario a escala de hormiga (pendiente de su piso: un escenario). En una casa de dos dormitorios junto a la acería, una familia obrera forma un grupo con sus hijos, y gana su primer concurso de talentos en el instituto Theodore Roosevelt. E para hablar, recoger y ayudar; para mirar, quédate quieto.",
+            "Gary (Indiana, Estados Unidos), en 1966, sobre el piso de Música del santuario a escala de hormiga. En una casa de dos dormitorios junto a la acería, una familia obrera forma un grupo con sus hijos, y gana su primer concurso de talentos en el instituto Theodore Roosevelt. E para hablar, recoger y ayudar; para mirar, quédate quieto.",
             new[]
             {
                 "Gary nació en 1906 alrededor de la gran acería de la US Steel, a orillas del lago Míchigan. Joseph Jackson, antiguo boxeador, manejaba allí una grúa y tocaba la guitarra en los Falcons; Katherine Scruse, testigo de Jehová, tocaba el clarinete y el piano y trabajaba a tiempo parcial en Sears. Compraron la casa de 2300 Jackson Street en 1950: dos dormitorios para ellos y sus nueve hijos. Michael, el octavo, nació el 29 de agosto de 1958.",
                 "En 1964 Joe vio que Tito tocaba su guitarra y formó un grupo con Jackie, Tito y Jermaine; Michael entró en las congas y Marlon, en agosto de 1965, en la pandereta. Ganaron su primer concurso de talentos en el instituto Theodore Roosevelt en 1966: Jermaine cantó My Girl y Michael, Barefootin' (esta historia nombra sus canciones sin reproducir sus letras). En agosto de 1967 ganaron también en el Regal de Chicago y en el Apollo de Harlem; en noviembre grabaron Big Boy para Steeltown Records, de Gordon Keith, en Gary, y el 26 de julio de 1968 firmaron con Motown.",
                 "De adulto, Michael Jackson fue el cantante más vendido de su generación y coescribió con Lionel Richie We Are the World (1985), que recaudó unos 63 millones de dólares contra el hambre en África y Estados Unidos; en 1992 creó la Heal the World Foundation para los niños.",
-                "Lo discutido: Michael contó de adulto que su padre fue violento con él en los ensayos; Joe lo reconoció en parte y sus hermanos lo matizaron. Y Michael fue acusado de abusos a menores: un caso acabó en acuerdo extrajudicial en 1994, otro en absolución en 2005, y siguió habiendo acusaciones después de su muerte en 2009. Esta historia no juzga nada de eso: se limita a una familia de Gary en 1966, cuando él tenía 7 años. Las frases son de juego; la fecha exacta del concurso y lo que cada uno dijo no constan.",
+                "Lo discutido: Michael contó de adulto que su padre fue violento con él en los ensayos; Joe lo reconoció en parte y sus hermanos lo matizaron. Y Michael fue acusado de abusos a menores: un caso acabó en acuerdo extrajudicial en 1994, otro en absolución en 2005, y siguió habiendo acusaciones después de su muerte en 2009. Esta historia no juzga nada de eso: se limita a una familia de Gary en 1966, cuando él tenía 7 años. Las frases son de juego; la fecha exacta del concurso y lo que cada uno dijo no constan. El momento de esta historia: una familia de once en dos dormitorios, tras el turno de la acería, sigue ensayando junta. Recreación: el gesto de Tito con el micrófono es inventado.",
             },
             new[]
             {
@@ -415,7 +415,7 @@ public static partial class StorySceneBuilder
                 Talk("Habla con Lisa", lisa.transform, "Lisa", "En Bangkok se presentaron unas cuatro mil y me cogieron solo a mí. Tenía catorce años cuando vine. Fui la primera extranjera de la agencia, y por las noches llamaba a casa."),
                 Talk("Habla con Rosé", rose1.transform, "Rosé", "Mi padre me animó a la audición de Sídney. Éramos setecientas. Un día libre cada dos semanas, y otros trece de ensayo. Se aguanta porque estamos juntas."),
                 Hold("Quédate ante el espejo durante el ensayo", hall, 12f, "Jennie", "Otra vez desde el principio. Hasta que las cuatro pisemos en el mismo instante."),
-                Talk("Habla con Jisoo", jisoo.transform, "Jisoo", "Yo soy de aquí, entré en 2011. Las demás lejos de casa y yo cuidándolas. La familia, aquí, es la que ensaya contigo."),
+                Talk("Habla con Jisoo", jisoo.transform, "Jisoo", "Yo soy de aquí, entré en 2011. Las demás están lejos de casa. La familia, aquí, es la que ensaya contigo."),
                 Talk("8 de agosto de 2016: vuelve con Jennie", jennie.transform, "Jennie", "Hoy sale el disco. Eran nueve y somos cuatro; seis años por tres minutos. Ahora toca ver si ha valido."),
             },
             "El barrio de Hapjeong (Mapo, Seúl), sobre la Sala de Ballet del santuario a escala de hormiga, en los años de aprendizas de la agencia YG hasta el 8 de agosto de 2016, el día del debut. Cuatro chicas de Corea, Tailandia y Australia ensayan catorce horas al día. E para hablar, recoger y ayudar; para mirar, quédate quieto.",
@@ -424,7 +424,7 @@ public static partial class StorySceneBuilder
                 "En 2010 la agencia YG Entertainment hizo audiciones por todo el mundo. Jennie volvió ese año a Corea desde Nueva Zelanda y entró como aprendiz; Lisa fue la única elegida entre unas 4000 aspirantes en Tailandia y en 2011 se convirtió en la primera aprendiz extranjera de YG; Jisoo entró en julio de 2011; Rosé, criada en Melbourne, quedó primera entre 700 en la audición de Australia de 2012.",
                 "YG anunció en noviembre de 2011 un grupo de al menos siete chicas para 2012; el debut se retrasó años y otras aprendizas se quedaron por el camino. En el documental Light Up the Sky (Netflix, 2020) cuentan las catorce horas diarias, un día libre cada dos semanas y las evaluaciones mensuales. Las cuatro se presentaron en junio de 2016 y debutaron el 8 de agosto con Square One, con Boombayah y Whistle (esta historia nombra sus canciones sin reproducir sus letras).",
                 "En 2019 fueron el primer grupo femenino de K-pop en Coachella. En 2021 fueron portavoces de la cumbre del clima COP26 y en 2023 el rey Carlos III les dio la Orden del Imperio Británico honorífica por esa labor.",
-                "El sistema de aprendices de la industria coreana ha sido muy criticado por la presión a menores de edad, y el documental apenas entra en ello: lo que se cuenta aquí sale sobre todo de la agencia y de ellas mismas. Las frases son de juego; las notas y los nombres de las profesoras son inventados. La comparación con otras bandas está en el doc del proyecto.",
+                "El sistema de aprendices de la industria coreana ha sido muy criticado por la presión a menores de edad, y el documental apenas entra en ello: lo que se cuenta aquí sale sobre todo de la agencia y de ellas mismas. Las frases son de juego; las notas y los nombres de las profesoras son inventados. La comparación con otras bandas está en el doc del proyecto. El momento de esta historia: años de ensayo sin saber si se debutará, y una niña de 14 años que cruza el mar y aprende otra lengua para seguir; es real, según ellas mismas.",
             },
             new[]
             {
@@ -438,7 +438,7 @@ public static partial class StorySceneBuilder
         return n;
     }
 
-    // ══ BOB MARLEY Y LOS WAILERS · el One Love Peace Concert, Kingston, 22 de abril de 1978 · Sala de Ballet (pendiente: escenario) ════
+    // ══ BOB MARLEY Y LOS WAILERS · el One Love Peace Concert, Kingston, 22 de abril de 1978 · Música ════
     //    La otra banda de la comparación con BLACKPINK (docs/microcosmos-musica.md): de los patios de Trench Town a un estadio que pide la paz en plena
     //    guerra entre barrios. Sin armas en escena: los partidos y la violencia se cuentan de palabra.
 
@@ -496,13 +496,13 @@ public static partial class StorySceneBuilder
                 Talk("Habla con la vendedora", seller.transform, "Vendedora de Coronation Market", "No sé si esto va a durar. Pero esta noche he visto a los del otro barrio bailar a mi lado, y eso no lo había visto nunca."),
                 Talk("Vuelve con Bob Marley", bob.transform, "Bob Marley", "Una canción no para una bala. Pero hoy nadie aquí se ha olvidado de que somos vecinos."),
             },
-            "Kingston (Jamaica), el 22 de abril de 1978, sobre la Sala de Ballet del santuario a escala de hormiga (pendiente de su piso: un escenario). Tras años de violencia entre los barrios de los dos partidos, Bob Marley vuelve del exilio y encabeza un concierto por la paz en el Estadio Nacional. E para hablar, recoger y ayudar; para mirar, quédate quieto.",
+            "Kingston (Jamaica), el 22 de abril de 1978, sobre el piso de Música del santuario a escala de hormiga. Tras años de violencia entre los barrios de los dos partidos, Bob Marley vuelve del exilio y encabeza un concierto por la paz en el Estadio Nacional. E para hablar, recoger y ayudar; para mirar, quédate quieto.",
             new[]
             {
                 "Trench Town nació en los años treinta como barrio modelo sobre la antigua finca de Daniel Trench: patios del gobierno (Government Yards) con cocina y baños comunes. Bob Marley creció en el de First Street. Allí Joe Higgs daba clases informales de canto, en las que coincidieron Bob, Bunny Livingston y Peter Tosh; en 1963 Higgs los llevó a Coxsone Dodd, y Simmer Down llegó al primer puesto en Jamaica. Beverley Kelso recordaba ensayar bajo un mango de Second Street. En 1974 Tosh y Bunny dejaron el grupo (esta historia nombra sus canciones sin reproducir sus letras).",
                 "En los setenta, los dos grandes partidos, el PNP de Michael Manley y el JLP de Edward Seaga, se apoyaban en bandas de sus barrios. En diciembre de 1976 Marley fue tiroteado en su casa de Hope Road y, aun así, cantó dos días después en Smile Jamaica; luego se fue a Londres. En prisión, Claudie Massop (JLP) y Aston «Bucky» Marshall (PNP) pensaron en un gran concierto, y Massop fue a Londres a convencerle.",
                 "El One Love Peace Concert fue el 22 de abril de 1978 en el Estadio Nacional: 16 grupos, más de 32 000 personas y la recaudación destinada a saneamiento y viviendas del oeste de Kingston. Peter Tosh dedicó 66 minutos a criticar de frente a los dos líderes. Hacia las 00:30, durante Jammin', Marley llamó a Manley y a Seaga al escenario y unió sus manos en alto.",
-                "La paz no duró: Massop y Marshall murieron asesinados en menos de dos años y Jamaica tuvo 889 asesinatos en 1980, durante la campaña electoral; las fuentes discuten si los dos líderes subieron de buena gana. Marley murió en 1981. Las frases son de juego; Massop, Marshall y Higgs hablan aquí en resumen de lo que cuentan las crónicas. La historia no elige bando.",
+                "La paz no duró: Massop y Marshall murieron asesinados en menos de dos años y Jamaica tuvo 889 asesinatos en 1980, durante la campaña electoral; las fuentes discuten si los dos líderes subieron de buena gana. Marley murió en 1981. Las frases son de juego; Massop, Marshall y Higgs hablan aquí en resumen de lo que cuentan las crónicas. La historia no elige bando. El momento de esta historia: un hombre al que dispararon en su propia ciudad vuelve a ella para juntar las manos de los dos lados. Recreación: la vendedora es inventada, y lo que dice Massop resume las crónicas.",
             },
             new[]
             {
@@ -516,7 +516,7 @@ public static partial class StorySceneBuilder
         return n;
     }
 
-    // ══ U2 · el concierto del Sí, Waterfront Hall, Belfast, 19 de mayo de 1998 · Sala de Ballet (pendiente: escenario) ═════════════════
+    // ══ U2 · el concierto del Sí, Waterfront Hall, Belfast, 19 de mayo de 1998 · Música ═════════════════
     //    El ROCK que denuncia: de Sunday Bloody Sunday (1983) a poner un escenario al servicio de un referéndum de paz. Por qué U2 y no otros: doc, «Rock y rap».
     //    Sin armas ni escenas del Domingo Sangriento: se recuerda de palabra.
 
@@ -564,18 +564,18 @@ public static partial class StorySceneBuilder
                 Collect("Reparte las entradas gratis: llévalas a la puerta del Waterfront", tickets, door, "Estudiante de Queen's", "Gratis y a medias: católicos y protestantes. Dos mil personas que quizá nunca se han sentado juntas. Y de esta edad, la mayoría no ha conocido otra cosa que las bombas."),
                 Reach("Ve al Maysfield Leisure Centre, a dos pasos", maysfield, "Vecina de Falls Road", "Aquí mismo, en diciembre del 82, Bono les dijo que esa canción no era para ningún bando, que era contra la matanza venga de quien venga. Yo estaba, y tenía miedo de cómo iba a acabar."),
                 Hold("Quédate mirando la bandera blanca", maysfield, 8f, "Vecina de Falls Road", "Al año siguiente llevaba una bandera blanca por el escenario, cuando cantaba aquello del Domingo Sangriento. Trece muertos en Derry en un día. Enterramos a mucha gente después."),
-                Talk("Habla con David Trimble, entre bastidores", trimble.transform, "David Trimble", "Yo no hago esto. No sé qué hace un líder unionista en un concierto de rock, ni me voy a quitar la chaqueta. Pero sé lo que me juego el viernes."),
+                Talk("Habla con David Trimble, entre bastidores", trimble.transform, "David Trimble", "Yo no hago esto. No sé qué hace un líder unionista en un concierto de rock, ni me voy a quitar la chaqueta. Pero sé lo que me juego el viernes, y lo que se juega mi familia. Subo igual."),
                 Talk("Habla con John Hume", hume.transform, "John Hume", "David, tranquilo. Llevo treinta años esperando esto. Se quita la chaqueta y se sale. No hace falta que cantes."),
                 Hold("Mira el concierto desde las butacas", stage, 12f, "Bono", "Os presento a dos hombres que han dado un salto de fe. Y les levanto los brazos: uno a cada lado, los tres sin decir nada. Esa foto da la vuelta al mundo."),
                 Talk("Vuelve con Bono", bono.transform, "Bono", "No he venido a deciros qué votar. Solo que esta noche estáis sentados al lado del otro. El viernes, vosotros."),
             },
-            "Belfast (Irlanda del Norte), en mayo de 1998, sobre la Sala de Ballet del santuario a escala de hormiga (pendiente de su piso: un escenario). A tres días del referéndum del Acuerdo de Viernes Santo, U2 y Ash tocan gratis en el Waterfront Hall, y Bono sube al escenario a John Hume y David Trimble. E para hablar, recoger y ayudar; para mirar, quédate quieto.",
+            "Belfast (Irlanda del Norte), en mayo de 1998, sobre el piso de Música del santuario a escala de hormiga. A tres días del referéndum del Acuerdo de Viernes Santo, U2 y Ash tocan gratis en el Waterfront Hall, y Bono sube al escenario a John Hume y David Trimble. E para hablar, recoger y ayudar; para mirar, quédate quieto.",
             new[]
             {
                 "El 30 de enero de 1972, en Derry, soldados británicos dispararon contra una marcha por los derechos civiles: murieron 13 personas ese día y otra después, todas desarmadas, como concluyó la investigación Saville en 2010. U2, un grupo de Dublín, grabó entre septiembre y noviembre de 1982 Sunday Bloody Sunday, sobre el horror de esa violencia (esta historia la nombra sin reproducir sus letras): The Edge escribió el riff y el primer texto, y Bono lo rehízo. Publicada en War (1983), en concierto Bono avisaba de que no era una canción de rebeldes, y en la gira de 1983 llevaba una bandera blanca. El 8 de noviembre de 1987, el día de la bomba de Enniskillen, condenó el atentado en mitad de la canción, en Denver.",
                 "El Acuerdo de Viernes Santo se firmó el 10 de abril de 1998 y debía votarse en referéndum el 22 de mayo. Los partidarios temían que no llegara la mayoría de los protestantes. Tim Attwood (SDLP) pidió ayuda a Bono, David Kerr (colaborador de Trimble) se sumó, y en pocos días se organizó un concierto gratuito en el Waterfront Hall, el 19 de mayo, con U2 y Ash y unas 2000–2500 personas de las dos comunidades.",
                 "Bono subió al escenario a John Hume (SDLP, nacionalista) y David Trimble (UUP, unionista) y levantó sus brazos. A Trimble, muy nervioso, costó convencerle de quitarse la chaqueta. El Sí ganó con el 71 %; Hume y Trimble recibieron el Nobel de la Paz ese mismo año.",
-                "Su efecto se discute: un colaborador de Trimble lo llama el momento decisivo de la campaña; el director de la campaña del Sí cree que ayudó al ambiente sin cambiar votos. Bono también ha recibido críticas por mezclar música y política. Las frases son de juego, salvo la anécdota de la chaqueta y el recado de Attwood, en resumen; la vecina y la estudiante son inventadas.",
+                "Su efecto se discute: un colaborador de Trimble lo llama el momento decisivo de la campaña; el director de la campaña del Sí cree que ayudó al ambiente sin cambiar votos. Bono también ha recibido críticas por mezclar música y política. Las frases son de juego, salvo la anécdota de la chaqueta y el recado de Attwood, en resumen; la vecina y la estudiante son inventadas. El momento de esta historia: dos rivales de toda la vida suben juntos a un escenario sabiendo lo que arriesgan (la familia de Trimble recibió una amenaza de muerte el día del resultado). Recreación: las palabras de Hume y Trimble entre bastidores.",
             },
             new[]
             {
@@ -589,7 +589,7 @@ public static partial class StorySceneBuilder
         return n;
     }
 
-    // ══ PUBLIC ENEMY · Roosevelt y Hempstead (Long Island), 1989 · Aula (pendiente: sala de grabación y radio) ═══════════════════════
+    // ══ PUBLIC ENEMY · Roosevelt y Hempstead (Long Island), 1989 · Música ═══════════════════════
     //    El RAP que denuncia: un estudiante de diseño, una radio universitaria y un collage de sonido que quiere ser el noticiero de su barrio. Por qué ellos: doc, «Rock y rap».
 
     static int PublicEnemy(Transform t)
@@ -644,15 +644,15 @@ public static partial class StorySceneBuilder
                 Visit("Escucha el barrio: la cancha, la parada y la biblioteca", hood, "Vecina de Roosevelt", "El trabajo que se va, la droga en la esquina, la policía, los de siempre sin voz. ¿Quién lo cuenta? Ese chico alto, el de los Ridenhour, viene aquí a escuchar."),
                 Talk("Habla con Flavor Flav", flav.transform, "Flavor Flav", "Él es la voz seria y yo el que te despierta. Si no te ríes un poco, no aguantas oír esto entero."),
                 Hold("1989: Spike Lee ha pedido un himno para su película. Quédate en la grabación", studio, 12f, "Chuck D", "Lo escribí casi todo en un avión sobre Italia. Se llama como aquella canción de los Isley Brothers. Es decirle a la gente que no se quede sentada."),
-                Talk("Vuelve con Chuck D", chuck.transform, "Chuck D", "Yo no digo qué pensar. Digo que apagues lo que te cuentan y mires tu calle."),
+                Talk("Verano de 1989: vuelve con Chuck D", chuck.transform, "Chuck D", "Yo no digo qué pensar. Digo que apagues lo que te cuentan y mires tu calle. Y este año he tenido que pedir perdón en público por lo que dijo uno de los nuestros. Denunciar también es mirar en tu propia casa."),
             },
-            "Roosevelt y Hempstead (Long Island, Nueva York), en 1989, sobre el Aula del santuario a escala de hormiga (pendiente de su piso: una sala de grabación y radio). Public Enemy, un grupo salido de la radio de una universidad, graba para una película el tema que le hará famoso. E para hablar, recoger y ayudar; para mirar, quédate quieto.",
+            "Roosevelt y Hempstead (Long Island, Nueva York), en 1989, sobre el piso de Música del santuario a escala de hormiga. Public Enemy, un grupo salido de la radio de una universidad, graba para una película el tema que le hará famoso. E para hablar, recoger y ayudar; para mirar, quédate quieto.",
             new[]
             {
                 "Carlton Ridenhour (Chuck D) creció en Roosevelt, Long Island, y estudió diseño gráfico en la Universidad Adelphi, donde conoció a Hank Shocklee y a William Drayton (Flavor Flav). Desde 1982–83 hizo programas en WBAU, la emisora universitaria, con Bill Stephney como director de programas; una promo para la radio, Public Enemy #1, dio nombre al grupo. Rick Rubin lo fichó para Def Jam y en 1987 salió su primer disco.",
                 "Con el Bomb Squad (Hank y Keith Shocklee, Eric Sadler) inventaron un sonido hecho de capas de samples. It Takes a Nation of Millions to Hold Us Back (1988) fue el primer disco de hip hop elegido el mejor del año por la crítica de The Village Voice. Chuck D describió el rap como un noticiero del Estados Unidos negro. Sus temas: el racismo, la policía, la droga en los barrios, los medios de comunicación.",
                 "En 1989, Spike Lee les pidió un himno para Do the Right Thing. Chuck D lo escribió sobre todo en un vuelo sobre Italia y el grupo lo grabó con Branford Marsalis: Fight the Power, que se publicó el 4 de julio de 1989 (esta historia la nombra sin reproducir sus letras). El video, una marcha contra la violencia racial, se rodó el 22 de abril en Bedford-Stuyvesant, Brooklyn, dirigido por Lee. En 2005 Fear of a Black Planet (1990) entró en el Registro Nacional de Grabaciones de Estados Unidos; en 2013 entraron en el Salón de la Fama del Rock.",
-                "Lo discutido: en 1989 Professor Griff, miembro del grupo, hizo declaraciones antisemitas; Chuck D se disculpó y lo apartó del grupo, y algunas letras también fueron criticadas, igual que la estética militar de su seguridad. Las frases son de juego, y la vecina y el chico son inventados. No se usa el logotipo del grupo.",
+                "Lo discutido: en 1989 Professor Griff, miembro del grupo, hizo declaraciones antisemitas; Chuck D se disculpó y lo apartó del grupo, y algunas letras también fueron criticadas, igual que la estética militar de su seguridad. Las frases son de juego, y la vecina y el chico son inventados. No se usa el logotipo del grupo. El momento de esta historia: un estudiante de diseño pone su voz al servicio de su barrio, y cuando el grupo falla se disculpa en público; las dos cosas son reales.",
             },
             new[]
             {
@@ -666,7 +666,7 @@ public static partial class StorySceneBuilder
         return n;
     }
 
-    // ══ GRANDES APORTES DE LAS CANCIONES · la Plaza de las Canciones (sitio inventado), 21 de junio · Aula (pendiente: escenario) ══════════
+    // ══ GRANDES APORTES DE LAS CANCIONES · la Plaza de las Canciones (sitio inventado), 21 de junio · Música ══════════
     //    Seis canciones que cambiaron algo, cada una con su historia y su rincón de época (en el claro, y su edificio en el pueblo, con el año y la región de su rincón):
     //    We Shall Overcome, Bella Ciao, Imagine, Biko, Redemption Song y Latinoamérica. Ninguna letra: título, autor y tema, con palabras propias.
 
@@ -723,13 +723,13 @@ public static partial class StorySceneBuilder
                 Talk("Rincón de los Andes: habla con Susana Baca", baca.transform, "Susana Baca", "Calle 13 llamó a tres mujeres: Totó, de Colombia; Maria Rita, de Brasil, y yo, de Perú. Es una canción sobre lo que no se puede comprar: la tierra, la gente, la memoria de un continente."),
                 Talk("Vuelve con la cronista", cron.transform, "Cronista", "Ninguna paró una guerra sola. Pero cada una le dio voz a mucha gente, y una voz compartida ya es un principio de algo."),
             },
-            "La Plaza de las Canciones, un sitio inventado, sobre el Aula del santuario a escala de hormiga (pendiente de su piso: un escenario), un 21 de junio, Día de la Música. Una cronista te guía por seis rincones de época, cada uno con la historia de una canción que cambió algo. E para hablar; para escuchar, quédate quieto.",
+            "La Plaza de las Canciones, un sitio inventado, sobre el piso de Música del santuario a escala de hormiga, un 21 de junio, Día de la Música. Una cronista te guía por seis rincones de época, cada uno con la historia de una canción que cambió algo. E para hablar; para escuchar, quédate quieto.",
             new[]
             {
                 "Este microcosmos es un lugar inventado: reúne en un mismo sitio seis canciones reales, sin reproducir sus letras: de cada una, su autor, su época y su tema contado con palabras propias.",
                 "We Shall Overcome. Viene de himnos afroamericanos. En 1945 Lucille Simmons y otras huelguistas del tabaco de Charleston la cantaban lentamente en el piquete; Zilphia Horton la aprendió de ellas y la llevó a la Escuela Highlander (Tennessee); Pete Seeger la difundió, y Guy Carawan la enseñó en 1960 en la fundación del SNCC. Fue el himno de los derechos civiles. El 15 de marzo de 1965, tras Selma, Lyndon Johnson pronunció sus palabras ante el Congreso. Bella Ciao. Su melodía se atribuye a un canto de las mondine, las escardadoras de arroz del valle del Po, aunque el origen se discute (el investigador Fausto Giovannardi apunta a una melodía yidis); la versión partisana hoy se canta en el mundo entero, pero los historiadores dudan de cuánto se cantó de verdad durante la Resistencia (Cesare Bermani la sitúa en la Brigada Maiella). Se hizo global con la serie La casa de papel.",
                 "Imagine. John Lennon la grabó en mayo de 1971 en su estudio de Tittenhurst Park (Ascot), inspirada en los poemas de Yoko Ono, a quien reconoció después como coautora. Pide imaginar un mundo sin fronteras ni posesiones. Biko. Steve Biko, líder de la Conciencia Negra, murió bajo custodia policial el 12 de septiembre de 1977 en Sudáfrica. Peter Gabriel publicó esta canción en 1980 y donó lo recaudado (más de 50 000 libras) al movimiento; inspiró Sun City y las campañas contra el apartheid. Redemption Song. Bob Marley la grabó sola, con guitarra acústica, en Uprising (1980), ya enfermo; recoge una idea de un discurso de Marcus Garvey en Nueva Escocia en 1937, sobre liberarse de la esclavitud mental. Latinoamérica. Calle 13 (Puerto Rico) la publicó en 2011 con Totó la Momposina, Susana Baca y Maria Rita; el video se rodó en Perú y ganó el Grammy Latino a la grabación y la canción del año. Canta la historia común del continente y lo que no se vende.",
-                "Las frases son de juego, también las de personas reales: resumen lo que dijeron o lo que cuentan sus biografías. Sobre lo discutido: ninguna canción de estas paró una guerra por sí sola, y varias se han usado también con fines que sus autores no eligieron.",
+                "Las frases son de juego, también las de personas reales: resumen lo que dijeron o lo que cuentan sus biografías. Sobre lo discutido: ninguna canción de estas paró una guerra por sí sola, y varias se han usado también con fines que sus autores no eligieron. El momento de esta historia: unas huelguistas cantan en el piquete y su canción acaba ante el Congreso; un músico dona lo que gana por contar una muerte lejana; un hombre enfermo graba solo su último mensaje. Recreación: la cronista y la mondina son inventadas.",
             },
             new[]
             {

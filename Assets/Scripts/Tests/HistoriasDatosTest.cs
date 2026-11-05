@@ -21,7 +21,7 @@ public class HistoriasDatosTest : MonoBehaviour, ITestUnit
         ("Onondaga", "Classroom_Area", false, 1450, "Haudenosaunee", "haudenosaunee", "tewaarathon"),
         ("Alejandría de Cleopatra", "Kitchen_Area", true, -42, "EgiptoPtolemaico", "egipto_ptolemaico", "gimnasio_griego"),
         ("Langley", "Informatics_Area", true, 1962, "VirginiaTidewater", "virginia_1960", "gimnasio_moderno"),
-        ("Viena 1824", "Ballet_Area", false, 1824, "Viena", "viena_biedermeier", "sala_esgrima"),
+        ("Viena 1824", "Music_Area", true, 1824, "Viena", "viena_biedermeier", "sala_esgrima"),
         ("Leiden", "Classroom_Area", true, 1637, "ProvinciasUnidas", "provincias_1600", "sala_esgrima"),
         ("San Pablo", "Infirmary_Area", true, 1952, "Amazonia", "amazonia_1950", "estadio"),
         ("Madrid 2018", "Classroom_Area", false, 2018, "EspanaActual", "espana_actual", "gimnasio_moderno"),

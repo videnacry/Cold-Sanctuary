@@ -264,6 +264,17 @@ public static class Performances
         Mi("ifo_energia", "Revisar el SAI y las baterías",
             Checking("Medir las baterías", P.Tablet, F.Sparks, 6f),
             Noting("Registrar la carga"));
+        Mi("son_grabar", "Grabar y mezclar",
+            Console("Ajustar la mesa de mezclas", 9f),
+            Checking("Escuchar la toma", P.Tablet),
+            Console("Mezclar las pistas", 6f));
+        Mi("son_ensayo", "Ensayar el concierto",
+            S("Afinar el instrumento", M.Reach, P.Wrench, P.None, 8f, F.None, 1.6f),
+            S("Tocar la pieza", M.Reach, P.None, P.None, 10f, F.None, 1.6f),
+            Noting("Anotar los cambios"));
+        Mi("son_equipo", "Revisar instrumentos y sonido",
+            S("Cambiar cuerdas y cables", M.Reach, P.Wrench, P.None, 8f, F.None, 1.6f),
+            Checking("Probar los micrófonos", P.Tablet, F.None, 6f));
         Mi("aul_clase", "Dar o recibir una clase",
             S("Explicar en la pizarra", M.Teach, P.Chalk, P.Book, 9f, F.Chalk, 1.2f, Raise, atFace: true),
             S("Tomar apuntes", M.Write, P.Pen, P.Book, 7f, F.Paper, 2.5f, Fine));

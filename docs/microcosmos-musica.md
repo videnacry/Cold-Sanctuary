@@ -24,8 +24,8 @@ situaciones del mundo junto al rap» y uno general, **«Grandes aportes de las c
 | Instrumentos | `Assets/Editor/MicroFurniture.Music.cs` | `piano`, `bateria`, `amplificador`, `microfono`, `mesa_mezclas` (cuatro pistas antes de 1990; portátil después), `tarima`. Acompañan a un puesto (`CivicBuilder.NotStation`): no son puestos. |
 | Rincones de otra época | `Lot.Era(año, región)` en `CivicBuilder.Towns.cs` | Un edificio con otro año y región dentro del mismo pueblo (solo con plano, `PlannedTown`). Lo usa «Grandes aportes». |
 | Fecha, lugar, luz | `StorySceneBuilder.Dates`, `Eras.OfMicrocosmos`, `SolarPosition.GeoOf` | Fecha, hora, año y coordenadas. |
-| Pisos | `MicroFloors.Table`, `Match.MusicFloor` | Ver la tabla. El piso que falta se escribe sin la palabra «estudio» (si no, la alerta de piso nuevo lo cruzaba con el Aula y el Estudio Textil). |
-| Entradas | `VirtualizationMachine.StoryScenes`, `EraHubSceneBuilder.All` | La máquina del área y la Sala de Eras. La Sala de Ballet sigue en obras: mientras, también se entra desde el Gimnasio, como el Dojo. |
+| Pisos | `MicroFloors.Table` | Ver la tabla. |
+| Entradas | `VirtualizationMachine.StoryScenes`, `EraHubSceneBuilder.All` | La máquina del área y la Sala de Eras. BLACKPINK, también desde el Gimnasio (la Sala de Ballet sigue en obras). |
 | Su insecto | `InsectCast` | El porqué de cada especie (las escenas la pasan explícita). |
 | Prueba | `Assets/Scripts/Tests/MusicaStoryTest.cs` (**grupo 86**) | Ver «Qué probar». También añadidas a 62 (`CivilizedErasTest`) y 87 (`GymTrainingTest`); `MicrocosmosFloorTest` (43) sube a 70 escenas. |
 
@@ -34,18 +34,31 @@ situaciones del mundo junto al rap» y uno general, **«Grandes aportes de las c
 | Historia (escena) | Lugar y fecha | Piso | Insecto (por qué) |
 |---|---|---|---|
 | **Shakira** (`Microcosmos_Shakira`) | Colegio Pies Descalzos de La Playa, Barranquilla, 2009, 8:00 | **Aula** (`Classroom_Area`), representativo | Abeja: baila para contar dónde hay comida |
-| **Bad Bunny** (`Microcosmos_BadBunny`) | Vega Baja, Puerto Rico, 2016, 17:00 | **Informática** (`Informatics_Area`), **pendiente** | Grillo: canta de noche desde su madriguera |
-| **John Lennon y Yoko Ono** (`Microcosmos_JohnLennon`) | Queen Elizabeth Hotel, Montreal, 1-6-1969, 19:00 | **Sala de Ballet** (`Ballet_Area`), **pendiente** | Cigarra (años quieta: quedarse quieto es la protesta); Yoko, luciérnaga |
-| **Michael Jackson y los suyos** (`Microcosmos_MichaelJackson`) | Gary, Indiana, 1966, 17:30 | **Sala de Ballet**, **pendiente** | Luciérnaga: cada especie tiene su coreografía de destellos |
+| **Bad Bunny** (`Microcosmos_BadBunny`) | Vega Baja, Puerto Rico, 2016, 17:00 | **Música** (`Music_Area`) | Grillo: canta de noche desde su madriguera |
+| **John Lennon y Yoko Ono** (`Microcosmos_JohnLennon`) | Queen Elizabeth Hotel, Montreal, 1-6-1969, 19:00 | **Música** | Cigarra (años quieta: quedarse quieto es la protesta); Yoko, luciérnaga |
+| **Michael Jackson y los suyos** (`Microcosmos_MichaelJackson`) | Gary, Indiana, 1966, 17:30 | **Música** | Luciérnaga: cada especie tiene su coreografía de destellos |
 | **BLACKPINK** (`Microcosmos_Blackpink`) | Hapjeong, Seúl, 8-8-2016, 11:00 | **Sala de Ballet**, representativo (es una sala de ensayo) | Mariquita asiática: nativa de Corea, pasa el invierno apiñada |
-| **Bob Marley y los Wailers** (`Microcosmos_Wailers`) | Kingston, 22-4-1978, 17:00 | **Sala de Ballet**, **pendiente** | Grillo (Tosh, mantis) |
-| **U2** (`Microcosmos_U2`) | Waterfront Hall, Belfast, 19-5-1998, 19:00 | **Sala de Ballet**, **pendiente** | Bono, cigarra; Hume y Trimble, dos hormigas de la misma especie |
-| **Public Enemy** (`Microcosmos_PublicEnemy`) | Roosevelt y Hempstead, Long Island, primavera de 1989, 16:00 | **Aula**, **pendiente** (nació en una radio universitaria) | Chuck D, escarabajo pelotero: convierte lo que otros tiran (el sampler) |
-| **Grandes aportes de las canciones** (`Microcosmos_GrandesCanciones`) | La Plaza de las Canciones, **lugar inventado**, un 21 de junio, 18:00 | **Aula**, **pendiente** | Cronista, grillo; cada figura, el suyo |
+| **Bob Marley y los Wailers** (`Microcosmos_Wailers`) | Kingston, 22-4-1978, 17:00 | **Música** | Grillo (Tosh, mantis) |
+| **U2** (`Microcosmos_U2`) | Waterfront Hall, Belfast, 19-5-1998, 19:00 | **Música** | Bono, cigarra; Hume y Trimble, dos hormigas de la misma especie |
+| **Public Enemy** (`Microcosmos_PublicEnemy`) | Roosevelt y Hempstead, Long Island, primavera de 1989, 16:00 | **Música** | Chuck D, escarabajo pelotero: convierte lo que otros tiran (el sampler) |
+| **Grandes aportes de las canciones** (`Microcosmos_GrandesCanciones`) | La Plaza de las Canciones, **lugar inventado**, un 21 de junio, 18:00 | **Música** | Cronista, grillo; cada figura, el suyo |
 
-**Piso pendiente nuevo:** «Sala de grabación y escenario de conciertos (música)» (`MicroFloors.Match.MusicFloor`). Es uno más de la lista. Lo piden Vega Baja, Montreal, Gary, Kingston, Belfast, Long Island y Grandes aportes. Si se crea, `AlertFloors` los señala.
-
+**Su piso (2026-11-05):** el piso de **Música** ([piso-musica.md](piso-musica.md)), creado por petición de Berón («si no existe área de música créala»). Ya ninguna es pendiente; BLACKPINK sigue en la Sala de Ballet, que es una sala de ensayo. Viena 1824 también va en él.
 ## Las historias (pasos)
+
+**El momento de cada historia (regla de Berón, 2026-11-05; texto en el manual, lo escribe la rama de historias):** cada historia revela un acto altruista, bello o de superación. Con figuras históricas se puede embellecer, y la ficha lo marca («Recreación:»); a personas vivas no se les inventan actos. La ficha de cada una lo dice en «El momento de esta historia» (grupo 86).
+
+| Historia | El momento | ¿Recreación? |
+|---|---|---|
+| Shakira (viva) | A los 20 años dedica lo primero que gana a que otros niños tengan escuela | No: real |
+| Bad Bunny (vivo) | No deja el trabajo ni la isla, y luego reparte juguetes e instrumentos cada Navidad | Solo la promesa en su boca; el acto es real |
+| Lennon y Ono (ella, viva) | Gastan la atención del mundo en pedir paz y abren la puerta a quien viene a burlarse | La periodista que acaba cantando |
+| Los Jackson | Una familia de once en dos dormitorios sigue ensayando tras el turno | Tito baja el micrófono y se echa atrás: inventado (Tito murió en 2024) |
+| BLACKPINK (vivas) | Años sin saber si debutarán; una niña de 14 años cruza el mar | No: real, según ellas. Se quitó una frase que atribuía a Jisoo cuidar a las demás |
+| Wailers | Tiroteado en su ciudad, vuelve para juntar las manos de los dos lados | La vendedora, inventada |
+| U2 (Bono y Attwood, vivos) | Dos rivales suben juntos sabiendo lo que arriesgan | Las palabras de Hume y Trimble, ambos fallecidos |
+| Public Enemy (vivos) | Dar voz al barrio, y pedir perdón en público cuando el grupo falla (1989) | No: real |
+| Grandes aportes | Huelguistas en el piquete; Gabriel dona lo que gana; Marley, enfermo, graba solo | La cronista y la mondina, inventadas |
 
 Todas: 8 pasos, 60 XP; al terminar, la ficha.
 
@@ -110,7 +123,7 @@ Cada uno lleva los edificios de su historia (hitos), los del pueblo y relleno po
 | Long Island | Adelphi, WBAU, South Franklin, casa Ridenhour, cancha, Coliseum, diner, hospital, iglesia | cancha / hospital | **acortado** (campus a ~6 km); casa representativa |
 | Plaza de las Canciones | 6 rincones (`Lot.Era`) y sala de conciertos, escuela de música, comedor, casa, gimnasio, casa de salud | gimnasio / casa de salud | **inventado** |
 
-Todos caben a 1:1 en su barrio (±1000 × ±720 m; Vega Baja, sobre Informática, ±900 × ±560 m), para que el mapa a mano y el plano coincidan.
+Todos caben a 1:1 en el barrio de su piso de 36 × 26 m (±1000 × ±720 m), para que el mapa a mano y el plano coincidan.
 
 ## Fuentes
 
@@ -131,13 +144,13 @@ Wikipedia, «Bella ciao», «Biko (song)», «Latinoamérica (song)»; The Beatl
 
 ## Qué probar en Unity (lo hace el probador)
 
-1. Con `SampleScene` abierta, **de una en una** (W5), con «Tools/Cold Sanctuary/Build Microcosmos de música/<historia>», en este orden: **Shakira, BLACKPINK** (pisos representativos), Bad Bunny, Lennon, Gary, Kingston, Belfast, Public Enemy, Grandes aportes. Después «Build Sala de Eras» y guardar SampleScene si se tocó. La Sala de Ballet tiene que estar construida con su «Acabado».
+1. **Primero SampleScene con el piso de Música** ([piso-musica.md](piso-musica.md)). Después, **de una en una** (W5), con «Tools/Cold Sanctuary/Build Microcosmos de música/<historia>»: Shakira, BLACKPINK (Sala de Ballet, con su «Acabado»), Bad Bunny, Lennon, Gary, Kingston, Belfast, Public Enemy, Grandes aportes (y Viena 1824). Por último, «Build Sala de Eras».
 2. Consola: `[Pueblos] …` (escala **1:1** en todos), `[Mapa] …: mapa a mano (…)` y ninguna `la planta «…» no está en su bioma`; `[Reglas] Microcosmos_X: OK`; `[Pisos] …: OK` o «PENDIENTE».
 3. Grupos: **86** (`MusicaStoryTest`: las 9 escenas), 62, 43 (`MicrocosmosFloorTest`), 63, 87 (entrenamiento de época), 68 (toda historia con mapa) y 76 (alerta de piso nuevo).
 4. Fotos: el protagonista con su ropa; el sitio clave de cada historia (colegio, caja del súper, cama y carteles, sala de ensayo con su espejo, telones, butacas, cabina); los mogotes de Vega Baja sobre las máquinas; la acería de Gary sobre el espejo; los seis rincones de «Grandes aportes» con su propio mobiliario; frutales en los patios; ningún muro ni techo; nada flotando.
 
 ## Riesgos conocidos
 
-- **Elementos del mapa**: `Piece` con `Como` usa elementos del catálogo; en la Sala de Ballet solo se ha comprobado por nombres. Si «mesa» no empareja el piano, se queda en su versión general (peñascos).
+- **Elementos del mapa**: `Piece` con `Como` usa elementos del catálogo; en el piso de Música solo se ha comprobado por nombres (`pared`, `mesa`, `silla`).
 - **`Lot.Era`** solo cambia el año y la región al levantar el edificio; los que luego retocan muebles (`Homes`) solo tocan casas, y ningún rincón lo es.
-- **Conflicto con `claude/edif-histo`**: las dos ramas añaden filas tras las mismas anclas (`Stories`, `Dates`, `Eras`, `GeoOf`, `MicroFloors.Table`, regiones): al unirlas hay que **conservar las dos**.
+- `claude/edif-histo` ya está unida a esta rama (se conservaron las dos tandas).

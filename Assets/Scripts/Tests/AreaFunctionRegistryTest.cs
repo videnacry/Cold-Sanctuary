@@ -26,6 +26,8 @@ public class AreaFunctionRegistryTest : MonoBehaviour, ITestUnit
         "bio_cultivo", "bio_pcr", "nuc_turno", "gua_carnivoros",
         // (2026-11-04) los pisos nuevos: Informática (el clúster de IA) y el Aula (docs/piso-informatica.md, docs/piso-aula.md)
         "ifo_sysadmin", "ifo_refrigeracion", "ifo_energia", "aul_clase", "aul_estudio",
+        // (2026-11-05) la música (docs/piso-musica.md)
+        "son_grabar", "son_ensayo", "son_equipo",
     };
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]

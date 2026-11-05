@@ -26,14 +26,14 @@ public class MusicaStoryTest : MonoBehaviour, ITestUnit
     static readonly (string scene, string display, string hero, int year, string region, string platform, bool rep, string[] fruits)[] Cases =
     {
         ("Microcosmos_Shakira", "Barranquilla", "Shakira", 2009, "CaribeHispano", "Classroom_Area", true, new[] { "Mango", "Guanábana", "Aguacate", "Quenepa" }),
-        ("Microcosmos_BadBunny", "Vega Baja", "Bad Bunny", 2016, "CaribeHispano", "Informatics_Area", false, new[] { "Mango", "Guanábana", "Aguacate", "Quenepa" }),
-        ("Microcosmos_JohnLennon", "Montreal", "John Lennon", 1969, "NorteamericaNorte", "Ballet_Area", false, new[] { "Manzano", "Cerezo", "Ciruelo" }),
-        ("Microcosmos_MichaelJackson", "Gary", "Michael Jackson", 1966, "NorteamericaNorte", "Ballet_Area", false, new[] { "Manzano", "Cerezo", "Ciruelo" }),
+        ("Microcosmos_BadBunny", "Vega Baja", "Bad Bunny", 2016, "CaribeHispano", "Music_Area", true, new[] { "Mango", "Guanábana", "Aguacate", "Quenepa" }),
+        ("Microcosmos_JohnLennon", "Montreal", "John Lennon", 1969, "NorteamericaNorte", "Music_Area", true, new[] { "Manzano", "Cerezo", "Ciruelo" }),
+        ("Microcosmos_MichaelJackson", "Gary", "Michael Jackson", 1966, "NorteamericaNorte", "Music_Area", true, new[] { "Manzano", "Cerezo", "Ciruelo" }),
         ("Microcosmos_Blackpink", "Seúl", "Jennie", 2016, "Corea", "Ballet_Area", true, new[] { "Caqui", "Peral", "Azufaifo" }),
-        ("Microcosmos_Wailers", "Kingston", "Bob Marley", 1978, "Jamaica", "Ballet_Area", false, new[] { "Ackee", "Árbol del pan", "Mango" }),
-        ("Microcosmos_U2", "Belfast", "Bono", 1998, "IslasBritanicas", "Ballet_Area", false, new[] { "Manzano", "Ciruelo", "Peral" }),
-        ("Microcosmos_PublicEnemy", "Long Island", "Chuck D", 1989, "NorteamericaNorte", "Classroom_Area", false, new[] { "Manzano", "Cerezo", "Ciruelo" }),
-        ("Microcosmos_GrandesCanciones", "Grandes aportes de las canciones", "Cronista", 2025, "Hispanoamerica", "Classroom_Area", false, new[] { "Limonero", "Manzano" }),
+        ("Microcosmos_Wailers", "Kingston", "Bob Marley", 1978, "Jamaica", "Music_Area", true, new[] { "Ackee", "Árbol del pan", "Mango" }),
+        ("Microcosmos_U2", "Belfast", "Bono", 1998, "IslasBritanicas", "Music_Area", true, new[] { "Manzano", "Ciruelo", "Peral" }),
+        ("Microcosmos_PublicEnemy", "Long Island", "Chuck D", 1989, "NorteamericaNorte", "Music_Area", true, new[] { "Manzano", "Cerezo", "Ciruelo" }),
+        ("Microcosmos_GrandesCanciones", "Grandes aportes de las canciones", "Cronista", 2025, "Hispanoamerica", "Music_Area", true, new[] { "Limonero", "Manzano" }),
         // ══FIN DE LOS CASOS══
     };
 
@@ -46,7 +46,30 @@ public class MusicaStoryTest : MonoBehaviour, ITestUnit
 
     public IEnumerator Run()
     {
+        Floor();
         foreach (var c in Cases) yield return One(c.scene, c.display, c.hero, c.year, c.region, c.platform, c.rep, c.fruits);
+    }
+
+    /// <summary>EL PISO DE MÚSICA (docs/piso-musica.md): sus misiones, su uniforme y, con la escena construida, su sitio y su capacidad.</summary>
+    static void Floor()
+    {
+        TestProbe.Begin("Piso de Música: misiones, uniforme, torre y capacidad");
+        foreach (string id in new[] { "son_grabar", "son_ensayo", "son_equipo" })
+        {
+            TestProbe.Check($"«{id}» está en el registro, en Música", AreaFunctions.Get(id) != null && AreaFunctions.Get(id).area == "Música");
+            TestProbe.Check($"«{id}» tiene sus pasos con «E»", PlayerTasks.Authored(id));
+        }
+        TestProbe.Check("ningún microcosmos sigue pendiente de sala de grabación", !System.Array.Exists(MicroFloors.Table, m => m.pending.Contains("grabación")));
+        TestProbe.Check("Viena 1824 está en el piso de Música", MicroFloors.Of("Viena 1824") != null && MicroFloors.Of("Viena 1824").platform == "Music_Area");
+        SanctuaryArea area = null;
+        foreach (SanctuaryArea a in FindObjectsByType<SanctuaryArea>(FindObjectsInactive.Include, FindObjectsSortMode.None)) if (a.name == "Music_Area") area = a;
+        if (area == null) { TestProbe.Check("el piso está en la escena (reconstruye SampleScene)", false); TestProbe.End(); return; }
+        TestProbe.Check("es del tipo Music", area.areaType == SanctuaryAreaType.Music);
+        var lines = AreaCapacity.Check(new[] { area.transform }, AreaCapacity.Members(), out _);
+        foreach (string act in new[] { "concierto", "grabar", "mezcla", "ensayar", "sonido" })
+            TestProbe.Check($"capacidad: {act}", lines.Exists(l => l.area == "Música" && l.activity == act && l.ok), string.Join(" · ", lines.ConvertAll(l => l.ToString())));
+        TestProbe.Check("la cabina es de cristal (GlassWall)", area.GetComponentsInChildren<GlassWall>(true).Length > 0);
+        TestProbe.End();
     }
 
     IEnumerator One(string scene, string display, string hero, int year, string region, string platform, bool rep, string[] fruits)
@@ -108,6 +131,7 @@ public class MusicaStoryTest : MonoBehaviour, ITestUnit
         }
         TestProbe.Check("la ficha con su historia y ≥ 4 fuentes", card != null && card.history.Length >= 3 && card.sources.Length >= 4, card != null ? $"{card.history.Length} párrafos, {card.sources.Length} fuentes" : "sin HistoryCard");
         TestProbe.Check($"la ficha avisa «{NoLyricsNote}»", card != null && string.Join(" ", card.history).Contains(NoLyricsNote));
+        TestProbe.Check("la ficha nombra el momento altruista, bello o de superación de la historia", card != null && string.Join(" ", card.history).Contains("El momento de esta historia"));
 
         // Las cuatro categorías, el pueblo entero y sus frutales.
         TestProbe.Check("el pueblo entero: ≥ 12 edificios", sites.Count >= 12, $"{sites.Count}");

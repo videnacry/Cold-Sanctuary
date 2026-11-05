@@ -4,8 +4,6 @@
 /// </summary>
 public static partial class MicroStoryMaps
 {
-    const MicroFloorElements.Action Quitar = MicroFloorElements.Action.Quitar, Apilar = MicroFloorElements.Action.Apilar, Como = MicroFloorElements.Action.Como;
-
     public static readonly Map[] Music =
     {
         // ══ LA PLAYA (Barranquilla), 2009 (Shakira): sobre el Aula ══════════════════════════════════════════════════════════════════
@@ -47,14 +45,14 @@ public static partial class MicroStoryMaps
             todo = new[] { "en vivo: mirar que el manglar quede en la orilla de la Ciénaga y no sobre una calle" },
         },
 
-        // ══ VEGA BAJA, 2016 (Bad Bunny): sobre Informática (pendiente de su sala de grabación) ═══════════════════════════════════════
+        // ══ VEGA BAJA, 2016 (Bad Bunny): sobre el piso de Música ═══════════════════════════════════════
         new Map
         {
             display = "Vega Baja", place = "Vega Baja (Puerto Rico), 2016", status = Status.Hecho,
             source = "Reserva Natural Laguna Tortuguero (DRNA); Little y Wadsworth 1964; OpenStreetMap",
             floor = new[]
             {
-                new Piece("maquina", Como, "los armarios del clúster son los MOGOTES del karst del norte de Puerto Rico: mesetas de caliza con bosque arriba", "mesa"),
+                new Piece("mesa", Como, "la mesa de mezclas y el banco son los MOGOTES del karst del norte de Puerto Rico: mesetas de caliza con bosque arriba", "mesa"),
                 new Piece("silla", Como, "ni nieve en el Caribe: las sillas son mogotes menores", "mesa"),
                 new Piece("alfombra", Quitar, "el llano de la costa no tiene desniveles"),
                 new Piece("pared", Como, "el borde del llano sube hacia el karst en terrazas de pasto", "escalera"),
@@ -86,16 +84,16 @@ public static partial class MicroStoryMaps
             todo = new[] { "verificar la situación real del Econo Plaza; en vivo, que la enea quede en la orilla de la laguna" },
         },
 
-        // ══ MONTREAL, 1 de junio de 1969 (John Lennon y Yoko Ono): sobre la Sala de Ballet (pendiente de su piso) ══════════════════════
+        // ══ MONTREAL, 1 de junio de 1969 (John Lennon y Yoko Ono): sobre el piso de Música ══════════════════════
         new Map
         {
             display = "Montreal", place = "Queen Elizabeth Hotel, Montreal, 1 de junio de 1969", status = Status.Hecho,
             source = "Wikipedia «Bed-in»; Les amis de la montagne; Ville de Montréal (arbres publics); OpenStreetMap",
             floor = new[]
             {
-                new Piece("espejo", Como, "la pared de espejo no es un glaciar en junio: son las torres de Place Ville Marie y del centro de Montreal", "cajonera"),
+                new Piece("pared", Como, "los paños de la cabina de cristal: las torres de Place Ville Marie y del centro de Montreal", "cajonera"),
                 new Piece("silla", Como, "sin nieve en junio: las sillas y bancos son cerros de la falda del Mont Royal", "mesa"),
-                new Piece("mesa", Como, "el piano y las mesas: el Mont Royal, con su meseta de bosque", "mesa"),
+                new Piece("mesa", Como, "la mesa de mezclas y el banco: el Mont Royal, con su meseta de bosque", "mesa"),
                 new Piece("alfombra", Quitar, "el centro de la ciudad es llano y está asfaltado"),
             },
             flora = new[]
@@ -122,16 +120,16 @@ public static partial class MicroStoryMaps
             todo = new[] { "verificar la posición del estudio de André Perry en 1969 (no consta en las fuentes de la ficha)" },
         },
 
-        // ══ GARY, 1966 (los Jackson): sobre la Sala de Ballet (pendiente de su escenario) ═════════════════════════════════════════════
+        // ══ GARY, 1966 (los Jackson): sobre el piso de Música ═════════════════════════════════════════════
         new Map
         {
             display = "Gary", place = "Gary (Indiana), 1966", status = Status.Hecho,
             source = "WBEZ 2017; Indiana Dunes (National Park Service); OpenStreetMap",
             floor = new[]
             {
-                new Piece("espejo", Como, "la pared de espejo es la ACERÍA de la US Steel a lo largo del lago: altos hornos y chimeneas", "maquina"),
+                new Piece("pared", Como, "los paños de la cabina de cristal son la ACERÍA de la US Steel a lo largo del lago: altos hornos y chimeneas", "maquina"),
                 new Piece("silla", Como, "ni nevados en Indiana: las sillas y bancos son las dunas del lago", "cojin"),
-                new Piece("mesa", Como, "el piano y las mesas: las naves de la acería", "maquina"),
+                new Piece("mesa", Como, "la mesa de mezclas y el banco: las naves de la acería", "maquina"),
                 new Piece("alfombra", Quitar, "la llanura del lago Míchigan no tiene desniveles"),
             },
             flora = new[]
@@ -191,16 +189,16 @@ public static partial class MicroStoryMaps
             todo = new[] { "la residencia de las aprendizas no consta: su sitio es representativo" },
         },
 
-        // ══ KINGSTON, 22 de abril de 1978 (Bob Marley y los Wailers): sobre la Sala de Ballet (pendiente de su escenario) ═════════════════
+        // ══ KINGSTON, 22 de abril de 1978 (Bob Marley y los Wailers): sobre el piso de Música ═════════════════
         new Map
         {
             display = "Kingston", place = "Kingston (Jamaica), 22 de abril de 1978", status = Status.Hecho,
             source = "Adams 1972, Flowering Plants of Jamaica; Trench Town Culture Yard; OpenStreetMap",
             floor = new[]
             {
-                new Piece("espejo", Como, "la pared de espejo no es un glaciar en el Caribe: es la muralla de las Montañas Azules", "pared"),
+                new Piece("pared", Como, "los paños de la cabina de cristal: la muralla de las Montañas Azules", "pared"),
                 new Piece("silla", Como, "sin nieve: las sillas y bancos son las lomas de Long Mountain", "mesa"),
-                new Piece("mesa", Como, "el piano y las mesas: las mesetas de las Montañas Azules, con bosque arriba", "mesa"),
+                new Piece("mesa", Como, "la mesa de mezclas y el banco: las mesetas de las Montañas Azules, con bosque arriba", "mesa"),
                 new Piece("alfombra", Quitar, "el suelo de Kingston es la llanura de Liguanea"),
             },
             flora = new[]
@@ -228,16 +226,16 @@ public static partial class MicroStoryMaps
             todo = new[] { "las distancias están a un tercio: en vivo, mirar que Trench Town y el estadio se lean como barrios distintos" },
         },
 
-        // ══ BELFAST, 19 de mayo de 1998 (U2): sobre la Sala de Ballet (pendiente de su escenario) ═════════════════════════════════════
+        // ══ BELFAST, 19 de mayo de 1998 (U2): sobre el piso de Música ═════════════════════════════════════
         new Map
         {
             display = "Belfast", place = "Waterfront Hall, Belfast, 19 de mayo de 1998", status = Status.Hecho,
             source = "Belfast Hills Partnership; Belfast City Council (árboles); OpenStreetMap",
             floor = new[]
             {
-                new Piece("espejo", Como, "la pared de espejo es el acantilado de basalto de Cave Hill", "pared"),
+                new Piece("pared", Como, "los paños de la cabina de cristal: el acantilado de basalto de Cave Hill", "pared"),
                 new Piece("silla", Como, "sin nieve en mayo: las sillas y bancos son las colinas de Black Mountain", "mesa"),
-                new Piece("mesa", Como, "el piano y las mesas: los astilleros Harland & Wolff y sus grúas", "maquina"),
+                new Piece("mesa", Como, "la mesa de mezclas y el banco: los astilleros Harland & Wolff y sus grúas", "maquina"),
                 new Piece("alfombra", Quitar, "la orilla del Lagan es llana"),
             },
             flora = new[]
@@ -263,7 +261,7 @@ public static partial class MicroStoryMaps
             todo = new[] { "la oficina del Sí no consta: su sitio es representativo. La línea de paz es una calle (sin muro: no hace falta para la historia)" },
         },
 
-        // ══ LONG ISLAND, 1989 (Public Enemy): sobre el Aula (pendiente de su sala de grabación y radio) ═══════════════════════════════
+        // ══ LONG ISLAND, 1989 (Public Enemy): sobre el piso de Música ═══════════════════════════════
         new Map
         {
             display = "Long Island", place = "Roosevelt y Hempstead (Long Island), primavera de 1989", status = Status.Hecho,
@@ -271,7 +269,7 @@ public static partial class MicroStoryMaps
             floor = new[]
             {
                 new Piece("silla", Como, "sin nieve en abril y sin relieve en Long Island: las sillas son los bloques de oficinas de Garden City y Uniondale", "cajonera"),
-                new Piece("mesa", Como, "las mesas son el Nassau Coliseum y sus grandes aparcamientos", "maquina"),
+                new Piece("mesa", Como, "la mesa de mezclas y el banco son el Nassau Coliseum y sus grandes aparcamientos", "maquina"),
                 new Piece("pared", Como, "las pizarras y pantallas son las pantallas acústicas de la autopista: terrazas de tierra", "escalera"),
                 new Piece("alfombra", Quitar, "la llanura de Hempstead es plana"),
             },
@@ -299,7 +297,7 @@ public static partial class MicroStoryMaps
             todo = new[] { "verificar en un plano de 1989 el número de South Franklin Street; la casa de los Ridenhour no consta: su sitio es representativo" },
         },
 
-        // ══ LA PLAZA DE LAS CANCIONES (inventada): sobre el Aula (pendiente de su escenario) ═════════════════════════════════════════
+        // ══ LA PLAZA DE LAS CANCIONES (inventada): sobre el piso de Música ═════════════════════════════════════════
         new Map
         {
             display = "Grandes aportes de las canciones", place = "La Plaza de las Canciones (lugar inventado), un 21 de junio", status = Status.Hecho,

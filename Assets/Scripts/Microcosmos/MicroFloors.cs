@@ -19,8 +19,6 @@ public static class MicroFloors
     {
         public string display, platform, why, pending;
         public bool representative => string.IsNullOrEmpty(pending);
-        /// <summary>(2026-11-05) El piso que falta para los microcosmos de la música (sin la palabra «estudio», que ya usa el Aula en la alerta de piso nuevo).</summary>
-        public const string MusicFloor = "Sala de grabación y escenario de conciertos (música)";
         public Match(string display, string platform, string why, string pending = null) { this.display = display; this.platform = platform; this.why = why; this.pending = pending ?? ""; }
     }
 
@@ -69,7 +67,7 @@ public static class MicroFloors
         M("Onondaga", "Classroom_Area", "la Gran Ley de la Paz: el consejo de las Cinco Naciones", "Sala de asambleas (parlamento)"),
         M("Alejandría de Cleopatra", "Kitchen_Area", "Cleopatra abre los graneros en los años sin crecida: dar de comer a una ciudad, la Cocina"),
         M("Langley", "Informatics_Area", "las calculadoras humanas de Langley y el IBM 7090: el piso de Informática"),
-        M("Viena 1824", "Ballet_Area", "Beethoven y el estreno de la Novena: música y baile, la Sala de Ballet", "Sala de grabación y escenario de conciertos (música)"),
+        M("Viena 1824", "Music_Area", "Beethoven y el estreno de la Novena: el concierto, el piso de Música"),
         M("Leiden", "Classroom_Area", "Descartes, el método y la geometría: el Aula"),
         M("San Pablo", "Infirmary_Area", "Guevara y Granado en la colonia de leprosos: el hospital"),
         M("Madrid 2018", "Classroom_Area", "la moción de censura de 2018: cómo funciona un parlamento", "Sala de asambleas (parlamento)"),
@@ -84,15 +82,15 @@ public static class MicroFloors
         M("Omaha", "TextileStudio_Area", "Buffett y la señora B: la tienda que empezó vendiendo alfombras y telas, el Estudio Textil", "Mercado y oficina de comercio (economía)"),
         M("Prairie View", "Classroom_Area", "Scott y Prairie View A&M: la universidad, su biblioteca y sus estudiantes; el Aula"),
         M("Uagadugú", "Garden_Area", "los productores y sus huertos: labrar y sembrar antes de las lluvias, el Huerto"),
-        // La música (docs/microcosmos-musica.md). Sobre la Sala de Ballet (la sala con piano, equipo de sonido y suelo de escenario), Informática o el Aula hasta que exista su piso.
-        M("Grandes aportes de las canciones", "Classroom_Area", "aprender cómo seis canciones cambiaron algo: el Aula y su historia", Match.MusicFloor),
-        M("Long Island", "Classroom_Area", "Public Enemy nace en la radio de una universidad: el Aula", Match.MusicFloor),
-        M("Belfast", "Ballet_Area", "U2 en el Waterfront Hall: un concierto por el referéndum de paz; la sala con piano y equipo de sonido", Match.MusicFloor),
-        M("Kingston", "Ballet_Area", "el One Love Peace Concert: la música en el escenario; la sala con piano y equipo de sonido", Match.MusicFloor),
+        // La música (docs/microcosmos-musica.md): sobre su piso, Música (docs/piso-musica.md, 2026-11-05); BLACKPINK, sobre la Sala de Ballet.
+        M("Grandes aportes de las canciones", "Music_Area", "seis canciones que cambiaron algo: el escenario del piso de Música"),
+        M("Long Island", "Music_Area", "Public Enemy nace en una radio y un estudio: la sala de grabación del piso de Música"),
+        M("Belfast", "Music_Area", "U2 en el Waterfront Hall: un concierto por el referéndum de paz; el escenario del piso de Música"),
+        M("Kingston", "Music_Area", "el One Love Peace Concert: la música en el escenario; el escenario del piso de Música"),
         M("Seúl", "Ballet_Area", "BLACKPINK: años de ensayo ante el espejo; la Sala de Ballet es una sala de ensayo"),
-        M("Gary", "Ballet_Area", "los Jackson: ensayar voces y pasos en casa y subir al escenario del instituto; la sala de baile", Match.MusicFloor),
-        M("Montreal", "Ballet_Area", "Lennon y Ono graban con todos en la habitación del hotel: la sala con piano y equipo de sonido", Match.MusicFloor),
-        M("Vega Baja", "Informatics_Area", "Benito graba en su cuarto con un portátil: la música hecha con ordenador, Informática", Match.MusicFloor),
+        M("Gary", "Music_Area", "los Jackson: ensayar voces y pasos en casa y subir al escenario del instituto; el escenario del piso de Música"),
+        M("Montreal", "Music_Area", "Lennon y Ono graban con todos en la habitación del hotel: el escenario del piso de Música"),
+        M("Vega Baja", "Music_Area", "Benito graba en su cuarto: la sala de grabación del piso de Música"),
         M("Barranquilla", "Classroom_Area", "Shakira y el colegio Pies Descalzos de La Playa: la escuela; el Aula"),
     };
 
@@ -112,6 +110,7 @@ public static class MicroFloors
     {
         ["Informatics_Area"] = new[] { "informática", "ordenador", "programación", "computación", "servidor", "cálculo" },
         ["Classroom_Area"] = new[] { "aula", "biblioteca", "universidad", "universitaria", "estudio", "clase", "archivo" },
+        ["Music_Area"] = new[] { "música", "grabación", "concierto", "escenario" },
     };
 
     /// <summary>Minúsculas y sin tildes (para comparar «Informática» con «informatica»).</summary>

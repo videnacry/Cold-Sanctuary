@@ -3512,12 +3512,14 @@ public static partial class SampleSceneBuilder
         var entFloors = new List<Transform>();
         entFloors.AddRange(gymF); entFloors.Add(cardio); entFloors.AddRange(calF); entFloors.AddRange(hatF); entFloors.AddRange(ashF); entFloors.AddRange(balF); entFloors.AddRange(dojF);
         // Dos pisos por nivel; encima, los del Aula (AulaFloors, docs/piso-aula.md: la sala de estudio, con la misma regla).
-        int entLevels = Mathf.CeilToInt((entFloors.Count + AulaFloors()) / 2f);
+        int entLevels = Mathf.CeilToInt((entFloors.Count + AulaFloors() + 1) / 2f);   // + 1: el piso de Música (docs/piso-musica.md), encima del Aula
         Debug.Log($"[Centros] {members} miembros: Gimnasio {gymF.Count}, Calistenia {calF.Count}, Yoga Hatha {hatF.Count}, Yoga Ashtanga {ashF.Count}, Ballet {balF.Count}, Dojo {dojF.Count} pisos; la torre del Entrenamiento, {entFloors.Count} pisos en {entLevels} niveles.");
         BeginTreeTower(areasGroup.transform, TorreEntrenamiento, EntrenamientoCenter, GymSize, EntrenamientoYaw, entLevels);
         foreach (Transform t in entFloors) Floor(t);
         // (2026-11-04) EL AULA (docs/piso-aula.md): encima del Dojo: aula de clases y sala de estudio para todos.
         SanctuaryArea aula = BuildClassroom(areasGroup.transform); areas.Add(aula);
+        // (2026-11-05) LA MÚSICA (docs/piso-musica.md): encima del Aula: sala de grabación y escenario de conciertos.
+        SanctuaryArea music = BuildMusic(areasGroup.transform); areas.Add(music);
         //  · PRODUCCIÓN (más baja, junto al Árbol de los Campos): Construcción · Mecánica · Estudio Textil. La maquinaria
         //    pesada, abajo.
         //    Un ÁRBOL: 2 niveles desde 96 m (por encima de Servicios y Ciencias); sus 3 pisos en orden y uno libre; 4 puntas con frutales.
@@ -4170,6 +4172,7 @@ public static partial class SampleSceneBuilder
         // (2026-11-04) Los pisos nuevos: Informática (Bill Gates en Albuquerque) y el Aula (MacKenzie Scott en Prairie View).
         WireMeditationArea(parent, "Informatics_Area", "Informática", new Color(0.55f, 0.65f, 0.8f), MissionKind.Channel, null, virtualOnly: true);
         WireMeditationArea(parent, "Classroom_Area", "Aula", new Color(0.85f, 0.8f, 0.65f), MissionKind.Channel, null, virtualOnly: true);
+        WireMeditationArea(parent, MusicArea, "Música", new Color(0.62f, 0.5f, 0.72f), MissionKind.Channel, null, virtualOnly: true);   // (2026-11-05) docs/piso-musica.md
 
         // Segunda vía de entrada: el hechizo de loto (arranca bloqueado; se activa al aprenderlo).
         GameObject player = GameObject.Find("Player");
