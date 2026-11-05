@@ -8,7 +8,7 @@ orquestas/animaciones para completar sus tareas/jornada/ocio/recuperación».
 
 Rama `claude/edif-actividades`. Código en `Assets/Scripts/Activities/` (`ActivityKit`, `ActivityPerformer`, `Performances`,
 `MealRitual`, `Uniforms`, `UniformWearer`, `UniformDirector`) y `CubeInsect.Uniform.cs`. Prueba: `ActividadesTest` (grupo 97).
-Solo código: **sin probar en vivo** (lo prueba el probador único).
+Primer pase en vivo: ronda 7 (el comportamiento en la jornada, bien; los 6 fallos eran de la prueba y de la mano del insecto, ver §7).
 
 ## 1. Auditoría (estado el 2026-11-04, antes del cambio)
 
@@ -179,3 +179,12 @@ la historia), `UniformDirector` llama a `MealRitual.Sweep` y la vajilla desapare
    (e) el huerto (peto, sombrero, regadera con gotas); (f) la obra (chaleco, casco, martillo con polvo); (g) un laboratorio (bata,
    gafas, pipeta); (h) alguien nadando en la raíz de un árbol (neopreno); (i) un insecto-humano en el comedor de su era con la cuchara y
    otro trabajando con su delantal; (j) la arboleda en el horario libre (leyendo con libro y taza).
+
+## 7. Ronda 7 (grupo 97, 23/6): causas
+
+- **Misiones con brazo 0° y 0 efectos, la actuación que no se para, el uniforme que no se quita:** no era la unión con entreno, tareasE y
+  personajes (`Dress` y `Perform` siguen en `WorkdayDirector.Drive`; en la jornada real el registro da «13 pasos, 38 efectos»). La prueba usaba
+  a Linduarda y el pase «Solo grupos» no pone `TestRunner.Running`, así que la jornada siguió mandándole su misión de verdad a la vez:
+  dos actuaciones que se sustituían en cada fotograma. Ahora la prueba usa un cuerpo propio, fuera del personal.
+- **Insecto sin cuchara ni herramienta:** error de verdad en `ActivityKit.Hand`: al coger algo, la «Punta» del utensilio pasaba a ser la mano,
+  `Held` no lo veía y los utensilios se apilaban. Afectaba a todos los insectos-humanos.

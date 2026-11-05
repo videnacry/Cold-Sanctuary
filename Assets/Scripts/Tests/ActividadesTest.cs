@@ -6,6 +6,7 @@ using UnityEngine;
 /// <summary>
 /// PRUEBA DE LAS ACTIVIDADES DE VERDAD (grupo 97; docs/actividades-y-uniformes.md; Berón 2026-11-04: «parece que solo van al piso que
 /// les toca y no hacen nada … sería posible que los humanos se coloquen uniformes»). En cualquier escena con personal:
+///  Con un cuerpo propio de la prueba (no del personal: en «Solo grupos» la jornada sigue en marcha y mandaría a la vez a quien se cogiera).
 ///  1. LA COMIDA (humano): bandeja → sentarse → cubiertos → bocados (el brazo sube y baja, la comida del plato MENGUA, el hambre baja) →
 ///     beber → recoger → devolver; todos los pasos en orden y la vajilla fuera de las manos al final.
 ///  2. LAS MISIONES: N misiones del catálogo diario (las obligatorias primero) puestas como las pone la jornada a quien ya está en su
@@ -40,12 +41,13 @@ public class ActividadesTest : MonoBehaviour, ITestUnit
     public IEnumerator Run()
     {
         TestProbe.Begin("Actividades: la orquesta de la comida, las misiones que se hacen de verdad y los uniformes");
-        GameObject human = PickHuman();
-        if (TestProbe.Check("hay un humano de cubos para la prueba", human != null))
+        GameObject human = MakeHuman();
+        if (TestProbe.Check("hay un humano de cubos para la prueba", human != null && ActivityKit.IsHuman(human)))
         {
             yield return HumanMeal(human);
-            yield return Missions();
+            yield return Missions(human);
             yield return Uniform(human);
+            HospitalStation.Release(human.name);   // (el puesto médico que le dio la prueba de las misiones del hospital)
         }
         UniformTable();
         yield return Insect();
@@ -54,18 +56,19 @@ public class ActividadesTest : MonoBehaviour, ITestUnit
         TestProbe.End();
     }
 
-    // Un miembro del personal con cuerpo de cubos (no el jugador ni la Magnate), quieto: sin nada en su cola.
-    static GameObject PickHuman()
+    // UN CUERPO SOLO PARA LA PRUEBA, lejos de todo, que no es del personal. (Ronda 7: con un miembro del personal —Linduarda— y el pase
+    // «Solo grupos», donde la jornada sigue en marcha, la jornada le mandaba a la vez su misión de verdad: dos actuaciones que se
+    // pisaban en cada fotograma —0 pasos, brazo 0°, 0 efectos— y su uniforme y su actuación volvían al quitárselos.)
+    GameObject MakeHuman()
     {
-        foreach (string n in WorkdayDirector.Staff)
-        {
-            if (n == "Player") continue;
-            GameObject g = WorkdayDirector.Body(n);
-            if (g != null && g.activeInHierarchy && ActivityKit.IsHuman(g) && g.GetComponent<Anima>() != null && !g.GetComponent<Anima>().death) return g;
-        }
-        foreach (Anima a in FindObjectsByType<Anima>(FindObjectsSortMode.None))
-            if (a != null && !a.death && !a.CompareTag("Player") && ActivityKit.IsHuman(a.gameObject) && a.GetComponent<Magnate>() == null) return a.gameObject;
-        return null;
+        GameObject g = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        g.name = "Prueba_Actividades";
+        g.transform.position = new Vector3(0f, -200f, 0f);
+        g.AddComponent<Anima>();
+        g.AddComponent<BodyMetabolism>();
+        CubeHumanoid.Dress(g, new Color(0.4f, 0.3f, 0.55f), new Color(0.86f, 0.7f, 0.58f), 1.75f);
+        _temp.Add(g);
+        return g;
     }
 
     static void Quiet(GameObject g)
@@ -131,14 +134,12 @@ public class ActividadesTest : MonoBehaviour, ITestUnit
     }
 
     // ── 2. Las misiones se hacen ────────────────────────────────────────────────────────────────────────────────
-    IEnumerator Missions()
+    IEnumerator Missions(GameObject g)
     {
         var all = AreaFunctions.SanctuaryMissions().ToList();
         // (la clase de Hatha —guía, demostrador y correctores— la lleva YogaClass con su secuencia: no pasa por la actuación)
         var sample = all.Where(f => f.mandatory && !OwnSystem(f.id)).Concat(all.Where(f => !f.mandatory && !OwnSystem(f.id))).Take(Mathf.Max(1, sampleMissions)).ToList();
         int ok = 0, own = 0; var bad = new List<string>();
-        GameObject g = PickHuman();
-        if (g == null) yield break;
         CreatureRig rig = g.GetComponent<CreatureRig>();
         foreach (var f in sample)
         {
