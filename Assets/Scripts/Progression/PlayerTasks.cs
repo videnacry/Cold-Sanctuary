@@ -123,7 +123,7 @@ public static class PlayerTasks
         T("aul_estudio", "Coge un libro|estante|Libro", "Estudia en la mesa|mesa|Libro", "Devuelve el libro|estante|Libro");
         // ══ MÚSICA ══
         T("son_grabar", "Prepara los micrófonos en la cabina|cabina|Tablet", "Graba las tomas|cabina|", "Mézclalas en la mesa|mezclas|Tablet");
-        T("son_ensayo", "Afina los instrumentos|ensayo|Llave inglesa", "Ensaya en el rincón|ensayo|", "Prueba en el escenario|escenario|");
+        T("son_ensayo", "Afina los instrumentos|ensayo|Llave inglesa", "Ensaya en la sala|ensayo|", "Prueba en el escenario|escenario|");
         T("son_equipo", "Revisa cuerdas y cables|tecnico|Llave inglesa", "Prueba micrófonos y altavoces|escenario|Tablet");
         T("aul_legal", "Saca los contratos y los permisos|estante|Carpeta", "Revisa las normas y los acuerdos en la mesa|mesa|Contrato", "Archiva lo firmado|estante|Carpeta");
         T("aul_lenguas", "Reúne los documentos por traducir|mesa|Diccionario", "Tradúcelos|mesa|Diccionario", "Da la clase de idiomas|pizarra|Tiza");

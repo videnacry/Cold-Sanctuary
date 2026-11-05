@@ -99,7 +99,7 @@ public static class VirtualMissions
             case "ifo_refrigeracion": return new[] { "Cambiar los filtros de la CDU", "Buscar fugas en los colectores", "Probar la bomba de reserva", "Desincrustar el intercambiador" };
             case "ifo_energia": return new[] { "Leer el analizador de la acometida", "Probar el SAI", "Revisar las baterías" };
             case "son_grabar": return new[] { "Preparar la cabina y los micrófonos", "Grabar las tomas", "Mezclarlas en la mesa" };
-            case "son_ensayo": return new[] { "Afinar los instrumentos", "Ensayar en el rincón", "Probar en el escenario" };
+            case "son_ensayo": return new[] { "Afinar los instrumentos", "Ensayar en la sala", "Probar en el escenario" };
             case "son_equipo": return new[] { "Revisar cuerdas y cables", "Probar micrófonos y altavoces" };
             case "aul_clase": return new[] { "Preparar la pizarra y la pantalla", "Dar la clase desde la tarima", "Resolver dudas en las filas" };
             case "aul_estudio": return new[] { "Buscar el libro en la biblioteca", "Consultarlo en el catálogo", "Estudiar en la mesa" };
@@ -138,8 +138,8 @@ public static class VirtualMissions
             case "ifo_sysadmin": return new[] { "Bloque_Puesto de monitorización 1", "Bloque_Puesto de monitorización 2", "Bloque_Racks de almacenamiento (NVMe y copias)", "Bloque_Fila de racks de GPU A (4 racks + CDU)" };
             case "ifo_refrigeracion": return new[] { "Bloque_Banco de mantenimiento de la refrigeración 1", "Bloque_Fila de racks de GPU B (4 racks + CDU)", "Bloque_Bombas del circuito (2 + 1 de reserva)", "Bloque_Intercambiador: calor a la red de distrito" };
             case "ifo_energia": return new[] { "Bloque_Cuadro de la acometida (central nuclear y paneles)", "Bloque_SAI 1", "Bloque_Armario de baterías de litio 1" };
-            case "son_grabar": return new[] { "Micrófonos de la cabina", "Micrófonos de la cabina", "Mesa de mezclas y monitores" };
-            case "son_ensayo": return new[] { "Rincón de ensayo", "Rincón de ensayo", "Escenario de conciertos" };
+            case "son_grabar": return new[] { "Cabina de grabación 1", "Cabina de grabación 1", "Mesa de mezclas 1" };
+            case "son_ensayo": return new[] { "Banda de ensayo 1", "Banda de ensayo 1", "Escenario de conciertos" };
             case "son_equipo": return new[] { "Banco del técnico de sonido", "Escenario de conciertos" };
             case "aul_clase": return new[] { "Tarima del profesor (mesa, pizarra y pantalla)", "Tarima del profesor (mesa, pizarra y pantalla)", "Fila de pupitres 1 (6 plazas)" };
             case "aul_estudio": return new[] { "Estanterías de la biblioteca", "Puesto del catálogo y de ordenador 1", "Mesa de estudio 1 (6 plazas)" };
