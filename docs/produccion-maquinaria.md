@@ -37,4 +37,4 @@ Primero puse un lote de 16 kg sin máquinas, que incumplía esta regla. La líne
 
 ## 2026-11-06: el Huerto para 31 personas
 
-A 3 kg/m² al año, 24,8 kg/día piden **3017 m²**; los 8 bancales del Árbol de los Campos dan 1728 (14,2 kg). Faltan **1290 m²**. No cabe en lo que hay: o un nivel más del Árbol (2 pisos de 32 m y 2 puntas de 20 m, unos 2850 m²), o un piso de estantes con LED. La decisión es de Berón.
+A 3 kg/m² al año, 24,8 kg/día piden **3017 m²**; los 8 bancales del Árbol de los Campos dan 1728 (14,2 kg). Faltan **1290 m²**. No cabe en lo que hay: o dos niveles más del Árbol (sus 8 plataformas dan 216 m² de bancal de media: un nivel de 4 plataformas sumaría unos 860 m², y no basta), o un piso de estantes con LED. La decisión es de Berón.
