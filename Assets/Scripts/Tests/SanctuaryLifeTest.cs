@@ -313,7 +313,7 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         // LÍMITE DE LA ESTRUCTURA: ningún edificio pasa de los pisos que aguantan sus columnas (StructuralLimits).
         // Pisos DE VERDAD: en un edificio-árbol el número de la alfombra cuenta plataformas (cada nivel, 2 pisos y 2 puntas de rama) y las puntas no son pisos. Aquí, sus pisos más el techo.
         var towers = new System.Collections.Generic.Dictionary<string, int>();
-        foreach (ArbolCampos ac in ArbolCampos.All) if (ac != null) towers[ac.building] = ac.levels.Count(l => l.kind == TreeLevel.Kind.Floor) + 1;
+        foreach (ArbolCampos ac in ArbolCampos.All) if (ac != null) towers[ac.building] = ac.levels.Count(l => l.kind == TreeLevel.Kind.Floor && !l.tip) + 1;
         int FloorsOfPad(CarpetPad c) => towers.TryGetValue(c.building, out int n) ? n : c.floor;
         int maxFloor = CarpetPad.All.Count > 0 ? CarpetPad.All.Max(FloorsOfPad) : 0;
         TestProbe.Check($"ningún edificio pasa de {StructuralLimits.MaxFloors} pisos (lo que aguantan las columnas)", maxFloor > 0 && maxFloor <= StructuralLimits.MaxFloors, $"el más alto: {maxFloor} pisos ({CarpetPad.All.First(c => FloorsOfPad(c) == maxFloor).building})");

@@ -551,7 +551,8 @@ public class JornadaTest : MonoBehaviour, ITestUnit
             string doing = null, area = shift && w != null ? wd.Where(w, h, out doing) : null;
             WorkRoster.Assignment cur = shift && w != null ? wd.Current(w, h) : null;
             if (tr.player && shift && w != null && PlayerWorkday.HeadingEarly(h) is WorkRoster.Assignment early) { cur = early; area = early.mission.area; doing = early.mission.title; }   // ya hizo lo suyo y su puesto es el siguiente (como para la Magnate)
-            else if (!tr.player && shift && w != null && wd.HeadingEarly(w, tr.g, h) is WorkRoster.Assignment gone) { cur = gone; area = gone.mission.area; doing = gone.mission.title; }   // el personal igual: su puesto ya es el siguiente (lo que conduce Drive)
+            bool heading = false;
+            if (!tr.player && shift && w != null && wd.HeadingEarly(w, tr.g, h) is WorkRoster.Assignment gone) { heading = true; cur = gone; area = gone.mission.area; doing = gone.mission.title; }   // el personal igual: su puesto ya es el siguiente (lo que conduce Drive)
             bool handled = MagnateWarden.Instance.Handling(tr.g);
             string head = Head(tr.g);
             bool needs = head != null && (head.StartsWith("comer") || head.StartsWith("pedir") || head.StartsWith("buscar mesa") || head.StartsWith("levantarse") || head.Contains("en la barra") || head.Contains("baño") || head.Contains("aseo") || head.Contains("dormir") || head.Contains("cama"));
@@ -570,8 +571,8 @@ public class JornadaTest : MonoBehaviour, ITestUnit
             {
                 _shiftSamples++;
                 bool plausible = atPost || riding || handled || asleep || needs;
-                if (plausible) _shiftPlausible++;
-                if (cur != null && !tr.player) { _shift.TryGetValue(cur, out Vector2 v); v.y++; if (atPost) v.x++; _shift[cur] = v; }
+                if (plausible || heading) _shiftPlausible++;
+                if (cur != null && !tr.player && !heading) { _shift.TryGetValue(cur, out Vector2 v); v.y++; if (atPost) v.x++; _shift[cur] = v; }
                 if (doing != null && doing.StartsWith("Entrenamiento:") && h >= WorkRoster.StartHour + 6f) { _training.TryGetValue(tr.name, out Vector2 v); v.y++; if (atPost) v.x++; _training[tr.name] = v; }
                 if (plausible) tr.offSince = -1f; else if (tr.offSince < 0f) tr.offSince = now;
                 if (full && !plausible && path < 0.5f && now - tr.offSince >= 20f)   // 20 s FUERA y quieto (no al cambiar de puesto)

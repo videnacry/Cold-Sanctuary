@@ -110,7 +110,7 @@ public class LoteEstaticoTest : MonoBehaviour, ITestUnit
         else
         {
             CubeWalkCycle walk = far.GetComponentInChildren<CubeWalkCycle>();
-            Renderer body = far.GetComponentInChildren<Renderer>();
+            Renderer body = far.GetComponentsInChildren<Renderer>().FirstOrDefault(r => r.enabled);   // (la primera dibujada: la pieza suelta de un uniforme quitado está apagada de antes)
             LoteEstatico.FarInTests = true;
             yield return Until(() => !walk.enabled, 12f);
             TestProbe.Check("un cuerpo lejano no se dibuja y pausa su figura", !walk.enabled && body.forceRenderingOff && body.enabled, $"{far.name}: figura {(walk.enabled ? "activa" : "pausada")}, «{body.name}» oculto {body.forceRenderingOff}, a {(far.transform.position - cam).magnitude:0} m");

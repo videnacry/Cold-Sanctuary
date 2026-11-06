@@ -174,12 +174,13 @@ public class ExperienciaJugadorTest : MonoBehaviour, ITestUnit
         Transform giant = null, flora = null;
         foreach (Transform t in Object.FindObjectsByType<Transform>(FindObjectsSortMode.None))
         {
-            if (giant == null && t.name.EndsWith("_gigante")) giant = t;
             if (flora == null && t.name == "Flora_a_escala") flora = t;
         }
+        // La copia gigante del piso es hermana de su flora (hay más cosas «_gigante»: el «Almohadon_gigante» del ring).
+        if (flora != null && flora.parent != null) foreach (Transform c in flora.parent) if (c.name.EndsWith("_gigante")) { giant = c; break; }
         // El suelo: «Mat» o, en los pisos del árbol, que no lo tienen, la losa más grande de la copia.
         Renderer floor = giant != null && giant.Find("Mat") != null ? giant.Find("Mat").GetComponent<Renderer>() : null;
-        if (giant != null && floor == null) foreach (Renderer r in giant.GetComponentsInChildren<Renderer>()) { Bounds rb = r.bounds; if (rb.size.y < 3f && (floor == null || rb.size.x * rb.size.z > floor.bounds.size.x * floor.bounds.size.z)) floor = r; }
+        if (giant != null && floor == null) foreach (Renderer r in giant.GetComponentsInChildren<Renderer>()) { Bounds rb = r.bounds; if (rb.size.y < 8f && (floor == null || rb.size.x * rb.size.z > floor.bounds.size.x * floor.bounds.size.z)) floor = r; }
         if (giant == null || flora == null || floor == null) { why = $"área gigante {(giant != null)}, flora {(flora != null)}, suelo {(floor != null)}"; return 0; }
         Bounds b = floor.bounds; int n = 0;
         foreach (Transform p in flora)
