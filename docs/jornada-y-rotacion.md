@@ -213,4 +213,4 @@ Las horas libres (16–19 y 20–22 h) tienen ahora un **horario semanal** de oc
 
 **Ronda 15 (2026-11-06):** el entrenamiento de las 14 es un destino al que se sale antes, como la comida; el de las 8 se pierde si la primera misión queda a más de una hora (`HeadingEarly`).
 
-**Ronda 17 (2026-11-06):** a mediodía se come en lo que queda de la hora (mínimo el 40 
+**Ronda 17 (2026-11-06):** a mediodía se come en lo que queda de la hora (mínimo el 40 por ciento), y la bandeja se deja en la mesa si la barra está en otra planta. Kushal no deja una misión con pasos sin hacer y, hecha su parte del entrenamiento, sale hacia la de las 15. El Sitio Nuclear entra en las rondas de máscaras.
