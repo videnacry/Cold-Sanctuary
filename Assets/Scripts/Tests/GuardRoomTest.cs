@@ -28,7 +28,7 @@ public class GuardRoomTest : MonoBehaviour, ITestUnit
             TestProbe.Check($"la pantalla «{GuardWatch.Title(f)}» siempre dice algo", !string.IsNullOrEmpty(GuardWatch.Read(f)), GuardWatch.Read(f));
         TestProbe.Check("un sismo fuerte es raro y el mar solo avisa tras un sismo fuerte", Enumerable.Range(0, 3650).Count(d => GuardWatchRule.Magnitude(d) >= GuardWatchRule.TsunamiWatchMagnitude) < 200
             && Enumerable.Range(0, 3650).All(d => GuardWatchRule.SeaState(d) == GuardWatchRule.Sea.Normal || GuardWatchRule.Magnitude(d) >= GuardWatchRule.TsunamiWatchMagnitude));
-        TestProbe.Check("la misión de la sala existe, con su efecto", AreaFunctions.Get("gua_sala") != null && AreaFunctions.Get("gua_sala").effect != null);
+        TestProbe.Check("la misión de la sala existe, con su efecto", AreaFunctions.HasEffect("gua_sala"));
         TestProbe.Check("la sala cumple la mezcla (S14)", AreaDesign.Of("Sala de guardia")?.state == AreaDesign.State.Cumple);
         HunterLoop loop = HunterLoop.Start;
         for (int d = 0; d < 365; d++) loop.Day(HunterRule.Spiders);

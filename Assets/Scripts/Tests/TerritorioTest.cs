@@ -90,8 +90,11 @@ public class TerritorioTest : MonoBehaviour, ITestUnit
             {
                 Vector3 p = a.transform.position;
                 if (where == 1) return Vector2.Distance(new Vector2(p.x, p.z), new Vector2(MarineLife.Lagoon.x, MarineLife.Lagoon.z)) < 60f;
-                bool hit = Physics.Raycast(p + Vector3.up * 3f, Vector3.down, out RaycastHit h, 8f, ~0, QueryTriggerInteraction.Ignore);
-                return hit && (where == 0) == Territorio.IsLand(h.collider);
+                // (todo lo que hay debajo, no lo primero: una mata, una guarida o el lomo de otro animal tapaban el suelo)
+                bool land = false, any = false;
+                foreach (RaycastHit h in Physics.RaycastAll(p + Vector3.up * 3f, Vector3.down, 8f, ~0, QueryTriggerInteraction.Ignore))
+                    if (h.collider.GetComponentInParent<Anima>() == null) { any = true; land |= Territorio.IsLand(h.collider); }
+                return any && (where == 0) == land;
             }
             TestProbe.Check($"{sp}: en su hábitat", all.Any(Home), $"primero en ({all[0].transform.position.x:0}, {all[0].transform.position.z:0})");
         }
@@ -130,8 +133,12 @@ public class TerritorioTest : MonoBehaviour, ITestUnit
             {
                 if (!t.name.StartsWith("Planta_")) continue;
                 spots++;
-                if (!Physics.Raycast(t.position + Vector3.up * 4f, Vector3.down, out RaycastHit h, 6f, ~0, QueryTriggerInteraction.Ignore)) { bad++; worst = $"{t.name}@{t.position}: sin suelo"; continue; }
-                if (Mathf.Abs(h.point.y - t.position.y) > 0.12f) { bad++; worst = $"{t.name}@{t.position}: suelo a {h.point.y:0.00}"; }
+                // (el suelo, sin los cuerpos: un buey almizclero sobre la mata daba «suelo a 1,39», y otra cuenta en cada pasada)
+                float top = float.NegativeInfinity;
+                foreach (RaycastHit h in Physics.RaycastAll(t.position + Vector3.up * 4f, Vector3.down, 6f, ~0, QueryTriggerInteraction.Ignore))
+                    if (h.collider.GetComponentInParent<Anima>() == null && h.point.y > top) top = h.point.y;
+                if (float.IsNegativeInfinity(top)) { bad++; worst = $"{t.name}: sin suelo"; continue; }
+                if (Mathf.Abs(top - t.position.y) > 0.12f) { bad++; worst = $"{t.name}: suelo a {top:0.00}"; }
             }
             bool meshesOk = flora.GetComponentsInChildren<MeshRenderer>().All(r => r.bounds.min.y > -0.1f);
             TestProbe.Check("ninguna mata bajo el suelo", meshesOk);

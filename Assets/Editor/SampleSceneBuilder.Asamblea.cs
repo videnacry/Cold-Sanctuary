@@ -112,7 +112,7 @@ public static partial class SampleSceneBuilder
         KitchenProps.Fit(desk);
         AreaSeat.Add(desk.gameObject, "interpretar", AreaSeat.Category.Trabajo, 2);
         WorldLabel iw = desk.gameObject.AddComponent<WorldLabel>(); iw.text = "Cabina de intérpretes"; iw.height = 2f;
-        SoundRoom(g, "Sonica_interpretes", booth, new Vector2(6.6f, 5.4f), 3);
+        SoundRoom(g, "Sonica_interpretes", booth, new Vector2(7.6f, 6.4f), 3);   // (2 m libres de la mesa a la piel de dentro, también a lo ancho)
 
         // EL KLEROTERION Y LA CLEPSIDRA de Atenas (+X, sur): sortear quién modera y medir los turnos.
         Transform lots = KitchenProps.Root(g, "Kleroterion y clepsidra (Atenas)", new Vector3(16f, 0f, -8.5f));

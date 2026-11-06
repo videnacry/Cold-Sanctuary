@@ -109,7 +109,7 @@ Scripts que mandan: `Mind.Update` 52 ms (31 llamadas, casi todo tiempo propio), 
 |---|---|
 | `LogQuieto`: 8 etiquetas charlatanas, 1 mensaje cada 5 s por etiqueta | Solo cambia el log; con TestRunner sale todo. Avisos y errores, intactos |
 | `Mind`: humores y campos 1 de cada 6 frames; `ThoughtField.All` en vez de buscar | Mismo tiempo de juego (`GameTick`); un campo nuevo actúa antes, no 1 s después |
-| `WorkdayDirector`: 1/8 del personal por frame | Empezar y acabar misiones sigue en cada frame; alguien tarda hasta 8 frames en recibir su orden |
+| `WorkdayDirector`: se rehace la orden de 1/8 del personal por frame | Empezar y acabar misiones y **conducir a cada persona (`Drive`) siguen en cada frame**; solo la búsqueda de misiones va repartida, así que un cambio tarda hasta 8 frames. Repartir `Drive` hacía andar a 1/8 de la velocidad: `PathMover` integra el `Time.deltaTime` de un frame. Regla: solo se reparte lo que no integra tiempo o lo acumula con `GameTick` |
 | `SpeciesScaleFix`: ya en su talla, mide cada 20–27 s o al cambiar de etapa | Si otro script lo reescala, tarda más en corregirlo |
 | `Swarm`: pasto 1 de cada 6 frames, lista común de cazadores, dueño del collider en caché | Mismo pasto por tiempo de juego |
 

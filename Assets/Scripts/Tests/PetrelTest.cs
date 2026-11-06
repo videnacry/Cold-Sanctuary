@@ -31,13 +31,16 @@ public class PetrelTest : MonoBehaviour, ITestUnit
         // Nidos: sobre roca de la isla.
         var nests = SnowPetrelNest.All.Where(n => n != null).ToList();
         TestProbe.Greater("nidos en los acantilados de la isla", nests.Count, 3f, $"{nests.Count}");
-        bool rock = nests.All(n => Physics.OverlapSphere(n.transform.position, 6f).Any(c => c.name == "Acantilado"));
-        TestProbe.Check("todos en la roca, ninguno en hielo", rock);
+        // (el acantilado de la isla o el peñasco de un casquete silvestre: ese no tiene collider, lo marca su posadero)
+        bool OnRock(SnowPetrelNest n) => Physics.OverlapSphere(n.transform.position, 6f).Any(c => c.name == "Acantilado")
+            || (n.transform.parent != null && n.transform.parent.GetComponentsInChildren<Transform>(true).Any(t => t.name == "Posadero_roca" && (t.position - n.transform.position).sqrMagnitude < 64f));
+        var off = nests.Where(n => !OnRock(n)).ToList();
+        TestProbe.Check("todos en la roca, ninguno en hielo", off.Count == 0, off.Count > 0 ? $"{off.Count} fuera, el primero en {off[0].transform.position}" : "");
         TestProbe.Check("sin nidos en los icebergs", !nests.Any(n => n.GetComponentInParent<Iceberg>() != null));
         TestProbe.Check("cada uno tiene su nido", birds.All(b => b.Nest != null));
 
         // Vuela sin NavMesh.
-        SnowPetrelLife p = birds[0];
+        SnowPetrelLife p = birds.FirstOrDefault(b => !b.Breeding) ?? birds[0];   // (el que incuba o corteja va a su nido, no a descansar)
         Vector3 a0 = p.transform.position;
         yield return new WaitForSeconds(2f);
         TestProbe.Check("vuela: se mueve y sin agente de NavMesh", p != null && (!p.TryGetComponent(out UnityEngine.AI.NavMeshAgent nav) || !nav.enabled));
@@ -49,7 +52,7 @@ public class PetrelTest : MonoBehaviour, ITestUnit
         if (p.TryGetComponent(out Animal an)) an.hungry = -0.5f;
         p.RestNow();
         float t0 = Time.realtimeSinceStartup;
-        while (!p.Perched && Time.realtimeSinceStartup - t0 < 25f) yield return null;
+        while (!p.Perched && Time.realtimeSinceStartup - t0 < 25f) { if (an != null) an.hungry = -0.5f; yield return null; }
         TestProbe.Check("se posa en el iceberg", p.Perched, p.OnBerg != null ? p.OnBerg.name : "sin iceberg");
         TestProbe.End();
     }

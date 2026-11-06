@@ -214,7 +214,7 @@ public class NuclearAccessTest : MonoBehaviour, ITestUnit
             moving.Tow("prueba", true);
             moving.Place(back, moving.driftA);
             yield return null; yield return null;
-            TestProbe.Check("remolcado y lejos, la línea vuelve", !line.Disconnected && !line.LineClosed && Iceberg.Threatening(N) == null);
+            TestProbe.Check("remolcado y lejos, la línea vuelve", !line.Disconnected && !line.LineClosed && Iceberg.Threatening(N) == null, $"desconectada {line.Disconnected}, cerrada {line.LineClosed}, amenaza {(Iceberg.Threatening(N) != null ? Iceberg.Threatening(N).name : "ninguna")}");
         }
 
         // ── 5. EL SANTUARIO MARINO ──

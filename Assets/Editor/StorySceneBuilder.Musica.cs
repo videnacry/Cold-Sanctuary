@@ -151,7 +151,7 @@ public static partial class StorySceneBuilder
         // 2 · LA CASA Y LA IGLESIA de Almirante Sur.
         Transform home = Spot(t, "Casa de Almirante Sur", new Vector3(-12f, 0f, 12f), "La casa de la familia, en Almirante Sur", 3.5f);
         Prop(home, "Terraza", new Vector3(0f, 0.12f, 0f), new Vector3(5f, 0.24f, 3.5f), wood);
-        Prop(home, "Techo de zinc de la marquesina (solo sus postes)", new Vector3(-2.2f, 1.2f, -1.5f), new Vector3(0.12f, 2.4f, 0.12f), zinc);
+        Prop(home, "Poste de la marquesina", new Vector3(-2.2f, 1.2f, -1.5f), new Vector3(0.12f, 2.4f, 0.12f), zinc);
         Transform church = Spot(t, "Iglesia del barrio", new Vector3(-20f, 0f, 2f), "La iglesia: cantó en su coro hasta los 13 años", 3.5f);
         for (int k = 0; k < 3; k++) Prop(church, "Banco del coro", new Vector3(0f, 0.25f, -1.5f + k * 1.5f), new Vector3(2.4f, 0.5f, 0.45f), pew);
 

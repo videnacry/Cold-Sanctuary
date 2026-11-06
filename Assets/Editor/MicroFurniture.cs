@@ -1051,7 +1051,7 @@ internal static partial class MicroFurniture
                 C(h, new Vector3(0.75f, 0.31f, -0.2f), new Vector3(0.3f, 0.02f, 0.3f), Ember, 0f, "Brasa");
                 potY = 0.61f; break;
         }
-        KitchenProps.Pot(t, "Olla", new Vector3(-0.6f, potY, 0.05f));
+        KitchenProps.Pot(t, "Olla", new Vector3(-0.6f, potY, 0.05f)).localScale = Vector3.one * (MicroCivicScale.PotFor(KitchenDiners) / 0.22f);   // (la misma olla que en la encimera: esta, sin escalar, daba 10 L)
         KitchenProps.Pan(t, "Sarten", new Vector3(-0.2f, 0.02f, -0.5f), 30f);
         // La tabla baja de trabajo con los utensilios, y el agua.
         Transform board = new GameObject("Tabla_de_trabajo").transform; board.SetParent(t, false); board.localPosition = new Vector3(0.1f, 0f, 0f);

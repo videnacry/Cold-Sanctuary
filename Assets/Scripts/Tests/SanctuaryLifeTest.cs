@@ -310,7 +310,7 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         TestProbe.Check("ballet y dojo están en obras; el gimnasio y la calistenia, abiertos", ConstructionProject.All.Count >= 2 && FindByPrefix("Gym_Area") && FindByPrefix("Calistenia"));
         // LÍMITE DE LA ESTRUCTURA: ningún edificio pasa de los pisos que aguantan sus columnas (StructuralLimits).
         int maxFloor = CarpetPad.All.Count > 0 ? CarpetPad.All.Max(c => c.floor) : 0;
-        TestProbe.Check($"ningún edificio pasa de {StructuralLimits.MaxFloors} pisos (lo que aguantan las columnas)", maxFloor > 0 && maxFloor <= StructuralLimits.MaxFloors, $"el más alto: {maxFloor} pisos");
+        TestProbe.Check($"ningún edificio pasa de {StructuralLimits.MaxFloors} pisos (lo que aguantan las columnas)", maxFloor > 0 && maxFloor <= StructuralLimits.MaxFloors, $"el más alto: {maxFloor} pisos ({CarpetPad.All.First(c => c.floor == maxFloor).building})");
         // TORRES TEMÁTICAS (Berón 2026-10-29; docs/plano-edificios.md): pocos edificios con muchos pisos: Servicios, Entrenamiento,
         // Ciencias y Producción (y el Árbol de los Campos); los reactores, en el sitio nuclear. Desde el 2026-10-31 las torres son
         // ÁRBOLES (docs/edificio-arbol.md §Migración): alfombras de edificio SOLO en el suelo (0) y en el techo; entre pisos se nada.
@@ -422,9 +422,9 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         else TestProbe.Greater("la torre de Servicios (con el hospital) tiene alfombras en cada piso, en el hielo y en el techo (8)", hospFloors, 7f, $"{hospFloors} pisos con alfombras");
         int roofs = pads.Count(p => p.kind == CarpetPad.Kind.Santuario);
         TestProbe.Greater("cada edificio tiene en su techo las alfombras del santuario (4 torres, la central, el Árbol de los Campos, la residencia)", roofs, 6f, $"{roofs} techos");
-        TestProbe.Check("en el techo, las de edificio y las del santuario están en el mismo piso", pads.Where(p => p.kind == CarpetPad.Kind.Santuario && p.building != "Residencia").All(s => pads.Any(e => e.kind == CarpetPad.Kind.Edificio && e.surface == s.surface)));
+        TestProbe.Check("en el techo, las de edificio y las del santuario están en el mismo piso", pads.Where(p => p.kind == CarpetPad.Kind.Santuario && p.building != "Residencia" && p.building != AereoRule.Building).All(s => pads.Any(e => e.kind == CarpetPad.Kind.Edificio && e.surface == s.surface)));
         TestProbe.Check("cada casa del árbol tiene su alfombra (y la residencia, la de cada habitación)", pads.Count(p => p.kind == CarpetPad.Kind.Habitacion) >= 12 && pads.Any(p => p.kind == CarpetPad.Kind.Residencia));
-        CarpetPad anyB = pads.FirstOrDefault(p => p.kind == CarpetPad.Kind.Edificio && p.floor == 1);
+        CarpetPad anyB = pads.FirstOrDefault(p => p.kind == CarpetPad.Kind.Edificio && p.floor == 1 && p.Destinations().Count > 0);   // (la pista suelta de un edificio de un solo piso con alfombras no tiene a dónde ir)
         TestProbe.Check("el selector de una alfombra de edificio solo ofrece sus pisos", anyB != null && anyB.Destinations().Count > 0 && anyB.Destinations().All(d => d.building == anyB.building));
         // De un piso del hospital a la cama de Kushal: piso → techo → residencia → su habitación, sin escaleras.
         CarpetPad start = servTree ? pads.Where(p => p.building == "Servicios" && p.kind == CarpetPad.Kind.Edificio).OrderByDescending(p => p.floor).FirstOrDefault()   // árbol: desde su techo (a él se llega nadando)

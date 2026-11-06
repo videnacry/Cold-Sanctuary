@@ -229,6 +229,7 @@ public class FotobioFacadeTest : MonoBehaviour, ITestUnit
             Bounds bb = r.bounds;
             if (bb.size.x > 80f || bb.size.z > 80f) continue;   // el hielo y el mar
             if (r.GetComponentInParent<Rigidbody>() != null || r.GetComponentInParent<Anima>() != null) continue;   // lo que se mueve
+            if (r.name.StartsWith("Lote_")) continue;   // (el lote estático de Play: su caja abarca la zona entera; sus piezas se miran una a una)
             if (bb.max.y < FotobioSpec.TrunkBottom - 2f || bb.min.y > FotobioSpec.TrunkTop + 2f) continue;
             float dx = Mathf.Max(bb.min.x - axis.x, 0f, axis.x - bb.max.x), dz = Mathf.Max(bb.min.z - axis.z, 0f, axis.z - bb.max.z);
             if (new Vector2(dx, dz).magnitude < sweep + 2f) hits.Add(r.name);

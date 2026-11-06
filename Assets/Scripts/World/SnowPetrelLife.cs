@@ -69,6 +69,8 @@ public class SnowPetrelLife : MonoBehaviour
 
     /// <summary>Que vaya ya a posarse (pruebas).</summary>
     public void RestNow() { _nextRest = 0f; }
+    /// <summary>¿Está criando (pollo, huevo que incubar, su pollo en el nido o en celo)? Entonces va al nido y no descansa en los icebergs.</summary>
+    public bool Breeding => _a == null || _a.lifeStage == LifeStage.child || Egg.ToIncubate(_a) != null || NestChick() != null || (_a.lifeStage == LifeStage.adult && ((_estrus != null && _estrus.InEstrus) || (GetComponent<Reproduction>() is Reproduction r && r.Pregnant) || PartnerBreeding()));
 
     void LateUpdate()
     {

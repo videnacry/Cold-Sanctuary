@@ -18,7 +18,6 @@ public static partial class StorySceneBuilder
         Transform clinic = Spot(t, "Dispensario de la colonia", new Vector3(-13f, 0f, 9f), "El dispensario: curas sin guantes", 3f);
         Prop(clinic, "Plataforma sobre pilotes", new Vector3(0f, 0.3f, 0f), new Vector3(7f, 0.6f, 5f), wood);
         for (int k = 0; k < 4; k++) Prop(clinic, "Pilote", new Vector3(-3f + (k % 2) * 6f, 1.5f, -2f + (k / 2) * 4f), new Vector3(0.3f, 3f, 0.3f), wood);
-        Prop(clinic, "Techo de irapay", new Vector3(0f, 3.1f, 0f), new Vector3(8f, 0.3f, 6f), palm, false);
         Prop(clinic, "Mesa de curas", new Vector3(0f, 1f, 0f), new Vector3(2.2f, 0.8f, 1f), white);
         Transform lab = Spot(t, "Mesa de Granado", new Vector3(-17f, 0f, 0f), "Las muestras de Alberto Granado", 2.2f);
         Prop(lab, "Microscopio", new Vector3(0f, 0.95f, 0f), new Vector3(0.3f, 0.5f, 0.3f), ball, false);

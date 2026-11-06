@@ -64,6 +64,8 @@ public static class AreaFunctions
     /// <summary>Todas las funciones registradas.</summary>
     public static IEnumerable<AreaFunction> All => _byId.Values;
     public static AreaFunction Get(string id) => id != null && _byId.TryGetValue(id, out AreaFunction f) ? f : null;
+    /// <summary>¿Tiene efecto propio, en la ficha o por prefijo? (<see cref="_prefixEffects"/>: la misión del turno lo lleva por prefijo.)</summary>
+    public static bool HasEffect(string id) { AreaFunction f = Get(id); if (f == null) return false; if (f.effect != null) return true; foreach (var e in _prefixEffects) if (id.StartsWith(e.prefix)) return true; return false; }
 
     // ── Definición ───────────────────────────────────────────────────────────────────────────────────────────────
     static AreaFunction Def(string area, string id, string title, float h, bool mandatory, Kind kind, params string[] stations)

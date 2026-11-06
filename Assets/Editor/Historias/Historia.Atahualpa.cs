@@ -17,8 +17,9 @@ public static partial class StorySceneBuilder
 
         // 1 · EL AYNI: lo que los vecinos hacen unos por otros: el techo de la viuda, la chacra del abuelo y el telar.
         Transform roof = Spot(t, "Casa de la viuda", new Vector3(-13f, 0f, 9f), "Ayni: hoy el ayllu le techa la casa a la viuda", 3f);
-        for (int k = 0; k < 2; k++) Prop(roof, "Muro de adobe", new Vector3(-1.8f + k * 3.6f, 0.9f, 0f), new Vector3(0.4f, 1.8f, 3.4f), adobe);
-        Prop(roof, "Medio techo de ichu", new Vector3(-0.9f, 2f, 0f), new Vector3(2f, 0.3f, 3.8f), thatch, false);
+        // (Sin muros ni techo, regla 2 de edificación: la casa es su cimiento y el ichu que el ayllu trae para techarla.)
+        for (int k = 0; k < 2; k++) Prop(roof, "Cimiento de adobe", new Vector3(-1.8f + k * 3.6f, 0.2f, 0f), new Vector3(0.4f, 0.4f, 3.4f), adobe);
+        Prop(roof, "Haces de ichu para techar", new Vector3(0f, 0.2f, 0f), new Vector3(2f, 0.4f, 1.6f), thatch, false);
         Transform plot = Spot(t, "Chacra del abuelo", new Vector3(-18f, 0f, 1f), "Ayni: sembrar la chacra de quien ya no puede", 2.4f);
         Prop(plot, "Surcos", new Vector3(0f, 0.1f, 0f), new Vector3(3.6f, 0.2f, 2.6f), earth, false);
         Prop(plot, "Chaquitaclla (arado de pie)", new Vector3(2.2f, 0.7f, 0f), new Vector3(0.12f, 1.4f, 0.12f), wood);
@@ -32,6 +33,7 @@ public static partial class StorySceneBuilder
 
         // 2 · LA OBRA SIN TERMINAR: un muro a medias, sus piedras por llegar y la piedra cansada.
         Transform wall = Spot(t, "Muro sin terminar", new Vector3(0f, 0f, 16f), "Un muro sin terminar: la obra de la mit'a se paró con la guerra", 3.6f);
+        { MicroPiece wp = wall.gameObject.AddComponent<MicroPiece>(); wp.kind = MicroBuildRules.Historic; wp.walkable = true; }   // (el muro a medias ES la historia: la excepción de la regla 2)
         for (int k = 0; k < 5; k++) Prop(wall, "Sillar labrado", new Vector3(-4f + k * 2f, 0.6f, 2f), new Vector3(1.9f, 1.2f, 1f), stone);
         for (int k = 0; k < 2; k++) Prop(wall, "Sillar de la segunda hilada", new Vector3(-3f + k * 2f, 1.7f, 2f), new Vector3(1.9f, 1f, 1f), stone);
         Prop(wall, "Rampa de tierra", new Vector3(5.6f, 0.5f, 2f), new Vector3(3f, 1f, 1.4f), earth, false);
@@ -42,10 +44,9 @@ public static partial class StorySceneBuilder
         // 3 · EL ESTADO: las colcas y los quipus; el camino, el tambo y el chasqui.
         Transform qollqa = Spot(t, "Colca", new Vector3(14f, 0f, 5f), "La colca: maíz, chuño y charqui para los años malos", 2.8f);
         Prop(qollqa, "Colca circular de piedra", new Vector3(0f, 1.1f, 0f), new Vector3(2.4f, 2.2f, 2.4f), stone);
-        Prop(qollqa, "Techo de ichu", new Vector3(0f, 2.4f, 0f), new Vector3(2.8f, 0.4f, 2.8f), thatch, false);
         Prop(qollqa, "Quipu de la colca", new Vector3(-2.2f, 1.2f, 0f), new Vector3(0.1f, 1f, 1.8f), wool, false);
         Transform road = Spot(t, "Tambo del camino", new Vector3(13f, 0f, -9f), "El tambo del Qhapaq Ñan: comida y descanso para quien va de paso", 2.8f);
-        Prop(road, "Techo de ichu", new Vector3(0f, 2.4f, 1f), new Vector3(5f, 0.3f, 3f), thatch, false);
+        Prop(road, "Haces de ichu del tambo", new Vector3(0f, 0.2f, 1f), new Vector3(2f, 0.4f, 1.4f), thatch, false);
         for (int k = 0; k < 2; k++) Prop(road, "Horcón", new Vector3(-2f + k * 4f, 1.2f, 1f), new Vector3(0.3f, 2.4f, 0.3f), wood);
         Prop(road, "Empedrado del camino", new Vector3(5f, 0.03f, 1f), new Vector3(6f, 0.06f, 2f), stone, false);
 
