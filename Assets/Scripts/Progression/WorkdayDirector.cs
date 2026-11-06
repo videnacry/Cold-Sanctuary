@@ -1081,7 +1081,32 @@ public class WorkdayDirector : MonoBehaviour
         // mueble (el «Bloque_Intercambiador» de la central) y se le iba a buscar atravesándolo (JornadaTest 2026-10-29).
         if (p != Vector3.zero && UnityEngine.AI.NavMesh.SamplePosition(p + Vector3.down, out UnityEngine.AI.NavMeshHit h, 2.5f, UnityEngine.AI.NavMesh.AllAreas) && Mathf.Abs(h.position.y - (p.y - 1f)) < 1f)
             p = h.position + Vector3.up;
-        return p;
+        return Clear(area, who, p);
+    }
+
+    // Un puesto de la rejilla dentro de un mueble (29 alumnos en una clase del Hospital: «Quirofano 2», «Bloque_Microrreactor»): al sitio libre más cercano. Se recuerda: se pide por persona y frame.
+    static readonly Dictionary<(string, string), (Vector3 raw, Vector3 free)> _clear = new Dictionary<(string, string), (Vector3, Vector3)>();
+    static bool Solid(Vector3 p)
+    {
+        foreach (Collider c in Physics.OverlapCapsule(p - Vector3.up * 0.4f, p + Vector3.up * 0.7f, 0.35f, ~0, QueryTriggerInteraction.Ignore))
+            if (c.GetComponentInParent<Anima>() == null) return true;
+        return false;
+    }
+    static Vector3 Clear(string area, string who, Vector3 p)
+    {
+        if (p == Vector3.zero) return p;
+        var key = (area, who);
+        if (_clear.TryGetValue(key, out var c) && (c.raw - p).sqrMagnitude < 0.04f) return c.free;
+        Vector3 free = p;
+        if (Solid(p))
+            for (int ring = 1; ring <= 3 && free == p; ring++)
+                for (int k = 0; k < 8; k++)
+                {
+                    Vector3 q = p + Quaternion.Euler(0f, k * 45f, 0f) * Vector3.forward * (ring * 1.5f);
+                    if (!Solid(q) && UnityEngine.AI.NavMesh.SamplePosition(q + Vector3.down, out UnityEngine.AI.NavMeshHit nh, 0.8f, UnityEngine.AI.NavMesh.AllAreas)) { free = nh.position + Vector3.up; break; }
+                }
+        _clear[key] = (p, free);
+        return free;
     }
 
     public static Vector3 AreaPoint(string area, string who)

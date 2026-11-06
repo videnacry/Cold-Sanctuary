@@ -152,7 +152,11 @@ public class DineSpell : QueuedSpell
                 if (Meal == null) return true;
                 // RECOGER Y DEVOLVER: el plato y el vaso a la bandeja, y la bandeja al extremo de la barra.
                 Meal.PickUp(self.gameObject);
-                BeginLeg(self, ReturnPoint(self));
+                // Las mesas están en el anillo y la barra en el piso: devolver la bandeja eran 27 m a nado por el tronco, ya pasadas las 12, y la misión
+                // de esa hora se perdía entera (a las 12:01 las 30 personas seguían comiendo o devolviendo). En otra planta, se deja en la mesa.
+                Vector3 back = ReturnPoint(self);
+                if (Mathf.Abs(back.y - self.transform.position.y) > 2f) { Meal.Return(self.gameObject); return true; }
+                BeginLeg(self, back);
                 _phase = 5;
                 return false;
             default:
@@ -196,7 +200,14 @@ public class DineSpell : QueuedSpell
         return p;
     }
 
-    float EatSeconds() => eatMinutes * (TimeController.timeController != null ? TimeController.timeController.TimeSpeedMinuteSecs : 1f);
+    float EatSeconds()
+    {
+        TimeController tc = TimeController.timeController;
+        float s = eatMinutes * (tc != null ? tc.TimeSpeedMinuteSecs : 1f);
+        if (tc == null || tc.Hour < 11f || tc.Hour >= 12.5f) return s;
+        // A mediodía se come en lo que queda de la hora de comer (quien llega tarde, más deprisa, y no menos del 40 %): a las 12 hay misión.
+        return Mathf.Clamp((12f - tc.Hour) * 60f * tc.TimeSpeedMinuteSecs, s * 0.4f, s);
+    }
 
     // ── El tramo: un destino fijo sobre el NavMesh, PathMover (y sus alfombras), con tope y sin dar vueltas ──
 

@@ -212,3 +212,5 @@ Las horas libres (16–19 y 20–22 h) tienen ahora un **horario semanal** de oc
 > **2026-11-04 — Hacer la actividad, comer con su orquesta y uniformes:** en su sitio cada uno HACE su tarea o su actividad (postura, herramienta en la mano, gesto y efecto), come con la orquesta de la comida (bandeja, cubiertos, bocados, beber, devolver) y lleva el uniforme de su tarea; también los insectos-humanos. Ver [actividades-y-uniformes.md](actividades-y-uniformes.md).
 
 **Ronda 15 (2026-11-06):** el entrenamiento de las 14 es un destino al que se sale antes, como la comida; el de las 8 se pierde si la primera misión queda a más de una hora (`HeadingEarly`).
+
+**Ronda 17 (2026-11-06):** a mediodía se come en lo que queda de la hora (mínimo el 40 

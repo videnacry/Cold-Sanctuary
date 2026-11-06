@@ -336,13 +336,21 @@ public class PlayerWorkday : MonoBehaviour
         {
             if (cur.virtualized) return null;
             from = cur.a.mission.area; end = cur.a.start + cur.a.mission.hours; me = cur.a.worker;
-            ready = cur.present >= EarlyDoneShare * cur.a.mission.hours * perHour;
+            ready = cur.present >= EarlyDoneShare * cur.a.mission.hours * perHour && (cur.task == null || cur.tasked);   // (y con sus pasos hechos: comer en la misma torre contaba como «en su puesto» y se iba con 0/3)
         }
         else if (h >= l0 && h < l1 && pw._records.Count > 0)
         {
             ActionQueue q = pw._player != null ? pw._player.GetComponent<ActionQueue>() : null;
             from = LunchArea; end = l1; me = pw._records[0].a.worker;
             ready = pw.AteToday && (q == null || !q.Own.Any(s => s is DineSpell));   // ya comió: a la misión de las 12
+        }
+        else if (pw.TrainingArea != null && pw._records.Count > 0 && h >= l1 + WorkRoster.SecondBlock && h < l1 + WorkRoster.SecondBlock + WorkRoster.AfternoonTraining)
+        {
+            // EL ENTRENAMIENTO: hecha su parte, sale hacia la misión de las 15 (media hora, y en otra torre el viaje se la comía entera).
+            me = pw._records[0].a.worker; from = pw.TrainingArea; end = float.MaxValue;
+            foreach (Record r in pw._records) if (r.a.start > h && r.a.start < end) end = r.a.start;
+            if (end == float.MaxValue) return null;
+            ready = pw._trainPresent >= EarlyDoneShare * WorkRoster.AfternoonTraining * perHour;
         }
         else if (pw._records.Count > 0 && h >= WorkRoster.StartHour && h < l1 + WorkRoster.SecondBlock)
         {
