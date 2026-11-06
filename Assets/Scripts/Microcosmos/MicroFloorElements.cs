@@ -134,6 +134,8 @@ public static class MicroFloorElements
         return null;
     }
 
+    static readonly System.Collections.Generic.HashSet<string> InnerFloors = new System.Collections.Generic.HashSet<string> { "Planta_hospitalizacion", "Planta_veterinaria", "Planta_ashtanga", "Planta_hatha" };
+
     // Lo que no es parte del piso terminado (ni en el santuario ni en su copia gigante): la obra, las formas preparadas, los anillos
     // (son otras plataformas), la estructura elevada y la máquina de virtualización.
     static bool Skip(Transform t)
@@ -141,6 +143,7 @@ public static class MicroFloorElements
         string n = t.name;
         if (FloorForms.IsObra(t) || n == FloorForms.ConstructionName || n == FloorForms.MicroName) return true;
         if (n.StartsWith("Anillo") || n == "Estructura_Elevada" || n.EndsWith("_VirtualizationMachine")) return true;
+        if (InnerFloors.Contains(n) || n.StartsWith("Planta_musica")) return true;   // (las plantas de un área en otro piso son otras plataformas, como los anillos. «Planta» casaba con la fila de la maceta y la planta entera contaba como un mueble sin versión en la copia gigante)
         return false;
     }
 

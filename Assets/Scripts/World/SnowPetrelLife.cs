@@ -68,7 +68,7 @@ public class SnowPetrelLife : MonoBehaviour
     }
 
     /// <summary>Que vaya ya a posarse (pruebas).</summary>
-    public void RestNow() { _nextRest = 0f; }
+    public void RestNow(Iceberg on = null) { _nextRest = 0f; if (on != null) _berg = on; }
     /// <summary>¿Está criando (pollo, huevo que incubar, su pollo en el nido o en celo)? Entonces va al nido y no descansa en los icebergs.</summary>
     public bool Breeding => _a == null || _a.lifeStage == LifeStage.child || Egg.ToIncubate(_a) != null || NestChick() != null || (_a.lifeStage == LifeStage.adult && ((_estrus != null && _estrus.InEstrus) || (GetComponent<Reproduction>() is Reproduction r && r.Pregnant) || PartnerBreeding()));
 
@@ -106,7 +106,7 @@ public class SnowPetrelLife : MonoBehaviour
         }
         if (Time.time >= _nextRest)
         {
-            _berg = NearestBerg();
+            if (_berg == null) _berg = NearestBerg();   // (uno por descanso: elegido en cada fotograma, con dos icebergs cambiaba de rumbo y no llegaba nunca)
             _perch = _berg != null ? _berg.PerchSpot(_phase) : _nest != null ? _nest.transform.position : transform.position;
             if (Fly(_perch, true) < 1f)
             {
@@ -126,6 +126,7 @@ public class SnowPetrelLife : MonoBehaviour
     {
         if (!_perched) return;
         _perched = false;
+        _berg = null;
         transform.SetParent(_parent, true);
     }
 

@@ -376,10 +376,14 @@ public class WorkdayDirector : MonoBehaviour
         WorkRoster.Mission postMission = Current(me, h)?.mission;
         WorkRoster.Assignment early = PlayerWorkday.HeadingEarly(h);   // ya hizo lo suyo y va a la siguiente: ese es su puesto
         if (early != null) { area = early.mission.area; doing = early.mission.title; postMission = early.mission; }
-        if (area != _postArea) { _postArea = area; _postSince = Time.time; }   // [Jornada de Kushal] puesto nuevo: el reloj del trayecto empieza
+        if (area != _postArea)   // [Jornada de Kushal] puesto nuevo: el reloj del trayecto empieza, con lo que tarda el viaje (al Sitio Nuclear pasa de 120 s y la Magnate lo traía a medio camino)
+        {
+            _postArea = area; _postSince = Time.time;
+            _postCommute = area != null ? Mathf.Max(PlayerWorkday.Commute, ArbolCampos.TripSeconds(p.transform.position, WorkPoint(area, "Player")) * 1.3f) : PlayerWorkday.Commute;
+        }
         if (area == null || area == AreaWork.Guard) return;
         if (AreaTransform(area) == null || MagnateWarden.Instance.Handling(p)) return;
-        if (Time.time - _postSince < PlayerWorkday.Commute) return;   // [Jornada de Kushal] tiene un rato para llegar (andando / en alfombra)
+        if (Time.time - _postSince < _postCommute) return;   // [Jornada de Kushal] tiene un rato para llegar (andando / en alfombra)
         Vector3 pos = p.transform.position;
         if (InWorkspace(postMission, area, pos)) { _transitSince = -1f; return; }
         // DE CAMINO (en un puente, en una pista, en alfombra, en una escalera): se le deja pasar un rato, que las tareas
@@ -396,7 +400,7 @@ public class WorkdayDirector : MonoBehaviour
 
     float _transitSince = -1f;
     const float MaxTransit = 90f;
-    string _postArea; float _postSince = -999f;   // [Jornada de Kushal] su puesto actual y desde cuándo (PlayerWorkday.Commute)
+    string _postArea; float _postSince = -999f, _postCommute = PlayerWorkday.Commute;   // [Jornada de Kushal] su puesto actual y desde cuándo (PlayerWorkday.Commute)
     /// <summary>Desde cuándo (Time.time) el puesto de Kushal es el actual: el rato para llegar (PlayerWorkday.Commute) cuenta desde aquí.</summary>
     public float PlayerPostSince => _postSince;
 
@@ -480,7 +484,7 @@ public class WorkdayDirector : MonoBehaviour
         if (h < BreakfastEnd || h >= s + 7f) return null;   // (desde que acaba el desayuno: sale de casa hacia la primera misión)
         if (_heading.TryGetValue(w, out WorkRoster.Assignment latched))
         {
-            if (latched != null && h < latched.start && (today.work.Contains(latched) || latched == LunchOf(w))) return latched;
+            if (latched != null && h < latched.start && (today.work.Contains(latched) || latched == LunchOf(w) || latched == TrainingOf(w))) return latched;
             _heading.Remove(w);
         }
         WorkRoster.Assignment cur = Current(w, h);
@@ -506,6 +510,7 @@ public class WorkdayDirector : MonoBehaviour
         // misión de las 12 se perdía: Lizmibet «Del ADN a la secuencia» 0 %, grupo 50). Sale hacia el restaurante como hacia una
         // misión (a mitad del viaje desde la de las 10); allí pide al dar las 11 (Where → «Comida»; la barra se llena entonces).
         if (next == null && Mathf.Abs(end - l0) < 0.01f && !_lunched.Contains(g)) next = LunchOf(w);
+        if (next == null && Mathf.Abs(end - (s + 6f)) < 0.01f) next = TrainingOf(w);   // (es 1 h: saliendo a las 14 se iba media en el viaje)
         if (next == null || next.mission.area == AreaWork.Guard || (cur != null && next.mission.area == cur.mission.area)) return null;
         Vector3 to = WorkPoint(next.mission.area, g.name);
         if (to == Vector3.zero) return null;
@@ -524,6 +529,16 @@ public class WorkdayDirector : MonoBehaviour
     {
         if (!_lunchOf.TryGetValue(w, out WorkRoster.Assignment a))
             _lunchOf[w] = a = new WorkRoster.Assignment { worker = w, mission = new WorkRoster.Mission(PlayerWorkday.LunchArea, "comida", "De camino a la comida", WorkRoster.LunchHours), start = WorkRoster.StartHour + WorkRoster.FirstBlock };
+        return a;
+    }
+
+    // El entrenamiento de las 14 como destino, como la comida. El título es el de Where: Drive lo trata como entrenamiento al llegar.
+    readonly Dictionary<WorkRoster.Worker, WorkRoster.Assignment> _trainingOf = new Dictionary<WorkRoster.Worker, WorkRoster.Assignment>();
+    WorkRoster.Assignment TrainingOf(WorkRoster.Worker w)
+    {
+        if (today == null || !today.training.TryGetValue(w, out string area)) return null;
+        if (!_trainingOf.TryGetValue(w, out WorkRoster.Assignment a) || a.mission.area != area)
+            _trainingOf[w] = a = new WorkRoster.Assignment { worker = w, mission = new WorkRoster.Mission(area, "entrenamiento", $"Entrenamiento: {area}", WorkRoster.AfternoonTraining), start = WorkRoster.StartHour + 6f };
         return a;
     }
 

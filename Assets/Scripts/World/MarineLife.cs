@@ -276,7 +276,7 @@ public class MarineLife : MonoBehaviour
         // Bajo una placa de hielo y queriendo salir al hielo: primero sale a agua abierta (hacia la laguna); trepar desde
         // debajo la metía dentro de la placa.
         bool underIce = cur.y < -0.3f && IceAbove(cur);
-        if (onIce && underIce) { Vector3 open = Home - cur; open.y = 0f; to = cur + (open.sqrMagnitude > 0.01f ? open.normalized : Vector3.forward) * 3f; to.y = SwimY; onIce = false; }
+        if (onIce && underIce) { Vector3 open = _visitor != null && _visitor.berg != null ? cur - _visitor.berg.transform.position : Home - cur; open.y = 0f; to = cur + (open.sqrMagnitude > 0.01f ? open.normalized : Vector3.forward) * 3f; to.y = SwimY; onIce = false; }
         Vector3 d = to - transform.position;
         float dist = d.magnitude;
         if (dist > 0.01f)
@@ -299,7 +299,7 @@ public class MarineLife : MonoBehaviour
                 Vector3 nose = flatNow.sqrMagnitude > 1e-8f ? np + flatNow.normalized * (_halfLen + 0.6f) : np;
                 if (ThickAbove(cur))   // (una aparición o un empujón lo dejó dentro: sale hacia la laguna, sin pasar por debajo)
                 {
-                    Vector3 open = Home - cur; open.y = 0f;
+                    Vector3 open = _visitor != null && _visitor.berg != null ? cur - _visitor.berg.transform.position : Home - cur; open.y = 0f;   // (a un visitante su hogar es el iceberg: hacia él se metía más; sale hacia fuera)
                     np = cur + open.normalized * v * Time.deltaTime; np.y = cur.y;
                 }
                 else if (ThickAbove(np) || ThickAbove(nose))

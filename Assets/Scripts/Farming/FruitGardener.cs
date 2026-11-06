@@ -21,6 +21,8 @@ public class FruitGardener : MonoBehaviour
 {
     public const string MissionPrefix = "jar_frutales";
     /// <summary>Lo más larga que puede ser una ronda (h de juego): el bloque de la mañana (las misiones no se parten en la comida).</summary>
+    /// <summary>El jardinero frutal (su profesión): la primera ronda del día es suya; con la agenda llena de clases se la quedaban los clones.</summary>
+    public const string FruitOwner = "Shalva";
     public const float MaxRoundHours = 2f;   // (2026-11-05: eran 3 h; las franjas de trabajo son 9–11, 12–14 y 15–16)
     /// <summary>Holgura (h de juego) que se guarda al repartir el tiempo de las tareas de la semana. Era 0,15 h; medido en Unity
     /// (2026-10-31) la ronda real va siempre algo por DEBAJO de su estimación (2,25/2,36, 2,81/2,88 y 2,86/2,88 h), y con rondas
@@ -296,7 +298,7 @@ public class FruitGardener : MonoBehaviour
     {
         var l = new List<WorkRoster.Mission>();
         foreach (Round r in Rounds())
-            l.Add(new WorkRoster.Mission("Huerto", r.id, r.title, MaxRoundHours, true) { roams = true });   // ≤ 2 h: lo que sobra de la revisión, para polinizar y podar
+            l.Add(new WorkRoster.Mission("Huerto", r.id, r.title, MaxRoundHours, true) { roams = true, owner = l.Exists(x => x.owner == FruitOwner) ? null : FruitOwner });   // ≤ 2 h: lo que sobra de la revisión, para polinizar y podar
         return l;
     }
 

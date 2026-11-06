@@ -360,6 +360,7 @@ public class PlayerWorkday : MonoBehaviour
         WorkRoster.Assignment next = null;
         foreach (Record r in pw._records) if (Mathf.Abs(r.a.start - end) < 0.01f) { next = r.a; break; }
         if (next == null && Mathf.Abs(end - l0) < 0.01f && !pw.AteToday) next = Lunch(me);
+        if (next == null && Mathf.Abs(end - (WorkRoster.StartHour + 6f)) < 0.01f && pw.TrainingArea != null) next = Training(me, pw.TrainingArea);
         if (next == null || next.mission.area == from || next.mission.area == AreaWork.Guard) return null;
         float lead = Mathf.Max(EarlyLead, TravelSeconds(from, next.mission.area) / perHour);
         if (end - h > lead) return null;
@@ -369,6 +370,15 @@ public class PlayerWorkday : MonoBehaviour
     /// <summary>El área de la comida (WorkdayDirector.Where: de 11 a 12, «Comida» en la Cocina).</summary>
     public const string LunchArea = "Cocina";
     static WorkRoster.Assignment _lunch;
+    static WorkRoster.Assignment _training;
+    /// <summary>El entrenamiento de las 14 como destino (HeadingEarly), como la comida.</summary>
+    static WorkRoster.Assignment Training(WorkRoster.Worker me, string area)
+    {
+        if (_training == null || _training.worker != me || _training.mission.area != area)
+            _training = new WorkRoster.Assignment { worker = me, mission = new WorkRoster.Mission(area, "entrenamiento", $"Entrenamiento: {area}", WorkRoster.AfternoonTraining), start = WorkRoster.StartHour + 6f };
+        return _training;
+    }
+
     /// <summary>La comida como «misión» a la que se va (para HeadingEarly y quien mira su puesto: la Magnate, JornadaTest).</summary>
     static WorkRoster.Assignment Lunch(WorkRoster.Worker me)
     {

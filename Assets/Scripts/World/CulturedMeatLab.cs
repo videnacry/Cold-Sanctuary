@@ -194,7 +194,7 @@ public class CulturedMeatLab : MonoBehaviour
         L(r.Find("Biorreactor_semilla"), "Biorreactor semilla (50 L, microportadores)", 1.9f);
         Bioreactor(r, "Biorreactor_produccion", new Vector3(1.4f, 0f, -hz + 1.6f), 0.8f, 2.1f, glass, broth, steel, dark);
         L(r.Find("Biorreactor_produccion"), "Biorreactor de producción (500 L · 37 °C · pH 7,3 · O₂)", 2.9f);
-        Bioreactor(r, "Biorreactor_produccion_2", new Vector3(5.9f, 0f, -hz + 1.6f), 0.8f, 2.1f, glass, broth, steel, dark);   // regla P19: la demanda pide tres
+        Bioreactor(r, "Biorreactor_produccion_2", new Vector3(5.75f, 0f, -hz + 1.6f), 0.8f, 2.1f, glass, broth, steel, dark);   // regla P19: la demanda pide tres
         L(r.Find("Biorreactor_produccion_2"), "Biorreactor de producción 2 (500 L)", 2.9f);
         Bioreactor(r, "Biorreactor_produccion_3", new Vector3(-1f, 0f, -4f), 0.8f, 2.1f, glass, broth, steel, dark);
         L(r.Find("Biorreactor_produccion_3"), "Biorreactor de producción 3 (500 L)", 2.9f);

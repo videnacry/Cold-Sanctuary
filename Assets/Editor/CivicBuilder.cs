@@ -708,6 +708,9 @@ internal static partial class CivicBuilder
         else at = t.InverseTransformPoint(work.transform.TransformPoint(new Vector3(0f, 0f, -2f)));
         at.y = 0f;
         GameObject g = AreaMicrocosmos.Folk(t, name, at, Random.Range(1.6f, 1.85f), 1f, species, body, female);
+        // Con lo que lleva encima (antenas, gorro) una especie alta pasaba de 2,3 m: todos de estatura parecida.
+        Transform ins = g.transform.Find("Insecto");
+        if (ins != null) { bool any = false; Bounds bb = default; foreach (Renderer r in ins.GetComponentsInChildren<Renderer>()) { if (!r.enabled) continue; if (!any) { bb = r.bounds; any = true; } else bb.Encapsulate(r.bounds); } if (any && bb.size.y > 2.2f) ins.localScale *= 2.2f / bb.size.y; }
         CubeInsect.WearShirt(g, Color.HSVToRGB(Mathf.Abs(name.GetHashCode() % 100) / 100f, 0.35f, 0.75f));
         var j = g.AddComponent<MicroJornada>(); j.work = work; j.role = role; j.dine = dine; j.practice = practice; j.home = home;
         return 1;
