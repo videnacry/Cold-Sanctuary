@@ -12,7 +12,7 @@ Los resultados vienen de leer el código con 11 humanos, y desde la ronda 9 el p
 |---|---|---|---|
 | Carne Cultivada | 48–49 kg: el techo de depredadores (5 osos, 5 lobos y hasta 6 zorros) y 2 de cocina | 2 kg antes; ahora 60 kg | **FALLABA; arreglada** |
 | Cocina | 33 comidas | 10 por equipo | Por medir (cuenta `Equipo_` en la escena) |
-| Huerto | 8,8 kg de verdura | ~3 kg/m² al año por superficie de bancales | Por medir |
+| Huerto | 24,8 kg de verdura (31 personas) | ~3 kg/m² al año por superficie de bancales: 14,2 kg con 1728 m² | **Falta**: hacen falta 3017 m², 1290 más (ver abajo) |
 | Estudio Textil | 0,18 prendas | 2 telares: 1 prenda | Bien |
 | Mecánica | Servicio | Puestos | Exenta: la mide S13 |
 | Hospital, Química, Biología, Planta Atómica | Investigación | — | Exentas |
@@ -34,3 +34,7 @@ Primero puse un lote de 16 kg sin máquinas, que incumplía esta regla. La líne
 `batchGrams` se calcula de esas máquinas. Un lote da 120 raciones y el almacén guarda 160. La densidad de 10⁷ células/mL es una cifra de referencia, sin fuente directa.
 
 **Quién cuenta (ronda 9):** las líneas de Cocina, Huerto y Textil usan las personas reales (`Humans`, ~32): 96 comidas, 25,6 kg y 0,53 prendas. Los depredadores usan `FaunaScale` (11): ver [hielo-y-respiraderos.md](hielo-y-respiraderos.md). El Huerto queda muy justo: 8 pisos de 396 m² dan ~26 kg al día, sin contar los bancales de las puntas.
+
+## 2026-11-06: el Huerto para 31 personas
+
+A 3 kg/m² al año, 24,8 kg/día piden **3017 m²**; los 8 bancales del Árbol de los Campos dan 1728 (14,2 kg). Faltan **1290 m²**. No cabe en lo que hay: o un nivel más del Árbol (2 pisos de 32 m y 2 puntas de 20 m, unos 2850 m²), o un piso de estantes con LED. La decisión es de Berón.

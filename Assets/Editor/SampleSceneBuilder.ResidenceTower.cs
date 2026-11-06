@@ -7,7 +7,7 @@ using UnityEngine;
 public static partial class SampleSceneBuilder
 {
     /// <summary>Lóbulo Isla:Cabo: lejos de la cueva de los lobos y de la de la osa, y a ≥ 16 m de Producción y del Árbol de los Campos.</summary>
-    public static readonly Vector3 ResidenciaCenter = new Vector3(-66f, 0f, -212f);
+    public static readonly Vector3 ResidenciaCenter = new Vector3(-66f, 0f, -215f);
     public static readonly Vector2 ResidenciaSize = new Vector2(40f, 38f);
     public const float ResidenciaYaw = 0f;
 

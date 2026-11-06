@@ -292,6 +292,7 @@ Berón (2026-11-05): «debe existir una lista de reglas para la creación de per
 | W8 | **Al terminar una implementación, los docs y [checklist.md](checklist.md) quedan al día**, y este manual si hay regla nueva. | Berón lo exige. | **solo en docs** | memoria 2026-11-03 (segunda tanda) |
 | W12 | **Una clase que mueva u oculte piezas hijas por script va en `LoteEstatico.Blocked`** (o en `Anchors` si se mueve entera y rígida); sin eso funciona, pero la pieza tarda hasta una vuelta de barrida en reaccionar. | Las piezas quietas se dibujan en lotes en Play. | 112 | [rendimiento.md](rendimiento.md) |
 | W13 | **Nada recorre la escena en cada frame** (`FindObjects…`, `GameObject.Find`): con temporizador o `SceneCache`. Con 63 000 objetos, una búsqueda cuesta milisegundos. | `EmotionReader` lo hacía. | **solo en docs** | ídem |
+| W14 | **Repartir trabajo entre frames, solo si no integra tiempo**: lo que usa el `Time.deltaTime` de un frame (andar, entrenar, actuar) corre en cada frame; se reparte la búsqueda cara o se acumula el tiempo con `GameTick`. | Repartir `WorkdayDirector.Drive` hizo andar a todo el personal a 1/8 de la velocidad. | 50 (`JornadaTest` usa `TickLive`, el mismo paso que el juego), 112 | [rendimiento.md](rendimiento.md) |
 
 ## 11. Sincronización mesocosmos ↔ microcosmos
 
@@ -384,7 +385,7 @@ reconstruir. Vale para TODOS los pisos, no solo el hospital. Cada piso del santu
 ## 12. Recuento y reglas sin comprobación automática
 
 
-**Total: 204 reglas** (S 15 · F 14 · T 24 · C 7 · G 8 · H 8 · M 39 · A 5 · J 32 · P 21 · E 17 · W 13 = 203 —W9, W10 y W11 van en §11; P11 repite J30; P1–P11 son de personajes y P12–P21 de territorio, producción y fauna (§13)—, más la regla de
+**Total: 205 reglas** (S 15 · F 14 · T 24 · C 7 · G 8 · H 8 · M 39 · A 5 · J 32 · P 21 · E 17 · W 14 = 204 —W9, W10 y W11 van en §11; P11 repite J30; P1–P11 son de personajes y P12–P21 de territorio, producción y fauna (§13)—, más la regla de
 sincronización de §11). (Recontado por el probador al integrar actividades, tareasE, entreno, personajes, hospital y cohetes, 2026-11-04:
 las J18 en adelante se renumeraron en una sola secuencia —J18–J21 actividades y uniformes, J22 tareas con «E», J23–J27 entrenamientos
 y entrenador, J28 profesiones, J29 nada en pisos en obras—.)

@@ -336,3 +336,7 @@ Con los seis personajes nuevos el santuario tiene **17 personas** (14,3 kg de O�
 daba 12,7 kg/día a salud 0,85: no llegaba. Ahora **10 módulos por columna** (`FotobioSpec.ModulesPerColumn`): 480 m² en el tronco + 115 en
 las quillas = **595 m²**, ~17,9 kg/día a salud plena y ~15,2 a 0,85 (~18 personas). El arpa del tronco va de 10 a 56 m (por encima de la
 puerta del suelo, de 7 m). Si la población sigue creciendo, hay que sumar otro vano (el 5 choca con el carril de nado) o más altura.
+
+## 2026-11-06: faltan 425 m² para 31 personas
+
+31 personas respiran 26 kg de O₂ al día. A salud 0,85 hacen falta **1020 m²**; hay 595. El vano 5 sigue chocando con el carril de nado, las arpas ya van de 10 a 56 m y subir la productividad de diseño (20 g/m²/día) no sería honesto. Lo que cabe es **una fachada de tronco en un segundo árbol** (4 columnas de 10 módulos, 480 m²: 1075 m² en total, 27,4 kg/día a 0,85), con +74 kW de LED en la noche polar. `FotobioFacade` hoy supone una sola fachada, así que es obra de verdad. La decisión es de Berón.
