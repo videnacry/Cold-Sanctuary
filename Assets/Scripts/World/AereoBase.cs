@@ -8,6 +8,8 @@ using UnityEngine;
 public class AereoBase : MonoBehaviour
 {
     public static AereoBase Instance { get; private set; }
+    /// <summary>El hijo con lo que se ve del parque energético.</summary>
+    public const string EnergyRootName = "Parque_energetico_AUTO";
 
     [Tooltip("Donde aparece Kushal en cada casquete.")] public Transform launchArrival, energyArrival;
     public List<Transform> tables = new List<Transform>();

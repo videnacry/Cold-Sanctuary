@@ -16,7 +16,7 @@ public static partial class SampleSceneBuilder
     /// <summary>Empieza el parque: su casquete, su árbol y sus pisos (el campo y las máquinas, al final: <see cref="FinishEnergySite"/>).</summary>
     static SanctuaryArea BeginEnergyTree(Transform parent)
     {
-        _energyRoot = new GameObject("Parque_energetico_AUTO").transform; _energyRoot.SetParent(parent, false);
+        _energyRoot = new GameObject(AereoBase.EnergyRootName).transform; _energyRoot.SetParent(parent, false);
         Vector3 site = EnergyRule.Center;
         HelixTower h = TowerHelix(new Vector2(32f, 32f), 2, 0f, 10f);
         h.firstY = EnergyRule.FirstFloorY;   // (después de TowerHelix: su mínimo es por los árboles que crecen en el suelo, y en el casquete no hay)

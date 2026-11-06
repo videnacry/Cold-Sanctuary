@@ -119,6 +119,7 @@ public class WorkdayDirector : MonoBehaviour
         List<WorkRoster.Mission> todays = AreaWork.Today(day, ConstructionProject.All);
         todays.AddRange(GymProgramming.Missions());   // la del entrenador (papel fijo: revisar el registro y ajustar los planes)
         today = roster.Plan(day, todays);
+        _orders.Clear(); _cloneOrders.Clear();   // (las órdenes guardadas eran del plan de ayer)
         int gymDays = GymProgramming.ApplyGymDays(today, roster.trainingAreas, roster.workers);   // los días de gimnasio de cada plan
         if (gymDays > 0) Debug.Log($"[Gimnasio] Día {day}: {gymDays} cambios en el entrenamiento de las 14 h por los días de cada plan; al gimnasio: {string.Join(", ", today.training.Where(kv => kv.Value == GymArea).Select(kv => kv.Key.name))}.");
         plannedDay = day;
@@ -175,10 +176,18 @@ public class WorkdayDirector : MonoBehaviour
     public const float PlanFrom = BreakfastEnd;
 
     /// <summary>Avanza la jornada a la hora <paramref name="h"/>: empieza y termina misiones, mueve a cada uno a su sitio.</summary>
-    /// <summary>Repasar a cada persona busca sus misiones del día: en juego, 1/<see cref="DriveSlices"/> del personal por frame. Empezar y
-    /// acabar misiones sigue siendo en cada frame. Las pruebas llaman a <see cref="Tick(float)"/>, que los repasa a todos.</summary>
+    /// <summary>Buscar las misiones de una persona es lo caro (LINQ sobre todo el día): en juego se rehace para 1/<see cref="DriveSlices"/> del
+    /// personal por frame y el resto usa la orden guardada. <b>Conducirla (<see cref="Drive"/>) es en CADA frame</b>: anda, entrena y actúa con
+    /// el Time.deltaTime de un frame, así que conducir 1 de cada 8 frames la hacía andar a 1/8 de la velocidad (la jornada entera llegaba tarde:
+    /// nadie comía a su hora ni entrenaba, JornadaTest 32/15). Empezar y acabar misiones, también en cada frame.</summary>
     public const int DriveSlices = 8;
     public void Tick(float h) => Tick(h, false);
+    /// <summary>El mismo paso que da el juego en Update, con el reparto: lo usa JornadaTest para probar la jornada tal como corre de verdad.</summary>
+    public void TickLive(float h) => Tick(h, true);
+
+    /// <summary>La orden guardada de una persona (dónde, qué y qué misión). <c>early</c>: es de antes de las 8.</summary>
+    struct Order { public string where, doing, mid; public bool early; }
+    readonly Dictionary<WorkRoster.Worker, Order> _orders = new Dictionary<WorkRoster.Worker, Order>(), _cloneOrders = new Dictionary<WorkRoster.Worker, Order>();
 
     void Tick(float h, bool sliced)
     {
@@ -192,11 +201,15 @@ public class WorkdayDirector : MonoBehaviour
             _placed = true;
             foreach (WorkRoster.Worker w in roster.workers)
             {
-                if (!Mine()) continue;
+                bool fresh = Mine();
                 GameObject g = Body(w.name);
                 if (g == null || g.CompareTag("Player") || OnOwnDuty(g)) continue;
-                WorkRoster.Assignment first = HeadingEarly(w, g, h);
-                if (first != null) Drive(g, first.mission.area, first.mission.title, null);
+                if (fresh || !_orders.TryGetValue(w, out Order o) || !o.early)
+                {
+                    WorkRoster.Assignment first = HeadingEarly(w, g, h);
+                    _orders[w] = o = new Order { where = first?.mission.area, doing = first?.mission.title, early = true };
+                }
+                if (o.where != null) Drive(g, o.where, o.doing, null);
             }
             return;
         }
@@ -216,17 +229,30 @@ public class WorkdayDirector : MonoBehaviour
         UpdateInitiator(h);
         foreach (WorkRoster.Worker w in roster.workers)
         {
-            if (!Mine()) continue;
+            bool fresh = Mine();
             GameObject g = Body(w.name);
             if (g == null || g.CompareTag("Player") || OnOwnDuty(g)) continue;
-            string where = Where(w, h, out string doing);
-            string mid = Current(w, h)?.mission.id;
-            WorkRoster.Assignment early = HeadingEarly(w, g, h);
-            if (early != null) { where = early.mission.area; doing = early.mission.title; mid = null; }   // ya va hacia lo siguiente (otra torre)
-            Drive(g, where, doing, mid);
+            if (fresh || !_orders.TryGetValue(w, out Order o) || o.early)
+            {
+                string where = Where(w, h, out string doing);
+                string mid = Current(w, h)?.mission.id;
+                WorkRoster.Assignment early = HeadingEarly(w, g, h);
+                if (early != null) { where = early.mission.area; doing = early.mission.title; mid = null; }   // ya va hacia lo siguiente (otra torre)
+                _orders[w] = o = new Order { where = where, doing = doing, mid = mid };
+            }
+            Drive(g, o.where, o.doing, o.mid);
         }
-        if (!sliced || slot == 1) foreach (var kv in _clones)
-            if (kv.Value != null && !OnOwnDuty(kv.Value)) { string where = Where(kv.Key, h, out string doing); string cm = Current(kv.Key, h)?.mission.id; Drive(kv.Value, where, doing, FruitGardener.IsRound(cm) ? cm : null, alwaysMove: true); }
+        foreach (var kv in _clones)
+        {
+            if (kv.Value == null || OnOwnDuty(kv.Value)) continue;
+            if (!sliced || slot == 1 || !_cloneOrders.TryGetValue(kv.Key, out Order o))
+            {
+                string where = Where(kv.Key, h, out string doing);
+                string cm = Current(kv.Key, h)?.mission.id;
+                _cloneOrders[kv.Key] = o = new Order { where = where, doing = doing, mid = FruitGardener.IsRound(cm) ? cm : null };
+            }
+            Drive(kv.Value, o.where, o.doing, o.mid, alwaysMove: true);
+        }
         HoldPlayer(h);
     }
 

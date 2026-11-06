@@ -100,7 +100,8 @@ public class EnergyTest : MonoBehaviour, ITestUnit
         // ── 5. LA FAUNA ──
         WindTurbineUnit w = es.turbines[0];
         TestProbe.Check("cada torre lleva su pala negra y su detector", es.turbines.All(u => u.blackBlade != null && u.blackBlade.name == "Pala_negra" && u.detector != null));
-        GameObject bird = new GameObject("Ave_de_prueba"); bird.transform.position = w.transform.position + new Vector3(100f, 40f, 0f);
+        Vector3 outward = w.transform.position - EnergyRule.Center; outward.y = 0f;
+        GameObject bird = new GameObject("Ave_de_prueba"); bird.transform.position = w.transform.position + outward.normalized * 100f + Vector3.up * 40f;   // (por fuera del casquete: a 100 m hacia dentro también paraba a la torre de al lado, a 208 m)
         EnergySite.TestBirds.Add(bird.transform);
         es.ScanNow();
         TestProbe.Check("un ave a ≤ 200 m para la turbina", w.Stopped);
@@ -119,7 +120,7 @@ public class EnergyTest : MonoBehaviour, ITestUnit
         EnergySite.TestBirds.Clear(); Destroy(bird);
 
         TidalTurbineUnit m = es.tidal[0];
-        TestProbe.Check("la mareal lleva sonar y anillo", es.tidal.Count == EnergyRule.TidalUnits && es.tidal.All(u => u.sonar != null && u.GetComponentsInChildren<Transform>(true).Any(t => t.name == "Anillo_mareal")));
+        TestProbe.Check("la mareal lleva sonar y anillo", es.tidal.Count == EnergyRule.TidalUnits && es.tidal.All(u => u.sonar != null && u.sonar.parent.GetComponentsInChildren<Transform>(true).Any(t => t.name == "Anillo_mareal")));
         GameObject seal = new GameObject("Foca_de_prueba"); seal.transform.position = m.transform.position + new Vector3(30f, 0f, 0f);
         EnergySite.TestSwimmers.Add(seal.transform);
         es.ScanNow();
@@ -159,7 +160,7 @@ public class EnergyTest : MonoBehaviour, ITestUnit
         TestProbe.Check("cada tres días salen las revisiones", new[] { "sol_mantenimiento", "ene_control", "ene_eolica", "ene_mareal", "ene_almacen" }.All(seen.Contains));
         foreach (string st in new[] { "panel", "aerogenerador", "detector", "pontona", "sonar", "bateria", "silo", "consola", "banco_taller" })
             TestProbe.Check($"el puesto «{st}» está en el parque", PlayerTasks.Resolve(EnergyRule.Area, st, 0, null, null).found);
-        TestProbe.Check("las de sitio van al casquete", new[] { "sol_mantenimiento", "ene_eolica", "ene_mareal", "ene_almacen" }.All(i => { Vector3? p = EnergySite.FieldPoint(i, "Prueba"); return p.HasValue && Flat(p.Value, EnergyRule.Center) < EnergyRule.CapHalf + 2f; }));
+        TestProbe.Check("las de sitio van al casquete", new[] { "sol_mantenimiento", "ene_eolica", "ene_mareal", "ene_almacen" }.All(i => { Vector3? p = EnergySite.FieldPoint(i, "Prueba"); return p.HasValue && EnergySite.OnCap(p.Value); }));
         TestProbe.Check("Fernando es su profesional", Professions.Practises("Fernando", EnergyRule.Area, "sol_mantenimiento"));
 
         // ── 8. LAS AVES ──

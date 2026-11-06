@@ -323,7 +323,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit
         if (!ColdSanctuary.TestRunner.Running) return;   // (fuera del orquestador lo hace su Update)
         float h = _tc.Hour; int d = _tc.Day;
         if (_wd.plannedDay != d && h >= WorkdayDirector.PlanFrom && h < WorkRoster.StartHour + 8f) _wd.PlanDay(d);
-        if (_wd.today != null && _wd.plannedDay == d) _wd.Tick(h);
+        if (_wd.today != null && _wd.plannedDay == d) _wd.TickLive(h);   // (con el reparto, como en juego: con Tick(h) la prueba no vio que la jornada andaba a 1/8)
     }
 
     /// <summary>Cada persona del personal (y Kushal) despierta, de pie, sin hambre, sin sueño y sin ganas de ir al baño: el

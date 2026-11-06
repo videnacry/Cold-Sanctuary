@@ -317,7 +317,7 @@ public class EnergySite : MonoBehaviour
         Transform t = null;
         int hash = Mathf.Abs((who ?? "").GetHashCode());
         if ((missionId == "ene_eolica" || missionId == "ene_ronda_aves") && s.turbines.Count > 0) t = s.turbines[hash % s.turbines.Count].transform;
-        else if (missionId == "ene_mareal" && s.tidal.Count > 0) t = s.tidal[hash % s.tidal.Count].transform.parent;
+        else if (missionId == "ene_mareal" && s.tidal.Count > 0) t = s.tidal[hash % s.tidal.Count].transform;   // (la unidad está en la pontona; su padre, desde que el cuerpo pasó al Santuario Aéreo, es el muelle: mandaba a la gente al santuario 1)
         else if (missionId == "ene_almacen" || missionId == "ene_disuasion") t = s.storage;
         else if (s.tables.Count == 0) return null;   // (el campo solo existe con la escena cargada)
         else if (missionId == "sol_instalacion" && s.installed < s.tables.Count) t = s.tables[s.installed];

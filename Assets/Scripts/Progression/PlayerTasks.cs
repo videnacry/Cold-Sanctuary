@@ -438,6 +438,7 @@ public static class PlayerTasks
         if (area == "Huerto") { GameObject g = GameObject.Find("Garden_Area"); if (g != null && !l.Contains(g.transform)) l.Add(g.transform); }
         if (area == "Cocina") { RestaurantKitchen rk = Object.FindAnyObjectByType<RestaurantKitchen>(); if (rk != null && !l.Contains(rk.transform)) l.Add(rk.transform); }
         if (area == EnergyRule.Area && EnergySite.Instance != null) l.Add(EnergySite.Instance.transform);   // el campo, las torres y el almacén, en el casquete
+        if (area == EnergyRule.Area && AereoBase.Instance != null && AereoBase.Instance.transform.Find(AereoBase.EnergyRootName) is Transform up) l.Add(up);   // (las mesas, las pontonas, el almacén y las cajas están en la escena de arriba; abajo solo queda la lógica)
         return l;
     }
 

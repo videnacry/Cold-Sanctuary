@@ -105,6 +105,10 @@ public class GymUsabilityTest : MonoBehaviour, ITestUnit
         // La Magnate no da clases a quien usa la prueba (le cambiaba la postura en las máquinas: Goluis con el Saludo al Sol, los
         // agarres a 1,6 m de sus manos en la batería completa).
         MagnateWarden.Lock(this, true);
+        // Ni el recorrido de bienvenida de Kushal: si estaba a medias, la Magnate lo llevaba a la cocina y el jefe de turno (Goluis, una de
+        // las tres personas de la prueba) dejaba las máquinas para iniciarlo. Como en KitchenInitiationTest; al acabar vuelven.
+        var story = new List<Behaviour>(); story.AddRange(FindObjectsByType<Magnate>(FindObjectsSortMode.None)); story.AddRange(FindObjectsByType<KitchenBoss>(FindObjectsSortMode.None));
+        var storyOn = story.Where(b => b.enabled).ToList(); foreach (Behaviour b in storyOn) b.enabled = false;
         foreach (Person p0 in ps) { TeachingSession ts = p0.a != null ? TeachingSession.For(p0.a) : null; if (ts != null) ts.Cancel(); }
         WorkdayDirector wd = WorkdayDirector.Instance;
         _walkSpeed = wd != null ? wd.walkSpeed : 2.6f;
@@ -147,6 +151,7 @@ public class GymUsabilityTest : MonoBehaviour, ITestUnit
         Time.timeScale = oldScale; Time.maximumDeltaTime = oldMax;
         WorkdayDirector.LogTeleports = false;
         MagnateWarden.Lock(this, false);
+        foreach (Behaviour b in storyOn) if (b != null) b.enabled = true;
         if (wd != null) wd.enabled = wdWas;
         TestProbe.End();
     }
@@ -170,6 +175,7 @@ public class GymUsabilityTest : MonoBehaviour, ITestUnit
             if (g == null || g.CompareTag("Player") || g.GetComponent<Magnate>() != null) continue;
             if (g.TryGetComponent(out Linduarda lin) && lin.enabled) continue;   // su conducta propia la mueve (la enfermería)
             if (g.TryGetComponent(out NewcomerInitiator ni) && ni.InProgress) continue;
+            if (AreaInitiator.Leading(g)) continue;   // (ya está iniciando a alguien)
             if (RestaurantService.Drives(g) || Orchestra.Busy(g)) continue;   // los lleva el servicio del restaurante o una orquesta
             Anima a = g.GetComponent<Anima>(); CreatureRig rig = g.GetComponent<CreatureRig>();
             Transform body = g.transform.Find(CubeHumanoid.BodyName);
