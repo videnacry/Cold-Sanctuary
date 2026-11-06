@@ -282,6 +282,8 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         TestProbe.Check("hay director de la jornada", wd != null);
         if (wd != null)
         {
+            // (Las obras cargan su partida guardada al empezar Play, antes de que corran las pruebas: terminadas allí, aquí no habría ninguna.)
+            foreach (ConstructionProject cp0 in ConstructionProject.All) cp0.Restore(0, false);
             var plan = wd.PlanDay(100);
             TestProbe.Greater("la jornada reparte misiones al personal", plan.work.Count, 5f, $"{plan.work.Count} misiones, {wd.roster.workers.Count} personas, {plan.clones.Count} clones");
             TestProbe.Check("todas las obligatorias quedan cubiertas", plan.backlog.All(m => !m.mandatory));
@@ -309,8 +311,12 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         TestProbe.Check("la salida de la enfermería está vigilada (iniciación bloqueante)", FindAnyObjectByType<InfirmaryGate>() != null);
         TestProbe.Check("ballet y dojo están en obras; el gimnasio y la calistenia, abiertos", ConstructionProject.All.Count >= 2 && FindByPrefix("Gym_Area") && FindByPrefix("Calistenia"));
         // LÍMITE DE LA ESTRUCTURA: ningún edificio pasa de los pisos que aguantan sus columnas (StructuralLimits).
-        int maxFloor = CarpetPad.All.Count > 0 ? CarpetPad.All.Max(c => c.floor) : 0;
-        TestProbe.Check($"ningún edificio pasa de {StructuralLimits.MaxFloors} pisos (lo que aguantan las columnas)", maxFloor > 0 && maxFloor <= StructuralLimits.MaxFloors, $"el más alto: {maxFloor} pisos ({CarpetPad.All.First(c => c.floor == maxFloor).building})");
+        // Pisos DE VERDAD: en un edificio-árbol el número de la alfombra cuenta plataformas (cada nivel, 2 pisos y 2 puntas de rama) y las puntas no son pisos. Aquí, sus pisos más el techo.
+        var towers = new System.Collections.Generic.Dictionary<string, int>();
+        foreach (ArbolCampos ac in ArbolCampos.All) if (ac != null) towers[ac.building] = ac.levels.Count(l => l.kind == TreeLevel.Kind.Floor) + 1;
+        int FloorsOfPad(CarpetPad c) => towers.TryGetValue(c.building, out int n) ? n : c.floor;
+        int maxFloor = CarpetPad.All.Count > 0 ? CarpetPad.All.Max(FloorsOfPad) : 0;
+        TestProbe.Check($"ningún edificio pasa de {StructuralLimits.MaxFloors} pisos (lo que aguantan las columnas)", maxFloor > 0 && maxFloor <= StructuralLimits.MaxFloors, $"el más alto: {maxFloor} pisos ({CarpetPad.All.First(c => FloorsOfPad(c) == maxFloor).building})");
         // TORRES TEMÁTICAS (Berón 2026-10-29; docs/plano-edificios.md): pocos edificios con muchos pisos: Servicios, Entrenamiento,
         // Ciencias y Producción (y el Árbol de los Campos); los reactores, en el sitio nuclear. Desde el 2026-10-31 las torres son
         // ÁRBOLES (docs/edificio-arbol.md §Migración): alfombras de edificio SOLO en el suelo (0) y en el techo; entre pisos se nada.
@@ -424,7 +430,7 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         TestProbe.Greater("cada edificio tiene en su techo las alfombras del santuario (4 torres, la central, el Árbol de los Campos, la residencia)", roofs, 6f, $"{roofs} techos");
         TestProbe.Check("en el techo, las de edificio y las del santuario están en el mismo piso", pads.Where(p => p.kind == CarpetPad.Kind.Santuario && p.building != "Residencia" && p.building != AereoRule.Building).All(s => pads.Any(e => e.kind == CarpetPad.Kind.Edificio && e.surface == s.surface)));
         TestProbe.Check("cada casa del árbol tiene su alfombra (y la residencia, la de cada habitación)", pads.Count(p => p.kind == CarpetPad.Kind.Habitacion) >= 12 && pads.Any(p => p.kind == CarpetPad.Kind.Residencia));
-        CarpetPad anyB = pads.FirstOrDefault(p => p.kind == CarpetPad.Kind.Edificio && p.floor == 1 && p.Destinations().Count > 0);   // (la pista suelta de un edificio de un solo piso con alfombras no tiene a dónde ir)
+        CarpetPad anyB = pads.FirstOrDefault(p => p.kind == CarpetPad.Kind.Edificio && p.Destinations().Count > 0);   // (en un árbol no hay piso 1 con alfombras: van en el hielo y en el techo)
         TestProbe.Check("el selector de una alfombra de edificio solo ofrece sus pisos", anyB != null && anyB.Destinations().Count > 0 && anyB.Destinations().All(d => d.building == anyB.building));
         // De un piso del hospital a la cama de Kushal: piso → techo → residencia → su habitación, sin escaleras.
         CarpetPad start = servTree ? pads.Where(p => p.building == "Servicios" && p.kind == CarpetPad.Kind.Edificio).OrderByDescending(p => p.floor).FirstOrDefault()   // árbol: desde su techo (a él se llega nadando)
@@ -446,7 +452,7 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
             }
             foreach (FlyingCarpet fc in FlyingCarpet.All) fc.speed = 18f;
             Vector3 left = home.bed.position - traveler.transform.position;
-            TestProbe.Check(servTree ? "un trabajador va del techo de Servicios a su casa del árbol en alfombras (2 vuelos)" : "un trabajador va de un piso del hospital a su casa del árbol en alfombras (3 vuelos)", left.magnitude < 4f && FlyingCarpet.Trips - flights >= (servTree ? 2 : 3), $"{FlyingCarpet.Trips - flights} vuelos, a {left.magnitude:0.0} m de la cama");
+            TestProbe.Check(servTree ? "un trabajador va del techo de Servicios a su casa del árbol en alfombra y nadando (1 vuelo)" : "un trabajador va de un piso del hospital a su casa del árbol en alfombras (3 vuelos)", left.magnitude < 4f && FlyingCarpet.Trips - flights >= (servTree ? 1 : 3), $"{FlyingCarpet.Trips - flights} vuelos, a {left.magnitude:0.0} m de la cama");
             Destroy(traveler);
         }
         var census = new System.Collections.Generic.Dictionary<string, int>();

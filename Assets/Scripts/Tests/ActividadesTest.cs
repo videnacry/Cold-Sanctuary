@@ -280,7 +280,7 @@ public class ActividadesTest : MonoBehaviour, ITestUnit
         do
         {
             ActivityPerformer ap = ActivityPerformer.Keep(h, cook, table.transform.position);
-            held = ActivityKit.Held(h, true); fx = ap.effects; martial |= ci.InMartial; workFrames++;
+            if (ActivityKit.Held(h, true) == ActivityKit.Prop.Ladle) held = ActivityKit.Prop.Ladle; /* (en algún momento: la actuación va por pasos) */ fx = ap.effects; martial |= ci.InMartial; workFrames++;
             yield return null;
         }
         while (Time.time < workEnd && Time.realtimeSinceStartup < end);

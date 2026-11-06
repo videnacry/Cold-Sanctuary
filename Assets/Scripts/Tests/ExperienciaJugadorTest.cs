@@ -177,9 +177,11 @@ public class ExperienciaJugadorTest : MonoBehaviour, ITestUnit
             if (giant == null && t.name.EndsWith("_gigante")) giant = t;
             if (flora == null && t.name == "Flora_a_escala") flora = t;
         }
-        Transform mat = giant != null ? giant.Find("Mat") : null;
-        if (giant == null || flora == null || mat == null) { why = $"área gigante {(giant != null)}, flora {(flora != null)}, suelo {(mat != null)}"; return 0; }
-        Bounds b = mat.GetComponent<Renderer>().bounds; int n = 0;
+        // El suelo: «Mat» o, en los pisos del árbol, que no lo tienen, la losa más grande de la copia.
+        Renderer floor = giant != null && giant.Find("Mat") != null ? giant.Find("Mat").GetComponent<Renderer>() : null;
+        if (giant != null && floor == null) foreach (Renderer r in giant.GetComponentsInChildren<Renderer>()) { Bounds rb = r.bounds; if (rb.size.y < 3f && (floor == null || rb.size.x * rb.size.z > floor.bounds.size.x * floor.bounds.size.z)) floor = r; }
+        if (giant == null || flora == null || floor == null) { why = $"área gigante {(giant != null)}, flora {(flora != null)}, suelo {(floor != null)}"; return 0; }
+        Bounds b = floor.bounds; int n = 0;
         foreach (Transform p in flora)
             if (p.position.x > b.min.x && p.position.x < b.max.x && p.position.z > b.min.z && p.position.z < b.max.z && Mathf.Abs(p.position.y - b.max.y) < 2f) n++;
         why = $"{n} plantas sobre el suelo de «{giant.name}» ({flora.childCount} en total)";

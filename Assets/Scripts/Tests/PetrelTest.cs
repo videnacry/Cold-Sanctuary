@@ -50,7 +50,7 @@ public class PetrelTest : MonoBehaviour, ITestUnit
         Iceberg berg = Iceberg.All.First(b => b != null);
         p.transform.position = berg.PerchSpot(0f) + Vector3.up * 6f;
         if (p.TryGetComponent(out Animal an)) an.hungry = -0.5f;
-        p.RestNow();
+        p.RestNow(berg);
         float t0 = Time.realtimeSinceStartup;
         while (!p.Perched && Time.realtimeSinceStartup - t0 < 25f) { if (an != null) an.hungry = -0.5f; yield return null; }
         TestProbe.Check("se posa en el iceberg", p.Perched, p.OnBerg != null ? p.OnBerg.name : "sin iceberg");

@@ -58,7 +58,8 @@ public class TreeBuildingsTest : MonoBehaviour, ITestUnit
             }
             TestProbe.Check($"{b}: en cada nivel, pisos en dos lados opuestos y ramas a las puntas en los otros dos, alternando (hélice)", helix, helix ? $"{floors.Select(l => l.level).Distinct().Count()} niveles" : why);
             var areas = root.GetComponentsInChildren<SanctuaryArea>().Where(a => floors.Any(l => l.deck == a.transform)).ToList();
-            TestProbe.Check($"{b}: sus áreas, cada una en su piso pegado al tronco", areas.Count > 0 && areas.All(a => a.Contains(t.World(floors.First(l => l.deck == a.transform).outside) + Vector3.up)),
+            // (La Residencia no tiene áreas de trabajo, a propósito: EnergyTest la cuenta entre los pisos sin área. Allí se mira que cada plataforma esté amueblada y sea la de su puerta.)
+            TestProbe.Check($"{b}: sus áreas, cada una en su piso pegado al tronco", b == "Residencia" ? floors.All(l => l.deck != null && l.deck.childCount > 0 && t.LevelAt(t.World(l.outside) + Vector3.up) == l) : areas.Count > 0 && areas.All(a => a.Contains(t.World(floors.First(l => l.deck == a.transform).outside) + Vector3.up)),
                 string.Join(", ", areas.Select(a => a.displayName)));
 
             // ── 2. PUERTAS Y ENTRADAS ──

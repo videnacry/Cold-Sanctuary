@@ -90,7 +90,7 @@ public class GuardRoomTest : MonoBehaviour, ITestUnit
             string names = string.Join(" ", room.GetComponentsInChildren<Transform>(true).Select(x => x.name));
             foreach (string piece in new[] { "Muro_de_pantallas", "Consolas_fila_1", "Mesa de radar", "Carta de hielo", "Sismógrafo", "Mareógrafo y boya", "Radio VHF", "Tablero de guardia", "Puesto de respaldo" })
                 TestProbe.Check($"tiene {piece}", names.Contains(piece));
-            TestProbe.Check("una pantalla por lectura", room.GetComponentsInChildren<GuardScreen>(true).Length == GuardWatch.Feeds.Length);
+            TestProbe.Check("una pantalla por lectura", room.GetComponentsInChildren<GuardScreen>(true).Length == GuardWatch.Feeds.Length, $"{room.GetComponentsInChildren<GuardScreen>(true).Length} pantallas para {GuardWatch.Feeds.Length} lecturas");
             TestProbe.Check("el tablero de guardia sigue, ya no en un árbol", room.GetComponentInChildren<GuardBoard>(true) != null);
             int seats = room.GetComponentsInChildren<AreaSeat>(true).Where(s => s.activity == "vigilancia").Sum(s => s.seats);
             TestProbe.Check("varias personas a la vez (S13)", seats >= AreaCapacity.MinWorkSeats, $"{seats} puestos");

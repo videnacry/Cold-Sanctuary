@@ -203,6 +203,7 @@ public class EnergyTest : MonoBehaviour, ITestUnit
         es.habituation = 0f; foreach (WindTurbineUnit u in es.turbines) u.ClearForTest();
         wait0 = Time.time;
         while (Time.time - wait0 < 61f) yield return new WaitForSeconds(1f);
+        foreach (WindTurbineUnit u in es.turbines) u.ClearForTest();   // (el barrido de cada segundo la paró durante la espera: sin esto no «salta» el detector)
         es.ScanNow();
         TestProbe.Check("sin habituación salen las figuras y sube", es.Scares == sc0 + 1 && es.figures[0].gameObject.activeSelf && es.habituation > 0f);
         EnergySite.TestBirds.Clear(); Destroy(bird2);

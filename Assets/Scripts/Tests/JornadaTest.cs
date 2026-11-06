@@ -174,7 +174,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit
         string per = string.Join(" · ", recs.Select(r => $"«{r.a.mission.title}» {r.Share:P0}{(r.done ? " ✓" : " ✗")}"));
         TestProbe.Check($"{tag}: Kushal completa TODAS sus misiones (todos sus pasos con E, en su puesto)", recs.Count > 0 && recs.All(r => r.done), per);
         TestProbe.Check($"{tag}: come en el restaurante (11–12 h)", _pw.AteToday);
-        TestProbe.Check($"{tag}: hace su entrenamiento (14–16 h)", _pw.TrainingDone, $"{_pw.TrainingArea} {_pw.TrainingShare:P0}");
+        TestProbe.Check($"{tag}: hace su entrenamiento (14–15 h)", _pw.TrainingDone, $"{_pw.TrainingArea} {_pw.TrainingShare:P0}");
         TestProbe.Check($"{tag}: a las 16:00 su jornada se cierra (libre)", _pw.DayClosed);
         int extra = MagnateWarden.Returned - returnedBefore - expectedReturns;
         TestProbe.Check($"{tag}: la Magnate no tuvo que traerlo (aparte de la escapada): llega solo a cada puesto", extra <= 0, $"{MagnateWarden.Returned - returnedBefore} vez/veces en total, {expectedReturns} esperada(s)");
@@ -551,6 +551,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit
             string doing = null, area = shift && w != null ? wd.Where(w, h, out doing) : null;
             WorkRoster.Assignment cur = shift && w != null ? wd.Current(w, h) : null;
             if (tr.player && shift && w != null && PlayerWorkday.HeadingEarly(h) is WorkRoster.Assignment early) { cur = early; area = early.mission.area; doing = early.mission.title; }   // ya hizo lo suyo y su puesto es el siguiente (como para la Magnate)
+            else if (!tr.player && shift && w != null && wd.HeadingEarly(w, tr.g, h) is WorkRoster.Assignment gone) { cur = gone; area = gone.mission.area; doing = gone.mission.title; }   // el personal igual: su puesto ya es el siguiente (lo que conduce Drive)
             bool handled = MagnateWarden.Instance.Handling(tr.g);
             string head = Head(tr.g);
             bool needs = head != null && (head.StartsWith("comer") || head.StartsWith("pedir") || head.StartsWith("buscar mesa") || head.StartsWith("levantarse") || head.Contains("en la barra") || head.Contains("baño") || head.Contains("aseo") || head.Contains("dormir") || head.Contains("cama"));
@@ -571,7 +572,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit
                 bool plausible = atPost || riding || handled || asleep || needs;
                 if (plausible) _shiftPlausible++;
                 if (cur != null && !tr.player) { _shift.TryGetValue(cur, out Vector2 v); v.y++; if (atPost) v.x++; _shift[cur] = v; }
-                if (doing != null && doing.StartsWith("Entrenamiento")) { _training.TryGetValue(tr.name, out Vector2 v); v.y++; if (atPost) v.x++; _training[tr.name] = v; }
+                if (doing != null && doing.StartsWith("Entrenamiento:") && h >= WorkRoster.StartHour + 6f) { _training.TryGetValue(tr.name, out Vector2 v); v.y++; if (atPost) v.x++; _training[tr.name] = v; }
                 if (plausible) tr.offSince = -1f; else if (tr.offSince < 0f) tr.offSince = now;
                 if (full && !plausible && path < 0.5f && now - tr.offSince >= 20f)   // 20 s FUERA y quieto (no al cambiar de puesto)
                     Add(tr.name, "parado fuera de su puesto en turno", $"le toca «{doing}» en {area}; está en {Where(p)} sin moverse 20 s ({tr.activity})", true);
@@ -598,7 +599,8 @@ public class JornadaTest : MonoBehaviour, ITestUnit
             string desire = a.TryGetComponent(out Volition vo) ? vo.LastDesire : "";
             // (2026-11-02) UN CADÁVER no está «atascado»: las abejas que caza la araña, la foca que caza la orca… quedaban con su último
             // deseo («explore») y contaban como atascadas > 20 s (las 6 SnowBee del grupo 50 estaban muertas, comprobado en vivo).
-            bool resting = a.death || a.asleep || a.busy || habit || inHabitat || desire == "rest" || desire == "brood" || desire == "den" || desire == "incubate" || desire == "drink" || desire == "nurse" || desire == "tend" || desire == "habit" || desire == "";
+            bool perched = a.TryGetComponent(out SnowPetrelLife petrel) && (petrel.Perched || petrel.Breeding);
+            bool resting = perched || a.death || a.asleep || a.busy || habit || inHabitat || desire == "rest" || desire == "brood" || desire == "den" || desire == "incubate" || desire == "drink" || desire == "nurse" || desire == "tend" || desire == "habit" || desire == "";
             bool full = Window(tr, out float path, out float net, out float reach);
             tr.activity = a.asleep ? "durmiendo" : a.busy ? "comiendo/cazando" : habit ? $"hábito: {hb.Doing}" : inHabitat ? "en su hábitat" : full && path > 1f ? $"moviéndose ({desire})" : $"quieto ({desire})";
             bool flier = a.AirAffinity >= 0.5f;
@@ -609,7 +611,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit
             bool same = now - tr.headSince >= 19f;
             if (full && same && !resting && path < 0.5f) Add(tr.name, "atascado > 20 s", $"quiere «{desire}» y no se mueve en {Where(p)}", false);
             if (full && same && !flier && !marine && !a.busy && path > 15f && net < 2f && reach < path * 0.35f) Add(tr.name, "da vueltas en círculo", $"{path:0} m en 20 s para {net:0.0} m netos ({tr.activity})", false);
-            CheckBody(tr, p, riding, a.death || a.asleep || a.busy, false);
+            if (!(marine && inHabitat)) CheckBody(tr, p, riding, a.death || a.asleep || a.busy, false);   // (en su respiradero la foca asoma recta por la placa y al descansar se tumba: es su sitio, no un cuerpo dentro del hielo)
         }
 
         // Dentro de un mueble, en el agua sin ser acuático, cayendo y volcado (con 3 muestras seguidas, para no contar un roce).
@@ -712,7 +714,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit
             float pl = _shiftSamples > 0 ? _shiftPlausible / (float)_shiftSamples : 0f;
             TestProbe.Check($"{tag}: en turno cada uno está en su puesto o haciendo algo razonable (comer, baño, dormir, en camino) ≥ 75 %", pl >= 0.75f, $"{pl:P0} de {_shiftSamples} muestras");
             int trainers = _training.Count(kv => kv.Value.y >= 3f), trainedOk = _training.Count(kv => kv.Value.y >= 3f && kv.Value.x / kv.Value.y >= 0.5f);
-            TestProbe.Check($"{tag}: entrenan en su sala (14–16 h)", trainers > 0 && trainedOk >= 0.7f * trainers, $"{trainedOk}/{trainers}: " + string.Join(", ", _training.Select(kv => $"{kv.Key} {(kv.Value.y > 0 ? kv.Value.x / kv.Value.y : 0f):P0}")));
+            TestProbe.Check($"{tag}: entrenan en su sala (14–15 h)", trainers > 0 && trainedOk >= 0.7f * trainers, $"{trainedOk}/{trainers}: " + string.Join(", ", _training.Select(kv => $"{kv.Key} {(kv.Value.y > 0 ? kv.Value.x / kv.Value.y : 0f):P0}")));
             int staff = _tracks.Count(tr => tr.human && !tr.player && tr.g != null && _t._wd.roster.Find(tr.g.name.Replace("_Post", "")) != null);
             TestProbe.Check($"{tag}: a mediodía come en el restaurante al menos la mitad del personal", _ate.Count(n => n != "Kushal") >= staff / 2, $"{_ate.Count(n => n != "Kushal")}/{staff}: {string.Join(", ", _ate)}");
             HumanChecks(tag);

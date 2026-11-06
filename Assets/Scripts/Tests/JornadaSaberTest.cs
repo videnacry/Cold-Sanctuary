@@ -115,12 +115,12 @@ public class JornadaSaberTest : MonoBehaviour, ITestUnit
         foreach (WorkRoster.Worker t in new[] { t1, t2 }) foreach (string k in new[] { "qui_a", "qui_b", "qui_c", WorkRoster.InstructSkill }) t.taught.Add(k);
         l1.taught.Add("qui_b"); l2.taught.Add("qui_c");
         var seven = new List<WorkRoster.Mission> { new WorkRoster.Mission("A", "qui_a", "A", 1f), new WorkRoster.Mission("A", "qui_b", "B", 1f), new WorkRoster.Mission("A", "qui_c", "C", 1f), new WorkRoster.Mission("B", "limpiar", "Limpiar", 1f), new WorkRoster.Mission("B", "barrer", "Barrer", 1f) };
+        // (Limpiar y barrer ya los sabe todo el mundo: con la iniciación como tarea, lo que nadie sabe gana y se llevaba todas las clases.)
+        foreach (WorkRoster.Worker w7 in ro7.workers) foreach (WorkRoster.Mission m7 in seven) if (!m7.id.StartsWith("qui_")) w7.taught.Add(MissionRequirements.KnowledgeKey(m7.id));
         WorkRoster.DayPlan p7 = ro7.Plan(0, seven);
-        // (solo las de quirófano: las de «limpiar» y «barrer» nadie las sabe aquí, y esas las da la Magnate: «sin nadie que sepa, la Magnate», arriba)
-        var taught7 = p7.lessons.Where(l => l.real.id.StartsWith("qui_")).ToList();
-        var later = taught7.Where(l => l.start > 9f).ToList();
+        var later = p7.lessons.Where(l => l.start > 9f).ToList();
         TestProbe.Check("el que estaba libre a las 9 inicia a las 10", later.Count == 2 && later.All(l => l.instructor != null) && later.Select(l => l.instructor).Distinct().Count() == 2, string.Join(" · ", later));
-        TestProbe.Check("las clases de después también las da un compañero", taught7.Count >= 3 && taught7.All(l => l.instructor != null), string.Join(" · ", taught7));
+        TestProbe.Check("las clases de después también las da un compañero", p7.lessons.Count >= 3 && p7.lessons.All(l => l.instructor != null), string.Join(" · ", p7.lessons));
         TestProbe.Check("nadie da dos clases a la vez ni trabaja mientras", ro7.workers.All(w => { var a = p7.Of(w).ToList(); return a.All(x => !a.Any(y => y != x && x.start < y.start + y.mission.hours && y.start < x.start + x.mission.hours)); }));
 
         // ── Clases ──

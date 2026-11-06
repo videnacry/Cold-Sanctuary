@@ -225,6 +225,8 @@ public class TreeMaskTest : MonoBehaviour, ITestUnit
         var paused = new List<Behaviour>();
         foreach (PlayerWorkday w in FindObjectsByType<PlayerWorkday>(FindObjectsSortMode.None)) if (w.enabled) { w.enabled = false; paused.Add(w); }
         if (k.TryGetComponent(out TreeTrip trip) && trip.enabled) trip.enabled = false;
+        // Ni el examen de llegada: si empezó al darle a Play, su orquesta lo devolvía a la enfermería en cuanto se le ponía en el tronco.
+        foreach (NewcomerInitiator ni in FindObjectsByType<NewcomerInitiator>(FindObjectsSortMode.None)) if (ni.InProgress) ni.ResetState();
         for (int i = 0; i < 8 && pc.BodyHeld; i++) pc.HoldBody(false);
         Vector3 at = t.World(new Vector3(-3f, 34f, 4f));
         for (int tries = 0; tries < 5 && !t.InRootWater(sb.HeadPosition); tries++)

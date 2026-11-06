@@ -59,12 +59,12 @@ public class CadenaAlimenticiaTest : MonoBehaviour, ITestUnit
 
         // ── 3. ESPECIE NUEVA (hipotética, y se deja todo como estaba) ──
         float reindeer = PopulationPlan.PerHuman["Reindeer"], hare = PopulationPlan.PerHuman["ArcticHare"], musk = PopulationPlan.PerHuman["MuskOx"], wolves = PopulationPlan.PerHuman["Wolf"];
-        PopulationPlan.PerHuman["Wolf"] = wolves * 2f;
+        PopulationPlan.PerHuman["Wolf"] = wolves * 20f;   // (×2 ya no: el laboratorio, a medida del techo de depredadores (P19), les cubre esa comida y las presas no tienen por qué subir)
         PopulationPlan.Groups["PruebaDepredador"] = 1;   // desconocida: sin relaciones, sale sin dieta y no estorba
         PopulationPlan.PerHuman["PruebaDepredador"] = 0.2f;
         FoodChain.Evaluate();
         bool up = PopulationPlan.PerHuman["Reindeer"] > reindeer || PopulationPlan.PerHuman["ArcticHare"] > hare || PopulationPlan.PerHuman["MuskOx"] > musk;
-        TestProbe.Check("con más depredadores suben sus presas, sola", up, $"reno {reindeer:0.00} → {PopulationPlan.PerHuman["Reindeer"]:0.00}");
+        TestProbe.Check("con más depredadores suben sus presas, sola", up, $"reno {reindeer:0.00} → {PopulationPlan.PerHuman["Reindeer"]:0.00}, laboratorio {FoodChain.LabShare:P0}");
         PopulationPlan.Groups.Remove("PruebaDepredador"); PopulationPlan.PerHuman.Remove("PruebaDepredador");
         PopulationPlan.PerHuman["Wolf"] = wolves; PopulationPlan.PerHuman["Reindeer"] = reindeer; PopulationPlan.PerHuman["ArcticHare"] = hare; PopulationPlan.PerHuman["MuskOx"] = musk;
         FoodChain.Evaluate();
