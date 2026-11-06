@@ -424,6 +424,8 @@ public class WorkdayDirector : MonoBehaviour
     static bool InAreaNamed(string name, Vector3 pos)
     {
         if (AereoRule.IsArea(name)) { if (AereoRule.InSector(pos) || AereoLink.PlayerThere) return true; AereoLink l = AereoLink.Instance; if (l != null && (pos - l.transform.position).sqrMagnitude < 400f) return true; }
+        // La sala de guardia es un sitio, no un área: nadie contaba como dentro aunque estuviera en ella (Gohageneis «parado fuera» ×123; a Kushal lo traería la Magnate).
+        if (name == AreaWork.GuardRoom) { Transform gr = AreaTransform(name); if (gr == null) return false; Vector3 gl = gr.InverseTransformPoint(pos); return Mathf.Abs(gl.x) < 24f && Mathf.Abs(gl.z) < 24f && gl.y > -2f && gl.y < 7f; }
         if (name == SiteLine.AreaName) return SiteLine.Instance != null && (pos - SiteLine.Instance.transform.position).sqrMagnitude < 225f;   // la estación no es un área: a 15 m del andén
         foreach (SanctuaryArea a in SceneCache.All<SanctuaryArea>(2f))
             if (a != null && a.displayName == name && a.InBuilding(pos)) return true;
@@ -618,7 +620,8 @@ public class WorkdayDirector : MonoBehaviour
         if (vetDuty && vet == null) vet = g.AddComponent<VetCare>();
         if (vet != null) vet.enabled = vetDuty;
         if (vet != null && vet.Busy) { if (idle != null) idle.enabled = false; SetStatus(g, vet.Doing ?? doing); return; }
-        if (lin != null) lin.enabled = !evacuating && (area == null || area == AreaWork.Hospital || NewcomerWaiting());   // (con su conducta encendida, Drive no la mueve: en la evacuación tiene que irse como los demás)
+        bool linAway = lin != null && area == AreaWork.Hospital && !NewcomerWaiting() && !InWorkspace(null, AreaWork.Hospital, g.transform.position);   // (su conducta solo sabe del hospital: desde otra torre se quedaba quieta allí, toda la hora)
+        if (lin != null) lin.enabled = !evacuating && !linAway && (area == null || area == AreaWork.Hospital || NewcomerWaiting());   // (con su conducta encendida, Drive no la mueve: en la evacuación tiene que irse como los demás)
         if (lin != null && lin.enabled && NewcomerWaiting() && idle != null) idle.enabled = false;   // con un recién llegado, Linduarda no merodea: lo atiende
         if (RestaurantService.Drives(g)) { if (idle != null) idle.enabled = false; return; }   // la brigada del restaurante: la mueve el servicio (puesto, pase, obrador, limpieza)
         if (area == null)

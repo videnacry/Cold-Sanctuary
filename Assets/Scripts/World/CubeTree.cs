@@ -228,4 +228,3 @@ public static class CubeTree
 }
 
 /// <summary>Un árbol donde anidan las abejas y las arañas de las nieves: los abedules de la isla y el de la escena del ciclo de vida.</summary>
-public class NestTree : MonoBehaviour { }

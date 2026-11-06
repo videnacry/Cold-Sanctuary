@@ -353,7 +353,7 @@ public class PlayerWorkday : MonoBehaviour
             if (h < l0 && !pw.AteToday && l0 < end) end = l0;
             float last = -1f;
             foreach (Record r in pw._records) { float e = r.a.start + r.a.mission.hours; if (e <= h + 0.01f && e > last) { last = e; from = r.a.mission.area; } }
-            if (from == null || end == float.MaxValue) return null;
+            if (end == float.MaxValue) return null;   // (sin misión hecha aún, from es null: sale de donde esté hacia la primera, también en el entrenamiento de las 8)
             ready = true;
         }
         else return null;
@@ -362,7 +362,7 @@ public class PlayerWorkday : MonoBehaviour
         if (next == null && Mathf.Abs(end - l0) < 0.01f && !pw.AteToday) next = Lunch(me);
         if (next == null && Mathf.Abs(end - (WorkRoster.StartHour + 6f)) < 0.01f && pw.TrainingArea != null) next = Training(me, pw.TrainingArea);
         if (next == null || next.mission.area == from || next.mission.area == AreaWork.Guard) return null;
-        float lead = Mathf.Max(EarlyLead, TravelSeconds(from, next.mission.area) / perHour);
+        float lead = Mathf.Max(EarlyLead, (from != null ? TravelSeconds(from, next.mission.area) : pw._player != null ? ArbolCampos.TripSeconds(pw._player.transform.position, WorkdayDirector.AreaPoint(next.mission.area, "Player")) : 0f) / perHour);
         if (end - h > lead) return null;
         return ready ? next : null;
     }

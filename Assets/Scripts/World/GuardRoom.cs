@@ -126,30 +126,4 @@ public class GuardRoom : MonoBehaviour
     void OnEnable() => WorkdayDirector.RegisterPlace(AreaWork.GuardRoom, transform);
 }
 
-/// <summary>Una pantalla del muro: su texto se renueva cada <see cref="Every"/> s y se pone roja en alerta.</summary>
-public class GuardScreen : MonoBehaviour
-{
-    const float Every = 2f;
-    public GuardWatch.Feed feed;
-    public Renderer panel;
-    public Material normal, alert;
-    WorldLabel _label;
-    float _next;
 
-    void Start() => _label = GetComponent<WorldLabel>();
-
-    void Update()
-    {
-        if (Time.time < _next) return;
-        _next = Time.time + Every;
-        if (_label != null) _label.text = $"{GuardWatch.Title(feed)}\n{GuardWatch.Read(feed)}";
-        if (panel != null && normal != null && alert != null) panel.sharedMaterial = GuardWatch.Alert(feed) ? alert : normal;
-    }
-}
-
-/// <summary>Lo que gira en la sala: el barrido del radar y el tambor del sismógrafo.</summary>
-public class GuardSpin : MonoBehaviour
-{
-    public Vector3 degreesPerSecond = new Vector3(0f, 90f, 0f);
-    void Update() => transform.Rotate(degreesPerSecond * Time.deltaTime, Space.Self);
-}

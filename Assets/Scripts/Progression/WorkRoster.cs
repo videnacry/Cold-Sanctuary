@@ -253,7 +253,7 @@ public class WorkRoster
             foreach (Worker w in order)
             {
                 if (w.clone || used[w] > hour + 1e-3f || Busy(w, hour) || done[w] + LessonHours > InitiationCap(w, plan.day) + 1e-3f) continue;
-                var mine = options.Where(m => Wants(w, m)).ToList();
+                var mine = options.Where(m => Wants(w, m) && !FarAfterLunch(w, m.area, clock)).ToList();
                 if (mine.Count == 0) continue;
                 Lesson c = classes.Where(x => x.learners.Count < LessonGroupSize && mine.Contains(x.real)).OrderByDescending(x => Score(x.real)).FirstOrDefault();
                 if (c == null)
@@ -406,12 +406,15 @@ public class WorkRoster
     }
 
     // Nunca hecha → la menos hecha → la que hace más días que no hace (y que quepa en lo que le queda de jornada).
+    /// <summary>A Kushal no se le da a las 12 una misión de un sitio lejano: sale de comer a esa hora y el viaje (140 s de una hora de 150) se la come entera. Regla J31.</summary>
+    static bool FarAfterLunch(Worker w, string area, float clock) => w.name == "Player" && System.Math.Abs(clock - (StartHour + FirstBlock + LunchHours)) < 0.01f && (NuclearSite.IsSiteArea(area) || AereoRule.IsArea(area) || area == EnergyRule.Area);
+
     Mission Choose(Worker w, List<Mission> pool, float used)
     {
         Mission best = null;
         foreach (Mission m in pool)
         {
-            if (PlaceFor(w, used, m.hours, out _) < 0f) continue;
+            if (PlaceFor(w, used, m.hours, out float at) < 0f || FarAfterLunch(w, m.area, at)) continue;
             if (w.name == "Player" && FruitGardener.IsRound(m.id)) continue;   // (2026-11-05) la ronda de frutales la hace la conducta FruitGardener, que no mueve al jugador: con Kushal, ese día se quedaba sin hacer
             if (best == null) { best = m; continue; }
             int cm = w.Count(m.id), cb = w.Count(best.id);
