@@ -144,6 +144,21 @@ public class SnowPetrelLife : MonoBehaviour
         float v = land && dist < 8f ? Mathf.Max(2f, speed * dist / 8f) : speed;
         Vector3 goal = to;
         if (!land || dist > 20f) goal.y = Mathf.Max(to.y, dist > 30f ? 24f : to.y);   // en crucero, por encima de los edificios bajos y del hielo
+        // El crucero va a 24 m en línea recta y el hielo llega a 30 con su escalón a 35: sin esto entraba por la pared del iceberg.
+        // Cerca de uno sube en vertical hasta pasarlo; si va a un sitio de ese mismo iceberg, llega por arriba y baja encima.
+        foreach (Iceberg b in Iceberg.All)
+        {
+            if (b == null) continue;
+            float m = Mathf.Max(b.size.x, b.size.z) * 0.5f + 10f, top = b.transform.position.y + b.size.y * 0.1f + 8f;
+            Vector3 here = cur - b.transform.position, there = to - b.transform.position; here.y = there.y = 0f;
+            if (here.sqrMagnitude > m * m) continue;
+            bool onThis = there.sqrMagnitude <= m * m;
+            if (onThis && new Vector2(d.x, d.z).sqrMagnitude < 1f) break;   // ya encima: baja
+            if (cur.y < top - 0.5f) goal = new Vector3(cur.x, top, cur.z);
+            else if (onThis) goal = new Vector3(to.x, top, to.z);
+            else goal.y = Mathf.Max(goal.y, top);
+            break;
+        }
         transform.position = Vector3.MoveTowards(cur, goal, v * Time.deltaTime);
         Vector3 flat = new Vector3(d.x, 0f, d.z);
         if (flat.sqrMagnitude > 1e-4f) transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(flat), 5f * Time.deltaTime);

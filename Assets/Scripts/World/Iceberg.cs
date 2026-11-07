@@ -53,7 +53,9 @@ public class Iceberg : MonoBehaviour
     /// <summary>El punto del agua frente a la repisa: por ahí se sube.</summary>
     public Vector3 Approach => ledge != null ? ledge.position + (ledge.position - transform.position).normalized * 12f + Vector3.down : transform.position;
     /// <summary>Dónde se posa un ave: arriba, en el escalón del hielo. Se mueve con él.</summary>
-    public Vector3 PerchSpot(float seed) => transform.TransformPoint(new Vector3(-size.x * 0.3f + Mathf.Repeat(seed * 7f, size.x * 0.25f), size.y * 0.1f + 0.1f, size.z * 0.3f));
+    public Vector3 PerchSpot(float seed) => transform.TransformPoint(new Vector3(-size.x * 0.3f + Mathf.Repeat(seed * 7f, size.x * 0.25f), size.y * 0.1f + PerchClearance, size.z * 0.3f));
+    /// <summary>Altura del pájaro posado sobre el hielo: el centro del cuerpo, no los pies. Con 0,1 m el cuerpo tocaba la caja del iceberg (la jornada lo veía «dentro de Iceberg_deriva», a y = 30).</summary>
+    public const float PerchClearance = 0.2f;
 
     /// <summary>Un sitio en la repisa, propio de cada uno.</summary>
     public Vector3 HaulSpot(float seed)

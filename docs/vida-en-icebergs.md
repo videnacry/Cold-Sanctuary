@@ -36,5 +36,5 @@ Los dos icebergs y sus animales están en el **santuario 1**, no en el Santuario
 
 - **No crían aquí.** Con el motivo «cuidado de crías» solo se queda más: no hay parto. Evita ciclos de vida lejos de todo.
 - **Sin depredadores en los icebergs:** las orcas siguen en la laguna, así que nadie huye. Por eso el motivo «refugio» no está.
-- **Los petreles ya son reales.** `SnowPetrel` vuela (`SnowPetrelLife`), se posa unas horas arriba del iceberg y va con él; anida en la roca de la isla, nunca en el hielo.
+- **Los petreles ya son reales.** `SnowPetrel` vuela (`SnowPetrelLife`), se posa unas horas arriba del iceberg y va con él (a `Iceberg.PerchClearance`, 0,2 m sobre la caja: con 0,1 m el cuerpo tocaba el hielo; en crucero sube sobre cualquier iceberg en vez de cruzarlo, porque los 24 m de crucero quedan por debajo de sus 30); anida en la roca de la isla, nunca en el hielo.
 - **Coste:** 8 `Animal` más, 2 bancos más y 2 repisas, sin NavMesh, y `Lod` los trata como lejanos. Se puede vigilar en la primera reconstrucción.
