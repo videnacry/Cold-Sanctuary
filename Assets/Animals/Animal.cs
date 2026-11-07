@@ -97,6 +97,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
             Population.Remove(gameObject);
             wholePopulation.Remove(gameObject);
             lifeStage = LifeStage.soul;
+            Debug.Log($"[Muerte] «{name}» ({SpeciesName}): se lo han comido entero.");
         }
         return effectiveBite * Nutrition;
     }
@@ -424,6 +425,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         if (death || asphyxiaThreshold <= 0f || rig == null) return;
         float deficit = asphyxiaThreshold - MediumFactor;
         if (deficit <= 0f) return;                          // medio soportable → sin asfixia
+        _hurtBy = "asfixia";
         Hurt(deficit * asphyxiaRate * rig.mass);            // ahogo: proporcional a lo malo del medio y a la masa
     }
 
@@ -444,7 +446,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         GetComponent<SicknessState>()?.MakeSick(starvationSickness);
 
         // Por debajo de un mínimo vital → muerte por inanición (por el mismo camino que cualquier daño letal).
-        if (rig.mass <= Body.baseMass * lethalMassFrac) Hurt(rig.mass);
+        if (rig.mass <= Body.baseMass * lethalMassFrac) { _hurtBy = "inanición"; Hurt(rig.mass); }
     }
 
     // DE VUELTA AL NAVMESH: un agente activo que NO está sobre el NavMesh no puede ir a ningún sitio (todas las conductas
@@ -772,6 +774,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
     /// Inflict damage, remove gameObject from population and wholePopulation fields, set lifestage to soul and rig.mass to 0
     /// </summary>
     /// <param name="damage"></param>
+    string _hurtBy;   // (la causa, para el log: una muerte sin rastro no se puede explicar)
     public virtual void Hurt(float damage)
     {
         lp -= damage;
@@ -781,6 +784,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         {
             transform.Rotate(Vector3.forward, 90);
             death = true;
+            Debug.Log($"[Muerte] «{name}» ({SpeciesName}, {lifeStage}) muere de {_hurtBy ?? "un golpe o un ataque"}: hambre {hungry:0.00}, masa {rig.mass:0.0}, en ({transform.position.x:0},{transform.position.y:0},{transform.position.z:0}).");
             BroadcastGrief();                 // los que tenían un VÍNCULO con este ser (+ o −) entran en DUELO
             StopAllCoroutines();
             ani.enabled = false;
