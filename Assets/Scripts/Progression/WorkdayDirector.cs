@@ -665,7 +665,7 @@ public class WorkdayDirector : MonoBehaviour
         if (idle != null && idle.enabled) idle.enabled = false;
         if (OwnNeeds(g, area, doing)) return;   // [Jornada] comer, el baño y dormir van antes; a mediodía, a comer
         Vector3 to = EnergySite.FieldPoint(WorkRoster.LessonBase(missionId), g.name) ?? WorkPoint(area, g.name);   // (los paneles y las torres se revisan en el casquete, no en el piso de control)
-        if ((g.transform.position - to).sqrMagnitude > 4f)
+        if (!AtWork(g, area, to))
         {
             if (g.GetComponent<Anima>() != null && CarpetPad.Route(g, ref to)) return;   // otro grupo de plataformas: en alfombra voladora
             if (alwaysMove && g.GetComponent<Anima>() == null) g.transform.position = Vector3.MoveTowards(g.transform.position, to, walkSpeed * 3f * Time.deltaTime);
@@ -1094,6 +1094,24 @@ public class WorkdayDirector : MonoBehaviour
             if (c.GetComponentInParent<Anima>() == null) return true;
         return false;
     }
+    // «Ya está» a 2 m vale en un área abierta, no en un puesto del hospital: el puesto está a 1,1–1,45 m del centro de su mesa,
+    // y quien llegaba por el otro lado de la mesa se paraba encima y empezaba a trabajar allí. En un puesto hay que llegar a él;
+    // si el camino no alcanza el punto (acotado: 6 s a menos de 2 m), trabaja donde llegó y lo dice, en vez de andar para siempre.
+    static readonly Dictionary<string, float> _postWalk = new Dictionary<string, float>();
+    static int _postWalkLogs;
+    static bool AtWork(GameObject g, string area, Vector3 to)
+    {
+        Vector3 d = g.transform.position - to;
+        if (d.sqrMagnitude > 4f) { _postWalk.Remove(g.name); return false; }
+        if (area != AreaWork.Hospital || HospitalStation.PostFor(g.name) == null) return true;
+        d.y = 0f;
+        if (d.sqrMagnitude <= 0.16f) return true;
+        if (!_postWalk.TryGetValue(g.name, out float since)) { _postWalk[g.name] = Time.time; return false; }
+        if (Time.time - since < 6f) return false;
+        if (_postWalkLogs < 20 && Time.time - since < 6.5f) { _postWalkLogs++; Debug.Log($"[Jornada] «{g.name}» no alcanza su puesto {to}: se queda a {d.magnitude:0.0} m, en {g.transform.position}."); }
+        return true;
+    }
+
     static Vector3 Clear(string area, string who, Vector3 p, float radius = 0.35f)
     {
         if (p == Vector3.zero) return p;
