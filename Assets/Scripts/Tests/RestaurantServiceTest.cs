@@ -343,6 +343,8 @@ public class RestaurantServiceTest : MonoBehaviour, ITestUnit
             if (!riding && !tr.prevRiding)
             {
                 float j = (p - tr.prev).magnitude;
+                // Un paso normal en un fotograma largo no es un salto: a ×2 con el tope de 1/3 s, un fotograma son 0,67 s de juego y 1,73 m andando a 2,6 m/s.
+                if (j <= Mathf.Max(maxJump, 2.6f * Time.deltaTime * 1.1f)) j = 0f;
                 if (j > maxJump) Debug.Log($"[Restaurante] SALTO de «{g.name}»: {j:0.00} m de ({tr.prev.x:0.00},{tr.prev.y:0.00},{tr.prev.z:0.00}) a ({p.x:0.00},{p.y:0.00},{p.z:0.00}) haciendo «{tag?.doing}» (andando {moving}, tramo {leg}).");
                 if (j > tr.maxJump) { tr.maxJump = j; tr.jumpInfo = $"{j:0.00} m en ({p.x:0.0},{p.y:0.0},{p.z:0.0}) haciendo «{tag?.doing}»"; }
             }
