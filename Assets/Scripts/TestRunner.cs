@@ -53,10 +53,12 @@ public class TestRunner : MonoBehaviour
 
         Debug.Log($"[TEST] ══════ TestRunner: {units.Count} unidad(es) ══════");
 
+        StartCoroutine(Alimentador());
         int i = 0;
         while (i < units.Count)
         {
             int g = units[i].Group;
+            _groupNow = g;
             List<ITestUnit> group = new List<ITestUnit>();
             while (i < units.Count && units[i].Group == g) { group.Add(units[i]); i++; }
 
@@ -84,6 +86,18 @@ public class TestRunner : MonoBehaviour
 
     // EL ALIMENTADOR: durante la batería WorkdayDirector.Update no corre (Running), así que nadie tiene la misión de alimentar a los depredadores de tierra y
     // pasan horas de juego sin comer: los adultos morían de hambre a media batería y las pruebas 99 y 105 no encontraban la población. Entre grupos se hace su trabajo.
+    // Entre grupos no bastaba: un grupo largo dejaba a los osos con hambre 45 y sin masa («Servicio del restaurante en vivo»). Cada 5 s reales; no en la jornada (50), que
+    // lleva a su alimentador de verdad, ni en la prueba del alimentador (105), que necesita a los animales con hambre.
+    int _groupNow;
+    IEnumerator Alimentador()
+    {
+        while (Running)
+        {
+            if (_groupNow != 50 && _groupNow != 105) Alimentar();
+            yield return new WaitForSecondsRealtime(5f);
+        }
+    }
+
     static void Alimentar()
     {
         foreach (GameObject go in Animal.wholePopulation)
