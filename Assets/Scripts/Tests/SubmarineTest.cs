@@ -55,6 +55,8 @@ public class SubmarineTest : MonoBehaviour, ITestUnit
         if (sub == null) { TestProbe.End(); yield break; }
 
         // ── 3. ENTREGA ──
+        // Si está llevando material a otra obra, se espera a que aparque, como en 90 y 94: Send no acepta encargos de viaje («en 0 s»).
+        { float old = Time.timeScale; Time.timeScale = 4f; float tw = Time.time, rw = Time.realtimeSinceStartup; while (sub.Now != ConstructionSubmarine.State.Parked && Time.time - tw < 900f && Time.realtimeSinceStartup - rw < 300f) yield return null; Time.timeScale = old; }
         ArbolCampos home = ArbolCampos.At(sub.transform.position + Vector3.up * 0.5f, out _, out _, false);
         // Las obras se guardan: en una partida con todas terminadas (ronda 12: las 4 en 6/6) no queda ninguna abierta. La prueba prepara la suya, sin tocar lo guardado, y la deja como estaba.
         ConstructionProject job = ConstructionProject.All.Where(p => p != null).OrderBy(p => p.Finished)
@@ -75,6 +77,7 @@ public class SubmarineTest : MonoBehaviour, ITestUnit
         if (jelly != null) { jelly.transform.position = dest.World(new Vector3(-3f, dl.inside.y * 0.5f, 2f)); jelly.GoTo(jelly.transform.position); }
         int d0 = sub.Deliveries;
         Vector3 start = sub.transform.position;
+        sub.ResetTrip();   // (lo que se mide es ESTE viaje, no los de toda la batería)
         bool sent = sub.Send(job);
         float oldScale = Time.timeScale; Time.timeScale = 3f;
         float t0 = Time.time, r0 = Time.realtimeSinceStartup; bool wasWet = false, wasOnDeck = false;

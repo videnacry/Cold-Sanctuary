@@ -36,6 +36,8 @@ public class ConstructionSubmarine : MonoBehaviour
     public string Doing { get; private set; } = "Aparcado en el garaje";
     public ConstructionProject Target { get; private set; }
     public int Deliveries { get; private set; }
+    /// <summary>Empieza de cero lo medido (holgura, metros, esquivas): para medir UN viaje.</summary>
+    public void ResetTrip() { MinClearance = float.PositiveInfinity; Avoidances = 0; DrivenMeters = 0f; SwamMeters = 0f; }
     /// <summary>Lo más cerca (m, de casco a cuerpo o a grupo) que pasó de un animal en todos sus trayectos.</summary>
     public float MinClearance { get; private set; } = float.PositiveInfinity;
     public int Avoidances { get; private set; }
@@ -130,6 +132,7 @@ public class ConstructionSubmarine : MonoBehaviour
 
     ConstructionProject NextJob()
     {
+        if (MaterialStore.Instance != null && !MaterialStore.Instance.HasDayKit()) return null;   // (sin material en el almacén iba y venía de vacío sin parar: «material en obra: False», y ocupado para quien lo necesitaba)
         foreach (ConstructionProject p in ConstructionProject.All)
             if (p != null && !p.Finished && !p.materialOnSite && ArbolCampos.At(p.transform.position + Vector3.up * 0.5f, out _, out _, false) != null) return p;
         return null;
