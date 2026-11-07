@@ -20,7 +20,7 @@ anda hasta el punto del área (`WorkdayDirector.WorkPoint`) y se queda de pie si
 | Misión(es) | Quién la conduce | Antes | Ahora |
 |---|---|---|---|
 | `enf_iniciacion` | `NewcomerInitiator` (orquesta: análisis, vacuna, virtualización) | **Hace** (orquesta) | igual; en la espera, prepara la vacuna y la ficha |
-| `enf_visita`, `hos_urgencias`, `hos_uci`, `hos_quirofano` | jornada → puesto médico (`HospitalStation.PostFor`); Linduarda, su conducta | Llega y se queda (Linduarda sí atiende) | **Hace**: auscultar (fonendo), temperatura, vendar, vía, monitor, operar (bisturí), suturar, anotar |
+| `enf_visita`, `hos_urgencias`, `hos_uci`, `hos_quirofano` | jornada → puesto médico (`HospitalStation.PostFor`; se llega al punto del puesto, a 0,4 m y no a los 2 m de un área abierta, o quedaría sobre la mesa); Linduarda, su conducta | Llega y se queda (Linduarda sí atiende) | **Hace**: auscultar (fonendo), temperatura, vendar, vía, monitor, operar (bisturí), suturar, anotar |
 | `hos_veterinaria`, `enf_animales` | jornada + `VetCare` (lleva la ración a los ingresados) | Lleva la ración; si no, se queda | **Hace**: explorar, vacunar, dar de comer, anotar |
 | `enf_inventario` | jornada | Llega y se queda | **Hace**: desinfectar (espray), reponer (caja), contar |
 | `coc_servicio`, `coc_obrador`, `prep_*`, `coc_limpieza`, `coc_atender`, `coc_sala`, `coc_comedor` | `RestaurantService` (brigada) | **Hace** (comandas, platos, mesas) con un solo gesto de brazos y las manos vacías | igual + **utensilio y efecto por papel** (cucharón y vapor, amasar con harina, estropajo y espuma); sin servicio, las actuaciones propias |
