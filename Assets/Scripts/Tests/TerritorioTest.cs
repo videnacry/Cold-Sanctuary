@@ -16,7 +16,7 @@ using UnityEngine.AI;
 /// </summary>
 public class TerritorioTest : MonoBehaviour, ITestUnit
 {
-    public int Group => 99;
+    public int Group => 30;   // (era 99: lo que mira es la población de partida, y tras 70 grupos de reloj quedaba un solo zorro)
     public bool ParallelSafe => false;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]

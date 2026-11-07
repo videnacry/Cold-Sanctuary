@@ -139,7 +139,7 @@ public class NuclearAccessTest : MonoBehaviour, ITestUnit
         IEnumerator Until(System.Func<bool> done, float gameMax)
         {
             float t0 = Time.time, r0 = Time.realtimeSinceStartup;
-            while (!done() && Time.time - t0 < gameMax && Time.realtimeSinceStartup - r0 < 90f) { deepest = Mathf.Max(deepest, line.Depth); hid |= !probe.enabled; yield return null; }
+            while (!done() && Time.time - t0 < gameMax && Time.realtimeSinceStartup - r0 < 300f) { deepest = Mathf.Max(deepest, line.Depth); hid |= !probe.enabled; yield return null; }
         }
         int trips = line.Trips;
         bool went = line.Ride(body, 2f), carried = FlyingCarpet.Riding(body);

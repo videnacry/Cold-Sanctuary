@@ -54,7 +54,7 @@ public class HieloMarinoTest : MonoBehaviour, ITestUnit
         }
         Collider sheet = FindObjectsByType<Collider>(FindObjectsSortMode.None).FirstOrDefault(c => c.name == MarineLife.ThinIce);
         TestProbe.Check("el hielo fijo mide lo que las placas y un oso puede acechar encima", sheet != null && Mathf.Abs(sheet.bounds.size.y - SeaRule.PlateThickness) < 0.1f && sheet.bounds.max.y > -0.1f);
-        TestProbe.Check("bajo el hielo fijo sí se nada", sheet != null && MarineLife.IceAbove(sheet.bounds.center) && !MarineLife.ThickAbove(sheet.bounds.center));
+        TestProbe.Check("bajo el hielo fijo sí se nada", sheet != null && MarineLife.IceAbove(sheet.bounds.center) && !MarineLife.ThickAbove(sheet.bounds.center), sheet != null ? string.Join(", ", Physics.RaycastAll(new Vector3(sheet.bounds.center.x, 8f, sheet.bounds.center.z), Vector3.down, 14f, ~0, QueryTriggerInteraction.Ignore).Select(h => $"{h.collider.name} a {h.point.y:0.0}")) : "");
 
         // ── 3. SUBMARINO ──
         var trees = ArbolCampos.All.Where(a => a != null).ToList();

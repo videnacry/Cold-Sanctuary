@@ -145,6 +145,7 @@ public class EnergyTest : MonoBehaviour, ITestUnit
         TestProbe.Check("hay 6 contenedores y un silo", es.storage != null && es.storage.GetComponentsInChildren<Transform>(true).Count(t => t.name.StartsWith("Bateria_LFP")) == EnergyRule.BatteryContainers && es.storage.Find("Silo_arena") != null);
 
         // ── 7. LA JORNADA ──
+        es.Repair("prueba");   // (las de los días que corrieron antes: la prueba cuenta la suya)
         es.Fail(0);
         TestProbe.Check("una avería enciende su baliza y da misión", es.Faults == 1 && es.tables[0].Find("Aviso_averia").gameObject.activeSelf && EnergySite.Missions(0).Any(x => x.id == "sol_reparacion"));
         es.Step(0f, 355f, 12f, 0f); float broken = es.SolarKW;

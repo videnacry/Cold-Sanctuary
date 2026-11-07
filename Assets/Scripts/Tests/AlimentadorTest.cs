@@ -8,7 +8,7 @@ using UnityEngine;
 /// </summary>
 public class AlimentadorTest : MonoBehaviour, ITestUnit
 {
-    public int Group => 105;
+    public int Group => 31;   // (era 105: al final de la batería no quedaba un oso adulto en la lista)
     public bool ParallelSafe => false;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
