@@ -162,26 +162,7 @@ public class FruitGardener : MonoBehaviour
                 // LAS TAREAS DEL ÁRBOL, EN TRAMOS QUE QUEPAN EN UNA RONDA (2026-11-04: con las ~200 revisiones de máscaras, un árbol solo
                 // pedía 4,6–5,5 h y la ronda pasaba de 3 h). De arriba abajo, tantas puertas como quepan (con su vuelo hasta el techo,
                 // entrar y salir); el fitoplancton del fondo, en el último tramo (o en uno suyo si no cabe).
-                var (masks, beds) = TreeTaskList(tree);
-                var chunk = new List<MaskStation>();
-                float budget = RoundTarget - flightH;
-                foreach (MaskStation m in masks)
-                {
-                    chunk.Add(m);
-                    if (chunk.Count > 1 && TreeTaskHours(tree, chunk, new List<Phytoplankton>()) > budget)
-                    {
-                        chunk.RemoveAt(chunk.Count - 1);
-                        units.Add(new Leg { building = b, tree = tree, masks = chunk, beds = new List<Phytoplankton>(), hours = TreeTaskHours(tree, chunk, new List<Phytoplankton>()) });
-                        chunk = new List<MaskStation> { m };
-                    }
-                }
-                if (beds.Count > 0 && chunk.Count > 0 && TreeTaskHours(tree, chunk, beds) > budget)
-                {
-                    units.Add(new Leg { building = b, tree = tree, masks = chunk, beds = new List<Phytoplankton>(), hours = TreeTaskHours(tree, chunk, new List<Phytoplankton>()) });
-                    chunk = new List<MaskStation>();
-                }
-                if (chunk.Count > 0 || beds.Count > 0)
-                    units.Add(new Leg { building = b, tree = tree, masks = chunk, beds = beds, hours = TreeTaskHours(tree, chunk, beds) });
+                units.AddRange(TreeStretches(tree));
             }
         }
         // EL REPARTO (2026-11-04): cada tramo cabe ya en una ronda; se llenan las rondas por orden del camino y, si un tramo no cabe en
@@ -237,6 +218,39 @@ public class FruitGardener : MonoBehaviour
     /// <summary>Minutos de juego en leer el PANEL DE MÁSCARAS de la puerta del suelo (la luz y la carga de cada estación del árbol).</summary>
     public const float BoardMinutes = 3f;
     static int Today => TimeController.timeController != null ? TimeController.timeController.Day : 0;
+
+    /// <summary>Lo más que dura un tramo de tareas del árbol (h de juego): lo que no quepa va en el tramo siguiente, aunque la ronda tuviera sitio.</summary>
+    public const float MaxTreeTaskHours = 1f;
+
+    /// <summary>Lo de hoy de un árbol en TRAMOS de ≤ <see cref="MaxTreeTaskHours"/> h: de arriba abajo, tantas puertas como quepan; el fitoplancton del fondo, en el
+    /// último (o en uno suyo si no cabe). Cada estación y cada cortina van en un tramo; una estación sola nunca se queda fuera, aunque ella sola pasara del tope.</summary>
+    public static List<Leg> TreeStretches(ArbolCampos tree)
+    {
+        string b = tree.building;
+        var units = new List<Leg>();
+        var (masks, beds) = TreeTaskList(tree);
+        float budget = Mathf.Min(RoundTarget - FlightSeconds / SecondsPerGameHour, MaxTreeTaskHours);
+        var none = new List<Phytoplankton>();
+        var chunk = new List<MaskStation>();
+        foreach (MaskStation m in masks)
+        {
+            chunk.Add(m);
+            if (chunk.Count > 1 && TreeTaskHours(tree, chunk, none) > budget)
+            {
+                chunk.RemoveAt(chunk.Count - 1);
+                units.Add(new Leg { building = b, tree = tree, masks = chunk, beds = new List<Phytoplankton>(), hours = TreeTaskHours(tree, chunk, none) });
+                chunk = new List<MaskStation> { m };
+            }
+        }
+        if (beds.Count > 0 && chunk.Count > 0 && TreeTaskHours(tree, chunk, beds) > budget)
+        {
+            units.Add(new Leg { building = b, tree = tree, masks = chunk, beds = new List<Phytoplankton>(), hours = TreeTaskHours(tree, chunk, none) });
+            chunk = new List<MaskStation>();
+        }
+        if (chunk.Count > 0 || beds.Count > 0)
+            units.Add(new Leg { building = b, tree = tree, masks = chunk, beds = beds, hours = TreeTaskHours(tree, chunk, beds) });
+        return units;
+    }
 
     /// <summary>Lo que toca HOY en un árbol (2026-11-04: revisión BARATA, docs/mascaras-de-oxigeno.md §El jardinero): las estaciones
     /// que le tocan por la ROTACIÓN semanal (1/7 de las puertas cada día) y las que el panel marca en rojo (<see cref="MaskStation.FlagBelow"/>),
@@ -337,6 +351,15 @@ public class FruitGardener : MonoBehaviour
     public void Assign(string missionId) => Assign(missionId, RoundFor(missionId));
 
     /// <summary>Solo las tareas del árbol <paramref name="t"/> (máscaras y fitoplancton), como una ronda de un tramo (pruebas).</summary>
+    /// <summary>Solo un tramo de <see cref="TreeStretches"/>.</summary>
+    public void AssignTreeLeg(ArbolCampos t, Leg leg, int n)
+    {
+        Round r = new Round { id = $"{MissionPrefix}_arbol_{t.building}_{n}", title = $"Revisar las máscaras de oxígeno y cuidar el fitoplancton de {t.building}", hours = leg.hours };
+        r.legs.Add(leg);
+        MissionId = null;
+        Assign(r.id, r);
+    }
+
     public void AssignTreeTasks(ArbolCampos t)
     {
         var (masks, beds) = TreeTaskList(t);

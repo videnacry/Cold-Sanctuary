@@ -204,20 +204,32 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
                 if (tree.Top != null) WorkdayDirector.Teleport(gb.transform, tree.World(tree.Top.outside) + Vector3.up);
                 FruitGardener tg = gb.AddComponent<FruitGardener>();
                 float sc0 = Time.timeScale; Time.timeScale = 4f;
-                tg.AssignTreeTasks(tree);
-                float est = FruitGardener.TreeTaskHours(tree, masks, beds);
-                float capT = Mathf.Min(900f, est * TimeController.timeController.SecondsPerGameDay / 24f / Time.timeScale * 5f + 240f), tt0 = Time.realtimeSinceStartup;   // (2026-11-04: con 190 s no acababa: iba por el fitoplancton)
-                while (!tg.Finished && Time.realtimeSinceStartup - tt0 < capT) yield return null;
+                // Por tramos, como los reparte la jornada: cada uno ≤ 1 h; entre todos, todo lo de hoy.
+                var stretches = FruitGardener.TreeStretches(tree);
+                float est = 0f, hT = 0f, capT = 0f; int masksDone = 0, phytoDone = 0, skippedT = 0; bool allDone = true, onTime = true;
+                for (int si = 0; si < stretches.Count; si++)
+                {
+                    FruitGardener.Leg leg = stretches[si];
+                    if (tree.Top != null) WorkdayDirector.Teleport(gb.transform, tree.World(tree.Top.outside) + Vector3.up);
+                    tg.AssignTreeLeg(tree, leg, si);
+                    float capS = Mathf.Min(900f, leg.hours * TimeController.timeController.SecondsPerGameDay / 24f / Time.timeScale * 5f + 240f), tt0 = Time.realtimeSinceStartup;   // (2026-11-04: con 190 s no acababa: iba por el fitoplancton)
+                    capT += capS;
+                    while (!tg.Finished && Time.realtimeSinceStartup - tt0 < capS) yield return null;
+                    float hS = tg.RoundSeconds / (TimeController.timeController.SecondsPerGameDay / 24f);
+                    allDone &= tg.Finished; onTime &= hS <= leg.hours * 1.5f + 0.1f;
+                    est = Mathf.Max(est, leg.hours); hT = Mathf.Max(hT, hS);
+                    masksDone += tg.MasksChecked; phytoDone += tg.PhytoCared; skippedT += tg.Skipped;
+                }
                 Time.timeScale = sc0;
-                float hT = tg.RoundSeconds / (TimeController.timeController.SecondsPerGameDay / 24f);
+                TestProbe.Check("cada estación y cada cortina de hoy van en un tramo", stretches.SelectMany(l => l.masks).Count() == masks.Count && !masks.Except(stretches.SelectMany(l => l.masks)).Any() && stretches.SelectMany(l => l.beds).Count() == beds.Count, $"{stretches.Count} tramos");
                 int rotOk = rot.Count(m => m.condition > 0.99f), redOk = notDue.Count(m => m.condition > 0.99f);
                 int untouched = all.Count(m => !masks.Contains(m) && m.condition < 0.99f), others = all.Count(m => !masks.Contains(m));
                 TestProbe.Check($"el jardinero lee el panel de máscaras de {tree.building} y revisa hoy solo 1/7 de las puertas (la rotación) y las que están en rojo",
-                    tg.Finished && masks.Count <= Mathf.CeilToInt(all.Count / 7f) + notDue.Count && rotOk == rot.Count && redOk == notDue.Count && untouched == others,
-                    tg.Finished ? $"{tg.MasksChecked} revisadas de {all.Count} estaciones: {rotOk}/{rot.Count} de la rotación, {redOk}/{notDue.Count} en rojo; {untouched}/{others} sin tocar; {tg.Skipped} saltadas" : $"a los {capT:0} s va por «{tg.Doing}»");
-                TestProbe.Check($"y cuida el fitoplancton del fondo abierto de {tree.building} (en óptimas condiciones)", beds.Count > 0 && tg.PhytoCared == beds.Count && beds.All(b => b.condition > 0.99f), $"{tg.PhytoCared}/{beds.Count} cortinas");
+                    allDone && masks.Count <= Mathf.CeilToInt(all.Count / 7f) + notDue.Count && rotOk == rot.Count && redOk == notDue.Count && untouched == others,
+                    allDone ? $"{masksDone} revisadas de {all.Count} estaciones: {rotOk}/{rot.Count} de la rotación, {redOk}/{notDue.Count} en rojo; {untouched}/{others} sin tocar; {skippedT} saltadas" : $"a los {capT:0} s va por «{tg.Doing}»");
+                TestProbe.Check($"y cuida el fitoplancton del fondo abierto de {tree.building} (en óptimas condiciones)", beds.Count > 0 && phytoDone == beds.Count && beds.All(b => b.condition > 0.99f), $"{phytoDone}/{beds.Count} cortinas");
                 TestProbe.Check("las tareas del árbol son cortas (≤ 1 h de juego), duran lo estimado al repartir la jornada (≤ 1,5 ×) y sale del agua sin la máscara",
-                    tg.Finished && est <= 1f && hT <= est * 1.5f + 0.1f && !BreathingMask.Has(gb),
+                    allDone && est <= FruitGardener.MaxTreeTaskHours && onTime && !BreathingMask.Has(gb),
                     $"medidas {hT:0.00} h de juego (estimadas {est:0.00} h), máscara puesta {BreathingMask.Has(gb)}");
                 Debug.Log($"[Frutales] Medida: tareas del árbol de {tree.building} ({masks.Count} de {all.Count} estaciones, {beds.Count} cortinas): {hT:0.00} h de juego (estimadas {est:0.00} h).");
                 Destroy(gb);

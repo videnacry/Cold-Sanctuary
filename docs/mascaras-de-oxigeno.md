@@ -116,3 +116,5 @@ pantalla), se pone la máscara y pasa 20 s bajo el agua con 4 s de aliento sin g
   máscaras, el carro le trae la mitad de las del puesto más lleno del edificio (además del reparto de cada noche).
 - **Jardinero**: entra por el **techo** (panel en su puerta) y baja una sola vez por las estaciones de hoy hasta el fondo: ~0,7–0,85 h
   por árbol (subir desde el suelo y volver contaba la altura del tronco dos veces: 1,06 h en el árbol más pequeño).
+
+**Ronda 19:** cada tramo de tareas del árbol dura como mucho 1 h de juego (`FruitGardener.TreeStretches`). Lo que no cabe, estaciones en rojo incluidas, pasa al tramo siguiente del mismo día, en otra ronda si hace falta; una estación que ella sola pasara de 1 h va en un tramo propio.
