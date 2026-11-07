@@ -221,7 +221,8 @@ public class SiteLine : MonoBehaviour
         _inTube = false;
         Stand(r, 0f);
         yield return Wait(r, SiteLineRule.LockSeconds, false);
-        Finish(r, transform.position, back ? "vuelta" : "línea", t0);
+        CarpetPad exitPad = CarpetPad.For(transform.position);   // (la caseta no pisa NavMesh: quien salía aquí no podía andar los 7,5 m a su pista y se quedaba para siempre)
+        Finish(r, exitPad != null && (exitPad.transform.position - transform.position).sqrMagnitude < 144f ? exitPad.transform.position : transform.position, back ? "vuelta" : "línea", t0);
     }
 
     // ── EN PERSONA: la escena de abajo ─────────────────────────────────────────────────────────────────────────────

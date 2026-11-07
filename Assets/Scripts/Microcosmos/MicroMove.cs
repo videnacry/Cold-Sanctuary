@@ -12,7 +12,9 @@ public static class MicroMove
         if (ag != null && ag.enabled && ag.isOnNavMesh)
         {
             ag.speed = speed;
-            if ((ag.destination - to).sqrMagnitude > 1f) ag.SetDestination(to);
+            // Sin camino en curso pero lejos del destino (un Warp o el fin de otro camino lo vacía; destination sigue siendo la de antes): se pide de nuevo, o se queda quieto para siempre.
+            bool idle = !ag.pathPending && (!ag.hasPath || ag.remainingDistance < 0.1f) && Time.frameCount % 15 == 0;
+            if (idle || (ag.destination - to).sqrMagnitude > 1f) ag.SetDestination(to);
             return false;
         }
         t.position += d.normalized * Mathf.Min(speed * Time.deltaTime, d.magnitude);

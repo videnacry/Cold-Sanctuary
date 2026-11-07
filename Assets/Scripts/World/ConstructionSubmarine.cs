@@ -187,8 +187,10 @@ public class ConstructionSubmarine : MonoBehaviour
 
     // El trayecto: por tierra a la puerta → agua del tronco → (si es otro árbol: baja, sale por el fondo, mar, sube por el otro) →
     // la puerta de llegada → por tierra a su sitio.
+    ArbolCampos _tripA, _tripB;
     void AddTrip(ArbolCampos a, TreeLevel la, ArbolCampos b, TreeLevel lb, System.Func<Vector3> end)
     {
+        _tripA = a; _tripB = b;
         float lift = 0.05f;
         _route.Add((() => a.World(la.outside) + Vector3.up * lift, false, $"a la puerta de {la.name}"));
         _route.Add((() => a.World(la.door) + Vector3.up * lift, false, $"puerta de {la.name}"));
@@ -227,6 +229,14 @@ public class ConstructionSubmarine : MonoBehaviour
 
     void Step()
     {
+        // Su destino se descargó (el garaje de la lanzadera, con el Santuario Aéreo): el camino apunta a árboles destruidos y lanzaba una excepción por fotograma, con el submarino parado para siempre. Vuelve a su plaza.
+        if (_tripA == null || _tripB == null)
+        {
+            Debug.LogWarning("[Submarino] Su destino ya no está en la escena: vuelve a su plaza.");
+            _route.Clear(); _wp = 0; Target = null; _freeTrip = false; _loaded = false; ShowCargo(false);
+            transform.SetPositionAndRotation(home.position, home.rotation); Now = State.Parked; Doing = "Aparcado en el garaje";
+            return;
+        }
         if (_wp >= _route.Count)
         {
             if (Now == State.Returning) { Now = State.Parked; Doing = "Aparcado en el garaje"; transform.rotation = home.rotation; Target = null; Debug.Log("[Submarino] Aparcado en el garaje."); return; }
