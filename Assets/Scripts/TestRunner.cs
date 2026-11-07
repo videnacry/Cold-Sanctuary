@@ -75,10 +75,22 @@ public class TestRunner : MonoBehaviour
                 foreach (ITestUnit u in group) yield return StartCoroutine(u.Run());   // en serie
             }
             Sanear(g);
+            Alimentar();
         }
 
         TestProbe.Total();
         Running = false;
+    }
+
+    // EL ALIMENTADOR: durante la batería WorkdayDirector.Update no corre (Running), así que nadie tiene la misión de alimentar a los depredadores de tierra y
+    // pasan horas de juego sin comer: los adultos morían de hambre a media batería y las pruebas 99 y 105 no encontraban la población. Entre grupos se hace su trabajo.
+    static void Alimentar()
+    {
+        foreach (GameObject go in Animal.wholePopulation)
+        {
+            if (go == null || !go.TryGetComponent(out Animal a) || a.death || a.lifeStage == LifeStage.child && !(a.Forage != null && a.Forage.eatsPrey)) continue;
+            if (a.lifeStage == LifeStage.child || PredatorRound.Served(a)) a.hungry = Mathf.Min(a.hungry, 0f);
+        }
     }
 
     // LO QUE UN GRUPO DEJA MAL (una excepción en una corrutina se la salta su final): se dice y se deja como estaba, para que no lo pague el grupo siguiente.
