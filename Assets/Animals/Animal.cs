@@ -87,6 +87,10 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
     public override float MaxFatReserves      => Prof.maxFatReserves;
     public override float FatAccumulationRate => Prof.fatAccumulationRate;
 
+    // Al descargar un microcosmos sus animales se destruyen, pero seguían en estos conjuntos: cada escena dejaba sus entradas muertas, y cada animal y cada grupo
+    // las recorren al sentir amenazas y al morder (el coste crece con cada microcosmos visitado).
+    protected virtual void OnDestroy() { wholePopulation.Remove(gameObject); Population?.Remove(gameObject); }
+
     public float Consume(float biteSize)
     {
         float effectiveBite = biteSize / (1f + Toughness);
