@@ -90,6 +90,16 @@ public class MarineLife : MonoBehaviour
         return false;
     }
 
+    /// <summary>La cara de arriba del hielo grueso en la vertical de <paramref name="p"/>.</summary>
+    static bool ThickTop(Vector3 p, out float top)
+    {
+        top = float.NegativeInfinity;
+        int n = Physics.RaycastNonAlloc(new Vector3(p.x, 8f, p.z), Vector3.down, _hits, 14f, ~0, QueryTriggerInteraction.Ignore);
+        for (int i = 0; i < n; i++)
+            if (_hits[i].point.y > -0.3f && _hits[i].collider.name != ThinIce && _hits[i].collider.GetComponentInParent<Anima>() == null && _hits[i].point.y > top) top = _hits[i].point.y;
+        return n > 0 && !float.IsNegativeInfinity(top);
+    }
+
     // Profundidad a la que nada por debajo de la placa (el lomo, 15 cm bajo su cara inferior).
     float UnderIceY => IceBottom - _halfH - 0.15f;
 
@@ -300,7 +310,9 @@ public class MarineLife : MonoBehaviour
                 if (ThickAbove(cur))   // (una aparición o un empujón lo dejó dentro: sale hacia la laguna, sin pasar por debajo)
                 {
                     Vector3 open = _visitor != null && _visitor.berg != null ? cur - _visitor.berg.transform.position : Home - cur; open.y = 0f;   // (a un visitante su hogar es el iceberg: hacia él se metía más; sale hacia fuera)
-                    np = cur + open.normalized * v * Time.deltaTime; np.y = cur.y;
+                    np = cur + open.normalized * v * Time.deltaTime;
+                    // Al despertar en su descansadero del casquete salía nadando POR DENTRO del hielo hasta el borde: va por encima y se tira al agua.
+                    np.y = _visitor == null && ThickTop(cur, out float top) ? top + _halfH : cur.y;
                 }
                 else if (ThickAbove(np) || ThickAbove(nose))
                 {

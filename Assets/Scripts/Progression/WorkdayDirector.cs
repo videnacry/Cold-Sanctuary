@@ -386,6 +386,8 @@ public class WorkdayDirector : MonoBehaviour
         if (Time.time - _postSince < _postCommute) return;   // [Jornada de Kushal] tiene un rato para llegar (andando / en alfombra)
         Vector3 pos = p.transform.position;
         if (InWorkspace(postMission, area, pos)) { _transitSince = -1f; return; }
+        // Va a comer: la barra y las mesas están fuera del área («Comida» en Cocina), y la Magnate lo traía a la Cocina a media comida.
+        if (doing == "Comida" && p.TryGetComponent(out ActionQueue pq) && pq.Own.Any(s => s is DineSpell)) { _transitSince = -1f; return; }
         // DE CAMINO (en un puente, en una pista, en alfombra, en una escalera): se le deja pasar un rato, que las tareas
         // de varias áreas obligan a cruzar; quedarse ahí no es trabajar.
         if (InTransit(p))
@@ -1075,7 +1077,7 @@ public class WorkdayDirector : MonoBehaviour
     /// (docs/hospital.md); en el resto (o si los puestos están llenos), un punto del área.</summary>
     static Vector3 WorkPoint(string area, string who)
     {
-        if (area == AreaWork.Hospital) { HospitalStation post = HospitalStation.PostFor(who); if (post != null) return post.StandPoint; }
+        if (area == AreaWork.Hospital) { HospitalStation post = HospitalStation.PostFor(who); if (post != null) return Clear(area, who, post.StandPoint, 0.12f); }   // (radio justo: pegado a la mesa es su sitio; dentro de ella, no)
         Vector3 p = AreaPoint(area, who);
         // Al NavMesh (como RestaurantService): la rejilla de puestos alrededor del centro del área caía a veces DENTRO de un
         // mueble (el «Bloque_Intercambiador» de la central) y se le iba a buscar atravesándolo (JornadaTest 2026-10-29).
@@ -1086,24 +1088,24 @@ public class WorkdayDirector : MonoBehaviour
 
     // Un puesto de la rejilla dentro de un mueble (29 alumnos en una clase del Hospital: «Quirofano 2», «Bloque_Microrreactor»): al sitio libre más cercano. Se recuerda: se pide por persona y frame.
     static readonly Dictionary<(string, string), (Vector3 raw, Vector3 free)> _clear = new Dictionary<(string, string), (Vector3, Vector3)>();
-    static bool Solid(Vector3 p)
+    static bool Solid(Vector3 p, float radius)
     {
-        foreach (Collider c in Physics.OverlapCapsule(p - Vector3.up * 0.4f, p + Vector3.up * 0.7f, 0.35f, ~0, QueryTriggerInteraction.Ignore))
+        foreach (Collider c in Physics.OverlapCapsule(p - Vector3.up * 0.4f, p + Vector3.up * 0.7f, radius, ~0, QueryTriggerInteraction.Ignore))
             if (c.GetComponentInParent<Anima>() == null) return true;
         return false;
     }
-    static Vector3 Clear(string area, string who, Vector3 p)
+    static Vector3 Clear(string area, string who, Vector3 p, float radius = 0.35f)
     {
         if (p == Vector3.zero) return p;
         var key = (area, who);
         if (_clear.TryGetValue(key, out var c) && (c.raw - p).sqrMagnitude < 0.04f) return c.free;
         Vector3 free = p;
-        if (Solid(p))
+        if (Solid(p, radius))
             for (int ring = 1; ring <= 3 && free == p; ring++)
                 for (int k = 0; k < 8; k++)
                 {
                     Vector3 q = p + Quaternion.Euler(0f, k * 45f, 0f) * Vector3.forward * (ring * 1.5f);
-                    if (!Solid(q) && UnityEngine.AI.NavMesh.SamplePosition(q + Vector3.down, out UnityEngine.AI.NavMeshHit nh, 0.8f, UnityEngine.AI.NavMesh.AllAreas)) { free = nh.position + Vector3.up; break; }
+                    if (!Solid(q, radius) && UnityEngine.AI.NavMesh.SamplePosition(q + Vector3.down, out UnityEngine.AI.NavMeshHit nh, 0.8f, UnityEngine.AI.NavMesh.AllAreas)) { free = nh.position + Vector3.up; break; }
                 }
         _clear[key] = (p, free);
         return free;
