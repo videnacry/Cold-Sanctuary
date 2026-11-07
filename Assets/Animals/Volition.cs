@@ -45,7 +45,10 @@ public class Volition : MonoBehaviour
         else if (Time.time >= _nextStep && _last != null && Continues(_last.key) && !self.asleep && !self.busy && !self.aware)
         {
             _nextStep = Time.time + 1f;
-            _last.Dispatch(self);
+            // Solo mientras lo siga sintiendo. Sin esto, ya en casa seguía «volviendo a casa» cada segundo, y al estar encima del sitio
+            // salía «no puede volver a casa» a 2 m de ella; y constaba como «quiere X y no se mueve» hasta la decisión siguiente.
+            if (_last.NeedProbe(self) > minNeed) _last.Dispatch(self);
+            else { _last = null; _lastScore = 0f; }
         }
 
         // Reflejo de amenaza (paridad con ActiveBehaveTick). LOD pleno: SenseThreats es O(n²), el mayor ahorro.

@@ -275,6 +275,7 @@ public static class DesireCatalog
     /// <summary>Contadores para el diagnóstico (viajes empezados, atascados, paseos sin sitio alcanzable).</summary>
     public static int TripsStarted, TripsStalled, StrollNoPick, Strolls;
 
+    static int _noPickLogs, _stallLogs;
     static Trip TripOf(Animal a, string key)
     {
         if (!_trips.TryGetValue(a, out Trip t)) _trips[a] = t = new Trip();
@@ -297,6 +298,7 @@ public static class DesireCatalog
         if (rem < t.best - 0.25f) { t.best = rem; t.bestAt = Time.time; }
         if (Time.time - t.bestAt > 5f || Time.time - t.since > 40f)                    // atascado o tope
         {
+            if (_stallLogs < 30) { _stallLogs++; Debug.Log($"[Fauna] «{self.name}» se atasca yendo a {t.goal} desde {self.transform.position}: quedan {rem:0.0} m, velocidad pedida {nav.speed:0.0}, real {nav.velocity.magnitude:0.0}, parado {nav.isStopped}, camino {nav.pathStatus}."); }
             t.going = false; t.failUntil = Time.time + 8f; TripsStalled++;
             nav.ResetPath();
             return false;
@@ -351,6 +353,7 @@ public static class DesireCatalog
             if (NavReach.Reachable(self, p, out Vector3 at) && Flat(at - here) >= minHop && !Detour(self, at, here)) { Walk(self, t, at); return; }
         }
         StrollNoPick++; t.pauseUntil = Time.time + 1f;   // nada alcanzable ahora: lo reintenta en un momento
+        if (_noPickLogs < 30 && self.nav != null) { _noPickLogs++; Debug.Log($"[Fauna] «{self.name}» ({key}) no encuentra adónde ir en {here}: agente tipo {self.nav.agentTypeID}, área {self.nav.areaMask}, nextPosition a {(self.nav.nextPosition - here).magnitude:0.00} m, velocidad {self.nav.speed:0.0}, en NavMesh {self.nav.isOnNavMesh}."); }
     }
 
     // ¿El camino hasta ese sitio da un RODEO (más del doble de la distancia recta + 1,5 m)? En el recinto de la Cría (la guarida,
@@ -399,10 +402,13 @@ public static class DesireCatalog
     static void GoHome(Animal self)
     {
         if (self.nav == null || !self.nav.isOnNavMesh) return;
+        // Ya en casa: Volition re-despacha el deseo cada segundo, y estando encima del sitio GoTo decía «no» y salía «no puede volver a casa» a 2 m de ella.
+        if (HomeNeed(self) <= 0f) return;
         float a = (self.GetHashCode() % 360) * Mathf.Deg2Rad;
         Vector3 spot = self.HomeOrigin + new Vector3(Mathf.Cos(a), 0f, Mathf.Sin(a)) * HomeZone(self) * 0.5f;
         if (GoTo(self, "homebound", spot)) return;
         Trip t = TripOf(self, "homebound");
+        if (Time.time < t.failUntil) return;   // (se acaba de atascar: lo reintenta; no es que no haya camino)
         if (Time.time >= t.failUntil && NavReach.PartialEnd(self, spot, out Vector3 end) && Flat(end - self.transform.position) > 2f) { Walk(self, t, end); return; }
         _homeBlocked[self] = Time.time + 90f;
         if (_homeLogs++ < 20) Debug.Log($"[Fauna] «{self.name}» no puede volver a casa desde ({self.transform.position.x:0},{self.transform.position.z:0}) (hogar en ({self.HomeOrigin.x:0},{self.HomeOrigin.z:0})): lo deja estar un rato.");
@@ -459,8 +465,9 @@ public static class DesireCatalog
     {
         Animal cub = CubNeed(self, out _);
         if (cub == null) return;
+        // A su lado se para: seguía re-apuntando a la cría, que a su vez la seguía a ella («heel»), y daban vueltas juntas (lobo: 25 m en 20 s para 0 netos).
+        if (Vector3.Distance(self.transform.position, cub.transform.position) <= 2.5f) { if (self.nav != null && self.nav.isOnNavMesh) self.nav.ResetPath(); FeedCub(self, cub); return; }
         if (self.nav != null && self.nav.isOnNavMesh) Move(self, cub.transform.position);
-        if (Vector3.Distance(self.transform.position, cub.transform.position) <= 2.5f) FeedCub(self, cub);
     }
 
     /// <summary>Cada toma: (madre o padre, cría). Para las escenas de ciclo de vida (la crianza vista, no supuesta).</summary>
