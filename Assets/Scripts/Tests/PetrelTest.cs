@@ -54,6 +54,10 @@ public class PetrelTest : MonoBehaviour, ITestUnit
         float t0 = Time.realtimeSinceStartup;
         while (!p.Perched && Time.realtimeSinceStartup - t0 < 25f) { if (an != null) an.hungry = -0.5f; yield return null; }
         TestProbe.Check("se posa en el iceberg", p.Perched, p.OnBerg != null ? p.OnBerg.name : "sin iceberg");
+        // Posado ENCIMA, no dentro: la jornada mira con una esfera de 0,12 m y lo veía «dentro de Iceberg_deriva» a y = 30.
+        yield return new WaitForSeconds(1.5f);
+        float clear = p.transform.position.y - (berg.transform.position.y + berg.size.y * 0.1f);
+        TestProbe.Check("posado sobre el hielo, no dentro de él", p.Perched && clear > 0.12f, $"{clear:0.00} m sobre la caja del iceberg");
         TestProbe.End();
     }
 }
