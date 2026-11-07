@@ -133,8 +133,22 @@ public class LoteEstatico : MonoBehaviour
         for (int i = 0; i < SceneManager.sceneCount; i++) Instance.StartCoroutine(Instance.AfterLoad(SceneManager.GetSceneAt(i)));
     }
 
-    void OnEnable() { SceneManager.sceneLoaded += Loaded; }
-    void OnDisable() { SceneManager.sceneLoaded -= Loaded; if (Instance == this) Instance = null; }
+    void OnEnable() { SceneManager.sceneLoaded += Loaded; SceneManager.sceneUnloaded += Unloaded; }
+    void OnDisable() { SceneManager.sceneLoaded -= Loaded; SceneManager.sceneUnloaded -= Unloaded; if (Instance == this) Instance = null; }
+
+    // UNA ESCENA QUE SE VA se lleva sus piezas y sus lotes, pero sus entradas se quedaban aquí: tras los 40 microcosmos, 44 307 lotes y 78 690 piezas casi
+    // todas muertas, y la barrida (1 ms por frame) tardaba en llegar a las vivas. Las mallas de esos lotes, además, no las libera nadie.
+    void Unloaded(Scene s)
+    {
+        foreach (Group g in _groups) if (g.go == null && g.mesh != null) { Destroy(g.mesh); g.mesh = null; }
+        _groups.RemoveAll(g => g.go == null);
+        _detail.RemoveAll(g => g.go == null);
+        _dirty.RemoveAll(g => g.go == null);
+        _all.RemoveAll(p => p.r == null);
+        _cursor = 0;
+        var goneMeshes = new List<Mesh>(); foreach (Mesh m in _meshes.Keys) if (m == null) goneMeshes.Add(m);
+        foreach (Mesh m in goneMeshes) _meshes.Remove(m);
+    }
     void Loaded(Scene s, LoadSceneMode mode) { StartCoroutine(AfterLoad(s)); }
 
     // Tras los Start de la escena (colocan percheros, encienden luces, montan cubos): espera acotada, en tiempo real.
