@@ -60,6 +60,7 @@ public class TestRunner : MonoBehaviour
             List<ITestUnit> group = new List<ITestUnit>();
             while (i < units.Count && units[i].Group == g) { group.Add(units[i]); i++; }
 
+            _scale = Time.timeScale; _maxDelta = Time.maximumDeltaTime;
             bool allParallel = group.Count > 1;
             foreach (ITestUnit u in group) if (!u.ParallelSafe) { allParallel = false; break; }
 
@@ -73,10 +74,21 @@ public class TestRunner : MonoBehaviour
             {
                 foreach (ITestUnit u in group) yield return StartCoroutine(u.Run());   // en serie
             }
+            Sanear(g);
         }
 
         TestProbe.Total();
         Running = false;
+    }
+
+    // LO QUE UN GRUPO DEJA MAL (una excepción en una corrutina se la salta su final): se dice y se deja como estaba, para que no lo pague el grupo siguiente.
+    float _scale, _maxDelta;
+    void Sanear(int group)
+    {
+        if (!Mathf.Approximately(Time.timeScale, _scale)) { Debug.LogError($"[TEST] FUGA del grupo {group}: Time.timeScale {Time.timeScale} (era {_scale})."); Time.timeScale = _scale; }
+        if (!Mathf.Approximately(Time.maximumDeltaTime, _maxDelta)) { Debug.LogError($"[TEST] FUGA del grupo {group}: maximumDeltaTime {Time.maximumDeltaTime} (era {_maxDelta})."); Time.maximumDeltaTime = _maxDelta; }
+        WorkdayDirector wd = FindAnyObjectByType<WorkdayDirector>(FindObjectsInactive.Include);
+        if (wd != null && !wd.enabled) { Debug.LogError($"[TEST] FUGA del grupo {group}: la jornada se quedó apagada."); wd.enabled = true; }
     }
 }
 }

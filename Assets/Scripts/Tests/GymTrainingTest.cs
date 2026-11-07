@@ -231,11 +231,13 @@ public class GymTrainingTest : MonoBehaviour, ITestUnit
         TestProbe.Check("hay 3 personas y el entrenador para la parte en vivo", people.Count >= 3 && trainer != null, $"{string.Join(", ", people.Select(p => p.name))} · entrenador {(trainer != null ? trainer.name : "—")}");
         if (people.Count < 1) yield break;
 
+        // (Las rutinas, ANTES de tocar nada: una excepción aquí dejaba la jornada apagada, el reloj a ×speed y a estos tres sujetos para el resto de la batería.)
+        GymProgramming.ResetAll();
+        var routines = people.Select(g => Short(g.name)).ToList();
         bool wdWas = wd != null && wd.enabled; if (wd != null) wd.enabled = false;
         float oldScale = Time.timeScale; Time.timeScale = speed;
-        GymProgramming.ResetAll();
         var held = people.Concat(trainer != null ? new[] { trainer } : new GameObject[0]).Select(Hold).ToList();
-        var sessions = people.Select(g => new GymTrainingSession(g, Short(g.name), budget)).ToList();
+        var sessions = people.Select((g, i) => new GymTrainingSession(g, routines[i], budget)).ToList();
 
         // La máquina del primer ejercicio de la primera persona: TODAS sus copias ocupadas al empezar.
         GymMachineType busyType = sessions[0].routine.Main.First().station;

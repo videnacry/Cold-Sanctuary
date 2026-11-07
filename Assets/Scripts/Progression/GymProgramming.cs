@@ -231,6 +231,7 @@ public static class GymProgramming
     /// <summary>El plan de <paramref name="who"/> (lo escribe la primera vez; null si no puede tener plan).</summary>
     public static TrainingPlan For(string who, int day = 0)
     {
+        if (who != null && who.EndsWith("_Post")) who = who.Substring(0, who.Length - 5);   // (el cuerpo en la escena se llama «Goluis_Post»: sin esto, los de puesto no tenían plan y nunca iban a las máquinas)
         if (!Eligible(who)) return null;
         if (_plans.TryGetValue(who, out TrainingPlan p)) return p;
         Profile pr = _profiles.TryGetValue(who, out Profile f) ? f : P(TrainingSplit.CuerpoEntero, TrainingGoal.Salud, 0.7f, "Sin perfil: cuerpo entero 3 d de salud.", 0, 2, 4);
