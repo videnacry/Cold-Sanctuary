@@ -615,9 +615,12 @@ public class WorkdayDirector : MonoBehaviour
     public int EvacuateSite()
     {
         int left = 0;
-        foreach (WorkRoster.Worker w in roster.workers)
+        // (Ronda 30) TODO el personal de la lista, en la rotación o no (aún sin iniciar, o de otro santuario y aquí de paso): nadie se queda en la zona.
+        var seen = new HashSet<string>();
+        foreach (string name in staff.Concat(roster.workers.Select(x => x.name)))
         {
-            GameObject g = Body(w.name);
+            if (!seen.Add(name)) continue;
+            GameObject g = Body(name);
             if (g == null || (!NuclearSiteRule.InZone(g.transform.position) && !SiteLine.IsAway(g))) continue;
             left++;
             if (SiteLine.IsAway(g)) continue;   // (ronda 30) trabajaba abajo: la Línea lo sube ya (SiteLine.Work vuelve en cuanto hay emergencia) y sale a la pista

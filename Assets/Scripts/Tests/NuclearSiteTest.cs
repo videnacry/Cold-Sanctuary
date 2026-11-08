@@ -84,25 +84,40 @@ public class NuclearSiteTest : MonoBehaviour, ITestUnit
         bool wasScrammed = rr == null || rr.scrammed;
         ns.Drill("prueba");
         TestProbe.Check("el simulacro prueba el plan sin parar nada y lo deja como estaba", ns.Drills == d0 + 1 && ns.State == NuclearSite.Alert.Normal && !ns.ValvesOpen && (rr == null || rr.scrammed == wasScrammed));
-        // EVACUACIÓN: alguien del personal en la estación (desde donde se trabaja la planta); la emergencia lo tiene que sacar de la zona.
+        // EVACUACIÓN (ronda 30): alguien del personal TRABAJANDO ABAJO en la Central: espera en la pista de la estación, baja por la Línea (oculto, sin cargar la
+        // escena) y entonces se declara la emergencia. Tiene que contar como en la zona, subir y salir de ella. Se elige de la lista del personal (con o sin
+        // rotación: una prueba sola, sin la jornada antes, no tiene a nadie en ella).
         WorkdayDirector wd = WorkdayDirector.Instance;
-        GameObject evac = wd != null ? wd.roster.workers.Select(w => WorkdayDirector.Body(w.name)).FirstOrDefault(g => g != null && !g.CompareTag("Player") && !RestaurantService.Drives(g) && g.GetComponent<Anima>() != null) : null;
+        GameObject evac = WorkdayDirector.Staff.Select(WorkdayDirector.Body).FirstOrDefault(g => g != null && g.activeInHierarchy && !g.CompareTag("Player") && !RestaurantService.Drives(g) && g.GetComponent<Anima>() != null);
         Vector3 back = evac != null ? evac.transform.position : Vector3.zero;
-        if (evac != null) WorkdayDirector.Teleport(evac.transform, WorkdayDirector.AreaPoint(NuclearSite.PowerArea, evac.name));
+        bool below = false;
+        if (evac != null)
+        {
+            WorkdayDirector.Teleport(evac.transform, WorkdayDirector.AreaPoint(NuclearSite.PowerArea, evac.name));
+            SiteLine.Note(evac, NuclearSite.PowerArea);
+            below = SiteLine.BoardWork(evac);
+            yield return null;
+            below &= SiteLine.IsAway(evac);
+        }
+        TestProbe.Check("hay alguien del personal trabajando abajo, en la Central (en la estación, bajado por la Línea)", wd != null && evac != null && below, evac != null ? $"«{evac.name}»: abajo {below}" : "nadie del personal en la escena");
         ns.DeclareEmergency("prueba");
         TestProbe.Check("EMERGENCIA: reactor parado, válvulas abiertas y balizas encendidas, sin nadie", ns.State == NuclearSite.Alert.Emergencia && ns.ValvesOpen && (rr == null || rr.scrammed) && ns.beacons.All(b => b.activeSelf));
-        if (evac == null) TestProbe.Check("hay alguien del personal para evacuar", false);
-        else
+        if (evac != null && below)
         {
-            bool started = ns.EvacueesLeft > 0;
+            bool counted = ns.EvacueesLeft > 0;
             float oldTs = Time.timeScale; Time.timeScale = 4f;
-            float te = Time.time, re = Time.realtimeSinceStartup;
-            while ((NuclearSiteRule.InZone(evac.transform.position) || SiteLine.IsAway(evac)) && Time.time - te < 300f && Time.realtimeSinceStartup - re < 300f) yield return null;
+            float te = Time.time, re = Time.realtimeSinceStartup, upAt = -1f;
+            while ((NuclearSiteRule.InZone(evac.transform.position) || SiteLine.IsAway(evac)) && Time.time - te < 300f && Time.realtimeSinceStartup - re < 300f)
+            {
+                if (upAt < 0f && !SiteLine.IsAway(evac)) upAt = Time.time - te;
+                yield return null;
+            }
             Time.timeScale = oldTs;
-            TestProbe.Check("EVACUACIÓN: la emergencia saca de la zona a quien trabajaba en la Central", started && !NuclearSiteRule.InZone(evac.transform.position), $"«{evac.name}»: {ns.EvacueesLeft} en la zona al último recuento; {Time.time - te:0} s de juego; a {Flat(evac.transform.position, NuclearSiteRule.Center):0} m del sitio");
+            TestProbe.Check("la emergencia cuenta a quien estaba abajo, lo sube por la Línea y lo saca de la zona", counted && upAt >= 0f && !SiteLine.IsAway(evac) && !NuclearSiteRule.InZone(evac.transform.position),
+                $"«{evac.name}»: contado {counted}; arriba a los {upAt:0} s; fuera a los {Time.time - te:0} s de juego; a {Flat(evac.transform.position, NuclearSiteRule.Center):0} m del sitio");
         }
         ns.ClearEmergency();
-        if (evac != null) WorkdayDirector.Teleport(evac.transform, back);
+        if (evac != null) { SiteLine.Note(evac, null); WorkdayDirector.Teleport(evac.transform, back); }
         TestProbe.Check("el tiempo libre no va al sitio nuclear", LeisureDirector.OpenArea(NuclearSite.PlantArea, ns.gameObject.scene) == null && LeisureDirector.OpenArea(NuclearSite.PowerArea, ns.gameObject.scene) == null);
         TestProbe.Check("fin de la emergencia: todo vuelve a normal", ns.State == NuclearSite.Alert.Normal && !ns.ValvesOpen && ns.beacons.All(b => !b.activeSelf));
 
