@@ -256,7 +256,11 @@ public class NuclearAccessTest : MonoBehaviour, ITestUnit
             string[] kit = { "Esclusa_refugio", "Botella_oxigeno", "Deposito_agua", "Depurador_CO2", "Baterias_refugio", "Telefono_fibra", "Radio_traves_roca", "Osmosis_inversa", "Electrolizador", "Depurador_amina", "Sondeo_mar", "Perforadora_sondeos", "Preventor_sondeo", "Despensa_refugio", "Estante_hidroponia", "Panel_espirulina", "Deposito_abono", "Cable_reactor" };
             var noKit = rf != null ? kit.Where(k => Named(rf, k) == null).ToList() : kit.ToList();
             TestProbe.Check("el refugio, entero y centrado en el pilar", rf != null && noKit.Count == 0 && Mathf.Abs(rf.position.z - Named(m, "Estacion_inferior").position.z) < 0.5f, string.Join(", ", noKit));
-            TestProbe.Check("pocas piezas: la escena no pesa", m.GetComponentsInChildren<Transform>(true).Length < 2000, $"{m.GetComponentsInChildren<Transform>(true).Length} objetos");
+            // (2026-11-08, docs/sitio-nuclear.md §25) La planta nuclear vive aquí desde la ronda 28 («Planta_nuclear_marina»): sus piezas salieron del santuario 1 (su árbol y sus pisos), no son nuevas.
+            // El tope de siempre vale para lo de las cavernas; la planta tiene el suyo, el de los pisos que eran del árbol del sitio.
+            Transform plantRoot = Named(m, "Planta_nuclear_marina");
+            int all = m.GetComponentsInChildren<Transform>(true).Length, plantN = plantRoot != null ? plantRoot.GetComponentsInChildren<Transform>(true).Length : 0;
+            TestProbe.Check("pocas piezas: la escena no pesa (las cavernas, < 2000; la planta, < 2500)", all - plantN < 2000 && plantN < 2500, $"{all} objetos: cavernas {all - plantN}, planta {plantN}");
             TestProbe.Check("no toca nada de arriba: el santuario 1 sigue igual", ns != null && SiteLine.Instance == line && SceneManager.GetActiveScene() == active0 && ns.gameObject.scene == active0);
             AsyncOperation un = SceneManager.UnloadSceneAsync(SiteLine.MarineScene);
             float ru = Time.realtimeSinceStartup;

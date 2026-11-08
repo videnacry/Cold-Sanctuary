@@ -18,6 +18,7 @@ public static partial class SampleSceneBuilder
     /// <summary>Paso entre una sala y la siguiente (m): las puertas de las áreas (abiertas a +Z) dan a él. Más de 2 personas y un carro.</summary>
     const float MarineHallGap = 8f;
     const int MarineHallsPerRow = 3;
+    public const string MarinePlantRoot = "Planta_nuclear_marina";
 
     /// <summary>El siguiente piso de la planta, en su sala: de oeste a este en la fila, y la fila siguiente al norte.</summary>
     static Vector2 MarineFloor(Transform floor)
@@ -37,6 +38,8 @@ public static partial class SampleSceneBuilder
     /// Devuelve su planta (para el suelo y los límites de la escena).</summary>
     static Rect BuildMarinePlant(Transform root, Vector3 at, float floorY, float xStart)
     {
+        // Toda la planta bajo una raíz propia («Planta_nuclear_marina»): sus salas, cavernas, columnas y vigas (se cuenta y se fotografía aparte).
+        Transform plantRoot = new GameObject(MarinePlantRoot).transform; plantRoot.SetParent(root, false); root = plantRoot;
         _marineFloors = true; _marineHalls.Clear();
         _marineFloorY = floorY; _marineStartX = _marineCursorX = xStart; _marineRowZ = at.z; _marineInRow = 0;
         _towerHelix = null; _towerTop = null; _towerSize = NuclearSize; _towerCenter = new Vector3(xStart, floorY, at.z);
