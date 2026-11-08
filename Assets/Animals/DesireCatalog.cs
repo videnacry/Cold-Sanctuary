@@ -293,6 +293,9 @@ public static class DesireCatalog
         NavMeshAgent nav = self.nav;
         if (nav == null || !nav.isOnNavMesh) { t.going = false; return false; }
         if (nav.pathPending) { if (Time.time - t.since > 3f) { t.going = false; t.failUntil = Time.time + 4f; TripsStalled++; nav.ResetPath(); return false; } return true; }   // (camino que no llega a calcularse: tope)
+        // Con camino y sin velocidad: una pausa (Idle, velocidad 0) de otra conducta, como «no alcanza comida; descansa», le dejaba quieto con
+        // el viaje en marcha hasta darlo por atascado (osos, lobos, crías: «velocidad pedida 0,0 … sin WalkSpell»). Quien lleva el viaje, anda.
+        if (nav.hasPath && nav.speed < 0.05f && !self.busy) self.Loco?.SetGait(false, 0.1f);
         float rem = nav.hasPath ? Remaining(nav) : 0f;
         if (rem <= nav.stoppingDistance + 0.35f) { t.going = false; return false; }   // llegó
         if (rem < t.best - 0.25f) { t.best = rem; t.bestAt = Time.time; }
