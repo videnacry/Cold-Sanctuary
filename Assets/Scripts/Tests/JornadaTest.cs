@@ -572,7 +572,9 @@ public class JornadaTest : MonoBehaviour, ITestUnit
                 _shiftSamples++;
                 bool plausible = atPost || riding || handled || asleep || needs;
                 if (plausible || heading) _shiftPlausible++;
-                if (cur != null && !tr.player && !heading) { _shift.TryGetValue(cur, out Vector2 v); v.y++; if (atPost) v.x++; _shift[cur] = v; }
+                // (Ronda 28) En alfombra va de camino: ni dentro ni fuera de su puesto (Linduarda 0 % en los paneles solares y Lizmibet 29 % en la
+                // vigilancia radiológica, los dos sitios más lejos, contaban el vuelo como ausencia). La muestra «razonable» de abajo sí lo cuenta.
+                if (cur != null && !tr.player && !heading && !riding) { _shift.TryGetValue(cur, out Vector2 v); v.y++; if (atPost) v.x++; _shift[cur] = v; }
                 if (doing != null && doing.StartsWith("Entrenamiento:") && h >= WorkRoster.StartHour + 6f) { _training.TryGetValue(tr.name, out Vector2 v); v.y++; if (atPost) v.x++; _training[tr.name] = v; }
                 if (plausible) tr.offSince = -1f; else if (tr.offSince < 0f) tr.offSince = now;
                 if (full && !plausible && path < 0.5f && now - tr.offSince >= 20f)   // 20 s FUERA y quieto (no al cambiar de puesto)
