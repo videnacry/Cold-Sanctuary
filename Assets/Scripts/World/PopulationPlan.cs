@@ -33,6 +33,13 @@ public static class PopulationPlan
     /// y los bancos y plantas son los de la construcción). <see cref="Humans"/> cuenta personas (comidas, verdura, prendas). docs/hielo-y-respiraderos.md.</summary>
     public const int FaunaScale = 11;
 
+    /// <summary>(2026-11-08) LAS PERSONAS QUE VIVEN EN EL SANTUARIO según su lista de personal (<see cref="WorkdayDirector.Staff"/>), más la Magnate y el
+    /// recién llegado: 32. No depende de quién está ya iniciado: el O₂ (<see cref="FotobioFacade"/>) y la verdura (<see cref="VerticalFarm"/>) se dimensionan
+    /// para todos, al construir y en juego.</summary>
+    public static int PlannedPeople => WorkdayDirector.Staff.Length + 2;
+    /// <summary>Lo mayor de la plantilla en juego (<see cref="Humans"/>) y la planeada.</summary>
+    public static int People => Mathf.Max(Humans, PlannedPeople);
+
     /// <summary>Cuántos individuos le tocan a la especie (mínimo 2, para que pueda haber pareja).</summary>
     public static int Target(string species) { FoodChain.Evaluate(); return Raw(species); }
 

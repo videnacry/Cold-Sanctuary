@@ -56,7 +56,8 @@ public static class ProductionAudit
             new Stage("perfusión con andamio", "Biorreactor_andamio", CulturedMeatLab.ScaffoldKg),
             new Stage("centrífugas", "Centrifuga", 40f), new Stage("formadoras", "Formadora", 40f) } },
         new Line { area = "Cocina", product = "comidas", unit = "comidas", demand = () => PopulationPlan.Humans * 3f, stages = new[] { new Stage("equipos de cocina", "Equipo_", 10f) } },
-        new Line { area = "Huerto", product = "verdura", unit = "kg", demand = () => PopulationPlan.Humans * 0.8f, custom = () => Object.FindObjectsByType<GardenPlot>(FindObjectsInactive.Include, FindObjectsSortMode.None).Sum(p => p.size.x * p.size.y) * 3f / 365f },
+        // (2026-11-08) Para las 32 personas planeadas (PopulationPlan.People): los bancales del Árbol y los estantes LED del Huerto vertical (VerticalFarm).
+        new Line { area = "Huerto", product = "verdura", unit = "kg", demand = () => VerticalFarm.DemandKgDay, custom = () => VerticalFarm.FieldsKgDay() + VerticalFarm.CapacityKgDay(), customLabel = "bancales y estantes LED" },
         new Line { area = "Estudio Textil", product = "prendas", unit = "prendas", demand = () => PopulationPlan.Humans * 6f / 365f, stages = new[] { new Stage("telares", "Telar_", 0.5f) } },
         // Lo que el reactor da todo el día contra lo que piden los pisos en su punta (FloorEnergy; la regla completa, con paneles y baterías, es EnergyRule.Check).
         new Line { area = "Energía", product = "electricidad en punta", unit = "kWh", demand = () => EnergyRule.DemandKW() * EnergyRule.PeakFactor * 24f, custom = () => EnergyRule.ReactorKW * 24f, customLabel = "reactor de 5 MWe" },
