@@ -90,6 +90,21 @@ public class GlassWallTest : MonoBehaviour, ITestUnit
         TestProbe.Check("MicroBuildRules: el cristal no cuenta como muro, pero un mueble a < 2 m de él sí incumple el paso; a 2 m, nada", noWall && passage && r2.Count == 0,
             $"cama a ~0,6 m: [{string.Join("; ", r1.Take(3))}] · en el centro (2,2 m): [{string.Join("; ", r2.Take(3))}]");
         Destroy(scope.gameObject);
+
+        // EL SITIO DE CADA PUESTO MÉDICO (ronda 27: David ×14 dentro de «Quirofano veterinario 4», Yulo ×7 en el 3): el centro del cuerpo, de pie
+        // y al inclinarse 0,25 m hacia la mesa, fuera de todo collider que no sea una persona o un animal.
+        var badPost = new List<string>();
+        foreach (HospitalStation st in HospitalStation.All)
+        {
+            if (st == null || !st.doctorPost) continue;
+            Vector3 p = st.ClearStandPoint, lean = p + HospitalStation.Flat(st.transform.position - p).normalized * 0.25f;
+            foreach (Vector3 q in new[] { p, lean })
+            {
+                string hit = HospitalStation.SolidAt(q, 0.12f);
+                if (hit != null) { badPost.Add($"{st.name}: {(q == p ? "de pie" : "inclinado")} en «{hit}»"); break; }
+            }
+        }
+        TestProbe.Check("cada puesto médico deja el cuerpo fuera de todo mueble, de pie e inclinado hacia la mesa", badPost.Count == 0, string.Join("; ", badPost.Take(6)));
         TestProbe.End();
     }
 
