@@ -180,7 +180,15 @@ public class WorkdayDirector : MonoBehaviour
 
     void Update()
     {
-        if (TC == null || ColdSanctuary.TestRunner.Running) return;   // las pruebas usan a los personajes
+        if (ColdSanctuary.TestRunner.Running)   // las pruebas usan a los personajes
+        {
+            // Con cualquier arnés (también el que pone Running sin pasar por TestRunner.Start): nadie apagado en otro santuario (salvo la prueba
+            // del apagado, InTests) y el alimentador de la batería.
+            if (RemoteStaff.Count > 0 && !RemoteStaff.InTests) RemoteStaff.RestoreAll();
+            ColdSanctuary.TestRunner.FeedBetween();
+            return;
+        }
+        if (TC == null) return;
         float h = TC.Hour; int day = TC.Day;
         if (_breakfastDay != day && h >= BreakfastHour && h < BreakfastEnd) Breakfast(day);
         if (plannedDay != day && h >= PlanFrom && h < WorkRoster.StartHour + 8f) PlanDay(day);

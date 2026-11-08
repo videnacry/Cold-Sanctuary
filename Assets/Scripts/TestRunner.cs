@@ -62,7 +62,7 @@ public class TestRunner : MonoBehaviour
         while (i < units.Count)
         {
             int g = units[i].Group;
-            _groupNow = g;
+            _groupNow = g; CurrentGroup = g;
             List<ITestUnit> group = new List<ITestUnit>();
             while (i < units.Count && units[i].Group == g) { group.Add(units[i]); i++; }
 
@@ -93,11 +93,21 @@ public class TestRunner : MonoBehaviour
     // Entre grupos no bastaba: un grupo largo dejaba a los osos con hambre 45 y sin masa («Servicio del restaurante en vivo»). Cada 5 s reales; no en la jornada (50), que
     // lleva a su alimentador de verdad, ni en la prueba del alimentador (105), que necesita a los animales con hambre.
     int _groupNow;
+    /// <summary>El grupo que corre ahora (0 si las unidades las lanza otro arnés, como SoloGrupos).</summary>
+    public static int CurrentGroup { get; private set; }
+    static float _fedAt = -999f;
+    /// <summary>El alimentador de la batería, cada 5 s reales, lo llame quien lo llame (esta corrutina o, con otro arnés que pone Running sin pasar por
+    /// Start, WorkdayDirector.Update: con SoloGrupos los osos adultos morían de hambre, 43–46, en el primer grupo largo de cada tanda).</summary>
+    public static void FeedBetween()
+    {
+        if (!Running || CurrentGroup == 50 || CurrentGroup == 105 || Time.realtimeSinceStartup - _fedAt < 5f) return;
+        _fedAt = Time.realtimeSinceStartup; Alimentar();
+    }
     IEnumerator Alimentador()
     {
         while (Running)
         {
-            if (_groupNow != 50 && _groupNow != 105) Alimentar();
+            FeedBetween();
             yield return new WaitForSecondsRealtime(5f);
         }
     }
