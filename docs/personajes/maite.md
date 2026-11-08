@@ -42,7 +42,7 @@
 ## 7. Relaciones
 
 - Pareja de Josedrilo; comparten casa. *documentada · Berón 2026-11-04 · [personajes-mesocosmos.md §Profesiones y parejas](../personajes-mesocosmos.md) · [ResidentialBuilder.cs:44](../../Assets/Editor/ResidentialBuilder.cs#L44)*
-- Con Amykhuz, el otro jefe de cocina. *documentada · ídem*
+- Con Amykhuz, el otro jefe de cocina: los dos tienen hoy los rangos más altos de la cocina; Goluis es el encargado. *documentada · ídem · Berón 2026-11-08*
 - Familia: **Falta**.
 
 ## 8. Horario y costumbres

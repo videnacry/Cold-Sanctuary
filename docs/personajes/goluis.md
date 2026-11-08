@@ -39,14 +39,14 @@
 
 ## 5. Profesión y lo que sabe hacer
 
-- Jefe de cocina, según su ficha y [world-simulation.md](../world-simulation.md) («Cocina. Dominio de Goluis»). *recreada, sin base de Berón: `Professions.Unconfirmed` · [Professions.cs:147](../../Assets/Scripts/Progression/Professions.cs#L147)*
-- Berón nombró jefes de cocina a Maite y Amykhuz; Goluis **no tiene entrada en `Professions.All`**. *documentada · [reglas-personajes.md §Auditoría](../reglas-personajes.md)*
+- **Encargado de la cocina**; hoy los rangos más altos de la cocina son los de Maite y Amykhuz. *documentada · Berón 2026-11-08 (respuesta a esta ficha)*. Su ficha vieja y [world-simulation.md](../world-simulation.md) («Cocina. Dominio de Goluis») lo hacían jefe; el código aún lo lleva como pendiente en `Professions.Unconfirmed` ([Professions.cs:147](../../Assets/Scripts/Progression/Professions.cs#L147)).
+- Goluis **aún no tiene entrada en `Professions.All`** ni base en `Professions.Basis`. *código · [Professions.cs:28](../../Assets/Scripts/Progression/Professions.cs#L28)*
 - Sabe toda la cocina y la enseña a los recién llegados (sígueme → limpiar → recetas). *código · [KitchenBoss.cs:4](../../Assets/Scripts/World/KitchenBoss.cs#L4) · [kitchen-simulation.md §1](../kitchen-simulation.md)*
 - Fue el primer entrenador del gimnasio unas horas del 2026-11-04. *código · [GymProgramming.cs:29](../../Assets/Scripts/Progression/GymProgramming.cs#L29) · [gimnasio-maquinas.md §15.5](../gimnasio-maquinas.md)*
 
 ## 6. Puesto y áreas
 
-- Sale en la Cocina, con el rótulo «Goluis (jefe de cocina)». *código · [SanctuaryDirector.cs:159](../../Assets/Scripts/World/SanctuaryDirector.cs#L159) · [SampleSceneBuilder.cs:2781](../../Assets/Editor/SampleSceneBuilder.cs#L2781)*
+- Sale en la Cocina, con el rótulo «Goluis (jefe de cocina)», que ya no es correcto: es encargado (Berón 2026-11-08). *código · [SanctuaryDirector.cs:159](../../Assets/Scripts/World/SanctuaryDirector.cs#L159) · [SampleSceneBuilder.cs:2781](../../Assets/Editor/SampleSceneBuilder.cs#L2781)*
 - En la brigada del restaurante, en la línea con Maite y Amykhuz. *recreada · [personajes-mesocosmos.md §La jornada](../personajes-mesocosmos.md)*
 - En la jornada rota como todos (J30); sin profesión, no tiene ronda propia.
 
@@ -85,7 +85,7 @@
 
 ## 11. Preguntas para Berón
 
-1. ¿Sigue de jefe de cocina, ahora que Maite y Amykhuz son los jefes? Si no, ¿qué profesión tiene?
+1. ~~¿Sigue de jefe de cocina?~~ Contestado (2026-11-08): es encargado; Maite y Amykhuz tienen los rangos más altos. ¿Qué hace un encargado que no hagan los demás (turnos, pedidos, la iniciación de la cocina)?
 2. ¿Su nacionalidad?
 3. ¿Su hija está en el santuario o en algún sitio del juego?
 4. ¿Es verdad que estuvo en los cierres de Five Guys con Leo, y desde cuándo está en el santuario?

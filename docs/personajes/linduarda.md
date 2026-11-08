@@ -71,6 +71,7 @@
 - En los microcosmos es una **luciérnaga** (las médicas: la luz). *recreada · [microcosmos-civilizaciones.md](../microcosmos-civilizaciones.md)*
 - Encarga misiones a Kushal en el Microcosmos: limpiar los conductos de una máquina, investigar hongos, extraer un cabello de cada pelotero, recuperar la semilla de la rueda. *recreada · [microcosmos-eras-and-observation.md](../microcosmos-eras-and-observation.md) · [microcosmos-dungbeetle-level.md §3 y §4](../microcosmos-dungbeetle-level.md) · [novela.md](../novela.md)*
 - Nivel: hechicera de nivel 4. Berón (2026-11-08) cree que los creados **antes** de Linduarda, Irosene y Lizmibet son de santuario 1, nivel 1. *documentada (nota de Berón)*. Su santuario y su nivel exactos: **Falta**.
+- **Recuerdo de Berón, por confirmar** (2026-11-08): Linduarda vive en el santuario 3 o en uno más alto. *documentada ⚠️*
 
 ## 10. En el código
 
@@ -92,5 +93,5 @@
 4. ¿Le damos una entrada de profesión (médica) con su base, como a Ivelyna y Malena? Hoy le tocan obras y no hace consultas por profesión.
 5. ¿Debe iniciar ella a los recién llegados también en la jornada, como cuentan su ficha y la novela, o vale el de turno (J5, J32)?
 6. ¿La fotografía y la arquitectura deben ser actividades de su horario libre?
-7. ¿En qué santuario y nivel está (regla del 2026-11-08)?
+7. ¿En qué santuario y nivel está? Berón recuerda (2026-11-08) el santuario 3 o uno más alto: ¿cuál, y qué nivel?
 8. ¿Su ropa es el pijama sanitario de la captura? Un comentario viejo de [CubeHair.cs:149](../../Assets/Scripts/Avatar/CubeHair.cs#L149) dice «bata blanca».

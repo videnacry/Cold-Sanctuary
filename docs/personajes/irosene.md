@@ -61,7 +61,7 @@
 - **Lizmibet**: su gran amiga, de su misma edad y nivel; probable consuegra. *documentada, consuegra ⚠️ · [character-irosene.md §Relaciones](../character-irosene.md)*
 - **Leo**: su nieto, que las trajo al santuario y está en el último nivel. *documentada · ídem*
 - Una hija «Alicia», exesposa de Josedrilo; Josedrilo, padre de Leo. *documentada ⚠️ · ídem*. Ver la pregunta 3.
-- Un primer esposo, «Néstor». *documentada · [character-irosene.md §Historia](../character-irosene.md)*. Ver la pregunta 3.
+- Un primer esposo, «Néstor»: es **Nesvitor**, del santuario (Berón 2026-11-08). *documentada · [character-irosene.md §Historia](../character-irosene.md)*. Ver §Solo documentación.
 - Sus hijos y la relación con ellos: ficha larga, con ⚠️ y tema delicado. *documentada ⚠️ · [character-irosene.md §Relaciones](../character-irosene.md)*
 - Con Panterilia: la visita en la limpieza. *documentada · [character-irosene.md §Lugar en el santuario](../character-irosene.md)*
 
@@ -75,6 +75,7 @@
 - En los microcosmos es una **araña**: tejedora, por el textil. *recreada · [microcosmos-civilizaciones.md](../microcosmos-civilizaciones.md)*
 - Su nivel, según cada doc: Tier 4, «nivel submarino», jardín submarino ([character-irosene.md §Lugar](../character-irosene.md), [area-missions-spec.md §UnderwaterGarden](../area-missions-spec.md)); «3er santuario V1» ([soul-composition-blend.md](../soul-composition-blend.md)); de las antiguas, llega con hechizos potentes ([world-topology-and-planes.md](../world-topology-and-planes.md)). En el juego vive en el santuario 1 con todos.
 - Berón (2026-11-08): los creados antes de Linduarda, Irosene y Lizmibet serían de santuario 1, nivel 1. *documentada (nota de Berón)*
+- **Recuerdo de Berón, por confirmar** (2026-11-08): Irosene y Lizmibet se pensaron con la magia de santuario 3, nivel 1, pero empiezan en el santuario 2. *documentada ⚠️*
 - Su cuerpo es el que copian las pruebas para pacientes y donantes. *código · [BloodBankTest.cs:55](../../Assets/Scripts/Tests/BloodBankTest.cs#L55)*. Y es turista del restaurante ([RestaurantService.cs:571](../../Assets/Scripts/Kitchen/RestaurantService.cs#L571)).
 
 ## 10. En el código
@@ -95,8 +96,20 @@
 
 1. ¿Es ecuatoriana? La ficha larga dice que voló desde Ecuador, pero no su nacionalidad.
 2. ¿Confirma los ⚠️ de su historia? ¿Cuánto de la parte delicada (la violencia en su familia) debe salir en el juego, y con qué tono?
-3. Su ficha nombra a un primer esposo «Néstor», a una hija «Alicia», exesposa de Josedrilo, y a Lizmibet como consuegra. En el santuario están Nesvitor «Néstor», Alicita «Alicia», Josedrilo y Lizmibet. ¿Son las mismas personas o solo coinciden los nombres?
+3. Su ficha nombra a una hija «Alicia», exesposa de Josedrilo, y a Lizmibet como consuegra. En el santuario están Alicita «Alicia», Josedrilo y Lizmibet. ¿Son las mismas personas? (Néstor ya está contestado: es Nesvitor.)
 4. ¿Fausto es alguien de su historia? La ficha larga habla de un sobrino de Néstor que acabaría siendo su pareja ⚠️.
-5. ¿En qué santuario y nivel está? Los docs dicen Tier 4 (submarino), «3er santuario V1» y, por la regla del 2026-11-08, por encima de santuario 1, nivel 1.
+5. ¿En qué santuario y nivel está? Los docs dicen Tier 4 (submarino) y «3er santuario V1»; Berón recuerda (2026-11-08) que se pensó con la magia de santuario 3, nivel 1, y empieza en el santuario 2. ¿Lo confirma?
 6. ¿Deben estar en su horario libre el karaoke, correr, escalar o bucear? ¿Y sus remedios naturales, en la farmacia o el huerto?
 7. ¿Escribimos sus diálogos (los tres `DialogueSequence` están vacíos) a partir de sus dichos documentados?
+
+## Solo documentación, no mostrar en el juego
+
+> Nombres reales (Berón 2026-11-08): **se documentan, pero el juego no los muestra nunca** (ni rótulos, ni diálogos, ni la interfaz). Ver la regla P24 del [manual](../manual-de-diseno.md) §9.1.
+
+| En el juego | Nombre real | Fuente |
+|---|---|---|
+| Irosene | Irene | Berón 2026-11-08 |
+| Nesvitor | Néstor: el primer esposo de su historia ([character-irosene.md §Historia](../character-irosene.md)) | Berón 2026-11-08 |
+
+- Que Alicita sea la hija «Alicia» de su historia **no está confirmado** (pregunta 3).
+- Ojo: Irosene y su primer esposo viven los dos en el santuario. Su historia juntos es delicada; no debe salir en el juego sin que Berón decida cómo.

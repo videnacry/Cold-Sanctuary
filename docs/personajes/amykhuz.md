@@ -28,7 +28,7 @@
 
 ## 5. Profesión y lo que sabe hacer
 
-- Profesional de cocina y química; jefe de cocina con Maite. *documentada · Berón 2026-11-04 · [personajes-mesocosmos.md §Profesiones y parejas](../personajes-mesocosmos.md) · [Professions.cs:125](../../Assets/Scripts/Progression/Professions.cs#L125)*
+- Profesional de cocina y química; jefe de cocina con Maite; hoy los dos tienen los rangos más altos de la cocina y Goluis es el encargado (Berón 2026-11-08). *documentada · Berón 2026-11-04 y 2026-11-08 · [personajes-mesocosmos.md §Profesiones y parejas](../personajes-mesocosmos.md) · [Professions.cs:125](../../Assets/Scripts/Progression/Professions.cs#L125)*
 
 ## 6. Puesto y áreas
 
@@ -68,5 +68,5 @@
 
 1. ¿Quién es, de dónde es y qué le gusta? ¿Alguna historia suya?
 2. ¿Qué química hace (laboratorio, cocina, otra)?
-3. ¿Quién manda en la cocina: él y Maite, o también Goluis (su ficha antigua lo hace jefe)?
+3. ~~¿Quién manda en la cocina?~~ Contestado (Berón 2026-11-08): Maite y él tienen los rangos más altos; Goluis es encargado.
 4. El doc del gimnasio aún lo llama «Amahuz» ([gimnasio-maquinas.md](../gimnasio-maquinas.md) §15, tabla de planes).

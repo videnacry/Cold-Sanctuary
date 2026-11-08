@@ -71,3 +71,4 @@
 1. ¿De dónde es, qué máster hizo y qué le gusta? ¿Alguna historia suya?
 2. La ficha de Irosene ([character-irosene.md §Relaciones](../character-irosene.md)) nombra a una «Alicia», hija de Irosene. ¿Es otra persona? (No lo damos por hecho.)
 3. La razón de su plan de gimnasio dice «Huerto (cargar cajas)», del reparto provisional ([GymProgramming.cs:213](../../Assets/Scripts/Progression/GymProgramming.cs#L213)). ¿La cambiamos?
+4. Su rótulo en el juego dice «Alicita · Alicia» ([SampleSceneBuilder.Construction.cs:202](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L202)). Si «Alicia» es su nombre real, no debe verse en el juego (P24): ¿lo quitamos?
