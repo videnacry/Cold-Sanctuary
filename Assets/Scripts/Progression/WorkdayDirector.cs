@@ -635,12 +635,12 @@ public class WorkdayDirector : MonoBehaviour
         Linduarda lin = g.GetComponent<Linduarda>();
         CarnivoreKeeper keeper = g.GetComponent<CarnivoreKeeper>();
         bool guardDuty = missionId == "gua_carnivoros";
-        if (guardDuty && keeper == null && g.GetComponent<Anima>() != null) keeper = g.AddComponent<CarnivoreKeeper>();
+        if (guardDuty && keeper == null && IsPerson(g)) keeper = g.AddComponent<CarnivoreKeeper>();
         if (keeper != null) keeper.enabled = guardDuty;
         // EL ALIMENTADOR (docs/alimentador.md): quien tiene la misión sigue la lista compartida, sea quien sea.
         bool feederDuty = missionId != null && missionId.StartsWith("gua_alimentador");
         PredatorFeeder predatorFeeder = g.GetComponent<PredatorFeeder>();
-        if (feederDuty && predatorFeeder == null && g.GetComponent<Anima>() != null) predatorFeeder = g.AddComponent<PredatorFeeder>();
+        if (feederDuty && predatorFeeder == null && IsPerson(g)) predatorFeeder = g.AddComponent<PredatorFeeder>();
         if (predatorFeeder != null) predatorFeeder.enabled = feederDuty;
         if (feederDuty && predatorFeeder != null && idle != null) idle.enabled = false;
         // LA RONDA DE FRUTALES (docs/jardines-frutales.md): quien la tiene recorre los techos con su conducta propia.
@@ -1234,6 +1234,10 @@ public class WorkdayDirector : MonoBehaviour
 
     // Un cuerpo de la Magnate (copia de su cuerpo de cubos) sin su conducta: para clones de trabajo e iniciaciones.
     public static GameObject SpawnMagnateBody(string label) => SpawnBodyCopy("Magnate", label);
+
+    /// <summary>¿Es una persona que puede llevar una misión con conducta propia (el alimentador, la guardia de carnívoros)? Con Anima, o un clon:
+    /// su cuerpo de cubos copiado, sin Anima (ronda 25: el alimentador solo se ponía con Anima y los clones no daban de comer).</summary>
+    public static bool IsPerson(GameObject g) => g != null && (g.GetComponent<Anima>() != null || g.transform.Find(CubeHumanoid.BodyName) != null);
 
     /// <summary>Una copia del cuerpo de cubos de <paramref name="source"/> (sin su conducta), de pie: clones, turistas virtuales…</summary>
     public static GameObject SpawnBodyCopy(string source, string label)

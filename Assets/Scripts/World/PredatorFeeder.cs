@@ -25,7 +25,7 @@ public class PredatorFeeder : MonoBehaviour
     public int checkedOk { get; private set; }
     public string Doing => _duty == Duty.Track && _e != null && _e.animal != null ? $"sigue a «{_e.animal.name}»" : _duty == Duty.Load ? "recoge raciones" : _duty == Duty.Retreat ? "se retira" : "alimentador";
 
-    void OnEnable() { _duty = Duty.Load; _e = null; }
+    void OnEnable() { _duty = Duty.Load; _e = null; Debug.Log($"[Alimentador] «{name}» empieza su turno: {PredatorRound.Left} depredadores por atender, {(PredatorRound.Store != null ? "almacén " + PredatorRound.Store.name : "sin almacén")}."); }   // (una línea por turno, también de los clones)
     void OnDisable()
     {
         if (_e != null && _e.state == PredatorRound.State.Claimed) { _e.state = PredatorRound.State.Pending; _e.by = null; }   // deja la reserva: otro lo atenderá
