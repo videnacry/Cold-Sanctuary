@@ -100,9 +100,13 @@ public class LeisureRoster
     }
 
     /// <summary>Qué toca a la hora <paramref name="h"/> en el horario de un día (para el panel): jornada, cena, sueño o libre.</summary>
-    public static string BlockAt(float h)
+    public static string BlockAt(float h) => BlockAt(h, WorkRoster.StartHour + 8f);
+
+    /// <summary>(2026-11-08) Lo mismo para quien estira su jornada hasta <paramref name="shiftEnd"/> (<see cref="WorkRoster.DayPlan.EndOf"/>): sus franjas
+    /// libres de antes de esa hora son jornada. El reparto semanal no lo sabe de antemano: la jornada manda (LeisureDirector cede a OnShift).</summary>
+    public static string BlockAt(float h, float shiftEnd)
     {
-        if (h >= WorkRoster.StartHour && h < WorkRoster.StartHour + 8f) return "jornada";
+        if (h >= WorkRoster.StartHour && h < System.Math.Max(WorkRoster.StartHour + 8f, shiftEnd)) return "jornada";
         if (h >= DinnerHour && h < DinnerHour + 1f) return "cena";
         if (h >= BedHour || h < 7f) return "sueño";
         if (SlotAt(h) >= 0) return "libre";

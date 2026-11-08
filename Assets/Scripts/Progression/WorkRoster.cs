@@ -63,6 +63,8 @@ public class WorkRoster
         public readonly Dictionary<string, int> count = new Dictionary<string, int>();      // veces que ha hecho cada misión
         public readonly Dictionary<string, int> lastDay = new Dictionary<string, int>();    // último día que la hizo
         public int joined = int.MinValue;   // primer día que entró en la rotación
+        /// <summary>(2026-11-08) Su CASA como posición (<see cref="SanctuaryPlacement.Home.Position"/>): 0 = santuario 1 nivel 1. Solo cuenta con <see cref="sanctuaryModel"/>.</summary>
+        public int home;
         /// <summary>Lo que le ha enseñado la Magnate (claves de <see cref="MissionRequirements.KnowledgeKey"/>).</summary>
         public readonly HashSet<string> taught = new HashSet<string>();
         public Worker(string name, bool clone = false) { this.name = name; this.clone = clone; }
@@ -103,6 +105,17 @@ public class WorkRoster
         public List<(Mission mission, string why)> blocked = new List<(Mission, string)>();   // sin sus requisitos: hoy no
         public List<Mission> unqualified = new List<Mission>();      // hoy nadie sabe: mañana vuelven solas al catálogo
         public int waitingLesson;                                    // les quedaba algo por aprender y no cupieron en ninguna clase
+        // (2026-11-08) EL REPARTO POR SANTUARIOS (sanctuaryModel): dónde pasa cada uno el día, sus horas de más y lo que pide cada sitio.
+        public Dictionary<Worker, SanctuaryPlacement.Home> place = new Dictionary<Worker, SanctuaryPlacement.Home>();
+        public Dictionary<Worker, float> overtime = new Dictionary<Worker, float>();   // horas de más, desde las 16:00 (solo quien las tiene)
+        public Dictionary<SanctuaryPlacement.Home, float> hoursAt = new Dictionary<SanctuaryPlacement.Home, float>();   // horas de tareas de cada sitio
+        public Dictionary<string, float> hoursByArea = new Dictionary<string, float>();   // horas de tareas de cada área ENTERA (AreaGroup), de su lista de hoy
+        public Dictionary<string, int> quota = new Dictionary<string, int>();             // personas que pide cada área: ⌈horas / 5⌉, al menos 1
+        public List<string> cloneAreas = new List<string>();           // las áreas que sin la Magnate no tenían a nadie
+        public List<Worker> secondSplit = new List<Worker>();          // sobraban tras cubrir las horas: segundo reparto
+        public float Overtime(Worker w) => w != null && overtime.TryGetValue(w, out float o) ? o : 0f;
+        /// <summary>Cuándo acaba la jornada de <paramref name="w"/>: a las 16:00, o más tarde si se estira para acabar las tareas de su sitio.</summary>
+        public float EndOf(Worker w) => StartHour + 8f + Overtime(w);
         public IEnumerable<Assignment> Of(Worker w) => work.Where(a => a.worker == w).OrderBy(a => a.start);
     }
 
@@ -113,6 +126,69 @@ public class WorkRoster
 
     /// <summary>(2026-11-05) La mañana nueva y los requisitos. Apagado, el reparto puro de siempre (el que usan las pruebas de la rotación).</summary>
     public bool initiationModel;
+    /// <summary>(Berón 2026-11-08) EL REPARTO POR SANTUARIOS (lo enciende <c>WorkdayDirector</c>; docs/jornada-y-rotacion.md §Reparto por santuarios):
+    ///  1. Cada uno pasa el día en UN sitio (santuario y nivel) al que puede ir (<see cref="SanctuaryPlacement.CanAccess"/>). Primero se cubren las horas
+    ///     de cada sitio, empezando por el que menos gente alcanza; los que sobran van, en un segundo reparto, al sitio con más horas por persona.
+    ///  2. El orden del personal es una PERMUTACIÓN sembrada con el día (<see cref="DayOrder"/>): el reparto cambia cada día.
+    ///  3. Las horas se ESTIRAN (desde las 16:00, hasta <see cref="MaxOvertime"/>) para acabar las tareas de su sitio, en vez de dejarlas pendientes.
+    ///     Kushal no: el jugador es libre a las 16:00.
+    ///  4. La Magnate se divide SOLO para las áreas que se quedan sin nadie: un clon por área. (Las clases de iniciación sin maestro siguen siendo suyas.)
+    /// Apagado: el reparto puro de siempre (orden fijo, 5 h, clones para las obligatorias).</summary>
+    public bool sanctuaryModel;
+    /// <summary>Lo más que se estira una jornada: de las 16:00 a la cena (19:00, <see cref="LeisureRoster.DinnerHour"/>). Lo que no cabe, pendiente.</summary>
+    public const float MaxOvertime = 3f, OvertimeStep = 0.5f;
+    /// <summary>El sitio de cada área (por defecto, la tabla de <see cref="SanctuaryPlacement.PlaceOfArea"/>).</summary>
+    public System.Func<string, SanctuaryPlacement.Home> placeOf = SanctuaryPlacement.PlaceOfArea;
+    /// <summary>EL ÁREA ENTERA (Berón 2026-11-08): un área de varios pisos o salas cuenta como UNA para el reparto (horas, personas que pide y «al
+    /// menos 1»). Las misiones ya usan un solo nombre por área («Hospital», «Sala de Yoga»); esto junta además los nombres de sus pisos o salas
+    /// («Sala de Yoga · Hatha tradicional», «Hospital veterinario…») si alguno llega como área propia.</summary>
+    public static string AreaGroup(string area)
+    {
+        if (area == null) return null;
+        if (area.StartsWith("Sala de Yoga")) return "Sala de Yoga";
+        if (area.StartsWith(AreaWork.Hospital)) return AreaWork.Hospital;
+        return area;
+    }
+    /// <summary>Las horas de más de cada uno en el reparto en curso (las lee <see cref="PlaceFor"/>).</summary>
+    readonly Dictionary<Worker, float> _overtime = new Dictionary<Worker, float>();
+    readonly Dictionary<Worker, SanctuaryPlacement.Home> _place = new Dictionary<Worker, SanctuaryPlacement.Home>();
+    float Extra(Worker w) => w != null && _overtime.TryGetValue(w, out float o) ? o : 0f;
+
+    /// <summary>¿Puede <paramref name="w"/> hacer hoy <paramref name="m"/>? Con el reparto por santuarios, solo lo de su sitio del día (un clon, todo).</summary>
+    public bool Allowed(Worker w, Mission m) => !sanctuaryModel || w == null || w.clone || !_place.TryGetValue(w, out var p) || p.Equals(placeOf(m.area));
+
+    /// <summary>EL ORDEN DEL PERSONAL DEL DÍA (Berón 2026-11-08): una permutación sembrada con el día; dos días seguidos nunca dan el mismo orden
+    /// (con 2 o 3 personas, el orden rota). Kushal va siempre el primero: el jugador tiene su jornada entera (sus 5 h, PlayerWorkday); el orden de
+    /// los demás es el que cambia (INFERIDO). Apagado el reparto por santuarios, el orden fijo de siempre.</summary>
+    public List<Worker> DayOrder(int day)
+    {
+        if (!sanctuaryModel) return new List<Worker>(workers);
+        var others = workers.Where(w => w.name != "Player").ToList();
+        List<Worker> today;
+        int n = others.Count;
+        if (n <= 3) { today = new List<Worker>(n); int k = n == 0 ? 0 : ((day % n) + n) % n; for (int i = 0; i < n; i++) today.Add(others[(i + k) % n]); }
+        else
+        {
+            today = Shuffle(others, day);
+            if (today.SequenceEqual(Shuffle(others, day - 1))) { Worker first = today[0]; today.RemoveAt(0); today.Add(first); }   // (1 de n!: rota uno)
+        }
+        Worker me = workers.FirstOrDefault(w => w.name == "Player");
+        if (me != null) today.Insert(0, me);
+        return today;
+    }
+
+    static List<Worker> Shuffle(List<Worker> from, int day)
+    {
+        var l = new List<Worker>(from);
+        uint x = (uint)day * 2654435761u ^ 0x9E3779B9u; if (x == 0u) x = 1u;
+        for (int i = l.Count - 1; i > 0; i--)
+        {
+            x ^= x << 13; x ^= x >> 17; x ^= x << 5;   // xorshift32: el mismo en cualquier máquina
+            int j = (int)(x % (uint)(i + 1));
+            (l[i], l[j]) = (l[j], l[i]);
+        }
+        return l;
+    }
     /// <summary>Encendido (Berón 2026-11-05, diseño final): inicia quien sepa la tarea y sepa iniciar; la Magnate, si no hay nadie libre. Apagado: siempre ella.</summary>
     public bool instructorsTeach = true;
     /// <summary>¿Puede iniciar a otros en esta tarea? La Magnate, siempre (por eso no sale aquí): ella es el último recurso.</summary>
@@ -181,16 +257,24 @@ public class WorkRoster
         plan.hoursStaff = workers.Count * WorkHours;
 
         var used = workers.ToDictionary(w => w, w => 0f);
-        List<Worker> order = workers;
+        _overtime.Clear(); _place.Clear();
+        _staff = DayOrder(day);   // (2026-11-08) el orden del personal de HOY: con el reparto por santuarios, una permutación del día
+        if (sanctuaryModel) SplitDay(plan, pools);   // cada uno, a su sitio del día
+        List<Worker> order = _staff;
         if (initiationModel) order = PlanInitiations(plan, pools, used);   // PRIMERO las iniciaciones; lo aprendido ya se puede hacer hoy, a partir de esa hora
         AssignOwned(plan, pools, used);    // las de puesto, primero a su dueño (si no, la rotación le llenaba la jornada); sin él, por rotación
         AssignGroups(plan, pools, used);   // primero las de grupo: todas a la misma hora, cada una a una persona distinta
         ProfessionRound(plan, pools, used);   // (2026-11-04) luego, a cada profesional una misión de cada área de su profesión
         RunRounds(plan, pools, order, used);
 
+        if (sanctuaryModel)
+        {
+            Stretch(plan, pools, order, used);    // las horas se estiran hasta acabar lo de su sitio
+            CloneForEmptyAreas(plan, pools, used);   // y la Magnate, solo donde no hay nadie
+        }
         // Obligatorias sin cubrir: la Magnate se divide (clones de 5 h) hasta cubrirlas todas.
         int cloneN = 0;
-        while (pools.Values.Any(p => p.Any(m => m.mandatory)))
+        while (!sanctuaryModel && pools.Values.Any(p => p.Any(m => m.mandatory)))
         {
             var c = new Worker($"Magnate (clon {++cloneN})", clone: true);
             plan.clones.Add(c); used[c] = 0f;
@@ -205,6 +289,8 @@ public class WorkRoster
                 foreach (Mission m in p)
                     if (initiationModel && !m.mandatory && MissionRequirements.NeedsLesson(m.id) && !workers.Any(w => Learned(w, m))) plan.unqualified.Add(m); else plan.backlog.Add(m);
         pending = plan.backlog.Select(m => m).ToList();
+        foreach (var kv in _overtime) if (kv.Value > 1e-3f) plan.overtime[kv.Key] = kv.Value;
+        foreach (var kv in _place) plan.place[kv.Key] = kv.Value;
 
         // EL ENTRENAMIENTO DE LAS 8:00: rota con otra cuenta, para no repetir el de las 14 h.
         if (initiationModel && trainingAreas.Count > 0)
@@ -225,6 +311,99 @@ public class WorkRoster
     }
 
 
+    List<Worker> _staff = new List<Worker>();
+
+    // EL REPARTO POR SITIOS (Berón 2026-11-08). Las horas de cada sitio (santuario y nivel) se cubren primero empezando por el que menos gente
+    // alcanza (con la gente que menos sitios alcanza, para no gastar en la tierra a quien también puede ir al Aéreo); cada sitio pide la suma de lo que pide cada
+    // área suya entera (⌈sus horas / 5⌉, al menos 1). Todo sale de los datos de hoy (personal y lista de tareas): nada está fijado a mano.
+    // Los que sobran (segundo reparto) van, uno a uno, al sitio con más horas por persona de los que alcanzan. Kushal, siempre en el santuario 1
+    // (es el jugador: está en esta escena). Quien no alcanza ningún sitio con tareas, al santuario 1 nivel 1.
+    void SplitDay(DayPlan plan, Dictionary<string, List<Mission>> pools)
+    {
+        // LAS HORAS DE CADA ÁREA (Berón 2026-11-08): las de su propia lista de hoy (catálogo + obras, cocina, sitio…), contando el área ENTERA
+        // (el hospital y el yoga son un área, tengan los pisos que tengan: AreaGroup). Cada área pide ⌈horas / 5⌉ personas, y al menos 1.
+        foreach (var kv in pools)
+        {
+            float h = kv.Value.Sum(m => m.hours); if (h <= 0f) continue;
+            string g = AreaGroup(kv.Key);
+            plan.hoursByArea[g] = (plan.hoursByArea.TryGetValue(g, out float ha) ? ha : 0f) + h;
+            var at = placeOf(kv.Key);
+            plan.hoursAt[at] = (plan.hoursAt.TryGetValue(at, out float o) ? o : 0f) + h;
+        }
+        var needAt = plan.hoursAt.Keys.ToDictionary(p => p, p => 0);
+        foreach (var kv in plan.hoursByArea)
+        {
+            int q = System.Math.Max(1, (int)System.Math.Ceiling(kv.Value / WorkHours - 1e-4f));
+            plan.quota[kv.Key] = q;
+            needAt[placeOf(kv.Key)] += q;
+        }
+        var count = plan.hoursAt.Keys.ToDictionary(p => p, p => 0);
+        void Put(Worker w, SanctuaryPlacement.Home p) { _place[w] = p; if (count.ContainsKey(p)) count[p]++; }
+        Worker me = _staff.FirstOrDefault(w => w.name == "Player");
+        if (me != null) Put(me, SanctuaryPlacement.LandFirst);
+        int Reach(SanctuaryPlacement.Home p) => _staff.Count(w => SanctuaryPlacement.CanAccess(w.home, p));
+        foreach (var p in plan.hoursAt.Keys.OrderBy(Reach).ThenByDescending(p => p.Position).ToList())
+        {
+            int need = needAt[p];
+            foreach (Worker w in _staff.Where(w => !_place.ContainsKey(w) && SanctuaryPlacement.CanAccess(w.home, p)).OrderBy(w => w.home).ToList())   // (estable: a igualdad, el orden del día)
+            {
+                if (count[p] >= need) break;
+                Put(w, p);
+            }
+        }
+        foreach (Worker w in _staff)
+        {
+            if (_place.ContainsKey(w)) continue;
+            SanctuaryPlacement.Home best = SanctuaryPlacement.LandFirst; float load = -1f;
+            foreach (var p in plan.hoursAt.Keys)
+            {
+                if (!SanctuaryPlacement.CanAccess(w.home, p)) continue;
+                float l = plan.hoursAt[p] / (count[p] + 1);   // las horas que le tocarían a cada uno si va
+                if (l > load + 1e-4f) { load = l; best = p; }
+            }
+            Put(w, best);
+            plan.secondSplit.Add(w);
+        }
+    }
+
+    // LAS HORAS SE ESTIRAN (Berón 2026-11-08): si en un sitio quedan tareas, quienes están allí trabajan media hora más (desde las 16:00), y otra,
+    // hasta acabarlas o llegar a MaxOvertime. Kushal no se estira. Acotado: como mucho MaxOvertime / OvertimeStep vueltas.
+    void Stretch(DayPlan plan, Dictionary<string, List<Mission>> pools, List<Worker> order, Dictionary<Worker, float> used)
+    {
+        for (int step = 0; step < (int)(MaxOvertime / OvertimeStep + 0.5f); step++)
+        {
+            var left = new HashSet<SanctuaryPlacement.Home>(pools.Where(kv => kv.Value.Count > 0).Select(kv => placeOf(kv.Key)));
+            if (left.Count == 0) return;
+            bool any = false;
+            foreach (Worker w in order)
+            {
+                if (w.clone || w.name == "Player" || !_place.TryGetValue(w, out var p) || !left.Contains(p)) continue;
+                _overtime[w] = System.Math.Min(MaxOvertime, Extra(w) + OvertimeStep); any = true;
+            }
+            if (!any) break;
+            RunRounds(plan, pools, order, used);
+        }
+        // Lo estirado es lo que de verdad trabaja de más (si en la última media hora no le cupo nada, acaba antes).
+        foreach (Worker w in _overtime.Keys.ToList()) if (!w.clone) _overtime[w] = System.Math.Max(0f, System.Math.Min(_overtime[w], used[w] - WorkHours));
+    }
+
+    // LA MAGNATE, SOLO DONDE NO HAY NADIE (Berón 2026-11-08): un área con tareas y sin ninguna persona trabajando en ella hoy recibe UN clon, que
+    // hace las suyas con la jornada estirada. Lo que no le quepa, pendiente para mañana (como en las demás áreas).
+    void CloneForEmptyAreas(DayPlan plan, Dictionary<string, List<Mission>> pools, Dictionary<Worker, float> used)
+    {
+        // (por área ENTERA: el hospital con todos sus pisos es una, AreaGroup)
+        foreach (var grp in plan.areaOrder.Where(a => pools.TryGetValue(a, out var p) && p.Count > 0).GroupBy(AreaGroup).ToList())
+        {
+            var members = new HashSet<string>(grp);
+            if (plan.work.Any(a => !a.lesson && members.Contains(a.mission.area))) continue;   // ya tiene a alguien
+            var c = new Worker($"Magnate (clon {plan.clones.Count + 1})", clone: true);
+            used[c] = 0f; _overtime[c] = MaxOvertime;
+            RunRounds(plan, members.ToDictionary(a => a, a => pools[a]), new List<Worker> { c }, used);
+            if (used[c] <= 0f) { used.Remove(c); _overtime.Remove(c); continue; }   // ninguna le cabe: pendiente
+            plan.clones.Add(c); plan.cloneAreas.Add(grp.Key);
+        }
+    }
+
     // LAS INICIACIONES (Berón 2026-11-05): la lista del día sale de los personajes y de lo que no saben de lo que hay hoy. Se reparte antes que nada y de quien menos sabe a quien
     // más, llenando sus horas de iniciación desde la primera de la jornada; así queda claro si serán todas, la mitad o las que le falten. Por clases: quien puede, entra en una que ya
     // exista. Devuelve el orden del personal para repartir después las del santuario. Saber iniciar es una tarea más de la lista.
@@ -237,7 +416,7 @@ public class WorkRoster
         var skill = new Mission("Aula", InstructSkill, "Saber iniciar a otros", LessonHours);
         var skills = workers.ToDictionary(w => w, w => options.Count(m => Learned(w, m)));
         options.Add(skill);
-        var order = workers.OrderBy(w => skills[w]).ToList();   // (estable: a igualdad, el orden fijo del personal)
+        var order = _staff.OrderBy(w => skills[w]).ToList();   // (estable: a igualdad, el orden del personal del día)
         bool Wants(Worker w, Mission m) => !Learned(w, m) && (m != skill || skills[w] >= MinSkillsToInstruct);
         var scores = new Dictionary<Mission, int>();   // (se calcula una vez por hora: Practises parte cadenas)
         int Compute(Mission m) => workers.Count(w => !w.clone && Wants(w, m)) + (m.mandatory ? 100 : 0) + (MissionRequirements.NeedsLesson(m.id) ? 200 : 0) + (workers.Any(w => Learned(w, m)) || m == skill ? 0 : 400);
@@ -253,7 +432,7 @@ public class WorkRoster
             foreach (Worker w in order)
             {
                 if (w.clone || used[w] > hour + 1e-3f || Busy(w, hour) || done[w] + LessonHours > InitiationCap(w, plan.day) + 1e-3f) continue;
-                var mine = options.Where(m => Wants(w, m) && !FarAfterLunch(w, m.area, clock)).ToList();
+                var mine = options.Where(m => Wants(w, m) && (m == skill || Allowed(w, m)) && !FarAfterLunch(w, m.area, clock)).ToList();
                 if (mine.Count == 0) continue;
                 Lesson c = classes.Where(x => x.learners.Count < LessonGroupSize && mine.Contains(x.real)).OrderByDescending(x => Score(x.real)).FirstOrDefault();
                 if (c == null)
@@ -275,7 +454,7 @@ public class WorkRoster
             int magnates = 0;
             foreach (Lesson c in classes)
             {
-                Worker t = !instructorsTeach ? null : workers.Where(w => w.name != "Player" && used[w] <= hour + 1e-3f && !Busy(w, hour) && CanInitiate(w, c.real) && !c.learners.Contains(w)).OrderBy(w => _busy.TryGetValue(w, out var b) ? b.Count : 0).FirstOrDefault();
+                Worker t = !instructorsTeach ? null : workers.Where(w => w.name != "Player" && used[w] <= hour + 1e-3f && !Busy(w, hour) && CanInitiate(w, c.real) && Allowed(w, c.real) && !c.learners.Contains(w)).OrderBy(w => _busy.TryGetValue(w, out var b) ? b.Count : 0).FirstOrDefault();
                 if (t != null)
                 {
                     c.instructor = t; c.teacher = t.name;
@@ -300,7 +479,7 @@ public class WorkRoster
             foreach (Mission m in pool.Where(x => !string.IsNullOrEmpty(x.owner)).ToList())
             {
                 Worker w = Find(m.owner);
-                if (w == null || PlaceFor(w, used[w], m.hours, out _) < 0f) continue;
+                if (w == null || !Allowed(w, m) || PlaceFor(w, used[w], m.hours, out _) < 0f) continue;
                 pool.Remove(m);
                 Assign(plan, w, m, used);
             }
@@ -315,13 +494,13 @@ public class WorkRoster
     void ProfessionRound(DayPlan plan, Dictionary<string, List<Mission>> pools, Dictionary<Worker, float> used)
     {
         if (!useProfessions) return;
-        foreach (Worker w in workers)
+        foreach (Worker w in _staff)   // (el orden del personal del día)
         {
             if (w.clone) continue;
             foreach (string area in Professions.AreasOf(w.name).Distinct())
             {
                 if (!pools.TryGetValue(area, out var pool) || pool.Count == 0) continue;
-                var mine = pool.Where(m => Professions.Practises(w.name, area, m.id) && (!IsNewcomer(w, plan.day) || !m.lead) && string.IsNullOrEmpty(m.group)).ToList();   // (solo las de su profesión; las de grupo van en AssignGroups)
+                var mine = pool.Where(m => Professions.Practises(w.name, area, m.id) && (!IsNewcomer(w, plan.day) || !m.lead) && string.IsNullOrEmpty(m.group) && Allowed(w, m)).ToList();   // (solo las de su profesión; las de grupo van en AssignGroups)
                 Mission pick = Choose(w, mine.Where(m => Qualified(w, m)).ToList(), used[w]);
                 if (pick == null) continue;
                 pool.Remove(pick);
@@ -352,13 +531,13 @@ public class WorkRoster
                 crew.Clear(); free = f;
                 // (2026-11-04) EL PROFESIONAL del área (el maestro de yoga en la clase), si está libre y no es recién llegado, entra y la dirige.
                 float span = roles.Max(m => m.hours);
-                pro = useProfessions ? workers.FirstOrDefault(w => !w.clone && used[w] <= f + 1e-3f && PlaceFor(w, f, span, out _) == f && !IsNewcomer(w, plan.day) && Professions.Practises(w.name, roles[0].area, roles[0].id)) : null;
+                pro = useProfessions ? workers.FirstOrDefault(w => !w.clone && used[w] <= f + 1e-3f && PlaceFor(w, f, span, out _) == f && !IsNewcomer(w, plan.day) && Allowed(w, roles[0]) && Professions.Practises(w.name, roles[0].area, roles[0].id)) : null;
                 if (pro != null) crew.Add(pro);   // (si hay papel que dirige, lo dirige; en una obra, entra el jefe de obra nueva)
                 int newcomers = 0;
                 for (int i = 0; crew.Count < roles.Count && i < workers.Count; i++)
                 {
-                    Worker w = workers[(offset + i) % workers.Count];
-                    if (used[w] > f + 1e-3f || PlaceFor(w, f, span, out _) != f || crew.Contains(w)) continue;
+                    Worker w = _staff[(offset + i) % _staff.Count];
+                    if (used[w] > f + 1e-3f || PlaceFor(w, f, span, out _) != f || crew.Contains(w) || !Allowed(w, roles[0])) continue;
                     if (IsNewcomer(w, plan.day)) { if (newcomers >= support) continue; newcomers++; }   // al recién llegado, solo un papel de apoyo
                     crew.Add(w);
                 }
@@ -394,7 +573,7 @@ public class WorkRoster
                 if (!pools.TryGetValue(area, out var pool) || pool.Count == 0) continue;
                 foreach (Worker w in staff)
                 {
-                    Mission pick = Choose(w, pool.Where(m => (!IsNewcomer(w, plan.day) || !m.lead) && Qualified(w, m)).ToList(), used[w]);
+                    Mission pick = Choose(w, pool.Where(m => (!IsNewcomer(w, plan.day) || !m.lead) && Qualified(w, m) && Allowed(w, m)).ToList(), used[w]);
                     if (pick == null) continue;
                     pool.Remove(pick);
                     Assign(plan, w, pick, used);
@@ -439,12 +618,24 @@ public class WorkRoster
     static readonly (float from, float to, float clock)[] NewBlocks = { (0f, 2f, 9f), (2f, 4f, 12f), (4f, 5f, 15f) };
 
     /// <summary>Dónde cabe una misión de <paramref name="h"/> horas a quien lleva <paramref name="used"/>: las horas de jornada en que empieza (−1 si no cabe) y su hora de reloj.</summary>
-    public float Place(float used, float h, out float clock)
+    public float Place(float used, float h, out float clock) => Place(used, h, out clock, 0f);
+
+    /// <summary>(2026-11-08) Con <paramref name="extra"/> horas de más: la última franja sigue después de las 16:00 (15–16 y lo que se estire, seguido;
+    /// en el reparto puro, una franja nueva a las 16:00).</summary>
+    public float Place(float used, float h, out float clock, float extra)
     {
-        foreach (var b in initiationModel ? NewBlocks : OldBlocks)
+        var blocks = initiationModel ? NewBlocks : OldBlocks;
+        for (int i = 0; i < blocks.Length; i++)
         {
+            var b = blocks[i];
+            float to = b.to + (initiationModel && i == blocks.Length - 1 ? extra : 0f);
             float u = System.Math.Max(used, b.from);
-            if (u + h <= b.to + 1e-4f) { clock = b.clock + u - b.from; return u; }
+            if (u + h <= to + 1e-4f) { clock = b.clock + u - b.from; return u; }
+        }
+        if (!initiationModel && extra > 1e-4f)
+        {
+            float u = System.Math.Max(used, WorkHours);
+            if (u + h <= WorkHours + extra + 1e-4f) { clock = StartHour + 8f + u - WorkHours; return u; }
         }
         clock = -1f;
         return -1f;
@@ -460,7 +651,7 @@ public class WorkRoster
         float from = used;
         for (int i = 0; i < 6; i++)
         {
-            float u = Place(from, h, out clock);
+            float u = Place(from, h, out clock, Extra(w));
             if (u < 0f) return -1f;
             int hit = -1;
             for (int k = (int)u; k < u + h - 1e-3f; k++) if (Busy(w, k)) hit = k;
@@ -472,10 +663,20 @@ public class WorkRoster
     }
 
     /// <summary>Las horas de jornada que han pasado a la hora de reloj <paramref name="clock"/> (para quien se incorpora a medias).</summary>
-    public float UsedAt(float clock)
+    public float UsedAt(float clock) => UsedAt(clock, 0f);
+
+    /// <summary>Lo mismo con <paramref name="extra"/> horas de más (la jornada estirada desde las 16:00).</summary>
+    public float UsedAt(float clock, float extra)
     {
         float u = 0f;
-        foreach (var b in initiationModel ? NewBlocks : OldBlocks) u += System.Math.Max(0f, System.Math.Min(b.to - b.from, clock - b.clock));
+        var blocks = initiationModel ? NewBlocks : OldBlocks;
+        for (int i = 0; i < blocks.Length; i++)
+        {
+            var b = blocks[i];
+            float len = b.to - b.from + (initiationModel && i == blocks.Length - 1 ? extra : 0f);
+            u += System.Math.Max(0f, System.Math.Min(len, clock - b.clock));
+        }
+        if (!initiationModel) u += System.Math.Max(0f, System.Math.Min(extra, clock - (StartHour + 8f)));
         return u;
     }
 
@@ -490,7 +691,8 @@ public class WorkRoster
     public static List<string> Balance(DayPlan p, int workersCount)
     {
         var l = new List<string>();
-        if (p.clones.Count > 0) l.Add($"Faltan personas: la Magnate se dividió en {p.clones.Count} clon(es) para cubrir las misiones obligatorias.");
+        if (p.clones.Count > 0 && p.cloneAreas.Count > 0) l.Add($"Faltan personas: la Magnate se dividió en {p.clones.Count} clon(es) para las áreas sin nadie: {string.Join(", ", p.cloneAreas)}.");
+        else if (p.clones.Count > 0) l.Add($"Faltan personas: la Magnate se dividió en {p.clones.Count} clon(es) para cubrir las misiones obligatorias.");
         if (p.backlog.Count > 0) l.Add($"Faltan personas: {p.backlog.Count} misión(es) ({p.backlog.Sum(m => m.hours):0.#} h) pasan a mañana.");
         float idle = workersCount * WorkHours - p.work.Where(a => !a.worker.clone).Sum(a => a.mission.hours);
         if (idle > 0.5f && p.backlog.Count == 0) l.Add($"Faltan misiones: {idle:0.#} h de trabajo sin asignar; conviene crear misiones en las áreas con menos carga.");
@@ -500,6 +702,13 @@ public class WorkRoster
         if (p.unqualified.Count > 0) l.Add($"Nadie sabe hacer aún {p.unqualified.Count} misión(es): {string.Join(", ", p.unqualified.Take(6).Select(m => m.id))}.");
         if (p.waitingLesson > 0) l.Add($"{p.waitingLesson} persona(s) sin sitio en las iniciaciones de hoy: trabajan y aprenden otro día.");
         if (l.Count == 0) l.Add("Equilibrado: todas las misiones cubiertas por el personal, sin clones ni pendientes.");
+        foreach (var kv in p.hoursAt.OrderBy(k => k.Key.Position))
+        {
+            int n = p.place.Count(x => x.Value.Equals(kv.Key));
+            l.Add($"{kv.Key}: {kv.Value:0.#} h de tareas para {n} persona(s){(n > 0 ? $" ({kv.Value / n:0.#} h cada una)" : "")}.");
+        }
+        if (p.secondSplit.Count > 0) l.Add($"Segundo reparto: {p.secondSplit.Count} persona(s) que sobraban, al sitio con más horas por persona.");
+        if (p.overtime.Count > 0) l.Add($"Jornada estirada para acabar las tareas: {string.Join(", ", p.overtime.Where(x => !x.Key.clone).Select(x => $"{x.Key.name} +{x.Value:0.#} h"))}.");
         return l;
     }
 }

@@ -48,7 +48,7 @@ public class WorkdayDirector : MonoBehaviour
     {
         if (KitchenLarder.Instance != null) KitchenLarder.Instance.autoPlan = false;   // la cocina produce por misiones desde el primer día
         foreach (SanctuaryArea a in FindObjectsByType<SanctuaryArea>(FindObjectsSortMode.None))
-            if (a.GetComponent<ConstructionProject>() == null && !IsTraining(a.areaType) && !roster.areas.Contains(a.displayName)) roster.areas.Add(a.displayName);
+            if (a.GetComponent<ConstructionProject>() == null && !IsTraining(a.areaType) && !roster.areas.Contains(WorkRoster.AreaGroup(a.displayName))) roster.areas.Add(WorkRoster.AreaGroup(a.displayName));   // (un área de varios pisos, una sola)
         roster.areas.Sort(System.StringComparer.Ordinal);   // orden base estable (día 0)
         if (!roster.areas.Contains(AreaWork.Guard)) roster.areas.Add(AreaWork.Guard);
         if (AreaTransform(AreaWork.GuardRoom) != null && !roster.areas.Contains(AreaWork.GuardRoom)) roster.areas.Add(AreaWork.GuardRoom);
@@ -116,6 +116,9 @@ public class WorkdayDirector : MonoBehaviour
         _lunched.Clear(); _lunchStocked = false; _heading.Clear();   // [Jornada] la comida de hoy
         ReleaseGym(); _coachDay = int.MinValue;   // las sesiones de gimnasio de ayer
         roster.initiationModel = true; roster.worldCheck = MissionRequirements.Blocked;   // la mañana nueva y los requisitos (docs/jornada-y-rotacion.md)
+        // (Berón 2026-11-08) EL REPARTO POR SANTUARIOS: la casa de cada uno (santuario y nivel) sale de sus margas y lo guardado, cada día (suben al subir).
+        roster.sanctuaryModel = true;
+        foreach (WorkRoster.Worker w in roster.workers) if (!w.clone) w.home = SanctuaryPlacement.PositionOf(w.name, SanctuaryPlacement.Score(Body(w.name), w.name));
         List<WorkRoster.Mission> todays = AreaWork.Today(day, ConstructionProject.All);
         todays.AddRange(GymProgramming.Missions());   // la del entrenador (papel fijo: revisar el registro y ajustar los planes)
         today = roster.Plan(day, todays);
@@ -124,6 +127,8 @@ public class WorkdayDirector : MonoBehaviour
         if (gymDays > 0) Debug.Log($"[Gimnasio] Día {day}: {gymDays} cambios en el entrenamiento de las 14 h por los días de cada plan; al gimnasio: {string.Join(", ", today.training.Where(kv => kv.Value == GymArea).Select(kv => kv.Key.name))}.");
         plannedDay = day;
         foreach (WorkRoster.Worker c in today.clones) _clones[c] = SpawnMagnateBody(c.name);
+        _feastApplied = RemoteStaff.Feast; RemoteStaff.Apply(today, Body, _feastApplied);   // quien pasa el día en otro santuario no se simula aquí
+        if (RemoteStaff.Count > 0) Debug.Log($"[Jornada] Día {day}: {RemoteStaff.Count} persona(s) pasan el día en otro santuario (no se simulan aquí).");
         _taughtToday.Clear();
         foreach (WorkRoster.Lesson l in today.lessons) Debug.Log($"[Iniciación] {l}.");
         Debug.Log($"[Jornada] Día {day}: {today.work.Count} misiones para {roster.workers.Count} personas · orden de áreas: {string.Join(" → ", today.areaOrder)}" +
@@ -189,9 +194,11 @@ public class WorkdayDirector : MonoBehaviour
     struct Order { public string where, doing, mid; public bool early; }
     readonly Dictionary<WorkRoster.Worker, Order> _orders = new Dictionary<WorkRoster.Worker, Order>(), _cloneOrders = new Dictionary<WorkRoster.Worker, Order>();
 
+    bool _feastApplied;
     void Tick(float h, bool sliced)
     {
         _hour = h;
+        if (RemoteStaff.Feast != _feastApplied) { _feastApplied = RemoteStaff.Feast; RemoteStaff.Apply(today, Body, _feastApplied); }   // la fiesta los trae a todos
         int slot = Time.frameCount % DriveSlices, turn = 0;
         bool Mine() => !sliced || turn++ % DriveSlices == slot;
         if (h < WorkRoster.StartHour)   // (7:50–8:00) desayunados: cada uno sale hacia su primera misión si está en otro árbol
@@ -203,7 +210,7 @@ public class WorkdayDirector : MonoBehaviour
             {
                 bool fresh = Mine();
                 GameObject g = Body(w.name);
-                if (g == null || g.CompareTag("Player") || OnOwnDuty(g)) continue;
+                if (g == null || RemoteStaff.Hidden(g) || g.CompareTag("Player") || OnOwnDuty(g)) continue;   // (en otro santuario: no se simula)
                 if (fresh || !_orders.TryGetValue(w, out Order o) || !o.early)
                 {
                     WorkRoster.Assignment first = HeadingEarly(w, g, h);
@@ -231,7 +238,7 @@ public class WorkdayDirector : MonoBehaviour
         {
             bool fresh = Mine();
             GameObject g = Body(w.name);
-            if (g == null || g.CompareTag("Player") || OnOwnDuty(g)) continue;
+            if (g == null || RemoteStaff.Hidden(g) || g.CompareTag("Player") || OnOwnDuty(g)) continue;   // (en otro santuario: no se simula)
             if (fresh || !_orders.TryGetValue(w, out Order o) || o.early)
             {
                 string where = Where(w, h, out string doing);
@@ -266,7 +273,7 @@ public class WorkdayDirector : MonoBehaviour
         foreach (WorkRoster.Worker w in roster.workers)
         {
             GameObject g = Body(w.name);
-            if (g == null || g.CompareTag("Player")) continue;
+            if (g == null || RemoteStaff.Hidden(g) || g.CompareTag("Player")) continue;
             string area = Where(w, h, out _);
             if (area == null) continue;
             Vector3 p = FruitGardener.StartPoint(Current(w, h)?.mission.id) ?? WorkPoint(area, g.name); if (p == Vector3.zero) continue;   // la ronda de frutales empieza en su techo
@@ -282,8 +289,9 @@ public class WorkdayDirector : MonoBehaviour
     {
         if (g == null || today == null || TC == null || plannedDay != TC.Day) return false;
         float h = TC.Hour;
-        if (h < WorkRoster.StartHour || h >= WorkRoster.StartHour + 8f) return false;
-        return roster.Find(g.CompareTag("Player") ? "Player" : g.name.Replace("_Post", "")) != null;
+        if (h < WorkRoster.StartHour) return false;
+        WorkRoster.Worker w = roster.Find(g.CompareTag("Player") ? "Player" : g.name.Replace("_Post", ""));
+        return w != null && h < today.EndOf(w);   // (2026-11-08) quien estira su jornada para acabar sigue en ella después de las 16:00
     }
 
     /// <summary>Diagnóstico de las pruebas: registra quién teletransporta a quién (con la pila).</summary>
@@ -308,7 +316,7 @@ public class WorkdayDirector : MonoBehaviour
         {
             if (a.mission.id != missionId || h < a.start || h >= a.start + a.mission.hours) continue;
             GameObject g = a.worker.clone ? (_clones.TryGetValue(a.worker, out GameObject c) ? c : null) : Body(a.worker.name);
-            if (g != null && !g.CompareTag("Player")) l.Add(g);
+            if (g != null && !RemoteStaff.Hidden(g) && !g.CompareTag("Player")) l.Add(g);
         }
         return l;
     }
@@ -327,7 +335,7 @@ public class WorkdayDirector : MonoBehaviour
                 bool now = h >= a.start && h < a.start + a.mission.hours;
                 if (now != (pass == 0)) continue;
                 GameObject g = a.worker.clone ? (_clones.TryGetValue(a.worker, out GameObject c) ? c : null) : Body(a.worker.name);
-                if (g != null && !g.CompareTag("Player") && !l.Contains(g)) l.Add(g);
+                if (g != null && !RemoteStaff.Hidden(g) && !g.CompareTag("Player") && !l.Contains(g)) l.Add(g);
             }
         return l;
     }
@@ -457,7 +465,13 @@ public class WorkdayDirector : MonoBehaviour
         doing = null;
         if (today == null) return null;
         float s = WorkRoster.StartHour;
-        if (h < s || h >= s + 8f) return null;   // fuera de la jornada: libre
+        if (h < s || h >= today.EndOf(w)) return null;   // fuera de la jornada: libre
+        if (h >= s + 8f)   // (2026-11-08) LA JORNADA ESTIRADA: después de las 16:00 solo su tarea de más; entre una y otra, libre
+        {
+            foreach (WorkRoster.Assignment a in today.work)
+                if (a.worker == w && h >= a.start && h < a.start + a.mission.hours) { doing = a.mission.title; return a.mission.area; }
+            return null;
+        }
         foreach (WorkRoster.Assignment a in today.work)
             if (a.worker == w && h >= a.start && h < a.start + a.mission.hours) { doing = a.mission.title; return a.mission.area; }
         if (h >= s + WorkRoster.FirstBlock && h < s + WorkRoster.FirstBlock + WorkRoster.LunchHours) { doing = "Comida"; return "Cocina"; }
@@ -485,7 +499,7 @@ public class WorkdayDirector : MonoBehaviour
     {
         if (today == null || TC == null || g == null || w == null) return null;
         float s = WorkRoster.StartHour, l0 = s + WorkRoster.FirstBlock, l1 = l0 + WorkRoster.LunchHours;
-        if (h < BreakfastEnd || h >= s + 7f) return null;   // (desde que acaba el desayuno: sale de casa hacia la primera misión)
+        if (h < BreakfastEnd || h >= today.EndOf(w) - 1f) return null;   // (desde que acaba el desayuno: sale de casa hacia la primera misión)
         if (_heading.TryGetValue(w, out WorkRoster.Assignment latched))
         {
             if (latched != null && h < latched.start && (today.work.Contains(latched) || latched == LunchOf(w) || latched == TrainingOf(w))) return latched;
@@ -637,7 +651,7 @@ public class WorkdayDirector : MonoBehaviour
             // rama le encendía el merodeo ANTES de llegar a OwnNeeds (que es donde se quita el merodeo en turno), y JefeConstruccion
             // y Gohageneis merodeaban por la obra atravesando la «Columna», la «Grua_pluma» y la «Miniexcavadora» (JornadaTest
             // 2026-10-29). En el hueco se queda donde está (sus necesidades siguen yendo por su carril propio).
-            if (_hour >= WorkRoster.StartHour && _hour < WorkRoster.StartHour + 8f && g.GetComponent<Anima>() != null)
+            if (_hour >= WorkRoster.StartHour && (_hour < WorkRoster.StartHour + 8f || OnShift(g)) && g.GetComponent<Anima>() != null)   // (también en la jornada estirada)
             {
                 if (idle != null) idle.enabled = false;
                 ActionQueue gq = g.GetComponent<ActionQueue>();
@@ -1154,6 +1168,7 @@ public class WorkdayDirector : MonoBehaviour
             initiations++;
             GameObject g = Body(a.worker.name);
             GameObject ini = SpawnMagnateBody("Magnate (iniciación)");
+            if (ini != null && g != null && RemoteStaff.Hidden(g)) { Destroy(ini); ini = null; }   // (en otro santuario: la inicia allí)
             if (ini != null && g != null) ini.transform.position = g.transform.position + g.transform.right * 1.2f;
             if (ini != null) _initiators.Add((ini, a.start + 0.5f));
             Debug.Log($"[Iniciación] La Magnate inicia a {a.worker.name} en «{a.mission.title}»: ella lanza los hechizos y {a.worker.name} los repite.");
@@ -1266,7 +1281,8 @@ public class WorkdayDirector : MonoBehaviour
         foreach (var a in today.Of(me)) lines.Add($"{(marks ? (PlayerWorkday.Done(a) ? "✓ " : "☐ ") : "")}{a.start:00}:00  {a.mission.title}");
         lines.Add("11:00  Comida (restaurante)");
         if (today.training.TryGetValue(me, out string tr)) lines.Add($"14:00  Entrenamiento: {tr}");
-        lines.Add("16:00  Libre");
+        float end = today.EndOf(me);   // (2026-11-08) a las 16:00, o cuando acabe su jornada estirada
+        lines.Add($"{Mathf.Floor(end):00}:{(end % 1f) * 60f:00}  Libre");
         return lines;
     }
 

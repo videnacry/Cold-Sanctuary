@@ -101,7 +101,7 @@ public class LeisureDirector : MonoBehaviour
         {
             if (n == "Player") continue;
             GameObject g = WorkdayDirector.Body(n);
-            if (g == null || !g.activeInHierarchy || g.CompareTag("Player") || !g.TryGetComponent(out Anima a) || a.death) continue;
+            if (g == null || (!g.activeInHierarchy && !RemoteStaff.Hidden(g)) || g.CompareTag("Player") || !g.TryGetComponent(out Anima a) || a.death) continue;   // (quien está en otro santuario sigue en el horario: vuelve para las fiestas)
             if (!found.TryGetValue(g.scene, out var l)) found[g.scene] = l = (new List<GameObject>(), false);
             l.bodies.Add(g);
         }
@@ -398,6 +398,11 @@ public class LeisureDirector : MonoBehaviour
     {
         float h = TC.Hour; int day = TC.Day;
         int slot = LeisureRoster.SlotAt(h);
+        // (Berón 2026-11-08) LA FIESTA: en la franja de una actividad de todos a la vez del santuario (y el rato de antes para llegar), los que
+        // viven en otro santuario vuelven (RemoteStaff; los trae la jornada en su siguiente paso).
+        int soon = NextSlotWithin(h, TogetherLead);
+        RemoteStaff.Feast = groups.Any(gr => !gr.micro && gr.plan != null && day >= gr.plan.firstDay && day < gr.plan.firstDay + LeisureRoster.DaysPerWeek
+            && gr.plan.activities.Any(a => a.together && a.togetherDay == day - gr.plan.firstDay && (a.togetherSlot == slot || a.togetherSlot == soon)));
         foreach (Group gr in groups)
         {
             if (gr.plan == null) continue;
@@ -405,6 +410,7 @@ public class LeisureDirector : MonoBehaviour
             foreach (GameObject g in gr.bodies)
             {
                 if (g == null) continue;
+                if (RemoteStaff.Hidden(g)) { if (_runs.TryGetValue(g, out Run away)) { Release(g, away); _runs.Remove(g); } continue; }   // en otro santuario: allí hace lo suyo
                 LeisureRoster.Entry e = slot >= 0 && inWeek && gr.personOf.TryGetValue(g, out var p) ? gr.plan.At(p, day, slot) : null;
                 // (2026-11-04, ronda 6 del grupo 89: 11/15 llegaban al ring; los de las torres lejanas —Producción, la guardia— no
                 // llegaban en la hora) A una actividad de TODOS A LA VEZ se sale con tiempo: TogetherLead antes de su franja.

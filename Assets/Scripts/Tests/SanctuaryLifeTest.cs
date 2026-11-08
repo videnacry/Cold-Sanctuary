@@ -265,7 +265,7 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         TestProbe.Check("el orden de áreas rota cada día (la última pasa a ser la primera)", d1.areaOrder[0] == "C" && d1.areaOrder[1] == "A", string.Join(",", d1.areaOrder));
         string firstD0 = d0.Of(w1).First().mission.area, firstD1 = d1.Of(w1).First().mission.area;
         TestProbe.Check("la primera persona empieza cada día por un área distinta", firstD0 != firstD1, $"{firstD0} → {firstD1}");
-        TestProbe.Check("nadie pasa de sus 5 h de trabajo", d0.work.GroupBy(a => a.worker).All(g => g.Sum(a => a.mission.hours) <= WorkRoster.WorkHours + 1e-3f));
+        TestProbe.Check("reparto puro (sin santuarios): nadie pasa de sus 5 h de trabajo", d0.work.GroupBy(a => a.worker).All(g => g.Sum(a => a.mission.hours) <= WorkRoster.WorkHours + 1e-3f));
         var cMission = d1.Of(w1).FirstOrDefault(a => a.mission.area == "C");
         TestProbe.Check("se da primero la misión que esa persona nunca ha hecho", cMission == null || w1.Count(cMission.mission.id) == 1, cMission != null ? cMission.mission.id : "—");
         var solo = new WorkRoster(); solo.areas.Add("X"); solo.Add("Solo");
@@ -273,7 +273,7 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         for (int i = 0; i < 6; i++) heavy.Add(new WorkRoster.Mission("X", "m" + i, "m" + i, 2f, true));
         heavy.Add(new WorkRoster.Mission("X", "extra", "extra", 2f));
         var hp = solo.Plan(0, heavy);
-        TestProbe.Check("si faltan personas, la Magnate se divide y cubre todas las obligatorias", hp.clones.Count > 0 && hp.backlog.All(m => !m.mandatory), $"{hp.clones.Count} clones, {hp.backlog.Count} pendientes");
+        TestProbe.Check("reparto puro (sin santuarios): si faltan personas, la Magnate se divide y cubre todas las obligatorias", hp.clones.Count > 0 && hp.backlog.All(m => !m.mandatory), $"{hp.clones.Count} clones, {hp.backlog.Count} pendientes");
         TestProbe.Check("las que no se cubren pasan a mañana y son las primeras", hp.backlog.Count == 1 && solo.Plan(1, new System.Collections.Generic.List<WorkRoster.Mission>()).work.Any(a => a.mission.id == "extra"));
         TestProbe.Check("el informe dice si faltan personas", WorkRoster.Balance(hp, 1).Any(s => s.StartsWith("Faltan personas")));
 
@@ -287,6 +287,9 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
             var plan = wd.PlanDay(100);
             TestProbe.Greater("la jornada reparte misiones al personal", plan.work.Count, 5f, $"{plan.work.Count} misiones, {wd.roster.workers.Count} personas, {plan.clones.Count} clones");
             TestProbe.Check("todas las obligatorias quedan cubiertas", plan.backlog.All(m => !m.mandatory));
+            // (Berón 2026-11-08) EL REPARTO POR SANTUARIOS: la Magnate solo se divide para las áreas sin nadie, y nadie trabaja más allá de la cena
+            TestProbe.Check("la jornada usa el reparto por santuarios: clones solo para áreas sin nadie", wd.roster.sanctuaryModel && plan.clones.Count == plan.cloneAreas.Count, string.Join(", ", plan.cloneAreas));
+            TestProbe.Check("nadie pasa de sus 5 h más lo estirado (como mucho hasta la cena)", plan.work.Where(a => !a.worker.clone).GroupBy(a => a.worker).All(g => g.Sum(a => a.mission.hours) <= WorkRoster.WorkHours + plan.Overtime(g.Key) + 1e-3f && plan.Overtime(g.Key) <= WorkRoster.MaxOvertime + 1e-3f));
             TestProbe.Check("cada persona tiene entrenamiento (yoga o gimnasio)", wd.roster.workers.All(w => plan.training.ContainsKey(w)), string.Join(", ", wd.OpenTraining()));
             TestProbe.Check("hay misiones de obra para las áreas en construcción", plan.work.Any(a => a.mission.id.StartsWith("obra_trabajo_")));
             // CADA OBRA TIENE SU EQUIPO (Berón 2026-10-28): la jornada pone a trabajar a tantas personas distintas como pide.
