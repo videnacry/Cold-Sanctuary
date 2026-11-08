@@ -276,12 +276,18 @@ public class WorkdayDirector : MonoBehaviour
             {
                 string where = Where(kv.Key, h, out string doing);
                 string cm = Current(kv.Key, h)?.mission.id;
-                _cloneOrders[kv.Key] = o = new Order { where = where, doing = doing, mid = FruitGardener.IsRound(cm) ? cm : null };
+                _cloneOrders[kv.Key] = o = new Order { where = where, doing = doing, mid = CloneDuty(cm) };
             }
             Drive(kv.Value, o.where, o.doing, o.mid, alwaysMove: true);
         }
         HoldPlayer(h);
     }
+
+    /// <summary>La misión que un clon de la Magnate lleva con su conducta propia (las demás: ir a su sitio). La ronda de frutales y, desde la
+    /// ronda 24, el alimentador y la guardia de carnívoros: con el reparto las dos plazas del alimentador eran de clones, que iban a la sala de
+    /// guardia sin PredatorFeeder, y nadie daba de comer a los osos (morían de hambre, 43, en la jornada).</summary>
+    public static string CloneDuty(string missionId) =>
+        missionId != null && (FruitGardener.IsRound(missionId) || missionId.StartsWith("gua_alimentador") || missionId == "gua_carnivoros") ? missionId : null;
 
     // ARRANQUE: lo primero es la asignación de itinerarios; con ella cada uno aparece YA en el área de su primer turno
     // (como si el reloj empezara justo al comenzar la jornada). El jugador, recién llegado, sigue en la enfermería.
