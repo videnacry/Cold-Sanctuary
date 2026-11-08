@@ -286,10 +286,10 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
             foreach (ConstructionProject cp0 in ConstructionProject.All) cp0.Restore(0, false);
             var plan = wd.PlanDay(100);
             TestProbe.Greater("la jornada reparte misiones al personal", plan.work.Count, 5f, $"{plan.work.Count} misiones, {wd.roster.workers.Count} personas, {plan.clones.Count} clones");
-            TestProbe.Check("todas las obligatorias quedan cubiertas", plan.backlog.All(m => !m.mandatory));
-            // (Berón 2026-11-08) EL REPARTO POR SANTUARIOS: la Magnate solo se divide para las áreas sin nadie, y nadie trabaja más allá de la cena
-            TestProbe.Check("la jornada usa el reparto por santuarios: clones solo para áreas sin nadie", wd.roster.sanctuaryModel && plan.clones.Count == plan.cloneAreas.Count, string.Join(", ", plan.cloneAreas));
-            TestProbe.Check("nadie pasa de sus 5 h más lo estirado (como mucho hasta la cena)", plan.work.Where(a => !a.worker.clone).GroupBy(a => a.worker).All(g => g.Sum(a => a.mission.hours) <= WorkRoster.WorkHours + plan.Overtime(g.Key) + 1e-3f && plan.Overtime(g.Key) <= WorkRoster.MaxOvertime + 1e-3f));
+            TestProbe.Check("todas las tareas quedan cubiertas, obligatorias o no: nada pasa a mañana", plan.backlog.Count == 0 && plan.impossible.Count == 0 && wd.roster.pending.Count == 0, string.Join(", ", plan.backlog.Concat(plan.impossible).Take(6).Select(m => m.id)));
+            // (Berón 2026-11-08) EL REPARTO POR SANTUARIOS: partes iguales; la Magnate, para las áreas sin nadie y para lo que no cabe en los humanos
+            TestProbe.Check("la jornada usa el reparto por santuarios: cada clon con su área", wd.roster.sanctuaryModel && plan.clones.Count == plan.cloneAreas.Count, string.Join(", ", plan.cloneAreas));
+            TestProbe.Check("nadie pasa de sus 5 h de trabajo", plan.work.Where(a => !a.worker.clone).GroupBy(a => a.worker).All(g => g.Sum(a => a.mission.hours) <= WorkRoster.WorkHours + 1e-3f));
             TestProbe.Check("cada persona tiene entrenamiento (yoga o gimnasio)", wd.roster.workers.All(w => plan.training.ContainsKey(w)), string.Join(", ", wd.OpenTraining()));
             TestProbe.Check("hay misiones de obra para las áreas en construcción", plan.work.Any(a => a.mission.id.StartsWith("obra_trabajo_")));
             // CADA OBRA TIENE SU EQUIPO (Berón 2026-10-28): la jornada pone a trabajar a tantas personas distintas como pide.

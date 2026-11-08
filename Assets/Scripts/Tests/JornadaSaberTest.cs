@@ -173,9 +173,7 @@ public class JornadaSaberTest : MonoBehaviour, ITestUnit
             WorkRoster.DayPlan t = wd.PlanDay(wd.plannedDay + 1);
             Debug.Log($"[Jornada] Prueba: {t.work.Count(a => !a.lesson)} tareas, {t.lessons.Count} iniciaciones, {t.clones.Count} clones, {t.blocked.Count} sin requisitos, {t.unqualified.Count} sin nadie que sepa, {t.backlog.Count} pendientes.");
             TestProbe.Check("en el santuario hay entrenamiento e iniciaciones", t.morning.Count > 0 && t.lessons.Count > 0, string.Join(" · ", t.lessons.Take(6)));
-            // (2026-11-08) con el reparto por santuarios la franja de las 15 sigue después de las 16:00 para quien estira su jornada, hasta su fin (EndOf), nunca más allá de la cena
-            bool InDay(WorkRoster.Assignment a) => InSlot(a) || (a.start >= 15f && a.start + a.mission.hours <= t.EndOf(a.worker) + 1e-3f && t.EndOf(a.worker) <= WorkRoster.StartHour + 8f + WorkRoster.MaxOvertime + 1e-3f);
-            TestProbe.Check("en el santuario, nada fuera de las franjas (o de la jornada estirada)", t.work.Where(a => !a.worker.clone).All(InDay), string.Join(" · ", t.work.Where(a => !a.worker.clone && !InDay(a)).Take(6)));
+            TestProbe.Check("en el santuario, nada fuera de las franjas", t.work.Where(a => !a.worker.clone).All(InSlot), string.Join(" · ", t.work.Where(a => !InSlot(a)).Take(6)));
         }
         TestProbe.End();
         yield break;

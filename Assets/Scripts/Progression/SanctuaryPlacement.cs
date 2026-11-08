@@ -73,11 +73,11 @@ public static class SanctuaryPlacement
     public static bool CanAccess(int ownPosition, Home target) => CanAccess(Home.At(ownPosition), target);
 
     /// <summary>EL SANTUARIO DE CADA ÁREA (una tabla, para Berón). Aéreo: la lanzadera y el parque energético (<see cref="AereoRule.IsArea"/>). Marino:
-    /// la línea de las cavernas, que baja a él (INFERIDO: la central, la planta atómica y el TRIGA siguen en el santuario 1, §20). Lo demás, la tierra.</summary>
+    /// la línea de las cavernas, que baja a él, y la PLANTA NUCLEAR (la Planta Atómica y la Central Nuclear: Berón 2026-11-08, «lejos del santuario y de la vida»; dónde está y su estación de alfombras lo mira otra tarea). Lo demás, la tierra.</summary>
     public static int SanctuaryOfArea(string area)
     {
         if (AereoRule.IsArea(area)) return Aerial;
-        if (area == SiteLine.AreaName) return Marine;
+        if (area == SiteLine.AreaName || area == NuclearSite.PlantArea || area == NuclearSite.PowerArea) return Marine;
         return Land;
     }
     /// <summary>El nivel de cada área: hoy todo es nivel 1 (aún no hay pisos de nivel 2).</summary>
