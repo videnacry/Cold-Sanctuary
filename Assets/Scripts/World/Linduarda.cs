@@ -7,7 +7,7 @@ using UnityEngine;
 /// instante, por magia) y, a quien tenga su <see cref="HealthRecord"/> en `false`, **va y le lanza** el hechizo que le
 /// falte — `VaccinateSpell` (vacunar) o `ClinicalAnalysisSpell` (muestras/análisis). Así, al empezar el juego, atiende a
 /// Kushal (creado con ambos en false). No es scriptado: es su impulso, resuelto por los mismos hechizos de todos.
-/// </summary>
+/// Ficha: docs/personajes/linduarda.md.</summary>
 [RequireComponent(typeof(Anima))]
 public class Linduarda : MonoBehaviour
 {

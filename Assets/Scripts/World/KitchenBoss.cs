@@ -7,7 +7,7 @@ using UnityEngine;
 /// (primero limpiar, luego las recetas)— lo que él sabe (es omnisciente de cocina: `Grimoire.knowsAll`). "Conocer = poder
 /// enseñar". Al terminar, marca `kitchenTrained`. Emergente, no scriptado. (La enseñanza paso-a-paso interactiva de la
 /// limpieza/recetas puede migrar luego a <see cref="TeachingSession"/>, como el yoga.)
-/// </summary>
+/// Ficha: docs/personajes/goluis.md.</summary>
 [RequireComponent(typeof(Anima))]
 public class KitchenBoss : MonoBehaviour
 {

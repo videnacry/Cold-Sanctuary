@@ -196,29 +196,29 @@ public static partial class SampleSceneBuilder
     /// Nesvitor, mayor (lo dice su foto), algo menos ágil. El rótulo lleva su profesión (Professions).</summary>
     public static readonly (string id, string label, float x, Color clothes, float s, float ag, float en, float m)[] FamilyCharacters =
     {
-        ("Nesvitor", "Nesvitor · Néstor (guardia y agricultor)", 30f, new Color(0.1f, 0.1f, 0.11f), 0.95f, 0.9f, 1.05f, 1.0f),
-        ("Amykhuz", "Amykhuz (jefe de cocina y química)", 32f, new Color(0.1f, 0.12f, 0.22f), 1.0f, 1.05f, 1.0f, 0.9f),
-        ("Karen", "Karen (asuntos legales y lenguas)", 34f, new Color(0.97f, 0.96f, 0.95f), 0.9f, 1.05f, 1.0f, 0.95f),
-        ("Alicita", "Alicita · Alicia (contabilidad y dirección de proyectos)", 36f, new Color(0.12f, 0.13f, 0.15f), 0.9f, 1.0f, 1.05f, 0.95f),
-        ("Ducristin", "Ducristin (gerente de banca y profesor)", 38f, new Color(0.6f, 0.78f, 0.95f), 1.0f, 1.0f, 1.0f, 1.05f),
-        ("Josedrilo", "Josedrilo (maestro de Hatha, jefe de obra nueva y bioconstrucción)", 40f, new Color(0.1f, 0.09f, 0.09f), 1.05f, 1.0f, 1.0f, 1.0f),
-        ("Maite", "Maite (jefa de cocina y curandera)", 42f, new Color(0.36f, 0.33f, 0.24f), 0.9f, 1.05f, 1.0f, 0.95f),
-        ("Shalva", "Shalva (cultivo y bioconstrucción)", 44f, new Color(0.3f, 0.33f, 0.15f), 1.05f, 1.0f, 1.05f, 1.0f),
-        ("Adaguchi", "Adaguchi (submarinismo y cocina)", 46f, new Color(0.08f, 0.08f, 0.09f), 1.05f, 1.0f, 1.0f, 1.05f),
-        ("Gallarle", "Gallarle", 48f, new Color(0.45f, 0.5f, 0.55f), 1.0f, 1.0f, 1.0f, 1.0f),
-        ("Julian", "Julian (dirección de proyectos; pendiente de foto)", 50f, new Color(0.4f, 0.45f, 0.52f), 1.0f, 1.0f, 1.0f, 1.0f),        // pareja de Alicita (búlgaro)
-        ("Fausto", "Fausto (mecánico; pendiente de foto)", 52f, new Color(0.35f, 0.38f, 0.42f), 1.05f, 1.0f, 1.0f, 1.0f), // pareja de Irosene
+        ("Nesvitor", "Nesvitor · Néstor (guardia y agricultor)", 30f, new Color(0.1f, 0.1f, 0.11f), 0.95f, 0.9f, 1.05f, 1.0f),   // ficha: docs/personajes/nesvitor.md
+        ("Amykhuz", "Amykhuz (jefe de cocina y química)", 32f, new Color(0.1f, 0.12f, 0.22f), 1.0f, 1.05f, 1.0f, 0.9f),   // ficha: docs/personajes/amykhuz.md
+        ("Karen", "Karen (asuntos legales y lenguas)", 34f, new Color(0.97f, 0.96f, 0.95f), 0.9f, 1.05f, 1.0f, 0.95f),   // ficha: docs/personajes/karen.md
+        ("Alicita", "Alicita · Alicia (contabilidad y dirección de proyectos)", 36f, new Color(0.12f, 0.13f, 0.15f), 0.9f, 1.0f, 1.05f, 0.95f),   // ficha: docs/personajes/alicita.md
+        ("Ducristin", "Ducristin (gerente de banca y profesor)", 38f, new Color(0.6f, 0.78f, 0.95f), 1.0f, 1.0f, 1.0f, 1.05f),   // ficha: docs/personajes/ducristin.md
+        ("Josedrilo", "Josedrilo (maestro de Hatha, jefe de obra nueva y bioconstrucción)", 40f, new Color(0.1f, 0.09f, 0.09f), 1.05f, 1.0f, 1.0f, 1.0f),   // ficha: docs/personajes/josedrilo.md
+        ("Maite", "Maite (jefa de cocina y curandera)", 42f, new Color(0.36f, 0.33f, 0.24f), 0.9f, 1.05f, 1.0f, 0.95f),   // ficha: docs/personajes/maite.md
+        ("Shalva", "Shalva (cultivo y bioconstrucción)", 44f, new Color(0.3f, 0.33f, 0.15f), 1.05f, 1.0f, 1.05f, 1.0f),   // ficha: docs/personajes/shalva.md
+        ("Adaguchi", "Adaguchi (submarinismo y cocina)", 46f, new Color(0.08f, 0.08f, 0.09f), 1.05f, 1.0f, 1.0f, 1.05f),   // ficha: docs/personajes/adaguchi.md
+        ("Gallarle", "Gallarle", 48f, new Color(0.45f, 0.5f, 0.55f), 1.0f, 1.0f, 1.0f, 1.0f),   // ficha: docs/personajes/gallarle.md
+        ("Julian", "Julian (dirección de proyectos; pendiente de foto)", 50f, new Color(0.4f, 0.45f, 0.52f), 1.0f, 1.0f, 1.0f, 1.0f),        // pareja de Alicita (búlgaro) · ficha: docs/personajes/julian.md
+        ("Fausto", "Fausto (mecánico; pendiente de foto)", 52f, new Color(0.35f, 0.38f, 0.42f), 1.05f, 1.0f, 1.0f, 1.0f), // pareja de Irosene · ficha: docs/personajes/fausto.md
         // (2026-11-04) LOS SEIS NUEVOS, pendientes de foto (aspecto provisional en CubeHair.Placeholder).
-        ("David", "David (informática; pendiente de foto)", 54f, new Color(0.4f, 0.45f, 0.52f), 1.0f, 1.0f, 1.0f, 1.0f),
-        ("Adonis", "Adonis (informática; pendiente de foto)", 56f, new Color(0.45f, 0.4f, 0.35f), 1.0f, 1.0f, 1.0f, 1.0f),
-        ("Yulo", "Yulo (biotecnología)", 58f, new Color(0.35f, 0.45f, 0.4f), 1.0f, 1.0f, 1.0f, 1.0f),
-        ("Lale", "Lale (biotecnología)", 60f, new Color(0.5f, 0.45f, 0.55f), 1.0f, 1.0f, 1.0f, 1.0f),
-        ("Ivelyna", "Ivelyna (pediatra)", 62f, new Color(0.55f, 0.5f, 0.42f), 1.0f, 1.0f, 1.0f, 1.0f),
-        ("Luciana", "Luciana (piloto y artes marciales)", 64f, new Color(0.38f, 0.42f, 0.5f), 1.0f, 1.0f, 1.0f, 1.0f),
-        ("Malena", "Malena (pediatra)", 68f, new Color(0.86f, 0.74f, 0.62f), 1.0f, 1.0f, 1.0f, 1.0f),
+        ("David", "David (informática; pendiente de foto)", 54f, new Color(0.4f, 0.45f, 0.52f), 1.0f, 1.0f, 1.0f, 1.0f),   // ficha: docs/personajes/david.md
+        ("Adonis", "Adonis (informática; pendiente de foto)", 56f, new Color(0.45f, 0.4f, 0.35f), 1.0f, 1.0f, 1.0f, 1.0f),   // ficha: docs/personajes/adonis.md
+        ("Yulo", "Yulo (biotecnología)", 58f, new Color(0.35f, 0.45f, 0.4f), 1.0f, 1.0f, 1.0f, 1.0f),   // ficha: docs/personajes/yulo.md
+        ("Lale", "Lale (biotecnología)", 60f, new Color(0.5f, 0.45f, 0.55f), 1.0f, 1.0f, 1.0f, 1.0f),   // ficha: docs/personajes/lale.md
+        ("Ivelyna", "Ivelyna (pediatra)", 62f, new Color(0.55f, 0.5f, 0.42f), 1.0f, 1.0f, 1.0f, 1.0f),   // ficha: docs/personajes/ivelyna.md
+        ("Luciana", "Luciana (piloto y artes marciales)", 64f, new Color(0.38f, 0.42f, 0.5f), 1.0f, 1.0f, 1.0f, 1.0f),   // ficha: docs/personajes/luciana.md
+        ("Malena", "Malena (pediatra)", 68f, new Color(0.86f, 0.74f, 0.62f), 1.0f, 1.0f, 1.0f, 1.0f),   // ficha: docs/personajes/malena.md
         // (2026-11-05) Pendientes de foto. Consol: «muy flexible» (Berón), de ahí su agilidad y su resistencia; Fernando, neutro.
-        ("Consol", "Consol (maestra de Ashtanga; pendiente de foto)", 70f, new Color(0.42f, 0.3f, 0.5f), 1.0f, 1.35f, 1.15f, 0.95f),
-        ("Fernando", "Fernando (instalador y reparador de paneles solares; pendiente de foto)", 72f, new Color(0.85f, 0.55f, 0.15f), 1.05f, 1.0f, 1.0f, 1.0f),
+        ("Consol", "Consol (maestra de Ashtanga; pendiente de foto)", 70f, new Color(0.42f, 0.3f, 0.5f), 1.0f, 1.35f, 1.15f, 0.95f),   // ficha: docs/personajes/consol.md
+        ("Fernando", "Fernando (instalador y reparador de paneles solares; pendiente de foto)", 72f, new Color(0.85f, 0.55f, 0.15f), 1.05f, 1.0f, 1.0f, 1.0f),   // ficha: docs/personajes/fernando.md
     };
 
     /// <summary>LOS FAMOSOS QUE SE FUERON A SUS MICROCOSMOS (Berón 2026-11-04: «los personajes famosos, elon musk, sadhguru, y demás
@@ -227,12 +227,12 @@ public static partial class SampleSceneBuilder
     /// Sus papeles en el santuario los llevan otros: docs/personajes-mesocosmos.md §Reparto de papeles.</summary>
     public static readonly (string id, string label, float x, Color clothes, float s, float ag, float en, float m)[] MesoCharacters =
     {
-        ("Sadhguru", "Sadhguru (maestro de yoga)", 14f, new Color(0.5f, 0.72f, 0.62f), 1.0f, 1.2f, 1.4f, 1.0f),
-        ("ElonMusk", "Elon Musk (vehículos eléctricos y cohetes)", 18f, new Color(0.08f, 0.08f, 0.09f), 1.05f, 0.95f, 1.0f, 1.1f),
-        ("Goku", "Goku (artes marciales)", 20f, new Color(0.95f, 0.47f, 0.12f), 1.6f, 1.5f, 1.6f, 1.1f),
-        ("BillGates", "Bill Gates (software y salud pública)", 22f, new Color(0.22f, 0.32f, 0.55f), 0.95f, 0.95f, 1.0f, 1.0f),
-        ("WarrenBuffett", "Warren Buffett (inversor)", 24f, new Color(0.42f, 0.43f, 0.46f), 0.85f, 0.8f, 0.9f, 1.05f),
-        ("MacKenzieScott", "MacKenzie Scott (novelista y filántropa)", 26f, new Color(0.62f, 0.75f, 0.88f), 0.95f, 1.05f, 1.05f, 0.95f),
-        ("IbrahimTraore", "Ibrahim Traoré (capitán)", 28f, new Color(0.33f, 0.36f, 0.24f), 1.25f, 1.2f, 1.3f, 1.05f),
+        ("Sadhguru", "Sadhguru (maestro de yoga)", 14f, new Color(0.5f, 0.72f, 0.62f), 1.0f, 1.2f, 1.4f, 1.0f),   // ficha: docs/personajes/sadhguru.md
+        ("ElonMusk", "Elon Musk (vehículos eléctricos y cohetes)", 18f, new Color(0.08f, 0.08f, 0.09f), 1.05f, 0.95f, 1.0f, 1.1f),   // ficha: docs/personajes/elonmusk.md
+        ("Goku", "Goku (artes marciales)", 20f, new Color(0.95f, 0.47f, 0.12f), 1.6f, 1.5f, 1.6f, 1.1f),   // ficha: docs/personajes/goku.md
+        ("BillGates", "Bill Gates (software y salud pública)", 22f, new Color(0.22f, 0.32f, 0.55f), 0.95f, 0.95f, 1.0f, 1.0f),   // ficha: docs/personajes/billgates.md
+        ("WarrenBuffett", "Warren Buffett (inversor)", 24f, new Color(0.42f, 0.43f, 0.46f), 0.85f, 0.8f, 0.9f, 1.05f),   // ficha: docs/personajes/warrenbuffett.md
+        ("MacKenzieScott", "MacKenzie Scott (novelista y filántropa)", 26f, new Color(0.62f, 0.75f, 0.88f), 0.95f, 1.05f, 1.05f, 0.95f),   // ficha: docs/personajes/mackenziescott.md
+        ("IbrahimTraore", "Ibrahim Traoré (capitán)", 28f, new Color(0.33f, 0.36f, 0.24f), 1.25f, 1.2f, 1.3f, 1.05f),   // ficha: docs/personajes/ibrahimtraore.md
     };
 }

@@ -23,58 +23,58 @@ public static class Professions
 
     /// <summary>El personal sanitario de verdad (lo primero que busca el equipo de los submarinos): Lizmibet, médica; Linduarda, la doctora
     /// de la iniciación; Ivelyna, pediatra.</summary>
-    public static readonly string[] Medical = { "Lizmibet", "Linduarda", "Ivelyna" };
+    public static readonly string[] Medical = { "Lizmibet", "Linduarda", "Ivelyna" };   // fichas: linduarda.md, lizmibet.md, ivelyna.md
 
-    public static readonly Entry[] All =
+    public static readonly Entry[] All =   // el puesto de cada uno va también en su ficha: docs/personajes/<nombre>.md
     {
         // Josedrilo: MAESTRO JEFE DE HATHA (YogaTeacher), JEFE DE OBRA NUEVA (las obras: «obra_») y bioconstrucción (el material: «mat_»).
-        new Entry("Josedrilo", "maestro de Hatha, jefe de obra nueva y bioconstrucción", "Sala de Yoga", "Construcción:obra_,mat_"),
+        new Entry("Josedrilo", "maestro de Hatha, jefe de obra nueva y bioconstrucción", "Sala de Yoga", "Construcción:obra_,mat_"),   // ficha: docs/personajes/josedrilo.md
         // Consol (2026-11-05): MAESTRA JEFA DE ASHTANGA (AshtangaTeacher). Da la clase de las 14 h y prepara la del día (yog_ashtanga). Las de grupo
         // «clase_yoga» son Hatha: no entran en su profesión.
-        new Entry("Consol", "maestra de Ashtanga", "Sala de Yoga:yog_ashtanga"),
+        new Entry("Consol", "maestra de Ashtanga", "Sala de Yoga:yog_ashtanga"),   // ficha: docs/personajes/consol.md
         // Fernando (2026-11-05): PANELES SOLARES. Sus misiones son las del área Energía: los paneles («sol_») y las revisiones del parque («ene_»; docs/energia.md).
-        new Entry("Fernando", "instalador y reparador de paneles solares", EnergyRule.Area),
+        new Entry("Fernando", "instalador y reparador de paneles solares", EnergyRule.Area),   // ficha: docs/personajes/fernando.md
         // Tote: JEFE DE REPARACIONES («rep_») y guardia.
-        new Entry("JefeConstruccion", "jefe de reparaciones y guardia", "Construcción:rep_", "Guardia", AreaWork.GuardRoom),
+        new Entry("JefeConstruccion", "jefe de reparaciones y guardia", "Construcción:rep_", "Guardia", AreaWork.GuardRoom),   // ficha: docs/personajes/tote.md
         // Los guardias: Gohageneis (y las artes marciales), Nesvitor (y agricultor) y Tote.
-        new Entry("Gohageneis", "guardia, artes marciales y maestro de baile", "Guardia", AreaWork.GuardRoom),
+        new Entry("Gohageneis", "guardia, artes marciales y maestro de baile", "Guardia", AreaWork.GuardRoom),   // ficha: docs/personajes/gohageneis.md
         // Panterilia: MAESTRA DE BAILE y FINANZAS (la mesa de cuentas del restaurante). Dejó de ser segunda maestra de yoga (2026-11-05: sin base documentada).
-        new Entry("Panterilia", "maestra de baile y finanzas", "Cocina:coc_cuentas"),
+        new Entry("Panterilia", "maestra de baile y finanzas", "Cocina:coc_cuentas"),   // ficha: docs/personajes/panterilia.md
         // Julian: DIRECCIÓN DE PROYECTOS, con Alicita (con_proyectos y con_proyectos2: uno cada uno).
-        new Entry("Julian", "dirección de proyectos", "Construcción:con_proyectos"),
-        new Entry("Nesvitor", "guardia y agricultor", "Guardia", AreaWork.GuardRoom, "Huerto"),
+        new Entry("Julian", "dirección de proyectos", "Construcción:con_proyectos"),   // ficha: docs/personajes/julian.md
+        new Entry("Nesvitor", "guardia y agricultor", "Guardia", AreaWork.GuardRoom, "Huerto"),   // ficha: docs/personajes/nesvitor.md
         // Maite: jefa de cocina con Amykhuz, y CURANDERA (las plantas medicinales y las curas del hospital).
-        new Entry("Maite", "jefa de cocina y curandera", "Cocina", "Hospital:hos_plantas,enf_visita"),
-        new Entry("Amykhuz", "jefe de cocina y química", "Cocina", "Química"),
+        new Entry("Maite", "jefa de cocina y curandera", "Cocina", "Hospital:hos_plantas,enf_visita"),   // ficha: docs/personajes/maite.md
+        new Entry("Amykhuz", "jefe de cocina y química", "Cocina", "Química"),   // ficha: docs/personajes/amykhuz.md
         // Shalva, profesional de cultivo: EL JARDINERO FRUTAL (su misión de profesión en el Huerto es una ronda de frutales; la experta de los
         // frutales era Irosene, que ahora es de letras y textil). El riego y la cosecha del huerto le llegan por la rotación, como a todos.
-        new Entry("Shalva", "cultivo (jardinero frutal) y bioconstrucción", "Huerto:jar_frutales", "Construcción:mat_"),
+        new Entry("Shalva", "cultivo (jardinero frutal) y bioconstrucción", "Huerto:jar_frutales", "Construcción:mat_"),   // ficha: docs/personajes/shalva.md
         // Submarinismo: los submarinos (el de obra y la ambulancia) y las tareas bajo el agua de los árboles salen de Construcción.
-        new Entry("Adaguchi", "submarinismo y cocina", "Construcción", "Cocina"),
+        new Entry("Adaguchi", "submarinismo y cocina", "Construcción", "Cocina"),   // ficha: docs/personajes/adaguchi.md
         // Asuntos legales y lenguas: aún no hay área propia; su mesa está en la sala de estudio del Aula, donde da clase de lenguas.
-        new Entry("Karen", "asuntos legales y lenguas", "Aula:aul_legal,aul_lenguas"),
-        new Entry("Alicita", "contabilidad y dirección de proyectos", "Cocina:coc_cuentas", "Construcción:con_proyectos"),
+        new Entry("Karen", "asuntos legales y lenguas", "Aula:aul_legal,aul_lenguas"),   // ficha: docs/personajes/karen.md
+        new Entry("Alicita", "contabilidad y dirección de proyectos", "Cocina:coc_cuentas", "Construcción:con_proyectos"),   // ficha: docs/personajes/alicita.md
         // Ducristin: GERENTE DE BANCA Y PROFESOR. No hay banco: lleva las finanzas en la mesa de cuentas del restaurante (donde entra el
         // dinero del santuario) y da clase en el Aula. Su mecánica pasa a Fausto.
-        new Entry("Ducristin", "gerente de banca y profesor", "Cocina:coc_cuentas", "Aula:aul_clase"),
-        new Entry("Fausto", "mecánico", "Mecánica"),
+        new Entry("Ducristin", "gerente de banca y profesor", "Cocina:coc_cuentas", "Aula:aul_clase"),   // ficha: docs/personajes/ducristin.md
+        new Entry("Fausto", "mecánico", "Mecánica"),   // ficha: docs/personajes/fausto.md
         // Andrea: COMUNICACIÓN (los avisos del santuario y la radio, en el comedor del restaurante —la torre de Servicios—, donde coinciden
         // todos a la hora de comer). Su papel de entrenador del gimnasio lo pone la rama del entrenamiento.
-        new Entry("Andrea", "comunicación", "Cocina:coc_avisos"),
+        new Entry("Andrea", "comunicación", "Cocina:coc_avisos"),   // ficha: docs/personajes/andrea.md
         // Irosene: LETRAS (clases de poesía y narración y lecturas en la sala de estudio del Aula) y su textil.
-        new Entry("Irosene", "letras (poesía y narración) y textil", "Aula:aul_letras", "Estudio Textil"),
+        new Entry("Irosene", "letras (poesía y narración) y textil", "Aula:aul_letras", "Estudio Textil"),   // ficha: docs/personajes/irosene.md
         // LOS SEIS NUEVOS (Berón 2026-11-04). Informática: el clúster de IA (sistemas, refrigeración y energía).
-        new Entry("David", "informática", "Informática"),
-        new Entry("Adonis", "informática", "Informática"),
+        new Entry("David", "informática", "Informática"),   // ficha: docs/personajes/david.md
+        new Entry("Adonis", "informática", "Informática"),   // ficha: docs/personajes/adonis.md
         // Biotecnología: el laboratorio de carne cultivada y la biología (con los fotobiorreactores del árbol, que se cuidan desde Biología).
-        new Entry("Yulo", "biotecnología", "Carne Cultivada", "Biología"),
-        new Entry("Lale", "biotecnología", "Carne Cultivada", "Biología"),
+        new Entry("Yulo", "biotecnología", "Carne Cultivada", "Biología"),   // ficha: docs/personajes/yulo.md
+        new Entry("Lale", "biotecnología", "Carne Cultivada", "Biología"),   // ficha: docs/personajes/lale.md
         // Pediatra: en el Hospital (pediatría de los niños de las personas; la Cría es de animales y le toca en la rotación como a todos).
-        new Entry("Ivelyna", "pediatría", "Hospital:hos_pediatria,enf_"),
-        new Entry("Malena", "pediatría", "Hospital:hos_pediatria,enf_"),
+        new Entry("Ivelyna", "pediatría", "Hospital:hos_pediatria,enf_"),   // ficha: docs/personajes/ivelyna.md
+        new Entry("Malena", "pediatría", "Hospital:hos_pediatria,enf_"),   // ficha: docs/personajes/malena.md
         // Piloto: la flota de alfombras voladoras y el transporte aéreo (en la Mecánica) y el vuelo y el control de misión de la lanzadera.
         // Los submarinos siguen con Adaguchi.
-        new Entry("Luciana", "piloto y artes marciales: alfombras, transporte aéreo y lanzadera", "Mecánica:mec_alfombras", "Control de misión"),
+        new Entry("Luciana", "piloto y artes marciales: alfombras, transporte aéreo y lanzadera", "Mecánica:mec_alfombras", "Control de misión"),   // ficha: docs/personajes/luciana.md
     };
 
     /// <summary>(2026-11-04) Los MAESTROS de una clase de entrenamiento o de ocio que no es misión de grupo: el baile (Berón: «Panterilia y
@@ -107,7 +107,7 @@ public static class Professions
     }
 
     /// <summary>El nombre de su ficha: docs/personajes/&lt;nombre&gt;.md.</summary>
-    public static string DocName(string who) => who == "Player" ? "kushal" : who == "JefeConstruccion" ? "tote" : who.ToLowerInvariant();
+    public static string DocName(string who) => who == "Player" ? "kushal" : who == "JefeConstruccion" ? "tote" : who.ToLowerInvariant();   // índice, plantilla y tabla de lo completa que está cada ficha: docs/personajes/README.md
 
     /// <summary>LA BASE DOCUMENTADA DE CADA PUESTO (Berón 2026-11-05; docs/reglas-personajes.md, R7): de dónde sale.
     /// Lo que queda por confirmar va en <see cref="Unconfirmed"/>. Al añadir o cambiar un puesto, se cambia aquí y en su ficha.</summary>

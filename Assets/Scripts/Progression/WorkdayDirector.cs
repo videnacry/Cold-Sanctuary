@@ -16,7 +16,7 @@ public class WorkdayDirector : MonoBehaviour
 {
     public static WorkdayDirector Instance { get; private set; }
 
-    public static readonly string[] Staff = { "Player", "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene", "JefeConstruccion", "Andrea",
+    public static readonly string[] Staff = { "Player", "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene", "JefeConstruccion", "Andrea",   // FICHA DE CADA UNO: docs/personajes/<nombre>.md (Professions.DocName; índice: docs/personajes/README.md)
                                "Nesvitor", "Amykhuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi",   // familia y amigos de Berón (docs/diseno-personajes.md)
                                "Gallarle", "Julian", "Fausto",   // (2026-11-04) parejas: de Ducristin (Gallarle), de Alicita (Julian) y de Irosene (Fausto); pendientes de foto
                                "David", "Adonis", "Yulo", "Lale", "Ivelyna", "Luciana", "Malena",   // (2026-11-04) seis nuevos y Malena (2026-11-05): informática, biotecnología, pediatría y piloto

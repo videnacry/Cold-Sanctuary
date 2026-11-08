@@ -2073,7 +2073,7 @@ public static partial class SampleSceneBuilder
 
         WorldCharacter playerWC = player.GetComponent<WorldCharacter>();
         if (playerWC == null) playerWC = player.AddComponent<WorldCharacter>();
-        playerWC.characterName = "Player";
+        playerWC.characterName = "Player";   // Kushal, el jugador: ficha en docs/personajes/kushal.md
         playerWC.isPlayer = true;
     }
 
@@ -2793,7 +2793,7 @@ public static partial class SampleSceneBuilder
     static void BuildMagnate(Transform parent)
     {
         GameObject m = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-        m.name = "Magnate"; m.transform.SetParent(parent); m.transform.position = new Vector3(6f, 1f, 6f);
+        m.name = "Magnate"; m.transform.SetParent(parent); m.transform.position = new Vector3(6f, 1f, 6f);   // ficha: docs/personajes/magnate.md
         var r = m.GetComponent<Renderer>(); if (r != null) r.sharedMaterial = MakeMaterial("Magnate_MAT", new Color(0.85f, 0.8f, 0.95f));
         m.AddComponent<Anima>();
         m.AddComponent<Mind>().identity = "Magnate";
@@ -3024,7 +3024,7 @@ public static partial class SampleSceneBuilder
         return g;
     }
 
-    static void BuildLinduarda(Transform parent)
+    static void BuildLinduarda(Transform parent)   // ficha: docs/personajes/linduarda.md (y lizmibet.md, tote.md, andrea.md, neo.md, que también se crean aquí)
     {
         GameObject root = new GameObject("Enfermeria_AUTO"); root.transform.SetParent(parent);
 
@@ -3040,7 +3040,7 @@ public static partial class SampleSceneBuilder
         // LIZMIBET (docs/character-irosene.md): la gran amiga de Irosene, de su misma edad (70+), llegada con ella desde
         // Ecuador, co-abuela de Leo; también MÉDICA: atiende con Linduarda en la enfermería.
         GameObject liz = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-        liz.name = "Lizmibet"; liz.transform.SetParent(root.transform); liz.transform.position = new Vector3(10f, 1f, 8f);
+        liz.name = "Lizmibet"; liz.transform.SetParent(root.transform); liz.transform.position = new Vector3(10f, 1f, 8f);   // ficha: docs/personajes/lizmibet.md
         var lr = liz.GetComponent<Renderer>(); if (lr != null) lr.sharedMaterial = MakeMaterial("Lizmibet_MAT", new Color(0.95f, 0.95f, 0.97f));
         Anima lza = liz.AddComponent<Anima>();
         lza.strength = 0.95f; lza.agility = 1.05f; lza.endurance = 1.2f; lza.bodyMass = 1.05f;   // activa a sus 70 y tantos
@@ -3051,20 +3051,20 @@ public static partial class SampleSceneBuilder
         // Su ESPOSO, JEFE DE CONSTRUCCIÓN (docs/construction-simulation.md): repara y levanta las estructuras de las áreas
         // humanas desde el área de Construcción (maquinaria y material). JOSEDRILO da las clases de yoga (el profesional; antes Andrea y Sadhguru).
         // ANDREA es uno de los DUEÑOS del santuario (los turistas son una de sus vías de ingresos).
-        MakeCharacter(root.transform, "JefeConstruccion", "Tote · Tofelite (jefe de construcción)",   // Tofelite, esposo de Lizmibet; lo suelen llamar Tote. El id sigue siendo JefeConstruccion (escenas y pruebas)
+        MakeCharacter(root.transform, "JefeConstruccion", "Tote · Tofelite (jefe de construcción)",   // Tofelite, esposo de Lizmibet; lo suelen llamar Tote. El id sigue siendo JefeConstruccion (escenas y pruebas) · ficha: docs/personajes/tote.md
              new Vector3(12f, 1f, 8f), new Color(0.78f, 0.8f, 0.82f), 1.3f, 0.95f, 1.25f, 1.15f);
-        MakeCharacter(root.transform, "Andrea", "Andrea (dueño del santuario y entrenador del gimnasio)", new Vector3(16f, 1f, 8f), new Color(0.08f, 0.08f, 0.09f), 1.6f, 1.2f, 1.3f, 1.05f);   // (2026-11-04) «el personaje con más fuerza es Andrea»: 1,6, por encima de Goluis (1,5)
+        MakeCharacter(root.transform, "Andrea", "Andrea (dueño del santuario y entrenador del gimnasio)", new Vector3(16f, 1f, 8f), new Color(0.08f, 0.08f, 0.09f), 1.6f, 1.2f, 1.3f, 1.05f);   // (2026-11-04) «el personaje con más fuerza es Andrea»: 1,6, por encima de Goluis (1,5) · ficha: docs/personajes/andrea.md
         // (2026-11-04) SADHGURU y LOS SEIS DEL MESOCOSMOS ya no se construyen aquí: Berón los sacó a sus microcosmos («los personajes
         // famosos … sácalos del mesocosmos y crea sus microcosmos respectivos»). Sus datos siguen en MesoCharacters y su aspecto en
         // CubeHair.For; sus papeles los llevan otros (docs/personajes-mesocosmos.md §Reparto de papeles).
         // LA FAMILIA Y LOS AMIGOS DE BERÓN (2026-11-04, de sus fotos; docs/diseno-personajes.md §Familia y amigos): personal
         // de la rotación; cinco llevan además un papel de los famosos que se fueron. Entran en la jornada, el horario libre y la arboleda.
-        foreach (var (id, label, x, clothes, s, ag, en, m) in FamilyCharacters)
+        foreach (var (id, label, x, clothes, s, ag, en, m) in FamilyCharacters)   // cada uno: su ficha en docs/personajes/
             MakeCharacter(root.transform, id, label, new Vector3(x, 1f, 8f), clothes, s, ag, en, m);
         // (2026-11-04) NEO, niño, hijo de Ducristin y Gallarle (Berón). Con el ciclo de vida de los humanos (PersonLife:
         // etapa de niño, crece comiendo y durmiendo) y sus padres enlazados: de niño va con Gallarle (FollowMother) y vive en su casa del
         // árbol (Bedroom.kids). No está en la jornada (no trabaja). Sus padres llevan el mismo ciclo de vida, sin embarazos (female = false).
-        GameObject neo = MakeCharacter(root.transform, "Neo", "Neo (niño)", new Vector3(66f, 1f, 8f), new Color(0.3f, 0.55f, 0.75f), 0.5f, 1.1f, 0.8f, 0.45f);
+        GameObject neo = MakeCharacter(root.transform, "Neo", "Neo (niño)", new Vector3(66f, 1f, 8f), new Color(0.3f, 0.55f, 0.75f), 0.5f, 1.1f, 0.8f, 0.45f);   // ficha: docs/personajes/neo.md
         GameObject duc = root.transform.Find("Ducristin")?.gameObject, gal = root.transform.Find("Gallarle")?.gameObject;
         PersonLife neoLife = PersonLife.Equip(neo, false, newborn: true);
         if (neo.TryGetComponent(out BodyAging neoAge)) neoAge.growth = 0.35f;   // un niño (niño < 0,6 de crecimiento; BodyAging)
@@ -3291,7 +3291,7 @@ public static partial class SampleSceneBuilder
 
         // Compañeros POR COMPOSICIÓN (fase 5, CompanionBase retirado): Anima + SoulComposition(arquetipo) +
         // Mind + MoodState(curvas+anchors) + su componente de comportamiento propio.
-        GameObject gohageneis = MakePlaceholderPerson("Gohageneis_Post", new Vector3(5f, 1f, -5f), new Color(0.95f, 0.5f, 0.2f));
+        GameObject gohageneis = MakePlaceholderPerson("Gohageneis_Post", new Vector3(5f, 1f, -5f), new Color(0.95f, 0.5f, 0.2f));   // ficha: docs/personajes/gohageneis.md
         gohageneis.transform.SetParent(charactersGroup.transform);
         MoodState gohaMood = MakeCompanionCore(gohageneis, "Gohageneis");
         gohaMood.restingMoodMin = 0.65f; gohaMood.restingMoodMax = 0.9f; gohaMood.moodModMin = 0.4f; gohaMood.moodModMax = 1.2f; gohaMood.fatigueRate = 0.00008f;
@@ -3303,7 +3303,7 @@ public static partial class SampleSceneBuilder
         gohageneis.AddComponent<CarnivoreKeeper>();   // GUARDIA: patrulla (alimentar a los depredadores es la misión del alimentador)
         gohageneis.AddComponent<WorldCharacter>().characterName = "Gohageneis";
 
-        GameObject goluis = MakePlaceholderPerson("Goluis_Post", new Vector3(-5f, 1f, -5f), new Color(0.4f, 0.4f, 0.55f));
+        GameObject goluis = MakePlaceholderPerson("Goluis_Post", new Vector3(-5f, 1f, -5f), new Color(0.4f, 0.4f, 0.55f));   // ficha: docs/personajes/goluis.md
         goluis.transform.SetParent(charactersGroup.transform);
         MoodState golMood = MakeCompanionCore(goluis, "Goluis");
         golMood.restingMoodMin = 0.3f; golMood.restingMoodMax = 0.65f; golMood.moodModMin = -0.3f; golMood.moodModMax = 0.7f; golMood.fatigueRate = 0.0003f;
@@ -3314,7 +3314,7 @@ public static partial class SampleSceneBuilder
         goluis.AddComponent<Goluis>();
         goluis.AddComponent<WorldCharacter>().characterName = "Goluis";
 
-        GameObject panterilia = MakePlaceholderPerson("Panterilia_Post", new Vector3(0f, 1f, -12f), new Color(0.55f, 0.25f, 0.5f));
+        GameObject panterilia = MakePlaceholderPerson("Panterilia_Post", new Vector3(0f, 1f, -12f), new Color(0.55f, 0.25f, 0.5f));   // ficha: docs/personajes/panterilia.md
         panterilia.transform.SetParent(charactersGroup.transform);
         MoodState pantMood = MakeCompanionCore(panterilia, "Panterilia");
         pantMood.restingMoodMin = 0.55f; pantMood.restingMoodMax = 0.8f; pantMood.moodModMin = 0.3f; pantMood.moodModMax = 1f; pantMood.stressPenalty = 0.6f; pantMood.fatigueRate = 0.00015f;
@@ -3326,7 +3326,7 @@ public static partial class SampleSceneBuilder
         panterilia.AddComponent<WorldCharacter>().characterName = "Panterilia";
 
         // Irosene — compañera motivacional (canal primario = Satisfacción). Ver docs/character-irosene.md.
-        GameObject irosene = MakePlaceholderPerson("Irosene_Post", new Vector3(3f, 1f, -13f), new Color(0.90f, 0.55f, 0.40f));
+        GameObject irosene = MakePlaceholderPerson("Irosene_Post", new Vector3(3f, 1f, -13f), new Color(0.90f, 0.55f, 0.40f));   // ficha: docs/personajes/irosene.md
         irosene.transform.SetParent(charactersGroup.transform);
         MoodState iroMood = MakeCompanionCore(irosene, "Irosene");
         iroMood.primaryChannel = MindChannel.Satisfaction; iroMood.baseRestorationRate = 0.03f;

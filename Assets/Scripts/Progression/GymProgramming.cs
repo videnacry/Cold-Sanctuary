@@ -198,25 +198,25 @@ public static class GymProgramming
 
     static Dictionary<string, Profile> BuildProfiles() => new Dictionary<string, Profile>
     {
-        { "Player", P(TrainingSplit.CuerpoEntero, TrainingGoal.Hipertrofia, 0.9f, "Kushal, recién llegado: principiante, cuerpo entero 3 d (ACSM: 2–3 d/sem al empezar).", 0, 2, 4) },
-        { "Linduarda", P(TrainingSplit.EmpujeTironPierna, TrainingGoal.Hipertrofia, 0.8f, "«Deportista, gimnasio a diario»: empuje/tirón/pierna 6 d (cada músculo 2×/sem).", 0, 1, 2, 3, 4, 5) },
-        { "Lizmibet", P(TrainingSplit.CuerpoEntero, TrainingGoal.Salud, 0.45f, "Más de 70 años: fuerza 2 d/sem en máquinas guiadas (OMS y ACSM para mayores).", 1, 4) },
-        { "Goluis", P(TrainingSplit.TorsoPierna, TrainingGoal.Fuerza, 1.4f, "Corpulento, jefe de cocina: torso/pierna 4 d de fuerza (4–6 reps).", 0, 1, 3, 4) },
-        { "Panterilia", P(TrainingSplit.CuerpoEntero, TrainingGoal.Hipertrofia, 0.75f, "Delgada, 42 años: cuerpo entero 3 d para ganar músculo.", 1, 3, 5) },
-        { "Gohageneis", P(TrainingSplit.EmpujeTironPierna, TrainingGoal.Fuerza, 1.1f, "Artes marciales y Guardia: fuerza en empuje/tirón/pierna 3 d (el resto, su dojo).", 0, 2, 4) },
-        { "Irosene", P(TrainingSplit.CuerpoEntero, TrainingGoal.Resistencia, 0.5f, "Más de 70, corre, escala y bucea: resistencia muscular 2 d (15–20 reps).", 2, 5) },
-        { "JefeConstruccion", P(TrainingSplit.TorsoPierna, TrainingGoal.Resistencia, 1.15f, "Tote, robusto, jornadas de obra: torso/pierna 4 d de resistencia.", 1, 2, 4, 5) },
-        { "Andrea", P(TrainingSplit.TorsoPierna, TrainingGoal.Fuerza, 1.5f, "El de más fuerza y entrenador del gimnasio; corre 25 km: torso/pierna 4 d de fuerza (la fuerza pesada mejora la economía de carrera).", 0, 2, 3, 5) },
-        { "Nesvitor", P(TrainingSplit.CuerpoEntero, TrainingGoal.Salud, 0.6f, "El mayor de las cuentas: salud, 2 d en máquinas guiadas.", 0, 3) },
-        { "Amykhuz", P(TrainingSplit.TorsoPierna, TrainingGoal.Hipertrofia, 0.85f, "Delgado: torso/pierna 4 d para ganar masa.", 0, 1, 3, 4) },
-        { "Karen", P(TrainingSplit.CuerpoEntero, TrainingGoal.Resistencia, 0.6f, "Entrena con Amykhuz los lunes: cuerpo entero 3 d de resistencia.", 0, 2, 4) },
-        { "Alicita", P(TrainingSplit.EmpujeTironPierna, TrainingGoal.Hipertrofia, 0.65f, "Huerto (cargar cajas): empuje/tirón/pierna 3 d.", 1, 3, 5) },
-        { "Ducristin", P(TrainingSplit.TorsoPierna, TrainingGoal.Fuerza, 1f, "Mecánico (levantar piezas): torso/pierna 4 d de fuerza.", 0, 2, 3, 5) },
-        { "Josedrilo", P(TrainingSplit.EmpujeTironPierna, TrainingGoal.Hipertrofia, 1f, "El profesional del yoga (y la bioconstrucción): empuje/tirón/pierna 3 d; los demás días, el yoga.", 1, 3, 5) },
-        { "Maite", P(TrainingSplit.CuerpoEntero, TrainingGoal.Resistencia, 0.65f, "Registros y vacunación (mucho de pie): cuerpo entero 3 d de resistencia.", 1, 3, 5) },
-        { "Shalva", P(TrainingSplit.TorsoPierna, TrainingGoal.Hipertrofia, 0.9f, "Personal general: torso/pierna 4 d.", 1, 2, 4, 5) },
-        { "Adaguchi", P(TrainingSplit.Weider, TrainingGoal.Hipertrofia, 0.9f, "Sudadera sin mangas, estilo culturista: Weider 5 d (un grupo por día; cada músculo 1×/sem).", 0, 1, 2, 3, 4) },
-        { "Consol", P(TrainingSplit.CuerpoEntero, TrainingGoal.Salud, 0.7f, "Maestra de Ashtanga: da la clase de las 14 h de lunes a viernes; sábado y domingo, gimnasio suave.", 5, 6) },
+        { "Player", P(TrainingSplit.CuerpoEntero, TrainingGoal.Hipertrofia, 0.9f, "Kushal, recién llegado: principiante, cuerpo entero 3 d (ACSM: 2–3 d/sem al empezar).", 0, 2, 4) },   // ficha: docs/personajes/kushal.md
+        { "Linduarda", P(TrainingSplit.EmpujeTironPierna, TrainingGoal.Hipertrofia, 0.8f, "«Deportista, gimnasio a diario»: empuje/tirón/pierna 6 d (cada músculo 2×/sem).", 0, 1, 2, 3, 4, 5) },   // ficha: docs/personajes/linduarda.md
+        { "Lizmibet", P(TrainingSplit.CuerpoEntero, TrainingGoal.Salud, 0.45f, "Más de 70 años: fuerza 2 d/sem en máquinas guiadas (OMS y ACSM para mayores).", 1, 4) },   // ficha: docs/personajes/lizmibet.md
+        { "Goluis", P(TrainingSplit.TorsoPierna, TrainingGoal.Fuerza, 1.4f, "Corpulento, jefe de cocina: torso/pierna 4 d de fuerza (4–6 reps).", 0, 1, 3, 4) },   // ficha: docs/personajes/goluis.md
+        { "Panterilia", P(TrainingSplit.CuerpoEntero, TrainingGoal.Hipertrofia, 0.75f, "Delgada, 42 años: cuerpo entero 3 d para ganar músculo.", 1, 3, 5) },   // ficha: docs/personajes/panterilia.md
+        { "Gohageneis", P(TrainingSplit.EmpujeTironPierna, TrainingGoal.Fuerza, 1.1f, "Artes marciales y Guardia: fuerza en empuje/tirón/pierna 3 d (el resto, su dojo).", 0, 2, 4) },   // ficha: docs/personajes/gohageneis.md
+        { "Irosene", P(TrainingSplit.CuerpoEntero, TrainingGoal.Resistencia, 0.5f, "Más de 70, corre, escala y bucea: resistencia muscular 2 d (15–20 reps).", 2, 5) },   // ficha: docs/personajes/irosene.md
+        { "JefeConstruccion", P(TrainingSplit.TorsoPierna, TrainingGoal.Resistencia, 1.15f, "Tote, robusto, jornadas de obra: torso/pierna 4 d de resistencia.", 1, 2, 4, 5) },   // ficha: docs/personajes/tote.md
+        { "Andrea", P(TrainingSplit.TorsoPierna, TrainingGoal.Fuerza, 1.5f, "El de más fuerza y entrenador del gimnasio; corre 25 km: torso/pierna 4 d de fuerza (la fuerza pesada mejora la economía de carrera).", 0, 2, 3, 5) },   // ficha: docs/personajes/andrea.md
+        { "Nesvitor", P(TrainingSplit.CuerpoEntero, TrainingGoal.Salud, 0.6f, "El mayor de las cuentas: salud, 2 d en máquinas guiadas.", 0, 3) },   // ficha: docs/personajes/nesvitor.md
+        { "Amykhuz", P(TrainingSplit.TorsoPierna, TrainingGoal.Hipertrofia, 0.85f, "Delgado: torso/pierna 4 d para ganar masa.", 0, 1, 3, 4) },   // ficha: docs/personajes/amykhuz.md
+        { "Karen", P(TrainingSplit.CuerpoEntero, TrainingGoal.Resistencia, 0.6f, "Entrena con Amykhuz los lunes: cuerpo entero 3 d de resistencia.", 0, 2, 4) },   // ficha: docs/personajes/karen.md
+        { "Alicita", P(TrainingSplit.EmpujeTironPierna, TrainingGoal.Hipertrofia, 0.65f, "Huerto (cargar cajas): empuje/tirón/pierna 3 d.", 1, 3, 5) },   // ficha: docs/personajes/alicita.md
+        { "Ducristin", P(TrainingSplit.TorsoPierna, TrainingGoal.Fuerza, 1f, "Mecánico (levantar piezas): torso/pierna 4 d de fuerza.", 0, 2, 3, 5) },   // ficha: docs/personajes/ducristin.md
+        { "Josedrilo", P(TrainingSplit.EmpujeTironPierna, TrainingGoal.Hipertrofia, 1f, "El profesional del yoga (y la bioconstrucción): empuje/tirón/pierna 3 d; los demás días, el yoga.", 1, 3, 5) },   // ficha: docs/personajes/josedrilo.md
+        { "Maite", P(TrainingSplit.CuerpoEntero, TrainingGoal.Resistencia, 0.65f, "Registros y vacunación (mucho de pie): cuerpo entero 3 d de resistencia.", 1, 3, 5) },   // ficha: docs/personajes/maite.md
+        { "Shalva", P(TrainingSplit.TorsoPierna, TrainingGoal.Hipertrofia, 0.9f, "Personal general: torso/pierna 4 d.", 1, 2, 4, 5) },   // ficha: docs/personajes/shalva.md
+        { "Adaguchi", P(TrainingSplit.Weider, TrainingGoal.Hipertrofia, 0.9f, "Sudadera sin mangas, estilo culturista: Weider 5 d (un grupo por día; cada músculo 1×/sem).", 0, 1, 2, 3, 4) },   // ficha: docs/personajes/adaguchi.md
+        { "Consol", P(TrainingSplit.CuerpoEntero, TrainingGoal.Salud, 0.7f, "Maestra de Ashtanga: da la clase de las 14 h de lunes a viernes; sábado y domingo, gimnasio suave.", 5, 6) },   // ficha: docs/personajes/consol.md
     };
 
     /// <summary>¿Puede tener plan de gimnasio? Los humanos del santuario sí; los humanos-insecto de los microcosmos no: en sus
