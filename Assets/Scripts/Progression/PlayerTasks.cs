@@ -338,7 +338,7 @@ public static class PlayerTasks
         ["secuenciador"] = new[] { "secuenciador" },
         ["fotobiorreactor"] = new[] { "fotobio", "espirulina", "tubo" },
         // (2026-11-08) el Huerto vertical
-        ["estante_cultivo"] = new[] { "estanteria_led", "estante de cultivo" },
+        ["estante_cultivo"] = new[] { "estanteria_led", "estanteria led", "estante de cultivo" },
         ["vivero"] = new[] { "vivero", "germinacion", "semillero" },
         ["lavado"] = new[] { "lavado", "embolsado" },
         ["camara_verdura"] = new[] { "camara de verdura", "camara_verdura", "camara fria", "camara" },

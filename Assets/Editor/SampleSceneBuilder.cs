@@ -3465,9 +3465,14 @@ public static partial class SampleSceneBuilder
         SanctuaryArea music = BuildMusic(areasGroup.transform); areas.Add(music);
         //  · PRODUCCIÓN (más baja, junto al Árbol de los Campos): Construcción · Mecánica · Estudio Textil. La maquinaria
         //    pesada, abajo.
-        //    Un ÁRBOL: 2 niveles desde 96 m (por encima de Servicios y Ciencias); sus 3 pisos en orden y uno libre; 4 puntas con frutales.
-        BeginTreeTower(areasGroup.transform, TorreProduccion, ProduccionCenter, ProduccionSize, ProduccionYaw, 2, ProduccionFirstY, 4f);
+        //    Un ÁRBOL: sus 3 pisos en orden, el HUERTO VERTICAL (2026-11-08: los pisos de estantes LED que pida la demanda de verdura, regla P19;
+        //    docs/produccion-maquinaria.md) y el garaje del submarino en el primer piso libre; los niveles que hagan falta (2 pisos por nivel; hoy 3).
+        var (farmRacks, farmFloors) = VerticalFarmPlan();
+        int prodLevels = Mathf.Max(2, Mathf.CeilToInt((3 + farmFloors + 1) / 2f));
+        BeginTreeTower(areasGroup.transform, TorreProduccion, ProduccionCenter, ProduccionSize, ProduccionYaw, prodLevels, ProduccionFirstY, 4f);
         Floor(works.transform); Floor(mech.transform); Floor(textile.transform);
+        if (farmRacks > 0) { SanctuaryArea farm = BuildVerticalFarm(areasGroup.transform); areas.Add(farm); }
+        Debug.Log($"[Torres] Producción: {prodLevels} niveles (Construcción, Mecánica, Estudio Textil, {farmFloors} piso(s) de Huerto vertical con {farmRacks} estantes y el garaje).");
         BuildResidenceTower(areasGroup.transform);   // la Residencia: edificio-árbol en la isla (docs/residencia.md)
         // Los EDIFICIOS que juntan varias áreas llevan el nombre de su torre (el de su planta baja diría solo una).
         BuildingNames[kitchen.transform] = TorreServicios; BuildingNames[gym.transform] = TorreEntrenamiento; BuildingNames[works.transform] = TorreProduccion;
@@ -3499,11 +3504,13 @@ public static partial class SampleSceneBuilder
         //    y la torre de Foucault) · Química (síntesis y análisis) · Biología (cultivo y molecular). El reactor de
         //    investigación va abajo: su piscina baja como un pilar hasta el suelo.
         //    Un ÁRBOL: 4 niveles; sus 7 pisos en orden (el reactor abajo: su piscina cuelga 4 m bajo la losa) y uno libre; 8 puntas con frutales.
-        BeginTreeTower(areasGroup.transform, TorreCiencias, CienciasCenter, CienciasSize, CienciasYaw, 4);
+        Helix ciencias = BeginTreeTower(areasGroup.transform, TorreCiencias, CienciasCenter, CienciasSize, CienciasYaw, 4);
         SanctuaryArea chem = BuildChemistry(areasGroup.transform); areas.Add(chem);
         SanctuaryArea bio = BuildBiology(areasGroup.transform); areas.Add(bio);
         // (2026-11-04) INFORMÁTICA (docs/piso-informatica.md): el piso libre de Ciencias, encima de Biología: el clúster de IA local.
         SanctuaryArea info = BuildInformatics(areasGroup.transform); areas.Add(info);
+        // (2026-11-08) LA SEGUNDA FACHADA DE FOTOBIORREACTORES (docs/fotobiorreactores.md §2026-11-08): en el tronco de Ciencias, junto a Biología, que la cuida.
+        BuildFotobioTower(ciencias);
         // EL SITIO NUCLEAR (Berón 2026-11-05; docs/sitio-nuclear.md): su casquete y su árbol bajo, lejos y a sotavento. Abajo los dos reactores,
         // encima el ciclotrón y la sala de experimentos, y arriba el Centro de emergencias y el garaje.
         BeginNuclearTree(areasGroup.transform);

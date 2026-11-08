@@ -35,6 +35,7 @@ public static class AreaDesign
         new Row("Construcción", State.Cumple, "construccion-sostenible.md", "muestrario de técnicas en el borde +Z (2026-11-05)", "Colombia (guadua y bahareque)", "Iberia, Magreb y Andes (tapia)", "Japón (kigumi)", "Nubia y Egipto (bóveda sin cimbra)", "Perú (sillería inca)"),
         new Row("Mecánica", State.Falta, "", "sin investigación de diseño"),
         new Row("Huerto", State.Cumple, "huertos-y-cultivos.md", "seis métodos del mundo junto al cultivo (2026-11-05)", "México (chinampa)", "Burkina Faso (zaï)", "Andes (andén)", "Europa central (hügelkultur)", "Corea (batdam)", "Bali (subak)"),
+        new Row(VerticalFarm.AreaName, State.Falta, "produccion-maquinaria.md", "técnica (NFT y LED, 2026-11-08); sin mezcla de culturas"),
         new Row("Calistenia", State.Falta, "", "sin investigación de diseño"),
         new Row("Cría", State.Falta, "cria-simulation.md", "sin investigación de diseño"),
         new Row("Carne Cultivada", State.Falta, "carne-cultivada.md", "técnica; sin mezcla"),
