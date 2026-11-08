@@ -34,6 +34,10 @@ public class HudModalsTest : MonoBehaviour, ITestUnit
         KeyCode[] keys = { HudModals.HorarioKey, HudModals.RecursosKey, HudModals.MisionesKey };
         TestProbe.Check("las teclas son distintas y no chocan con F1 ni con F10", keys.Distinct().Count() == 3 && !keys.Contains(HudGate.ToggleKey) && !keys.Contains(SceneLauncher.PauseKey), string.Join(", ", keys));
 
+        // Esc cede a un diálogo abierto (es lo que se quiere): sin ninguno, para probar la pila. Uno que dejó otra prueba se cierra y se dice cuál.
+        string left = GameKeys.OpenDialogs;
+        if (GameKeys.DialogOpen) { GameKeys.CloseDialogs(); float w0 = Time.realtimeSinceStartup; while (GameKeys.DialogOpen && Time.realtimeSinceStartup - w0 < 2f) yield return null; }
+        if (left.Length > 0) Debug.Log($"[TEST] (antes de la pila de ventanas había abierto: {left}; cerrado)");
         HudModals.Close();
         HudModals.Toggle(HudModals.Modal.Horario);
         TestProbe.Check("el horario se abre en la pila y HorarioPanel lo ve", HorarioPanel.Show && HudModals.Current == HudModals.Modal.Horario);

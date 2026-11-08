@@ -125,6 +125,7 @@ public class TestRunner : MonoBehaviour
     float _scale, _maxDelta;
     void Sanear(int group)
     {
+        if (GameKeys.DialogOpen) { Debug.LogError($"[TEST] FUGA del grupo {group}: se quedó abierto {GameKeys.OpenDialogs}."); GameKeys.CloseDialogs(); }   // (ronda 28: «Esc la cierra» fallaba con un diálogo de otro grupo abierto)
         if (!Mathf.Approximately(Time.timeScale, _scale)) { Debug.LogError($"[TEST] FUGA del grupo {group}: Time.timeScale {Time.timeScale} (era {_scale})."); Time.timeScale = _scale; }
         if (!Mathf.Approximately(Time.maximumDeltaTime, _maxDelta)) { Debug.LogError($"[TEST] FUGA del grupo {group}: maximumDeltaTime {Time.maximumDeltaTime} (era {_maxDelta})."); Time.maximumDeltaTime = _maxDelta; }
         WorkdayDirector wd = FindAnyObjectByType<WorkdayDirector>(FindObjectsInactive.Include);

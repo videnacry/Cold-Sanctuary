@@ -200,6 +200,25 @@ public class RepartoSantuariosTest : MonoBehaviour, ITestUnit
         TestProbe.Check("5 h justas (1 + 2 + 2) para una persona: caben todas, sin clon", Mathf.Approximately(Worked(pfit, fw), 5f) && pfit.clones.Count == 0, string.Join(" · ", pfit.work.Select(a => $"{a.worker.name} {a.start:0.#} {a.mission.id}")));
         TestProbe.Check("la obra cuenta turnos, no personas: uno puede hacer los tres del equipo", ConstructionProject.ShiftOf("obra_trabajo_Sala de Ballet") == "#1" && ConstructionProject.ShiftOf("obra_trabajo_Sala de Ballet#3") == "#3");
 
+        // LAS OPCIONALES (Berón 2026-11-08; docs/tareas-por-area.md): si nadie tiene tiempo, ese día no se hacen; nunca un clon para ellas
+        TestProbe.Check("la lista de opcionales: estudio y cuentas sí; seguridad, cuidado de seres vivos, comida y obras, nunca",
+            WorkRoster.IsOptional("aul_estudio") && WorkRoster.IsOptional("coc_cuentas") && !WorkRoster.IsOptional("hos_urgencias") && !WorkRoster.IsOptional("cri_vinculo") && !WorkRoster.IsOptional("coc_servicio") && !WorkRoster.IsOptional("con_almacen") && !WorkRoster.IsOptional("nuc_vigilancia")
+            && new WorkRoster.Mission("Aula", "aul_estudio", "", 1f).optional && !new WorkRoster.Mission("Aula", "aul_estudio", "", 1f, true).optional);
+        List<WorkRoster.Mission> Busy() { var l = Ms("A", "req", 5); l.Add(new WorkRoster.Mission("Aula", "aul_estudio", "Estudiar", 1f)); l.Add(new WorkRoster.Mission("Música", "son_grabar", "Grabar", 1f)); l.Add(new WorkRoster.Mission("Cocina", "coc_cuentas", "Cuentas", 0.5f)); return l; }
+        WorkRoster full = Roster(("Llena", 0));
+        WorkRoster.DayPlan pfull = full.Plan(0, Busy());
+        TestProbe.Check("sin tiempo libre, las opcionales se omiten y no hay clon para ellas (ni pendientes)",
+            pfull.clones.Count == 0 && pfull.skipped.Count == 3 && !pfull.work.Any(a => a.mission.optional) && pfull.backlog.Count == 0 && full.pending.Count == 0 && Mathf.Approximately(Worked(pfull, full.Find("Llena")), 5f),
+            $"{pfull.clones.Count} clones · omitidas: {string.Join(", ", pfull.skipped.Select(m => m.id))}");
+        WorkRoster roomy = Roster(("Holgada0", 0), ("Holgada1", 0));
+        WorkRoster.DayPlan proomy = roomy.Plan(0, Busy());
+        TestProbe.Check("con tiempo libre, las opcionales se hacen", proomy.skipped.Count == 0 && proomy.work.Count(a => a.mission.optional) == 3 && proomy.clones.Count == 0 && roomy.workers.All(w => Worked(proomy, w) <= WorkRoster.WorkHours + 1e-3f));
+        TestProbe.Check("las horas y la parte igual salen solo de las obligadas", Mathf.Approximately(pfull.hoursAt[S1], 5f), $"{pfull.hoursAt[S1]} h");
+        // Los clones bajan: lo mismo con todo obligado (como antes) pedía un clon para las opcionales
+        var asBefore = Busy().Select(x => { var c = x.Copy(); c.optional = false; return c; }).ToList();
+        WorkRoster.DayPlan pbefore = Roster(("Antes", 0)).Plan(0, asBefore);
+        TestProbe.Check("los clones del día bajan: con las opcionales como obligadas, 1 clon; ahora 0", pbefore.clones.Count == 1 && pfull.clones.Count == 0, $"antes {pbefore.clones.Count} · ahora {pfull.clones.Count}");
+
         // ── 4. Cambia cada día y con los datos ──
         WorkRoster six = Roster(("P0", 2), ("P1", 2), ("P2", 2), ("P3", 2), ("P4", 2), ("P5", 2));
         bool differs = true;

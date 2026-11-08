@@ -723,7 +723,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
             {
                 Loco.GoTo(threat.transform.position);
                 if (Vector3.Distance(transform.position, threat.transform.position) < 4f)
-                    threatTarget.Hurt((rig.mass - exhaustion) / 10f);
+                    { if (threat.TryGetComponent(out Animal ta)) ta.CauseOfHarm = $"la pelea con «{name}» ({SpeciesName})"; threatTarget.Hurt((rig.mass - exhaustion) / 10f); }
                 yield return new WaitForSeconds(interval);
             }
         }
@@ -759,7 +759,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
             {
                 Loco.GoTo(threat.transform.position);
                 if (Vector3.Distance(transform.position, threat.transform.position) < 4f)
-                    threatTarget.Hurt((rig.mass - exhaustion) / 15f);
+                    { if (threat.TryGetComponent(out Animal ta)) ta.CauseOfHarm = $"el acoso de «{name}» ({SpeciesName})"; threatTarget.Hurt((rig.mass - exhaustion) / 15f); }
             }
             else
             {

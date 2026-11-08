@@ -51,8 +51,11 @@ public class WorkRoster
         public bool roams;
         public bool lead;        // DIRIGE (guiar la clase, demostrar, operar, iniciar a otros): no se le da a un recién llegado
         public string owner;     // PUESTO (regla de oro, J30): se le ofrece primero a esta persona (el entrenador y sus planes); sin ella, va por rotación, no se hace
-        public Mission(string area, string id, string title, float hours, bool mandatory = false) { this.area = area; this.id = id; this.title = title; this.hours = hours; this.mandatory = mandatory; }
-        public Mission Copy() => new Mission(area, id, title, hours, mandatory) { group = group, also = also, site = site, roams = roams, lead = lead, owner = owner };
+        /// <summary>(Berón 2026-11-08) OPCIONAL: si ningún humano tiene tiempo, ese día no se hace; nunca lleva un clon ni pasa a mañana. Sale de
+        /// <see cref="OptionalIds"/>; una obligatoria nunca lo es.</summary>
+        public bool optional;
+        public Mission(string area, string id, string title, float hours, bool mandatory = false) { this.area = area; this.id = id; this.title = title; this.hours = hours; this.mandatory = mandatory; optional = !mandatory && IsOptional(id); }
+        public Mission Copy() => new Mission(area, id, title, hours, mandatory) { group = group, also = also, site = site, roams = roams, lead = lead, owner = owner, optional = optional };
         public override string ToString() => $"{area}: {title} ({hours:0.#} h)";
     }
 
@@ -114,6 +117,7 @@ public class WorkRoster
         public List<string> cloneAreas = new List<string>();           // el área (la primera de sus tareas) de cada clon
         public int emptyAreaClones;                                    // de ellos, los de áreas que se quedaban sin nadie
         public List<Worker> secondSplit = new List<Worker>();          // sobraban tras cubrir las horas: segundo reparto
+        public List<Mission> skipped = new List<Mission>();            // opcionales que hoy no se hacen (nadie tenía tiempo): no pasan a mañana
         public List<Mission> impossible = new List<Mission>();         // (solo registro) tareas que nadie, ni un clon, puede hacer hoy: debe quedar vacía
         public IEnumerable<Assignment> Of(Worker w) => work.Where(a => a.worker == w).OrderBy(a => a.start);
     }
@@ -141,6 +145,15 @@ public class WorkRoster
     /// <summary>EL ÁREA ENTERA (Berón 2026-11-08): un área de varios pisos o salas cuenta como UNA para el reparto (horas, personas que pide y «al
     /// menos 1»). Las misiones ya usan un solo nombre por área («Hospital», «Sala de Yoga»); esto junta además los nombres de sus pisos o salas
     /// («Sala de Yoga · Hatha tradicional», «Hospital veterinario…») si alguno llega como área propia.</summary>
+    /// <summary>LAS OPCIONALES (Berón 2026-11-08; docs/tareas-por-area.md): investigación, formación, cultura, cuentas y avisos, y lo que puede
+    /// esperar. Nunca la seguridad, el cuidado de seres vivos (pacientes, crías, animales, plantas), la comida del día ni las obras.</summary>
+    public static readonly HashSet<string> OptionalIds = new HashSet<string>
+    {
+        "coc_cuentas", "coc_avisos", "asa_mediar", "mec_vehiculos", "tex_tejer", "gym_mantener", "sol_instalacion", "lanz_fabrica",
+        "qui_sintesis", "bio_pcr", "fis_experimentos", "aul_estudio", "aul_letras", "aul_lenguas", "son_grabar", "son_ensayo",
+    };
+    public static bool IsOptional(string id) => id != null && OptionalIds.Contains(id);
+
     public static string AreaGroup(string area)
     {
         if (area == null) return null;
@@ -257,6 +270,10 @@ public class WorkRoster
         plan.hoursDemanded = pools.Values.Sum(p => p.Sum(m => m.hours));
         plan.hoursStaff = workers.Count * WorkHours;
 
+        // (Berón 2026-11-08) LAS OPCIONALES aparte: primero se reparten por igual las obligadas; después, las opcionales a quien aún tenga tiempo.
+        var optional = new Dictionary<string, List<Mission>>();
+        if (sanctuaryModel)
+            foreach (var kv in pools) { optional[kv.Key] = kv.Value.Where(m => m.optional).ToList(); kv.Value.RemoveAll(m => m.optional); }
         var used = workers.ToDictionary(w => w, w => 0f);
         _place.Clear();
         _staff = DayOrder(day);   // (2026-11-08) el orden del personal de HOY: con el reparto por santuarios, una permutación del día
@@ -268,7 +285,13 @@ public class WorkRoster
         ProfessionRound(plan, pools, used);   // (2026-11-04) luego, a cada profesional una misión de cada área de su profesión
         RunRounds(plan, pools, order, used);
 
-        if (sanctuaryModel) CloneForRest(plan, pools, used);   // lo que no cabe en los humanos: clones (primero las áreas sin nadie), y nada a mañana
+        if (sanctuaryModel)
+        {
+            CloneForRest(plan, pools, used);   // lo que no cabe en los humanos: clones (primero las áreas sin nadie), y nada a mañana
+            // LAS OPCIONALES, a los humanos que aún tienen tiempo en sus 5 h (la que menos lleva primero); nunca a un clon. Las que no caben, hoy no se hacen.
+            RunRounds(plan, optional, _staff.Where(w => !w.clone).ToList(), used);
+            foreach (var kv in optional) { plan.skipped.AddRange(kv.Value); kv.Value.Clear(); }
+        }
         // Obligatorias sin cubrir: la Magnate se divide (clones de 5 h) hasta cubrirlas todas.
         int cloneN = 0;
         while (!sanctuaryModel && pools.Values.Any(p => p.Any(m => m.mandatory)))
@@ -711,6 +734,7 @@ public class WorkRoster
         }
         if (p.secondSplit.Count > 0) l.Add($"Segundo reparto: {p.secondSplit.Count} persona(s) que sobraban, al sitio con más horas por persona.");
         if (p.impossible.Count > 0) l.Add($"IMPOSIBLE hoy (ni un clon puede): {string.Join(", ", p.impossible.Take(6).Select(m => $"{m.id} {m.hours:0.#} h"))}.");
+        if (p.skipped.Count > 0) l.Add($"Opcionales que hoy no se hacen (nadie tenía tiempo; no pasan a mañana): {string.Join(", ", p.skipped.Take(8).Select(m => m.id))}.");
         return l;
     }
 }
