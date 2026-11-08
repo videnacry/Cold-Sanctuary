@@ -414,6 +414,7 @@ public static class AreaMicrocosmos
             Bounds inside = Inner(rect, 3f);
             var lost = new List<string>();
             int snapped = 0;
+            var upEnds = new List<(Bounds top, Vector3 up)>();   // (ronda 29) el extremo de arriba de cada meseta, para coser lo que haya encima
             foreach (Bounds top in tops)
             {
                 // El pie de la trepada, por el lado que quede dentro de los muros: antes solo se probaban los dos lados en z, y una meseta junto a
@@ -440,9 +441,43 @@ public static class AreaMicrocosmos
                 // up/down ya están en ese espacio (se midieron con la raíz en el origen). (Ronda 29: el InverseTransformPoint de la ronda 27 restaba la
                 // posición de la raíz otra vez y desplazaba cada enlace (−7300, …) en Buda: fallo mío.)
                 link.startPoint = down; link.endPoint = up; link.width = 2f; link.bidirectional = true; link.costModifier = 4f;
-                climbs++;
+                climbs++; upEnds.Add((top, up));
             }
             if (lost.Count > 0) Debug.LogWarning($"[Microcosmos] {display}: {lost.Count} de {tops.Count} caras de arriba sin enlace para trepar (ningún lado con el pie dentro de los muros): {string.Join(", ", lost)}.");
+            // (Ronda 29) CADA MIRADOR Y CASA DEL BARRIO ALTO, ALCANZABLE: CalculatePath desde la plaza (el centro del piso, en el suelo) hasta su
+            // NavMesh. El mirador de Buda (y 233) seguía sin alcanzarse con los 124 enlaces conectados: su suelo es otra isla encima de su meseta.
+            // Si no se llega, se cose con un enlace desde el extremo de arriba de la trepada de esa meseta hasta el NavMesh del edificio, y se mide otra vez.
+            Vector3 plazaW = root.transform.TransformPoint(new Vector3(rect.center.x, groundY, rect.center.z));
+            if (UnityEngine.AI.NavMesh.SamplePosition(plazaW, out UnityEngine.AI.NavMeshHit ph, 30f, UnityEngine.AI.NavMesh.AllAreas))
+                foreach (AreaFunctionSite site in cast.GetComponentsInChildren<AreaFunctionSite>(true))
+                {
+                    if (!site.name.StartsWith(CivicBuilder.OutpostPrefix) && !site.name.Contains("barrio alto")) continue;
+                    Vector3 siteW = site.transform.position;
+                    if (!UnityEngine.AI.NavMesh.SamplePosition(siteW, out UnityEngine.AI.NavMeshHit sh, 6f, UnityEngine.AI.NavMesh.AllAreas)) { Debug.LogWarning($"[Microcosmos] {display}: «{site.name}» en {siteW}: sin NavMesh a 6 m."); continue; }
+                    var path = new UnityEngine.AI.NavMeshPath();
+                    UnityEngine.AI.NavMesh.CalculatePath(ph.position, sh.position, UnityEngine.AI.NavMesh.AllAreas, path);
+                    string before = $"{path.status}";
+                    if (path.status != UnityEngine.AI.NavMeshPathStatus.PathComplete)
+                    {
+                        Vector3 sl = root.transform.InverseTransformPoint(siteW);
+                        (Bounds top, Vector3 up) best = default; float bd = float.MaxValue; bool any = false;
+                        foreach (var ue in upEnds)
+                        {
+                            if (!InsideXZ(ue.top, sl, 0.5f)) continue;
+                            float dd = Mathf.Abs(ue.top.max.y - sl.y);
+                            if (dd < bd) { bd = dd; best = ue; any = true; }
+                        }
+                        if (any)
+                        {
+                            var sg = new GameObject("Subir_al_edificio"); sg.transform.SetParent(lr, false);
+                            var sl2 = sg.AddComponent<Unity.AI.Navigation.NavMeshLink>();
+                            sl2.startPoint = best.up; sl2.endPoint = root.transform.InverseTransformPoint(sh.position); sl2.width = 2f; sl2.bidirectional = true; sl2.costModifier = 2f;
+                            sl2.UpdateLink();
+                            UnityEngine.AI.NavMesh.CalculatePath(ph.position, sh.position, UnityEngine.AI.NavMesh.AllAreas, path);
+                        }
+                    }
+                    Debug.Log($"[Microcosmos] {display}: de la plaza a «{site.name}» (NavMesh a y {sh.position.y:0.0}): {before}" + (before == $"{path.status}" && path.status == UnityEngine.AI.NavMeshPathStatus.PathComplete ? "" : $" → con el enlace al edificio: {path.status}") + ".");
+                }
             Debug.Log($"[Microcosmos] {display}: {climbs} enlaces para trepar, {snapped} con el extremo de arriba sobre el NavMesh (el resto, en la cara del mueble).");
             foreach (Collider c in giant.GetComponentsInChildren<Collider>())
             {
