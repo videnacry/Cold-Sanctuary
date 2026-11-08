@@ -60,6 +60,12 @@ public static class AreaMicrocosmos
             UnityEditor.SceneManagement.EditorSceneManager.OpenScene(SampleSceneBuilder.AereoScenePath, UnityEditor.SceneManagement.OpenSceneMode.Additive);
             src = GameObject.Find(areaGo);
         }
+        // (2026-11-08) La Central Nuclear y la Planta Atómica están en el Santuario Marino: sus microcosmos (Chernóbil; Newton, Curie, Einstein) abren esa escena. Se cierra en Finish.
+        if (src == null && System.IO.File.Exists(SampleSceneBuilder.MarineScenePath))
+        {
+            UnityEditor.SceneManagement.EditorSceneManager.OpenScene(SampleSceneBuilder.MarineScenePath, UnityEditor.SceneManagement.OpenSceneMode.Additive);
+            src = GameObject.Find(areaGo);
+        }
         // Sus POSICIONES RESERVADAS (regla 8, PlatformSlots): la historia, los personajes, la fauna y la flora del microcosmos
         // van a las plazas que el piso dejó libres al construirse. Están en locales del área: en el área ×10 (clonada en el
         // origen de la raíz, sin girar), plaza × AreaScale.

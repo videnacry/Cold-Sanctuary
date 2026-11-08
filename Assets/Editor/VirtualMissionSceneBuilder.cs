@@ -45,6 +45,10 @@ public static class VirtualMissionSceneBuilder
         // al analizador, a la cocina…), sin conducta, en el origen de la escena.
         Transform areaRoot = null; float hz = 8f;
         GameObject src = AreaGo(area) != null ? GameObject.Find(AreaGo(area)) : null;
+        // (2026-11-08) La Central Nuclear y la Planta Atómica están en el Santuario Marino: se abre para copiarlas y se cierra al guardar.
+        bool openedMarine = false;
+        if (src == null && AreaGo(area) != null && NuclearSite.Underwater(area) && System.IO.File.Exists(SampleSceneBuilder.MarineScenePath))
+        { EditorSceneManager.OpenScene(SampleSceneBuilder.MarineScenePath, OpenSceneMode.Additive); openedMarine = true; src = GameObject.Find(AreaGo(area)); }
         if (src != null)
         {
             GameObject copy = Object.Instantiate(src);
@@ -104,6 +108,7 @@ public static class VirtualMissionSceneBuilder
         boot.staff = Staff(area);
         WorldLabel tl = root.AddComponent<WorldLabel>(); tl.text = $"{area} · {title}"; tl.height = 4f;
         Save(scene, path, prev);
+        if (openedMarine) { Scene marino = SceneManager.GetSceneByPath(SampleSceneBuilder.MarineScenePath); if (marino.isLoaded) EditorSceneManager.CloseScene(marino, removeScene: true); }
     }
 
     static string AreaGo(string area)

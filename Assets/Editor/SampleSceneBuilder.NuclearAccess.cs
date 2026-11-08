@@ -11,13 +11,13 @@ public static partial class SampleSceneBuilder
     static SiteLine _nuclearLine;
 
     /// <summary>La estación, el tramo de tubo que se ve y la salida de escape.</summary>
-    static SiteLine BuildCavernLine(Transform root, Helix hx)
+    static SiteLine BuildCavernLine(Transform root, Vector3 site, string building)
     {
-        Vector3 site = hx.site;
+
         Color conc = new Color(0.6f, 0.6f, 0.58f), steel = TreeSteel, dark = new Color(0.25f, 0.27f, 0.3f), yel = new Color(0.95f, 0.8f, 0.2f), green = new Color(0.25f, 0.7f, 0.4f);
-        // En el borde oeste del casquete: lejos del tronco, de la chimenea (sureste) y del radar (este).
-        float edge = NuclearCapHalf - 9f;
-        Vector3 top = site + new Vector3(-edge, 0f, 20f), inward = Vector3.right, side = Vector3.forward;
+        // (2026-11-08) En la estación: la Línea al oeste, su pista al norte, el pozo de escape al sur (a 20 m del tubo), la chimenea al sureste y el radar al este.
+        float edge = 8f;
+        Vector3 top = site + new Vector3(-edge, 0f, 2f), inward = Vector3.right, side = Vector3.forward;
 
         Transform st = new GameObject("Linea_cavernas").transform; st.SetParent(root, false); st.SetPositionAndRotation(top, Quaternion.LookRotation(-inward));
         SiteLine line = st.gameObject.AddComponent<SiteLine>();
@@ -31,10 +31,10 @@ public static partial class SampleSceneBuilder
         KitchenProps.C(st, new Vector3(3.8f, 1f, 3.6f), new Vector3(2.2f, 2f, 2.2f), new Color(0.35f, 0.45f, 0.55f), 0f, "Cabrestante_electrico");
         Label(st, $"Línea de las cavernas: {SiteLineRule.OneWay(SiteLineRule.Drop):0} s hasta el Santuario Marino, esclusas incluidas", 4f);
         line.gameObject.AddComponent<HunterCell>();   // el árbol cazador se lleva desde arriba, como la roca (docs/contencion-arbol-cazador.md)
-        // La alfombra llega aquí: una pista más de la red del edificio, en su propio soporte (bajo el casquete entero, OnDeck la tomaría por la de todo el suelo).
+        // La alfombra llega aquí: una pista de la RED DEL SANTUARIO, como el muelle del Aéreo (2026-11-08: ya no hay árbol del sitio), en su propio soporte.
         Transform padHolder = new GameObject("Linea_alfombras").transform; padHolder.SetParent(root, false);
         Vector3 padAt = top + side * 7.5f + Vector3.up * 0.01f;
-        CarpetPad.BuildZone(padHolder, padAt, Quaternion.LookRotation(inward), CarpetPad.Kind.Edificio, hx.building, 0, $"{hx.building}#linea", SiteLine.AreaName, 2);
+        CarpetPad.BuildZone(padHolder, padAt, Quaternion.LookRotation(inward), CarpetPad.Kind.Santuario, building, 0, $"{building}#linea", SiteLine.AreaName, 3);
 
         // ── EL TUBO QUE SE VE: de cristal, del casquete al fondo somero, con su escudo por fuera. Es el tramo que se suelta ──
         float reach = SiteLineRule.VisibleDrop + 2f, h = LineBore * 0.5f;
@@ -73,7 +73,7 @@ public static partial class SampleSceneBuilder
         line.car = car;
 
         // ── LA SEGUNDA SALIDA: otra tapa y otro pozo, lejos del tubo ──
-        Vector3 eHead = top - side * 34f + Vector3.up * 0.05f;
+        Vector3 eHead = top - side * 20f + Vector3.up * 0.05f;
         Transform eT = new GameObject("Salida_escape").transform; eT.SetParent(root, false); eT.position = eHead;
         KitchenProps.C(eT, new Vector3(0f, 0.4f, 0f), new Vector3(3.2f, 0.8f, 3.2f), green, 0f, "Tapa_escape");
         KitchenProps.C(root, root.InverseTransformPoint(new Vector3(eHead.x, NuclearSiteRule.SeabedY * 0.5f, eHead.z)), new Vector3(2.8f, -NuclearSiteRule.SeabedY, 2.8f), conc, 0f, "Pozo_escape");
