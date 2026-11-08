@@ -4,6 +4,11 @@ Tablero para retomar. Última sesión: 2026-08-28. Marca lo que completes.
 Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-planteamiento.md`](gaps-vs-planteamiento.md),
 [`world-topology-and-planes.md`](world-topology-and-planes.md) (visión del mundo grande / los 3 planos).
 
+> **HECHO 2026-11-08 (reparto por santuarios, rama claude/reparto-santuarios; solo código, sin probar en vivo):** cada humano tiene su casa (santuario y nivel; los nueve de siempre en s1n1, los demás por sus margas), solo va a lo anterior, y cada día pasa la jornada en un sitio al que llega. El orden del personal cambia cada día; las horas de cada área entera salen de su lista de hoy; la jornada se estira hasta la cena para acabar; la Magnate se divide solo para áreas sin nadie; quien pasa el día fuera se apaga en SampleScene y vuelve para las fiestas ([jornada-y-rotacion.md](jornada-y-rotacion.md) §Reparto por santuarios; manual J33–J36).
+> - [ ] Probar los grupos 113, 28, 104, 50, 65, 87 y 95; después 55, 110, 100, 94, 45, 75, 74 y 77.
+> - [ ] Jugar un día sin pruebas: Fernando y Luciana se apagan a las 7:50 y vuelven en la fiesta; el HUD dice «Libre» a su hora.
+> - [ ] **Berón**: la tabla de puntuación inicial del personal sin margas (`SanctuaryPlacement.StartingScore`, inferida), qué cuenta como «acabar un santuario» (`Advance`), si la Central y la Planta Atómica son del Marino, y si Kushal también estira su jornada.
+
 > **HECHO 2026-11-05 (ronda 12, rama claude/fix-ronda12; solo código, sin probar en vivo):** alfombra de la plataforma fuera del Santuario Aéreo, evacuación de todos los de la zona (Linduarda incluida), cordones de Ø 1,8 m en las ramas del Sitio Nuclear, y pruebas 100, 110, 73 y 94 al día con la separación de escenas.
 > - [ ] Ascensor del tronco en los dos árboles del Aéreo: subir en persona del andén a la plataforma (lanzadera) y al techo (parque).
 > - [ ] Reconstruir SampleScene (solo el santuario) y el Santuario Aéreo.
