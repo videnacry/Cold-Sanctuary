@@ -990,6 +990,10 @@ Vuelven a calcularse abajo, con lo que se alza en el Santuario Marino (`PlaceRes
 ### Cada sala, con su puerta
 Las salas con paredes (`Room`: sala de control, garita, almacén…) dejan su puerta en la pared delantera: **2 m** donde cabe (dos personas a la vez) y al menos 1,2 m en las cámaras pequeñas. Así la prueba de alcance de 114 entra en ellas.
 
+### Nombres (para buscarlos en la escena)
+- **Santuario Marino:** la planta, bajo `Santuario_Marino/Planta_nuclear_marina`. Sus salas: `NuclearPower_Area` (la Central) con su hija `Centro_emergencias`, y `AtomicPlant_Area` (la Planta, con el TRIGA bajo `Planta/Piscina_reactor`) con sus hijas `Planta_ciclotron` y `Sala_experimentos_fisica`. Cada sala tiene su caverna `Caverna_<sala>`, con sus `Columna_roca` y `Viga_transferencia`.
+- **Santuario 1:** bajo `Sitio_nuclear_AUTO/Estacion_nuclear`: `Casquete_artificial`, `Garaje_nuclear` (con `Muelle_submarino`, `Escotilla_submarino` y `Guia_elevador`), `Chimenea_filtrada` y las `Estacion_radiacion`; la Línea en `Sitio_nuclear_AUTO/Linea_cavernas` y su pista en `Linea_alfombras`. La demanda de energía de la planta, en `Sitio_nuclear_AUTO/Pisos_planta_marina` (un objeto vacío con su `FloorEnergy`). La caja de `Sitio_nuclear_AUTO` mide ~440 m porque lleva las boyas de la zona de exclusión (200 m de radio) y de la línea submarina.
+
 ### Lo que queda pendiente
 - **Sin NavMesh abajo** (como antes): los trabajadores no andan por las salas; Kushal sí. La prueba 114 comprueba que cada puesto se alcanza andando desde el andén.
 
