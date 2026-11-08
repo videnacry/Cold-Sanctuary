@@ -239,7 +239,12 @@ public class WorkRoster
         // Pools por área: pendientes de ayer → obligatorias → resto.
         var pools = new Dictionary<string, List<Mission>>();
         foreach (string a in areas) pools[a] = new List<Mission>();
-        foreach (Mission m in pending.Concat(todays.Where(x => x.mandatory)).Concat(todays.Where(x => !x.mandatory)))
+        // (2026-11-08) UNA TAREA DE CADA DÍA que quedó pendiente y hoy vuelve en la lista es la MISMA tarea: se cuenta una vez (antes se sumaban las dos,
+        // y con cada día sin hacer las horas del área crecían: el Huerto pedía 61 h con las rondas de frutales repetidas). La de ayer va primero.
+        todays = todays.ToList();
+        var again = new HashSet<string>(pending.Select(m => m.id));
+        var fresh = todays.Where(x => !again.Contains(x.id)).ToList();
+        foreach (Mission m in pending.Concat(fresh.Where(x => x.mandatory)).Concat(fresh.Where(x => !x.mandatory)))
         {
             if (!pools.TryGetValue(m.area, out var p)) { pools[m.area] = p = new List<Mission>(); if (!areas.Contains(m.area)) { areas.Add(m.area); plan.areaOrder.Add(m.area); } }
             p.Add(m);
@@ -434,7 +439,17 @@ public class WorkRoster
         var order = _staff.OrderBy(w => skills[w]).ToList();   // (estable: a igualdad, el orden del personal del día)
         bool Wants(Worker w, Mission m) => !Learned(w, m) && (m != skill || skills[w] >= MinSkillsToInstruct);
         var scores = new Dictionary<Mission, int>();   // (se calcula una vez por hora: Practises parte cadenas)
-        int Compute(Mission m) => workers.Count(w => !w.clone && Wants(w, m)) + (m.mandatory ? 100 : 0) + (MissionRequirements.NeedsLesson(m.id) ? 200 : 0) + (workers.Any(w => Learned(w, m)) || m == skill ? 0 : 400);
+        // (2026-11-08) UN ÁREA QUE HOY NADIE PUEDE HACER (todas sus tareas piden saber y nadie de su sitio sabe ninguna) va PRIMERO: alguien se inicia
+        // en ella y la hace después; la Magnate la cubre solo si nadie pudo iniciarse ese día. Regla de oro: todos aprenden todo.
+        var emptyAreas = new HashSet<string>();
+        void FindEmpty()
+        {
+            emptyAreas.Clear();
+            foreach (var kv in pools)
+                if (kv.Value.Count > 0 && !kv.Value.Any(m => workers.Any(w => !w.clone && Qualified(w, m) && Allowed(w, m)))) emptyAreas.Add(AreaGroup(kv.Key));
+        }
+        int Compute(Mission m) => workers.Count(w => !w.clone && Wants(w, m)) + (m.mandatory ? 100 : 0) + (MissionRequirements.NeedsLesson(m.id) ? 200 : 0) + (workers.Any(w => Learned(w, m)) || m == skill ? 0 : 400)
+            + (m != skill && emptyAreas.Contains(AreaGroup(m.area)) ? 800 : 0);
         int Score(Mission m) => scores[m];
         var done = workers.ToDictionary(w => w, w => 0f);
         var waiting = new HashSet<Worker>();
@@ -442,18 +457,22 @@ public class WorkRoster
         {
             float clock = -1f;
             Place(hour, LessonHours, out clock);
+            FindEmpty();
             foreach (Mission m in options) scores[m] = Compute(m);
             var classes = new List<Lesson>();
+            bool OpenHere(Mission m) => emptyAreas.Contains(AreaGroup(m.area)) && !classes.Any(x => AreaGroup(x.real.area) == AreaGroup(m.area));
             foreach (Worker w in order)
             {
                 if (w.clone || used[w] > hour + 1e-3f || Busy(w, hour) || done[w] + LessonHours > InitiationCap(w, plan.day) + 1e-3f) continue;
                 var mine = options.Where(m => Wants(w, m) && (m == skill || Allowed(w, m)) && !FarAfterLunch(w, m.area, clock)).ToList();
                 if (mine.Count == 0) continue;
-                Lesson c = classes.Where(x => x.learners.Count < LessonGroupSize && mine.Contains(x.real)).OrderByDescending(x => Score(x.real)).FirstOrDefault();
+                // (un área vacía sin clase todavía esta hora abre la suya antes de que nadie se sume a otra: cada área vacía, su clase)
+                Mission empty = classes.Count < MaxLessonGroups ? mine.Where(OpenHere).OrderByDescending(Score).FirstOrDefault() : null;
+                Lesson c = empty != null ? null : classes.Where(x => x.learners.Count < LessonGroupSize && mine.Contains(x.real)).OrderByDescending(x => Score(x.real)).FirstOrDefault();
                 if (c == null)
                 {
                     if (classes.Count >= MaxLessonGroups) { waiting.Add(w); continue; }
-                    Mission best = mine.OrderByDescending(Score).First();
+                    Mission best = empty ?? mine.OrderByDescending(Score).First();
                     Mission shown = best.Copy();
                     shown.id = LessonPrefix + best.id; shown.title = "Iniciación: " + best.title; shown.hours = LessonHours; shown.group = null; shown.mandatory = false; shown.lead = false; shown.owner = null;
                     c = new Lesson { mission = shown, real = best, start = clock };

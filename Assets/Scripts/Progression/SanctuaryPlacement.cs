@@ -53,9 +53,11 @@ public static class SanctuaryPlacement
 
     public static int SoulSum(GameObject g, string name)
     {
+        // La tabla de inicio es el SUELO: un cuerpo con margas sin subir (nivel 1 en las tres, 3 puntos) no baja a nadie a s1n1 (2026-11-08: en vivo,
+        // los santuarios 2 y 3 se quedaban vacíos). Las margas mandan cuando pasan de ahí.
+        int start = name != null && StartingScore.TryGetValue(name, out int s) ? s : DefaultStartingScore;
         CharacterLevel cl = g != null ? g.GetComponent<CharacterLevel>() : null;
-        if (cl != null) return cl.stats.level + cl.yoga.level + cl.bonds.level;
-        return name != null && StartingScore.TryGetValue(name, out int s) ? s : DefaultStartingScore;
+        return cl != null ? System.Math.Max(start, cl.stats.level + cl.yoga.level + cl.bonds.level) : start;
     }
 
     /// <summary>La posición que da una puntuación: la última fila de la tabla que alcanza.</summary>

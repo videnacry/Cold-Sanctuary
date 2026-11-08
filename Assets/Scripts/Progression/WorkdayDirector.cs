@@ -119,6 +119,7 @@ public class WorkdayDirector : MonoBehaviour
         // (Berón 2026-11-08) EL REPARTO POR SANTUARIOS: la casa de cada uno (santuario y nivel) sale de sus margas y lo guardado, cada día (suben al subir).
         roster.sanctuaryModel = true;
         foreach (WorkRoster.Worker w in roster.workers) if (!w.clone) w.home = SanctuaryPlacement.PositionOf(w.name, SanctuaryPlacement.Score(Body(w.name), w.name));
+        Debug.Log($"[Reparto] Día {day} · casas: {string.Join(" · ", roster.workers.Where(w => !w.clone).GroupBy(w => w.home).OrderBy(g => g.Key).Select(g => $"{SanctuaryPlacement.Home.At(g.Key)}: {string.Join(", ", g.Select(w => w.name))}"))}");
         List<WorkRoster.Mission> todays = AreaWork.Today(day, ConstructionProject.All);
         todays.AddRange(GymProgramming.Missions());   // la del entrenador (papel fijo: revisar el registro y ajustar los planes)
         today = roster.Plan(day, todays);
