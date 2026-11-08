@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 
 /// <summary>
@@ -11,6 +12,10 @@ public static class GameKeys
     /// <summary>Un menú propio (p. ej. el de la máquina de virtualización) se queda con el teclado.</summary>
     public static bool MenuOpen;
     /// <summary>Hay un diálogo abierto (opciones, confirmación, menú de misiones): secuestra Intro y oculta el lanzador.</summary>
+    /// <summary>Qué diálogo está abierto (para los registros); vacío si ninguno.</summary>
+    public static string OpenDialogs => string.Join(", ", new[] { MenuOpen ? "menú" : null, ChoiceDialog.IsOpen ? "diálogo de opciones" : null, ConfirmationPanel.IsVisible ? "panel de confirmación" : null, MissionSelectMenu.Instance != null && MissionSelectMenu.Instance.IsOpen ? "menú de misiones" : null }.Where(x => x != null));
+    /// <summary>Cierra todos los diálogos (las pruebas, si uno se quedó abierto).</summary>
+    public static void CloseDialogs() { MenuOpen = false; if (ChoiceDialog.IsOpen) ChoiceDialog.Close(); if (ConfirmationPanel.IsVisible) ConfirmationPanel.Instance.Hide(); if (MissionSelectMenu.Instance != null) MissionSelectMenu.Instance.CloseSilently(); }
     public static bool DialogOpen => MenuOpen || ChoiceDialog.IsOpen || ConfirmationPanel.IsVisible || (MissionSelectMenu.Instance != null && MissionSelectMenu.Instance.IsOpen);
     static bool Muted => SpellConsole.Capturing || MenuOpen;   // los diálogos de opciones NO bloquean el teclado (solo ocultan el lanzador): uno se puede alejar y se cierran
     public static bool GetKey(KeyCode k) => !Muted && Input.GetKey(k);
