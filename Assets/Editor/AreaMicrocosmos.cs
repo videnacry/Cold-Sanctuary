@@ -377,6 +377,7 @@ public static class AreaMicrocosmos
             Transform lr = new GameObject("Trepadas").transform; lr.SetParent(root.transform, false);
             Bounds inside = Inner(rect, 3f);
             var lost = new List<string>();
+            int snapped = 0;
             foreach (Bounds top in tops)
             {
                 // El pie de la trepada, por el lado que quede dentro de los muros: antes solo se probaban los dos lados en z, y una meseta junto a
@@ -391,16 +392,17 @@ public static class AreaMicrocosmos
                 if (!found) { lost.Add($"({c.x:0}, {top.max.y:0}, {c.z:0})"); continue; }
                 // Los extremos, SOBRE el NavMesh ya horneado: la meseta del mirador de Buda se anda a y 237 y la cara de arriba de su mueble
                 // da 233; con el extremo 4 m por debajo el enlace no conectaba («alcanzable False», ronda 25).
-                if (UnityEngine.AI.NavMesh.SamplePosition(up, out UnityEngine.AI.NavMeshHit hu, 6f, UnityEngine.AI.NavMesh.AllAreas)) up = hu.position;
-                else { lost.Add($"({c.x:0}, {top.max.y:0}, {c.z:0}) sin NavMesh arriba"); continue; }
+                // (Ronda 26) Solo si hay NavMesh a mano: en el Editor, recién horneado, no lo había en ninguna de las 124 caras y se quitaron todos
+                // los enlaces. Sin él, el extremo de la cara del mueble, como antes.
+                if (UnityEngine.AI.NavMesh.SamplePosition(up, out UnityEngine.AI.NavMeshHit hu, 6f, UnityEngine.AI.NavMesh.AllAreas)) { up = hu.position; snapped++; }
                 if (UnityEngine.AI.NavMesh.SamplePosition(down, out UnityEngine.AI.NavMeshHit hd, 3f, UnityEngine.AI.NavMesh.AllAreas)) down = hd.position;
-                else { lost.Add($"({c.x:0}, {top.max.y:0}, {c.z:0}) sin NavMesh al pie"); continue; }
                 var g = new GameObject("Trepar"); g.transform.SetParent(lr, false);
                 var link = g.AddComponent<Unity.AI.Navigation.NavMeshLink>();
                 link.startPoint = down; link.endPoint = up; link.width = 2f; link.bidirectional = true; link.costModifier = 4f;
                 climbs++;
             }
             if (lost.Count > 0) Debug.LogWarning($"[Microcosmos] {display}: {lost.Count} de {tops.Count} caras de arriba sin enlace para trepar (ningún lado con el pie dentro de los muros): {string.Join(", ", lost)}.");
+            Debug.Log($"[Microcosmos] {display}: {climbs} enlaces para trepar, {snapped} con el extremo de arriba sobre el NavMesh (el resto, en la cara del mueble).");
             foreach (Collider c in giant.GetComponentsInChildren<Collider>())
             {
                 Bounds b = c.bounds;
