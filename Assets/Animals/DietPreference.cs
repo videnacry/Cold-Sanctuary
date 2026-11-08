@@ -34,6 +34,14 @@ public static class DietPreference
     {
         _catalog = new Dictionary<string, Dictionary<string, float>>
         {
+            // Depredadores de tierra del santuario (docs/reglas-animales.md). Sin entrada todo valía 1: lobos y osos se cazaban entre sí y a los
+            // zorros. El lobo ártico caza buey almizclero y liebre (Mech 2007, Arctic) y reno; el oso polar vive de focas. Que lobo y oso
+            // no se coman entre sí ni al zorro es una simplificación [A]: se matan a veces como competidores, no como comida, y aquí cazar
+            // es solo para comer. 0 = no es su presa (Forager no la caza viva; su carroña sí se come).
+            { "Wolf", new Dictionary<string, float> { { "Bear", 0f }, { "PolarBear", 0f }, { "ArcticFox", 0f }, { "Malamute", 0f } } },
+            { "Bear", new Dictionary<string, float> { { "Wolf", 0f }, { "ArcticFox", 0f }, { "Malamute", 0f } } },
+            { "PolarBear", new Dictionary<string, float> { { "Wolf", 0f }, { "ArcticFox", 0f }, { "Malamute", 0f } } },
+            { "ArcticFox", new Dictionary<string, float> { { "Wolf", 0f }, { "Bear", 0f }, { "PolarBear", 0f } } },
             // Insectos del Microcosmos (cadena real): preferencias entre sus presas.
             // Mariquita: especialista en pulgón (también cochinillas y ácaros); un grillo le queda grande → casi nunca.
             { "Ladybug", new Dictionary<string, float> { { "Aphid", 3.0f }, { "Cricket", 0.05f } } },

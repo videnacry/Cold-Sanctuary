@@ -221,9 +221,12 @@ public class SiteLine : MonoBehaviour
         _inTube = false;
         Stand(r, 0f);
         yield return Wait(r, SiteLineRule.LockSeconds, false);
-        CarpetPad exitPad = CarpetPad.For(transform.position);   // (la caseta no pisa NavMesh: quien salía aquí no podía andar los 7,5 m a su pista y se quedaba para siempre)
-        Finish(r, exitPad != null && (exitPad.transform.position - transform.position).sqrMagnitude < 144f ? exitPad.transform.position : transform.position, back ? "vuelta" : "línea", t0);
+        Finish(r, ExitPoint, back ? "vuelta" : "línea", t0);
     }
+
+    /// <summary>Donde deja la línea a quien sube: en la pista de alfombras de la caseta (a menos de 12 m), porque la caseta no pisa NavMesh y
+    /// quien salía en ella no podía andar los 7,5 m a su pista y se quedaba para siempre (Lizmibet, ronda 20). Sin pista, en la caseta.</summary>
+    public Vector3 ExitPoint { get { CarpetPad p = CarpetPad.For(transform.position); return p != null && (p.transform.position - transform.position).sqrMagnitude < 144f ? p.transform.position : transform.position; } }
 
     // ── EN PERSONA: la escena de abajo ─────────────────────────────────────────────────────────────────────────────
 

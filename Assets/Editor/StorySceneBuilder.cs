@@ -148,6 +148,10 @@ public static partial class StorySceneBuilder
     [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias: Bruce Lee (Dojo)")]
     public static void BuildBruceLee() => BuildOne("Microcosmos_BruceLee");
 
+    /// <summary>Solo el de Buda (Kapilavastu), sin rehacer los demás (límite de memoria del PC).</summary>
+    [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias: Buda (Kapilavastu)")]
+    public static void BuildBuda() => BuildOne("Microcosmos_Buda");
+
     /// <summary>Genera un solo microcosmos de historia por su escena (en su mismo origen que en <see cref="BuildAll"/>).</summary>
     public static void BuildOne(string scene)
     {

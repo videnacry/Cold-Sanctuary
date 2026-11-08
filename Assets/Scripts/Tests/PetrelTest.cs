@@ -55,9 +55,16 @@ public class PetrelTest : MonoBehaviour, ITestUnit
         while (!p.Perched && Time.realtimeSinceStartup - t0 < 25f) { if (an != null) an.hungry = -0.5f; yield return null; }
         TestProbe.Check("se posa en el iceberg", p.Perched, p.OnBerg != null ? p.OnBerg.name : "sin iceberg");
         // Posado ENCIMA, no dentro: la jornada mira con una esfera de 0,12 m y lo veía «dentro de Iceberg_deriva» a y = 30.
-        yield return new WaitForSeconds(1.5f);
-        float clear = p.transform.position.y - (berg.transform.position.y + berg.size.y * 0.1f);
-        TestProbe.Check("posado sobre el hielo, no dentro de él", p.Perched && clear > 0.12f, $"{clear:0.00} m sobre la caja del iceberg");
+        // Lo más bajo que queda MIENTRAS está posado (a 1 m de su sitio ya cuenta como posado y baja hasta él). Antes se medía a los 1,5 s, sin
+        // sujetarle el hambre: si para entonces había vuelto a volar (sube en vertical hasta pasar el iceberg) salían «6,74 m sobre la caja».
+        float clear = float.MaxValue; int perchedFrames = 0; float w0 = Time.realtimeSinceStartup;
+        while (Time.realtimeSinceStartup - w0 < 1.5f)
+        {
+            if (an != null) an.hungry = -0.5f;
+            if (p.Perched) { perchedFrames++; clear = Mathf.Min(clear, p.transform.position.y - (berg.transform.position.y + berg.size.y * 0.1f)); }
+            yield return null;
+        }
+        TestProbe.Check("posado sobre el hielo, no dentro de él", perchedFrames > 0 && clear > 0.12f, perchedFrames > 0 ? $"lo más bajo, {clear:0.00} m sobre la caja del iceberg ({perchedFrames} fotogramas posado)" : "no se quedó posado");
         TestProbe.End();
     }
 }

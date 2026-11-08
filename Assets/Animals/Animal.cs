@@ -779,6 +779,8 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
     /// </summary>
     /// <param name="damage"></param>
     string _hurtBy;   // (la causa, para el log: una muerte sin rastro no se puede explicar)
+    /// <summary>Quién o qué le está haciendo daño (para el log de <c>[Muerte]</c>): «la caza de «Wolf(Clone)» (Wolf)».</summary>
+    public string CauseOfHarm { get => _hurtBy; set => _hurtBy = value; }
     public virtual void Hurt(float damage)
     {
         lp -= damage;

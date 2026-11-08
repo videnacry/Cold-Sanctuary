@@ -102,6 +102,7 @@ public class PolarUnderstory : MonoBehaviour
                 Vector3 p = new Vector3(x + R(-2f, 2f), 0f, z + R(-2f, 2f));
                 if (!Physics.Raycast(p + Vector3.up * 8f, Vector3.down, out RaycastHit hit, 10f, ~0, QueryTriggerInteraction.Ignore) || !Territorio.IsLand(hit.collider)) continue;
                 p.y = hit.point.y;
+                if (Crowded(p)) continue;
                 SetChunk(p);
                 bool shore = hit.collider.name != Territorio.Land;
                 float community = Mathf.PerlinNoise(x * 0.018f + 3.1f, z * 0.018f + 7.7f);
@@ -138,6 +139,22 @@ public class PolarUnderstory : MonoBehaviour
     }
 
     void Counted() { Plants++; TundraPlants++; }
+
+    // Ni pegada a una pared ni dentro del anillo de una raíz: el rayo cae en «Tierra» también al pie del tronco de un edificio-árbol, y quien
+    // pastaba allí metía el cuerpo en la pared (el buey almizclero «dentro de Pared_raiz», (−53, −97), «pasta juncia», batería 20). Un buey
+    // mide 2,3 m: nada sólido que no sea suelo a menos de 1,8 m de la planta.
+    static readonly Collider[] _crowd = new Collider[16];
+    static bool Crowded(Vector3 p)
+    {
+        int n = Physics.OverlapSphereNonAlloc(p + Vector3.up * 1.2f, 1.8f, _crowd, ~0, QueryTriggerInteraction.Ignore);
+        for (int i = 0; i < n; i++)
+        {
+            Collider c = _crowd[i];
+            if (c == null || c is TerrainCollider || Territorio.IsLand(c) || c.GetComponentInParent<Anima>() != null) continue;
+            return true;
+        }
+        return false;
+    }
 
     void Spot(Vector3 p, AffordanceKind k, int stock)
     {

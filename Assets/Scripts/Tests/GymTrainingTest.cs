@@ -243,7 +243,9 @@ public class GymTrainingTest : MonoBehaviour, ITestUnit
         GymMachineType busyType = sessions[0].routine.Main.First().station;
         var dummies = new List<string>();
         foreach (GymStation s in GymStation.All.Where(s => s != null && s.type == busyType)) { string d = "Ocupado_" + dummies.Count; if (s.Claim(d)) dummies.Add(d); }
-        float dummyUntil = Time.time + 12f;
+        // Ocupadas hasta 12 s DESPUÉS de que llegue a ese ejercicio. Antes eran 12 s desde el principio, y el calentamiento en la clase dura
+        // ~2 min: en la batería 20 llegó al press de banca a los 128 s con todas libres, y la prueba nunca vio una máquina ocupada.
+        float dummyUntil = float.MaxValue;
 
         Vector3 cp = WorkdayDirector.GymClassPoint();
         Transform at = WorkdayDirector.AreaTransform(GymProgramming.GymArea);
@@ -253,6 +255,7 @@ public class GymTrainingTest : MonoBehaviour, ITestUnit
         float tEnd = Time.time + budget * 2.5f + 60f, rEnd = Time.realtimeSinceStartup + realLimit;
         while (Time.time < tEnd && Time.realtimeSinceStartup < rEnd && sessions.Any(s => !s.Done))
         {
+            if (dummyUntil == float.MaxValue && sessions[0].events.Any(e => e.kind == GymTrainingSession.Kind.Station || e.kind == GymTrainingSession.Kind.Swap || e.kind == GymTrainingSession.Kind.Wait || e.kind == GymTrainingSession.Kind.Defer)) dummyUntil = Time.time + 12f;
             if (dummies.Count > 0 && Time.time >= dummyUntil) { foreach (string d in dummies) GymStation.Release(d); dummies.Clear(); }
             coach?.Tick(sessions);
             foreach (GymTrainingSession s in sessions) s.Tick(coach);
