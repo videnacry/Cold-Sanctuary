@@ -160,9 +160,17 @@ public class ArbolCampos : MonoBehaviour
     {
         ArbolCampos ta = At(from, out _, out _), tb = At(to, out _, out _, false);
         Vector3 d = to - from; d.y = 0f;
-        if (ta == null && tb == null) return d.magnitude / 1.6f;
+        if (ta == null && tb == null) return NearSanctuaryPad(from) || NearSanctuaryPad(to) ? 85f + d.magnitude / 18f : d.magnitude / 1.6f;   // (2026-11-08: a una pista de la red del santuario fuera de los árboles —la estación nuclear, el muelle aéreo— se va en alfombra, no andando)
         if (ta == tb) return 40f;
         return 85f + d.magnitude / 18f;
+    }
+
+    /// <summary>¿Hay una pista de alfombras de la red del santuario a menos de 15 m (en planta) de <paramref name="p"/>?</summary>
+    static bool NearSanctuaryPad(Vector3 p)
+    {
+        foreach (CarpetPad c in CarpetPad.All)
+            if (c != null && c.kind == CarpetPad.Kind.Santuario) { Vector3 d = c.transform.position - p; d.y = 0f; if (d.sqrMagnitude < 225f) return true; }
+        return false;
     }
 
     public TreeLevel ExitFor(Vector3 to)
