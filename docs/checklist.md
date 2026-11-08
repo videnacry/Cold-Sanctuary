@@ -4,6 +4,11 @@ Tablero para retomar. Última sesión: 2026-08-28. Marca lo que completes.
 Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-planteamiento.md`](gaps-vs-planteamiento.md),
 [`world-topology-and-planes.md`](world-topology-and-planes.md) (visión del mundo grande / los 3 planos).
 
+> **HECHO 2026-11-08 (planta nuclear bajo el mar, rama claude/nuclear-submarina; solo código, sin probar en vivo):** la Central Nuclear y la Planta Atómica, enteras en el Santuario Marino junto a las cavernas (`BuildMarinePlant`); arriba solo la estación de 40 × 40 m con la Línea y su pista de la red del santuario; la jornada baja por la Línea sin cargar nada. Regla T25; docs/sitio-nuclear.md §25.
+> - [ ] Reconstruir: «Build Santuario Marino (escena del fondo)» y después «Build Sample Scene Blockout (solo el santuario, sin microcosmos)», y guardar.
+> - [ ] Probar los grupos 114, 94, 100, 101, 50, 61, 96, 75 y 73.
+> - [ ] Pendiente (T16): columnas en las salas de la planta (46 × 30 m sin columnas: luz libre > 14 m).
+>
 > **HECHO 2026-11-08 (reparto por santuarios, rama claude/reparto-santuarios; solo código, sin probar en vivo):** cada humano tiene su casa (santuario y nivel; los nueve de siempre en s1n1, los demás por sus margas), solo va a lo anterior, y cada día pasa la jornada en un sitio al que llega. El orden del personal cambia cada día; las horas de cada área entera salen de su lista de hoy; las horas de cada sitio se reparten por igual (≤ 5 h; clones para lo que sobra y para las áreas sin nadie; nada pasa a mañana; la planta nuclear es del Marino); quien pasa el día fuera se apaga en SampleScene y vuelve para las fiestas ([jornada-y-rotacion.md](jornada-y-rotacion.md) §Reparto por santuarios; manual J33–J36).
 > - [ ] Probar los grupos 113, 28, 104, 50, 65, 87 y 95; después 55, 110, 100, 94, 45, 75, 74 y 77.
 > - [ ] Jugar un día sin pruebas: Fernando y Luciana se apagan a las 7:50 y vuelven en la fiesta; el HUD dice «Libre» a su hora.

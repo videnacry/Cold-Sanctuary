@@ -109,9 +109,10 @@ public class NuclearAccessTest : MonoBehaviour, ITestUnit
         TestProbe.Check("segunda salida, lejos del tubo", shaft != null && Flat(shaft.position, top) >= 20f && Mathf.Abs(line.escapeTop.position.y) < 0.5f);
         var pads = FindObjectsByType<CarpetPad>(FindObjectsSortMode.None);
         CarpetPad pad = pads.FirstOrDefault(p => p != null && p.displayName == SiteLine.AreaName);
-        CarpetPad ground = pads.FirstOrDefault(p => p != null && p.kind == CarpetPad.Kind.Edificio && p.building == NuclearSiteRule.Building && p != pad && p.floor == 0);
-        TestProbe.Check("se llega en alfombra: una pista de la red del edificio, a mano del andén", pad != null && ground != null && ground.Destinations().Contains(pad) && Vector3.Distance(pad.transform.position, top) < 9f);
-        TestProbe.Check("la pista de la estación no se adueña del suelo del casquete", ground != null && CarpetPad.For(ground.transform.position + Vector3.up * 0.2f) == ground);
+        // (2026-11-08, docs/sitio-nuclear.md §25) Sin árbol del sitio: la pista de la estación es de la RED DEL SANTUARIO, como el muelle del Aéreo.
+        CarpetPad ground = pads.FirstOrDefault(p => p != null && p.kind == CarpetPad.Kind.Santuario && p != pad);
+        TestProbe.Check("se llega en alfombra: una pista de la red del santuario, a mano del andén", pad != null && pad.kind == CarpetPad.Kind.Santuario && ground != null && ground.Destinations().Contains(pad) && Vector3.Distance(pad.transform.position, top) < 9f);
+        TestProbe.Check("la pista de la estación es la suya (CarpetPad.For en ella da ella)", pad != null && CarpetPad.For(pad.transform.position + Vector3.up * 0.2f) == pad);
         TestProbe.Check("la jornada la trata como un sitio, y la evacuación también", WorkdayDirector.AreaTransform(SiteLine.AreaName) == line.transform && NuclearSite.IsSiteArea(SiteLine.AreaName) && WorkdayDirector.InWorkspace(null, SiteLine.AreaName, top + Vector3.right));
         string[] ids = { "nuc_vigilancia", "nuc_pasivos", "nuc_simulacro", "nuc_roca", SiteLine.MissionId, "nuc_refuerzo", Refuge.MissionId, Iceberg.TowMission, Iceberg.LaunchTow, Iceberg.EnergyTow, "lanz_vaciado", "ene_parada" };
         var noSteps = ids.Where(i => !PlayerTasks.Authored(i)).ToList();

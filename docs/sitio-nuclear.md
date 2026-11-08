@@ -942,6 +942,45 @@ Es lo más fácil de juntar: la lanzadera y el parque están **en sus coordenada
 - Las turbinas vuelven a tener cuerpo, y deja de hacer falta la pérdida del cable. El huerto del techo del parque vuelve.
 - **T24** deja de tener sentido. Es el camino inverso de §23: lo que allí costaba carga, aquí cuesta memoria siempre.
 
+## 25. La planta nuclear, bajo el mar (Berón 2026-11-08)
+
+Berón: mover la planta nuclear (Central Nuclear y Planta Atómica) **completamente bajo el agua**, como parte del santuario 2; arriba solo su estación de alfombras, a la que se llega en alfombra como al muelle del santuario 3. **Esta sección manda sobre §2, §3, §4 y §20 donde difieran.**
+
+### Cómo queda
+
+| | Santuario 1 (`SampleScene`) | Santuario Marino (`Santuario_Marino`) |
+|---|---|---|
+| Central Nuclear | **Nada** (sus misiones siguen) | Su sala: acceso, sala de control, pozo del microrreactor, conversión de potencia, calefacción de distrito, subestación, diésel, contenedores, almacén y panel de la roca; y el **Centro de emergencias** |
+| Planta Atómica | **Nada** (sus misiones siguen) | Su sala con el TRIGA en su piscina (baja 20 m a la roca), la consola, el equipo y la protección; el **ciclotrón** con la síntesis de FDG; la **sala de física** (lo del antiguo anillo en el suelo, sin alfombras; el péndulo de Foucault sube por un pozo en la roca) |
+| Dónde | La **estación** (40 × 40 m) en el sitio de siempre, (360, −360) | Dos filas de salas de 46 × 30 m al este de las cavernas, a la cota de la galería, con 8 m de paso entre ellas: se va andando desde el andén de abajo |
+| Llegar | En alfombra: su pista es de la **red del santuario** (`{building}#linea`), como el muelle del Aéreo | Por la Línea (57,8 s) |
+| Lógica | **Toda**: `NuclearSite`, `CavernRock`, `Refuge`, vigilancia, balizas, válvulas | Las máquinas en juego (reactor, consolas, ciclotrón…), solo con la escena cargada |
+
+**La estación** (`BuildNuclearStation`, ±20 m, `NuclearSiteRule.StationHalf`): el casquete pequeño con su pretil y sus 4 tendones, la cabeza de la Línea y su caseta, la pista de alfombras a 7,5 m del andén, la tapa del pozo de escape a 20 m del tubo, la chimenea de la ventilación filtrada de las salas (30 m, a sotavento, cuenta para T13), el radar y el sonar, 8 estaciones de radiación con su baliza, y bajo la losa las cabezas de las dos válvulas de la toma pasiva. En el agua, como antes: sondas, boyas de la zona de exclusión (200 m) y la línea submarina al santuario. Sin escaleras.
+
+### La jornada
+- Las dos áreas son del santuario 2 (`SanctuaryPlacement`, ya lo eran). En el santuario 1 su sitio es la **estación** (`SiteLine` las registra; un sitio registrado manda sobre un área de una escena cargada después).
+- Quien tiene trabajo en ellas vuela a la estación y **baja por la Línea sin cargar nada** (`SiteLine.BoardWork`), como en el Aéreo: el cuerpo se oculta y la misión corre por el reloj; vuelve cuando su jornada lo lleva a otra parte (o en una emergencia, o a la hora como mucho). Su propio viaje: no ocupa el carro de las bajadas a la roca.
+- La salida hacia la planta cuenta el viaje de la Línea (`SiteLine.TripSeconds`), y la vuelta también.
+- Kushal baja en persona por el andén (carga la escena, como siempre).
+- **Evacuación:** en emergencia quien está abajo sube y la jornada lo manda al hospital.
+
+### Energía y agua
+- Los pisos de abajo siguen en el balance del santuario 1: `Planta nuclear (bajo el mar)`, 2 × 46 × 30 m × 45 W/m² = **124 kW**, lo mismo que declaraban sus dos áreas arriba. El reactor (5 MWe) y su apagado en emergencia no cambian.
+- **Agua pasiva:** ya no es el tronco. Es el mar, que entra solo por la toma pasiva de cada sala a 57 bar. Se cuenta solo la columna sobre la huella de las salas de los reactores (2 × 14 × 14 m × 500 m ≈ 196 000 m³): una cota prudente, el mar no se acaba. Pasa de las 72 h de referencia.
+
+### Lo que se quita
+- El **árbol del sitio** (sus 3 niveles, puntas y aerocondensadores), el **cajón del TRIGA** con su recinto y esclusas, el pozo del microrreactor desde el tronco y el **garaje del sitio** (el submarino de obra ya no tiene parada aquí: lo que haga falta abajo baja por la Línea, que cabe el módulo).
+
+### Lo que queda pendiente (no inventado)
+- **T16, luz libre ≤ 14 m:** las salas de la planta son de 46 × 30 m sin columnas. Ponerlas pide rehacer la distribución de los pisos (el TRIGA, el ciclotrón y el centro de emergencias tienen sitios fijos). Hasta entonces, **no cumple**.
+- **Posiciones reservadas de los microcosmos** (`PlatformSlots`): las de estas dos áreas se ponían arriba. Sus microcosmos (Chernóbil; Newton, Curie, Einstein) abren el Santuario Marino para copiar el piso y avisarán de que les faltan; salen del suelo «Mat».
+- **Sin NavMesh abajo** (como antes): los trabajadores no andan por las salas; Kushal sí. La prueba 114 comprueba que cada puesto se alcanza andando desde el andén.
+
+### Pruebas
+- **114 (`NuclearSubmarinaTest`), nueva:** nada del sitio por encima de y 0 salvo la estación; ni el árbol ni las áreas arriba; la pista en la red del santuario y a mano del andén; sin escaleras; la jornada a la estación y la bajada sin cargar nada; la energía; abajo, las dos áreas con su maquinaria, todo bajo y 0 y **cada puesto alcanzable** (relleno por rejilla de 1 m desde el andén de abajo, pasos de ≤ 0,4 m y una persona de 0,35 m de radio).
+- **94** reescrita para la estación; **100** con la pista de la red del santuario; `SanctuaryLifeTest`: sin árbol del sitio arriba.
+
 ## Fuentes
 - [10 CFR 100.11](https://www.law.cornell.edu/cfr/text/10/100.11), [10 CFR 100.3](https://www.law.cornell.edu/cfr/text/10/100.3), [10 CFR 53.530](https://www.law.cornell.edu/cfr/text/10/53.530)
 - [NRC: emergencias en reactores de investigación](https://www.nrc.gov/about-nrc/emerg-preparedness/about-emerg-preparedness/research-test.html); [archivo de esa página](https://webarchive.library.unt.edu/eot2008/20080916122805/http:/www.nrc.gov/about-nrc/emerg-preparedness/protect-public/research-test.html)
