@@ -250,3 +250,22 @@ cada salida, baja un 2 % al día y un 40 % al moverlas; por debajo de 0,25 de fu
 - Atraer y curar: [buitres y comederos, preprint](https://ecoevorxiv.org/repository/object/5517/download/10822), [revisión de rehabilitación](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8929655/), [centro de Gran Canaria](https://accedacris.ulpgc.es/bitstream/10553/36035/2/A_long_term.pdf), [gripe aviar en el océano Austral, SCAR](https://ecoevorxiv.org/8jrbu/), [COMNAP](https://www.comnap.aq/s/COMNAP-HPAI-Summary-Page-30August2023.pdf)
 - Normas: [distancias, programa antártico australiano](https://www.antarctica.gov.au/environment/environment-policy-and-management/code-of-conduct/field-work/guidelines-for-animal-approach-distances/), [IAATO](https://assets.contentstack.io/v3/assets/blt0de87ff52d9c34a8/blt2899f1c8f0af6b14/66d6d58870c2e9e630c3a98c/General_Visitor_Guidelines_IAATO.pdf), [aeronaves, UBA](https://www.umweltbundesamt.de/sites/default/files/medien/2875/dokumente/leaflet_operation_of_aircraft_in_the_vicinity_of_animal_concentrations.pdf)
 - Demanda: [CBECS 2018, tabla C22](https://www.eia.gov/consumption/commercial/data/2018/ce/pdf/c22.pdf)
+
+## 2026-11-08: las cargas del oxígeno y del Huerto vertical
+
+Dos cargas nuevas en el balance (`FloorEnergy`, potencia MEDIA, como todos los pisos):
+
+| Carga | Media | En la noche polar | Cómo se declara |
+|---|---|---|---|
+| LED de la fachada del Árbol (595 m²; antes no estaba en el balance) | ~65 kW | 92 kW | `FloorEnergy` en `Fachada_fotobiorreactores` |
+| LED de la fachada de Ciencias (480 m², nueva) | ~53 kW | 74 kW | `FloorEnergy` en `Fachada_fotobiorreactores_2` |
+| Huerto vertical: 8 estantes (10 kWh/kg) y 520 m² × 5 W/m² | ~9 kW | ~9 kW | `FloorEnergy.Declare` (`SanctuaryAreaType.VerticalFarm` + `VerticalFarm.LedKW`) |
+| **Total nuevo** | **~127 kW** | **~175 kW** | |
+
+- La media del LED es `FotobioSpec.LedMeanKW` = la potencia de la noche polar × la parte del año en que los LED rellenan el sol (`LedMeanFraction`, ~71 %: mi cuenta aproximada; Unity da la exacta).
+- **Balance (inferido, sin Unity):** la última medida era 952 kW de media, 1523 de punta, 128 mesas de 173 plazas. Con lo nuevo: **~1079 kW de media y ~1726 de punta**; el reactor (5000 kW) cubre la punta con ~3,3 MW de margen. **~146 mesas de 173**: quedan ~27 plazas libres. Las baterías no cambian (lo nuevo no es esencial).
+- **Noche polar con los LED a tope:** (1079 − 118 + 166) × 1,6 ≈ **1803 kW** de punta, también bajo los 5000 del reactor. Lo comprueba ahora el grupo 101.
+- Mes a mes: reactor + viento (5375 kW) ≫ 1079: cumple todos los meses.
+- Las mesas que faltan las pone el constructor solo (`TablesFor`); en una escena ya construida sin reconstruir, aparecerían como pendientes (`sol_instalacion`).
+
+**Prueba (grupo 101, `EnergyTest`):** las fachadas declaran sus LED; el Huerto vertical declara sus estantes; en la noche polar, con los LED de las fachadas a tope, el reactor cubre la punta. La regla completa (`rep.Ok`) debe seguir cumpliendo.
