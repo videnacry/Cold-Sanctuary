@@ -98,27 +98,27 @@ Es un **primer juego de requisitos**: la lista de tareas con riesgo es decisión
 
 | Qué | Impacto | Hecho |
 |---|---|---|
-| Tope de 5 h (J2) | **Cambia en el juego**: 5 h más lo que se estire, hasta la cena (19:00) | `Place`/`PlaceFor`/`UsedAt` con horas de más; 28 y 104 lo miden así. La rotación pura sigue en 5 h |
+| Tope de 5 h (J2) | **No cambia**: 5 h, y libre a las 16:00. Berón (corrección del 2026-11-08) quitó la jornada estirada | 28 y 104 lo miden; 113 comprueba que nadie trabaja después de las 16:00 |
 | Orden fijo del personal | **Cambia**: permutación del día (Kushal, el primero) | `DayOrder`; regla 5 del reparto reescrita |
-| Clones por obligatorias | **Cambia**: por área sin nadie, y por obligatoria que no cabe ni a las 19:00 (valor por defecto) | `CloneForEmptyAreas`. Un área con gente estira primero; lo no obligatorio que no cabe pasa a mañana |
+| Clones por obligatorias | **Cambia**: un clon por área sin nadie, y clones para todo lo que no cabe en los humanos, obligatorio o no | `CloneForRest`. Nada pasa a mañana |
 | Kushal y los nueve de siempre | Solo la tierra (s1n1): **ya no reciben misiones del Aéreo ni de la Línea** | J31 sigue, pero casi nunca aplica |
 | Fernando y Luciana | s3n1 (inferido): pasan el día en el Aéreo; sus puestos de la tierra (Luciana en Mecánica) no los cogen ese día | `StartingScore` |
 | Línea de las cavernas | La mayoría de días no tiene tareas: nadie va al Marino | — |
-| Horario libre | La jornada estirada se come franjas de 16, 17 y 18 h; quien está fuera no se conduce y vuelve para la fiesta | `LeisureDirector` (cede a `OnShift`, salta a `RemoteStaff.Hidden`) |
-| HUD | «Libre» a la hora en que acaba su jornada (Kushal no se estira: 16:00) | `Itinerary` |
+| Horario libre | No cambia: empieza a las 16:00; quien está fuera no se conduce y vuelve para la fiesta | `LeisureDirector` (salta a `RemoteStaff.Hidden`) |
+| HUD | No cambia: «16:00 Libre» | `Itinerary` |
 | Capacidad (S13 = J16) | **No cambia**: todo sigue para todos los miembros | `AreaCapacity`; el Marino y el Aéreo no miran el número de miembros |
 | Microcosmos (`MicroJornada`) | No cambia | — |
-| Pruebas | 113 nueva; en 28 y 104, las de la rotación pura dicen que lo son, y las del juego miden la jornada estirada | Ver el informe de la rama |
+| Pruebas | 113 nueva; en 28, las de la rotación pura dicen que lo son y la del juego pide que nada pase a mañana; 104 y 50 vuelven a las de antes | Ver el informe de la rama |
 
 ## Reparto (rotación)
 
 1. Cada día hay una **lista de misiones por área**. Primero van las que quedaron **pendientes** ayer, luego las **obligatorias** del día y después el resto.
-2. Se recorre el **orden de áreas**. De cada área se toma una misión y se le da a la **primera persona** (en el **orden del personal del día**, ver 5) a la que aún le quepa en su jornada (5 h, o lo que se estire: §Reparto por santuarios). Después se pasa a la siguiente área, y así en vueltas.
+2. Se recorre el **orden de áreas**. De cada área se toma una misión y se le da a la **primera persona** (en el **orden del personal del día**, ver 5) a la que aún le quepa en sus 5 h. Con el reparto por santuarios, a la que **menos horas lleva** de su sitio (partes iguales). Después se pasa a la siguiente área, y así en vueltas.
 3. A esa persona se le da primero una misión del área que **nunca haya hecho**. Si no hay, la que **menos veces** haya hecho; si empatan, la que **hace más días** que no hace.
 4. Las misiones se reparten por **tiempo**: cada una tiene su duración y no se parte en la comida.
 5. El **orden de áreas rota** una posición cada día: la última pasa a ser la primera. **El orden del personal también cambia cada día** (Berón 2026-11-08; antes no cambiaba): es una permutación sembrada con el día (`WorkRoster.DayOrder`), y dos días seguidos nunca dan el mismo orden. Kushal va siempre el primero (el jugador tiene su jornada entera). Con el reparto puro (`sanctuaryModel` apagado, solo en pruebas de la rotación) sigue el orden fijo.
-6. **Clones de la Magnate** (Berón 2026-11-08): solo para un **área que se queda sin nadie** (un clon por área entera, que hace sus tareas con la jornada estirada). Ya no se divide por las obligatorias que sobran en un área con gente: esa gente estira su jornada. Las clases de iniciación sin maestro siguen siendo suyas (J32). Texto antiguo: obligatorias sin cubrir → clones de 5 h hasta cubrirlas.
-7. **El resto** pasa a pendientes y es lo primero que se asigna al día siguiente. Con el reparto por santuarios, solo lo **no obligatorio** que no cabe ni estirando hasta la cena; una obligatoria que no cabe recibe un clon.
+6. **Clones de la Magnate** (Berón 2026-11-08): con el reparto por santuarios, un clon por **área que se queda sin nadie** y clones de 5 h para **todo lo que no cabe en los humanos**, obligatorio o no. Las clases de iniciación sin maestro siguen siendo suyas (J32). En el reparto puro, solo para las obligatorias sin cubrir.
+7. **Pendientes:** en el reparto puro, el resto pasa a mañana y es lo primero que se asigna. Con el reparto por santuarios **nada pasa a mañana**. Solo queda en el registro (`DayPlan.impossible`, debe estar vacío) lo que ni un clon puede hacer.
 8. **Entrenamiento**: rota entre los entrenamientos abiertos (persona *i*, día *d* → *(i + d) mod n*).
    Desde el 2026-11-04, **el gimnasio va por los días del plan de cada uno** (`GymProgramming.ApplyGymDays`; el entrenador, Andrea,
    siempre): quien tiene gimnasio ese día en su plan va; a quien la rotación mandaba un día sin gimnasio en su plan, se le da el
@@ -130,25 +130,18 @@ Es un **primer juego de requisitos**: la lista de tareas con riesgo es decisión
 - faltan personas: hubo clones o quedaron pendientes;
 - faltan misiones: horas de personal sin asignar;
 - un área se queda hoy sin misiones.
-Con el reparto por santuarios dice además las horas de cada sitio y para cuántas personas, quién va al segundo reparto y quién estira su jornada.
+Con el reparto por santuarios dice además las horas de cada sitio, para cuántas personas y la parte de cada una, quién va al segundo reparto y qué es imposible.
 
 ## Reparto por santuarios (Berón 2026-11-08)
 
 Por rendimiento y por diseño. Lo hace `WorkRoster` con `sanctuaryModel` (lo enciende `WorkdayDirector`); la casa de cada uno, `SanctuaryPlacement`; el apagado de quien está fuera, `RemoteStaff`. Prueba: grupo 113 (`RepartoSantuariosTest`, casi toda sin escena).
 
 **Casa.** Cada humano vive en un santuario y un nivel. Santuario 1 = la tierra (`SampleScene`), 2 = el Marino ([sitio-nuclear.md](sitio-nuclear.md) §20), 3 = el Aéreo (§23).
-- Los nueve de siempre (Kushal, Linduarda, Lizmibet, Goluis, Panterilia, Gohageneis, Irosene, JefeConstruccion, Andrea): santuario 1, nivel 1.
-- Los demás, por sus estadísticas: por defecto la **suma de los niveles de sus margas del alma** (Stats + Yoga + Vínculos). La tabla de umbrales es `SanctuaryPlacement.PositionThresholds`; para usar otras estadísticas se cambia `SanctuaryPlacement.Score`.
-
-| Puntuación ≥ | 3 | 6 | 9 | 12 | 15 | 18 |
-|---|---|---|---|---|---|---|
-| Casa | s1n1 | s2n1 | s3n1 | s1n2 | s2n2 | s3n2 |
-
-- El personal aún no lleva margas en el cuerpo (solo Kushal). Mientras, usa `StartingScore` (**inferido, para que Berón lo cambie**): Fernando y Luciana 9 (s3n1: su trabajo es del Aéreo) y el resto 6 (s2n1).
-- **La tabla de inicio es el suelo** (2026-11-08, ronda en vivo): un cuerpo con margas sin subir (las tres a nivel 1) no baja a nadie a s1n1. Las margas solo mandan cuando pasan de su puntuación de inicio. En vivo, el santuario 2 y el 3 se quedaban sin nadie. Inferido: algún cuerpo del personal lleva un `CharacterLevel` a nivel 1 (no se puede ver sin la escena). El log `[Reparto] Día N · casas:` dice la casa de cada uno.
+- **Se sube por poder** (Berón 2026-11-08; [progresion-santuarios.md](progresion-santuarios.md)): un humano sale de su santuario solo cuando su poder supera al **jefe** de ese santuario, el animal más poderoso de su fauna (en s1n1, la ballena, la orca o el oso polar, el más fuerte que haya). Pasa al siguiente santuario del nivel, o al nivel siguiente tras el último. Poder = cuerpo (`Predation.Power`) + magia de las margas + bonusPacks (`SanctuaryPower`).
+- **Casa de inicio:** Irosene y Lizmibet en s2n1, Linduarda en s3n1 (`SanctuaryPlacement.StartingHome`). Los demás, por su poder: un humano corriente, s1n1.
 - **Acceso:** a sitios anteriores sí, a los siguientes nunca. Va si el nivel del sitio es menor, o si es el mismo y el santuario es menor o igual. s1n1 no va a s1n2 ni a s2n1; s1n2 va a s1n1, s2n1 y s3n1.
-- **Subir** (valor por defecto hasta que Berón decida, 2026-11-08): un santuario se **acaba** con `SanctuaryPlacement.DaysToFinish` = **30 días de juego vividos allí** (pasando la jornada en él, en el nivel de su casa). Al acabar todos los santuarios hasta el número del suyo, **sube de nivel**: el mismo santuario, un nivel más, y la cuenta empieza de nuevo (`AfterDay`, `LiveDay`; lo cuenta `WorkdayDirector.PlanDay` una vez por día). La casa nunca baja. **Se guarda entre partidas** en PlayerPrefs (`cs_santuarios`: la casa, los días de cada santuario y el último día contado), como `Progress`; no hay otro sistema de guardado. En las pruebas no se cuenta.
-- **El santuario de cada área** (`SanctuaryPlacement.SanctuaryOfArea`): Aéreo = Energía, Control de misión y Fábrica de cohetes; Marino = la Línea de las cavernas (sus misiones bajan allí); el resto, la tierra. La Central Nuclear y la Planta Atómica son de la tierra (el TRIGA está en el santuario 1; valor por defecto). Hoy todo es nivel 1.
+- **Guardado:** la casa nunca baja y se guarda entre partidas en PlayerPrefs (`cs_santuarios_poder`), como `Progress`; no hay otro sistema de guardado. Sube como mucho un santuario por día. En las pruebas no se guarda. Ya no hay tabla de puntuación ni regla de 30 días.
+- **El santuario de cada área** (`SanctuaryPlacement.SanctuaryOfArea`): Aéreo = Energía, Control de misión y Fábrica de cohetes. Marino = la Línea de las cavernas y **la planta nuclear** (Planta Atómica y Central Nuclear; Berón 2026-11-08: «lejos del santuario y de la vida»; dónde está y su estación de alfombras lo mira otra tarea). El resto, la tierra. Hoy todo es nivel 1.
 
 **El área entera.** Un área de varios pisos o salas es una sola: el hospital con todos sus pisos, el yoga con sus salas (`WorkRoster.AreaGroup`). Las misiones ya usan un nombre por área. En la escena tampoco hay pisos que sean áreas aparte: el hospital y el yoga son un `SanctuaryArea` cada uno, con sus pisos dentro. Las horas de cada área salen de **su propia lista de hoy**: el catálogo más lo del día (obras, cocina, material, sitio, energía, frutales). Cada área pide ⌈horas / 5⌉ personas, y al menos 1. Todo se recalcula en cada reparto con el personal y las tareas de ese día. Una persona nueva, un piso nuevo o una misión nueva cambian las horas y los clones. Nada está fijado a mano.
 
@@ -182,9 +175,9 @@ Horas de hoy, del catálogo fijo (`AreaFunctions`), más lo que se añade según
 1. Cada uno pasa el día en **un** sitio al que llega. Kushal, siempre en la tierra.
 2. **Primer reparto:** cada sitio con tareas pide la suma de lo que piden sus áreas. Se cubren empezando por el sitio al que llega menos gente. Para cada sitio se coge primero a quien menos sitios alcanza, en el orden del día.
 3. **Segundo reparto:** los que sobran van, uno a uno, al sitio con más horas por persona de los que alcanzan.
-4. Las vueltas por áreas reparten las tareas de cada sitio solo entre los suyos. Iniciaciones, puestos, profesiones y grupos también.
-5. **Jornada estirada:** si en un sitio quedan tareas, los suyos trabajan media hora más desde las 16:00, y otra, hasta acabarlas o llegar a la cena (`MaxOvertime` = 3 h, hasta las 19:00). Kushal no se estira (valor por defecto). La franja de las 15 sigue sin corte.
-6. **Clones:** un área entera con tareas y sin nadie hoy recibe un clon de la Magnate. Un área **sin tareas hoy no pide a nadie**. Una **obligatoria que no cabe ni a las 19:00** recibe otro clon (valor por defecto, 2026-11-08), así las obligatorias siempre quedan cubiertas. Lo no obligatorio que no cabe, pendiente.
+4. **Partes iguales** (Berón 2026-11-08, corregido): las horas de tareas del sitio se reparten por igual entre sus humanos. Cada tarea va a quien menos horas lleva hoy de los que pueden hacerla (`RunRounds`). Si la parte pasa de 5 h, cada humano hace 5 h y lo demás, clones. Si no, todos la misma parte, menor. Las tareas no se parten. **Tolerancia:** entre quien más y quien menos lleva del sitio, como mucho la tarea más larga del sitio (113 lo prueba con tareas de 1 h y de 2 h). Iniciaciones, puestos, profesiones y grupos se reparten antes y también cuentan.
+5. **Sin jornada estirada:** todos acaban a las 16:00 (Berón quitó las horas de más).
+6. **Clones** (`CloneForRest`): primero un clon por cada área entera con tareas y sin ningún humano (nadie de su sitio, o nadie pudo iniciarse en ella). Después, clones de 5 h para lo que quede, sitio a sitio. Un área **sin tareas no pide a nadie**. **Nada pasa a mañana**: varios trabajadores o clones en un área se reparten sus tareas.
 7. **La regla de oro sigue** (J30): dentro de su sitio todos rotan por todo. Y como cada día cambia el orden y el reparto, todos pasan por todos los sitios que alcanzan.
 
 **Un área que nadie sabe hacer** (2026-11-08, ronda en vivo; regla de oro J30): si todas las tareas de un área piden saber y nadie de su sitio sabe ninguna (la Planta Atómica: `pla_`, `fis_`), sus iniciaciones van **primero** (`PlanInitiations`: +800 de prioridad, y cada área vacía abre su propia clase en la hora). Quien se inicia, la hace después. La Magnate la cubre solo si nadie pudo iniciarse ese día.
@@ -199,7 +192,7 @@ Horas de hoy, del catálogo fijo (`AreaFunctions`), más lo que se añade según
 
 **Capacidad.** Las salas y las máquinas **no se encogen**: siguen hechas para todos los miembros de todos los santuarios (`AreaCapacity.Members` = toda la lista del personal), porque en las fiestas todos se juntan en uno. **Los constructores del Marino (`SampleSceneBuilder.Marine`) y del Aéreo (`SampleSceneBuilder.Aereo`) no miran el número de miembros**: sus salas tienen el tamaño que tienen. No se han reconstruido.
 
-**La jornada estirada en el juego.** `Where`, `OnShift`, `HeadingEarly` y el itinerario del HUD usan `DayPlan.EndOf(w)` (16:00 + lo estirado). El horario libre ya cedía a `OnShift`; el reparto semanal no lo sabe de antemano (`LeisureRoster.BlockAt(h, fin)` para el panel). Una franja libre que cae en la jornada estirada cuenta como hecha en las cuentas de la semana sin haberse hecho.
+**El fin de la jornada.** Las 16:00 para todos: `Where`, `OnShift`, `HeadingEarly`, el itinerario del HUD y el horario libre no cambian.
 
 ## Misiones por área (catálogo actual)
 

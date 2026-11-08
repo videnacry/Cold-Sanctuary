@@ -48,16 +48,40 @@ public class RepartoSantuariosTest : MonoBehaviour, ITestUnit
         TestProbe.Begin("Reparto por santuarios: casa por estadísticas, acceso hacia atrás, horas por área, jornada estirada y clones solo donde no hay nadie");
 
         // ── 1. La casa de cada uno ──
-        TestProbe.Check("los nueve de siempre son santuario 1 nivel 1", SanctuaryPlacement.Originals.Length == 9 && new[] { "Player", "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene", "JefeConstruccion", "Andrea" }.All(SanctuaryPlacement.IsOriginal));
-        TestProbe.Check("la tabla de umbrales: 3 → s1n1, 6 → s2n1, 9 → s3n1, 12 → s1n2", SanctuaryPlacement.PositionFor(3) == 0 && SanctuaryPlacement.PositionFor(6) == 1 && SanctuaryPlacement.PositionFor(9) == 2 && SanctuaryPlacement.PositionFor(12) == 3 && SanctuaryPlacement.PositionFor(5) == 0);
-        bool rising = true; for (int s = 0; s < 30; s++) rising &= SanctuaryPlacement.PositionFor(s + 1) >= SanctuaryPlacement.PositionFor(s);
-        TestProbe.Check("más puntuación nunca baja de sitio", rising);
+        // SE SUBE POR PODER (Berón 2026-11-08; docs/progresion-santuarios.md): jefe = el animal más poderoso; magia y bonusPacks para superarlo
+        var bosses = SanctuaryPower.Bosses();
+        float whale = SanctuaryPower.OfSpecies("Whale");
+        float faunaMax = SanctuaryPower.FaunaOf[SanctuaryPlacement.Land].Max(SanctuaryPower.OfSpecies);
+        TestProbe.Check("el jefe de s1n1 sale de la fauna y sus arquetipos: el más fuerte de ballena, orca y oso polar (aquí, la ballena)",
+            bosses.Count >= 3 && bosses[0].who == "Whale" && Mathf.Approximately(bosses[0].power, faunaMax) && whale >= SanctuaryPower.OfSpecies("Orca") && whale >= SanctuaryPower.OfSpecies("Bear"),
+            string.Join(" · ", bosses.Select((b, i) => $"{SanctuaryPlacement.Home.At(i)}: {b.who} {b.power:0.00}")));
+        TestProbe.Check("con la fauna viva de la escena, manda la viva", Mathf.Approximately(SanctuaryPower.Bosses(("Orca_TEST", 9f))[0].power, 9f));
+        bool rising = true; for (int i = 1; i < bosses.Count; i++) rising &= bosses[i].power >= bosses[i - 1].power;
+        TestProbe.Check("cada jefe es al menos tan fuerte como el anterior (hay que superar a TODOS sus animales)", rising);
+        var probe = new GameObject("Reparto_TEST_poder"); Anima pa0 = probe.AddComponent<Anima>(); pa0.strength = 1.3f; pa0.bodyMass = 0.9f; pa0.armament = 0.2f;
+        bool oneFormula = Mathf.Approximately(Predation.PredatorPower(pa0), Predation.Power(pa0.strength, pa0.bodyMass, pa0.armadura, pa0.agility, pa0.armament, pa0.sickness));
+        Destroy(probe);
+        TestProbe.Check("una sola fórmula para animales y humanos (Predation.Power)", oneFormula);
+        TestProbe.Check("la magia es lo que suben las margas (0 sin subir)", Mathf.Approximately(SanctuaryPower.Magic(Aptitudes.Default, 0), 0f) && SanctuaryPower.Magic(Aptitudes.Default, 10) > 0.5f);
+        float plain = SanctuaryPower.PlainHuman;
+        TestProbe.Check("un humano corriente se queda en s1n1", SanctuaryPower.PositionFor(plain, bosses) == 0 && SanctuaryPlacement.Next(false, 0, false, 0, SanctuaryPower.OfHuman(null, "Fernando"), bosses) == 0);
+        TestProbe.Check("el pack solo no basta para la ballena; con magia, sí", plain + SanctuaryPower.OfPack("bonusPack2") < bosses[0].power && plain + SanctuaryPower.OfPack("bonusPack2") + SanctuaryPower.Magic(Aptitudes.Default, 10) > bosses[0].power);
+        TestProbe.Check("Irosene lleva bonusPack2", Mathf.Approximately(SanctuaryPower.OfHuman(null, "Irosene"), SanctuaryPower.OfSpecies("Irosene") + SanctuaryPower.OfPack("bonusPack2")));
+        int StartOf(string n) => SanctuaryPlacement.Next(false, 0, false, SanctuaryPlacement.StartingHome.TryGetValue(n, out int st) ? st : 0, SanctuaryPower.OfHuman(null, n), bosses);
+        TestProbe.Check("de inicio: Irosene y Lizmibet en s2n1, Linduarda en s3n1, Kushal y los demás por su poder (s1n1)",
+            StartOf("Irosene") == 1 && StartOf("Lizmibet") == 1 && StartOf("Linduarda") == 2 && StartOf("Player") == 0 && StartOf("Goluis") == 0 && StartOf("Luciana") == 0,
+            string.Join(", ", new[] { "Irosene", "Lizmibet", "Linduarda", "Player", "Goluis", "Luciana" }.Select(n => $"{n} {SanctuaryPower.OfHuman(null, n):0.00} → {SanctuaryPlacement.Home.At(StartOf(n))}")));
+        TestProbe.Check("quien supera al jefe de su casa sube UN santuario, y una vez por día", SanctuaryPlacement.Next(true, 0, false, 0, bosses[0].power + 0.1f, bosses) == 1 && SanctuaryPlacement.Next(true, 0, true, 0, bosses[0].power + 0.1f, bosses) == 0 && SanctuaryPlacement.Next(true, 0, false, 0, bosses[0].power - 0.1f, bosses) == 0);
+        TestProbe.Check("tras el último santuario del nivel, el nivel siguiente; y nunca baja", SanctuaryPlacement.Home.At(SanctuaryPlacement.Next(true, 2, false, 0, bosses[2].power + 0.1f, bosses)).Equals(S1N2) && SanctuaryPlacement.Next(true, 2, false, 0, 0f, bosses) == 2);
         TestProbe.Check("posición y casa: s3n1 es la 2 y la 3 es s1n2 (acabar la vuelta sube el nivel)", S3.Position == 2 && SanctuaryPlacement.Home.At(3).Equals(S1N2) && SanctuaryPlacement.Home.At(2).Equals(S3));
         TestProbe.Check("s1n1 no va a s1n2 ni a s2n1", !SanctuaryPlacement.CanAccess(S1, S1N2) && !SanctuaryPlacement.CanAccess(S1, S2) && SanctuaryPlacement.CanAccess(S1, S1));
         TestProbe.Check("s1n2 va a s1n1, s2n1 y s3n1", SanctuaryPlacement.CanAccess(S1N2, S1) && SanctuaryPlacement.CanAccess(S1N2, S2) && SanctuaryPlacement.CanAccess(S1N2, S3));
         TestProbe.Check("s2n1 va a s1n1 pero no a s3n1", SanctuaryPlacement.CanAccess(S2, S1) && !SanctuaryPlacement.CanAccess(S2, S3));
         TestProbe.Check("el santuario de cada área: el Aéreo, el Marino y la tierra", SanctuaryPlacement.SanctuaryOfArea(Energy) == 3 && SanctuaryPlacement.SanctuaryOfArea(Control) == 3 && SanctuaryPlacement.SanctuaryOfArea(Line) == 2 && SanctuaryPlacement.SanctuaryOfArea("Cocina") == 1 && SanctuaryPlacement.SanctuaryOfArea(AreaWork.Hospital) == 1);
-        TestProbe.Check("sin margas en el cuerpo, la tabla de inicio (Fernando al Aéreo)", SanctuaryPlacement.PositionFor(SanctuaryPlacement.SoulSum(null, "Fernando")) == 2 && SanctuaryPlacement.PositionFor(SanctuaryPlacement.SoulSum(null, "Nadie_TEST")) == SanctuaryPlacement.PositionFor(SanctuaryPlacement.DefaultStartingScore));
+        TestProbe.Check("la planta nuclear (Planta Atómica y Central Nuclear) es del Marino: lejos del santuario y de la vida", SanctuaryPlacement.SanctuaryOfArea(NuclearSite.PlantArea) == 2 && SanctuaryPlacement.SanctuaryOfArea(NuclearSite.PowerArea) == 2);
+        WorkRoster nucLand = Roster(("T0", 0), ("T1", 0));
+        WorkRoster.DayPlan pnl = nucLand.Plan(0, Ms(NuclearSite.PowerArea, "nuc_t", 2));
+        TestProbe.Check("los de la tierra nunca trabajan en la planta nuclear: la cubre un clon", !pnl.work.Any(a => !a.worker.clone) && pnl.clones.Count == 1);
 
         // ── 2 y 3. Un día con los tres santuarios ──
         WorkRoster ro = Roster(("L1", 0), ("L2", 0), ("L3", 0), ("M", 1), ("Ae", 2));
@@ -70,11 +94,23 @@ public class RepartoSantuariosTest : MonoBehaviour, ITestUnit
         TestProbe.Check("nadie va más allá de su casa", ro.workers.All(w => SanctuaryPlacement.CanAccess(w.home, p.place[w])));
         TestProbe.Check("nadie trabaja fuera de su sitio del día", p.work.Where(a => !a.worker.clone).All(a => p.place[a.worker].Equals(SanctuaryPlacement.PlaceOfArea(a.mission.area))), string.Join(" · ", p.work.Select(a => $"{a.worker.name}→{a.mission.area}")));
         TestProbe.Check("las horas de cada área salen de su lista de hoy (Energía 6 h → pide 2 personas; Línea 1 h → 1)", Mathf.Approximately(p.hoursByArea[Energy], 6f) && p.quota[Energy] == 2 && p.quota[Line] == 1 && Mathf.Approximately(p.hoursByArea["A"], 4f));
-        TestProbe.Check("Ae estira su jornada 1 h y acaba todo el Aéreo", Mathf.Approximately(p.Overtime(ae), 1f) && p.Of(ae).Sum(a => a.mission.hours) >= 6f - 1e-3f && !p.backlog.Any(x => x.area == Energy), $"+{p.Overtime(ae)} h, {p.Of(ae).Count()} tareas");
-        TestProbe.Check("lo estirado va después de las 16:00 y la jornada acaba más tarde", p.Of(ae).Any(a => a.start >= 16f - 1e-3f) && Mathf.Approximately(p.EndOf(ae), 17f), string.Join(" · ", p.Of(ae).Select(a => $"{a.start:0.#}")));
-        TestProbe.Check("sin áreas vacías, la Magnate no se divide", p.clones.Count == 0 && p.backlog.Count == 0, $"{p.clones.Count} clones, {p.backlog.Count} pendientes");
+        // PARTES IGUALES (Berón 2026-11-08, corregido). Tolerancia: entre quien más y quien menos del sitio, como mucho la tarea más larga del sitio.
+        float Worked(WorkRoster.DayPlan pl, WorkRoster.Worker w) => pl.Of(w).Sum(a => a.mission.hours);
+        bool Even(WorkRoster.DayPlan pl, IEnumerable<WorkRoster.Worker> ws, float longest) { var hs = ws.Select(w => Worked(pl, w)).ToList(); return hs.Count == 0 || hs.Max() - hs.Min() <= longest + 1e-3f; }
+        var land = ro.workers.Where(w => w.home == 0).ToList();
+        TestProbe.Check("en la tierra, 8 h entre 3: partes iguales (diferencia ≤ la tarea más larga, 1 h) y todas hechas", Even(p, land, 1f) && Mathf.Approximately(land.Sum(w => Worked(p, w)), 8f), string.Join(" · ", land.Select(w => $"{w.name} {Worked(p, w)} h")));
+        TestProbe.Check("en el Aéreo, 6 h para 1 persona: ella 5 h y un clon la hora que sobra", Mathf.Approximately(Worked(p, ae), 5f) && p.clones.Count == 1 && p.Of(p.clones[0]).All(a => a.mission.area == Energy) && Mathf.Approximately(p.share[S3], 5f), $"Ae {Worked(p, ae)} h · {p.clones.Count} clones");
+        TestProbe.Check("nada pasa a mañana ni queda imposible", p.backlog.Count == 0 && ro.pending.Count == 0 && p.impossible.Count == 0);
+        TestProbe.Check("nadie trabaja después de las 16:00 (sin jornada estirada)", p.work.All(a => a.start + a.mission.hours <= WorkRoster.StartHour + 8f + 1e-3f));
         TestProbe.Check("el que sobraba tras cubrir las horas va al segundo reparto", p.secondSplit.Count == 1 && p.secondSplit[0].home == 0, string.Join(", ", p.secondSplit.Select(w => w.name)));
-        TestProbe.Check("el informe dice las horas de cada santuario y quién se estira", WorkRoster.Balance(p, ro.workers.Count).Any(s => s.StartsWith("santuario 3 nivel 1")) && WorkRoster.Balance(p, ro.workers.Count).Any(s => s.StartsWith("Jornada estirada")));
+        TestProbe.Check("el informe dice las horas de cada santuario y la parte de cada uno", WorkRoster.Balance(p, ro.workers.Count).Any(s => s.StartsWith("santuario 3 nivel 1") && s.Contains("5 h cada una")));
+        WorkRoster four = Roster(("F0", 0), ("F1", 0), ("F2", 0), ("F3", 0));
+        WorkRoster.DayPlan p4 = four.Plan(0, Ms("A", "f", 4));
+        TestProbe.Check("pocas horas: 4 h entre 4, una cada uno, sin clones", four.workers.All(w => Mathf.Approximately(Worked(p4, w), 1f)) && p4.clones.Count == 0);
+        WorkRoster mix = Roster(("X0", 0), ("X1", 0), ("X2", 0));
+        var mixed = new List<WorkRoster.Mission>(Ms("A", "m2_", 3, 2f)); mixed.AddRange(Ms("B", "m1_", 4));
+        WorkRoster.DayPlan pm = mix.Plan(0, mixed);
+        TestProbe.Check("con tareas de 2 h y de 1 h (10 h entre 3): diferencia ≤ 2 h, todo hecho, sin clones", Even(pm, mix.workers, 2f) && Mathf.Approximately(mix.workers.Sum(w => Worked(pm, w)), 10f) && pm.clones.Count == 0, string.Join(" · ", mix.workers.Select(w => $"{w.name} {Worked(pm, w)} h")));
 
         // Clones solo para las áreas sin nadie
         WorkRoster lone = Roster(("L1", 0), ("L2", 0));
@@ -82,34 +118,25 @@ public class RepartoSantuariosTest : MonoBehaviour, ITestUnit
         far.AddRange(Ms("A", "a", 4)); far.AddRange(Ms(Energy, "e", 2)); far.AddRange(Ms(Control, "c", 1)); far.AddRange(Ms(Line, "l", 1));
         WorkRoster.DayPlan pf = lone.Plan(0, far);
         TestProbe.Check("un clon por cada área sin nadie (Energía, Control de misión, Línea), y ninguno en la tierra",
-            pf.clones.Count == 3 && new HashSet<string>(pf.cloneAreas).SetEquals(new[] { Energy, Control, Line }), $"{pf.clones.Count}: {string.Join(", ", pf.cloneAreas)}");
+            pf.clones.Count == 3 && pf.emptyAreaClones == 3 && new HashSet<string>(pf.cloneAreas).SetEquals(new[] { Energy, Control, Line }), $"{pf.clones.Count}: {string.Join(", ", pf.cloneAreas)}");
         TestProbe.Check("cada clon, en una sola área", pf.clones.All(c => pf.Of(c).Select(a => a.mission.area).Distinct().Count() == 1));
         WorkRoster solo = Roster(("Solo", 0));
         WorkRoster.DayPlan ps = solo.Plan(0, Ms("A", "x", 6, 2f, true));
         WorkRoster.Worker so = solo.Find("Solo");
-        TestProbe.Check("las obligatorias que no caben ni estirando hasta la cena: un clon para ellas, ninguna a mañana",
-            ps.clones.Count == 1 && ps.mandatoryClones == 1 && ps.backlog.Count == 0 && ps.Overtime(so) <= WorkRoster.MaxOvertime + 1e-3f && ps.Overtime(so) > 0f && WorkRoster.Balance(ps, 1).Any(s => s.StartsWith("Faltan personas")), $"+{ps.Overtime(so)} h, {ps.clones.Count} clones, {ps.backlog.Count} pendientes");
+        TestProbe.Check("12 h obligatorias para 1 persona: ella hasta 5 h y clones el resto, nada a mañana",
+            Worked(ps, so) <= WorkRoster.WorkHours + 1e-3f && ps.clones.Count >= 1 && ps.work.Count == 6 && ps.backlog.Count == 0 && ps.impossible.Count == 0 && WorkRoster.Balance(ps, 1).Any(s => s.StartsWith("Faltan personas")), $"{Worked(ps, so)} h, {ps.clones.Count} clones, {ps.backlog.Count} pendientes");
         WorkRoster solo2 = Roster(("Solo", 0));
         WorkRoster.DayPlan ps2 = solo2.Plan(0, Ms("A", "y", 6, 2f));
-        TestProbe.Check("las no obligatorias que no caben: se estira hasta la cena y el resto pasa a mañana, sin clones", ps2.clones.Count == 0 && ps2.backlog.Count == 3, $"{ps2.clones.Count} clones, {ps2.backlog.Count} pendientes");
+        TestProbe.Check("las no obligatorias también: clones para lo que no cabe, nada a mañana", ps2.clones.Count >= 1 && ps2.work.Count == 6 && ps2.backlog.Count == 0 && solo2.pending.Count == 0, $"{ps2.clones.Count} clones, {ps2.backlog.Count} pendientes");
         WorkRoster onlyA = Roster(("I1", 0)); WorkRoster.DayPlan pa = onlyA.Plan(0, Ms("A", "a", 2));
         TestProbe.Check("un área sin tareas hoy (la B) no pide a nadie ni tiene clon", !pa.quota.ContainsKey("B") && pa.quota.ContainsKey("A") && pa.clones.Count == 0, string.Join(", ", pa.quota.Keys));
         WorkRoster idle = Roster(("I0", 0)); WorkRoster.DayPlan pi = idle.Plan(0, Ms(Energy, "e", 0));
         TestProbe.Check("sin ninguna tarea, ni cuota ni clones", pi.quota.Count == 0 && pi.clones.Count == 0);
 
-        // (2026-11-08, ronda en vivo) LAS MARGAS SIN SUBIR NO BAJAN A NADIE: la tabla de inicio es el suelo
-        GameObject lvGo = new GameObject("Reparto_TEST_margas");
-        CharacterLevel lv = lvGo.AddComponent<CharacterLevel>();
-        bool floorOk = SanctuaryPlacement.PositionFor(SanctuaryPlacement.SoulSum(lvGo, "Nesvitor")) == 1 && SanctuaryPlacement.PositionFor(SanctuaryPlacement.SoulSum(lvGo, "Fernando")) == 2;
-        lv.stats.level = 5; lv.yoga.level = 4; lv.bonds.level = 3;
-        bool marginsRule = SanctuaryPlacement.SoulSum(lvGo, "Nesvitor") == 12;
-        Destroy(lvGo);
-        TestProbe.Check("un cuerpo con las margas a nivel 1 sigue en su casa de la tabla de inicio (s2n1; Fernando s3n1)", floorOk);
-        TestProbe.Check("y con las margas subidas, mandan ellas", marginsRule);
         // Los de s2 y s3 pueden trabajar en la tierra; los de la tierra nunca fuera
         WorkRoster up = Roster(("U0", 2), ("U1", 1));
         WorkRoster.DayPlan pu = up.Plan(0, Ms("A", "a", 6));
-        TestProbe.Check("los de s2 y s3 trabajan en la tierra si allí está el trabajo", pu.place.Values.All(x => x.Equals(S1)) && pu.work.Any(a => a.worker.name == "U0") && pu.work.Any(a => a.worker.name == "U1") && pu.clones.Count == 0);
+        TestProbe.Check("los de s2 y s3 trabajan en la tierra si allí está el trabajo (3 h cada uno)", pu.place.Values.All(x => x.Equals(S1)) && up.workers.All(w => Mathf.Approximately(Worked(pu, w), 3f)) && pu.clones.Count == 0);
         WorkRoster down = Roster(("D0", 0));
         WorkRoster.DayPlan pdn = down.Plan(0, Ms(Energy, "e", 2));
         TestProbe.Check("los de la tierra no van fuera aunque allí haya trabajo: clon", pdn.place[down.Find("D0")].Equals(S1) && pdn.clones.Count == 1 && !pdn.work.Any(a => a.worker.name == "D0"));
@@ -118,7 +145,7 @@ public class RepartoSantuariosTest : MonoBehaviour, ITestUnit
         var ini = new WorkRoster { sanctuaryModel = true, initiationModel = true, useProfessions = false };
         ini.areas.AddRange(new[] { "A", "Planta Atómica" });
         ini.trainingAreas.Add("Sala de Yoga");
-        for (int i = 0; i < 3; i++) ini.Add("N" + i);
+        for (int i = 0; i < 3; i++) ini.Add("N" + i).home = 1;   // (la Planta es del Marino: solo los de s2 en adelante)
         var risky = new List<WorkRoster.Mission>(Ms("A", "qui_a", 10)); risky.AddRange(Ms("A", "limpiar_a", 3)); risky.Add(new WorkRoster.Mission("Planta Atómica", "pla_operar", "Operar", 1f));
         WorkRoster.DayPlan pin = ini.Plan(0, risky);
         TestProbe.Check("la Planta, que nadie sabe, recibe su iniciación y la hace una persona (sin clon)",
@@ -126,28 +153,16 @@ public class RepartoSantuariosTest : MonoBehaviour, ITestUnit
             $"clases: {string.Join(" · ", pin.lessons.Select(l => l.real.id))} · clones: {string.Join(", ", pin.cloneAreas)}");
 
         // UNA TAREA DE CADA DÍA QUE QUEDÓ PENDIENTE SE CUENTA UNA VEZ
-        WorkRoster dup = Roster(("R0", 0));
+        // (en el reparto puro, que aún deja pendientes; con santuarios no queda ninguno)
+        var dup = new WorkRoster { useProfessions = false }; dup.areas.Add("A"); dup.Add("R0");
         dup.Plan(0, Ms("A", "d", 12));
         int pend = dup.pending.Count;
         WorkRoster.DayPlan pdup = dup.Plan(1, Ms("A", "d", 12));
-        TestProbe.Check("lo pendiente de ayer que vuelve hoy no se suma dos veces (12 h, no más)", pend > 0 && Mathf.Approximately(pdup.hoursByArea["A"], 12f), $"{pend} pendientes · hoy {pdup.hoursByArea["A"]} h");
+        TestProbe.Check("lo pendiente de ayer que vuelve hoy no se suma dos veces (12 h, no más)", pend > 0 && Mathf.Approximately(pdup.hoursDemanded, 12f), $"{pend} pendientes · hoy {pdup.hoursDemanded} h");
 
-        // ACABAR UN SANTUARIO: 30 días vividos en cada uno hasta el suyo, y sube de nivel
-        var lived = new Dictionary<int, int>();
-        SanctuaryPlacement.Home h = S2;
-        for (int i = 0; i < SanctuaryPlacement.DaysToFinish; i++) h = SanctuaryPlacement.AfterDay(lived, h, S2);
-        bool notYet = h.Equals(S2);
-        for (int i = 0; i < SanctuaryPlacement.DaysToFinish - 1; i++) h = SanctuaryPlacement.AfterDay(lived, h, S1);
-        bool stillNot = h.Equals(S2);
-        h = SanctuaryPlacement.AfterDay(lived, h, S1);
-        TestProbe.Check($"s2n1 sube a s2n2 al acabar s1 y s2 ({SanctuaryPlacement.DaysToFinish} días cada uno), no antes", notYet && stillNot && h.Equals(new SanctuaryPlacement.Home(2, 2)) && lived.Count == 0, h.ToString());
-        var l1 = new Dictionary<int, int>(); SanctuaryPlacement.Home k1 = S1;
-        for (int i = 0; i < SanctuaryPlacement.DaysToFinish; i++) k1 = SanctuaryPlacement.AfterDay(l1, k1, i % 2 == 0 ? S1 : S1N2);
-        TestProbe.Check("los días en otro nivel no cuentan; con 30 en s1, s1n1 pasa a s1n2", k1.Equals(S1) && SanctuaryPlacement.Home.At(SanctuaryPlacement.AfterDay(new Dictionary<int, int> { { 1, SanctuaryPlacement.DaysToFinish - 1 } }, S1, S1).Position).Equals(S1N2));
-        TestProbe.Check("en las pruebas no se cuenta ni se guarda", SanctuaryPlacement.LiveDay("Reparto_TEST", 5, 0, S1) == 0 && SanctuaryPlacement.DaysIn("Reparto_TEST", 1) == 0);
         WorkRoster kushal = Roster(("Player", 2));
         WorkRoster.DayPlan pk = kushal.Plan(0, Ms("A", "k", 6));
-        TestProbe.Check("Kushal no se estira y siempre está en la tierra", pk.Overtime(kushal.Find("Player")) == 0f && pk.place[kushal.Find("Player")].Equals(S1) && pk.backlog.Count == 1);
+        TestProbe.Check("Kushal, siempre en la tierra: sus 5 h y un clon la que sobra", Mathf.Approximately(Worked(pk, kushal.Find("Player")), 5f) && pk.place[kushal.Find("Player")].Equals(S1) && pk.clones.Count == 1 && pk.backlog.Count == 0);
 
         // EL ÁREA ENTERA: el yoga y el hospital cuentan como una, tengan los pisos que tengan
         TestProbe.Check("los pisos del yoga y del hospital son su área", WorkRoster.AreaGroup("Sala de Yoga · Hatha tradicional") == "Sala de Yoga" && WorkRoster.AreaGroup("Sala de Yoga") == "Sala de Yoga" && WorkRoster.AreaGroup(AreaWork.Hospital + " veterinario") == AreaWork.Hospital && WorkRoster.AreaGroup("Cocina") == "Cocina");
@@ -198,12 +213,7 @@ public class RepartoSantuariosTest : MonoBehaviour, ITestUnit
         TestProbe.Check("se apagan los de fuera (no se simulan)", hid);
         TestProbe.Check("y vuelven todos para la fiesta", back);
 
-        float c;
-        var old = new WorkRoster();
-        TestProbe.Check("reparto puro: lo estirado es una franja nueva a las 16:00", old.Place(5f, 1f, out c, 1f) == 5f && Mathf.Approximately(c, 16f) && old.Place(5f, 1f, out c) < 0f && Mathf.Approximately(old.UsedAt(16.5f, 1f), 5.5f));
-        var nw = new WorkRoster { initiationModel = true };
-        TestProbe.Check("modelo nuevo: la franja de las 15 sigue después de las 16:00", nw.Place(4f, 2f, out c, 1f) == 4f && Mathf.Approximately(c, 15f) && nw.Place(4f, 2f, out c) < 0f);
-        TestProbe.Check("el horario libre ve la jornada estirada", LeisureRoster.BlockAt(16.5f, 17f) == "jornada" && LeisureRoster.BlockAt(16.5f) == "libre" && LeisureRoster.BlockAt(17.5f, 17f) == "libre");
+        TestProbe.Check("el tiempo libre empieza a las 16:00 para todos", LeisureRoster.BlockAt(15.9f) == "jornada" && LeisureRoster.BlockAt(16.1f) == "libre");
 
         // ── En la escena (si hay jornada): lo que da el reparto de verdad, para el informe ──
         WorkdayDirector wd = FindAnyObjectByType<WorkdayDirector>();
@@ -213,7 +223,14 @@ public class RepartoSantuariosTest : MonoBehaviour, ITestUnit
             foreach (var kv in t.hoursByArea.OrderBy(k => k.Key)) Debug.Log($"[Reparto] {kv.Key} ({SanctuaryPlacement.PlaceOfArea(kv.Key)}): {kv.Value:0.#} h, pide {t.quota[kv.Key]} persona(s).");
             foreach (string s in WorkRoster.Balance(t, wd.roster.workers.Count)) Debug.Log("[Reparto] " + s);
             TestProbe.Check("en el santuario: nadie trabaja fuera de su sitio ni más allá de su casa", t.work.Where(a => !a.worker.clone && t.place.ContainsKey(a.worker)).All(a => t.place[a.worker].Equals(SanctuaryPlacement.PlaceOfArea(a.mission.area)) && SanctuaryPlacement.CanAccess(a.worker.home, t.place[a.worker])));
-            TestProbe.Check("en el santuario: los clones son solo de áreas sin nadie", t.clones.Count == t.cloneAreas.Count, $"{t.clones.Count} clones · {string.Join(", ", t.cloneAreas)}");
+            TestProbe.Check("en el santuario: cada clon tiene su área apuntada", t.clones.Count == t.cloneAreas.Count, $"{t.clones.Count} clones · {string.Join(", ", t.cloneAreas)}");
+            TestProbe.Check("en el santuario: nada pasa a mañana ni queda imposible", t.backlog.Count == 0 && t.impossible.Count == 0 && wd.roster.pending.Count == 0, string.Join(", ", t.impossible.Take(6).Select(x => x.id)));
+            TestProbe.Check("en el santuario: nadie pasa de 5 h ni trabaja después de las 16:00", t.work.Where(a => !a.worker.clone).GroupBy(a => a.worker).All(g => g.Sum(a => a.mission.hours) <= WorkRoster.WorkHours + 1e-3f) && t.work.All(a => a.start + a.mission.hours <= WorkRoster.StartHour + 8f + 1e-3f));
+            foreach (var kv in t.hoursAt)
+            {
+                var hs = t.place.Where(x => x.Value.Equals(kv.Key)).Select(x => t.Of(x.Key).Sum(a => a.mission.hours)).ToList();
+                if (hs.Count > 0) Debug.Log($"[Reparto] {kv.Key}: {hs.Count} personas, parte {t.share[kv.Key]:0.#} h, de {hs.Min():0.#} a {hs.Max():0.#} h (con iniciaciones, puestos y grupos).");
+            }
         }
         yield return null;
         TestProbe.End();
