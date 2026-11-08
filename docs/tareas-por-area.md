@@ -24,7 +24,7 @@ Código: `WorkRoster` (el reparto por santuarios: [jornada-y-rotacion.md](jornad
 **Leyenda.**
 - **A la vez**: puestos que en la vida real funcionan simultáneamente. En el código solo lo fuerzan los `group`. Los demás se reparten como tareas.
 - **Seguidas**: se hacen una detrás de otra.
-- **Opcional**: candidata a quedarse sin hacer si no hay nadie libre, en vez de pedir un clon. **Solo se marca, no está aplicado**: la regla de hoy es que todo se hace.
+- **Opcional**: candidata de la auditoría. **Berón (2026-11-08) decidió que una opcional, si ningún humano tiene tiempo, ese día no se hace**: nunca lleva un clon y no pasa a mañana. Solo se aplica a las de `WorkRoster.OptionalIds` (§Las opcionales aplicadas); las demás candidatas quedan fuera por ser cuidado de seres vivos, comida, obras o seguridad.
 
 Horas del catálogo fijo (`AreaFunctions`); entre paréntesis, lo que se añade según el día. **Ob.** = obligatoria.
 
@@ -113,14 +113,23 @@ Horas del catálogo fijo (`AreaFunctions`); entre paréntesis, lo que se añade 
 | Control de misión | 5 (+ iceberg 2, vaciado 1, **ob.**) | control 1, seguridad 1, fábrica 2, seguimiento 1 | **fábrica** (sin lanzamiento cercano) |
 | Energía | 2 (+ eólica o mareal 1, almacén 0,5, instalar 2, reparar 1, disuasión 1, iceberg 2, parada 1) | **mantenimiento de paneles 1**, control 0,5, ronda de aves 0,5 | **instalar** (las mesas pueden esperar), **disuasión** |
 
-## Por qué esas son opcionales
+## Las opcionales aplicadas (Berón 2026-11-08)
 
-Son tareas no obligatorias que cumplen al menos una de estas condiciones:
-- solo hacen falta cuando hay demanda (turistas, visitas, un desacuerdo);
-- son investigación o formación;
-- son ocio con sentido (el vínculo con una cría);
-- son una segunda plaza de un puesto que ya está cubierto.
+**Regla:** primero se reparten por igual las obligadas. Después, las opcionales van a los humanos que aún tienen tiempo en sus 5 h, a quien menos lleva primero. Las que no caben **ese día no se hacen**: nunca un clon, nunca a mañana. La jornada lo escribe cada día: `[Reparto] Día N · opcionales omitidas: …`.
 
-**Nunca son opcionales** la seguridad (nuclear, guardia, hospital de guardia), el cuidado de seres vivos (pacientes, crías, cultivos), la comida del día ni las obras.
+**Aplicadas** (`WorkRoster.OptionalIds`; una obligatoria nunca lo es):
+- **Cuentas y avisos:** `coc_cuentas`, `coc_avisos`.
+- **Asamblea:** `asa_mediar`, solo si hay un desacuerdo.
+- **Mantenimiento que puede esperar:** `mec_vehiculos`, `tex_tejer`, `gym_mantener`, `sol_instalacion` (las mesas nuevas esperan; los paneles se mantienen siempre), `lanz_fabrica`.
+- **Investigación:** `qui_sintesis`, `bio_pcr`, `fis_experimentos`.
+- **Formación:** `aul_estudio`, `aul_letras`, `aul_lenguas`.
+- **Cultura:** `son_grabar`, `son_ensayo`.
 
-**Pendiente con Berón:** si lo opcional se deja sin hacer cuando no hay nadie, en vez de pedir un clon. Hoy la regla es que nada queda sin hacer.
+**Candidatas de la auditoría que NO se aplican** (la regla de Berón: nunca seguridad, cuidado de seres vivos, comida ni obras):
+- **Pacientes y animales:** `hos_quirofano`, `hos_pediatria`, `hos_plantas`, `enf_animales`, `cri_vinculo`, `gua_alimentador_2`, `ene_disuasion` (protege a las aves).
+- **Comida:** `coc_sala`, `hue_visitantes`.
+- **Plantas:** `hue_transplante`.
+- **Obras:** `con_almacen`, `con_proyectos2`.
+- **Papeles de la clase de yoga:** el segundo corrector, que es obligatorio.
+
+**Los clones bajan.** Con 5 h obligadas y 2,5 h opcionales para una persona, antes salía 1 clon (las opcionales contaban como obligadas). Ahora salen 0 y se omiten las 3 opcionales (113). En el juego, la línea `[Reparto] … opcionales omitidas: … · clones: N` da la cuenta de cada día.

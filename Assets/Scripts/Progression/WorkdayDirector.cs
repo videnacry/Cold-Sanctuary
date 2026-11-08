@@ -134,6 +134,7 @@ public class WorkdayDirector : MonoBehaviour
         List<WorkRoster.Mission> todays = AreaWork.Today(day, ConstructionProject.All);
         todays.AddRange(GymProgramming.Missions());   // la del entrenador (papel fijo: revisar el registro y ajustar los planes)
         today = roster.Plan(day, todays);
+        Debug.Log($"[Reparto] Día {day} · opcionales omitidas: {(today.skipped.Count == 0 ? "ninguna" : string.Join(", ", today.skipped.Select(m => $"{m.id} ({m.area}, {m.hours:0.#} h)")))} · clones: {today.clones.Count}");
         _orders.Clear(); _cloneOrders.Clear();   // (las órdenes guardadas eran del plan de ayer)
         int gymDays = GymProgramming.ApplyGymDays(today, roster.trainingAreas, roster.workers);   // los días de gimnasio de cada plan
         if (gymDays > 0) Debug.Log($"[Gimnasio] Día {day}: {gymDays} cambios en el entrenamiento de las 14 h por los días de cada plan; al gimnasio: {string.Join(", ", today.training.Where(kv => kv.Value == GymArea).Select(kv => kv.Key.name))}.");
