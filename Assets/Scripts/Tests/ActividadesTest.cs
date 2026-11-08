@@ -42,14 +42,14 @@ public class ActividadesTest : MonoBehaviour, ITestUnit
     {
         TestProbe.Begin("Actividades: la orquesta de la comida, las misiones que se hacen de verdad y los uniformes");
         // EL PUESTO JUNTO A LA MESA, con el cuerpo fuera (ronda 25): una mesa de 2 × 1 m y su puesto a 1,1 m del centro (el de la mesa veterinaria)
-        // queda a 0,1 m de la caja; ClearStandPoint lo deja a 0,35 m, y uno que ya está lejos no se mueve.
+        // queda a 0,1 m de la caja; ClearStandPoint lo deja a HospitalStation.Clearance (0,5 m), y uno que ya está lejos no se mueve.
         {
             GameObject mesa = new GameObject("Mesa_prueba_puesto"); mesa.transform.position = new Vector3(8600f, -600f, 8600f);
             BoxCollider bc = mesa.AddComponent<BoxCollider>(); bc.center = new Vector3(0f, 0.45f, 0f); bc.size = new Vector3(2f, 0.9f, 1f);
             HospitalStation hs = mesa.AddComponent<HospitalStation>(); hs.standLocal = new Vector3(1.1f, 0f, 0f);
             Physics.SyncTransforms();
             Vector3 p = hs.ClearStandPoint; float gap = p.x - (mesa.transform.position.x + 1f);
-            TestProbe.Check("el puesto pegado a la mesa deja el cuerpo fuera de ella (≥ 0,35 m de su caja)", gap >= HospitalStation.Clearance - 0.01f && gap < 0.6f, $"{gap:0.00} m");
+            TestProbe.Check("el puesto pegado a la mesa deja el cuerpo fuera de ella (a su holgura de la caja)", gap >= HospitalStation.Clearance - 0.01f && gap < 0.6f, $"{gap:0.00} m");
             hs.standLocal = new Vector3(1.6f, 0f, 0f);
             TestProbe.Check("un puesto ya apartado se queda donde está", (hs.ClearStandPoint - hs.StandPoint).sqrMagnitude < 1e-4f);
             Destroy(mesa);

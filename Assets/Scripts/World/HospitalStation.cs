@@ -35,7 +35,9 @@ public class HospitalStation : MonoBehaviour, IInteractable
     /// <summary>Holgura del puesto respecto a su mesa: pegado a ella (regla de la ronda 19), pero con el centro del cuerpo FUERA aunque se incline a
     /// explorar o auscultar (ronda 25: Andrea y David ×14 dentro de «Quirofano veterinario 3/4» en «Explorar al paciente»; el puesto de la mesa
     /// veterinaria está a 1,1 m de su centro, casi en el borde de su caja).</summary>
-    public const float Clearance = 0.35f;
+    // (Ronda 28) 0,5 y no 0,35: al inclinarse 0,25 m hacia la mesa (explorar, auscultar) el centro del cuerpo quedaba a 0,10 m de su caja, dentro de
+    // la esfera de 0,12 con que se mira (grupo 84: las cuatro «Mesa veterinaria», «inclinado»). Con 0,5 queda a 0,25.
+    public const float Clearance = 0.5f;
     /// <summary>El punto del puesto apartado de la caja de su propia mesa lo justo para dejar <see cref="Clearance"/> (si ya la tiene, el mismo).</summary>
     public Vector3 ClearStandPoint { get { if (_clearAt == null || _clearFor != standLocal) { _clearFor = standLocal; _clearAt = FindClearStand(); } return _clearAt.Value; } }
     Vector3? _clearAt; Vector3 _clearFor;   // (se calcula una vez: los muebles del hospital no se mueven)
