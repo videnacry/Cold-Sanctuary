@@ -347,6 +347,7 @@ public class LeisureDirector : MonoBehaviour
         public Vector3 to; public AreaFunctionStation st;
         public float since, arrivedAt = -1f, performed, blockedFor, walked, flown, poseAt;
         public bool reachable;   // (microcosmos) su punto tiene camino andando por el NavMesh
+        public float bestLeft = float.MaxValue, bestAt;   // (ronda 27) lo más cerca que ha llegado y cuándo: mientras se acerca, no se le pone allí
         public float speed = 2.6f, allowed = 60f;   // a qué paso va y cuánto tiempo tiene para llegar andando (microcosmos)
         public Vector3 last; public int jumps; public bool fallback, posed, b, onBed;
         public bool idleWas, linWas, touchedIdle, touchedLin;
@@ -635,7 +636,10 @@ public class LeisureDirector : MonoBehaviour
             {
                 if (r.group.micro)
                 {
-                    if (!MicroMove.Step(g.transform, r.to, r.speed, 1.6f) && Time.time - r.since - r.blockedFor > r.allowed)
+                    // Mientras se acerca, sigue andando (con tope: el doble del tiempo): la Tejedora iba a 2,4 m/s y le faltaban 7,6 m a los 65 s.
+                    if (d.magnitude < r.bestLeft - 0.5f) { r.bestLeft = d.magnitude; r.bestAt = Time.time; }
+                    bool closing = Time.time - r.bestAt < 5f && Time.time - r.since - r.blockedFor < r.allowed * 2f;
+                    if (!MicroMove.Step(g.transform, r.to, r.speed, 1.6f) && Time.time - r.since - r.blockedFor > r.allowed && !closing)
                     {
                         // (con NavMeshAgent hay que llevarlo con Warp: mover el transform lo dejaba volver a su sitio en el fotograma
                         // siguiente, y contaba decenas de «saltos» de ida y vuelta)
