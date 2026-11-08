@@ -118,6 +118,9 @@ public class GroupAnimalsTest : MonoBehaviour, ITestUnit
             {
                 float g0 = target.growthPerSecond, gr0 = target.grazeRate; target.growthPerSecond = 0f; target.grazeRate = 0f;
                 Vector3 back = pred.transform.position;
+                // Su agente de NavMesh lo devolvía a tierra cada fotograma antes de que el banco mirase (ronda 24: una foca de un iceberg, con el
+                // agente activo: «0 mordiscos»). Mientras se le pone en el banco, sin agente.
+                bool navWas = pred.nav != null && pred.nav.enabled; if (navWas) pred.nav.enabled = false;
                 int before = target.Visible, bites0 = Swarm.Bites; float cnt0 = target.count;
                 float t0 = Time.time, r0 = Time.realtimeSinceStartup; int minVisible = before;
                 while (Time.time - t0 < 2.5f && Time.realtimeSinceStartup - r0 < 10f)
@@ -129,6 +132,7 @@ public class GroupAnimalsTest : MonoBehaviour, ITestUnit
                     minVisible = Mathf.Min(minVisible, target.Visible);
                 }
                 pred.transform.position = back;
+                if (navWas) pred.nav.enabled = true;
                 int after = target.Visible, bites = Mathf.RoundToInt(cnt0 - target.count);   // (los de ESTE banco: Swarm.Bites cuenta los de todos)
                 TestProbe.Check($"un depredador ({pred.SpeciesName}) choca con el banco: cada mordisco quita UN pez, al momento", bites >= 1 && before - after == bites && Mathf.Abs(cnt0 - target.count - bites) < 0.01f && Swarm.Bites - bites0 >= bites,
                     $"{bites} mordiscos: {before} → {after} peces (cuenta {cnt0:0.0} → {target.count:0.0})");
