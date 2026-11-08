@@ -38,10 +38,25 @@ public class HorarioLibreTest : MonoBehaviour, ITestUnit
 
     static void Log(string s) => Debug.Log("[Horario] " + s);
 
+    // CADA SEMANA, por igual (ronda 23: Δ=4 en «Manualidades en el estudio textil», de 1 a 5 veces, con la misma gente y actividades que la
+    // batería anterior, Δ=2): las cuentas de cada uno siguen de una semana a otra y el reparto igualaba el total, no la semana. 29 personas,
+    // plazas como las del santuario, 6 semanas seguidas.
+    void WeeksEven()
+    {
+        var r = new LeisureRoster();
+        for (int i = 0; i < 29; i++) r.Add($"P{i}");
+        int[] caps = { 4, 4, 6, 3, 8, 5, 4, 10, 6, 3, 0, 0, 4, 6 };
+        for (int i = 0; i < caps.Length; i++) r.activities.Add(new LeisureRoster.Activity($"a{i}", $"Actividad {i}", LeisureRoster.Kind.Ocio, "x", caps[i]));
+        int worst = 0; string where = "";
+        for (int w = 0; w < 6; w++) { int sp = LeisureRoster.Spread(r.Plan(w), out _, out string wa); if (sp > worst) { worst = sp; where = $"semana {w}: {wa}"; } }
+        TestProbe.Check("cada semana, cada actividad repartida por igual (Δ ≤ 2), también las siguientes", worst <= 2, $"Δ={worst} {where}");
+    }
+
     public IEnumerator Run()
     {
         TestProbe.Begin("Horario libre: la semana de ocio y cuidado, repartida por igual, andando a cada sitio (santuario y microcosmos)");
         Logic();
+        WeeksEven();
         float oldScale = Time.timeScale;
         try { Family_(); } catch (System.Exception ex) { TestProbe.Check("la familia y los amigos de Berón", false, ex.Message); }
         yield return Sanctuary();
