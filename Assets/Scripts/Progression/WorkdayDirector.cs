@@ -618,14 +618,31 @@ public class WorkdayDirector : MonoBehaviour
         foreach (WorkRoster.Worker w in roster.workers)
         {
             GameObject g = Body(w.name);
-            if (g == null || !NuclearSiteRule.InZone(g.transform.position)) continue;
+            if (g == null || (!NuclearSiteRule.InZone(g.transform.position) && !SiteLine.IsAway(g))) continue;
             left++;
+            if (SiteLine.IsAway(g)) continue;   // (ronda 30) trabajaba abajo: la Línea lo sube ya (SiteLine.Work vuelve en cuanto hay emergencia) y sale a la pista
+            OffTheDeck(g);   // (ronda 30) quien está en la estación sin NavMesh bajo los pies (la caseta de la Línea), a la pista: de ahí sale en alfombra
             if (g.CompareTag("Player")) { MagnateWarden.Bring(g, AreaPoint(AreaWork.Hospital, "Player"), "Emergencia en el sitio nuclear: te saco de aquí. Vamos al hospital, al control de contaminación."); continue; }
             if (!OnOwnDuty(g)) Drive(g, AreaWork.Hospital, EvacuationDoing, null, true);
         }
         foreach (var kv in _clones)
             if (kv.Value != null && NuclearSiteRule.InZone(kv.Value.transform.position)) { left++; if (!OnOwnDuty(kv.Value)) Drive(kv.Value, AreaWork.Hospital, EvacuationDoing, null, true); }
         return left;
+    }
+
+    /// <summary>(Ronda 30) En una evacuación, quien se ha quedado en la ESTACIÓN NUCLEAR sin NavMesh bajo los pies (la caseta y el andén de la Línea no lo
+    /// tienen) pasa a la pista de la estación, a 7,5 m: es la salida que la Línea ya usa (<see cref="SiteLine.ExitPoint"/>). Sobre NavMesh, anda solo.</summary>
+    static void OffTheDeck(GameObject g)
+    {
+        SiteLine l = SiteLine.Instance;
+        if (l == null || g == null || FlyingCarpet.Riding(g) || g.CompareTag("Player")) return;
+        Vector3 c = NuclearSiteRule.Center, p = g.transform.position;
+        if (Mathf.Abs(p.x - c.x) > NuclearSiteRule.StationHalf + 1f || Mathf.Abs(p.z - c.z) > NuclearSiteRule.StationHalf + 1f) return;
+        if (UnityEngine.AI.NavMesh.SamplePosition(p, out UnityEngine.AI.NavMeshHit hit, 0.8f, UnityEngine.AI.NavMesh.AllAreas) && Mathf.Abs(hit.position.y - p.y) < 1.2f) return;
+        Vector3 to = l.ExitPoint;
+        if ((to - p).sqrMagnitude < 1f) return;
+        Teleport(g.transform, to + Vector3.up * 0.02f);
+        Debug.Log($"[Sitio nuclear] Evacuación: «{g.name}» estaba en la estación sin suelo de paso (caseta de la Línea): sale a la pista.");
     }
 
     void Drive(GameObject g, string area, string doing, string missionId, bool alwaysMove = false)
@@ -638,6 +655,7 @@ public class WorkdayDirector : MonoBehaviour
         if (AereoRule.IsArea(area) && (AereoLink.IsAway(g) || AereoLink.Board(g))) return;
         SiteLine.Note(g, area);   // LA PLANTA BAJO EL MAR (docs/sitio-nuclear.md §25): quien trabaja en ella baja por la Línea desde la estación y su misión corre por el reloj
         if (NuclearSite.Underwater(area) && (SiteLine.IsAway(g) || SiteLine.BoardWork(g))) return;
+        if (SiteLine.IsAway(g)) return;   // (ronda 30) sube por la Línea (en una emergencia, ya de vuelta): al salir a la pista, la jornada lo lleva
         if ((missionId == SiteLine.MissionId || missionId == Refuge.MissionId || HunterCell.Rides(missionId)) && SiteLine.Board(g, missionId)) return;   // la bajada: ya en la estación, sube al carro (docs/sitio-nuclear.md §8)
         NewcomerInitiator ini = g.GetComponent<NewcomerInitiator>();
         if (ini != null && ini.InProgress) return;   // está iniciando a un recién llegado: lo lleva ella (si no, la jornada la mandaba en alfombra a otro piso)
@@ -1191,6 +1209,13 @@ public class WorkdayDirector : MonoBehaviour
     {
         Transform t = null;
         if (area == AreaWork.Guard) { GameObject gt = Body("Guardia_AUTO"); t = gt != null ? gt.transform : null; }
+        // (Ronda 30) LA ESTACIÓN NUCLEAR: se espera en su PISTA (NavMesh y alfombras), no junto a la caseta de la Línea, que no pisa NavMesh: Linduarda, puesta allí,
+        // no podía irse en la evacuación. La pista está a 7,5 m del andén: desde ella se sube al carro (≤ 9 m).
+        else if ((area == SiteLine.AreaName || NuclearSite.Underwater(area)) && SiteLine.Instance != null && SiteLine.Instance.Pad != null)
+        {
+            int h0 = Mathf.Abs((who ?? "").GetHashCode());
+            return SiteLine.Instance.Pad.TransformPoint(new Vector3((h0 % 5 - 2) * 1.2f, 1f, ((h0 / 5) % 3 - 1) * 1f));
+        }
         else t = AreaTransform(area);
         if (t == null) return Vector3.zero;
         int hsh = Mathf.Abs((who ?? "").GetHashCode());
