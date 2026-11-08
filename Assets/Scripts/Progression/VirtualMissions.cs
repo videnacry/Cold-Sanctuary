@@ -19,6 +19,7 @@ public static class VirtualMissions
         if (id.StartsWith("obra_material_")) return "obra_material";
         if (id.StartsWith("obra_trabajo_")) return "obra_trabajo";
         if (id.StartsWith("rep_")) return "rep";
+        if (id == "bio_fotobio_2") return "bio_fotobio";   // (2026-11-08) la segunda fachada: el mismo cuidado, la misma escena
         return id;
     }
 
@@ -133,6 +134,10 @@ public static class VirtualMissions
             case "lanz_vaciado": return new[] { "Dar la orden de vaciar", "Comprobar que los tanques se vacían" };
             case "ene_parada": return new[] { "Parar los aerogeneradores", "Parar la turbina mareal" };
             case "instruir": return new[] { "Observar cómo inicia un compañero", "Iniciar tú a alguien", "Comprobar lo que ha aprendido" };
+            // (2026-11-08) El Huerto vertical (estantes LED de la torre de Producción).
+            case "huv_siembra": return new[] { "Llenar las bandejas de germinación", "Sembrar los tacos", "Trasplantar las plántulas a los canales" };
+            case "huv_cosecha": return new[] { "Coger la caja de cosecha", "Cortar las bandejas maduras", "Lavar y embolsar", "Llevarla a la cámara de verdura" };
+            case "huv_solucion": return new[] { "Medir la conductividad y el pH", "Dosificar los nutrientes", "Limpiar los canales y el filtro" };
             default: return new[] { "Preparar", "Hacer la tarea", "Recoger" };
         }
     }

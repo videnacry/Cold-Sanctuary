@@ -211,7 +211,9 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         // Servicios para turistas y personal: aseos, médica, guardia.
         int wcs = 0; foreach (Transform tt in FindObjectsByType<Transform>(FindObjectsSortMode.None)) if (tt.name.StartsWith("Aseos")) wcs++;
         TestProbe.Greater("hay aseos en las áreas humanas", wcs, 4f, $"{wcs}");
-        TestProbe.Check("Lizmibet (médica, amiga de Irosene) está en el santuario", FindByPrefix("Lizmibet"));
+        // Su casa puede ser otro santuario (el reparto la pone en el 2): existe, aquí o apagada mientras pasa el día allí.
+        GameObject liz = null; foreach (Transform tt in FindObjectsByType<Transform>(FindObjectsInactive.Include, FindObjectsSortMode.None)) if (tt.name.StartsWith("Lizmibet") && tt.GetComponent<Anima>() != null) { liz = tt.gameObject; break; }
+        TestProbe.Check("Lizmibet (médica, amiga de Irosene) está en el santuario", liz != null && (liz.activeInHierarchy || RemoteStaff.Hidden(liz)), liz == null ? "no existe" : liz.activeInHierarchy ? "aquí" : RemoteStaff.Hidden(liz) ? "en otro santuario" : "apagada sin estar fuera");
         Clock clock = FindAnyObjectByType<Clock>();
         float dayMin = TimeController.timeController.RealMinutesPerDay;
         TestProbe.Check("un día de juego dura lo configurado en el reloj (1 h por defecto)", clock != null && Mathf.Abs(dayMin - clock.realMinutesPerDay) < 0.5f, $"{dayMin:0.#} min");

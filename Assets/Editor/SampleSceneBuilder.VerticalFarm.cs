@@ -63,8 +63,10 @@ public static partial class SampleSceneBuilder
             blocks.Add(new LabBlock("Vivero de germinación", 2.4f, 1.2f, t => { GerminationBench(t); AreaSeat.Add(t.gameObject, "siembra", AreaSeat.Category.Trabajo, 2); }));
             blocks.Add(new LabBlock("Dosificador de solución nutritiva", 2.4f, 1.2f, t => { NutrientDoser(t); AreaSeat.Add(t.gameObject, "solución nutritiva", AreaSeat.Category.Trabajo, 2); }));
             blocks.Add(new LabBlock("Lavado y embolsado", 2.4f, 1.0f, t => { WashStation(t); AreaSeat.Add(t.gameObject, "cosecha", AreaSeat.Category.Trabajo, 2); }));
-            blocks.Add(new LabBlock("Cámara de verdura", 2.2f, 2.2f, t => VegColdRoom(t)));
-            blocks.Add(new LabBlock("Banco de herramientas", 2.0f, 0.9f, t => { FarmToolBench(t); AreaSeat.Add(t.gameObject, "mantenimiento", AreaSeat.Category.Trabajo, 2); }));
+            // (Ronda 23) Huella con 0,5 m más por lado: las cajas de la cámara salen 0,47 m por delante de su caja y el banco también sobresale; con la
+            // huella justa quedaban a 1,63–1,71 m de los estantes LED (regla: 2 m libres).
+            blocks.Add(new LabBlock("Cámara de verdura", 3.2f, 3.2f, t => VegColdRoom(t)));
+            blocks.Add(new LabBlock("Banco de herramientas", 3.0f, 1.9f, t => { FarmToolBench(t); AreaSeat.Add(t.gameObject, "mantenimiento", AreaSeat.Category.Trabajo, 2); }));
             blocks.Add(new LabBlock("Compostador de raíces", 1.2f, 1.0f, t => Composter(t)));
             blocks.Add(new LabBlock("Descanso y fuente de agua", 1.8f, 0.8f, t => RestCorner(t)));
         }

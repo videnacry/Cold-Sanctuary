@@ -126,7 +126,41 @@ public class LeisureRoster
         plan.activities.AddRange(activities); plan.people.AddRange(people);
         for (int d = plan.firstDay; d < plan.firstDay + DaysPerWeek; d++)
             for (int s = 0; s < SlotHours.Length; s++) PlanSlot(plan, d, s);
+        Rebalance(plan);
         return plan;
+    }
+
+    // IGUALAR LA SEMANA. Las cuentas siguen de una semana a otra y Choose iguala el TOTAL: una semana podía quedar con «Manualidades» de 1 a 5
+    // veces (ronda 23). Se cambian de actividad dos personas en la misma franja (las plazas no cambian; ni «todos a la vez» ni el maestro) cuando
+    // a una le sobra esa actividad esta semana y a la otra le falta, y sin descompensar la otra actividad. Con tope.
+    void Rebalance(WeekPlan plan)
+    {
+        var free = plan.entries.Where(e => !e.lead && !e.activity.together).ToList();
+        var cnt = new Dictionary<(Person, Activity), int>();
+        foreach (Entry e in plan.entries) if (!e.lead) { var k = (e.person, e.activity); cnt[k] = (cnt.TryGetValue(k, out int c) ? c : 0) + 1; }
+        int C(Person p, Activity a) => cnt.TryGetValue((p, a), out int c) ? c : 0;
+        for (int iter = 0; iter < 600; iter++)
+        {
+            bool swapped = false;
+            foreach (Activity a in plan.activities)
+            {
+                if (a.together) continue;
+                Person hi = plan.people.OrderByDescending(p => C(p, a)).First(), lo = plan.people.OrderBy(p => C(p, a)).First();
+                if (C(hi, a) - C(lo, a) <= 2) continue;
+                foreach (Entry e1 in free)
+                {
+                    if (e1.person != hi || e1.activity != a) continue;
+                    Entry e2 = free.FirstOrDefault(x => x.person == lo && x.day == e1.day && x.slot == e1.slot && x.activity != a && C(hi, x.activity) <= C(lo, x.activity));
+                    if (e2 == null) continue;
+                    Activity b = e2.activity;
+                    e1.person = lo; e2.person = hi;
+                    cnt[(hi, a)] = C(hi, a) - 1; cnt[(lo, a)] = C(lo, a) + 1; cnt[(lo, b)] = C(lo, b) - 1; cnt[(hi, b)] = C(hi, b) + 1;
+                    hi.count[a.id] = hi.Count(a.id) - 1; lo.count[a.id] = lo.Count(a.id) + 1; lo.count[b.id] = lo.Count(b.id) - 1; hi.count[b.id] = hi.Count(b.id) + 1;
+                    swapped = true; break;
+                }
+            }
+            if (!swapped) break;
+        }
     }
 
     void PlanSlot(WeekPlan plan, int day, int slot)
