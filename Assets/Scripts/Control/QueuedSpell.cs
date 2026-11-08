@@ -155,6 +155,14 @@ public class WanderSpell : QueuedSpell
     // Antes andaba en línea recta (WalkSpell) hacia un punto al azar y atravesaba columnas, grúas y máquinas del gimnasio
     // (JornadaTest 2026-10-29). Ahora el punto sale del NavMesh de su mismo piso y anda por él con PathMover, despacio, y al
     // llegar se queda un rato mirando (no va y viene sin parar: eso parecía dar vueltas en círculo). Todo con tope de tiempo.
+    // ¿Cabe de pie una persona en ese punto del suelo? (Ivelyna se quedó mirando dentro de «Fila interior 4» de la sala de asambleas.)
+    static bool Occupied(Vector3 floor)
+    {
+        foreach (Collider c in Physics.OverlapCapsule(floor + Vector3.up * 0.3f, floor + Vector3.up * 1.6f, 0.25f, ~0, QueryTriggerInteraction.Ignore))
+            if (c.GetComponentInParent<Anima>() == null) return true;
+        return false;
+    }
+
     public override bool Tick(Anima self)
     {
         if (self == null) return true;
@@ -173,6 +181,7 @@ public class WanderSpell : QueuedSpell
                 UnityEngine.AI.NavMeshPath path = new UnityEngine.AI.NavMeshPath();
                 if (!UnityEngine.AI.NavMesh.SamplePosition(here, out UnityEngine.AI.NavMeshHit from, 1.5f, UnityEngine.AI.NavMesh.AllAreas)) break;
                 if (!UnityEngine.AI.NavMesh.CalculatePath(from.position, h.position, UnityEngine.AI.NavMesh.AllAreas, path) || path.status != UnityEngine.AI.NavMeshPathStatus.PathComplete) continue;
+                if (Occupied(h.position)) continue;   // el NavMesh pasa por encima de muebles bajos (las filas de la sala de asambleas): ahí no se queda
                 _dest = h.position; found = true;
             }
             if (!found) { _arrived = true; _restUntil = Time.time + Random.Range(4f, 8f); }   // sin sitio al que ir: se queda mirando

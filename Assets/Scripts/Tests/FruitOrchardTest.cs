@@ -191,6 +191,10 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
             if (tree == null) TestProbe.Check("el jardinero revisa las máscaras de oxígeno y cuida el fitoplancton de un edificio-árbol", false, "sin árboles con máscaras");
             else
             {
+                // Sin cruzar la medianoche: a las 0 h cada estación pierde el 10 % del día (MaskStation.DecayPerDay) y las recién revisadas
+                // quedaban al 90 % (batería 20: las 4 pasaron a 100 % y el «Reparto de la noche» llegó en el segundo tramo). Se empieza de mañana
+                // y se deja a las estaciones ver el día nuevo antes de ponerles el estado de la prueba.
+                if (TimeController.timeController != null && TimeController.timeController.Hour > 18f) { TimeController.timeController.SetHour(8f); for (int fr = 0; fr < 40; fr++) yield return null; }
                 var all = FruitGardener.TreeStations(tree);
                 foreach (MaskStation m in MaskStation.Of(tree.building)) m.condition = 0.6f;   // ámbar: no se revisan si no les toca
                 // Dos que NO tocan hoy, en rojo: el panel las marca y se revisan también.

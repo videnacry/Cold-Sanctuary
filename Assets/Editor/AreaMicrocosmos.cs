@@ -376,16 +376,25 @@ public static class AreaMicrocosmos
         {
             Transform lr = new GameObject("Trepadas").transform; lr.SetParent(root.transform, false);
             Bounds inside = Inner(rect, 3f);
+            var lost = new List<string>();
             foreach (Bounds top in tops)
             {
-                Vector3 up = new Vector3(top.center.x, top.max.y, top.min.z + 1.5f), down = new Vector3(top.center.x, groundY, top.min.z - 2f);
-                if (!InsideXZ(inside, down, 0f)) { up.z = top.max.z - 1.5f; down.z = top.max.z + 2f; }
-                if (!InsideXZ(inside, down, 0f)) continue;
+                // El pie de la trepada, por el lado que quede dentro de los muros: antes solo se probaban los dos lados en z, y una meseta junto a
+                // una pared en z se quedaba sin enlace (probablemente el mirador de Microcosmos_Buda, a 224 m: «alcanzable False»; el aviso de abajo lo dirá).
+                Vector3 c = top.center, up = default, down = default; bool found = false;
+                foreach (Vector3 dir in new[] { Vector3.back, Vector3.forward, Vector3.left, Vector3.right })
+                {
+                    float half = Mathf.Abs(dir.x) > 0f ? top.extents.x : top.extents.z;
+                    up = new Vector3(c.x, top.max.y, c.z) + dir * (half - 1.5f); down = new Vector3(c.x, groundY, c.z) + dir * (half + 2f);
+                    if (InsideXZ(inside, down, 0f)) { found = true; break; }
+                }
+                if (!found) { lost.Add($"({c.x:0}, {top.max.y:0}, {c.z:0})"); continue; }
                 var g = new GameObject("Trepar"); g.transform.SetParent(lr, false);
                 var link = g.AddComponent<Unity.AI.Navigation.NavMeshLink>();
                 link.startPoint = down; link.endPoint = up; link.width = 2f; link.bidirectional = true; link.costModifier = 4f;
                 climbs++;
             }
+            if (lost.Count > 0) Debug.LogWarning($"[Microcosmos] {display}: {lost.Count} de {tops.Count} caras de arriba sin enlace para trepar (ningún lado con el pie dentro de los muros): {string.Join(", ", lost)}.");
             foreach (Collider c in giant.GetComponentsInChildren<Collider>())
             {
                 Bounds b = c.bounds;

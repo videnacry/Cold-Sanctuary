@@ -97,6 +97,41 @@ public class RepartoSantuariosTest : MonoBehaviour, ITestUnit
         WorkRoster idle = Roster(("I0", 0)); WorkRoster.DayPlan pi = idle.Plan(0, Ms(Energy, "e", 0));
         TestProbe.Check("sin ninguna tarea, ni cuota ni clones", pi.quota.Count == 0 && pi.clones.Count == 0);
 
+        // (2026-11-08, ronda en vivo) LAS MARGAS SIN SUBIR NO BAJAN A NADIE: la tabla de inicio es el suelo
+        GameObject lvGo = new GameObject("Reparto_TEST_margas");
+        CharacterLevel lv = lvGo.AddComponent<CharacterLevel>();
+        bool floorOk = SanctuaryPlacement.PositionFor(SanctuaryPlacement.SoulSum(lvGo, "Nesvitor")) == 1 && SanctuaryPlacement.PositionFor(SanctuaryPlacement.SoulSum(lvGo, "Fernando")) == 2;
+        lv.stats.level = 5; lv.yoga.level = 4; lv.bonds.level = 3;
+        bool marginsRule = SanctuaryPlacement.SoulSum(lvGo, "Nesvitor") == 12;
+        Destroy(lvGo);
+        TestProbe.Check("un cuerpo con las margas a nivel 1 sigue en su casa de la tabla de inicio (s2n1; Fernando s3n1)", floorOk);
+        TestProbe.Check("y con las margas subidas, mandan ellas", marginsRule);
+        // Los de s2 y s3 pueden trabajar en la tierra; los de la tierra nunca fuera
+        WorkRoster up = Roster(("U0", 2), ("U1", 1));
+        WorkRoster.DayPlan pu = up.Plan(0, Ms("A", "a", 6));
+        TestProbe.Check("los de s2 y s3 trabajan en la tierra si allí está el trabajo", pu.place.Values.All(x => x.Equals(S1)) && pu.work.Any(a => a.worker.name == "U0") && pu.work.Any(a => a.worker.name == "U1") && pu.clones.Count == 0);
+        WorkRoster down = Roster(("D0", 0));
+        WorkRoster.DayPlan pdn = down.Plan(0, Ms(Energy, "e", 2));
+        TestProbe.Check("los de la tierra no van fuera aunque allí haya trabajo: clon", pdn.place[down.Find("D0")].Equals(S1) && pdn.clones.Count == 1 && !pdn.work.Any(a => a.worker.name == "D0"));
+
+        // UN ÁREA QUE NADIE SABE HACER: primero se inicia alguien en ella y la hace; el clon, solo si nadie pudo
+        var ini = new WorkRoster { sanctuaryModel = true, initiationModel = true, useProfessions = false };
+        ini.areas.AddRange(new[] { "A", "Planta Atómica" });
+        ini.trainingAreas.Add("Sala de Yoga");
+        for (int i = 0; i < 3; i++) ini.Add("N" + i);
+        var risky = new List<WorkRoster.Mission>(Ms("A", "qui_a", 10)); risky.AddRange(Ms("A", "limpiar_a", 3)); risky.Add(new WorkRoster.Mission("Planta Atómica", "pla_operar", "Operar", 1f));
+        WorkRoster.DayPlan pin = ini.Plan(0, risky);
+        TestProbe.Check("la Planta, que nadie sabe, recibe su iniciación y la hace una persona (sin clon)",
+            pin.lessons.Any(l => l.real.area == "Planta Atómica") && pin.work.Any(a => !a.lesson && !a.worker.clone && a.mission.area == "Planta Atómica") && !pin.cloneAreas.Contains("Planta Atómica"),
+            $"clases: {string.Join(" · ", pin.lessons.Select(l => l.real.id))} · clones: {string.Join(", ", pin.cloneAreas)}");
+
+        // UNA TAREA DE CADA DÍA QUE QUEDÓ PENDIENTE SE CUENTA UNA VEZ
+        WorkRoster dup = Roster(("R0", 0));
+        dup.Plan(0, Ms("A", "d", 12));
+        int pend = dup.pending.Count;
+        WorkRoster.DayPlan pdup = dup.Plan(1, Ms("A", "d", 12));
+        TestProbe.Check("lo pendiente de ayer que vuelve hoy no se suma dos veces (12 h, no más)", pend > 0 && Mathf.Approximately(pdup.hoursByArea["A"], 12f), $"{pend} pendientes · hoy {pdup.hoursByArea["A"]} h");
+
         // ACABAR UN SANTUARIO: 30 días vividos en cada uno hasta el suyo, y sube de nivel
         var lived = new Dictionary<int, int>();
         SanctuaryPlacement.Home h = S2;

@@ -73,6 +73,7 @@ public class DineSpell : QueuedSpell
     public MealRitual Meal { get; private set; }
     public float returnTimeout = 60f;
     float _until;
+    bool _noonMeal, _hurried;   // empezó a comer entre las 11 y las 12 / ya se le dio prisa
     string _dish;
     // El tramo en curso: un destino fijo, ya sobre el NavMesh.
     Vector3 _snap; bool _hasGoal; float _legStart, _checkAt, _bestLeft; Vector3 _checkPos; int _restarts;
@@ -138,6 +139,13 @@ public class DineSpell : QueuedSpell
             case 3:
             {
                 // LOS BOCADOS (MealRitual): el brazo al plato y a la boca, el plato que mengua y la saciedad por bocado; cada tres, un trago.
+                // EMPEZÓ A COMER EN LA HORA DE COMER Y DAN LAS 12: acaba deprisa. Quien llegaba tarde a la barra comía al menos el 40 % del
+                // tiempo (EatSeconds) y se metía en la misión de las 12 (Kushal, batería 20: «Limpieza del gimnasio» 0/3, comiendo Yogur con fruta).
+                if (_noonMeal && !_hurried && TimeController.timeController != null && TimeController.timeController.Hour >= 12f && TimeController.timeController.Hour < 13f)
+                {
+                    _hurried = true; _until = Mathf.Min(_until, Time.time + 2f); Meal?.Hurry(2f);
+                    Debug.Log($"[Restaurante] «{self.name}» acaba deprisa {_dish}: a las 12 tiene misión.");
+                }
                 if (Meal != null) { if (!Meal.Eat(self.gameObject, _until)) return false; }
                 else { if (_seat != null) DailyPoses.Sit().ApplyFinal(self); if (Time.time < _until) return false; }   // sigue sentado (las asanas bloquean los huesos un instante)
                 BodyMetabolism body = self.GetComponent<BodyMetabolism>();
@@ -204,6 +212,7 @@ public class DineSpell : QueuedSpell
     {
         TimeController tc = TimeController.timeController;
         float s = eatMinutes * (tc != null ? tc.TimeSpeedMinuteSecs : 1f);
+        _noonMeal = tc != null && tc.Hour >= 11f && tc.Hour < 12f;
         if (tc == null || tc.Hour < 11f || tc.Hour >= 12.5f) return s;
         // A mediodía se come en lo que queda de la hora de comer (quien llega tarde, más deprisa, y no menos del 40 %): a las 12 hay misión.
         return Mathf.Clamp((12f - tc.Hour) * 60f * tc.TimeSpeedMinuteSecs, s * 0.4f, s);

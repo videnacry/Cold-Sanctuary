@@ -125,6 +125,9 @@ public class MealRitual
 
     /// <summary>Un fotograma de la comida, que acaba a la hora <paramref name="until"/> (Time.time). true = plato vacío (ya comió).
     /// Reparte los <see cref="Bites"/> bocados por el tiempo; cada tres, un trago.</summary>
+    /// <summary>Acaba en <paramref name="seconds"/> s lo que queda (los bocados que faltan, seguidos): a las 12 hay misión.</summary>
+    public void Hurry(float seconds) { if (_eatStart >= 0f) _eatEnd = Mathf.Min(_eatEnd, Time.time + seconds); }
+
     public bool Eat(GameObject who, float until)
     {
         if (who == null) return true;

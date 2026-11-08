@@ -119,6 +119,7 @@ public class WorkdayDirector : MonoBehaviour
         // (Berón 2026-11-08) EL REPARTO POR SANTUARIOS: la casa de cada uno (santuario y nivel) sale de sus margas y lo guardado, cada día (suben al subir).
         roster.sanctuaryModel = true;
         foreach (WorkRoster.Worker w in roster.workers) if (!w.clone) w.home = SanctuaryPlacement.PositionOf(w.name, SanctuaryPlacement.Score(Body(w.name), w.name));
+        Debug.Log($"[Reparto] Día {day} · casas: {string.Join(" · ", roster.workers.Where(w => !w.clone).GroupBy(w => w.home).OrderBy(g => g.Key).Select(g => $"{SanctuaryPlacement.Home.At(g.Key)}: {string.Join(", ", g.Select(w => w.name))}"))}");
         List<WorkRoster.Mission> todays = AreaWork.Today(day, ConstructionProject.All);
         todays.AddRange(GymProgramming.Missions());   // la del entrenador (papel fijo: revisar el registro y ajustar los planes)
         today = roster.Plan(day, todays);
@@ -1119,7 +1120,10 @@ public class WorkdayDirector : MonoBehaviour
     {
         Vector3 d = g.transform.position - to;
         if (d.sqrMagnitude > 4f) { _postWalk.Remove(g.name); return false; }
-        if (area != AreaWork.Hospital || HospitalStation.PostFor(g.name) == null) return true;
+        // Fuera de un puesto, a 2 m vale, salvo si está DENTRO de un mueble: el alumno de una lección del hospital veterinario sin puesto
+        // (los 8 son del personal) llegaba a la rejilla por el otro lado de una mesa y se quedaba en ella (Goluis, «Quirofano veterinario 3»).
+        bool post = area == AreaWork.Hospital && HospitalStation.PostFor(g.name) != null;
+        if (!post && !Solid(g.transform.position, 0.12f)) { _postWalk.Remove(g.name); return true; }
         d.y = 0f;
         if (d.sqrMagnitude <= 0.16f) return true;
         if (!_postWalk.TryGetValue(g.name, out float since)) { _postWalk[g.name] = Time.time; return false; }
