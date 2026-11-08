@@ -37,26 +37,45 @@ public class HospitalStation : MonoBehaviour, IInteractable
     /// veterinaria está a 1,1 m de su centro, casi en el borde de su caja).</summary>
     public const float Clearance = 0.35f;
     /// <summary>El punto del puesto apartado de la caja de su propia mesa lo justo para dejar <see cref="Clearance"/> (si ya la tiene, el mismo).</summary>
-    public Vector3 ClearStandPoint
+    public Vector3 ClearStandPoint { get { if (_clearAt == null || _clearFor != standLocal) { _clearFor = standLocal; _clearAt = FindClearStand(); } return _clearAt.Value; } }
+    Vector3? _clearAt; Vector3 _clearFor;   // (se calcula una vez: los muebles del hospital no se mueven)
+
+    public static Vector3 Flat(Vector3 v) { v.y = 0f; return v; }
+
+    /// <summary>El primer collider (que no sea de una persona o un animal) en el que caería un centro de cuerpo en <paramref name="p"/>; null si nada.</summary>
+    public static string SolidAt(Vector3 p, float r)
     {
-        get
+        foreach (Collider c in Physics.OverlapSphere(p, r, ~0, QueryTriggerInteraction.Ignore))
+            if (c != null && c.GetComponentInParent<Anima>() == null && !(c is TerrainCollider)) return c.name;
+        return null;
+    }
+
+    // Junto a la mesa, a Clearance de su caja; y además libre de TODO lo demás (la máquina de anestesia y la lámpara del quirófano veterinario están
+    // a 1,4–1,6 m del centro de la mesa: apartarse de la mesa en línea recta metía el cuerpo en ellas o en el cristal). Se prueba el sitio de
+    // siempre y, si no cabe de pie y al inclinarse, la vuelta a la mesa a la misma holgura, cada 15°, el más cercano primero.
+    Vector3 FindClearStand()
+    {
+        Vector3 s = StandPoint;
+        Bounds bb = default; bool any = false;
+        foreach (Collider c in GetComponentsInChildren<Collider>())
         {
-            Vector3 s = StandPoint;
-            // La caja de la mesa entera: la suya y la de sus piezas (ronda 26: Shalva dentro de «Quirofano veterinario 3»; con solo el collider
-            // del propio objeto, si la caja está en una pieza hija no se apartaba nada).
-            Bounds bb = default; bool any = false;
-            foreach (Collider c in GetComponentsInChildren<Collider>())
-            {
-                if (c == null || c.isTrigger || !c.enabled) continue;
-                if (!any) { bb = c.bounds; any = true; } else bb.Encapsulate(c.bounds);
-            }
-            if (!any) return s;
-            Vector3 q = new Vector3(s.x, bb.center.y, s.z), near = bb.ClosestPoint(q), d = q - near; d.y = 0f;
-            if (d.sqrMagnitude >= Clearance * Clearance) return s;
-            Vector3 dir = d.sqrMagnitude > 1e-6f ? d.normalized : new Vector3(s.x - bb.center.x, 0f, s.z - bb.center.z).normalized;
-            Vector3 p = near + dir * Clearance; p.y = s.y;
-            return p;
+            if (c == null || c.isTrigger || !c.enabled) continue;
+            if (!any) { bb = c.bounds; any = true; } else bb.Encapsulate(c.bounds);
         }
+        if (!any) return s;
+        Vector3 Around(Vector3 dir) { Vector3 q = new Vector3(bb.center.x, s.y, bb.center.z) + dir * 50f; Vector3 near = bb.ClosestPoint(new Vector3(q.x, bb.center.y, q.z)); Vector3 p = near + dir * Clearance; p.y = s.y; return p; }
+        bool Fits(Vector3 p) => SolidAt(p, 0.12f) == null && SolidAt(p + Flat(bb.center - p).normalized * 0.25f, 0.12f) == null;
+        Vector3 q0 = new Vector3(s.x, bb.center.y, s.z), n0 = bb.ClosestPoint(q0), d0 = Flat(q0 - n0);
+        if (d0.sqrMagnitude >= Clearance * Clearance && Fits(s)) return s;
+        Vector3 dir0 = d0.sqrMagnitude > 1e-6f ? d0.normalized : Flat(s - bb.center).normalized;
+        for (int k = 0; k <= 12; k++)
+            foreach (int sign in k == 0 ? new[] { 1 } : new[] { 1, -1 })
+            {
+                Vector3 p = Around(Quaternion.Euler(0f, sign * k * 15f, 0f) * dir0);
+                if (Fits(p)) return p;
+            }
+        Debug.LogWarning($"[Hospital] «{name}»: ningún sitio junto a la mesa deja el cuerpo fuera de los muebles; se queda en el de siempre.");
+        return Around(dir0);
     }
 
     /// <summary>Puesto médico de <paramref name="who"/>: el que ya tenía, o el primero libre. null si los 8 están ocupados.</summary>
