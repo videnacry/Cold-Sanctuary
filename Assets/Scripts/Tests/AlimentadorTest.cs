@@ -45,6 +45,9 @@ public class AlimentadorTest : MonoBehaviour, ITestUnit
         // ni una ración de un clon en toda la jornada; los osos, muertos de hambre).
         { GameObject clon = WorkdayDirector.SpawnMagnateBody("Magnate (clon de prueba)"); TestProbe.Check("el cuerpo de un clon puede llevar una misión con conducta propia", WorkdayDirector.IsPerson(clon)); Destroy(clon); }
 
+        // El primer día ya hay raciones: el primer lote no está antes del turno de las 12 (ronda 26: «recoge 0 raciones»).
+        TestProbe.Check("el almacén empieza con un día de raciones de los depredadores de tierra", CulturedMeatLab.FirstDayStock() >= 3 * (PredatorRound.RationsFor("Bear") + PredatorRound.RationsFor("Wolf")), $"{CulturedMeatLab.FirstDayStock()} raciones");
+
         // ── La lista compartida ──
         PredatorRound.NewRound();
         var list = PredatorRound.Today();
