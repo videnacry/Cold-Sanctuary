@@ -41,6 +41,10 @@ public class TestRunner : MonoBehaviour
     IEnumerator Start()
     {
         Running = true;
+        // Quien la jornada apagó al cargar la escena (pasa el día en otro santuario: Lizmibet y Linduarda, casa en el santuario 2) se quedaba
+        // apagado toda la batería: la jornada lo aplica antes de que esto empiece, y solo vuelve a mirar al cambiar de día. Con las pruebas,
+        // nadie apagado (RemoteStaff): «Lizmibet está en el santuario», sus series del gimnasio y su entrenamiento en la jornada, 0.
+        RemoteStaff.RestoreAll();
         try { System.IO.File.Delete(RequestFile); } catch (System.Exception) { }   // una vez: el siguiente Play es para jugar
         yield return new WaitForSeconds(startDelay);
         TestProbe.ResetTotals();
