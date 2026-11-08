@@ -59,6 +59,14 @@ public class MicroFloor : MonoBehaviour
     public static readonly string[] WallNames = { "Muro_N", "Muro_S", "Muro_E", "Muro_O" };
 
     /// <summary>El rectángulo interior de los muros, en el mundo (la raíz no gira: solo se traslada).</summary>
+    // (Ronda 30) EL BUSCADOR DE CAMINOS, MÁS DEPRISA mientras hay un microcosmos cargado: el NavMesh de Buda tiene ~79 000 vértices, el
+    // editor va a ~0,5 FPS a ×6 y el cálculo de caminos se reparte por fotogramas (100 iteraciones por fotograma por defecto): la petición de
+    // un camino se quedaba pendiente fotograma tras fotograma (hasPath False, pathPending True, velocidad 0). Se restaura al descargarlo.
+    public const int MicroPathIterations = 4000;
+    static int _loaded, _iterationsBefore;
+    void OnEnable() { if (_loaded++ == 0) { _iterationsBefore = UnityEngine.AI.NavMesh.pathfindingIterationsPerFrame; UnityEngine.AI.NavMesh.pathfindingIterationsPerFrame = Mathf.Max(_iterationsBefore, MicroPathIterations); } }
+    void OnDisable() { if (--_loaded <= 0) { _loaded = 0; UnityEngine.AI.NavMesh.pathfindingIterationsPerFrame = _iterationsBefore > 0 ? _iterationsBefore : 100; } }
+
     public Bounds WorldRect()
     {
         Vector3 c = transform.TransformPoint(center);
