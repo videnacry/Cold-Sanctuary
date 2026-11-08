@@ -252,6 +252,20 @@ public static class AreaMicrocosmos
         if (outposts > 0)   // sus miradores tapan su meseta: ahí no crece nada (Covered)
             foreach (AreaFunctionSite s in cast.GetComponentsInChildren<AreaFunctionSite>(true))
                 if ((s.name.StartsWith(CivicBuilder.OutpostPrefix) || s.name.Contains("barrio alto")) && SubtreeBounds(s.transform, out Bounds ob, false)) { ob.Expand(new Vector3(4f, 0f, 4f)); _blocked.Add(ob); }
+        // (Ronda 28) LAS MESETAS SE ANDAN: la forma de microcosmos viste cada mueble gigante de terreno (la mesa, una montaña con su altiplano) y
+        // sus mallas sólidas no se hornean (MicroFloorDress, por rendimiento), así que las caras de arriba no tenían NavMesh y los enlaces para
+        // trepar no conectaban con nada (Buda: «124 enlaces, 0 con el extremo de arriba sobre el NavMesh»; el mirador, inalcanzable). Una losa
+        // invisible y plana en cada cara de arriba, fuera de la copia gigante (sin sus modificadores), entra en el horneado.
+        if (giant != null && tops != null)
+        {
+            Transform mesas = new GameObject("Mesetas_andables").transform; mesas.SetParent(root.transform, false);
+            foreach (Bounds top in tops)
+            {
+                var slab = new GameObject("Meseta"); slab.transform.SetParent(mesas, true);
+                slab.transform.position = new Vector3(top.center.x, top.max.y - 0.15f, top.center.z);   // (5 cm por debajo de la cara: la flora que crece encima no queda dentro)
+                slab.AddComponent<BoxCollider>().size = new Vector3(top.size.x, 0.2f, top.size.z);
+            }
+        }
         // (2026-11-04) LA CAPA DE TIERRA (MicroGround, MicroSoilBuilder; Berón: «una capa de superficie … un suelo de tierra, el cual
         // tiene sus irregularidades, cúmulos y piedras»): 10 cm sobre la cara de arriba MÁS ALTA de cada suelo del piso (cubre las
         // alfombras y las losas) y una placa sobre cada mueble poblado; lisa donde está la historia y su pueblo, sin tierra sobre su
