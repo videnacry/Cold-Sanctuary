@@ -8,7 +8,7 @@ using UnityEngine;
 ///  · Los nueve de siempre (<see cref="Originals"/>) empiezan en santuario 1, nivel 1.
 ///  · Los demás, por sus estadísticas: por defecto la SUMA de los niveles de sus margas del alma (Stats + Yoga + Vínculos, <see cref="CharacterLevel"/>),
 ///    con los umbrales de UNA tabla (<see cref="PositionThresholds"/>). Berón puede elegir otras estadísticas cambiando <see cref="Score"/>.
-///  · ACCESO: se puede ir a santuarios y niveles ANTERIORES, nunca a los siguientes. El nivel sube al terminar una vuelta por todos los santuarios.
+///  · ACCESO: se puede ir a santuarios y niveles ANTERIORES, nunca a los siguientes. El nivel sube al acabar todos los santuarios hasta el suyo (<see cref="DaysToFinish"/> días vividos en cada uno).
 ///    Por eso basta un número, la POSICIÓN: (nivel − 1) × 3 + (santuario − 1). s1n1 = 0, s2n1 = 1, s3n1 = 2, s1n2 = 3… Se puede ir a un sitio si su
 ///    posición no pasa de la propia: nivel menor, o el mismo nivel y santuario menor o igual (<see cref="CanAccess"/>).
 ///  · Se GUARDA entre partidas (PlayerPrefs, como <see cref="Progress"/>): la posición de cada uno, que nunca baja. Mientras corren las pruebas no se guarda.
@@ -110,7 +110,7 @@ public static class SanctuaryPlacement
     public static int Saved(string name) { Load(); return _saved.TryGetValue(name, out int p) ? p : 0; }
 
     /// <summary>La posición de <paramref name="name"/> con esa puntuación: la guardada o la de la tabla, la mayor (nunca baja). Los nueve de siempre
-    /// empiezan en s1n1 y solo suben con <see cref="Advance"/>. Si sube, se guarda.</summary>
+    /// empiezan en s1n1 y solo suben de nivel viviendo (<see cref="LiveDay"/>). Si sube, se guarda.</summary>
     public static int PositionOf(string name, int score)
     {
         int saved = Saved(name), p = System.Math.Max(saved, IsOriginal(name) ? 0 : PositionFor(score));
@@ -118,13 +118,40 @@ public static class SanctuaryPlacement
         return p;
     }
 
-    /// <summary>Terminó el santuario de su casa en esta vuelta: pasa al siguiente; tras el último, al santuario 1 del nivel siguiente. Se guarda.</summary>
-    public static int Advance(string name)
+    /// <summary>ACABAR UN SANTUARIO (por defecto hasta que Berón diga otra cosa, 2026-11-08): haber vivido allí estos días de juego, en el nivel de su casa.</summary>
+    public const int DaysToFinish = 30;
+
+    /// <summary>Lógica pura: un día vivido en <paramref name="place"/> por quien vive en <paramref name="home"/>. <paramref name="days"/>: días vividos en cada
+    /// santuario de su nivel (se suma aquí). Si ya acabó todos los santuarios hasta el número del suyo (cada uno con <see cref="DaysToFinish"/> días), sube
+    /// de nivel: el mismo santuario, un nivel más, y la cuenta vuelve a empezar. Devuelve su casa después del día. Un día en otro nivel no cuenta.</summary>
+    public static Home AfterDay(Dictionary<int, int> days, Home home, Home place)
     {
-        int p = Saved(name) + 1;
-        if (!Off) { _saved[name] = p; Save(); }
-        return p;
+        if (place.level != home.level || place.sanctuary > home.sanctuary) return home;
+        days[place.sanctuary] = (days.TryGetValue(place.sanctuary, out int d) ? d : 0) + 1;
+        for (int s = 1; s <= home.sanctuary; s++) if (!days.TryGetValue(s, out int ds) || ds < DaysToFinish) return home;
+        days.Clear();
+        return new Home(home.sanctuary, home.level + 1);
     }
+
+    /// <summary>El día <paramref name="day"/> vivido en <paramref name="place"/> (lo llama la jornada al repartir; una vez por día). Guarda la cuenta y la casa nueva.
+    /// Devuelve la posición después del día. Mientras corren las pruebas no cuenta.</summary>
+    public static int LiveDay(string name, int day, int position, Home place)
+    {
+        if (Off || string.IsNullOrEmpty(name)) return position;
+        Load();
+        if (_saved.TryGetValue(name + "@", out int last) && last >= day) return position;   // (ese día ya contó)
+        _saved[name + "@"] = day;
+        var days = new Dictionary<int, int>();
+        for (int s = 1; s <= Count; s++) if (_saved.TryGetValue($"{name}#{s}", out int ds)) days[s] = ds;
+        int p = AfterDay(days, Home.At(position), place).Position;
+        for (int s = 1; s <= Count; s++) { if (days.TryGetValue(s, out int ds)) _saved[$"{name}#{s}"] = ds; else _saved.Remove($"{name}#{s}"); }
+        if (p > Saved(name)) _saved[name] = p;
+        Save();
+        return System.Math.Max(p, position);
+    }
+
+    /// <summary>Días vividos en el santuario <paramref name="sanctuary"/> del nivel de su casa (para el panel y las pruebas).</summary>
+    public static int DaysIn(string name, int sanctuary) { Load(); return _saved.TryGetValue($"{name}#{sanctuary}", out int d) ? d : 0; }
 
     /// <summary>Lo que lleva de la vuelta del nivel: cuántos santuarios ya ha pasado (0 = está en el primero).</summary>
     public static int RoundProgress(int position) => System.Math.Max(0, position) % Count;

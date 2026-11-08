@@ -111,7 +111,8 @@ public class WorkRoster
         public Dictionary<SanctuaryPlacement.Home, float> hoursAt = new Dictionary<SanctuaryPlacement.Home, float>();   // horas de tareas de cada sitio
         public Dictionary<string, float> hoursByArea = new Dictionary<string, float>();   // horas de tareas de cada área ENTERA (AreaGroup), de su lista de hoy
         public Dictionary<string, int> quota = new Dictionary<string, int>();             // personas que pide cada área: ⌈horas / 5⌉, al menos 1
-        public List<string> cloneAreas = new List<string>();           // las áreas que sin la Magnate no tenían a nadie
+        public List<string> cloneAreas = new List<string>();           // el área de cada clon: las que sin la Magnate no tenían a nadie, y luego las de obligatorias que no cabían
+        public int mandatoryClones;                                    // de ellos, los de obligatorias que no cabían ni a las 19:00
         public List<Worker> secondSplit = new List<Worker>();          // sobraban tras cubrir las horas: segundo reparto
         public float Overtime(Worker w) => w != null && overtime.TryGetValue(w, out float o) ? o : 0f;
         /// <summary>Cuándo acaba la jornada de <paramref name="w"/>: a las 16:00, o más tarde si se estira para acabar las tareas de su sitio.</summary>
@@ -388,7 +389,7 @@ public class WorkRoster
     }
 
     // LA MAGNATE, SOLO DONDE NO HAY NADIE (Berón 2026-11-08): un área con tareas y sin ninguna persona trabajando en ella hoy recibe UN clon, que
-    // hace las suyas con la jornada estirada. Lo que no le quepa, pendiente para mañana (como en las demás áreas).
+    // hace las suyas con la jornada estirada. Un área sin tareas hoy no pide a nadie. Y si una obligatoria no cabe ni a las 19:00, otro clon para ella.
     void CloneForEmptyAreas(DayPlan plan, Dictionary<string, List<Mission>> pools, Dictionary<Worker, float> used)
     {
         // (por área ENTERA: el hospital con todos sus pisos es una, AreaGroup)
@@ -401,6 +402,20 @@ public class WorkRoster
             RunRounds(plan, members.ToDictionary(a => a, a => pools[a]), new List<Worker> { c }, used);
             if (used[c] <= 0f) { used.Remove(c); _overtime.Remove(c); continue; }   // ninguna le cabe: pendiente
             plan.clones.Add(c); plan.cloneAreas.Add(grp.Key);
+        }
+        // LAS OBLIGATORIAS QUE NO CABEN NI A LAS 19:00 (por defecto, 2026-11-08): un clon más para ellas, área por área, en vez de dejarlas para mañana
+        // (las áreas deben estar cubiertas todos los días). Acotado: como mucho 50 clones.
+        for (int k = 0; k < 50; k++)
+        {
+            string area = plan.areaOrder.FirstOrDefault(a => pools.TryGetValue(a, out var p) && p.Any(m => m.mandatory));
+            if (area == null) break;
+            var c = new Worker($"Magnate (clon {plan.clones.Count + 1})", clone: true);
+            used[c] = 0f; _overtime[c] = MaxOvertime;
+            var mand = new Dictionary<string, List<Mission>> { { area, pools[area].Where(m => m.mandatory).ToList() } };
+            RunRounds(plan, mand, new List<Worker> { c }, used);
+            if (used[c] <= 0f) { used.Remove(c); _overtime.Remove(c); break; }   // ninguna cabe en una jornada: queda pendiente
+            pools[area].RemoveAll(m => m.mandatory && !mand[area].Contains(m));
+            plan.clones.Add(c); plan.cloneAreas.Add(area); plan.mandatoryClones++;
         }
     }
 
@@ -691,7 +706,7 @@ public class WorkRoster
     public static List<string> Balance(DayPlan p, int workersCount)
     {
         var l = new List<string>();
-        if (p.clones.Count > 0 && p.cloneAreas.Count > 0) l.Add($"Faltan personas: la Magnate se dividió en {p.clones.Count} clon(es) para las áreas sin nadie: {string.Join(", ", p.cloneAreas)}.");
+        if (p.clones.Count > 0 && p.cloneAreas.Count > 0) l.Add($"Faltan personas: la Magnate se dividió en {p.clones.Count} clon(es) ({p.clones.Count - p.mandatoryClones} para áreas sin nadie, {p.mandatoryClones} para obligatorias que no cabían ni a las 19:00): {string.Join(", ", p.cloneAreas)}.");
         else if (p.clones.Count > 0) l.Add($"Faltan personas: la Magnate se dividió en {p.clones.Count} clon(es) para cubrir las misiones obligatorias.");
         if (p.backlog.Count > 0) l.Add($"Faltan personas: {p.backlog.Count} misión(es) ({p.backlog.Sum(m => m.hours):0.#} h) pasan a mañana.");
         float idle = workersCount * WorkHours - p.work.Where(a => !a.worker.clone).Sum(a => a.mission.hours);

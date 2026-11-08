@@ -122,6 +122,8 @@ public class WorkdayDirector : MonoBehaviour
         List<WorkRoster.Mission> todays = AreaWork.Today(day, ConstructionProject.All);
         todays.AddRange(GymProgramming.Missions());   // la del entrenador (papel fijo: revisar el registro y ajustar los planes)
         today = roster.Plan(day, todays);
+        // (2026-11-08) UN DÍA VIVIDO en su sitio de hoy: con 30 en cada santuario hasta el suyo, sube de nivel (vale desde mañana)
+        foreach (var kv in today.place) if (!kv.Key.clone) kv.Key.home = SanctuaryPlacement.LiveDay(kv.Key.name, day, kv.Key.home, kv.Value);
         _orders.Clear(); _cloneOrders.Clear();   // (las órdenes guardadas eran del plan de ayer)
         int gymDays = GymProgramming.ApplyGymDays(today, roster.trainingAreas, roster.workers);   // los días de gimnasio de cada plan
         if (gymDays > 0) Debug.Log($"[Gimnasio] Día {day}: {gymDays} cambios en el entrenamiento de las 14 h por los días de cada plan; al gimnasio: {string.Join(", ", today.training.Where(kv => kv.Value == GymArea).Select(kv => kv.Key.name))}.");

@@ -87,8 +87,29 @@ public class RepartoSantuariosTest : MonoBehaviour, ITestUnit
         WorkRoster solo = Roster(("Solo", 0));
         WorkRoster.DayPlan ps = solo.Plan(0, Ms("A", "x", 6, 2f, true));
         WorkRoster.Worker so = solo.Find("Solo");
-        TestProbe.Check("un área con alguien no recibe clones aunque sobren obligatorias: se estira hasta la cena y el resto pasa a mañana",
-            ps.clones.Count == 0 && ps.backlog.Count > 0 && ps.Overtime(so) <= WorkRoster.MaxOvertime + 1e-3f && ps.Overtime(so) > 0f && WorkRoster.Balance(ps, 1).Any(s => s.StartsWith("Faltan personas")), $"+{ps.Overtime(so)} h, {ps.backlog.Count} pendientes");
+        TestProbe.Check("las obligatorias que no caben ni estirando hasta la cena: un clon para ellas, ninguna a mañana",
+            ps.clones.Count == 1 && ps.mandatoryClones == 1 && ps.backlog.Count == 0 && ps.Overtime(so) <= WorkRoster.MaxOvertime + 1e-3f && ps.Overtime(so) > 0f && WorkRoster.Balance(ps, 1).Any(s => s.StartsWith("Faltan personas")), $"+{ps.Overtime(so)} h, {ps.clones.Count} clones, {ps.backlog.Count} pendientes");
+        WorkRoster solo2 = Roster(("Solo", 0));
+        WorkRoster.DayPlan ps2 = solo2.Plan(0, Ms("A", "y", 6, 2f));
+        TestProbe.Check("las no obligatorias que no caben: se estira hasta la cena y el resto pasa a mañana, sin clones", ps2.clones.Count == 0 && ps2.backlog.Count == 3, $"{ps2.clones.Count} clones, {ps2.backlog.Count} pendientes");
+        WorkRoster onlyA = Roster(("I1", 0)); WorkRoster.DayPlan pa = onlyA.Plan(0, Ms("A", "a", 2));
+        TestProbe.Check("un área sin tareas hoy (la B) no pide a nadie ni tiene clon", !pa.quota.ContainsKey("B") && pa.quota.ContainsKey("A") && pa.clones.Count == 0, string.Join(", ", pa.quota.Keys));
+        WorkRoster idle = Roster(("I0", 0)); WorkRoster.DayPlan pi = idle.Plan(0, Ms(Energy, "e", 0));
+        TestProbe.Check("sin ninguna tarea, ni cuota ni clones", pi.quota.Count == 0 && pi.clones.Count == 0);
+
+        // ACABAR UN SANTUARIO: 30 días vividos en cada uno hasta el suyo, y sube de nivel
+        var lived = new Dictionary<int, int>();
+        SanctuaryPlacement.Home h = S2;
+        for (int i = 0; i < SanctuaryPlacement.DaysToFinish; i++) h = SanctuaryPlacement.AfterDay(lived, h, S2);
+        bool notYet = h.Equals(S2);
+        for (int i = 0; i < SanctuaryPlacement.DaysToFinish - 1; i++) h = SanctuaryPlacement.AfterDay(lived, h, S1);
+        bool stillNot = h.Equals(S2);
+        h = SanctuaryPlacement.AfterDay(lived, h, S1);
+        TestProbe.Check($"s2n1 sube a s2n2 al acabar s1 y s2 ({SanctuaryPlacement.DaysToFinish} días cada uno), no antes", notYet && stillNot && h.Equals(new SanctuaryPlacement.Home(2, 2)) && lived.Count == 0, h.ToString());
+        var l1 = new Dictionary<int, int>(); SanctuaryPlacement.Home k1 = S1;
+        for (int i = 0; i < SanctuaryPlacement.DaysToFinish; i++) k1 = SanctuaryPlacement.AfterDay(l1, k1, i % 2 == 0 ? S1 : S1N2);
+        TestProbe.Check("los días en otro nivel no cuentan; con 30 en s1, s1n1 pasa a s1n2", k1.Equals(S1) && SanctuaryPlacement.Home.At(SanctuaryPlacement.AfterDay(new Dictionary<int, int> { { 1, SanctuaryPlacement.DaysToFinish - 1 } }, S1, S1).Position).Equals(S1N2));
+        TestProbe.Check("en las pruebas no se cuenta ni se guarda", SanctuaryPlacement.LiveDay("Reparto_TEST", 5, 0, S1) == 0 && SanctuaryPlacement.DaysIn("Reparto_TEST", 1) == 0);
         WorkRoster kushal = Roster(("Player", 2));
         WorkRoster.DayPlan pk = kushal.Plan(0, Ms("A", "k", 6));
         TestProbe.Check("Kushal no se estira y siempre está en la tierra", pk.Overtime(kushal.Find("Player")) == 0f && pk.place[kushal.Find("Player")].Equals(S1) && pk.backlog.Count == 1);
