@@ -398,7 +398,9 @@ public static class AreaMicrocosmos
                 if (UnityEngine.AI.NavMesh.SamplePosition(down, out UnityEngine.AI.NavMeshHit hd, 3f, UnityEngine.AI.NavMesh.AllAreas)) down = hd.position;
                 var g = new GameObject("Trepar"); g.transform.SetParent(lr, false);
                 var link = g.AddComponent<Unity.AI.Navigation.NavMeshLink>();
-                link.startPoint = down; link.endPoint = up; link.width = 2f; link.bidirectional = true; link.costModifier = 4f;
+                // (Ronda 27) Los extremos de un NavMeshLink van en el espacio LOCAL de su objeto, y la raíz del microcosmos está lejos del origen
+                // (Buda, x ~ 7300): con las posiciones del mundo, cada enlace quedaba desplazado lo que la raíz, y no se trepaba a ninguna meseta.
+                link.startPoint = g.transform.InverseTransformPoint(down); link.endPoint = g.transform.InverseTransformPoint(up); link.width = 2f; link.bidirectional = true; link.costModifier = 4f;
                 climbs++;
             }
             if (lost.Count > 0) Debug.LogWarning($"[Microcosmos] {display}: {lost.Count} de {tops.Count} caras de arriba sin enlace para trepar (ningún lado con el pie dentro de los muros): {string.Join(", ", lost)}.");
