@@ -388,6 +388,22 @@ public static class AreaMicrocosmos
         nav.overrideVoxelSize = true; nav.voxelSize = MicroNavVoxel;
         nav.BuildNavMesh();
         Phase("NavMesh");
+        // (Ronda 29) ¿HAY NAVMESH EN LAS MESETAS? Justo tras hornear: cuántos vértices del NavMesh de este piso están a más de 10 m del suelo, y
+        // tres caras de arriba muestreadas (en el mundo).
+        if (giant != null && tops != null)
+        {
+            var tri = UnityEngine.AI.NavMesh.CalculateTriangulation();
+            Bounds wr = new Bounds(root.transform.TransformPoint(rect.center), rect.size + Vector3.up * 1000f);
+            float gy = root.transform.TransformPoint(new Vector3(0f, groundY, 0f)).y;
+            int mine = 0, high = 0; foreach (Vector3 v in tri.vertices) { if (!InsideXZ(wr, v, 0f)) continue; mine++; if (v.y > gy + 10f) high++; }
+            var samples = new List<string>();
+            for (int i = 0; i < tops.Count && samples.Count < 3; i += Mathf.Max(1, tops.Count / 3))
+            {
+                Vector3 w = root.transform.TransformPoint(tops[i].center);
+                samples.Add(UnityEngine.AI.NavMesh.SamplePosition(w, out UnityEngine.AI.NavMeshHit sh, 3f, UnityEngine.AI.NavMesh.AllAreas) ? $"({w.x:0},{w.y:0},{w.z:0}) → NavMesh a y {sh.position.y:0.0}" : $"({w.x:0},{w.y:0},{w.z:0}) → nada a 3 m");
+            }
+            Debug.Log($"[Microcosmos] {display}: NavMesh tras hornear: {mine} vértices en el piso, {high} a más de 10 m del suelo (mesetas); {tops.Count} caras de arriba; muestras: {string.Join(" · ", samples)}.");
+        }
         // (2026-11-03) TREPAR: los insectos-humanos suben por las patas y los costados de los muebles del piso (Berón: «pueden trepar
         // plataformas verticales como las paredes y patas de sillas, mesas, etc.»). Un NavMeshLink del suelo a cada cara de arriba (la IA
         // lo recorre trepando) y un Climbable en cada mueble alto (el jugador trepa con PlayerClimber).
@@ -414,13 +430,16 @@ public static class AreaMicrocosmos
                 // da 233; con el extremo 4 m por debajo el enlace no conectaba («alcanzable False», ronda 25).
                 // (Ronda 26) Solo si hay NavMesh a mano: en el Editor, recién horneado, no lo había en ninguna de las 124 caras y se quitaron todos
                 // los enlaces. Sin él, el extremo de la cara del mueble, como antes.
-                if (UnityEngine.AI.NavMesh.SamplePosition(up, out UnityEngine.AI.NavMeshHit hu, 6f, UnityEngine.AI.NavMesh.AllAreas)) { up = hu.position; snapped++; }
-                if (UnityEngine.AI.NavMesh.SamplePosition(down, out UnityEngine.AI.NavMeshHit hd, 3f, UnityEngine.AI.NavMesh.AllAreas)) down = hd.position;
+                // (Ronda 29) Las caras se midieron con la raíz AÚN EN EL ORIGEN y el NavMesh se horneó ya en su sitio (root.position = o): se busca
+                // en el mundo y se vuelve a las coordenadas de la raíz. Antes se buscaba en las del origen y nunca había nada («0 con el extremo…»).
+                if (UnityEngine.AI.NavMesh.SamplePosition(root.transform.TransformPoint(up), out UnityEngine.AI.NavMeshHit hu, 6f, UnityEngine.AI.NavMesh.AllAreas)) { up = root.transform.InverseTransformPoint(hu.position); snapped++; }
+                if (UnityEngine.AI.NavMesh.SamplePosition(root.transform.TransformPoint(down), out UnityEngine.AI.NavMeshHit hd, 3f, UnityEngine.AI.NavMesh.AllAreas)) down = root.transform.InverseTransformPoint(hd.position);
                 var g = new GameObject("Trepar"); g.transform.SetParent(lr, false);
                 var link = g.AddComponent<Unity.AI.Navigation.NavMeshLink>();
-                // (Ronda 27) Los extremos de un NavMeshLink van en el espacio LOCAL de su objeto, y la raíz del microcosmos está lejos del origen
-                // (Buda, x ~ 7300): con las posiciones del mundo, cada enlace quedaba desplazado lo que la raíz, y no se trepaba a ninguna meseta.
-                link.startPoint = g.transform.InverseTransformPoint(down); link.endPoint = g.transform.InverseTransformPoint(up); link.width = 2f; link.bidirectional = true; link.costModifier = 4f;
+                // Los extremos de un NavMeshLink van en el espacio local de su objeto, que es el de la raíz (el enlace cuelga de ella sin moverse), y
+                // up/down ya están en ese espacio (se midieron con la raíz en el origen). (Ronda 29: el InverseTransformPoint de la ronda 27 restaba la
+                // posición de la raíz otra vez y desplazaba cada enlace (−7300, …) en Buda: fallo mío.)
+                link.startPoint = down; link.endPoint = up; link.width = 2f; link.bidirectional = true; link.costModifier = 4f;
                 climbs++;
             }
             if (lost.Count > 0) Debug.LogWarning($"[Microcosmos] {display}: {lost.Count} de {tops.Count} caras de arriba sin enlace para trepar (ningún lado con el pie dentro de los muros): {string.Join(", ", lost)}.");
