@@ -136,6 +136,11 @@ public static partial class SampleSceneBuilder
             for (float r = 8f; r < 80f && !found; r += 1f) { Vector3 p = lagoon + dir * r; if (PolarLandscapeBuilder.IceAt(p.x, p.z)) { shore = p; found = true; } }
             if (!found) continue;
             Quaternion rot = Quaternion.LookRotation(dir);
+            // (Ronda 28) Que debajo de la lámina se pueda nadar: el frente del casquete (su collider) sobresale de IceAt, y una lámina quedaba con el centro
+            // bajo el casquete («bajo el hielo fijo sí se nada — Casquete a 0,0»). Se aparta del frente hasta que el centro de la lámina no tenga hielo grueso
+            // encima (de 0,5 en 0,5 m, hasta 10 m).
+            Physics.SyncTransforms();
+            for (int k = 0; k < 20 && MarineLife.ThickAbove(shore - dir * ((Back - Lip) * 0.5f)); k++) shore -= dir * 0.5f;
             if (!Clear(shore - dir * 2f + Vector3.down * 1f, new Vector3(W, 1f, Back), rot)) continue;   // (el submarino atracado, un muelle…)
             Transform sheet = new GameObject($"Lamina_hielo_fijo_{n}").transform; sheet.SetParent(parent, false); sheet.SetPositionAndRotation(shore, rot);
             // Cuatro piezas alrededor del agujero, en coordenadas de la orilla: +Z, hacia la placa.
