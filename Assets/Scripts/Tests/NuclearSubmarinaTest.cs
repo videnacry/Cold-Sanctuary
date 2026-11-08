@@ -53,6 +53,7 @@ public class NuclearSubmarinaTest : MonoBehaviour, ITestUnit
                 Bounds b = r.bounds;
                 if (b.max.y <= 0.05f) continue;
                 if (r.name.StartsWith("Boya_")) continue;   // (las boyas flotan: marcan la zona y la línea, no son edificios)
+                if (r.GetComponentInParent<FlyingCarpet>() != null || r.GetComponentInParent<Anima>() != null) continue;   // (las alfombras de su pista vuelan con quien las usa, y quien va en ellas: no son del sitio; ronda 29, una a 131 m)
                 Vector3 c = b.center;
                 bool inStation = Mathf.Abs(c.x - station.position.x) <= NuclearSiteRule.StationHalf + 1f && Mathf.Abs(c.z - station.position.z) <= NuclearSiteRule.StationHalf + 1f;
                 if (!inStation) above.Add($"{r.name} ({c.x:0}, {b.max.y:0.0}, {c.z:0})");

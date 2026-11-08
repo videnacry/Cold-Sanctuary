@@ -330,7 +330,7 @@ public class ConstructionSubmarine : MonoBehaviour
         Vector3 face = move.sqrMagnitude > 1e-6f ? move : transform.forward;
         if (!wet) face.y = 0f;
         if (face.sqrMagnitude > 1e-6f) transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(face.normalized), 1f - Mathf.Exp(-3f * Time.deltaTime));
-        bool exact = !wet || label.StartsWith("puerta") || label.StartsWith("frente") || label.StartsWith("dentro") || label.StartsWith("sale");   // (en el agua abierta basta pasar cerca: si un grupo está en el punto, lo rodea)
+        bool exact = !wet || label.StartsWith("puerta") || label.StartsWith("frente") || label.StartsWith("dentro") || label.StartsWith("sale") || label.Contains("elevador");   // (2026-11-08: el elevador del muelle lo deja en su plaza exacta, aunque salga del agua)   // (en el agua abierta basta pasar cerca: si un grupo está en el punto, lo rodea)
         if ((goal - transform.position).magnitude < (exact ? 0.8f : 3f))
         {
             if (label.StartsWith("puerta")) doorsUsed.Add(label);
