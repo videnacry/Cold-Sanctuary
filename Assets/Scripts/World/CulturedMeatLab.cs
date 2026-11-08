@@ -68,6 +68,22 @@ public class CulturedMeatLab : MonoBehaviour
 
     public static readonly List<CulturedMeatLab> All = new List<CulturedMeatLab>();
     void OnEnable() { All.Add(this); }
+
+    /// <summary>LA RESERVA DEL PRIMER DÍA (ronda 26): el almacén empezaba vacío y el primer lote no está antes del turno de las 12; los
+    /// alimentadores «recogen 0 raciones» y los osos, con hambre desde el arranque, morían a mediodía. Un día de raciones de los depredadores
+    /// de tierra del plan (cada uno, sus 3 rondas), en el primer laboratorio, si está vacío.</summary>
+    public static int FirstDayStock()
+    {
+        int n = 0;
+        foreach (string sp in new[] { "Bear", "Wolf", "ArcticFox" }) n += PopulationPlan.Raw(sp) * PredatorRound.RationsFor(sp) * 3;
+        return n;
+    }
+    void Start()
+    {
+        if (rationsStored > 0 || All.Count == 0 || All[0] != this) return;
+        rationsStored = Mathf.Min(maxPortionsWaiting, FirstDayStock());
+        Debug.Log($"[Carne cultivada] Reserva del primer día en el almacén del alimentador: {rationsStored} raciones de 500 g.");
+    }
     void OnDisable() { All.Remove(this); }
 
     double TargetCells => batchGrams * cellsPerGram;
