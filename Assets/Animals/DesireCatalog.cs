@@ -293,17 +293,31 @@ public static class DesireCatalog
         NavMeshAgent nav = self.nav;
         if (nav == null || !nav.isOnNavMesh) { t.going = false; return false; }
         if (nav.pathPending) { if (Time.time - t.since > 3f) { t.going = false; t.failUntil = Time.time + 4f; TripsStalled++; nav.ResetPath(); return false; } return true; }   // (camino que no llega a calcularse: tope)
-        float rem = nav.hasPath ? nav.remainingDistance : 0f;
+        float rem = nav.hasPath ? Remaining(nav) : 0f;
         if (rem <= nav.stoppingDistance + 0.35f) { t.going = false; return false; }   // llegó
         if (rem < t.best - 0.25f) { t.best = rem; t.bestAt = Time.time; }
         if (Time.time - t.bestAt > 5f || Time.time - t.since > 40f)                    // atascado o tope
         {
-            if (_stallLogs < 30) { _stallLogs++; Debug.Log($"[Fauna] «{self.name}» se atasca yendo a {t.goal} desde {self.transform.position}: quedan {rem:0.0} m, velocidad pedida {nav.speed:0.0}, real {nav.velocity.magnitude:0.0}, parado {nav.isStopped}, camino {nav.pathStatus}."); }
+            if (_stallLogs < 30) { _stallLogs++; Debug.Log($"[Fauna] «{self.name}» se atasca yendo a {t.goal} desde {self.transform.position}: quedan {rem:0.0} m, velocidad pedida {nav.speed:0.0}, real {nav.velocity.magnitude:0.0}, parado {nav.isStopped}, camino {nav.pathStatus}{(nav.speed < 0.05f ? $", sin velocidad: {(self.Walk != null && self.Walk.IsCharging ? "en postura de carga" : self.TryGetComponent(out CharacterLevel cl) ? $"energía {cl.currentEnergy:0.0}/{cl.MaxEnergy:0.0}" : "sin WalkSpell ni energía")}" : "")}."); }
             t.going = false; t.failUntil = Time.time + 8f; TripsStalled++;
             nav.ResetPath();
             return false;
         }
         return true;
+    }
+
+    // Lo que le queda por el camino. remainingDistance es Infinito cuando el camino tiene más esquinas de las que el agente ya calculó: con
+    // eso nunca «mejoraba» ni «llegaba», y a los 5 s el viaje se daba por atascado aunque fuera a toda velocidad (ronda 22: liebres, renos,
+    // pingüinos y bueyes «quedan Infinito m … real 5,0»). Entonces se suma el camino de esquina en esquina.
+    static float Remaining(NavMeshAgent nav)
+    {
+        float r = nav.remainingDistance;
+        if (!float.IsInfinity(r) && !float.IsNaN(r)) return r;
+        Vector3[] c = nav.path.corners;
+        if (c == null || c.Length == 0) return Vector3.Distance(nav.transform.position, nav.destination);
+        float sum = Vector3.Distance(nav.transform.position, c[Mathf.Min(1, c.Length - 1)]);
+        for (int i = 1; i < c.Length - 1; i++) sum += Vector3.Distance(c[i], c[i + 1]);
+        return sum;
     }
 
     static void Walk(Animal self, Trip t, Vector3 at)
@@ -351,6 +365,13 @@ public static class DesireCatalog
             Vector3 p = pick();
             if (Flat(p - here) < minHop) continue;
             if (NavReach.Reachable(self, p, out Vector3 at) && Flat(at - here) >= minHop && !Detour(self, at, here)) { Walk(self, t, at); return; }
+        }
+        // Al borde de una colonia sobre el hielo o en un recinto pequeño, los saltos largos caen en el agua o tras la valla: saltos cortos.
+        for (int i = 0; i < 8; i++)
+        {
+            Vector2 r = UnityEngine.Random.insideUnitCircle.normalized * UnityEngine.Random.Range(Mathf.Max(0.9f, minHop * 0.5f), Mathf.Max(2f, minHop));
+            Vector3 p = here + new Vector3(r.x, 0f, r.y);
+            if (NavReach.Reachable(self, p, out Vector3 at) && Flat(at - here) >= 0.8f && !Detour(self, at, here)) { Walk(self, t, at); return; }
         }
         StrollNoPick++; t.pauseUntil = Time.time + 1f;   // nada alcanzable ahora: lo reintenta en un momento
         if (_noPickLogs < 30 && self.nav != null) { _noPickLogs++; Debug.Log($"[Fauna] «{self.name}» ({key}) no encuentra adónde ir en {here}: agente tipo {self.nav.agentTypeID}, área {self.nav.areaMask}, nextPosition a {(self.nav.nextPosition - here).magnitude:0.00} m, velocidad {self.nav.speed:0.0}, en NavMesh {self.nav.isOnNavMesh}."); }
