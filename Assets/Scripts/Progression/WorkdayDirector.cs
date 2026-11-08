@@ -258,6 +258,8 @@ public class WorkdayDirector : MonoBehaviour
         {
             bool fresh = Mine();
             GameObject g = Body(w.name);
+            if (w.name == GymProgramming.Trainer && h >= WorkRoster.StartHour + 5f && h < WorkRoster.StartHour + 6f && g != null && (RemoteStaff.Hidden(g) || OnOwnDuty(g)) && (!_traceDay.TryGetValue(w.name + "·salta", out int sd) || sd != today.day))
+            { _traceDay[w.name + "·salta"] = today.day; Debug.Log($"[Jornada] {h:00.00} h · la jornada no lleva a {w.name}: {(RemoteStaff.Hidden(g) ? "en otro santuario" : MagnateWarden.Instance.Handling(g) ? "la Magnate" : AreaInitiator.Leading(g) ? "inicia a alguien" : "otra conducta propia")}."); }
             if (g == null || RemoteStaff.Hidden(g) || g.CompareTag("Player") || OnOwnDuty(g)) continue;   // (en otro santuario: no se simula)
             if (fresh || !_orders.TryGetValue(w, out Order o) || o.early)
             {
@@ -514,6 +516,7 @@ public class WorkdayDirector : MonoBehaviour
     // entero (eso no es trabajo de nadie). Lo siguiente es una misión de hoy en otra área (no la comida ni el entrenamiento, que
     // empiezan a su hora). Una vez en camino no se da la vuelta (el viaje que queda se acorta al andar).
     readonly Dictionary<WorkRoster.Worker, WorkRoster.Assignment> _heading = new Dictionary<WorkRoster.Worker, WorkRoster.Assignment>();
+    readonly Dictionary<string, int> _traceDay = new Dictionary<string, int>();
     public WorkRoster.Assignment HeadingEarly(WorkRoster.Worker w, GameObject g, float h)
     {
         if (today == null || TC == null || g == null || w == null) return null;
@@ -524,7 +527,9 @@ public class WorkdayDirector : MonoBehaviour
             if (latched != null && h < latched.start && (today.work.Contains(latched) || latched == LunchOf(w) || latched == TrainingOf(w))) return latched;
             _heading.Remove(w);
         }
-        WorkRoster.Assignment cur = Current(w, h);
+        // (Ronda 27) En la hora del entrenamiento, el entrenamiento ES lo de ahora: sin esto, a las 14,3 h Andrea ya salía hacia la misión de las 15
+        // con el viaje entero de margen, y el entrenamiento se quedaba en nada.
+        WorkRoster.Assignment cur = Current(w, h) ?? (h >= s + 6f && h < s + 6f + WorkRoster.AfternoonTraining ? TrainingOf(w) : null);
         float end, share;
         if (cur != null) { end = cur.start + cur.mission.hours; share = 0.5f; }
         else if (h >= l0 && h < l1)
@@ -548,16 +553,20 @@ public class WorkdayDirector : MonoBehaviour
         // misión (a mitad del viaje desde la de las 10); allí pide al dar las 11 (Where → «Comida»; la barra se llena entonces).
         if (next == null && Mathf.Abs(end - l0) < 0.01f && !_lunched.Contains(g)) next = LunchOf(w);
         if (next == null && Mathf.Abs(end - (s + 6f)) < 0.01f) next = TrainingOf(w);   // (es 1 h: saliendo a las 14 se iba media en el viaje)
-        if (next == null || next.mission.area == AreaWork.Guard || (cur != null && next.mission.area == cur.mission.area)) return null;
+        // (Ronda 27) POR QUÉ NO SALE el entrenador hacia su entrenamiento (Andrea, 0 % los dos días y nunca «sale ya hacia «Entrenamiento»»):
+        // entre las 13 y las 14, una línea por día con la salida que toma.
+        bool trace = w.name == GymProgramming.Trainer && h >= s + 5f && h < s + 6f && _traceDay.TryGetValue(w.name, out int td) ? td != today.day : w.name == GymProgramming.Trainer && h >= s + 5f && h < s + 6f;
+        void Trace(string why) { if (!trace) return; _traceDay[w.name] = today.day; Debug.Log($"[Jornada] {h:00.00} h · {w.name} no sale aún hacia el entrenamiento: {why} (ahora «{cur?.mission.title ?? "—"}» en {cur?.mission.area ?? "—"} hasta las {end:00.00} h; siguiente «{next?.mission.title ?? "—"}»; en {g.transform.position})."); }
+        if (next == null || next.mission.area == AreaWork.Guard || (cur != null && next.mission.area == cur.mission.area)) { Trace(next == null ? "no hay nada a las " + end.ToString("00.00") : next.mission.area == AreaWork.Guard ? "lo siguiente es la guardia" : "lo siguiente es en la misma área"); return null; }
         Vector3 to = WorkPoint(next.mission.area, g.name);
-        if (to == Vector3.zero) return null;
+        if (to == Vector3.zero) { Trace("sin punto de trabajo"); return null; }
         float perHour = TC.SecondsPerGameDay / 24f;
         // EL ENTRENAMIENTO dura 1 h: se llega a su hora, no a mitad del viaje (Linduarda y Andrea, 0 % en la sala: del Santuario Aéreo y del
         // comedor al piso del gimnasio hay alfombra y 106–194 m por la raíz). Y desde el Aéreo cuenta también el vuelo de vuelta.
         if (next == TrainingOf(w)) share = 1f;
         float back = cur != null && AereoRule.IsArea(cur.mission.area) && !AereoRule.IsArea(next.mission.area) ? AereoRule.TripSeconds(cur.mission.area) : 0f;
         float lead = (ArbolCampos.TripSeconds(g.transform.position, to) + back + (AereoRule.IsArea(next.mission.area) ? AereoRule.TripSeconds(next.mission.area) : 0f)) * 1.15f / Mathf.Max(1f, perHour) * share;
-        if (end - h > lead) return null;
+        if (end - h > lead) { if (end - h < lead + 0.25f) Trace($"viaje estimado {lead / share * perHour:0} s (queda {(end - h) * perHour:0} s)"); return null; }
         _heading[w] = next;
         Debug.Log($"[Jornada] {h:00.0} h · {w.name} sale ya hacia «{next.mission.title}» ({next.mission.area}, a las {next.start:00.0} h): el viaje es de {lead / share * perHour:0} s.");
         return next;
