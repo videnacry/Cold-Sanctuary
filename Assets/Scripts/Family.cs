@@ -84,8 +84,6 @@ public class Family
     public static GameObject[] RenderGroup(GameObject animal, int quantity, Vector3 position, float height, float radius = 0)
     {
         if (radius == 0) radius = quantity * 2;
-        Vector3 maxPos = new Vector3(position.x + radius, position.y + radius, position.z + radius);
-        Vector3 minPos = new Vector3(position.x - radius, position.y - radius, position.z - radius);
         GameObject[] creatures = new GameObject[quantity];
         Vector3[] positions = new Vector3[quantity];
         int counter = 0;
@@ -93,8 +91,10 @@ public class Family
         // en (0,0,0) — el centro del santuario, dentro del Casquete (la cría de lobo «masa 0,9, en (0,0,0)» de cada batería).
         for (int idx = 0; idx < quantity; idx++)
         {
-            float xPos = Random.Range(minPos.x, maxPos.x);
-            float zPos = Random.Range(minPos.z, maxPos.z);
+            // En el círculo del radio, no en su cuadrado: las esquinas quedaban a radio·√2 (ronda 23: 1 de 1 y 1 de 5 fuera de 6 m).
+            Vector2 disc = Random.insideUnitCircle * radius;
+            float xPos = position.x + disc.x;
+            float zPos = position.z + disc.y;
             positions[counter] = new Vector3(xPos, height, zPos);
             counter++;
         }
