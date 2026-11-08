@@ -278,6 +278,7 @@ Berón (2026-11-05): «debe existir una lista de reglas para la creación de per
 | P9 | **J16 al llegar alguien**: recuento de centros, ring y camas. | Que quepan todos. | 75, 89 | [reglas-personajes.md](reglas-personajes.md) |
 | P10 | **Los docs van con el cambio**: ficha, personajes, diseño, manual y checklist. | Berón lo pide. | `check-personajes.sh` (la ficha); el resto, **solo en docs** | [reglas-personajes.md](reglas-personajes.md) |
 | P11 | **Regla de oro: todos saben hacer de todo** (= J30). | Berón. | 87 | [reglas-personajes.md](reglas-personajes.md) |
+| P22 | **Cada persona tiene su ficha con la plantilla** de [personajes/README.md](personajes/README.md) (Berón 2026-11-08): las 11 secciones, cada dato con su veracidad (M39) y su fuente (doc y sección, o fichero y línea), y «Falta» para lo que no se sabe. **Un dato nuevo actualiza su ficha** y su fila en la tabla de lo completas que están. **El código enlaza a la ficha**: cada sitio donde se define una persona (personal, profesión, aspecto, constructor, arquetipo, clase propia) lleva el comentario «ficha: docs/personajes/…». | Ver qué personajes están más completos y equilibrarlos; que la información repartida por el código lleve a un solo sitio. | `check-personajes.sh` y 95 (que la ficha exista); el resto, **solo en docs** | [personajes/README.md](personajes/README.md) |
 
 ## 10. Pruebas y flujo de trabajo
 
@@ -387,7 +388,7 @@ reconstruir. Vale para TODOS los pisos, no solo el hospital. Cada piso del santu
 ## 12. Recuento y reglas sin comprobación automática
 
 
-**Total: 207 reglas** (S 15 · F 14 · T 24 · C 7 · G 8 · H 8 · M 39 · A 5 · J 33 · P 21 · E 17 · W 15 = 206 —W9, W10 y W11 van en §11; P11 repite J30; P1–P11 son de personajes y P12–P21 de territorio, producción y fauna (§13)—, más la regla de
+**Total: 208 reglas** (S 15 · F 14 · T 24 · C 7 · G 8 · H 8 · M 39 · A 5 · J 33 · P 22 · E 17 · W 15 = 207 —W9, W10 y W11 van en §11; P11 repite J30; P1–P11 y P22 (2026-11-08, fichas) son de personajes y P12–P21 de territorio, producción y fauna (§13)—, más la regla de
 sincronización de §11). (Recontado por el probador al integrar actividades, tareasE, entreno, personajes, hospital y cohetes, 2026-11-04:
 las J18 en adelante se renumeraron en una sola secuencia —J18–J21 actividades y uniformes, J22 tareas con «E», J23–J27 entrenamientos
 y entrenador, J28 profesiones, J29 nada en pisos en obras—.)

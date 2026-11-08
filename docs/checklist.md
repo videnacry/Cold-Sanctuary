@@ -4,6 +4,16 @@ Tablero para retomar. Última sesión: 2026-08-28. Marca lo que completes.
 Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-planteamiento.md`](gaps-vs-planteamiento.md),
 [`world-topology-and-planes.md`](world-topology-and-planes.md) (visión del mundo grande / los 3 planos).
 
+> **HECHO 2026-11-08 (fichas de personajes, rama claude/perfiles-personajes; solo docs y comentarios, sin cambios de conducta):** una ficha
+> por persona en [`personajes/`](personajes/README.md) con la plantilla de 11 secciones (cada dato con su veracidad M39 y su fuente), 32 del
+> santuario y 8 figuras de fuera; tabla de lo completa que está cada una, de Irosene y la Magnate (16 de 18) a Nesvitor, David y Adonis
+> (6); 13 contradicciones entre fuentes; comentarios «ficha: docs/personajes/…» en cada sitio del código donde se define una persona.
+> Regla nueva **P22** en el [manual](manual-de-diseno.md) §9.1.
+> - [ ] **Berón**: contestar la sección 11 de las fichas con menos puntos (de dónde es cada uno, cómo llegó, cómo es, las fotos que faltan).
+> - [ ] **Berón**: la familia de Irosene frente a los nombres del santuario (Néstor, Alicia, Josedrilo, Lizmibet; [README](personajes/README.md) §Contradicciones).
+> - [ ] Decidir si Linduarda y Lizmibet tienen entrada en `Professions.All`, si Malena entra en `Professions.Medical` y si Linduarda cuida animales.
+> - [ ] Limpiar los textos viejos de los planes de gimnasio y de `SanctuaryDirector` (lista en el README) cuando Berón confirme.
+
 > **HECHO 2026-11-05 (ronda 12, rama claude/fix-ronda12; solo código, sin probar en vivo):** alfombra de la plataforma fuera del Santuario Aéreo, evacuación de todos los de la zona (Linduarda incluida), cordones de Ø 1,8 m en las ramas del Sitio Nuclear, y pruebas 100, 110, 73 y 94 al día con la separación de escenas.
 > - [ ] Ascensor del tronco en los dos árboles del Aéreo: subir en persona del andén a la plataforma (lanzadera) y al techo (parque).
 > - [ ] Reconstruir SampleScene (solo el santuario) y el Santuario Aéreo.
