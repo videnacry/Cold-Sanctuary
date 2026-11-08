@@ -4,7 +4,7 @@ using UnityEngine;
 /// El Papi Gohageneis — celebración, arte de vivir, restauración emocional. Comportamiento propio (sobre
 /// `MoodState`); stats desde el arquetipo "Gohageneis". Barra de celebración que, al llenarse por cercanía,
 /// dispara un burst de Satisfacción + alivio de fatiga. Ver docs/creature-stats.md.
-/// </summary>
+/// Ficha: docs/personajes/gohageneis.md.</summary>
 public class Gohageneis : MonoBehaviour
 {
     [Header("Gohageneis — Celebration Charge")]

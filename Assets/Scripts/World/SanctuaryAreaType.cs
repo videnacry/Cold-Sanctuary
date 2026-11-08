@@ -47,4 +47,5 @@ public enum SanctuaryAreaType
     Assembly,             // Sala de asambleas — lo mejor de las asambleas del mundo, para todos a la vez (docs/piso-asambleas.md)
     Music,                // Música — sala de grabación y escenario de conciertos, para todos a la vez (docs/piso-musica.md)
     EnergyPark,           // Parque Energético: control y taller de los paneles (docs/energia.md)
+    VerticalFarm,         // Huerto vertical — estantes con LED en la torre de Producción (docs/produccion-maquinaria.md §2026-11-08)
 }

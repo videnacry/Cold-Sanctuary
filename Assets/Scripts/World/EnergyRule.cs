@@ -47,6 +47,7 @@ public static class EnergyRule
             case SanctuaryAreaType.AtomicPlant: case SanctuaryAreaType.Chemistry: case SanctuaryAreaType.Biology: return 45f;
             case SanctuaryAreaType.Gym: case SanctuaryAreaType.Calisthenics: case SanctuaryAreaType.YogaRoom: case SanctuaryAreaType.Ballet: case SanctuaryAreaType.MartialArts: case SanctuaryAreaType.Music: case SanctuaryAreaType.Assembly: return 18f;
             case SanctuaryAreaType.Garden: case SanctuaryAreaType.UnderwaterGarden: return 5f;   // bombas de riego; la luz es del sol
+            case SanctuaryAreaType.VerticalFarm: return 5f;   // pasillos, vivero y lavado; los estantes pagan aparte su luz (FloorEnergy.Declare: VerticalFarm.LedKW)
             default: return 16f;   // oficinas, aulas, talleres, control (Informática: 16 + lo fijo)
         }
     }

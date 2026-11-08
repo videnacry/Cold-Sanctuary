@@ -3,7 +3,7 @@
 Berón (2026-11-05): «debe existir una lista de reglas para la creación de personajes en el mesocosmos, entre ellos estaría la
 reestructuración de puestos … recopilar información de cada personaje al detalle en un .md y la regla de actualizar los docs».
 
-Son las reglas **P1–P11** del [manual de diseño](manual-de-diseno.md) (§9.1). La comprobación automática es
+Son las reglas **P1–P11 y P24** del [manual de diseño](manual-de-diseno.md) (§9.1). La comprobación automática es
 `PersonajesReglasTest` (grupo 95) y `tools/check-personajes.sh`, que no necesita Unity.
 
 ## Las reglas
@@ -21,6 +21,7 @@ Son las reglas **P1–P11** del [manual de diseño](manual-de-diseno.md) (§9.1)
 | P9 | **J16 al llegar alguien**: se recuentan miembros y residentes frente a cada centro (`AreaCapacity`, `TrainingCentres.FloorsFor`), el ring y la cama-litera; si no llegan, se añade un piso o se agranda. | 75, 89 |
 | P10 | **Los docs van con el cambio**: su ficha, [personajes-mesocosmos.md](personajes-mesocosmos.md), [diseno-personajes.md](diseno-personajes.md), el manual, el checklist y los docs del área que toca. Un cambio de personaje sin docs no está terminado. | `check-personajes.sh` |
 | P11 | **REGLA DE ORO: todos saben hacer de todo** (= J30 del manual; Berón 2026-11-05: «las tareas de todas las áreas van por rotación normal, los puestos de nivel son un extra pero la regla de oro es que todos los personajes del santuario (mesocosmos) saben hacer de todo»). Toda misión va por rotación normal. Un puesto da prioridad o el papel que dirige, nunca exclusividad: si falta quien lo tiene, lo hace otro. | `WorkRoster.AssignOwned`; 87 |
+| P24 | **Ficha con plantilla, al día y enlazada desde el código** (Berón 2026-11-08): las 11 secciones de [personajes/README.md](personajes/README.md), cada dato con su veracidad (M39) y su fuente; un dato nuevo actualiza la ficha y su fila de la tabla; cada sitio del código donde se define la persona lleva «ficha: docs/personajes/…». | Su ficha, [personajes/README.md](personajes/README.md) |
 
 ## Lista para añadir a alguien
 
@@ -31,7 +32,7 @@ Son las reglas **P1–P11** del [manual de diseño](manual-de-diseno.md) (§9.1)
 5. `Professions.All`, `Professions.Basis` y, si hace falta, `Unconfirmed` y `ClassLeads`; `SanctuaryDirector.HomeArea`.
 6. Su plan de gimnasio en `GymProgramming` (sin él, cuerpo entero de salud).
 7. Casa (P5), recuento (P9) y jerarquía (P6).
-8. Docs (P10).
+8. Docs (P10) y su ficha desde la plantilla, con su fila en la tabla de [personajes/README.md](personajes/README.md) y el comentario «ficha: docs/personajes/…» en cada sitio del código de los pasos 2 a 6 (P24).
 
 Si alguien se va a un microcosmos (J12), se le quita de todo eso, pero se conservan su aspecto y sus datos.
 

@@ -8,6 +8,15 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 > - [ ] Probar los grupos 113, 28, 104, 50, 65, 87 y 95; después 55, 110, 100, 94, 45, 75, 74 y 77.
 > - [ ] Jugar un día sin pruebas: Fernando y Luciana se apagan a las 7:50 y vuelven en la fiesta; el HUD dice «Libre» a su hora.
 > - [ ] **Berón**: la tabla de puntuación inicial del personal sin margas (`SanctuaryPlacement.StartingScore`, inferida). Valores por defecto hasta que decida: un santuario se acaba con 30 días vividos (`DaysToFinish`), la Central y la Planta Atómica son de la tierra, Kushal no se estira, un área sin tareas no pide a nadie y una obligatoria que no cabe ni a las 19:00 recibe un clon.
+> **HECHO 2026-11-08 (fichas de personajes, rama claude/perfiles-personajes; solo docs y comentarios, sin cambios de conducta):** una ficha
+> por persona en [`personajes/`](personajes/README.md) con la plantilla de 11 secciones (cada dato con su veracidad M39 y su fuente), 32 del
+> santuario y 8 figuras de fuera; tabla de lo completa que está cada una, de Irosene y la Magnate (16 de 18) a Nesvitor, David y Adonis
+> (6); 13 contradicciones entre fuentes; comentarios «ficha: docs/personajes/…» en cada sitio del código donde se define una persona.
+> Regla nueva **P24** en el [manual](manual-de-diseno.md) §9.1.
+> - [ ] **Berón**: contestar la sección 11 de las fichas con menos puntos (de dónde es cada uno, cómo llegó, cómo es, las fotos que faltan).
+> - [ ] **Berón**: la familia de Irosene frente a los nombres del santuario (Néstor, Alicia, Josedrilo, Lizmibet; [README](personajes/README.md) §Contradicciones).
+> - [ ] Decidir si Linduarda y Lizmibet tienen entrada en `Professions.All`, si Malena entra en `Professions.Medical` y si Linduarda cuida animales.
+> - [ ] Limpiar los textos viejos de los planes de gimnasio y de `SanctuaryDirector` (lista en el README) cuando Berón confirme.
 
 > **HECHO 2026-11-05 (ronda 12, rama claude/fix-ronda12; solo código, sin probar en vivo):** alfombra de la plataforma fuera del Santuario Aéreo, evacuación de todos los de la zona (Linduarda incluida), cordones de Ø 1,8 m en las ramas del Sitio Nuclear, y pruebas 100, 110, 73 y 94 al día con la separación de escenas.
 > - [ ] Ascensor del tronco en los dos árboles del Aéreo: subir en persona del andén a la plataforma (lanzadera) y al techo (parque).
@@ -15,7 +24,12 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 > - [ ] Probar los grupos 100, 110, 73, 94 y 28.
 > **HECHO 2026-11-06 (suite, rama claude/fix-suite; solo código, sin probar en vivo):** `WorkdayDirector` conduce a cada persona en cada frame y solo reparte la búsqueda de misiones (regla W14); `JornadaTest` usa `TickLive`. Las pruebas por tramos deben correr con `TestRunner.Running` encendido (`Temp/solo-running.txt`).
 > - [ ] Comprobar en vivo que el personal anda a su velocidad y volver a medir `WorkdayDirector.Update`.
-> - [ ] Decidir: el O₂ de la fachada (faltan 425 m²) y el Huerto (faltan 1290 m²) para 31 personas.
+> - [x] Decidir: el O₂ de la fachada (faltan 425 m²) y el Huerto (faltan 1290 m²) para 31 personas. Berón (2026-11-08): segunda fachada y Huerto vertical.
+>
+> **HECHO 2026-11-08 (oxígeno y huerto, rama claude/oxigeno-huerto; solo código, sin probar en vivo):** segunda fachada de fotobiorreactores en el tronco de la torre de Ciencias (480 m²; con la del Árbol, 1075 m²: 27,4 kg de O₂/día a salud 0,85 para 26,9 que respiran 32 personas) y su misión `bio_fotobio_2`; Huerto vertical en la torre de Producción (3 niveles), 8 estantes LED que salen de la demanda (25,6 kg/día; da 29,4 con los bancales) y sus tareas `huv_*`; las cargas en el balance de energía (~+127 kW de media). Reglas P22 y P23 del manual. docs/fotobiorreactores.md, docs/produccion-maquinaria.md y docs/energia.md §2026-11-08.
+> - [ ] Reconstruir SampleScene solo el santuario (menú «Build Sample Scene Blockout (solo el santuario, sin microcosmos)») y guardarla.
+> - [ ] Probar los grupos 56, 103, 101, 61, 96 (PlayerTasks), 75 (capacidad), 97 (actividades), 73 (garaje del submarino), 57 (torres-árbol), 55 (frutales) y 50 (jornada).
+> - [ ] Mirar en fotos: las arpas en las 4 esquinas del tronco de Ciencias (10–56 m) y el piso del Huerto vertical.
 >
 > **HECHO 2026-11-05 (rendimiento, rama claude/rendimiento; solo código, sin probar en vivo):** lote estático en Play sin reconstruir nada (las piezas siguen con nombre, collider y `enabled`), detalle apagado a más de 120 m, cuerpos y grupos sin dibujar a más de 130 m, sonda con A/B y renderers por builder, menú con los ajustes de URP. Detalle y riesgos: [rendimiento.md](rendimiento.md).
 > - [ ] Medir en SampleScene: *Perfilar scripts* (da el coste por tipo), `rendimiento-ab` y el build de medida (`tools/build-perf.sh`).

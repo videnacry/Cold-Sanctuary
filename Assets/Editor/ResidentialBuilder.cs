@@ -11,7 +11,7 @@ public static class ResidentialBuilder
     public const float DeckY = 12f;   // como las demás áreas humanas: a 12 m, el bosque no queda en sombra
     static readonly Color Wood = new Color(0.62f, 0.52f, 0.42f), WoodDark = new Color(0.48f, 0.4f, 0.33f), Roof = new Color(0.55f, 0.66f, 0.75f);
 
-    public static readonly string[] Owners =
+    public static readonly string[] Owners =   // cada dueño: su ficha en docs/personajes/ (casa y pareja, §7)
     {
         "Player", "Magnate", "Linduarda", "Goluis", "Panterilia", "Gohageneis", "Irosene", "Lizmibet", "Andrea",   // solo personajes del juego
         // (2026-11-04) La familia y los amigos de Berón, en las casas que dejaron Sadhguru y los seis del mesocosmos (se fueron a sus
@@ -34,7 +34,7 @@ public static class ResidentialBuilder
         "Consol", "Fernando",
     };
     /// <summary>La pareja con la que comparte casa cada dueño (manual M18, J14), si la tiene.</summary>
-    static readonly System.Collections.Generic.Dictionary<string, string> Partners = new System.Collections.Generic.Dictionary<string, string>
+    static readonly System.Collections.Generic.Dictionary<string, string> Partners = new System.Collections.Generic.Dictionary<string, string>   // las parejas, en la ficha de cada uno: docs/personajes/
     {
         { "Lizmibet", "JefeConstruccion" },   // Tote, su esposo
         { "Amykhuz", "Karen" },                // (confirmado por Berón)

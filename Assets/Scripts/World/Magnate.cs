@@ -10,7 +10,7 @@ using UnityEngine;
 /// tiempo busca al que se está **quedando atrás** (menor nivel integral), va a él y le **enseña yoga** (le da el
 /// recuerdo en el `Grimoire`, le encola el Saludo al Sol y potencia su XP/pensamiento). Existe (clonada) en todos los
 /// sanctuary como una compañera más. Primera rebanada: estado infinito + pacificar + enseñar al rezagado.
-/// </summary>
+/// Ficha: docs/personajes/magnate.md.</summary>
 [RequireComponent(typeof(Anima))]
 public class Magnate : MonoBehaviour
 {

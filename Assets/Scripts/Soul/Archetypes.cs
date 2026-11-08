@@ -135,10 +135,10 @@ public static class Archetypes
             { "Scorpionfly", MakeBody(0.15f, 0.9f, 0.8f, 0.3f, 0.2f, 1.3f, 1.4f) },   // activo bajo cero; salta
             { "VelvetMite",  MakeBody(0.12f, 0.6f, 0.9f, 0.4f, 0.3f, 1.0f) },
             { "Earthworm",   MakeBody(0.35f, 0.2f, 0.5f, 0.9f, 0.7f, 1.1f) },         // arrastra hojas mayores que ella
-            { "Panterilia",  MakeBody(1.00f, 0.95f, 1.7f,  0.7f, 0.8f, 0.9f, 1.4f) },   // companions (fase 5): sus Base* reales
-            { "Goluis",      MakeBody(1.05f, 0.9f,  1.1f,  1.5f, 1.3f, 1.4f, 0.6f) },
-            { "Gohageneis",  MakeBody(1.00f, 1.2f,  1.05f, 1.1f, 1.1f, 1.3f, 1.7f) },
-            { "Irosene",     MakeBody(1.00f, 1.2f,  1.3f,  1.2f, 1.3f, 1.3f, 1.6f) },
+            { "Panterilia",  MakeBody(1.00f, 0.95f, 1.7f,  0.7f, 0.8f, 0.9f, 1.4f) },   // companions (fase 5): sus Base* reales · ficha: docs/personajes/panterilia.md
+            { "Goluis",      MakeBody(1.05f, 0.9f,  1.1f,  1.5f, 1.3f, 1.4f, 0.6f) },   // ficha: docs/personajes/goluis.md
+            { "Gohageneis",  MakeBody(1.00f, 1.2f,  1.05f, 1.1f, 1.1f, 1.3f, 1.7f) },   // ficha: docs/personajes/gohageneis.md
+            { "Irosene",     MakeBody(1.00f, 1.2f,  1.3f,  1.2f, 1.3f, 1.3f, 1.6f) },   // ficha: docs/personajes/irosene.md
             { "Fox",      MakeBody(1.00f, 1.4f, 1.5f, 1.1f, 0.9f, 1.3f) },
             { "Deer",     MakeBody(1.50f, 1.4f, 1.5f, 1.0f, 1.4f, 1.5f) },
             { "Seal",     MakeBody(1.20f, 1.1f, 1.2f, 1.3f, 1.6f, 1.4f) },

@@ -107,6 +107,49 @@ public static class FotobioSpec
 
     /// <summary>Superficie iluminada de la fachada (m²): el tronco (4 caras) y las quillas de las <paramref name="branches"/> ramas.</summary>
     public static float Area(int branches = 4) => 4 * TrunkBays.Length * ModulesPerColumn * ModuleArea + branches * KeelPanels * KeelPanelArea;
+
+    // ── LA SEGUNDA FACHADA (Berón 2026-11-08; docs/fotobiorreactores.md §2026-11-08): las mismas arpas en el tronco de la TORRE DE CIENCIAS ──
+    /// <summary>La torre-árbol de la segunda fachada: Ciencias, la del laboratorio de Biología donde se cuida el cultivo (el cuidador no cambia de
+    /// edificio). Su tronco es el mismo de 22 × 22 m; no gira (el sol polar da la vuelta a las cuatro caras cada día: la media diaria es la misma que
+    /// la del Árbol, que gira).</summary>
+    public const string SecondBuilding = "Ciencias", SecondRootName = "Fachada_fotobiorreactores_2";
+    /// <summary>Superficie de una fachada solo de tronco (4 caras × 1 vano × 10 módulos de 12 m²): 480 m².</summary>
+    public static float TrunkArea => 4 * TrunkBays.Length * ModulesPerColumn * ModuleArea;
+    /// <summary>Las dos fachadas (m²): la del Árbol (tronco y quillas) y la del tronco de Ciencias: 1075 m².</summary>
+    public static float TotalArea() => Area() + TrunkArea;
+    /// <summary>Litros de una fachada solo de tronco.</summary>
+    public static float TrunkLiters => TrunkArea * TubeLitersPerM2;
+
+    static float _ledMean = -1f;
+    /// <summary>Fracción del año (media) en que van los LED, con el modelo de <see cref="FotobioFacade.Light"/>: rellenan (1 − sol) cuando el sol no
+    /// llega al 75 %. Integra el sol del santuario (−77,85°) día a día y hora a hora. La usa la demanda de energía (FloorEnergy, potencia MEDIA).</summary>
+    public static float LedMeanFraction()
+    {
+        if (_ledMean >= 0f) return _ledMean;
+        float s = 0f; int n = 0;
+        for (int d = 1; d <= 365; d++)
+            for (float hr = 0.5f; hr < 24f; hr += 1f)
+            {
+                float el = SolarPosition.SunFor(SolarPosition.SanctuaryLat, d, hr).elevation;
+                float sun = Mathf.Clamp01(Mathf.Sin(Mathf.Max(0f, el) * Mathf.Deg2Rad) / Mathf.Sin(25f * Mathf.Deg2Rad)) * 0.9f;
+                s += sun < 0.75f ? 1f - sun : 0f; n++;
+            }
+        return _ledMean = s / n;
+    }
+    /// <summary>Potencia MEDIA de los LED de una fachada a lo largo del año (kW).</summary>
+    public static float LedMeanKW(float area) => LedKW(area) * LedMeanFraction();
+
+    /// <summary>EL TRONCO DE UNA TORRE-ÁRBOL AGUANTA SU FACHADA: <see cref="StructuralLimits.RootCheck"/> con los nervios y zunchos que pide su
+    /// altura (como SampleSceneBuilder.FinishHelix: 2 pisos y 2 puntas por nivel) más el peso de las arpas en el tronco.</summary>
+    public static StructuralLimits.RootReport TowerStructure(HelixTower h, out float facadeMN)
+    {
+        int n = 2 * h.levels;
+        var re = StructuralLimits.Reinforce(h, n, n, h.RootHeight);
+        StructuralLimits.RootReport r = StructuralLimits.RootCheck(h, n, n, h.RootHeight, re.ribs, re.hoopSpacing, TreeSpec.HoopArea, TreeSpec.StrutDrop, re.ribD);
+        facadeMN = TrunkTonnes * 9.81f / 1000f;
+        r.axialMN += facadeMN;
+        return r;
+    }
     /// <summary>Litros de cultivo.</summary>
     public static float Liters(int branches = 4) => 4 * TrunkBays.Length * ModulesPerColumn * ModuleArea * TubeLitersPerM2 + branches * KeelPanels * KeelPanelArea * KeelThick * 1000f;
     /// <summary>Biomasa (kg/día) y O₂ (kg/día) a pleno rendimiento.</summary>
@@ -162,9 +205,20 @@ public class FotobioFacade : MonoBehaviour
     public const string MissionId = "bio_fotobio", MissionArea = "Biología";
     public const float MissionHours = 1f;
 
+    /// <summary>La fachada del Árbol de los Campos (la primera, <see cref="index"/> 0).</summary>
     public static FotobioFacade Instance { get; private set; }
+    /// <summary>(2026-11-08) TODAS las fachadas: la del Árbol (0) y la del tronco de Ciencias (1). Cada una es un cultivo aparte (sus colectores no se
+    /// unen) con su cuadro y su misión diaria de 1 h.</summary>
+    public static readonly List<FotobioFacade> All = new List<FotobioFacade>();
 
     [Header("Construida")]
+    [Tooltip("0 = la del Árbol de los Campos; 1 = la del tronco de la torre de Ciencias.")]
+    public int index;
+    [Tooltip("El edificio-árbol de cuyo tronco cuelga.")]
+    public string building = TreeSpec.Building;
+    [Tooltip("Las medidas del tronco del que cuelga (las de su HelixTower).")]
+    public HelixTower trunk;
+    public int groundSide = TreeSpec.GroundSide;
     public float areaM2, liters;
     public int trunkModules, keelPanels;
     [Header("Cultivo")]
@@ -184,8 +238,27 @@ public class FotobioFacade : MonoBehaviour
     bool _present; int _dutyDay = int.MinValue, _caredDay = int.MinValue;
     SanctuaryArea _lab;
 
-    void OnEnable() { Instance = this; }
-    void OnDisable() { if (Instance == this) Instance = null; }
+    void OnEnable()
+    {
+        if (!All.Contains(this)) All.Add(this);
+        All.Sort((a, b) => a.index.CompareTo(b.index));
+        if (index == 0 || Instance == null) Instance = this;
+    }
+    void OnDisable() { All.Remove(this); if (Instance == this) Instance = All.Count > 0 ? All[0] : null; }
+
+    /// <summary>Las fachadas de la escena (también fuera de Play, donde no corre OnEnable).</summary>
+    public static List<FotobioFacade> InScene()
+    {
+        var l = new List<FotobioFacade>(FindObjectsByType<FotobioFacade>(FindObjectsInactive.Include, FindObjectsSortMode.None));
+        l.Sort((a, b) => a.index.CompareTo(b.index));
+        return l;
+    }
+    /// <summary>La misión diaria de esta fachada: «bio_fotobio» la del Árbol y «bio_fotobio_2» la de Ciencias.</summary>
+    public string Id => index == 0 ? MissionId : $"{MissionId}_{index + 1}";
+    /// <summary>O₂ de ahora de todas las fachadas (kg/día).</summary>
+    public static float TotalO2KgDay { get { float s = 0f; foreach (FotobioFacade f in All) if (f != null) s += f.o2KgDay; return s; } }
+    /// <summary>Superficie de todas las fachadas (m²).</summary>
+    public static float TotalAreaM2 { get { float s = 0f; foreach (FotobioFacade f in All) if (f != null) s += f.areaM2; return s; } }
 
     void Start()
     {
@@ -200,8 +273,8 @@ public class FotobioFacade : MonoBehaviour
     }
 
     // ── NÚMEROS ──
-    /// <summary>Personas del santuario (el personal, la Magnate y el recién llegado; <see cref="PopulationPlan.Humans"/>).</summary>
-    public static int People => Mathf.Max(1, PopulationPlan.Humans);
+    /// <summary>Personas del santuario: el personal de la lista, la Magnate y el recién llegado (<see cref="PopulationPlan.People"/>, 32).</summary>
+    public static int People => Mathf.Max(1, PopulationPlan.People);
     public float PeopleCovered => o2KgDay / FotobioSpec.O2PerPerson;
     float NutF => Mathf.Clamp01(nutrients / 0.35f);
     float DenF => density < 0.3f ? density / 0.3f : density > FotobioSpec.SelfShade ? Mathf.Max(0.25f, 1f - (density - FotobioSpec.SelfShade) * 0.8f) : 1f;
@@ -253,12 +326,15 @@ public class FotobioFacade : MonoBehaviour
         return (b, health);
     }
 
-    /// <summary>La misión diaria (la añade <see cref="AreaWork.Today"/> si hay fachada).</summary>
+    /// <summary>Las misiones diarias (las añade <see cref="AreaWork.Today"/>): UNA por fachada, de 1 h cada una (como los tramos de
+    /// <see cref="FruitGardener.TreeStretches"/>, ninguna pasa de <see cref="FruitGardener.MaxTreeTaskHours"/>): dos cultivos, dos turnos.</summary>
     public static List<WorkRoster.Mission> Missions()
     {
         var l = new List<WorkRoster.Mission>();
-        if (Instance != null)
-            l.Add(new WorkRoster.Mission(MissionArea, MissionId, "Fotobiorreactores del Árbol: muestra (densidad, pH y microscopio), medio de Zarrouk, cosecha de espirulina y lavado", MissionHours, true));
+        foreach (FotobioFacade f in All)
+            if (f != null)
+                l.Add(new WorkRoster.Mission(MissionArea, f.Id, $"Fotobiorreactores {(f.index == 0 ? "del Árbol" : $"de la torre de {f.building}")}: muestra (densidad, pH y microscopio), medio de Zarrouk, cosecha de espirulina y lavado",
+                    Mathf.Min(MissionHours, FruitGardener.MaxTreeTaskHours), true));
         return l;
     }
 
@@ -277,7 +353,7 @@ public class FotobioFacade : MonoBehaviour
         WorkdayDirector wd = WorkdayDirector.Instance;
         if (tc == null || wd == null || wd.today == null || wd.plannedDay != tc.Day) return;
         WorkRoster.Assignment a = null;
-        foreach (WorkRoster.Assignment x in wd.today.work) if (x.mission.id == MissionId) { a = x; break; }
+        foreach (WorkRoster.Assignment x in wd.today.work) if (x.mission.id == Id) { a = x; break; }
         if (a == null) return;
         if (_dutyDay != tc.Day) { _dutyDay = tc.Day; _present = false; }
         float h = tc.Hour, end = a.start + a.mission.hours;
@@ -309,7 +385,8 @@ public class FotobioFacade : MonoBehaviour
         if (force || ledOn != _lastLed) { _lastLed = ledOn; Material m = KitchenProps.Mat(ledOn ? new Color(0.98f, 0.35f, 0.8f) : new Color(0.22f, 0.22f, 0.25f)); foreach (Renderer r in _leds) if (r != null) r.sharedMaterial = m; }
         if (_label != null)
             _label.text = $"{FotobioSpec.Title} · {areaM2:0} m² · densidad {density:0.00} g/L · pH {Ph:0.0} · {Temperature:0} °C · salud {health * 100f:0}%" +
-                          $"{(contamination > 0.4f ? " · ¡contaminación!" : "")} · O₂ {o2KgDay:0.0} kg/día ({PeopleCovered:0.0} de {People} personas)" +
+                          $"{(contamination > 0.4f ? " · ¡contaminación!" : "")} · O₂ {o2KgDay:0.0} kg/día" +
+                          (All.Count > 1 ? $"; las {All.Count} fachadas, {TotalO2KgDay:0.0} ({TotalO2KgDay / FotobioSpec.O2PerPerson:0.0} de {People} personas)" : $" ({PeopleCovered:0.0} de {People} personas)") +
                           $" · {(ledOn ? $"LED {ledKW:0} kW" : "sol")}{(lastCareDay >= 0 ? $" · cuidado: {lastCaredBy}, día {lastCareDay}" : " · sin cuidar")}";
     }
 }

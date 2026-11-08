@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// Panterilia — limpieza, nutrición, observación. Comportamiento propio (sobre `MoodState`); stats desde el
 /// arquetipo "Panterilia". Sube el radio de Observación del jugador por cercanía. Ver docs/creature-stats.md.
-/// </summary>
+/// Ficha: docs/personajes/panterilia.md.</summary>
 public class Panterilia : MonoBehaviour
 {
     [Header("Panterilia — Observation Bonus")]

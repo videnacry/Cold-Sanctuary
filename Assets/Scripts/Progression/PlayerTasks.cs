@@ -66,6 +66,10 @@ public static class PlayerTasks
         T("coc_comedor", "Recoge las mesas|mesa|Bandeja", "Friega el suelo del comedor|mesa|Fregona", "Limpia los aseos|aseos|Cepillo");
         // ══ HUERTO ══
         T("hue_riego", "Coge la regadera|bancal|Regadera", "Riega el bancal|bancal|Regadera", "Levanta las malas hierbas con su raíz|bancal|Almocafre");
+        // (2026-11-08) El HUERTO VERTICAL (estantes LED de la torre de Producción; docs/produccion-maquinaria.md).
+        T("huv_siembra", "Llena las bandejas de germinación|vivero|Bandeja de semillero", "Siembra las semillas en los tacos|vivero|Sobre de semillas", "Trasplanta las plántulas a los canales|estante_cultivo|Bandeja de plántulas");
+        T("huv_cosecha", "Coge la caja de cosecha|estante_cultivo|Caja de cosecha", "Corta las plantas de las bandejas maduras|estante_cultivo|Cuchillo de cosecha", "Lava y embolsa la verdura|lavado|Bolsa", "Llévala a la cámara de la cocina|camara_verdura|Caja de cosecha"); Elsewhere("huv_cosecha", 3, "Cocina");
+        T("huv_solucion", "Mide la conductividad y el pH|dosificador|Medidor de EC y pH", "Dosifica los nutrientes|dosificador|Garrafa de nutrientes", "Limpia los canales y el filtro|estante_cultivo|Cepillo");
         T("hue_transplante", "Coge las plantas del vivero|bancal|Bandeja de cepellones", "Mira cuáles son nativas|bancal|Tablet", "Llévalas a la tundra y plántalas|bancal|Bandeja de cepellones", "Quema las bolsas de no nativas|incinerador|Bolsa cerrada");
         T("hue_cosecha", "Coge la cesta|bancal|Cesta", "Cosecha lo maduro|bancal|Cesta", "Lleva la cosecha a la cocina|mesa|Cesta"); Elsewhere("hue_cosecha", 2, "Cocina");
         T("hue_visitantes", "Coge el pienso|bancal|Saco de pienso", "Llena los comederos|comedero|Saco de pienso", "Rellena el agua|comedero|Cubo");
@@ -113,6 +117,7 @@ public static class PlayerTasks
         T("bio_cultivo", "Trabaja en la cabina|cabina|Pipeta", "Revisa el incubador|incubador|Placa", "Mira al microscopio|microscopio|Placa");
         T("bio_pcr", "Extrae el ADN|mesa_laboratorio|Pipeta", "Prepara la PCR en el termociclador|termociclador|Tubos", "Carga el secuenciador|secuenciador|Tubos");
         T("bio_fotobio", "Toma una muestra|fotobiorreactor|Vial", "Mide densidad y pH|mesa_laboratorio|Tablet", "Cosecha la espirulina|fotobiorreactor|Malla");
+        T("bio_fotobio_2", "Toma una muestra de la fachada de Ciencias|fotobiorreactor|Vial", "Mide densidad y pH|mesa_laboratorio|Tablet", "Cosecha la espirulina|fotobiorreactor|Malla");   // (2026-11-08) la segunda fachada
         T("nuc_turno", "Pasa el control de acceso|acceso|Credencial", "Vigila la sala de control|consola|Tablet", "Revisa la calefacción|intercambiador|Linterna");
         T("nuc_vigilancia", "Lee las estaciones del casquete|consola|Tablet", "Comprueba tu dosímetro|acceso|Dosímetro", "Revisa los filtros de la chimenea|consola|Linterna");
         T("nuc_pasivos", "Revisa la toma de agua de mar|intercambiador|Linterna", "Prueba las válvulas del tronco|consola|Tablet");
@@ -332,6 +337,12 @@ public static class PlayerTasks
         ["termociclador"] = new[] { "termociclador", "pcr" },
         ["secuenciador"] = new[] { "secuenciador" },
         ["fotobiorreactor"] = new[] { "fotobio", "espirulina", "tubo" },
+        // (2026-11-08) el Huerto vertical
+        ["estante_cultivo"] = new[] { "estanteria_led", "estanteria led", "estante de cultivo" },
+        ["vivero"] = new[] { "vivero", "germinacion", "semillero" },
+        ["lavado"] = new[] { "lavado", "embolsado" },
+        ["camara_verdura"] = new[] { "camara de verdura", "camara_verdura", "camara fria", "camara" },
+        ["dosificador"] = new[] { "dosificador", "solucion nutritiva", "deposito" },
         ["pendulo"] = new[] { "pendulo", "foucault" },
         ["bomba"] = new[] { "bomba", "torre" },
         ["acceso"] = new[] { "acceso", "puerta", "torno" },

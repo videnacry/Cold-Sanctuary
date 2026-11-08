@@ -282,6 +282,7 @@ Berón (2026-11-05): «debe existir una lista de reglas para la creación de per
 | P9 | **J16 al llegar alguien**: recuento de centros, ring y camas. | Que quepan todos. | 75, 89 | [reglas-personajes.md](reglas-personajes.md) |
 | P10 | **Los docs van con el cambio**: ficha, personajes, diseño, manual y checklist. | Berón lo pide. | `check-personajes.sh` (la ficha); el resto, **solo en docs** | [reglas-personajes.md](reglas-personajes.md) |
 | P11 | **Regla de oro: todos saben hacer de todo** (= J30). | Berón. | 87 | [reglas-personajes.md](reglas-personajes.md) |
+| P24 | **Cada persona tiene su ficha con la plantilla** de [personajes/README.md](personajes/README.md) (Berón 2026-11-08): las 11 secciones, cada dato con su veracidad (M39) y su fuente (doc y sección, o fichero y línea), y «Falta» para lo que no se sabe. **Un dato nuevo actualiza su ficha** y su fila en la tabla de lo completas que están. **El código enlaza a la ficha**: cada sitio donde se define una persona (personal, profesión, aspecto, constructor, arquetipo, clase propia) lleva el comentario «ficha: docs/personajes/…». | Ver qué personajes están más completos y equilibrarlos; que la información repartida por el código lleve a un solo sitio. | `check-personajes.sh` y 95 (que la ficha exista); el resto, **solo en docs** | [personajes/README.md](personajes/README.md) |
 
 ## 10. Pruebas y flujo de trabajo
 
@@ -391,7 +392,7 @@ reconstruir. Vale para TODOS los pisos, no solo el hospital. Cada piso del santu
 ## 12. Recuento y reglas sin comprobación automática
 
 
-**Total: 211 reglas** (S 15 · F 14 · T 24 · C 7 · G 8 · H 8 · M 39 · A 5 · J 37 · P 21 · E 17 · W 15 = 210 —W9, W10 y W11 van en §11; P11 repite J30; P1–P11 son de personajes y P12–P21 de territorio, producción y fauna (§13)—, más la regla de
+**Total: 214 reglas** (S 15 · F 14 · T 24 · C 7 · G 8 · H 8 · M 39 · A 5 · J 37 · P 24 · E 17 · W 15 = 213 —W9, W10 y W11 van en §11; P11 repite J30; P1–P11 y P24 (2026-11-08, fichas) son de personajes y P12–P23 de territorio, producción y fauna (§13)—, más la regla de
 sincronización de §11). (Recontado por el probador al integrar actividades, tareasE, entreno, personajes, hospital y cohetes, 2026-11-04:
 las J18 en adelante se renumeraron en una sola secuencia —J18–J21 actividades y uniformes, J22 tareas con «E», J23–J27 entrenamientos
 y entrenador, J28 profesiones, J29 nada en pisos en obras—.)
@@ -441,6 +442,8 @@ Berón (2026-11-05): «¿tenemos reglas para la creación de animales?». Detall
 | P19 | **Las áreas de producción escalan su maquinaria a lo que se les pide:** cada una tiene su línea en `ProductionAudit` (demanda, máquinas por etapa, cuello de botella); se comprueba al crear el área, al subir la demanda y al final del Blockout. Un número sin máquinas no vale. | Berón, 2026-11-05. | 103, `[Producción]` | [produccion-maquinaria.md](produccion-maquinaria.md) |
 | P20 | **Las placas de hielo y la isla son paredes para la fauna; solo se respira en agua abierta, canales o hielo fijo.** Con 1,5 m ya no es física, sino diseño: las placas llevan los edificios y la fauna no se mete debajo. Bajo el hielo fijo sí se nada. El submarino de obra pasa por debajo de la falda de roca. | Berón, 2026-11-05: «hazlo real». | 107 | [hielo-y-respiraderos.md](hielo-y-respiraderos.md) |
 | P21 | **Quien usa un iceberg tiene su motivo:** por qué va, cuánto se queda y por qué se va, según la especie y la estación; nada de figuras, también en las aves; contado en la cadena alimenticia. | Berón, 2026-11-05. | 108 | [vida-en-icebergs.md](vida-en-icebergs.md) |
+| P22 | **El O₂ y la verdura se dimensionan para las personas de la lista** (`PopulationPlan.People`: el personal de `WorkdayDirector.Staff`, la Magnate y el recién llegado; hoy 32), al construir y en juego, no para los ya iniciados. Si no cabe en lo que hay, se añade estructura (otra fachada, otro piso), nunca se sube el rendimiento de diseño. | Berón, 2026-11-08: segunda fachada y Huerto vertical. | 56, 103 | [fotobiorreactores.md](fotobiorreactores.md), [produccion-maquinaria.md](produccion-maquinaria.md) |
+| P23 | **Cada carga de cultivo con luz paga su energía y cada cultivo tiene su cuidado diario de ≤ 1 h:** las fachadas de fotobiorreactores declaran sus LED (potencia media del año; en la noche polar, la entera, que el reactor debe cubrir en punta) y el Huerto vertical sus estantes (`VerticalFarm.KWhPerKg`); una misión por fachada (`bio_fotobio`, `bio_fotobio_2`) y las del Huerto vertical (`huv_*`), cada una ≤ `FruitGardener.MaxTreeTaskHours`. | Berón, 2026-11-08. | 56, 101, 103, 61 | [energia.md](energia.md) |
 
 ## Docs de cada tema
 

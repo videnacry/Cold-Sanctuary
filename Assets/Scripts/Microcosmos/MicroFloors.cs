@@ -113,6 +113,7 @@ public static class MicroFloors
         ["Classroom_Area"] = new[] { "aula", "biblioteca", "universidad", "universitaria", "estudio", "clase", "archivo" },
         ["Assembly_Area"] = new[] { "asamblea", "asambleas", "parlamento", "consejo" },
         ["Music_Area"] = new[] { "música", "grabación", "concierto", "escenario" },
+        ["VerticalFarm_Area"] = new[] { "huerto vertical", "hidroponía", "invernadero", "cultivo bajo luz", "granja vertical" },   // (2026-11-08) docs/produccion-maquinaria.md
     };
 
     /// <summary>Minúsculas y sin tildes (para comparar «Informática» con «informatica»).</summary>

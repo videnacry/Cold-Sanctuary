@@ -92,6 +92,10 @@ public static partial class SampleSceneBuilder
                 FloorEnergy.DeclareFloor(air.gameObject, "Aire de la celda del árbol cazador", 0f, 0f, EnergyRule.ContainmentKW, essential: true);
             }
         }
+        // (2026-11-08) Los LED de las fachadas de fotobiorreactores (el Árbol y Ciencias): su potencia MEDIA del año (FotobioSpec.LedMeanKW; en la
+        // noche polar, la entera: FotobioSpec.LedKW). docs/fotobiorreactores.md, docs/energia.md.
+        foreach (FotobioFacade fb in Object.FindObjectsByType<FotobioFacade>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+            FloorEnergy.DeclareFloor(fb.gameObject, FotobioEnergyName(fb), 0f, 0f, FotobioSpec.LedMeanKW(fb.areaM2));
         // Las casas de árbol, si algún santuario las construye (no son un piso: las cuelga el parque).
         int homes = 0;
         foreach (Bedroom b in Object.FindObjectsByType<Bedroom>(FindObjectsInactive.Include, FindObjectsSortMode.None)) if (b.GetComponentInParent<TreeFloor>() == null) homes++;

@@ -18,12 +18,20 @@ public static partial class SampleSceneBuilder
     static readonly Color FotobioCulture = new Color(0.10f, 0.40f, 0.32f), FotobioFrame = new Color(0.78f, 0.80f, 0.82f),
         FotobioLedOff = new Color(0.22f, 0.22f, 0.25f), FotobioPump = new Color(0.25f, 0.45f, 0.62f);
 
-    /// <summary>Monta la fachada en el árbol <paramref name="tree"/> (la raíz «Arbol_de_los_Campos»). Sin árbol, avisa y no hace nada.</summary>
-    static void BuildFotobio(Transform tree)
+    /// <summary>Monta la fachada del Árbol de los Campos (tronco y quillas) en <paramref name="tree"/> (la raíz «Arbol_de_los_Campos»).</summary>
+    static void BuildFotobio(Transform tree) => BuildFotobio(tree, TreeSpec.Helix, 0, TreeSpec.GroundSide, TreeSpec.Building, true);
+
+    /// <summary>(2026-11-08) LA SEGUNDA FACHADA, en el tronco de la torre-árbol <paramref name="hx"/> (Ciencias: docs/fotobiorreactores.md §2026-11-08):
+    /// las mismas arpas (4 caras × 1 vano × 10 módulos, 480 m²), sin quillas; su cuadro al pie, en la cara de su puerta del suelo.</summary>
+    static void BuildFotobioTower(Helix hx) { if (hx == null) { Debug.LogWarning("[Fotobio] No hay torre para la segunda fachada."); return; } BuildFotobio(hx.root, hx.h, 1, hx.groundSide, hx.building, false); }
+
+    /// <summary>Monta una fachada en el tronco del árbol <paramref name="tree"/> de medidas <paramref name="h"/>: arpas en el vano 0 de cada cara y, si
+    /// <paramref name="keels"/>, una quilla bajo cada rama. Sin árbol, avisa y no hace nada.</summary>
+    static void BuildFotobio(Transform tree, HelixTower h, int index, int groundSide, string building, bool keels)
     {
         if (tree == null) { Debug.LogWarning("[Fotobio] No hay Árbol de los Campos: sin fachada de fotobiorreactores."); return; }
-        HelixTower h = TreeSpec.Helix;
-        Transform root = new GameObject(FotobioSpec.RootName).transform;
+
+        Transform root = new GameObject(index == 0 ? FotobioSpec.RootName : FotobioSpec.SecondRootName).transform;
         root.SetParent(tree, false);
 
         var tubes = new List<(Vector3 a, Vector3 b, float r)>();
@@ -70,7 +78,7 @@ public static partial class SampleSceneBuilder
         }
 
         // ── RAMAS: una quilla de paneles planos bajo el tramo largo de cada rama ──
-        for (int k = 1; k <= TreeSpec.Platforms; k++)
+        for (int k = 1; keels && k <= TreeSpec.Platforms; k++)
         {
             var (lv, side, tip) = TreeSpec.Platform(k);
             if (!tip) continue;
@@ -104,26 +112,36 @@ public static partial class SampleSceneBuilder
         var pv = new List<Vector3>(); var pt = new List<int>(); FotobioBoxes(pv, pt, pumps); FotobioPiece(root, "Fotobio_bombas", pv, pt, FotobioPump);
 
         // ── CUADRO DE CONTROL al pie (cara a, entre los nervios de −7,3 y −3,7 m: lejos de la puerta del suelo, en x = 5) ──
-        Quaternion q0 = HelixTower.SideRot(TreeSpec.GroundSide);
-        Transform panel = KitchenProps.C(root, HelixTower.FromSide(TreeSpec.GroundSide, new Vector3(-5.5f, 1.6f, h.OuterHalf + 0.2f)), new Vector3(1.2f, 1.6f, 0.4f), FotobioPump, q0, "Cuadro_fotobio");
-        Label(panel, FotobioSpec.Title, 1.3f);
+        // (en una torre, la cara de su puerta del suelo; x = −5,5 queda lejos de la puerta, en x = 5)
+        Quaternion q0 = HelixTower.SideRot(groundSide);
+        Transform panel = KitchenProps.C(root, HelixTower.FromSide(groundSide, new Vector3(-5.5f, 1.6f, h.OuterHalf + 0.2f)), new Vector3(1.2f, 1.6f, 0.4f), FotobioPump, q0, "Cuadro_fotobio");
+        Label(panel, index == 0 ? FotobioSpec.Title : $"{FotobioSpec.Title} (torre de {building})", 1.3f);
 
         FotobioFacade fb = root.gameObject.AddComponent<FotobioFacade>();
+        fb.index = index; fb.building = building; fb.groundSide = groundSide;
+        fb.trunk = h;
         fb.trunkModules = modules; fb.keelPanels = panels;
         fb.areaM2 = modules * FotobioSpec.ModuleArea + panels * FotobioSpec.KeelPanelArea;
         fb.liters = modules * FotobioSpec.ModuleArea * FotobioSpec.TubeLitersPerM2 + panels * FotobioSpec.KeelPanelArea * FotobioSpec.KeelThick * 1000f;
+        // Sus LED, en el balance de energía (potencia MEDIA del año; EnsureFloorEnergy lo repite al validar).
+        FloorEnergy.DeclareFloor(root.gameObject, FotobioEnergyName(fb), 0f, 0f, FotobioSpec.LedMeanKW(fb.areaM2));
 
         // ── EL TRONCO AGUANTA LA FACHADA ──
-        StructuralLimits.RootReport rep = FotobioSpec.Structure(h, out float mn, out float km);
-        string what = $"fachada {mn:0.00} MN ({FotobioSpec.TrunkTonnes:0} t en el tronco, {FotobioSpec.KeelTonnes:0.0} t por quilla, {km:0.0} MN·m en cada rama) → {rep}";
-        if (rep.Fail) Debug.LogError($"[Estructura] El tronco no aguanta la fachada de fotobiorreactores: {what}.");
-        else if (rep.Warn) Debug.LogWarning($"[Estructura] Con la fachada de fotobiorreactores el tronco va justo: {what}.");
-        else Debug.Log($"[Estructura] Tronco con la fachada de fotobiorreactores: {what}.");
+        float mn, km = 0f;
+        StructuralLimits.RootReport rep = keels ? FotobioSpec.Structure(h, out mn, out km) : FotobioSpec.TowerStructure(h, out mn);
+        string what = $"fachada {mn:0.00} MN ({FotobioSpec.TrunkTonnes:0} t en el tronco" + (keels ? $", {FotobioSpec.KeelTonnes:0.0} t por quilla, {km:0.0} MN·m en cada rama" : "") + $") → {rep}";
+        if (rep.Fail) Debug.LogError($"[Estructura] El tronco de «{building}» no aguanta la fachada de fotobiorreactores: {what}.");
+        else if (rep.Warn) Debug.LogWarning($"[Estructura] Con la fachada de fotobiorreactores el tronco de «{building}» va justo: {what}.");
+        else Debug.Log($"[Estructura] Tronco de «{building}» con la fachada de fotobiorreactores: {what}.");
         float o2 = FotobioSpec.O2KgDay(fb.areaM2);
-        Debug.Log($"[Fotobio] Fachada: {modules} módulos de tubos en el tronco ({FotobioSpec.TrunkBottom:0.0}–{FotobioSpec.TrunkTop:0} m) y {panels} paneles en {branches} ramas: " +
+        Debug.Log($"[Fotobio] Fachada {index + 1} («{building}»): {modules} módulos de tubos en el tronco ({FotobioSpec.TrunkBottom:0.0}–{FotobioSpec.TrunkTop:0} m) y {panels} paneles en {branches} ramas: " +
                   $"{fb.areaM2:0} m², {fb.liters / 1000f:0.0} m³ de cultivo; a pleno rendimiento {FotobioSpec.BiomassKgDay(fb.areaM2):0.0} kg de espirulina y {o2:0.0} kg de O₂ al día " +
-                  $"({o2 / FotobioSpec.O2PerPerson:0.0} personas); LED {FotobioSpec.LedKW(fb.areaM2):0} kW ({FotobioSpec.LedPPFD(fb.areaM2):0} µmol/m²/s) en la noche polar.");
+                  $"({o2 / FotobioSpec.O2PerPerson:0.0} personas); LED {FotobioSpec.LedKW(fb.areaM2):0} kW ({FotobioSpec.LedPPFD(fb.areaM2):0} µmol/m²/s) en la noche polar, " +
+                  $"{FotobioSpec.LedMeanKW(fb.areaM2):0} kW de media en el año ({FotobioSpec.LedMeanFraction() * 100f:0} %).");
     }
+
+    /// <summary>El nombre de la fachada en el balance de energía.</summary>
+    static string FotobioEnergyName(FotobioFacade fb) => $"Fotobiorreactores: LED de la fachada {(fb.index == 0 ? "del Árbol" : $"de {fb.building}")}";
 
     static void FotobioPiece(Transform root, string name, List<Vector3> v, List<int> t, Color c)
     {
