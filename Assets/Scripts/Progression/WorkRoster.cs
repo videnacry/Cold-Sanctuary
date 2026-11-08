@@ -618,7 +618,10 @@ public class WorkRoster
             if (w.name == "Player" && FruitGardener.IsRound(m.id)) continue;   // (2026-11-05) la ronda de frutales la hace la conducta FruitGardener, que no mueve al jugador: con Kushal, ese día se quedaba sin hacer
             if (best == null) { best = m; continue; }
             int cm = w.Count(m.id), cb = w.Count(best.id);
-            if (cm < cb || (cm == cb && w.Last(m.id) < w.Last(best.id))) best = m;
+            // (2026-11-08) Con el reparto por santuarios, a igualdad, la MÁS LARGA primero: las franjas son de 2, 2 y 1 h, y con la de 1 h delante
+            // no cabían dos de 2 h (salía un clon con horas de sobra). Una persona encadena así todas las tareas de su área si le caben.
+            int lm = w.Last(m.id), lb = w.Last(best.id);
+            if (cm < cb || (cm == cb && lm < lb) || (sanctuaryModel && cm == cb && lm == lb && m.hours > best.hours + 1e-4f)) best = m;
         }
         return best;
     }

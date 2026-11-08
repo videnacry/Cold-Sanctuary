@@ -212,7 +212,7 @@ public static class AreaFunctions
         _prefixEffects.Add((HunterCell.DrillId, (id, who) => HunterCell.Instance?.Drill(who)));
         _prefixEffects.Add((HunterCell.RecaptureId, (id, who) => HunterCell.Instance?.Recapture(who)));
         _prefixEffects.Add(("obra_material_", (id, who) => Obra(id.Substring(14), who, material: true)));
-        _prefixEffects.Add(("obra_trabajo_", (id, who) => Obra(id.Substring(13), who, material: false)));
+        _prefixEffects.Add(("obra_trabajo_", (id, who) => Obra(id.Substring(13), who, material: false, shift: ConstructionProject.ShiftOf(id))));
         _prefixEffects.Add(("prep_", (id, who) => KitchenLarder.Instance?.StartPrep(id.Substring(5), who)));
 
         // ══ FUNCIONES DE LOS MICROCOSMOS (eras civilizadas): las que el santuario no tiene ══
@@ -298,11 +298,11 @@ public static class AreaFunctions
 
     static CulturedMeatLab Lab() => CulturedMeatLab.All.Count > 0 ? CulturedMeatLab.All[0] : null;
 
-    static void Obra(string title, string who, bool material)
+    static void Obra(string title, string who, bool material, string shift = null)
     {
         int hash = title.LastIndexOf('#'); if (hash > 0) title = title.Substring(0, hash);   // «…#2»: otra persona del equipo
         foreach (ConstructionProject p in ConstructionProject.All)
-            if (p.title == title) { if (material) p.DeliverMaterial(who); else p.WorkDay(who); }
+            if (p.title == title) { if (material) p.DeliverMaterial(who); else p.WorkDay(who, shift); }
     }
 
     // ── El SANTUARIO ─────────────────────────────────────────────────────────────────────────────────────────────

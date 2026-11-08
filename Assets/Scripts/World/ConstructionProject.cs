@@ -287,14 +287,21 @@ public class ConstructionProject : MonoBehaviour
     /// <summary>Misión «Trabajar la obra»: <paramref name="who"/> trabaja su turno. Cuando ha trabajado todo el equipo del día
     /// (<see cref="crewNeeded"/> personas distintas) se gasta el material del día y la obra avanza un día. Devuelve true al
     /// terminarla.</summary>
-    public bool WorkDay(string who)
+    public bool WorkDay(string who) => WorkDay(who, null);
+
+    /// <summary>El TURNO de una misión de equipo: «obra_trabajo_X» es el #1; «obra_trabajo_X#3», el #3 (Berón 2026-11-08: el día cuenta cuando se han hecho
+    /// todos los turnos del equipo, los haga quien los haga; con una sola persona, ella los encadena).</summary>
+    public static string ShiftOf(string missionId) { int h = missionId != null ? missionId.LastIndexOf('#') : -1; return h > 0 ? missionId.Substring(h) : "#1"; }
+
+    /// <summary><paramref name="shift"/>: el turno (<see cref="ShiftOf"/>); sin él, cada persona cuenta como un turno (como antes).</summary>
+    public bool WorkDay(string who, string shift)
     {
         if (Finished) return false;
         EndShift(who);
         if (!materialOnSite) { Debug.Log($"[Obra] {who} no puede avanzar «{title}»: falta el material del día."); return false; }
         int day = TimeController.timeController != null ? TimeController.timeController.Day : 0;
         if (day != _crewDay) { _crewDay = day; _crewToday.Clear(); }
-        _crewToday.Add(who ?? "?");
+        _crewToday.Add(shift ?? who ?? "?");   // (los turnos del equipo, no las personas: una persona puede hacer varios)
         if (_crewToday.Count < crewNeeded) { Debug.Log($"[Obra] {who} trabaja en «{title}»: {_crewToday.Count}/{crewNeeded} del equipo de hoy."); Refresh(); return false; }
         _crewToday.Clear(); _crewDay = int.MinValue;   // (un día de obra por equipo completo, aunque caiga en el mismo día de juego)
         string stage = CurrentStageName;

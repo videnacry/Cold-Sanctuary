@@ -171,6 +171,35 @@ public class RepartoSantuariosTest : MonoBehaviour, ITestUnit
         WorkRoster.DayPlan py = nobody.Plan(0, yoga);
         TestProbe.Check("el yoga de varios pisos: sus horas juntas y un solo clon", py.clones.Count == 1 && py.hoursByArea.Count == 1 && Mathf.Approximately(py.hoursByArea["Sala de Yoga"], 4f) && py.quota["Sala de Yoga"] == 1, $"{py.clones.Count} clones · {string.Join(", ", py.hoursByArea.Select(kv => $"{kv.Key} {kv.Value} h"))}");
 
+        // VARIAS TAREAS A LA VEZ EN UN ÁREA (Berón 2026-11-08; docs/tareas-por-area.md): con varias personas se reparten; con una, las encadena
+        // todas, sin un clon por puesto. El clon, solo si las horas del área pasan de lo que cubren sus humanos.
+        string[] posts = { "coc_caja", "coc_comanda", "coc_cocinar", "coc_servir", "coc_limpiar" };
+        List<WorkRoster.Mission> Restaurant() => posts.Select(id => new WorkRoster.Mission("Cocina", id, id, 1f, true)).ToList();
+        WorkRoster one = Roster(("Uno", 0));
+        WorkRoster.DayPlan p1 = one.Plan(0, Restaurant());
+        TestProbe.Check("restaurante con una persona: hace los 5 puestos seguidos, sin clones", p1.Of(one.Find("Uno")).Count() == 5 && p1.clones.Count == 0 && p1.backlog.Count == 0, $"{p1.Of(one.Find("Uno")).Count()} tareas, {p1.clones.Count} clones");
+        WorkRoster two = Roster(("Dos0", 0), ("Dos1", 0));
+        WorkRoster.DayPlan p2 = two.Plan(0, Restaurant());
+        TestProbe.Check("con dos, se los reparten (3 y 2), sin clones", two.workers.All(w => p2.Of(w).Any()) && Even(p2, two.workers, 1f) && p2.clones.Count == 0);
+        var cls = new[] { "yog_guia", "yog_demo", "yog_corrige_1", "yog_corrige_2" }.Select(id => new WorkRoster.Mission("Sala de Yoga", id, id, 1f, true) { group = "clase_yoga" }).ToList();
+        WorkRoster yogi = Roster(("Yogi", 0));
+        WorkRoster.DayPlan py1 = yogi.Plan(0, cls);
+        TestProbe.Check("la clase de yoga (4 papeles a la vez) con una persona: los hace todos, sin un clon por papel", py1.Of(yogi.Find("Yogi")).Count() == 4 && py1.clones.Count == 0);
+        WorkRoster over = Roster(("Sobra", 0));
+        var seven = Restaurant(); seven.AddRange(Ms("Cocina", "coc_extra", 2));
+        WorkRoster.DayPlan p7 = over.Plan(0, seven);
+        TestProbe.Check("7 h para una persona: ella 5 h y un clon las 2 que pasan", Mathf.Approximately(Worked(p7, over.Find("Sobra")), 5f) && p7.clones.Count == 1 && p7.backlog.Count == 0);
+        // (las franjas nuevas son de 2, 2 y 1 h: con la de 1 h primero no cabían las dos de 2 y salía un clon con horas de sobra)
+        var fit = new WorkRoster { sanctuaryModel = true, initiationModel = true, useProfessions = false };
+        fit.areas.Add("Cocina"); fit.trainingAreas.Add("Sala de Yoga");
+        WorkRoster.Worker fw = fit.Add("Encaja");
+        var fitDay = new List<WorkRoster.Mission> { new WorkRoster.Mission("Cocina", "coc_corta", "Corta", 1f, true), new WorkRoster.Mission("Cocina", "coc_larga1", "Larga 1", 2f, true), new WorkRoster.Mission("Cocina", "coc_larga2", "Larga 2", 2f, true) };
+        foreach (var fm in fitDay) fw.taught.Add(MissionRequirements.KnowledgeKey(fm.id));
+        fw.taught.Add(WorkRoster.InstructSkill);
+        WorkRoster.DayPlan pfit = fit.Plan(0, fitDay);
+        TestProbe.Check("5 h justas (1 + 2 + 2) para una persona: caben todas, sin clon", Mathf.Approximately(Worked(pfit, fw), 5f) && pfit.clones.Count == 0, string.Join(" · ", pfit.work.Select(a => $"{a.worker.name} {a.start:0.#} {a.mission.id}")));
+        TestProbe.Check("la obra cuenta turnos, no personas: uno puede hacer los tres del equipo", ConstructionProject.ShiftOf("obra_trabajo_Sala de Ballet") == "#1" && ConstructionProject.ShiftOf("obra_trabajo_Sala de Ballet#3") == "#3");
+
         // ── 4. Cambia cada día y con los datos ──
         WorkRoster six = Roster(("P0", 2), ("P1", 2), ("P2", 2), ("P3", 2), ("P4", 2), ("P5", 2));
         bool differs = true;
