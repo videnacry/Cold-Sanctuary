@@ -641,7 +641,7 @@ public class LeisureDirector : MonoBehaviour
                         // siguiente, y contaba decenas de «saltos» de ida y vuelta)
                         // (Lo que hace falta para saber qué lo frena: la llegada, el estado del camino, si pisa el NavMesh y dónde se paró.)
                         var nag = g.GetComponent<UnityEngine.AI.NavMeshAgent>();
-                        Debug.LogWarning($"[Horario] Atasco de «{g.name}»: en {g.transform.position}, destino {r.to}, alcanzable {r.reachable}, andados {r.walked:0} m, agente {(nag == null ? "ninguno" : !nag.enabled ? "apagado" : !nag.isOnNavMesh ? "fuera del NavMesh" : $"camino {nag.pathStatus}, destino del agente {nag.destination}, queda {nag.remainingDistance:0.0} m, {nag.path.corners.Length} esquinas, velocidad {nag.velocity.magnitude:0.0}")}.");
+                        Debug.LogWarning($"[Horario] Atasco de «{g.name}»: en {g.transform.position}, destino {r.to}, alcanzable {r.reachable}, andados {r.walked:0} m, agente {(nag == null ? "ninguno" : !nag.enabled ? "apagado" : !nag.isOnNavMesh ? "fuera del NavMesh" : $"camino {nag.pathStatus}, destino del agente {nag.destination}, queda {nag.remainingDistance:0.0} m, {nag.path.corners.Length} esquinas, velocidad {nag.velocity.magnitude:0.0}, agente a {(nag.nextPosition - g.transform.position).magnitude:0.0} m del cuerpo")}.");
                         WorkdayDirector.Teleport(g.transform, r.to); r.fallback = true; r.last = g.transform.position;
                         Debug.LogWarning($"[Horario] «{g.name}» no llega andando en {r.allowed:0} s a «{r.venue.title}»: se le pone allí.");
                     }
