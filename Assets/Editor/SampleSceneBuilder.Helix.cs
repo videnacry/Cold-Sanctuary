@@ -714,8 +714,11 @@ public static partial class SampleSceneBuilder
         {
             string n = t.name;
             if (n.StartsWith("Agua") || n == "Campo_magnetico" || n == "Cascada" || n == "Exoesqueleto" || n.StartsWith("Rama_") || n.StartsWith("Campana_rama_")
-                || n == "Nervio_rama" || n.StartsWith("Tornapunta") || n == "Tapa_raiz" || n == "Cartel_raiz" || n == "Encepado_raiz" || n == "Fondo_raiz" || n == "Pared_raiz" || n == "Campana_techo" || n == "Perchero_mascaras" || n == "Estacion_mascaras")
+                || n == "Nervio_rama" || n.StartsWith("Tornapunta") || n == "Tapa_raiz" || n == "Cartel_raiz" || n == "Encepado_raiz" || n == "Fondo_raiz" || n == "Campana_techo" || n == "Perchero_mascaras" || n == "Estacion_mascaras")
                 t.gameObject.GetOrAdd<Unity.AI.Navigation.NavMeshModifier>().ignoreFromBuild = true;
+            // LA PARED DE LA RAÍZ corta el NavMesh (no se ignora): ignorada, el NavMesh del suelo la atravesaba y los animales iban por dentro
+            // del cristal (ronda 26: el reno y antes el buey, «dentro de Pared_raiz»). No andable ni ella ni su canto; por las puertas, sí.
+            if (n == "Pared_raiz") { var mod = t.gameObject.GetOrAdd<Unity.AI.Navigation.NavMeshModifier>(); mod.ignoreFromBuild = false; mod.overrideArea = true; mod.area = 1; }
         }
     }
 
