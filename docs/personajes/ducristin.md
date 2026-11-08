@@ -29,13 +29,13 @@
 
 ## 5. Profesión y lo que sabe hacer
 
-- Gerente de banca y profesor. *documentada · Berón 2026-11-04 · [personajes-mesocosmos.md §Profesiones y parejas](../personajes-mesocosmos.md) · [Professions.cs:130](../../Assets/Scripts/Progression/Professions.cs#L130)*
+- Gerente de banca y profesor. *documentada · Berón 2026-11-04 · [personajes-mesocosmos.md §Profesiones y parejas](../personajes-mesocosmos.md) · [Professions.cs:133](../../Assets/Scripts/Progression/Professions.cs#L133)*
 - En el reparto provisional llevó la mecánica (de Elon Musk). Hoy la lleva Fausto. *inventada · [personajes-mesocosmos.md §Reparto de papeles](../personajes-mesocosmos.md)*
 - Qué enseña como profesor: **Falta**.
 
 ## 6. Puesto y áreas
 
-- No hay banco: lleva las finanzas en la mesa de cuentas del restaurante (`coc_cuentas`) y da clase en el Aula (`aul_clase`). *recreada · [Professions.cs:59](../../Assets/Scripts/Progression/Professions.cs#L59) · [personajes-mesocosmos.md §Por qué así](../personajes-mesocosmos.md)*
+- No hay banco: lleva las finanzas en la mesa de cuentas del restaurante (`coc_cuentas`) y da clase en el Aula (`aul_clase`). *recreada · [Professions.cs:61](../../Assets/Scripts/Progression/Professions.cs#L61) · [personajes-mesocosmos.md §Por qué así](../personajes-mesocosmos.md)*
 - Sale en el Aula. *código · [SanctuaryDirector.cs:172](../../Assets/Scripts/World/SanctuaryDirector.cs#L172) · [SampleSceneBuilder.Construction.cs:177](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L177)*
 - Viste siempre su ropa de trabajo en el juego: el cuerpo se viste una vez al construirse. *código · [personajes-mesocosmos.md §Lale, Yulo, Malena y las fotos](../personajes-mesocosmos.md)*
 
@@ -62,7 +62,7 @@
 |---|---|
 | Datos (rótulo, ropa, stats) | [SampleSceneBuilder.Construction.cs:203](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L203) |
 | Aspecto (trabajo e informal) | [CubeHair.cs:203](../../Assets/Scripts/Avatar/CubeHair.cs#L203) · [CubeHair.cs:206](../../Assets/Scripts/Avatar/CubeHair.cs#L206) |
-| Profesión y base | [Professions.cs:59](../../Assets/Scripts/Progression/Professions.cs#L59) · [Professions.cs:130](../../Assets/Scripts/Progression/Professions.cs#L130) |
+| Profesión y base | [Professions.cs:61](../../Assets/Scripts/Progression/Professions.cs#L61) · [Professions.cs:133](../../Assets/Scripts/Progression/Professions.cs#L133) |
 | Gimnasio | [GymProgramming.cs:214](../../Assets/Scripts/Progression/GymProgramming.cs#L214) |
 | Casa, pareja e hijo | [ResidentialBuilder.cs:22](../../Assets/Editor/ResidentialBuilder.cs#L22) · [ResidentialBuilder.cs:43](../../Assets/Editor/ResidentialBuilder.cs#L43) · [ResidentialBuilder.cs:49](../../Assets/Editor/ResidentialBuilder.cs#L49) |
 

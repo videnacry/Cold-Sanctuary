@@ -29,7 +29,7 @@
 
 ## 5. Profesión y lo que sabe hacer
 
-- **Sin profesión**: hace la rotación general. *código · [Professions.cs:148](../../Assets/Scripts/Progression/Professions.cs#L148) · [reglas-personajes.md §Auditoría de puestos](../reglas-personajes.md)*
+- **Sin profesión**: hace la rotación general. *código · [Professions.cs:150](../../Assets/Scripts/Progression/Professions.cs#L150) · [reglas-personajes.md §Auditoría de puestos](../reglas-personajes.md)*
 
 ## 6. Puesto y áreas
 
@@ -58,7 +58,7 @@
 |---|---|
 | Cuerpo y stats | [SampleSceneBuilder.Construction.cs:208](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L208) |
 | Aspecto | [CubeHair.cs:228](../../Assets/Scripts/Avatar/CubeHair.cs#L228) |
-| Sin profesión | [Professions.cs:148](../../Assets/Scripts/Progression/Professions.cs#L148) |
+| Sin profesión | [Professions.cs:150](../../Assets/Scripts/Progression/Professions.cs#L150) |
 | Personal | [WorkdayDirector.cs:21](../../Assets/Scripts/Progression/WorkdayDirector.cs#L21) |
 | Dónde sale | [SampleSceneBuilder.Construction.cs:190](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L190) |
 | Madre de Neo | [SampleSceneBuilder.cs:3072](../../Assets/Editor/SampleSceneBuilder.cs#L3072) |

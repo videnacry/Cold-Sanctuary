@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// GOLUIS, el JEFE de la cocina (docs/kitchen-simulation.md). Como Linduarda con la salud y la Magnate con el yoga, su
+/// GOLUIS, el ENCARGADO de la cocina (Berón 2026-11-08; los rangos más altos son Maite y Amykhuz; docs/kitchen-simulation.md). Como Linduarda con la salud y la Magnate con el yoga, su
 /// **pensamiento custom** es INICIAR a los recién llegados en la cocina: a quien la Magnate ya presentó, le lanza «sígueme»
 /// (<see cref="FollowSpell"/>), lo trae a la cocina y le ENSEÑA —por <see cref="TeachSpell"/>, respetando requisitos
 /// (primero limpiar, luego las recetas)— lo que él sabe (es omnisciente de cocina: `Grimoire.knowsAll`). "Conocer = poder

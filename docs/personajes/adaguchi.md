@@ -27,12 +27,12 @@
 
 ## 5. Profesión y lo que sabe hacer
 
-- Profesional de **submarinismo** (submarino de obra, ambulancia, tareas bajo el agua) y de **cocina**. *documentada (Berón 2026-11-04) · [personajes-mesocosmos.md §Profesiones y parejas](../personajes-mesocosmos.md) · [Professions.cs:127](../../Assets/Scripts/Progression/Professions.cs#L127)*
-- Que su profesión cubra **toda el área de Construcción** (porque los submarinos salen de allí). *inventada (deducido, sin confirmar) · [Professions.cs:154](../../Assets/Scripts/Progression/Professions.cs#L154) · [reglas-personajes.md §Auditoría de puestos](../reglas-personajes.md)*
+- Profesional de **submarinismo** (submarino de obra, ambulancia, tareas bajo el agua) y de **cocina**. *documentada (Berón 2026-11-04) · [personajes-mesocosmos.md §Profesiones y parejas](../personajes-mesocosmos.md) · [Professions.cs:130](../../Assets/Scripts/Progression/Professions.cs#L130)*
+- Que su profesión cubra **toda el área de Construcción** (porque los submarinos salen de allí). *inventada (deducido, sin confirmar) · [Professions.cs:156](../../Assets/Scripts/Progression/Professions.cs#L156) · [reglas-personajes.md §Auditoría de puestos](../reglas-personajes.md)*
 
 ## 6. Puesto y áreas
 
-- Construcción y Cocina. *recreada · [Professions.cs:53](../../Assets/Scripts/Progression/Professions.cs#L53)*
+- Construcción y Cocina. *recreada · [Professions.cs:55](../../Assets/Scripts/Progression/Professions.cs#L55)*
 - Sale en Construcción. *recreada · [SanctuaryDirector.cs:171](../../Assets/Scripts/World/SanctuaryDirector.cs#L171) · [SampleSceneBuilder.Construction.cs:175](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L175)*
 - En la prueba del restaurante trabaja en el obrador. *recreada · [personajes-mesocosmos.md §La jornada (regla W9)](../personajes-mesocosmos.md)*
 
@@ -58,7 +58,7 @@
 |---|---|
 | Cuerpo y stats | [SampleSceneBuilder.Construction.cs:207](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L207) |
 | Aspecto | [CubeHair.cs:218](../../Assets/Scripts/Avatar/CubeHair.cs#L218) |
-| Profesión y base | [Professions.cs:53](../../Assets/Scripts/Progression/Professions.cs#L53) · [Professions.cs:127](../../Assets/Scripts/Progression/Professions.cs#L127) · [Professions.cs:154](../../Assets/Scripts/Progression/Professions.cs#L154) |
+| Profesión y base | [Professions.cs:55](../../Assets/Scripts/Progression/Professions.cs#L55) · [Professions.cs:130](../../Assets/Scripts/Progression/Professions.cs#L130) · [Professions.cs:156](../../Assets/Scripts/Progression/Professions.cs#L156) |
 | Personal | [WorkdayDirector.cs:20](../../Assets/Scripts/Progression/WorkdayDirector.cs#L20) |
 | Área de salida | [SanctuaryDirector.cs:171](../../Assets/Scripts/World/SanctuaryDirector.cs#L171) · [SampleSceneBuilder.Construction.cs:175](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L175) |
 | Gimnasio | [GymProgramming.cs:218](../../Assets/Scripts/Progression/GymProgramming.cs#L218) |

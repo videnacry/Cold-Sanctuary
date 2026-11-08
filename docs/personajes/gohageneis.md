@@ -37,15 +37,15 @@
 
 ## 5. Profesión y lo que sabe hacer
 
-- Guardia y maestro de baile. *documentada · Berón 2026-11-04 · [personajes-mesocosmos.md §Profesiones y parejas](../personajes-mesocosmos.md) · [Professions.cs:120](../../Assets/Scripts/Progression/Professions.cs#L120)*
-- Artes marciales: **sin base de Berón**. Salió del reparto provisional al irse Goku («ágil y atlético, y ya es de la Guardia»). La experta documentada es Luciana. *inventada · [Professions.cs:146](../../Assets/Scripts/Progression/Professions.cs#L146) · [reglas-personajes.md §Auditoría de puestos](../reglas-personajes.md)*
+- Guardia y maestro de baile. *documentada · Berón 2026-11-04 · [personajes-mesocosmos.md §Profesiones y parejas](../personajes-mesocosmos.md) · [Professions.cs:122](../../Assets/Scripts/Progression/Professions.cs#L122)*
+- Artes marciales: **sin base de Berón**. Salió del reparto provisional al irse Goku («ágil y atlético, y ya es de la Guardia»). La experta documentada es Luciana. *inventada · [Professions.cs:149](../../Assets/Scripts/Progression/Professions.cs#L149) · [reglas-personajes.md §Auditoría de puestos](../reglas-personajes.md)*
 - Por su vida sabe de mudanzas, ventas, bar, conducir, cocina, limpieza y construcción. *documentada (ficha) · [creature-stats.md §Gohageneis](../creature-stats.md)*. El juego no usa nada de eso.
 
 ## 6. Puesto y áreas
 
 - Profesión en el código: «guardia, artes marciales y maestro de baile»; áreas Guardia y Sala de guardia. *código · [Professions.cs:40](../../Assets/Scripts/Progression/Professions.cs#L40) · [sala-de-guardia.md](../sala-de-guardia.md)*
 - Patrulla (`CarnivoreKeeper`) sin área fija: no está en `HomeArea`. *código · [SampleSceneBuilder.cs:3303](../../Assets/Editor/SampleSceneBuilder.cs#L3303) · [SanctuaryDirector.cs:160](../../Assets/Scripts/World/SanctuaryDirector.cs#L160)*
-- Baile: se turna por días con Panterilia. Artes marciales: con Luciana, los días contrarios. *código · [Professions.cs:86](../../Assets/Scripts/Progression/Professions.cs#L86) · [personajes-mesocosmos.md §Maestros de baile](../personajes-mesocosmos.md)*
+- Baile: se turna por días con Panterilia. Artes marciales: con Luciana, los días contrarios. *código · [Professions.cs:88](../../Assets/Scripts/Progression/Professions.cs#L88) · [personajes-mesocosmos.md §Maestros de baile](../personajes-mesocosmos.md)*
 - En la brigada de la prueba del restaurante va en el pase; su cuerpo es el del camarero con turistas. *código · [RestaurantServiceTest.cs:40](../../Assets/Scripts/Tests/RestaurantServiceTest.cs#L40) · [RestaurantServiceGame.cs:28](../../Assets/Scripts/Kitchen/RestaurantServiceGame.cs#L28)*
 
 ## 7. Relaciones
@@ -75,7 +75,7 @@
 | Arquetipo | [Archetypes.cs:140](../../Assets/Scripts/Soul/Archetypes.cs#L140) · [Archetypes.cs:174](../../Assets/Scripts/Soul/Archetypes.cs#L174) |
 | Vivencias | [PhrasePools.cs:57](../../Assets/Scripts/Mind/PhrasePools.cs#L57) |
 | Aspecto | [CubeHair.cs:256](../../Assets/Scripts/Avatar/CubeHair.cs#L256) |
-| Profesión, base y clases | [Professions.cs:40](../../Assets/Scripts/Progression/Professions.cs#L40) · [Professions.cs:86](../../Assets/Scripts/Progression/Professions.cs#L86) · [Professions.cs:120](../../Assets/Scripts/Progression/Professions.cs#L120) |
+| Profesión, base y clases | [Professions.cs:40](../../Assets/Scripts/Progression/Professions.cs#L40) · [Professions.cs:88](../../Assets/Scripts/Progression/Professions.cs#L88) · [Professions.cs:122](../../Assets/Scripts/Progression/Professions.cs#L122) |
 | Gimnasio | [GymProgramming.cs:206](../../Assets/Scripts/Progression/GymProgramming.cs#L206) |
 | Personal y casa | [WorkdayDirector.cs:19](../../Assets/Scripts/Progression/WorkdayDirector.cs#L19) · [ResidentialBuilder.cs:16](../../Assets/Editor/ResidentialBuilder.cs#L16) |
 

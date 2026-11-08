@@ -28,7 +28,7 @@
 
 ## 5. Profesión y lo que sabe hacer
 
-- Profesional de cocina y química; jefe de cocina con Maite; hoy los dos tienen los rangos más altos de la cocina y Goluis es el encargado (Berón 2026-11-08). *documentada · Berón 2026-11-04 y 2026-11-08 · [personajes-mesocosmos.md §Profesiones y parejas](../personajes-mesocosmos.md) · [Professions.cs:125](../../Assets/Scripts/Progression/Professions.cs#L125)*
+- Profesional de cocina y química; jefe de cocina con Maite; hoy los dos tienen los rangos más altos de la cocina y Goluis es el encargado (Berón 2026-11-08). *documentada · Berón 2026-11-04 y 2026-11-08 · [personajes-mesocosmos.md §Profesiones y parejas](../personajes-mesocosmos.md) · [Professions.cs:127](../../Assets/Scripts/Progression/Professions.cs#L127)*
 
 ## 6. Puesto y áreas
 
@@ -60,7 +60,7 @@
 | Datos (rótulo, ropa, stats) | [SampleSceneBuilder.Construction.cs:200](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L200) |
 | Nombre viejo | [WorkdayDirector.cs:79](../../Assets/Scripts/Progression/WorkdayDirector.cs#L79) (`LegacyIds`) |
 | Aspecto | [CubeHair.cs:194](../../Assets/Scripts/Avatar/CubeHair.cs#L194) |
-| Profesión y base | [Professions.cs:48](../../Assets/Scripts/Progression/Professions.cs#L48) · [Professions.cs:125](../../Assets/Scripts/Progression/Professions.cs#L125) |
+| Profesión y base | [Professions.cs:48](../../Assets/Scripts/Progression/Professions.cs#L48) · [Professions.cs:127](../../Assets/Scripts/Progression/Professions.cs#L127) |
 | Gimnasio | [GymProgramming.cs:211](../../Assets/Scripts/Progression/GymProgramming.cs#L211) |
 | Casa y pareja | [ResidentialBuilder.cs:22](../../Assets/Editor/ResidentialBuilder.cs#L22) · [ResidentialBuilder.cs:40](../../Assets/Editor/ResidentialBuilder.cs#L40) |
 

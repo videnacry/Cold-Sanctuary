@@ -139,7 +139,7 @@ public static partial class SampleSceneBuilder
         new GameObject("AnimaNameplate_AUTO").AddComponent<AnimaNameplate>().transform.SetParent(root.transform);  // ETIQUETAS de nombre sobre las animas (para dirigir hechizos por teclado) — docs typed-spells-and-queues
         BuildAnimaStatusPanels(root.transform);  // HUD DECLARATIVO generado por CÓDIGO (paneles-GameObject por elemento) — demuestra prefabs-por-código
         BuildRestaurantSandbox(root.transform);  // RESTAURANTE jugable (cocinar platillos para todos → stock → XP + inventario). docs/kitchen-simulation.md
-        BuildGoluisKitchen(root.transform);      // GOLUIS, jefe de cocina: inicia a los recién llegados (sígueme→limpiar→recetas). docs/kitchen-simulation.md
+        BuildGoluisKitchen(root.transform);      // GOLUIS, encargado de cocina: inicia a los recién llegados (sígueme→limpiar→recetas). docs/kitchen-simulation.md
         BuildMagnate(root.transform);            // LA MAGNATE: maestra-guardiana (estado infinito; pacifica; enseña yoga al rezagado). docs/anyma-factory-and-control.md
         BuildLinduarda(root.transform);          // LINDUARDA (enfermería): guardiana de salud emergente (status→vacuna/analiza al que tenga HealthRecord false, p.ej. Kushal)
         BuildPatrolPosts(root.transform);          // los puestos de vigía de la patrulla
@@ -2780,13 +2780,13 @@ public static partial class SampleSceneBuilder
     // GOLUIS en la cocina: jefe que inicia a los recién llegados (los hace seguirlo y les enseña limpiar + recetas base).
     static void BuildGoluisKitchen(Transform parent)
     {
-        // Un solo Goluis: el personaje (con alma, mente y ánimo) es también el jefe de cocina. Antes había otro Goluis
+        // Un solo Goluis: el personaje (con alma, mente y ánimo) es también el encargado de cocina. Antes había otro Goluis
         // (una cápsula) solo para la cocina: dos humanos con el mismo nombre.
         GameObject g = GameObject.Find("Goluis_Post");
-        if (g == null) { Debug.LogWarning("[Cocina] sin Goluis_Post: la cocina se queda sin jefe."); return; }
+        if (g == null) { Debug.LogWarning("[Cocina] sin Goluis_Post: la cocina se queda sin encargado."); return; }
         if (g.GetComponent<KitchenBoss>() == null) g.AddComponent<KitchenBoss>();
         WorldLabel wl = g.GetOrAdd<WorldLabel>();
-        wl.text = "Goluis (jefe de cocina)";
+        wl.text = "Goluis (encargado de cocina)";   // (Berón 2026-11-08: encargado; los rangos más altos de la cocina son Maite y Amykhuz)
     }
 
     // LA MAGNATE en el santuario: cápsula visual + Anima + Mind("Magnate") + Magnate (estado infinito/guardiana).

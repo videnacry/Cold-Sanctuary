@@ -26,7 +26,7 @@
 
 ## 5. Profesión y lo que sabe hacer
 
-- **Instala y repara paneles solares**; Berón pidió añadir la instalación y el mantenimiento a la jornada. *documentada (Berón 2026-11-05) · [Professions.cs:118](../../Assets/Scripts/Progression/Professions.cs#L118) · memoria de Berón, sanctuary-2026-11-05-asks*
+- **Instala y repara paneles solares**; Berón pidió añadir la instalación y el mantenimiento a la jornada. *documentada (Berón 2026-11-05) · [Professions.cs:120](../../Assets/Scripts/Progression/Professions.cs#L120) · memoria de Berón, sanctuary-2026-11-05-asks*
 - En el juego: `sol_mantenimiento` (cada día, 1 h: escarcha y nieve), `sol_instalacion` (si hay mesas pendientes, 2 h) y `sol_reparacion` (si hay averías, 1 h). *recreada · [energia.md §4](../energia.md) · [EnergySite.cs:283-289](../../Assets/Scripts/World/EnergySite.cs#L283)*
 - Su profesión es **toda el área Energía**, también las revisiones del parque (`ene_`: ronda de aves, disuasión…). *inventada (ampliación nuestra, no está en `Professions.Unconfirmed`) · [Professions.cs:35-36](../../Assets/Scripts/Progression/Professions.cs#L35) · [EnergySite.cs:263](../../Assets/Scripts/World/EnergySite.cs#L263)*
 - Cómo lo hace (cepillar la escarcha, subir y apretar módulos, cambiar el roto, consola, tablet, linterna). *recreada · [actividades-y-uniformes.md §1.1](../actividades-y-uniformes.md)*
@@ -57,7 +57,7 @@
 |---|---|
 | Cuerpo y stats | [SampleSceneBuilder.Construction.cs:221](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L221) |
 | Aspecto provisional | [CubeHair.cs:243](../../Assets/Scripts/Avatar/CubeHair.cs#L243) |
-| Profesión y base | [Professions.cs:36](../../Assets/Scripts/Progression/Professions.cs#L36) · [Professions.cs:118](../../Assets/Scripts/Progression/Professions.cs#L118) |
+| Profesión y base | [Professions.cs:36](../../Assets/Scripts/Progression/Professions.cs#L36) · [Professions.cs:120](../../Assets/Scripts/Progression/Professions.cs#L120) |
 | Sus misiones | [EnergySite.cs:283](../../Assets/Scripts/World/EnergySite.cs#L283) |
 | Personal | [WorkdayDirector.cs:23](../../Assets/Scripts/Progression/WorkdayDirector.cs#L23) |
 | Dónde sale | [SanctuaryDirector.cs:178](../../Assets/Scripts/World/SanctuaryDirector.cs#L178) · [SampleSceneBuilder.Construction.cs:188](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L188) |

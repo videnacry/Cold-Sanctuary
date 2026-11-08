@@ -201,7 +201,7 @@ public static class GymProgramming
         { "Player", P(TrainingSplit.CuerpoEntero, TrainingGoal.Hipertrofia, 0.9f, "Kushal, recién llegado: principiante, cuerpo entero 3 d (ACSM: 2–3 d/sem al empezar).", 0, 2, 4) },   // ficha: docs/personajes/kushal.md
         { "Linduarda", P(TrainingSplit.EmpujeTironPierna, TrainingGoal.Hipertrofia, 0.8f, "«Deportista, gimnasio a diario»: empuje/tirón/pierna 6 d (cada músculo 2×/sem).", 0, 1, 2, 3, 4, 5) },   // ficha: docs/personajes/linduarda.md
         { "Lizmibet", P(TrainingSplit.CuerpoEntero, TrainingGoal.Salud, 0.45f, "Más de 70 años: fuerza 2 d/sem en máquinas guiadas (OMS y ACSM para mayores).", 1, 4) },   // ficha: docs/personajes/lizmibet.md
-        { "Goluis", P(TrainingSplit.TorsoPierna, TrainingGoal.Fuerza, 1.4f, "Corpulento, jefe de cocina: torso/pierna 4 d de fuerza (4–6 reps).", 0, 1, 3, 4) },   // ficha: docs/personajes/goluis.md
+        { "Goluis", P(TrainingSplit.TorsoPierna, TrainingGoal.Fuerza, 1.4f, "Corpulento, encargado de cocina: torso/pierna 4 d de fuerza (4–6 reps).", 0, 1, 3, 4) },   // ficha: docs/personajes/goluis.md
         { "Panterilia", P(TrainingSplit.CuerpoEntero, TrainingGoal.Hipertrofia, 0.75f, "Delgada, 42 años: cuerpo entero 3 d para ganar músculo.", 1, 3, 5) },   // ficha: docs/personajes/panterilia.md
         { "Gohageneis", P(TrainingSplit.EmpujeTironPierna, TrainingGoal.Fuerza, 1.1f, "Artes marciales y Guardia: fuerza en empuje/tirón/pierna 3 d (el resto, su dojo).", 0, 2, 4) },   // ficha: docs/personajes/gohageneis.md
         { "Irosene", P(TrainingSplit.CuerpoEntero, TrainingGoal.Resistencia, 0.5f, "Más de 70, corre, escala y bucea: resistencia muscular 2 d (15–20 reps).", 2, 5) },   // ficha: docs/personajes/irosene.md

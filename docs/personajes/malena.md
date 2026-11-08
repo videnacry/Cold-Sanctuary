@@ -28,8 +28,8 @@
 
 ## 5. Profesión y lo que sabe hacer
 
-- **Pediatra**. *documentada (Berón 2026-11-05) · [Professions.cs:139](../../Assets/Scripts/Progression/Professions.cs#L139)*
-- En el juego: `hos_pediatria` (consulta, vacunas y crecimiento de los niños) y las misiones `enf_` del hospital. *recreada · [Professions.cs:74](../../Assets/Scripts/Progression/Professions.cs#L74) · [AreaFunctions.cs:178](../../Assets/Scripts/Progression/AreaFunctions.cs#L178)*
+- **Pediatra**. *documentada (Berón 2026-11-05) · [Professions.cs:142](../../Assets/Scripts/Progression/Professions.cs#L142)*
+- En el juego: `hos_pediatria` (consulta, vacunas y crecimiento de los niños) y las misiones `enf_` del hospital. *recreada · [Professions.cs:76](../../Assets/Scripts/Progression/Professions.cs#L76) · [AreaFunctions.cs:178](../../Assets/Scripts/Progression/AreaFunctions.cs#L178)*
 - **No está en `Professions.Medical`** (Lizmibet, Linduarda e Ivelyna), aunque [reglas-personajes.md §Auditoría de puestos](../reglas-personajes.md) cuenta cuatro médicas con ella. El submarino-ambulancia no la busca primero. *código · [Professions.cs:26](../../Assets/Scripts/Progression/Professions.cs#L26)*
 
 ## 6. Puesto y áreas
@@ -61,7 +61,7 @@
 |---|---|
 | Cuerpo y stats | [SampleSceneBuilder.Construction.cs:218](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L218) |
 | Aspecto | [CubeHair.cs:234](../../Assets/Scripts/Avatar/CubeHair.cs#L234) |
-| Profesión y base | [Professions.cs:74](../../Assets/Scripts/Progression/Professions.cs#L74) · [Professions.cs:139](../../Assets/Scripts/Progression/Professions.cs#L139) |
+| Profesión y base | [Professions.cs:76](../../Assets/Scripts/Progression/Professions.cs#L76) · [Professions.cs:142](../../Assets/Scripts/Progression/Professions.cs#L142) |
 | Personal sanitario | [Professions.cs:26](../../Assets/Scripts/Progression/Professions.cs#L26) |
 | Personal | [WorkdayDirector.cs:22](../../Assets/Scripts/Progression/WorkdayDirector.cs#L22) |
 | Área de salida | [SanctuaryDirector.cs:176](../../Assets/Scripts/World/SanctuaryDirector.cs#L176) |

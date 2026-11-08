@@ -35,14 +35,14 @@
 ## 5. Profesión y lo que sabe hacer
 
 - Entrenador del gimnasio: la misión `gym_planes` (revisar el registro de series y ajustar los planes), la clase de calentamiento de las 14 h, corregir y hacer de spotter. *documentada (Berón 2026-11-04) · [GymProgramming.cs:32](../../Assets/Scripts/Progression/GymProgramming.cs#L32) · [gimnasio-maquinas.md §15.5](../gimnasio-maquinas.md)*
-- Comunicación: los avisos del santuario y la radio, en el comedor (`coc_avisos`). *documentada (Berón 2026-11-04) · [Professions.cs:63](../../Assets/Scripts/Progression/Professions.cs#L63) · [Professions.cs:132](../../Assets/Scripts/Progression/Professions.cs#L132)*
+- Comunicación: los avisos del santuario y la radio, en el comedor (`coc_avisos`). *documentada (Berón 2026-11-04) · [Professions.cs:65](../../Assets/Scripts/Progression/Professions.cs#L65) · [Professions.cs:135](../../Assets/Scripts/Progression/Professions.cs#L135)*
 - Corre trayectos de unos 25 km a ritmo suave y graba vídeos artísticos de lo que descubre. *documentada · [character-andrea.md §Quién es](../character-andrea.md)*
 - Hace yoga (con Leo). Fue maestro de yoga unas horas del 2026-11-04, tras irse Sadhguru; pasó a Josedrilo. *documentada · [character-andrea.md §En el juego](../character-andrea.md)*
 
 ## 6. Puesto y áreas
 
 - Sale en el gimnasio y su área es el Gimnasio (antes, el comedor). *código · [SampleSceneBuilder.Construction.cs:165](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L165) · [SanctuaryDirector.cs:162](../../Assets/Scripts/World/SanctuaryDirector.cs#L162)*
-- Su profesión le da `coc_avisos` en la Cocina. *código · [Professions.cs:63](../../Assets/Scripts/Progression/Professions.cs#L63)*
+- Su profesión le da `coc_avisos` en la Cocina. *código · [Professions.cs:65](../../Assets/Scripts/Progression/Professions.cs#L65)*
 - `gym_planes` es suya primero y, sin él, va por rotación (regla de oro). *código · [reglas-personajes.md P11](../reglas-personajes.md)*
 
 ## 7. Relaciones
@@ -70,7 +70,7 @@
 | Cuerpo, stats y rótulo | [SampleSceneBuilder.cs:3056](../../Assets/Editor/SampleSceneBuilder.cs#L3056) |
 | Aspecto | [CubeHair.cs:167](../../Assets/Scripts/Avatar/CubeHair.cs#L167) |
 | Entrenador | [GymProgramming.cs:26-32](../../Assets/Scripts/Progression/GymProgramming.cs#L26) |
-| Profesión y su base | [Professions.cs:63](../../Assets/Scripts/Progression/Professions.cs#L63) · [Professions.cs:132](../../Assets/Scripts/Progression/Professions.cs#L132) |
+| Profesión y su base | [Professions.cs:65](../../Assets/Scripts/Progression/Professions.cs#L65) · [Professions.cs:135](../../Assets/Scripts/Progression/Professions.cs#L135) |
 | Personal y horario libre | [WorkdayDirector.cs:19](../../Assets/Scripts/Progression/WorkdayDirector.cs#L19) · [LeisureDirector.cs:86](../../Assets/Scripts/Progression/LeisureDirector.cs#L86) |
 | Salida | [SampleSceneBuilder.Construction.cs:165](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L165) · [SanctuaryDirector.cs:162](../../Assets/Scripts/World/SanctuaryDirector.cs#L162) |
 | Gimnasio | [GymProgramming.cs:209](../../Assets/Scripts/Progression/GymProgramming.cs#L209) |

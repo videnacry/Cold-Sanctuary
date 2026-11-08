@@ -44,7 +44,7 @@
 
 ## 5. Profesión y lo que sabe hacer
 
-- **Letras**: profesora de poesía y narración. *documentada (Berón 2026-11-04) · [personajes-mesocosmos.md §Profesiones](../personajes-mesocosmos.md) · [Professions.cs:65](../../Assets/Scripts/Progression/Professions.cs#L65), base en [:133](../../Assets/Scripts/Progression/Professions.cs#L133)*
+- **Letras**: profesora de poesía y narración. *documentada (Berón 2026-11-04) · [personajes-mesocosmos.md §Profesiones](../personajes-mesocosmos.md) · [Professions.cs:67](../../Assets/Scripts/Progression/Professions.cs#L67), base en [:136](../../Assets/Scripts/Progression/Professions.cs#L136)*
 - **Textil**: envolver dulces de niña le dio velocidad y destreza; destaca en el estudio textil. *documentada · [character-irosene.md §Historia](../character-irosene.md) · [area-missions-spec.md §TextileStudio](../area-missions-spec.md)*
 - Remedios naturales, recetas de dulces, cocina de su niñez. *documentada · [character-irosene.md](../character-irosene.md)*. En el juego no hay misión que lo use (la farmacia nombra «remedios de Irosene» solo en [area-missions-spec.md §SupplementsPharmacy](../area-missions-spec.md)).
 
@@ -87,7 +87,7 @@
 | Stats | [Archetypes.cs:141](../../Assets/Scripts/Soul/Archetypes.cs#L141), [:175](../../Assets/Scripts/Soul/Archetypes.cs#L175) |
 | Vivencias | [PhrasePools.cs:68](../../Assets/Scripts/Mind/PhrasePools.cs#L68) |
 | Aspecto | [CubeHair.cs:259](../../Assets/Scripts/Avatar/CubeHair.cs#L259) |
-| Profesión y su base | [Professions.cs:65](../../Assets/Scripts/Progression/Professions.cs#L65), [:133](../../Assets/Scripts/Progression/Professions.cs#L133) |
+| Profesión y su base | [Professions.cs:67](../../Assets/Scripts/Progression/Professions.cs#L67), [:136](../../Assets/Scripts/Progression/Professions.cs#L136) |
 | Área de salida | [SanctuaryDirector.cs:159](../../Assets/Scripts/World/SanctuaryDirector.cs#L159) |
 | Gimnasio | [GymProgramming.cs:207](../../Assets/Scripts/Progression/GymProgramming.cs#L207) |
 | Casa y pareja | [ResidentialBuilder.cs:16](../../Assets/Editor/ResidentialBuilder.cs#L16), [:42](../../Assets/Editor/ResidentialBuilder.cs#L42) |

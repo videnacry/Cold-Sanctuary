@@ -65,7 +65,7 @@ Si alguien se va a un microcosmos (J12), se le quita de todo eso, pero se conser
 | Persona | Lo que no tiene base | Qué hay |
 |---|---|---|
 | Gohageneis | **Artes marciales** | Salió del reparto provisional («ágil y atlético, y ya es de la Guardia»), al irse Goku. Berón solo dijo guardia y maestro de baile. La experta documentada es Luciana: por P6 podría dirigirlas ella. Se turnan por días. |
-| Goluis | **Jefe de cocina** | Lo dicen su ficha y `world-simulation.md`, pero Berón nombró jefes a Maite y Amykhuz. No tiene entrada en `Professions`. |
+| ~~Goluis~~ | ~~**Jefe de cocina**~~ | **Contestado (Berón 2026-11-08)**: es **encargado de cocina**, con entrada en `Professions` y su base; los rangos más altos son Maite y Amykhuz. |
 | Hospital | **Los 4 puestos veterinarios** (H2) | Berón pidió 4 humanos y 4 veterinarios. Los humanos tienen 4 médicas (Lizmibet, Linduarda, Ivelyna, Malena). Ninguna persona está documentada como veterinaria: los cubre la rotación. |
 | Gallarle | **Sin profesión** | Pendiente desde el 2026-11-04. |
 | Panterilia | **Limpieza y farmacia**; sale en el huerto | Lo dice su ficha antigua; Berón solo citó baile y finanzas. Sale en el huerto por la farmacia, que no tiene área. |

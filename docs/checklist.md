@@ -12,8 +12,8 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 > - [ ] **Berón**: contestar la sección 11 de las fichas con menos puntos (de dónde es cada uno, cómo llegó, cómo es, las fotos que faltan).
 > - [x] Berón (2026-11-08): Irosene es Irene y Nesvitor es Néstor, el de su historia (nombres reales solo en las fichas); Goluis es encargado de cocina, Maite y Amykhuz los rangos más altos.
 > - [ ] **Berón**: si Alicita es la «Alicia» de la historia de Irosene, si Josedrilo es el padre de Leo y si Lizmibet es su consuegra.
-> - [ ] Quitar los nombres reales de los rótulos (Nesvitor «Néstor»; Alicita «Alicia», si es real) y reconstruir la escena.
-> - [ ] Cocina: rótulo de Goluis «encargado», su entrada en `Professions` con base, y la razón de su plan de gimnasio.
+> - [x] Quitados los nombres reales de los rótulos (Nesvitor «Néstor»; Alicita «Alicia», pendiente de confirmar). [ ] Reconstruir la escena para verlo.
+> - [x] Cocina: rótulo «Goluis (encargado de cocina)», su entrada en `Professions` con base (2026-11-08), sin la duda de `Unconfirmed`, y la razón de su plan de gimnasio. [ ] Probar los grupos 95, 45 y 50 (ahora tiene ronda de profesión en Cocina).
 > - [ ] Decidir si Linduarda y Lizmibet tienen entrada en `Professions.All`, si Malena entra en `Professions.Medical` y si Linduarda cuida animales.
 > - [ ] Limpiar los textos viejos de los planes de gimnasio y de `SanctuaryDirector` (lista en el README) cuando Berón confirme.
 

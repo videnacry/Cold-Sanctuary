@@ -26,8 +26,8 @@
 
 ## 5. Profesión y lo que sabe hacer
 
-- **Mecánico**. *documentada (Berón 2026-11-04: «Irosene y Fausto son pareja (Fausto es mecánico)») · [personajes-mesocosmos.md §Profesiones y parejas](../personajes-mesocosmos.md) · [Professions.cs:131](../../Assets/Scripts/Progression/Professions.cs#L131)*
-- Lleva el área Mecánica entera, que antes llevaba Ducristin. *recreada · [Professions.cs:60](../../Assets/Scripts/Progression/Professions.cs#L60)*
+- **Mecánico**. *documentada (Berón 2026-11-04: «Irosene y Fausto son pareja (Fausto es mecánico)») · [personajes-mesocosmos.md §Profesiones y parejas](../personajes-mesocosmos.md) · [Professions.cs:134](../../Assets/Scripts/Progression/Professions.cs#L134)*
+- Lleva el área Mecánica entera, que antes llevaba Ducristin. *recreada · [Professions.cs:62](../../Assets/Scripts/Progression/Professions.cs#L62)*
 
 ## 6. Puesto y áreas
 
@@ -54,7 +54,7 @@
 |---|---|
 | Cuerpo y stats | [SampleSceneBuilder.Construction.cs:210](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L210) |
 | Aspecto provisional | [CubeHair.cs:237](../../Assets/Scripts/Avatar/CubeHair.cs#L237) |
-| Profesión y base | [Professions.cs:60](../../Assets/Scripts/Progression/Professions.cs#L60) · [Professions.cs:131](../../Assets/Scripts/Progression/Professions.cs#L131) |
+| Profesión y base | [Professions.cs:62](../../Assets/Scripts/Progression/Professions.cs#L62) · [Professions.cs:134](../../Assets/Scripts/Progression/Professions.cs#L134) |
 | Personal | [WorkdayDirector.cs:21](../../Assets/Scripts/Progression/WorkdayDirector.cs#L21) |
 | Área de salida | [SanctuaryDirector.cs:172](../../Assets/Scripts/World/SanctuaryDirector.cs#L172) |
 | Casa | [ResidentialBuilder.cs:42](../../Assets/Editor/ResidentialBuilder.cs#L42) |

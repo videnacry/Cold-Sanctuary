@@ -39,14 +39,14 @@
 
 ## 5. Profesión y lo que sabe hacer
 
-- **Encargado de la cocina**; hoy los rangos más altos de la cocina son los de Maite y Amykhuz. *documentada · Berón 2026-11-08 (respuesta a esta ficha)*. Su ficha vieja y [world-simulation.md](../world-simulation.md) («Cocina. Dominio de Goluis») lo hacían jefe; el código aún lo lleva como pendiente en `Professions.Unconfirmed` ([Professions.cs:147](../../Assets/Scripts/Progression/Professions.cs#L147)).
-- Goluis **aún no tiene entrada en `Professions.All`** ni base en `Professions.Basis`. *código · [Professions.cs:28](../../Assets/Scripts/Progression/Professions.cs#L28)*
+- **Encargado de la cocina**; hoy los rangos más altos de la cocina son los de Maite y Amykhuz. *documentada · Berón 2026-11-08 (respuesta a esta ficha)*. Su ficha vieja y [world-simulation.md](../world-simulation.md) («Cocina. Dominio de Goluis») lo hacían jefe.
+- Profesión en el código: «encargado de cocina», área Cocina (una misión de cocina al día en la ronda de profesiones), con su base. *código · [Professions.cs:50](../../Assets/Scripts/Progression/Professions.cs#L50) · [:128](../../Assets/Scripts/Progression/Professions.cs#L128)*
 - Sabe toda la cocina y la enseña a los recién llegados (sígueme → limpiar → recetas). *código · [KitchenBoss.cs:4](../../Assets/Scripts/World/KitchenBoss.cs#L4) · [kitchen-simulation.md §1](../kitchen-simulation.md)*
 - Fue el primer entrenador del gimnasio unas horas del 2026-11-04. *código · [GymProgramming.cs:29](../../Assets/Scripts/Progression/GymProgramming.cs#L29) · [gimnasio-maquinas.md §15.5](../gimnasio-maquinas.md)*
 
 ## 6. Puesto y áreas
 
-- Sale en la Cocina, con el rótulo «Goluis (jefe de cocina)», que ya no es correcto: es encargado (Berón 2026-11-08). *código · [SanctuaryDirector.cs:159](../../Assets/Scripts/World/SanctuaryDirector.cs#L159) · [SampleSceneBuilder.cs:2781](../../Assets/Editor/SampleSceneBuilder.cs#L2781)*
+- Sale en la Cocina, con el rótulo «Goluis (encargado de cocina)» (2026-11-08; antes «jefe de cocina»; se ve al reconstruir la escena). *código · [SanctuaryDirector.cs:159](../../Assets/Scripts/World/SanctuaryDirector.cs#L159) · [SampleSceneBuilder.cs:2789](../../Assets/Editor/SampleSceneBuilder.cs#L2789)*
 - En la brigada del restaurante, en la línea con Maite y Amykhuz. *recreada · [personajes-mesocosmos.md §La jornada](../personajes-mesocosmos.md)*
 - En la jornada rota como todos (J30); sin profesión, no tiene ronda propia.
 
@@ -74,13 +74,13 @@
 | Qué | Dónde |
 |---|---|
 | Cuerpo, alma y anclas | [SampleSceneBuilder.cs:3306](../../Assets/Editor/SampleSceneBuilder.cs#L3306) |
-| Jefe de cocina (rótulo y conducta) | [SampleSceneBuilder.cs:2781](../../Assets/Editor/SampleSceneBuilder.cs#L2781) · [KitchenBoss.cs](../../Assets/Scripts/World/KitchenBoss.cs) |
+| Encargado de cocina (rótulo y conducta de iniciación) | [SampleSceneBuilder.cs:2789](../../Assets/Editor/SampleSceneBuilder.cs#L2789) · [KitchenBoss.cs](../../Assets/Scripts/World/KitchenBoss.cs) |
 | Su conducta (presión) | [Goluis.cs](../../Assets/Scripts/Companion/Companions/Goluis.cs) |
 | Arquetipo | [Archetypes.cs:139](../../Assets/Scripts/Soul/Archetypes.cs#L139) · [Archetypes.cs:173](../../Assets/Scripts/Soul/Archetypes.cs#L173) |
 | Vivencias | [PhrasePools.cs:33](../../Assets/Scripts/Mind/PhrasePools.cs#L33) |
 | Diálogos | [DialogueAssetCreator.cs:198](../../Assets/Editor/DialogueAssetCreator.cs#L198) |
 | Aspecto | [CubeHair.cs:251](../../Assets/Scripts/Avatar/CubeHair.cs#L251) |
-| Puesto sin confirmar | [Professions.cs:147](../../Assets/Scripts/Progression/Professions.cs#L147) |
+| Puesto y su base | [Professions.cs:50](../../Assets/Scripts/Progression/Professions.cs#L50) · [Professions.cs:128](../../Assets/Scripts/Progression/Professions.cs#L128) |
 | Personal, salida, gimnasio y casa | [WorkdayDirector.cs:19](../../Assets/Scripts/Progression/WorkdayDirector.cs#L19) · [SanctuaryDirector.cs:159](../../Assets/Scripts/World/SanctuaryDirector.cs#L159) · [GymProgramming.cs:204](../../Assets/Scripts/Progression/GymProgramming.cs#L204) · [ResidentialBuilder.cs:16](../../Assets/Editor/ResidentialBuilder.cs#L16) |
 
 ## 11. Preguntas para Berón

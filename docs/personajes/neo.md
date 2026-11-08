@@ -49,7 +49,7 @@
 
 ## 9. Microcosmos y santuario
 
-- Es una de las personas del mesocosmos con ficha. *código · [Professions.cs:105](../../Assets/Scripts/Progression/Professions.cs#L105)*
+- Es una de las personas del mesocosmos con ficha. *código · [Professions.cs:107](../../Assets/Scripts/Progression/Professions.cs#L107)*
 - Su insecto en los microcosmos: el de cualquiera, por su nombre. **Falta** uno propio.
 
 ## 10. En el código

@@ -38,7 +38,7 @@ Cada ficha tiene estas 11 secciones, en este orden. Copia [linduarda.md](linduar
 
 Las fuentes son un doc y su sección o un fichero de código y su línea. En el código, cada sitio donde se define una persona lleva un
 comentario «ficha: docs/personajes/…». La lista de personas sale de `Professions.Mesocosmos` y el nombre del fichero, de
-`Professions.DocName` ([Professions.cs:99](../../Assets/Scripts/Progression/Professions.cs#L99), [:110](../../Assets/Scripts/Progression/Professions.cs#L110)).
+`Professions.DocName` ([Professions.cs:101](../../Assets/Scripts/Progression/Professions.cs#L101), [:112](../../Assets/Scripts/Progression/Professions.cs#L112)).
 `tools/check-personajes.sh` y la prueba 95 comprueban que cada una tenga su ficha.
 
 ## Lo completas que están (2026-11-08)
@@ -124,7 +124,7 @@ Están en la sección 11 de cada ficha, como preguntas. Las principales (las con
 3. **Linduarda y los animales.** Su ficha dice Una Salud, pero la jornada la excluye de cuidar a los animales ingresados.
 4. **El santuario y el nivel de Irosene**: Tier 4 submarino, «3er santuario V1» o, según la regla del 2026-11-08, por encima de
    santuario 1 nivel 1. En el juego vive en el santuario 1 como todos.
-5. ~~**Goluis, jefe de cocina**~~ *Contestado (Berón 2026-11-08)*: Goluis es **encargado**; los rangos más altos de la cocina son los de Maite y Amykhuz. El código aún lo llama jefe (`KitchenBoss`, su rótulo, su plan de gimnasio, `Professions.Unconfirmed`): pendiente de cambiar.
+5. ~~**Goluis, jefe de cocina**~~ *Contestado (Berón 2026-11-08)*: Goluis es **encargado**; los rangos más altos de la cocina son los de Maite y Amykhuz. Código al día (rótulo, `Professions` con base, plan de gimnasio, comentarios).
 6. **Panterilia, limpieza y farmacia** según su ficha vieja; Berón solo dijo baile y finanzas. Sus anclas `protect_daughter` y
    `chemical_reliance` no tienen fuente escrita.
 7. **Gohageneis y las artes marciales**: las da en días alternos con Luciana sin base de Berón; la experta documentada es Luciana.
@@ -137,7 +137,7 @@ Están en la sección 11 de cada ficha, como preguntas. Las principales (las con
 12. **Fernando** lleva toda el área de Energía (también las patrullas `ene_`), y Berón solo dijo paneles solares; no está en
     `Professions.Unconfirmed` (P7).
 13. **Traoré** guarda un aspecto militar (boina y uniforme) aunque su microcosmos es solo civil (J6).
-14. **Nombres reales en el juego**: el rótulo de Nesvitor muestra «Néstor» y el de Alicita, «Alicia» ([SampleSceneBuilder.Construction.cs:199](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L199), [:202](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L202)). Los nombres reales no se muestran (P24): hay que quitarlos de los rótulos.
+14. ~~**Nombres reales en el juego**~~ *Arreglado (2026-11-08)*: los rótulos de Nesvitor y Alicita ya no dicen «Néstor» ni «Alicia» ([SampleSceneBuilder.Construction.cs:199](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L199), [:202](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L202)); «Alicia», pendiente de que Berón confirme si es su nombre real. Se ve al reconstruir la escena.
 
 ## Cómo se mantiene
 

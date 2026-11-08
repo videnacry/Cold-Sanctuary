@@ -28,8 +28,8 @@
 
 ## 5. Profesión y lo que sabe hacer
 
-- **Pediatra**. *documentada (Berón 2026-11-04) · [Professions.cs:138](../../Assets/Scripts/Progression/Professions.cs#L138)*
-- En el juego: `hos_pediatria` (consulta, vacunas y crecimiento de los niños) y las misiones `enf_` del hospital. *recreada · [Professions.cs:73](../../Assets/Scripts/Progression/Professions.cs#L73) · [AreaFunctions.cs:178](../../Assets/Scripts/Progression/AreaFunctions.cs#L178)*
+- **Pediatra**. *documentada (Berón 2026-11-04) · [Professions.cs:141](../../Assets/Scripts/Progression/Professions.cs#L141)*
+- En el juego: `hos_pediatria` (consulta, vacunas y crecimiento de los niños) y las misiones `enf_` del hospital. *recreada · [Professions.cs:75](../../Assets/Scripts/Progression/Professions.cs#L75) · [AreaFunctions.cs:178](../../Assets/Scripts/Progression/AreaFunctions.cs#L178)*
 - Está en `Professions.Medical`: el submarino-ambulancia la busca de las primeras. *código · [Professions.cs:26](../../Assets/Scripts/Progression/Professions.cs#L26) · [submarinos-medicos.md](../submarinos-medicos.md)*
 
 ## 6. Puesto y áreas
@@ -61,7 +61,7 @@
 |---|---|
 | Cuerpo y stats | [SampleSceneBuilder.Construction.cs:216](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L216) |
 | Aspecto | [CubeHair.cs:232](../../Assets/Scripts/Avatar/CubeHair.cs#L232) |
-| Profesión y base | [Professions.cs:73](../../Assets/Scripts/Progression/Professions.cs#L73) · [Professions.cs:138](../../Assets/Scripts/Progression/Professions.cs#L138) |
+| Profesión y base | [Professions.cs:75](../../Assets/Scripts/Progression/Professions.cs#L75) · [Professions.cs:141](../../Assets/Scripts/Progression/Professions.cs#L141) |
 | Personal sanitario | [Professions.cs:26](../../Assets/Scripts/Progression/Professions.cs#L26) |
 | Personal | [WorkdayDirector.cs:22](../../Assets/Scripts/Progression/WorkdayDirector.cs#L22) |
 | Área de salida | [SanctuaryDirector.cs:176](../../Assets/Scripts/World/SanctuaryDirector.cs#L176) |

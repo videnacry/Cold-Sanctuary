@@ -44,7 +44,7 @@
 - Guarda los puestos: se teletransporta ante quien abandona el suyo y lo devuelve (J4). *documentada · [MagnateWarden.cs](../../Assets/Scripts/World/MagnateWarden.cs)*
 - Último recurso de las iniciaciones (diseño final, Berón 2026-11-05): inician los trabajadores que saben. *documentada · manual J32*
 - Se divide en clones de 5 h si faltan manos para las obligatorias; Berón (2026-11-08): solo cuando un área se quedaría sin trabajador. *documentada · [jornada-y-rotacion.md](../jornada-y-rotacion.md) · nota de Berón 2026-11-08*
-- No está en la jornada (`WorkdayDirector.Staff`); sí en las personas del mesocosmos ([Professions.cs:104](../../Assets/Scripts/Progression/Professions.cs#L104)).
+- No está en la jornada (`WorkdayDirector.Staff`); sí en las personas del mesocosmos ([Professions.cs:106](../../Assets/Scripts/Progression/Professions.cs#L106)).
 
 ## 7. Relaciones
 
@@ -73,7 +73,7 @@
 | Su conducta | [Magnate.cs](../../Assets/Scripts/World/Magnate.cs) |
 | Guardar los puestos | [MagnateWarden.cs](../../Assets/Scripts/World/MagnateWarden.cs) |
 | Aspecto | [CubeHair.cs:148](../../Assets/Scripts/Avatar/CubeHair.cs#L148) |
-| Personas del mesocosmos | [Professions.cs:104](../../Assets/Scripts/Progression/Professions.cs#L104) |
+| Personas del mesocosmos | [Professions.cs:106](../../Assets/Scripts/Progression/Professions.cs#L106) |
 | Casa | [ResidentialBuilder.cs:16](../../Assets/Editor/ResidentialBuilder.cs#L16) |
 
 ## 11. Preguntas para Berón
