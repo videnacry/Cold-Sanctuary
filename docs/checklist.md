@@ -8,7 +8,7 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 > por persona en [`personajes/`](personajes/README.md) con la plantilla de 11 secciones (cada dato con su veracidad M39 y su fuente), 32 del
 > santuario y 8 figuras de fuera; tabla de lo completa que está cada una, de Irosene y la Magnate (16 de 18) a Nesvitor, David y Adonis
 > (6); 13 contradicciones entre fuentes; comentarios «ficha: docs/personajes/…» en cada sitio del código donde se define una persona.
-> Regla nueva **P22** en el [manual](manual-de-diseno.md) §9.1.
+> Regla nueva **P24** en el [manual](manual-de-diseno.md) §9.1.
 > - [ ] **Berón**: contestar la sección 11 de las fichas con menos puntos (de dónde es cada uno, cómo llegó, cómo es, las fotos que faltan).
 > - [ ] **Berón**: la familia de Irosene frente a los nombres del santuario (Néstor, Alicia, Josedrilo, Lizmibet; [README](personajes/README.md) §Contradicciones).
 > - [ ] Decidir si Linduarda y Lizmibet tienen entrada en `Professions.All`, si Malena entra en `Professions.Medical` y si Linduarda cuida animales.

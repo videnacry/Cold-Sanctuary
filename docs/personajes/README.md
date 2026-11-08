@@ -4,7 +4,7 @@ Berón (2026-11-08): «hace falta una lista de personajes y que cada uno tenga s
 otros y equilibrarlos. Los primeros que se crearon dan más información que otros, y hay que seguir rellenándolos todos. Poned enlaces que
 repartan la información de los personajes por el código».
 
-Reglas: [manual-de-diseno.md §9.1](../manual-de-diseno.md) (P2, P10 y P22) y [reglas-personajes.md](../reglas-personajes.md).
+Reglas: [manual-de-diseno.md §9.1](../manual-de-diseno.md) (P2, P10 y P24) y [reglas-personajes.md](../reglas-personajes.md).
 
 ## La plantilla
 
