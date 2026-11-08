@@ -12,6 +12,8 @@ public class AreaFunctionSite : MonoBehaviour
 {
     [Tooltip("La plantilla del registro (AreaFunctions.Buildings).")]
     public string building = "Casa";
+    /// <summary>(Ronda 29) Al construir no se llega andando (ni cosiendo ni recolocándolo): el horario libre no lo usa.</summary>
+    public bool unreachable;
     [Tooltip("Su nombre de verdad («Restaurante de Ruby Chow, Seattle»).")]
     public string title = "";
     [Tooltip("La región o cultura de este edificio (MicroStyles.Region): con el año, el estilo de sus muebles.")]

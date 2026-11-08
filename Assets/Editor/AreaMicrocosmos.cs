@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -476,7 +477,28 @@ public static class AreaMicrocosmos
                             UnityEngine.AI.NavMesh.CalculatePath(ph.position, sh.position, UnityEngine.AI.NavMesh.AllAreas, path);
                         }
                     }
-                    Debug.Log($"[Microcosmos] {display}: de la plaza a «{site.name}» (NavMesh a y {sh.position.y:0.0}): {before}" + (before == $"{path.status}" && path.status == UnityEngine.AI.NavMeshPathStatus.PathComplete ? "" : $" → con el enlace al edificio: {path.status}") + ".");
+                    // (Ronda 29) SI SIGUE SIN LLEGARSE: a la meseta libre más alta a la que sí se llega (y que le cabe); si no hay ninguna, el horario
+                    // libre no lo usa (AreaFunctionSite.unreachable). El mirador de Buda a y 233 quedaba «PathPartial» aun cosido.
+                    string relocated = "";
+                    if (path.status != UnityEngine.AI.NavMeshPathStatus.PathComplete)
+                    {
+                        var taken = new List<Vector3>();
+                        foreach (AreaFunctionSite o2 in cast.GetComponentsInChildren<AreaFunctionSite>(true)) if (o2 != site) taken.Add(root.transform.InverseTransformPoint(o2.transform.position));
+                        foreach (var ue in upEnds.OrderByDescending(x => x.top.max.y))
+                        {
+                            if (ue.top.size.x < 16f || ue.top.size.z < 14f) continue;
+                            if (taken.Any(p => InsideXZ(ue.top, p, 0f) && Mathf.Abs(p.y - ue.top.max.y) < 3f)) continue;
+                            Vector3 cw = root.transform.TransformPoint(new Vector3(ue.top.center.x, ue.top.max.y, ue.top.center.z));
+                            if (!UnityEngine.AI.NavMesh.SamplePosition(cw, out UnityEngine.AI.NavMeshHit ch, 3f, UnityEngine.AI.NavMesh.AllAreas)) continue;
+                            var p2 = new UnityEngine.AI.NavMeshPath();
+                            if (!UnityEngine.AI.NavMesh.CalculatePath(ph.position, ch.position, UnityEngine.AI.NavMesh.AllAreas, p2) || p2.status != UnityEngine.AI.NavMeshPathStatus.PathComplete) continue;
+                            Vector3 from = site.transform.position; site.transform.position = cw; path = p2;
+                            relocated = $" → recolocado de y {from.y:0} a la meseta de y {cw.y:0}: {p2.status}";
+                            break;
+                        }
+                        if (path.status != UnityEngine.AI.NavMeshPathStatus.PathComplete) { site.unreachable = true; relocated = " → ninguna meseta libre alcanzable: el horario libre no lo usa"; }
+                    }
+                    Debug.Log($"[Microcosmos] {display}: de la plaza a «{site.name}» (NavMesh a y {sh.position.y:0.0}): {before}" + relocated + (before == $"{path.status}" && path.status == UnityEngine.AI.NavMeshPathStatus.PathComplete ? "" : $" → con el enlace al edificio: {path.status}") + ".");
                 }
             Debug.Log($"[Microcosmos] {display}: {climbs} enlaces para trepar, {snapped} con el extremo de arriba sobre el NavMesh (el resto, en la cara del mueble).");
             foreach (Collider c in giant.GetComponentsInChildren<Collider>())

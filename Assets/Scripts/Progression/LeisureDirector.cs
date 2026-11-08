@@ -287,6 +287,7 @@ public class LeisureDirector : MonoBehaviour
     {
         var sites = new List<AreaFunctionSite>();
         foreach (GameObject root in gr.scene.GetRootGameObjects()) sites.AddRange(root.GetComponentsInChildren<AreaFunctionSite>(true));
+        sites.RemoveAll(s => s == null || s.unreachable);   // (ronda 29) un mirador al que no se llega andando no entra en el horario
         // ETIQUETAS DE ACTIVIDAD (docs/microcosmos-actividades.md): con los edificios etiquetados, el tiempo libre va a los de ocio,
         // recuperación y descanso (no a los de trabajo: la escuela, el mercado o el huerto de un pueblo etiquetado son trabajo).
         bool tagged = sites.Any(s => !string.IsNullOrEmpty(s.activity));
