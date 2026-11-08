@@ -970,16 +970,32 @@ Berón: mover la planta nuclear (Central Nuclear y Planta Atómica) **completame
 - **Agua pasiva:** ya no es el tronco. Es el mar, que entra solo por la toma pasiva de cada sala a 57 bar. Se cuenta solo la columna sobre la huella de las salas de los reactores (2 × 14 × 14 m × 500 m ≈ 196 000 m³): una cota prudente, el mar no se acaba. Pasa de las 72 h de referencia.
 
 ### Lo que se quita
-- El **árbol del sitio** (sus 3 niveles, puntas y aerocondensadores), el **cajón del TRIGA** con su recinto y esclusas, el pozo del microrreactor desde el tronco y el **garaje del sitio** (el submarino de obra ya no tiene parada aquí: lo que haga falta abajo baja por la Línea, que cabe el módulo).
+- El **árbol del sitio** (sus 3 niveles, puntas y aerocondensadores), el **cajón del TRIGA** con su recinto y esclusas, y el pozo del microrreactor desde el tronco.
 
-### Lo que queda pendiente (no inventado)
-- **T16, luz libre ≤ 14 m:** las salas de la planta son de 46 × 30 m sin columnas. Ponerlas pide rehacer la distribución de los pisos (el TRIGA, el ciclotrón y el centro de emergencias tienen sitios fijos). Hasta entonces, **no cumple**.
-- **Posiciones reservadas de los microcosmos** (`PlatformSlots`): las de estas dos áreas se ponían arriba. Sus microcosmos (Chernóbil; Newton, Curie, Einstein) abren el Santuario Marino para copiar el piso y avisarán de que les faltan; salen del suelo «Mat».
+### El garaje del submarino de obra: en la estación
+**Elegido: en la estación, no abajo.** El submarino de obra es del santuario 1: su mar es de 16 m y el Santuario Marino es otra escena a 500 m. No puede llegar a las salas de la planta. Por eso **sube a la estación**: por una escotilla en la losa (`Escotilla_submarino`, con su pozo bajo el agua) y un elevador de cuatro guías lo deja en su plaza (`Garaje_nuclear`, `NuclearSite.submarineBerth`). Su viaje es `ConstructionSubmarine.SendToBerth`: sale por el fondo de su árbol, cruza bajo el hielo, sube por la escotilla, descarga y vuelve igual a su garaje de siempre (Producción). Lo que haga falta abajo baja por la Línea: cabe el módulo del microrreactor (§20).
+
+### T16 en las salas de la planta: columnas, y una viga donde el equipo no deja
+- **Columnas de roca** (4 × 4 m) en cada sala: las menos que dejan cada luz libre en ≤ 14 m (`MarineColumns`). En 46 × 30 m son dos, en (±8,3; 0): luces de 13,0 m (pared a columna) y 12,7 m (columna a columna) a lo largo, y 13,4 m a lo ancho.
+- **Cada columna, a ≥ 2 m de todo mueble.** Se ha rehecho la distribución:
+  - **Central y sala de física:** `PackFloor` las esquiva (`MarineKeepOut`: columna + 1 m, y PackFloor deja otro metro). La Central, en otro orden (comprobado con la regla de PackFloor) y con el intercambiador de la calefacción en 6 × 6 m. La física deja sitio al péndulo en su esquina.
+  - **Ciclotrón:** corrido 6 m al sur, fuera de la banda de las columnas.
+  - **Centro de emergencias:** los puestos pasan de z = 4 a z = 6 (3,5 m de la columna).
+  - **Planta Atómica (el TRIGA):** corrida 9 m al este; la columna oeste queda libre.
+- **La excepción, y por qué:** la columna **este** de la sala del TRIGA cae sobre la piscina y su puente. Esa distribución (piscina, puente, conejo neumático hacia la celda caliente, purificación, bomba del primario, consola) es **compacta a propósito**, de 22 × 16 m, porque esas piezas van unidas por tuberías y por el conejo. Una columna con 2 m alrededor pide un hueco de 8 m que no tiene. Partirla alargaría las tuberías del primario y el recorrido del conejo. En su lugar va una **viga de transferencia** (`Viga_transferencia`, 2,4 m de ala) de pared a pared bajo el techo, en la línea de esa columna: la luz a cada lado queda en 13,5 y 13,9 m. El constructor decide solo: si algo queda a menos de 2 m de una columna, pone la viga y lo dice en el registro (`[Marino] T16: …`).
+
+### Posiciones reservadas de sus microcosmos
+Vuelven a calcularse abajo, con lo que se alza en el Santuario Marino (`PlaceReservedSlotsOn`, la misma regla 8 que arriba, sin alfombras). Sus microcosmos (Chernóbil; Newton, Curie, Einstein) abren el Santuario Marino para copiar el piso y encuentran sus plazas.
+
+### Cada sala, con su puerta
+Las salas con paredes (`Room`: sala de control, garita, almacén…) dejan su puerta en la pared delantera: **2 m** donde cabe (dos personas a la vez) y al menos 1,2 m en las cámaras pequeñas. Así la prueba de alcance de 114 entra en ellas.
+
+### Lo que queda pendiente
 - **Sin NavMesh abajo** (como antes): los trabajadores no andan por las salas; Kushal sí. La prueba 114 comprueba que cada puesto se alcanza andando desde el andén.
 
 ### Pruebas
-- **114 (`NuclearSubmarinaTest`), nueva:** nada del sitio por encima de y 0 salvo la estación; ni el árbol ni las áreas arriba; la pista en la red del santuario y a mano del andén; sin escaleras; la jornada a la estación y la bajada sin cargar nada; la energía; abajo, las dos áreas con su maquinaria, todo bajo y 0 y **cada puesto alcanzable** (relleno por rejilla de 1 m desde el andén de abajo, pasos de ≤ 0,4 m y una persona de 0,35 m de radio).
-- **94** reescrita para la estación; **100** con la pista de la red del santuario; `SanctuaryLifeTest`: sin árbol del sitio arriba.
+- **114 (`NuclearSubmarinaTest`), nueva:** nada del sitio por encima de y 0 salvo la estación; ni el árbol ni las áreas arriba; la pista en la red del santuario y a mano del andén; sin escaleras; la jornada a la estación y la bajada sin cargar nada; la energía; abajo, las dos áreas con su maquinaria, todo bajo y 0 y **cada puesto alcanzable** (relleno por rejilla de 1 m desde el andén de abajo; a ≤ 1,5 m del borde de cada puesto); **cada sala con puerta**; **T16** (luz libre ≤ 14 m con columnas o vigas, y las columnas a ≥ 2 m de los muebles); las **posiciones reservadas** de las dos áreas.
+- **94** reescrita para la estación, con el **garaje** y el viaje del submarino de obra; **100** con la pista de la red del santuario; `SanctuaryLifeTest`: sin árbol del sitio arriba.
 
 ## Fuentes
 - [10 CFR 100.11](https://www.law.cornell.edu/cfr/text/10/100.11), [10 CFR 100.3](https://www.law.cornell.edu/cfr/text/10/100.3), [10 CFR 53.530](https://www.law.cornell.edu/cfr/text/10/53.530)

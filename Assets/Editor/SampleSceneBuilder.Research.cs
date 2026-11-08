@@ -97,7 +97,7 @@ public static partial class SampleSceneBuilder
 
     // Zonas que no se amueblan en una planta: el hueco de su ÁREA DE ALFOMBRAS (+Z, en <paramref name="x"/>; PlaceCarpetAreas
     // la pone donde no hay muebles) y la máquina de virtualización (esquina +X +Z). Ya no hay escaleras (docs/alfombras-plan.md).
-    static List<Rect> CarpetKeepOut(Vector2 size, float x = 0f) =>
+    static List<Rect> CarpetKeepOut(Vector2 size, float x = 0f) => _marineFloors ? MarineKeepOut(size) :
         new List<Rect> { new Rect(x - 4.2f, size.y * 0.5f - 5f, 8.4f, 5f), new Rect(size.x * 0.5f - 4f, size.y * 0.5f - 4f, 4f, 4f) };
 
     static void LogLeft(string where, List<LabBlock> left)
@@ -148,7 +148,8 @@ public static partial class SampleSceneBuilder
 
     static void Room(Transform t, float w, float d, Color wall, string label)   // sala o cámara: paredes con su puerta abierta (se entra)
     {
-        const float h = 2.4f, th = 0.15f, door = 1.2f;
+        const float h = 2.4f, th = 0.15f;
+        float door = Mathf.Clamp(w - 1f, 1.2f, 2f);   // (2026-11-08) la puerta: 2 m (dos personas a la vez) donde cabe; en las cámaras pequeñas, lo que deje 0,5 m de pared a cada lado
         Solid(t, new Vector3(0f, h * 0.5f, d * 0.5f), new Vector3(w, h, th), wall, "Pared_sala");
         Solid(t, new Vector3(-w * 0.5f, h * 0.5f, 0f), new Vector3(th, h, d), wall, "Pared_sala");
         Solid(t, new Vector3(w * 0.5f, h * 0.5f, 0f), new Vector3(th, h, d), wall, "Pared_sala");
@@ -298,7 +299,9 @@ public static partial class SampleSceneBuilder
         };
         // (2026-11-08) BAJO EL MAR (Santuario Marino, sin alfombras): sin anillo; lo del anillo y el péndulo, en el suelo de la sala, con su 2 m de paso.
         if (_marineFloors) inside.AddRange(onRing);
+        Vector2 pend = new Vector2(hs.x * 0.5f - 4f, hs.y * 0.5f - 4f);   // (bajo el mar, el péndulo va a la esquina −X +Z de la sala: se le reserva su sitio, 2 m alrededor)
         var hallKeep = CarpetKeepOut(hs, -hs.x * 0.3f);
+        if (_marineFloors) hallKeep.Add(new Rect(-pend.x - 3f, pend.y - 3f, 6f, 6f));
         LogLeft("Física (sala)", PackFloor(hall, hs, inside, hallKeep));
         Transform ring = hall;
         if (!_marineFloors)
@@ -331,16 +334,17 @@ public static partial class SampleSceneBuilder
         Color concrete = new Color(0.7f, 0.7f, 0.68f);
         var blocks = new List<LabBlock>
         {
-            new LabBlock("Puesto de acceso", 6f, 3f, t => { Room(t, 4f, 3f, concrete, "Garita"); KitchenProps.C(t, new Vector3(1.75f, 1f, -1.6f), new Vector3(2.5f, 0.1f, 0.1f), LabYellow, 0f, "Barrera"); }),
+            // (2026-11-08) En este orden caben con las columnas de su sala bajo el mar (T16: banda de columnas en z = 0; simulado con la regla de PackFloor).
             new LabBlock("Sala de control", 10f, 8f, t => { Room(t, 10f, 8f, concrete, "Sala_control"); for (int i = 0; i < 4; i++) { KitchenProps.C(t, new Vector3(-3.6f + i * 2.4f, 0.45f, 0.5f), new Vector3(1.6f, 0.9f, 0.8f), LabDark, 0f, "Consola_operador"); KitchenProps.C(t, new Vector3(-3.6f + i * 2.4f, 1.15f, 0.75f), new Vector3(1.2f, 0.5f, 0.05f), LabBlue, 0f, "Pantallas"); } KitchenProps.C(t, new Vector3(0f, 1.5f, 3.75f), new Vector3(8f, 1.2f, 0.1f), LabBlue, 0f, "Panel_mimico"); }),
             new LabBlock("Microrreactor (5 MWe)", 12f, 4.5f, t => { KitchenProps.C(t, new Vector3(0f, 0.3f, 0f), new Vector3(12f, 0.6f, 4.5f), concrete, 0f, "Losa_blindada"); KitchenProps.C(t, new Vector3(0f, 0.9f, 0f), new Vector3(3f, 0.6f, 3f), LabSteel, 0f, "Brocal_pozo"); KitchenProps.C(t, new Vector3(0f, 1.25f, 0f), new Vector3(2.4f, 0.1f, 2.4f), LabYellow, 0f, "Tapa_trebol"); Label(t, "Pozo del microrreactor: el reactor está abajo, en su cajón sumergido", 2.5f); }),
-            new LabBlock("Conversión de potencia", 12f, 3.5f, t => { KitchenProps.C(t, new Vector3(0f, 1.6f, 0f), new Vector3(12f, 3.2f, 3.5f), LabSteel, 0f, "Contenedor_turbina"); KitchenProps.C(t, new Vector3(4f, 3.6f, 0f), new Vector3(2.5f, 0.8f, 2.5f), LabDark, 0f, "Aerorrefrigerador"); }),
-            new LabBlock("Intercambiador de la calefacción de distrito", 8f, 6f, t => { for (int i = 0; i < 2; i++) Vessel(KitchenProps.Root(t, "Deposito", new Vector3(-2f + i * 4f, 0f, 0f)), 1.2f, 3.5f, new Color(0.8f, 0.5f, 0.3f), "Intercambiador"); KitchenProps.C(t, new Vector3(0f, 2.5f, 0f), new Vector3(7f, 0.3f, 0.3f), new Color(0.8f, 0.3f, 0.25f), 0f, "Tuberia_agua_caliente"); }),
+            new LabBlock("Puesto de acceso", 6f, 3f, t => { Room(t, 4f, 3f, concrete, "Garita"); KitchenProps.C(t, new Vector3(1.75f, 1f, -1.6f), new Vector3(2.5f, 0.1f, 0.1f), LabYellow, 0f, "Barrera"); }),
+            new LabBlock("Panel de la roca", 6f, 2f, t => { KitchenProps.C(t, new Vector3(0f, 1.2f, 0.6f), new Vector3(5.6f, 2.4f, 0.3f), LabDark, 0f, "Panel_roca"); KitchenProps.C(t, new Vector3(0f, 0.4f, -0.2f), new Vector3(2.4f, 0.8f, 0.8f), LabSteel, 0f, "Pupitre_roca"); }),
             new LabBlock("Subestación", 6f, 4f, t => { for (int i = 0; i < 2; i++) KitchenProps.C(t, new Vector3(-1.5f + i * 3f, 1.2f, 0f), new Vector3(1.8f, 2.4f, 1.8f), new Color(0.4f, 0.45f, 0.4f), 0f, "Transformador"); KitchenProps.C(t, new Vector3(0f, 1.0f, 2f), new Vector3(6f, 2f, 0.05f), LabSteel, 0f, "Valla_subestacion"); }),
             new LabBlock("Diésel de respaldo", 6f, 3f, t => { KitchenProps.C(t, new Vector3(0f, 1.3f, 0f), new Vector3(6f, 2.6f, 3f), new Color(0.3f, 0.5f, 0.35f), 0f, "Grupo_electrogeno"); KitchenProps.C(t, new Vector3(2.4f, 3f, 0f), new Vector3(0.3f, 1f, 0.3f), LabDark, 0f, "Escape"); }),
-            new LabBlock("Losa de contenedores del núcleo", 15f, 6f, t => { KitchenProps.C(t, new Vector3(0f, 0.15f, 0f), new Vector3(15f, 0.3f, 6f), concrete, 0f, "Losa"); for (int i = 0; i < 2; i++) KitchenProps.C(t, new Vector3(-4f + i * 8f, 1.6f, 0f), new Vector3(6f, 2.6f, 2.6f), new Color(0.5f, 0.52f, 0.55f), 0f, "Contenedor_transporte"); }),
             new LabBlock("Almacén", 6f, 4f, t => Room(t, 6f, 4f, concrete, "Almacen")),
-            new LabBlock("Panel de la roca", 6f, 2f, t => { KitchenProps.C(t, new Vector3(0f, 1.2f, 0.6f), new Vector3(5.6f, 2.4f, 0.3f), LabDark, 0f, "Panel_roca"); KitchenProps.C(t, new Vector3(0f, 0.4f, -0.2f), new Vector3(2.4f, 0.8f, 0.8f), LabSteel, 0f, "Pupitre_roca"); }),
+            new LabBlock("Losa de contenedores del núcleo", 15f, 6f, t => { KitchenProps.C(t, new Vector3(0f, 0.15f, 0f), new Vector3(15f, 0.3f, 6f), concrete, 0f, "Losa"); for (int i = 0; i < 2; i++) KitchenProps.C(t, new Vector3(-4f + i * 8f, 1.6f, 0f), new Vector3(6f, 2.6f, 2.6f), new Color(0.5f, 0.52f, 0.55f), 0f, "Contenedor_transporte"); }),
+            new LabBlock("Conversión de potencia", 12f, 3.5f, t => { KitchenProps.C(t, new Vector3(0f, 1.6f, 0f), new Vector3(12f, 3.2f, 3.5f), LabSteel, 0f, "Contenedor_turbina"); KitchenProps.C(t, new Vector3(4f, 3.6f, 0f), new Vector3(2.5f, 0.8f, 2.5f), LabDark, 0f, "Aerorrefrigerador"); }),
+            new LabBlock("Intercambiador de la calefacción de distrito", 6f, 6f, t => { for (int i = 0; i < 2; i++) Vessel(KitchenProps.Root(t, "Deposito", new Vector3(-1.6f + i * 3.2f, 0f, 0f)), 1.2f, 3.5f, new Color(0.8f, 0.5f, 0.3f), "Intercambiador"); KitchenProps.C(t, new Vector3(0f, 2.5f, 0f), new Vector3(5.6f, 0.3f, 0.3f), new Color(0.8f, 0.3f, 0.25f), 0f, "Tuberia_agua_caliente"); }),
         };
         LogLeft("Central nuclear", PackFloor(g, NuclearSize, blocks, CarpetKeepOut(NuclearSize)));
         // El límite del sitio (la zona de exclusión del juego) va PINTADO en el suelo, no con valla: en el santuario no hay

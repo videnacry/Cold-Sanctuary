@@ -178,6 +178,73 @@ public class ConstructionSubmarine : MonoBehaviour
     bool _freeTrip;
     ArbolCampos _pendingTo; TreeLevel _pendingLevel; string _pendingTitle;
 
+    // ── UN MUELLE FUERA DE LOS ÁRBOLES (2026-11-08, docs/sitio-nuclear.md §25): el garaje del sitio nuclear está en su estación, sobre el agua. El submarino sale
+    // por el fondo de su árbol, cruza bajo el hielo, sube por la escotilla de la estación y el elevador lo deja en su plaza; y vuelve igual.
+    Transform _berth;
+    /// <summary>¿Está (o va) en un muelle de fuera de los árboles?</summary>
+    public bool AtBerth => _berth != null;
+
+    /// <summary>Lleva la carga a un MUELLE <paramref name="berth"/> (su plaza; debajo, en el agua, la escotilla). false si no está aparcado en su árbol.</summary>
+    public bool SendToBerth(Transform berth, string title)
+    {
+        if (berth == null || Now != State.Parked) return false;
+        ArbolCampos from = ArbolCampos.At(transform.position + Vector3.up * 0.5f, out TreeLevel la, out _, false);
+        if (from == null || la == null) { Debug.LogWarning($"[Submarino] no sé en qué piso estoy para ir a «{title}»."); return false; }
+        Target = null; _freeTrip = true; _berth = berth;
+        _route.Clear(); doorsUsed.Clear();
+        _tripA = from; _tripB = from;
+        float lift = 0.05f;
+        _route.Add((() => from.World(la.outside) + Vector3.up * lift, false, $"a la puerta de {la.name}"));
+        _route.Add((() => from.World(la.door) + Vector3.up * lift, false, $"puerta de {la.name}"));
+        _route.Add((() => from.World(la.inside + Vector3.up * (Height * 0.5f + 0.5f)) - Vector3.up * Height * 0.5f, true, $"dentro del tronco de {from.building}"));
+        _route.Add((() => from.transform.position + Vector3.up * 3f, true, $"baja por el tronco de {from.building}"));
+        _route.Add((() => from.transform.position + Vector3.up * seaDepth, true, $"sale por el fondo de {from.building} al mar"));
+        AddBerthLegs(berth, true);
+        _wp = 0; _legSince = Time.time;
+        Now = State.Loading; _wait = Time.time + 2f;
+        Doing = $"Carga {title} en el garaje";
+        Debug.Log($"[Submarino] Va a llevar {title} al muelle «{berth.name}»: {_route.Count} tramos.");
+        return true;
+    }
+
+    // Del mar al muelle (llegando) o del muelle al mar (saliendo): bajo la escotilla, a su hondura, y el elevador.
+    void AddBerthLegs(Transform berth, bool arriving)
+    {
+        Vector3 Under() { Vector3 p = berth.position; p.y = seaDepth; return p; }
+        Vector3 Hatch() { Vector3 p = berth.position; p.y -= Height + 1f; return p; }
+        if (arriving)
+        {
+            _route.Add((Under, true, $"cruza el mar bajo el hielo hasta {berth.name}"));
+            _route.Add((Hatch, true, $"sube a la escotilla de {berth.name}"));
+            _route.Add((() => berth.position, false, $"el elevador lo deja en {berth.name}"));
+        }
+        else
+        {
+            _route.Add((Hatch, false, $"el elevador lo baja desde {berth.name}"));
+            _route.Add((Under, true, $"sale de la escotilla de {berth.name} al mar"));
+        }
+    }
+
+    // La vuelta desde el muelle a su garaje, en su árbol.
+    bool AddReturnFromBerth()
+    {
+        ArbolCampos to = ArbolCampos.At(home.position + Vector3.up, out TreeLevel lb, out _, false);
+        Transform berth = _berth;
+        if (to == null || lb == null || berth == null) return false;
+        _tripA = to; _tripB = to;
+        AddBerthLegs(berth, false);
+        float lift = 0.05f;
+        _route.Add((() => to.transform.position + Vector3.up * seaDepth, true, $"cruza el mar bajo el hielo hasta {to.building}"));
+        _route.Add((() => to.transform.position + Vector3.up * 3f, true, $"entra por el fondo de {to.building}"));
+        _route.Add((() => to.World(new Vector3(0f, lb.inside.y, 0f) + (lb.inside - new Vector3(0f, lb.inside.y, 0f)) * 0.3f), true, $"sube por el tronco de {to.building}"));
+        _route.Add((() => to.World(lb.inside + Vector3.up * 0.5f), true, $"frente a la puerta de {lb.name}"));
+        _route.Add((() => to.World(lb.door) + Vector3.up * lift, false, $"puerta de {lb.name}"));
+        _route.Add((() => to.World(lb.outside) + Vector3.up * lift, false, $"sale a {lb.name}"));
+        _route.Add((() => home.position, false, "a su sitio en el garaje"));
+        _berth = null;
+        return true;
+    }
+
     /// <summary>Dónde aparca en un piso: frente a su puerta, metido en el piso (a 9 m del umbral), sobre la losa.</summary>
     static Vector3 ParkPoint(ArbolCampos t, TreeLevel lv)
     {
@@ -222,7 +289,8 @@ public class ConstructionSubmarine : MonoBehaviour
             ArbolCampos from = ArbolCampos.At(transform.position + Vector3.up, out TreeLevel la, out _, false);
             ArbolCampos to = ArbolCampos.At(home.position + Vector3.up, out TreeLevel lb, out _, false);
             _route.Clear(); _wp = 0;
-            if (from != null && la != null && to != null && lb != null) AddTrip(from, la, to, lb, () => home.position);
+            if (_berth != null) AddReturnFromBerth();   // (desde el muelle de la estación nuclear: por la escotilla y el mar)
+            else if (from != null && la != null && to != null && lb != null) AddTrip(from, la, to, lb, () => home.position);
             Now = _route.Count > 0 ? State.Returning : State.Parked; _legSince = Time.time;
         }
     }

@@ -116,7 +116,7 @@ public class NuclearSubmarinaTest : MonoBehaviour, ITestUnit
         TestProbe.Check("con su maquinaria: reactor, consola, ciclotrón, equipo, sala de física, control y conversión de la central y el centro de emergencias",
             plant != null && power != null && plant.GetComponentInChildren<ResearchReactor>(true) != null && plant.GetComponentInChildren<ReactorConsole>(true) != null && plant.GetComponentInChildren<Cyclotron>(true) != null
             && plant.GetComponentsInChildren<PlantEquipment>(true).Length >= 5 && plant.Find("Sala_experimentos_fisica") != null
-            && power.GetComponentsInChildren<Transform>(true).Any(t => t.name == "Sala_control") && power.GetComponentsInChildren<Transform>(true).Any(t => t.name == "Contenedor_turbina")
+            && power.GetComponentsInChildren<Transform>(true).Any(t => t.name == "Bloque_Sala de control") && power.GetComponentsInChildren<Transform>(true).Any(t => t.name == "Contenedor_turbina")
             && mb.GetComponentsInChildren<Transform>(true).Any(t => t.name == NuclearSiteRule.EmergencyName));
         var high = new List<string>();
         foreach (SanctuaryArea a in down) foreach (Renderer r in a.GetComponentsInChildren<Renderer>(true)) if (r.bounds.max.y > 0f) high.Add($"{a.displayName}/{r.name} ({r.bounds.max.y:0})");
@@ -135,17 +135,55 @@ public class NuclearSubmarinaTest : MonoBehaviour, ITestUnit
         }
         posts.AddRange(mb.GetComponentsInChildren<Transform>(true).Where(t => t.name == "Puesto_emergencias"));
         Transform start = mb.arrival;
-        var reach = start != null ? Walkable(start.position, posts.Select(p => p.position).ToList()) : null;
+        // (cada puesto, por su caja: se llega a 1,5 m de su borde; un bloque grande no exige pisar su centro)
+        Bounds BoxOf(Transform p) { var rs = p.GetComponentsInChildren<Renderer>(true).Where(r => r.GetComponent<TMPro.TMP_Text>() == null).ToList(); if (rs.Count == 0) return new Bounds(p.position, Vector3.one * 0.2f); Bounds b = rs[0].bounds; foreach (Renderer r in rs) b.Encapsulate(r.bounds); return b; }
+        var reach = start != null ? Walkable(start.position, posts.Select(BoxOf).ToList()) : null;
         var cut = new List<string>();
         for (int i = 0; i < posts.Count; i++) if (reach == null || !reach[i]) cut.Add(posts[i].name);
         TestProbe.Check("cada puesto de trabajo de la planta se alcanza andando desde el andén de abajo", posts.Count >= 10 && cut.Count == 0, cut.Count == 0 ? $"{posts.Count} puestos" : $"{cut.Count} de {posts.Count} sin camino: {string.Join(", ", cut.Distinct().Take(8))}");
+        // CADA SALA CON PUERTA: toda sala con paredes de la Central se abre a un lado (Room deja su hueco de ≥ 1,2 m; 2 m donde cabe).
+        var rooms = power != null ? power.GetComponentsInChildren<Transform>(true).Where(t => t.name.StartsWith("Bloque_") && t.Cast<Transform>().Count(c => c.name == "Pared_sala") > 0).ToList() : new List<Transform>();
+        var shut = rooms.Where(t => t.Cast<Transform>().Count(c => c.name == "Pared_sala") < 5).Select(t => t.name).ToList();
+        TestProbe.Check("cada sala con paredes de la Central tiene su puerta (pared delantera partida en dos)", rooms.Count >= 3 && shut.Count == 0, shut.Count == 0 ? $"{rooms.Count} salas" : string.Join(", ", shut));
+
+        // T16: LUZ LIBRE ≤ 14 m en cada sala de la planta: columnas de roca (o, donde un equipo fijo no deja 2 m, su viga de transferencia) y ninguna a menos de 2 m de un mueble.
+        var halls = mb.GetComponentsInChildren<Transform>(true).Where(t => t.name.StartsWith("Caverna_") && t.name != "Caverna_microrreactor" && t.name != "Caverna_residuos").ToList();
+        var spanBad = new List<string>(); var tight = new List<string>(); int cols = 0, beams = 0;
+        var furniture = down.SelectMany(a => a.GetComponentsInChildren<Renderer>(true)).Where(r => r.GetComponent<TMPro.TMP_Text>() == null && !(r.bounds.size.y < 0.3f && Mathf.Max(r.bounds.size.x, r.bounds.size.z) > 3f) && !r.name.StartsWith("Wall_") && r.name != "Mat" && !r.name.StartsWith("Suelo")).ToList();
+        foreach (Transform hall in halls)
+        {
+            var forro = hall.GetComponentsInChildren<Renderer>(true).Where(r => r.name == "Forro_caverna").ToList();
+            if (forro.Count == 0) continue;
+            Bounds inner = forro[0].bounds; foreach (Renderer r in forro) inner.Encapsulate(r.bounds);
+            var sup = hall.GetComponentsInChildren<Renderer>(true).Where(r => r.name == "Columna_roca" || r.name == "Viga_transferencia").ToList();
+            cols += sup.Count(r => r.name == "Columna_roca"); beams += sup.Count(r => r.name == "Viga_transferencia");
+            // A lo largo de x: de pared a apoyo, de apoyo a apoyo y al otro lado; a lo largo de z: de pared a columna (las vigas van de pared a pared).
+            var xs = sup.Select(r => (r.bounds.min.x, r.bounds.max.x)).OrderBy(p => p.Item1).ToList();
+            float last = inner.min.x + 0.05f, worst = 0f;
+            foreach (var (a, b) in xs) { worst = Mathf.Max(worst, a - last); last = b; }
+            worst = Mathf.Max(worst, inner.max.x - 0.05f - last);
+            foreach (Renderer c in sup.Where(r => r.name == "Columna_roca")) worst = Mathf.Max(worst, c.bounds.min.z - inner.min.z, inner.max.z - c.bounds.max.z);
+            if (worst > CavernRule.MaxFreeSpan + 0.5f) spanBad.Add($"{hall.name}: {worst:0.0} m");
+            foreach (Renderer c in sup.Where(r => r.name == "Columna_roca"))
+            {
+                Renderer f = furniture.FirstOrDefault(r => r.bounds.max.y > c.bounds.min.y + 0.15f && r.bounds.min.y < c.bounds.min.y + 3f && Mathf.Max(Mathf.Max(r.bounds.min.x - c.bounds.max.x, c.bounds.min.x - r.bounds.max.x), Mathf.Max(r.bounds.min.z - c.bounds.max.z, c.bounds.min.z - r.bounds.max.z)) < 2f);
+                if (f != null) tight.Add($"{hall.name}: columna junto a «{f.name}»");
+            }
+        }
+        TestProbe.Check($"T16: cada sala de la planta, con luz libre ≤ {CavernRule.MaxFreeSpan:0} m (columnas de roca y, donde el equipo no deja, vigas)", halls.Count >= 5 && spanBad.Count == 0 && cols > 0,
+            spanBad.Count == 0 ? $"{halls.Count} salas, {cols} columnas, {beams} vigas" : string.Join(", ", spanBad));
+        TestProbe.Check("las columnas, a ≥ 2 m de todo mueble", tight.Count == 0, tight.Count == 0 ? "libres" : string.Join(", ", tight.Take(6)));
+
+        // LAS POSICIONES RESERVADAS de sus microcosmos, abajo (regla 8).
+        var noSlots = down.Where(a => { PlatformSlots ps = a.GetComponent<PlatformSlots>(); return ps == null || ps.story.Count < PlatformSlots.MinStory || ps.characters.Count < PlatformSlots.MinCharacters; }).Select(a => a.displayName).ToList();
+        TestProbe.Check("las dos áreas, con las posiciones reservadas de sus microcosmos (Chernóbil; Newton, Curie, Einstein)", down.Count >= 2 && noSlots.Count == 0, noSlots.Count == 0 ? "con plazas" : "sin plazas: " + string.Join(", ", noSlots));
 
         if (loadedHere) { AsyncOperation un = SceneManager.UnloadSceneAsync(s2); float ru = Time.realtimeSinceStartup; while (un != null && !un.isDone && Time.realtimeSinceStartup - ru < 30f) yield return null; }
         TestProbe.End();
     }
 
     /// <summary>Relleno por inundación (acotado) del suelo andable desde <paramref name="from"/>: ¿llega a menos de 2 m de cada punto?</summary>
-    static bool[] Walkable(Vector3 from, List<Vector3> goals)
+    static bool[] Walkable(Vector3 from, List<Bounds> goals)
     {
         const float step = 1f, rise = 0.4f, maxR = 260f;
         var ok = new bool[goals.Count];
@@ -166,7 +204,7 @@ public class NuclearSubmarinaTest : MonoBehaviour, ITestUnit
         {
             var (i, j) = q.Dequeue(); float y = seen[(i, j)];
             Vector3 p = new Vector3(from.x + i * step, y, from.z + j * step);
-            for (int k = 0; k < goals.Count; k++) if (!ok[k] && Flat(p, goals[k]) < 2f && Mathf.Abs(goals[k].y - y) < 3f) ok[k] = true;
+            for (int k = 0; k < goals.Count; k++) if (!ok[k] && goals[k].max.y > y - 0.5f && goals[k].min.y < y + 3f && FurnitureSpacing.DistXZ(goals[k], p) <= 1.5f) ok[k] = true;
             foreach (var (di, dj) in new[] { (1, 0), (-1, 0), (0, 1), (0, -1) })
             {
                 var n = (i + di, j + dj);

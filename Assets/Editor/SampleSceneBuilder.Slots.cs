@@ -37,21 +37,45 @@ public static partial class SampleSceneBuilder
             pads.Add(new Bounds(p.transform.TransformPoint(bc.center), new Vector3(Mathf.Abs(e.x), Mathf.Abs(e.y), Mathf.Abs(e.z))));
         }
         int few = 0;
-        foreach (Transform f in floors)
-        {
-            Vector2 size = _platforms.TryGetValue(f, out Vector2 s) ? s : FloorBox(f);
-            PlatformSlots ps = f.GetComponent<PlatformSlots>();
-            if (ps == null) ps = f.gameObject.AddComponent<PlatformSlots>();
-            ComputeSlots(f, size, all, pads, ps);
-            SanctuaryArea sa = f.GetComponent<SanctuaryArea>();
-            string name = sa != null ? sa.displayName : f.name;
-            bool ok = ps.story.Count >= PlatformSlots.MinStory && ps.characters.Count >= PlatformSlots.MinCharacters
-                   && ps.fauna.Count >= PlatformSlots.MinFauna && ps.flora.Count >= PlatformSlots.MinFlora;
-            string line = $"[Plazas] {name}: historia {ps.story.Count}, personajes {ps.characters.Count}, fauna {ps.fauna.Count}, flora {ps.flora.Count}";
-            if (ok || sa == null) Debug.Log(line);
-            else { Debug.LogWarning(line + " — no cabe la historia de su microcosmos: amplía el piso o aparta muebles (regla 8)."); few++; }
-        }
+        foreach (Transform f in floors) if (!ReserveSlotsOn(f, all, pads)) few++;
         Debug.Log($"[Plazas] {floors.Count} pisos con sus posiciones reservadas para el microcosmos ({few} áreas sin sitio suficiente).");
+    }
+
+
+    /// <summary>Las plazas de un piso. false = es un área y no le cabe la historia de su microcosmos.</summary>
+    static bool ReserveSlotsOn(Transform f, List<Bounds> all, List<Bounds> pads)
+    {
+        Vector2 size = _platforms.TryGetValue(f, out Vector2 s) ? s : FloorBox(f);
+        PlatformSlots ps = f.GetComponent<PlatformSlots>();
+        if (ps == null) ps = f.gameObject.AddComponent<PlatformSlots>();
+        ComputeSlots(f, size, all, pads, ps);
+        SanctuaryArea sa = f.GetComponent<SanctuaryArea>();
+        string name = sa != null ? sa.displayName : f.name;
+        bool ok = ps.story.Count >= PlatformSlots.MinStory && ps.characters.Count >= PlatformSlots.MinCharacters
+               && ps.fauna.Count >= PlatformSlots.MinFauna && ps.flora.Count >= PlatformSlots.MinFlora;
+        string line = $"[Plazas] {name}: historia {ps.story.Count}, personajes {ps.characters.Count}, fauna {ps.fauna.Count}, flora {ps.flora.Count}";
+        if (ok || sa == null) { Debug.Log(line); return true; }
+        Debug.LogWarning(line + " — no cabe la historia de su microcosmos: amplía el piso o aparta muebles (regla 8).");
+        return false;
+    }
+
+    /// <summary>(2026-11-08) Las plazas de los pisos que no salen del Blockout: los de la planta nuclear bajo el mar (BuildMarinePlant), con lo que se alza
+    /// en su escena. Sin alfombras abajo. Las usan sus microcosmos (Chernóbil; Newton, Curie, Einstein) al copiar el piso.</summary>
+    static void PlaceReservedSlotsOn(IEnumerable<Transform> floors, Transform sceneRoot)
+    {
+        var all = new List<Bounds>();
+        foreach (Renderer r in sceneRoot.GetComponentsInChildren<Renderer>())
+        {
+            if (!r.enabled || r.GetComponent<TMPro.TMP_Text>() != null) continue;
+            Bounds b = r.bounds;
+            if (b.size.x > 60f || b.size.z > 60f) continue;
+            bool furniture = r.transform.parent != null && FurnitureSpacing.IsFurniture(r.transform.parent);
+            if (b.size.y < 0.3f && (b.size.x > 3f || b.size.z > 3f) && !furniture) continue;
+            if (r.name.StartsWith("Revestimiento_caverna") || r.name.StartsWith("Forro_caverna")) continue;   // (la caverna envuelve la sala: no es un mueble)
+            all.Add(b);
+        }
+        var pads = new List<Bounds>();
+        foreach (Transform f in floors) if (f != null) ReserveSlotsOn(f, all, pads);
     }
 
     // Sin tamaño apuntado (escenas de prueba): el de su suelo («Mat»), o 12 × 12.

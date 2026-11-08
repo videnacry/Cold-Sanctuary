@@ -15,7 +15,7 @@ public static partial class SampleSceneBuilder
     // La cara de la estación: todo dentro de ±StationHalf (NuclearSiteRule).
     static float NuclearCapHalf => NuclearSiteRule.StationHalf;
     static Transform _nuclearRoot;
-    public const string EmergencyFloorName = NuclearSiteRule.EmergencyName;
+    public const string EmergencyFloorName = NuclearSiteRule.EmergencyName, NuclearGarageName = "Garaje_nuclear";
 
     /// <summary>LA ESTACIÓN del sitio nuclear en el santuario 1, con su lógica. Lo de abajo lo hace <see cref="BuildMarineScene"/>.</summary>
     static void BuildNuclearStation(Transform parent)
@@ -53,6 +53,17 @@ public static partial class SampleSceneBuilder
             KitchenProps.C(v, Vector3.zero, new Vector3(1f, 0.6f, 0.8f), new Color(0.8f, 0.2f, 0.15f), 0f, "Actuador_valvula");
             ns.valves.Add(v);
         }
+        // EL GARAJE DEL SUBMARINO DE OBRA, en la estación (2026-11-08): el submarino es del santuario 1 (su mar es de 16 m; el Marino, otra escena), así que no
+        // puede bajar a la planta: sube aquí por una escotilla en la losa y un elevador lo deja en su plaza. Lo que haga falta abajo baja por la Línea (cabe el módulo).
+        Transform gar = new GameObject(NuclearGarageName).transform; gar.SetParent(st, false); gar.localPosition = new Vector3(6f, 0f, 9f);
+        SubmarineBay(gar, "Garaje del sitio nuclear: el submarino de obra sube por la escotilla; el material baja a la planta por la Línea", new Vector3(0f, 0.02f, 0f));
+        KitchenProps.C(gar, new Vector3(0f, 0.03f, 0f), new Vector3(TreeSpec.VehicleBeam + 1f, 0.04f, TreeSpec.VehicleLength + 1f), new Color(0.3f, 0.32f, 0.35f), 0f, "Escotilla_submarino");
+        foreach (int s in new[] { -1, 1 })
+            foreach (int k in new[] { -1, 1 })
+                KitchenProps.C(gar, new Vector3(s * (TreeSpec.VehicleBeam * 0.5f + 1.2f), 1.5f, k * (TreeSpec.VehicleLength * 0.5f - 1f)), new Vector3(0.4f, 3f, 0.4f), TreeSteel, 0f, "Guia_elevador");
+        KitchenProps.C(gar, new Vector3(0f, -4f, 0f), new Vector3(TreeSpec.VehicleBeam + 0.6f, 8f, TreeSpec.VehicleLength + 0.6f), new Color(0.6f, 0.6f, 0.58f), 0f, "Pozo_escotilla");
+        Transform berth = new GameObject("Muelle_submarino").transform; berth.SetParent(gar, false); berth.localPosition = new Vector3(0f, 0.05f, 0f);
+        ns.submarineBerth = berth;
         // Lo que piden los pisos de abajo sigue en el balance del santuario 1 (docs/energia.md).
         GameObject pf = new GameObject("Pisos_planta_marina"); pf.transform.SetParent(_nuclearRoot, false);
         FloorEnergy.DeclareFloor(pf, NuclearSiteRule.PlantFloorsName, 0f, 0f, NuclearSiteRule.PlantFloorsKW);

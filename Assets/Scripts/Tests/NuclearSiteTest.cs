@@ -110,6 +110,26 @@ public class NuclearSiteTest : MonoBehaviour, ITestUnit
         CarpetPad pad = FindObjectsByType<CarpetPad>(FindObjectsSortMode.None).FirstOrDefault(p => p != null && p.surface == $"{NuclearSiteRule.Building}#linea");
         TestProbe.Check("se llega en alfombra a la estación (red del santuario; sin escaleras)", pad != null && pad.kind == CarpetPad.Kind.Santuario && SiteLine.Instance != null && Vector3.Distance(pad.transform.position, SiteLine.Instance.transform.position) < 12f);
 
+        // EL GARAJE DEL SITIO, en la estación: el submarino de obra sale de su árbol, cruza bajo el hielo, sube por la escotilla y aparca en su plaza; y vuelve.
+        Transform berth = ns.submarineBerth;
+        TestProbe.Check("el garaje del submarino de obra está en la estación (escotilla y elevador)", berth != null && station != null && berth.IsChildOf(station) && Named(site, "Escotilla_submarino") != null && Named(site, "Guia_elevador") != null);
+        ConstructionSubmarine sub = ConstructionSubmarine.Instance;
+        if (sub == null || berth == null) TestProbe.Check("el submarino de obra llega a su garaje del sitio", false, $"submarino {sub != null}, garaje {berth != null}");
+        else
+        {
+            float old = Time.timeScale; Time.timeScale = 4f;
+            { float tw = Time.time, rw = Time.realtimeSinceStartup; while (sub.Now != ConstructionSubmarine.State.Parked && Time.time - tw < 900f && Time.realtimeSinceStartup - rw < 300f) yield return null; }
+            int dl = sub.Deliveries; float arrived = float.MaxValue;
+            bool sent = sub.SendToBerth(berth, "material del sitio");
+            float t0 = Time.time, rr0 = Time.realtimeSinceStartup;
+            while (sent && sub.Deliveries == dl && Time.time - t0 < 900f && Time.realtimeSinceStartup - rr0 < 300f) { arrived = Mathf.Min(arrived, Vector3.Distance(sub.transform.position, berth.position)); yield return null; }
+            TestProbe.Check("el submarino de obra llega por el mar y la escotilla a su garaje de la estación, y descarga", sent && sub.Deliveries > dl && arrived < 2f, $"en {Time.time - t0:0} s de juego; a {arrived:0.0} m de la plaza");
+            float t1 = Time.time, r1 = Time.realtimeSinceStartup;
+            while (sub.Now != ConstructionSubmarine.State.Parked && Time.time - t1 < 900f && Time.realtimeSinceStartup - r1 < 300f) yield return null;
+            Time.timeScale = old;
+            TestProbe.Check("y vuelve a aparcar en su garaje de siempre", sub.Now == ConstructionSubmarine.State.Parked && !sub.AtBerth && sub.home != null && Vector3.Distance(sub.transform.position, sub.home.position) < 2f);
+        }
+
         // ── 7. REGLA T13 ──
         ElevatedElement stack = site.GetComponentInChildren<ElevatedElement>(true);
         LaunchSite ls = LaunchSite.Instance;

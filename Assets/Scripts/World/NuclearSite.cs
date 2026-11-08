@@ -99,7 +99,9 @@ public class NuclearSite : MonoBehaviour
     public List<Transform> seaProbes = new List<Transform>();
     [Tooltip("Balizas de alarma (apagadas en normal).")]
     public List<GameObject> beacons = new List<GameObject>();
-    [Tooltip("Agua (m³) del tronco por encima de los reactores.")]
+    [Tooltip("(2026-11-08) El muelle del submarino de obra en la estación: su plaza, sobre la escotilla y el elevador (docs/sitio-nuclear.md §25).")]
+    public Transform submarineBerth;
+    [Tooltip("Agua (m³) que enfría sin bombas (el mar, por la toma pasiva de cada sala).")]
     public float gravityWaterM3;
 
     public Alert State { get; private set; } = Alert.Normal;
