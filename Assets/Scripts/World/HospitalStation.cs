@@ -42,10 +42,18 @@ public class HospitalStation : MonoBehaviour, IInteractable
         get
         {
             Vector3 s = StandPoint;
-            if (!TryGetComponent(out Collider c)) return s;
-            Vector3 q = new Vector3(s.x, Mathf.Clamp(s.y, c.bounds.min.y, c.bounds.max.y), s.z), near = c.ClosestPoint(q), d = q - near; d.y = 0f;
+            // La caja de la mesa entera: la suya y la de sus piezas (ronda 26: Shalva dentro de «Quirofano veterinario 3»; con solo el collider
+            // del propio objeto, si la caja está en una pieza hija no se apartaba nada).
+            Bounds bb = default; bool any = false;
+            foreach (Collider c in GetComponentsInChildren<Collider>())
+            {
+                if (c == null || c.isTrigger || !c.enabled) continue;
+                if (!any) { bb = c.bounds; any = true; } else bb.Encapsulate(c.bounds);
+            }
+            if (!any) return s;
+            Vector3 q = new Vector3(s.x, bb.center.y, s.z), near = bb.ClosestPoint(q), d = q - near; d.y = 0f;
             if (d.sqrMagnitude >= Clearance * Clearance) return s;
-            Vector3 dir = d.sqrMagnitude > 1e-6f ? d.normalized : new Vector3(s.x - c.bounds.center.x, 0f, s.z - c.bounds.center.z).normalized;
+            Vector3 dir = d.sqrMagnitude > 1e-6f ? d.normalized : new Vector3(s.x - bb.center.x, 0f, s.z - bb.center.z).normalized;
             Vector3 p = near + dir * Clearance; p.y = s.y;
             return p;
         }
