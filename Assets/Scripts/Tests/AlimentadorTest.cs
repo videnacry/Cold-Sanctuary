@@ -41,6 +41,9 @@ public class AlimentadorTest : MonoBehaviour, ITestUnit
         foreach (string id in new[] { "gua_alimentador", "gua_alimentador_2", "gua_carnivoros" })
             TestProbe.Check($"un clon con «{id}» la lleva a cabo", WorkdayDirector.CloneDuty(id) == id);
         TestProbe.Check("un clon con otra misión solo va a su sitio", WorkdayDirector.CloneDuty("coc_servicio") == null);
+        // …y su cuerpo puede llevarla: un clon es una copia del cuerpo SIN Anima, y el alimentador solo se le ponía a quien la tenía (ronda 25:
+        // ni una ración de un clon en toda la jornada; los osos, muertos de hambre).
+        { GameObject clon = WorkdayDirector.SpawnMagnateBody("Magnate (clon de prueba)"); TestProbe.Check("el cuerpo de un clon puede llevar una misión con conducta propia", WorkdayDirector.IsPerson(clon)); Destroy(clon); }
 
         // ── La lista compartida ──
         PredatorRound.NewRound();
