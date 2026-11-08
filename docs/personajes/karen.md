@@ -28,12 +28,12 @@
 
 ## 5. Profesión y lo que sabe hacer
 
-- Profesional de asuntos legales y lenguas. *documentada · Berón 2026-11-04 · [personajes-mesocosmos.md §Profesiones y parejas](../personajes-mesocosmos.md) · [Professions.cs:128](../../Assets/Scripts/Progression/Professions.cs#L128)*
+- Profesional de asuntos legales y lenguas. *documentada · Berón 2026-11-04 · [personajes-mesocosmos.md §Profesiones y parejas](../personajes-mesocosmos.md) · [Professions.cs:131](../../Assets/Scripts/Progression/Professions.cs#L131)*
 - Qué lenguas habla: **Falta**.
 
 ## 6. Puesto y áreas
 
-- En el Aula, porque no hay área de asuntos legales: `aul_legal` (contratos, permisos, normas, en una mesa de la sala de estudio) y `aul_lenguas` (traducir y dar clase de idiomas). *recreada · [Professions.cs:55](../../Assets/Scripts/Progression/Professions.cs#L55) · [AreaFunctions.cs:164](../../Assets/Scripts/Progression/AreaFunctions.cs#L164) · [personajes-mesocosmos.md §Por qué así](../personajes-mesocosmos.md)*
+- En el Aula, porque no hay área de asuntos legales: `aul_legal` (contratos, permisos, normas, en una mesa de la sala de estudio) y `aul_lenguas` (traducir y dar clase de idiomas). *recreada · [Professions.cs:57](../../Assets/Scripts/Progression/Professions.cs#L57) · [AreaFunctions.cs:164](../../Assets/Scripts/Progression/AreaFunctions.cs#L164) · [personajes-mesocosmos.md §Por qué así](../personajes-mesocosmos.md)*
 - Sale en el Aula. *código · [SanctuaryDirector.cs:171](../../Assets/Scripts/World/SanctuaryDirector.cs#L171) · [SampleSceneBuilder.Construction.cs:176](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L176)*
 
 ## 7. Relaciones
@@ -58,7 +58,7 @@
 |---|---|
 | Datos (rótulo, ropa, stats) | [SampleSceneBuilder.Construction.cs:201](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L201) |
 | Aspecto | [CubeHair.cs:197](../../Assets/Scripts/Avatar/CubeHair.cs#L197) |
-| Profesión y base | [Professions.cs:55](../../Assets/Scripts/Progression/Professions.cs#L55) · [Professions.cs:128](../../Assets/Scripts/Progression/Professions.cs#L128) |
+| Profesión y base | [Professions.cs:57](../../Assets/Scripts/Progression/Professions.cs#L57) · [Professions.cs:131](../../Assets/Scripts/Progression/Professions.cs#L131) |
 | Misiones | [AreaFunctions.cs:164](../../Assets/Scripts/Progression/AreaFunctions.cs#L164) |
 | Gimnasio | [GymProgramming.cs:212](../../Assets/Scripts/Progression/GymProgramming.cs#L212) |
 | Casa (con Amykhuz) | [ResidentialBuilder.cs:40](../../Assets/Editor/ResidentialBuilder.cs#L40) |

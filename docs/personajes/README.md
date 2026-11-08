@@ -23,6 +23,7 @@ Cada ficha tiene estas 11 secciones, en este orden. Copia [linduarda.md](linduar
 | 9 | Microcosmos y santuario | Su insecto, sus misiones del Microcosmos, su santuario y nivel |
 | 10 | En el código | Dónde vive cada dato suyo en el código, con enlace a la línea |
 | 11 | Preguntas para Berón | Lo que falta o se contradice |
+| — | Solo documentación, no mostrar en el juego | Solo si hace falta: nombres reales y datos que el juego no debe enseñar nunca (Berón 2026-11-08) |
 
 **Cada dato lleva su veracidad y su fuente** (M39, [veracidad-frases.md](../veracidad-frases.md)):
 
@@ -37,7 +38,7 @@ Cada ficha tiene estas 11 secciones, en este orden. Copia [linduarda.md](linduar
 
 Las fuentes son un doc y su sección o un fichero de código y su línea. En el código, cada sitio donde se define una persona lleva un
 comentario «ficha: docs/personajes/…». La lista de personas sale de `Professions.Mesocosmos` y el nombre del fichero, de
-`Professions.DocName` ([Professions.cs:99](../../Assets/Scripts/Progression/Professions.cs#L99), [:110](../../Assets/Scripts/Progression/Professions.cs#L110)).
+`Professions.DocName` ([Professions.cs:101](../../Assets/Scripts/Progression/Professions.cs#L101), [:112](../../Assets/Scripts/Progression/Professions.cs#L112)).
 `tools/check-personajes.sh` y la prueba 95 comprueban que cada una tenga su ficha.
 
 ## Lo completas que están (2026-11-08)
@@ -55,7 +56,7 @@ comentario «ficha: docs/personajes/…». La lista de personas sale de `Profess
 | 2 | [Linduarda](linduarda.md) | L | L | L | P | L | L | P | P | L | **15** | edad y llegada; aptitudes y frases en el código; su profesión no tiene entrada |
 | 6 | [Gohageneis](gohageneis.md) | L | L | L | L | P | L | P | L | P | **15** | si da artes marciales; cómo llegó; su familia |
 | 9 | [Andrea](andrea.md) | L | L | L | P | L | L | P | P | P | **14** | edad; pareja o familia; aptitudes mentales |
-| 4 | [Goluis](goluis.md) | P | L | L | L | P | L | P | P | P | **13** | nacionalidad; si sigue de jefe de cocina; su hija |
+| 4 | [Goluis](goluis.md) | P | L | L | L | P | L | P | P | P | **13** | nacionalidad; qué hace como encargado; su hija |
 | 5 | [Panterilia](panterilia.md) | P | P | L | L | L | P | P | P | P | **12** | foto y nacionalidad; cómo llegó; su hija y su «dependencia química» |
 | 30 | [Consol](consol.md) | L | F | P | P | L | L | P | L | P | **12** | foto; su historia; su carácter |
 | 3 | [Lizmibet](lizmibet.md) | L | P | F | P | P | L | P | P | P | **10** | carácter y frases; su vida de médica; su profesión no tiene entrada |
@@ -78,7 +79,7 @@ comentario «ficha: docs/personajes/…». La lista de personas sale de `Profess
 | 12 | [Karen](karen.md) | P | F | F | P | P | L | P | P | F | **7** | qué lenguas y qué asuntos legales; su historia; su carácter |
 | 20 | [Gallarle](gallarle.md) | L | F | F | P | F | P | L | P | F | **7** | su profesión; su historia; su carácter |
 | 25 | [Yulo](yulo.md) | P | F | F | P | L | P | P | P | F | **7** | su historia; su carácter; nada lo distingue de Lale |
-| 10 | [Nesvitor](nesvitor.md) | P | F | F | P | P | L | F | P | F | **6** | quién es para Berón; su historia; su carácter |
+| 10 | [Nesvitor](nesvitor.md) | P | F | F | P | P | L | P | P | F | **7** | su historia en el juego (delicada); su carácter; qué le gusta |
 | 23 | [David](david.md) | P | F | F | P | P | P | P | P | F | **6** | foto; su historia; qué parte de la informática |
 | 24 | [Adonis](adonis.md) | P | F | F | P | P | P | P | P | F | **6** | foto; su historia; qué parte de la informática |
 
@@ -113,17 +114,17 @@ tienen su ficha en el doc de su microcosmos: [microcosmos-famosos.md](../microco
 
 ## Contradicciones entre fuentes (2026-11-08)
 
-Están en la sección 11 de cada ficha, como preguntas. Las principales:
+Están en la sección 11 de cada ficha, como preguntas. Las principales (las contestadas por Berón, tachadas o marcadas):
 
-1. **La familia de Irosene y los nombres del santuario.** La ficha de Irosene nombra a un primer esposo «Néstor», a una hija «Alicia»,
-   exesposa de Josedrilo, a Josedrilo padre de Leo y a Lizmibet consuegra ⚠️. En el santuario están Nesvitor «Néstor», Alicita «Alicia»
-   (pareja de Julian) y Josedrilo (pareja de Maite). No se da por hecho que sean las mismas personas: pregunta a Berón.
+1. **La familia de Irosene y los nombres del santuario.** *Contestado en parte (Berón 2026-11-08)*: Irosene es Irene y Nesvitor es
+   Néstor, el primer esposo de su historia (nombres reales: solo en sus fichas, sección «Solo documentación»). **Sigue abierto**: si
+   Alicita es la hija «Alicia», exesposa de Josedrilo, si Josedrilo es el padre de Leo y si Lizmibet es su consuegra ⚠️.
 2. **Médicas sin profesión.** Linduarda y Lizmibet no tienen entrada en `Professions.All`; `Professions.Medical` no incluye a Malena,
    aunque [reglas-personajes.md](../reglas-personajes.md) cuenta 4 médicas.
 3. **Linduarda y los animales.** Su ficha dice Una Salud, pero la jornada la excluye de cuidar a los animales ingresados.
 4. **El santuario y el nivel de Irosene**: Tier 4 submarino, «3er santuario V1» o, según la regla del 2026-11-08, por encima de
    santuario 1 nivel 1. En el juego vive en el santuario 1 como todos.
-5. **Goluis, jefe de cocina** según su ficha y `KitchenBoss`, pero Berón nombró jefes a Maite y Amykhuz.
+5. ~~**Goluis, jefe de cocina**~~ *Contestado (Berón 2026-11-08)*: Goluis es **encargado**; los rangos más altos de la cocina son los de Maite y Amykhuz. Código al día (rótulo, `Professions` con base, plan de gimnasio, comentarios).
 6. **Panterilia, limpieza y farmacia** según su ficha vieja; Berón solo dijo baile y finanzas. Sus anclas `protect_daughter` y
    `chemical_reliance` no tienen fuente escrita.
 7. **Gohageneis y las artes marciales**: las da en días alternos con Luciana sin base de Berón; la experta documentada es Luciana.
@@ -136,6 +137,7 @@ Están en la sección 11 de cada ficha, como preguntas. Las principales:
 12. **Fernando** lleva toda el área de Energía (también las patrullas `ene_`), y Berón solo dijo paneles solares; no está en
     `Professions.Unconfirmed` (P7).
 13. **Traoré** guarda un aspecto militar (boina y uniforme) aunque su microcosmos es solo civil (J6).
+14. ~~**Nombres reales en el juego**~~ *Arreglado (2026-11-08)*: los rótulos de Nesvitor y Alicita ya no dicen «Néstor» ni «Alicia» ([SampleSceneBuilder.Construction.cs:199](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L199), [:202](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L202)); «Alicia», pendiente de que Berón confirme si es su nombre real. Se ve al reconstruir la escena.
 
 ## Cómo se mantiene
 

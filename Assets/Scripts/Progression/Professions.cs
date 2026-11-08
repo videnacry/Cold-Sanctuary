@@ -46,6 +46,8 @@ public static class Professions
         // Maite: jefa de cocina con Amykhuz, y CURANDERA (las plantas medicinales y las curas del hospital).
         new Entry("Maite", "jefa de cocina y curandera", "Cocina", "Hospital:hos_plantas,enf_visita"),   // ficha: docs/personajes/maite.md
         new Entry("Amykhuz", "jefe de cocina y química", "Cocina", "Química"),   // ficha: docs/personajes/amykhuz.md
+        // Goluis (Berón 2026-11-08): ENCARGADO DE COCINA; los rangos más altos de la cocina son Maite y Amykhuz.
+        new Entry("Goluis", "encargado de cocina", "Cocina"),   // ficha: docs/personajes/goluis.md
         // Shalva, profesional de cultivo: EL JARDINERO FRUTAL (su misión de profesión en el Huerto es una ronda de frutales; la experta de los
         // frutales era Irosene, que ahora es de letras y textil). El riego y la cosecha del huerto le llegan por la rotación, como a todos.
         new Entry("Shalva", "cultivo (jardinero frutal) y bioconstrucción", "Huerto:jar_frutales", "Construcción:mat_"),   // ficha: docs/personajes/shalva.md
@@ -123,6 +125,7 @@ public static class Professions
         { "Nesvitor", "Berón 2026-11-04: guardia y agricultor" },
         { "Maite", "Berón 2026-11-04: jefa de cocina con Amykhuz y curandera" },
         { "Amykhuz", "Berón 2026-11-04: profesional de cocina y química, jefe de cocina con Maite" },
+        { "Goluis", "Berón 2026-11-08: encargado de cocina (los rangos más altos de la cocina son Maite y Amykhuz)" },
         { "Shalva", "Berón 2026-11-04: profesional de cultivo y bioconstrucción" },
         { "Adaguchi", "Berón 2026-11-04: profesional de submarinismo y cocina" },
         { "Karen", "Berón 2026-11-04: profesional de asuntos legales y lenguas" },
@@ -144,7 +147,6 @@ public static class Professions
     public static readonly Dictionary<string, string> Unconfirmed = new Dictionary<string, string>
     {
         { "Gohageneis", "artes marciales: salió del reparto provisional («ágil y atlético»), sin palabra de Berón; la experta documentada es Luciana" },
-        { "Goluis", "jefe de cocina: lo dice su ficha, pero Berón nombró jefes a Maite y Amykhuz; sin entrada de profesión" },
         { "Gallarle", "sin profesión" },
         { "Luciana", "control de misión de la lanzadera: deducido de «piloto»" },
         { "Maite", "curas del hospital (enf_visita): deducido de «curandera»" },

@@ -28,9 +28,9 @@
 
 ## 5. Profesión y lo que sabe hacer
 
-- **Biotecnología**. *documentada (Berón 2026-11-04) · [Professions.cs:136](../../Assets/Scripts/Progression/Professions.cs#L136) · memoria de Berón, character-roles (2026-11-04 15:42)*
-- En el juego: el laboratorio de Carne Cultivada. *recreada · [Professions.cs:70](../../Assets/Scripts/Progression/Professions.cs#L70) · [carne-cultivada.md](../carne-cultivada.md)*
-- Biología y el cuidado de los fotobiorreactores del árbol. *inventada (deducido de «biotecnología», sin confirmar) · [Professions.cs:152](../../Assets/Scripts/Progression/Professions.cs#L152) · [reglas-personajes.md §Auditoría de puestos](../reglas-personajes.md)*
+- **Biotecnología**. *documentada (Berón 2026-11-04) · [Professions.cs:139](../../Assets/Scripts/Progression/Professions.cs#L139) · memoria de Berón, character-roles (2026-11-04 15:42)*
+- En el juego: el laboratorio de Carne Cultivada. *recreada · [Professions.cs:72](../../Assets/Scripts/Progression/Professions.cs#L72) · [carne-cultivada.md](../carne-cultivada.md)*
+- Biología y el cuidado de los fotobiorreactores del árbol. *inventada (deducido de «biotecnología», sin confirmar) · [Professions.cs:154](../../Assets/Scripts/Progression/Professions.cs#L154) · [reglas-personajes.md §Auditoría de puestos](../reglas-personajes.md)*
 
 ## 6. Puesto y áreas
 
@@ -57,7 +57,7 @@
 |---|---|
 | Cuerpo y stats | [SampleSceneBuilder.Construction.cs:214](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L214) |
 | Aspecto | [CubeHair.cs:222](../../Assets/Scripts/Avatar/CubeHair.cs#L222) |
-| Profesión, base y lo deducido | [Professions.cs:70](../../Assets/Scripts/Progression/Professions.cs#L70) · [Professions.cs:136](../../Assets/Scripts/Progression/Professions.cs#L136) · [Professions.cs:152](../../Assets/Scripts/Progression/Professions.cs#L152) |
+| Profesión, base y lo deducido | [Professions.cs:72](../../Assets/Scripts/Progression/Professions.cs#L72) · [Professions.cs:139](../../Assets/Scripts/Progression/Professions.cs#L139) · [Professions.cs:154](../../Assets/Scripts/Progression/Professions.cs#L154) |
 | Personal y nombre viejo | [WorkdayDirector.cs:22](../../Assets/Scripts/Progression/WorkdayDirector.cs#L22) · [WorkdayDirector.cs:79](../../Assets/Scripts/Progression/WorkdayDirector.cs#L79) |
 | Área de salida | [SanctuaryDirector.cs:175](../../Assets/Scripts/World/SanctuaryDirector.cs#L175) |
 | Casa | [ResidentialBuilder.cs:32](../../Assets/Editor/ResidentialBuilder.cs#L32) |

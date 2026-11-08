@@ -27,7 +27,7 @@
 
 ## 5. Profesión y lo que sabe hacer
 
-- **Dirección de proyectos** (project manager), con Alicita. *documentada (Berón 2026-11-04) · [Professions.cs:122](../../Assets/Scripts/Progression/Professions.cs#L122) · memoria de Berón, character-roles (2026-11-04 15:02)*
+- **Dirección de proyectos** (project manager), con Alicita. *documentada (Berón 2026-11-04) · [Professions.cs:124](../../Assets/Scripts/Progression/Professions.cs#L124) · memoria de Berón, character-roles (2026-11-04 15:02)*
 - En el juego: misiones `con_proyectos` y `con_proyectos2` de Construcción; cada día cada uno coge la que menos ha hecho. *recreada · [Professions.cs:44](../../Assets/Scripts/Progression/Professions.cs#L44) · [AreaFunctions.cs:167-168](../../Assets/Scripts/Progression/AreaFunctions.cs#L167) · [personajes-mesocosmos.md §Maestros de baile](../personajes-mesocosmos.md)*
 
 ## 6. Puesto y áreas
@@ -55,7 +55,7 @@
 |---|---|
 | Cuerpo y stats | [SampleSceneBuilder.Construction.cs:209](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L209) |
 | Aspecto provisional | [CubeHair.cs:236](../../Assets/Scripts/Avatar/CubeHair.cs#L236) |
-| Profesión y base | [Professions.cs:44](../../Assets/Scripts/Progression/Professions.cs#L44) · [Professions.cs:122](../../Assets/Scripts/Progression/Professions.cs#L122) |
+| Profesión y base | [Professions.cs:44](../../Assets/Scripts/Progression/Professions.cs#L44) · [Professions.cs:124](../../Assets/Scripts/Progression/Professions.cs#L124) |
 | Personal | [WorkdayDirector.cs:21](../../Assets/Scripts/Progression/WorkdayDirector.cs#L21) |
 | Área de salida | [SanctuaryDirector.cs:173](../../Assets/Scripts/World/SanctuaryDirector.cs#L173) |
 | Casa | [ResidentialBuilder.cs:41](../../Assets/Editor/ResidentialBuilder.cs#L41) |

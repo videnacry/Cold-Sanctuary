@@ -29,7 +29,7 @@
 
 ## 5. Profesión y lo que sabe hacer
 
-- Jefe de reparaciones (las misiones `rep_`) y guardia. *documentada (Berón 2026-11-04) · [Professions.cs:38](../../Assets/Scripts/Progression/Professions.cs#L38) · [Professions.cs:119](../../Assets/Scripts/Progression/Professions.cs#L119)*
+- Jefe de reparaciones (las misiones `rep_`) y guardia. *documentada (Berón 2026-11-04) · [Professions.cs:38](../../Assets/Scripts/Progression/Professions.cs#L38) · [Professions.cs:121](../../Assets/Scripts/Progression/Professions.cs#L121)*
 - Antes: jefe de construcción, obras y reparaciones de las áreas humanas. *documentada (Berón 2026-10-31) · memoria `character-roles`*. Desde el 2026-11-04 la obra nueva la dirige Josedrilo. *documentada · [personajes-mesocosmos.md §Profesiones](../personajes-mesocosmos.md)*
 - Guardia con Gohageneis y Nesvitor; su profesión incluye la Sala de guardia. *documentada · [sala-de-guardia.md](../sala-de-guardia.md)*
 
@@ -61,8 +61,8 @@
 |---|---|
 | Cuerpo, stats y rótulo | [SampleSceneBuilder.cs:3054](../../Assets/Editor/SampleSceneBuilder.cs#L3054) |
 | Aspecto | [CubeHair.cs:159](../../Assets/Scripts/Avatar/CubeHair.cs#L159) |
-| Profesión y su base | [Professions.cs:38](../../Assets/Scripts/Progression/Professions.cs#L38) · [Professions.cs:119](../../Assets/Scripts/Progression/Professions.cs#L119) |
-| Nombre de la ficha (`tote`) | [Professions.cs:110](../../Assets/Scripts/Progression/Professions.cs#L110) |
+| Profesión y su base | [Professions.cs:38](../../Assets/Scripts/Progression/Professions.cs#L38) · [Professions.cs:121](../../Assets/Scripts/Progression/Professions.cs#L121) |
+| Nombre de la ficha (`tote`) | [Professions.cs:112](../../Assets/Scripts/Progression/Professions.cs#L112) |
 | Personal y horario libre | [WorkdayDirector.cs:19](../../Assets/Scripts/Progression/WorkdayDirector.cs#L19) · [LeisureDirector.cs:86](../../Assets/Scripts/Progression/LeisureDirector.cs#L86) |
 | Salida | [SampleSceneBuilder.Construction.cs:166](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L166) · [SanctuaryDirector.cs:163](../../Assets/Scripts/World/SanctuaryDirector.cs#L163) |
 | Gimnasio | [GymProgramming.cs:208](../../Assets/Scripts/Progression/GymProgramming.cs#L208) |

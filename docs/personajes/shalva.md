@@ -27,13 +27,13 @@
 
 ## 5. Profesión y lo que sabe hacer
 
-- Profesional de **cultivo** y **bioconstrucción**. *documentada (Berón 2026-11-04) · [personajes-mesocosmos.md §Profesiones y parejas](../personajes-mesocosmos.md) · [Professions.cs:126](../../Assets/Scripts/Progression/Professions.cs#L126)*
-- **Jardinero frutal**: cada día una ronda de frutales (`jar_frutales`), heredada de Irosene. *inventada (deducido de «cultivo», sin confirmar) · [Professions.cs:151](../../Assets/Scripts/Progression/Professions.cs#L151) · [jardines-frutales.md §Ronda 7](../jardines-frutales.md) · [FruitGardener.cs:25](../../Assets/Scripts/Farming/FruitGardener.cs#L25)*
-- Bioconstrucción en el juego: misiones de material (`mat_`). *recreada · [Professions.cs:51](../../Assets/Scripts/Progression/Professions.cs#L51)*
+- Profesional de **cultivo** y **bioconstrucción**. *documentada (Berón 2026-11-04) · [personajes-mesocosmos.md §Profesiones y parejas](../personajes-mesocosmos.md) · [Professions.cs:129](../../Assets/Scripts/Progression/Professions.cs#L129)*
+- **Jardinero frutal**: cada día una ronda de frutales (`jar_frutales`), heredada de Irosene. *inventada (deducido de «cultivo», sin confirmar) · [Professions.cs:153](../../Assets/Scripts/Progression/Professions.cs#L153) · [jardines-frutales.md §Ronda 7](../jardines-frutales.md) · [FruitGardener.cs:25](../../Assets/Scripts/Farming/FruitGardener.cs#L25)*
+- Bioconstrucción en el juego: misiones de material (`mat_`). *recreada · [Professions.cs:53](../../Assets/Scripts/Progression/Professions.cs#L53)*
 
 ## 6. Puesto y áreas
 
-- Huerto (`jar_frutales`) y Construcción (`mat_`). *recreada · [Professions.cs:51](../../Assets/Scripts/Progression/Professions.cs#L51)*
+- Huerto (`jar_frutales`) y Construcción (`mat_`). *recreada · [Professions.cs:53](../../Assets/Scripts/Progression/Professions.cs#L53)*
 - Sale en el huerto. *recreada · [SanctuaryDirector.cs:170](../../Assets/Scripts/World/SanctuaryDirector.cs#L170) · [SampleSceneBuilder.Construction.cs:173](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L173)*
 - Su nombre sale en el cartel de la sala de cuidados de los frutales. *recreada · [SampleSceneBuilder.Orchards.cs:274](../../Assets/Editor/SampleSceneBuilder.Orchards.cs#L274) · [jardines-frutales.md §La sala de cuidados](../jardines-frutales.md)*
 
@@ -59,7 +59,7 @@
 |---|---|
 | Cuerpo y stats | [SampleSceneBuilder.Construction.cs:206](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L206) |
 | Aspecto | [CubeHair.cs:215](../../Assets/Scripts/Avatar/CubeHair.cs#L215) |
-| Profesión y base | [Professions.cs:51](../../Assets/Scripts/Progression/Professions.cs#L51) · [Professions.cs:126](../../Assets/Scripts/Progression/Professions.cs#L126) · [Professions.cs:151](../../Assets/Scripts/Progression/Professions.cs#L151) |
+| Profesión y base | [Professions.cs:53](../../Assets/Scripts/Progression/Professions.cs#L53) · [Professions.cs:129](../../Assets/Scripts/Progression/Professions.cs#L129) · [Professions.cs:153](../../Assets/Scripts/Progression/Professions.cs#L153) |
 | Personal | [WorkdayDirector.cs:20](../../Assets/Scripts/Progression/WorkdayDirector.cs#L20) |
 | Área de salida | [SanctuaryDirector.cs:170](../../Assets/Scripts/World/SanctuaryDirector.cs#L170) · [SampleSceneBuilder.Construction.cs:173](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L173) |
 | Jardinero frutal | [FruitGardener.cs:25](../../Assets/Scripts/Farming/FruitGardener.cs#L25) |

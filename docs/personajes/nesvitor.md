@@ -1,4 +1,4 @@
-# Nesvitor (Néstor)
+# Nesvitor
 
 > Ficha con la plantilla de [README.md](README.md). Id en el código: `Nesvitor`. Revisada: 2026-11-08.
 > Veracidad de cada dato (regla M39, [veracidad-frases.md](../veracidad-frases.md)): **documentada** = lo dijo Berón (sus mensajes o la
@@ -28,7 +28,7 @@
 
 ## 5. Profesión y lo que sabe hacer
 
-- Guardia y agricultor. *documentada · Berón 2026-11-04 · [personajes-mesocosmos.md §Profesiones y parejas](../personajes-mesocosmos.md) · [Professions.cs:123](../../Assets/Scripts/Progression/Professions.cs#L123)*
+- Guardia y agricultor. *documentada · Berón 2026-11-04 · [personajes-mesocosmos.md §Profesiones y parejas](../personajes-mesocosmos.md) · [Professions.cs:125](../../Assets/Scripts/Progression/Professions.cs#L125)*
 - Antes, en el reparto provisional, llevó las cuentas del santuario desde el restaurante («el papel de persona mayor que se pedía para él», heredado de Warren Buffett). Ya no vale. *inventada · [personajes-mesocosmos.md §Reparto de papeles](../personajes-mesocosmos.md)*
 
 ## 6. Puesto y áreas
@@ -41,6 +41,7 @@
 
 - Familia o amigo de Berón: el parentesco exacto **Falta**.
 - Pareja e hijos: **Falta**. Vive solo en su casa del árbol. *código · [ResidentialBuilder.cs:22](../../Assets/Editor/ResidentialBuilder.cs#L22)*
+- Es el «Néstor» de la historia de Irosene: su primer esposo (Berón 2026-11-08). *documentada · [character-irosene.md §Historia](../character-irosene.md)*. Ver §Solo documentación.
 
 ## 8. Horario y costumbres
 
@@ -60,13 +61,24 @@
 | Datos (rótulo, ropa, stats) | [SampleSceneBuilder.Construction.cs:199](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L199) (`FamilyCharacters`) |
 | Dónde sale | [SampleSceneBuilder.Construction.cs:172](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L172) · [SanctuaryDirector.cs:177](../../Assets/Scripts/World/SanctuaryDirector.cs#L177) |
 | Aspecto | [CubeHair.cs:191](../../Assets/Scripts/Avatar/CubeHair.cs#L191) |
-| Profesión y base | [Professions.cs:45](../../Assets/Scripts/Progression/Professions.cs#L45) · [Professions.cs:123](../../Assets/Scripts/Progression/Professions.cs#L123) |
+| Profesión y base | [Professions.cs:45](../../Assets/Scripts/Progression/Professions.cs#L45) · [Professions.cs:125](../../Assets/Scripts/Progression/Professions.cs#L125) |
 | Gimnasio | [GymProgramming.cs:210](../../Assets/Scripts/Progression/GymProgramming.cs#L210) |
 | Personal y casa | [WorkdayDirector.cs:20](../../Assets/Scripts/Progression/WorkdayDirector.cs#L20) · [ResidentialBuilder.cs:22](../../Assets/Editor/ResidentialBuilder.cs#L22) |
 
 ## 11. Preguntas para Berón
 
 1. ¿Quién es para ti, de dónde es y qué le gusta? ¿Alguna historia suya para el juego?
-2. La ficha de Irosene ([character-irosene.md §Historia](../character-irosene.md)) nombra a un «Néstor». ¿Es otra persona, verdad? (No lo damos por hecho.)
+2. ~~¿Es el «Néstor» de la ficha de Irosene?~~ Contestado (2026-11-08): sí, es la misma persona. ¿Cómo debe ser en el juego su relación con Irosene, que vive con Fausto? (Tema delicado: su historia está en la ficha de Irosene.)
 3. La razón de su plan de gimnasio dice «el mayor de las cuentas», del reparto provisional ([GymProgramming.cs:210](../../Assets/Scripts/Progression/GymProgramming.cs#L210)), y dos comentarios lo llaman «consejero» ([SampleSceneBuilder.Construction.cs:168](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L168), [SanctuaryDirector.cs:168](../../Assets/Scripts/World/SanctuaryDirector.cs#L168)). ¿Lo quitamos?
 4. ¿Plan de gimnasio de salud por ser mayor, o como los demás?
+
+## Solo documentación, no mostrar en el juego
+
+> Nombres reales (Berón 2026-11-08): **se documentan, pero el juego no los muestra nunca** (ni rótulos, ni diálogos, ni la interfaz). Ver la regla P24 del [manual](../manual-de-diseno.md) §9.1.
+
+| En el juego | Nombre real | Fuente |
+|---|---|---|
+| Nesvitor | Néstor | Berón 2026-11-04 («Nesvitor (nestor)», [diseno-personajes.md §Familia y amigos](../diseno-personajes.md)) y 2026-11-08 |
+| Irosene | Irene: fue su esposa ([character-irosene.md §Historia](../character-irosene.md)) | Berón 2026-11-08 |
+
+- (2026-11-08) Se quitó «· Néstor» de su rótulo, que ahora es «Nesvitor (guardia y agricultor)» ([SampleSceneBuilder.Construction.cs:199](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L199)). Las escenas construidas antes lo siguen mostrando hasta reconstruirlas.

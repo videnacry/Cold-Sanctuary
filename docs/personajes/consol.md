@@ -27,7 +27,7 @@
 
 ## 5. Profesión y lo que sabe hacer
 
-- Profesora de yoga, experta en Ashtanga. *documentada (Berón 2026-11-05) · [Professions.cs:117](../../Assets/Scripts/Progression/Professions.cs#L117)*
+- Profesora de yoga, experta en Ashtanga. *documentada (Berón 2026-11-05) · [Professions.cs:119](../../Assets/Scripts/Progression/Professions.cs#L119)*
 - Berón: «ahora que ha llegado Consol el segundo puesto se le pondría a ella siendo que existe documentación de su gran habilidad, de hecho su descripción la hace candidata a ser superior a Josedrilo». *documentada · [personajes-mesocosmos.md §Consol y Fernando](../personajes-mesocosmos.md) · [reglas-personajes.md §Auditoría de puestos](../reglas-personajes.md)*
 - Su clase, «Ashtanga profundo» (`AshtangaPrimary.Deep`): Surya Namaskara A, tres posturas de 8 respiraciones con su variación de 5 (Paschimottanasana B, Baddha Konasana B, Prasarita Padottanasana C) y Savasana; la postura que abre rota con el día. *recreada · [ashtanga-primary-series.md §Clase profunda de Consol](../ashtanga-primary-series.md) · [AshtangaPrimary.cs:67](../../Assets/Scripts/Asana/AshtangaPrimary.cs#L67) · [YogaLibrary.cs:23](../../Assets/Scripts/Asana/YogaLibrary.cs#L23) · [YogaClass.cs:38](../../Assets/Scripts/World/YogaClass.cs#L38)*
 
@@ -35,7 +35,7 @@
 
 - **Maestra jefa de Ashtanga** (`AshtangaTeacher`); Josedrilo, jefe de Hatha. Cada uno jefe de su estilo. *recreada (decisión nuestra sobre lo que dijo Berón) · [WorkdayDirector.cs:777](../../Assets/Scripts/Progression/WorkdayDirector.cs#L777) · [personajes-mesocosmos.md §Consol y Fernando](../personajes-mesocosmos.md) · [yoga-pisos.md §5](../yoga-pisos.md)*
 - Profesión en el juego: la Sala de Yoga, solo `yog_ashtanga` (0,5 h: preparar la clase). No entra en la clase de grupo de Hatha (`clase_yoga`). *recreada · [Professions.cs:34](../../Assets/Scripts/Progression/Professions.cs#L34) · [AreaFunctions.cs:173](../../Assets/Scripts/Progression/AreaFunctions.cs#L173)*
-- Abre la clase de Ashtanga de las 14 h en la primera sala del día, aunque no haya llegado aún. *código · [WorkdayDirector.cs:783](../../Assets/Scripts/Progression/WorkdayDirector.cs#L783) · [Professions.cs:92-93](../../Assets/Scripts/Progression/Professions.cs#L92)*
+- Abre la clase de Ashtanga de las 14 h en la primera sala del día, aunque no haya llegado aún. *código · [WorkdayDirector.cs:783](../../Assets/Scripts/Progression/WorkdayDirector.cs#L783) · [Professions.cs:94-95](../../Assets/Scripts/Progression/Professions.cs#L94)*
 - Sale en el piso de la Sala de Yoga. *recreada · [SanctuaryDirector.cs:178](../../Assets/Scripts/World/SanctuaryDirector.cs#L178) · [SampleSceneBuilder.Construction.cs:187](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L187)*
 
 ## 7. Relaciones
@@ -46,7 +46,7 @@
 
 ## 8. Horario y costumbres
 
-- Lunes a viernes da la clase de Ashtanga de las 14 h; a las 20 h guía el Ashtanga autoguiado. *recreada · [personajes-mesocosmos.md §Consol y Fernando](../personajes-mesocosmos.md) · [Professions.cs:91-93](../../Assets/Scripts/Progression/Professions.cs#L91)*
+- Lunes a viernes da la clase de Ashtanga de las 14 h; a las 20 h guía el Ashtanga autoguiado. *recreada · [personajes-mesocosmos.md §Consol y Fernando](../personajes-mesocosmos.md) · [Professions.cs:93-95](../../Assets/Scripts/Progression/Professions.cs#L93)*
 - Sábado y domingo, gimnasio suave: cuerpo entero, salud. *recreada · [GymProgramming.cs:219](../../Assets/Scripts/Progression/GymProgramming.cs#L219)*
 - La clase profunda pasa a Savasana a las 14:45 ([YogaClass.cs:41](../../Assets/Scripts/World/YogaClass.cs#L41)); el doc aún dice 15:45 ([ashtanga-primary-series.md §Clase profunda](../ashtanga-primary-series.md)).
 
@@ -61,8 +61,8 @@
 |---|---|
 | Cuerpo y stats | [SampleSceneBuilder.Construction.cs:220](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L220) |
 | Aspecto provisional | [CubeHair.cs:241](../../Assets/Scripts/Avatar/CubeHair.cs#L241) |
-| Profesión y base | [Professions.cs:34](../../Assets/Scripts/Progression/Professions.cs#L34) · [Professions.cs:117](../../Assets/Scripts/Progression/Professions.cs#L117) |
-| Maestra de Ashtanga | [WorkdayDirector.cs:777](../../Assets/Scripts/Progression/WorkdayDirector.cs#L777) · [Professions.cs:92](../../Assets/Scripts/Progression/Professions.cs#L92) |
+| Profesión y base | [Professions.cs:34](../../Assets/Scripts/Progression/Professions.cs#L34) · [Professions.cs:119](../../Assets/Scripts/Progression/Professions.cs#L119) |
+| Maestra de Ashtanga | [WorkdayDirector.cs:777](../../Assets/Scripts/Progression/WorkdayDirector.cs#L777) · [Professions.cs:94](../../Assets/Scripts/Progression/Professions.cs#L94) |
 | Su clase | [AshtangaPrimary.cs:67](../../Assets/Scripts/Asana/AshtangaPrimary.cs#L67) · [YogaClass.cs:38](../../Assets/Scripts/World/YogaClass.cs#L38) |
 | Personal | [WorkdayDirector.cs:23](../../Assets/Scripts/Progression/WorkdayDirector.cs#L23) |
 | Área de salida | [SanctuaryDirector.cs:178](../../Assets/Scripts/World/SanctuaryDirector.cs#L178) |

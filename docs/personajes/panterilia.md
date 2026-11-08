@@ -36,9 +36,9 @@
 
 ## 5. Profesión y lo que sabe hacer
 
-- Maestra de baile y finanzas (la mesa de cuentas del restaurante, `coc_cuentas`). *documentada (Berón 2026-11-04) · [Professions.cs:42](../../Assets/Scripts/Progression/Professions.cs#L42) · [Professions.cs:121](../../Assets/Scripts/Progression/Professions.cs#L121)*
-- Guía el baile un día de cada dos, con Gohageneis. *código · [Professions.cs:86](../../Assets/Scripts/Progression/Professions.cs#L86)*
-- Su ficha antigua: dirige la limpieza y la farmacia (nivel 2). *recreada, sin base de Berón: `Professions.Unconfirmed` · [world-simulation.md](../world-simulation.md) · [area-missions-spec.md](../area-missions-spec.md) · [Professions.cs:155](../../Assets/Scripts/Progression/Professions.cs#L155)*
+- Maestra de baile y finanzas (la mesa de cuentas del restaurante, `coc_cuentas`). *documentada (Berón 2026-11-04) · [Professions.cs:42](../../Assets/Scripts/Progression/Professions.cs#L42) · [Professions.cs:123](../../Assets/Scripts/Progression/Professions.cs#L123)*
+- Guía el baile un día de cada dos, con Gohageneis. *código · [Professions.cs:88](../../Assets/Scripts/Progression/Professions.cs#L88)*
+- Su ficha antigua: dirige la limpieza y la farmacia (nivel 2). *recreada, sin base de Berón: `Professions.Unconfirmed` · [world-simulation.md](../world-simulation.md) · [area-missions-spec.md](../area-missions-spec.md) · [Professions.cs:157](../../Assets/Scripts/Progression/Professions.cs#L157)*
 - Fue segunda maestra de yoga hasta el 2026-11-05; se quitó por no tener base (P7). *documentada · [reglas-personajes.md §Auditoría](../reglas-personajes.md)*
 - Sube el radio de observación del jugador (+1,5) mientras está cerca. *código · [Panterilia.cs](../../Assets/Scripts/Companion/Companions/Panterilia.cs) · [observation-system.md](../observation-system.md)*
 
@@ -77,8 +77,8 @@
 | Arquetipo | [Archetypes.cs:138](../../Assets/Scripts/Soul/Archetypes.cs#L138) · [Archetypes.cs:172](../../Assets/Scripts/Soul/Archetypes.cs#L172) |
 | Vivencias | [PhrasePools.cs:44](../../Assets/Scripts/Mind/PhrasePools.cs#L44) |
 | Aspecto | [CubeHair.cs:253](../../Assets/Scripts/Avatar/CubeHair.cs#L253) |
-| Profesión, base y lo sin confirmar | [Professions.cs:42](../../Assets/Scripts/Progression/Professions.cs#L42) · [Professions.cs:121](../../Assets/Scripts/Progression/Professions.cs#L121) · [Professions.cs:155](../../Assets/Scripts/Progression/Professions.cs#L155) |
-| Maestra de baile | [Professions.cs:86](../../Assets/Scripts/Progression/Professions.cs#L86) |
+| Profesión, base y lo sin confirmar | [Professions.cs:42](../../Assets/Scripts/Progression/Professions.cs#L42) · [Professions.cs:123](../../Assets/Scripts/Progression/Professions.cs#L123) · [Professions.cs:157](../../Assets/Scripts/Progression/Professions.cs#L157) |
+| Maestra de baile | [Professions.cs:88](../../Assets/Scripts/Progression/Professions.cs#L88) |
 | Personal, salida, gimnasio y casa | [WorkdayDirector.cs:19](../../Assets/Scripts/Progression/WorkdayDirector.cs#L19) · [SanctuaryDirector.cs:160](../../Assets/Scripts/World/SanctuaryDirector.cs#L160) · [GymProgramming.cs:205](../../Assets/Scripts/Progression/GymProgramming.cs#L205) · [ResidentialBuilder.cs:16](../../Assets/Editor/ResidentialBuilder.cs#L16) |
 
 ## 11. Preguntas para Berón

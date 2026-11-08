@@ -26,8 +26,8 @@
 
 ## 5. Profesión y lo que sabe hacer
 
-- **Informática** («IT specialist»). *documentada (Berón 2026-11-04) · [Professions.cs:134](../../Assets/Scripts/Progression/Professions.cs#L134) · memoria de Berón, character-roles (2026-11-04 15:42)*
-- En el juego: el área Informática entera, el clúster de IA (`ifo_sysadmin`, `ifo_refrigeracion`, `ifo_energia`), igual que Adonis. *recreada · [Professions.cs:67](../../Assets/Scripts/Progression/Professions.cs#L67) · [personajes-mesocosmos.md §Los seis nuevos](../personajes-mesocosmos.md)*
+- **Informática** («IT specialist»). *documentada (Berón 2026-11-04) · [Professions.cs:137](../../Assets/Scripts/Progression/Professions.cs#L137) · memoria de Berón, character-roles (2026-11-04 15:42)*
+- En el juego: el área Informática entera, el clúster de IA (`ifo_sysadmin`, `ifo_refrigeracion`, `ifo_energia`), igual que Adonis. *recreada · [Professions.cs:69](../../Assets/Scripts/Progression/Professions.cs#L69) · [personajes-mesocosmos.md §Los seis nuevos](../personajes-mesocosmos.md)*
 
 ## 6. Puesto y áreas
 
@@ -54,7 +54,7 @@
 |---|---|
 | Cuerpo y stats | [SampleSceneBuilder.Construction.cs:212](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L212) |
 | Aspecto provisional | [CubeHair.cs:238](../../Assets/Scripts/Avatar/CubeHair.cs#L238) |
-| Profesión y base | [Professions.cs:67](../../Assets/Scripts/Progression/Professions.cs#L67) · [Professions.cs:134](../../Assets/Scripts/Progression/Professions.cs#L134) |
+| Profesión y base | [Professions.cs:69](../../Assets/Scripts/Progression/Professions.cs#L69) · [Professions.cs:137](../../Assets/Scripts/Progression/Professions.cs#L137) |
 | Personal | [WorkdayDirector.cs:22](../../Assets/Scripts/Progression/WorkdayDirector.cs#L22) |
 | Área de salida | [SanctuaryDirector.cs:175](../../Assets/Scripts/World/SanctuaryDirector.cs#L175) |
 | Casa | [ResidentialBuilder.cs:32](../../Assets/Editor/ResidentialBuilder.cs#L32) |

@@ -29,14 +29,14 @@
 
 ## 5. Profesión y lo que sabe hacer
 
-- Profesional de contabilidad y *project manager* (dirección de proyectos). *documentada · Berón 2026-11-04 · [personajes-mesocosmos.md §Profesiones y parejas](../personajes-mesocosmos.md) · [Professions.cs:129](../../Assets/Scripts/Progression/Professions.cs#L129)*
+- Profesional de contabilidad y *project manager* (dirección de proyectos). *documentada · Berón 2026-11-04 · [personajes-mesocosmos.md §Profesiones y parejas](../personajes-mesocosmos.md) · [Professions.cs:132](../../Assets/Scripts/Progression/Professions.cs#L132)*
 - En el reparto provisional llevó el Huerto (alimentar a los visitantes, de MacKenzie Scott). Ya no vale. *inventada · [personajes-mesocosmos.md §Reparto de papeles](../personajes-mesocosmos.md)*
 
 ## 6. Puesto y áreas
 
-- `coc_cuentas` (las cuentas del santuario en la mesa del restaurante) y `con_proyectos` (dirigir las obras: plan, plazos, material y equipos). *recreada · [Professions.cs:56](../../Assets/Scripts/Progression/Professions.cs#L56) · [AreaFunctions.cs:166](../../Assets/Scripts/Progression/AreaFunctions.cs#L166)*
+- `coc_cuentas` (las cuentas del santuario en la mesa del restaurante) y `con_proyectos` (dirigir las obras: plan, plazos, material y equipos). *recreada · [Professions.cs:58](../../Assets/Scripts/Progression/Professions.cs#L58) · [AreaFunctions.cs:166](../../Assets/Scripts/Progression/AreaFunctions.cs#L166)*
 - Comparte la dirección de proyectos con Julian: dos misiones, y cada uno coge la que menos ha hecho. *recreada · [personajes-mesocosmos.md §Maestros de baile](../personajes-mesocosmos.md) · [Professions.cs:43](../../Assets/Scripts/Progression/Professions.cs#L43)*
-- Las cuentas (`coc_cuentas`) las comparten también Panterilia y Ducristin. *código · [Professions.cs:42](../../Assets/Scripts/Progression/Professions.cs#L42) · [Professions.cs:59](../../Assets/Scripts/Progression/Professions.cs#L59)*
+- Las cuentas (`coc_cuentas`) las comparten también Panterilia y Ducristin. *código · [Professions.cs:42](../../Assets/Scripts/Progression/Professions.cs#L42) · [Professions.cs:61](../../Assets/Scripts/Progression/Professions.cs#L61)*
 - Sale en Construcción. *código · [SanctuaryDirector.cs:172](../../Assets/Scripts/World/SanctuaryDirector.cs#L172) · [SampleSceneBuilder.Construction.cs:174](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L174)*
 
 ## 7. Relaciones
@@ -61,7 +61,7 @@
 |---|---|
 | Datos (rótulo, ropa, stats) | [SampleSceneBuilder.Construction.cs:202](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L202) |
 | Aspecto | [CubeHair.cs:200](../../Assets/Scripts/Avatar/CubeHair.cs#L200) |
-| Profesión y base | [Professions.cs:56](../../Assets/Scripts/Progression/Professions.cs#L56) · [Professions.cs:129](../../Assets/Scripts/Progression/Professions.cs#L129) |
+| Profesión y base | [Professions.cs:58](../../Assets/Scripts/Progression/Professions.cs#L58) · [Professions.cs:132](../../Assets/Scripts/Progression/Professions.cs#L132) |
 | Misiones | [AreaFunctions.cs:166](../../Assets/Scripts/Progression/AreaFunctions.cs#L166) |
 | Gimnasio | [GymProgramming.cs:213](../../Assets/Scripts/Progression/GymProgramming.cs#L213) |
 | Casa (con Julian) | [ResidentialBuilder.cs:22](../../Assets/Editor/ResidentialBuilder.cs#L22) · [ResidentialBuilder.cs:41](../../Assets/Editor/ResidentialBuilder.cs#L41) |
@@ -71,3 +71,4 @@
 1. ¿De dónde es, qué máster hizo y qué le gusta? ¿Alguna historia suya?
 2. La ficha de Irosene ([character-irosene.md §Relaciones](../character-irosene.md)) nombra a una «Alicia», hija de Irosene. ¿Es otra persona? (No lo damos por hecho.)
 3. La razón de su plan de gimnasio dice «Huerto (cargar cajas)», del reparto provisional ([GymProgramming.cs:213](../../Assets/Scripts/Progression/GymProgramming.cs#L213)). ¿La cambiamos?
+4. ~~Su rótulo decía «Alicita · Alicia».~~ (2026-11-08) Se quitó «· Alicia» del rótulo ([SampleSceneBuilder.Construction.cs:202](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L202)): puede ser su nombre real y, por defecto, no se muestra (P24). **Pendiente de que Berón confirme** si es su nombre real; si no lo es, ¿se vuelve a poner?

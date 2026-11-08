@@ -61,6 +61,7 @@
 - En los microcosmos es una **mariquita** (protege el huerto). *recreada · [microcosmos-civilizaciones.md](../microcosmos-civilizaciones.md)*
 - Su cuerpo sirve de turista del restaurante. *código · [RestaurantService.cs:571](../../Assets/Scripts/Kitchen/RestaurantService.cs#L571)*
 - Nivel: «las únicas del Nivel 2 con hechizos de Nivel 4» ⚠️. Berón (2026-11-08) cree que los creados antes de Linduarda, Irosene y Lizmibet son de santuario 1, nivel 1. *documentada (nota de Berón)*. Santuario y nivel exactos: **Falta**.
+- **Recuerdo de Berón, por confirmar** (2026-11-08): Irosene y Lizmibet se pensaron con la magia de santuario 3, nivel 1, pero empiezan en el santuario 2. *documentada ⚠️*
 
 ## 10. En el código
 

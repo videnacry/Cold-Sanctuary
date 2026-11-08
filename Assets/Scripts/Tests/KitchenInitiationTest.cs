@@ -33,7 +33,7 @@ public class KitchenInitiationTest : MonoBehaviour, ITestUnit
         if (player == null || ob == null || rk == null || rk.dishes == null || rk.dishes.Length < 2)
         { TestProbe.Check("hay jugador recién llegado y restaurante con platillos", false); TestProbe.End(); yield break; }
 
-        // La Magnate y el jefe de cocina, quietos: el test hace él la entrega (como la Magnate al volver del río).
+        // La Magnate y el encargado de cocina (KitchenBoss), quietos: el test hace él la entrega (como la Magnate al volver del río).
         Magnate[] mags = FindObjectsByType<Magnate>(FindObjectsSortMode.None);
         KitchenBoss[] bosses = FindObjectsByType<KitchenBoss>(FindObjectsSortMode.None);
         foreach (Magnate m in mags) m.enabled = false;

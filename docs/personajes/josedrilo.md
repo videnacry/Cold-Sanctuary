@@ -28,7 +28,7 @@
 
 ## 5. Profesión y lo que sabe hacer
 
-- «El profesional de yoga es Josedrilo»; también profesional de bioconstrucción y jefe de obra nueva. *documentada · Berón 2026-11-04 · [personajes-mesocosmos.md §Profesiones y parejas](../personajes-mesocosmos.md) · [Professions.cs:116](../../Assets/Scripts/Progression/Professions.cs#L116)*
+- «El profesional de yoga es Josedrilo»; también profesional de bioconstrucción y jefe de obra nueva. *documentada · Berón 2026-11-04 · [personajes-mesocosmos.md §Profesiones y parejas](../personajes-mesocosmos.md) · [Professions.cs:118](../../Assets/Scripts/Progression/Professions.cs#L118)*
 - Desde el 2026-11-05, jefe de Hatha; Consol, jefa de Ashtanga. Berón: Consol es «candidata a ser superior a Josedrilo». Decisión nuestra: cada uno jefe de su estilo (P6). *documentada (Berón) + recreada (la decisión) · [personajes-mesocosmos.md §Consol y Fernando](../personajes-mesocosmos.md) · [reglas-personajes.md §Auditoría](../reglas-personajes.md)*
 - En el reparto provisional fue guardia, con Gohageneis. Ya no vale. *inventada · [personajes-mesocosmos.md §Reparto de papeles](../personajes-mesocosmos.md)*
 - Qué estilo de yoga practica y desde cuándo: **Falta**.
@@ -63,7 +63,7 @@
 | Datos (rótulo, ropa, stats) | [SampleSceneBuilder.Construction.cs:204](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L204) |
 | Maestro de Hatha | [WorkdayDirector.cs:777](../../Assets/Scripts/Progression/WorkdayDirector.cs#L777) |
 | Aspecto | [CubeHair.cs:209](../../Assets/Scripts/Avatar/CubeHair.cs#L209) |
-| Profesión y base | [Professions.cs:31](../../Assets/Scripts/Progression/Professions.cs#L31) · [Professions.cs:116](../../Assets/Scripts/Progression/Professions.cs#L116) |
+| Profesión y base | [Professions.cs:31](../../Assets/Scripts/Progression/Professions.cs#L31) · [Professions.cs:118](../../Assets/Scripts/Progression/Professions.cs#L118) |
 | Gimnasio | [GymProgramming.cs:215](../../Assets/Scripts/Progression/GymProgramming.cs#L215) |
 | Casa (con Maite) | [ResidentialBuilder.cs:22](../../Assets/Editor/ResidentialBuilder.cs#L22) · [ResidentialBuilder.cs:44](../../Assets/Editor/ResidentialBuilder.cs#L44) |
 

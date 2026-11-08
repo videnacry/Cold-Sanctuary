@@ -28,16 +28,16 @@
 
 ## 5. Profesión y lo que sabe hacer
 
-- **Piloto**: alfombras voladoras y transporte aéreo. *documentada (Berón 2026-11-04) · [Professions.cs:140](../../Assets/Scripts/Progression/Professions.cs#L140) · memoria de Berón, character-roles (2026-11-04 15:42)*
-- **Experta en artes marciales**. *documentada (Berón 2026-11-05) · [Professions.cs:140](../../Assets/Scripts/Progression/Professions.cs#L140)*
-- En el juego: `mec_alfombras` (la flota de alfombras, en la Mecánica). *recreada · [Professions.cs:77](../../Assets/Scripts/Progression/Professions.cs#L77) · [AreaFunctions.cs:179](../../Assets/Scripts/Progression/AreaFunctions.cs#L179)*
-- **Control de misión** de la lanzadera (`lan_control`). *inventada (deducido de «piloto», sin confirmar) · [Professions.cs:149](../../Assets/Scripts/Progression/Professions.cs#L149) · [AreaFunctions.cs:180](../../Assets/Scripts/Progression/AreaFunctions.cs#L180)*
+- **Piloto**: alfombras voladoras y transporte aéreo. *documentada (Berón 2026-11-04) · [Professions.cs:143](../../Assets/Scripts/Progression/Professions.cs#L143) · memoria de Berón, character-roles (2026-11-04 15:42)*
+- **Experta en artes marciales**. *documentada (Berón 2026-11-05) · [Professions.cs:143](../../Assets/Scripts/Progression/Professions.cs#L143)*
+- En el juego: `mec_alfombras` (la flota de alfombras, en la Mecánica). *recreada · [Professions.cs:79](../../Assets/Scripts/Progression/Professions.cs#L79) · [AreaFunctions.cs:179](../../Assets/Scripts/Progression/AreaFunctions.cs#L179)*
+- **Control de misión** de la lanzadera (`lan_control`). *inventada (deducido de «piloto», sin confirmar) · [Professions.cs:151](../../Assets/Scripts/Progression/Professions.cs#L151) · [AreaFunctions.cs:180](../../Assets/Scripts/Progression/AreaFunctions.cs#L180)*
 
 ## 6. Puesto y áreas
 
 - Mecánica y Control de misión; sale en la Mecánica. *recreada · [SanctuaryDirector.cs:176](../../Assets/Scripts/World/SanctuaryDirector.cs#L176) · [SampleSceneBuilder.Construction.cs:189](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L189)*
-- Maestra de artes marciales, en días alternos con Gohageneis: da el entrenamiento del dojo cuando esté terminado y guía las artes marciales de las 20 h. *recreada · [Professions.cs:89-90](../../Assets/Scripts/Progression/Professions.cs#L89) · [LeisureDirector.cs:178](../../Assets/Scripts/Progression/LeisureDirector.cs#L178) · [horario-libre.md §Catálogo y sitios](../horario-libre.md)*
-- Por la regla P6, como experta documentada, podría dirigir ella las artes marciales; hoy se turna con Gohageneis, cuyo puesto de artes marciales no tiene base. *documentada (regla) · [reglas-personajes.md §Auditoría de puestos](../reglas-personajes.md) · [Professions.cs:146](../../Assets/Scripts/Progression/Professions.cs#L146)*
+- Maestra de artes marciales, en días alternos con Gohageneis: da el entrenamiento del dojo cuando esté terminado y guía las artes marciales de las 20 h. *recreada · [Professions.cs:91-92](../../Assets/Scripts/Progression/Professions.cs#L91) · [LeisureDirector.cs:178](../../Assets/Scripts/Progression/LeisureDirector.cs#L178) · [horario-libre.md §Catálogo y sitios](../horario-libre.md)*
+- Por la regla P6, como experta documentada, podría dirigir ella las artes marciales; hoy se turna con Gohageneis, cuyo puesto de artes marciales no tiene base. *documentada (regla) · [reglas-personajes.md §Auditoría de puestos](../reglas-personajes.md) · [Professions.cs:149](../../Assets/Scripts/Progression/Professions.cs#L149)*
 
 ## 7. Relaciones
 
@@ -48,7 +48,7 @@
 ## 8. Horario y costumbres
 
 - Gimnasio: **sin plan propio** (genérico: cuerpo entero 3 días de salud). *código · [GymProgramming.cs:237](../../Assets/Scripts/Progression/GymProgramming.cs#L237)*
-- Horario libre: guía las artes marciales de las 20 h los días que le tocan. *recreada · [Professions.cs:90](../../Assets/Scripts/Progression/Professions.cs#L90)*
+- Horario libre: guía las artes marciales de las 20 h los días que le tocan. *recreada · [Professions.cs:92](../../Assets/Scripts/Progression/Professions.cs#L92)*
 
 ## 9. Microcosmos y santuario
 
@@ -61,8 +61,8 @@
 |---|---|
 | Cuerpo y stats | [SampleSceneBuilder.Construction.cs:217](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L217) |
 | Aspecto | [CubeHair.cs:230](../../Assets/Scripts/Avatar/CubeHair.cs#L230) |
-| Profesión, base y lo deducido | [Professions.cs:77](../../Assets/Scripts/Progression/Professions.cs#L77) · [Professions.cs:140](../../Assets/Scripts/Progression/Professions.cs#L140) · [Professions.cs:149](../../Assets/Scripts/Progression/Professions.cs#L149) |
-| Maestra de artes marciales | [Professions.cs:89](../../Assets/Scripts/Progression/Professions.cs#L89) · [LeisureDirector.cs:178](../../Assets/Scripts/Progression/LeisureDirector.cs#L178) |
+| Profesión, base y lo deducido | [Professions.cs:79](../../Assets/Scripts/Progression/Professions.cs#L79) · [Professions.cs:143](../../Assets/Scripts/Progression/Professions.cs#L143) · [Professions.cs:151](../../Assets/Scripts/Progression/Professions.cs#L151) |
+| Maestra de artes marciales | [Professions.cs:91](../../Assets/Scripts/Progression/Professions.cs#L91) · [LeisureDirector.cs:178](../../Assets/Scripts/Progression/LeisureDirector.cs#L178) |
 | Personal | [WorkdayDirector.cs:22](../../Assets/Scripts/Progression/WorkdayDirector.cs#L22) |
 | Área de salida | [SanctuaryDirector.cs:176](../../Assets/Scripts/World/SanctuaryDirector.cs#L176) |
 | Casa | [ResidentialBuilder.cs:32](../../Assets/Editor/ResidentialBuilder.cs#L32) |

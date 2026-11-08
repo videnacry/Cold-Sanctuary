@@ -196,10 +196,10 @@ public static partial class SampleSceneBuilder
     /// Nesvitor, mayor (lo dice su foto), algo menos ágil. El rótulo lleva su profesión (Professions).</summary>
     public static readonly (string id, string label, float x, Color clothes, float s, float ag, float en, float m)[] FamilyCharacters =
     {
-        ("Nesvitor", "Nesvitor · Néstor (guardia y agricultor)", 30f, new Color(0.1f, 0.1f, 0.11f), 0.95f, 0.9f, 1.05f, 1.0f),   // ficha: docs/personajes/nesvitor.md
+        ("Nesvitor", "Nesvitor (guardia y agricultor)", 30f, new Color(0.1f, 0.1f, 0.11f), 0.95f, 0.9f, 1.05f, 1.0f),   // ficha: docs/personajes/nesvitor.md · (2026-11-08) sin «· Néstor» en el rótulo: es su nombre real, que no se muestra (Berón; P24)
         ("Amykhuz", "Amykhuz (jefe de cocina y química)", 32f, new Color(0.1f, 0.12f, 0.22f), 1.0f, 1.05f, 1.0f, 0.9f),   // ficha: docs/personajes/amykhuz.md
         ("Karen", "Karen (asuntos legales y lenguas)", 34f, new Color(0.97f, 0.96f, 0.95f), 0.9f, 1.05f, 1.0f, 0.95f),   // ficha: docs/personajes/karen.md
-        ("Alicita", "Alicita · Alicia (contabilidad y dirección de proyectos)", 36f, new Color(0.12f, 0.13f, 0.15f), 0.9f, 1.0f, 1.05f, 0.95f),   // ficha: docs/personajes/alicita.md
+        ("Alicita", "Alicita (contabilidad y dirección de proyectos)", 36f, new Color(0.12f, 0.13f, 0.15f), 0.9f, 1.0f, 1.05f, 0.95f),   // ficha: docs/personajes/alicita.md · (2026-11-08) sin «· Alicia» en el rótulo: puede ser su nombre real, y los nombres reales no se muestran (P24) hasta que Berón confirme
         ("Ducristin", "Ducristin (gerente de banca y profesor)", 38f, new Color(0.6f, 0.78f, 0.95f), 1.0f, 1.0f, 1.0f, 1.05f),   // ficha: docs/personajes/ducristin.md
         ("Josedrilo", "Josedrilo (maestro de Hatha, jefe de obra nueva y bioconstrucción)", 40f, new Color(0.1f, 0.09f, 0.09f), 1.05f, 1.0f, 1.0f, 1.0f),   // ficha: docs/personajes/josedrilo.md
         ("Maite", "Maite (jefa de cocina y curandera)", 42f, new Color(0.36f, 0.33f, 0.24f), 0.9f, 1.05f, 1.0f, 0.95f),   // ficha: docs/personajes/maite.md

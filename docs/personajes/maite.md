@@ -28,9 +28,9 @@
 
 ## 5. Profesión y lo que sabe hacer
 
-- Profesional de cocina; jefa de cocina con Amykhuz; curandera. *documentada · Berón 2026-11-04 · [personajes-mesocosmos.md §Profesiones y parejas](../personajes-mesocosmos.md) · [Professions.cs:124](../../Assets/Scripts/Progression/Professions.cs#L124)*
+- Profesional de cocina; jefa de cocina con Amykhuz; curandera. *documentada · Berón 2026-11-04 · [personajes-mesocosmos.md §Profesiones y parejas](../personajes-mesocosmos.md) · [Professions.cs:126](../../Assets/Scripts/Progression/Professions.cs#L126)*
 - Curandera en el juego: remedios de plantas medicinales (`hos_plantas`: infusiones, cataplasmas y ungüentos). *recreada · [AreaFunctions.cs:175](../../Assets/Scripts/Progression/AreaFunctions.cs#L175)*
-- Las curas del hospital (`enf_visita`): **deducido** de «curandera», sin confirmar. *inventada · [Professions.cs:150](../../Assets/Scripts/Progression/Professions.cs#L150)*
+- Las curas del hospital (`enf_visita`): **deducido** de «curandera», sin confirmar. *inventada · [Professions.cs:152](../../Assets/Scripts/Progression/Professions.cs#L152)*
 - En el reparto provisional llevó los registros y la vacunación del hospital (de Bill Gates). Ya no vale. *inventada · [personajes-mesocosmos.md §Reparto de papeles](../personajes-mesocosmos.md)*
 
 ## 6. Puesto y áreas
@@ -42,7 +42,7 @@
 ## 7. Relaciones
 
 - Pareja de Josedrilo; comparten casa. *documentada · Berón 2026-11-04 · [personajes-mesocosmos.md §Profesiones y parejas](../personajes-mesocosmos.md) · [ResidentialBuilder.cs:44](../../Assets/Editor/ResidentialBuilder.cs#L44)*
-- Con Amykhuz, el otro jefe de cocina. *documentada · ídem*
+- Con Amykhuz, el otro jefe de cocina: los dos tienen hoy los rangos más altos de la cocina; Goluis es el encargado. *documentada · ídem · Berón 2026-11-08*
 - Familia: **Falta**.
 
 ## 8. Horario y costumbres
@@ -62,7 +62,7 @@
 |---|---|
 | Datos (rótulo, ropa, stats) | [SampleSceneBuilder.Construction.cs:205](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L205) |
 | Aspecto | [CubeHair.cs:212](../../Assets/Scripts/Avatar/CubeHair.cs#L212) |
-| Profesión, base y lo deducido | [Professions.cs:47](../../Assets/Scripts/Progression/Professions.cs#L47) · [Professions.cs:124](../../Assets/Scripts/Progression/Professions.cs#L124) · [Professions.cs:150](../../Assets/Scripts/Progression/Professions.cs#L150) |
+| Profesión, base y lo deducido | [Professions.cs:47](../../Assets/Scripts/Progression/Professions.cs#L47) · [Professions.cs:126](../../Assets/Scripts/Progression/Professions.cs#L126) · [Professions.cs:152](../../Assets/Scripts/Progression/Professions.cs#L152) |
 | Misión de curandera | [AreaFunctions.cs:175](../../Assets/Scripts/Progression/AreaFunctions.cs#L175) |
 | Gimnasio | [GymProgramming.cs:216](../../Assets/Scripts/Progression/GymProgramming.cs#L216) |
 | Casa (con Josedrilo) | [ResidentialBuilder.cs:44](../../Assets/Editor/ResidentialBuilder.cs#L44) |

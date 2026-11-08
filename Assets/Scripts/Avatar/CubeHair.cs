@@ -246,7 +246,7 @@ public static class CubeHair
         // y zapatillas de tela). La complexión delgada y fibrosa sale de sus stats (BodyShape), que pone su builder.
         if (n.Contains("bruce lee")) return new Look(Style.Short, C(0.05f, 0.05f, 0.06f), C(0.86f, 0.7f, 0.56f), C(0.15f, 0.1f, 0.07f)).Face(0.8f, 0.6f).Wear(C(0.1f, 0.1f, 0.11f), 1.72f).Sleeves(C(0.1f, 0.1f, 0.11f)).Pants(C(0.08f, 0.08f, 0.09f)).Shoes(C(0.12f, 0.12f, 0.12f));
         if (n.Contains("maestra")) return new Look(Style.Bun, C(0.7f, 0.7f, 0.72f), SkinLight, C(0.3f, 0.25f, 0.2f));
-        // Goluis: 25 años, el de la fuerza (corpulento), jefe de cocina → cabeza rapada, barba, chaqueta de cocinero.
+        // Goluis: 25 años, el de la fuerza (corpulento), encargado de cocina → cabeza rapada, barba, chaqueta de cocinero.
         // (de su foto) degradado con la parte de arriba en punta, perilla, pendiente, tatuajes en los brazos, polo claro.
         if (n.Contains("goluis")) return new Look(Style.Fade, C(0.1f, 0.08f, 0.07f), C(0.74f, 0.55f, 0.42f), C(0.18f, 0.12f, 0.08f)).Face(0.92f, 0.3f).Goatee().Earring().Tattoos().Wear(C(0.93f, 0.9f, 0.86f), 1.75f).Pants(C(0.2f, 0.22f, 0.28f));   // ficha: docs/personajes/goluis.md
         // Panterilia: 42 años, la de la percepción (delgada), alma con un 5 % de león → melena leonada, ojos ámbar.
