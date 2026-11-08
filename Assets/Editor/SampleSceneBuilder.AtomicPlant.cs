@@ -20,7 +20,7 @@ public static partial class SampleSceneBuilder
     static SanctuaryArea BuildAtomicPlant(Transform areasGroup)
     {
         SanctuaryArea a = BuildAreaBox(areasGroup, "AtomicPlant_Area", "Planta Atómica", SanctuaryAreaType.AtomicPlant, 3,
-            CienciasCenter, CienciasSize, new Color(0.8f, 0.82f, 0.78f));
+            CienciasCenter, _marineFloors ? NuclearSize : CienciasSize, new Color(0.8f, 0.82f, 0.78f));
         TowerFloor(a.transform);   // la planta baja de la torre (la piscina del reactor baja hasta el suelo)
         FurnishAtomicPlant(a.transform, NuclearSiteRule.PoolDepth - 0.1f);   // en el sitio nuclear, la piscina baja por el casquete hasta su cajón sumergido (docs/sitio-nuclear.md)
         // PLANTA DE ARRIBA: el CICLOTRÓN médico (Berón, 2026-10-23: un acelerador de partículas). Un piso apilado, como la
@@ -37,7 +37,7 @@ public static partial class SampleSceneBuilder
     static void FurnishCyclotronFloor(Transform up, Vector2 size)
     {
         Solid(up, new Vector3(0f, 0.05f, 0f), new Vector3(size.x, 0.1f, size.y), new Color(0.78f, 0.8f, 0.76f), "Suelo_ciclotron");
-        Transform r = new GameObject("Ciclotron_sala").transform; r.SetParent(up, false); r.localPosition = new Vector3(0f, 0.1f, 0f);
+        Transform r = new GameObject("Ciclotron_sala").transform; r.SetParent(up, false); r.localPosition = new Vector3(0f, 0.1f, _marineFloors ? MarineCyclotronShiftZ : 0f);   // (bajo el mar, al sur: lejos de la banda de columnas, T16)
 
         // ── CICLOTRÓN: el imán (yugo de hierro y bobinas), las «Des», el blanco de agua y el autoblindaje ──
         Transform cyc = Equip(r, "Ciclotron", new Vector3(-5f, 0f, -3.5f), 0f, (t) =>
@@ -72,7 +72,7 @@ public static partial class SampleSceneBuilder
 
     static void FurnishAtomicPlant(Transform area, float h)
     {
-        Transform r = new GameObject("Planta").transform; r.SetParent(area, false); r.localPosition = new Vector3(0f, 0.1f, 0f);
+        Transform r = new GameObject("Planta").transform; r.SetParent(area, false); r.localPosition = new Vector3(_marineFloors ? MarineAtomicShiftX : 0f, 0.1f, 0f);   // (bajo el mar, corrida al este: la columna oeste de su sala queda libre, T16)
 
         // ── EL REACTOR: piscina de hormigón que baja hasta el suelo (pilar), con el agua, el núcleo y su luz ──
         Transform pool = KitchenProps.Root(r, "Piscina_reactor", new Vector3(-6.5f, 0f, -2.5f));

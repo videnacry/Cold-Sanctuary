@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// EL SANTUARIO MARINO, escena propia (Berón 2026-11-05; docs/sitio-nuclear.md §20; docs/world-topology-and-planes.md §3.1): el lecho a su hondura real, las dos salas con columnas, la galería,
+/// EL SANTUARIO MARINO, escena propia (Berón 2026-11-05; docs/sitio-nuclear.md §20 y §25; docs/world-topology-and-planes.md §3.1): el lecho a su hondura real, las dos salas con columnas, la galería, la PLANTA NUCLEAR entera (2026-11-08: Central Nuclear y Planta Atómica, BuildMarinePlant),
 /// el pie del tubo, el pie del pozo de escape y el refugio. Pocas piezas: se carga aditiva solo cuando Kushal baja. Se construye con su propio menú, sin tocar el santuario 1.
 /// Las coordenadas son las del sitio, muy por debajo de todo lo demás: al cargarla encima del santuario no choca con nada.
 /// </summary>
@@ -45,9 +45,9 @@ public static partial class SampleSceneBuilder
         Vector3 hallR = new Vector3(CavernRule.ReactorLength, NuclearSiteRule.CavernHeight, CavernRule.ReactorSpan), hallW = new Vector3(CavernRule.WasteLength, NuclearSiteRule.CavernHeight, CavernRule.WasteSpan);
 
         // El lecho y una caja oscura alrededor: la roca que no se dibuja.
-        KitchenProps.C(root, new Vector3(site.x, SeaRule.MarineFloorY - 0.5f, site.z + 40f), new Vector3(420f, 1f, 420f), new Color(0.2f, 0.2f, 0.2f), 0f, "Lecho_marino");
-        Transform box = KitchenProps.Root(root, "Roca_alrededor", new Vector3(site.x, at.y - 14f, site.z + 40f));
-        Hull(box, new Vector3(300f, 100f, 300f), 2f, rockC, "Roca");
+        KitchenProps.C(root, new Vector3(site.x + 80f, SeaRule.MarineFloorY - 0.5f, site.z + 40f), new Vector3(580f, 1f, 420f), new Color(0.2f, 0.2f, 0.2f), 0f, "Lecho_marino");   // (2026-11-08: hasta la planta, al este)
+        Transform box = KitchenProps.Root(root, "Roca_alrededor", new Vector3(site.x + 80f, at.y - 14f, site.z + 40f));
+        Hull(box, new Vector3(460f, 100f, 300f), 2f, rockC, "Roca");
 
         // ── LA SALA DEL MICRORREACTOR ──
         Transform cav = BuildCavern(root, "Caverna_microrreactor", at, hallR, "Sala del microrreactor: 60 m de roca encima");
@@ -101,8 +101,11 @@ public static partial class SampleSceneBuilder
 
         BuildRockMonitoring(b, cav, waste, hallR, hallW);
 
+        // ── LA PLANTA NUCLEAR (2026-11-08, docs/sitio-nuclear.md §25): la Central Nuclear y la Planta Atómica, al este de las salas, a la cota de la galería ──
+        Rect plantZone = BuildMarinePlant(root, at, floorY, at.x + 50f);
         // ── EL SUELO: uno solo y sus cuatro límites. Se anda por las salas y la galería; las paredes de hormigón no tienen colisión todavía ──
         float x0 = at.x - 24f, x1 = at.x + 42f, z0 = at.z - 22f, z1 = wasteAt.z + 22f;
+        x1 = Mathf.Max(x1, plantZone.xMax + MarineHallGap); z0 = Mathf.Min(z0, plantZone.yMin - MarineHallGap); z1 = Mathf.Max(z1, plantZone.yMax + MarineHallGap);   // (el suelo y los límites, también bajo la planta)
         Vector3 mid = new Vector3((x0 + x1) * 0.5f, floorY - 0.25f, (z0 + z1) * 0.5f);
         Solid(root, mid, new Vector3(x1 - x0, 0.5f, z1 - z0), new Color(0.32f, 0.33f, 0.34f), "Suelo_marino");
         void Limit(Vector3 c, Vector3 s) { BoxCollider w = new GameObject("Limite_marino").AddComponent<BoxCollider>(); w.transform.SetParent(root, false); w.transform.position = c; w.size = s; }

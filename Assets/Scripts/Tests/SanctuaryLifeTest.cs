@@ -341,7 +341,7 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
             int top = t.Top != null ? t.Top.index : -1;
             TestProbe.Check($"«{t.building}» (árbol): alfombras de edificio solo en el suelo y en el techo", fl.Count == 2 && fl[0] == 0 && fl[1] == top, string.Join(", ", fl));
         }
-        TestProbe.Check("la Central Nuclear está en el árbol del sitio nuclear (sin alfombras de edificio propias)", !CarpetPad.All.Any(c => c.kind == CarpetPad.Kind.Edificio && c.building == "Central Nuclear") && treeNames.Contains(NuclearSiteRule.Building));
+        TestProbe.Check("la Central Nuclear está bajo el mar, en el Santuario Marino (docs/sitio-nuclear.md §25): sin alfombras de edificio y sin árbol del sitio en el santuario 1", !CarpetPad.All.Any(c => c.kind == CarpetPad.Kind.Edificio && (c.building == "Central Nuclear" || c.building == NuclearSiteRule.Building)) && !treeNames.Contains(NuclearSiteRule.Building));
         // Cada torre: sus áreas, de abajo arriba. Apiladas (mismo x, z, cada una más alta) o, en un árbol, en sus pisos en orden
         // (cada una en un piso de número mayor y nunca más abajo).
         bool Stacked(params string[] names)

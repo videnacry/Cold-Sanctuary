@@ -41,6 +41,19 @@ public static class NuclearSiteRule
     /// <summary>La referencia pasiva: 72 h sin operador (el depósito por gravedad del AP1000).</summary>
     public const float ReferenceHours = 72f;
 
+    // ── LA PLANTA BAJO EL MAR (Berón 2026-11-08; docs/sitio-nuclear.md §25) ──
+    /// <summary>Lo único que queda arriba: la ESTACIÓN DE ALFOMBRAS con la cabeza de la Línea, en un casquete pequeño en el sitio de siempre.</summary>
+    public const string StationName = "Estacion_nuclear", EmergencyName = "Centro_emergencias";
+    /// <summary>Medio lado (m) de la estación: el andén, la caseta de la Línea, la pista de alfombras y la tapa del pozo de escape, con 2 m entre todo.</summary>
+    public const float StationHalf = 20f;
+    /// <summary>Lo que piden los pisos de la planta, que siguen en el balance del santuario 1 aunque estén abajo: la Central y la Planta, 46 × 30 m cada una,
+    /// a 45 W/m² (laboratorio, EnergyRule.WattsPerM2), lo mismo que declaraban sus áreas cuando estaban arriba.</summary>
+    public const string PlantFloorsName = "Planta nuclear (bajo el mar)";
+    public static float PlantFloorsKW => 2f * 46f * 30f * 45f / 1000f;
+    /// <summary>Agua para el calor residual sin bombas: la del mar que entra sola por la toma pasiva de cada sala, a 57 bar. Se cuenta solo la columna sobre la
+    /// huella de las salas de los reactores (14 × 14 m por 500 m de mar): es una cota prudente, el mar no se acaba.</summary>
+    public static float SeaSinkM3 => 2f * 14f * 14f * -SeaRule.MarineFloorY;
+
     /// <summary>Fracción de la potencia que sigue saliendo como calor residual <paramref name="seconds"/> s tras parar (Way–Wigner simplificada).</summary>
     public static float DecayFraction(float seconds) => 0.066f * Mathf.Pow(Mathf.Max(1f, seconds), -0.2f);
 
@@ -86,7 +99,9 @@ public class NuclearSite : MonoBehaviour
     public List<Transform> seaProbes = new List<Transform>();
     [Tooltip("Balizas de alarma (apagadas en normal).")]
     public List<GameObject> beacons = new List<GameObject>();
-    [Tooltip("Agua (m³) del tronco por encima de los reactores.")]
+    [Tooltip("(2026-11-08) El muelle del submarino de obra en la estación: su plaza, sobre la escotilla y el elevador (docs/sitio-nuclear.md §25).")]
+    public Transform submarineBerth;
+    [Tooltip("Agua (m³) que enfría sin bombas (el mar, por la toma pasiva de cada sala).")]
     public float gravityWaterM3;
 
     public Alert State { get; private set; } = Alert.Normal;
@@ -98,6 +113,9 @@ public class NuclearSite : MonoBehaviour
     /// <summary>¿Se está evacuando el sitio? (la jornada no manda a nadie allí)</summary>
     public static bool Evacuating => Instance != null && Instance.State == Alert.Emergencia;
     public static bool IsSiteArea(string area) => area == PlantArea || area == PowerArea || area == SiteLine.AreaName;
+    /// <summary>(2026-11-08) ¿El área está entera BAJO EL MAR, en el Santuario Marino? La Central Nuclear y la Planta Atómica (docs/sitio-nuclear.md §25): en el
+    /// santuario 1 solo queda su estación de alfombras con la Línea.</summary>
+    public static bool Underwater(string area) => area == PlantArea || area == PowerArea;
     float _nextCount;
 
     void OnEnable() { Instance = this; }

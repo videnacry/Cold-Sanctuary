@@ -464,7 +464,7 @@ public class WorkdayDirector : MonoBehaviour
         if (AereoRule.IsArea(name)) { if (AereoRule.InSector(pos) || AereoLink.PlayerThere) return true; AereoLink l = AereoLink.Instance; if (l != null && (pos - l.transform.position).sqrMagnitude < 400f) return true; }
         // La sala de guardia es un sitio, no un área: nadie contaba como dentro aunque estuviera en ella (Gohageneis «parado fuera» ×123; a Kushal lo traería la Magnate).
         if (name == AreaWork.GuardRoom) { Transform gr = AreaTransform(name); if (gr == null) return false; Vector3 gl = gr.InverseTransformPoint(pos); return Mathf.Abs(gl.x) < 24f && Mathf.Abs(gl.z) < 24f && gl.y > -2f && gl.y < 7f; }
-        if (name == SiteLine.AreaName) return SiteLine.Instance != null && (pos - SiteLine.Instance.transform.position).sqrMagnitude < 225f;   // la estación no es un área: a 15 m del andén
+        if (name == SiteLine.AreaName || NuclearSite.Underwater(name)) return SiteLine.Instance != null && (pos - SiteLine.Instance.transform.position).sqrMagnitude < 225f;   // la estación no es un área: a 15 m del andén (y la planta, que está abajo, se trabaja desde ella: docs/sitio-nuclear.md §25)
         foreach (SanctuaryArea a in SceneCache.All<SanctuaryArea>(2f))
             if (a != null && a.displayName == name && a.InBuilding(pos)) return true;
         if (name == "Huerto")
@@ -566,7 +566,8 @@ public class WorkdayDirector : MonoBehaviour
         // comedor al piso del gimnasio hay alfombra y 106–194 m por la raíz). Y desde el Aéreo cuenta también el vuelo de vuelta.
         if (next == TrainingOf(w)) share = 1f;
         float back = cur != null && AereoRule.IsArea(cur.mission.area) && !AereoRule.IsArea(next.mission.area) ? AereoRule.TripSeconds(cur.mission.area) : 0f;
-        float lead = (ArbolCampos.TripSeconds(g.transform.position, to) + back + (AereoRule.IsArea(next.mission.area) ? AereoRule.TripSeconds(next.mission.area) : 0f)) * 1.15f / Mathf.Max(1f, perHour) * share;
+        back += cur != null && NuclearSite.Underwater(cur.mission.area) && !NuclearSite.Underwater(next.mission.area) ? SiteLine.TripSeconds(cur.mission.area) : 0f;   // (la subida desde la planta, abajo)
+        float lead = (ArbolCampos.TripSeconds(g.transform.position, to) + back + (AereoRule.IsArea(next.mission.area) ? AereoRule.TripSeconds(next.mission.area) : 0f) + SiteLine.TripSeconds(next.mission.area)) * 1.15f / Mathf.Max(1f, perHour) * share;
         if (end - h > lead) { if (end - h < lead + 0.25f) Trace($"viaje estimado {lead / share * perHour:0} s (queda {(end - h) * perHour:0} s)"); return null; }
         _heading[w] = next;
         Debug.Log($"[Jornada] {h:00.0} h · {w.name} sale ya hacia «{next.mission.title}» ({next.mission.area}, a las {next.start:00.0} h): el viaje es de {lead / share * perHour:0} s.");
@@ -635,6 +636,8 @@ public class WorkdayDirector : MonoBehaviour
         if (evacuating) { area = AreaWork.Hospital; doing = EvacuationDoing; missionId = null; alwaysMove = true; }
         AereoLink.Note(g, area);   // SANTUARIO AÉREO (docs/sitio-nuclear.md §23): quien trabaja allí vuela desde el muelle y su misión corre por el reloj
         if (AereoRule.IsArea(area) && (AereoLink.IsAway(g) || AereoLink.Board(g))) return;
+        SiteLine.Note(g, area);   // LA PLANTA BAJO EL MAR (docs/sitio-nuclear.md §25): quien trabaja en ella baja por la Línea desde la estación y su misión corre por el reloj
+        if (NuclearSite.Underwater(area) && (SiteLine.IsAway(g) || SiteLine.BoardWork(g))) return;
         if ((missionId == SiteLine.MissionId || missionId == Refuge.MissionId || HunterCell.Rides(missionId)) && SiteLine.Board(g, missionId)) return;   // la bajada: ya en la estación, sube al carro (docs/sitio-nuclear.md §8)
         NewcomerInitiator ini = g.GetComponent<NewcomerInitiator>();
         if (ini != null && ini.InProgress) return;   // está iniciando a un recién llegado: lo lleva ella (si no, la jornada la mandaba en alfombra a otro piso)
@@ -1106,12 +1109,16 @@ public class WorkdayDirector : MonoBehaviour
     static readonly Dictionary<string, Transform> _areas = new Dictionary<string, Transform>();
     /// <summary>El área por su nombre visible (cacheada).</summary>
     /// <summary>Un sitio de trabajo que no es un área de la escena (la estación de la línea de las cavernas): la jornada lo trata como a un área.</summary>
-    public static void RegisterPlace(string name, Transform t) { _areas[name] = t; }
+    public static void RegisterPlace(string name, Transform t) { _areas[name] = t; _places[name] = t; }
+    // (2026-11-08) Los sitios registrados mandan sobre las áreas que aparezcan después (la Central Nuclear y la Planta Atómica del Santuario Marino, cargado
+    // cuando Kushal baja: la jornada sigue mandando a la gente a la estación de arriba, no 570 m más abajo).
+    static readonly Dictionary<string, Transform> _places = new Dictionary<string, Transform>();
 
     static float _areasRetry;
     public static Transform AreaTransform(string area)
     {
         if (area == null) return null;
+        if (_places.TryGetValue(area, out Transform place) && place != null) return place;
         if (_areas.TryGetValue(area, out Transform t) && t != null) return t;
         // Un área que no está en esta escena no se busca en cada llamada (se pide por persona y por frame).
         if (Time.unscaledTime < _areasRetry && !ColdSanctuary.TestRunner.Running) return null;

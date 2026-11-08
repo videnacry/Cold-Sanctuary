@@ -3511,16 +3511,10 @@ public static partial class SampleSceneBuilder
         SanctuaryArea info = BuildInformatics(areasGroup.transform); areas.Add(info);
         // (2026-11-08) LA SEGUNDA FACHADA DE FOTOBIORREACTORES (docs/fotobiorreactores.md §2026-11-08): en el tronco de Ciencias, junto a Biología, que la cuida.
         BuildFotobioTower(ciencias);
-        // EL SITIO NUCLEAR (Berón 2026-11-05; docs/sitio-nuclear.md): su casquete y su árbol bajo, lejos y a sotavento. Abajo los dos reactores,
-        // encima el ciclotrón y la sala de experimentos, y arriba el Centro de emergencias y el garaje.
-        BeginNuclearTree(areasGroup.transform);
-        SanctuaryArea nuc = BuildNuclearPlant(areasGroup.transform); areas.Add(nuc);
-        _towerSize = CienciasSize;
-        SanctuaryArea plant = BuildAtomicPlant(areasGroup.transform); areas.Add(plant);
-        _nuclearPlantArea = plant.transform;
-        _nuclearPowerArea = nuc.transform;
-        BuildPhysicsHall(plant.transform);
-        BuildNuclearUpperFloors();
+        // EL SITIO NUCLEAR (Berón 2026-11-05; docs/sitio-nuclear.md): lejos y a sotavento. Desde el 2026-11-08 (§25) la Central Nuclear y la Planta Atómica,
+        // con el ciclotrón, la sala de experimentos y el Centro de emergencias, están BAJO EL MAR, en el Santuario Marino (BuildMarinePlant). Aquí, solo su
+        // estación de alfombras con la Línea y la lógica del sitio.
+        BuildNuclearStation(areasGroup.transform);
         // Los EDIFICIOS (sus plantas bajas): sin puentes ni escaleras, cada uno con sus alfombras (docs/alfombras-plan.md).
         var ground = new List<SanctuaryArea>();   // (todos son edificios-árbol: llevan sus alfombras en el techo y en el suelo)
         // Techo de cada edificio: sobre su piso MÁS ALTO (la cadena entera); encima va su techo de alfombras, con sus paneles.
@@ -4114,12 +4108,11 @@ public static partial class SampleSceneBuilder
         WireMeditationArea(parent, "Gym_Area", "Gimnasio", new Color(0.55f, 0.6f, 0.7f), MissionKind.Channel, null, virtualOnly: true);
         WireMeditationArea(parent, "Construction_Area", "Construcción", new Color(0.85f, 0.72f, 0.4f), MissionKind.Channel, null, virtualOnly: true);
         WireMeditationArea(parent, "CubCare_Area", "Cría", new Color(0.8f, 0.72f, 0.55f), MissionKind.Channel, null, virtualOnly: true);
-        WireMeditationArea(parent, "AtomicPlant_Area", "Planta Atómica", new Color(0.8f, 0.82f, 0.78f), MissionKind.Channel, PhysicsSceneBuilder.SceneName);   // Newton, Curie, Einstein
+        // (2026-11-08) La Planta Atómica y la Central Nuclear están en el Santuario Marino: sus máquinas de virtualización las pone BuildMarinePlant.
         // Química (Curie, Patterson), Biología (Jenner) y Central Nuclear (Chernóbil): sus historias (VirtualizationMachine.StoryScenes)
         // se entran por la máquina de SU área (docs/microcosmos-cientificos.md).
         WireMeditationArea(parent, "Chemistry_Area", "Química", new Color(0.78f, 0.85f, 0.9f), MissionKind.Channel, null, virtualOnly: true);
         WireMeditationArea(parent, "Biology_Area", "Biología", new Color(0.78f, 0.9f, 0.78f), MissionKind.Channel, null, virtualOnly: true);
-        WireMeditationArea(parent, "NuclearPower_Area", "Central Nuclear", new Color(0.75f, 0.78f, 0.8f), MissionKind.Channel, null, virtualOnly: true);
         // (2026-11-04) Los pisos nuevos: Informática (Bill Gates en Albuquerque) y el Aula (MacKenzie Scott en Prairie View).
         WireMeditationArea(parent, "Informatics_Area", "Informática", new Color(0.55f, 0.65f, 0.8f), MissionKind.Channel, null, virtualOnly: true);
         WireMeditationArea(parent, EnergyFloorName, EnergyRule.Area, new Color(0.55f, 0.75f, 0.6f), MissionKind.Channel, null, virtualOnly: true);   // (2026-11-05) el Parque Energético

@@ -74,6 +74,7 @@ public static partial class SampleSceneBuilder
     /// continuas). Devuelve la planta del piso (la de la torre).</summary>
     static Vector2 TowerFloor(Transform floor)
     {
+        if (_marineFloors) return MarineFloor(floor);   // (2026-11-08) la planta nuclear, bajo el mar: en fila junto a las cavernas (BuildMarinePlant)
         if (_towerHelix != null)
         {
             int k = 1;
@@ -121,6 +122,7 @@ public static partial class SampleSceneBuilder
     {
         Transform t = area.Find(name);
         if (t != null && _platforms.ContainsKey(t)) return t;
+        if (_marineFloors) { t = new GameObject(name).transform; t.SetParent(area, false); MarineFloor(t); return t; }
         t = new GameObject(name).transform; t.SetParent(area, false);
         if (_towerTop != null && _towerTop == below) TowerFloor(t);
         else StackOn(t, below, FloorSize(below, new Vector2(24f, 18f)));
