@@ -100,7 +100,14 @@ public class SiteLine : MonoBehaviour
     bool Recall => NuclearSite.Evacuating || Disconnected || (CavernRock.Instance != null && CavernRock.Instance.Closed);
 
     void Awake() { if (upperTube != null) _upperHome = upperTube.localRotation; }
-    void OnEnable() { Instance = this; WorkdayDirector.RegisterPlace(AreaName, transform); }
+    void OnEnable()
+    {
+        Instance = this;
+        WorkdayDirector.RegisterPlace(AreaName, transform);
+        // (2026-11-08) La planta está abajo: en el santuario 1 sus dos áreas son la estación (docs/sitio-nuclear.md §25).
+        WorkdayDirector.RegisterPlace(NuclearSite.PlantArea, transform);
+        WorkdayDirector.RegisterPlace(NuclearSite.PowerArea, transform);
+    }
     void OnDisable() { if (Instance == this) Instance = null; }
 
     // LA DESCONEXIÓN: suelta en cuanto el carro no está en el tramo que se aparta; vuelve despacio, con el peligro ya pasado.
@@ -227,6 +234,54 @@ public class SiteLine : MonoBehaviour
     /// <summary>Donde deja la línea a quien sube: en la pista de alfombras de la caseta (a menos de 12 m), porque la caseta no pisa NavMesh y
     /// quien salía en ella no podía andar los 7,5 m a su pista y se quedaba para siempre (Lizmibet, ronda 20). Sin pista, en la caseta.</summary>
     public Vector3 ExitPoint { get { CarpetPad p = CarpetPad.For(transform.position); return p != null && (p.transform.position - transform.position).sqrMagnitude < 144f ? p.transform.position : transform.position; } }
+
+
+    // ── LA PLANTA BAJO EL MAR (Berón 2026-11-08; docs/sitio-nuclear.md §25): la Central Nuclear y la Planta Atómica están en el Santuario Marino. Quien trabaja
+    // en ellas llega en alfombra a la estación, baja por la Línea SIN CARGAR NADA (como el muelle del Aéreo: el cuerpo se oculta y su misión corre por el reloj)
+    // y vuelve cuando su jornada lo lleva a otra parte. No ocupa el carro de las bajadas a la roca: es su propio viaje, del mismo minuto.
+    readonly Dictionary<GameObject, string> _wanted = new Dictionary<GameObject, string>();
+    readonly HashSet<GameObject> _away = new HashSet<GameObject>();
+    /// <summary>¿Cuántos trabajan ahora abajo?</summary>
+    public int Away => _away.Count;
+    /// <summary>Tope (s reales) de una estancia abajo sin que la jornada diga nada: nadie se queda para siempre.</summary>
+    public const float WorkStayLimit = 3600f;
+
+    /// <summary>Lo que se tarda en llegar al puesto de <paramref name="area"/> desde la estación (s): un viaje de la Línea si es de la planta; si no, 0.</summary>
+    public static float TripSeconds(string area) => NuclearSite.Underwater(area) ? SiteLineRule.OneWay(SiteLineRule.Drop) : 0f;
+    /// <summary>La jornada dice adónde va hoy cada uno (null = a ninguna parte): si deja de ser la planta, vuelve.</summary>
+    public static void Note(GameObject g, string area) { if (Instance != null && g != null) Instance._wanted[g] = area; }
+    public static bool IsAway(GameObject g) => Instance != null && g != null && Instance._away.Contains(g);
+
+    /// <summary>La jornada: quien tiene trabajo en la planta y ya está en la estación, baja. true = se ha ido. Kushal no: él baja en persona por el andén.</summary>
+    public static bool BoardWork(GameObject g)
+    {
+        SiteLine l = Instance;
+        if (l == null || g == null || g.CompareTag("Player") || FlyingCarpet.Riding(g) || l._away.Contains(g) || l.LineClosed || NuclearSite.Evacuating) return false;
+        if ((g.transform.position - l.transform.position).sqrMagnitude > BoardRadius * BoardRadius) return false;
+        l.StartCoroutine(l.Work(g));
+        return true;
+    }
+
+    IEnumerator Work(GameObject g)
+    {
+        _away.Add(g); Trips++;
+        FlyingCarpet.Carry(g, true);
+        var agent = g.GetComponent<UnityEngine.AI.NavMeshAgent>();
+        bool agentWas = agent != null && agent.enabled;
+        if (agent != null) agent.enabled = false;
+        var off = new List<Renderer>();
+        foreach (Renderer r in g.GetComponentsInChildren<Renderer>()) if (r.enabled) { r.enabled = false; off.Add(r); }
+        float one = SiteLineRule.OneWay(Length), t0 = Time.time;
+        for (float w = 0f; w < one && !Recall; w += Time.deltaTime) yield return null;
+        while (g != null && Time.time - t0 < WorkStayLimit && !Recall && _wanted.TryGetValue(g, out string area) && NuclearSite.Underwater(area)) yield return null;
+        for (float w = 0f; w < one; w += Time.deltaTime) yield return null;   // (la subida: también en emergencia, es el minuto de la Línea o el pozo)
+        foreach (Renderer r in off) if (r != null) r.enabled = true;
+        _away.Remove(g);
+        FlyingCarpet.Carry(g, false);
+        if (g == null) yield break;
+        g.transform.position = ExitPoint + Vector3.up * 0.02f;
+        if (agent != null) { agent.enabled = agentWas; if (agent.enabled && agent.isOnNavMesh) agent.Warp(g.transform.position); }
+    }
 
     // ── EN PERSONA: la escena de abajo ─────────────────────────────────────────────────────────────────────────────
 
