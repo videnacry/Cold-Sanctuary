@@ -75,7 +75,22 @@ public class CadenaAlimenticiaTest : MonoBehaviour, ITestUnit
         var used = swarms.Select(s => s.species).Distinct().ToList();
         foreach (SwarmModels.Species sp in new[] { SwarmModels.Species.SilverFish, SwarmModels.Species.ArcticCod, SwarmModels.Species.Krill, SwarmModels.Species.IceKrill, SwarmModels.Species.Cyanea, SwarmModels.Species.Desmonema, SwarmModels.Species.Clam })
             TestProbe.Check($"hay {SwarmModels.Label(sp)}", used.Contains(sp));
+        Caza();
         yield return null;
         TestProbe.End();
+    }
+
+    // LA CAZA RESPETA LA CADENA (2026-11-08): en una batería (≈1,5 días de juego) caían 3 de las 6 liebres y los 2 zorros, y lobos y osos se cazaban entre sí.
+    // La cadena da por año del santuario lo que crían (crías al año por hembra × ½ hembras × margen); se caza eso, y nunca por debajo de una pareja.
+    void Caza()
+    {
+        TestProbe.Check("cuota de caza: 2 liebres por año del santuario (6 × 1 cría × ½ × 0,8)", HuntQuota.PerYear("ArcticHare") == 2, $"{HuntQuota.PerYear("ArcticHare")}");
+        TestProbe.Check("cuota de caza: 1 buey almizclero (3 × 12/15 × ½ × 0,8, al menos 1)", HuntQuota.PerYear("MuskOx") == 1, $"{HuntQuota.PerYear("MuskOx")}");
+        TestProbe.Check("con la cuota del año cumplida no se caza más de esa especie", HuntQuota.Allows("ArcticHare", 6, 1) && !HuntQuota.Allows("ArcticHare", 6, 2));
+        TestProbe.Check("nunca por debajo de una pareja: con 2 vivos no se caza", HuntQuota.Allows("ArcticHare", 3, 0) && !HuntQuota.Allows("ArcticHare", 2, 0));
+        TestProbe.Check("una especie fuera del plan (escenarios de prueba) no tiene cuota", HuntQuota.Allows("Bunny", 1, 99));
+        TestProbe.Check("lobo y oso no se comen entre sí", DietPreference.For("Wolf", "Bear") == 0f && DietPreference.For("Bear", "Wolf") == 0f);
+        TestProbe.Check("ni lobo ni oso tienen al zorro ártico por comida", DietPreference.For("Wolf", "ArcticFox") == 0f && DietPreference.For("Bear", "ArcticFox") == 0f);
+        TestProbe.Check("el lobo sigue cazando buey, reno y liebre (Mech 2007)", DietPreference.For("Wolf", "MuskOx") > 0f && DietPreference.For("Wolf", "Reindeer") > 0f && DietPreference.For("Wolf", "ArcticHare") > 0f);
     }
 }

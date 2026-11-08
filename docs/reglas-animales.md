@@ -128,6 +128,7 @@ equilibrar el número de poblaciones y también puede incrementar el número de 
 - **Qué sube, en este orden:** bancos (hasta 8) y plantas (hasta ×6), que no cuestan Animal completos; luego presas, hasta ×2. Si no basta, avisa.
 - **Cuándo corre:** la primera vez que se pide una población, sola, también si hay especies nuevas; al final del Blockout escribe el informe `[Cadena]`.
 - **Límite:** es un balance de cada año, no una simulación. El test de verdad es `[ECO]` en vivo.
+- **La caza lo respeta (`HuntQuota`, 2026-11-08):** en el santuario se caza de cada especie lo que esta cuenta da por año (crías al año por hembra × ½ hembras × 0,8; al menos 1: 2 liebres, 2 renos, 1 buey) y nunca por debajo de una pareja. Antes, en una batería (≈1,5 días de juego), caían 3 de 6 liebres y los 2 zorros. Lobo y oso no se cazan entre sí ni al zorro (`DietPreference` 0, simplificación `[A]`: se matan como competidores, no como comida). Cada `[Muerte]` por caza dice quién cazó.
 
 | Ración diaria (kg) | Fuente |
 |---|---|

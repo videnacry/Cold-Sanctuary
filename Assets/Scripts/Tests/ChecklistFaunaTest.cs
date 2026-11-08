@@ -23,11 +23,27 @@ public class ChecklistFaunaTest : MonoBehaviour, ITestUnit
 
     readonly List<GameObject> _trash = new List<GameObject>();
 
+    // Cada miembro de una familia aparece en su radio, también con un número IMPAR de miembros: el bucle de posiciones daba
+    // 2·(n/2) vueltas y el último se quedaba en (0,0,0), dentro del Casquete (la cría de lobo que muere al empezar cada batería).
+    void AparicionDeFamilia()
+    {
+        GameObject tpl = new GameObject("Plantilla_familia_TEST");
+        foreach (int n in new[] { 1, 3, 5 })
+        {
+            Vector3 at = new Vector3(8700f, -600f, 8000f);
+            GameObject[] g = Family.RenderGroup(tpl, n, at, at.y, 6f);
+            int lejos = 0; foreach (GameObject x in g) { if (x == null || new Vector2(x.transform.position.x - at.x, x.transform.position.z - at.z).magnitude > 6.01f) lejos++; if (x != null) Destroy(x); }
+            TestProbe.Check($"una familia de {n} aparece entera en su radio (ninguno en el origen)", g.Length == n && lejos == 0, $"{lejos} de {g.Length} fuera");
+        }
+        Destroy(tpl);
+    }
+
     public IEnumerator Run()
     {
         TestProbe.Begin("ChecklistFauna (§23-45 forrajeo, amenaza, posesión, medio, rastros, copia de animal)");
         yield return null;
 
+        AparicionDeFamilia();             // las familias nacen en su sitio
         Decisiones();                     // §23/§24 ThreatResponder
         Forrajeo();                       // §23 Forager (fauna real, solo lectura)
         yield return Posesion();          // §23 IA + posesión
