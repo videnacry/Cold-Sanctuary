@@ -178,6 +178,11 @@ public static class AreaFunctions
         Roles(S(Def("Hospital", "hos_pediatria", "Pediatría: consulta, vacunas y control del crecimiento de los niños", 1f, false, Kind.Heal, "camilla")), "medico");
         S(Def("Mecánica", "mec_alfombras", "Flota de alfombras voladoras: revisar circuitos, LED y tejido y repartirlas por las pistas (transporte aéreo)", 1f, false, Kind.Make, "banco_taller"));
         S(Def("Control de misión", "lan_control", "Control de misión: seguimiento de la lanzadera, del tiempo y de los vuelos", 1f, false, Kind.Operate, "consola"));
+        // (2026-11-08) EL HUERTO VERTICAL (docs/produccion-maquinaria.md §2026-11-08): los estantes LED de la torre de Producción. Cada tarea ≤ 1 h; la cosecha es
+        // obligatoria (la verdura del día es la de la cocina) y lleva la cosecha a la Cocina.
+        S(Effect(Def(VerticalFarm.AreaName, "huv_siembra", "Huerto vertical: sembrar las bandejas de germinación y trasplantar las plántulas a los canales", 1f, false, Kind.Tend, "estante_cultivo"), who => VerticalFarm.Instance?.Sow(who)));
+        S(Effect(Also(Def(VerticalFarm.AreaName, "huv_cosecha", "Huerto vertical: cosechar los estantes LED, lavar, embolsar y llevar la verdura a la cámara", 1f, true, Kind.Tend, "estante_cultivo"), "Cocina"), who => VerticalFarm.Instance?.Harvest(who)));
+        S(Effect(Def(VerticalFarm.AreaName, "huv_solucion", "Huerto vertical: medir la solución nutritiva (EC y pH), dosificar y limpiar canales y filtros", 0.5f, false, Kind.Tend, "estante_cultivo"), who => VerticalFarm.Instance?.CheckSolution(who)));
 
         // ══ FUNCIONES DEL DÍA (no son del catálogo fijo: las añade AreaWork.Today), con su efecto en el santuario ══
         Get("coc_servicio").effect = who => KitchenLarder.Instance?.ServeService(12, who);

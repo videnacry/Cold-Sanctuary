@@ -89,7 +89,9 @@ public class Family
         GameObject[] creatures = new GameObject[quantity];
         Vector3[] positions = new Vector3[quantity];
         int counter = 0;
-        for (int idx = -(quantity / 2); quantity / 2 > idx; idx += 1)
+        // Una posición por miembro. Antes el bucle iba de −n/2 a n/2: 2·(n/2) vueltas, y con n impar el último miembro se quedaba
+        // en (0,0,0) — el centro del santuario, dentro del Casquete (la cría de lobo «masa 0,9, en (0,0,0)» de cada batería).
+        for (int idx = 0; idx < quantity; idx++)
         {
             float xPos = Random.Range(minPos.x, maxPos.x);
             float zPos = Random.Range(minPos.z, maxPos.z);

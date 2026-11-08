@@ -60,6 +60,17 @@ public class EnergyTest : MonoBehaviour, ITestUnit
         TestProbe.Check("también los pisos sin área: residencia, sala de guardia y laboratorio", new[] { "Residencia, plaza", AreaWork.GuardRoom, "Laboratorio de contención", "Aire de la celda del árbol cazador" }.All(n => FloorEnergy.All.Any(f => f.floor == n && f.KW > 0f)) && FloorEnergy.All.Count(f => f.floor.StartsWith("Residencia, Planta")) >= 5 && FloorEnergy.All.Any(f => f.floor.StartsWith("Aire") && f.essential));
         FloorEnergy info = areas.FirstOrDefault(a => a.areaType == SanctuaryAreaType.Informatics)?.GetComponent<FloorEnergy>();
         TestProbe.Check("Informática suma sus 95 kW", info != null && info.fixedKW >= EnergyRule.InformaticsKW);
+        // (2026-11-08) Las cargas nuevas: los LED de las dos fachadas de fotobiorreactores (de media) y los estantes del Huerto vertical; y en la
+        // noche polar, con los LED de las fachadas a tope, el reactor sigue cubriendo la punta.
+        var facades = FindObjectsByType<FotobioFacade>(FindObjectsSortMode.None).Where(f => f.gameObject.scene == es.gameObject.scene).ToList();
+        TestProbe.Check("las fachadas de fotobiorreactores declaran sus LED", facades.Count > 0 && facades.All(f => f.GetComponent<FloorEnergy>() != null && f.GetComponent<FloorEnergy>().KW > 0f),
+            string.Join(" · ", facades.Select(f => $"{f.building}: {(f.GetComponent<FloorEnergy>() != null ? f.GetComponent<FloorEnergy>().KW : 0f):0} kW")));
+        VerticalFarm farm = FindAnyObjectByType<VerticalFarm>();
+        TestProbe.Check("el Huerto vertical declara sus estantes LED", farm != null && farm.GetComponent<FloorEnergy>() != null && farm.GetComponent<FloorEnergy>().fixedKW >= farm.LedKW - 0.01f && farm.LedKW > 0f,
+            farm != null ? $"{farm.Racks} estantes, {farm.LedKW:0.0} kW" : "sin Huerto vertical");
+        float ledMean = facades.Sum(f => FotobioSpec.LedMeanKW(f.areaM2)), ledFull = facades.Sum(f => FotobioSpec.LedKW(f.areaM2));
+        float polarPeak = (EnergyRule.DemandKW() - ledMean + ledFull) * EnergyRule.PeakFactor;
+        TestProbe.Check("en la noche polar, con los LED de las fachadas a tope, el reactor cubre la punta", EnergyRule.ReactorKW >= polarPeak, $"punta {polarPeak:0} kW de {EnergyRule.ReactorKW:0} (LED {ledMean:0} → {ledFull:0} kW)");
         TestProbe.Check("los paneles van en proporción a la energía", EnergyRule.TablesFor(200f) >= 2 * EnergyRule.TablesFor(100f) - 1 && EnergyRule.TablesFor(0f) == 0);
         EnergyRule.Report rep = es.Validate("prueba");
         Debug.Log($"[Energía] Balance: {rep}");

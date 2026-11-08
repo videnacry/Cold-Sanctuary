@@ -181,6 +181,8 @@ public class Forager : MonoBehaviour
                 if (a.SpeciesName != null && a.SpeciesName == self.SpeciesName) continue;   // no CAZAR la propia especie
                 if (myPower < defense) continue;          // solo si puedo con ella (con manada)
                 if (!self.CanHarm(t)) continue;           // un vínculo la protege
+                if (DietPreference.For(self.SpeciesName, a.SpeciesName) <= 0f) continue;   // no es su presa (lobo↔oso, el zorro)
+                if (!HuntQuota.MayHunt(a)) continue;      // la cuota del año de esa especie, y nunca por debajo de una pareja
             }
             // Carcasa: comestible siempre (scavenging), incluso de la propia especie.
             float dist = Vector3.Distance(pos, a.transform.position);
@@ -353,6 +355,7 @@ public class Forager : MonoBehaviour
         ITarget victim = prey.GetComponent<ITarget>();
         if (victim == null) { self.busy = false; yield break; }
         bool wasAliveAtStart = !victim.Dead;   // para la confianza-por-uso: solo cuenta como CAZA si estaba viva (no carroña)
+        Animal preyAnimal = prey.GetComponent<Animal>(); string preySpecies = preyAnimal != null ? preyAnimal.SpeciesName : null;
         prey.GetComponent<Anima>()?.RespondToThreat(self.gameObject);   // la presa reacciona a la amenaza
         Vector3 location = prey.transform.position;
         float distance = Vector3.Distance(self.transform.position, location);
@@ -394,7 +397,7 @@ public class Forager : MonoBehaviour
                 {
                     self.Loco.SetGait(true, interval);
                     cansancio += 0.01f;
-                    if (distance < 8) victim.Hurt(0.8f);
+                    if (distance < 8) { if (preyAnimal != null) preyAnimal.CauseOfHarm = $"la caza de «{self.name}» ({self.SpeciesName})"; victim.Hurt(0.8f); }
                     yield return new WaitForSeconds(interval);
                 }
                 else
@@ -409,6 +412,7 @@ public class Forager : MonoBehaviour
         // Confianza-por-uso (D2): una CAZA de presa viva refuerza el combate si la abatí; si me rendí (agotado), lo merma.
         // Así el depredador exitoso se vuelve más osado y el que nunca caza (herbívoro) no. Ver capabilities-and-embodiment.md §4.
         if (wasAliveAtStart) self.RecordUse(Capability.Combat, prey == null || victim.Dead);
+        if (wasAliveAtStart && prey != null && victim.Dead) HuntQuota.Record(preySpecies, prey.transform.position);
 
         // Si la presa quedó como FoodItem sin consumir, llevarla a las crías.
         FoodItem remains = prey != null ? prey.GetComponent<FoodItem>() : null;

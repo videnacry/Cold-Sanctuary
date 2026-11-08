@@ -35,6 +35,7 @@ public class FloorEnergy : MonoBehaviour
         f.areaM2 = s.x * s.y;
         f.wattsPerM2 = EnergyRule.WattsPerM2(a.areaType);
         f.fixedKW = a.areaType == SanctuaryAreaType.Informatics ? EnergyRule.InformaticsKW : 0f;
+        if (a.areaType == SanctuaryAreaType.VerticalFarm && a.TryGetComponent(out VerticalFarm vf)) f.fixedKW = vf.LedKW;   // (2026-11-08) los LED, el clima y las bombas de sus estantes
         f.essential = EnergyRule.Essential(a.areaType);
         return f;
     }

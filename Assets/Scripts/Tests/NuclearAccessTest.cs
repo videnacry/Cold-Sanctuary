@@ -144,7 +144,7 @@ public class NuclearAccessTest : MonoBehaviour, ITestUnit
         int trips = line.Trips;
         bool went = line.Ride(body, 2f), carried = FlyingCarpet.Riding(body);
         yield return Until(() => !line.Busy, 300f);
-        TestProbe.Check("ida y vuelta sin cargar nada: baja hasta el fondo, oculto, y sube", went && carried && !line.Busy && line.Trips == trips + 1 && line.LastExit == "línea" && !FlyingCarpet.Riding(body) && deepest >= line.Length - 1f && hid && probe.enabled && MarineBase.Instance == null && Vector3.Distance(body.transform.position, top) < 3f, $"hasta {deepest:0} m; {line.LastSeconds:0} s");
+        TestProbe.Check("ida y vuelta sin cargar nada: baja hasta el fondo, oculto, y sube", went && carried && !line.Busy && line.Trips == trips + 1 && line.LastExit == "línea" && !FlyingCarpet.Riding(body) && deepest >= line.Length - 1f && hid && probe.enabled && MarineBase.Instance == null && Vector3.Distance(body.transform.position, line.ExitPoint) < 3f, $"hasta {deepest:0} m; {line.LastSeconds:0} s");
         TestProbe.Near("tarda lo que dice la regla", line.LastSeconds, 2f * one + 2f, 8f);   // (a ×4 con pocos FPS cada tramo se pasa hasta un fotograma: 124–128 s en vivo para 118)
         deepest = 0f;
         line.Ride(body, 2f);
@@ -152,7 +152,7 @@ public class NuclearAccessTest : MonoBehaviour, ITestUnit
         ns.DeclareEmergency("prueba de la línea");
         bool refused = !line.CanRide;
         yield return Until(() => !line.Busy, 120f);
-        TestProbe.Check("emergencia a media bajada: vuelve desde donde esté", refused && !line.Busy && line.LastExit == "vuelta" && deepest < line.Length - 5f && Vector3.Distance(body.transform.position, top) < 3f, $"llegó a {deepest:0} m");
+        TestProbe.Check("emergencia a media bajada: vuelve desde donde esté", refused && !line.Busy && line.LastExit == "vuelta" && deepest < line.Length - 5f && Vector3.Distance(body.transform.position, line.ExitPoint) < 3f, $"llegó a {deepest:0} m");
         ns.ClearEmergency();
         int escapes = line.Escapes;
         line.Ride(body, 3f);

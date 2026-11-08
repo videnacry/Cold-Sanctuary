@@ -20,7 +20,12 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 > - [ ] Probar los grupos 100, 110, 73, 94 y 28.
 > **HECHO 2026-11-06 (suite, rama claude/fix-suite; solo código, sin probar en vivo):** `WorkdayDirector` conduce a cada persona en cada frame y solo reparte la búsqueda de misiones (regla W14); `JornadaTest` usa `TickLive`. Las pruebas por tramos deben correr con `TestRunner.Running` encendido (`Temp/solo-running.txt`).
 > - [ ] Comprobar en vivo que el personal anda a su velocidad y volver a medir `WorkdayDirector.Update`.
-> - [ ] Decidir: el O₂ de la fachada (faltan 425 m²) y el Huerto (faltan 1290 m²) para 31 personas.
+> - [x] Decidir: el O₂ de la fachada (faltan 425 m²) y el Huerto (faltan 1290 m²) para 31 personas. Berón (2026-11-08): segunda fachada y Huerto vertical.
+>
+> **HECHO 2026-11-08 (oxígeno y huerto, rama claude/oxigeno-huerto; solo código, sin probar en vivo):** segunda fachada de fotobiorreactores en el tronco de la torre de Ciencias (480 m²; con la del Árbol, 1075 m²: 27,4 kg de O₂/día a salud 0,85 para 26,9 que respiran 32 personas) y su misión `bio_fotobio_2`; Huerto vertical en la torre de Producción (3 niveles), 8 estantes LED que salen de la demanda (25,6 kg/día; da 29,4 con los bancales) y sus tareas `huv_*`; las cargas en el balance de energía (~+127 kW de media). Reglas P22 y P23 del manual. docs/fotobiorreactores.md, docs/produccion-maquinaria.md y docs/energia.md §2026-11-08.
+> - [ ] Reconstruir SampleScene solo el santuario (menú «Build Sample Scene Blockout (solo el santuario, sin microcosmos)») y guardarla.
+> - [ ] Probar los grupos 56, 103, 101, 61, 96 (PlayerTasks), 75 (capacidad), 97 (actividades), 73 (garaje del submarino), 57 (torres-árbol), 55 (frutales) y 50 (jornada).
+> - [ ] Mirar en fotos: las arpas en las 4 esquinas del tronco de Ciencias (10–56 m) y el piso del Huerto vertical.
 >
 > **HECHO 2026-11-05 (rendimiento, rama claude/rendimiento; solo código, sin probar en vivo):** lote estático en Play sin reconstruir nada (las piezas siguen con nombre, collider y `enabled`), detalle apagado a más de 120 m, cuerpos y grupos sin dibujar a más de 130 m, sonda con A/B y renderers por builder, menú con los ajustes de URP. Detalle y riesgos: [rendimiento.md](rendimiento.md).
 > - [ ] Medir en SampleScene: *Perfilar scripts* (da el coste por tipo), `rendimiento-ab` y el build de medida (`tools/build-perf.sh`).

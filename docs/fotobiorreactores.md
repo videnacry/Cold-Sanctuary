@@ -12,6 +12,7 @@ Código:
 - `Assets/Editor/SampleSceneBuilder.Fotobio.cs`: la construye, después de `BuildTree`.
 - `AreaWork.Today`: la misión diaria.
 - `Assets/Scripts/Tests/FotobioFacadeTest.cs`: la prueba (grupo 56).
+- (2026-11-08) La segunda fachada, en el tronco de la torre de Ciencias: `SampleSceneBuilder.BuildFotobioTower`; ver §2026-11-08 al final.
 
 ## 1. Investigación
 
@@ -340,3 +341,39 @@ puerta del suelo, de 7 m). Si la población sigue creciendo, hay que sumar otro 
 ## 2026-11-06: faltan 425 m² para 31 personas
 
 31 personas respiran 26 kg de O₂ al día. A salud 0,85 hacen falta **1020 m²**; hay 595. El vano 5 sigue chocando con el carril de nado, las arpas ya van de 10 a 56 m y subir la productividad de diseño (20 g/m²/día) no sería honesto. Lo que cabe es **una fachada de tronco en un segundo árbol** (4 columnas de 10 módulos, 480 m²: 1075 m² en total, 27,4 kg/día a 0,85), con +74 kW de LED en la noche polar. `FotobioFacade` hoy supone una sola fachada, así que es obra de verdad. La decisión es de Berón.
+
+## 2026-11-08: la segunda fachada, en el tronco de Ciencias (Berón la aprobó)
+
+**Dónde.** En el tronco de la **torre de Ciencias** (92, 0, −117), girada 90°. Se eligió esta torre porque:
+- el cultivo se cuida en el **laboratorio de Biología**, que está en esa misma torre: quien hace la misión no cambia de edificio;
+- su tronco es igual que el del Árbol (22 × 22 m de agua y acrílico), con 4 niveles desde 64 m: de 10 a 56 m no hay ni pisos ni ramas;
+- Producción ya tiene el garaje del submarino al pie y ahora el Huerto vertical; Servicios y Entrenamiento quedan lejos de Biología.
+
+**Qué.** Las mismas arpas que el tronco del Árbol, sin quillas (`BuildFotobioTower`, `FotobioSpec.SecondRootName` = `Fachada_fotobiorreactores_2`):
+- 4 caras × 1 vano (el 0, el de la esquina) × 10 módulos de 3 × 4 m, de 10 a 56 m: **40 módulos, 480 m²**, ~9,5 m³ de cultivo;
+- el cuadro de control al pie, en la cara de la puerta del suelo de la torre (x = −5,5 m; la puerta va en x = 5);
+- la torre **no gira**: el sol polar da la vuelta a las cuatro caras cada día, así que la luz media del día es la misma que en el Árbol, que gira;
+- el tronco aguanta: `FotobioSpec.TowerStructure` (`StructuralLimits.RootCheck` con los nervios que pide la torre, más ~25 t de arpas y bombas).
+
+**Reglas del edificio-árbol que cumple** (docs/edificio-arbol.md, reglas-plataformas): no toca los pisos (≥ 64 m) ni las ramas; queda a ≥ 2 m de cada puerta del tronco y de su carril de nado (la prueba lee las puertas reales de la torre, que cada piso pone donde su umbral queda libre); no tapa la columna de nado; ≥ 2 m de las alfombras; sin escaleras.
+
+**Números (dos fachadas, 1075 m²):**
+
+| | Árbol (595 m²) | Ciencias (480 m²) | Total |
+|---|---|---|---|
+| O₂ a pleno rendimiento | 17,9 kg/día | 14,4 | **32,3** |
+| O₂ con salud 0,85 | 15,2 | 12,2 | **27,4** (32,6 personas) |
+| Lo que respiran 32 personas (0,84 kg) | | | **26,9** |
+| LED en la noche polar | 92 kW | 74 kW | **166 kW** |
+| LED de media en el año (~71 % del año, inferido) | ~65 kW | ~53 kW | **~118 kW** |
+
+- **Personas:** 32 = las 30 de `WorkdayDirector.Staff` + la Magnate + el recién llegado (`PopulationPlan.People`). Antes contaba solo los ya iniciados.
+- **El LED de media** sale de `FotobioSpec.LedMeanFraction()`, que integra el sol del santuario hora a hora con el mismo modelo que `FotobioFacade.Light`. El ~71 % es una cuenta mía aproximada; Unity da la cifra exacta en el registro `[Fotobio] Fachada 2…`.
+
+**El trabajo.** Una misión por fachada, de 1 h cada una (los tramos de ≤ 1 h de `FruitGardener.TreeStretches`): `bio_fotobio` (Árbol) y **`bio_fotobio_2`** (Ciencias), obligatorias, en Biología, con sus pasos en `PlayerTasks`. Son dos cultivos aparte (sus colectores no se juntan), cada uno con su cuadro.
+
+**Energía.** Cada fachada declara su LED medio en el balance (`FloorEnergy` en la raíz de la fachada). Ver [energia.md](energia.md) §2026-11-08.
+
+**Prueba (grupo 56):** dos fachadas; la de Ciencias con 40 módulos y 480 m²; por cada fachada: existe, su energía, libre de puertas, carril y nado, transparente, espacio; juntas: con salud 0,85 cubren a las 32 personas, y cuidadas cada día pasan de lo que respiran; cada tronco aguanta; cada fachada tiene su misión de ≤ 1 h.
+
+**Riesgos:** sin probar en vivo. Si alguna puerta de piso de Ciencias quedó cerca de la esquina del vano 0, la prueba del carril lo dirá (la puerta solo baja hasta 64 m, pero el carril va de arriba abajo). No sé qué hay en el hielo junto al pie de Ciencias entre 8 y 58 m de altura: lo mira la prueba del círculo.

@@ -65,6 +65,7 @@ public static class Uniforms
         if (id.StartsWith("cri_")) return Kind.Cria;
         if (id.StartsWith("gua_")) return Kind.Guardia;
         if (id.StartsWith("ifo_")) return Kind.Informatica;
+        if (id.StartsWith("huv_")) return Kind.Huerto;   // (2026-11-08) el Huerto vertical
         if (id.StartsWith("asa_")) return Kind.Asamblea;
         if (id.StartsWith("son_")) return Kind.Musica;
         if (id.StartsWith("sol_") || id.StartsWith("ene_")) return Kind.Energia;
@@ -74,7 +75,7 @@ public static class Uniforms
         {
             case AreaWork.Hospital: return Kind.BataMedica;
             case "Cocina": return Kind.Cocina;
-            case "Huerto": return Kind.Huerto;
+            case "Huerto": case VerticalFarm.AreaName: return Kind.Huerto;
             case "Construcción": return Kind.Obra;
             case "Mecánica": return Kind.Taller;
             case "Carne Cultivada": case "Química": case "Biología": return Kind.Laboratorio;
