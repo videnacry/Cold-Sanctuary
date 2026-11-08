@@ -389,6 +389,12 @@ public static class AreaMicrocosmos
                     if (InsideXZ(inside, down, 0f)) { found = true; break; }
                 }
                 if (!found) { lost.Add($"({c.x:0}, {top.max.y:0}, {c.z:0})"); continue; }
+                // Los extremos, SOBRE el NavMesh ya horneado: la meseta del mirador de Buda se anda a y 237 y la cara de arriba de su mueble
+                // da 233; con el extremo 4 m por debajo el enlace no conectaba («alcanzable False», ronda 25).
+                if (UnityEngine.AI.NavMesh.SamplePosition(up, out UnityEngine.AI.NavMeshHit hu, 6f, UnityEngine.AI.NavMesh.AllAreas)) up = hu.position;
+                else { lost.Add($"({c.x:0}, {top.max.y:0}, {c.z:0}) sin NavMesh arriba"); continue; }
+                if (UnityEngine.AI.NavMesh.SamplePosition(down, out UnityEngine.AI.NavMeshHit hd, 3f, UnityEngine.AI.NavMesh.AllAreas)) down = hd.position;
+                else { lost.Add($"({c.x:0}, {top.max.y:0}, {c.z:0}) sin NavMesh al pie"); continue; }
                 var g = new GameObject("Trepar"); g.transform.SetParent(lr, false);
                 var link = g.AddComponent<Unity.AI.Navigation.NavMeshLink>();
                 link.startPoint = down; link.endPoint = up; link.width = 2f; link.bidirectional = true; link.costModifier = 4f;
