@@ -36,6 +36,12 @@ public class AlimentadorTest : MonoBehaviour, ITestUnit
             TestProbe.Check($"{id}: con gesto de jornada", Performances.ForMission(id) != null);
         }
 
+        // Un clon de la Magnate con la misión la hace de verdad (ronda 24: con el reparto las dos plazas eran de clones, que iban a su sitio
+        // sin la misión, y nadie daba de comer: los dos osos adultos morían de hambre, 43, en la jornada).
+        foreach (string id in new[] { "gua_alimentador", "gua_alimentador_2", "gua_carnivoros" })
+            TestProbe.Check($"un clon con «{id}» la lleva a cabo", WorkdayDirector.CloneDuty(id) == id);
+        TestProbe.Check("un clon con otra misión solo va a su sitio", WorkdayDirector.CloneDuty("coc_servicio") == null);
+
         // ── La lista compartida ──
         PredatorRound.NewRound();
         var list = PredatorRound.Today();
