@@ -48,10 +48,31 @@ public class RepartoSantuariosTest : MonoBehaviour, ITestUnit
         TestProbe.Begin("Reparto por santuarios: casa por estadísticas, acceso hacia atrás, horas por área, jornada estirada y clones solo donde no hay nadie");
 
         // ── 1. La casa de cada uno ──
-        TestProbe.Check("los nueve de siempre son santuario 1 nivel 1", SanctuaryPlacement.Originals.Length == 9 && new[] { "Player", "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene", "JefeConstruccion", "Andrea" }.All(SanctuaryPlacement.IsOriginal));
-        TestProbe.Check("la tabla de umbrales: 3 → s1n1, 6 → s2n1, 9 → s3n1, 12 → s1n2", SanctuaryPlacement.PositionFor(3) == 0 && SanctuaryPlacement.PositionFor(6) == 1 && SanctuaryPlacement.PositionFor(9) == 2 && SanctuaryPlacement.PositionFor(12) == 3 && SanctuaryPlacement.PositionFor(5) == 0);
-        bool rising = true; for (int s = 0; s < 30; s++) rising &= SanctuaryPlacement.PositionFor(s + 1) >= SanctuaryPlacement.PositionFor(s);
-        TestProbe.Check("más puntuación nunca baja de sitio", rising);
+        // SE SUBE POR PODER (Berón 2026-11-08; docs/progresion-santuarios.md): jefe = el animal más poderoso; magia y bonusPacks para superarlo
+        var bosses = SanctuaryPower.Bosses();
+        float whale = SanctuaryPower.OfSpecies("Whale");
+        float faunaMax = SanctuaryPower.FaunaOf[SanctuaryPlacement.Land].Max(SanctuaryPower.OfSpecies);
+        TestProbe.Check("el jefe de s1n1 sale de la fauna y sus arquetipos: el más fuerte de ballena, orca y oso polar (aquí, la ballena)",
+            bosses.Count >= 3 && bosses[0].who == "Whale" && Mathf.Approximately(bosses[0].power, faunaMax) && whale >= SanctuaryPower.OfSpecies("Orca") && whale >= SanctuaryPower.OfSpecies("Bear"),
+            string.Join(" · ", bosses.Select((b, i) => $"{SanctuaryPlacement.Home.At(i)}: {b.who} {b.power:0.00}")));
+        TestProbe.Check("con la fauna viva de la escena, manda la viva", Mathf.Approximately(SanctuaryPower.Bosses(("Orca_TEST", 9f))[0].power, 9f));
+        bool rising = true; for (int i = 1; i < bosses.Count; i++) rising &= bosses[i].power >= bosses[i - 1].power;
+        TestProbe.Check("cada jefe es al menos tan fuerte como el anterior (hay que superar a TODOS sus animales)", rising);
+        var probe = new GameObject("Reparto_TEST_poder"); Anima pa0 = probe.AddComponent<Anima>(); pa0.strength = 1.3f; pa0.bodyMass = 0.9f; pa0.armament = 0.2f;
+        bool oneFormula = Mathf.Approximately(Predation.PredatorPower(pa0), Predation.Power(pa0.strength, pa0.bodyMass, pa0.armadura, pa0.agility, pa0.armament, pa0.sickness));
+        Destroy(probe);
+        TestProbe.Check("una sola fórmula para animales y humanos (Predation.Power)", oneFormula);
+        TestProbe.Check("la magia es lo que suben las margas (0 sin subir)", Mathf.Approximately(SanctuaryPower.Magic(Aptitudes.Default, 0), 0f) && SanctuaryPower.Magic(Aptitudes.Default, 10) > 0.5f);
+        float plain = SanctuaryPower.PlainHuman;
+        TestProbe.Check("un humano corriente se queda en s1n1", SanctuaryPower.PositionFor(plain, bosses) == 0 && SanctuaryPlacement.Next(false, 0, false, 0, SanctuaryPower.OfHuman(null, "Fernando"), bosses) == 0);
+        TestProbe.Check("el pack solo no basta para la ballena; con magia, sí", plain + SanctuaryPower.OfPack("bonusPack2") < bosses[0].power && plain + SanctuaryPower.OfPack("bonusPack2") + SanctuaryPower.Magic(Aptitudes.Default, 10) > bosses[0].power);
+        TestProbe.Check("Irosene lleva bonusPack2", Mathf.Approximately(SanctuaryPower.OfHuman(null, "Irosene"), SanctuaryPower.OfSpecies("Irosene") + SanctuaryPower.OfPack("bonusPack2")));
+        int StartOf(string n) => SanctuaryPlacement.Next(false, 0, false, SanctuaryPlacement.StartingHome.TryGetValue(n, out int st) ? st : 0, SanctuaryPower.OfHuman(null, n), bosses);
+        TestProbe.Check("de inicio: Irosene y Lizmibet en s2n1, Linduarda en s3n1, Kushal y los demás por su poder (s1n1)",
+            StartOf("Irosene") == 1 && StartOf("Lizmibet") == 1 && StartOf("Linduarda") == 2 && StartOf("Player") == 0 && StartOf("Goluis") == 0 && StartOf("Luciana") == 0,
+            string.Join(", ", new[] { "Irosene", "Lizmibet", "Linduarda", "Player", "Goluis", "Luciana" }.Select(n => $"{n} {SanctuaryPower.OfHuman(null, n):0.00} → {SanctuaryPlacement.Home.At(StartOf(n))}")));
+        TestProbe.Check("quien supera al jefe de su casa sube UN santuario, y una vez por día", SanctuaryPlacement.Next(true, 0, false, 0, bosses[0].power + 0.1f, bosses) == 1 && SanctuaryPlacement.Next(true, 0, true, 0, bosses[0].power + 0.1f, bosses) == 0 && SanctuaryPlacement.Next(true, 0, false, 0, bosses[0].power - 0.1f, bosses) == 0);
+        TestProbe.Check("tras el último santuario del nivel, el nivel siguiente; y nunca baja", SanctuaryPlacement.Home.At(SanctuaryPlacement.Next(true, 2, false, 0, bosses[2].power + 0.1f, bosses)).Equals(S1N2) && SanctuaryPlacement.Next(true, 2, false, 0, 0f, bosses) == 2);
         TestProbe.Check("posición y casa: s3n1 es la 2 y la 3 es s1n2 (acabar la vuelta sube el nivel)", S3.Position == 2 && SanctuaryPlacement.Home.At(3).Equals(S1N2) && SanctuaryPlacement.Home.At(2).Equals(S3));
         TestProbe.Check("s1n1 no va a s1n2 ni a s2n1", !SanctuaryPlacement.CanAccess(S1, S1N2) && !SanctuaryPlacement.CanAccess(S1, S2) && SanctuaryPlacement.CanAccess(S1, S1));
         TestProbe.Check("s1n2 va a s1n1, s2n1 y s3n1", SanctuaryPlacement.CanAccess(S1N2, S1) && SanctuaryPlacement.CanAccess(S1N2, S2) && SanctuaryPlacement.CanAccess(S1N2, S3));
@@ -61,7 +82,6 @@ public class RepartoSantuariosTest : MonoBehaviour, ITestUnit
         WorkRoster nucLand = Roster(("T0", 0), ("T1", 0));
         WorkRoster.DayPlan pnl = nucLand.Plan(0, Ms(NuclearSite.PowerArea, "nuc_t", 2));
         TestProbe.Check("los de la tierra nunca trabajan en la planta nuclear: la cubre un clon", !pnl.work.Any(a => !a.worker.clone) && pnl.clones.Count == 1);
-        TestProbe.Check("sin margas en el cuerpo, la tabla de inicio (Fernando al Aéreo)", SanctuaryPlacement.PositionFor(SanctuaryPlacement.SoulSum(null, "Fernando")) == 2 && SanctuaryPlacement.PositionFor(SanctuaryPlacement.SoulSum(null, "Nadie_TEST")) == SanctuaryPlacement.PositionFor(SanctuaryPlacement.DefaultStartingScore));
 
         // ── 2 y 3. Un día con los tres santuarios ──
         WorkRoster ro = Roster(("L1", 0), ("L2", 0), ("L3", 0), ("M", 1), ("Ae", 2));
@@ -113,15 +133,6 @@ public class RepartoSantuariosTest : MonoBehaviour, ITestUnit
         WorkRoster idle = Roster(("I0", 0)); WorkRoster.DayPlan pi = idle.Plan(0, Ms(Energy, "e", 0));
         TestProbe.Check("sin ninguna tarea, ni cuota ni clones", pi.quota.Count == 0 && pi.clones.Count == 0);
 
-        // (2026-11-08, ronda en vivo) LAS MARGAS SIN SUBIR NO BAJAN A NADIE: la tabla de inicio es el suelo
-        GameObject lvGo = new GameObject("Reparto_TEST_margas");
-        CharacterLevel lv = lvGo.AddComponent<CharacterLevel>();
-        bool floorOk = SanctuaryPlacement.PositionFor(SanctuaryPlacement.SoulSum(lvGo, "Nesvitor")) == 1 && SanctuaryPlacement.PositionFor(SanctuaryPlacement.SoulSum(lvGo, "Fernando")) == 2;
-        lv.stats.level = 5; lv.yoga.level = 4; lv.bonds.level = 3;
-        bool marginsRule = SanctuaryPlacement.SoulSum(lvGo, "Nesvitor") == 12;
-        Destroy(lvGo);
-        TestProbe.Check("un cuerpo con las margas a nivel 1 sigue en su casa de la tabla de inicio (s2n1; Fernando s3n1)", floorOk);
-        TestProbe.Check("y con las margas subidas, mandan ellas", marginsRule);
         // Los de s2 y s3 pueden trabajar en la tierra; los de la tierra nunca fuera
         WorkRoster up = Roster(("U0", 2), ("U1", 1));
         WorkRoster.DayPlan pu = up.Plan(0, Ms("A", "a", 6));
@@ -149,19 +160,6 @@ public class RepartoSantuariosTest : MonoBehaviour, ITestUnit
         WorkRoster.DayPlan pdup = dup.Plan(1, Ms("A", "d", 12));
         TestProbe.Check("lo pendiente de ayer que vuelve hoy no se suma dos veces (12 h, no más)", pend > 0 && Mathf.Approximately(pdup.hoursDemanded, 12f), $"{pend} pendientes · hoy {pdup.hoursDemanded} h");
 
-        // ACABAR UN SANTUARIO: 30 días vividos en cada uno hasta el suyo, y sube de nivel
-        var lived = new Dictionary<int, int>();
-        SanctuaryPlacement.Home h = S2;
-        for (int i = 0; i < SanctuaryPlacement.DaysToFinish; i++) h = SanctuaryPlacement.AfterDay(lived, h, S2);
-        bool notYet = h.Equals(S2);
-        for (int i = 0; i < SanctuaryPlacement.DaysToFinish - 1; i++) h = SanctuaryPlacement.AfterDay(lived, h, S1);
-        bool stillNot = h.Equals(S2);
-        h = SanctuaryPlacement.AfterDay(lived, h, S1);
-        TestProbe.Check($"s2n1 sube a s2n2 al acabar s1 y s2 ({SanctuaryPlacement.DaysToFinish} días cada uno), no antes", notYet && stillNot && h.Equals(new SanctuaryPlacement.Home(2, 2)) && lived.Count == 0, h.ToString());
-        var l1 = new Dictionary<int, int>(); SanctuaryPlacement.Home k1 = S1;
-        for (int i = 0; i < SanctuaryPlacement.DaysToFinish; i++) k1 = SanctuaryPlacement.AfterDay(l1, k1, i % 2 == 0 ? S1 : S1N2);
-        TestProbe.Check("los días en otro nivel no cuentan; con 30 en s1, s1n1 pasa a s1n2", k1.Equals(S1) && SanctuaryPlacement.Home.At(SanctuaryPlacement.AfterDay(new Dictionary<int, int> { { 1, SanctuaryPlacement.DaysToFinish - 1 } }, S1, S1).Position).Equals(S1N2));
-        TestProbe.Check("en las pruebas no se cuenta ni se guarda", SanctuaryPlacement.LiveDay("Reparto_TEST", 5, 0, S1) == 0 && SanctuaryPlacement.DaysIn("Reparto_TEST", 1) == 0);
         WorkRoster kushal = Roster(("Player", 2));
         WorkRoster.DayPlan pk = kushal.Plan(0, Ms("A", "k", 6));
         TestProbe.Check("Kushal, siempre en la tierra: sus 5 h y un clon la que sobra", Mathf.Approximately(Worked(pk, kushal.Find("Player")), 5f) && pk.place[kushal.Find("Player")].Equals(S1) && pk.clones.Count == 1 && pk.backlog.Count == 0);

@@ -116,15 +116,24 @@ public class WorkdayDirector : MonoBehaviour
         _lunched.Clear(); _lunchStocked = false; _heading.Clear();   // [Jornada] la comida de hoy
         ReleaseGym(); _coachDay = int.MinValue;   // las sesiones de gimnasio de ayer
         roster.initiationModel = true; roster.worldCheck = MissionRequirements.Blocked;   // la mañana nueva y los requisitos (docs/jornada-y-rotacion.md)
-        // (Berón 2026-11-08) EL REPARTO POR SANTUARIOS: la casa de cada uno (santuario y nivel) sale de sus margas y lo guardado, cada día (suben al subir).
+        // (Berón 2026-11-08) EL REPARTO POR SANTUARIOS: la casa de cada uno (santuario y nivel). Se sube por PODER: quien supera al jefe de su
+        // santuario (el animal más poderoso de su fauna) pasa al siguiente (docs/progresion-santuarios.md). Cada día, con la fauna y los cuerpos de hoy.
         roster.sanctuaryModel = true;
-        foreach (WorkRoster.Worker w in roster.workers) if (!w.clone) w.home = SanctuaryPlacement.PositionOf(w.name, SanctuaryPlacement.Score(Body(w.name), w.name));
+        var bosses = SanctuaryPower.Bosses(SanctuaryPower.LiveFauna());
+        Debug.Log($"[Progresión] Día {day} · jefes: {string.Join(" · ", bosses.Select((b, i) => $"{SanctuaryPlacement.Home.At(i)}: {b.who} {b.power:0.00}"))}");
+        var powers = new List<string>();
+        foreach (WorkRoster.Worker w in roster.workers)
+        {
+            if (w.clone) continue;
+            float pw = SanctuaryPower.OfHuman(Body(w.name), w.name);
+            w.home = SanctuaryPlacement.PositionOf(w.name, pw, bosses, day);
+            powers.Add($"{w.name} {pw:0.00}");
+        }
+        Debug.Log($"[Progresión] Día {day} · poder: {string.Join(", ", powers)}");
         Debug.Log($"[Reparto] Día {day} · casas: {string.Join(" · ", roster.workers.Where(w => !w.clone).GroupBy(w => w.home).OrderBy(g => g.Key).Select(g => $"{SanctuaryPlacement.Home.At(g.Key)}: {string.Join(", ", g.Select(w => w.name))}"))}");
         List<WorkRoster.Mission> todays = AreaWork.Today(day, ConstructionProject.All);
         todays.AddRange(GymProgramming.Missions());   // la del entrenador (papel fijo: revisar el registro y ajustar los planes)
         today = roster.Plan(day, todays);
-        // (2026-11-08) UN DÍA VIVIDO en su sitio de hoy: con 30 en cada santuario hasta el suyo, sube de nivel (vale desde mañana)
-        foreach (var kv in today.place) if (!kv.Key.clone) kv.Key.home = SanctuaryPlacement.LiveDay(kv.Key.name, day, kv.Key.home, kv.Value);
         _orders.Clear(); _cloneOrders.Clear();   // (las órdenes guardadas eran del plan de ayer)
         int gymDays = GymProgramming.ApplyGymDays(today, roster.trainingAreas, roster.workers);   // los días de gimnasio de cada plan
         if (gymDays > 0) Debug.Log($"[Gimnasio] Día {day}: {gymDays} cambios en el entrenamiento de las 14 h por los días de cada plan; al gimnasio: {string.Join(", ", today.training.Where(kv => kv.Value == GymArea).Select(kv => kv.Key.name))}.");

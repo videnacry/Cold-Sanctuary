@@ -3,16 +3,17 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// DÓNDE VIVE CADA UNO (Berón 2026-11-08; docs/jornada-y-rotacion.md §Santuarios y niveles; manual S20–S23). Cada humano tiene su CASA:
-/// un santuario y un nivel. Santuario 1 = la tierra (SampleScene), 2 = el Marino (docs/sitio-nuclear.md §20), 3 = el Aéreo (§23).
-///  · Los nueve de siempre (<see cref="Originals"/>) empiezan en santuario 1, nivel 1.
-///  · Los demás, por sus estadísticas: por defecto la SUMA de los niveles de sus margas del alma (Stats + Yoga + Vínculos, <see cref="CharacterLevel"/>),
-///    con los umbrales de UNA tabla (<see cref="PositionThresholds"/>). Berón puede elegir otras estadísticas cambiando <see cref="Score"/>.
-///  · ACCESO: se puede ir a santuarios y niveles ANTERIORES, nunca a los siguientes. El nivel sube al acabar todos los santuarios hasta el suyo (<see cref="DaysToFinish"/> días vividos en cada uno).
-///    Por eso basta un número, la POSICIÓN: (nivel − 1) × 3 + (santuario − 1). s1n1 = 0, s2n1 = 1, s3n1 = 2, s1n2 = 3… Se puede ir a un sitio si su
-///    posición no pasa de la propia: nivel menor, o el mismo nivel y santuario menor o igual (<see cref="CanAccess"/>).
+/// DÓNDE VIVE CADA UNO (Berón 2026-11-08; docs/progresion-santuarios.md, docs/jornada-y-rotacion.md §Reparto por santuarios; manual J33). Cada humano tiene
+/// su CASA: un santuario y un nivel. Santuario 1 = la tierra (SampleScene), 2 = el Marino (docs/sitio-nuclear.md §20), 3 = el Aéreo (§23).
+///  · SE SUBE POR PODER: un humano sale de su santuario solo cuando su poder supera al JEFE de ese santuario, el animal más poderoso de su fauna
+///    (<see cref="SanctuaryPower"/>). Entonces pasa al siguiente santuario del mismo nivel, o al primero del nivel siguiente tras el último.
+///    Se prepara con tareas, entrenamiento, yoga y meditación; después se le enseña magia, y magia y bonusPacks son lo que le deja superar a una ballena.
+///  · LA CASA DE INICIO (<see cref="StartingHome"/>): Irosene y Lizmibet en s2n1 y Linduarda en s3n1 (Berón); los demás, por su poder (un humano
+///    corriente, s1n1).
+///  · ACCESO: se puede ir a santuarios y niveles ANTERIORES, nunca a los siguientes. Basta un número, la POSICIÓN: (nivel − 1) × 3 + (santuario − 1).
+///    s1n1 = 0, s2n1 = 1, s3n1 = 2, s1n2 = 3… Se va a un sitio si su posición no pasa de la propia (<see cref="CanAccess"/>).
 ///  · Se GUARDA entre partidas (PlayerPrefs, como <see cref="Progress"/>): la posición de cada uno, que nunca baja. Mientras corren las pruebas no se guarda.
-/// Lógica pura salvo <see cref="Score"/> (lee el cuerpo) y el guardado.
+/// Lógica pura salvo el guardado.
 /// </summary>
 public static class SanctuaryPlacement
 {
@@ -33,40 +34,13 @@ public static class SanctuaryPlacement
 
     public static readonly Home LandFirst = new Home(Land, 1);
 
-    /// <summary>Los nueve de siempre: santuario 1, nivel 1 (Berón 2026-11-08).</summary>
+    /// <summary>Los nueve de siempre (Berón 2026-11-08). Ya no fijan la casa: la da el poder, salvo <see cref="StartingHome"/>.</summary>
     public static readonly string[] Originals = { "Player", "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene", "JefeConstruccion", "Andrea" };
     public static bool IsOriginal(string name) => System.Array.IndexOf(Originals, name) >= 0;
 
-    /// <summary>LA TABLA DE UMBRALES (para Berón): la puntuación mínima para cada posición. Índice = posición: 0 = s1n1, 1 = s2n1, 2 = s3n1,
-    /// 3 = s1n2, 4 = s2n2, 5 = s3n2. Con la puntuación por defecto (suma de niveles de las tres margas, 3 al empezar), cada 3 niveles ganados
-    /// es un santuario más. Para más niveles, añadir filas.</summary>
-    public static readonly int[] PositionThresholds = { 3, 6, 9, 12, 15, 18 };
-
-    /// <summary>PUNTUACIÓN INICIAL de quien aún no tiene margas en el cuerpo (el personal no lleva <see cref="CharacterLevel"/>; solo Kushal).
-    /// INFERIDO, para que Berón lo cambie: Fernando (paneles) y Luciana (piloto, lanzadera) tienen su trabajo en el Aéreo → s3n1; el resto → s2n1.</summary>
-    public static readonly Dictionary<string, int> StartingScore = new Dictionary<string, int> { { "Fernando", 9 }, { "Luciana", 9 } };
-    /// <summary>La de quien no está en <see cref="StartingScore"/> ni tiene margas (INFERIDO: s2n1).</summary>
-    public const int DefaultStartingScore = 6;
-
-    /// <summary>La puntuación de una persona (cámbiese para usar otras estadísticas). Por defecto: la suma de los niveles de sus margas.</summary>
-    public static System.Func<GameObject, string, int> Score = SoulSum;
-
-    public static int SoulSum(GameObject g, string name)
-    {
-        // La tabla de inicio es el SUELO: un cuerpo con margas sin subir (nivel 1 en las tres, 3 puntos) no baja a nadie a s1n1 (2026-11-08: en vivo,
-        // los santuarios 2 y 3 se quedaban vacíos). Las margas mandan cuando pasan de ahí.
-        int start = name != null && StartingScore.TryGetValue(name, out int s) ? s : DefaultStartingScore;
-        CharacterLevel cl = g != null ? g.GetComponent<CharacterLevel>() : null;
-        return cl != null ? System.Math.Max(start, cl.stats.level + cl.yoga.level + cl.bonds.level) : start;
-    }
-
-    /// <summary>La posición que da una puntuación: la última fila de la tabla que alcanza.</summary>
-    public static int PositionFor(int score)
-    {
-        int p = 0;
-        for (int i = 0; i < PositionThresholds.Length; i++) if (score >= PositionThresholds[i]) p = i;
-        return p;
-    }
+    /// <summary>LA CASA DE INICIO que no sale del poder (Berón 2026-11-08): Irosene y Lizmibet, planeadas con la magia de s3n1, empiezan en s2n1;
+    /// Linduarda, hechicera de nivel 4, en s3n1 (el santuario más alto que hay). El poder puede subirlos más, nunca bajarlos.</summary>
+    public static readonly Dictionary<string, int> StartingHome = new Dictionary<string, int> { { "Irosene", 1 }, { "Lizmibet", 1 }, { "Linduarda", 2 } };
 
     /// <summary>¿Puede quien vive en <paramref name="own"/> ir a <paramref name="target"/>? A lo anterior sí; a lo siguiente, no.</summary>
     public static bool CanAccess(Home own, Home target) => target.level < own.level || (target.level == own.level && target.sanctuary <= own.sanctuary);
@@ -85,7 +59,7 @@ public static class SanctuaryPlacement
     public static Home PlaceOfArea(string area) => new Home(SanctuaryOfArea(area), LevelOfArea(area));
 
     // ── La casa de cada uno, guardada ──
-    const string Key = "cs_santuarios";
+    const string Key = "cs_santuarios_poder";   // (2026-11-08: clave nueva; la de antes guardaba las casas de la tabla de puntuación, que ya no vale)
     static readonly Dictionary<string, int> _saved = new Dictionary<string, int>();
     static bool _loaded;
     static bool Off => ColdSanctuary.TestRunner.Running;
@@ -111,49 +85,27 @@ public static class SanctuaryPlacement
     /// <summary>La posición guardada (0 si nunca se guardó).</summary>
     public static int Saved(string name) { Load(); return _saved.TryGetValue(name, out int p) ? p : 0; }
 
-    /// <summary>La posición de <paramref name="name"/> con esa puntuación: la guardada o la de la tabla, la mayor (nunca baja). Los nueve de siempre
-    /// empiezan en s1n1 y solo suben de nivel viviendo (<see cref="LiveDay"/>). Si sube, se guarda.</summary>
-    public static int PositionOf(string name, int score)
+    /// <summary>LA CASA DE <paramref name="name"/> con su poder de hoy (<see cref="SanctuaryPower.OfHuman"/>) y los jefes (<see cref="SanctuaryPower.Bosses"/>).
+    /// Ver <see cref="Next"/>. Se guarda. En las pruebas, siempre como la primera vez y sin guardar.</summary>
+    public static int PositionOf(string name, float power, List<(string who, float power)> bosses, int day)
     {
-        int saved = Saved(name), p = System.Math.Max(saved, IsOriginal(name) ? 0 : PositionFor(score));
-        if (p != saved && !Off) { _saved[name] = p; Save(); }
+        Load();
+        bool known = !Off && _saved.ContainsKey(name);
+        int saved = known ? _saved[name] : 0;
+        bool counted = known && _saved.TryGetValue(name + "@", out int last) && last >= day;
+        int p = Next(known, saved, counted, StartingHome.TryGetValue(name, out int s) ? s : 0, power, bosses);
+        if (!Off) { _saved[name] = p; _saved[name + "@"] = day; Save(); }
         return p;
     }
 
-    /// <summary>ACABAR UN SANTUARIO (por defecto hasta que Berón diga otra cosa, 2026-11-08): haber vivido allí estos días de juego, en el nivel de su casa.</summary>
-    public const int DaysToFinish = 30;
-
-    /// <summary>Lógica pura: un día vivido en <paramref name="place"/> por quien vive en <paramref name="home"/>. <paramref name="days"/>: días vividos en cada
-    /// santuario de su nivel (se suma aquí). Si ya acabó todos los santuarios hasta el número del suyo (cada uno con <see cref="DaysToFinish"/> días), sube
-    /// de nivel: el mismo santuario, un nivel más, y la cuenta vuelve a empezar. Devuelve su casa después del día. Un día en otro nivel no cuenta.</summary>
-    public static Home AfterDay(Dictionary<int, int> days, Home home, Home place)
+    /// <summary>Lógica pura de la subida. La primera vez (<paramref name="known"/> falso): la mayor entre su casa de inicio y lo que su poder ya supera.
+    /// Después, como mucho UN santuario por día (si ese día no contó ya): si su poder supera al jefe de su casa, pasa al siguiente. Nunca baja.</summary>
+    public static int Next(bool known, int saved, bool countedToday, int start, float power, List<(string who, float power)> bosses)
     {
-        if (place.level != home.level || place.sanctuary > home.sanctuary) return home;
-        days[place.sanctuary] = (days.TryGetValue(place.sanctuary, out int d) ? d : 0) + 1;
-        for (int s = 1; s <= home.sanctuary; s++) if (!days.TryGetValue(s, out int ds) || ds < DaysToFinish) return home;
-        days.Clear();
-        return new Home(home.sanctuary, home.level + 1);
+        int p = known ? saved : System.Math.Max(start, SanctuaryPower.PositionFor(power, bosses));
+        if (known && !countedToday && p < bosses.Count && power > bosses[p].power) p++;
+        return System.Math.Max(p, start);
     }
-
-    /// <summary>El día <paramref name="day"/> vivido en <paramref name="place"/> (lo llama la jornada al repartir; una vez por día). Guarda la cuenta y la casa nueva.
-    /// Devuelve la posición después del día. Mientras corren las pruebas no cuenta.</summary>
-    public static int LiveDay(string name, int day, int position, Home place)
-    {
-        if (Off || string.IsNullOrEmpty(name)) return position;
-        Load();
-        if (_saved.TryGetValue(name + "@", out int last) && last >= day) return position;   // (ese día ya contó)
-        _saved[name + "@"] = day;
-        var days = new Dictionary<int, int>();
-        for (int s = 1; s <= Count; s++) if (_saved.TryGetValue($"{name}#{s}", out int ds)) days[s] = ds;
-        int p = AfterDay(days, Home.At(position), place).Position;
-        for (int s = 1; s <= Count; s++) { if (days.TryGetValue(s, out int ds)) _saved[$"{name}#{s}"] = ds; else _saved.Remove($"{name}#{s}"); }
-        if (p > Saved(name)) _saved[name] = p;
-        Save();
-        return System.Math.Max(p, position);
-    }
-
-    /// <summary>Días vividos en el santuario <paramref name="sanctuary"/> del nivel de su casa (para el panel y las pruebas).</summary>
-    public static int DaysIn(string name, int sanctuary) { Load(); return _saved.TryGetValue($"{name}#{sanctuary}", out int d) ? d : 0; }
 
     /// <summary>Lo que lleva de la vuelta del nivel: cuántos santuarios ya ha pasado (0 = está en el primero).</summary>
     public static int RoundProgress(int position) => System.Math.Max(0, position) % Count;
