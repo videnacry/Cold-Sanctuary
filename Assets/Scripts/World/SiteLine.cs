@@ -234,6 +234,8 @@ public class SiteLine : MonoBehaviour
     /// <summary>Donde deja la línea a quien sube: en la pista de alfombras de la caseta (a menos de 12 m), porque la caseta no pisa NavMesh y
     /// quien salía en ella no podía andar los 7,5 m a su pista y se quedaba para siempre (Lizmibet, ronda 20). Sin pista, en la caseta.</summary>
     public Vector3 ExitPoint { get { CarpetPad p = CarpetPad.For(transform.position); return p != null && (p.transform.position - transform.position).sqrMagnitude < 144f ? p.transform.position : transform.position; } }
+    /// <summary>(Ronda 30) La pista de la estación (a menos de 12 m), o null: ahí se espera para bajar y ahí se deja a quien sube.</summary>
+    public Transform Pad { get { CarpetPad p = CarpetPad.For(transform.position); return p != null && (p.transform.position - transform.position).sqrMagnitude < 144f ? p.transform : null; } }
 
 
     // ── LA PLANTA BAJO EL MAR (Berón 2026-11-08; docs/sitio-nuclear.md §25): la Central Nuclear y la Planta Atómica están en el Santuario Marino. Quien trabaja
