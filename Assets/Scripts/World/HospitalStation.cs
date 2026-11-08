@@ -32,6 +32,25 @@ public class HospitalStation : MonoBehaviour, IInteractable
     public static IReadOnlyList<HospitalStation> All => _all;
     public Vector3 StandPoint => transform.TransformPoint(standLocal) + Vector3.up;
 
+    /// <summary>Holgura del puesto respecto a su mesa: pegado a ella (regla de la ronda 19), pero con el centro del cuerpo FUERA aunque se incline a
+    /// explorar o auscultar (ronda 25: Andrea y David ×14 dentro de «Quirofano veterinario 3/4» en «Explorar al paciente»; el puesto de la mesa
+    /// veterinaria está a 1,1 m de su centro, casi en el borde de su caja).</summary>
+    public const float Clearance = 0.35f;
+    /// <summary>El punto del puesto apartado de la caja de su propia mesa lo justo para dejar <see cref="Clearance"/> (si ya la tiene, el mismo).</summary>
+    public Vector3 ClearStandPoint
+    {
+        get
+        {
+            Vector3 s = StandPoint;
+            if (!TryGetComponent(out Collider c)) return s;
+            Vector3 q = new Vector3(s.x, Mathf.Clamp(s.y, c.bounds.min.y, c.bounds.max.y), s.z), near = c.ClosestPoint(q), d = q - near; d.y = 0f;
+            if (d.sqrMagnitude >= Clearance * Clearance) return s;
+            Vector3 dir = d.sqrMagnitude > 1e-6f ? d.normalized : new Vector3(s.x - c.bounds.center.x, 0f, s.z - c.bounds.center.z).normalized;
+            Vector3 p = near + dir * Clearance; p.y = s.y;
+            return p;
+        }
+    }
+
     /// <summary>Puesto médico de <paramref name="who"/>: el que ya tenía, o el primero libre. null si los 8 están ocupados.</summary>
     public static HospitalStation PostFor(string who)
     {

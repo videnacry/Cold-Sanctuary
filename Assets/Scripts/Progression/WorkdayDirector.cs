@@ -1110,7 +1110,7 @@ public class WorkdayDirector : MonoBehaviour
     /// (docs/hospital.md); en el resto (o si los puestos están llenos), un punto del área.</summary>
     static Vector3 WorkPoint(string area, string who)
     {
-        if (area == AreaWork.Hospital) { HospitalStation post = HospitalStation.PostFor(who); if (post != null) return Clear(area, who, post.StandPoint, 0.12f); }   // (radio justo: pegado a la mesa es su sitio; dentro de ella, no)
+        if (area == AreaWork.Hospital) { HospitalStation post = HospitalStation.PostFor(who); if (post != null) return Clear(area, who, post.ClearStandPoint, 0.12f); }   // (radio justo: pegado a la mesa es su sitio; dentro de ella, no)
         Vector3 p = AreaPoint(area, who);
         // Al NavMesh (como RestaurantService): la rejilla de puestos alrededor del centro del área caía a veces DENTRO de un
         // mueble (el «Bloque_Intercambiador» de la central) y se le iba a buscar atravesándolo (JornadaTest 2026-10-29).
@@ -1139,7 +1139,8 @@ public class WorkdayDirector : MonoBehaviour
         // Fuera de un puesto, a 2 m vale, salvo si está DENTRO de un mueble: el alumno de una lección del hospital veterinario sin puesto
         // (los 8 son del personal) llegaba a la rejilla por el otro lado de una mesa y se quedaba en ella (Goluis, «Quirofano veterinario 3»).
         bool post = area == AreaWork.Hospital && HospitalStation.PostFor(g.name) != null;
-        if (!post && !Solid(g.transform.position, 0.12f)) { _postWalk.Remove(g.name); return true; }
+        // (Ronda 25) Medio cuerpo libre, no 0,12 m: al inclinarse sobre el puesto (Adonis en «Puesto de monitorización 3») el centro entraba en él.
+        if (!post && !Solid(g.transform.position, 0.25f)) { _postWalk.Remove(g.name); return true; }
         d.y = 0f;
         if (d.sqrMagnitude <= 0.16f) return true;
         if (!_postWalk.TryGetValue(g.name, out float since)) { _postWalk[g.name] = Time.time; return false; }
