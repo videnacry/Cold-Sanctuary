@@ -275,8 +275,28 @@ public class RepartoSantuariosTest : MonoBehaviour, ITestUnit
         TestProbe.Check("cada clon dice por qué", pl.cloneReasons.Count == pl.clones.Count && pl.cloneReasons.All(s => s.Contains("motivo")));
         WorkRoster.DayPlan pu0 = LiveRoster(false, liveDay).Plan(0, liveDay.Select(x => x.Copy()).ToList());
         Debug.Log($"[Reparto] Caso en vivo sin formar (iniciaciones de 2 h): {pu0.clones.Count} clones · {pu0.lessons.Count} clases · motivos: {string.Join(" | ", pu0.cloneReasons.Take(8))}");
-        // LA FAUNA (Berón 2026-11-09; docs/reglas-animales.md E11): el zorro ártico, con un grupo mínimo viable de 4; el resto, como su proporción por humano
-        TestProbe.Check("el zorro ártico tiene al menos 4 (mínimo viable); el oso sigue en su proporción", PopulationPlan.Raw("ArcticFox") >= 4 && PopulationPlan.Raw("Bear") == Mathf.Max(2, Mathf.RoundToInt(PopulationPlan.FaunaScale * PopulationPlan.PerHuman["Bear"])), $"zorros {PopulationPlan.Raw("ArcticFox")}");
+        // CONTROL DE MISIÓN, TAMBIÉN EN OBRA (Berón 2026-11-09): su área vive en la escena aérea; la obra la llevan los del Aéreo
+        TestProbe.Check("Control de misión no es básico; su seguridad (diluvio, iceberg, vaciado) sigue aunque esté en obra",
+            !AreasEnObra.IsBasic(LaunchSite.ControlArea) && AreasEnObra.Filter(new List<WorkRoster.Mission> { new WorkRoster.Mission(LaunchSite.ControlArea, "lanz_control", "", 1f), new WorkRoster.Mission(LaunchSite.ControlArea, "lanz_seguridad", "", 1f), new WorkRoster.Mission(LaunchSite.ControlArea, Iceberg.LaunchTow, "", 2f, true) }, new HashSet<string> { LaunchSite.ControlArea }).Select(x => x.id).OrderBy(x => x).SequenceEqual(new[] { "lanz_remolque", "lanz_seguridad" }));
+        var ctrlObra = AreaWork.ObraMissions(LaunchSite.ControlArea, 1, reform: true, area: AreasEnObra.ObraArea(LaunchSite.ControlArea));
+        TestProbe.Check("la obra de Control de misión es del Aéreo (la hacen los de s3)", ctrlObra.All(x => SanctuaryPlacement.SanctuaryOfArea(x.area) == SanctuaryPlacement.Aerial) && AreaWork.ObraMissions("Música", 1, reform: true, area: AreasEnObra.ObraArea("Música")).All(x => x.area == "Construcción"));
+        WorkRoster air = Roster(("Linda", 2));
+        var airDay = new List<WorkRoster.Mission>(Ms(EnergyRule.Area, "ene_t", 2)); airDay.AddRange(ctrlObra);
+        WorkRoster.DayPlan pair = air.Plan(0, airDay);
+        TestProbe.Check("la del Aéreo hace sus tareas y, con el tiempo que le queda, turnos de la obra", pair.Of(air.Find("Linda")).Any(a => a.mission.area == EnergyRule.Area) && pair.Of(air.Find("Linda")).Any(a => a.mission.id.StartsWith("obra_")) && pair.clones.Count == 0, string.Join(", ", pair.Of(air.Find("Linda")).Select(a => a.mission.id)));
+
+        // LA FAUNA POR HUMANOS (Berón 2026-11-09; docs/reglas-animales.md §Fauna por humanos): K × los humanos de cada santuario, repartido por niveles tróficos
+        TestProbe.Check("K por defecto 3: 26 humanos dan 78 animales", PopulationPlan.AnimalsPerHuman == 3 && PopulationPlan.TotalFor(26) == 78);
+        TestProbe.Check("las partes de cada especie suman 1", Mathf.Abs(PopulationPlan.Shares(PopulationPlan.Groups.Keys).Values.Sum() - 1f) < 1e-3f);
+        var alloc = PopulationPlan.Allocate(78, PopulationPlan.Groups.Keys, out List<string> dropped78);
+        int Lvl(PopulationPlan.Trophic t) => alloc.Where(kv => PopulationPlan.LevelOf(kv.Key) == t).Sum(kv => kv.Value);
+        TestProbe.Check("78 animales: suman 78, cada especie con su mínimo (zorro 4) y muchas más presas que depredadores",
+            alloc.Values.Sum() == 78 && dropped78.Count == 0 && alloc.All(kv => kv.Value >= PopulationPlan.MinOf(kv.Key)) && alloc["ArcticFox"] >= 4 && Lvl(PopulationPlan.Trophic.Prey) > 5 * Lvl(PopulationPlan.Trophic.Apex),
+            string.Join(", ", alloc.OrderByDescending(kv => kv.Value).Select(kv => $"{kv.Key} {kv.Value}")));
+        var small = PopulationPlan.Allocate(20, PopulationPlan.Groups.Keys, out List<string> dropped20);
+        TestProbe.Check("con muy pocos humanos no se pasa del total: cae el depredador más raro", small.Values.Sum() <= 20 && dropped20.Count > 0 && dropped20[0] == "Orca" && small.Where(kv => kv.Value > 0).All(kv => kv.Value >= PopulationPlan.MinOf(kv.Key)), $"fuera: {string.Join(", ", dropped20)}");
+        TestProbe.Check("el techo de la reproducción es lo que toca con K, no 1,5× un plan viejo", PopulationPlan.Cap("Bear") == PopulationPlan.Target("Bear") && PopulationPlan.Raw("ArcticFox") >= 4);
+        Debug.Log($"[Fauna] Santuario 1 ({PopulationPlan.HumansIn(SanctuaryPlacement.Land)} humanos × {PopulationPlan.AnimalsPerHuman}): {string.Join(", ", PopulationPlan.Groups.Keys.Select(s => $"{s} {PopulationPlan.Raw(s)}"))}.");
 
         // ── 4. Cambia cada día y con los datos ──
         WorkRoster six = Roster(("P0", 2), ("P1", 2), ("P2", 2), ("P3", 2), ("P4", 2), ("P5", 2));

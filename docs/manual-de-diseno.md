@@ -427,7 +427,7 @@ Berón (2026-11-05): «¿tenemos reglas para la creación de animales?». Detall
 | E8 | **Ciclo de vida completo** en unidades reales; el parto es 1 cría. | «Todos sus procesos naturales». | 58 | [ciclo-de-vida.md](ciclo-de-vida.md) |
 | E9 | **Dieta real:** lo que no sea presa, pez o kril va en el `Ethogram` sobre un `Affordance`. | La morsa no come peces. | 99 | [reglas-animales.md](reglas-animales.md) |
 | E10 | **Hábitat real:** vive donde vive; si hace falta, el mundo se adapta. | Oso sobre pasto: inconsistente. | 99, fotos | ídem |
-| E11 | **Población por humano**, más presas que depredadores; techo de 1,5×. | Rendimiento y equilibrio. | 99, `[ECO]` | ídem |
+| E11 | **Fauna por humanos** (Berón 2026-11-09): total = K × los humanos del santuario (K = 3), repartido por la pirámide trófica (70 / 22 / 8 %), con mínimo viable (2; zorro ártico 4) y techo en ese total. | Rendimiento y equilibrio. | 99, `[ECO]` | ídem |
 | E12 | **Escena de ciclo de vida** para cada especie. | Comprobar cada proceso. | 58 en su escena | ídem |
 | E13 | **Polos mezclados, y dicho:** cada ficha dice de dónde es. | Para que no pase por dato. | solo en docs | ídem |
 | E14 | **Mente propia:** `Archetypes` y `PhrasePools`. | Todo ser tiene mente. | 99 | ídem |

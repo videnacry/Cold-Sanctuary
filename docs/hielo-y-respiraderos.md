@@ -30,4 +30,4 @@ Berón (2026-11-05) pidió que el hielo de 300 m fuese real, y eso dejó dos cos
 En la ronda 9 entró el personal real (32) en `PopulationPlan.Humans`, y eso movía también la fauna en Play: el techo de reproducción subía a 1,5 × 32 y los osos podían llegar a 15. Eso contradecía el tope de memoria y dejaba bancos y plantas por debajo de lo calculado.
 
 - **Ahora:** `FaunaScale` = 11 fija toda la fauna y la cadena alimenticia. `Humans` solo cuenta personas (comidas, verdura, prendas).
-- **Se pierde:** ya no acoge más animales al llegar más gente. Era una idea escrita en `PopulationPlan`; subirla ahora es decidir subir `FaunaScale`.
+- **Desde el 2026-11-09 (Berón):** la fauna vuelve a escalar con los humanos, pero con un techo. El total es K × los humanos de cada santuario (`PopulationPlan.AnimalsPerHuman` = 3), y la reproducción no lo pasa. Con unos 27 humanos en el santuario 1 son **81 animales**, frente a los ~86 vivos de hoy: la memoria no sube. Con K = 4 serían 108 y con K = 5, 135; subirlo es una decisión de memoria (el PC de 16 GB). Ver [reglas-animales.md](reglas-animales.md) §Fauna por humanos.
