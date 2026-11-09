@@ -504,11 +504,10 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         bool landBound = currentMedium != Medium.Water && GetComponent<MarineLife>() == null;
         GameObject threat = null;
         float nearest = range;
-        foreach (GameObject go in wholePopulation)
+        foreach (Animal predator in HuntersNow())
         {
-            if (go == null || go == gameObject) continue;
-            Animal predator = go.GetComponent<Animal>();   // "depredador" = come presa (Forager.eatsPrey), ya no el tipo Carnivore
-            if (predator == null || predator.death || predator.Forage == null || !predator.Forage.HuntsNow(predator)) continue;
+            if (predator == null || predator == this) continue;
+            GameObject go = predator.gameObject;
             // Un cazador marino NADANDO no alcanza a quien anda por el hielo (la orca de la laguna y el pingüino de la orilla):
             // no es amenaza para él. Antes la colonia huía de las orcas de la laguna sin parar.
             if (landBound && predator.TryGetComponent(out MarineLife pm) && !pm.OnIce) continue;
@@ -540,6 +539,22 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         else alertness = Mathf.MoveTowards(alertness, 0f, 0.5f * TimeController.timeController.TimeSpeedMinuteSecs / 60f);
     }
     static NavMeshPath _threatPath;
+    // (Ronda 31) LOS QUE CAZAN AHORA, una vez por fotograma: cada animal recorría toda la población con un GetComponent por cada uno para
+    // quedarse con los cazadores (O(n²); AnimaController.Update, 46 ms por fotograma en Buda). Mismo filtro, misma lista para todos.
+    static readonly List<Animal> _hunters = new List<Animal>(); static int _huntersFrame = -1;
+    static List<Animal> HuntersNow()
+    {
+        if (_huntersFrame == Time.frameCount) return _hunters;
+        _huntersFrame = Time.frameCount; _hunters.Clear();
+        foreach (GameObject go in wholePopulation)
+        {
+            if (go == null) continue;
+            Animal p = go.GetComponent<Animal>();   // "depredador" = come presa (Forager.eatsPrey), ya no el tipo Carnivore
+            if (p == null || p.death || p.Forage == null || !p.Forage.HuntsNow(p)) continue;
+            _hunters.Add(p);
+        }
+        return _hunters;
+    }
     const float ALERT_TO_REACT = 0.3f;   // alerta mínima para que la amenaza dispare la respuesta (reacciona a lo percibido)
 
     // Forrajear: cazar si come presa, si no pastar/pescar. Reemplaza los Feed de Carnivore/Herbivore (concreto, etapa 5).
