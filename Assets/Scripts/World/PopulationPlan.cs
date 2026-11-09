@@ -43,8 +43,12 @@ public static class PopulationPlan
     /// <summary>Cuántos individuos le tocan a la especie (mínimo 2, para que pueda haber pareja).</summary>
     public static int Target(string species) { FoodChain.Evaluate(); return Raw(species); }
 
+    /// <summary>(Berón 2026-11-09) EL GRUPO MÍNIMO VIABLE de las especies que su proporción deja demasiado cortas: el zorro ártico, 4 (con 11 × 0,2 salían 2).
+    /// Las demás, el mínimo de 2 de siempre (una pareja).</summary>
+    public static readonly Dictionary<string, int> MinViable = new Dictionary<string, int> { { "ArcticFox", 4 } };
+
     /// <summary><see cref="Target"/> sin pasar por la cadena (la usa la propia cadena).</summary>
-    public static int Raw(string species) => PerHuman.TryGetValue(species, out float r) ? Mathf.Max(2, Mathf.RoundToInt(FaunaScale * r)) : 0;
+    public static int Raw(string species) => PerHuman.TryGetValue(species, out float r) ? Mathf.Max(MinViable.TryGetValue(species, out int min) ? min : 2, Mathf.RoundToInt(FaunaScale * r)) : 0;
 
     /// <summary>Los que comen de verdad: el plan más los que viven en los icebergs (fijos: no crían; <see cref="IcebergVisitor"/>).</summary>
     public static int Census(string species) => Raw(species) + (species == "Seal" ? IcebergVisitor.Seals : species == "Penguin" ? IcebergVisitor.Penguins : 0);

@@ -245,6 +245,8 @@ public class RepartoSantuariosTest : MonoBehaviour, ITestUnit
         WorkRoster.DayPlan mBefore = Model(false), mAfter = Model(true);
         Debug.Log($"[Reparto] Modelo (28 humanos en la tierra): antes {mBefore.clones.Count} clones/día ({mBefore.hoursAt[S1]:0.#} h obligadas) · con las áreas en obra {mAfter.clones.Count} clones/día ({mAfter.hoursAt[S1]:0.#} h obligadas) · omitidas {mAfter.skipped.Count}.");
         TestProbe.Check("con las áreas no básicas en obra, menos clones al día", mAfter.clones.Count < mBefore.clones.Count && mAfter.backlog.Count == 0, $"antes {mBefore.clones.Count} · después {mAfter.clones.Count}");
+        // LA FAUNA (Berón 2026-11-09; docs/reglas-animales.md E11): el zorro ártico, con un grupo mínimo viable de 4; el resto, como su proporción por humano
+        TestProbe.Check("el zorro ártico tiene al menos 4 (mínimo viable); el oso sigue en su proporción", PopulationPlan.Raw("ArcticFox") >= 4 && PopulationPlan.Raw("Bear") == Mathf.Max(2, Mathf.RoundToInt(PopulationPlan.FaunaScale * PopulationPlan.PerHuman["Bear"])), $"zorros {PopulationPlan.Raw("ArcticFox")}");
 
         // ── 4. Cambia cada día y con los datos ──
         WorkRoster six = Roster(("P0", 2), ("P1", 2), ("P2", 2), ("P3", 2), ("P4", 2), ("P5", 2));

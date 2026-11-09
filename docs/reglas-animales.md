@@ -100,6 +100,7 @@ Los números se comprobaron contra fuentes el 2026-11-05; WP = Wikipedia, usada 
 - **Medidas:** 2,9–3,5 kg de media; cuerpo 41–68 cm; cola ~1/3 del cuerpo (las fuentes discrepan). **Modelo:** 0,85 m con cola, 3,3 kg.
 - **Reproducción:** gestación ~52 d (46–58), camada 5–8 (aquí 1), los dos padres; madriguera en montículo de 1–4 m con 4–8 bocas, usada décadas o siglos (ADW; Audet et al. 2002, *Mammalian Species* 713). Destete no aclarado (28–60 d según fuente). **Modelo:** cría 70 d.
 - **Sin confirmar:** que siga al oso para aprovechar sus presas. Es un dato muy repetido; solo aparece en sus pensamientos.
+- **Grupo mínimo viable: 4** (Berón 2026-11-09; `PopulationPlan.MinViable`). Con la proporción de 0,2 por humano y la escala de 11 salían 2, una sola pareja. La cadena alimenticia (E15) ajusta sus presas sola. Hace falta reconstruir el santuario para que nazcan los 4 en el Blockout.
 
 ### Buey almizclero, *Ovibos moschatus* (`MuskOx`, Ártico)
 - **Medidas:** macho 300–400 kg, hembra 180–275 kg; 1,35–2,5 m; ~1,2 m a la cruz (ADW). **Modelo:** 2,3 m, 300 kg.
