@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 /// <summary>
 /// CATÁLOGO DE MISIONES DE TRABAJO por área (docs/jornada-y-rotacion.md; base: docs/area-missions-spec.md, los
@@ -26,6 +27,23 @@ public static class AreaWork
         ("Estudio Textil", "puerta descolgada"), ("Mecánica", "tejado con goteras"), ("Gimnasio", "foco fundido"),
     };
 
+    /// <summary>Las misiones de una obra abierta: llevar el material del día (1 h) y el EQUIPO (una misión de 2 h por turno, del mismo grupo; el día de
+    /// obra cuenta cuando se han hecho todos los turnos). <paramref name="reform"/> (un área no básica en obra, <see cref="AreasEnObra"/>): opcionales,
+    /// las hace quien tenga tiempo y nunca piden un clon; las obras de siempre (Dojo, Ballet) son obligatorias.</summary>
+    public static List<WorkRoster.Mission> ObraMissions(string title, int crew, bool reform)
+    {
+        var l = new List<WorkRoster.Mission>();
+        var carry = M("Construcción", "obra_material_" + title, $"Llevar el material del día a la obra «{title}»", 1f, !reform); carry.site = title;   // del almacén a la obra
+        l.Add(carry);
+        for (int k = 0; k < UnityEngine.Mathf.Max(1, crew); k++)
+        {
+            var work = M("Construcción", "obra_trabajo_" + title + (k == 0 ? "" : $"#{k + 1}"), $"Trabajar la obra «{title}» (estructura de guadua, bahareque y paneles)", 2f, !reform);
+            work.site = title; work.group = "obra_" + title; l.Add(work);
+        }
+        foreach (var m in l) m.optional = reform;
+        return l;
+    }
+
     /// <summary>Las misiones del día <paramref name="day"/>: las fijas, las de cada obra abierta y una reparación.</summary>
     public static List<WorkRoster.Mission> Today(int day, IEnumerable<ConstructionProject> projects)
     {
@@ -49,18 +67,15 @@ public static class AreaWork
             foreach (Gastronomy.Prep p in larder.Needed(10))
                 l.Add(M("Cocina", "prep_" + p.name, $"Elaborar {p.name} ({p.equipment})", UnityEngine.Mathf.Clamp(UnityEngine.Mathf.Ceil(p.activeMin / 30f) * 0.5f, 0.5f, 2f)));
         int open = 0;
-        foreach (ConstructionProject p in projects)
+        var projectList = projects.Where(p => p != null).ToList();
+        // (Berón 2026-11-09) LAS ÁREAS EN OBRA (AreasEnObra): no dan tareas de área (salvo el O₂ y el material de obra); sus horas son las de su obra.
+        var enObra = new HashSet<string>(projectList.Where(p => p.reform && !p.Finished).Select(p => WorkRoster.AreaGroup(p.title)));
+        if (enObra.Count > 0) l = AreasEnObra.Filter(l, enObra);
+        foreach (ConstructionProject p in projectList)
         {
-            if (p == null || p.Finished) continue;
+            if (p.Finished) continue;
             open++;
-            var carry = M("Construcción", "obra_material_" + p.title, $"Llevar el material del día a la obra «{p.title}»", 1f, true); carry.site = p.title;   // del almacén a la obra
-            l.Add(carry);
-            // El EQUIPO del día: una misión por persona, hechas a la vez (mismo grupo); el día de obra cuenta cuando trabajan todas.
-            for (int k = 0; k < UnityEngine.Mathf.Max(1, p.crewNeeded); k++)
-            {
-                var work = M("Construcción", "obra_trabajo_" + p.title + (k == 0 ? "" : $"#{k + 1}"), $"Trabajar la obra «{p.title}» (estructura de guadua, bahareque y paneles)", 2f, true);
-                work.site = p.title; work.group = "obra_" + p.title; l.Add(work);
-            }
+            l.AddRange(ObraMissions(p.title, p.crewNeeded, p.reform));
         }
         // MATERIAL: lo que el almacén necesita reponer (todo sale del bambusal, los huertos y el laboratorio).
         MaterialStore store = MaterialStore.Instance;

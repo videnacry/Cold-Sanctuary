@@ -4,6 +4,9 @@ Tablero para retomar. Última sesión: 2026-08-28. Marca lo que completes.
 Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-planteamiento.md`](gaps-vs-planteamiento.md),
 [`world-topology-and-planes.md`](world-topology-and-planes.md) (visión del mundo grande / los 3 planos).
 
+> **HECHO 2026-11-09 (áreas en obra, rama claude/areas-en-obra; solo código, sin probar en vivo):** solo lo básico queda terminado (servicios básicos, construcción, gimnasio y yoga); ciencias, aula, asambleas, música y estudio textil vuelven a ser obra, sin tareas de área y con tareas de obra opcionales ([areas-en-obra.md](areas-en-obra.md)).
+> - [ ] Probar 113 y 28; jugar un día sin pruebas y ver las obras en la escena y el registro `[Obras]`.
+
 > **HECHO 2026-11-08 (planta nuclear bajo el mar, rama claude/nuclear-submarina; solo código, sin probar en vivo):** la Central Nuclear y la Planta Atómica, enteras en el Santuario Marino junto a las cavernas (`BuildMarinePlant`); arriba solo la estación de 40 × 40 m con la Línea y su pista de la red del santuario; la jornada baja por la Línea sin cargar nada. Regla T25; docs/sitio-nuclear.md §25.
 > - [ ] Reconstruir: «Build Santuario Marino (escena del fondo)» y después «Build Sample Scene Blockout (solo el santuario, sin microcosmos)», y guardar.
 > - [ ] Probar los grupos 114, 94, 100, 101, 50, 61, 96, 75 y 73.

@@ -47,6 +47,7 @@ public class WorkdayDirector : MonoBehaviour
     void Start()
     {
         if (KitchenLarder.Instance != null) KitchenLarder.Instance.autoPlan = false;   // la cocina produce por misiones desde el primer día
+        AreasEnObra.Apply();   // (Berón 2026-11-09) solo lo básico queda terminado: lo demás vuelve a ser obra (docs/areas-en-obra.md)
         foreach (SanctuaryArea a in FindObjectsByType<SanctuaryArea>(FindObjectsSortMode.None))
             if (a.GetComponent<ConstructionProject>() == null && !IsTraining(a.areaType) && !roster.areas.Contains(WorkRoster.AreaGroup(a.displayName))) roster.areas.Add(WorkRoster.AreaGroup(a.displayName));   // (un área de varios pisos, una sola)
         roster.areas.Sort(System.StringComparer.Ordinal);   // orden base estable (día 0)

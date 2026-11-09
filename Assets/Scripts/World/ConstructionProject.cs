@@ -33,6 +33,8 @@ public class ConstructionProject : MonoBehaviour
     public float wallHeight = 3f;
     [Tooltip("Guardar el estado de la obra entre partidas (PlayerPrefs). Nunca mientras corren las pruebas.")]
     public bool persist = true;
+    [Tooltip("(Berón 2026-11-09) Un área no básica vuelta a obra (AreasEnObra): sin «Acabado»; enseña su forma en construcción (FloorForms) hasta terminar, y sus tareas de obra son opcionales.")]
+    public bool reform;
 
     public bool Finished => daysDone >= daysRequired;
     public float Progress => Mathf.Clamp01(daysDone / (float)daysRequired);
@@ -345,6 +347,7 @@ public class ConstructionProject : MonoBehaviour
         if (_material != null) _material.gameObject.SetActive(materialOnSite && !Finished);
         if (_scaffold != null) _scaffold.gameObject.SetActive(!Finished);
         if (_done != null) _done.gameObject.SetActive(Finished);   // terminada: aparece el área acabada de verdad (docs/obras-dojo-ballet.md)
+        if (reform && TryGetComponent(out FloorForms ff)) ff.ShowConstruction(!Finished);   // (una reforma: su andamio y sus palés a la vista mientras dure)
         if (Finished) EndAllShifts();
         ShowPieces();
         ShrinkMaterial();

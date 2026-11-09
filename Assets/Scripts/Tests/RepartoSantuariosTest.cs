@@ -219,6 +219,33 @@ public class RepartoSantuariosTest : MonoBehaviour, ITestUnit
         WorkRoster.DayPlan pbefore = Roster(("Antes", 0)).Plan(0, asBefore);
         TestProbe.Check("los clones del día bajan: con las opcionales como obligadas, 1 clon; ahora 0", pbefore.clones.Count == 1 && pfull.clones.Count == 0, $"antes {pbefore.clones.Count} · ahora {pfull.clones.Count}");
 
+        // ÁREAS EN OBRA (Berón 2026-11-09; docs/areas-en-obra.md): solo lo básico queda terminado; lo demás es una obra, sin tareas de área
+        TestProbe.Check("básicas: hospital, cocina, guardia, huerto, cría, energía, carne cultivada, mecánica, construcción, gimnasio y yoga",
+            new[] { AreaWork.Hospital, "Cocina", AreaWork.Guard, AreaWork.GuardRoom, "Huerto", "Cría", EnergyRule.Area, "Carne Cultivada", "Mecánica", "Construcción", "Gimnasio", "Sala de Yoga", NuclearSite.PlantArea, NuclearSite.PowerArea }.All(AreasEnObra.IsBasic)
+            && !new[] { "Química", "Biología", "Informática", "Aula", "Sala de asambleas", "Música", "Estudio Textil" }.Any(AreasEnObra.IsBasic));
+        var enObra = new HashSet<string> { "Biología", "Estudio Textil" };
+        var kept = AreasEnObra.Filter(new List<WorkRoster.Mission> { new WorkRoster.Mission("Biología", "bio_pcr", "", 1f), new WorkRoster.Mission("Biología", "bio_fotobio_2", "", 1f, true), new WorkRoster.Mission("Estudio Textil", "mat_cuerda", "", 1f, true), new WorkRoster.Mission("Cocina", "coc_servicio", "", 2f, true) }, enObra);
+        TestProbe.Check("un área en obra no da tareas; el O₂ (fotobiorreactores) y el material de obra siguen", kept.Select(x => x.id).OrderBy(x => x).SequenceEqual(new[] { "bio_fotobio_2", "coc_servicio", "mat_cuerda" }), string.Join(", ", kept.Select(x => x.id)));
+        var reform = AreaWork.ObraMissions("Música", AreasEnObra.CrewFor(2.5f), reform: true);
+        TestProbe.Check("sus horas pasan a la obra (material + equipo) y no piden clones: tareas de obra opcionales",
+            reform.Count == 1 + AreasEnObra.CrewFor(2.5f) && reform.All(x => x.optional && !x.mandatory && x.area == "Construcción" && x.site == "Música") && AreasEnObra.CrewFor(5f) == 2 && AreasEnObra.CrewFor(1f) == 1);
+        // EL MODELO: 28 humanos en la tierra, el catálogo, 27 rondas de frutales y 4 obras de 7 h (como en vivo)
+        List<WorkRoster.Mission> ModelDay(bool obras)
+        {
+            var l = AreaWork.Catalog.Select(x => x.Copy()).Where(x => SanctuaryPlacement.SanctuaryOfArea(x.area) == SanctuaryPlacement.Land).ToList();
+            for (int i = 0; i < 27; i++) l.Add(new WorkRoster.Mission("Huerto", $"jar_frutales_{i + 1}", "Ronda", 2f, true));
+            foreach (string site in new[] { "Sala de Ballet", "Sala de Ballet (piso 2)", "Dojo (MMA, kickboxing y karate)", "Dojo (piso 2)" }) l.AddRange(AreaWork.ObraMissions(site, 3, reform: false));
+            if (!obras) return l;
+            var set = new HashSet<string>(l.Select(x => WorkRoster.AreaGroup(x.area)).Where(a => !AreasEnObra.IsBasic(a)));
+            var after = AreasEnObra.Filter(l, set);
+            foreach (string a in set) after.AddRange(AreaWork.ObraMissions(a, AreasEnObra.CrewFor(AreasEnObra.AreaHours(a)), reform: true));
+            return after;
+        }
+        WorkRoster.DayPlan Model(bool obras) { var r = Roster(Enumerable.Range(0, 28).Select(i => ($"T{i}", 0)).ToArray()); return r.Plan(0, ModelDay(obras)); }
+        WorkRoster.DayPlan mBefore = Model(false), mAfter = Model(true);
+        Debug.Log($"[Reparto] Modelo (28 humanos en la tierra): antes {mBefore.clones.Count} clones/día ({mBefore.hoursAt[S1]:0.#} h obligadas) · con las áreas en obra {mAfter.clones.Count} clones/día ({mAfter.hoursAt[S1]:0.#} h obligadas) · omitidas {mAfter.skipped.Count}.");
+        TestProbe.Check("con las áreas no básicas en obra, menos clones al día", mAfter.clones.Count < mBefore.clones.Count && mAfter.backlog.Count == 0, $"antes {mBefore.clones.Count} · después {mAfter.clones.Count}");
+
         // ── 4. Cambia cada día y con los datos ──
         WorkRoster six = Roster(("P0", 2), ("P1", 2), ("P2", 2), ("P3", 2), ("P4", 2), ("P5", 2));
         bool differs = true;
