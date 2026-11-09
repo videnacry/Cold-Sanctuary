@@ -597,7 +597,7 @@ public class IceInsectLife : MonoBehaviour
     }
 
     // LISTAS COMPARTIDAS (refrescadas cada segundo): antes cada insecto buscaba en toda la escena varias veces por frame.
-    static readonly System.Collections.Generic.Dictionary<System.Type, (Object[] items, float at)> _cache = new System.Collections.Generic.Dictionary<System.Type, (Object[], float)>();
+    static readonly System.Collections.Generic.Dictionary<System.Type, (Object[] items, float at, int frame)> _cache = new System.Collections.Generic.Dictionary<System.Type, (Object[], float, int)>();
     // REVERSIÓN A NODRIZA: si en la colmena hay larvas y ninguna obrera tiene edad de nodriza (3–10 días), las obreras mayores
     // vuelven a criar (hasta 3 por colmena). Es real: en colonias sin nodrizas, pecoreadoras reactivan sus glándulas
     // hipofaríngeas y vuelven a alimentar larvas (Robinson, Page, Strambi & Robinson 1992, Ethology 90:336; Huang & Robinson
@@ -629,9 +629,11 @@ public class IceInsectLife : MonoBehaviour
 
     static T[] Cached<T>() where T : Object
     {
-        if (_cache.TryGetValue(typeof(T), out var c) && Time.time - c.at < 1f) return (T[])c.items;
+        // (Ronda 31) 1 s de juego Y 10 fotogramas: a ×6 y 0,5 FPS cada fotograma son 2 s de juego, y cada araña rehacía la búsqueda de toda la
+        // escena en cada fotograma (IceInsectLife.LateUpdate, 1,4 ms por llamada en Buda).
+        if (_cache.TryGetValue(typeof(T), out var c) && (Time.time - c.at < 1f || Time.frameCount - c.frame < 10)) return (T[])c.items;
         T[] items = FindObjectsByType<T>(FindObjectsSortMode.None);
-        _cache[typeof(T)] = (items, Time.time);
+        _cache[typeof(T)] = (items, Time.time, Time.frameCount);
         return items;
     }
 
