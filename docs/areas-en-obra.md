@@ -29,7 +29,7 @@ Código: `AreasEnObra` (la lista, el filtro y la conversión de la escena), `Are
 | Sala de asambleas | **en obra** | personajes nuevos |
 | Música | **en obra** | personajes nuevos |
 | Estudio Textil | **en obra** | personajes nuevos; **su cuerda para las obras sigue** |
-| Control de misión (Aéreo) | sin cambio | su área está en la escena aérea, que no se carga; sus tareas siguen. **Pendiente con Berón** |
+| Control de misión (Aéreo) | **en obra** (Berón 2026-11-09) | no es básico. Su área está en la escena aérea: la obra se lleva desde el muelle aéreo (`AreasEnObra.RemoteAreas`) y la hacen los del Aéreo (sus tareas de obra son de su área: `ObraArea`). Al cargar la escena se enseña en obras (`SyncLoaded`). **Su seguridad sigue**: el diluvio y la trinchera (`lanz_seguridad`), el remolque de un iceberg y el vaciado. |
 
 Sala de Ballet, Dojo y Calistenia ya eran obras y siguen igual.
 

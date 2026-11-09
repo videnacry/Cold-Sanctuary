@@ -30,14 +30,14 @@ public static class AreaWork
     /// <summary>Las misiones de una obra abierta: llevar el material del día (1 h) y el EQUIPO (una misión de 2 h por turno, del mismo grupo; el día de
     /// obra cuenta cuando se han hecho todos los turnos). <paramref name="reform"/> (un área no básica en obra, <see cref="AreasEnObra"/>): opcionales,
     /// las hace quien tenga tiempo y nunca piden un clon; las obras de siempre (Dojo, Ballet) son obligatorias.</summary>
-    public static List<WorkRoster.Mission> ObraMissions(string title, int crew, bool reform)
+    public static List<WorkRoster.Mission> ObraMissions(string title, int crew, bool reform, string area = "Construcción")
     {
         var l = new List<WorkRoster.Mission>();
-        var carry = M("Construcción", "obra_material_" + title, $"Llevar el material del día a la obra «{title}»", 1f, !reform); carry.site = title;   // del almacén a la obra
+        var carry = M(area, "obra_material_" + title, $"Llevar el material del día a la obra «{title}»", 1f, !reform); carry.site = title;   // del almacén a la obra
         l.Add(carry);
         for (int k = 0; k < UnityEngine.Mathf.Max(1, crew); k++)
         {
-            var work = M("Construcción", "obra_trabajo_" + title + (k == 0 ? "" : $"#{k + 1}"), $"Trabajar la obra «{title}» (estructura de guadua, bahareque y paneles)", 2f, !reform);
+            var work = M(area, "obra_trabajo_" + title + (k == 0 ? "" : $"#{k + 1}"), $"Trabajar la obra «{title}» (estructura de guadua, bahareque y paneles)", 2f, !reform);
             work.site = title; work.group = "obra_" + title; l.Add(work);
         }
         foreach (var m in l) m.optional = reform;
@@ -75,7 +75,7 @@ public static class AreaWork
         {
             if (p.Finished) continue;
             open++;
-            l.AddRange(ObraMissions(p.title, p.crewNeeded, p.reform));
+            l.AddRange(ObraMissions(p.title, p.crewNeeded, p.reform, AreasEnObra.ObraArea(p.title)));
         }
         // MATERIAL: lo que el almacén necesita reponer (todo sale del bambusal, los huertos y el laboratorio).
         MaterialStore store = MaterialStore.Instance;
