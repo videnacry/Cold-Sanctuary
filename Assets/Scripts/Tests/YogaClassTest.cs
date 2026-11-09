@@ -64,6 +64,7 @@ public class YogaClassTest : MonoBehaviour, ITestUnit
             if (g.TryGetComponent(out Linduarda lin) && lin.enabled) continue;
             if (g.TryGetComponent(out NewcomerInitiator ni) && ni.InProgress) continue;
             if (RestaurantService.Drives(g) || Orchestra.Busy(g)) continue;   // los lleva el servicio del restaurante o una orquesta
+            if (wd != null && wd.AwayToday(n)) continue;   // (ronda 31) hoy pasa el día en otro santuario: Lizmibet estaba a 620 m de su esterilla
             Anima a = g.GetComponent<Anima>(); if (a != null && Magnate.IsMember(a)) people.Add(a);   // (quien aún no es miembro: al serlo, SanctuaryDirector lo coloca de golpe en su área)
         }
         TestProbe.Check($"hay maestro y {practitioners} practicantes en el personal", people.Count >= practitioners + 1, string.Join(", ", people.Select(p => p.name)));
