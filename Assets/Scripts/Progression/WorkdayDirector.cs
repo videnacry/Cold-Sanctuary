@@ -32,6 +32,15 @@ public class WorkdayDirector : MonoBehaviour
 
     public readonly WorkRoster roster = new WorkRoster();
     public WorkRoster.DayPlan today;
+    /// <summary>(Ronda 31) ¿Pasa hoy el día en otro santuario? (el reparto lo pone allí: en juego su cuerpo se apaga y sus misiones corren por
+    /// el reloj). Puede visitar este (acceso hacia atrás), pero hoy no está: una clase de aquí no cuenta con él.</summary>
+    public bool AwayToday(string name)
+    {
+        if (today == null || string.IsNullOrEmpty(name)) return false;
+        string n = name.Replace("_Post", "");
+        foreach (var kv in today.place) if (!kv.Key.clone && kv.Key.name == n) return kv.Value.sanctuary != RemoteStaff.SceneSanctuary;
+        return false;
+    }
     public int plannedDay = int.MinValue;
     readonly HashSet<WorkRoster.Assignment> _done = new HashSet<WorkRoster.Assignment>();
     readonly HashSet<WorkRoster.Assignment> _started = new HashSet<WorkRoster.Assignment>();
