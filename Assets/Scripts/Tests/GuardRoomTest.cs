@@ -67,7 +67,11 @@ public class GuardRoomTest : MonoBehaviour, ITestUnit
         Bedroom[] rooms = FindObjectsByType<Bedroom>(FindObjectsSortMode.None);
         TestProbe.Check("la Residencia está en su edificio-árbol: sin casas de árbol en el santuario 1", rooms.Length >= 30 && rooms.All(r => r.GetComponentInParent<TreeFloor>() != null) && GameObject.Find("ArboledaResidencial") == null, $"{rooms.Length} habitaciones");
         TestProbe.Check("los árboles de la isla son solo flora", FindObjectsByType<NestTree>(FindObjectsSortMode.None).Length >= 3 && FindObjectsByType<NestTree>(FindObjectsSortMode.None).All(n => n.GetComponentInParent<TreeFloor>() == null));
+        if (PopulationPlan.InsectsInSanctuary1)
+        {
         TestProbe.Check("las abejas de las nieves siguen anidando", FindObjectsByType<IceInsectLife>(FindObjectsSortMode.None).Any(b => b.hive != null));
+        }
+        else Debug.Log("[TEST] SKIP · las abejas de las nieves siguen anidando — sin insectos en el santuario 1 por ahora (PopulationPlan.InsectsInSanctuary1, Berón 2026-11-09)");
 
         // ── LOS CASQUETES SILVESTRES ──
         foreach (string cap in new[] { "BosqueOeste", "BosqueNorte" })

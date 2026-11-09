@@ -183,6 +183,8 @@ public class GroupAnimalsTest : MonoBehaviour, ITestUnit
             }
         }
 
+        if (PopulationPlan.InsectsInSanctuary1)
+        {
         // ── 7. ABEJAS ──
         {
             BeeSwarm b = bees.FirstOrDefault(s => s.TreeCount >= 3) ?? bees.FirstOrDefault();
@@ -206,6 +208,8 @@ public class GroupAnimalsTest : MonoBehaviour, ITestUnit
                 }
             }
         }
+        }
+        else Debug.Log("[TEST] SKIP · 7. abejas: el enjambre vuela de árbol en árbol — sin insectos en el santuario 1 por ahora (PopulationPlan.InsectsInSanctuary1, Berón 2026-11-09)");
         Swarm.AnimateAll = false;
         TestProbe.End();
     }
