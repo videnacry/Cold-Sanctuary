@@ -20,8 +20,11 @@ public class AnimaController : MonoBehaviour
     /// <summary>Re-escanea los cerebros del objeto. Llámalo si añades/quitas uno en runtime (p. ej. posesión).</summary>
     public void RefreshBrains() => _brains = GetComponents<IBrain>();
 
+    float _lodNext;
     void Update()
     {
+        // (2026-11-09) Lejos y fuera de la vista, el cerebro piensa cada 0,75 s (SimulationLod); nunca el del jugador.
+        if (!(_active is PlayerBrain) && !gameObject.CompareTag("Player") && SimulationLod.Skip(transform.position, ref _lodNext)) return;
         IBrain best = PickBest();
         if (best != _active)
         {

@@ -28,6 +28,7 @@ public class TreeDoorExit : MonoBehaviour
     bool _placed;
     static bool _anyone;
 
+    float _lodNext;
     void Update()
     {
         if (landing == null) return;
@@ -45,6 +46,7 @@ public class TreeDoorExit : MonoBehaviour
                 if (_swimmers[i] != null && _swimmers[i].IsSwimming) { _anyone = true; _swimAt.Add(_swimmers[i].transform.position); }
         }
         if (!_anyone) return;
+        if (SimulationLod.Skip(transform.position, ref _lodNext)) return;   // (2026-11-09) puerta lejos y fuera de la vista: cada 0,75 s
         // Solo si un nadador anda cerca de esta puerta, que casi no se mueve (se relee su sitio cada 64 frames).
         if ((Time.frameCount + GetHashCode()) % 64 == 0 || !_placed) { _placed = true; _at = transform.position; }
         bool near = false;

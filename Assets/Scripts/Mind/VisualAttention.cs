@@ -76,6 +76,7 @@ public class VisualAttention : MonoBehaviour
         if (conscious && Time.time < _holdUntil) return;
         conscious = false;
         if (Time.time < _next) return;
+        if (SimulationLod.IsFar(transform.position)) { _next = Time.time + SimulationLod.FarInterval; focus = null; return; }   // (2026-11-09) lejos y fuera de la vista, no mira
         // Lejos del jugador mira menos a menudo (Lod): cada mirada son rayos contra quienes tiene delante.
         float slow = ColdSanctuary.TestRunner.Running ? 1f : Lod.SlowFactor(transform.position);
         _next = Time.time + (0.25f + Random.Range(0f, 0.1f)) * slow;   // escalonado: no escanean todos en el mismo frame
