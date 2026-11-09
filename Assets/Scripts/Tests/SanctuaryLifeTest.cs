@@ -54,6 +54,10 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         { var (unique, expensive, worst) = CheapMaterials.Census();
           Debug.Log($"[Rendimiento] Materiales distintos en escena: {unique}; caros: {expensive}.");
           TestProbe.Check("ningún material caro (todo Simple Lit mate y opaco; transparente solo el cristal)", expensive == 0, $"{unique} distintos, {expensive} caros: {worst}"); }
+        { var urp = UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline as UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset;   // (2026-11-09) sombras baratas
+          int extra = FindObjectsByType<Light>(FindObjectsSortMode.None).Count(l => l.shadows != LightShadows.None && l != RenderSettings.sun && !(RenderSettings.sun == null && l.type == LightType.Directional));
+          TestProbe.Check("sombras baratas: el sol hasta 60 m con 1 cascada y ninguna otra luz con sombra", !ShadowQuality.Cheap || (urp != null && urp.shadowDistance <= ShadowQuality.MaxDistance + 0.01f && urp.shadowCascadeCount == 1 && extra == 0),
+              urp != null ? $"{urp.shadowDistance:0} m, {urp.shadowCascadeCount} cascadas, {extra} luces más con sombra; {ShadowQuality.RenderersOff} piezas sin sombra" : "sin URP"); }
 
         // Insectos de hielo a tamaño modificado.
         int bees = 0; float maxBee = 0f; Vector3 firstScale = Vector3.zero;
