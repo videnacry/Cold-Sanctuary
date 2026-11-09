@@ -49,6 +49,12 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
 
         if (PopulationPlan.InsectsInSanctuary1)
         {
+        // (Berón 2026-11-09, rendimiento) MATERIALES BARATOS: ni iridiscencia ni brillo. Todo Simple Lit, mate, sin metal; transparente solo el
+        // cristal (y el agua de una pecera). Y cuántos materiales distintos hay (para comparar antes y después).
+        { var (unique, expensive, worst) = CheapMaterials.Census();
+          Debug.Log($"[Rendimiento] Materiales distintos en escena: {unique}; caros: {expensive}.");
+          TestProbe.Check("ningún material caro (todo Simple Lit mate y opaco; transparente solo el cristal)", expensive == 0, $"{unique} distintos, {expensive} caros: {worst}"); }
+
         // Insectos de hielo a tamaño modificado.
         int bees = 0; float maxBee = 0f; Vector3 firstScale = Vector3.zero;
         foreach (IceInsectLife b in FindObjectsByType<IceInsectLife>(FindObjectsSortMode.None))
