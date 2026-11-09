@@ -137,7 +137,7 @@ public class GardenCrop : MonoBehaviour
         m = new Material(sh) { color = c, name = $"Cultivo_{ColorUtility.ToHtmlStringRGB(c)}" };
         if (m.HasProperty("_BaseColor")) m.SetColor("_BaseColor", c);
         if (m.HasProperty("_Smoothness")) m.SetFloat("_Smoothness", 0.15f);
-        _mats[c] = m;
+        _mats[c] = CheapMaterials.MakeCheap(m);   // (2026-11-09) Simple Lit mate
         return m;
     }
 

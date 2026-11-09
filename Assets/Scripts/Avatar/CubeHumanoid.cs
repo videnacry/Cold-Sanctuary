@@ -54,14 +54,8 @@ public static class CubeHumanoid
         return rig;
     }
 
-    static Material Mat(Color c)
-    {
-        Shader sh = Shader.Find("Universal Render Pipeline/Lit");
-        if (sh == null) sh = Shader.Find("Standard");
-        var m = new Material(sh) { color = c };
-        if (m.HasProperty("_BaseColor")) m.SetColor("_BaseColor", c);
-        return m;
-    }
+    // (2026-11-09) Uno por color para todas las personas (antes, uno nuevo por pieza del cuerpo y persona), mate y opaco.
+    static Material Mat(Color c) => CheapMaterials.Opaque(c, "Persona");
 
     static void Build(Transform root, CreatureRig rig, Color clothes, Color skin)
     {

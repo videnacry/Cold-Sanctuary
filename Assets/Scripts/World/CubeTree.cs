@@ -18,7 +18,7 @@ public static class CubeTree
         if (sh == null) sh = Shader.Find("Standard");
         cache = new Material(sh) { color = c };
         if (cache.HasProperty("_BaseColor")) cache.SetColor("_BaseColor", c);
-        return cache;
+        return CheapMaterials.MakeCheap(cache);   // (2026-11-09) Simple Lit mate
     }
 
     public static GameObject Build(Transform parent, string name, Vector3 groundPos, int seed, float height = 16f, bool carnivorous = true, System.Func<Vector3, bool> blocked = null, float reachHeight = -1f, int maxNests = -1, bool birch = false)

@@ -2143,7 +2143,7 @@ public static partial class SampleSceneBuilder
         Material mat = new Material(shader) { name = name };
         if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", color);
         if (mat.HasProperty("_Color")) mat.SetColor("_Color", color);
-        return mat;
+        return CheapMaterials.MakeCheap(mat);   // (2026-11-09) Simple Lit mate (CheapMaterials)
     }
 
     // Material de AGUA transparente (URP Lit en modo Transparent, mezcla alfa): deja ver peces, focas y el borde

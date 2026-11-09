@@ -301,6 +301,6 @@ public class GardenPlot : MonoBehaviour
         Shader sh = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
         m = new Material(sh) { color = c };
         if (m.HasProperty("_BaseColor")) m.SetColor("_BaseColor", c);
-        return _bedMats[c] = m;
+        return _bedMats[c] = CheapMaterials.MakeCheap(m);   // (2026-11-09) Simple Lit mate
     }
 }
