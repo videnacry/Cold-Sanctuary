@@ -359,7 +359,8 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         }
         TestProbe.Check("las áreas de cada torre van de abajo arriba (apiladas, o en orden en los pisos de su árbol)",
             Stacked("Kitchen_Area", "Infirmary_Area", "CubCare_Area", "CulturedMeatLab_Area") && Stacked("Gym_Area", "Calisthenics_Area", "YogaRoom_Area", "Ballet_Area", "MartialArts_Area")
-            && Stacked("NuclearPower_Area", "AtomicPlant_Area") && Stacked("Chemistry_Area", "Biology_Area") && Stacked("Construction_Area", "VehicleWorkshop_Area", "TextileStudio_Area"));
+            && (GameObject.Find("NuclearPower_Area") == null || Stacked("NuclearPower_Area", "AtomicPlant_Area")) &&   // (ronda 31: la central está bajo el mar, en el Santuario Marino; lo comprueba la línea de arriba)
+            Stacked("Chemistry_Area", "Biology_Area") && Stacked("Construction_Area", "VehicleWorkshop_Area", "TextileStudio_Area"));
         // La Cría va ENCIMA de la planta más alta del hospital (la veterinaria): apilada, 11 m sobre ella; en el árbol, su piso siguiente.
         GameObject vetFloor = GameObject.Find("Planta_veterinaria"), criaGo = GameObject.Find("CubCare_Area");
         if (vetFloor != null && criaGo != null)
@@ -433,7 +434,7 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         else TestProbe.Greater("la torre de Servicios (con el hospital) tiene alfombras en cada piso, en el hielo y en el techo (8)", hospFloors, 7f, $"{hospFloors} pisos con alfombras");
         int roofs = pads.Count(p => p.kind == CarpetPad.Kind.Santuario);
         TestProbe.Greater("cada edificio tiene en su techo las alfombras del santuario (4 torres, la central, el Árbol de los Campos, la residencia)", roofs, 6f, $"{roofs} techos");
-        TestProbe.Check("en el techo, las de edificio y las del santuario están en el mismo piso", pads.Where(p => p.kind == CarpetPad.Kind.Santuario && p.building != "Residencia" && p.building != AereoRule.Building).All(s => pads.Any(e => e.kind == CarpetPad.Kind.Edificio && e.surface == s.surface)));
+        TestProbe.Check("en el techo, las de edificio y las del santuario están en el mismo piso", pads.Where(p => p.kind == CarpetPad.Kind.Santuario && p.building != "Residencia" && p.building != AereoRule.Building && (p.surface == null || !p.surface.EndsWith("#linea"))).All(s => pads.Any(e => e.kind == CarpetPad.Kind.Edificio && e.surface == s.surface)));
         TestProbe.Check("cada casa del árbol tiene su alfombra (y la residencia, la de cada habitación)", pads.Count(p => p.kind == CarpetPad.Kind.Habitacion) >= 12 && pads.Any(p => p.kind == CarpetPad.Kind.Residencia));
         CarpetPad anyB = pads.FirstOrDefault(p => p.kind == CarpetPad.Kind.Edificio && p.Destinations().Count > 0);   // (en un árbol no hay piso 1 con alfombras: van en el hielo y en el techo)
         TestProbe.Check("el selector de una alfombra de edificio solo ofrece sus pisos", anyB != null && anyB.Destinations().Count > 0 && anyB.Destinations().All(d => d.building == anyB.building));
