@@ -14,6 +14,7 @@ Código: `AreasEnObra` (la lista, el filtro y la conversión de la escena), `Are
 | Cocina / restaurante | **terminada** | la comida |
 | Guardia y Sala de guardia | **terminadas** | seguridad (depredadores, icebergs, roca, el árbol cazador) |
 | Huerto | **terminada** | la comida y el material de obra (guadua) |
+| Huerto vertical | **terminada** (ronda 31) | las estanterías LED que eligió Berón: comida |
 | Cría | **terminada** | cuidado de las crías |
 | Carne Cultivada | **terminada** | alimenta a los depredadores, y el micelio es material de obra |
 | Energía, Planta Atómica, Central Nuclear | **terminadas** | la energía (soporte de vida) |

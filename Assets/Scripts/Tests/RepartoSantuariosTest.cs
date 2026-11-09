@@ -245,6 +245,36 @@ public class RepartoSantuariosTest : MonoBehaviour, ITestUnit
         WorkRoster.DayPlan mBefore = Model(false), mAfter = Model(true);
         Debug.Log($"[Reparto] Modelo (28 humanos en la tierra): antes {mBefore.clones.Count} clones/día ({mBefore.hoursAt[S1]:0.#} h obligadas) · con las áreas en obra {mAfter.clones.Count} clones/día ({mAfter.hoursAt[S1]:0.#} h obligadas) · omitidas {mAfter.skipped.Count}.");
         TestProbe.Check("con las áreas no básicas en obra, menos clones al día", mAfter.clones.Count < mBefore.clones.Count && mAfter.backlog.Count == 0, $"antes {mBefore.clones.Count} · después {mAfter.clones.Count}");
+        TestProbe.Check("el Huerto vertical (las estanterías LED: comida) es básico", AreasEnObra.IsBasic(VerticalFarm.AreaName));
+
+        // EL CASO EN VIVO (ronda 31: 21 clones con humanos ociosos): el catálogo del día, 26 + 2 + 1 humanos y las franjas de 2, 2 y 1 h
+        WorkRoster LiveRoster(bool trained, List<WorkRoster.Mission> dayList)
+        {
+            var r = new WorkRoster { sanctuaryModel = true, initiationModel = true, useProfessions = false };
+            r.trainingAreas.Add("Sala de Yoga");
+            for (int i = 0; i < 29; i++)
+            {
+                WorkRoster.Worker w = r.Add($"V{i}"); w.home = i < 26 ? 0 : i < 28 ? 1 : 2;
+                if (!trained) continue;
+                foreach (var cm in dayList) w.taught.Add(MissionRequirements.KnowledgeKey(cm.id));
+                foreach (string k in new[] { WorkRoster.InstructSkill }) w.taught.Add(k);
+            }
+            return r;
+        }
+        var liveDay = ModelDay(true).Concat(AreaWork.Catalog.Where(x => SanctuaryPlacement.SanctuaryOfArea(x.area) != SanctuaryPlacement.Land).Select(x => x.Copy())).ToList();
+        WorkRoster lr = LiveRoster(true, liveDay);
+        WorkRoster.DayPlan pl = lr.Plan(0, liveDay);
+        int allowed = pl.emptyAreaClones;
+        foreach (var kv in pl.hoursAt) { int n = pl.place.Count(x => x.Value.Equals(kv.Key)); allowed += Mathf.CeilToInt(Mathf.Max(0f, kv.Value - WorkRoster.WorkHours * n) / WorkRoster.WorkHours - 1e-4f); }
+        foreach (string why in pl.cloneReasons) Debug.Log("[Reparto] " + why);
+        var clonedAt = new HashSet<SanctuaryPlacement.Home>(pl.cloneAreas.Select(SanctuaryPlacement.PlaceOfArea));   // (ociosos solo cuentan donde hubo clones)
+        float idleH = lr.workers.Where(w => clonedAt.Contains(pl.place[w])).Sum(w => WorkRoster.WorkHours - Worked(pl, w));
+        TestProbe.Check("en vivo (todos formados): clones ≤ ⌈horas de más / 5⌉ por sitio + áreas sin nadie, y sin humanos ociosos mientras hay clones",
+            pl.clones.Count <= allowed && pl.backlog.Count == 0 && pl.impossible.Count == 0 && (pl.clones.Count == 0 || idleH < 2.5f),
+            $"{pl.clones.Count} clones (permitidos {allowed}) · ociosas {idleH:0.#} h · {string.Join(" · ", pl.hoursAt.Select(kv => $"{kv.Key} {kv.Value:0.#} h"))}");
+        TestProbe.Check("cada clon dice por qué", pl.cloneReasons.Count == pl.clones.Count && pl.cloneReasons.All(s => s.Contains("motivo")));
+        WorkRoster.DayPlan pu0 = LiveRoster(false, liveDay).Plan(0, liveDay.Select(x => x.Copy()).ToList());
+        Debug.Log($"[Reparto] Caso en vivo sin formar (iniciaciones de 2 h): {pu0.clones.Count} clones · {pu0.lessons.Count} clases · motivos: {string.Join(" | ", pu0.cloneReasons.Take(8))}");
         // LA FAUNA (Berón 2026-11-09; docs/reglas-animales.md E11): el zorro ártico, con un grupo mínimo viable de 4; el resto, como su proporción por humano
         TestProbe.Check("el zorro ártico tiene al menos 4 (mínimo viable); el oso sigue en su proporción", PopulationPlan.Raw("ArcticFox") >= 4 && PopulationPlan.Raw("Bear") == Mathf.Max(2, Mathf.RoundToInt(PopulationPlan.FaunaScale * PopulationPlan.PerHuman["Bear"])), $"zorros {PopulationPlan.Raw("ArcticFox")}");
 

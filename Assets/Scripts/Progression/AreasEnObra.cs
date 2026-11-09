@@ -19,6 +19,7 @@ public static class AreasEnObra
     {
         AreaWork.Hospital, "Cocina", AreaWork.Guard, AreaWork.GuardRoom, "Huerto", "Cría", "Carne Cultivada", "Mecánica", "Construcción",
         "Gimnasio", "Sala de Yoga", EnergyRule.Area, NuclearSite.PlantArea, NuclearSite.PowerArea, SiteLine.AreaName,
+        VerticalFarm.AreaName,   // (ronda 31) el Huerto vertical: las estanterías LED que eligió Berón, comida
     };
     public static bool IsBasic(string area) => area != null && Basic.Contains(WorkRoster.AreaGroup(area));
 
