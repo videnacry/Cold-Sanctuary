@@ -265,6 +265,7 @@ en el doc de su tema; aquí no se repite.
 | J34 | **El reparto es por sitios y cambia cada día** (Berón 2026-11-08). Cada uno pasa el día en un sitio al que llega. Primero se cubren las horas de cada sitio; los que sobran van a un segundo reparto. **El orden del personal es una permutación del día** (antes no cambiaba). Un área de varios pisos (el hospital, el yoga) es **una**. Sus horas salen de su propia lista de hoy y pide ⌈horas / 5⌉ personas, al menos 1. Todo se recalcula cada día con el personal y las tareas que haya: nada fijado a mano. | Que todas las áreas tengan a alguien y que el reparto no sea siempre igual. | 113, 28 | [jornada-y-rotacion.md](jornada-y-rotacion.md) §Reparto por santuarios |
 | J35 | **Partes iguales y nada a mañana** (Berón 2026-11-08, corregido). Las horas de tareas de cada sitio se reparten por igual entre sus humanos, tan parejas como dejan las tareas, que no se parten (diferencia ≤ la tarea más larga del sitio). Si la parte pasa de 5 h, cada humano hace 5 h y **clones de la Magnate** hacen el resto; si no, todos la misma parte, menor. **Sin jornada estirada**: libre a las 16:00. **Varias tareas a la vez en un área**: con varias personas se reparten; con una, las encadena, sin un clon por puesto (la obra cuenta turnos, no personas; [tareas-por-area.md](tareas-por-area.md)). Un área que nadie de su sitio puede hacer recibe primero una iniciación (J30) y si no, su clon; un área sin tareas, nadie. **Nada pasa a mañana**. Las **opcionales** (investigación, formación, cultura, cuentas, lo que puede esperar) se hacen si alguien tiene tiempo; si no, ese día no: nunca un clon. | Que nadie trabaje más que otro y que nada se acumule. | 113, 28 | [jornada-y-rotacion.md](jornada-y-rotacion.md) §Reparto por santuarios |
 | J36 | **Quien pasa el día en otro santuario no se simula aquí** (Berón 2026-11-08): su cuerpo se apaga y sus tareas corren por el reloj; vuelve el día que le toca la tierra y en las fiestas (actividades de todos a la vez). **Las salas no se encogen**: siguen hechas para todos los miembros de todos los santuarios, porque en las fiestas se juntan todos (S13 = J16). | Rendimiento sin perder el diseño. | 113 (`RemoteStaff`), 75 | [jornada-y-rotacion.md](jornada-y-rotacion.md) §Reparto por santuarios |
+| J37 | **Solo lo básico queda terminado** (Berón 2026-11-09): los servicios básicos de humanos y animales (hospital, cocina, guardia, huerto, cría, carne cultivada, energía, mecánica), la construcción, el gimnasio y el yoga. Lo demás (ciencias, aula, asambleas, música, estudio textil) **vuelve a ser obra**: sin tareas de área (salvo el O₂ y el material de obra), sus horas pasan a su obra, y esas tareas de obra son opcionales (nunca piden un clon). | Menos clones. | 113 (`AreasEnObra`) | [areas-en-obra.md](areas-en-obra.md) |
 
 ### 9.1 Creación de personajes
 
@@ -393,7 +394,7 @@ reconstruir. Vale para TODOS los pisos, no solo el hospital. Cada piso del santu
 ## 12. Recuento y reglas sin comprobación automática
 
 
-**Total: 214 reglas** (S 15 · F 14 · T 24 · C 7 · G 8 · H 8 · M 39 · A 5 · J 37 · P 24 · E 17 · W 15 = 213 —W9, W10 y W11 van en §11; P11 repite J30; P1–P11 y P24 (2026-11-08, fichas) son de personajes y P12–P23 de territorio, producción y fauna (§13)—, más la regla de
+**Total: 215 reglas** (S 15 · F 14 · T 24 · C 7 · G 8 · H 8 · M 39 · A 5 · J 38 · P 24 · E 17 · W 15 = 214 —W9, W10 y W11 van en §11; P11 repite J30; P1–P11 y P24 (2026-11-08, fichas) son de personajes y P12–P23 de territorio, producción y fauna (§13)—, más la regla de
 sincronización de §11). (Recontado por el probador al integrar actividades, tareasE, entreno, personajes, hospital y cohetes, 2026-11-04:
 las J18 en adelante se renumeraron en una sola secuencia —J18–J21 actividades y uniformes, J22 tareas con «E», J23–J27 entrenamientos
 y entrenador, J28 profesiones, J29 nada en pisos en obras—.)
@@ -448,7 +449,7 @@ Berón (2026-11-05): «¿tenemos reglas para la creación de animales?». Detall
 
 ## Docs de cada tema
 
-[rendimiento.md](rendimiento.md) · [progresion-santuarios.md](progresion-santuarios.md) · [tareas-por-area.md](tareas-por-area.md) · [reglas-plataformas.md](reglas-plataformas.md) · [construcciones-elevadas.md](construcciones-elevadas.md) ·
+[rendimiento.md](rendimiento.md) · [areas-en-obra.md](areas-en-obra.md) · [progresion-santuarios.md](progresion-santuarios.md) · [tareas-por-area.md](tareas-por-area.md) · [reglas-plataformas.md](reglas-plataformas.md) · [construcciones-elevadas.md](construcciones-elevadas.md) ·
 [plano-edificios.md](plano-edificios.md) · [edificio-arbol.md](edificio-arbol.md) · [mascaras-de-oxigeno.md](mascaras-de-oxigeno.md) ·
 [submarino-de-obra.md](submarino-de-obra.md) · [alfombras-plan.md](alfombras-plan.md) (sustituye a
 [transporte-alfombras.md](transporte-alfombras.md), que tenía puentes) · [jardines-frutales.md](jardines-frutales.md) ·
