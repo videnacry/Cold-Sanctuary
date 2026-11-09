@@ -8,6 +8,7 @@ public static class MicroMove
     sealed class Hand { public Vector3[] c; public int i; public Vector3 to; public float lift, until; }
     static readonly System.Collections.Generic.Dictionary<Transform, Hand> _hand = new System.Collections.Generic.Dictionary<Transform, Hand>();
     static readonly System.Collections.Generic.Dictionary<Transform, float> _still = new System.Collections.Generic.Dictionary<Transform, float>();
+    static readonly System.Collections.Generic.Dictionary<Transform, int> _pendingFrom = new System.Collections.Generic.Dictionary<Transform, int>();
     static void EndHand(Transform t, UnityEngine.AI.NavMeshAgent ag)
     {
         _hand.Remove(t);
@@ -38,7 +39,12 @@ public static class MicroMove
         if (ag != null && ag.enabled && ag.isOnNavMesh)
         {
             ag.speed = speed;
-            if (ag.velocity.sqrMagnitude > 0.04f || d.magnitude <= arrive + 1f) _still.Remove(t);
+            // (Ronda 30) Un camino PENDIENTE es esperar, no estar parado (el cálculo se reparte por fotogramas): hasta 30 fotogramas; solo si sigue
+            // pendiente después, o si no lo está y no se mueve, cuenta para ir a mano.
+            bool waiting = false;
+            if (ag.pathPending) { if (!_pendingFrom.TryGetValue(t, out int pf)) { pf = Time.frameCount; _pendingFrom[t] = pf; } waiting = Time.frameCount - pf < 30; }
+            else _pendingFrom.Remove(t);
+            if (waiting || ag.velocity.sqrMagnitude > 0.04f || d.magnitude <= arrive + 1f) _still.Remove(t);
             else if (!_still.TryGetValue(t, out float since)) _still[t] = Time.time;
             else if (Time.time - since > 3f)
             {
@@ -69,7 +75,11 @@ public static class MicroMove
                 if (ok && p.corners.Length > 1 && ag.SetPath(p)) return false;
                 if (_said.Add(t)) Debug.LogWarning($"[Horario] «{t.name}» no tiene camino a {to} desde {ag.nextPosition}: CalculatePath {ok}, {p.status}, {p.corners.Length} esquinas (a {d.magnitude:0.0} m).");
             }
-            if (idle || (ag.destination - to).sqrMagnitude > 1f) ag.SetDestination(to);
+            // (Ronda 30) En PLANTA: el destino del agente es el punto del NavMesh y el que se pide va 1 m por encima (OnMesh + arriba); en 3D la
+            // diferencia era 1 m justo y, con el redondeo, a veces «otro destino» en cada fotograma: cada SetDestination reiniciaba el cálculo del
+            // camino, que a 0,5 FPS no acababa nunca (pathPending, velocidad 0).
+            Vector3 dd = ag.destination - to; dd.y = 0f;
+            if (idle || dd.sqrMagnitude > 1f) ag.SetDestination(to);
             return false;
         }
         t.position += d.normalized * Mathf.Min(speed * Time.deltaTime, d.magnitude);
