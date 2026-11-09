@@ -370,7 +370,9 @@ public class ConstructionSubmarine : MonoBehaviour
         Vector3 to = other - c; float dist = to.magnitude;
         if (dist > look + otherR) return;
         float ahead = d.sqrMagnitude > 1e-4f ? Vector3.Dot(to, d.normalized) : 0f;
-        if (ahead < -Length * 0.5f || gap > 10f) return;
+        // (Ronda 31) De cerca, por donde venga: un animal que se le echa encima por detrás o de lado (o con el submarino parado por otro de
+        // delante) no hacía apartarse al casco, y la holgura bajaba a -0,4 m (12 esquivas). A menos de 1,5 m se aparta igual; frena solo por los de delante.
+        if ((ahead < -Length * 0.5f && gap > 1.5f) || gap > 10f) return;
         // Apartarse en perpendicular a la marcha, hacia el lado contrario al animal (y algo en altura).
         Vector3 lat = d.sqrMagnitude > 1e-4f ? Vector3.ProjectOnPlane(-to, d.normalized) : -to;
         if (lat.sqrMagnitude < 1e-4f) lat = Vector3.Cross(d.normalized, Vector3.up);
