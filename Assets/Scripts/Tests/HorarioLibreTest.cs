@@ -50,6 +50,10 @@ public class HorarioLibreTest : MonoBehaviour, ITestUnit
         int worst = 0; string where = "";
         for (int w = 0; w < 6; w++) { int sp = LeisureRoster.Spread(r.Plan(w), out _, out string wa); if (sp > worst) { worst = sp; where = $"semana {w}: {wa}"; } }
         TestProbe.Check("cada semana, cada actividad repartida por igual (Δ ≤ 2), también las siguientes", worst <= 2, $"Δ={worst} {where}");
+        // (Ronda 31) La franja de cada uno, por índice (el horario la pedía buscando en toda la semana por cuerpo y fotograma): da la misma que la lista.
+        var wp = r.Plan(6); int miss = 0;
+        foreach (LeisureRoster.Entry e in wp.entries) { LeisureRoster.Entry first = wp.entries.First(x => x.person == e.person && x.day == e.day && x.slot == e.slot); if (wp.At(e.person, e.day, e.slot) != first) miss++; }
+        TestProbe.Check("la franja de cada uno sale igual por índice que buscando en la semana", miss == 0 && wp.At(new LeisureRoster.Person("nadie"), wp.firstDay, 0) == null, $"{miss} distintas");
     }
 
     public IEnumerator Run()
