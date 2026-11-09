@@ -88,10 +88,12 @@ public class LeisureDirector : MonoBehaviour
 
     /// <summary>Vuelve a mirar quién hay en cada escena (cada 2 s, o ya si <paramref name="now"/>) y reparte la semana si cambió
     /// la gente o la semana.</summary>
+    int _scanFrame;
     public void Scan(bool now = false)
     {
-        if (!now && Time.unscaledTime < _scanAt) return;
-        _scanAt = Time.unscaledTime + 2f;
+        // (Ronda 31) También cada 20 fotogramas como poco: a 0,5 FPS (Buda a ×6) «cada 2 s» era cada fotograma, y el repaso es caro.
+        if (!now && (Time.unscaledTime < _scanAt || Time.frameCount < _scanFrame)) return;
+        _scanAt = Time.unscaledTime + 2f; _scanFrame = Time.frameCount + 20;
         groups.RemoveAll(g => !g.scene.IsValid() || !g.scene.isLoaded);
         int week = LeisureRoster.WeekOf(TC.Day);
         var found = new Dictionary<Scene, (List<GameObject> bodies, bool micro)>();

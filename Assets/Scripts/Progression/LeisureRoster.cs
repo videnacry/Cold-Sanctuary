@@ -74,7 +74,19 @@ public class LeisureRoster
         public readonly List<string> unfilled = new List<string>();   // «persona día h»: franjas sin actividad (no cabía nadie más)
         public readonly List<Activity> activities = new List<Activity>();
         public readonly List<Person> people = new List<Person>();
-        public Entry At(Person p, int day, int slot) => entries.FirstOrDefault(e => e.person == p && e.day == day && e.slot == slot);
+        // (Ronda 31) Por ÍNDICE: el horario libre la pide por cuerpo y fotograma, y buscarla en toda la semana (~1000 entradas, con LINQ) era
+        // lo más caro de LeisureDirector.Update (16 ms por fotograma en Buda). Se rehace si cambia el número de entradas o tras Reindex().
+        Dictionary<(Person, int, int), Entry> _at; int _atCount = -1;
+        public void Reindex() { _at = null; }
+        public Entry At(Person p, int day, int slot)
+        {
+            if (_at == null || _atCount != entries.Count)
+            {
+                _at = new Dictionary<(Person, int, int), Entry>(); _atCount = entries.Count;
+                foreach (Entry e in entries) { var k = (e.person, e.day, e.slot); if (!_at.ContainsKey(k)) _at[k] = e; }   // (la primera, como antes)
+            }
+            return p != null && _at.TryGetValue((p, day, slot), out Entry x) ? x : null;
+        }
         public IEnumerable<Entry> Of(Person p) => entries.Where(e => e.person == p).OrderBy(e => e.day).ThenBy(e => e.slot);
         /// <summary>Cuántos hacen <paramref name="a"/> en esa franja (para la capacidad).</summary>
         public int Load(Activity a, int day, int slot) => entries.Count(e => e.activity == a && e.day == day && e.slot == slot);
@@ -127,6 +139,7 @@ public class LeisureRoster
         for (int d = plan.firstDay; d < plan.firstDay + DaysPerWeek; d++)
             for (int s = 0; s < SlotHours.Length; s++) PlanSlot(plan, d, s);
         Rebalance(plan);
+        plan.Reindex();   // (Rebalance cambia la persona de entradas ya puestas)
         return plan;
     }
 
