@@ -27,6 +27,9 @@ public static class Lod
         return Mathf.Lerp(1f, maxSlow, t);
     }
 
+    /// <summary>El foco de detalle (el jugador), para SimulationLod.</summary>
+    public static Transform FocusNow => Focus();
+
     static Transform Focus()
     {
         if (focus != null) return focus;

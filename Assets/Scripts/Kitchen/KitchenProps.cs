@@ -16,7 +16,7 @@ public static class KitchenProps
     public static Material Mat(Color c)
     {
         if (_mats.TryGetValue(c, out Material m) && m != null) return m;
-        Shader sh = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
+        Shader sh = CheapMaterials.Simple;   // (2026-11-09) Simple Lit, mate: ni brillo ni reflejos (CheapMaterials)
         m = new Material(sh) { color = c, name = $"Cocina_{ColorUtility.ToHtmlStringRGB(c)}" };
         if (m.HasProperty("_BaseColor")) m.SetColor("_BaseColor", c);
         if (m.HasProperty("_Smoothness")) m.SetFloat("_Smoothness", 0.35f);
@@ -25,12 +25,12 @@ public static class KitchenProps
             m.SetFloat("_Surface", 1f); m.SetFloat("_Blend", 0f);
             m.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
             m.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-            m.SetFloat("_ZWrite", 0f); m.SetFloat("_Smoothness", 0.92f);
+            m.SetFloat("_ZWrite", 0f);
             m.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
             m.SetOverrideTag("RenderType", "Transparent");
             m.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
         }
-        return _mats[c] = m;
+        return _mats[c] = CheapMaterials.MakeCheap(m);
     }
 
     static Color H(string hex) { ColorUtility.TryParseHtmlString("#" + hex, out Color c); return c; }

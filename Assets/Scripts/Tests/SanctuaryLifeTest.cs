@@ -47,6 +47,18 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         foreach (Transform t in FindObjectsByType<Transform>(FindObjectsSortMode.None)) if (t.name == "Llama") { flame = true; break; }
         TestProbe.Check("las cocinas son de inducción (sin llama de gas)", !flame);
 
+        if (PopulationPlan.InsectsInSanctuary1)
+        {
+        // (Berón 2026-11-09, rendimiento) MATERIALES BARATOS: ni iridiscencia ni brillo. Todo Simple Lit, mate, sin metal; transparente solo el
+        // cristal (y el agua de una pecera). Y cuántos materiales distintos hay (para comparar antes y después).
+        { var (unique, expensive, worst) = CheapMaterials.Census();
+          Debug.Log($"[Rendimiento] Materiales distintos en escena: {unique}; caros: {expensive}.");
+          TestProbe.Check("ningún material caro (todo Simple Lit mate y opaco; transparente solo el cristal)", expensive == 0, $"{unique} distintos, {expensive} caros: {worst}"); }
+        { var urp = UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline as UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset;   // (2026-11-09) sombras baratas
+          int extra = FindObjectsByType<Light>(FindObjectsSortMode.None).Count(l => l.shadows != LightShadows.None && l != RenderSettings.sun && !(RenderSettings.sun == null && l.type == LightType.Directional));
+          TestProbe.Check("sombras baratas: el sol hasta 60 m con 1 cascada y ninguna otra luz con sombra", !ShadowQuality.Cheap || (urp != null && urp.shadowDistance <= ShadowQuality.MaxDistance + 0.01f && urp.shadowCascadeCount == 1 && extra == 0),
+              urp != null ? $"{urp.shadowDistance:0} m, {urp.shadowCascadeCount} cascadas, {extra} luces más con sombra; {ShadowQuality.RenderersOff} piezas sin sombra" : "sin URP"); }
+
         // Insectos de hielo a tamaño modificado.
         int bees = 0; float maxBee = 0f; Vector3 firstScale = Vector3.zero;
         foreach (IceInsectLife b in FindObjectsByType<IceInsectLife>(FindObjectsSortMode.None))
@@ -59,6 +71,10 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         }
         TestProbe.Greater("las abejas de las nieves viven (vuelan) en el bosque", bees, 0f);
         TestProbe.Check("la abeja de las nieves mide ~20 cm", bees == 0 || (maxBee > 0.1f && maxBee < 0.45f), $"{maxBee:0.00} m (escala {firstScale})");
+        }
+        else Debug.Log("[TEST] SKIP · abejas de las nieves a su tamaño — sin insectos en el santuario 1 por ahora (PopulationPlan.InsectsInSanctuary1, Berón 2026-11-09)");
+        if (!PopulationPlan.InsectsInSanctuary1)   // (y que de verdad no queden: ni insectos, ni colmenas, ni enjambres de abejas)
+            TestProbe.Check("sin insectos en el santuario 1 (interruptor apagado)", FindObjectsByType<IceInsectLife>(FindObjectsSortMode.None).Length == 0 && FindObjectsByType<Hive>(FindObjectsSortMode.None).Length == 0 && !Swarm.All.Any(s => s != null && s.kind == SwarmKind.Bee), $"{FindObjectsByType<IceInsectLife>(FindObjectsSortMode.None).Length} insectos, {FindObjectsByType<Hive>(FindObjectsSortMode.None).Length} colmenas; quitados {InsectPurge.Removed}");
 
         // Energía = metabolismo: sin grasa, se recupera gastando masa del cuerpo.
         GameObject g = new GameObject("Metabolismo_TEST");
@@ -98,6 +114,8 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
             TestProbe.Greater("…y cosecha raciones de carne para los depredadores", lab.portionsMade, 0f, $"{lab.portionsMade} raciones");
         }
 
+        if (PopulationPlan.InsectsInSanctuary1)
+        {
         // Colmena: la reina pone huevos en las celdillas y las obreras tienen oficios distintos según su edad.
         Hive hv = null;
         // Una colmena con abejas y SIN araña al lado (con una araña acechando, la reina huye en vez de poner: es otra prueba).
@@ -126,6 +144,8 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
                               $"huevos {hv.Count(Hive.Cell.Egg)} larvas {hv.Count(Hive.Cell.Larva)} miel {hv.Count(Hive.Cell.Honey)} polen {hv.Count(Hive.Cell.Pollen)} vacías {hv.Count(Hive.Cell.Empty)} · {QueenInfo(hv)}");
             hv.secondsPerDay = old;
         }
+        }
+        else Debug.Log("[TEST] SKIP · colmena: reina, huevos y oficios — sin insectos en el santuario 1 por ahora (PopulationPlan.InsectsInSanctuary1, Berón 2026-11-09)");
 
         // Restaurante gourmet, estudio textil y telarañas.
         GameObject dining = GameObject.Find("Comedor_Gourmet");
@@ -205,8 +225,12 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
                 $"antes {(before ? "ya fuera de su alcance" : "a su alcance")}, con el bloqueo {locked}, al quitarlo como antes {free}");
         }
         TestProbe.Check("el estudio textil tiene telar, rueca y tintes", GameObject.Find("Telar_de_pie") != null && GameObject.Find("Rueca") != null && GameObject.Find("Tina_Añil") != null);
+        if (PopulationPlan.InsectsInSanctuary1)
+        {
         TestProbe.Greater("las arañas de las nieves tejen su tela junto a los panales", SpiderWeb.All.Count, 0f, $"{SpiderWeb.All.Count} telas");
         TestProbe.Check("la colmena está en una cavidad con piquera (entrada)", FindByPrefix("Piquera"));
+        }
+        else Debug.Log("[TEST] SKIP · telarañas y piquera de la colmena — sin insectos en el santuario 1 por ahora (PopulationPlan.InsectsInSanctuary1, Berón 2026-11-09)");
 
         // Servicios para turistas y personal: aseos, médica, guardia.
         int wcs = 0; foreach (Transform tt in FindObjectsByType<Transform>(FindObjectsSortMode.None)) if (tt.name.StartsWith("Aseos")) wcs++;

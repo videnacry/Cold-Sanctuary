@@ -32,6 +32,11 @@ public static class PopulationPlan
     /// <summary>Personas en juego (comidas, verdura, prendas). La jornada puede subirlo. Ya no escala la fauna: la escala con <see cref="HumansIn"/>.</summary>
     public static int Humans = 11;
 
+    /// <summary>(Berón 2026-11-09, rendimiento) INSECTOS EN EL SANTUARIO 1: por ahora no (abejas y arañas de las nieves, mariquitas, sus
+    /// colmenas y enjambres de abejas). Un solo interruptor para que vuelvan (<see cref="InsectPurge"/>). Los peces, el kril y las medusas
+    /// (también Swarm) no son insectos y alimentan a la fauna marina: se quedan.</summary>
+    public static bool InsectsInSanctuary1 = false;
+
     /// <summary>(2026-11-08) LAS PERSONAS QUE VIVEN EN EL SANTUARIO según su lista de personal (<see cref="WorkdayDirector.Staff"/>), más la Magnate y el
     /// recién llegado: 32. No depende de quién está ya iniciado: el O₂ (<see cref="FotobioFacade"/>) y la verdura (<see cref="VerticalFarm"/>) se dimensionan
     /// para todos, al construir y en juego.</summary>

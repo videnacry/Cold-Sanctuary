@@ -245,6 +245,6 @@ public static class VirtualMissionSceneBuilder
         Shader sh = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
         var m = new Material(sh) { name = name, color = c };
         if (m.HasProperty("_BaseColor")) m.SetColor("_BaseColor", c);
-        return _mats[name] = m;
+        return _mats[name] = CheapMaterials.MakeCheap(m);   // (2026-11-09) Simple Lit mate
     }
 }

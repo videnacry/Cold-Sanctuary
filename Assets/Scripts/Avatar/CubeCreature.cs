@@ -89,9 +89,10 @@ public static class CubeCreature
     public static Material Mat(Color c)
     {
         if (_mats.TryGetValue(c, out Material m) && m != null) return m;
-        Shader sh = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
+        Shader sh = CheapMaterials.Simple;   // (2026-11-09) mate y opaco
         m = new Material(sh) { color = c, name = $"Cubo_{ColorUtility.ToHtmlStringRGB(c)}" };
         if (m.HasProperty("_BaseColor")) m.SetColor("_BaseColor", c);
+        CheapMaterials.MakeCheap(m);
 #if UNITY_EDITOR
         // En el editor (prefabs de animales) el material tiene que ser un ASSET: si no, el prefab guardado pierde el color.
         if (!Application.isPlaying)

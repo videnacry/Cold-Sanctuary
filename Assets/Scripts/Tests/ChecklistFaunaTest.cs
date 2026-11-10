@@ -25,6 +25,16 @@ public class ChecklistFaunaTest : MonoBehaviour, ITestUnit
 
     // Cada miembro de una familia aparece en su radio, también con un número IMPAR de miembros: el bucle de posiciones daba
     // 2·(n/2) vueltas y el último se quedaba en (0,0,0), dentro del Casquete (la cría de lobo que muere al empezar cada batería).
+    // NIVEL DE DETALLE (Berón 2026-11-09): cerca, cada fotograma; lejos y fuera de la vista, una vez cada intervalo (los relojes ponen al día).
+    void NivelDeDetalle()
+    {
+        float next = 0f; int ranNear = 0, ranFar = 0;
+        for (int f = 0; f < 10; f++) if (!SimulationLod.SkipNow(false, f * 0.1f, ref next, 0.75f)) ranNear++;
+        next = 0f;
+        for (int f = 0; f < 30; f++) if (!SimulationLod.SkipNow(true, f * 0.1f, ref next, 0.75f)) ranFar++;   // 3 s de juego
+        TestProbe.Check("nivel de detalle: cerca corre cada fotograma; lejos, una vez cada 0,75 s", ranNear == 10 && ranFar == 4, $"cerca {ranNear}/10, lejos {ranFar} en 3 s");
+    }
+
     void AparicionDeFamilia()
     {
         GameObject tpl = new GameObject("Plantilla_familia_TEST");
@@ -44,6 +54,7 @@ public class ChecklistFaunaTest : MonoBehaviour, ITestUnit
         yield return null;
 
         AparicionDeFamilia();             // las familias nacen en su sitio
+        NivelDeDetalle();                 // (2026-11-09) lo lejano corre menos, cerca siempre
         Decisiones();                     // §23/§24 ThreatResponder
         Forrajeo();                       // §23 Forager (fauna real, solo lectura)
         yield return Posesion();          // §23 IA + posesión
