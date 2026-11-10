@@ -136,7 +136,7 @@ public class AereoLink : MonoBehaviour
         float w = 0f;
         while (w < AereoRule.FlightSeconds || (op != null && !op.isDone && w < AereoRule.FlightSeconds + AereoRule.LoadLimit)) { w += Time.unscaledDeltaTime; yield return null; }
         AereoBase b = AereoBase.Instance;
-        if (b != null) { Put(p, (launch ? b.launchArrival : b.energyArrival).position); PlayerThere = true; }
+        if (b != null) { Put(p, (launch ? b.launchArrival : b.energyArrival).position); PlayerThere = true; AreasEnObra.SyncLoaded(); }   // (las áreas de allí que están en obra, en obras)
         else Debug.LogWarning("[Aéreo] La escena no ha cargado a tiempo: Kushal se queda en el muelle.");
         if (pc != null) pc.HoldBody(false);
         ScreenFader.Get().FadeFromBlack();

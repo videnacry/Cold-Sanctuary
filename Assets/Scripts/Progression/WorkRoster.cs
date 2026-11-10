@@ -118,6 +118,7 @@ public class WorkRoster
         public int emptyAreaClones;                                    // de ellos, los de áreas que se quedaban sin nadie
         public List<Worker> secondSplit = new List<Worker>();          // sobraban tras cubrir las horas: segundo reparto
         public List<Mission> skipped = new List<Mission>();            // opcionales que hoy no se hacen (nadie tenía tiempo): no pasan a mañana
+        public List<string> cloneReasons = new List<string>();        // (2026-11-09) por qué salió cada clon: «clon para «área»: motivo …»
         public List<Mission> impossible = new List<Mission>();         // (solo registro) tareas que nadie, ni un clon, puede hacer hoy: debe quedar vacía
         public IEnumerable<Assignment> Of(Worker w) => work.Where(a => a.worker == w).OrderBy(a => a.start);
     }
@@ -395,6 +396,21 @@ public class WorkRoster
     //  1. Primero, un clon por cada área ENTERA (AreaGroup) con tareas y sin ningún humano hoy (nadie de su sitio, o nadie pudo iniciarse en ella).
     //  2. Después, clones para lo que quede, sitio a sitio (cada uno con las tareas de un sitio), hasta acabar. Un área sin tareas no pide a nadie.
     // Acotado: como mucho 200 clones; lo que ni un clon puede hacer (una tarea más larga que cualquier franja) queda solo en el registro (impossible).
+    /// <summary>(2026-11-09) POR QUÉ ningún humano hace <paramref name="m"/>: nadie de su sitio, nadie sabe hacerla, todos al tope de 5 h, o los que
+    /// tienen horas no tienen un hueco de su duración en sus franjas (se dice quiénes y cuánto les queda).</summary>
+    string Why(DayPlan plan, Mission m)
+    {
+        var at = placeOf(m.area);
+        var humans = workers.Where(w => !w.clone && _place.TryGetValue(w, out var p) && p.Equals(at)).ToList();
+        if (humans.Count == 0) return $"nadie vive en {at} o llega a él ({m.id})";
+        var can = humans.Where(w => Qualified(w, m) && !(IsNewcomer(w, plan.day) && m.lead)).ToList();
+        if (can.Count == 0) return $"nadie de {at} sabe hacer {m.id} (sin iniciar)";
+        float Worked(Worker w) => plan.work.Where(a => a.worker == w).Sum(a => a.mission.hours);
+        var free = can.Where(w => Worked(w) < WorkHours - 1e-3f).ToList();
+        if (free.Count == 0) return $"todos los de {at} que saben {m.id} están al tope de {WorkHours:0} h";
+        return $"sin hueco de {m.hours:0.#} h para {m.id} en las franjas de quien tiene horas ({string.Join(", ", free.Take(4).Select(w => $"{w.name} {WorkHours - Worked(w):0.#} h"))}{(free.Count > 4 ? $" y {free.Count - 4} más" : "")})";
+    }
+
     void CloneForRest(DayPlan plan, Dictionary<string, List<Mission>> pools, Dictionary<Worker, float> used)
     {
         Worker NewClone() { var c = new Worker($"Magnate (clon {plan.clones.Count + 1})", clone: true); used[c] = 0f; return c; }
@@ -402,10 +418,12 @@ public class WorkRoster
         {
             var members = new HashSet<string>(grp);
             if (plan.work.Any(a => !a.lesson && !a.worker.clone && members.Contains(a.mission.area))) continue;   // ya tiene a alguien
+            string why = Why(plan, pools[grp.First()].First());
             Worker c = NewClone();
             RunRounds(plan, members.ToDictionary(a => a, a => pools[a]), new List<Worker> { c }, used);
             if (used[c] <= 0f) { used.Remove(c); continue; }
             plan.clones.Add(c); plan.cloneAreas.Add(grp.Key); plan.emptyAreaClones++;
+            plan.cloneReasons.Add($"clon para «{grp.Key}»: motivo {why}");
         }
         for (int k = 0; k < 200; k++)
         {
@@ -413,10 +431,12 @@ public class WorkRoster
             if (area == null) return;
             var at = placeOf(area);
             var mine = pools.Where(kv => kv.Value.Count > 0 && placeOf(kv.Key).Equals(at)).ToDictionary(kv => kv.Key, kv => kv.Value);
+            string why2 = Why(plan, pools[area].First());
             Worker c = NewClone();
             RunRounds(plan, mine, new List<Worker> { c }, used);
             if (used[c] <= 0f) { used.Remove(c); break; }
             plan.clones.Add(c); plan.cloneAreas.Add(area);
+            plan.cloneReasons.Add($"clon para «{area}»: motivo {why2}");
         }
         foreach (var kv in pools) { plan.impossible.AddRange(kv.Value); kv.Value.Clear(); }   // (solo registro: debe quedar vacío)
     }
@@ -592,17 +612,10 @@ public class WorkRoster
             }
         }
     }
-    // Vueltas por las áreas: de cada área, una misión a la primera persona a la que le quepa. (2026-11-08) Con el reparto por santuarios, PARTES
-    // IGUALES: a la que MENOS horas lleva hoy de las que pueden hacerla (a igualdad, el orden del día). Así las horas del sitio se reparten por igual,
-    // tan parejas como dejan las tareas, que no se parten (entre quien más y quien menos, como mucho la tarea más larga).
+    // Vueltas por las áreas: de cada área, una misión a la primera persona a la que le quepa (el reparto puro).
     void RunRounds(DayPlan plan, Dictionary<string, List<Mission>> pools, List<Worker> staff, Dictionary<Worker, float> used)
     {
-        Dictionary<Worker, float> worked = null;
-        if (sanctuaryModel)
-        {
-            worked = staff.ToDictionary(w => w, w => 0f);
-            foreach (Assignment a in plan.work) if (worked.ContainsKey(a.worker)) worked[a.worker] += a.mission.hours;
-        }
+        if (sanctuaryModel) { SharedRounds(plan, pools, staff, used); return; }
         bool progress = true;
         while (progress)
         {
@@ -610,21 +623,74 @@ public class WorkRoster
             foreach (string area in plan.areaOrder)
             {
                 if (!pools.TryGetValue(area, out var pool) || pool.Count == 0) continue;
-                Worker best = null; Mission bestPick = null;
                 foreach (Worker w in staff)
                 {
-                    if (best != null && worked[w] >= worked[best] - 1e-4f) continue;
                     Mission pick = Choose(w, pool.Where(m => (!IsNewcomer(w, plan.day) || !m.lead) && Qualified(w, m) && Allowed(w, m)).ToList(), used[w]);
                     if (pick == null) continue;
-                    best = w; bestPick = pick;
-                    if (worked == null) break;   // (reparto puro: la primera persona a la que le cabe)
+                    pool.Remove(pick);
+                    Assign(plan, w, pick, used);
+                    progress = true;
+                    break;
                 }
-                if (best == null) continue;
-                pool.Remove(bestPick);
-                Assign(plan, best, bestPick, used);
-                if (worked != null) worked[best] += bestPick.hours;
-                progress = true;
             }
+        }
+    }
+
+    // PARTES IGUALES (2026-11-08) Y SIN HUECOS (2026-11-09, ronda 31 en vivo). Cada vez, la persona que MENOS horas lleva hoy (a igualdad, el orden del
+    // día) coge, de TODAS las áreas de su sitio, la tarea que mejor encaja: la que empieza justo donde acaba lo suyo (sin dejar un hueco que ya nadie
+    // usaría, porque la jornada se llena hacia delante), y a igualdad la más larga (las franjas son de 2, 2 y 1 h), la que menos ha hecho, la que hace
+    // más días que no hace y el orden de áreas del día. Antes se iba área por área: las de 1 h ocupaban las franjas de 2 h, las de 2 h (rondas de
+    // frutales, servicio, guardias, obras) ya no cabían en nadie y salían 21 clones con humanos ociosos («Faltan misiones: 14 h»).
+    void SharedRounds(DayPlan plan, Dictionary<string, List<Mission>> pools, List<Worker> staff, Dictionary<Worker, float> used)
+    {
+        var worked = staff.ToDictionary(w => w, w => 0f);
+        foreach (Assignment a in plan.work) if (worked.ContainsKey(a.worker)) worked[a.worker] += a.mission.hours;
+        var areaIdx = new Dictionary<string, int>();
+        for (int i = 0; i < plan.areaOrder.Count; i++) areaIdx[plan.areaOrder[i]] = i;
+        var full = new HashSet<Worker>();
+        for (int guard = 0; guard < 5000; guard++)
+        {
+            Worker pickW = null; Mission pickM = null; string pickArea = null;
+            foreach (Worker w in staff.Where(x => !full.Contains(x)).OrderBy(x => worked[x]))
+            {
+                Mission best = null; string bestArea = null; float bestGap = 0f;
+                foreach (var kv in pools)
+                    foreach (Mission m in kv.Value)
+                    {
+                        if ((IsNewcomer(w, plan.day) && m.lead) || !Qualified(w, m) || !Allowed(w, m)) continue;
+                        if (w.name == "Player" && FruitGardener.IsRound(m.id)) continue;   // (la ronda de frutales la lleva FruitGardener, que no mueve al jugador)
+                        float u = PlaceFor(w, used[w], m.hours, out float at);
+                        if (u < 0f || FarAfterLunch(w, m.area, at)) continue;
+                        float gap = u - used[w];
+                        if (best != null)
+                        {
+                            if (gap > bestGap + 1e-4f) continue;
+                            if (System.Math.Abs(gap - bestGap) < 1e-4f)
+                            {
+                                if (m.hours < best.hours - 1e-4f) continue;
+                                if (System.Math.Abs(m.hours - best.hours) < 1e-4f)
+                                {
+                                    int cm = w.Count(m.id), cb = w.Count(best.id);
+                                    if (cm > cb) continue;
+                                    if (cm == cb)
+                                    {
+                                        int lm = w.Last(m.id), lb = w.Last(best.id);
+                                        if (lm > lb) continue;
+                                        if (lm == lb && (areaIdx.TryGetValue(kv.Key, out int ia) ? ia : 999) >= (areaIdx.TryGetValue(bestArea, out int ib) ? ib : 999)) continue;
+                                    }
+                                }
+                            }
+                        }
+                        best = m; bestArea = kv.Key; bestGap = gap;
+                    }
+                if (best == null) { full.Add(w); continue; }
+                pickW = w; pickM = best; pickArea = bestArea;
+                break;
+            }
+            if (pickW == null) return;
+            pools[pickArea].Remove(pickM);
+            Assign(plan, pickW, pickM, used);
+            worked[pickW] += pickM.hours;
         }
     }
 

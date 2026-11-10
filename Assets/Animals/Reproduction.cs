@@ -84,7 +84,8 @@ public class Reproduction : MonoBehaviour
         if (Eusocial(_animal.SpeciesName) && !IsColonyQueen()) return false;   // solo la reina pone; las obreras son estériles
         if (LivingCount() >= softPopulationCap) return false;   // cuenta solo los VIVOS (antes contaba también los cadáveres)
         int planCap = PopulationPlan.Cap(_animal.SpeciesName);
-        if (planCap > 0 && LivingCount() >= planCap) return false;   // equilibrio con los humanos: no más de 1,5× lo que toca (PopulationPlan)
+        if (planCap > 0 && LivingCount() >= planCap) return false;   // equilibrio con los humanos: no más de lo que le toca con K (PopulationPlan, Berón 2026-11-09)
+        if (planCap > 0 && SceneAnimals() >= PopulationPlan.TotalCap) return false;   // ni más animales en total que K × los humanos del santuario
         return true;
     }
 
@@ -158,6 +159,15 @@ public class Reproduction : MonoBehaviour
 
     /// <summary>Pare una cría: copia del progenitor puesta en etapa `child` (crece por `Animal.Init`→`LifeStage`).
     /// Devuelve el `Animal` de la cría. Público para el test del ciclo de vida.</summary>
+
+    /// <summary>Los animales vivos del plan (<see cref="PopulationPlan.Groups"/>) en la escena de este: lo que cuenta para el techo de K × humanos.</summary>
+    int SceneAnimals()
+    {
+        int n = 0;
+        foreach (GameObject g in Animal.wholePopulation)
+            if (g != null && g.scene == gameObject.scene && g.TryGetComponent(out Animal a) && !a.death && PopulationPlan.Groups.ContainsKey(a.SpeciesName)) n++;
+        return n;
+    }
 
     int LivingCount()
     {

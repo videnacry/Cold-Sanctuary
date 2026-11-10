@@ -19,11 +19,22 @@ public static class AreasEnObra
     {
         AreaWork.Hospital, "Cocina", AreaWork.Guard, AreaWork.GuardRoom, "Huerto", "Cría", "Carne Cultivada", "Mecánica", "Construcción",
         "Gimnasio", "Sala de Yoga", EnergyRule.Area, NuclearSite.PlantArea, NuclearSite.PowerArea, SiteLine.AreaName,
+        VerticalFarm.AreaName,   // (ronda 31) el Huerto vertical: las estanterías LED que eligió Berón, comida
     };
     public static bool IsBasic(string area) => area != null && Basic.Contains(WorkRoster.AreaGroup(area));
 
-    /// <summary>Lo que se sigue haciendo aunque su área esté en obra: el O₂ (fotobiorreactores, «bio_fotobio») y el material de obra («mat_»).</summary>
-    public static bool KeepsWhileEnObra(WorkRoster.Mission m) => m != null && m.id != null && (m.id.StartsWith("mat_") || m.id.StartsWith(FotobioFacade.MissionId));
+    /// <summary>Lo que se sigue haciendo aunque su área esté en obra: el O₂ (fotobiorreactores, «bio_fotobio»), el material de obra («mat_») y la
+    /// SEGURIDAD de la lanzadera (el diluvio y la trinchera, el remolque de un iceberg y el vaciado de combustible: Control de misión, 2026-11-09).</summary>
+    public static bool KeepsWhileEnObra(WorkRoster.Mission m) => m != null && m.id != null && (m.id.StartsWith("mat_") || m.id.StartsWith(FotobioFacade.MissionId) || SafetyIds.Contains(m.id));
+    static readonly HashSet<string> SafetyIds = new HashSet<string> { "lanz_seguridad", "lanz_vaciado", Iceberg.LaunchTow };
+
+    /// <summary>Dónde se hace la obra de un área: en la tierra, en Construcción (su equipo); en el Marino o el Aéreo, en el área misma, para que la
+    /// hagan los que pasan allí el día (Control de misión: los de s3).</summary>
+    public static string ObraArea(string title) => SanctuaryPlacement.SanctuaryOfArea(title) == SanctuaryPlacement.Land ? "Construcción" : title;
+
+    /// <summary>LAS ÁREAS DE OTRAS ESCENAS que también vuelven a obra (Berón 2026-11-09): Control de misión vive en la escena aérea, que no está cargada;
+    /// su obra se lleva desde aquí, en un objeto propio, y su forma en construcción se enseña al cargar esa escena (<see cref="SyncLoaded"/>).</summary>
+    public static readonly string[] RemoteAreas = { LaunchSite.ControlArea };
 
     /// <summary>Las tareas de hoy sin las de las áreas en obra (<paramref name="enObra"/>: áreas enteras), salvo <see cref="KeepsWhileEnObra"/>.</summary>
     public static List<WorkRoster.Mission> Filter(IEnumerable<WorkRoster.Mission> todays, ICollection<string> enObra)
@@ -56,7 +67,30 @@ public static class AreasEnObra
             cp.title = a.displayName; cp.reform = true; cp.daysRequired = Days; cp.crewNeeded = CrewFor(AreaHours(a.displayName));
             n++; names.Add($"{a.displayName} (equipo de {cp.crewNeeded})");
         }
+        foreach (string remote in RemoteAreas)
+        {
+            if (IsBasic(remote) || ConstructionProject.All.Any(p => p != null && p.title == remote)) continue;
+            var go = new GameObject($"Obra_{remote}");
+            if (AereoLink.Instance != null) go.transform.SetParent(AereoLink.Instance.transform, false);   // (en el muelle aéreo: desde allí se vuela a su obra)
+            ConstructionProject rp = go.AddComponent<ConstructionProject>();
+            rp.title = remote; rp.reform = true; rp.daysRequired = Days; rp.crewNeeded = CrewFor(AreaHours(remote));
+            n++; names.Add($"{remote} (en otra escena; equipo de {rp.crewNeeded})");
+        }
         if (n > 0) Debug.Log($"[Obras] Áreas no básicas en obra (Berón 2026-11-09): {string.Join(", ", names)}.");
         return n;
+    }
+
+    /// <summary>Al cargar otra escena (la aérea): las áreas que allí vuelven a obra enseñan su forma en construcción mientras su obra (la de aquí) no
+    /// esté terminada. Si el área no tiene <see cref="FloorForms"/>, se dice.</summary>
+    public static void SyncLoaded()
+    {
+        foreach (SanctuaryArea a in Object.FindObjectsByType<SanctuaryArea>(FindObjectsSortMode.None))
+        {
+            if (a == null || System.Array.IndexOf(RemoteAreas, a.displayName) < 0) continue;
+            ConstructionProject cp = ConstructionProject.All.FirstOrDefault(p => p != null && p.reform && p.title == a.displayName);
+            if (cp == null) continue;
+            if (a.TryGetComponent(out FloorForms ff)) ff.ShowConstruction(!cp.Finished);
+            else Debug.LogWarning($"[Obras] «{a.displayName}» está en obra pero su piso no tiene FloorForms: no se puede enseñar en obras.");
+        }
     }
 }

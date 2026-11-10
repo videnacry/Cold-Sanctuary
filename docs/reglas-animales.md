@@ -22,7 +22,7 @@ junta. El resumen está en [manual-de-diseno.md §13](manual-de-diseno.md#13-ani
 | E8 | **Ciclo de vida completo:** agua, celo, cortejo, gestación o huevo, parto, crianza, cría que sigue a su madre, joven, adulto, vejez. Las tablas van en unidades reales (meses, días); el calendario las escala. El parto es siempre 1 cría, aunque la especie tenga camadas: se cuenta en la ficha y se simplifica aquí. | «Que realice todos sus procesos naturales». | Grupo 58, su escena |
 | E9 | **Dieta real.** Lo que no sea presa, pez o krill va en el `Ethogram` como `Feed` sobre un `Affordance` (liquen, sauce, juncia, bayas). Si no existe, se crea. | La morsa no come peces; el reno no come «pasto». | Grupo 99; `[ECO]` |
 | E10 | **Hábitat real.** La especie vive donde vive de verdad: mar y hielo (`MarineLife`, descansaderos), hielo fijo, isla de tierra. Se documenta el sitio y por qué. El mundo se adapta: si necesita una colonia, cueva o tundra, se construye. | Oso sobre pasto: inconsistente. | Grupo 99, fotos |
-| E11 | **Población por humano** (`PopulationPlan.PerHuman`): más presas que depredadores, grupos pequeños y un Animal completo caro. La reproducción respeta el techo de 1,5×. | Rendimiento y equilibrio. | Grupo 99; `[ECO]` |
+| E11 | **Fauna por humanos** (Berón 2026-11-09; §Fauna por humanos): el total de animales de un santuario = **K × sus humanos** (`PopulationPlan.AnimalsPerHuman`, 3 por defecto). Se reparte por la pirámide trófica (70 % presas y herbívoros, 22 % mesodepredadores, 8 % ápice), cada especie con su mínimo viable (2; el zorro ártico 4). La reproducción no pasa de lo que le toca ni del total. | Rendimiento y equilibrio. | Grupo 113; 99; `[ECO]` |
 | E12 | **Escena de ciclo de vida.** Cada especie tiene `CicloVida_<Escena>`: se añade a `CicloVidaPanel.Species` (con su hábitat) y a `StartScreen.Special`; comida inagotable y pareja adulta. | Comprobar cada proceso. | Grupo 58 en esa escena |
 | E13 | **Polo mezclado, y dicho.** El santuario es artificial y junta los dos polos (morsas árticas y pingüinos antárticos). Se admite, pero cada ficha dice de dónde es la especie. | Para que no pase por dato. | Solo en docs |
 | E15 | **Cadena alimenticia.** Al añadir una especie se pone en `PopulationPlan.Groups` y `FoodChain` la evalúa: lee dietas y poblaciones, calcula lo que necesita cada depredador y sube bancos, plantas o presas para que nadie pase hambre. Si hace falta una presa que no existe, se crea. | Berón: «para que nadie muera de hambre». | Grupo 85; `[Cadena]` al final del Blockout; menú «Cadena alimenticia (evaluar)» |
@@ -115,6 +115,53 @@ Los números se comprobaron contra fuentes el 2026-11-05; WP = Wikipedia, usada 
 - **Dieta:** ~60 % invertebrados, 30 % peces, 10 % vertebrados, según un estudio de la isla Laurie citado allí. **Modelo:** kril y peces de la superficie; ración 60 g `[A]`.
 - **Conducta:** bandadas posadas en icebergs; asociado a hielo y témpanos ([Australian Antarctic Program](https://www.antarctica.gov.au/about-antarctica/animals/flying-birds/petrels-and-shearwaters/snow-petrel/)). **Sin confirmar:** el aceite de estómago, por eso no se modela.
 - **Licencia:** vive en una isla mezcla de polos, como todo el santuario, y usa los acantilados de aves de la isla.
+
+## Fauna por humanos (Berón 2026-11-09)
+
+Berón: el total de animales de un santuario es **K × los humanos que viven en él**. K es `PopulationPlan.AnimalsPerHuman`, 3 por defecto; Berón puede subirlo a 4 o 5. Sustituye a la escala fija de 11 (`FaunaScale`).
+
+- **Reparto:** por la pirámide trófica, en número de individuos (`LevelShare`):
+  - **70 %** presas y herbívoros: pingüinos, pingüino emperador, petrel de las nieves, reno, buey almizclero, liebre;
+  - **22 %** mesodepredadores: foca, morsa, beluga y zorro ártico;
+  - **8 %** ápice: oso polar, lobo y orca.
+  Dentro de cada nivel, cada especie va por su peso (`PerHuman`, que la cadena alimenticia sube si una presa falta). Las partes suman 1 (113).
+- **Mínimo viable:** 2 por especie (una pareja) y 4 el zorro ártico (`MinViable`). Si K × humanos no da para todos los mínimos, sale el depredador más raro (primero el ápice), sin pasarse nunca del total (`Allocate`, 113).
+- **Techo:** la reproducción no pasa de lo que le toca a la especie (`Cap` = `Target`, antes 1,5×) ni del total de la escena (`TotalCap`).
+- **Cada santuario, su total:** santuario 1, 27 humanos (la lista del personal menos Irosene, Lizmibet y Linduarda) × 3 = **81**; santuario 2, 2 × 3 = 6; santuario 3, 1 × 3 = 3. Hoy solo el santuario 1 tiene fauna en su escena. El 2 y el 3 tienen su total, pero sus escenas no tienen animales que repartir (inferido: las aves del Aéreo no las pone `PopulationPlan`).
+- **Fuera del total:** las focas y pingüinos de los icebergs (`IcebergVisitor`), como antes.
+
+**De dónde sale la pirámide.**
+
+| Fuente | Qué dice | Cómo se usa |
+|---|---|---|
+| Lindeman, R. L. (1942). The trophic-dynamic aspect of ecology. *Ecology* 23(4): 399–417 | Solo pasa ~10 % de la energía de un nivel trófico al siguiente | Cada nivel, mucho menor que el de debajo |
+| Pauly, D. y Christensen, V. (1995). Primary production required to sustain global fisheries. *Nature* 374: 255–257 | Eficiencia media de transferencia de ~10 % en las redes marinas | La misma pirámide en el mar (focas, orcas) |
+| Carbone, C. y Gittleman, J. L. (2002). A common rule for the scaling of carnivore density. *Science* 295: 2273–2276 | 10 000 kg de presa sostienen unos 90 kg de una especie carnívora (~1:111 en biomasa) | Pocos depredadores por presa |
+| Legagneux, P. et al. (2012). Disentangling trophic relationships in a High Arctic tundra ecosystem through food web modeling. *Ecology* 93(7): 1707–1716 | En la tundra de la isla Bylot los depredadores son una parte pequeña de la biomasa de animales; manda la presión de los depredadores | La tundra sigue la misma regla |
+| Elton, C. (1927). *Animal Ecology* | La pirámide de números: muchos individuos pequeños abajo y pocos grandes arriba | Se reparte en **número**, no en biomasa |
+
+**Paso a individuos (inferido).** Los depredadores pesan más que sus presas (un oso, 400 kg; un pingüino, 4 kg), así que en número la pirámide es menos empinada que en biomasa. Se eligió ~9 presas por depredador ápice (70 % / 8 %) y un nivel intermedio del 22 % para focas, morsas, belugas y zorros, que comen peces, bivalvos o presas pequeñas y a la vez son presa del ápice. Los números exactos son de diseño. Lo que viene de las fuentes es el orden de magnitud.
+
+**Antes y después en el santuario 1** (sin los ajustes de la cadena; antes, el plan con la escala fija de 11 y techo de 1,5×; después, K = 3 con 27 humanos):
+
+| Especie | Antes (plan / techo) | Después (plan = techo) |
+|---|---|---|
+| Pingüino | 13 / 20 | 17 |
+| Pingüino emperador | 9 / 14 | 11 |
+| Petrel de las nieves | 6 / 9 | 8 |
+| Reno | 7 / 11 | 8 |
+| Liebre ártica | 6 / 9 | 7 |
+| Buey almizclero | 3 / 5 | 4 |
+| Foca | 7 / 11 | 8 |
+| Morsa | 3 / 5 | 4 |
+| Beluga | 2 / 3 | 2 |
+| Zorro ártico | 4 / 6 | 4 |
+| Oso polar | 3 / 5 | 3 |
+| Lobo | 3 / 5 | 3 |
+| Orca | 2 / 3 | 2 |
+| **Total** | **68 / 106** (en vivo ~86) | **81** |
+
+Para que nazcan los nuevos números hay que reconstruir el santuario: el Blockout reparte `Split`. En juego, la reproducción ya obedece el techo nuevo.
 
 ## Cadena alimenticia (`FoodChain`)
 
