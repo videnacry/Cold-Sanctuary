@@ -51,6 +51,7 @@ Sala de Ballet, Dojo y Calistenia ya eran obras y siguen igual.
   - El horario libre ya no usa sus salas mientras están en obras.
 - **Limitación:** estas áreas no tienen «Acabado» aparte, así que sus muebles siguen a la vista bajo el andamio. Para que la obra los coloque pieza a pieza habría que reconstruir la escena moviéndolos a un «Acabado», como en el Ballet.
 - **En las pruebas no se convierte nada** (salvo `AreasEnObra.InTests`): las pruebas de esas áreas (74, 77…) siguen viéndolas terminadas.
+- **Jardines sobre obras** (ronda 33): las macetas de un techo que está sobre un piso en obras (`FruitGardener.OnSite`) no entran en las rondas hasta que la obra acabe, porque nadie cuida un huerto encima de una obra. El registro `[Frutales] N macetas sobre pisos en obras` dice cuántas y de qué techos. Depende de que el techo cuelgue del piso de arriba del edificio: si cuelga de otro sitio, no se detecta.
 
 ## Los clones: antes y después (modelo de 113)
 

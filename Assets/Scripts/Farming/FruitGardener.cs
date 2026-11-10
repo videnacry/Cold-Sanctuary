@@ -108,11 +108,16 @@ public class FruitGardener : MonoBehaviour
     {
         FruitPlant.All.RemoveAll(p => p == null);
         MaskStation.All.RemoveAll(m => m == null);
-        int key = (FruitPlant.All.Count * 1000 + MaskStation.All.Count) * 7 + ((Today % 7) + 7) % 7;   // (la rotación de las máscaras cambia cada día)
+        // (Berón 2026-11-09, ronda 33) UN JARDÍN SOBRE UNA OBRA no se cuida: nadie atiende un huerto encima de un piso en obras (AreasEnObra). Sus macetas
+        // no entran en las rondas hasta que la obra acabe.
+        if (_onSite == null || Time.unscaledTime >= _onSiteAt) { _onSite = FruitPlant.All.Where(OnSite).ToList(); _onSiteAt = Time.unscaledTime + 2f; }   // (cada 2 s: no en cada consulta)
+        var onSite = _onSite;
+        int key = (FruitPlant.All.Count * 1000 + MaskStation.All.Count) * 7 + ((Today % 7) + 7) % 7 + onSite.Count * 7919;   // (la rotación de las máscaras cambia cada día)
         if (_rounds != null && _roundsFor == key) return _rounds;
         _roundsFor = key;
         _rounds = new List<Round>();
-        var byRoof = FruitPlant.All.Where(p => !p.HomeTended).GroupBy(p => p.building).ToDictionary(g => g.Key, g => TipOrder(g.OrderBy(p => p.order).ToList()));   // (2026-11-04) las macetas de las casas del árbol las cuida su residente (FruitPlant.HomeTended)
+        var byRoof = FruitPlant.All.Where(p => !p.HomeTended && !onSite.Contains(p)).GroupBy(p => p.building).ToDictionary(g => g.Key, g => TipOrder(g.OrderBy(p => p.order).ToList()));   // (2026-11-04) las macetas de las casas del árbol las cuida su residente (FruitPlant.HomeTended)
+        if (onSite.Count > 0) Debug.Log($"[Frutales] {onSite.Count} macetas sobre pisos en obras, sin rondas hasta que acaben: {string.Join(", ", onSite.Select(p => p.building).Distinct())}.");
         // LOS EDIFICIOS-ÁRBOL y sus tareas (Berón 2026-11-03): revisar las máscaras de oxígeno y cuidar el fitoplancton. Las hace el
         // jardinero de ese edificio (si no cabe en su ronda, otro jardinero del mismo edificio); el Árbol de los Campos, sin
         // frutales, entra en el camino solo por sus tareas.
@@ -304,6 +309,9 @@ public class FruitGardener : MonoBehaviour
         }
         return outList;
     }
+    /// <summary>¿Está esta maceta sobre un piso en obras (una obra sin acabar en el piso o el edificio que la sostiene)?</summary>
+    static List<FruitPlant> _onSite; static float _onSiteAt;
+    public static bool OnSite(FruitPlant p) { if (p == null) return false; ConstructionProject cp = p.GetComponentInParent<ConstructionProject>(); return cp != null && !cp.Finished; }
     public static bool IsRound(string missionId) => missionId != null && missionId.StartsWith(MissionPrefix);
 
     /// <summary>Las misiones de la jornada: una por ronda, obligatorias (las plantas en maceta no aguantan un día sin

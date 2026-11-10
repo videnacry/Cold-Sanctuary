@@ -485,10 +485,21 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
             TestProbe.Check(servTree ? "un trabajador va del techo de Servicios a su casa del árbol en alfombra y nadando (1 vuelo)" : "un trabajador va de un piso del hospital a su casa del árbol en alfombras (3 vuelos)", left.magnitude < 4f && FlyingCarpet.Trips - flights >= (servTree ? 1 : 3), $"{FlyingCarpet.Trips - flights} vuelos, a {left.magnitude:0.0} m de la cama");
             Destroy(traveler);
         }
-        var census = new System.Collections.Generic.Dictionary<string, int>();
-        foreach (Animal a in FindObjectsByType<Animal>(FindObjectsSortMode.None)) if (a != null && !a.death && Mathf.Abs(a.transform.position.x) < 250f && Mathf.Abs(a.transform.position.z) < 250f) census[a.SpeciesName] = (census.TryGetValue(a.SpeciesName, out int cn) ? cn : 0) + 1;
-        int bears = census.TryGetValue("Bear", out int bc) ? bc : 0, penguins = census.TryGetValue("Penguin", out int pc) ? pc : 0;
-        TestProbe.Check("la fauna va en proporción a los humanos (más pingüinos que osos)", penguins > bears && bears <= PopulationPlan.Cap("Bear"), string.Join(", ", census.Select(kv => $"{kv.Key} {kv.Value}")));
+        // (Berón 2026-11-09) LA FAUNA SALVAJE: las especies del plan (PopulationPlan.Groups), sin las crías que crían los humanos en la Cría (CriaCareTarget), sin
+        // los que viven en los icebergs (fuera del total, IcebergVisitor) y sin los que no son fauna del plan (los malamutes, perros del santuario; los insectos).
+        var census = new System.Collections.Generic.Dictionary<string, int>(); var wild = new System.Collections.Generic.Dictionary<string, int>();
+        foreach (Animal a in FindObjectsByType<Animal>(FindObjectsSortMode.None))
+        {
+            if (a == null || a.death || Mathf.Abs(a.transform.position.x) >= 250f || Mathf.Abs(a.transform.position.z) >= 250f) continue;
+            census[a.SpeciesName] = (census.TryGetValue(a.SpeciesName, out int cn) ? cn : 0) + 1;
+            if (PopulationPlan.Groups.ContainsKey(a.SpeciesName) && a.GetComponent<CriaCareTarget>() == null && a.GetComponent<IcebergVisitor>() == null) wild[a.SpeciesName] = (wild.TryGetValue(a.SpeciesName, out int wn) ? wn : 0) + 1;
+        }
+        int bears = wild.TryGetValue("Bear", out int bc) ? bc : 0, penguins = wild.TryGetValue("Penguin", out int pc) ? pc : 0;
+        int Level(PopulationPlan.Trophic t) => wild.Where(kv => PopulationPlan.LevelOf(kv.Key) == t).Sum(kv => kv.Value);
+        string seen = $"salvaje: {string.Join(", ", wild.Select(kv => $"{kv.Key} {kv.Value}/{PopulationPlan.Cap(kv.Key)}"))} · todos: {string.Join(", ", census.Select(kv => $"{kv.Key} {kv.Value}"))}";
+        TestProbe.Check("la fauna va en proporción a los humanos (más pingüinos que osos, y osos dentro de lo que les toca)", penguins > bears && bears <= PopulationPlan.Cap("Bear"), seen);
+        TestProbe.Check($"la fauna salvaje no pasa de K × humanos ({PopulationPlan.TotalCap})", wild.Values.Sum() <= PopulationPlan.TotalCap, seen);
+        TestProbe.Check("la pirámide: muchas más presas que depredadores ápice", Level(PopulationPlan.Trophic.Prey) > 3 * Level(PopulationPlan.Trophic.Apex), $"presas {Level(PopulationPlan.Trophic.Prey)} · ápice {Level(PopulationPlan.Trophic.Apex)}");
         int machines = 0; foreach (Transform t in FindObjectsByType<Transform>(FindObjectsSortMode.None)) if (t.name.StartsWith("Maquina_")) machines++;
         TestProbe.Greater("el gimnasio tiene 10 tipos de máquina × 3", machines, 29f, $"{machines} máquinas");
         // 2 m LIBRES entre muebles en TODAS las plataformas (Berón 2026-10-28; FurnitureSpacing): cada área, y la planta de la

@@ -54,8 +54,13 @@ public class WorkRoster
         /// <summary>(Berón 2026-11-08) OPCIONAL: si ningún humano tiene tiempo, ese día no se hace; nunca lleva un clon ni pasa a mañana. Sale de
         /// <see cref="OptionalIds"/>; una obligatoria nunca lo es.</summary>
         public bool optional;
-        public Mission(string area, string id, string title, float hours, bool mandatory = false) { this.area = area; this.id = id; this.title = title; this.hours = hours; this.mandatory = mandatory; optional = !mandatory && IsOptional(id); }
-        public Mission Copy() => new Mission(area, id, title, hours, mandatory) { group = group, also = also, site = site, roams = roams, lead = lead, owner = owner, optional = optional };
+        /// <summary>(2026-11-09, ronda 33) DIVISIBLE: se puede hacer a trozos de 1 h o de media (las rondas de frutales, la patrulla, el alimentador, el vínculo
+        /// con una cría), para llenar los huecos de 0,5–1 h que dejan las franjas de 2, 2 y 1 h. Sale de <see cref="IsDivisible"/>.</summary>
+        public bool divisible;
+        /// <summary>Si es un TROZO de una tarea partida: aplica el efecto (lo que la tarea hace en el mundo) solo el último en acabar.</summary>
+        public bool piece, effectPiece = true;
+        public Mission(string area, string id, string title, float hours, bool mandatory = false) { this.area = area; this.id = id; this.title = title; this.hours = hours; this.mandatory = mandatory; optional = !mandatory && IsOptional(id); divisible = IsDivisible(id); }
+        public Mission Copy() => new Mission(area, id, title, hours, mandatory) { group = group, also = also, site = site, roams = roams, lead = lead, owner = owner, optional = optional, divisible = divisible, piece = piece, effectPiece = effectPiece };
         public override string ToString() => $"{area}: {title} ({hours:0.#} h)";
     }
 
@@ -154,6 +159,13 @@ public class WorkRoster
         "qui_sintesis", "bio_pcr", "fis_experimentos", "aul_estudio", "aul_letras", "aul_lenguas", "son_grabar", "son_ensayo",
     };
     public static bool IsOptional(string id) => id != null && OptionalIds.Contains(id);
+
+    /// <summary>LAS DIVISIBLES (Berón 2026-11-09, ronda 33): las rondas de frutales (sus tramos ya son de ≤ 1 h: FruitGardener.TreeStretches), la patrulla,
+    /// el alimentador y el vínculo con una cría. El quirófano y la veterinaria, no: van enteros.</summary>
+    public static readonly HashSet<string> DivisibleIds = new HashSet<string> { "gua_carnivoros", "gua_alimentador", "gua_alimentador_2", "cri_vinculo" };
+    public static bool IsDivisible(string id) => id != null && (DivisibleIds.Contains(id) || FruitGardener.IsRound(id));
+    /// <summary>El trozo más pequeño de una tarea divisible (h).</summary>
+    public const float MinPiece = 0.5f;
 
     public static string AreaGroup(string area)
     {
@@ -484,11 +496,13 @@ public class WorkRoster
                 var mine = options.Where(m => Wants(w, m) && (m == skill || Allowed(w, m)) && !FarAfterLunch(w, m.area, clock)).ToList();
                 if (mine.Count == 0) continue;
                 // (un área vacía sin clase todavía esta hora abre la suya antes de que nadie se sume a otra: cada área vacía, su clase)
-                Mission empty = classes.Count < MaxLessonGroups ? mine.Where(OpenHere).OrderByDescending(Score).FirstOrDefault() : null;
+                // (ronda 33: Irosene y Lizmibet no se iniciaban en la planta nuclear porque las 6 clases de la hora ya las llenaban los de la tierra) Un área vacía
+                // abre su clase aunque ya haya 6: la Magnate se divide para darla, y así nadie la cubre con un clon por no saber.
+                Mission empty = mine.Where(OpenHere).OrderByDescending(Score).FirstOrDefault();
                 Lesson c = empty != null ? null : classes.Where(x => x.learners.Count < LessonGroupSize && mine.Contains(x.real)).OrderByDescending(x => Score(x.real)).FirstOrDefault();
                 if (c == null)
                 {
-                    if (classes.Count >= MaxLessonGroups) { waiting.Add(w); continue; }
+                    if (classes.Count >= MaxLessonGroups && empty == null) { waiting.Add(w); continue; }
                     Mission best = empty ?? mine.OrderByDescending(Score).First();
                     Mission shown = best.Copy();
                     shown.id = LessonPrefix + best.id; shown.title = "Iniciación: " + best.title; shown.hours = LessonHours; shown.group = null; shown.mandatory = false; shown.lead = false; shown.owner = null;
@@ -650,48 +664,77 @@ public class WorkRoster
         var full = new HashSet<Worker>();
         for (int guard = 0; guard < 5000; guard++)
         {
-            Worker pickW = null; Mission pickM = null; string pickArea = null;
+            Worker pickW = null; Mission pickM = null; string pickArea = null; float pickPiece = 0f;
             foreach (Worker w in staff.Where(x => !full.Contains(x)).OrderBy(x => worked[x]))
             {
-                Mission best = null; string bestArea = null; float bestGap = 0f;
+                Mission best = null; string bestArea = null; float bestGap = 0f, bestH = 0f; bool bestExact = false;
                 foreach (var kv in pools)
                     foreach (Mission m in kv.Value)
                     {
                         if ((IsNewcomer(w, plan.day) && m.lead) || !Qualified(w, m) || !Allowed(w, m)) continue;
                         if (w.name == "Player" && FruitGardener.IsRound(m.id)) continue;   // (la ronda de frutales la lleva FruitGardener, que no mueve al jugador)
-                        float u = PlaceFor(w, used[w], m.hours, out float at);
+                        float h = m.hours;
+                        float u = PlaceFor(w, used[w], h, out float at);
+                        // (ronda 33) UNA DIVISIBLE QUE NO CABE ENTERA: el trozo más grande (de media en media hora) que le quepa; el resto sigue en la lista
+                        // y si entera solo cabe dejando un hueco, el trozo que llena justo lo que le queda de su franja (sin hueco)
+                        if (m.divisible && (u < 0f || u - used[w] > 1e-4f))
+                        {
+                            float room = BlockEnd(used[w]) - used[w], p0 = (float)System.Math.Floor(System.Math.Min(room, m.hours - MinPiece) / MinPiece) * MinPiece;
+                            if (p0 >= MinPiece - 1e-4f && System.Math.Abs(PlaceFor(w, used[w], p0, out float at0) - used[w]) < 1e-4f) { h = p0; u = used[w]; at = at0; }
+                        }
+                        if (u < 0f && m.divisible)
+                            for (h = System.Math.Min(m.hours - MinPiece, 2f); h >= MinPiece - 1e-4f; h -= MinPiece) { u = PlaceFor(w, used[w], h, out at); if (u >= 0f) break; }
                         if (u < 0f || FarAfterLunch(w, m.area, at)) continue;
                         float gap = u - used[w];
+                        bool exact = System.Math.Abs(u + h - BlockEnd(u)) < 1e-4f;   // (llena su franja justa: no deja medias horas sueltas)
                         if (best != null)
                         {
                             if (gap > bestGap + 1e-4f) continue;
                             if (System.Math.Abs(gap - bestGap) < 1e-4f)
                             {
-                                if (m.hours < best.hours - 1e-4f) continue;
-                                if (System.Math.Abs(m.hours - best.hours) < 1e-4f)
+                                if (!exact && bestExact) continue;
+                                if (exact == bestExact)
                                 {
-                                    int cm = w.Count(m.id), cb = w.Count(best.id);
-                                    if (cm > cb) continue;
-                                    if (cm == cb)
+                                    if (h < bestH - 1e-4f) continue;
+                                    if (System.Math.Abs(h - bestH) < 1e-4f)
                                     {
-                                        int lm = w.Last(m.id), lb = w.Last(best.id);
-                                        if (lm > lb) continue;
-                                        if (lm == lb && (areaIdx.TryGetValue(kv.Key, out int ia) ? ia : 999) >= (areaIdx.TryGetValue(bestArea, out int ib) ? ib : 999)) continue;
+                                        int cm = w.Count(m.id), cb = w.Count(best.id);
+                                        if (cm > cb) continue;
+                                        if (cm == cb)
+                                        {
+                                            int lm = w.Last(m.id), lb = w.Last(best.id);
+                                            if (lm > lb) continue;
+                                            if (lm == lb && (areaIdx.TryGetValue(kv.Key, out int ia) ? ia : 999) >= (areaIdx.TryGetValue(bestArea, out int ib) ? ib : 999)) continue;
+                                        }
                                     }
                                 }
                             }
                         }
-                        best = m; bestArea = kv.Key; bestGap = gap;
+                        best = m; bestArea = kv.Key; bestGap = gap; bestH = h; bestExact = exact;
                     }
                 if (best == null) { full.Add(w); continue; }
-                pickW = w; pickM = best; pickArea = bestArea;
+                pickW = w; pickM = best; pickArea = bestArea; pickPiece = bestH;
                 break;
             }
             if (pickW == null) return;
-            pools[pickArea].Remove(pickM);
-            Assign(plan, pickW, pickM, used);
-            worked[pickW] += pickM.hours;
+            Mission done = pickM;
+            if (pickPiece < pickM.hours - 1e-4f)
+            {
+                // UN TROZO: se le da una copia con sus horas; lo que queda sigue en la lista (y es el que aplica el efecto al acabar)
+                done = pickM.Copy(); done.hours = pickPiece; done.piece = true; done.effectPiece = false;
+                pickM.hours -= pickPiece; pickM.piece = true;
+            }
+            else pools[pickArea].Remove(pickM);
+            Assign(plan, pickW, done, used);
+            worked[pickW] += done.hours;
         }
+    }
+
+    /// <summary>Dónde acaba la franja en la que empieza una tarea a las <paramref name="u"/> horas de jornada.</summary>
+    float BlockEnd(float u)
+    {
+        foreach (var b in initiationModel ? NewBlocks : OldBlocks) if (u < b.to - 1e-4f) return b.to;
+        return WorkHours;
     }
 
     // Nunca hecha → la menos hecha → la que hace más días que no hace (y que quepa en lo que le queda de jornada).

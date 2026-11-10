@@ -56,6 +56,9 @@ public static class FoodChain
 
     /// <summary>Lo que da el laboratorio al día para los depredadores de tierra: un lote por jornada (<see cref="CulturedMeatLab.batchGrams"/>).</summary>
     public const float LabKgPerDay = CulturedMeatLab.MachineryGrams / 1000f;
+    /// <summary>(Pruebas) Lo que da el laboratorio, en kg al día, si no es el de verdad (null = <see cref="LabKgPerDay"/>): sin él, los depredadores de tierra
+    /// cazan todo lo que comen y la cadena tiene que subir sus presas.</summary>
+    public static float? LabOverride;
     /// <summary>Lo que necesitan al día los depredadores de tierra, según el plan (lo que se le pide al laboratorio: regla P19).</summary>
     public static float LandNeedKgPerDay { get { Evaluate(); return _landNeed / DaysPerYear; } }
     /// <summary>Parte de lo que necesitan los depredadores de tierra que cubre el alimentador: lo que da el laboratorio entre lo que necesitan todos.</summary>
@@ -190,7 +193,7 @@ public static class FoodChain
                 float land = 0f;
                 foreach (string sp in _land) land += PopulationPlan.Raw(sp) * (Intake.TryGetValue(sp, out float i) ? i : Mass(sp) * 0.05f) * DaysPerYear;
                 _landNeed = land;
-                LabShare = land > 0f ? Mathf.Clamp01(LabKgPerDay * DaysPerYear / land) : 0f;
+                LabShare = land > 0f ? Mathf.Clamp01((LabOverride ?? LabKgPerDay) * DaysPerYear / land) : 0f;
                 // Primero bancos y plantas (no cuestan Animal completos); las presas, solo si con eso no basta.
                 bool changed = false;
                 Dictionary<string, float> demand = Demand(null);
