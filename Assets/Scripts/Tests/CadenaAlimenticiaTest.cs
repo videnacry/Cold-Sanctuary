@@ -58,13 +58,26 @@ public class CadenaAlimenticiaTest : MonoBehaviour, ITestUnit
         TestProbe.Check("los bancos de la escena son los que pide la cadena", Swarm.All.Count(s => s != null && s.kind == SwarmKind.Fish) >= FoodChain.Banks(SwarmKind.Fish) && Swarm.All.Count(s => s != null && s.kind == SwarmKind.Clam) == FoodChain.Banks(SwarmKind.Clam));
 
         // ── 3. ESPECIE NUEVA (hipotética, y se deja todo como estaba) ──
+        // (Berón 2026-11-09, fauna por humanos) El total es K × humanos y cada nivel trófico tiene su parte: con más depredadores, DENTRO de las presas sube
+        // la parte de la cazada y baja la de otras, y el total no cambia. Sin el laboratorio (LabOverride = 0), los lobos cazan todo lo que comen: si no,
+        // el alimentador les cubre la comida (P19) y no hay por qué subir nada.
         float reindeer = PopulationPlan.PerHuman["Reindeer"], hare = PopulationPlan.PerHuman["ArcticHare"], musk = PopulationPlan.PerHuman["MuskOx"], wolves = PopulationPlan.PerHuman["Wolf"];
-        PopulationPlan.PerHuman["Wolf"] = wolves * 20f;   // (×2 ya no: el laboratorio, a medida del techo de depredadores (P19), les cubre esa comida y las presas no tienen por qué subir)
-        PopulationPlan.Groups["PruebaDepredador"] = 1;   // desconocida: sin relaciones, sale sin dieta y no estorba
+        var prey = PopulationPlan.Groups.Keys.Where(s => PopulationPlan.LevelOf(s) == PopulationPlan.Trophic.Prey).ToList();
+        var share0 = PopulationPlan.Shares(PopulationPlan.Groups.Keys);
+        PopulationPlan.PerHuman["Wolf"] = wolves * 20f;
+        PopulationPlan.Groups["PruebaDepredador"] = 1;   // desconocida: sin relaciones, sale sin dieta y no estorba (y obliga a evaluar la cadena otra vez)
         PopulationPlan.PerHuman["PruebaDepredador"] = 0.2f;
+        FoodChain.LabOverride = 0f;
         FoodChain.Evaluate();
-        bool up = PopulationPlan.PerHuman["Reindeer"] > reindeer || PopulationPlan.PerHuman["ArcticHare"] > hare || PopulationPlan.PerHuman["MuskOx"] > musk;
-        TestProbe.Check("con más depredadores suben sus presas, sola", up, $"reno {reindeer:0.00} → {PopulationPlan.PerHuman["Reindeer"]:0.00}, laboratorio {FoodChain.LabShare:P0}");
+        var share1 = PopulationPlan.Shares(PopulationPlan.Groups.Keys);
+        var hunted = new[] { "Reindeer", "ArcticHare", "MuskOx" };
+        bool up = hunted.Any(s => share1[s] > share0[s] + 1e-4f);
+        bool otherDown = prey.Any(s => share1[s] < share0[s] - 1e-4f);
+        int total = PopulationPlan.TotalCap, alloc = PopulationPlan.Allocate(total, PopulationPlan.Groups.Keys, out _).Values.Sum();
+        TestProbe.Check("con más depredadores sube la parte de su presa dentro de las presas, baja la de otras y el total sigue en K × humanos",
+            up && otherDown && alloc == total,
+            $"reno {share0["Reindeer"]:P1} → {share1["Reindeer"]:P1}, liebre {share0["ArcticHare"]:P1} → {share1["ArcticHare"]:P1}, buey {share0["MuskOx"]:P1} → {share1["MuskOx"]:P1} · total {alloc}/{total} · laboratorio {FoodChain.LabShare:P0}");
+        FoodChain.LabOverride = null;
         PopulationPlan.Groups.Remove("PruebaDepredador"); PopulationPlan.PerHuman.Remove("PruebaDepredador");
         PopulationPlan.PerHuman["Wolf"] = wolves; PopulationPlan.PerHuman["Reindeer"] = reindeer; PopulationPlan.PerHuman["ArcticHare"] = hare; PopulationPlan.PerHuman["MuskOx"] = musk;
         FoodChain.Evaluate();
