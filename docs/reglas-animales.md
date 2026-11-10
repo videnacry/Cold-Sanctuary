@@ -129,6 +129,7 @@ Berón: el total de animales de un santuario es **K × los humanos que viven en 
 - **Techo:** la reproducción no pasa de lo que le toca a la especie (`Cap` = `Target`, antes 1,5×) ni del total de la escena (`TotalCap`).
 - **Cada santuario, su total:** santuario 1, 27 humanos (la lista del personal menos Irosene, Lizmibet y Linduarda) × 3 = **81**; santuario 2, 2 × 3 = 6; santuario 3, 1 × 3 = 3. Hoy solo el santuario 1 tiene fauna en su escena. El 2 y el 3 tienen su total, pero sus escenas no tienen animales que repartir (inferido: las aves del Aéreo no las pone `PopulationPlan`).
 - **Fuera del total:** las focas y pingüinos de los icebergs (`IcebergVisitor`), como antes.
+- **El registro `[ECO]`** dice ahora `plan (K × humanos): N/total` y, aparte, lo que no cuenta: las crías de la Cría (osos, focas y pingüinos que crían los humanos), los de los icebergs y las especies que no son del plan (malamutes, insectos). En la ronda 33 eran 137 vivos: los 81 del plan, más Cría, icebergs y 41 insectos (que el santuario 1 va a quitar). El constructor pone los números del plan: pingüinos 24 = 17 + 3 de la Cría + 4 de los icebergs; focas 13 ≈ 8 + 2 + 4 − 1.
 
 **De dónde sale la pirámide.**
 

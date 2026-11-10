@@ -1272,6 +1272,7 @@ public class WorkdayDirector : MonoBehaviour
         // (2026-11-04) LA DE KUSHAL NO LA HACE NADIE POR ÉL: su efecto lo aplica su tarea con E al hacer el último paso
         // (PlayerTaskRunner) o la máquina de virtualización; si la ignora, caduca sin efecto (PlayerWorkday).
         if (!a.worker.clone && a.worker.name == "Player") return;
+        if (!a.mission.effectPiece) return;   // (ronda 33) un trozo de una tarea partida: el efecto lo aplica el trozo que la acaba
         Apply(a.mission, a.worker.name);
         if (a.mission.id == GymProgramming.PlanMissionId && today != null)   // el entrenador deja los planes revisados
             foreach (string l in GymProgramming.Review(a.worker.name, today.day, roster.workers.Where(w => !w.clone).Select(w => w.name))) Debug.Log($"[Entrenador] {a.worker.name} {l}");

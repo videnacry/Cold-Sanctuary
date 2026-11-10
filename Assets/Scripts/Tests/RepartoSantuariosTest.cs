@@ -298,6 +298,40 @@ public class RepartoSantuariosTest : MonoBehaviour, ITestUnit
         TestProbe.Check("el techo de la reproducción es lo que toca con K, no 1,5× un plan viejo", PopulationPlan.Cap("Bear") == PopulationPlan.Target("Bear") && PopulationPlan.Raw("ArcticFox") >= 4);
         Debug.Log($"[Fauna] Santuario 1 ({PopulationPlan.HumansIn(SanctuaryPlacement.Land)} humanos × {PopulationPlan.AnimalsPerHuman}): {string.Join(", ", PopulationPlan.Groups.Keys.Select(s => $"{s} {PopulationPlan.Raw(s)}"))}.");
 
+        // RONDA 33: TAREAS A TROZOS. Las rondas de frutales, la patrulla, el alimentador y el vínculo se pueden partir (de media en media hora) para llenar
+        // los huecos; el quirófano y la veterinaria van enteros.
+        TestProbe.Check("divisibles: rondas de frutales, patrulla, alimentador y vínculo; el quirófano y la veterinaria, no",
+            new WorkRoster.Mission("Huerto", FruitGardener.MissionPrefix + "_3", "", 2f, true).divisible && new[] { "gua_carnivoros", "gua_alimentador", "gua_alimentador_2", "cri_vinculo" }.All(WorkRoster.IsDivisible)
+            && !WorkRoster.IsDivisible("hos_quirofano") && !WorkRoster.IsDivisible("hos_veterinaria"));
+        var cut = new WorkRoster { sanctuaryModel = true, initiationModel = true, useProfessions = false };
+        cut.areas.Add("Huerto"); cut.trainingAreas.Add("Sala de Yoga");
+        WorkRoster.Worker cw = cut.Add("Trozos");
+        var cutDay = new List<WorkRoster.Mission>
+        {
+            new WorkRoster.Mission("Huerto", "hue_suyo", "Lo suyo", 0.5f, true) { owner = "Trozos" },   // (empieza a las 9: le deja 1,5 h hasta las 11)
+            new WorkRoster.Mission("Hospital", "hos_entera", "Entera", 2f, true),
+            new WorkRoster.Mission("Huerto", FruitGardener.MissionPrefix + "_9", "Ronda", 2f, true),
+        };
+        foreach (var cm2 in cutDay) cw.taught.Add(MissionRequirements.KnowledgeKey(cm2.id));
+        cw.taught.Add(WorkRoster.InstructSkill);
+        WorkRoster.DayPlan pcut = cut.Plan(0, cutDay);
+        var roundParts = pcut.Of(cw).Where(a => FruitGardener.IsRound(a.mission.id)).ToList();
+        TestProbe.Check("la ronda se parte para llenar el hueco de 1,5 h de la mañana y la media hora de las 15: 4,5 h, sin clon, y el efecto lo aplica un solo trozo",
+            pcut.clones.Count == 0 && Mathf.Approximately(Worked(pcut, cw), 4.5f) && roundParts.Count == 2 && Mathf.Approximately(roundParts.Sum(a => a.mission.hours), 2f) && roundParts.Count(a => a.mission.effectPiece) == 1,
+            string.Join(" · ", pcut.work.Select(a => $"{a.worker.name} {a.start:0.#} {a.mission.id} {a.mission.hours} h{(a.mission.effectPiece ? "" : " (trozo)")}")));
+        // RONDA 33: los del Marino se inician en la planta nuclear aunque las 6 clases de la hora ya estén llenas con los de la tierra
+        var nuc = new WorkRoster { sanctuaryModel = true, initiationModel = true, useProfessions = false };
+        nuc.trainingAreas.Add("Sala de Yoga");
+        var nucDay = new List<WorkRoster.Mission>();
+        for (int i = 0; i < 6; i++) { nuc.areas.Add("A" + i); nucDay.Add(new WorkRoster.Mission("A" + i, "qui_a" + i, "Riesgo " + i, 1f)); nuc.Add("Tierra" + i); }
+        nucDay.Add(new WorkRoster.Mission(NuclearSite.PlantArea, "pla_operar", "Operar", 1f));
+        nucDay.Add(new WorkRoster.Mission("B", "limp_x", "Limpiar x", 1f)); nucDay.Add(new WorkRoster.Mission("B", "limp_y", "Limpiar y", 1f));   // (sin riesgo: el área B no está vacía)
+        for (int i = 0; i < 2; i++) { WorkRoster.Worker mw = nuc.Add("Mar" + i); mw.home = 1; mw.taught.Add("limp_x"); mw.taught.Add("limp_y"); }   // (saben más: van detrás en la lista de iniciaciones, cuando las 6 clases ya están llenas)
+        WorkRoster.DayPlan pnuc = nuc.Plan(0, nucDay);
+        TestProbe.Check("los del Marino reciben la iniciación de la planta y la hacen ellos, sin clon «por no saber»",
+            pnuc.lessons.Any(l => l.real.area == NuclearSite.PlantArea) && pnuc.work.Any(a => !a.lesson && !a.worker.clone && a.mission.area == NuclearSite.PlantArea) && !pnuc.cloneAreas.Contains(NuclearSite.PlantArea),
+            $"clases {pnuc.lessons.Count}: {string.Join(", ", pnuc.lessons.Select(l => l.real.id))} · clones: {string.Join(", ", pnuc.cloneReasons)}");
+
         // ── 4. Cambia cada día y con los datos ──
         WorkRoster six = Roster(("P0", 2), ("P1", 2), ("P2", 2), ("P3", 2), ("P4", 2), ("P5", 2));
         bool differs = true;
