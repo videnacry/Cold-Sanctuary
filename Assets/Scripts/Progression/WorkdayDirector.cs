@@ -771,6 +771,32 @@ public class WorkdayDirector : MonoBehaviour
         if (area == AreaWork.Hospital) { HospitalStation post = HospitalStation.PostFor(g.name); if (post != null) face = post.transform.position; }
         ActivityPerformer ap = ActivityPerformer.Keep(g, p, face);
         if (ap != null && ap.Doing != null) SetStatus(g, $"{doing} · {ap.Doing}");
+        OutOfFurniture(g);
+    }
+
+    // (2026-11-11) FUERA DEL MUEBLE MIENTRAS TRABAJA: llegaba a 2 m de su puesto con los pies libres, pero al girarse hacia el área y teclear
+    // (brazos y tableta delante) el centro del cuerpo entraba en la mesa (Adonis en «Bloque_Puesto de monitorización 3», Informática; ya en la
+    // ronda 25). Cada 0,3 s: si el centro del cuerpo cae dentro de un sólido, un paso corto (0,15 m) hacia fuera, en horizontal.
+    static readonly Dictionary<GameObject, (Renderer[] rends, float next)> _bodyCheck = new Dictionary<GameObject, (Renderer[], float)>();
+    static int _outLogs;
+    static void OutOfFurniture(GameObject g)
+    {
+        if (!_bodyCheck.TryGetValue(g, out var bc)) bc = (g.GetComponentsInChildren<Renderer>(), 0f);
+        if (Time.time < bc.next) return;
+        bc.next = Time.time + 0.3f; _bodyCheck[g] = bc;
+        Bounds b = default; bool any = false;
+        foreach (Renderer r in bc.rends) { if (r == null || !r.enabled) continue; if (!any) { b = r.bounds; any = true; } else b.Encapsulate(r.bounds); }
+        if (!any) return;
+        foreach (Collider col in Physics.OverlapSphere(b.center, 0.15f, ~0, QueryTriggerInteraction.Ignore))
+        {
+            if (col == null || col.transform.IsChildOf(g.transform) || col is TerrainCollider || col is CharacterController || col.GetComponentInParent<Anima>() != null) continue;
+            if (col.attachedRigidbody != null && !col.attachedRigidbody.isKinematic) continue;
+            Vector3 away = b.center - col.bounds.center; away.y = 0f;
+            if (away.sqrMagnitude < 1e-4f) away = -g.transform.forward;
+            g.transform.position += away.normalized * 0.15f;
+            if (_outLogs++ < 20) Debug.Log($"[Jornada] «{g.name}» tenía el cuerpo dentro de «{col.name}» mientras trabaja: se aparta 0,15 m.");
+            return;
+        }
     }
 
     // ── EL UNIFORME DE LA TAREA (docs/actividades-y-uniformes.md §4): al llegar a su tarea se lo pone; al acabar (libre, la comida, otra
@@ -1203,19 +1229,26 @@ public class WorkdayDirector : MonoBehaviour
         return true;
     }
 
+    /// <summary>El sitio libre más cercano a <paramref name="p"/> (pivote a 1 m del suelo): él mismo si no cae en un mueble; si no, el primero
+    /// libre y con NavMesh en anillos de 1,5, 3 y 4,5 m. Lo usan los puestos de la jornada y (2026-11-11) los sitios de la clase del gimnasio.</summary>
+    public static Vector3 FreeSpot(Vector3 p, float radius = 0.35f)
+    {
+        if (!Solid(p, radius)) return p;
+        for (int ring = 1; ring <= 3; ring++)
+            for (int k = 0; k < 8; k++)
+            {
+                Vector3 q = p + Quaternion.Euler(0f, k * 45f, 0f) * Vector3.forward * (ring * 1.5f);
+                if (!Solid(q, radius) && UnityEngine.AI.NavMesh.SamplePosition(q + Vector3.down, out UnityEngine.AI.NavMeshHit nh, 0.8f, UnityEngine.AI.NavMesh.AllAreas)) return nh.position + Vector3.up;
+            }
+        return p;
+    }
+
     static Vector3 Clear(string area, string who, Vector3 p, float radius = 0.35f)
     {
         if (p == Vector3.zero) return p;
         var key = (area, who);
         if (_clear.TryGetValue(key, out var c) && (c.raw - p).sqrMagnitude < 0.04f) return c.free;
-        Vector3 free = p;
-        if (Solid(p, radius))
-            for (int ring = 1; ring <= 3 && free == p; ring++)
-                for (int k = 0; k < 8; k++)
-                {
-                    Vector3 q = p + Quaternion.Euler(0f, k * 45f, 0f) * Vector3.forward * (ring * 1.5f);
-                    if (!Solid(q, radius) && UnityEngine.AI.NavMesh.SamplePosition(q + Vector3.down, out UnityEngine.AI.NavMeshHit nh, 0.8f, UnityEngine.AI.NavMesh.AllAreas)) { free = nh.position + Vector3.up; break; }
-                }
+        Vector3 free = FreeSpot(p, radius);
         _clear[key] = (p, free);
         return free;
     }

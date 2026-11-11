@@ -99,8 +99,14 @@ public class GymCoach
         Vector3 f = classFacing * Vector3.forward, r = classFacing * Vector3.right;
         Vector3 p = classPoint + f * (2f + 1.2f * (k / 4)) + r * (((k % 4) - 1.5f) * 1.1f);
         if (UnityEngine.AI.NavMesh.SamplePosition(p + Vector3.down, out UnityEngine.AI.NavMeshHit h, 1.2f, UnityEngine.AI.NavMesh.AllAreas) && Mathf.Abs(h.position.y - (p.y - 1f)) < 0.8f) p = h.position + Vector3.up;
-        return p;
+        // (2026-11-11) La rejilla de la clase no mira las máquinas: un sitio caía en «Maquina_Gemelos 2» y Panterilia se metía andando en ella
+        // para calentar (JornadaTest, día 2, 14,15 h). Al sitio libre más cercano; se recuerda por alumno (la clase no se mueve).
+        if (_slots.TryGetValue(k, out var s) && (s.raw - p).sqrMagnitude < 0.04f) return s.free;
+        Vector3 free = WorkdayDirector.FreeSpot(p, 0.4f);
+        _slots[k] = (p, free);
+        return free;
     }
+    readonly Dictionary<int, (Vector3 raw, Vector3 free)> _slots = new Dictionary<int, (Vector3, Vector3)>();
 
     /// <summary>Un fotograma de un alumno en la clase: anda a su sitio de la fila y repite el movimiento del entrenador.</summary>
     public void Attend(GymTrainingSession s)
