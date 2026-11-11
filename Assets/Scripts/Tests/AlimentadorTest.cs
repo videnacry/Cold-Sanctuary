@@ -71,6 +71,9 @@ public class AlimentadorTest : MonoBehaviour, ITestUnit
             TestProbe.Check("la ración cae a unos metros del animal, no en la mano", Vector2.Distance(new Vector2(fi.transform.position.x, fi.transform.position.z), new Vector2(x.transform.position.x, x.transform.position.z)) > 2f);
             TestProbe.Check("la ración es comida de verdad", fi.material == OrganicMaterial.Meat && fi.grams >= 1000f);
             PredatorRound.Report(a, PredatorRound.State.Fed);
+            // (2026-11-11) Al dar de comer al ÚLTIMO de la lista, la lista se renueva y el mismo animal vuelve como pendiente; 2 s después, con
+            // la ración aún en el suelo (sigue con hambre), se le lanzaba otra: «Lobo_paciente … Quedan 4» y «… Quedan 3» seguidas.
+            TestProbe.Check("recién alimentado (la ración aún sin comer) no se le lanza otra aunque siga con hambre", PredatorRound.IsHungry(x) && !PredatorRound.ShouldFeed(x));
             x.hungry = -0.5f; Destroy(fi.gameObject);
             TestProbe.Check("sin hambre no se le da", !PredatorRound.IsHungry(x));
             x.hungry = old;

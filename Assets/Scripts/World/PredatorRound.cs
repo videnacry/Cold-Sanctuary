@@ -74,7 +74,7 @@ public static class PredatorRound
     }
 
     /// <summary>Empieza otra lista ya, aunque falte alguien (solo las pruebas).</summary>
-    public static void NewRound() { _list.Clear(); _nextScan = 0f; }
+    public static void NewRound() { _list.Clear(); _nextScan = 0f; _fedAt.Clear(); }
 
     public static int Left { get { int n = 0; foreach (Entry e in Today()) if (!Done(e)) n++; return n; } }
 
@@ -98,6 +98,7 @@ public static class PredatorRound
     {
         if (e == null) return;
         e.state = s;
+        if (s == State.Fed && e.animal != null) _fedAt[e.animal] = Time.time;
         Debug.Log($"[Alimentador] {e.by}: «{(e.animal != null ? e.animal.name : "?")}» {(s == State.Fed ? "tenía hambre: ración lanzada" : "no tiene hambre: marcado")}. Quedan {Left}.");
     }
 
@@ -109,6 +110,14 @@ public static class PredatorRound
         string msg = $"[Alimentador] «{(e.animal != null ? e.animal.name : "?")}» sigue pendiente: {why} ({e.misses}ª vez).";
         if (e.misses >= 3) Debug.LogWarning(msg); else Debug.Log(msg);
     }
+
+    /// <summary>(2026-11-11) ¿Se le lanza ración? Con hambre y sin una ración reciente: al dar de comer al último, la lista se renueva y el mismo
+    /// animal vuelve; con la primera ración aún en el suelo seguía «con hambre» y se le lanzaba otra (la ración DOBLE, no solo el registro).
+    /// Una ración vale <see cref="RefeedGameHours"/> h de juego; dentro de ese tiempo se marca comprobado.</summary>
+    public static bool ShouldFeed(Animal a) => IsHungry(a) && !(a != null && _fedAt.TryGetValue(a, out float t) && Time.time - t < RefeedSeconds);
+    public const float RefeedGameHours = 4f;
+    static float RefeedSeconds => (TimeController.timeController != null ? TimeController.timeController.SecondsPerGameDay : 3600f) * RefeedGameHours / 24f;
+    static readonly Dictionary<Animal, float> _fedAt = new Dictionary<Animal, float>();
 
     /// <summary>Si se le da de comer al llegar: ¿tiene hambre?</summary>
     public static bool IsHungry(Animal a) => a != null && !a.death && a.hungry > HungryAt;

@@ -86,7 +86,7 @@ public class PredatorFeeder : MonoBehaviour
 
     void Serve(Animal a)
     {
-        if (!PredatorRound.IsHungry(a)) { PredatorRound.Report(_e, PredatorRound.State.Checked); checkedOk++; }
+        if (!PredatorRound.ShouldFeed(a)) { PredatorRound.Report(_e, PredatorRound.State.Checked); checkedOk++; }
         else
         {
             int want = PredatorRound.RationsFor(a.SpeciesName), n = Mathf.Min(want, Rations);
