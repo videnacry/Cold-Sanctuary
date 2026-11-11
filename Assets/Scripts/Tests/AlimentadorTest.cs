@@ -52,6 +52,11 @@ public class AlimentadorTest : MonoBehaviour, ITestUnit
         PredatorRound.NewRound();
         var list = PredatorRound.Today();
         TestProbe.Check("la lista tiene a los depredadores de tierra (oso y lobo, y ni uno del mar)", list.Any(e => e.animal.SpeciesName == "Bear") && list.Any(e => e.animal.SpeciesName == "Wolf") && !list.Any(e => e.animal.SpeciesName == "Orca"), $"{list.Count}");
+        // (2026-11-11) Un ingresado lo alimenta la veterinaria: en la lista de la ronda no se le alcanza nunca y, como la lista solo se renueva
+        // completa, nadie más volvía a comer (tras 12 h de juego: lobos 4 → 1, el oso adulto muerto de inanición; «Lobo_paciente» 20 veces pendiente).
+        var admitted = Object.FindObjectsByType<Animal>(FindObjectsSortMode.None).Where(x => x != null && !x.death && x.Forage != null && x.Forage.eatsPrey && VetCare.Admitted(x)).ToList();
+        TestProbe.Check("un depredador ingresado no entra en la ronda del alimentador (le da de comer la veterinaria)", admitted.All(x => !PredatorRound.Served(x)) && !list.Any(e => VetCare.Admitted(e.animal)),
+            admitted.Count == 0 ? "sin ingresados en la escena" : string.Join(", ", admitted.Select(x => x.name)));
         var a = PredatorRound.Claim("Uno", Vector3.zero); var b = PredatorRound.Claim("Dos", Vector3.zero);
         TestProbe.Check("dos alimentadores no se reservan al mismo", a != null && b != null && a.animal != b.animal);
 

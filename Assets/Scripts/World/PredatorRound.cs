@@ -48,6 +48,10 @@ public static class PredatorRound
     {
         if (a == null || a.death || a.lifeStage == LifeStage.child || a.Forage == null || !a.Forage.eatsPrey) return false;
         if (a.GetComponent<MarineLife>() != null || a.GetComponent<IceInsectLife>() != null || a.GetComponentInParent<CriaFeeder>() != null) return false;
+        // (2026-11-11) NI LOS INGRESADOS: les da de comer la veterinaria (VetCare), en la mano. En la lista no se les alcanzaba nunca («Lobo_paciente»,
+        // 20 veces pendiente) y, como la lista solo se renueva completa, nadie más volvía a comer: en 12 h de juego los lobos pasaron de 4 a 1 y el oso
+        // adulto murió de inanición.
+        if (VetCare.Admitted(a)) return false;
         return Mathf.Abs(a.transform.position.x) <= 250f && Mathf.Abs(a.transform.position.z) <= 250f;   // (fuera, los escenarios de prueba)
     }
 
