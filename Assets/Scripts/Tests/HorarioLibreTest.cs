@@ -313,8 +313,9 @@ public class HorarioLibreTest : MonoBehaviour, ITestUnit
         TestProbe.Check($"{tag}: hay franjas libres en marcha", n > 0, $"{n} franjas");
         if (n == 0) return;
         TestProbe.Check($"{tag}: cada uno llega a su actividad (≥ {need:P0} de los que no atendían una necesidad)", free.Count > 0 && arrived >= need * free.Count, $"{arrived}/{free.Count} llegan" + (late.Length > 0 ? $"; sin llegar: {late}" : "") + (blocked.Length > 0 ? $"; con necesidades: {blocked}" : ""));
-        TestProbe.Check($"{tag}: llegan ANDANDO (o en alfombra), no puestos allí", arrived == 0 || walked >= 0.8f * arrived, $"{walked}/{arrived} andando · {free.Where(r => r.arrived).Sum(r => r.walked):0} m andados, {free.Sum(r => r.flown):0} m en alfombra");
-        TestProbe.Check($"{tag}: y la hacen (postura o gesto en el sitio)", arrived == 0 || performed >= 0.9f * arrived, $"{performed}/{arrived} · media {free.Where(r => r.arrived).Select(r => r.performed).DefaultIfEmpty(0f).Average():0} s haciéndola");
+        TestProbe.Check($"{tag}: llegan ANDANDO (o en alfombra), no puestos allí", arrived == 0 || walked * 5 >= arrived * 4,   // (en enteros: 0,8f × 5 = 4,0000005 y 4/5 —justo el 80 %— fallaba, Buda 2026-11-11)
+            $"{walked}/{arrived} andando · {free.Where(r => r.arrived).Sum(r => r.walked):0} m andados, {free.Sum(r => r.flown):0} m en alfombra");
+        TestProbe.Check($"{tag}: y la hacen (postura o gesto en el sitio)", arrived == 0 || performed * 10 >= arrived * 9, $"{performed}/{arrived} · media {free.Where(r => r.arrived).Select(r => r.performed).DefaultIfEmpty(0f).Average():0} s haciéndola");
         TestProbe.Check($"{tag}: sin saltos ni teletransportes", jumps == 0, $"{jumps}: {string.Join(", ", recs.Where(r => r.jumps > 0).Select(r => r.who))}");
         foreach (var g in recs.GroupBy(r => r.activity)) Log($"{tag} · {g.Key}: {string.Join(", ", g.Select(r => $"{r.who}{(r.arrived ? "✓" : "…")}"))}");
     }
