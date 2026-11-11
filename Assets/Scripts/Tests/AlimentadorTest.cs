@@ -82,16 +82,21 @@ public class AlimentadorTest : MonoBehaviour, ITestUnit
         TestProbe.Check("dos alimentadores no se reservan al mismo", a != null && b != null && a.animal != b.animal);
 
         // ── Con hambre: ración desde lejos; sin hambre: marcado ──
-        if (a != null)
+        // (2026-11-11) Con un DEPREDADOR ADULTO: desde 229c412 la lista lleva también a las crías huérfanas (biberón a 1,5 m y a demanda), y la
+        // reserva más cercana al origen era un polluelo de pingüino: «actual=1,5 esperado=5» y «recién alimentado…» (ronda 49) miraban la cría.
+        PredatorRound.Entry ad = a != null && !PredatorRound.Orphan(a.animal) ? a : b != null && !PredatorRound.Orphan(b.animal) ? b : null;
+        for (int k = 0; ad == null && k < 80; k++) { PredatorRound.Entry c = PredatorRound.Claim("Tres", Vector3.zero); if (c == null) break; if (!PredatorRound.Orphan(c.animal)) ad = c; }
+        TestProbe.Check("hay un depredador adulto en la ronda para probar la ración", ad != null);
+        if (ad != null)
         {
-            Animal x = a.animal; float old = x.hungry;
+            Animal x = ad.animal; float old = x.hungry;
             x.hungry = 0.5f;
             Vector3 from = PredatorRound.StandOff(x, x.transform.position + Vector3.right * 40f);
             TestProbe.Near("se queda a su distancia segura", Vector3.Distance(from, x.transform.position), PredatorRound.SafeDistance(x.SpeciesName), 0.3f);
             FoodItem fi = PredatorRound.Throw(x, 2, from);
             TestProbe.Check("la ración cae a unos metros del animal, no en la mano", Vector2.Distance(new Vector2(fi.transform.position.x, fi.transform.position.z), new Vector2(x.transform.position.x, x.transform.position.z)) > 2f);
             TestProbe.Check("la ración es comida de verdad", fi.material == OrganicMaterial.Meat && fi.grams >= 1000f);
-            PredatorRound.Report(a, PredatorRound.State.Fed);
+            PredatorRound.Report(ad, PredatorRound.State.Fed);
             // (2026-11-11) Al dar de comer al ÚLTIMO de la lista, la lista se renueva y el mismo animal vuelve como pendiente; 2 s después, con
             // la ración aún en el suelo (sigue con hambre), se le lanzaba otra: «Lobo_paciente … Quedan 4» y «… Quedan 3» seguidas.
             TestProbe.Check("recién alimentado (la ración aún sin comer) no se le lanza otra aunque siga con hambre", PredatorRound.IsHungry(x) && !PredatorRound.ShouldFeed(x));
