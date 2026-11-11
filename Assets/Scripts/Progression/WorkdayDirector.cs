@@ -124,7 +124,7 @@ public class WorkdayDirector : MonoBehaviour
         roster.trainingAreas.Clear(); roster.trainingAreas.AddRange(OpenTraining());
         foreach (GameObject c in _clones.Values) if (c != null) Destroy(c);
         _clones.Clear(); _done.Clear(); _started.Clear();
-        _lunched.Clear(); _lunchStocked = false; _heading.Clear();   // [Jornada] la comida de hoy
+        _lunched.Clear(); _lunchStocked = false; _dinnerStocked = false; _heading.Clear();   // [Jornada] la comida de hoy
         ReleaseGym(); _coachDay = int.MinValue;   // las sesiones de gimnasio de ayer
         roster.initiationModel = true; roster.worldCheck = MissionRequirements.Blocked;   // la mañana nueva y los requisitos (docs/jornada-y-rotacion.md)
         // (Berón 2026-11-08) EL REPARTO POR SANTUARIOS: la casa de cada uno (santuario y nivel). Se sube por PODER: quien supera al jefe de su
@@ -265,6 +265,7 @@ public class WorkdayDirector : MonoBehaviour
         for (int i = _initiators.Count - 1; i >= 0; i--) if (_initiators[i].go == null || h >= _initiators[i].until) { if (_initiators[i].go != null) Destroy(_initiators[i].go); _initiators.RemoveAt(i); }
 
         if (!_lunchStocked && h >= WorkRoster.StartHour + WorkRoster.FirstBlock) { _lunchStocked = true; StockLunch(); }   // [Jornada] la comida de las 11:00
+        if (!_dinnerStocked && h >= DinnerHour) { _dinnerStocked = true; StockLunch("cena"); }   // (2026-11-11) y la cena
         if (!_placed) PlaceAtStart(h);
         UpdateInitiator(h);
         foreach (WorkRoster.Worker w in roster.workers)
@@ -828,7 +829,11 @@ public class WorkdayDirector : MonoBehaviour
     readonly HashSet<GameObject> _lunched = new HashSet<GameObject>();
     readonly Dictionary<GameObject, (QueuedSpell s, float t)> _needSince = new Dictionary<GameObject, (QueuedSpell, float)>();
     const float MaxNeed = 240f;   // s de juego: una necesidad que no acaba (no llega a la barra, a los aseos) no lo saca de su puesto para siempre
-    bool _lunchStocked;
+    bool _lunchStocked, _dinnerStocked;
+    /// <summary>(2026-11-11) LA CENA: el servicio vuelve a llenar la barra (INFERIDO: a las 19 h, tras el tiempo libre de la tarde). Solo se reponía
+    /// la comida de las 11 (una ración por persona): el desayuno es en casa, pero por la tarde y la noche la barra estaba vacía y en una partida
+    /// de 12 h el registro se llenaba de «tiene hambre pero no hay comida en ningún sitio» (6 500 avisos, a partir del día 2).</summary>
+    public const float DinnerHour = 19f;
     bool OwnNeeds(GameObject g, string area, string doing)
     {
         ActionQueue q = g.GetComponent<ActionQueue>(); if (q == null) return false;
@@ -856,7 +861,7 @@ public class WorkdayDirector : MonoBehaviour
 
     // [Jornada] LA COMIDA DE LAS 11:00: el servicio del restaurante (misión obligatoria de cada día) deja la carta en la barra con
     // raciones para todo el personal. Sin esto la barra estaba vacía a mediodía y nadie comía («no hay comida en ningún sitio»).
-    void StockLunch()
+    void StockLunch(string meal = "comida")
     {
         RestaurantKitchen rk = FindAnyObjectByType<RestaurantKitchen>();
         if (rk == null || rk.dishes == null || rk.dishes.Length == 0 || today == null || !today.work.Any(a => a.mission.id == "coc_servicio")) return;
@@ -868,7 +873,7 @@ public class WorkdayDirector : MonoBehaviour
             int need = per - d.Have;
             if (need > 0) { rk.Deliver(d.recipe.dishName, null, need); added += need; }
         }
-        Debug.Log($"[Jornada] 11:00 · el servicio deja la comida en la barra: +{added} raciones ({per} de cada uno de {rk.dishes.Length} platillos).");
+        Debug.Log($"[Jornada] {(meal == "cena" ? $"{DinnerHour:00}:00" : "11:00")} · el servicio deja la {meal} en la barra: +{added} raciones ({per} de cada uno de {rk.dishes.Length} platillos).");
     }
 
     // ── PISOS DE YOGA (docs/yoga-pisos.md) ─────────────────────────────────────────────────────
