@@ -341,6 +341,7 @@ public class FruitGardener : MonoBehaviour
     Round _round;
     int _leg, _plant;
     float _until, _targetSince, _startedAt, _boardUntil;
+    int _swimKey = -1; float _swimBest, _swimBestAt; bool _swimDirect;   // (2026-11-11) el vaivén nadando
     Transform _can;
 
     public string MissionId { get; private set; }
@@ -409,7 +410,7 @@ public class FruitGardener : MonoBehaviour
             {
                 // (2026-11-04) Por la PUERTA DEL SUELO: primero lee el panel de máscaras (la luz y la carga de cada estación), luego
                 // entra a las estaciones de hoy (la rotación y las que están en rojo) y al fitoplancton del fondo, que está ahí mismo.
-                TreeLevel gl = t.Top;   // (2026-11-04: por el TECHO, y baja una sola vez)
+                TreeLevel gl = EntryLevel(t);   // (2026-11-04: por el TECHO, y baja una sola vez; 2026-11-11: si el techo cae en una obra, por el suelo)
                 if (gl == null) { EndLeg(); return; }
                 Doing = $"Va al techo de {leg.building} a revisar las máscaras de oxígeno y el fitoplancton";
                 if (t.InRootWater(transform.position)) { _lastLevel = t.LevelAt(transform.position) ?? gl; StartTreeTasks(t, leg, false); return; }
@@ -436,7 +437,14 @@ public class FruitGardener : MonoBehaviour
                 Vector3 d = target - transform.position;
                 SwimBody sb = SwimBody.Of(this);
                 float step = TaskSwimSpeed * Time.deltaTime;
-                if (WaterZone.Underwater(target + Vector3.up * 0.5f)) sb.SwimTo(target, TaskSwimSpeed);
+                // (2026-11-11) SIN VAIVÉN: si en 3 s no se acerca ni medio metro (algo lo empuja de vuelta: David y Gohageneis, 77 m en 20 s para
+                // 2,3 m netos en el tronco de Servicios), deja el cuerpo físico y va derecho por el agua del tronco hasta ese punto.
+                int key = _task * 1000 + _wp;
+                if (key != _swimKey) { _swimKey = key; _swimBest = float.MaxValue; _swimBestAt = Time.time; _swimDirect = false; }
+                float dNow = d.magnitude;
+                if (dNow < _swimBest - 0.5f) { _swimBest = dNow; _swimBestAt = Time.time; }
+                else if (!_swimDirect && Time.time - _swimBestAt > 3f) { _swimDirect = true; Debug.LogWarning($"[Frutales] «{name}» no avanza nadando hacia su tarea {_task + 1} en {leg.building} (a {dNow:0.0} m): va derecho por el agua."); }
+                if (!_swimDirect && WaterZone.Underwater(target + Vector3.up * 0.5f)) sb.SwimTo(target, TaskSwimSpeed);
                 else { sb.Begin(); transform.position += d.normalized * Mathf.Min(step, d.magnitude); }
                 if ((target - transform.position).magnitude < 0.6f) { _wp++; _targetSince = Time.time; }
                 else if (Time.time - _targetSince > ReachTimeout)
@@ -476,9 +484,18 @@ public class FruitGardener : MonoBehaviour
     void StartTreeTasks(ArbolCampos t, Leg leg, bool fromOutside)
     {
         _task = -1;
-        if (fromOutside && t.Top != null) { TreeLevel gl = t.Top; _wps.Clear(); _wps.Add(() => t.World(gl.door) + Vector3.up); _wps.Add(() => t.World(gl.inside) + Vector3.up); }
+        if (fromOutside && EntryLevel(t) != null) { TreeLevel gl = EntryLevel(t); _wps.Clear(); _wps.Add(() => t.World(gl.door) + Vector3.up); _wps.Add(() => t.World(gl.inside) + Vector3.up); }
         Debug.Log($"[Frutales] «{name}» entra en {leg.building} a revisar las máscaras de {leg.masks.Count} puertas y {leg.beds.Count} cortinas de fitoplancton.");
         NextTreeTask(t, leg, keepEntry: fromOutside);
+    }
+
+    /// <summary>(2026-11-11) Por dónde se entra a las tareas del árbol: el techo (el panel de máscaras), salvo que caiga sobre un área EN OBRA
+    /// (<see cref="AreasEnObra.InObra"/>): entonces por la puerta del suelo, sin pisar la obra.</summary>
+    static TreeLevel EntryLevel(ArbolCampos t)
+    {
+        TreeLevel top = t.Top;
+        if (top != null && t.Ground != null && (AreasEnObra.InObra(t.World(top.outside)) || AreasEnObra.InObra(t.World(top.door)))) return t.Ground;
+        return top;
     }
 
     TreeLevel LevelOf(ArbolCampos t, MaskStation m)
@@ -517,6 +534,7 @@ public class FruitGardener : MonoBehaviour
             for (int i = 2; i < p.Count - 2; i++) { Vector3 l = p[i]; _wps.Add(() => t.World(l) + Vector3.up * ph); }
         }
         if (to != null) _lastLevel = to;
+        Doing = _task < leg.masks.Count ? $"Nada a la puerta de {to?.name ?? "su nivel"} ({_task + 1}/{leg.masks.Count}, {leg.building}) a revisar sus máscaras" : $"Baja nadando al fitoplancton del fondo de {leg.building}";   // (2026-11-11: seguía «Lee el panel» todo el nado)
         if (_task < leg.masks.Count) { MaskStation m = leg.masks[_task]; _wps.Add(() => m != null ? m.SwimPoint + Vector3.down * 0.7f : transform.position); }
         else
         {

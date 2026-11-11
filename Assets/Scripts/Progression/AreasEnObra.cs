@@ -40,6 +40,16 @@ public static class AreasEnObra
     public static List<WorkRoster.Mission> Filter(IEnumerable<WorkRoster.Mission> todays, ICollection<string> enObra)
         => todays.Where(m => !enObra.Contains(WorkRoster.AreaGroup(m.area)) || KeepsWhileEnObra(m)).ToList();
 
+    /// <summary>(2026-11-11) ¿Cae <paramref name="p"/> sobre un área EN OBRA (una obra sin acabar)? Ahí no va nadie más que la obra: ni rondas ni
+    /// actividades (Goluis, David y Gohageneis daban vueltas en «Sala de asambleas», ya en obra). El agua del tronco de un árbol es de todos, no del piso.</summary>
+    public static bool InObra(Vector3 p)
+    {
+        foreach (ArbolCampos t in ArbolCampos.All) if (t != null && t.InRootWater(p)) return false;
+        foreach (ConstructionProject cp in ConstructionProject.All)
+            if (cp != null && !cp.Finished && cp.TryGetComponent(out SanctuaryArea a) && a.Contains(p, 0.5f)) return true;
+        return false;
+    }
+
     /// <summary>Turnos de 2 h del equipo de la obra para un área de <paramref name="areaHours"/> h al día: con la hora de material, tantas horas como el área.</summary>
     public static int CrewFor(float areaHours) => System.Math.Max(1, Mathf.RoundToInt((areaHours - 1f) / 2f));
 
