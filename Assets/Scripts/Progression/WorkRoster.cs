@@ -162,8 +162,8 @@ public class WorkRoster
 
     /// <summary>LAS DIVISIBLES (Berón 2026-11-09, ronda 33): las rondas de frutales (sus tramos ya son de ≤ 1 h: FruitGardener.TreeStretches), la patrulla,
     /// el alimentador y el vínculo con una cría. El quirófano y la veterinaria, no: van enteros.</summary>
-    public static readonly HashSet<string> DivisibleIds = new HashSet<string> { "gua_carnivoros", "gua_alimentador", "gua_alimentador_2", "cri_vinculo" };
-    public static bool IsDivisible(string id) => id != null && (DivisibleIds.Contains(id) || FruitGardener.IsRound(id));
+    public static readonly HashSet<string> DivisibleIds = new HashSet<string> { "gua_carnivoros", "gua_alimentador", "gua_alimentador_2", "cri_vinculo", "huv_cosecha" };
+    public static bool IsDivisible(string id) => id != null && (DivisibleIds.Contains(id) || FruitGardener.IsRound(id) || id.StartsWith("prep_"));   // (ronda 35: la cosecha del huerto vertical y las elaboraciones de la cocina también)
     /// <summary>El trozo más pequeño de una tarea divisible (h).</summary>
     public const float MinPiece = 0.5f;
 
@@ -216,7 +216,10 @@ public class WorkRoster
     /// <summary>¿Puede iniciar a otros en esta tarea? La Magnate, siempre (por eso no sale aquí): ella es el último recurso.</summary>
     public bool CanInitiate(Worker w, Mission m) => !w.clone && w.taught.Contains(InstructSkill) && Learned(w, m);
     /// <summary>Lo que le cabe de iniciación hoy: su primer día (entró después del primer reparto), toda la jornada; luego, la mitad.</summary>
-    public float InitiationCap(Worker w, int day) => w.joined == day && day > _firstDay ? WorkHours : InitiationHalf;
+    public float InitiationCap(Worker w, int day) => (w.joined == day && day > _firstDay) || RemoteLearner(w) ? WorkHours : InitiationHalf;
+    /// <summary>(ronda 35) Quien pasa el día en el Marino o el Aéreo se inicia en todo lo de su sitio el primer día que haga falta, la jornada entera si hace
+    /// falta: allí solo están ellos, y si no lo saben todo, lo de su sitio lo hacen clones «por no saber».</summary>
+    bool RemoteLearner(Worker w) => sanctuaryModel && _place.TryGetValue(w, out var p) && p.sanctuary != SanctuaryPlacement.Land;
     /// <summary>Requisitos del mundo: el motivo por el que no se puede hacer hoy, o null.</summary>
     public System.Func<Mission, string> worldCheck;
 
@@ -657,77 +660,120 @@ public class WorkRoster
     // frutales, servicio, guardias, obras) ya no cabían en nadie y salían 21 clones con humanos ociosos («Faltan misiones: 14 h»).
     void SharedRounds(DayPlan plan, Dictionary<string, List<Mission>> pools, List<Worker> staff, Dictionary<Worker, float> used)
     {
+        // (ronda 35) EN LOS HUECOS DE VERDAD: cada uno tiene sus tramos libres (sus franjas menos lo que ya hace: clases, grupos, puestos y las horas en que
+        // inicia). Antes se colocaba siempre detrás de lo último (used), y los huecos que dejaban un grupo a las 12 o una clase se perdían: humanos con 1–2 h
+        // libres y clones «sin hueco de 0,5 h».
         var worked = staff.ToDictionary(w => w, w => 0f);
         foreach (Assignment a in plan.work) if (worked.ContainsKey(a.worker)) worked[a.worker] += a.mission.hours;
+        var free = staff.ToDictionary(w => w, w => FreeIntervals(plan, w));
         var areaIdx = new Dictionary<string, int>();
         for (int i = 0; i < plan.areaOrder.Count; i++) areaIdx[plan.areaOrder[i]] = i;
         var full = new HashSet<Worker>();
         for (int guard = 0; guard < 5000; guard++)
         {
-            Worker pickW = null; Mission pickM = null; string pickArea = null; float pickPiece = 0f;
+            Worker pickW = null; Mission pickM = null; string pickArea = null; float pickH = 0f, pickAt = 0f;
             foreach (Worker w in staff.Where(x => !full.Contains(x)).OrderBy(x => worked[x]))
             {
-                Mission best = null; string bestArea = null; float bestGap = 0f, bestH = 0f; bool bestExact = false;
+                Mission best = null; string bestArea = null; float bestH = 0f, bestAt = 0f; bool bestExact = false;
                 foreach (var kv in pools)
                     foreach (Mission m in kv.Value)
                     {
                         if ((IsNewcomer(w, plan.day) && m.lead) || !Qualified(w, m) || !Allowed(w, m)) continue;
                         if (w.name == "Player" && FruitGardener.IsRound(m.id)) continue;   // (la ronda de frutales la lleva FruitGardener, que no mueve al jugador)
-                        float h = m.hours;
-                        float u = PlaceFor(w, used[w], h, out float at);
-                        // (ronda 33) UNA DIVISIBLE QUE NO CABE ENTERA: el trozo más grande (de media en media hora) que le quepa; el resto sigue en la lista
-                        // y si entera solo cabe dejando un hueco, el trozo que llena justo lo que le queda de su franja (sin hueco)
-                        if (m.divisible && (u < 0f || u - used[w] > 1e-4f))
+                        // El mejor tramo para ella: uno que llene justa (entera o, si es divisible, un trozo); si no, el más largo que quepa.
+                        float h = -1f, at = -1f; bool exact = false;
+                        foreach (var t in free[w])
                         {
-                            float room = BlockEnd(used[w]) - used[w], p0 = (float)System.Math.Floor(System.Math.Min(room, m.hours - MinPiece) / MinPiece) * MinPiece;
-                            if (p0 >= MinPiece - 1e-4f && System.Math.Abs(PlaceFor(w, used[w], p0, out float at0) - used[w]) < 1e-4f) { h = p0; u = used[w]; at = at0; }
+                            float len = t.to - t.from;
+                            float hh = m.hours <= len + 1e-4f ? m.hours : m.divisible ? (float)System.Math.Floor(System.Math.Min(len, m.hours - MinPiece) / MinPiece + 1e-4f) * MinPiece : -1f;
+                            if (hh < MinPiece - 1e-4f && hh < m.hours - 1e-4f) continue;
+                            if (hh <= 0f) continue;
+                            if (FarAfterLunch(w, m.area, Clock(t.from))) continue;
+                            bool ex = System.Math.Abs(hh - len) < 1e-4f;
+                            bool better = h < 0f || (ex && !exact) || (ex == exact && hh > h + 1e-4f);
+                            if (better) { h = hh; at = t.from; exact = ex; }
                         }
-                        if (u < 0f && m.divisible)
-                            for (h = System.Math.Min(m.hours - MinPiece, 2f); h >= MinPiece - 1e-4f; h -= MinPiece) { u = PlaceFor(w, used[w], h, out at); if (u >= 0f) break; }
-                        if (u < 0f || FarAfterLunch(w, m.area, at)) continue;
-                        float gap = u - used[w];
-                        bool exact = System.Math.Abs(u + h - BlockEnd(u)) < 1e-4f;   // (llena su franja justa: no deja medias horas sueltas)
+                        if (h <= 0f) continue;
                         if (best != null)
                         {
-                            if (gap > bestGap + 1e-4f) continue;
-                            if (System.Math.Abs(gap - bestGap) < 1e-4f)
+                            if (!exact && bestExact) continue;
+                            if (exact == bestExact)
                             {
-                                if (!exact && bestExact) continue;
-                                if (exact == bestExact)
+                                if (h < bestH - 1e-4f) continue;
+                                if (System.Math.Abs(h - bestH) < 1e-4f)
                                 {
-                                    if (h < bestH - 1e-4f) continue;
-                                    if (System.Math.Abs(h - bestH) < 1e-4f)
+                                    // (a igualdad, primero la que no se puede partir: tiene menos sitios donde caber; la divisible llena lo que quede)
+                                    if (m.divisible && !best.divisible) continue;
+                                    if (m.divisible == best.divisible) {
+                                    int cm = w.Count(m.id), cb = w.Count(best.id);
+                                    if (cm > cb) continue;
+                                    if (cm == cb)
                                     {
-                                        int cm = w.Count(m.id), cb = w.Count(best.id);
-                                        if (cm > cb) continue;
-                                        if (cm == cb)
-                                        {
-                                            int lm = w.Last(m.id), lb = w.Last(best.id);
-                                            if (lm > lb) continue;
-                                            if (lm == lb && (areaIdx.TryGetValue(kv.Key, out int ia) ? ia : 999) >= (areaIdx.TryGetValue(bestArea, out int ib) ? ib : 999)) continue;
-                                        }
+                                        int lm = w.Last(m.id), lb = w.Last(best.id);
+                                        if (lm > lb) continue;
+                                        if (lm == lb && (areaIdx.TryGetValue(kv.Key, out int ia) ? ia : 999) >= (areaIdx.TryGetValue(bestArea, out int ib) ? ib : 999)) continue;
+                                    }
                                     }
                                 }
                             }
                         }
-                        best = m; bestArea = kv.Key; bestGap = gap; bestH = h; bestExact = exact;
+                        best = m; bestArea = kv.Key; bestH = h; bestAt = at; bestExact = exact;
                     }
                 if (best == null) { full.Add(w); continue; }
-                pickW = w; pickM = best; pickArea = bestArea; pickPiece = bestH;
+                pickW = w; pickM = best; pickArea = bestArea; pickH = bestH; pickAt = bestAt;
                 break;
             }
             if (pickW == null) return;
             Mission done = pickM;
-            if (pickPiece < pickM.hours - 1e-4f)
+            if (pickH < pickM.hours - 1e-4f)
             {
                 // UN TROZO: se le da una copia con sus horas; lo que queda sigue en la lista (y es el que aplica el efecto al acabar)
-                done = pickM.Copy(); done.hours = pickPiece; done.piece = true; done.effectPiece = false;
-                pickM.hours -= pickPiece; pickM.piece = true;
+                done = pickM.Copy(); done.hours = pickH; done.piece = true; done.effectPiece = false;
+                pickM.hours -= pickH; pickM.piece = true;
             }
             else pools[pickArea].Remove(pickM);
-            Assign(plan, pickW, done, used);
+            AssignAt(plan, pickW, done, pickAt, used);
             worked[pickW] += done.hours;
+            free[pickW] = FreeIntervals(plan, pickW);
         }
+    }
+
+    /// <summary>Los tramos libres de <paramref name="w"/> hoy, en horas de jornada: sus franjas menos lo que ya tiene (tareas, clases, grupos) y las horas en
+    /// que inicia a otros. Solo los de media hora o más.</summary>
+    List<(float from, float to)> FreeIntervals(DayPlan plan, Worker w)
+    {
+        var taken = new List<(float from, float to)>();
+        foreach (Assignment a in plan.work) if (a.worker == w) { float s = Jornada(a.start); if (s >= 0f) taken.Add((s, s + a.mission.hours)); }
+        if (_busy.TryGetValue(w, out var b)) foreach (int k in b) taken.Add((k, k + 1f));
+        taken.Sort((x, y) => x.from.CompareTo(y.from));
+        var l = new List<(float from, float to)>();
+        foreach (var blk in initiationModel ? NewBlocks : OldBlocks)
+        {
+            float cur = blk.from;
+            foreach (var t in taken)
+            {
+                if (t.to <= cur + 1e-4f || t.from >= blk.to - 1e-4f) continue;
+                if (t.from > cur + 1e-4f) l.Add((cur, System.Math.Min(t.from, blk.to)));
+                cur = System.Math.Max(cur, t.to);
+            }
+            if (blk.to > cur + 1e-4f) l.Add((cur, blk.to));
+        }
+        l.RemoveAll(t => t.to - t.from < MinPiece - 1e-4f);
+        return l;
+    }
+
+    /// <summary>La hora de reloj de unas horas de jornada, y al revés (-1 si cae fuera de las franjas).</summary>
+    float Clock(float u) { foreach (var b in initiationModel ? NewBlocks : OldBlocks) if (u >= b.from - 1e-4f && u < b.to - 1e-4f) return b.clock + u - b.from; return -1f; }
+    float Jornada(float clock) { foreach (var b in initiationModel ? NewBlocks : OldBlocks) if (clock >= b.clock - 1e-4f && clock < b.clock + (b.to - b.from) - 1e-4f) return b.from + clock - b.clock; return -1f; }
+
+    /// <summary>Le da <paramref name="m"/> a <paramref name="w"/> a las <paramref name="u"/> horas de jornada (en un tramo suyo libre).</summary>
+    void AssignAt(DayPlan plan, Worker w, Mission m, float u, Dictionary<Worker, float> used)
+    {
+        var a = new Assignment { worker = w, mission = m, start = Clock(u), firstTime = initiationModel ? !Learned(w, m) : !w.Knows(m.id) };
+        plan.work.Add(a);
+        used[w] = System.Math.Max(used[w], u + m.hours);
+        w.count[m.id] = w.Count(m.id) + 1;
+        w.lastDay[m.id] = plan.day;
     }
 
     /// <summary>Dónde acaba la franja en la que empieza una tarea a las <paramref name="u"/> horas de jornada.</summary>
