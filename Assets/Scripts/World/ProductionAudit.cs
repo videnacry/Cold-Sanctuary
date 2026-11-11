@@ -14,7 +14,12 @@ public static class ProductionAudit
     public class Stage
     {
         public string label, prefix; public float perUnit;
+        /// <summary>(2026-11-11) Etiqueta y capacidad que dependen de la maquinaria construida (los litros de los biorreactores).</summary>
+        public System.Func<string> labelF; public System.Func<float> perF;
         public Stage(string label, string prefix, float perUnit) { this.label = label; this.prefix = prefix; this.perUnit = perUnit; }
+        public Stage(System.Func<string> label, string prefix, System.Func<float> perUnit) { labelF = label; this.prefix = prefix; perF = perUnit; }
+        public string Label => labelF != null ? labelF() : label;
+        public float PerUnit => perF != null ? perF() : perUnit;
     }
 
     public class Line
@@ -35,16 +40,24 @@ public static class ProductionAudit
         public override string ToString() => $"{area}: {product}: pide {demand:0.#} {unit}/día, da {capacity:0.#} ({bottleneck}) {(Ok ? "bien" : "FALTA MAQUINARIA")}";
     }
 
+    /// <summary>La carne al día del PLAN de depredadores de tierra (PopulationPlan.Cap, que escala con K × humanos) × lo que come cada uno.</summary>
+    public static float PlannedPredatorKg()
+    {
+        float plan = 0f;
+        foreach (string sp in new[] { "Bear", "Wolf", "ArcticFox" }) plan += PopulationPlan.Cap(sp) * (FoodChain.Intake.TryGetValue(sp, out float i) ? i : 1f);
+        return plan;
+    }
+
     /// <summary>Lo que necesitan al día los depredadores de tierra: el censo real en Play y, al construir, el plan.</summary>
     public static float PredatorKgPerDay()
     {
         // Para el techo de reproducción (1,5×), no para los que hay hoy: la maquinaria tiene que aguantar lo que pueden llegar a ser. Si el censo real lo pasa, manda el censo.
-        float plan = 0f;
-        foreach (string sp in new[] { "Bear", "Wolf", "ArcticFox" }) plan += PopulationPlan.Cap(sp) * (FoodChain.Intake.TryGetValue(sp, out float i) ? i : 1f);
+        float plan = PlannedPredatorKg();
         if (!Application.isPlaying) return plan;
         float kg = 0f;
         foreach (Animal a in Object.FindObjectsByType<Animal>(FindObjectsSortMode.None))
-            if (PredatorRound.Served(a)) kg += FoodChain.Intake.TryGetValue(a.SpeciesName, out float i) ? i : 1f;
+            if (PredatorRound.Served(a) && !PredatorRound.Orphan(a)) kg +=   // (2026-11-11) las crías huérfanas toman biberón, no carne: contadas, la demanda subió a 76,5 kg (ronda 49)
+                FoodChain.Intake.TryGetValue(a.SpeciesName, out float i) ? i : 1f;
         return Mathf.Max(plan, kg);
     }
 
@@ -52,8 +65,8 @@ public static class ProductionAudit
     public static readonly Line[] Lines =
     {
         new Line { area = "Carne Cultivada", product = "carne cultivada", unit = "kg", demand = () => PredatorKgPerDay() + 2f, stages = new[] {
-            new Stage("biorreactores de 500 L", "Biorreactor_produccion", CulturedMeatLab.ReactorLitres * CulturedMeatLab.GramsPerLitre / 1000f),
-            new Stage("perfusión con andamio", "Biorreactor_andamio", CulturedMeatLab.ScaffoldKg),
+            new Stage(() => $"biorreactores de {CulturedMeatLab.ReactorLitres:0} L", "Biorreactor_produccion", () => CulturedMeatLab.ReactorLitres * CulturedMeatLab.GramsPerLitre / 1000f),
+            new Stage(() => "perfusión con andamio", "Biorreactor_andamio", () => CulturedMeatLab.ScaffoldKg),
             new Stage("centrífugas", "Centrifuga", 40f), new Stage("formadoras", "Formadora", 40f) } },
         new Line { area = "Cocina", product = "comidas", unit = "comidas", demand = () => PopulationPlan.Humans * 3f, stages = new[] { new Stage("equipos de cocina", "Equipo_", 10f) } },
         // (2026-11-08) Para las 32 personas planeadas (PopulationPlan.People): los bancales del Árbol y los estantes LED del Huerto vertical (VerticalFarm).
@@ -80,8 +93,8 @@ public static class ProductionAudit
         r.capacity = float.MaxValue;
         foreach (Stage s in l.stages)
         {
-            float cap = Count(s.prefix) * s.perUnit;
-            if (cap < r.capacity) { r.capacity = cap; r.bottleneck = s.label; }
+            float cap = Count(s.prefix) * s.PerUnit;
+            if (cap < r.capacity) { r.capacity = cap; r.bottleneck = s.Label; }
         }
         return r;
     }

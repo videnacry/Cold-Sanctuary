@@ -29,11 +29,28 @@ public class CulturedMeatLab : MonoBehaviour
     public double seedCells = 1e9;          // un vial del banco
     public double cellsPerGram = 2.5e8;     // músculo: ≈ 2–3·10⁸ células por gramo
     /// <summary>Lo que da cada máquina (regla P19, docs/produccion-maquinaria.md): 10⁷ células/mL ÷ <see cref="cellsPerGram"/> = 40 g por litro.</summary>
-    public const float ReactorLitres = 500f, GramsPerLitre = 40f, ScaffoldKg = 12f;   // (perfusión en dos alturas)
+    // (2026-11-11) LA MAQUINARIA SE DIMENSIONA CON EL PLAN (fauna = K × humanos, PopulationPlan): tres biorreactores de producción del tamaño
+    // estándar más pequeño que da la carne del plan (500, 750, 1000 o 1500 L; más grandes no caben a 2 m) y seis unidades de perfusión con las
+    // alturas que hagan falta (2 a 4, de 6 kg cada una). Se decide al montar el laboratorio (Build) y queda en el laboratorio construido; sin él,
+    // lo que daría el plan. Antes: 500 L y dos alturas fijos (60 kg).
+    public const float GramsPerLitre = 40f, ScaffoldKgPerLevel = 6f;
     public const int ProductionReactors = 3, Scaffolds = 6;
+    public static readonly float[] StandardLitres = { 500f, 750f, 1000f, 1500f };
+    /// <summary>La carne al día que pide el plan de los depredadores de tierra (más 2 kg de margen, como la línea de producción).</summary>
+    public static float PlannedKgPerDay => ProductionAudit.PlannedPredatorKg() + 2f;
+    public static float LitresFor(float kg) { foreach (float l in StandardLitres) if (ProductionReactors * l * GramsPerLitre / 1000f >= kg) return l; return StandardLitres[StandardLitres.Length - 1]; }
+    public static int LevelsFor(float kg) => Mathf.Clamp(Mathf.CeilToInt(kg / (Scaffolds * ScaffoldKgPerLevel)), 2, 4);
+    public static float GramsOf(float litres, int levels) => Mathf.Min(ProductionReactors * litres * GramsPerLitre, Scaffolds * levels * ScaffoldKgPerLevel * 1000f);
+    [Tooltip("Litros de cada biorreactor de producción (lo fija Build con el plan).")] public float reactorLitres = 500f;
+    [Tooltip("Alturas de cada unidad de perfusión (lo fija Build con el plan).")] public int scaffoldLevels = 2;
+    static CulturedMeatLab BuiltLab { get { foreach (CulturedMeatLab l in All) if (l != null) return l; return Object.FindAnyObjectByType<CulturedMeatLab>(); } }
+    /// <summary>Litros de cada biorreactor de producción: los del laboratorio construido; sin él, los del plan.</summary>
+    public static float ReactorLitres { get { CulturedMeatLab b = BuiltLab; return b != null ? b.reactorLitres : LitresFor(PlannedKgPerDay); } }
+    /// <summary>Kg al día de cada unidad de perfusión (sus alturas × 6 kg).</summary>
+    public static float ScaffoldKg { get { CulturedMeatLab b = BuiltLab; return (b != null ? b.scaffoldLevels : LevelsFor(PlannedKgPerDay)) * ScaffoldKgPerLevel; } }
     /// <summary>El lote que permite la maquinaria: la etapa más corta.</summary>
-    public const float MachineryGrams = (ProductionReactors * ReactorLitres * GramsPerLitre < Scaffolds * ScaffoldKg * 1000f) ? ProductionReactors * ReactorLitres * GramsPerLitre : Scaffolds * ScaffoldKg * 1000f;
-    public float batchGrams = MachineryGrams;   // 32 kg por lote → 64 raciones de 500 g
+    public static float MachineryGrams => GramsOf(ReactorLitres, Mathf.RoundToInt(ScaffoldKg / ScaffoldKgPerLevel));
+    public float batchGrams = 60000f;   // (lo fija Build: GramsOf de su maquinaria; 60 kg = 3 × 500 L, dos alturas)
     public int maxPortionsWaiting = 160;
     /// <summary>Raciones en el almacén, listas para el alimentador (<see cref="PredatorRound"/>).</summary>
     public int rationsStored;
@@ -208,12 +225,14 @@ public class CulturedMeatLab : MonoBehaviour
         // 4 · Biorreactores de tanque agitado: semilla (pequeño) y producción (grande), con camisa, sensores y agitador.
         Bioreactor(r, "Biorreactor_semilla", new Vector3(-3.2f, 0f, -hz + 1.4f), 0.45f, 1.2f, glass, broth, steel, dark);
         L(r.Find("Biorreactor_semilla"), "Biorreactor semilla (50 L, microportadores)", 1.9f);
-        Bioreactor(r, "Biorreactor_produccion", new Vector3(1.4f, 0f, -hz + 1.6f), 0.8f, 2.1f, glass, broth, steel, dark);
-        L(r.Find("Biorreactor_produccion"), "Biorreactor de producción (500 L · 37 °C · pH 7,3 · O₂)", 2.9f);
-        Bioreactor(r, "Biorreactor_produccion_2", new Vector3(5.75f, 0f, -hz + 1.6f), 0.8f, 2.1f, glass, broth, steel, dark);   // regla P19: la demanda pide tres
-        L(r.Find("Biorreactor_produccion_2"), "Biorreactor de producción 2 (500 L)", 2.9f);
-        Bioreactor(r, "Biorreactor_produccion_3", new Vector3(-1f, 0f, -4f), 0.8f, 2.1f, glass, broth, steel, dark);
-        L(r.Find("Biorreactor_produccion_3"), "Biorreactor de producción 3 (500 L)", 2.9f);
+        float plannedKg = PlannedKgPerDay, litres = LitresFor(plannedKg); int levels = LevelsFor(plannedKg);
+        float k3 = Mathf.Pow(litres / 500f, 1f / 3f), rad = 0.8f * k3, tall = 2.1f * k3;   // (mismas proporciones; a 1500 L, 1,15 m de radio: 2 m libres entre ellos)
+        Bioreactor(r, "Biorreactor_produccion", new Vector3(1.4f, 0f, -hz + 1.6f), rad, tall, glass, broth, steel, dark);
+        L(r.Find("Biorreactor_produccion"), $"Biorreactor de producción ({litres:0} L · 37 °C · pH 7,3 · O₂)", tall + 0.8f);
+        Bioreactor(r, "Biorreactor_produccion_2", new Vector3(5.75f, 0f, -hz + 1.6f), rad, tall, glass, broth, steel, dark);   // regla P19: la demanda pide tres
+        L(r.Find("Biorreactor_produccion_2"), $"Biorreactor de producción 2 ({litres:0} L)", tall + 0.8f);
+        Bioreactor(r, "Biorreactor_produccion_3", new Vector3(-1f, 0f, -4f), rad, tall, glass, broth, steel, dark);
+        L(r.Find("Biorreactor_produccion_3"), $"Biorreactor de producción 3 ({litres:0} L)", tall + 0.8f);
 
         // 5 · Biorreactor de perfusión con andamio (diferenciación en fibras, con estiramiento).
         for (int u = 0; u < Scaffolds; u++)   // regla P19: seis unidades, en dos alturas
@@ -222,6 +241,7 @@ public class CulturedMeatLab : MonoBehaviour
         KitchenProps.C(perf, new Vector3(0f, 0.45f, 0f), new Vector3(1.8f, 0.9f, 1f), steel, 0f, "Base");
         KitchenProps.C(perf, new Vector3(0f, 1.1f, 0f), new Vector3(1.7f, 0.4f, 0.9f), glass, 0f, "Camara");
         KitchenProps.C(perf, new Vector3(0f, 1.65f, 0f), new Vector3(1.7f, 0.4f, 0.9f), glass, 0f, "Camara_alta");
+        for (int lv = 2; lv < levels; lv++) KitchenProps.C(perf, new Vector3(0f, 1.1f + 0.55f * lv, 0f), new Vector3(1.7f, 0.4f, 0.9f), glass, 0f, $"Camara_alta_{lv}");   // (2026-11-11) más alturas si el plan las pide
         for (int i = 0; i < 6; i++)   // tiras de andamio con el tejido creciendo
             KitchenProps.C(perf, new Vector3(-0.7f + i * 0.28f, 1.05f, 0f), new Vector3(0.12f, 0.06f, 0.75f), new Color(0.85f, 0.55f, 0.5f), 0f, "Andamio_tejido");
         KitchenProps.C(perf, new Vector3(-0.95f, 1.1f, 0f), new Vector3(0.1f, 0.3f, 0.8f), dark, 0f, "Estirador");
@@ -257,7 +277,9 @@ public class CulturedMeatLab : MonoBehaviour
 
         CulturedMeatLab lab = r.gameObject.AddComponent<CulturedMeatLab>();
         lab.feeder = feeder;
-        lab.batchGrams = MachineryGrams;
+        lab.reactorLitres = litres; lab.scaffoldLevels = levels;
+        lab.batchGrams = GramsOf(litres, levels);
+        Debug.Log($"[Carne cultivada] Maquinaria para el plan ({plannedKg:0.#} kg/día): {ProductionReactors} biorreactores de {litres:0} L y {Scaffolds} perfusiones de {levels} alturas → {lab.batchGrams / 1000f:0.#} kg por lote.");
         lab.console = con.gameObject.AddComponent<WorldLabel>(); lab.console.height = 2f; lab.console.text = "Carne cultivada";
         return lab;
     }

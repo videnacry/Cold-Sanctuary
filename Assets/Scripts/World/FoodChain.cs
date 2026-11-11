@@ -55,7 +55,7 @@ public static class FoodChain
     };
 
     /// <summary>Lo que da el laboratorio al día para los depredadores de tierra: un lote por jornada (<see cref="CulturedMeatLab.batchGrams"/>).</summary>
-    public const float LabKgPerDay = CulturedMeatLab.MachineryGrams / 1000f;
+    public static float LabKgPerDay => CulturedMeatLab.MachineryGrams / 1000f;   // (2026-11-11: la maquinaria se dimensiona con el plan)
     /// <summary>(Pruebas) Lo que da el laboratorio, en kg al día, si no es el de verdad (null = <see cref="LabKgPerDay"/>): sin él, los depredadores de tierra
     /// cazan todo lo que comen y la cadena tiene que subir sus presas.</summary>
     public static float? LabOverride;
