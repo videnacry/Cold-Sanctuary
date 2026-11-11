@@ -332,6 +332,33 @@ public class RepartoSantuariosTest : MonoBehaviour, ITestUnit
             pnuc.lessons.Any(l => l.real.area == NuclearSite.PlantArea) && pnuc.work.Any(a => !a.lesson && !a.worker.clone && a.mission.area == NuclearSite.PlantArea) && !pnuc.cloneAreas.Contains(NuclearSite.PlantArea),
             $"clases {pnuc.lessons.Count}: {string.Join(", ", pnuc.lessons.Select(l => l.real.id))} · clones: {string.Join(", ", pnuc.cloneReasons)}");
 
+        // RONDA 35: los huecos de verdad. Una clase a las 9 y un grupo a las 12 dejaban libre 10–11, y nada volvía atrás a llenarlo: ahora sí.
+        var gapR = new WorkRoster { sanctuaryModel = true, initiationModel = true, useProfessions = false };
+        gapR.areas.Add("A"); gapR.trainingAreas.Add("Sala de Yoga");
+        var gapDay = new List<WorkRoster.Mission>
+        {
+            new WorkRoster.Mission("A", "x_nueva", "Nueva", 1f), new WorkRoster.Mission("A", "y_1", "Y1", 1f), new WorkRoster.Mission("A", "y_2", "Y2", 1f), new WorkRoster.Mission("A", "y_3", "Y3", 1f),
+            new WorkRoster.Mission("A", "g_1", "Grupo 1", 2f, true) { group = "g" }, new WorkRoster.Mission("A", "g_2", "Grupo 2", 2f, true) { group = "g" },
+        };
+        for (int i = 0; i < 2; i++) { WorkRoster.Worker gw = gapR.Add("Hueco" + i); foreach (var gm in gapDay) if (gm.id != "x_nueva") gw.taught.Add(MissionRequirements.KnowledgeKey(gm.id)); gw.taught.Add(WorkRoster.InstructSkill); }
+        WorkRoster.DayPlan pgap = gapR.Plan(0, gapDay);
+        TestProbe.Check("la hora de 10 a 11 que dejan la clase y el grupo se llena: todo hecho por los dos, sin clones",
+            pgap.clones.Count == 0 && gapR.workers.All(w => Mathf.Approximately(Worked(pgap, w), 5f)) && pgap.work.Any(a => !a.lesson && Mathf.Approximately(a.start, 10f)),
+            string.Join(" · ", pgap.work.Select(a => $"{a.worker.name} {a.start:0.#} {a.mission.id}")));
+        TestProbe.Check("la cosecha del huerto vertical y las elaboraciones de la cocina se pueden partir", WorkRoster.IsDivisible("huv_cosecha") && WorkRoster.IsDivisible("prep_leche") && !WorkRoster.IsDivisible("hos_quirofano"));
+        // RONDA 35: los del Marino se inician en todo lo de su sitio el primer día (más de las 2 h de siempre)
+        var sea = new WorkRoster { sanctuaryModel = true, initiationModel = true, useProfessions = false };
+        sea.trainingAreas.Add("Sala de Yoga");
+        var seaDay = new List<WorkRoster.Mission>();
+        foreach (string id in new[] { "pla_operar", "pla_isotopos", "pla_ronda", "pla_ciclotron" }) seaDay.Add(new WorkRoster.Mission(NuclearSite.PlantArea, id, id, 1f));
+        foreach (string id in new[] { "nuc_turno", "nuc_vigilancia", "nuc_roca" }) seaDay.Add(new WorkRoster.Mission(NuclearSite.PowerArea, id, id, 1f));
+        for (int i = 0; i < 2; i++) sea.Add("Marina" + i).home = 1;
+        WorkRoster.DayPlan psea = sea.Plan(0, seaDay);
+        int lessonsMax = sea.workers.Max(w => psea.Of(w).Count(a => a.lesson));
+        var learned = new HashSet<string>(sea.workers.SelectMany(w => w.taught));
+        TestProbe.Check("en el Marino, el primer día se inician en más de 2 h y aprenden casi todo lo de su sitio", lessonsMax > 2 && seaDay.Count(m => learned.Contains(MissionRequirements.KnowledgeKey(m.id))) >= 5,
+            $"clases por persona hasta {lessonsMax} · aprendidas {seaDay.Count(m => learned.Contains(MissionRequirements.KnowledgeKey(m.id)))}/7");
+
         // ── 4. Cambia cada día y con los datos ──
         WorkRoster six = Roster(("P0", 2), ("P1", 2), ("P2", 2), ("P3", 2), ("P4", 2), ("P5", 2));
         bool differs = true;
