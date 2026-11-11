@@ -491,8 +491,13 @@ public static class DesireCatalog
         if (cub == null) return;
         // A su lado se para: seguía re-apuntando a la cría, que a su vez la seguía a ella («heel»), y daban vueltas juntas (lobo: 25 m en 20 s para 0 netos).
         if (Vector3.Distance(self.transform.position, cub.transform.position) <= 2.5f) { if (self.nav != null && self.nav.isOnNavMesh) self.nav.ResetPath(); FeedCub(self, cub); return; }
-        if (self.nav != null && self.nav.isOnNavMesh) Move(self, cub.transform.position);
+        if (self.nav != null && self.nav.isOnNavMesh) Move(self, MeetPoint(self.transform.position, cub.transform.position));
     }
+
+    /// <summary>(2026-11-11) DONDE SE ENCUENTRAN la madre que va a dar la toma y la cría que la busca: lejos, a MEDIO CAMINO; cerca (≤ 4 m), donde
+    /// está el otro. Antes cada uno iba a donde estaba el otro al decidir: se cruzaban, quedaban otra vez a la misma distancia y volvían a
+    /// cambiarse el sitio (lobos «da vueltas en círculo (nurse)», 18–22 m en 20 s, rondas 50 y 51).</summary>
+    static Vector3 MeetPoint(Vector3 me, Vector3 other) => Vector3.Distance(me, other) > 4f ? Vector3.Lerp(me, other, 0.5f) : other;
 
     /// <summary>Cada toma: (madre o padre, cría). Para las escenas de ciclo de vida (la crianza vista, no supuesta).</summary>
     public static event Action<Animal, Animal> CubFed;
@@ -627,8 +632,8 @@ public static class DesireCatalog
             float d = Vector3.Distance(o.transform.position, self.transform.position);
             if (d < best) { best = d; parent = o.transform; }
         }
-        Vector3 to = parent != null ? parent.position : self.HomeOrigin;
-        if (Vector3.Distance(self.transform.position, to) > (parent != null ? 2f : 1.5f)) Move(self, to);
+        Vector3 to = parent != null ? MeetPoint(self.transform.position, parent.position) : self.HomeOrigin;
+        if (Vector3.Distance(self.transform.position, parent != null ? parent.position : to) > (parent != null ? 2f : 1.5f)) Move(self, to);
         else
         {
             self.nav.ResetPath(); self.Loco?.Idle(1f);
