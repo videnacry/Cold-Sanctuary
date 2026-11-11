@@ -57,6 +57,27 @@ public class AlimentadorTest : MonoBehaviour, ITestUnit
         var admitted = Object.FindObjectsByType<Animal>(FindObjectsSortMode.None).Where(x => x != null && !x.death && x.Forage != null && x.Forage.eatsPrey && VetCare.Admitted(x)).ToList();
         TestProbe.Check("un depredador ingresado no entra en la ronda del alimentador (le da de comer la veterinaria)", admitted.All(x => !PredatorRound.Served(x)) && !list.Any(e => VetCare.Admitted(e.animal)),
             admitted.Count == 0 ? "sin ingresados en la escena" : string.Join(", ", admitted.Select(x => x.name)));
+        // (2026-11-11) CRÍAS HUÉRFANAS: una cría que aún no forrajea y no tiene madre (ni padre) viva no come nunca (tras 12 h: los dos oseznos
+        // sin la osa). Entra en la ronda y el alimentador le da el biberón en la mano; con su madre viva, no.
+        Animal adultLand = list.Select(e => e.animal).FirstOrDefault(x => x != null && x.lifeStage == LifeStage.adult);
+        if (adultLand != null)
+        {
+            GameObject cubGo = Instantiate(adultLand.gameObject, adultLand.transform.position + Vector3.right * 3f, adultLand.transform.rotation);
+            cubGo.name = "Cria_huerfana_TEST";
+            Animal cub = cubGo.GetComponent<Animal>(); cub.lifeStage = LifeStage.child;
+            yield return null;
+            cub.lifeStage = LifeStage.child; cub.bonds.Clear();
+            TestProbe.Check("una cría huérfana (sin madre viva) entra en la ronda del alimentador", PredatorRound.Orphan(cub) && PredatorRound.Served(cub), cub.SpeciesName);
+            TestProbe.Check("a la cría huérfana se la atiende de cerca (biberón), no a la distancia del adulto", PredatorRound.SafeDistanceFor(cub) < 2f && PredatorRound.SafeDistanceFor(adultLand) >= 5f);
+            cub.hungry = 0.5f;
+            TestProbe.Check("con hambre se le da aunque no haya raciones de carne en la mano", PredatorRound.ShouldFeed(cub));
+            PredatorRound.BottleFeed(cub, "prueba");
+            TestProbe.Check("…y el biberón la sacia", cub.hungry < 0f, $"hambre {cub.hungry:0.00}");
+            Reproduction.Imprint(cub, adultLand);
+            TestProbe.Check("con su madre viva no es huérfana (la amamanta ella)", !PredatorRound.Orphan(cub) && !PredatorRound.Served(cub));
+            Destroy(cubGo);
+            PredatorRound.NewRound(); list = PredatorRound.Today();
+        }
         var a = PredatorRound.Claim("Uno", Vector3.zero); var b = PredatorRound.Claim("Dos", Vector3.zero);
         TestProbe.Check("dos alimentadores no se reservan al mismo", a != null && b != null && a.animal != b.animal);
 

@@ -64,7 +64,7 @@ public class PredatorFeeder : MonoBehaviour
             case Duty.Track:
                 Animal a = _e != null ? _e.animal : null;
                 if (a == null || a.death) { _e = null; _duty = Duty.Seek; return; }   // (la lista lo quita sola)
-                float d = Flat(a.transform.position - transform.position), safe = PredatorRound.SafeDistance(a.SpeciesName);
+                float d = Flat(a.transform.position - transform.position), safe = PredatorRound.SafeDistanceFor(a);
                 if (d < safe * 0.5f)   // se le ha acercado: no se le da de comer con él encima
                 {
                     _away = PredatorRound.StandOff(a, transform.position); _since = Time.time; _duty = Duty.Retreat;
@@ -86,6 +86,7 @@ public class PredatorFeeder : MonoBehaviour
 
     void Serve(Animal a)
     {
+        if (PredatorRound.Orphan(a) && PredatorRound.ShouldFeed(a)) { PredatorRound.BottleFeed(a, name); fed++; PredatorRound.Report(_e, PredatorRound.State.Fed); _e = null; _duty = Rations < 2 ? Duty.Load : Duty.Seek; return; }   // (2026-11-11) huérfana: biberón, sin raciones de carne
         if (!PredatorRound.ShouldFeed(a)) { PredatorRound.Report(_e, PredatorRound.State.Checked); checkedOk++; }
         else
         {

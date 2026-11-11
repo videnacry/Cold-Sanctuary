@@ -575,6 +575,9 @@ public static class DesireCatalog
         Stop(self, 1f);
     }
 
+    /// <summary>(2026-11-11) El adulto vinculado (madre o padre, de su especie, vivo) de una cría; null = huérfana (PredatorRound.Orphan).</summary>
+    public static Animal ParentOfCub(Animal cub) => cub == null ? null : ParentOf(cub);
+
     // LA CRÍA SIGUE A SU MADRE (o a su padre: el adulto vinculado más cercano) en tierra.
     static Animal ParentOf(Animal self)
     {

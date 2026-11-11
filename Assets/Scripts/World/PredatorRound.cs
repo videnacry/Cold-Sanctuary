@@ -46,7 +46,9 @@ public static class PredatorRound
     /// <summary>¿Lo atiende la ronda? Los carnívoros de tierra del santuario, sin crías, ni los del mar, ni los de un recinto de la Cría.</summary>
     public static bool Served(Animal a)
     {
-        if (a == null || a.death || a.lifeStage == LifeStage.child || a.Forage == null || !a.Forage.eatsPrey) return false;
+        if (a == null || a.death) return false;
+        bool orphan = Orphan(a);   // (2026-11-11) la cría huérfana de cualquier especie de tierra: biberón
+        if (!orphan && (a.lifeStage == LifeStage.child || a.Forage == null || !a.Forage.eatsPrey)) return false;
         if (a.GetComponent<MarineLife>() != null || a.GetComponent<IceInsectLife>() != null || a.GetComponentInParent<CriaFeeder>() != null) return false;
         // (2026-11-11) NI LOS INGRESADOS: les da de comer la veterinaria (VetCare), en la mano. En la lista no se les alcanzaba nunca («Lobo_paciente»,
         // 20 veces pendiente) y, como la lista solo se renueva completa, nadie más volvía a comer: en 12 h de juego los lobos pasaron de 4 a 1 y el oso
@@ -114,10 +116,29 @@ public static class PredatorRound
     /// <summary>(2026-11-11) ¿Se le lanza ración? Con hambre y sin una ración reciente: al dar de comer al último, la lista se renueva y el mismo
     /// animal vuelve; con la primera ración aún en el suelo seguía «con hambre» y se le lanzaba otra (la ración DOBLE, no solo el registro).
     /// Una ración vale <see cref="RefeedGameHours"/> h de juego; dentro de ese tiempo se marca comprobado.</summary>
-    public static bool ShouldFeed(Animal a) => IsHungry(a) && !(a != null && _fedAt.TryGetValue(a, out float t) && Time.time - t < RefeedSeconds);
+    public static bool ShouldFeed(Animal a) => IsHungry(a) && (Orphan(a) || !(a != null && _fedAt.TryGetValue(a, out float t) && Time.time - t < RefeedSeconds));   // (la huérfana: a demanda, como en la Cría)
     public const float RefeedGameHours = 4f;
     static float RefeedSeconds => (TimeController.timeController != null ? TimeController.timeController.SecondsPerGameDay : 3600f) * RefeedGameHours / 24f;
     static readonly Dictionary<Animal, float> _fedAt = new Dictionary<Animal, float>();
+
+    /// <summary>(2026-11-11) CRÍA HUÉRFANA: una cría que aún no forrajea (<see cref="Metamorphosis.CanForage"/>) sin madre ni padre vivo vinculado
+    /// (<see cref="DesireCatalog.ParentOfCub"/>), suelta (no en un recinto de la Cría ni ingresada: a esas las alimentan CriaFeeder y VetCare). Sin
+    /// esto no comía nunca: tras 12 h, los dos oseznos sin la osa (muerta de hambre) seguían en el mapa sin una toma. La ronda la recoge y el
+    /// alimentador le da el BIBERÓN en la mano (<see cref="BottleFeed"/>; leche de la Cría, no las raciones de carne: INFERIDO).</summary>
+    public static bool Orphan(Animal a) => a != null && !a.death && a.lifeStage == LifeStage.child && !Metamorphosis.CanForage(a) && BroodRide.ParentalCare(a.LifeSpecies)
+        && !DesireCatalog.Confined(a) && DesireCatalog.ParentOfCub(a) == null;
+
+    /// <summary>A qué distancia se queda: la del adulto de su especie; a la cría huérfana, en la mano (1,5 m).</summary>
+    public static float SafeDistanceFor(Animal a) => Orphan(a) ? 1.5f : SafeDistance(a.SpeciesName);
+
+    /// <summary>El biberón: una toma, como la de la Cría (CriaFeeder): saciada una comida.</summary>
+    public static void BottleFeed(Animal a, string by)
+    {
+        if (a == null || a.death) return;
+        a.hungry = a.Body != null ? -a.Body.GetMealWeight(a.Mass) : -0.5f;
+        if (a.hungry >= 0f) a.hungry = -0.5f;
+        Debug.Log($"[Alimentador] «{by}» da el biberón a «{a.name}» (cría huérfana).");
+    }
 
     /// <summary>Si se le da de comer al llegar: ¿tiene hambre?</summary>
     public static bool IsHungry(Animal a) => a != null && !a.death && a.hungry > HungryAt;
@@ -127,7 +148,7 @@ public static class PredatorRound
     {
         Vector3 dir = from - a.transform.position; dir.y = 0f;
         if (dir.sqrMagnitude < 0.01f) dir = Vector3.back;
-        return a.transform.position + dir.normalized * SafeDistance(a.SpeciesName);
+        return a.transform.position + dir.normalized * SafeDistanceFor(a);
     }
 
     /// <summary>La ración, lanzada desde <paramref name="from"/>: cae a 3 m del animal, de su lado, y luego la come por su cuenta (Forager la ve como carne).</summary>
