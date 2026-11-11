@@ -102,6 +102,14 @@ public class PathMover : MonoBehaviour
             // ACANTILADO, salvo que el camino completo baje por ahí y lleve un rato parado al borde: sin barandillas, desde un
             // anillo o una plataforma hija se SALTA al piso de abajo (Berón 2026-10-27: «que sea fácil saltar»), como haría cualquiera.
             bool jump = _path.status == NavMeshPathStatus.PathComplete && next.y < transform.position.y - 1f && _cliffSince > 0f && Time.time - _cliffSince > 2.5f && transform.position.y - pos.y < 6f;
+            // (2026-11-11) UN HUECO ESTRECHO, NO UN ACANTILADO: el camino completo sigue a su MISMA altura (la esquina no está más abajo) y a 1,2 m
+            // vuelve a haber suelo a su nivel: lo cruza sin bajar. Andrea y Fernando, en el techo de Producción camino de la pista de alfombras
+            // («se detiene al borde en (-169,132,-136) camino PathComplete 2 esquinas», ×125, sin comer): el paso caía en una rendija sin
+            // collider que el NavMesh no ve. Tras 2 s parado al borde, como el salto.
+            bool bridge = !jump && pos.y < transform.position.y - 1.2f && _path.status == NavMeshPathStatus.PathComplete && _cliffSince > 0f && Time.time - _cliffSince > 2f
+                          && next.y > transform.position.y - PivotHeight - 0.6f && d.sqrMagnitude > 1e-6f
+                          && GroundY(transform.position + d.normalized * 1.2f, transform.position.y) >= transform.position.y - 0.4f;   // (GroundY da el pivote)
+            if (bridge) pos.y = transform.position.y;
             if (pos.y >= transform.position.y - 1.2f || jump) _cliffSince = 0f;
             else if (_cliffSince <= 0f) _cliffSince = Time.time;
             if (pos.y < transform.position.y - 1.2f && !jump)
