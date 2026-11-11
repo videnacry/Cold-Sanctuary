@@ -9,13 +9,13 @@ using UnityEngine;
 ///  · Grupos afectados: de «git diff --name-only A..B» a los grupos de prueba que tocan los archivos cambiados (TestImpact), escritos en
 ///    Temp/runner-groups.txt (lo que lee el arnés de grupos del probador). Si una clase centro toca más de la mitad de los grupos, lo dice y
 ///    recomienda la batería entera. Desde la línea de órdenes: -executeMethod TestImpactTool.FromCommandLine -impactRange A..B
-///  · Rehacer la lista rápida: de Logs/test-results.tsv (una batería entera con el TestRunner nuevo) a Resources/TestPresets/rapida.txt.
+///  · Rehacer la lista rápida: de Logs/test-results.tsv (una batería entera con el TestRunner nuevo) a Scripts/TestPresetsData.cs.
 ///  · Jugar con las pruebas (rápida): la lista rápida, de una vez.
 /// </summary>
 public static class TestImpactTool
 {
     public const string GroupsFile = "Temp/runner-groups.txt";
-    public const string RapidaFile = "Assets/Resources/TestPresets/rapida.txt";
+    public const string RapidaFile = "Assets/Scripts/TestPresetsData.cs";
     public const float RapidaMaxSeconds = 60f;
 
     [MenuItem("Tools/Cold Sanctuary/Pruebas/Grupos afectados (desde edificios)")]
@@ -88,10 +88,17 @@ public static class TestImpactTool
         float total = ok.Sum(r => r.seconds);
         var lines = new List<string>
         {
-            $"# Prueba rápida: unidades de menos de {RapidaMaxSeconds:0} s en la última batería completa ({resultsPath}, {System.DateTime.Now:yyyy-MM-dd HH:mm}): {ok.Count} unidades, {total:0} s.",
-            "# Una por línea: clase<TAB>grupo<TAB>segundos. Se rehace con Tools/Cold Sanctuary/Pruebas/Rehacer la lista rápida."
+            "using System.Collections.Generic;", "",
+            "/// <summary>",
+            "/// LA LISTA RÁPIDA, COMO DATOS EN C# (el repositorio solo guarda .cs y documentos). Una unidad por entrada: clase, grupo y segundos en la",
+            "/// última batería completa. La reescribe «Tools/Cold Sanctuary/Pruebas/Rehacer la lista rápida» (TestImpactTool.RefreshRapida).",
+            "/// </summary>",
+            "public static class TestPresetsData", "{",
+            $"    // Prueba rápida: unidades de menos de {RapidaMaxSeconds:0} s en la última batería completa ({resultsPath}, {System.DateTime.Now:yyyy-MM-dd HH:mm}): {ok.Count} unidades, {total:0} s.",
+            "    public static readonly (string unit, int group, float seconds)[] Rapida =", "    {"
         };
-        lines.AddRange(ok.Select(r => $"{r.unit}\t{r.group}\t{r.seconds:0}"));
+        lines.AddRange(ok.Select(r => $"        (\"{r.unit}\", {r.group}, {r.seconds.ToString("0", System.Globalization.CultureInfo.InvariantCulture)}f),"));
+        lines.Add("    };"); lines.Add("}");
         File.WriteAllLines(RapidaFile, lines);
         AssetDatabase.ImportAsset(RapidaFile);
         Debug.Log($"[Pruebas] Lista rápida rehecha: {ok.Count} unidades, {total:0} s (de {rows.Count} filas).");

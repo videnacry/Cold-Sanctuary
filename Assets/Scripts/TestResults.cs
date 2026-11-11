@@ -64,9 +64,9 @@ public static class TestResults
 }
 
 /// <summary>
-/// LISTAS DE PRUEBAS (2026-11-11): «rapida» son las unidades baratas (menos de 60 s cada una en la última batería completa), en
-/// Resources/TestPresets/rapida.txt: una por línea, «Clase&lt;TAB&gt;grupo&lt;TAB&gt;segundos»; las líneas con # son comentarios. Se rehace con
-/// «Tools/Cold Sanctuary/Pruebas/Rehacer la lista rápida» (PruebasRapidas.RefreshRapida) a partir de Logs/test-results.tsv.
+/// LISTAS DE PRUEBAS (2026-11-11): «rapida» son las unidades baratas (menos de 60 s cada una en la última batería completa), como datos
+/// en C# (<see cref="TestPresetsData"/>: el repositorio solo guarda .cs). Se rehace con «Tools/Cold Sanctuary/Pruebas/Rehacer la lista
+/// rápida» (TestImpactTool.RefreshRapida) a partir de Logs/test-results.tsv. <see cref="Parse"/> lee el mismo formato en texto.
 /// </summary>
 public static class TestPresets
 {
@@ -75,6 +75,7 @@ public static class TestPresets
     /// <summary>Las clases de unidad de una lista (vacía si no existe).</summary>
     public static HashSet<string> Units(string preset)
     {
+        if (preset == Rapida) { var s = new HashSet<string>(); foreach (var e in TestPresetsData.Rapida) s.Add(e.unit); return s; }
         TextAsset t = Resources.Load<TextAsset>("TestPresets/" + preset);
         return t != null ? Parse(t.text) : new HashSet<string>();
     }

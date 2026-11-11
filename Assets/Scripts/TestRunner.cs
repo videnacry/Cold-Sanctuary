@@ -25,7 +25,7 @@ public class TestRunner : MonoBehaviour
              "corren solo las pruebas de su piso: las demás unidades, aunque se registren solas al pedir las pruebas, no corren.")]
     public int[] onlyGroups = new int[0];
 
-    [Tooltip("Lista de unidades (vacío = todas): «rapida» = las baratas (Resources/TestPresets/rapida.txt). También por Temp/runner-preset.txt (una vez).")]
+    [Tooltip("Lista de unidades (vacío = todas): «rapida» = las baratas (TestPresetsData). También por Temp/runner-preset.txt (una vez).")]
     public string preset = "";
     /// <summary>Lista de una sola vez: si existe, su texto es la lista (p. ej. «rapida») y se borra al leerla.</summary>
     public const string PresetFile = "Temp/runner-preset.txt";

@@ -38,7 +38,7 @@ public class TestPipelineTest : MonoBehaviour, ITestUnit
         HashSet<string> parsed = TestPresets.Parse("# comentario\nAereoTest\t110\t28\n\n  TraceFieldTest\t1\t0  \n");
         TestProbe.Check("una lista se lee: una clase por línea, sin comentarios", parsed.SetEquals(new[] { "AereoTest", "TraceFieldTest" }), string.Join(",", parsed));
         HashSet<string> rapida = TestPresets.Units(TestPresets.Rapida);
-        TestProbe.Greater("la lista rápida existe y tiene sus unidades (Resources/TestPresets/rapida.txt)", rapida.Count, 20f, $"{rapida.Count} unidades");
+        TestProbe.Greater("la lista rápida existe y tiene sus unidades (TestPresetsData)", rapida.Count, 20f, $"{rapida.Count} unidades");
 
         var tests = new List<TestImpact.TestFile>
         {
