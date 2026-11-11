@@ -38,7 +38,14 @@ public class TreeTrip : MonoBehaviour
         TreeLevel want = tb == t._tree && b != null ? b : t._tree.ExitFor(to);
         if (want == null || want == t._to) return true;
         Debug.Log($"[Árbol] «{g.name}» ya no va a {t._to.name} sino a {want.name}: deja ese viaje y nada hacia allí.");
+        // (2026-11-11) NADA HACIA ALLÍ DE VERDAD: el viaje nuevo empieza ya, desde donde está y en el agua. Antes se dejaba el viaje y la ruta se
+        // replanificaba «desde donde está»; a media rama o columna ArbolCampos.At no lo ve ni en un nivel ni en el agua del tronco, la ruta lo daba
+        // por fuera del árbol, PathMover «se detiene al borde … PathInvalid» y GroundGuard, ya sin nado, lo bajaba de golpe: JefeConstruccion
+        // 52 m y Gohageneis 17 m («no se teletransporta», clase de yoga, rondas 48 y 51).
+        ArbolCampos tree = t._tree; float ph = t._ph;
         t.Finish(false);
+        List<Vector3> path = tree.SwimPath(null, want, tree.transform.InverseTransformPoint(g.transform.position) - Vector3.up * ph);
+        if (path != null && path.Count >= 2) { Start(g, tree, path, want, true); return true; }
         return false;
     }
     float _recheck;
