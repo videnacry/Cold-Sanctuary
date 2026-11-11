@@ -268,6 +268,16 @@ public static class DesireCatalog
     // otro animal en medio) o tarda más de 40 s, lo deja; ese deseo no vuelve a intentar ese viaje en unos segundos.
     class Trip { public string key; public Vector3 goal; public bool going; public float since, best, bestAt, pauseUntil, failUntil, lastCall; public int calls, started; }
     /// <summary>Diagnóstico: el viaje de un animal (deseo, si va, destino, pausas, llamadas).</summary>
+    /// <summary>(2026-11-11) El estado del agente de un animal, para los avisos de «atascado»: camino, cálculo pendiente, estado, velocidad,
+    /// sobre el NavMesh y distancia al destino.</summary>
+    public static string NavInfo(Animal a)
+    {
+        NavMeshAgent n = a != null ? a.nav : null;
+        if (n == null) return "sin agente";
+        if (!n.isActiveAndEnabled) return "agente apagado";
+        return $"agente: en NavMesh {n.isOnNavMesh}, camino {n.hasPath}, pendiente {n.pathPending}, estado {n.pathStatus}, velocidad {n.velocity.magnitude:0.00} (pedida {n.speed:0.0}), destino a {Vector3.Distance(n.transform.position, n.destination):0.0} m, parado {n.isStopped}";
+    }
+
     public static string TripInfo(Animal a) => a != null && _trips.TryGetValue(a, out Trip t) ? $"viaje «{t.key}» va={t.going} meta={t.goal:F1} pausa={t.pauseUntil - Time.time:0.0} fallo={t.failUntil - Time.time:0.0} llamadas={t.calls} (hace {Time.time - t.lastCall:0.0} s) empezados={t.started}" : "sin viaje";
     static readonly Dictionary<Animal, Trip> _trips = new Dictionary<Animal, Trip>();
     static readonly Dictionary<Animal, float> _homeBlocked = new Dictionary<Animal, float>();
@@ -275,7 +285,8 @@ public static class DesireCatalog
     /// <summary>Contadores para el diagnóstico (viajes empezados, atascados, paseos sin sitio alcanzable).</summary>
     public static int TripsStarted, TripsStalled, StrollNoPick, Strolls;
 
-    static int _noPickLogs, _stallLogs;
+    static int _noPickLogs, _stallLogs, _stillLogs;
+    static readonly Dictionary<Animal, (Vector3 at, float since, float logged)> _still = new Dictionary<Animal, (Vector3, float, float)>();
     static Trip TripOf(Animal a, string key)
     {
         if (!_trips.TryGetValue(a, out Trip t)) _trips[a] = t = new Trip();
@@ -359,6 +370,17 @@ public static class DesireCatalog
     {
         Trip t = TripOf(self, key);
         bool was = t.going; Strolls++; t.calls++; t.lastCall = Time.time;
+        // (2026-11-11) DIAGNÓSTICO EN VIVO: un paseo (explore, el recinto) que en 20 s no le ha movido medio metro lo dice, una vez por minuto y
+        // animal, con su viaje y su agente (rondas 50–51: renos, zorros, orcas y las crías de la Cría «quieren explore y no se mueven»).
+        {
+            Vector3 pos = self.transform.position;
+            if (!_still.TryGetValue(self, out var st) || Flat(pos - st.at) > 0.5f) _still[self] = st = (pos, Time.time, st.logged);
+            else if (Time.time - st.since >= 20f && Time.time >= st.logged && _stillLogs < 200)
+            {
+                _stillLogs++; _still[self] = (st.at, st.since, Time.time + 60f);
+                Debug.Log($"[Fauna] atascado «{self.name}» ({key}) {Time.time - st.since:0} s sin moverse en ({pos.x:0.0},{pos.y:0.0},{pos.z:0.0}): {TripInfo(self)} · {NavInfo(self)}");
+            }
+        }
         if (Going(self, t)) return;
         if (was) { t.pauseUntil = Time.time + UnityEngine.Random.Range(pauseMin, pauseMax); self.Loco?.Idle(t.pauseUntil - Time.time); }
         if (Time.time < t.pauseUntil) return;
