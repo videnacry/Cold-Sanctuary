@@ -35,6 +35,7 @@ public class YogaClassTest : MonoBehaviour, ITestUnit
     class Who
     {
         public Anima a; public Vector3 pos; public Quaternion rot; public Vector3 last;
+        public List<Behaviour> duties;
         public IdleBehavior idle; public bool idleWas; public ActionQueue q; public bool qWas;
         public UnityEngine.AI.NavMeshAgent agent; public bool agentWas;
         public CarnivoreKeeper keeper; public bool keeperWas;
@@ -199,6 +200,7 @@ public class YogaClassTest : MonoBehaviour, ITestUnit
         w.q = g.GetComponent<ActionQueue>(); w.qWas = w.q != null && w.q.enabled; if (w.q != null) { w.q.ClearOwn(); w.q.enabled = false; }
         w.agent = g.GetComponent<UnityEngine.AI.NavMeshAgent>(); w.agentWas = w.agent != null && w.agent.enabled; if (w.agent != null) w.agent.enabled = false;
         w.keeper = g.GetComponent<CarnivoreKeeper>(); w.keeperWas = w.keeper != null && w.keeper.enabled; if (w.keeper != null) w.keeper.enabled = false;
+        w.duties = TestDuties.Pause(g);   // (2026-11-11) la ronda del jardinero (y demás conductas propias) que dejó la jornada: no tira de él a la vez
         a.asleep = false;
         PathMover.Of(g.transform).Restart();
         return w;
@@ -230,6 +232,7 @@ public class YogaClassTest : MonoBehaviour, ITestUnit
             if (w.q != null) w.q.enabled = w.qWas;
             if (w.idle != null) w.idle.enabled = w.idleWas;
             if (w.keeper != null) w.keeper.enabled = w.keeperWas;
+            TestDuties.Resume(w.duties);
         }
         WorkdayDirector.LogTeleports = false;
         Time.timeScale = scale;
