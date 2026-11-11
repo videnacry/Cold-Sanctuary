@@ -23,16 +23,16 @@ public class AnimaController : MonoBehaviour
     float _lodNext;
     void Update()
     {
-        // (2026-11-09) Lejos y fuera de la vista, el cerebro piensa cada 0,75 s (SimulationLod); nunca el del jugador.
-        if (!(_active is PlayerBrain) && !gameObject.CompareTag("Player") && SimulationLod.Skip(transform.position, ref _lodNext)) return;
-        IBrain best = PickBest();
+        IBrain best = PickBest();   // (cada fotograma: es barato, y POSEER tiene que mandar al momento — [1238] fallaba con el salto de abajo antes)
         if (best != _active)
         {
             Debug.Log($"[Control] «{name}» ahora conducido por: {(best != null ? best.BrainName : "nadie")}" +
                       $" (relevancia {(best != null ? best.Relevance : 0f):0.00}).");
             _active = best;
         }
-        if (_active != null) _active.Act(this);
+        // (2026-11-09) Lejos y fuera de la vista, el cerebro ACTÚA cada 0,75 s (SimulationLod); nunca el del jugador ni uno poseído.
+        if (_active == null || (!(_active is PlayerBrain) && !gameObject.CompareTag("Player") && SimulationLod.Skip(transform.position, ref _lodNext))) return;
+        _active.Act(this);
     }
 
     IBrain PickBest()
