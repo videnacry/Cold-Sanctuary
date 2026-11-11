@@ -80,15 +80,50 @@ public static class PredatorRound
 
     public static int Left { get { int n = 0; foreach (Entry e in Today()) if (!Done(e)) n++; return n; } }
 
-    /// <summary>Se reserva el depredador pendiente más cercano: nadie más irá a por él. null = la lista está hecha.</summary>
-    public static Entry Claim(string who, Vector3 from)
+    /// <summary>(2026-11-11) EL ORDEN DE LA RONDA (menor = antes), por urgencia: (1) los que aún no se intentaron antes que los que no se
+    /// alcanzaron (no se pierde el turno con uno inalcanzable); (2) los depredadores adultos antes que las crías del biberón; (3) el más
+    /// hambriento; (4) el más grande (oso, lobo, zorro); (5) el más cercano. La lista sigue renovándose solo completa (Berón 2026-11-05); el
+    /// orden decide a quién se va primero. Vivo49: con 37 en la lista y el más cercano primero, dos osas murieron de hambre detrás de polluelos.</summary>
+    public static double Priority(Animal a, int misses, Vector3 from)
     {
-        Entry best = null; float bd = float.MaxValue;
+        if (a == null) return double.MaxValue;
+        int kind = Orphan(a) ? 1 : 0;
+        int hunger = Mathf.RoundToInt((9f - Mathf.Clamp(a.hungry, -1f, 9f)) * 10f);   // 0 (muy hambriento) … 100 (saciado)
+        int apex = a.SpeciesName == "Bear" ? 0 : a.SpeciesName == "Wolf" ? 1 : a.SpeciesName == "ArcticFox" ? 2 : 3;
+        float dist = Mathf.Min((a.transform.position - from).sqrMagnitude, 999999f);
+        return Mathf.Min(misses, 9) * 1e12 + kind * 1e10 + hunger * 1e7 + apex * 1e6 + dist;
+    }
+
+    /// <summary>¿Hay un pendiente más urgente que <paramref name="cur"/> (otro tipo antes, o mucho más hambriento)? El alimentador lo deja y va
+    /// a por él (sin contarlo como no alcanzado).</summary>
+    public static Entry MoreUrgent(Entry cur, Vector3 from)
+    {
+        if (cur == null || cur.animal == null) return null;
+        double mine = Priority(cur.animal, 0, from) - Mathf.Min((cur.animal.transform.position - from).sqrMagnitude, 999999f);
+        Entry best = null; double bd = mine - 2e7;   // (al menos 0,2 de hambre más, u otro tipo antes)
         foreach (Entry e in Today())
         {
-            if (e.state != State.Pending) continue;
-            // Los que aún no se han intentado van antes; luego, el más cercano.
-            float d = e.misses * 1000000f + (e.animal.transform.position - from).sqrMagnitude;
+            if (e == cur || e.state != State.Pending || e.animal == null || e.misses > 0) continue;
+            double p = Priority(e.animal, 0, from) - Mathf.Min((e.animal.transform.position - from).sqrMagnitude, 999999f);
+            if (p < bd) { bd = p; best = e; }
+        }
+        return best;
+    }
+
+    /// <summary>Suelta la reserva sin contarla como no alcanzado (la deja para ir a otro más urgente).</summary>
+    public static void Release(Entry e) { if (e != null && e.state == State.Claimed) { e.state = State.Pending; e.by = null; } }
+
+    /// <summary>Se reserva <paramref name="e"/> (si sigue pendiente).</summary>
+    public static bool ClaimThis(Entry e, string who) { if (e == null || e.state != State.Pending) return false; e.state = State.Claimed; e.by = who; return true; }
+
+    /// <summary>Se reserva el depredador pendiente más urgente (<see cref="Priority"/>): nadie más irá a por él. null = la lista está hecha.</summary>
+    public static Entry Claim(string who, Vector3 from)
+    {
+        Entry best = null; double bd = double.MaxValue;
+        foreach (Entry e in Today())
+        {
+            if (e.state != State.Pending || e.animal == null) continue;
+            double d = Priority(e.animal, e.misses, from);   // (2026-11-11) por urgencia; antes: los no intentados y el más cercano
             if (d < bd) { bd = d; best = e; }
         }
         if (best != null) { best.state = State.Claimed; best.by = who; }
@@ -125,8 +160,13 @@ public static class PredatorRound
     /// (<see cref="DesireCatalog.ParentOfCub"/>), suelta (no en un recinto de la Cría ni ingresada: a esas las alimentan CriaFeeder y VetCare). Sin
     /// esto no comía nunca: tras 12 h, los dos oseznos sin la osa (muerta de hambre) seguían en el mapa sin una toma. La ronda la recoge y el
     /// alimentador le da el BIBERÓN en la mano (<see cref="BottleFeed"/>; leche de la Cría, no las raciones de carne: INFERIDO).</summary>
-    public static bool Orphan(Animal a) => a != null && !a.death && a.lifeStage == LifeStage.child && !Metamorphosis.CanForage(a) && BroodRide.ParentalCare(a.LifeSpecies)
+    public static bool Orphan(Animal a) => a != null && !a.death && a.lifeStage == LifeStage.child && OrphanSpecies.Contains(a.SpeciesName) && !Metamorphosis.CanForage(a) && BroodRide.ParentalCare(a.LifeSpecies)
         && !DesireCatalog.Confined(a) && DesireCatalog.ParentOfCub(a) == null;
+
+    /// <summary>(2026-11-11) Las especies cuya cría no sobrevive sin sus padres y que el alimentador cría a biberón: oseznos, lobeznos, zorreznos y
+    /// cachorros de foca. No los polluelos de pingüino (vivo49: inflaban la lista a 37 y no se les alcanzaba en el hielo). INFERIDO: la documentación
+    /// (docs/ciclo-de-vida.md) no dice que la colonia alimente a un polluelo ajeno; en la naturaleza un polluelo sin padres no suele salir adelante.</summary>
+    public static readonly HashSet<string> OrphanSpecies = new HashSet<string> { "Bear", "Wolf", "ArcticFox", "Seal" };
 
     /// <summary>A qué distancia se queda: la del adulto de su especie; a la cría huérfana, en la mano (1,5 m).</summary>
     public static float SafeDistanceFor(Animal a) => Orphan(a) ? 1.5f : SafeDistance(a.SpeciesName);

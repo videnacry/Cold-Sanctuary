@@ -11,7 +11,10 @@ public class PredatorFeeder : MonoBehaviour
     public float speed = 3.2f;
     public const int Carry = 24;
     /// <summary>Si en este tiempo no llega, lo devuelve a la cola y va a por otro: no es una salida, sigue pendiente.</summary>
-    public const float RequeueAfter = 120f;
+    public const float RequeueAfter = 60f;   // (2026-11-11: 120 s eran casi medio turno de 2 h; vivo49, una acción por turno)
+    /// <summary>Sin camino por el NavMesh hasta él durante este tiempo: a la cola ya (en el hielo, en el agua).</summary>
+    public const float NoRouteAfter = 12f;
+    float _noRouteSince = -1f, _urgentLook;
 
     enum Duty { Load, Seek, Track, Retreat, Done }
     Duty _duty = Duty.Load;
@@ -59,7 +62,7 @@ public class PredatorFeeder : MonoBehaviour
                 _nextLook = Time.time + 2f;
                 _e = PredatorRound.Claim(name, transform.position);
                 if (_e == null) { _duty = Duty.Done; return; }
-                _since = Time.time; _duty = Duty.Track;
+                _since = Time.time; _noRouteSince = -1f; _duty = Duty.Track;
                 break;
             case Duty.Track:
                 Animal a = _e != null ? _e.animal : null;
@@ -72,7 +75,18 @@ public class PredatorFeeder : MonoBehaviour
                     return;
                 }
                 if (d <= safe + 1.5f) { Serve(a); return; }
-                PathMover.Of(this).StepToward(PredatorRound.StandOff(a, transform.position), speed);
+                PathMover pm = PathMover.Of(this);
+                pm.StepToward(PredatorRound.StandOff(a, transform.position), speed);
+                // (2026-11-11) Sin camino que llegue: a la cola en 12 s, no en 120 (vivo49: los turnos se iban siguiendo pingüinos por el hielo).
+                if (pm.NoRoute) { if (_noRouteSince < 0f) _noRouteSince = Time.time; else if (Time.time - _noRouteSince > NoRouteAfter) { PredatorRound.Requeue(_e, "no hay camino hasta él"); _e = null; _duty = Duty.Seek; return; } }
+                else _noRouteSince = -1f;
+                // Y si aparece uno MÁS URGENTE (un oso con hambre mientras sigue a un zorro saciado), lo deja y va a por él.
+                if (Time.time >= _urgentLook)
+                {
+                    _urgentLook = Time.time + 5f;
+                    PredatorRound.Entry urgent = PredatorRound.MoreUrgent(_e, transform.position);
+                    if (urgent != null && PredatorRound.ClaimThis(urgent, name)) { Debug.Log($"[Alimentador] «{name}» deja a «{a.name}» por uno más urgente: «{urgent.animal.name}»."); PredatorRound.Release(_e); _e = urgent; _since = Time.time; _noRouteSince = -1f; return; }
+                }
                 if (Time.time - _since > RequeueAfter) { PredatorRound.Requeue(_e, "no se le alcanza"); _e = null; _duty = Duty.Seek; }
                 break;
             case Duty.Retreat:

@@ -75,7 +75,33 @@ public class AlimentadorTest : MonoBehaviour, ITestUnit
             TestProbe.Check("…y el biberón la sacia", cub.hungry < 0f, $"hambre {cub.hungry:0.00}");
             Reproduction.Imprint(cub, adultLand);
             TestProbe.Check("con su madre viva no es huérfana (la amamanta ella)", !PredatorRound.Orphan(cub) && !PredatorRound.Served(cub));
+            // (2026-11-11) URGENCIA: el adulto con hambre va antes que la cría huérfana (aunque la cría tenga más), y entre adultos el más hambriento
+            // antes que el más cercano. Vivo49: 37 en la lista, 33 pendientes en 3 días, y dos osas muertas de hambre esperando detrás de polluelos.
+            cub.bonds.Clear(); cub.hungry = 3f; float oldAd = adultLand.hungry; adultLand.hungry = 0.6f;
+            TestProbe.Check("el depredador adulto con hambre va antes que la cría huérfana (biberón)", PredatorRound.Priority(adultLand, 0, cub.transform.position) < PredatorRound.Priority(cub, 0, cub.transform.position));
+            Animal other = list.Select(e => e.animal).FirstOrDefault(x => x != null && x != adultLand && !PredatorRound.Orphan(x));
+            if (other != null)
+            {
+                float oldO = other.hungry; other.hungry = -0.5f;
+                Vector3 nearOther = other.transform.position;
+                TestProbe.Check("el más hambriento antes que el más cercano", PredatorRound.Priority(adultLand, 0, nearOther) < PredatorRound.Priority(other, 0, nearOther));
+                TestProbe.Check("…pero el que no se alcanzó vuelve detrás aunque tenga hambre (no se pierde el turno con él)", PredatorRound.Priority(adultLand, 1, nearOther) > PredatorRound.Priority(other, 0, nearOther));
+                other.hungry = oldO;
+            }
+            adultLand.hungry = oldAd;
             Destroy(cubGo);
+            // HUÉRFANAS SOLO DONDE LA CRÍA NO SOBREVIVE SIN SUS PADRES: oseznos, lobeznos, zorreznos y cachorros de foca; no los polluelos de pingüino.
+            Animal pg = Object.FindObjectsByType<Animal>(FindObjectsSortMode.None).FirstOrDefault(x => x != null && !x.death && x.SpeciesName == "Penguin" && x.lifeStage == LifeStage.adult);
+            if (pg != null)
+            {
+                GameObject chickGo = Instantiate(pg.gameObject, pg.transform.position + Vector3.right * 2f, pg.transform.rotation);
+                chickGo.name = "Polluelo_huerfano_TEST"; Animal chick = chickGo.GetComponent<Animal>(); chick.lifeStage = LifeStage.child;
+                yield return null;
+                chick.lifeStage = LifeStage.child; chick.bonds.Clear();
+                TestProbe.Check("un polluelo de pingüino sin padres no entra en la ronda del biberón", !PredatorRound.Orphan(chick) && !PredatorRound.Served(chick));
+                Destroy(chickGo);
+            }
+            TestProbe.Check("las especies del biberón: oso, lobo, zorro ártico y foca", PredatorRound.OrphanSpecies.SetEquals(new[] { "Bear", "Wolf", "ArcticFox", "Seal" }));
             PredatorRound.NewRound(); list = PredatorRound.Today();
         }
         var a = PredatorRound.Claim("Uno", Vector3.zero); var b = PredatorRound.Claim("Dos", Vector3.zero);

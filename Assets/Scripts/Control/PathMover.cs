@@ -27,6 +27,8 @@ public class PathMover : MonoBehaviour
     /// <summary>Cuántos pasos lleva dados (para que quien conduce sepa si otro le ha dado un paso entre medias).</summary>
     public int Steps { get; private set; }
     /// <summary>(Registro de atascos) el camino que sigue: estado, esquina, a qué punto va y si el último paso se quedó quieto.</summary>
+    /// <summary>(2026-11-11) ¿El último camino calculado no llega (parcial o inválido)?</summary>
+    public bool NoRoute => _path != null && _path.status != NavMeshPathStatus.PathComplete;
     public string Trace => _path == null ? "sin camino" : $"camino {_path.status}, esquina {_corner}/{_path.corners.Length}{(_path.corners.Length > 0 ? $" ({_path.corners[Mathf.Min(_corner, _path.corners.Length - 1)].x:0.0},{_path.corners[Mathf.Min(_corner, _path.corners.Length - 1)].z:0.0})" : "")}, paso: {(_why < Whys.Length ? Whys[_why] : "?")} {_whyStep:0.00} m en ({_whyAt.x:0.0},{_whyAt.z:0.0}) hace {Time.frameCount - _whyFrame} fotogramas";
     static readonly string[] Whys = { "—", "ruta de alfombras o árbol", "sin camino y saldría del NavMesh", "nadando", "al borde", "anda" };
     byte _why; float _whyStep; Vector3 _whyAt; int _whyFrame;
