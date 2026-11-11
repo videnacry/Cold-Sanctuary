@@ -735,7 +735,7 @@ public class WorkdayDirector : MonoBehaviour
         }
         SetStatus(g, lin != null && lin.enabled && lin.Doing != null ? lin.Doing : doing);
         if ((feederDuty && predatorFeeder != null) || (guardDuty && keeper != null) || (lin != null && lin.enabled)) { LeaveGym(g); return; }   // su conducta propia hace ESTA misión
-        if (gardenDuty && gardener != null) { if (idle != null) idle.enabled = false; SetStatus(g, gardener.Doing ?? doing); return; }   // la ronda la lleva FruitGardener (y sus necesidades van antes, dentro de ella)
+        if (gardenDuty && gardener != null && !gardener.Finished) { if (idle != null) idle.enabled = false; SetStatus(g, gardener.Doing ?? doing); return; }   // (2026-11-11) TERMINADA la ronda antes de su hora (Amykhuz ×22, «Ronda terminada … en 1,4 h» de 2 h, quieto al pie de Servicios): sigue como cualquier misión, a su área (el Huerto) a hacer las tareas de la semana. La ronda la lleva FruitGardener (y sus necesidades van antes, dentro de ella)
         // LAS NECESIDADES VAN ANTES QUE LA CLASE DE YOGA (2026-11-02): con «ir al baño» o «pedir en la barra» en marcha en su carril
         // propio, la clase (su papel de guía, demostrador o corrector, o la esterilla del entrenamiento de las 14 h) lo seguía
         // llevando a la sala A LA VEZ, cada fotograma: un paso hacia los aseos y otro igual hacia la sala, y no se movía. Lizmibet
