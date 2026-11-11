@@ -280,12 +280,21 @@ public class GymUsabilityTest : MonoBehaviour, ITestUnit
     {
         Vector3 to = WorkdayDirector.GymApproach(st), from = p.g.transform.position;
         bool otherFloor = Mathf.Abs(to.y - from.y) > 1.5f;
-        if (otherFloor) { CarpetPad pad = CarpetPad.For(to); if (pad != null) from = pad.transform.position; }
+        // (2026-11-11) Desde la PUERTA DE ESE PISO (por donde se llega nadando por el tronco), no desde la pista de alfombras: la pista está en
+        // el techo de la torre y el piso del gimnasio no tiene NavMesh hasta ella (PathPartial: «Remo (ergómetro) 1», Fausto y Lizmibet, 142/143).
+        string fromWhat = "donde estaba";
+        if (otherFloor)
+        {
+            TreeLevel lv = null; ArbolCampos tree = null;
+            foreach (ArbolCampos t in ArbolCampos.All) if (t != null && (lv = t.LevelAt(to)) != null) { tree = t; break; }
+            if (lv != null) { from = tree.World(lv.outside) + Vector3.up; fromWhat = $"la puerta de su piso ({lv.name})"; }
+            else { CarpetPad pad = CarpetPad.For(to); if (pad != null) { from = pad.transform.position; fromWhat = "la pista de alfombras de su piso"; } }
+        }
         var path = new UnityEngine.AI.NavMeshPath();
         bool ok = UnityEngine.AI.NavMesh.SamplePosition(from, out UnityEngine.AI.NavMeshHit a, 2.5f, UnityEngine.AI.NavMesh.AllAreas)
                && UnityEngine.AI.NavMesh.SamplePosition(to, out UnityEngine.AI.NavMeshHit b, 2.5f, UnityEngine.AI.NavMesh.AllAreas)
                && UnityEngine.AI.NavMesh.CalculatePath(a.position, b.position, UnityEngine.AI.NavMesh.AllAreas, path) && path.status == UnityEngine.AI.NavMeshPathStatus.PathComplete;
-        if (!ok) Fail(st, $"{p.Name}: sin camino por el NavMesh hasta la máquina (desde {(otherFloor ? "la pista de alfombras de su piso" : "donde estaba")}, {path.status})");
+        if (!ok) Fail(st, $"{p.Name}: sin camino por el NavMesh hasta la máquina (desde {fromWhat}, {path.status})");
         WorkdayDirector.Teleport(p.g.transform, to);
         PathMover.Of(p.g.transform).Restart();
     }
@@ -306,10 +315,14 @@ public class GymUsabilityTest : MonoBehaviour, ITestUnit
         while (!WorkdayDirector.GymArrived(p.g, st) && walked < limit && Time.time - t0 < limit * 6f)
         {
             pm.StepToward(WorkdayDirector.GymApproach(st), _walkSpeed);
+            // (2026-11-11) El paso se da con el deltaTime DE ESTE fotograma; el tope del salto, con ese mismo. Desde 8e0c5de el tope de
+            // deltaTime cambia cuando alguien empieza a usar una máquina (0,04 s solo con _using > 0): medido con el del fotograma siguiente, un
+            // paso normal de un fotograma largo contaba como salto (Goluis 1,72 m, Lizmibet 1,35 m, Fausto 2,21 m).
+            float stepDt = Time.deltaTime;
             yield return null;
             bool riding = FlyingCarpet.Riding(p.g) || TreeTrip.Busy(p.g);   // (o nadando por el tronco de la torre-árbol)
             if (!riding) walked += Time.deltaTime;
-            float jump = Vector3.Distance(tr.position, last), lim = Mathf.Max(0.6f, _walkSpeed * 3f * Time.deltaTime);
+            float jump = Vector3.Distance(tr.position, last), lim = Mathf.Max(0.6f, _walkSpeed * 3f * stepDt);
             if (!riding && !rode && jump > lim && jump > p.maxJump) { p.maxJump = jump; p.jumpAt = $"yendo a {st.name}: de ({last.x:0.0},{last.y:0.0},{last.z:0.0}) a ({tr.position.x:0.0},{tr.position.y:0.0},{tr.position.z:0.0})"; }
             rode = riding; last = tr.position;
         }
