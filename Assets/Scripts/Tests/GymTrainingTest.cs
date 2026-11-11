@@ -166,6 +166,7 @@ public class GymTrainingTest : MonoBehaviour, ITestUnit
         public IdleBehavior idle; public bool idleWas; public ActionQueue q; public bool qWas;
         public UnityEngine.AI.NavMeshAgent agent; public bool agentWas;
         public CarnivoreKeeper keeper; public bool keeperWas;
+        public List<Behaviour> duties;
     }
 
     static Held Hold(GameObject g)
@@ -175,6 +176,7 @@ public class GymTrainingTest : MonoBehaviour, ITestUnit
         w.q = g.GetComponent<ActionQueue>(); w.qWas = w.q != null && w.q.enabled; if (w.q != null) { w.q.ClearOwn(); w.q.enabled = false; }
         w.agent = g.GetComponent<UnityEngine.AI.NavMeshAgent>(); w.agentWas = w.agent != null && w.agent.enabled; if (w.agent != null) w.agent.enabled = false;
         w.keeper = g.GetComponent<CarnivoreKeeper>(); w.keeperWas = w.keeper != null && w.keeper.enabled; if (w.keeper != null) w.keeper.enabled = false;
+        w.duties = TestDuties.Pause(g);   // (2026-11-11) la ronda del jardinero, el alimentador… que dejó la jornada: no tiran de él a la vez
         if (w.a != null) w.a.asleep = false;
         PathMover.Of(g.transform).Restart();
         return w;
@@ -189,6 +191,7 @@ public class GymTrainingTest : MonoBehaviour, ITestUnit
         if (w.q != null) w.q.enabled = w.qWas;
         if (w.idle != null) w.idle.enabled = w.idleWas;
         if (w.keeper != null) w.keeper.enabled = w.keeperWas;
+        TestDuties.Resume(w.duties);
     }
 
     /// <summary>La rutina de hoy de <paramref name="who"/> (el primer día de su plan) recortada a 3 ejercicios, con su
@@ -223,6 +226,7 @@ public class GymTrainingTest : MonoBehaviour, ITestUnit
             if (g == null || g.CompareTag("Player") || g.GetComponent<CreatureRig>() == null) continue;
             Anima a0 = g.GetComponent<Anima>(); if (a0 == null || a0.death) continue;
             if (g.TryGetComponent(out Linduarda lin) && lin.enabled) continue;
+            if (wd != null && wd.AwayToday(n)) continue;   // (2026-11-11) hoy pasa el día en otro santuario (RemoteStaff): Linduarda y Lizmibet, 0 ejercicios (vivo49), como en la clase de yoga
             if (g.TryGetComponent(out NewcomerInitiator ni) && ni.InProgress) continue;
             if (RestaurantService.Drives(g) || Orchestra.Busy(g)) continue;
             if (n == GymProgramming.Trainer) trainer = g; else if (people.Count < 3) people.Add(g);
