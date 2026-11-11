@@ -58,8 +58,15 @@ public class LoteEstaticoTest : MonoBehaviour, ITestUnit
         {
             MeshRenderer piece = mask.Find("Marco").GetComponent<MeshRenderer>();
             Bounds pb = piece.bounds;
-            bool covered = all.Any(r => r != null && r.enabled && r.name.StartsWith("Lote_") && r.bounds.Intersects(pb));
-            TestProbe.Check("hay un lote donde está la pieza", covered);
+            // (2026-11-11) El lote de una pieza de DETALLE (la máscara) se apaga a más de LoteEstatico.DetailDistance de la cámara (CullDetail, también
+            // con las pruebas, a diferencia de los cuerpos). Tras las pruebas de la escena aérea la cámara puede quedar lejos del perchero y el lote,
+            // que existe, estaba apagado por distancia (suite 48: «hay un lote donde está la pieza» FAIL, INFERIDO). Cuenta el lote encendido o
+            // apagado SOLO por la distancia; uno apagado con la cámara cerca sigue fallando.
+            Camera lcam = Camera.main;
+            bool FarFromCam(Renderer r) => lcam != null && Vector3.Distance(lcam.transform.position, r.bounds.center) - r.bounds.extents.magnitude > LoteEstatico.DetailDistance - 5f;
+            var lotes = all.Where(r => r != null && r.name.StartsWith("Lote_") && r.bounds.Intersects(pb)).ToList();
+            bool covered = lotes.Any(r => r.enabled || FarFromCam(r));
+            TestProbe.Check("hay un lote donde está la pieza", covered, $"{lotes.Count} lotes en su sitio, {lotes.Count(r => r.enabled)} encendidos · cámara a {(lcam != null ? Vector3.Distance(lcam.transform.position, pb.center) : -1f):0} m");
 
             int before = LoteEstatico.Ejected;
             mask.gameObject.SetActive(false);
