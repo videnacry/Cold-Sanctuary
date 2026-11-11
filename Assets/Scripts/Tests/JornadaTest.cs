@@ -19,8 +19,10 @@ using UnityEngine;
 /// dando vueltas, dentro de un mueble, en el agua sin ser acuáticos, cayendo, volcados y saltos/teletransportes sin motivo.
 /// Líneas «[Jornada] …» en el log para quien lo lea. Se añade solo al orquestador cuando se piden las pruebas.
 /// </summary>
-public class JornadaTest : MonoBehaviour, ITestUnit
+public class JornadaTest : MonoBehaviour, ITestUnit, IFastGameTime
 {
+    // (2026-11-11) Solo espera a que el juego avance: a ~3 FPS, con el tope de 0,333, el ×6 rendía como ×1. Con 1 s, hasta ×3 más rápido (TestRunner lo registra).
+    public float MaxDeltaTime => 1f;
     public int Group => 50;   // tras las iniciaciones (40–43) y los microcosmos: cambia el reloj y deja a Kushal trabajando
     public bool ParallelSafe => false;
     [Tooltip("Aceleración del tiempo (1 = ritmo real: un día = 1 h).")]

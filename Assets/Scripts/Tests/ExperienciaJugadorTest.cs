@@ -14,8 +14,10 @@ using UnityEngine;
 /// (<see cref="AmbrosioStory.Act"/>). Va acelerado (×<see cref="speed"/>); para verlo a ritmo real, speed = 1.
 /// Es el último grupo: deja el mundo cambiado (el jugador ya iniciado).
 /// </summary>
-public class ExperienciaJugadorTest : MonoBehaviour, ITestUnit
+public class ExperienciaJugadorTest : MonoBehaviour, ITestUnit, IFastGameTime
 {
+    // (2026-11-11) Solo espera a que el juego avance: a ~3 FPS, con el tope de 0,333, el ×6 rendía como ×1. Con 1 s, hasta ×3 más rápido (TestRunner lo registra).
+    public float MaxDeltaTime => 1f;
     public int Group => 40;
     public bool ParallelSafe => false;
     [Tooltip("Aceleración del tiempo durante el test (1 = ritmo real, para mirarlo).")]
