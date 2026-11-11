@@ -60,6 +60,7 @@ public class GymUsabilityTest : MonoBehaviour, ITestUnit
         public CarnivoreKeeper keeper; public bool keeperWas;
         public float maxJump; public string jumpAt;
         public bool done;
+        public readonly HashSet<GymMachineType> walkedTypes = new HashSet<GymMachineType>();   // (2026-11-11) a cuál de cada tipo ha ido andando
         public string Name => g.name;
     }
 
@@ -126,7 +127,10 @@ public class GymUsabilityTest : MonoBehaviour, ITestUnit
             var mine = new List<GymStation>(); for (int k = 0; k < tour.Count; k++) mine.Add(tour[(off + k) % tour.Count]);
             StartCoroutine(Circuit(ps[i], mine, realEnd));
         }
-        while (ps.Any(p => !p.done) && Time.realtimeSinceStartup < realEnd) yield return null;
+        // (2026-11-11) El paso de 0,04 s solo hace falta mientras alguien USA una máquina (la cinta se mide en varios fotogramas); andando, el
+        // de siempre: las caminatas iban a 0,34× (885 s, la unidad más lenta de la batería).
+        while (ps.Any(p => !p.done) && Time.realtimeSinceStartup < realEnd) { Time.maximumDeltaTime = _using > 0 ? 0.04f : oldMax; yield return null; }
+        Time.maximumDeltaTime = 0.04f;
         if (ps.Any(p => !p.done)) TestProbe.Check("el recorrido acaba dentro del tope de tiempo", false, $"{realLimit:0} s reales");
         foreach (Person p in ps) TestProbe.Check($"«{p.Name}» anda sin saltos entre máquinas (ningún fotograma más de lo que se anda)", p.maxJump <= 0f,
             p.maxJump > 0f ? $"salto de {p.maxJump:0.00} m {p.jumpAt}" : "");
@@ -253,14 +257,37 @@ public class GymUsabilityTest : MonoBehaviour, ITestUnit
             var u = new WorkdayDirector.GymUse { st = st, since = Time.time };
             float w0 = Time.time, r0 = Time.realtimeSinceStartup;
             int before = _fail.TryGetValue(st, out List<string> fl) ? fl.Count : 0;
-            yield return Walk(p, st, u);
+            // (2026-11-11) ANDANDO, a una máquina de cada tipo (por persona); a las demás copias, su camino por el NavMesh se comprueba al
+            // momento y se le coloca allí: lo que se protege (llega andando, sin saltos; cada copia alcanzable; posturas, pies, manos y sin
+            // atravesar en TODAS) sigue, sin andar cada copia (tres personas × todas las máquinas a pie eran la mayor parte de los 885 s).
+            if (p.walkedTypes.Add(st.type)) yield return Walk(p, st, u); else PathOnly(p, st);
             float walked = Time.time - w0;
+            _using++;
             yield return Use(p, st, u, true);
+            _using--;
             _used[st] = (_used.TryGetValue(st, out int c) ? c : 0) + 1;
             int after = _fail.TryGetValue(st, out fl) ? fl.Count : 0;
             Debug.Log($"[GymTest] {p.Name} · {st.name} [{st.type}] ({list.Count - queue.Count}/{list.Count}) andando {walked:0.0} s · {Time.realtimeSinceStartup - r0:0.0} s reales · {(after > before ? string.Join(" | ", fl.Skip(before)) : "OK")}");
         }
         p.done = true;
+    }
+
+    int _using;
+
+    /// <summary>Sin andar: hay camino por el NavMesh hasta el punto de llegada de la máquina (desde donde está, en su mismo piso; desde la pista
+    /// de alfombras de ese piso, si es otro), y se le coloca allí para probar la máquina.</summary>
+    void PathOnly(Person p, GymStation st)
+    {
+        Vector3 to = WorkdayDirector.GymApproach(st), from = p.g.transform.position;
+        bool otherFloor = Mathf.Abs(to.y - from.y) > 1.5f;
+        if (otherFloor) { CarpetPad pad = CarpetPad.For(to); if (pad != null) from = pad.transform.position; }
+        var path = new UnityEngine.AI.NavMeshPath();
+        bool ok = UnityEngine.AI.NavMesh.SamplePosition(from, out UnityEngine.AI.NavMeshHit a, 2.5f, UnityEngine.AI.NavMesh.AllAreas)
+               && UnityEngine.AI.NavMesh.SamplePosition(to, out UnityEngine.AI.NavMeshHit b, 2.5f, UnityEngine.AI.NavMesh.AllAreas)
+               && UnityEngine.AI.NavMesh.CalculatePath(a.position, b.position, UnityEngine.AI.NavMesh.AllAreas, path) && path.status == UnityEngine.AI.NavMeshPathStatus.PathComplete;
+        if (!ok) Fail(st, $"{p.Name}: sin camino por el NavMesh hasta la máquina (desde {(otherFloor ? "la pista de alfombras de su piso" : "donde estaba")}, {path.status})");
+        WorkdayDirector.Teleport(p.g.transform, to);
+        PathMover.Of(p.g.transform).Restart();
     }
 
     /// <summary>Anda hasta la máquina como la jornada (PathMover hacia el punto de llegada; alfombras entre pisos).</summary>
