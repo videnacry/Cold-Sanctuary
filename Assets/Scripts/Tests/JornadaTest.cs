@@ -514,6 +514,18 @@ public class JornadaTest : MonoBehaviour, ITestUnit, IFastGameTime
             return true;
         }
 
+        // (2026-11-11) «DAR VUELTAS» ES EN EL PLANO: el recorrido de la ventana medido en horizontal, como «net» y «reach». Con el recorrido en
+        // 3D, bajar nadando por el tronco de un edificio-árbol (Servicios: del techo a 153 m al fondo, a 3,9 m/s) daba 78 m en 20 s para 2,3 m
+        // netos EN PLANTA y contaba como vueltas (David y Gohageneis yendo al fitoplancton; Goluis). Nada los empujaba: bajaban.
+        static float FlatPath(Track tr)
+        {
+            if (tr.hist.Count < 2) return 0f;
+            int i0 = tr.hist.FindIndex(x => tr.hist[tr.hist.Count - 1].t - x.t <= 20.5f);
+            float s = 0f;
+            if (i0 >= 0) for (int i = i0 + 1; i < tr.hist.Count; i++) s += Flat(tr.hist[i].p - tr.hist[i - 1].p);
+            return s;
+        }
+
         static Bounds BodyBounds(Track tr)
         {
             Bounds b = new Bounds(tr.g.transform.position, Vector3.zero); bool any = false;
@@ -589,8 +601,9 @@ public class JornadaTest : MonoBehaviour, ITestUnit, IFastGameTime
             {
                 if (Walking(head) && path < 0.5f && now - tr.headSince >= 19f) Add(tr.name, "atascado > 20 s", $"«{head}» sin avanzar en {Where(p)}", true);
                 bool rounds = (cur != null && cur.mission.id.StartsWith("yog_corrige")) || (status != null && (status.Contains("Gimnasio") || status.Contains("Entrenamiento")));
-                if (!rounds && head != "merodear" && path > 12f && net < 2.5f && reach < path * 0.35f && now - tr.headSince >= 19f)   // (merodear es ir y venir al azar a propósito; ir a algo, hacerlo y volver —la barra, el aseo— cambia lo que hace: eso no es dar vueltas)
-                    Add(tr.name, "da vueltas en círculo", $"{path:0} m en 20 s para {net:0.0} m netos en {Where(p)} ({tr.activity})", true);
+                float flatPath = FlatPath(tr);
+                if (!rounds && head != "merodear" && flatPath > 12f && net < 2.5f && reach < flatPath * 0.35f && now - tr.headSince >= 19f)   // (merodear es ir y venir al azar a propósito; ir a algo, hacerlo y volver —la barra, el aseo— cambia lo que hace: eso no es dar vueltas)
+                    Add(tr.name, "da vueltas en círculo", $"{flatPath:0} m en planta en 20 s ({path:0} m en 3D) para {net:0.0} m netos en {Where(p)} ({tr.activity})", true);
             }
             if (!magnate) CheckBody(tr, p, riding, asleep || needs || (status != null && status.Contains("Gimnasio")) || wd.OnGymMachine(tr.g) || LeisureDirector.OnBed(tr.g), true);
         }
@@ -615,7 +628,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit, IFastGameTime
             if (desire != tr.headLabel) { tr.headLabel = desire; tr.headSince = now; }
             bool same = now - tr.headSince >= 19f;
             if (full && same && !resting && path < 0.5f) Add(tr.name, "atascado > 20 s", $"quiere «{desire}» y no se mueve en {Where(p)}", false);
-            if (full && same && !flier && !marine && !a.busy && path > 15f && net < 2f && reach < path * 0.35f) Add(tr.name, "da vueltas en círculo", $"{path:0} m en 20 s para {net:0.0} m netos ({tr.activity})", false);
+            if (full && same && !flier && !marine && !a.busy && FlatPath(tr) > 15f && net < 2f && reach < FlatPath(tr) * 0.35f) Add(tr.name, "da vueltas en círculo", $"{path:0} m en 20 s para {net:0.0} m netos ({tr.activity})", false);
             if (!(marine && inHabitat)) CheckBody(tr, p, riding, a.death || a.asleep || a.busy, false);   // (en su respiradero la foca asoma recta por la placa y al descansar se tumba: es su sitio, no un cuerpo dentro del hielo)
         }
 
