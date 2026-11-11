@@ -179,6 +179,7 @@ public class YogaFloorsTest : MonoBehaviour, ITestUnit
             if (g.TryGetComponent(out Linduarda lin) && lin.enabled) continue;
             if (g.TryGetComponent(out NewcomerInitiator ni) && ni.InProgress) continue;
             if (RestaurantService.Drives(g) || Orchestra.Busy(g)) continue;
+            if (wd != null && wd.AwayToday(n)) continue;   // (2026-11-11) hoy en otro santuario (RemoteStaff): «Linduarda: sin kund», rondas 49 y 51
             Anima a = g.GetComponent<Anima>(); if (a != null && Magnate.IsMember(a)) people.Add(a);
         }
         return people;
