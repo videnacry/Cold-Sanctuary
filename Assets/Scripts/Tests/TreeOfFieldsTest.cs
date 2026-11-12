@@ -298,7 +298,7 @@ public class TreeOfFieldsTest : MonoBehaviour, ITestUnit
                 b.transform.position = PathMover.Of(b.transform).OnGround(t.World(from1.outside) + tree.TransformDirection(TreeSpec.Dir(from1.doorAngle)) * 3f + side * (i - 1.5f) * 1.6f + Vector3.up);
                 group.Add(b);
             }
-            var done = new bool[group.Count]; int maxInBranch = 0, stuck1 = TreeTrip.Stuck;
+            var done = new bool[group.Count]; int maxInBranch = 0, stuck1 = TreeTrip.Stuck, stuckWho1 = TreeTrip.StuckWho.Count;
             float endG = Time.time + 300f, endGR = Time.realtimeSinceStartup + 150f;
             Time.timeScale = 3f;
             while (Time.time < endG && Time.realtimeSinceStartup < endGR && done.Any(x => !x))
@@ -319,8 +319,8 @@ public class TreeOfFieldsTest : MonoBehaviour, ITestUnit
             }
             Time.timeScale = oldScale;
             int arrivedG = done.Count(x => x);
-            TestProbe.Check("4 personas nadan a la vez por la misma rama (de 10 × 10 m) y llegan todas, sin atascarse", arrivedG == group.Count && TreeTrip.Stuck == stuck1 && maxInBranch >= 3,
-                $"{arrivedG}/{group.Count} llegan, hasta {maxInBranch} a la vez en la rama, {TreeTrip.Stuck - stuck1} atascos");
+            TestProbe.Check("4 personas nadan a la vez por la misma rama (de 10 × 10 m) y llegan todas, sin atascarse", arrivedG == group.Count && !TreeTrip.StuckWho.Skip(stuckWho1).Any(n => group.Any(g => g != null && g.name == n)) && maxInBranch >= 3,   // (2026-11-11: solo los del grupo; en la suite 60 el atasco era de Julian, de la jornada, a la vez)
+                $"{arrivedG}/{group.Count} llegan, hasta {maxInBranch} a la vez en la rama, {TreeTrip.Stuck - stuck1} atascos en total ({string.Join(", ", TreeTrip.StuckWho.Skip(stuckWho1))})");
             foreach (GameObject b in group) Destroy(b);
         }
         Time.timeScale = oldScale;

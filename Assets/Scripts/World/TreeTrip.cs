@@ -12,6 +12,8 @@ public class TreeTrip : MonoBehaviour
     public static bool Busy(GameObject g) => g != null && _busy.Contains(g);
     public static int Trips { get; private set; }
     public static int Stuck { get; private set; }
+    /// <summary>(2026-11-11) Quién se atascó (en orden), para que una prueba cuente solo a los suyos.</summary>
+    public static readonly List<string> StuckWho = new List<string>();
     /// <summary>Registro de cada tramo (las pruebas).</summary>
     public static bool Verbose;
     float _t0;
@@ -85,7 +87,7 @@ public class TreeTrip : MonoBehaviour
         // cocina hacia el árbol, 130 m, a 1,67 m por fotograma, en el servicio del restaurante).
         if ((transform.position - _left).sqrMagnitude > 16f)
         { Debug.Log($"[Árbol] «{name}» ya no está donde lo dejó el viaje ({Vector3.Distance(transform.position, _left):0.0} m): deja el viaje a {_to?.name}."); Finish(false); return; }
-        if (Time.time > _until) { Stuck++; Debug.LogWarning($"[Árbol] «{name}» no llegó a {_to.name} a tiempo: se queda donde está (tramo {_i}/{_path.Count - 1}, en {transform.position}, hacia {_tree.World(_path[Mathf.Min(_i, _path.Count - 1)])}, {Time.time - _t0:0} s; máscara {BreathingMask.Has(gameObject)}, rescate {BreathingMask.IsRescuing(gameObject)})."); Finish(false); return; }
+        if (Time.time > _until) { Stuck++; StuckWho.Add(name); Debug.LogWarning($"[Árbol] «{name}» no llegó a {_to.name} a tiempo: se queda donde está (tramo {_i}/{_path.Count - 1}, en {transform.position}, hacia {_tree.World(_path[Mathf.Min(_i, _path.Count - 1)])}, {Time.time - _t0:0} s; máscara {BreathingMask.Has(gameObject)}, rescate {BreathingMask.IsRescuing(gameObject)})."); Finish(false); return; }
         if (MaskStep()) { _left = transform.position; return; }
         float budget = (Wet(_i) ? _tree.routeSwimSpeed + (Carried(_i) ? _tree.routeCurrent : 0f) : 1.8f) * Time.deltaTime;
         for (int guard = 0; guard < 4 && _i < _path.Count && budget > 1e-4f; guard++)
