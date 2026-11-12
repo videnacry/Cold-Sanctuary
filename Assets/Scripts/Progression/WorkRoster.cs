@@ -693,14 +693,14 @@ public class WorkRoster
             Worker pickW = null; Mission pickM = null; string pickArea = null; float pickH = 0f, pickAt = 0f;
             foreach (Worker w in staff.Where(x => !full.Contains(x)).OrderBy(x => worked[x]))
             {
-                Mission best = null; string bestArea = null; float bestH = 0f, bestAt = 0f; bool bestExact = false;
+                Mission best = null; string bestArea = null; float bestH = 0f, bestAt = 0f; bool bestExact = false, bestFar = false;
                 foreach (var kv in pools)
                     foreach (Mission m in kv.Value)
                     {
                         if ((IsNewcomer(w, plan.day) && m.lead) || !Qualified(w, m) || !Allowed(w, m)) continue;
                         if (w.name == "Player" && PlayerSkips(m)) continue;   // (ronda 55) lo que lleva una conducta que no mueve al jugador
                         // El mejor tramo para ella: uno que llene justa (entera o, si es divisible, un trozo); si no, el más largo que quepa.
-                        float h = -1f, at = -1f; bool exact = false;
+                        float h = -1f, at = -1f; bool exact = false, far = false;
                         foreach (var t in free[w])
                         {
                             float len = t.to - t.from;
@@ -708,13 +708,17 @@ public class WorkRoster
                             if (hh < MinPiece - 1e-4f && hh < m.hours - 1e-4f) continue;
                             if (hh <= 0f) continue;
                             if (FarAfterLunch(w, m.area, Clock(t.from))) continue;
-                            if (ShortAndFar(plan, w, m.area, Clock(t.from), hh)) continue;
+                            // (2026-11-11) MEDIA HORA LEJOS (de todos, no solo de Kushal): una tarea de ≤ 0,5 h a más de 0,2 h de viaje de lo que acaba a
+                            // esa hora se la come el viaje. A Kushal nunca; a los demás, solo si no hay nada más cerca para ese tramo (no deja huecos ni clones).
+                            bool farT = ShortAndFar(plan, w, m.area, Clock(t.from), hh);
+                            if (farT && w.name == "Player") continue;
                             bool ex = System.Math.Abs(hh - len) < 1e-4f;
-                            bool better = h < 0f || (ex && !exact) || (ex == exact && hh > h + 1e-4f);
-                            if (better) { h = hh; at = t.from; exact = ex; }
+                            bool better = h < 0f || (far && !farT) || (far == farT && ((ex && !exact) || (ex == exact && hh > h + 1e-4f)));
+                            if (better) { h = hh; at = t.from; exact = ex; far = farT; }
                         }
                         if (h <= 0f) continue;
-                        if (best != null)
+                        if (best != null && far && !bestFar) continue;   // (lo cercano antes que la media hora lejos)
+                        if (best != null && !(bestFar && !far))
                         {
                             if (!exact && bestExact) continue;
                             if (exact == bestExact)
@@ -737,7 +741,7 @@ public class WorkRoster
                                 }
                             }
                         }
-                        best = m; bestArea = kv.Key; bestH = h; bestAt = at; bestExact = exact;
+                        best = m; bestArea = kv.Key; bestH = h; bestAt = at; bestExact = exact; bestFar = far;
                     }
                 if (best == null) { full.Add(w); continue; }
                 pickW = w; pickM = best; pickArea = bestArea; pickH = bestH; pickAt = bestAt;
@@ -817,7 +821,7 @@ public class WorkRoster
     /// al acabar la media hora).</summary>
     static bool ShortAndFar(DayPlan plan, Worker w, string area, float clock, float hours)
     {
-        if (w.name != "Player" || FarApart == null || hours > 0.5f + 1e-4f || clock < 0f) return false;
+        if (FarApart == null || hours > 0.5f + 1e-4f || clock < 0f) return false;
         foreach (Assignment a in plan.work)
             if (a.worker == w && System.Math.Abs(a.start + a.mission.hours - clock) < 0.01f && a.mission.area != area && FarApart(a.mission.area, area)) return true;
         return false;
