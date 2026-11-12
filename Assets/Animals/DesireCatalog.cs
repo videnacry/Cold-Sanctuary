@@ -266,7 +266,18 @@ public static class DesireCatalog
     // ══ MOVIMIENTO DE LOS DESEOS: siempre a sitios ALCANZABLES, con tope y sin re-apuntar en cada decisión ══════════════
     // Un «viaje» por animal: hacia dónde va, por qué deseo, desde cuándo y cuánto ha avanzado. Si en 5 s no se acerca (un muro,
     // otro animal en medio) o tarda más de 40 s, lo deja; ese deseo no vuelve a intentar ese viaje en unos segundos.
-    class Trip { public string key; public Vector3 goal; public bool going; public float since, best, bestAt, pauseUntil, failUntil, lastCall; public int calls, started; }
+    class Trip { public string key; public Vector3 goal; public bool going; public float since, best, bestAt, pauseUntil, failUntil, lastCall, reissueAt; public int calls, started; }
+    /// <summary>Viajes que se quedaron sin camino lejos de su meta (diagnóstico).</summary>
+    public static int NoPathTrips;
+    static int _noPathLogs;
+    /// <summary>(Pruebas) Un viaje a <paramref name="goal"/> recién empezado cuyo agente se ha quedado sin camino: ¿Going lo sigue llevando?</summary>
+    public static bool GoingWithoutPathForTest(Animal a, Vector3 goal)
+    {
+        if (a == null || a.nav == null || !a.nav.isOnNavMesh) return false;
+        a.nav.ResetPath();
+        var t = new Trip { key = "prueba", goal = goal, going = true, since = Time.time, bestAt = Time.time, best = float.MaxValue };
+        return Going(a, t);
+    }
     /// <summary>Diagnóstico: el viaje de un animal (deseo, si va, destino, pausas, llamadas).</summary>
     /// <summary>(2026-11-11) El estado del agente de un animal, para los avisos de «atascado»: camino, cálculo pendiente, estado, velocidad,
     /// sobre el NavMesh y distancia al destino.</summary>
@@ -307,6 +318,20 @@ public static class DesireCatalog
         // Con camino y sin velocidad: una pausa (Idle, velocidad 0) de otra conducta, como «no alcanza comida; descansa», le dejaba quieto con
         // el viaje en marcha hasta darlo por atascado (osos, lobos, crías: «velocidad pedida 0,0 … sin WalkSpell»). Quien lleva el viaje, anda.
         if (nav.hasPath && nav.speed < 0.05f && !self.busy) self.Loco?.SetGait(false, 0.1f);
+        // (2026-11-11) SIN CAMINO NO ES «LLEGÓ»: si el agente se queda sin camino (un SetPath descartado, un ResetPath de otra conducta) lejos de su
+        // meta, el viaje vuelve a pedirlo; si en 3 s sigue sin él, se da por fallido (con su pausa) en vez de empezar otro cada segundo sin
+        // moverse («[Fauna] atascado … empezados=136 · camino False … destino a 0,0 m», 333 líneas en vivo: renos, pingüinos, zorros, insectos).
+        if (!nav.hasPath && Flat(t.goal - self.transform.position) > nav.stoppingDistance + 0.6f)
+        {
+            if (Time.time - t.since > 3f)
+            {
+                t.going = false; t.failUntil = Time.time + 4f; TripsStalled++; NoPathTrips++;
+                if (_noPathLogs < 30) { _noPathLogs++; Debug.Log($"[Fauna] «{self.name}» se queda sin camino hacia {t.goal} ({Flat(t.goal - self.transform.position):0.0} m): {NavInfo(self)}."); }
+                return false;
+            }
+            if (Time.time >= t.reissueAt) { t.reissueAt = Time.time + 0.5f; self.Loco?.SetGait(false, 0.1f); nav.SetDestination(t.goal); }
+            return true;
+        }
         float rem = nav.hasPath ? Remaining(nav) : 0f;
         if (rem <= nav.stoppingDistance + 0.35f) { t.going = false; return false; }   // llegó
         if (rem < t.best - 0.25f) { t.best = rem; t.bestAt = Time.time; }
@@ -347,7 +372,7 @@ public static class DesireCatalog
         if (self.nav == null || !self.nav.isOnNavMesh) return;
         // Con el camino YA calculado (NavReach acaba de comprobar que se llega): SetPath, sin esperar a que el agente lo pida y
         // lo calcule otra vez (con cientos de obstáculos tallando, SetDestination podía quedarse «pendiente» y el animal quieto).
-        if (NavReach.LastPathTo(self, to, out NavMeshPath p)) { self.Loco?.SetGait(false, 1f); if (self.nav.SetPath(p)) return; }
+        if (NavReach.LastPathTo(self, to, out NavMeshPath p)) { self.Loco?.SetGait(false, 1f); if (self.nav.SetPath(p) && (self.nav.hasPath || self.nav.pathPending)) return; }   // (2026-11-11: un SetPath que «sale bien» pero deja al agente sin camino → SetDestination)
         if (self.Loco != null) self.Loco.Walk(to, 1f); else self.nav.SetDestination(to);
     }
 
