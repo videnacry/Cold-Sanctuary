@@ -540,7 +540,9 @@ public static partial class MicroBiome
                 new Plant(Kind.Shrub, 3, "Encina de la costa (Quercus agrifolia)", 1200, C(0.22f, 0.38f, 0.2f), C(0.4f, 0.35f, 0.25f)),
                 new Plant(Kind.Grass, 14, "Césped de la casa (Cynodon dactylon), segado", 5, C(0.4f, 0.62f, 0.28f), C(0.5f, 0.6f, 0.3f)),
                 new Plant(Kind.Flower, 5, "Rosal del jardín (Rosa)", 120, C(0.25f, 0.42f, 0.22f), C(0.85f, 0.15f, 0.25f)),
-                new Plant(Kind.Shrub, 4, "Seto de pitósporo (Pittosporum tobira)", 150, C(0.22f, 0.4f, 0.22f), C(0.95f, 0.95f, 0.85f)) },
+                new Plant(Kind.Shrub, 4, "Seto de pitósporo (Pittosporum tobira)", 150, C(0.22f, 0.4f, 0.22f), C(0.95f, 0.95f, 0.85f)),
+                // (2026-11-12, mapa a mano) Los olivos del Olive Walk de Caltech.
+                new Plant(Kind.Shrub, 2, "Olivo del Olive Walk de Caltech (Olea europaea)", 700, C(0.45f, 0.52f, 0.4f), C(0.4f, 0.38f, 0.32f)) },
               // Una ciudad de coches (sin caballos): los perros y los gatos de las casas.
               townFauna = new[] {
                 new Pet("Woodlouse", 3, 0.7f, C(0.8f, 0.72f, 0.6f), "Perro de la casa (en el microcosmos, una cochinilla hormiguera)"),

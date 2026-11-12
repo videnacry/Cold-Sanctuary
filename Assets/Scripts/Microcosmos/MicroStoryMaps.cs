@@ -150,7 +150,7 @@ public static partial class MicroStoryMaps
         MapParis1898(),   // (2026-11-12) hecho: MicroStoryMaps.Cientificos.cs
         MapColoradoSprings(),   // (2026-11-12) hecho: MicroStoryMaps.Cientificos.cs
         MapBerna(),   // (2026-11-12) hecho: MicroStoryMaps.Cientificos.cs
-        Stub("Pasadena", Base1, Base2, "Caltech, las San Gabriel y las calles de 1953"),
+        MapPasadena(),   // (2026-11-12) hecho: mapa a mano
         Stub("Chernóbil", Base1, Base2, "Prípiat, la central, el estanque de refrigeración (el lavabo como mar) y el bosque rojo"),
         Stub("Palenque", Base1, Base2, "el Palacio, el Templo de las Inscripciones, el río Otolum y la milpa"),
         // (2026-11-05) Los siete famosos que salieron del mesocosmos (docs/personajes-mesocosmos.md).

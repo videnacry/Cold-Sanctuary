@@ -128,4 +128,46 @@ public static partial class MicroStoryMaps
         },
         todo = new[] { "en vivo: que la pradera caiga fuera del camino de Knob Hill; que los álamos queden en la orilla del Monument Creek y no en la vía" },
     };
+
+    // ══ PASADENA, 1953 (Patterson y la edad de la Tierra): sobre el Laboratorio de Química ══════════════════════════════════════════════════════
+    // El laboratorio limpio de Caltech es el escenario. El campus entre California Boulevard, San Pasqual, Hill y Wilson, con los olivos del Olive Walk
+    // y las encinas de la costa; al sur y al norte, las calles de casas con su césped, sus rosales y sus setos de pitósporo; al oeste, el Arroyo Seco con su
+    // encinar; al norte, Colorado Boulevard y los montes de San Gabriel, y al pie, en Altadena, los cedros del Himalaya de la Christmas Tree Lane (1885).
+    // Una ciudad de coches: solo los perros y los gatos de las casas.
+    static Map MapPasadena() => new Map
+    {
+        display = "Pasadena", place = "Pasadena, el campus de Caltech y sus calles, 1953", status = Status.Hecho,
+        source = "Caltech Archives, «The Olive Walk» y el plano del campus (California Blvd, San Pasqual, Hill y Wilson); City of Pasadena, «Street Trees»; " +
+                 "Christmas Tree Lane (Santa Rosa Avenue, Altadena, cedros plantados en 1885; Registro Nacional de Lugares Históricos); el encinar de Quercus agrifolia " +
+                 "del Arroyo Seco (Arroyo Seco Foundation); el plano del pueblo",
+        floor = Natural(
+            new Piece("mesa", Como, "las poyatas: los montes de San Gabriel, al norte", "mesa"),
+            new Piece("lavabo", Como, "las pilas: el Arroyo Seco, al oeste", "lavabo")),
+        flora = new[]
+        {
+            // El campus: los olivos del Olive Walk, las encinas y el césped.
+            new Plant("Olivo del Olive Walk", -150f, 60f, 10, 40f), new Plant("Encina de la costa", -200f, -100f, 4, 30f), new Plant("Césped del campus", -100f, -200f, 12, 50f),
+            // Las palmeras de California Boulevard.
+            new Plant("Palmera de abanico", -500f, 150f, 6, 60f), new Plant("Palmera de abanico", 500f, 150f, 6, 60f),
+            // El encinar del Arroyo Seco.
+            new Plant("Encina de la costa", -1050f, 300f, 8, 80f), new Plant("Encina de la costa", -1050f, -300f, 8, 80f),
+            // Las calles de casas al sur y al norte del campus: césped, rosales y setos de pitósporo.
+            new Plant("Césped de la casa", 300f, -350f, 12, 60f), new Plant("Rosal del jardín", 300f, -350f, 6, 50f), new Plant("Seto de pitósporo", 300f, -350f, 4, 50f),
+            new Plant("Césped de la casa", -450f, 500f, 12, 60f), new Plant("Rosal del jardín", -450f, 500f, 6, 50f), new Plant("Seto de pitósporo", 600f, 600f, 4, 50f),
+            // Al norte, en Altadena: los cedros de la Christmas Tree Lane.
+            new Plant("Cedro del Himalaya", 0f, 1450f, 8, 80f),
+        },
+        fauna = new[]
+        {
+            new Animal("Woodlouse", "Perro de la casa (en el microcosmos, una cochinilla hormiguera), en las calles al sur del campus", 300f, -350f, 3, 0.7f, 60f),
+            new Animal("Woodlouse", "Gato de la casa, en las calles del norte", -450f, 500f, 3, 0.5f, 60f),
+            new Animal("Woodlouse", "Perro de la casa, en Lake Avenue", 600f, 600f, 2, 0.7f, 50f),
+        },
+        buildings = new[]
+        {
+            new Building("Campus de Caltech", 0f, 0f), new Building("Colorado Boulevard", 0f, 900f), new Building("Arroyo Seco", -1050f, 0f),
+            new Building("Montes de San Gabriel", 0f, 1600f), new Building("Christmas Tree Lane (Altadena)", 0f, 1450f),
+        },
+        todo = new[] { "en vivo: que los olivos queden en el paseo del campus y no sobre el laboratorio; que las palmeras caigan en la acera de California Boulevard" },
+    };
 }

@@ -175,3 +175,15 @@ origen están sus personas y sus sitios). Las distancias reales que no caben en 
   Colorado (USDA-ARS, Central Plains Experimental Range); el bosque de ribera de los arroyos del Front Range. **Inferido:** el sitio del Hotel Alta Vista
   (donde se alojó Tesla) en el plano.
 - **Menú:** `Build Microcosmos de historias: Tesla (Colorado Springs)`.
+
+### Pasadena (Patterson), sobre el Laboratorio de Química
+**El campus de Caltech y sus calles, 1953.** El laboratorio limpio es el escenario. Una ciudad de coches: solo lo plantado, y perros y gatos.
+- **El piso:** las poyatas son los montes de San Gabriel; las pilas, el Arroyo Seco; campanas y máquinas, roca.
+- **La flora (106):** los olivos del **Olive Walk** y las encinas de la costa del campus, con su césped; las palmeras de California Boulevard; el encinar
+  del Arroyo Seco; las calles de casas al sur y al norte (césped, rosales, setos de pitósporo); al norte, en Altadena, los cedros del Himalaya de la
+  **Christmas Tree Lane** (1885).
+- **Los animales del pueblo (8):** perros y gatos de las casas (cochinillas hormigueras).
+- **El bioma** gana el olivo del Olive Walk.
+- **Fuentes:** Caltech Archives (el Olive Walk y el plano del campus); City of Pasadena, «Street Trees»; Christmas Tree Lane (Registro Nacional de
+  Lugares Históricos); el encinar del Arroyo Seco (Arroyo Seco Foundation); el plano del pueblo. **Inferido:** las palmeras en California Boulevard.
+- **Menú:** `Build Microcosmos de historias: Patterson (Pasadena)`.
