@@ -22,7 +22,7 @@ public class FlyingCarpet : MonoBehaviour
     public float speed = 18f, cruise = 26f;
     /// <summary>(2026-11-04) El GROSOR de la alfombra (su canto con el núcleo de circuitos y la costura de LED, CarpetPad.BuildCarpet):
     /// quien va sentado o se baja, encima de él.</summary>
-    public const float Thickness = 0.07f;
+    public const float Thickness = 0.1f;   // (2026-11-11, petición #58: «más gruesas, con circuitos dentro»; la sonda de la ronda 65 midió 1 cm en la escena guardada: hay que reconstruirla)
     public bool Flying { get; private set; }
     float _ignoreUntil;
 
