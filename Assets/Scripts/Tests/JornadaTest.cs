@@ -571,7 +571,10 @@ public class JornadaTest : MonoBehaviour, ITestUnit, IFastGameTime
             string head = Head(tr.g);
             bool needs = head != null && (head.StartsWith("comer") || head.StartsWith("pedir") || head.StartsWith("buscar mesa") || head.StartsWith("levantarse") || head.Contains("en la barra") || head.Contains("baño") || head.Contains("aseo") || head.Contains("dormir") || head.Contains("cama"));
             bool asleep = tr.anima != null && tr.anima.asleep;
-            bool atPost = area != null && PlayerWorkday.AtPost(cur?.mission, area, p);
+            // (2026-11-11) Quien ha bajado por la Línea a la planta bajo el mar o ha volado al santuario aéreo HACE SU MISIÓN ALLÍ (corre por el reloj,
+            // en otra escena): no está «fuera de su puesto». Lizmibet e Irosene (la planta), Luciana (la flota aérea) a 0 % en la suite 60.
+            bool awaySite = SiteLine.IsAway(tr.g) || AereoLink.IsAway(tr.g);
+            bool atPost = awaySite || (area != null && PlayerWorkday.AtPost(cur?.mission, area, p));
             bool full = Window(tr, out float path, out float net, out float reach);
             bool moving = !full || path > 1f;
             string status = StatusOf(tr.g);
