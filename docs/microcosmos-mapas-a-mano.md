@@ -230,3 +230,17 @@ escenario) y la duna donde volaron. El mapa sigue el plano de Dayton y pone la d
   al-Yaʿqubi, *Kitab al-Buldan* (s. IX); Ruggles, *Islamic Gardens and Landscapes* (2008); el plano del pueblo. **Inferido:** el sitio de la Casa
   de la Sabiduría (el escenario, en el origen) y qué jardín tenía cada patio.
 - **Menú:** `Build Microcosmos de historias: Al-Juarismi (Bagdad)`.
+
+### Escútari (Florence Nightingale), sobre la Enfermería
+**El cuartel de Selimiye sobre el Bósforo, invierno de 1854–55.**
+- **El piso:** las camas son las alas del cuartel con sus filas de catres; los lavabos, el Bósforo y las fuentes del cuartel; las máquinas, roca.
+- **La flora (92):** hiedra y musgo de pared en las alas y las torres; cebada ratonera y malvas en el camino de Üsküdar y la calle de Selimiye;
+  caléndulas silvestres en la ribera del Bósforo; cipreses jóvenes, ciclámenes de invierno y lápidas en el **cementerio británico** (al sur, hacia
+  Haydarpaşa) y en el de **Karacaahmet** (al este); malvas en la ladera de Çamlıca.
+- **La fauna (22):** cucarachas orientales en las tres alas del cuartel, arañas de sótano en la torre de Nightingale, caracoles turcos sellados en
+  la hiedra, cochinillas bajo las lápidas, mariquitas invernando en los cipreses y hormigas segadoras en la ribera en un día templado.
+- **Edificios:** el cuartel, la torre de Nightingale, la mezquita de Selimiye, el embarcadero y los dos cementerios.
+- **Fuentes:** Royal Collection Trust, «The Military Hospital, Scutari» (W. Simpson, 1855); Plan d'Üsküdar (1850); Commonwealth War Graves
+  Commission, Haidar Pasha Cemetery; Nightingale, *Notes on Matters Affecting the Health … of the British Army* (1858); el plano del pueblo.
+  **Inferido:** la distancia a los dos cementerios (acortada al borde del mapa, en su dirección) y qué torre era la de Nightingale (la del noroeste).
+- **Menú:** `Build Microcosmos de historias: Nightingale (Escútari)`.

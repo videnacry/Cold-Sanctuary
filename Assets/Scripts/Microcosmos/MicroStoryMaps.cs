@@ -133,7 +133,7 @@ public static partial class MicroStoryMaps
         Stub("Mesopotamia", Base1, Base2, "Uruk: el Éufrates, los canales y los campos de cebada; el templo blanco"),
         Stub("Patanjali", Base1, Base2, "el āśram en el bosque: el río, el pipal, las chozas"),
         Stub("Tregua 1914", Base1, "la tierra de nadie (alfombras quitadas), las trincheras de cada lado y los abetos de Navidad"),
-        Stub("Escútari", Base1, Base2, "el hospital de los barracones de Selimiye junto al Bósforo"),
+        MapEscutari(),   // (2026-11-12) hecho: mapa a mano
         MapKapilavastu(),   // (2026-11-12) hecho: MicroStoryMaps.Tanda4.cs
         MapDayton(),   // (2026-11-12) hecho: mapa a mano
         MapAlejandria(),   // (2026-11-12) hecho: mapa a mano
