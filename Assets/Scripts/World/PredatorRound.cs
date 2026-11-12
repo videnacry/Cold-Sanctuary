@@ -180,6 +180,32 @@ public static class PredatorRound
         Debug.Log($"[Alimentador] «{by}» da el biberón a «{a.name}» (cría huérfana).");
     }
 
+    /// <summary>(2026-11-11) A partir de aquí «se muere de hambre» (más de una comida de retraso): no espera al turno del alimentador.</summary>
+    public const float StarvingAt = 1f;
+    /// <summary>Raciones de urgencia dejadas (diagnóstico y pruebas).</summary>
+    public static int EmergencyFed { get; private set; }
+    static float _nextEmergency;
+    /// <summary>(2026-11-11) URGENCIA FUERA DE TURNO: cada 5 s (o ya, con <paramref name="now"/>), a cada depredador de tierra servido que se muere de
+    /// hambre (≥ <see cref="StarvingAt"/>) y sin ración reciente, el almacén le deja su ración junto a él, si no hay ningún alimentador de turno.
+    /// Suite 63: una osa adulta murió de inanición al empezar (hambre 46) antes del primer turno. Lo llama el laboratorio en cada Update.</summary>
+    public static void EmergencyTick(bool now = false)
+    {
+        if (!now && Time.time < _nextEmergency) return;
+        _nextEmergency = Time.time + 5f;
+        if (!now) foreach (PredatorFeeder f in Object.FindObjectsByType<PredatorFeeder>(FindObjectsSortMode.None)) if (f != null && f.isActiveAndEnabled) return;   // (de turno: lo lleva él, por urgencia)
+        foreach (Animal a in Object.FindObjectsByType<Animal>(FindObjectsSortMode.None))
+        {
+            if (!Served(a) || Orphan(a) || a.hungry < StarvingAt || !ShouldFeed(a)) continue;
+            int n = TakeRations(RationsFor(a.SpeciesName));
+            if (n <= 0) { Debug.LogWarning($"[Alimentador] «{a.name}» se muere de hambre (hambre {a.hungry:0.0}) y el almacén está vacío."); continue; }
+            Vector3 from = a.transform.position + a.transform.forward * SafeDistanceFor(a);
+            Throw(a, n, from);
+            _fedAt[a] = Time.time; EmergencyFed++;
+            foreach (Entry e in _list) if (e.animal == a && !Done(e)) e.state = State.Fed;
+            Debug.Log($"[Alimentador] Urgencia: «{a.name}» ({a.SpeciesName}) se muere de hambre (hambre {a.hungry:0.0}) fuera de turno: el almacén le deja {n} raciones junto a él.");
+        }
+    }
+
     /// <summary>Si se le da de comer al llegar: ¿tiene hambre?</summary>
     public static bool IsHungry(Animal a) => a != null && !a.death && a.hungry > HungryAt;
 

@@ -55,7 +55,8 @@ public class WorkdayDirector : MonoBehaviour
 
     void Start()
     {
-        WorkRoster.FarFromLunch = FarFromLunch;   // (2026-11-11) la misión de Kushal justo tras comer, cerca del restaurante
+        WorkRoster.FarFromLunch = FarFromLunch;
+        WorkRoster.FarApart = FarApart;   // (2026-11-11) y la media hora de Kushal, en la misma torre que lo de antes   // (2026-11-11) la misión de Kushal justo tras comer, cerca del restaurante
         if (KitchenLarder.Instance != null) KitchenLarder.Instance.autoPlan = false;   // la cocina produce por misiones desde el primer día
         AreasEnObra.Apply();   // (Berón 2026-11-09) solo lo básico queda terminado: lo demás vuelve a ser obra (docs/areas-en-obra.md)
         foreach (SanctuaryArea a in FindObjectsByType<SanctuaryArea>(FindObjectsSortMode.None))
@@ -1271,6 +1272,18 @@ public class WorkdayDirector : MonoBehaviour
 
     // ¿Lejos del restaurante? Más de 0,2 h de juego de viaje (nado por los troncos y alfombras: ArbolCampos.TripSeconds). Una vez por área.
     static readonly Dictionary<string, bool> _farFromLunch = new Dictionary<string, bool>();
+    static readonly Dictionary<(string, string), bool> _farApart = new Dictionary<(string, string), bool>();
+    static bool FarApart(string a, string b)
+    {
+        if (string.IsNullOrEmpty(a) || string.IsNullOrEmpty(b) || a == b) return false;
+        if (_farApart.TryGetValue((a, b), out bool far)) return far;
+        Vector3 pa = AreaPoint(a, "Player"), pb = AreaPoint(b, "Player");
+        TimeController tc = TimeController.timeController;
+        float perHour = tc != null ? tc.SecondsPerGameDay / 24f : 150f;
+        far = pa != Vector3.zero && pb != Vector3.zero && ArbolCampos.TripSeconds(pa, pb) / Mathf.Max(1f, perHour) > 0.2f;
+        return _farApart[(a, b)] = far;
+    }
+
     static bool FarFromLunch(string area)
     {
         if (string.IsNullOrEmpty(area) || area == PlayerWorkday.LunchArea) return false;

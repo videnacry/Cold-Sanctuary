@@ -111,6 +111,21 @@ public class AlimentadorTest : MonoBehaviour, ITestUnit
             TestProbe.Check("las especies del biberón: oso, lobo, zorro ártico y foca", PredatorRound.OrphanSpecies.SetEquals(new[] { "Bear", "Wolf", "ArcticFox", "Seal" }));
             PredatorRound.NewRound(); list = PredatorRound.Today();
         }
+        // (2026-11-11) EL QUE SE MUERE DE HAMBRE FUERA DE TURNO: el almacén le deja la ración junto a él al momento (suite 63: una osa adulta murió de
+        // inanición al empezar, con hambre 46, antes del primer turno del alimentador).
+        Animal starving = list.Select(e => e.animal).FirstOrDefault(x => x != null && !PredatorRound.Orphan(x) && !x.death);
+        if (starving != null)
+        {
+            float oldH = starving.hungry; int before = PredatorRound.EmergencyFed;
+            starving.hungry = PredatorRound.StarvingAt + 1f;
+            CulturedMeatLab labE = CulturedMeatLab.All.FirstOrDefault(l => l != null); int stockWas = labE != null ? labE.rationsStored : 0;
+            if (labE != null && labE.rationsStored < 8) labE.rationsStored = 8;
+            PredatorRound.EmergencyTick(true);
+            TestProbe.Check("un depredador que se muere de hambre fuera de turno recibe su ración del almacén al momento", PredatorRound.EmergencyFed >= before + 1 && !PredatorRound.ShouldFeed(starving), $"{starving.name}, hambre {starving.hungry:0.0}");
+            starving.hungry = oldH; if (labE != null) labE.rationsStored = stockWas;
+            foreach (FoodItem fi in Object.FindObjectsByType<FoodItem>(FindObjectsSortMode.None)) if (fi != null && fi.name == "Racion_carne_cultivada" && Vector3.Distance(fi.transform.position, starving.transform.position) < 8f) Destroy(fi.gameObject);
+            PredatorRound.NewRound(); list = PredatorRound.Today();
+        }
         var a = PredatorRound.Claim("Uno", Vector3.zero); var b = PredatorRound.Claim("Dos", Vector3.zero);
         TestProbe.Check("dos alimentadores no se reservan al mismo", a != null && b != null && a.animal != b.animal);
 
