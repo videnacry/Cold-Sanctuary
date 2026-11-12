@@ -74,6 +74,11 @@ public static partial class MicroBiome
                 new Plant(Kind.Flower, 8, "Caña kans en flor (Saccharum spontaneum)", 150, C(0.5f, 0.62f, 0.35f), C(0.97f, 0.97f, 0.95f)),
                 new Plant(Kind.Shrub, 7, "Albahaca sagrada, tulsi (Ocimum tenuiflorum)", 45, C(0.35f, 0.5f, 0.25f), C(0.55f, 0.3f, 0.55f)),
                 new Plant(Kind.Fern, 6, "Plántula de sal (Shorea robusta)", 40, C(0.3f, 0.55f, 0.25f), C(0.35f, 0.3f, 0.2f)),
+                // (2026-11-12, mapa a mano) Los árboles del lugar: el bosque de sal de Lumbini, el baniano del Nigrodhārāma, el pipal y los mangos.
+                new Plant(Kind.Shrub, 4, "Árbol de sal (Shorea robusta)", 2500, C(0.22f, 0.42f, 0.2f), C(0.4f, 0.3f, 0.2f)),
+                new Plant(Kind.Shrub, 2, "Baniano (Ficus benghalensis)", 2000, C(0.2f, 0.4f, 0.18f), C(0.45f, 0.35f, 0.25f)),
+                new Plant(Kind.Shrub, 2, "Pipal (Ficus religiosa)", 1800, C(0.25f, 0.48f, 0.22f), C(0.45f, 0.38f, 0.3f)),
+                new Plant(Kind.Shrub, 2, "Mango (Mangifera indica)", 1200, C(0.18f, 0.38f, 0.16f), C(0.85f, 0.6f, 0.15f)),
                 new Plant(Kind.Fungus, 8, "Seta de termitero (Termitomyces)", 15, C(0.9f, 0.86f, 0.75f), C(0.8f, 0.7f, 0.55f)),
                 new Plant(Kind.Stone, 10, "Piedra", 0, Stone, Stone), new Plant(Kind.Sand, 4, "Arena del río", 0, Sand, Sand), new Plant(Kind.Dung, 3, "Boñiga de vaca", 0, DungC, DungC) },
               bugs = new[] {

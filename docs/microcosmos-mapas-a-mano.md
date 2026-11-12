@@ -76,3 +76,26 @@ cambios de piso que ya estaban en `MicroFloorElements.Overrides` (Tregua, Sils M
 
 La capa de tierra (`MicroGround.SoilEnabled`) está **apagada** por defecto desde el 2026-11-04 (colgaba el NavMesh de la Cocina); ver
 [microcosmos-suelo-y-elementos.md](microcosmos-suelo-y-elementos.md).
+
+## Tanda 4 (2026-11-12): las que el jugador ve primero
+
+Petición 75. Mapas en `MicroStoryMaps.Tanda4.cs`; prueba: grupo 115 (`MapasAManoTest`). Nada se siembra sobre el escenario de la historia (a ≤ 30 m de su
+origen están sus personas y sus sitios). Las distancias reales que no caben en el mapa (Kudan a 6 km, Lumbini a 25 km) van al borde, en su dirección.
+
+### Kapilavastu (Siddhārtha y los cuatro encuentros), sobre el Hospital
+**Tilaurakot, otoño tras el monzón, s. V a. C.** La ciudadela amurallada (~500 × 450 m) del plano, en la orilla este del Banganga.
+- **El piso:** las alfombras apiladas son el montículo de la ciudadela; las sillas, las colinas Siwalik (Churia) al norte (no nieva); las camas, los
+  diques de los arrozales; bañeras y piletas, los estanques revestidos de ladrillo; los lavabos, el Banganga. Las máquinas, roca (`Natural`).
+- **La flora (≈ 220):** arroz granado en los arrozales del este (40) y del oeste (30); caña kans en flor en tres tramos de la orilla del Banganga (36),
+  con arena y cantos; grama durva en las calles, tulsi en los patios y pipales junto al estanque de ladrillo y en las puertas este y oeste; mangos fuera
+  de la puerta norte; kusha en la orilla del Sagar; boñigas en las puertas norte y sur; al sur, **Kudan**: la arboleda de banianos del
+  Nigrodhārāma con su kusha; al este, hacia **Lumbini**, el bosque de sal con sus plántulas, termiteros y su seta (*Termitomyces*); una franja de
+  sal al norte de la ciudadela.
+- **La fauna (30):** saltamontes del arroz, pulgones y mariquitas en los arrozales, luciérnagas sobre ellos al anochecer, termitas en el bosque de
+  sal, peloteros en la boñiga de la puerta sur, hormigas león en la arena del río, mantis en la kans y el ácaro rojo de las lluvias en Kudan.
+- **El bioma** gana los árboles del lugar: árbol de sal, baniano, pipal y mango.
+- **Fuentes:** Coningham et al., proyecto Tilaurakot-Kapilavastu (Univ. de Durham): ciudadela de ~500 × 400 m, cuadrícula, murallas y foso
+  ([Durham](https://dur.ac.uk/departments/academic/archaeology/research/archaeology-research-projects/tilaurakot/)); Lumbini Development Trust
+  (Kudan, ~3 km al sur de Taulihawa, [LDT](https://lumbinidevtrust.gov.np/download/1042)); [Wikipedia, «Tilaurakot»](https://en.wikipedia.org/wiki/Tilaurakot)
+  (orilla este del Banganga). **Inferido:** Kudan a ~6 km de Tilaurakot (3 km a cada lado de Taulihawa); la flora del Terai (sal, kans, kusha) es la
+  del bioma ya investigado, no una lista del sitio.
