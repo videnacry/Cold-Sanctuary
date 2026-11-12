@@ -30,7 +30,8 @@ public static class AreasEnObra
 
     /// <summary>Dónde se hace la obra de un área: en la tierra, en Construcción (su equipo); en el Marino o el Aéreo, en el área misma, para que la
     /// hagan los que pasan allí el día (Control de misión: los de s3).</summary>
-    public static string ObraArea(string title) => SanctuaryPlacement.SanctuaryOfArea(title) == SanctuaryPlacement.Land ? "Construcción" : title;
+    public static string ObraArea(string title) => RefugeGrowth.IsStage(title) ? SiteLine.AreaName   // (las obras del refugio: abajo, las hacen los del Marino)
+        : SanctuaryPlacement.SanctuaryOfArea(title) == SanctuaryPlacement.Land ? "Construcción" : title;
 
     /// <summary>LAS ÁREAS DE OTRAS ESCENAS que también vuelven a obra (Berón 2026-11-09): Control de misión vive en la escena aérea, que no está cargada;
     /// su obra se lleva desde aquí, en un objeto propio, y su forma en construcción se enseña al cargar esa escena (<see cref="SyncLoaded"/>).</summary>

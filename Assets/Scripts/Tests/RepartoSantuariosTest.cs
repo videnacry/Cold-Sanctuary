@@ -392,6 +392,27 @@ public class RepartoSantuariosTest : MonoBehaviour, ITestUnit
         TestProbe.Check("en el Marino, el primer día se inician en más de 2 h y aprenden casi todo lo de su sitio", lessonsMax > 2 && seaDay.Count(m => learned.Contains(MissionRequirements.KnowledgeKey(m.id))) >= 5,
             $"clases por persona hasta {lessonsMax} · aprendidas {seaDay.Count(m => learned.Contains(MissionRequirements.KnowledgeKey(m.id)))}/7");
 
+        // EL REFUGIO CRECE (Berón 2026-11-05, #128; docs/sitio-nuclear.md §26): por obras que hace el equipo, hasta que se puede vivir allí
+        TestProbe.Check("autonomía de un mes (#125): 12 personas con corriente, 720 h; sin corriente, una semana", RefugeGrowth.AutonomyHours(12, 0, true) >= 720f - 1e-3f && Mathf.Approximately(RefugeGrowth.AutonomyHours(12, 0, false), RefugeRule.StoredHours));
+        TestProbe.Check("las obras del refugio: al menos 4 etapas, cada una con días y equipo, y la hacen los del Marino",
+            RefugeGrowth.Stages.Length >= 4 && RefugeGrowth.Stages.All(s => s.days > 0 && s.crew > 0 && RefugeGrowth.IsStage(s.title) && AreasEnObra.ObraArea(s.title) == SiteLine.AreaName));
+        bool grows = true;
+        for (int s = 1; s <= RefugeGrowth.Stages.Length; s++)
+        {
+            RefugeGrowth.Capacity a = RefugeGrowth.CapacityAfter(s - 1), b = RefugeGrowth.CapacityAfter(s);
+            bool rUp = b.seats > a.seats || b.livable > a.livable || b.days > a.days + 1e-3f || b.permanent > a.permanent;
+            bool rDown = b.seats < a.seats || b.livable < a.livable || b.days < a.days - 1e-3f || b.permanent < a.permanent;
+            grows &= rUp && !rDown;
+        }
+        TestProbe.Check("cada etapa terminada sube su capacidad (plazas, quien puede vivir allí, días o residentes fijos) y ninguna la baja", grows,
+            string.Join(" · ", Enumerable.Range(0, RefugeGrowth.Stages.Length + 1).Select(s => RefugeGrowth.CapacityAfter(s).ToString())));
+        RefugeGrowth.Capacity end = RefugeGrowth.CapacityAfter(RefugeGrowth.Stages.Length), start = RefugeGrowth.CapacityAfter(0);
+        TestProbe.Check("al principio solo es un refugio de emergencia; al final se puede vivir allí", start.livable == 0 && start.permanent == 0 && end.permanent > 0 && end.habitable);
+        TestProbe.Check("y la autonomía de un mes sigue con el refugio lleno en cada etapa (#125)",
+            Enumerable.Range(0, RefugeGrowth.Stages.Length + 1).All(s => RefugeGrowth.AutonomyHours(RefugeGrowth.CapacityAfter(s).seats, s, true) >= 720f - 1e-3f),
+            string.Join(", ", Enumerable.Range(0, RefugeGrowth.Stages.Length + 1).Select(s => $"{RefugeGrowth.CapacityAfter(s).seats} plazas {RefugeGrowth.AutonomyHours(RefugeGrowth.CapacityAfter(s).seats, s, true):0} h")));
+        TestProbe.Check("las obras del refugio no piden clones (se hacen con horas libres)", AreaWork.ObraMissions(RefugeGrowth.Stages[0].title, 2, reform: true, area: AreasEnObra.ObraArea(RefugeGrowth.Stages[0].title)).All(m => m.optional && SanctuaryPlacement.SanctuaryOfArea(m.area) == SanctuaryPlacement.Marine));
+
         // ── 4. Cambia cada día y con los datos ──
         WorkRoster six = Roster(("P0", 2), ("P1", 2), ("P2", 2), ("P3", 2), ("P4", 2), ("P5", 2));
         bool differs = true;

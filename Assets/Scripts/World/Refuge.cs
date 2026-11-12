@@ -50,9 +50,14 @@ public class Refuge : MonoBehaviour
     /// <summary>¿Hace agua y aire? Hace falta corriente y al menos un sondeo.</summary>
     public bool MakesOwn => reactorFeed && seaBores > 0;
     /// <summary>Lo que aguanta desde lleno, según haya máquinas o solo lo guardado.</summary>
-    public float MaxHours => MakesOwn ? RefugeRule.Hours : RefugeRule.StoredHours;
+    /// <summary>(Berón 2026-11-05, #128) Las etapas del refugio ya hechas (<see cref="RefugeGrowth"/>, las abre <see cref="RefugeBuilder"/>).</summary>
+    public int StagesDone => _builder != null ? _builder.Done : 0;
+    /// <summary>Lo que aguanta hoy, según sus etapas: plazas, quien puede vivir allí, días y residentes fijos.</summary>
+    public RefugeGrowth.Capacity Capacity => RefugeGrowth.CapacityAfter(StagesDone);
+    RefugeBuilder _builder;
+    public float MaxHours => RefugeGrowth.AutonomyHours(Capacity.seats, StagesDone, MakesOwn);   // (lleno: un mes con corriente, una semana sin ella)
 
-    void OnEnable() { Instance = this; }
+    void OnEnable() { Instance = this; _builder = GetComponent<RefugeBuilder>() ?? gameObject.AddComponent<RefugeBuilder>(); }   // (las obras para que crezca)
     void OnDisable() { if (Instance == this) Instance = null; }
 
     /// <summary>Lo que le queda de listo el día <paramref name="day"/> (1 = recién revisado).</summary>
@@ -69,7 +74,7 @@ public class Refuge : MonoBehaviour
     public void Service(string who, int day)
     {
         _lastService = day; Services++; HoursLeft = MaxHours;
-        Debug.Log($"[Refugio] {who} lo revisa: {RefugeRule.Capacity} plazas, {MaxHours / 24f:0} días, {RefugeRule.KwFull:0.0} kW lleno.");
+        Debug.Log($"[Refugio] {who} lo revisa: {Capacity}, {MaxHours / 24f:0} días lleno, {RefugeRule.KwFull:0.0} kW lleno.");
     }
 
     public void Enter() { Occupants++; HoursLeft = Mathf.Min(HoursLeft, MaxHours); Debug.LogWarning($"[Refugio] Entra alguien: {Occupants} dentro. Quedan {HoursLeft:0} h."); }
