@@ -135,3 +135,16 @@ origen están sus personas y sus sitios). Las distancias reales que no caben en 
   dice «[Mapa] … escenario imaginado (Berón, 2026-10-27), sin mapa real».
 - El resto de los científicos y famosos (Escútari, Dayton, Alejandría, París 1898, Berna, Pasadena, Colorado Springs, Chernóbil, Palenque,
   Velliangiri, Hawthorne, Albuquerque, Omaha, Prairie View, Uagadugú…) siguen en esbozo, con la siembra al azar de respaldo.
+
+### Berna (Einstein), sobre la Planta Atómica
+**El casco viejo en la península del Aar, mayo de 1905**, el año milagroso. Una ciudad: solo lo plantado y los animales del pueblo.
+- **El piso** (bajo el mar, como el de Newton): la piscina del reactor es el meandro del Aar; bancos y consolas, el Gurten y la meseta del
+  Kirchenfeld; los lavabos, las fuentes de la ciudad vieja; las máquinas, roca.
+- **La flora (81):** la Münsterplattform con sus castaños de Indias en flor, césped y boj; la Kleine Schanze al suroeste (castaños, césped, boj);
+  los tilos de la terraza del Palacio Federal (1902) y de la Bärenplatz; los geranios de las jardineras de la Kramgasse y la Gerechtigkeitsgasse;
+  el adoquín de arenisca de la Münstergasse.
+- **Los animales del pueblo (13):** caballos de los carros de reparto (pulgones de tiro) en la Kramgasse, en el mercado de la Bärenplatz y ante la
+  estación; gatos de los soportales (cochinillas hormigueras).
+- **Fuentes:** el plano del pueblo (Stadtplan Bern 1905); [Einstein-Haus Bern](https://www.einstein-bern.ch/) (Kramgasse 49); Stadtgrün Bern
+  (Münsterplattform, Kleine Schanze); el Palacio Federal (1902). **Inferido:** el número de árboles de cada plaza.
+- **Menú:** `Build Microcosmos de historias: Einstein (Berna)`.

@@ -149,7 +149,7 @@ public static partial class MicroStoryMaps
         Stub("Sils Maria", Base1, "el lago de Silvaplana, la roca de Surlej y los senderos de la Engadina (la mesa como nevado)"),
         Stub("París 1898", Base1, Base2, "la calle Lhomond y el cobertizo de la Escuela de Física y Química"),
         Stub("Colorado Springs", Base1, Base2, "el laboratorio de Tesla en Knob Hill con Pikes Peak al oeste"),
-        Stub("Berna", Base1, Base2, "la Kramgasse, la Zytglogge y el Aar"),
+        MapBerna(),   // (2026-11-12) hecho: MicroStoryMaps.Cientificos.cs
         Stub("Pasadena", Base1, Base2, "Caltech, las San Gabriel y las calles de 1953"),
         Stub("Chernóbil", Base1, Base2, "Prípiat, la central, el estanque de refrigeración (el lavabo como mar) y el bosque rojo"),
         Stub("Palenque", Base1, Base2, "el Palacio, el Templo de las Inscripciones, el río Otolum y la milpa"),
