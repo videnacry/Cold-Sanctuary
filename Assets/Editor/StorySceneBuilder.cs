@@ -161,6 +161,8 @@ public static partial class StorySceneBuilder
     public static void BuildEinstein() => BuildOne("Microcosmos_Einstein");
     [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias: Curie (París 1898)")]
     public static void BuildCurie() => BuildOne("Microcosmos_Curie");
+    [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias: Tesla (Colorado Springs)")]
+    public static void BuildTesla() => BuildOne("Microcosmos_Tesla");
     public static void BuildBuda() => BuildOne("Microcosmos_Buda");
 
     /// <summary>Genera un solo microcosmos de historia por su escena (en su mismo origen que en <see cref="BuildAll"/>).</summary>

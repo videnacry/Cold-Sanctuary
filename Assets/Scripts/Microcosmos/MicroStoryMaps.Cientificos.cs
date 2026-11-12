@@ -88,4 +88,44 @@ public static partial class MicroStoryMaps
         },
         todo = new[] { "en vivo: que los plátanos caigan en las aceras de los bulevares y no en la calzada; que el Luxemburgo no tape el boulevard Saint-Michel" },
     };
+
+    // ══ COLORADO SPRINGS, julio de 1899 (Tesla y la alta tensión): sobre la Construcción ═══════════════════════════════════════════════════════
+    // La estación experimental de Knob Hill, al este de la ciudad, es el escenario. Alrededor, la pradera de hierba corta en julio (grama azul,
+    // hierba del búfalo, yucas en flor, nopales, margaritas de la pradera), con hormigas segadoras y saltamontes; al oeste, la ciudad de Palmer con sus
+    // avenidas, el ferrocarril y el Monument Creek con sus álamos; al fondo, las Rocosas y el Pikes Peak, y la arenisca roja del Garden of the Gods.
+    static Map MapColoradoSprings() => new Map
+    {
+        display = "Colorado Springs", place = "Colorado Springs, la pradera de Knob Hill y la ciudad de Palmer, julio de 1899", status = Status.Hecho,
+        source = "Tesla, Colorado Springs Notes 1899–1900 (Nolit, 1978: la estación de Knob Hill, al este de la ciudad); Sanborn Fire Insurance Map, Colorado Springs 1897 " +
+                 "(el plano del pueblo); la estepa de hierba corta del este de Colorado (USDA-ARS, Central Plains Experimental Range: Bouteloua gracilis y B. dactyloides); " +
+                 "bosque de ribera de álamos de las llanuras (Populus deltoides) en los arroyos del Front Range",
+        floor = Natural(
+            new Piece("alfombra", Apilar, "las alfombras, apiladas: Knob Hill, la loma de la estación"),
+            new Piece("mesa", Como, "bancos y mesas de obra: las mesas (buttes) de la pradera", "mesa"),
+            new Piece("silla", Como, "las sillas: las cumbres del Front Range, con nieve en el Pikes Peak", "silla")),
+        flora = new[]
+        {
+            // La pradera de hierba corta al este y al norte de la estación.
+            new Plant("Grama azul", 300f, 100f, 30, 200f), new Plant("Grama azul", 250f, -300f, 20, 150f), new Plant("Hierba del búfalo", -150f, 200f, 15, 80f),
+            new Plant("Yuca", 400f, -100f, 8, 120f), new Plant("Nopal", 200f, 250f, 8, 80f), new Plant("Margarita de la pradera", 300f, -150f, 10, 100f),
+            // Los álamos del Monument Creek, al oeste de la ciudad, y la arenisca roja del Garden of the Gods, al noroeste.
+            new Plant("Álamo de Virginia", -960f, 450f, 6, 60f), new Plant("Álamo de Virginia", -950f, -300f, 6, 60f), new Plant("Arenisca roja", -1350f, 600f, 6, 100f),
+        },
+        fauna = new[]
+        {
+            new Animal("Grasshopper", "Saltamontes migratorio (Melanoplus sanguinipes)", 300f, 100f, 4, 2.4f, 150f),
+            new Animal("Ant", "Hormiga segadora (Pogonomyrmex occidentalis), con su montículo de grava", 250f, -300f, 3, 1.2f, 100f),
+            new Animal("Ladybug", "Mariquita convergente (Hippodamia convergens)", 300f, -150f, 2, 1.2f, 80f),
+            new Animal("SnowBee", "Abejorro (Bombus huntii), en las margaritas", 300f, -150f, 3, 1.8f, 80f),
+            new Animal("Spider", "Araña lobo (Hogna)", -150f, 200f, 2, 1.6f, 60f),
+            new Animal("DungBeetle", "Escarabajo pelotero (Phanaeus)", 400f, -100f, 2, 1.6f, 80f),
+            new Animal("Aphid", "Caballo de los coches de Pikes Peak Avenue (en el microcosmos, un pulgón de tiro)", -600f, 0f, 3, 2.4f, 60f),
+        },
+        buildings = new[]
+        {
+            new Building("Plaza (Acacia Park)", -660f, 210f), new Building("Estación del Denver & Rio Grande", -900f, 0f), new Building("Monument Creek", -960f, 0f),
+            new Building("Pikes Peak", -1450f, -300f), new Building("Hotel Alta Vista (donde se alojó Tesla)", -790f, -60f),
+        },
+        todo = new[] { "en vivo: que la pradera caiga fuera del camino de Knob Hill; que los álamos queden en la orilla del Monument Creek y no en la vía" },
+    };
 }

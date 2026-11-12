@@ -161,3 +161,17 @@ origen están sus personas y sus sitios). Las distancias reales que no caben en 
 - **Fuentes:** el plano del pueblo (Plan de Paris, Alphand 1889); Alphand, *Les Promenades de Paris* (1867–1873); Quinn, *Marie Curie: A Life* (1995):
   el cobertizo de la rue Lhomond y la casa de la rue de la Glacière, 24; la Compagnie générale des omnibus (~17 000 caballos hacia 1900).
 - **Menú:** `Build Microcosmos de historias: Curie (París 1898)`.
+
+### Colorado Springs (Tesla), sobre la Construcción
+**La pradera de Knob Hill y la ciudad de Palmer, julio de 1899.** La estación experimental es el escenario.
+- **El piso:** las alfombras apiladas son Knob Hill; las mesas de obra, las mesas (*buttes*) de la pradera; las sillas, las cumbres del Front Range con
+  nieve en el Pikes Peak; las máquinas, roca.
+- **La flora (109):** la pradera de hierba corta al este y al norte de la estación (grama azul, hierba del búfalo, yucas en flor, nopales,
+  margaritas de la pradera); los álamos de las llanuras del Monument Creek, al oeste de la ciudad; la arenisca roja del Garden of the Gods, al noroeste.
+- **La fauna (19):** saltamontes, hormigas segadoras con su montículo de grava, mariquitas, abejorros en las margaritas, arañas lobo y peloteros
+  en la pradera; caballos de los coches de Pikes Peak Avenue (pulgones de tiro).
+- **El bioma** gana el álamo de las llanuras (*Populus deltoides*) de la ribera.
+- **Fuentes:** Tesla, *Colorado Springs Notes 1899–1900* (Nolit, 1978); el plano del pueblo (Sanborn 1897); la estepa de hierba corta del este de
+  Colorado (USDA-ARS, Central Plains Experimental Range); el bosque de ribera de los arroyos del Front Range. **Inferido:** el sitio del Hotel Alta Vista
+  (donde se alojó Tesla) en el plano.
+- **Menú:** `Build Microcosmos de historias: Tesla (Colorado Springs)`.

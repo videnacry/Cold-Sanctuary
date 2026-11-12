@@ -441,7 +441,9 @@ public static partial class MicroBiome
                 new Plant(Kind.Shrub, 8, "Yuca (Yucca glauca)", 80, C(0.4f, 0.52f, 0.4f), C(0.95f, 0.95f, 0.85f)),
                 new Plant(Kind.Shrub, 6, "Nopal de la pradera (Opuntia polyacantha)", 25, C(0.4f, 0.55f, 0.3f), C(0.95f, 0.85f, 0.3f)),
                 new Plant(Kind.Flower, 6, "Margarita de la pradera (Ratibida columnifera)", 50, C(0.35f, 0.5f, 0.28f), C(0.8f, 0.25f, 0.1f)),
-                new Plant(Kind.Stone, 10, "Arenisca roja", 0, C(0.7f, 0.4f, 0.3f), Stone) },
+                new Plant(Kind.Stone, 10, "Arenisca roja", 0, C(0.7f, 0.4f, 0.3f), Stone),
+                // (2026-11-12, mapa a mano) El bosque de ribera del Monument Creek.
+                new Plant(Kind.Shrub, 3, "Álamo de Virginia (Populus deltoides), en la ribera del Monument Creek", 1800, C(0.3f, 0.5f, 0.25f), C(0.55f, 0.5f, 0.4f)) },
               bugs = new[] {
                 new Bug("Grasshopper", 6, 25, C(0.55f, 0.5f, 0.35f), "Saltamontes migratorio (Melanoplus sanguinipes)"),
                 new Bug("Ant", 6, 7, C(0.6f, 0.25f, 0.12f), "Hormiga segadora (Pogonomyrmex occidentalis), con su montículo de grava"),
