@@ -4,6 +4,9 @@ Tablero para retomar. Última sesión: 2026-08-28. Marca lo que completes.
 Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-planteamiento.md`](gaps-vs-planteamiento.md),
 [`world-topology-and-planes.md`](world-topology-and-planes.md) (visión del mundo grande / los 3 planos).
 
+> **HECHO 2026-11-12 (#128, el refugio crece, rama claude/refugio-crece; solo código, sin probar en vivo):** cinco obras en orden (dormitorios, comedor y despensa, agua y aire para 24, invernadero, enfermería y taller) que hace el equipo del Marino con horas libres; cada una sube lo que aguanta el refugio y la autonomía de un mes (#125) se mantiene ([sitio-nuclear.md](sitio-nuclear.md) §26).
+> - [ ] Probar 113 y, en vivo, ver el registro `[Refugio] Obra abierta` y sus turnos en la Línea.
+
 > **REGLA (2026-11-10): toda petición de Berón se anota aquí el mismo día**, con su fecha y el doc o la regla a la que apunta. **Un
 > punto solo cuenta como hecho cuando se ha verificado en vivo**: programado y compilado es «sin verificar», no «hecho».
 > Auditoría completa: [`auditoria-peticiones.md`](auditoria-peticiones.md).

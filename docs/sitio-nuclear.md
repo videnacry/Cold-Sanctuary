@@ -763,6 +763,9 @@ Berón: «el refugio sería ideal irlo mejorando al punto que sea posible vivir 
 |---|---|---|---|---|
 | **1. Refugio** (hecha) | Un mes para 12 en emergencia | Dos salas, galería, refugio | Viaje, soporte vital por reglas | ~400 objetos |
 | **2. Base habitable** | 8–12 personas por turnos de semanas | Dormitorios, comedor, enfermería, taller, **invernadero de 276 m²** (una sala con columnas) | Turnos largos, soporte vital de verdad (aire, agua y comida como cuentas diarias), trabajadores que viven abajo, un NavMesh propio, paredes con colisión | Bajo; hay que simular a quien vive abajo sin cargar la escena |
+
+**(2026-11-09)** La fase 2 se hace por obras: §26.
+
 | **3. Santuario Marino** | Lo de world-topology §3.1: cúpula, *moon pool* | Niveles a media y gran profundidad, fauna abisal, laboratorios, un edificio-árbol propio, salida al mar con traje o submarino | Bajar por niveles (peligro con la hondura), presión, fauna nueva, jornada y economía propias | Alto: **es un santuario entero**; requiere límite de memoria y descargar el santuario 1 |
 
 **Regla para crecer:** nunca los dos pesados a la vez. A partir de la fase 3 el Marino debería cargarse **en lugar de** el santuario 1, con un estado que se guarde, no aditivo. Eso aún no existe: es el mayor cambio de esa fase.
@@ -1000,6 +1003,40 @@ Las salas con paredes (`Room`: sala de control, garita, almacén…) dejan su pu
 ### Pruebas
 - **114 (`NuclearSubmarinaTest`), nueva:** nada del sitio por encima de y 0 salvo la estación; ni el árbol ni las áreas arriba; la pista en la red del santuario y a mano del andén; sin escaleras; la jornada a la estación y la bajada sin cargar nada; la energía; abajo, las dos áreas con su maquinaria, todo bajo y 0 y **cada puesto alcanzable** (relleno por rejilla de 1 m desde el andén de abajo; a ≤ 1,5 m del borde de cada puesto); **cada sala con puerta**; **T16** (luz libre ≤ 14 m con columnas o vigas, y las columnas a ≥ 2 m de los muebles); las **posiciones reservadas** de las dos áreas.
 - **94** reescrita para la estación, con el **garaje** y el viaje del submarino de obra; **100** con la pista de la red del santuario; `SanctuaryLifeTest`: sin árbol del sitio arriba.
+
+## 26. El refugio crece hasta que se puede vivir allí (Berón 2026-11-05, #128)
+
+Berón: «el refugio sería ideal irlo mejorando al punto que sea posible vivir alli». Esta sección es la **fase 2 de §21** (base habitable), hecha con obras. No hay sala nueva en la escena del Marino: las obras se llevan desde el santuario 1, como el resto de la lógica del refugio (§20).
+
+**Cómo crece.** Por **etapas**, una detrás de otra. Cada etapa es una obra (`ConstructionProject`) que abre `RefugeBuilder`, en el mismo objeto que `Refuge`:
+- **Quién la hace:** el equipo de construcción **del Marino**. Sus tareas de obra son del área «Línea de las cavernas» (`AreasEnObra.ObraArea`).
+- **Cuándo:** son **opcionales**. Se hacen con horas libres y nunca piden un clon. Si nadie tiene tiempo, la obra espera ese día.
+- **Al acabar una etapa** se abre la siguiente. Lo hecho se guarda como cualquier obra (`cs_obra_<título>`).
+- **Con las pruebas** no se abre ninguna obra (`RefugeBuilder.InTests`).
+
+| Etapa | Obra | Qué añade | Necesidad que cubre |
+|---|---|---|---|
+| 0 (hecha) | El refugio de §12 y §16 | 12 plazas de emergencia; un mes con corriente, una semana sin ella | Aire y agua de la mar (electrólisis y ósmosis), comida guardada para un mes |
+| 1 | Refugio: dormitorios (6 días, equipo de 2) | 12 literas en tres dormitorios con aseo | **Camas**: se puede vivir allí por turnos |
+| 2 | Refugio: comedor y despensa (5 días, 2) | Cocina, comedor y despensa para dos meses (432 kg) | **Comida**: 60 días para 12 |
+| 3 | Refugio: agua y aire para 24 (6 días, 2) | Segunda planta de ósmosis y segundo electrolizador | **Agua y aire**: 24 plazas de emergencia |
+| 4 | Refugio: invernadero (8 días, 3) | 276 m² de cultivo con luz (23 m² por persona, como Lunar Palace 1; §16) | **Comida fresca para 12** sin gastar la despensa |
+| 5 | Refugio: enfermería y taller (5 días, 2) | Enfermería y taller de reparación | **Vivir allí** sin subir: 12 residentes fijos |
+
+**Lo que aguanta** (`RefugeGrowth.CapacityAfter`, 113). Cada etapa sube algo y ninguna baja nada:
+- **Plazas de emergencia:** 12, y 24 desde la etapa 3.
+- **Quién vive allí por turnos:** 0, y 12 desde la etapa 1.
+- **Días de comida para quienes viven allí:** 30, 60 desde la etapa 2, y sin límite con el invernadero.
+- **Residentes fijos:** 0, y 12 al acabar.
+
+**La autonomía de un mes (#125, 720 h)** se mantiene en cada etapa con el refugio lleno (`RefugeGrowth.AutonomyHours`, 113):
+- **Con corriente,** el agua y el aire se hacen para quienes caben en la planta, y manda la comida: la despensa menos lo que da el invernadero.
+- **Sin corriente,** lo guardado: una semana para 12.
+- **Con 24 personas en la etapa 3,** 432 kg dan justo 30 días.
+
+**La corriente** sigue siendo la clave (§16). Con 24 personas son unos 12 kW, nada para la central. El invernadero añadiría unos 60 kW (§16), también posible con el reactor.
+
+**Lo que falta (fase 3):** que alguien viva abajo de verdad, con turnos de semanas y sin subir a la jornada del santuario 1. Hoy el refugio aguanta a sus residentes en los números, pero **la jornada no manda a nadie a vivir allí**.
 
 ## Fuentes
 - [10 CFR 100.11](https://www.law.cornell.edu/cfr/text/10/100.11), [10 CFR 100.3](https://www.law.cornell.edu/cfr/text/10/100.3), [10 CFR 53.530](https://www.law.cornell.edu/cfr/text/10/53.530)
