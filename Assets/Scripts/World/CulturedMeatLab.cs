@@ -107,6 +107,7 @@ public class CulturedMeatLab : MonoBehaviour
 
     void Update()
     {
+        if (All.Count > 0 && All[0] == this) PredatorRound.EmergencyTick();   // (2026-11-11) el que se muere de hambre fuera de turno
         float dt = Time.deltaTime * speed;
         _t += dt;
         switch (stage)

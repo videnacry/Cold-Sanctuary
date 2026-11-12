@@ -238,9 +238,21 @@ public class CarpetWalkSpell : QueuedSpell
         float dy = Mathf.Abs(d.y); d.y = 0f; ds.y = 0f;
         if ((d.magnitude <= stopDistance || ds.magnitude <= 0.4f) && dy < 2f) return true;
         Vector3 to = target.position;
-        if (CarpetPad.Route(self.gameObject, ref to)) { _checkAt = Time.time; _checkPos = self.transform.position; return false; }   // volando (o subiéndose)
+        // (2026-11-11) Volando o nadando por un tronco no cuenta como «sin avanzar»; pero si la ruta dice «en alfombra» y NO va en alfombra ni en un
+        // viaje del árbol, sí: Lizmibet, recién salida por la puerta del piso 5 de Residencia, «ir a su cama (en alfombra)» quieta (suite 63): la
+        // comprobación se reiniciaba en cada fotograma y no se rendía nunca antes del tope de 5 min.
+        if (CarpetPad.Route(self.gameObject, ref to))
+        {
+            if (FlyingCarpet.Riding(self.gameObject) || TreeTrip.Busy(self.gameObject)) { _checkAt = Time.time; _checkPos = self.transform.position; return false; }
+            return NoProgressCheck(self);
+        }
         if (to == target.position) to = _snap;                         // en su piso: al punto andable junto al destino
         PathMover.Of(self.transform).StepToward(to, speed);
+        return NoProgressCheck(self);
+    }
+
+    bool NoProgressCheck(Anima self)
+    {
         // SIN AVANZAR (JornadaTest 2026-10-29: «ir al baño» quieto más de 20 s): en 8 s sin moverse medio metro recalcula el
         // camino una vez; si sigue igual, lo deja (antes esperaba quieto hasta el tope de 2–5 min).
         if (_checkAt <= 0f || (self.transform.position - _checkPos).magnitude > 0.5f) { _checkAt = Time.time; _checkPos = self.transform.position; }
