@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using Unity.AI.Navigation;
@@ -72,6 +73,53 @@ public class StaleNavCarver : MonoBehaviour
         n += walls;
         Carved = n;
         Debug.Log($"[NavMesh] {n} muebles sin hueco en el NavMesh: ahora lo tallan (no se atraviesan).");
+    }
+
+    // ── (2026-11-11) DENTRO DE LA RAÍZ: cada 2 s, el animal de tierra que está dentro de la planta de la raíz de una torre-árbol (en su pared o
+    // dentro) lo dice UNA vez con cuándo se le vio por primera vez y sus 3 últimas posiciones, y se le saca al punto del NavMesh más cercano
+    // fuera de la pared (ronda 69: un zorro ártico «dentro de Pared_raiz» en (-45,0,-96), quieto, con el obstáculo de 754a752 puesto).
+    float _nextRootCheck;
+    readonly Dictionary<Animal, (float seen, List<Vector3> last, bool told)> _rootSeen = new Dictionary<Animal, (float, List<Vector3>, bool)>();
+    public static int PulledOutOfRoots { get; private set; }
+
+    void Update()
+    {
+        if (Time.time < _nextRootCheck) return;
+        _nextRootCheck = Time.time + 2f;
+        foreach (Animal a in FindObjectsByType<Animal>(FindObjectsSortMode.None))
+        {
+            if (a == null || a.death || a.nav == null || !a.nav.enabled || a.GetComponent<MarineLife>() != null) continue;
+            if (!_rootSeen.TryGetValue(a, out var h)) h = (Time.time, new List<Vector3>(), false);
+            h.last.Add(a.transform.position); if (h.last.Count > 3) h.last.RemoveAt(0);
+            ArbolCampos t = RootAround(a.transform.position, out float half);
+            if (t != null)
+            {
+                Vector3 l = t.transform.InverseTransformPoint(a.transform.position); Vector3 dir = new Vector3(l.x, 0f, l.z);
+                if (dir.sqrMagnitude < 0.01f) dir = Vector3.forward;
+                Vector3 outside = t.transform.TransformPoint(dir.normalized * (half * 1.45f + 2f)); outside.y = a.transform.position.y;
+                if (!h.told) { h.told = true; Debug.Log($"[Fauna] dentro de Pared_raiz: «{a.name}» ({a.SpeciesName}) en la raíz de {t.building}, en {a.transform.position}; visto por primera vez a los {h.seen:0} s; últimas posiciones: {string.Join(" → ", h.last)}."); }
+                if (NavMesh.SamplePosition(outside, out NavMeshHit nh, 6f, a.nav.areaMask) && RootAround(nh.position, out _) == null)
+                {
+                    a.nav.Warp(nh.position); PulledOutOfRoots++;
+                    Debug.Log($"[Fauna] «{a.name}» sale de la raíz de {t.building}: a {nh.position} (fuera de la pared).");
+                }
+            }
+            _rootSeen[a] = h;
+        }
+    }
+
+    // La torre-árbol (que no gira; la que gira lleva su obstáculo redondo) en cuya planta de raíz cae p (a la altura del suelo).
+    static ArbolCampos RootAround(Vector3 p, out float half)
+    {
+        half = 0f;
+        foreach (ArbolCampos t in ArbolCampos.All)
+        {
+            if (t == null || t.wall == null || !t.wall.TryGetComponent(out MeshCollider mc) || mc.sharedMesh == null) continue;
+            Vector3 l = t.wall.InverseTransformPoint(p); Bounds mb = mc.sharedMesh.bounds;
+            if (l.y < mb.min.y - 1f || l.y > mb.min.y + 4f) continue;
+            if (Mathf.Abs(l.x - mb.center.x) <= mb.extents.x + 0.3f && Mathf.Abs(l.z - mb.center.z) <= mb.extents.z + 0.3f) { half = mb.extents.x; return t; }
+        }
+        return null;
     }
 
     // ¿Hay NavMesh dentro de su planta, a la altura de su base? (en ≥ 2 de 9 puntos)
