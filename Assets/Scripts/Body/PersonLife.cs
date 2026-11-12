@@ -159,11 +159,19 @@ public class PersonLife : MonoBehaviour
         if (_navAg == null) _navAg = GetComponent<UnityEngine.AI.NavMeshAgent>();
         if (_navAg != null && _navAg.enabled) _navAg.enabled = false;
         Vector3 hand = mother.transform.position - mother.transform.forward * 0.5f * h + mother.transform.right * 0.35f * h;
+        // (2026-11-11, vivo57) A SU ALTURA, no a la de su madre: con el pivote de ella (más alto que el suyo) iba 0,5–0,7 m en el aire y, al
+        // soltarle, GroundGuard le «bajaba al suelo» (×14). Pies con pies.
+        hand.y = mother.transform.position.y - PathMover.Of(mother.transform).PivotHeight + pm.PivotHeight;
         transform.position = Vector3.MoveTowards(transform.position, hand, Mathf.Max(6f, d * 4f) * Time.deltaTime);
         Vector3 look = mother.transform.forward; look.y = 0f; if (look.sqrMagnitude > 0.01f) transform.rotation = Quaternion.LookRotation(look);
-        if (!travelling && dy < 1f && d < 1.5f * h && UnityEngine.AI.NavMesh.SamplePosition(transform.position, out UnityEngine.AI.NavMeshHit nh, 1.5f, UnityEngine.AI.NavMesh.AllAreas))
+        // Se le suelta solo con el suelo JUSTO bajo los pies (≤ 0,6 m): con 1,5 m se le soltaba sobre un NavMesh de otro nivel, su agente no
+        // quedaba en él y se quedaba en el aire (8,3 m). Se le posa en ese punto antes de encender el agente.
+        float feet = transform.position.y - pm.PivotHeight;
+        if (!travelling && dy < 1f && d < 1.5f * h && UnityEngine.AI.NavMesh.SamplePosition(new Vector3(transform.position.x, feet, transform.position.z), out UnityEngine.AI.NavMeshHit nh, 0.6f, UnityEngine.AI.NavMesh.AllAreas)
+            && Mathf.Abs(nh.position.y - feet) < 0.6f)
         {
             _byHand = false;
+            transform.position = nh.position + Vector3.up * pm.PivotHeight;
             if (_navAg != null) { _navAg.enabled = true; if (_navAg.isOnNavMesh) _navAg.Warp(nh.position); }
             pm.Restart();
         }

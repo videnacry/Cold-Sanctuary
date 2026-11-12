@@ -281,6 +281,20 @@ public static class DesireCatalog
     /// <summary>Diagnóstico: el viaje de un animal (deseo, si va, destino, pausas, llamadas).</summary>
     /// <summary>(2026-11-11) El estado del agente de un animal, para los avisos de «atascado»: camino, cálculo pendiente, estado, velocidad,
     /// sobre el NavMesh y distancia al destino.</summary>
+    /// <summary>(2026-11-11) UN SOLO DUEÑO DEL CUERPO: al ganar <paramref name="newKey"/> (Volition), el viaje de otro deseo se acaba (sin
+    /// tocar el agente: el nuevo pone su camino) y el hábito, si no es él quien gana, suelta al animal.</summary>
+    public static void Handover(Animal a, string newKey)
+    {
+        if (a == null) return;
+        if (_trips.TryGetValue(a, out Trip t) && t.going && t.key != newKey && !SameTrip(t.key, newKey)) t.going = false;
+        if (newKey != "habit" && a.TryGetComponent(out Habit h) && h.Active) h.Release();
+    }
+    // (el deseo «habit» y el viaje del deseo se llaman igual; «explore» usa el viaje «explore»; «buscar pareja», «cortejo» y «rastro» son de «mate»; «recinto», de «explore»)
+    static bool SameTrip(string tripKey, string desireKey) => tripKey == desireKey || (desireKey == "mate" && (tripKey == "buscar pareja" || tripKey == "cortejo" || tripKey == "rastro")) || (desireKey == "explore" && tripKey == "recinto");
+
+    /// <summary>(Pruebas) Empieza un viaje <paramref name="key"/> a <paramref name="goal"/>.</summary>
+    public static void StartTripForTest(Animal a, string key, Vector3 goal) { if (a == null) return; Trip t = TripOf(a, key); Walk(a, t, goal); }
+
     /// <summary>(2026-11-11) ¿Lleva un viaje de deseo en marcha (para NavTrace)?</summary>
     public static bool LiveTrip(Animal a, out string key) { key = null; if (a == null || !_trips.TryGetValue(a, out Trip t) || !t.going) return false; key = t.key; return true; }
 
