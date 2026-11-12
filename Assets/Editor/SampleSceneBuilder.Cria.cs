@@ -43,8 +43,10 @@ public static partial class SampleSceneBuilder
 
         Transform dogs = CriaPen(r, "Recinto_cachorros", new Vector3(-9.5f, 0f, 4.5f), new Vector2(6f, 6f), CrStraw,
             "Cachorros de malamute", "perros de trineo; maman unas ocho semanas", doorEast: true);
-        Transform bed = KitchenProps.Root(dogs, "Cama_cachorros", new Vector3(-1.4f, 0f, -1.4f));
-        KitchenProps.C(bed, new Vector3(0f, 0.12f, 0f), new Vector3(1.6f, 0.24f, 1.2f), new Color(0.55f, 0.35f, 0.3f), 0f, "Cama");
+        // (2026-11-11) COLCHONETA, no «Cama»: es la de los cachorros (1,6 m), no un mueble para gente; la sonda de la ronda 65 la contaba entre
+        // las camas cortas (petición #4: camas y camillas de ≥ 2 m para gente de 1,85 m).
+        Transform bed = KitchenProps.Root(dogs, "Colchoneta_cachorros", new Vector3(-1.4f, 0f, -1.4f));
+        KitchenProps.C(bed, new Vector3(0f, 0.12f, 0f), new Vector3(1.6f, 0.24f, 1.2f), new Color(0.55f, 0.35f, 0.3f), 0f, "Colchoneta");
         KitchenProps.C(bed, new Vector3(0f, 0.26f, 0f), new Vector3(1.4f, 0.06f, 1f), new Color(0.9f, 0.85f, 0.75f), 0f, "Manta");
         CriaCubs(dogs, "Malamute", "Cachorro", 3, "leche de cachorro", doorEast: true);
 
