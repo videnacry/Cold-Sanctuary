@@ -296,3 +296,16 @@ escenario) y la duna donde volaron. El mapa sigue el plano de Dayton y pone la d
 - **Fuentes:** Nietzsche, *Ecce Homo* («Así habló Zaratustra» §1); Siegfriedkarte 1:50 000, hoja 518 (1878); Stiftung Nietzsche-Haus; Info Flora;
   el plano del pueblo. **Inferido:** el sitio exacto de la roca (al suroeste del lago, hacia Surlej).
 - **Menú:** `Build Microcosmos de historias: Nietzsche (Sils Maria)`.
+
+### Chernóbil (Ananenko, Bespalov y Baranov), sobre la Central Nuclear
+**La central, el estanque de refrigeración y Prípiat, principios de mayo de 1986.** Prípiat va a la mitad de su distancia real (como en el plano).
+- **El piso:** los lavabos son el estanque de refrigeración; la bañera, **la piscina de burbujeo** bajo el reactor que el escuadrón vació; las
+  máquinas, roca.
+- **La flora (66):** el pinar del oeste (el futuro **Bosque Rojo**, aún verde en mayo) y el del sur con su musgo; abedules con hoja nueva en el
+  parque de Prípiat y dientes de león en sus céspedes; hierba de arenal en el aluvión del río; la arena de las obras de los bloques 5 y 6.
+- **La fauna (17):** hormigueros de hormiga roja en los dos pinares, hormigas león en la arena, mariquitas en los dientes de león, abejorros en los
+  abedules y arañas lobo en la arena de las obras.
+- **Edificios:** el bloque 4, el estanque, el pinar, el Palacio de Cultura Energetik, la piscina Lazurny, la noria y la estación de Yániv.
+- **Fuentes:** Leatherbarrow, *Chernobyl 01:23:40* (2016); Plokhy, *Chernobyl: History of a Tragedy* (2018); IAEA, *Chernobyl's Legacy* (2006);
+  el mapa de Prípiat de 1986; el plano del pueblo. **Inferido:** la extensión de los pinares en el mapa acortado.
+- **Menú:** `Build Microcosmos de historias: Chernóbil (Ananenko)`.

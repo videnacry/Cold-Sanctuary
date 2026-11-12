@@ -92,4 +92,47 @@ public static partial class MicroStoryMaps
         },
         todo = new[] { "en vivo: que la roca de Surlej quede en la orilla de Silvaplana y no dentro del lago" },
     };
+
+    // ══ CHERNÓBIL, principios de mayo de 1986 (Ananenko, Bespalov y Baranov): sobre la Central Nuclear ══════════════════════════════════════════
+    // La central con el bloque 4 roto, el canal de toma y el estanque de refrigeración al sureste; el río Prípiat al norte; la ciudad de Prípiat al
+    // noroeste (a la mitad de su distancia real) con la avenida de Lenin, la plaza del Palacio de Cultura Energetik, la piscina Lazurny y el parque de
+    // atracciones con su noria, evacuada el 27 de abril. Entre la central y la ciudad, el pinar que en semanas será el «Bosque Rojo» (en mayo, aún
+    // verde). El pinar de Polesia sobre arena fluvioglacial: pinos, musgo, hormigueros de hormiga roja; dientes de león en los céspedes de la ciudad.
+    static Map MapChernobil() => new Map
+    {
+        display = "Chernóbil", place = "La central de Chernóbil, el estanque de refrigeración y Prípiat, principios de mayo de 1986", status = Status.Hecho,
+        source = "Leatherbarrow, Chernobyl 01:23:40 (2016: la central, Prípiat y el vaciado de la piscina de burbujeo); Plokhy, Chernobyl: History of a " +
+                 "Tragedy (2018); IAEA, Chernobyl's Legacy (2006: el Bosque Rojo y el pinar); el mapa de Prípiat de 1986; el plano del pueblo",
+        floor = Natural(
+            new Piece("lavabo", Como, "los lavabos: el estanque de refrigeración de la central", "lavabo"),
+            new Piece("banera", Como, "la bañera: la piscina de burbujeo bajo el reactor, la que Ananenko, Bespalov y Baranov vaciaron", "banera")),
+        flora = new[]
+        {
+            // El pinar del oeste (el futuro Bosque Rojo) y el del sur, con su musgo.
+            new Plant("Pino silvestre", -600f, -150f, 12, 150f), new Plant("Musgo de pinar", -600f, -150f, 8, 120f),
+            new Plant("Pino silvestre", -200f, -600f, 10, 150f), new Plant("Musgo de pinar", -200f, -600f, 6, 120f),
+            // Los abedules del parque de Prípiat, con hoja nueva, y los dientes de león de sus céspedes.
+            new Plant("Abedul", -900f, 950f, 8, 100f), new Plant("Diente de león", -700f, 700f, 8, 100f),
+            // La hierba de arenal en el aluvión del Prípiat.
+            new Plant("Hierba de arenal", 200f, 500f, 8, 80f),
+            // La arena de las obras de los bloques 5 y 6.
+            new Plant("Arena fluvioglacial", 300f, 150f, 6, 80f),
+        },
+        fauna = new[]
+        {
+            new Animal("Ant", "Hormiga roja de bosque (Formica rufa), con su hormiguero en el pinar del oeste", -600f, -150f, 4, 0.8f, 150f),
+            new Animal("Ant", "Hormiga roja de bosque, en el pinar del sur", -200f, -600f, 3, 0.8f, 150f),
+            new Animal("Antlion", "Hormiga león (Myrmeleon formicarius), en la arena del pinar", -200f, -600f, 2, 1.2f, 120f),
+            new Animal("Ladybug", "Mariquita de 7 puntos, en los dientes de león de Prípiat", -700f, 700f, 3, 0.7f, 100f),
+            new Animal("SnowBee", "Abejorro (Bombus terrestris), en los abedules del parque", -900f, 950f, 3, 1.6f, 100f),
+            new Animal("Spider", "Araña lobo (Pardosa), en la arena de las obras", 300f, 150f, 2, 0.8f, 80f),
+        },
+        buildings = new[]
+        {
+            new Building("Bloque 4 de la central", 40f, 30f), new Building("Estanque de refrigeración", 520f, -470f), new Building("El pinar (el futuro Bosque Rojo)", -600f, -150f),
+            new Building("Palacio de Cultura Energetik", -760f, 700f), new Building("Piscina Lazurny", -850f, 650f), new Building("Noria del parque de atracciones", -800f, 950f),
+            new Building("Estación de Yániv", -200f, 600f),
+        },
+        todo = new[] { "en vivo: que la hierba de arenal quede en la orilla del Prípiat y no en el río; los pinos, todavía verdes (en mayo aún no eran rojos)" },
+    };
 }
