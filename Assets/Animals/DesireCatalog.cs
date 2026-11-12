@@ -260,9 +260,32 @@ public static class DesireCatalog
         if (!Confined(self)) return false;
         // (2026-11-11, vivo59) Su sitio, si sigue cerca; si no, donde está: con la Cría en el piso del árbol (a 108 m) su HomeOrigin se quedó en el
         // recinto viejo, los pasitos caían lejos de todo NavMesh y las crías no se movían nunca («recinto» 1 802 s sin moverse, Cachorro_1/2/3).
-        Vector3 home = Vector3.Distance(self.HomeOrigin, self.transform.position) > 6f ? self.transform.position : self.HomeOrigin;
-        Stroll(self, "recinto", () => home + Ring(0.8f, 2.2f), 4f, 9f, 0.6f);   // (pausas largas: curiosea, no corretea por el recinto)
+        // (2026-11-11, vivo61) Y A UN SITIO DE VERDAD: con pasitos de 0,8–2,2 m el punto alcanzable más cercano era su propio sitio (meta =
+        // su posición: «llegaba» al momento, 124–283 viajes en 800–1 700 llamadas, 1 800 s sin moverse: Polluelo_1/2/3, Osezno_2). Ahora un punto
+        // de 1,5 a 5 m, con camino completo (PenGoal); si no hay ninguno, descansa (sin viaje).
+        Trip t = TripOf(self, "recinto");
+        t.calls++; t.lastCall = Time.time;
+        if (t.going) { if (Going(self, t)) return true; t.pauseUntil = Time.time + UnityEngine.Random.Range(4f, 9f); self.Loco?.Idle(1f); return true; }   // llegó (o se atascó): mira y olfatea
+        if (Time.time < t.pauseUntil || Time.time < t.failUntil) return true;
+        if (PenGoal(self, out Vector3 goal)) { Walk(self, t, goal); return true; }
+        t.pauseUntil = Time.time + UnityEngine.Random.Range(4f, 9f); self.Loco?.Idle(1f);
         return true;
+    }
+
+    /// <summary>(2026-11-11) Un sitio del recinto de 1,5 a 5 m de la cría (alrededor de su sitio, o de donde está si su sitio guardado quedó lejos),
+    /// con camino completo. false si no hay ninguno en 16 intentos.</summary>
+    public static bool PenGoal(Animal self, out Vector3 goal)
+    {
+        goal = self != null ? self.transform.position : Vector3.zero;
+        if (self == null) return false;
+        Vector3 here = self.transform.position;
+        Vector3 home = Vector3.Distance(self.HomeOrigin, here) > 6f ? here : self.HomeOrigin;
+        for (int i = 0; i < 16; i++)
+        {
+            Vector3 p = home + Ring(1.5f, 5f);
+            if (NavReach.Reachable(self, p, out Vector3 at, 1f) && Flat(at - here) >= 1.5f && Flat(at - here) <= 5.5f) { goal = at; return true; }
+        }
+        return false;
     }
 
     // ══ MOVIMIENTO DE LOS DESEOS: siempre a sitios ALCANZABLES, con tope y sin re-apuntar en cada decisión ══════════════
