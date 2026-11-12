@@ -45,6 +45,10 @@ public static class VirtualMissionSceneBuilder
         // al analizador, a la cocina…), sin conducta, en el origen de la escena.
         Transform areaRoot = null; float hz = 8f;
         GameObject src = AreaGo(area) != null ? GameObject.Find(AreaGo(area)) : null;
+        // (2026-11-08) La Central Nuclear y la Planta Atómica están en el Santuario Marino: se abre para copiarlas y se cierra al guardar.
+        bool openedMarine = false;
+        if (src == null && AreaGo(area) != null && NuclearSite.Underwater(area) && System.IO.File.Exists(SampleSceneBuilder.MarineScenePath))
+        { EditorSceneManager.OpenScene(SampleSceneBuilder.MarineScenePath, OpenSceneMode.Additive); openedMarine = true; src = GameObject.Find(AreaGo(area)); }
         if (src != null)
         {
             GameObject copy = Object.Instantiate(src);
@@ -104,13 +108,14 @@ public static class VirtualMissionSceneBuilder
         boot.staff = Staff(area);
         WorldLabel tl = root.AddComponent<WorldLabel>(); tl.text = $"{area} · {title}"; tl.height = 4f;
         Save(scene, path, prev);
+        if (openedMarine) { Scene marino = SceneManager.GetSceneByPath(SampleSceneBuilder.MarineScenePath); if (marino.isLoaded) EditorSceneManager.CloseScene(marino, removeScene: true); }
     }
 
     static string AreaGo(string area)
     {
         switch (area)
         {
-            case AreaWork.Hospital: case "Guardia": return "Infirmary_Area";
+            case AreaWork.Hospital: case "Guardia": case AreaWork.GuardRoom: return "Infirmary_Area";
             case "Cocina": return "Kitchen_Area";
             case "Huerto": return "Garden_Area";
             case "Sala de Yoga": return "YogaRoom_Area";
@@ -124,6 +129,11 @@ public static class VirtualMissionSceneBuilder
             case "Química": return "Chemistry_Area";
             case "Biología": return "Biology_Area";
             case "Central Nuclear": return "NuclearPower_Area";
+            case "Informática": return SampleSceneBuilder.InformaticsArea;   // (2026-11-04) los pisos nuevos
+            case EnergyRule.Area: return SampleSceneBuilder.EnergyFloorName;
+            case "Aula": return SampleSceneBuilder.ClassroomArea;
+            case "Sala de asambleas": return SampleSceneBuilder.AssemblyArea;
+            case "Música": return SampleSceneBuilder.MusicArea;
             default: return null;
         }
     }
@@ -135,7 +145,7 @@ public static class VirtualMissionSceneBuilder
         {
             case AreaWork.Hospital: return new[] { "Linduarda", "Lizmibet" };
             case "Cocina": return new[] { "Andrea", "Goluis" };
-            case "Sala de Yoga": return new[] { "Sadhguru" };
+            case "Sala de Yoga": return new[] { WorkdayDirector.YogaTeacher };   // Andrea (antes Sadhguru, que se fue a su microcosmos)
             case "Construcción": return new[] { "JefeConstruccion" };
             case "Estudio Textil": return new[] { "Irosene" };
             case "Huerto": return new[] { "Panterilia" };
@@ -235,6 +245,6 @@ public static class VirtualMissionSceneBuilder
         Shader sh = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
         var m = new Material(sh) { name = name, color = c };
         if (m.HasProperty("_BaseColor")) m.SetColor("_BaseColor", c);
-        return _mats[name] = m;
+        return _mats[name] = CheapMaterials.MakeCheap(m);   // (2026-11-09) Simple Lit mate
     }
 }

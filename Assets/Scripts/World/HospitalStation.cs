@@ -32,6 +32,54 @@ public class HospitalStation : MonoBehaviour, IInteractable
     public static IReadOnlyList<HospitalStation> All => _all;
     public Vector3 StandPoint => transform.TransformPoint(standLocal) + Vector3.up;
 
+    /// <summary>Holgura del puesto respecto a su mesa: pegado a ella (regla de la ronda 19), pero con el centro del cuerpo FUERA aunque se incline a
+    /// explorar o auscultar (ronda 25: Andrea y David ×14 dentro de «Quirofano veterinario 3/4» en «Explorar al paciente»; el puesto de la mesa
+    /// veterinaria está a 1,1 m de su centro, casi en el borde de su caja).</summary>
+    // (Ronda 28) 0,5 y no 0,35: al inclinarse 0,25 m hacia la mesa (explorar, auscultar) el centro del cuerpo quedaba a 0,10 m de su caja, dentro de
+    // la esfera de 0,12 con que se mira (grupo 84: las cuatro «Mesa veterinaria», «inclinado»). Con 0,5 queda a 0,25.
+    public const float Clearance = 0.5f;
+    /// <summary>El punto del puesto apartado de la caja de su propia mesa lo justo para dejar <see cref="Clearance"/> (si ya la tiene, el mismo).</summary>
+    public Vector3 ClearStandPoint { get { if (_clearAt == null || _clearFor != standLocal) { _clearFor = standLocal; _clearAt = FindClearStand(); } return _clearAt.Value; } }
+    Vector3? _clearAt; Vector3 _clearFor;   // (se calcula una vez: los muebles del hospital no se mueven)
+
+    public static Vector3 Flat(Vector3 v) { v.y = 0f; return v; }
+
+    /// <summary>El primer collider (que no sea de una persona o un animal) en el que caería un centro de cuerpo en <paramref name="p"/>; null si nada.</summary>
+    public static string SolidAt(Vector3 p, float r)
+    {
+        foreach (Collider c in Physics.OverlapSphere(p, r, ~0, QueryTriggerInteraction.Ignore))
+            if (c != null && c.GetComponentInParent<Anima>() == null && !(c is TerrainCollider)) return c.name;
+        return null;
+    }
+
+    // Junto a la mesa, a Clearance de su caja; y además libre de TODO lo demás (la máquina de anestesia y la lámpara del quirófano veterinario están
+    // a 1,4–1,6 m del centro de la mesa: apartarse de la mesa en línea recta metía el cuerpo en ellas o en el cristal). Se prueba el sitio de
+    // siempre y, si no cabe de pie y al inclinarse, la vuelta a la mesa a la misma holgura, cada 15°, el más cercano primero.
+    Vector3 FindClearStand()
+    {
+        Vector3 s = StandPoint;
+        Bounds bb = default; bool any = false;
+        foreach (Collider c in GetComponentsInChildren<Collider>())
+        {
+            if (c == null || c.isTrigger || !c.enabled) continue;
+            if (!any) { bb = c.bounds; any = true; } else bb.Encapsulate(c.bounds);
+        }
+        if (!any) return s;
+        Vector3 Around(Vector3 dir) { Vector3 q = new Vector3(bb.center.x, s.y, bb.center.z) + dir * 50f; Vector3 near = bb.ClosestPoint(new Vector3(q.x, bb.center.y, q.z)); Vector3 p = near + dir * Clearance; p.y = s.y; return p; }
+        bool Fits(Vector3 p) => SolidAt(p, 0.12f) == null && SolidAt(p + Flat(bb.center - p).normalized * 0.25f, 0.12f) == null;
+        Vector3 q0 = new Vector3(s.x, bb.center.y, s.z), n0 = bb.ClosestPoint(q0), d0 = Flat(q0 - n0);
+        if (d0.sqrMagnitude >= Clearance * Clearance && Fits(s)) return s;
+        Vector3 dir0 = d0.sqrMagnitude > 1e-6f ? d0.normalized : Flat(s - bb.center).normalized;
+        for (int k = 0; k <= 12; k++)
+            foreach (int sign in k == 0 ? new[] { 1 } : new[] { 1, -1 })
+            {
+                Vector3 p = Around(Quaternion.Euler(0f, sign * k * 15f, 0f) * dir0);
+                if (Fits(p)) return p;
+            }
+        Debug.LogWarning($"[Hospital] «{name}»: ningún sitio junto a la mesa deja el cuerpo fuera de los muebles; se queda en el de siempre.");
+        return Around(dir0);
+    }
+
     /// <summary>Puesto médico de <paramref name="who"/>: el que ya tenía, o el primero libre. null si los 8 están ocupados.</summary>
     public static HospitalStation PostFor(string who)
     {
@@ -57,9 +105,11 @@ public class HospitalStation : MonoBehaviour, IInteractable
     static bool ForAnimals(HospitalService s) => s == HospitalService.Veterinaria || s == HospitalService.CirugiaVeterinaria;
 
     /// <summary>Atiende al paciente más cercano (animal en veterinaria, persona en el resto). Devuelve a quién.</summary>
-    public Anima Treat(Anima by)
+    public Anima Treat(Anima by) => TreatPatient(Nearest(by), by);
+
+    /// <summary>Atiende a ESTE paciente (el que trae el submarino, el de una prueba) con lo que hace este puesto.</summary>
+    public Anima TreatPatient(Anima patient, Anima by)
     {
-        Anima patient = Nearest(by);
         string what = Science(service);
         if (patient == null) { Debug.Log($"[Hospital] {Label(service)}: no hay ningún paciente aquí. ({what})"); return null; }
         SicknessState ss = patient.GetComponent<SicknessState>();
@@ -72,7 +122,16 @@ public class HospitalStation : MonoBehaviour, IInteractable
             case HospitalService.Consulta: case HospitalService.Veterinaria: patient.stress = Mathf.Max(0f, patient.stress - 0.1f); break;
             case HospitalService.Quirofano: case HospitalService.CirugiaVeterinaria:
                 if (!AnesthetistPresent(patient)) { Debug.Log($"[Hospital] {Label(service)}: no se opera sin alguien en la anestesia (Lista de verificación de cirugía segura de la OMS)."); return null; }
+                // Si sangra (clase III–IV del ATLS), primero sangre cruzada del banco: sin ella no se abre.
+                if (patient.GetComponent<BloodLoss>() is BloodLoss bl && bl.NeedsBlood)
+                {
+                    int u = BloodBank.Instance != null ? BloodBank.Instance.Transfuse(patient, by != null ? by.name : "el quirófano") : 0;
+                    if (u == 0 && bl.NeedsBlood) { Debug.Log($"[Hospital] {Label(service)}: «{patient.name}» ha perdido el {bl.lost * 100f:0} % de su sangre y no hay sangre compatible: no se opera (banco de sangre andante: un donante de su grupo)."); return null; }
+                }
                 Heal(1f); patient.stress = Mathf.Min(1f, patient.stress + 0.1f); break;
+            case HospitalService.BancoDeSangre:   // cruzar y transfundir al paciente de al lado (docs/hospital.md §Banco de sangre)
+                if (BloodBank.Instance != null) BloodBank.Instance.Transfuse(patient, by != null ? by.name : "el banco de sangre");
+                break;
         }
         BodyInjuries inj = patient.GetComponent<BodyInjuries>();
         string dx = $"enfermedad {patient.sickness:0.00}" + (inj != null ? $", {inj.Describe()}" : "");

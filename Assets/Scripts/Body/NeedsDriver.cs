@@ -11,12 +11,19 @@ public class NeedsDriver : MonoBehaviour
 {
     [Range(0f, 1f)] public float eatAbove = 0.6f;
     [Range(0f, 1f)] public float sleepAbove = 0.85f;
+    [Tooltip("Hambre que interrumpe la jornada (por debajo, en turno espera a la comida de las 11).")]
+    [Range(0f, 1f)] public float starvingAbove = 0.85f;
     public float checkEvery = 2f;
 
-    float _next;
+    float _next, _dineRetryAt;
     Anima _a;
     BodyMetabolism _body;
     ActionQueue _q;
+
+    /// <summary>¿Está atendiendo ahora una necesidad del cuerpo (lo primero de su carril propio es comer, dormir o el baño)? Mientras,
+    /// nadie más debe llevarlo a otro sitio (la clase de yoga, su puesto…).</summary>
+    public static bool Attending(ActionQueue q)
+        => q != null && q.Own.Count > 0 && q.Own[0] is QueuedSpell s && (s is EatSpell || s is SleepSpell || s is DineSpell || s is ToiletSpell || s is HomeNeedSpell);
 
     void Awake()
     {
@@ -28,22 +35,82 @@ public class NeedsDriver : MonoBehaviour
     void Update()
     {
         if (_a == null || _body == null || _a.death || Time.time < _next) return;
-        if (TryGetComponent(out NewcomerInitiator ini) && ini.InProgress) return;   // iniciando a un recién llegado: sus necesidades esperan
+        if (Orchestra.Busy(gameObject)) return;   // en una iniciación (examen, clase, cocina, huerto o acompañándolo): sus necesidades esperan (se acaba con tope)
         _next = Time.time + checkEvery;
-        foreach (QueuedSpell s in _q.Own) if (s is EatSpell || s is SleepSpell || s is DineSpell || s is ToiletSpell) return;   // ya atendiendo una necesidad
+        foreach (QueuedSpell s in _q.Own) if (s is EatSpell || s is SleepSpell || s is DineSpell || s is ToiletSpell || s is HomeNeedSpell || s is PublicSeatSpell) return;   // ya atendiendo una necesidad
+
+        // CON HOGAR (Household: los insectos-humanos de las eras civilizadas y las escenas de ciclo de vida humano), las
+        // necesidades se atienden EN CASA: comer en su mesa, dormir en su cama, el retrete y el lavabo. Un insecto-humano sin
+        // hogar no usa los sitios del santuario (el restaurante, los aseos de las áreas): espera.
+        Household home = Household.Of(gameObject);
+        if (home != null || GetComponent<FolkLineage>() != null) { HomeNeeds(home); return; }
 
         if (!_a.asleep && _a.sleepiness >= sleepAbove)
         {
             // A dormir a SU cama (arboleda residencial), si tiene dormitorio; si no, donde esté.
             Bedroom room = Bedroom.Of(_a);
-            if (room != null && room.bed != null && Vector3.Distance(room.bed.position, transform.position) > 2f)
-                _q.EnqueueOwn(new CarpetWalkSpell { target = room.bed, targetName = $"su cama ({room.name})", stopDistance = 1f });   // a su casa del árbol, en alfombra
+            if (room != null && room.bed != null && Vector3.Distance(room.SpotOf(_a).position, transform.position) > 2f)   // (a SU plaza: en una pijamada, la de la casa del anfitrión)
+                _q.EnqueueOwn(new CarpetWalkSpell { target = room.SpotOf(_a), targetName = $"su cama ({room.name})", stopDistance = 1f });   // a su casa del árbol, en alfombra
             _q.EnqueueOwn(new SleepSpell());
             return;
         }
-        if (!_a.asleep && _body.toilet >= 0.85f) { _q.EnqueueOwn(new ToiletSpell()); return; }   // el cuerpo pide ir al baño: busca los aseos
-        if (!_a.asleep && _body.hunger >= eatAbove) _q.EnqueueOwn(new DineSpell());   // a comer al restaurante (pedir, sentarse, comer)
+        if (!_a.asleep && _body.toilet >= 0.85f && ToiletSpell.CanTry(_a)) { _q.EnqueueOwn(new ToiletSpell()); return; }   // el cuerpo pide ir al baño: busca los aseos
+        if (!_a.asleep && _body.hunger >= eatAbove)
+        {
+            // (2026-11-01) SIN COMIDA en ningún sitio (antes de las 11:00 la barra está vacía: el servicio la llena a esa hora) no
+            // pide «comer» cada segundo: lo intenta de nuevo en 20 s. Antes cada DineSpell acababa al momento y el siguiente
+            // volvía a ser «pedir en la barra» sin moverse (Goluis 47 muestras «atascado» en la Central Nuclear, JornadaTest).
+            // (2026-11-02) La PRIMERA vez se encola al momento (el hambre se nota ya; la prueba «Cuerpo» lo mira a los 2
+            // fotogramas) y la espera es solo de la comida: antes movía `_next` y retrasaba también 20 s el sueño y el baño.
+            if (Time.time < _dineRetryAt) return;
+            // (2026-11-02) EN SU JORNADA, el hambre que no aprieta espera a la comida de las 11 (WorkdayDirector.OwnNeeds la
+            // pide al llegar al restaurante): desayunó antes de las 8 (WorkdayDirector.Breakfast). Antes un «pedir en la barra»
+            // a las 8 se llevaba la hora de la clase de yoga (Lizmibet y Andrea comiendo; la clase, con 0 alumnos) y uno a las
+            // 11 se sumaba al de la comida (Goluis, Irosene y JefeConstruccion comían DOS veces y perdían la misión de las 12).
+            // Solo el hambre de verdad (≥ starvingAbove) interrumpe el turno, como el baño y el sueño.
+            if (_body.hunger < starvingAbove && WorkdayDirector.Instance != null && WorkdayDirector.Instance.OnShift(gameObject)) return;
+            if (!DineSpell.AnyFood(transform.position)) _dineRetryAt = Time.time + 20f;
+            _q.EnqueueOwn(new DineSpell());   // a comer al restaurante (pedir, sentarse, comer)
+        }
     }
+
+    /// <summary>
+    /// LAS NECESIDADES EN CASA (<see cref="Household"/>, docs/ciclo-de-vida.md §Humanos): dormir (con sueño, o de noche en el bloque
+    /// de casa con algo de sueño), el baño, comer (en turno solo si aprieta: la comida del mediodía es la de su jornada) y lavarse.
+    /// Igual para un humano y un insecto-humano. Si su horario lo tiene retenido (<see cref="MicroJornada.hold"/>: la historia lo
+    /// necesita quieto) o no tiene horario ni vida libre (un personaje de la historia), el cuerpo espera.
+    /// </summary>
+    void HomeNeeds(Household home)
+    {
+        if (home == null) return;
+        MicroJornada mj = GetComponent<MicroJornada>();
+        PersonLife pl = GetComponent<PersonLife>();
+        if (mj != null ? mj.hold : (pl == null || !pl.freeLife)) return;
+        if (_a.asleep) return;
+        float hour = TimeController.timeController != null ? TimeController.timeController.Hour : 12f;
+        bool night = hour >= 22f || hour < 6f;
+        bool homeBlock = mj == null || mj.AtHomeBlock;
+        if (_a.sleepiness >= sleepAbove || (night && homeBlock && _a.sleepiness >= 0.5f))
+        { _q.EnqueueOwn(new HomeNeedSpell { need = HomeNeedSpell.Need.Dormir, home = home }); return; }
+        if (_body.toilet >= 0.85f) { _q.EnqueueOwn(new HomeNeedSpell { need = HomeNeedSpell.Need.Bano, home = home }); return; }
+        if (_body.hunger >= eatAbove && (!HomeNeedSpell.RetryEat.TryGetValue(_a, out float at) || Time.time >= at)
+            && !(_body.hunger < starvingAbove && mj != null && mj.OnShift))
+        { _q.EnqueueOwn(new HomeNeedSpell { need = HomeNeedSpell.Need.Comer, home = home }); return; }
+        if (_body.dirt >= 0.85f) { _q.EnqueueOwn(new HomeNeedSpell { need = HomeNeedSpell.Need.Lavarse, home = home }); return; }
+        // (2026-11-04) SENTARSE EN LA PLAZA (MicroSeat, docs/microcosmos-suelo-y-elementos.md §Escala; Berón: «debe ser posible sentarse
+        // en las sillas de restaurantes y bancos de las plazas»): en su tiempo libre de día, de vez en cuando, en el asiento público
+        // libre más cercano (un banco de la plaza, una silla de un comedor, el pretil de la fuente), un cuarto de hora.
+        bool free = mj == null || (!mj.OnShift && !mj.AtHomeBlock);
+        if (free && !night && Time.time >= _nextSeat && MicroSeat.All.Count > 0)
+        {
+            _nextSeat = Time.time + seatEvery * Random.Range(0.6f, 1.4f);
+            if (Random.value < 0.35f) _q.EnqueueOwn(new PublicSeatSpell());
+        }
+    }
+
+    [Tooltip("Cada cuántos segundos reales (de media) piensa en sentarse en un asiento público en su tiempo libre.")]
+    public float seatEvery = 90f;
+    float _nextSeat;
 }
 
 /// <summary>COMER: camina (por el NavMesh) a la comida más cercana con raciones, toma una y sacia el cuerpo.</summary>
@@ -92,6 +159,7 @@ public class EatSpell : QueuedSpell
 public class SleepSpell : QueuedSpell
 {
     bool _started;
+    Bedroom _room; int _spot = -1;   // dónde se acostó (para bajar por el tobogán si durmió arriba)
     public override string Label => "dormir";
 
     [Tooltip("Hora a la que se despierta tras el salto temporal (amanecer).")]
@@ -105,13 +173,14 @@ public class SleepSpell : QueuedSpell
             _started = true; self.asleep = true;
             // EN SU CAMA: se tumba boca arriba encima y cierra los ojos (si la tiene a mano; si no, duerme donde esté).
             Bedroom room = Bedroom.Of(self);
-            if (room != null && room.bed != null && Vector3.Distance(room.bed.position, self.transform.position) < 3f)
+            if (room != null && room.bed != null && Vector3.Distance(room.LieSpot(self), self.transform.position) < 3f)
             {
                 CharacterController cc = self.GetComponent<CharacterController>(); if (cc != null) cc.enabled = false;
                 // Sobre el colchón (su cara de arriba está a +0,50 de la raíz de la cama) y con la cabeza en la almohada: la
                 // pose Lie pone la cabeza hacia −z del cuerpo y la almohada está en +z de la cama, así que se gira 180°.
-                self.transform.position = room.bed.position + Vector3.up * 0.5f;
-                self.transform.rotation = room.bed.rotation * Quaternion.Euler(0f, 180f, 0f);
+                self.transform.position = room.LieSpot(self) + Vector3.up * 0.5f;   // en SU plaza de la cama (de 4 desde el 2026-11-04)
+                _room = room; _spot = room.SpotIndex(self);
+                self.transform.rotation = room.LieRotation(self) * Quaternion.Euler(0f, 180f, 0f);
                 if (cc != null) cc.enabled = true;
                 DailyPoses.Lie().ApplyFinal(self);
                 Debug.Log($"[Cuerpo] «{self.name}» se acuesta en su cama ({room.name}).");
@@ -135,6 +204,9 @@ public class SleepSpell : QueuedSpell
             DailyPoses.Stand().ApplyFinal(self);
             self.GetComponentInChildren<CubeFace>()?.Show(CubeFace.Expression.Neutral, 0.1f);
             Debug.Log($"[Cuerpo] «{self.name}» se despierta{(self.aware ? " (amenaza)" : " descansado")}.");
+            // (2026-11-04, Berón: «las literas tienen resbaladera») Si durmió en el piso de ARRIBA de la cama-litera, baja por el TOBOGÁN.
+            if (_room != null && _room.Upper(_spot) && _room.slideTop != null && _room.slideBottom != null && self.TryGetComponent(out ActionQueue sq))
+                sq.EnqueueOwn(new SlideSpell { room = _room });
             return true;
         }
         return false;

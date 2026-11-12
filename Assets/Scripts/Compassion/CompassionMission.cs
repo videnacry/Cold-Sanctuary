@@ -40,6 +40,7 @@ public class CompassionMission : MonoBehaviour
         Refugees.Clear();
         Refugees.AddRange(FindObjectsByType<Refugee>(FindObjectsSortMode.None));
         _card = GetComponent<HistoryCard>();
+        if (_card.lineTruth.Length == 0) _card.lineTruth = LineTruth.ForStory("Compasión");   // regla M39
         if (recordNames) _card.extra = () => NameJar.Instance != null ? "En el frasco: " + string.Join(", ", NameJar.Instance.names) : null;
     }
 

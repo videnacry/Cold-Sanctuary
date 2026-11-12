@@ -64,20 +64,37 @@ public abstract class LifeStage
 
 
 
+    /// <summary>Segundos (de juego, escalados por Time.timeScale) que dura UN DÍA REAL de vida en el calendario del santuario:
+    /// un año de vida = <see cref="TimeController.DaysPerYear"/> días de juego (28; un día de juego = 1 h a ×1), así que un día
+    /// de vida = 28/365 de día de juego ≈ 4,6 min. Es el MISMO calendario que la gestación (<see cref="Reproduction.Calendar"/>)
+    /// y la colmena (<see cref="Hive"/>). Antes LifeStage contaba sus «días» en MINUTOS de juego (~2,5 s): el oso vivía 5 días
+    /// de juego de adulto pero gestaba 19 (docs/ciclo-de-vida.md §Calendario).</summary>
+    public static float SecondsPerLifeDay(TimeController tc) => tc != null ? Mathf.Max(1e-4f, tc.SecondsForMonths(12f) / 365f) : 60f;
+
+    /// <summary>Días de vida transcurridos desde el último evento (lo usa <see cref="GrowScale"/> para crecer en proporción).</summary>
+    [System.NonSerialized] public float tickDays;
+    float _dayAcc;
+
     public virtual IEnumerator Live(Animal script, TimeController timeController, byte[] stagePreps, byte[] stageEvents)
     {
         foreach (byte preparation in stagePreps) GetPrep(preparation)(script);
+        float pendingGrow = 0f;
         while ((stageDays - livedDays) > 0)
         {
-            byte dayThirds = 0;
-            while (dayThirds < 3)
+            // Los EVENTOS (merodeo, descanso, engorde, volver a casa, cebar) siguen a su ritmo de siempre (~3 por minuto de
+            // juego); los DÍAS DE VIDA corren con el calendario (SecondsPerLifeDay), que se lee en cada vuelta: cambiar el año
+            // (escenas de ciclo de vida: comprimido) los recalibra al momento.
+            float tick = timeController.TimeSpeedMinuteSecs / Random.Range(2.5f, 3.2f);
+            float days = tick / SecondsPerLifeDay(timeController);
+            pendingGrow += days;
+            if (!script.busy)
             {
-                float thirdDuration = timeController.TimeSpeedMinuteSecs / Random.Range(2.5f, 3.2f);
-                if (!script.busy) foreach (byte myEvent in stageEvents) GetEvent(myEvent)(script, thirdDuration);
-                dayThirds++;
-                yield return new WaitForSeconds(thirdDuration);
+                tickDays = pendingGrow; pendingGrow = 0f;
+                foreach (byte myEvent in stageEvents) GetEvent(myEvent)(script, tick);
             }
-            livedDays++;
+            yield return new WaitForSeconds(tick);
+            _dayAcc += days;
+            if (_dayAcc >= 1f) { int whole = Mathf.FloorToInt(_dayAcc); livedDays += whole; _dayAcc -= whole; }
         }
         script.lifeStage = GetNextStage(script.lifeStage);
         LifeStage.InitStage(script, timeController);
@@ -149,15 +166,35 @@ public abstract class LifeStage
         return pos + offset;
     }
 
+    /// <summary>¿Lleva el cuerpo la VOLICIÓN (sus deseos «explore»/«homebound»/«rest» ya pasean, vuelven y descansan) o el
+    /// jugador que lo posee? Entonces el ciclo de vida NO lo mueve ni le cambia el paso. Antes, cada ~1 s, Wander le ponía un
+    /// destino al azar a 5–25 m y Rest le ponía el paso «quieto» (velocidad 0) dos de cada tres veces, encima de lo que el
+    /// deseo de turno quería: el animal zigzagueaba sin avanzar o se quedaba clavado a medio camino (JornadaTest: «da
+    /// vueltas en círculo (homebound/explore)», «atascado > 20 s»). Sin controlador activo (pruebas que lo apagan), sí.</summary>
+    public static bool DrivenElsewhere(Animal a)
+    {
+        if (a == null || !a.TryGetComponent(out AnimaController ac) || !ac.enabled || ac.Active == null) return false;
+        return !(ac.Active is AiBrain b) || b.useVolition;
+    }
+
     public SubEvent Wander()
     {
         return (Animal script, float duration) =>
         {
+            if (DrivenElsewhere(script)) return;
             script.ActsPrep.walk.Prep(script, duration);
             if (script.nav == null || !script.nav.isOnNavMesh) return;
             // Deambular a un punto LOCAL (ya no hacia un ave al azar — ese placeholder no tenía sentido). El `Homebound`
             // lo devuelve si se aleja de su hogar. La navegación por LECTURA del entorno (impulsos: olor/hogar/colegueo/
             // confort/experiencia) llega por rebanadas — ver docs/environmental-navigation.md (N0 aquí; N1+ = impulsos).
+            // CRÍA DE UN RECINTO (Cría, con sus tomas): da pasitos por su recinto (≤ 1,5 m de su sitio). Con el paso normal
+            // (5–25 m) apuntaba más allá de los muros y recorría el borde del recinto sin parar (vueltas en círculo).
+            if (script.GetComponentInParent<CriaFeeder>() != null)
+            {
+                Vector2 r = Random.insideUnitCircle * 1.5f;
+                NavTrace.Dest(script, script.nav, script.HomeOrigin + new Vector3(r.x, 0f, r.y), "LifeStage.Wander (recinto)");
+                return;
+            }
             float step = Mathf.Clamp(script.HomeRadius, 5f, 25f);
             // N8: ALTERNACIÓN ESPONTÁNEA (etología, environmental-navigation.md §2.1) — el ser saciado explora con
             // propósito, sin volver por donde vino: sesga el destino hacia ADELANTE (sigue avanzando por el territorio).
@@ -166,14 +203,14 @@ public abstract class LifeStage
             // hacia la comida aun sin hambre). Sin rejilla/rastro, Trail devuelve 0 y esto NO cambia nada.
             Vector3 trail = TraceField.Trail(script.transform.position, TraceChannel.ScentFood);
             if (trail.sqrMagnitude > 0.0001f) dest += trail.normalized * step;
-            script.nav.SetDestination(dest);
+            NavTrace.Dest(script, script.nav, dest, "LifeStage.Wander");
         };
     }
     public SubEvent Rest()
     {
         return (Animal script, float duration) =>
         {
-            if (Random.Range(1, 4) > 1 || script.exhaustion > 30) script.ActsPrep.idle.Prep(script, duration);
+            if (!DrivenElsewhere(script) && !DesireCatalog.LiveTrip(script, out _) && (Random.Range(1, 4) > 1 || script.exhaustion > 30)) script.ActsPrep.idle.Prep(script, duration);
             if (script.exhaustion < 0) script.exhaustion = 0;
         };
     }
@@ -181,14 +218,16 @@ public abstract class LifeStage
     {
         return (Animal script, float duration) =>
         {
-            if (Vector3.Distance(script.transform.position, script.HomeOrigin) > (script.HomeRadius * 2))
+            if (!DrivenElsewhere(script) && Vector3.Distance(script.transform.position, script.HomeOrigin) > (script.HomeRadius * 2))
             {
                 script.ActsPrep.run.Prep(script, duration);
                 // Apuntar a un punto DENTRO del radio del nido, no al punto exacto, para que los
                 // adultos se repartan por la zona en vez de amontonarse sobre HomeOrigin.
-                Vector3 offset = Random.insideUnitSphere * script.HomeRadius;
+                // CRÍA DE UN RECINTO (Cría, con sus tomas): vuelve a su sitio del recinto (≤ 1,5 m, como Wander). Con el radio de su
+                // hogar el punto caía más allá de los muros del recinto y el polluelo o el cachorro recorría el borde sin llegar.
+                Vector3 offset = script.GetComponentInParent<CriaFeeder>() != null ? Random.insideUnitSphere * 1.5f : Random.insideUnitSphere * script.HomeRadius;
                 Vector3 dest = script.HomeOrigin + new Vector3(offset.x, 0f, offset.z);
-                if (script.nav != null && script.nav.isOnNavMesh) script.nav.SetDestination(dest);
+                if (script.nav != null && script.nav.isOnNavMesh) NavTrace.Dest(script, script.nav, dest, "LifeStage.Homebound");
             }
         };
     }
@@ -197,6 +236,7 @@ public abstract class LifeStage
         return (Animal script, float duration) =>
         {
             if (script.Group?.fed == null || script.Group.fed.Length == 0) return;
+            if (DesireCatalog.LiveTrip(script, out _)) return;   // (2026-11-11) con un viaje de deseo en marcha, el cuerpo es suyo (NavTrace: «LifeStage.Feed (al nido)»)
             if (script.hungry >= -script.Body.GetMealWeight(script.rig.mass)) return;
 
             ICarrier carrier = script as ICarrier;
@@ -208,7 +248,7 @@ public abstract class LifeStage
             if (carrier.CarriedFood != null)
             {
                 float dist = Vector3.Distance(script.transform.position, nestPos);
-                if (script.nav != null && script.nav.isOnNavMesh) script.nav.SetDestination(nestPos);
+                if (script.nav != null && script.nav.isOnNavMesh) NavTrace.Dest(script, script.nav, nestPos, "LifeStage.Feed (al nido)");
                 script.ActsPrep.run.Prep(script, duration);
                 if (dist < 10f)
                 {
@@ -230,7 +270,7 @@ public abstract class LifeStage
                     carrier.PickUp(nearby);
                 else
                 {
-                    if (script.nav != null && script.nav.isOnNavMesh) script.nav.SetDestination(nearby.transform.position);
+                    if (script.nav != null && script.nav.isOnNavMesh) NavTrace.Dest(script, script.nav, nearby.transform.position, "LifeStage.Feed (comida)");
                     script.ActsPrep.walk.Prep(script, duration);
                 }
                 return;

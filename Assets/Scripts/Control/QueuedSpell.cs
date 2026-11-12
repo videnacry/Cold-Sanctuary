@@ -145,25 +145,52 @@ public class WalkToSpell : QueuedSpell
 /// carril opcional, docs/typed-spells-and-queues.md §4). Camina como `WalkToSpell` hacia un destino efímero.</summary>
 public class WanderSpell : QueuedSpell
 {
-    Vector3 _dest; bool _picked; float _until;
-    public float radius = 6f, timeout = 8f;
+    Vector3 _dest; bool _picked, _arrived; float _until, _restUntil; int _mySteps = -1;
+    public float radius = 4f, timeout = 8f, speed = 0.9f;
     public override string Label => "merodear";
+
+    /// <summary>¿El último paso de su PathMover lo dio este merodeo? (si otro le dio un paso entre medias, otro lo conduce).</summary>
+    public bool Drives(GameObject g) => _mySteps >= 0 && g.TryGetComponent(out PathMover pm) && pm.Steps == _mySteps;
+
+    // Antes andaba en línea recta (WalkSpell) hacia un punto al azar y atravesaba columnas, grúas y máquinas del gimnasio
+    // (JornadaTest 2026-10-29). Ahora el punto sale del NavMesh de su mismo piso y anda por él con PathMover, despacio, y al
+    // llegar se queda un rato mirando (no va y viene sin parar: eso parecía dar vueltas en círculo). Todo con tope de tiempo.
+    // ¿Cabe de pie una persona en ese punto del suelo? (Ivelyna se quedó mirando dentro de «Fila interior 4» de la sala de asambleas.)
+    static bool Occupied(Vector3 floor)
+    {
+        foreach (Collider c in Physics.OverlapCapsule(floor + Vector3.up * 0.3f, floor + Vector3.up * 1.6f, 0.25f, ~0, QueryTriggerInteraction.Ignore))
+            if (c.GetComponentInParent<Anima>() == null) return true;
+        return false;
+    }
+
     public override bool Tick(Anima self)
     {
         if (self == null) return true;
+        if (PathMover.DrivenRecently(self.gameObject) && !Drives(self.gameObject)) return true;   // otro lo conduce ya (su jornada, una orquesta): no tira de él
         if (!_picked)
         {
-            Vector2 r = Random.insideUnitCircle * radius;
-            _dest = self.transform.position + new Vector3(r.x, 0f, r.y);
-            _until = Time.time + timeout; _picked = true;
+            _picked = true; _until = Time.time + timeout;
+            Vector3 here = self.transform.position;
+            bool found = false;
+            for (int i = 0; i < 6 && !found; i++)
+            {
+                Vector2 r = Random.insideUnitCircle * radius;
+                Vector3 probe = here + new Vector3(r.x, 0f, r.y);
+                if (!UnityEngine.AI.NavMesh.SamplePosition(probe, out UnityEngine.AI.NavMeshHit h, 1.0f, UnityEngine.AI.NavMesh.AllAreas)) continue;
+                if (Mathf.Abs(h.position.y - (here.y - PathMover.Of(self).PivotHeight)) > 0.6f) continue;   // en su mismo piso
+                UnityEngine.AI.NavMeshPath path = new UnityEngine.AI.NavMeshPath();
+                if (!UnityEngine.AI.NavMesh.SamplePosition(here, out UnityEngine.AI.NavMeshHit from, 1.5f, UnityEngine.AI.NavMesh.AllAreas)) break;
+                if (!UnityEngine.AI.NavMesh.CalculatePath(from.position, h.position, UnityEngine.AI.NavMesh.AllAreas, path) || path.status != UnityEngine.AI.NavMeshPathStatus.PathComplete) continue;
+                if (Occupied(h.position)) continue;   // el NavMesh pasa por encima de muebles bajos (las filas de la sala de asambleas): ahí no se queda
+                _dest = h.position; found = true;
+            }
+            if (!found) { _arrived = true; _restUntil = Time.time + Random.Range(4f, 8f); }   // sin sitio al que ir: se queda mirando
         }
-        if (Time.time >= _until) return true;
-        Vector3 to = _dest - self.transform.position; to.y = 0f;
-        if (to.magnitude <= 0.6f) return true;
-
-        WalkSpell walk = self.GetComponent<WalkSpell>();
-        if (walk != null) walk.Drive(to.normalized);
-        else { var nav = self.GetComponent<UnityEngine.AI.NavMeshAgent>(); if (nav != null && nav.isOnNavMesh) nav.SetDestination(_dest); }
+        if (_arrived) return Time.time >= _restUntil;
+        PathMover pmv = PathMover.Of(self);
+        float left = pmv.StepToward(pmv.OnGround(_dest), speed);
+        _mySteps = pmv.Steps;
+        if (left <= 0.6f || Time.time >= _until) { _arrived = true; _restUntil = Time.time + Random.Range(5f, 10f); }
         return false;
     }
 }
@@ -188,20 +215,52 @@ public class CarpetWalkSpell : QueuedSpell
     public string targetName = "destino";
     public float stopDistance = 1f, speed = 1.6f, giveUpAfter = 300f;
     float _start = -1f;
+    Vector3 _snap;
+    float _checkAt; Vector3 _checkPos; int _restarts;
+    /// <summary>true si lo dejó por no avanzar (o por tope), no porque llegara.</summary>
+    public bool GaveUp { get; private set; }
+    const float NoProgress = 8f;
 
     public override string Label => $"ir a {targetName} (en alfombra)";
 
     public override bool Tick(Anima self)
     {
         if (self == null || target == null) return true;
-        if (_start < 0f) _start = Time.time;
-        if (Time.time - _start > giveUpAfter) return true;
-        Vector3 d = target.position - self.transform.position;
-        float dy = Mathf.Abs(d.y); d.y = 0f;
-        if (d.magnitude <= stopDistance && dy < 2f) return true;
+        if (_start < 0f)
+        {
+            _start = Time.time;
+            // EL DESTINO SOBRE EL NAVMESH: el centro de una cama (o de una silla) queda dentro de su obstáculo y el camino acaba a
+            // más de 1 m: nunca «llegaba» y rondaba la cama hasta rendirse (Lizmibet yendo a dormir, Berón 2026-10-29).
+            _snap = UnityEngine.AI.NavMesh.SamplePosition(target.position, out UnityEngine.AI.NavMeshHit h, 2f, UnityEngine.AI.NavMesh.AllAreas) && Mathf.Abs(h.position.y - target.position.y) < 1.5f ? h.position : target.position;
+        }
+        if (Time.time - _start > giveUpAfter) { GaveUp = true; return true; }
+        Vector3 d = target.position - self.transform.position, ds = _snap - self.transform.position;
+        float dy = Mathf.Abs(d.y); d.y = 0f; ds.y = 0f;
+        if ((d.magnitude <= stopDistance || ds.magnitude <= 0.4f) && dy < 2f) return true;
         Vector3 to = target.position;
-        if (CarpetPad.Route(self.gameObject, ref to)) return false;   // volando (o subiéndose)
+        // (2026-11-11) Volando o nadando por un tronco no cuenta como «sin avanzar»; pero si la ruta dice «en alfombra» y NO va en alfombra ni en un
+        // viaje del árbol, sí: Lizmibet, recién salida por la puerta del piso 5 de Residencia, «ir a su cama (en alfombra)» quieta (suite 63): la
+        // comprobación se reiniciaba en cada fotograma y no se rendía nunca antes del tope de 5 min.
+        if (CarpetPad.Route(self.gameObject, ref to))
+        {
+            if (FlyingCarpet.Riding(self.gameObject) || TreeTrip.Busy(self.gameObject)) { _checkAt = Time.time; _checkPos = self.transform.position; return false; }
+            return NoProgressCheck(self);
+        }
+        if (to == target.position) to = _snap;                         // en su piso: al punto andable junto al destino
         PathMover.Of(self.transform).StepToward(to, speed);
+        return NoProgressCheck(self);
+    }
+
+    bool NoProgressCheck(Anima self)
+    {
+        // SIN AVANZAR (JornadaTest 2026-10-29: «ir al baño» quieto más de 20 s): en 8 s sin moverse medio metro recalcula el
+        // camino una vez; si sigue igual, lo deja (antes esperaba quieto hasta el tope de 2–5 min).
+        if (_checkAt <= 0f || (self.transform.position - _checkPos).magnitude > 0.5f) { _checkAt = Time.time; _checkPos = self.transform.position; }
+        else if (Time.time - _checkAt > NoProgress)
+        {
+            if (_restarts++ == 0) { PathMover.Of(self.transform).Restart(); _checkAt = Time.time; }
+            else { GaveUp = true; Debug.Log($"[Andar] «{self.name}» no avanza hacia {targetName} en {NoProgress * 2f:0} s: lo deja. [{PathMover.Of(self.transform).Trace}; {CarpetPad.LastRoute(self.gameObject)}]"); return true; }   // (con el porqué: camino del NavMesh y última ruta)
+        }
         return false;
     }
 }

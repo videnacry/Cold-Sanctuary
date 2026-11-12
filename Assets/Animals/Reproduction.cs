@@ -30,7 +30,26 @@ public class Reproduction : MonoBehaviour
     EstrusState _estrus;
     float _cooldownUntil;
     bool _pregnant;
-    float _birthTime;
+    // La gestación y el descanso entre crías se cuentan en MESES del calendario (como el huevo, Egg.progress): si el año
+    // cambia a media gestación (el panel de ciclo de vida lo comprime, la prueba lo baja a 0,05 días), lo que falta se
+    // recalibra al momento. Antes se fijaba un `Time.time` de parto al concebir: la foca concebía al arrancar con el año de
+    // 2 días y paría a los ~100 min de juego aunque la prueba hubiera bajado el año a 0,05 (grupo 58: 11/5).
+    float _gestMonths, _gestDone;
+    float _restMonths;
+
+    /// <summary>¿Está gestando (o incubando: el pingüino lo lleva igual, dentro de la madre)? Lo leen el panel y la prueba
+    /// de las escenas de ciclo de vida.</summary>
+    public bool Pregnant => _pregnant;
+    /// <summary>`Time.time` en que parirá con el calendario de ahora (solo vale con <see cref="Pregnant"/>).</summary>
+    public float BirthAt => Time.time + Mathf.Max(0f, _gestMonths - _gestDone) * SecondsPerMonth();
+
+    float SecondsPerMonth()
+    {
+        TimeController tc = TimeController.timeController;
+        return tc != null ? Mathf.Max(1e-4f, tc.SecondsForMonths(1f)) : gestationSeconds / Mathf.Max(0.01f, _gestMonths);
+    }
+    /// <summary>Cada parto: (madre, cría). Para observar el ciclo de vida sin buscar crías nuevas por la escena.</summary>
+    public static event System.Action<Animal, Animal> Born;
 
     void Awake() { _animal = GetComponent<Animal>(); _estrus = GetComponent<EstrusState>(); }
 
@@ -38,26 +57,35 @@ public class Reproduction : MonoBehaviour
     {
         if (!Enabled || _animal == null || _animal.death) return;
 
-        if (_pregnant) { if (Time.time >= _birthTime) GiveBirth(); return; }
+        float months = Time.deltaTime / SecondsPerMonth();
+        if (_pregnant) { _gestDone += months; if (_gestDone >= _gestMonths && !WaitForDen()) GiveBirth(); return; }
+        if (_restMonths > 0f) _restMonths -= months;
         if (!CanConceive()) return;
         string sp = _animal.SpeciesName;
         // Pulgón: partenogénesis (hembras que paren hijas sin macho). Reina de hormiga/termita: guarda el esperma del
         // vuelo nupcial y pone sin volver a aparearse. El resto necesita pareja.
-        if (Parthenogenetic(sp) || Eusocial(sp) || FindMate() != null) Conceive();
+        if (Parthenogenetic(sp) || Eusocial(sp)) { _mate = null; Conceive(); return; }
+        Animal mate = FindMate();
+        if (mate != null) { _mate = mate; Conceive(); }
     }
+
+    Animal _mate;
+    /// <summary>El padre de lo que gesta (o del huevo): incuba (pingüino) y alimenta a la cría si la especie es biparental.</summary>
+    public Animal Mate => _mate;
 
     bool CanConceive()
     {
         if (_animal.lifeStage != LifeStage.adult) return false;   // solo adultos
         if (_animal.sex != Sex.female && !Hermaphrodite(_animal.SpeciesName)) return false;   // gesta la hembra → una cría por pareja; en los hermafroditas, los dos
-        if (Time.time < _cooldownUntil) return false;
+        if (Time.time < _cooldownUntil || _restMonths > 0f) return false;
         if (_estrus == null || !_estrus.InEstrus) return false;   // en celo
         if (_animal.hungry >= 0f) return false;                   // saciada (hungry>=0 = tiene hambre)
         if (HiveBreeds(_animal.SpeciesName)) return false;          // la abeja nace del panal (Hive), no de aquí
         if (Eusocial(_animal.SpeciesName) && !IsColonyQueen()) return false;   // solo la reina pone; las obreras son estériles
         if (LivingCount() >= softPopulationCap) return false;   // cuenta solo los VIVOS (antes contaba también los cadáveres)
         int planCap = PopulationPlan.Cap(_animal.SpeciesName);
-        if (planCap > 0 && LivingCount() >= planCap) return false;   // equilibrio con los humanos: no más de 1,5× lo que toca (PopulationPlan)
+        if (planCap > 0 && LivingCount() >= planCap) return false;   // equilibrio con los humanos: no más de lo que le toca con K (PopulationPlan, Berón 2026-11-09)
+        if (planCap > 0 && SceneAnimals() >= PopulationPlan.TotalCap) return false;   // ni más animales en total que K × los humanos del santuario
         return true;
     }
 
@@ -86,21 +114,60 @@ public class Reproduction : MonoBehaviour
     void Conceive()
     {
         _pregnant = true;
-        // GESTACIÓN real de la especie (meses) escalada al calendario del santuario (Clock: día y año configurables).
-        TimeController tc = TimeController.timeController;
-        _birthTime = Time.time + (tc != null ? tc.SecondsForMonths(Calendar(_animal.SpeciesName).gestationMonths) : gestationSeconds);
+        // GESTACIÓN real de la especie (meses), contada con el calendario del santuario (Clock: día y año configurables).
+        _gestMonths = Calendar(_animal.LifeSpecies).gestationMonths; _gestDone = 0f;
+    }
+
+    // EL PARTO ESPERA A LA GUARIDA (oso, malamute): si la gestación acaba con la madre aún de camino a su guarida (con el año
+    // comprimido, «12–24 h antes» son medio segundo de juego), el parto se retrasa mientras va hacia ella, hasta 60 s de juego
+    // (la primera fase del parto dura horas: la perra hace el nido y luego pare). Antes la malamute de su isla paría fuera.
+    float _labourSince = -1f;
+    bool WaitForDen()
+    {
+        MaternityDen md = GetComponent<MaternityDen>();
+        if (md == null || md.Life == null || !md.Life.den || !md.Wants || md.InDen) return false;
+        if (_labourSince < 0f) _labourSince = Time.time;
+        return Time.time - _labourSince < 60f;
     }
 
     void GiveBirth()
     {
         _pregnant = false;
-        TimeController tcb = TimeController.timeController;
-        _cooldownUntil = Time.time + Mathf.Max(cooldownSeconds, tcb != null ? tcb.SecondsForMonths(Calendar(_animal.SpeciesName).intervalMonths) : 600f);   // una cría por temporada (calendario real de la especie)
-        SpawnOffspring();
+        _labourSince = -1f;
+        _cooldownUntil = Time.time + cooldownSeconds;
+        // Una cría por temporada (calendario real de la especie); sin reloj, el tope de antes (600 s).
+        _restMonths = TimeController.timeController != null ? Calendar(_animal.LifeSpecies).intervalMonths : 0f;
+        if (TimeController.timeController == null) _cooldownUntil = Time.time + Mathf.Max(cooldownSeconds, 600f);
+        // OVÍPAROS (LifeHistory.eggs: pingüino, araña de las nieves): pone un HUEVO (o un saco) que se incuba; la cría nace al
+        // eclosionar (Egg.Hatch → Hatch).
+        LifeHistory life = LifeHistory.Of(_animal.LifeSpecies);
+        if (life.eggs) { Egg.Lay(this, _animal, _mate, life); return; }
+        // En la GUARIDA (MaternityDen) pare a su lado, dentro.
+        MaternityDen den = GetComponent<MaternityDen>();
+        Animal baby = SpawnOffspring(den != null && den.InDen ? transform.position + new Vector3(Random.Range(-0.6f, 0.6f), 0f, Random.Range(-0.6f, 0.6f)) : (Vector3?)null, _mate);
+        if (baby != null) Born?.Invoke(_animal, baby);
+    }
+
+    /// <summary>Eclosión de un huevo de esta madre (lo llama <see cref="Egg"/>): la cría nace donde estaba el huevo.</summary>
+    public Animal Hatch(Vector3 at, Animal father)
+    {
+        if (_animal == null) _animal = GetComponent<Animal>();
+        Animal baby = SpawnOffspring(at, father);
+        if (baby != null) Born?.Invoke(_animal, baby);
+        return baby;
     }
 
     /// <summary>Pare una cría: copia del progenitor puesta en etapa `child` (crece por `Animal.Init`→`LifeStage`).
     /// Devuelve el `Animal` de la cría. Público para el test del ciclo de vida.</summary>
+
+    /// <summary>Los animales vivos del plan (<see cref="PopulationPlan.Groups"/>) en la escena de este: lo que cuenta para el techo de K × humanos.</summary>
+    int SceneAnimals()
+    {
+        int n = 0;
+        foreach (GameObject g in Animal.wholePopulation)
+            if (g != null && g.scene == gameObject.scene && g.TryGetComponent(out Animal a) && !a.death && PopulationPlan.Groups.ContainsKey(a.SpeciesName)) n++;
+        return n;
+    }
 
     int LivingCount()
     {
@@ -147,7 +214,11 @@ public class Reproduction : MonoBehaviour
     /// (doi 10.1111/j.1365-2656.2007.01318.x).</summary>
     public static (float gestationMonths, float intervalMonths) Calendar(string sp) => sp switch
     {
-        "Seal" => (10.5f, 12f), "Penguin" => (2f, 12f), "Bear" => (8f, 29f), "PolarBear" => (8f, 36f),
+        // (Penguin = pingüino de Adelia: llega al nido y pone en ~2 semanas [A].) Pingüino emperador: la «gestación» es de la cópula a la PUESTA (~1 mes; la pareja se forma en abril y el huevo sale en
+        // mayo–junio, Prévost 1961 [A]); luego el macho incuba el huevo 2,1 meses (LifeHistory/Egg).
+        "Seal" => (10.5f, 12f), "EmperorPenguin" => (0.8f, 12f), "Penguin" => (0.5f, 12f), "Bear" => (8f, 29f), "PolarBear" => (8f, 36f),
+        // Territorio polar (fuentes en docs/reglas-animales.md).
+        "SnowPetrel" => (0.5f, 12f), "ArcticTern" => (0.5f, 12f), "WanderingAlbatross" => (0.5f, 24f), "CapePetrel" => (0.5f, 12f), "PolarSkua" => (0.5f, 12f), "Walrus" => (15f, 31f), "Reindeer" => (7.6f, 12f), "MuskOx" => (8f, 15f), "ArcticHare" => (1.7f, 12f), "ArcticFox" => (1.7f, 12f),
         "Whale" => (11.5f, 30f), "Orca" => (17f, 60f), "Fox" => (1.7f, 12f), "Wolf" => (2.1f, 12f),
         "Malamute" => (2.1f, 7f), "Deer" => (7.3f, 12f), "Bunny" => (1f, 1.5f), "Meerkat" => (2.3f, 4f),
         // INSECTOS (docs/insect-biology-audit.md): "gestación" = del apareamiento a que sale la cría (incubación del
@@ -165,6 +236,7 @@ public class Reproduction : MonoBehaviour
         "DungBeetle" => (0.3f, 1f),     // un huevo por bola-nido; pocas bolas: estratega K entre los insectos [A]
         "Antlion" => (1f, 0.3f),        // huevo en la arena ≈1 mes; el adulto vive pocas semanas [A]
         "Spider" => (0.8f, 1f),         // saco de huevos ≈2–4 sem; pocos sacos [A]
+        "SnowSpider" => (1f, 12f),      // araña de las nieves (ficticia, docs/ciclo-de-vida.md): de la cópula al saco ≈1 mes; un saco al año (como Theraphosa); el saco se incuba 1,75 meses (LifeHistory/Egg)
         // Especies de las eras (docs/era-species-behavior.md):
         "Scorpion" => (6f, 12f),        // vivíparo: gestación 122–277 d, media 185 (Leiurus; Ross 2009, J Venom Anim Toxins 15:347); una camada al año
         "CamelSpider" => (1.2f, 12f),   // puesta en la madriguera ≈3–4 sem tras la cópula + incubación; anual (Punzo 1998) [A]
@@ -181,9 +253,14 @@ public class Reproduction : MonoBehaviour
         "Earthworm" => (3f, 0.5f),      // capullo ≈3 meses, una cría por capullo; un capullo cada ~2 sem (Butt & Nuutinen 1998) [A]
         _ => (2f, 12f),
     };
-    public Animal SpawnOffspring()
+    public Animal SpawnOffspring() => SpawnOffspring(null, null);
+
+    /// <summary>Pare (o eclosiona) en <paramref name="at"/> (por defecto, a ≤ 2 m de la madre). <paramref name="father"/>: el
+    /// padre, que también se vincula con la cría si la especie cría en pareja (LifeHistory.biparental: el pingüino).</summary>
+    public Animal SpawnOffspring(Vector3? at, Animal father)
     {
-        Vector3 pos = transform.position + new Vector3(Random.Range(-2f, 2f), 0f, Random.Range(-2f, 2f));
+        if (_animal == null) _animal = GetComponent<Animal>();
+        Vector3 pos = at ?? transform.position + new Vector3(Random.Range(-2f, 2f), 0f, Random.Range(-2f, 2f));
         GameObject baby = Instantiate(_animal.gameObject, pos, transform.rotation);
         baby.name = _animal.SpeciesName + "_cria";
         Animal ba = baby.GetComponent<Animal>();
@@ -195,8 +272,14 @@ public class Reproduction : MonoBehaviour
             ba.sex = Random.value < 0.5f ? Sex.female : Sex.male;
             // CUIDADO DE LA CRÍA (BroodRide): la madre que cuida se encariña con lo que pare (base de «nurse»/«brood»);
             // la del escorpión y la araña lobo se la sube al lomo hasta la primera muda.
-            string sp = _animal.SpeciesName;
-            if (BroodRide.ParentalCare(sp)) _animal.GrowBond(ba, BondType.Imprint, 60f);
+            string sp = _animal.LifeSpecies;
+            // Y la cría con ella (impronta): con ese vínculo la cría hambrienta va a su madre a mamar («nurse», AwaitFeeding) y
+            // la sigue («heel»). En los que crían en pareja (pingüino), también el padre y la cría entre sí.
+            if (BroodRide.ParentalCare(sp)) { ba.bonds.Clear(); Imprint(_animal, ba); Imprint(ba, _animal); }
+            // El recién nacido de una especie que lo alimenta (lactancia, regurgitación) nace con HAMBRE: la primera toma (calostro)
+            // llega enseguida. El que no se alimenta de sus padres (arañita, cría de artrópodo) vive del vitelo: sin hambre.
+            if (LifeHistory.Has(sp)) ba.hungry = BroodRide.ParentalCare(sp) ? 0.5f : -0.5f;
+            if (father != null && !father.death && father != _animal && LifeHistory.Of(sp).biparental) { Imprint(father, ba); Imprint(ba, father); }
             BroodRide ride = baby.GetComponent<BroodRide>();
             if (BroodRide.Carries(sp))
             {
@@ -206,5 +289,15 @@ public class Reproduction : MonoBehaviour
             else if (ride != null) Destroy(ride);
         }
         return ba;
+    }
+
+    /// <summary>Vínculo de impronta madre↔cría (≥ 60 de 100): la cría recién instanciada aún no tiene sus stats (su ritmo de
+    /// vínculo puede ser 0 antes de su Init), así que se fija el valor además de crecerlo.</summary>
+    public static void Imprint(Anima from, Animal to)
+    {
+        if (from == null || to == null) return;
+        from.GrowBond(to, BondType.Imprint, 60f);
+        Bond b = from.GetBond(to);
+        if (b != null) b.value = Mathf.Max(b.value, 60f);
     }
 }

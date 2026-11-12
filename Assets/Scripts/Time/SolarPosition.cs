@@ -115,12 +115,40 @@ public static class SolarPosition
         if (string.IsNullOrEmpty(display)) return false;
         (string key, float la, float lo, float d)[] table =
         {
+            ("Cleopatra", 31.20f, 29.92f, 215f),   // Alejandría, el agosto de la crecida que no llega (antes que «Alejandría»: Eratóstenes)
             ("Sakshi", 60f, 60f, 121f), ("Ambrosio", 60f, 60f, 182f), ("Enfermer", 60f, 60f, 182f), ("Hospital", 60f, 60f, 182f),
             ("Cocina", 32.10f, 34.97f, 288f), ("Huerto", 31.87f, 35.44f, 91f), ("Textil", 48.88f, 16.65f, 288f),
             ("Mecánica", 48.88f, 16.65f, 182f), ("Mesopotamia", 31.32f, 45.64f, 91f), ("Patanjali", 25.32f, 83.01f, 15f),
             ("Kapilavastu", 27.57f, 83.05f, 288f), ("Egina", 37.75f, 23.53f, 152f), ("Alejandría", 31.20f, 29.92f, 172f),
             ("Escútari", 41.00f, 29.02f, 319f), ("Dayton", 36.02f, -75.67f, 351f), ("Tregua", 50.74f, 2.88f, 359f),
             ("Chambon", 45.06f, 4.30f, 288f), ("Sendler", 52.25f, 21.00f, 288f), ("Atómica", 52.81f, -0.63f, 253f),
+            ("Bruce Lee", 22.28f, 114.17f, 258f),   // Hong Kong, mediados de septiembre (empieza en la escuela de Yip Man)
+            ("Palenque", 17.48f, -92.05f, 240f),   // Palenque, 28 de agosto de 683 (la muerte de Pakal; temporada de lluvias)
+            ("Chimbacalle", -0.25f, -78.52f, 177f),   // Quito, 25 de junio de 1908
+            ("Lagunillas", -37.1f, -73.3f, 320f),   // Arauco, noviembre de 1557 (primavera austral; fecha representativa)
+            ("Cajamarca", -7.16f, -78.51f, 319f),   // 15 de noviembre de 1532
+            ("Onondaga", 43.08f, -76.2f, 244f),   // finales de agosto (la fecha tradicional no es segura)
+            ("Langley", 37.08f, -76.38f, 51f),   // Hampton, 20 de febrero de 1962
+            ("Viena", 48.21f, 16.37f, 128f),   // 7 de mayo de 1824
+            ("Leiden", 52.16f, 4.49f, 159f),   // 8 de junio de 1637
+            ("San Pablo", -3.68f, -72.2f, 166f),   // San Pablo de Loreto, 14 de junio de 1952
+            ("Madrid", 40.42f, -3.70f, 152f),   // 1 de junio de 2018
+            ("Gettysburg", 39.83f, -77.23f, 323f),   // 19 de noviembre de 1863
+            ("Velliangiri", 10.97f, 76.74f, 175f),   // Isha Yoga Center, 24 de junio de 1999
+            ("Hawthorne", 33.92f, -118.33f, 272f),   // la sede de SpaceX, 28 de septiembre de 2008
+            ("Albuquerque", 35.08f, -106.6f, 95f),   // primavera de 1975 (Micro-Soft, 4 de abril)
+            ("Omaha", 41.25f, -96.03f, 242f),   // 30 de agosto de 1983
+            ("Prairie View", 30.09f, -95.99f, 350f),   // 15 de diciembre de 2020
+            ("Uagadugú", 12.37f, -1.52f, 127f),   // 6 de mayo de 2024
+            ("Grandes aportes", 15.0f, -30.0f, 172f),   // lugar inventado: un punto del Atlántico, entre los continentes de sus canciones; 21 de junio
+            ("Long Island", 40.68f, -73.59f, 110f),   // Roosevelt, abril de 1989 (fecha representativa)
+            ("Belfast", 54.6f, -5.92f, 139f),   // 19 de mayo de 1998
+            ("Kingston", 18.0f, -76.78f, 112f),   // 22 de abril de 1978
+            ("Seúl", 37.55f, 126.91f, 221f),   // Hapjeong, 8 de agosto de 2016
+            ("Gary", 41.59f, -87.35f, 135f),   // mayo de 1966 (fecha representativa)
+            ("Montreal", 45.50f, -73.57f, 152f),   // 1 de junio de 1969
+            ("Vega Baja", 18.44f, -66.39f, 244f),   // septiembre de 2016 (fecha representativa)
+            ("Barranquilla", 11.03f, -74.87f, 32f),   // La Playa, principios de 2009 (fecha representativa: empieza el año escolar)
         };
         foreach (var e in table)
             if (display.IndexOf(e.key, System.StringComparison.OrdinalIgnoreCase) >= 0) { lat = e.la; lon = e.lo; doy = e.d; return true; }
@@ -128,32 +156,3 @@ public static class SolarPosition
     }
 }
 
-/// <summary>
-/// EL SOL POLAR DEL SANTUARIO: mueve la luz direccional de la escena con la hora y la estación del reloj de juego
-/// (<see cref="SolarPosition.Sanctuary"/>): sol de medianoche rasante y dorado, noches polares con luna, y días y noches
-/// en las transiciones. <see cref="TimeController.IsDay"/> (6–18 h) sigue siendo el horario humano.
-/// </summary>
-public class SunCycle : MonoBehaviour
-{
-    Light _light;
-    public SunPos Now { get; private set; }
-
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-    static void Attach()
-    {
-        if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != "SampleScene") return;
-        foreach (Light l in Object.FindObjectsByType<Light>(FindObjectsSortMode.None))
-            if (l.type == LightType.Directional && l.GetComponent<SunCycle>() == null) { l.gameObject.AddComponent<SunCycle>(); return; }
-    }
-
-    void Awake() { _light = GetComponent<Light>(); }
-
-    void Update()
-    {
-        TimeController t = TimeController.timeController; if (t == null || _light == null) return;
-        Now = SolarPosition.Sanctuary(t);
-        float L = SolarPosition.Apply(_light, Now);
-        // El ambiente solo si su escena manda (en un microcosmos cargado encima manda la luz de allí); la nieve refleja.
-        if (gameObject.scene == UnityEngine.SceneManagement.SceneManager.GetActiveScene()) RenderSettings.ambientIntensity = 0.3f + 0.7f * L;
-    }
-}

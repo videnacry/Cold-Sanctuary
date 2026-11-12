@@ -19,6 +19,10 @@ public class LessonPrompt : MonoBehaviour
 
     public static void Hide() { _text = null; }
 
+    /// <summary>La caja de la última vez que se dibujó, y en qué frame: <see cref="KushalVoice"/> se queda encima.</summary>
+    public static Rect LastRect { get; private set; }
+    public static int LastDrawFrame { get; private set; } = -100;
+
     static void Ensure()
     {
         if (_inst != null) return;
@@ -39,6 +43,7 @@ public class LessonPrompt : MonoBehaviour
         float h = th + sh + 16f;
         var box = new Rect((Screen.width - w) * 0.5f, Screen.height - h - 84f, w, h);   // encima de la barra de hechizos
         GUI.Box(box, GUIContent.none);
+        LastRect = box; LastDrawFrame = Time.frameCount;
         GUI.Label(new Rect(box.x + 10, box.y + 8, box.width - 20, th), _text, style);
         if (!string.IsNullOrEmpty(_spell))
         {

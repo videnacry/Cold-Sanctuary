@@ -13,7 +13,8 @@ public class SpeciesScaleFix : MonoBehaviour
     // Largo real del adulto (m), cabeza a cola; en los erguidos (pingüino), la altura. [A] aproximaciones de manual.
     public static readonly Dictionary<string, float> Real = new Dictionary<string, float>
     {
-        ["Bear"] = 2.2f, ["PolarBear"] = 2.2f, ["Seal"] = 1.6f, ["Penguin"] = 1.1f, ["Whale"] = 15f, ["Orca"] = 7f,
+        ["Bear"] = 2.2f, ["PolarBear"] = 2.2f, ["Seal"] = 1.6f, ["Penguin"] = 0.6f, ["Whale"] = 15f, ["Orca"] = 7f,
+        ["SnowPetrel"] = 0.78f, ["ArcticTern"] = 0.8f, ["WanderingAlbatross"] = 3f, ["CapePetrel"] = 0.85f, ["PolarSkua"] = 1.35f, ["EmperorPenguin"] = 1.0f, ["Walrus"] = 3.0f, ["Reindeer"] = 2.0f, ["MuskOx"] = 2.3f, ["ArcticHare"] = 0.62f, ["ArcticFox"] = 0.85f,
         ["Wolf"] = 1.4f, ["Malamute"] = 1.0f, ["Fox"] = 0.65f, ["Bunny"] = 0.6f, ["Deer"] = 1.9f,
     };
 
@@ -21,6 +22,10 @@ public class SpeciesScaleFix : MonoBehaviour
 
     Animal _a;
     float _next;
+    float _nextMeasure;
+    char _stage;
+    const float Settled = 20f;
+    static readonly System.Collections.Generic.List<Renderer> _rs = new System.Collections.Generic.List<Renderer>();
 
     void Awake() { _a = GetComponent<Animal>(); }
 
@@ -28,6 +33,9 @@ public class SpeciesScaleFix : MonoBehaviour
     {
         if (_a == null || Time.time < _next) return;
         _next = Time.time + 1f;
+        // Un animal ya en su talla no cambia hasta que crece: se mide cada Settled s, o al cambiar de etapa. Medir recorre sus cubos.
+        if (_a.lifeStage == _stage && Time.time < _nextMeasure && !ColdSanctuary.TestRunner.Running) return;
+        _stage = _a.lifeStage;
         if (_a.death || !Real.TryGetValue(_a.SpeciesName, out float adult)) return;
         if (GetComponentInParent<MicroSize>() != null) return;   // en un microcosmos manda su escala
         float stage = _a.lifeStage == LifeStage.child ? 0.4f : _a.lifeStage == LifeStage.teen ? 0.7f : 1f;
@@ -35,9 +43,10 @@ public class SpeciesScaleFix : MonoBehaviour
         // medía un 18 % menos y crecía y encogía al girar). Solo su cuerpo: ni carteles ni lo que lleve encima.
         bool any = false; Bounds b = default;
         Matrix4x4 toRoot = transform.worldToLocalMatrix;
-        foreach (Renderer r in GetComponentsInChildren<Renderer>())
+        GetComponentsInChildren(_rs);
+        foreach (Renderer r in _rs)
         {
-            if (!r.enabled || r.GetComponent<WorldLabel>() != null || r.GetComponentInParent<Animal>() != _a) continue;
+            if (!r.enabled || r.TryGetComponent(out WorldLabel _) || r.GetComponentInParent<Animal>() != _a) continue;
             Bounds lb = r is SkinnedMeshRenderer sk ? sk.localBounds : r.TryGetComponent(out MeshFilter mf) && mf.sharedMesh != null ? mf.sharedMesh.bounds : default;
             if (lb.size == Vector3.zero) continue;
             Matrix4x4 m = toRoot * r.localToWorldMatrix;
@@ -52,5 +61,6 @@ public class SpeciesScaleFix : MonoBehaviour
         if (now < 1e-3f) return;
         float k = adult * stage / now;
         if (Mathf.Abs(k - 1f) > 0.08f) transform.localScale *= Mathf.Clamp(k, 0.05f, 20f);
+        else _nextMeasure = Time.time + Settled + (GetHashCode() & 7);   // en su talla: repartidos, para no medir todos a la vez
     }
 }

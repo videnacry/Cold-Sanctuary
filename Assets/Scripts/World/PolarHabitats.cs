@@ -16,6 +16,10 @@ public class PolarHabitats : MonoBehaviour
 {
     public Vector3 pebbleBeach = new Vector3(60f, 0f, -10f);
     public Vector3[] denSites = new Vector3[0];
+    [Tooltip("La colonia del pingüino emperador: hielo fijo al abrigo de icebergs, sin nidos (docs/territorio-polar.md). Cero = sin colonia.")]
+    public Vector3 emperorColony;
+    [Tooltip("Rumbo (grados) desde la laguna de la playa de grava de las morsas (uglit).")]
+    public float walrusBeachAngle = 205f;
     [Tooltip("Separación angular (grados) entre descansaderos de la orilla de la laguna.")]
     public float haulOutStep = 15f;
 
@@ -26,7 +30,8 @@ public class PolarHabitats : MonoBehaviour
 
     public void Generate()
     {
-        Material dark = Mat("Respiradero", new Color(0.05f, 0.12f, 0.18f)), pebble = Mat("Guijarro", new Color(0.42f, 0.42f, 0.45f));
+        Material pebble = Mat("Guijarro", new Color(0.42f, 0.42f, 0.45f));
+        Holes = Affordance.Of(AffordanceKind.BreathingHole).Count;   // los respiraderos van en el hielo fijo (SampleSceneBuilder.Territorio), no en la plataforma
         Material snow = Mat("Ventisquero", new Color(0.95f, 0.97f, 1f)), gravel = Mat("Grava", new Color(0.45f, 0.38f, 0.3f));
         Vector3 lagoon = MarineLife.Lagoon;
         int i = 0;
@@ -36,9 +41,6 @@ public class PolarHabitats : MonoBehaviour
             if (!Shore(lagoon, dir, out Vector3 shore)) continue;
             var h = new GameObject($"Descansadero_{i}"); h.transform.SetParent(transform, false); h.transform.position = shore + dir * 2f;
             Affordance.Put(h, AffordanceKind.HaulOut, 2); HaulOuts++;
-            if (i % 2 != 0 || !Ice(shore + dir * 6f, out Vector3 holeAt)) continue;
-            Transform hole = Box($"Respiradero_{i}", holeAt + Vector3.up * 0.02f, new Vector3(0.9f, 0.03f, 0.9f), dark);
-            Affordance.Put(hole.gameObject, AffordanceKind.BreathingHole, 1); Holes++;
         }
 
         // Playa de guijarros de la colonia (el mar los trae muy despacio).
@@ -52,6 +54,40 @@ public class PolarHabitats : MonoBehaviour
         }
         Affordance.Put(beach, AffordanceKind.Pebble, 3, 40f, 0.0005f);
 
+        // Nidos de guijarros de la colonia de Adelia: anillos de piedras en la playa.
+        for (int n = 0; n < 8; n++)
+        {
+            Vector3 c = beach.transform.position + Quaternion.Euler(0f, n * 45f, 0f) * Vector3.forward * (3f + n % 3);
+            for (int k = 0; k < 7; k++)
+            {
+                Transform g = Box("Guijarro_nido", c + Quaternion.Euler(0f, k * 51f, 0f) * Vector3.forward * 0.3f + Vector3.up * 0.05f, Vector3.one * 0.1f, pebble);
+                g.SetParent(beach.transform, true);
+            }
+        }
+
+        // La playa de las morsas (uglit): grava en la orilla de la laguna, sitio para que descansen muchas juntas.
+        {
+            Vector3 dir = Quaternion.Euler(0f, walrusBeachAngle, 0f) * Vector3.forward;
+            if (Shore(lagoon, dir, out Vector3 shore))
+            {
+                var uglit = new GameObject("Playa_morsas"); uglit.transform.SetParent(transform, false); uglit.transform.position = shore + dir * 3f;
+                Transform g = Box("Grava_uglit", shore + dir * 3f + Vector3.up * 0.02f, new Vector3(14f, 0.03f, 6f), gravel);
+                g.rotation = Quaternion.LookRotation(dir); g.SetParent(uglit.transform, true);
+                Affordance.Put(uglit, AffordanceKind.HaulOut, 6); HaulOuts++;
+                Territorio ter = FindAnyObjectByType<Territorio>();
+                if (ter != null) ter.walrusBeach = uglit.transform.position;
+            }
+        }
+
+        // La colonia del emperador: no hay nido; se apiñan en el hielo fijo (Ethogram: «se apiña con la colonia»).
+        if (emperorColony != Vector3.zero && Ice(emperorColony, out Vector3 ec))
+        {
+            var col = new GameObject("Colonia_emperador"); col.transform.SetParent(transform, false); col.transform.position = ec;
+            Transform stain = Box("Guano_colonia", ec + Vector3.up * 0.015f, new Vector3(16f, 0.02f, 13f), Mat("Guano_colonia", new Color(0.8f, 0.76f, 0.66f)));
+            stain.SetParent(col.transform, true);
+            Affordance.Put(col, AffordanceKind.HaulOut, 8); HaulOuts++;
+        }
+
         int dens = 0;
         foreach (Vector3 d in denSites)
         {
@@ -60,7 +96,7 @@ public class PolarHabitats : MonoBehaviour
             Affordance.Put(den.gameObject, AffordanceKind.Den, 1); dens++;
         }
 
-        for (int k = 0; k < 2; k++)
+        for (int k = 0, nb = FoodChain.Banks(SwarmKind.Clam); k < nb; k++)   // un bajío por banco de bivalvos
         {
             Vector3 at = lagoon + Quaternion.Euler(0f, 70f + k * 150f, 0f) * Vector3.forward * 16f; at.y = -3.2f;
             Transform bank = Box($"Banco_grava_{k}", at, new Vector3(6f, 0.6f, 4f), gravel);
@@ -99,6 +135,6 @@ public class PolarHabitats : MonoBehaviour
         Shader sh = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
         var m = new Material(sh) { name = name, color = c };
         if (m.HasProperty("_BaseColor")) m.SetColor("_BaseColor", c);
-        return m;
+        return CheapMaterials.MakeCheap(m);   // (2026-11-09) Simple Lit mate
     }
 }

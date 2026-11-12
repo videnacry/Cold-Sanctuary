@@ -53,6 +53,11 @@ public static class Eras
     /// <summary>¿Existe ya esta capacidad en el año <paramref name="year"/> (por defecto, el de ahora)?</summary>
     public static bool Allows(Capability c, int? year = null) => (year ?? Now) >= StartOf(c);
 
+    /// <summary>Desde cuándo hay ESTRUCTURAS HUMANAS (aldeas de casas redondas del Natufiense / PPNA, ~9500 a. C.): antes, la tribu vive en
+    /// una guarida o refugio natural; después, cada era tiene sus edificios (docs/microcosmos-civilizaciones.md §8).</summary>
+    public const int StructuresFrom = -9500;
+    public static bool HasStructures(int year) => year >= StructuresFrom;
+
     /// <summary>«7000 a. C.» / «1942».</summary>
     public static string Format(int year) => year < 0 ? $"{-year:#,0} a. C." : year.ToString();
 
@@ -75,35 +80,54 @@ public static class Eras
             case "Escútari":              return (1854, "Escútari, Estambul");
             case "Dayton":                return (1903, "Dayton y Kill Devil Hills, EE. UU.");
             case "Tregua 1914":           return (1914, "Flandes");
+            case "Bruce Lee":             return (1964, "Hong Kong, Seattle, Long Beach y Los Ángeles");
             case "Irena Sendler":         return (1942, "Varsovia");
             case "Le Chambon-sur-Lignon": return (1942, "Le Chambon-sur-Lignon, Francia");
+            // Los microcosmos de científicos e históricos (docs/microcosmos-cientificos.md): cada uno, el pueblo donde ocurrió.
+            case "Crotona":               return (-530, "Crotona, Magna Grecia (Pitágoras)");
+            case "Menfis":                return (-450, "Menfis y el Nilo, Egipto (Heródoto)");
+            case "Bagdad":                return (820, "Bagdad, la Ciudad Redonda (al-Juarismi)");
+            case "Woolsthorpe":           return (1666, "Woolsthorpe, Lincolnshire (Newton, el año de la peste)");
+            case "Berkeley":              return (1796, "Berkeley, Gloucestershire (Edward Jenner)");
+            case "Angostura":             return (1819, "Angostura del Orinoco (Simón Bolívar)");
+            case "Sils Maria":            return (1881, "Sils Maria, Alta Engadina (Nietzsche)");
+            case "París 1898":            return (1898, "París, rue Lhomond (Marie y Pierre Curie)");
+            case "Colorado Springs":      return (1899, "Colorado Springs (Nikola Tesla)");
+            case "Berna":                 return (1905, "Berna (Albert Einstein, el año milagroso)");
+            case "Pasadena":              return (1953, "Pasadena y Argonne (Clair C. Patterson)");
+            case "Chernóbil":             return (1986, "Prípiat y la central de Chernóbil (Alekséi Ananenko y su escuadrón)");
+            case "Palenque":              return (683, "Lakamha' (Palenque), Chiapas: la muerte y el renacer de K'inich Janaab Pakal");
+            case "Velliangiri":           return (1999, "Isha Yoga Center, al pie de los montes Velliangiri (Coimbatore): Sadhguru y el Dhyanalinga");
+            case "Hawthorne":             return (2008, "La fábrica de SpaceX en Hawthorne, California (Elon Musk y el cuarto Falcon 1)");
+            case "Aldea de la montaña":   return (1930, "Una aldea de montaña de la China tradicional (homenaje a Goku, ficción)");
+            case "Albuquerque":           return (1975, "Albuquerque, Nuevo México (Bill Gates, Paul Allen y el BASIC del Altair)");
+            case "Omaha":                 return (1983, "Omaha, Nebraska (Warren Buffett compra la Nebraska Furniture Mart a Rose Blumkin)");
+            case "Prairie View":          return (2020, "Prairie View A&M University, Texas (la donación de MacKenzie Scott)");
+            case "Uagadugú":              return (2024, "Uagadugú, Burkina Faso (la entrega de tractores a los productores)");
+            case "Grandes aportes de las canciones": return (2025, "La Plaza de las Canciones (lugar inventado): seis canciones que cambiaron algo");
+            case "Long Island":           return (1989, "Roosevelt y Hempstead, Long Island (Public Enemy y Fight the Power)");
+            case "Belfast":               return (1998, "Belfast, Irlanda del Norte (U2 y el concierto del Sí en el Waterfront Hall)");
+            case "Kingston":              return (1978, "Kingston, Jamaica (Bob Marley y los Wailers: de Trench Town al One Love Peace Concert)");
+            case "Seúl":                  return (2016, "Hapjeong, Seúl (BLACKPINK: los años de aprendizas en YG y el debut)");
+            case "Gary":                  return (1966, "Gary, Indiana (la familia Jackson y el primer concurso de los Jackson 5)");
+            case "Montreal":              return (1969, "Queen Elizabeth Hotel, Montreal (John Lennon y Yoko Ono: el Bed-In y Give Peace a Chance)");
+            case "Vega Baja":             return (2016, "Vega Baja, Puerto Rico (Bad Bunny, del empaque del súper a SoundCloud)");
+            case "Barranquilla":          return (2009, "La Playa, Barranquilla (Shakira y el colegio de la Fundación Pies Descalzos)");
+            // La tanda 3 (docs/microcosmos-historias-3.md)
+            case "Chimbacalle":           return (1908, "Chimbacalle, Quito (Eloy Alfaro y la llegada del tren de Guayaquil)");
+            case "Lagunillas":            return (1557, "Tierras de Arauco, Chile (Galvarino vuelve con su gente)");
+            case "Cajamarca":             return (1532, "Cajamarca, Perú (cómo vivían los incas; Atahualpa recibe a los enviados)");
+            case "Onondaga":              return (1450, "El lago Onondaga, Nueva York (la Gran Ley de la Paz; fecha tradicional discutida)");
+            case "Alejandría de Cleopatra": return (-42, "Alejandría, Egipto (Cleopatra y los años sin crecida del Nilo)");
+            case "Langley":               return (1962, "Langley, Hampton, Virginia (Johnson, Vaughan, Jackson y el vuelo de Glenn)");
+            case "Viena 1824":            return (1824, "Viena (Beethoven y el estreno de la Novena)");
+            case "Leiden":                return (1637, "Leiden, Provincias Unidas (Descartes publica el Discurso del método)");
+            case "San Pablo":             return (1952, "La colonia de San Pablo, Loreto, Perú (Ernesto Guevara y Alberto Granado)");
+            case "Madrid 2018":           return (2018, "El Congreso de los Diputados, Madrid (la moción de censura de 2018)");
+            case "Gettysburg":            return (1863, "Gettysburg, Pensilvania (Lincoln y el cementerio nacional)");
+            case "Feria de las Hazañas":  return (2026, "Una feria inventada (grandes hazañas de presidentes y primeros ministros)");
             case "Planta Atómica":        return (1905, "Woolsthorpe, París y Berna (Newton, Curie, Einstein)");
             default: return null;
         }
     }
-}
-
-/// <summary>La FECHA de un microcosmos: va en su raíz; mientras su escena está cargada, <see cref="Eras.Now"/> es su año.</summary>
-public class MicroEra : MonoBehaviour
-{
-    public static MicroEra Current { get; private set; }
-    public int year = Eras.Present;
-    public string place = "";
-    [Tooltip("La fecha que se cuenta (día, estación o época), de la plantilla de microcosmos.")]
-    public string date = "";
-    [Tooltip("La hora del día (0–24): de ella sale la posición del sol.")]
-    public float hour = 10f;
-    [Tooltip("La plataforma del santuario que este microcosmos agranda (su área).")]
-    public string platform = "";
-
-    // Al entrar: dónde y cuándo estás (fecha, hora y la plataforma del santuario de la que es este microcosmos).
-    void Start()
-    {
-        if (string.IsNullOrEmpty(date)) return;
-        int h = Mathf.FloorToInt(hour), m = Mathf.RoundToInt((hour - h) * 60f) % 60;
-        LessonPrompt.Show($"{place} · {date} · {h:00}:{m:00} · sobre la plataforma: {platform}", null, 8f);
-    }
-
-    void OnEnable() { Current = this; }
-    void OnDisable() { if (Current == this) Current = null; }
 }

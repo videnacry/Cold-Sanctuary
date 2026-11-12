@@ -96,6 +96,8 @@ El mensaje **no está escrito entero**: se **compone** de plantillas cortas inde
 `(tag del pensamiento, mood, relación, aptitud dominante)`. Pocas plantillas × muchas combinaciones =
 variedad. Ejemplo: tag "árbol" + mood alto + sociability alta + bond medio → *"¿No sientes algo raro
 cerca del árbol? …"*. Es cómo los sims sociales fingen conversación barata.
+> **Hecho para las personas (2026-11-04):** las charlas entre humanos e insectos-humanos componen así su guion (tema del contexto × datos de los dos): [`conversaciones.md`](conversaciones.md).
+
 
 ## 7. Modelos existentes — qué reutilizar (y qué evitar)
 | Modelo | Para qué sirve aquí | ¿Usar? |

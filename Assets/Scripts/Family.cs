@@ -40,6 +40,11 @@ public class Family
         // Foca 2, Pingüino 2. parentsRate alto = más adultos y menos crías (mamífero marino: 1 cría por hembra).
         { "Penguin", new Family(4, 0.3f, biparental) },  // colonia (representada pequeña); 2 adultos + 2 pollos
         { "Orca",    new Family(3, 0.25f, maternal)  },  // pod: una pareja adulta + 1 cría (antes 1 adulta sola: no podía criar)
+        // Territorio polar (docs/reglas-animales.md): el parto es siempre 1 cría; grupos pequeños para no multiplicar Animal completos.
+        { "Walrus", new Family(3, 0.3f, maternal) }, { "EmperorPenguin", new Family(4, 0.3f, biparental) },
+        { "Reindeer", new Family(5, 0.3f, maternal) }, { "MuskOx", new Family(4, 0.35f, maternal) },
+        { "SnowPetrel", new Family(2, 1f, biparental) }, { "ArcticTern", new Family(2, 1f, biparental) }, { "WanderingAlbatross", new Family(2, 1f, biparental) }, { "CapePetrel", new Family(2, 1f, biparental) }, { "PolarSkua", new Family(2, 1f, biparental) }, { "ArcticHare", new Family(4, 0.4f, maternal) }, { "ArcticFox", new Family(4, 0.4f, biparental) },
+
         // Insectos
         { "Ant",     new Family(6, 0.8f, maternal) },  // colonia; reinas = parents
         { "Aphid",   new Family(4, 0.6f, maternal) },  // racimo de clones (partenogénesis aproximada)
@@ -79,15 +84,17 @@ public class Family
     public static GameObject[] RenderGroup(GameObject animal, int quantity, Vector3 position, float height, float radius = 0)
     {
         if (radius == 0) radius = quantity * 2;
-        Vector3 maxPos = new Vector3(position.x + radius, position.y + radius, position.z + radius);
-        Vector3 minPos = new Vector3(position.x - radius, position.y - radius, position.z - radius);
         GameObject[] creatures = new GameObject[quantity];
         Vector3[] positions = new Vector3[quantity];
         int counter = 0;
-        for (int idx = -(quantity / 2); quantity / 2 > idx; idx += 1)
+        // Una posición por miembro. Antes el bucle iba de −n/2 a n/2: 2·(n/2) vueltas, y con n impar el último miembro se quedaba
+        // en (0,0,0) — el centro del santuario, dentro del Casquete (la cría de lobo «masa 0,9, en (0,0,0)» de cada batería).
+        for (int idx = 0; idx < quantity; idx++)
         {
-            float xPos = Random.Range(minPos.x, maxPos.x);
-            float zPos = Random.Range(minPos.z, maxPos.z);
+            // En el círculo del radio, no en su cuadrado: las esquinas quedaban a radio·√2 (ronda 23: 1 de 1 y 1 de 5 fuera de 6 m).
+            Vector2 disc = Random.insideUnitCircle * radius;
+            float xPos = position.x + disc.x;
+            float zPos = position.z + disc.y;
             positions[counter] = new Vector3(xPos, height, zPos);
             counter++;
         }

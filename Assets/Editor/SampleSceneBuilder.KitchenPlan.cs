@@ -18,9 +18,9 @@ public static partial class SampleSceneBuilder
     // Puestos: centro (en la sala) y orientación; su lado abierto (−Z local) mira al pase.
     static readonly (Vector3 pos, float yaw)[] KitchenStations =
     {
-        (new Vector3(-9f, 0f, 9.6f), 0f), (new Vector3(0f, 0f, 9.6f), 0f), (new Vector3(9f, 0f, 9.6f), 0f),
+        (new Vector3(-9.4f, 0f, 10f), 0f), (new Vector3(0f, 0f, 10f), 0f), (new Vector3(9.4f, 0f, 10f), 0f),
         (new Vector3(12f, 0f, 0f), 90f),
-        (new Vector3(9f, 0f, -9.6f), 180f), (new Vector3(0f, 0f, -9.6f), 180f), (new Vector3(-9f, 0f, -9.6f), 180f),
+        (new Vector3(9.4f, 0f, -10f), 180f), (new Vector3(0f, 0f, -10f), 180f), (new Vector3(-9.4f, 0f, -10f), 180f),
         (new Vector3(-12f, 0f, 0f), -90f),
     };
 
@@ -44,15 +44,15 @@ public static partial class SampleSceneBuilder
         // ingredientes, con la despensa y la estantería compartidas a los lados.
         pass = KitchenProps.CounterRun(room, "Barra de servicio", new Vector3(0f, 0f, 0f), 5f, 180f);
         pass.gameObject.AddComponent<WorldLabel>().text = "Pase (barra de servicio)";
-        island = KitchenProps.CounterRun(room, "Mesa de emplatado", new Vector3(0f, 0f, 2.4f), 4.2f, 0f, 1.2f);
+        island = KitchenProps.CounterRun(room, "Mesa de emplatado", new Vector3(0f, 0f, 3.1f), 4.2f, 0f, 1.2f);
         island.gameObject.AddComponent<WorldLabel>().text = "Mesa de emplatado";
         for (int s = 0; s < 3; s++)
             for (int p = 0; p < 4; p++) KitchenProps.Plate(island, "Plato", new Vector3(-1.6f + s * 1.6f, KitchenProps.CounterTop + p * 0.018f, 0.3f));
-        KitchenProps.CounterRun(room, "Encimera ingredientes", new Vector3(0f, 0f, -2.4f), 5.5f, 180f);
+        KitchenProps.CounterRun(room, "Encimera ingredientes", new Vector3(0f, 0f, -3.0f), 5.5f, 180f);
         string[] items = { "Huevos", "Verduras", "Avena", "Fruta", "Yogur", "Legumbres" };
         for (int i = 0; i < items.Length; i++)
         {
-            Transform holder = KitchenProps.Root(room, items[i], new Vector3(-2.1f + i * 0.85f, KitchenProps.CounterTop, -2.4f));
+            Transform holder = KitchenProps.Root(room, items[i], new Vector3(-2.1f + i * 0.85f, KitchenProps.CounterTop, -3.0f));
             KitchenProps.Ingredient(holder, items[i], Vector3.zero);
             KitchenProps.Fit(holder, false);
             WorldLabel wl = holder.gameObject.AddComponent<WorldLabel>(); wl.text = items[i]; wl.height = 0.35f;
@@ -149,7 +149,7 @@ public static partial class SampleSceneBuilder
         Vector3 right = Vector3.Cross(Vector3.up, outDir);
         var skip = new List<(float a, float b)>();
         if (side == 3) { float c = Vector3.Dot(side < 2 ? new Vector3(0f, 0f, passAlong) : new Vector3(passAlong, 0f, 0f), right); skip.Add((c - 5f, c + 5f)); }
-        if (side == 2) { float c = 0f; skip.Add((c - 2.5f, c + 2.5f)); }   // el pie de la escalera norte del comedor
+        // (Ya no hay escalera del comedor: se sube al anillo en alfombra, y el lado +Z queda entero para los bloques.)
         float back = depth * 0.5f - 0.35f, rowZ = back;
         float x = -L * 0.5f; int n = 0, row = 0;
         foreach (var bl in blocks)
@@ -163,9 +163,10 @@ public static partial class SampleSceneBuilder
             }
             if (x == float.MaxValue) { Debug.LogWarning($"[Cocina] «{bl.name}» no cabe en la franja {strip.name}."); continue; }
             Transform b2 = KitchenProps.Root(strip, bl.name, new Vector3(x + bl.w * 0.5f, 0f, rowZ - bl.d * 0.5f));
+            b2.gameObject.AddComponent<FurnitureLine>();   // el bloque es un tramo corrido contra la pared (sus equipos van pegados)
             bl.build(b2, 0f, 0f);
             WorldLabel wl = b2.gameObject.AddComponent<WorldLabel>(); wl.text = bl.name.Replace('_', ' '); wl.height = 2.9f;
-            x += bl.w + 2f; n++;
+            x += bl.w + 2.4f; n++;   // 2 m libres y un poco más: los equipos sobresalen unos cm de su bloque
         }
         return n;
     }

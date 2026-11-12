@@ -8,7 +8,8 @@ using UnityEngine;
 /// - encima de su piso más alto, un PISO DE ALFOMBRAS (techo) con dos áreas: las de edificio y las del SANTUARIO, que
 ///   llevan al techo de los demás edificios y a la plataforma central de la residencia.
 /// Las áreas se ponen al final (<see cref="PlaceCarpetAreas"/>), con los muebles ya puestos, donde no estorban; las del
-/// suelo, cuando ya está el hielo (<see cref="PlaceGroundCarpetAreas"/>).
+/// suelo, cuando ya está el hielo (<see cref="PlaceGroundCarpetAreas"/>). Tras ellas, las posiciones reservadas de cada piso
+/// para su microcosmos (<see cref="PlaceReservedSlots"/>).
 /// </summary>
 public static partial class SampleSceneBuilder
 {
@@ -19,11 +20,15 @@ public static partial class SampleSceneBuilder
 
     const float ZoneW = 7.6f, ZoneD = 4.4f;
 
+    /// <summary>Nombre propio de los edificios que juntan varias áreas (las torres: Servicios, Entrenamiento, Ciencias,
+    /// Producción): sin él se llamarían como su planta baja. Se rellena en BuildAreaStructures.</summary>
+    static readonly Dictionary<Transform, string> BuildingNames = new Dictionary<Transform, string>();
+
     /// <summary>Apunta los edificios (sus plantas bajas): sus alfombras se ponen al final (<see cref="PlaceCarpetAreas"/>).</summary>
     static void RegisterBuildings(SanctuaryArea[] areas)
     {
         _buildings.Clear();
-        foreach (SanctuaryArea a in areas) _buildings.Add((a.transform, a.displayName));
+        foreach (SanctuaryArea a in areas) _buildings.Add((a.transform, BuildingNames.TryGetValue(a.transform, out string n) ? n : a.displayName));
         Debug.Log($"[Transporte] {areas.Length} edificios, sin puentes ni escaleras: se va en alfombra voladora.");
     }
 
@@ -35,7 +40,7 @@ public static partial class SampleSceneBuilder
         var l = new List<Transform>();
         foreach (Transform t in _platforms.Keys) if (t != null && BaseOf(t) == b) l.Add(t);
         if (!l.Contains(b)) l.Add(b);
-        l.Sort((x, y) => x.position.y.CompareTo(y.position.y));
+        l.Sort((x, y) => { int c = x.position.y.CompareTo(y.position.y); if (c != 0 && Mathf.Abs(x.position.y - y.position.y) > 0.05f) return c; return (_floorSeq.TryGetValue(x, out int a) ? a : 0).CompareTo(_floorSeq.TryGetValue(y, out int b) ? b : 0); });   // (en un árbol, dos pisos por nivel: por su número)
         return l;
     }
 
@@ -43,10 +48,12 @@ public static partial class SampleSceneBuilder
     // «Hospital · planta baja»), no solo «Planta baja».
     static string FloorName(Transform f, int i, string building)
     {
-        SanctuaryArea a = f.GetComponent<SanctuaryArea>();
+        SanctuaryArea a = f.GetComponent<SanctuaryArea>(), owner = f.parent != null ? f.parent.GetComponent<SanctuaryArea>() : null;
+        string nice = f.name.Replace("_Area", "").Replace("Planta_", "").Replace("Huerto_", "Huerto ").Replace('_', ' ');
         string area = a != null ? a.displayName
             : i == 1 ? building
-            : f.name.Replace("_Area", "").Replace("Planta_", "").Replace("Huerto_", "Huerto ").Replace('_', ' ');
+            : owner != null ? $"{owner.displayName} ({nice})"   // una planta propia de un área (la veterinaria del hospital, el ciclotrón)
+            : nice;
         if (area.Length > 0) area = char.ToUpper(area[0]) + area.Substring(1);
         return i == 1 ? $"{area} · planta baja" : $"{area} · planta {i - 1}";
     }
@@ -64,19 +71,29 @@ public static partial class SampleSceneBuilder
     /// lado (encima taparían el sol a los cultivos).</summary>
     static void PlaceCarpetAreas()
     {
+        FinishHelixes();   // los edificios-árbol, ya con sus muebles: el tronco con sus puertas donde el umbral queda libre, las ramas, las puntas y el techo
         ResolveInnerUpperFloors();
         Transform areasRoot = GameObject.Find("Areas_Placed")?.transform;
         var buildings = new List<(Transform t, string name)>(_buildings);
         foreach (Transform t in _platforms.Keys)   // huertos de gremio elevados: cada uno, un edificio de un piso
             if (t != null && t.name.StartsWith("Huerto_") && !_upperOf.ContainsKey(t) && !buildings.Exists(b => b.t == t))
                 buildings.Add((t, GardenPlot.Title(t.GetComponent<GardenPlot>().guild)));
+        // Los ACABADOS de las obras (dojo, ballet…), aún ocultos, también cuentan: al terminar la obra aparecen y sus muebles no
+        // pueden caer sobre el área de alfombras (FurnitureSpacing). Se encienden un momento para medirlos.
+        var unfinished = new List<GameObject>();
+        foreach (ConstructionProject cp in Object.FindObjectsByType<ConstructionProject>(FindObjectsSortMode.None))
+        {
+            Transform done = cp.transform.Find("Acabado");
+            if (done != null && !done.gameObject.activeSelf) { done.gameObject.SetActive(true); unfinished.Add(done.gameObject); }
+        }
         var all = new List<Bounds>();
         foreach (Renderer r in Object.FindObjectsByType<Renderer>(FindObjectsSortMode.None))
         {
             if (!r.enabled || r.GetComponent<TMPro.TMP_Text>() != null) continue;
             Bounds b = r.bounds;
             if (b.size.x > 60f || b.size.z > 60f) continue;
-            if (b.size.y < 0.3f && (b.size.x > 3f || b.size.z > 3f)) continue;   // suelos, alfombras de suelo, losas
+            bool furniture = r.transform.parent != null && FurnitureSpacing.IsFurniture(r.transform.parent);   // un mueble plano también estorba
+            if (b.size.y < 0.3f && (b.size.x > 3f || b.size.z > 3f) && !furniture) continue;   // suelos, alfombras de suelo, losas
             all.Add(b);
         }
         int zones = 0;
@@ -132,18 +149,32 @@ public static partial class SampleSceneBuilder
             }
         }
         _carpetBuildings.Clear(); _carpetBuildings.AddRange(buildings);
+        // Con muebles (y acabados de obra) y alfombras ya puestos: las POSICIONES RESERVADAS del microcosmos (regla 8).
+        PlaceReservedSlots(all);
+        foreach (GameObject g in unfinished) g.SetActive(false);   // siguen en obras
+        PoseTree();   // el Árbol de los Campos, medido sin girar, toma su forma (pisos girados 45° e inclinados ±3°)
         Debug.Log($"[Transporte] {zones} áreas de alfombras en {buildings.Count} edificios (cada piso, y en el techo las de edificio y santuario).");
     }
 
-    /// <summary>Pone el punto <paramref name="spotName"/> junto al área de alfombras de la planta baja del edificio
-    /// <paramref name="areaName"/>: es por donde se llega a él (ya no hay escaleras ni puentes).</summary>
+    /// <summary>Pone el punto <paramref name="spotName"/> junto al área de alfombras del piso del área
+    /// <paramref name="areaName"/>: es por donde se llega a ella (ya no hay escaleras ni puentes). En una torre, el área es un
+    /// piso más: se busca el área de alfombras que cuelga de ese piso (no la de su anillo ni la del hielo).</summary>
     static void SpotAtCarpets(string spotName, string areaName)
     {
         GameObject spot = GameObject.Find(spotName), area = GameObject.Find(areaName);
         SanctuaryArea sa = area != null ? area.GetComponent<SanctuaryArea>() : null;
         if (spot == null || sa == null) return;
+        // En un edificio-árbol el área no tiene alfombras: se llega por la puerta de su piso (el umbral, 2,5 m fuera del tronco).
+        foreach (ArbolCampos tr in Object.FindObjectsByType<ArbolCampos>(FindObjectsSortMode.None))
+        {
+            TreeLevel lv = tr.levels.Find(l => l.deck == area.transform && l.kind == TreeLevel.Kind.Floor);
+            if (lv == null) continue;
+            Vector3 o = tr.World(lv.outside), inward = o - tr.World(lv.door); inward.y = 0f;
+            spot.transform.position = o + inward.normalized * 1.5f;
+            return;
+        }
         foreach (CarpetPad p in Object.FindObjectsByType<CarpetPad>(FindObjectsSortMode.None))
-            if (p.kind == CarpetPad.Kind.Edificio && p.building == sa.displayName && p.floor == 1)
+            if (p.kind == CarpetPad.Kind.Edificio && p.transform.parent == area.transform && p.floor >= 1 && !p.surface.Contains("#anillo"))
             {
                 Vector3 toCenter = area.transform.position - p.transform.position; toCenter.y = 0f;
                 spot.transform.position = p.transform.position + (toCenter.sqrMagnitude > 0.01f ? toCenter.normalized : p.transform.forward) * (ZoneD * 0.5f + 1.5f);

@@ -13,6 +13,7 @@ de su área (opción «Simulación: …»). El elenco de la enfermería renace c
 | `Microcosmos_Buda` | Enfermería | Siddhārtha y los cuatro encuentros → camino del medio → meditación | Yoga |
 | `Microcosmos_Wright` | Mecánica | Los hermanos Wright: de la bicicleta al avión (1892–1903) | Stats |
 | `Microcosmos_Eratostenes` | Planta Atómica | Eratóstenes mide la Tierra (~240 a. C.), primer tramo de la escalera de la física | Stats |
+| `Microcosmos_BruceLee` | Dojo (por ahora, desde la máquina del Gimnasio) | Bruce Lee: Wing Chun con Yip Man, «sé agua», Seattle, el golpe de una pulgada, el Jeet Kune Do y sus notas de 1970 ([`microcosmos-bruce-lee.md`](microcosmos-bruce-lee.md)) | Stats |
 
 La entrada de Eratóstenes en el menú y el área `AtomicPlant_Area` las pone el trabajo de la planta atómica
 (`PhysicsSceneBuilder`); si el área aún no está en la escena, el microcosmos se genera sobre suelo libre.
@@ -49,3 +50,7 @@ La entrada de Eratóstenes en el menú y el área `AtomicPlant_Area` las pone el
 - Las cifras de las tarjetas están contrastadas con las fuentes citadas; las que son aproximadas lo dicen («alrededor
   de», «se calcula»).
 - Siguientes: Semmelweis (hospital), Arquímedes/Galileo (planta), Bolívar (Construcción), Aristóteles (Cría).
+
+## Científicos e históricos (2026-11-01)
+
+Doce historias más, cada una en el pueblo real donde ocurrió y llenando el piso entero: ver [microcosmos-cientificos.md](microcosmos-cientificos.md).

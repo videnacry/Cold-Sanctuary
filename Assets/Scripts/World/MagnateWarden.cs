@@ -30,11 +30,18 @@ public class MagnateWarden : MonoBehaviour
     [Tooltip("Tras devolver a alguien, segundos de gracia antes de poder volver a traerlo.")]
     public float grace = 4f;
 
+    /// <summary>¿Guarda los puestos? (casilla de Inicio y de la pausa, Berón 2026-10-30). Sin ella no devuelve a nadie a su
+    /// puesto de la jornada; a un recién llegado sin iniciar sí lo sigue llevando a la enfermería.</summary>
+    public static bool GuardPosts = true;
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)] static void ResetGuard() => GuardPosts = true;
+
     public static int Returned { get; private set; }
 
     readonly HashSet<GameObject> _busy = new HashSet<GameObject>();
     readonly Dictionary<GameObject, float> _graceUntil = new Dictionary<GameObject, float>();
     string _msg; float _msgUntil;
+    /// <summary>¿Está su aviso en pantalla? (lo usa <see cref="KushalVoice"/> para no taparlo).</summary>
+    public static bool Speaking => _inst != null && Time.time <= _inst._msgUntil && !string.IsNullOrEmpty(_inst._msg);
 
     /// <summary>¿La Magnate está ahora devolviendo a <paramref name="who"/> (o acaba de hacerlo), o es la propia Magnate
     /// en plena aparición? (La jornada no los mueve mientras tanto.)</summary>
@@ -49,6 +56,8 @@ public class MagnateWarden : MonoBehaviour
     /// <summary>Bloquea (o desbloquea) su alcance para TODOS mientras <paramref name="by"/> lo pida (una escena, una
     /// misión…). Cada quien quita solo su propio bloqueo.</summary>
     public static void Lock(object by, bool on) { if (by == null) return; if (on) _locks.Add(by); else _locks.Remove(by); }
+    /// <summary>¿Hay algún bloqueo activo (una prueba o una escena que usa a los personajes)?</summary>
+    public static bool Locked { get { _locks.RemoveWhere(k => k == null || (k is Object o && o == null)); return _locks.Count > 0; } }
 
     /// <summary>¿Está <paramref name="who"/> fuera del alcance de la Magnate ahora? Volando en alfombra, dentro del
     /// microcosmos (o entrando/saliendo de él) o con un bloqueo activo: no se le trae de vuelta.</summary>
@@ -57,6 +66,7 @@ public class MagnateWarden : MonoBehaviour
         _locks.RemoveWhere(k => k == null || (k is Object o && o == null));
         if (_locks.Count > 0) return true;
         if (FlyingCarpet.Riding(who)) return true;
+        if (Orchestra.Busy(who)) return true;   // en una iniciación (orquesta): ya lo lleva su coreografía
         return MobWorldLoader.HasInstance && (MobWorldLoader.Instance.IsInMobWorld || MobWorldLoader.Instance.IsBusy);
     }
 
@@ -70,6 +80,7 @@ public class MagnateWarden : MonoBehaviour
         Magnate mg = FindAnyObjectByType<Magnate>();
         string need = why != null && why.Contains("iniciación") ? "iniciar_a_los_recien_llegados" : "guardar_los_puestos";
         if (mg != null && !Convictions.Of(mg.gameObject).Has(need)) return;
+        if (need == "guardar_los_puestos" && !GuardPosts) return;
         Instance.StartCoroutine(Instance.Run(who, back, why));
     }
 
@@ -90,6 +101,7 @@ public class MagnateWarden : MonoBehaviour
         m.transform.rotation = Quaternion.LookRotation(-fwd);
         Debug.Log($"[Magnate] Se teletransporta delante de «{who.name}»: {why}");
         Say(why);
+        if (who.GetComponent<PlayerController>() != null) KushalVoice.Reply(KushalVoice.Ctx.Correction);   // Kushal le contesta, humilde
         Behaviour[] frozen = Pause(who);   // se detiene a escucharla
         yield return new WaitForSeconds(talk);
 

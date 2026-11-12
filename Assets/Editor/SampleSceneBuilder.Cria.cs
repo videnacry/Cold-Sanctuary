@@ -50,6 +50,7 @@ public static partial class SampleSceneBuilder
 
         // ── COCINA DE LECHE (lado este): mesa con biberones, báscula de crías, nevera de leche y fregadero ──
         Transform milk = KitchenProps.Root(r, "Cocina_de_leche", new Vector3(hx - 3.2f, 0f, 3.5f), -90f);
+        milk.gameObject.AddComponent<FurnitureLine>();   // nevera, mesa de biberones y fregadero: un tramo corrido (van pegados)
         Transform bench = KitchenProps.CounterRun(milk, "Mesa_biberones", new Vector3(0f, 0f, 0f), 3.2f);
         for (int i = 0; i < 6; i++)
         {
@@ -80,6 +81,11 @@ public static partial class SampleSceneBuilder
 
     /// <summary>Un recinto de crías: suelo (paja o nieve), muro de 1,2 m con su puerta hacia el pasillo (+Z, o +X si
     /// <paramref name="doorEast"/>) y su cartel. Los muros tienen collider: las crías no salen ni se ven unas a otras como presa.</summary>
+    // LA PUERTA DEL RECINTO, CERRADA (más baja que el muro: se ve que es la puerta). Antes el hueco quedaba abierto y las crías
+    // salían a pasear entre los puestos de cuidado (JornadaTest 2026-10-29: «Cachorro dentro de Cria_Malamute_Arrullar»). El
+    // cuidado se hace desde fuera, en los puestos, y las tomas las da CriaFeeder: nadie necesita entrar.
+    const float Gate = 0.9f;
+
     static Transform CriaPen(Transform parent, string name, Vector3 center, Vector2 size, Color floor, string title, string fact, bool doorEast = false)
     {
         Transform p = KitchenProps.Root(parent, name, center);
@@ -93,6 +99,7 @@ public static partial class SampleSceneBuilder
             float seg = (size.y - door) * 0.5f;
             Solid(p, new Vector3(hx, h * 0.5f, -hz + seg * 0.5f), new Vector3(t, h, seg), CrWall, "Muro");
             Solid(p, new Vector3(hx, h * 0.5f, hz - seg * 0.5f), new Vector3(t, h, seg), CrWall, "Muro");
+            Solid(p, new Vector3(hx, Gate * 0.5f, 0f), new Vector3(t, Gate, door), CrWall, "Puerta_recinto");   // la puerta, cerrada
         }
         else
         {
@@ -101,6 +108,7 @@ public static partial class SampleSceneBuilder
             float seg = (size.x - door) * 0.5f;
             Solid(p, new Vector3(-hx + seg * 0.5f, h * 0.5f, hz), new Vector3(seg, h, t), CrWall, "Muro");
             Solid(p, new Vector3(hx - seg * 0.5f, h * 0.5f, hz), new Vector3(seg, h, t), CrWall, "Muro");
+            Solid(p, new Vector3(0f, Gate * 0.5f, hz), new Vector3(door, Gate, t), CrWall, "Puerta_recinto");   // la puerta, cerrada
         }
         WorldLabel wl = p.gameObject.AddComponent<WorldLabel>(); wl.text = $"{title}\n{fact}"; wl.height = 2.2f;
         return p;
@@ -136,7 +144,10 @@ public static partial class SampleSceneBuilder
         Transform posts = new GameObject("Puestos_cuidado").transform; posts.SetParent(pen, false);
         for (int i = 0; i < steps.Length; i++)
         {
-            Vector3 local = doorEast ? new Vector3(3.6f, 0.45f, -1.6f + i * 0.8f) : new Vector3(-1.6f + i * 0.8f, 0.45f, 3.6f);
+            // A UN LADO de la puerta, pegados al muro (no delante del hueco: las crías que salían por él se metían en ellos,
+            // JornadaTest 2026-10-29 «Cria_foca_2 dentro de Cria_Seal_LeerEstado»).
+            float along = 1.15f + i * 0.45f;
+            Vector3 local = doorEast ? new Vector3(3.6f, 0.45f, along) : new Vector3(along, 0.45f, 3.6f);
             StationPart sp = MakeStationPart(posts, station, steps[i].action, steps[i].label, pen.TransformPoint(local), steps[i].c);
             sp.transform.localScale = Vector3.one * 0.4f;
         }

@@ -26,7 +26,15 @@ public class IslandsTest : MonoBehaviour, ITestUnit
         }
 
         TestProbe.Check("hay NavMesh en el hub", OnMesh(hub, out Vector3 a));
-        foreach (var (name, target) in new[] { ("la casa del árbol (Guardia)", new Vector3(-20f, 0f, 47f)), ("la Cocina", new Vector3(5f, 0f, 84f)), ("el Hospital", new Vector3(55f, 0f, 106f)) })
+        // El lóbulo Norte:Enfermeria (centro (55, 97), radio 28) lleva ahora el tronco de Servicios (55, 102): su antiguo punto
+        // (55, 106) cae DENTRO del tronco (sin NavMesh). Se prueba el hielo libre del lóbulo, alrededor del tronco.
+        Vector3 lobe = new Vector3(55f, 0f, 97f), lobeTarget = new Vector3(55f, 0f, 106f);
+        for (int k = 0; k < 24 && !OnMesh(lobeTarget, out _); k++)
+        {
+            float ang = k * 30f * Mathf.Deg2Rad, rad = k < 12 ? 16f : 22f;
+            lobeTarget = lobe + new Vector3(Mathf.Cos(ang), 0f, Mathf.Sin(ang)) * rad;
+        }
+        foreach (var (name, target) in new[] { ("la isla del norte (lóbulo de la antigua guardia)", new Vector3(-25f, 0f, 65f)), ("el pie de la torre de Servicios (cocina y hospital)", CarpetPad.All.Find(p => p.building == "Servicios" && p.floor == 0) is CarpetPad sp ? sp.transform.position : new Vector3(5f, 0f, 84f)), ("el lóbulo de la antigua enfermería (al pie de Servicios)", lobeTarget) })
         {
             bool onB = OnMesh(target, out Vector3 b);
             var path = new NavMeshPath();
@@ -47,14 +55,10 @@ public class IslandsTest : MonoBehaviour, ITestUnit
         }
         TestProbe.Check("la fauna marina vive en la laguna", marine > 0 && marineInLagoon * 2 >= marine, $"{marineInLagoon}/{marine} en la laguna");
 
-        GameObject tree = GameObject.Find("CasaArbolGuardia");
-        TestProbe.NotNull("la casa del árbol de guardia existe", tree);
-        TestProbe.Check("la casa del árbol no es carnívora", tree != null && tree.GetComponent<IceCarnivorousTree>() == null);
-        // Sin escaleras verticales (Berón 2026-10-27, docs/alfombras-plan.md): la casa del árbol se sube en alfombra.
+        // Sin escaleras verticales (Berón 2026-10-27, docs/alfombras-plan.md).
         int ladders = 0;
         foreach (Transform t in FindObjectsByType<Transform>(FindObjectsSortMode.None)) if (t.name == "Escalera" && t.Find("Peldano") != null) ladders++;
         TestProbe.Check("ya no hay escaleras verticales (se sube en alfombra)", ladders == 0, $"{ladders} escaleras");
-        TestProbe.Check("la casa del árbol de guardia tiene alfombra en el suelo y arriba", CarpetPad.All.FindAll(p => p.building == "Casa del guarda").Count >= 2);
         TestProbe.NotNull("la enfermería tiene analizador clínico", FindFirstObjectByType<ClinicalStation>());
         TestProbe.End();
     }

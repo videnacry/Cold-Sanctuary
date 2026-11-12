@@ -41,4 +41,11 @@ public enum SanctuaryAreaType
     Chemistry,            // Química — investigación: síntesis abajo, análisis arriba (docs/laboratorios-investigacion.md)
     Biology,              // Biología — investigación BSL-2: cultivo abajo, molecular arriba
     NuclearPower,         // Central nuclear — producción: microrreactor de 5 MWe y calefacción de distrito
+    LaunchControl,        // Control de misión de la lanzadera de cohetes (docs/lanzadera-de-cohetes.md)
+    Informatics,          // Informática — el clúster de IA local del santuario, su refrigeración líquida y su abastecimiento (docs/piso-informatica.md)
+    Classroom,            // Aula universitaria — aula de clases y sala de estudio para todos a la vez (docs/piso-aula.md)
+    Assembly,             // Sala de asambleas — lo mejor de las asambleas del mundo, para todos a la vez (docs/piso-asambleas.md)
+    Music,                // Música — sala de grabación y escenario de conciertos, para todos a la vez (docs/piso-musica.md)
+    EnergyPark,           // Parque Energético: control y taller de los paneles (docs/energia.md)
+    VerticalFarm,         // Huerto vertical — estantes con LED en la torre de Producción (docs/produccion-maquinaria.md §2026-11-08)
 }

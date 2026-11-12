@@ -26,7 +26,7 @@ public class EmotionReader : MonoBehaviour
         float r2 = (baseRadius * perc) * (baseRadius * perc);
 
         EmotionExpression best = null; float bestD = r2;
-        foreach (EmotionExpression e in FindObjectsOfType<EmotionExpression>())
+        foreach (EmotionExpression e in SceneCache.All<EmotionExpression>(0.25f))   // (buscarlas cada frame recorría toda la escena)
         {
             if (e == null || e.gameObject == gameObject) continue;
             float d = (e.transform.position - transform.position).sqrMagnitude;

@@ -82,14 +82,37 @@ public static partial class SampleSceneBuilder
     /// ANILLO (Berón, 2026-10-23): plataforma hija CUADRADA Y COMPLETA alrededor de una planta de <paramref name="floor"/>, a
     /// <paramref name="h"/> m sobre ella, de <paramref name="width"/> m de ancho, con solo el <paramref name="inside"/> (20 %)
     /// sobre la planta y el resto VOLANDO fuera del borde, para no quitarle sitio. Sin postes (voladizo) y sin barreras en los
-    /// bordes (Berón 2026-10-27: se puede saltar); sus escaleras de dentro las pone quien lo construye.
+    /// bordes (Berón 2026-10-27: se puede saltar); sin escaleras (Berón 2026-10-28): se sube en alfombra, con <see cref="RingCarpets"/>.
     /// Devuelve la raíz (a la altura de la cara de arriba). <see cref="RingPoint"/> recorre su línea central.
     /// </summary>
     static Transform RingDeck(Transform parent, string name, Vector2 floor, float h = MezzanineHeight, float width = 10f, float inside = 0.2f)
     {
         Color woodDark = new Color(0.48f, 0.4f, 0.33f), wood = new Color(0.62f, 0.52f, 0.42f);
         float inn = width * inside, hx = floor.x * 0.5f - inn, hz = floor.y * 0.5f - inn, ox = hx + width, oz = hz + width;
+        // (Berón 2026-11-03) En un piso de un edificio-árbol el anillo va por ENCIMA de la puerta del piso (7 × 7 m: 8 personas y el
+        // submarino de obra): a 8 m. A 4 m, su balcón contra el tronco tapaba la parte de arriba de la puerta.
+        if (HelixDeckOf(parent, out _, out _, out _)) h = Mathf.Max(h, TreeSpec.RingOverFloor);
         Transform ring = new GameObject(name).transform; ring.SetParent(parent, false); ring.localPosition = Vector3.up * h;
+        _ringOpenBack = false;
+        // EN UN PISO PEGADO AL TRONCO de un edificio-árbol (docs/edificio-arbol.md §Migración): el anillo va en U, abierto hacia el
+        // tronco (su lado −Z), con las alas hasta la cara del tronco y un BALCÓN de 3 m sobre el borde del piso, contra el tronco:
+        // ahí está su puerta (se llega nadando, como a los anillos de las puntas).
+        if (HelixDeckOf(parent, out Helix hxr, out _, out Transform deckr))
+        {
+            float S = hxr.h.floorSize;
+            float zBack = ring.InverseTransformPoint(deckr.TransformPoint(new Vector3(0f, 0f, -S * 0.5f))).z, len = oz - zBack, zc = (oz + zBack) * 0.5f;
+            Solid(ring, new Vector3(0f, -0.075f, hz + width * 0.5f), new Vector3(2f * ox, 0.15f, width), woodDark, "Losa_anillo");
+            KitchenProps.C(ring, new Vector3(0f, -0.3f, oz - 0.15f), new Vector3(2f * ox, 0.3f, 0.3f), wood, 0f, "Viga_borde");
+            for (int s = -1; s <= 1; s += 2)
+            {
+                Solid(ring, new Vector3(s * (hx + width * 0.5f), -0.075f, (zBack + hz) * 0.5f), new Vector3(width, 0.15f, hz - zBack), woodDark, "Losa_anillo");
+                KitchenProps.C(ring, new Vector3(s * (ox - 0.15f), -0.3f, zc), new Vector3(0.3f, 0.3f, len), wood, 0f, "Viga_borde");
+            }
+            Solid(ring, new Vector3(0f, -0.075f, zBack + 1.5f), new Vector3(2f * hx, 0.15f, 3f), woodDark, "Losa_anillo");   // el balcón
+            new GameObject("Balcon_tronco").transform.SetParent(ring, false);
+            _ringOpenBack = true; _ringBackZ = zBack;
+            return ring;
+        }
         for (int s = -1; s <= 1; s += 2)
         {
             Solid(ring, new Vector3(0f, -0.075f, s * (hz + width * 0.5f)), new Vector3(2f * ox, 0.15f, width), woodDark, "Losa_anillo");
@@ -102,7 +125,17 @@ public static partial class SampleSceneBuilder
 
     /// <summary>Punto y orientación a la distancia <paramref name="s"/> por la línea central del anillo (empieza en el centro
     /// del lado +Z y gira en sentido horario). yaw = la cama atravesada al anillo (su largo a lo ancho).</summary>
+    // El último anillo hecho va en U (un piso de un edificio-árbol): sus puntos del lado del tronco no valen (RingPoint los da como esquina).
+    static bool _ringOpenBack; static float _ringBackZ;
+
     static (Vector3 p, float yaw, bool corner) RingPoint(Vector2 floor, float s, float width = 10f, float inside = 0.2f, float cornerClear = -1f)
+    {
+        var r = RingPointFull(floor, s, width, inside, cornerClear);
+        if (_ringOpenBack && r.p.z < _ringBackZ + 1.5f) r.corner = true;   // el lado del tronco (anillo en U): no vale
+        return r;
+    }
+
+    static (Vector3 p, float yaw, bool corner) RingPointFull(Vector2 floor, float s, float width, float inside, float cornerClear)
     {
         float inn = width * inside, cx = floor.x * 0.5f - inn + width * 0.5f, cz = floor.y * 0.5f - inn + width * 0.5f;
         float per = 4f * (cx + cz); s = Mathf.Repeat(s, per);
@@ -117,4 +150,19 @@ public static partial class SampleSceneBuilder
     }
 
     static float RingLength(Vector2 floor, float width = 10f, float inside = 0.2f) => 4f * (floor.x * 0.5f + floor.y * 0.5f - 2f * width * inside + width);
+
+    /// <summary>ÁREA DE ALFOMBRAS DEL ANILLO (Berón 2026-10-28: sin escaleras, a los anillos se sube en alfombra): en el centro del
+    /// lado +Z de su línea central, atravesada (7,6 m a lo ancho del anillo), de la red del EDIFICIO: sus alfombras llevan a los
+    /// pisos del edificio y las de cada piso, a este anillo. Superficie «edificio#anillo» (en el piso N &gt; 1, «edificio#anilloN»),
+    /// (como lo eran las esterillas del anillo de yoga, que se quitó el 2026-11-04). Quien amuebla el anillo deja libre ese hueco (|x| &lt; 4,6 m en el lado +Z).</summary>
+    static CarpetPad RingCarpets(Transform ring, Transform floor, Vector2 floorSize, string building, string label, float width = 10f, float inside = 0.2f)
+    {
+        if (HelixDeckOf(floor, out _, out _, out _)) return null;   // en un edificio-árbol se llega al anillo nadando, por su puerta del tronco
+        var (p, _, _) = RingPoint(floorSize, 0f, width, inside);   // s = 0: el centro del lado +Z
+        building = BuildingOf(floor, building);   // en una torre, la red es la de la torre (Servicios, Ciencias…), no la del área
+        int i = FloorIndex(floor);
+        string surf = i == 1 ? $"{building}#anillo" : $"{building}#anillo{i}";
+        return CarpetPad.BuildZone(ring, ring.TransformPoint(p + Vector3.up * 0.01f), ring.rotation * Quaternion.Euler(0f, 90f, 0f), CarpetPad.Kind.Edificio,
+            building, i, surf, label, 2);
+    }
 }

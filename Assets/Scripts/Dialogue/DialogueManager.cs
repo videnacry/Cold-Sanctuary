@@ -182,7 +182,16 @@ public class DialogueManager : MonoBehaviour
 
         panel?.Hide();
         _isPlaying = false;
+        if (AddressedToKushal(sequence)) KushalVoice.Reply(KushalVoice.Ctx.Listen);   // le han hablado: contesta (arriba)
         OnSequenceFinished?.Invoke(sequence);
+    }
+
+    /// <summary>¿Habla en la secuencia alguien que no es Kushal (ni su voz interior, lado derecho)?</summary>
+    static bool AddressedToKushal(DialogueSequence s)
+    {
+        foreach (DialogueLine l in s.lines)
+            if (l != null && l.side == DialoguePanelSide.Left && l.speakerName != KushalVoice.Name) return true;
+        return false;
     }
 
     // ── Screen effects ────────────────────────────────────────────────────────

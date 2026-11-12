@@ -23,18 +23,37 @@ public class Phytoplankton : MonoBehaviour, ITarget, IEdible
     [Tooltip("Masa (kg) por unidad de biomasa, para Mass/Grams.")]
     public float perBiomassMass = 0.1f;
 
+    [Header("Cultivo en un edificio-árbol (las cortinas del fondo abierto; docs/mascaras-de-oxigeno.md §Fitoplancton)")]
+    [Tooltip("Edificio-árbol cuyo jardinero lo cuida (vacío = fitoplancton del mar, sin cuidados).")]
+    public string building = "";
+    [Tooltip("Estado del cultivo (1 = óptimo): luz, nutrientes y cortinas limpias. Baja cada día; lo repone el jardinero.")]
+    [Range(0f, 1f)] public float condition = 1f;
+    public const float DecayPerDay = 0.3f;
+    /// <summary>Minutos de juego en cuidar una cortina: limpiar el biofilm, medir y abonar (nitrato, fosfato, hierro).</summary>
+    public const float CareMinutes = 2f;
+    int _lastDay = -1;
+    /// <summary>Cuidados del jardinero: el cultivo vuelve a estar en óptimas condiciones.</summary>
+    public void Care(string who)
+    {
+        float b = condition; condition = 1f;
+        Debug.Log($"[Fitoplancton] «{who}» cuida {name} de {building}: estado {b * 100f:0}% → 100% (biomasa {biomass:0}).");
+    }
+
     void OnEnable()  => All.Add(this);
     void OnDisable() => All.Remove(this);
 
     void Update()
     {
         // Fotosíntesis: crece con la LUZ (reloj del día vía Clock). De noche crece a nightFactor; sin Clock en escena el
-        // reloj se queda de día (IsDay=true) → crece a tope. Se autoregenera desde casi 0 (nunca "muere").
+        // reloj se queda de día (IsDay=true) → crece a tope. Se autoregenera desde casi 0 (nunca "muere"). En un edificio-árbol, según su estado.
+        TimeController tc0 = TimeController.timeController;
+        if (!string.IsNullOrEmpty(building) && tc0 != null) { int day = tc0.Day; if (_lastDay < 0) _lastDay = day; if (day != _lastDay) { condition = Mathf.Max(0f, condition - DecayPerDay * (day - _lastDay)); _lastDay = day; } }
         if (biomass >= maxBiomass) return;
         TimeController tc = TimeController.timeController;
         byte timeScale = tc != null ? tc.TimeSpeed : (byte)1;
         float light = (tc == null || tc.IsDay) ? 1f : nightFactor;
-        biomass = Mathf.Min(maxBiomass, biomass + regenPerSecond * light * timeScale * Time.deltaTime);
+        float care = !string.IsNullOrEmpty(building) ? 0.25f + 0.75f * condition : 1f;   // un cultivo descuidado (cortinas sucias, sin nutrientes) crece menos
+        biomass = Mathf.Min(maxBiomass, biomass + regenPerSecond * light * care * timeScale * Time.deltaTime);
     }
 
     public static Phytoplankton Nearest(Vector3 position)

@@ -15,55 +15,113 @@ public class PathMover : MonoBehaviour
     Vector3 _goal = new Vector3(float.NaN, 0f, 0f);
     float _repathAt, _cliffLog, _cliffSince;
     const float WaterY = -0.25f;
+    /// <summary>El tramo más largo (m) que da de una vez: con fotogramas lentos, el avance del fotograma va en varios tramos.</summary>
+    public const float MaxStep = 1.2f;
 
     public static PathMover Of(Component c) => c.GetOrAdd<PathMover>();
+
+    /// <summary>Cuándo dio su último paso (Time.time). Mientras algo lo conduce con PathMover, nadie más debe moverlo: el
+    /// «merodear» de un anima libre lo empujaba a la vez hacia otro lado y daban vueltas en círculo (Berón 2026-10-29).</summary>
+    public float LastStep { get; private set; } = -999f;
+    public static bool DrivenRecently(GameObject g, float within = 1f) => g != null && g.TryGetComponent(out PathMover pm) && Time.time - pm.LastStep < within;
+    /// <summary>Cuántos pasos lleva dados (para que quien conduce sepa si otro le ha dado un paso entre medias).</summary>
+    public int Steps { get; private set; }
+    /// <summary>(Registro de atascos) el camino que sigue: estado, esquina, a qué punto va y si el último paso se quedó quieto.</summary>
+    /// <summary>(2026-11-11) ¿El último camino calculado no llega (parcial o inválido)?</summary>
+    public bool NoRoute => _path != null && _path.status != NavMeshPathStatus.PathComplete;
+    public string Trace => _path == null ? "sin camino" : $"camino {_path.status}, esquina {_corner}/{_path.corners.Length}{(_path.corners.Length > 0 ? $" ({_path.corners[Mathf.Min(_corner, _path.corners.Length - 1)].x:0.0},{_path.corners[Mathf.Min(_corner, _path.corners.Length - 1)].z:0.0})" : "")}, paso: {(_why < Whys.Length ? Whys[_why] : "?")} {_whyStep:0.00} m en ({_whyAt.x:0.0},{_whyAt.z:0.0}) hace {Time.frameCount - _whyFrame} fotogramas";
+    static readonly string[] Whys = { "—", "ruta de alfombras o árbol", "sin camino y saldría del NavMesh", "nadando", "al borde", "anda" };
+    byte _why; float _whyStep; Vector3 _whyAt; int _whyFrame;
+    void Why(byte w, float step) { _why = w; _whyStep = step; _whyAt = transform.position; _whyFrame = Time.frameCount; }
+
+    /// <summary>Olvida el camino calculado: el próximo paso recalcula hacia el destino nuevo (la orquesta lo llama al empezar
+    /// cada «ir a»; si no, con un destino a menos de 3 m del anterior seguía hasta el viejo y esperaba 4 s para corregir).</summary>
+    public void Restart() { _goal = new Vector3(float.NaN, 0f, 0f); _cliffSince = 0f; }
+
+    /// <summary>Dónde queda el pivote con los pies en el suelo que haya en <paramref name="p"/> (p = el punto de los pies,
+    /// p. ej. uno del NavMesh): sobre lo más alto a un escalón de ahí.</summary>
+    public Vector3 OnGround(Vector3 p) { p.y = GroundY(p, p.y + PivotHeight); return p; }
 
     /// <summary>Un paso hacia <paramref name="target"/> a <paramref name="speed"/> m/s. Devuelve la distancia que queda.</summary>
     public float StepToward(Vector3 target, float speed)
     {
+        LastStep = Time.time; Steps++;
         // Otro piso u otro edificio (ya no hay escaleras ni puentes): por la cadena de alfombras voladoras. Así lo hace
         // cualquiera que ande con PathMover (la jornada, Linduarda, la que inicia, los guardias…).
         Vector3 final = target;
-        if (CarpetPad.Route(gameObject, ref target)) return Flat(final - transform.position);
+        // Bajo el agua de un edificio-árbol SIN MÁSCARA: primero, a la estación de máscaras más cercana (docs/mascaras-de-oxigeno.md).
+        if (BreathingMask.RescueStep(gameObject)) { Why(1, 0f); return Flat(final - transform.position); }
+        if (CarpetPad.Route(gameObject, ref target)) { Why(1, 0f); return Flat(final - transform.position); }   // (y el Árbol de los Campos: por su raíz, nadando)
         if (_path == null) _path = new NavMeshPath();
         // Mientras cruza el agua (fuera del NavMesh) NO recalcula: el camino nuevo saldría de la orilla de atrás y daría la
         // vuelta (se quedaba yendo y viniendo en la orilla). Recalcula al pisar tierra si el destino se movió o pasó el tiempo.
         bool onMesh = NavMesh.SamplePosition(transform.position, out _, 1.5f, NavMesh.AllAreas);
         if (float.IsNaN(_goal.x) || (onMesh && ((target - _goal).sqrMagnitude > 9f || Time.time >= _repathAt))) Repath(target);
 
-        Vector3 pos = transform.position;
-        Vector3 next = target;
-        if (_path.status != NavMeshPathStatus.PathInvalid && _path.corners.Length > 1)
+        // NADAR (Berón 2026-10-29): en agua más honda que el pecho, el mismo cuerpo de nado que el jugador (horizontal, a
+        // braza, a flote), más despacio; en agua baja vadea andando. SwimBody decide por la profundidad donde está.
+        SwimBody swim = SwimBody.Of(this);
+        bool swimming = swim.UpdateWater();
+        if (swimming) speed = Mathf.Min(speed, swim.npcSwimSpeed);
+
+        // UN PASO POR FOTOGRAMA ERA UN SALTO: con fotogramas lentos y el tiempo acelerado (la batería completa: 0,33 s × 6 = 2 s
+        // de juego por fotograma) un paso era de 3,2 m en línea recta hacia la esquina, y quien iba a la barra desde la pista de
+        // la cocina no llegaba nunca (Kushal y Goluis, JornadaTest 2026-10-31). Ahora el avance del fotograma se da en TRAMOS
+        // de MaxStep como mucho, cada uno con su esquina, su suelo y su borde (a la misma velocidad).
+        float budget = speed * Time.deltaTime;
+        for (int sub = 0; sub < 6; sub++)
         {
-            while (_corner < _path.corners.Length - 1 && Flat(_path.corners[_corner] - pos) < 0.35f) _corner++;
-            next = _path.corners[Mathf.Min(_corner, _path.corners.Length - 1)];
+            Vector3 pos = transform.position;
+            Vector3 next = target;
+            if (_path.status != NavMeshPathStatus.PathInvalid && _path.corners.Length > 1)
+            {
+                while (_corner < _path.corners.Length - 1 && Flat(_path.corners[_corner] - pos) < 0.35f) _corner++;
+                next = _path.corners[Mathf.Min(_corner, _path.corners.Length - 1)];
+            }
+            Vector3 d = next - pos; d.y = 0f;
+            float step = Mathf.Min(Mathf.Min(budget, MaxStep), d.magnitude);
+            // Sin camino (destino inalcanzable por el NavMesh): no seguir en línea recta si eso le saca del NavMesh por un
+            // borde (antes Linduarda salía de la enfermería elevada atravesando la barandilla y caía 6 m).
+            bool noPath = _path.status == NavMeshPathStatus.PathInvalid || _path.corners.Length <= 1;
+            if (noPath && onMesh && d.sqrMagnitude > 1e-6f && !StaysOnMesh(pos + d.normalized * 0.6f, pos.y - PivotHeight)) { Why(2, 0f); return Flat(final - pos); }
+            if (d.sqrMagnitude > 1e-6f)
+            {
+                pos += d.normalized * step;
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(d), 8f * Time.deltaTime);
+            }
+            if (swimming)
+            {
+                pos.y = Mathf.MoveTowards(transform.position.y, swim.FloatPivotY, 1.5f * Time.deltaTime);   // a flote, sin «acantilados»
+                _cliffSince = 0f;
+                transform.position = pos; Why(3, step);
+                return Flat(final - pos);
+            }
+            pos.y = GroundY(pos, transform.position.y);
+            // ACANTILADO: si el paso le haría caer más de 1,2 m (borde de una plataforma elevada), no lo da. Las escaleras bajan
+            // de peldaño en peldaño; el NavMesh no ve las barandillas invisibles y la ruta a veces pasaba por el borde.
+            // ACANTILADO, salvo que el camino completo baje por ahí y lleve un rato parado al borde: sin barandillas, desde un
+            // anillo o una plataforma hija se SALTA al piso de abajo (Berón 2026-10-27: «que sea fácil saltar»), como haría cualquiera.
+            bool jump = _path.status == NavMeshPathStatus.PathComplete && next.y < transform.position.y - 1f && _cliffSince > 0f && Time.time - _cliffSince > 2.5f && transform.position.y - pos.y < 6f;
+            // (2026-11-11) UN HUECO ESTRECHO, NO UN ACANTILADO: el camino completo sigue a su MISMA altura (la esquina no está más abajo) y a 1,2 m
+            // vuelve a haber suelo a su nivel: lo cruza sin bajar. Andrea y Fernando, en el techo de Producción camino de la pista de alfombras
+            // («se detiene al borde en (-169,132,-136) camino PathComplete 2 esquinas», ×125, sin comer): el paso caía en una rendija sin
+            // collider que el NavMesh no ve. Tras 2 s parado al borde, como el salto.
+            bool bridge = !jump && pos.y < transform.position.y - 1.2f && _path.status == NavMeshPathStatus.PathComplete && _cliffSince > 0f && Time.time - _cliffSince > 2f
+                          && next.y > transform.position.y - PivotHeight - 0.6f && d.sqrMagnitude > 1e-6f
+                          && GroundY(transform.position + d.normalized * 1.2f, transform.position.y) >= transform.position.y - 0.4f;   // (GroundY da el pivote)
+            if (bridge) pos.y = transform.position.y;
+            if (pos.y >= transform.position.y - 1.2f || jump) _cliffSince = 0f;
+            else if (_cliffSince <= 0f) _cliffSince = Time.time;
+            if (pos.y < transform.position.y - 1.2f && !jump)
+            {
+                if (Time.time > _cliffLog) { _cliffLog = Time.time + 10f; Debug.Log($"[Ruta] «{name}» se detiene al borde en ({transform.position.x:0},{transform.position.y:0},{transform.position.z:0}) camino {_path.status} {_path.corners.Length} esquinas, hacia ({target.x:0},{target.z:0})."); }
+                Why(4, 0f); return Flat(final - transform.position);
+            }
+            transform.position = pos; Why(5, step);
+            budget -= step;
+            if (budget <= 1e-3f || step <= 1e-4f || jump) break;
         }
-        Vector3 d = next - pos; d.y = 0f;
-        float step = Mathf.Min(speed * Time.deltaTime, d.magnitude);
-        // Sin camino (destino inalcanzable por el NavMesh): no seguir en línea recta si eso le saca del NavMesh por un
-        // borde (antes Linduarda salía de la enfermería elevada atravesando la barandilla y caía 6 m).
-        bool noPath = _path.status == NavMeshPathStatus.PathInvalid || _path.corners.Length <= 1;
-        if (noPath && onMesh && d.sqrMagnitude > 1e-6f && !StaysOnMesh(pos + d.normalized * 0.6f, pos.y - PivotHeight)) return Flat(final - pos);
-        if (d.sqrMagnitude > 1e-6f)
-        {
-            pos += d.normalized * step;
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(d), 8f * Time.deltaTime);
-        }
-        pos.y = GroundY(pos, transform.position.y);
-        // ACANTILADO: si el paso le haría caer más de 1,2 m (borde de una plataforma elevada), no lo da. Las escaleras bajan
-        // de peldaño en peldaño; el NavMesh no ve las barandillas invisibles y la ruta a veces pasaba por el borde.
-        // ACANTILADO, salvo que el camino completo baje por ahí y lleve un rato parado al borde: sin barandillas, desde un
-        // anillo o una plataforma hija se SALTA al piso de abajo (Berón 2026-10-27: «que sea fácil saltar»), como haría cualquiera.
-        bool jump = _path.status == NavMeshPathStatus.PathComplete && next.y < transform.position.y - 1f && _cliffSince > 0f && Time.time - _cliffSince > 2.5f && transform.position.y - pos.y < 6f;
-        if (pos.y >= transform.position.y - 1.2f || jump) _cliffSince = 0f;
-        else if (_cliffSince <= 0f) _cliffSince = Time.time;
-        if (pos.y < transform.position.y - 1.2f && !jump)
-        {
-            if (Time.time > _cliffLog) { _cliffLog = Time.time + 10f; Debug.Log($"[Ruta] «{name}» se detiene al borde en ({transform.position.x:0},{transform.position.y:0},{transform.position.z:0}) camino {_path.status} {_path.corners.Length} esquinas, hacia ({target.x:0},{target.z:0})."); }
-            return Flat(final - transform.position);
-        }
-        transform.position = pos;
-        return Flat(final - pos);
+        return Flat(final - transform.position);
     }
 
     // ¿Ese punto sigue sobre el NavMesh, a la misma altura (no el suelo 6 m más abajo ni un borde a medio metro)?
@@ -72,16 +130,67 @@ public class PathMover : MonoBehaviour
 
     void Repath(Vector3 target)
     {
-        _goal = target; _repathAt = Time.time + 4f; _corner = 1;
+        // EL MISMO DESTINO (el recálculo de cada 4 s): si el camino que lleva sigue completo, solo se cambia por uno claramente
+        // más corto. Al pie de un tronco de 22 m los dos rodeos (por un lado y por el otro) miden casi lo mismo y el recálculo
+        // los alternaba: el guardia iba y venía en la esquina del tronco de Producción («da vueltas», JornadaTest 2026-11-01).
+        bool same = !float.IsNaN(_goal.x) && (target - _goal).sqrMagnitude < 0.04f && _path.status == NavMeshPathStatus.PathComplete && _path.corners.Length > 1;
+        float keepLeft = same ? Left() : 0f;
+        int keepCorner = _corner;
+        _goal = target; _repathAt = Time.time + 4f;
         Vector3 from = transform.position, to = target;
-        if (NavMesh.SamplePosition(from, out NavMeshHit a, 4f, NavMesh.AllAreas)) from = a.position;
+        if (FeetOnMesh(out Vector3 a)) from = a;
         if (NavMesh.SamplePosition(to, out NavMeshHit b, 4f, NavMesh.AllAreas)) to = b.position;
-        if (!NavMesh.CalculatePath(from, to, NavMesh.AllAreas, _path)) { _path.ClearCorners(); return; }
+        if (_spare == null) _spare = new NavMeshPath();
+        if (!NavMesh.CalculatePath(from, to, NavMesh.AllAreas, _spare)) { if (!same) { _path.ClearCorners(); _corner = 1; } return; }
+        if (same && _spare.status == NavMeshPathStatus.PathComplete && Length(_spare, from) > keepLeft * 0.85f - 1f) { _corner = keepCorner; return; }
+        (_path, _spare) = (_spare, _path);
+        _corner = 1;
         // Si ya pasó la primera esquina (p. ej. recalculó en la orilla tras cruzar un tramo de agua), no da media vuelta:
         // empieza por la esquina que de verdad tiene delante.
         Vector3[] c = _path.corners;
         Vector3 here = transform.position;
         while (_corner < c.Length - 1 && Flat(c[_corner + 1] - here) < Flat(c[_corner + 1] - c[_corner])) _corner++;
+    }
+
+    NavMeshPath _spare;
+    // Lo que le queda del camino que lleva (desde donde está, por sus esquinas que faltan).
+    float Left()
+    {
+        Vector3[] c = _path.corners; float s = 0f; Vector3 at = transform.position;
+        for (int i = Mathf.Min(_corner, c.Length - 1); i < c.Length; i++) { s += Flat(c[i] - at); at = c[i]; }
+        return s;
+    }
+    static float Length(NavMeshPath p, Vector3 from)
+    {
+        float s = 0f; Vector3 at = from;
+        foreach (Vector3 v in p.corners) { s += Flat(v - at); at = v; }
+        return s;
+    }
+
+    /// <summary>El punto del NavMesh DESDE el que sale: el de SU SUELO, a la altura de los pies. Antes era el más cercano al
+    /// PIVOTE (1 m sobre los pies), y junto a una mesa del comedor ese era la isla de NavMesh que queda sobre el tablero (a 0,77 m
+    /// del suelo, los muebles sin collider también cuentan al hornear): al levantarse de la silla el camino salía de la mesa, era
+    /// «parcial» hacia cualquier sitio y se quedaban de pie dentro de la mesa para siempre (la jornada del 2026-10-31: 4 personas
+    /// 30 min quietas en la Mesa_6 del anillo del comedor, «pedir en la barra» e «ir al baño» sin avanzar). Si el más cercano no está
+    /// a la altura de los pies, busca alrededor (hasta 3 m) el más cercano que sí; si no hay, el de antes.</summary>
+    bool FeetOnMesh(out Vector3 at)
+    {
+        Vector3 feet = transform.position - Vector3.up * PivotHeight;
+        at = feet;
+        const float Level = 0.35f;
+        if (NavMesh.SamplePosition(feet, out NavMeshHit h, 4f, NavMesh.AllAreas) && Mathf.Abs(h.position.y - feet.y) < Level) { at = h.position; return true; }
+        float best = float.MaxValue; bool found = false;
+        for (float r = 0.5f; r <= 3.01f && !found; r += 0.5f)
+            for (int i = 0; i < 12; i++)
+            {
+                Vector3 q = feet + Quaternion.Euler(0f, i * 30f, 0f) * Vector3.forward * r;
+                if (!NavMesh.SamplePosition(q, out NavMeshHit g, 0.4f, NavMesh.AllAreas) || Mathf.Abs(g.position.y - feet.y) >= Level) continue;
+                float d = Flat(g.position - feet);
+                if (d < best) { best = d; at = g.position; found = true; }
+            }
+        if (found) return true;
+        if (NavMesh.SamplePosition(transform.position, out h, 4f, NavMesh.AllAreas)) { at = h.position; return true; }
+        return false;
     }
 
     // Suelo bajo los pies (pivote del personaje a 1 m sobre el suelo, como la cápsula); sobre el agua, nadando.
@@ -92,17 +201,21 @@ public class PathMover : MonoBehaviour
         // subirse a una rama o a un tejado que tenía encima).
         float feet = current - PivotHeight, best = float.NegativeInfinity;
         foreach (RaycastHit h in Physics.RaycastAll(o, Vector3.down, 30f, ~0, QueryTriggerInteraction.Ignore))
-            if (!h.transform.IsChildOf(transform) && h.point.y > WaterY - 0.2f && h.point.y <= feet + 0.8f && h.point.y > best) best = h.point.y;
+            if (!h.transform.IsChildOf(transform) && h.point.y > WaterY - 0.2f && h.point.y <= feet + 0.8f && h.point.y > best && h.collider.GetComponentInParent<GymStation>() == null) best = h.point.y;   // (las máquinas del gimnasio no se pisan: junto al remo, el curl o las dominadas se subía a una pieza y al paso siguiente caía ~1,1 m de golpe; GymUsabilityTest ronda 6)
         if (!float.IsNegativeInfinity(best)) return Mathf.Max(best, WaterY) + PivotHeight;
         return WaterY + PivotHeight * 0.6f;   // en el agua: medio cuerpo sumergido
     }
 
-    float PivotHeight
+    /// <summary>Del pivote a los pies: la cápsula de los compañeros o, en el jugador, su CharacterController (como GroundGuard).
+    /// Sin esto el jugador que anda solo en una orquesta quedaba con los pies a otra altura.</summary>
+    public float PivotHeight
     {
         get
         {
             CapsuleCollider c = GetComponent<CapsuleCollider>();
-            return c != null ? c.height * 0.5f * transform.lossyScale.y - c.center.y * transform.lossyScale.y : 1f;
+            if (c != null) return c.height * 0.5f * transform.lossyScale.y - c.center.y * transform.lossyScale.y;
+            CharacterController cc = GetComponent<CharacterController>();
+            return cc != null ? (cc.height * 0.5f - cc.center.y) * transform.lossyScale.y : 1f;
         }
     }
 

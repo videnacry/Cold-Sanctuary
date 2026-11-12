@@ -264,6 +264,40 @@ Nasatya y le da toda la libertad mientras a los demás los controla** — el amo
 sobrevive. **Ruth** florece en **La Sembradora**; **Sakshi** en el que mira hacia dentro (**El Chamán**);
 **Momo** sigue haciendo reír. *(Mapa completo y hilos: `microcosmos-insects.md` §13.)*
 
+### Cómo nació la cocina
+Es otoño y anochece sobre una cocina gigante. La tribu come **frío** lo que encuentra: migas duras, granos que
+no se dejan masticar, trozos de fruta que la helada vuelve piedra. Solo hay **una brasa**, pequeña, y la guarda
+**el Señor del Fuego**, que llama a todos a su luz: *nadie se queda fuera del círculo*. Entre las recolectoras
+que van y vienen por el rastro de la **Tirana**, algo enorme y blando pasa **ligero y veloz** con un resto sobre
+la cabeza: **Nasatya**. No lo lleva a la guarida, sino **al fuego**, «porque allí el frío no se lo come». Kushal,
+que lo vio morir en otra vida sin saber que es él, **se une a ayudarlo**: resto a resto, hasta que junto a la
+brasa hay un montón.
+
+La Tirana lo ve todo. A las demás las **manda** por su feromona —lo que se recoge va a la guarida, nadie come
+sin su permiso—; a Nasatya lo **espía**… y lo deja hacer. *Tú llévalo adonde quieras.* El Chamán lo nota: con él
+es blanda, y nadie sabe por qué.
+
+Entonces **el Bufón**, que no sabe estar quieto, hace malabares con tres granos, y uno **cae junto a la brasa**.
+Chisporrotea. Un olor nuevo —dulce, tostado— recorre la cocina gigante, y el Señor del Fuego lo prueba: está
+**blando**. *El fuego lo ha masticado por nosotros.* Lo que el frío endurece, el fuego lo abre.
+
+Pero la brasa es pequeña y hay mucho que tostar: hace falta **velar el fuego**. El Señor del Fuego queda
+**absorto**, mirando la llama, alimentándola, sordo a todo lo demás —la **vigilia del fuego**, el primer acto de
+observación sostenida—, y Kushal le ayuda a que no se apague. El Chamán, a su lado, **no mira el fuego: lo mira
+a él** (Sakshi, en otra vida, ya miraba así).
+
+Cuando todo está tostado, la tribu se sienta **en círculo** alrededor de la piedra caliente. La Tirana quiere
+repartir —*primero yo, luego quien yo diga*—, pero Nasatya parte su trozo y se lo da a **la recolectora más
+pequeña**, y ella **calla**. *Come tú también, Nasatya.* El Chamán dice que a ese sitio, donde el fuego cambia
+la comida y la comida se reparte, **volverán siempre**. Así nació la cocina: **una brasa, una piedra caliente y
+un círculo donde nadie se queda fuera**. Mucho después, en el mismo sitio, el santuario levantaría la suya: por
+eso en su cocina se cocina **para todos**, por mayor, y lo que falta se hace primero.
+
+Nasatya se recuesta de lado, en su **postura rara**, y mira a Kushal como si lo conociera de antes. *Gracias,
+pequeño. Vuelve a tu mundo: aquí el fuego queda en buenas manos.* Y Kushal vuelve al Mesocosmos.
+*(Jugable: `KitchenOriginStory`, en el microcosmos de la Cocina — Intro → llevar restos → el grano → vigilia →
+círculo → despedida; tecla E. Prueba: `KitchenOriginStoryTest`.)*
+
 ---
 
 ## Por venir (esbozos a profundizar)

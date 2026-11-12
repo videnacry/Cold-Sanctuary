@@ -4,7 +4,10 @@
 > - v1: «2 m entre objetos para poder caminar», «el aislamiento con subplataforma», «investiga la distribución real y verifica cuánto espacio tenemos».
 > - v2: «reemplaza la planta de camas por el anillo… al menos 2 médicos (mejor 4) deben poder hacer todas las tareas a la vez… quizás dos pisos y un anillo de camas en cada piso, porque hay categorías de camas y cada paciente se recupera en el piso de su servicio… en el hospital de animales también anillo si hace falta (osos), y 4 veterinarios trabajando a la vez en lo mismo».
 >
-> Estado: v2 construido (PR #290); lo que falta, en `docs/hospital.md` §4.
+> Estado: v2 construido (PR #290). **2026-11-03**: la planta 1 se redistribuyó en el piso de 40 × 40 m del árbol con las **salas de
+> cristal** (4 quirófanos, UCI, 4 aislamientos con esclusa: cada una con sus muebles + 2 m hasta el cristal), el **banco de sangre** de
+> la planta baja es un tramo con sus neveras, congelador, agitador y sillón de donante, y llegan los **submarinos** (docs/hospital.md
+> §4–§6, docs/submarinos-medicos.md). Lo que falta, en `docs/hospital.md` §7.
 
 ## 1. Superficies de referencia (normas de diseño hospitalario)
 

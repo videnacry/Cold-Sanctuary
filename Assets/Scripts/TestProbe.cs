@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -18,6 +19,17 @@ public static class TestProbe
     static int _pass, _fail;
     static string _group = "";
     static int _grandPass, _grandFail;   // acumulados a través de TODOS los grupos (para el TOTAL del TestRunner)
+    public static int GrandPass => _grandPass;
+    public static int GrandFail => _grandFail;
+
+    // (2026-11-11, pruebas rápidas) EL CONTEXTO: grupo y unidad que corren (lo pone el TestRunner). Cada FAIL lo lleva en su línea, y se guardan
+    // los textos de los FAIL para el archivo de resultados (TestResults).
+    public static int ContextGroup { get; private set; }
+    public static string ContextUnit { get; private set; } = "";
+    public static readonly List<string> Fails = new List<string>();
+    public static void Context(int group, string unit) { ContextGroup = group; ContextUnit = unit ?? ""; }
+    /// <summary>La línea de un FAIL: «[TEST] FAIL · g50 JornadaTest · nombre — detalle» (sin contexto, como antes). Sigue empezando por «[TEST] FAIL ·».</summary>
+    public static string FailLine(string name, string detail) => $"[TEST] FAIL · {(ContextUnit.Length > 0 ? $"g{ContextGroup} {ContextUnit} · " : "")}{name}{Tail(detail)}";
 
     /// <summary>Resetea el TOTAL global (lo llama el `TestRunner` antes de correr todos los grupos).</summary>
     public static void ResetTotals() { _grandPass = 0; _grandFail = 0; }
@@ -40,7 +52,7 @@ public static class TestProbe
     public static bool Check(string name, bool ok, string detail = "")
     {
         if (ok) { _pass++; _grandPass++; Debug.Log($"[TEST] PASS · {name}{Tail(detail)}"); }
-        else    { _fail++; _grandFail++; Debug.LogWarning($"[TEST] FAIL · {name}{Tail(detail)}"); }
+        else    { _fail++; _grandFail++; Debug.LogWarning(FailLine(name, detail)); Fails.Add(name + Tail(detail)); }
         return ok;
     }
 

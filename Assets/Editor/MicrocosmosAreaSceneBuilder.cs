@@ -57,7 +57,7 @@ public static class MicrocosmosAreaSceneBuilder
         // ENFERMERÍA: su microcosmos es la historia de AMBROSIO (su muerte camino de la cueva), en un mundo extenso de antes
         // del fuego, dentro de la enfermería vista a escala de insecto (×10: el jugador es una hormiga).
         // TODAS las áreas: el área gigante, poblada por insectos a escala humana y MIRMIDONES (hormigas humanas), con su historia.
-        AreaMicrocosmos.Build(areaGo, display, kind, tint, o, null, spec); MicroWater.SurroundScene(scene); Finish(scene, path, prev); return;
+        AreaMicrocosmos.Build(areaGo, display, kind, tint, o, null, spec); Finish(scene, path, prev); return;   // (Finish pone el agua alrededor, fuera de los muros)
         // Suelo del microcosmos (40×40) con el color del área, y "decorado gigante" (lo que en el mundo real es pequeño).
         var ground = GameObject.CreatePrimitive(PrimitiveType.Plane);
         ground.name = "Ground"; ground.transform.position = o; ground.transform.localScale = new Vector3(4f, 1f, 4f);
@@ -174,8 +174,13 @@ public static class MicrocosmosAreaSceneBuilder
 
     internal static void Finish(Scene scene, string path, Scene prev)
     {
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+        { Scene aereo = SceneManager.GetSceneByPath(SampleSceneBuilder.AereoScenePath); if (aereo.isLoaded) EditorSceneManager.CloseScene(aereo, removeScene: true); }   // (si la abrió AreaMicrocosmos)
+        { Scene marino = SceneManager.GetSceneByPath(SampleSceneBuilder.MarineScenePath); if (marino.isLoaded && marino != scene) EditorSceneManager.CloseScene(marino, removeScene: true); }   // (2026-11-08: la planta nuclear; ídem)
         MicroWater.SurroundScene(scene);
+        Debug.Log($"[Tiempo] {scene.name} · agua alrededor: {sw.Elapsed.TotalSeconds:0.0} s"); sw.Restart();
         EditorSceneManager.SaveScene(scene, path);
+        Debug.Log($"[Tiempo] {scene.name} · guardar la escena: {sw.Elapsed.TotalSeconds:0.0} s");
         var scenes = new List<EditorBuildSettingsScene>(EditorBuildSettings.scenes);
         if (!scenes.Exists(s => s.path == path)) { scenes.Add(new EditorBuildSettingsScene(path, true)); EditorBuildSettings.scenes = scenes.ToArray(); }
         EditorSceneManager.CloseScene(scene, removeScene: true);
@@ -196,6 +201,6 @@ public static class MicrocosmosAreaSceneBuilder
         Shader sh = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
         var m = new Material(sh) { name = name, color = c };
         if (m.HasProperty("_BaseColor")) m.SetColor("_BaseColor", c);
-        return m;
+        return CheapMaterials.MakeCheap(m);   // (2026-11-09) Simple Lit mate
     }
 }

@@ -75,7 +75,7 @@ public class Mind : MonoBehaviour
     }
 
     // Campos de pensamiento cercanos (refrescados por intervalos; pueden aparecer/desaparecer en runtime).
-    ThoughtField[] _fields = System.Array.Empty<ThoughtField>();
+    GameTick _tick;   // humores y campos: 1 de cada 6 frames, con el tiempo de juego acumulado (son lineales: da lo mismo)
     float _nextFieldRefresh;
 
     [Header("Campo de pensamientos: percepción del entorno")]
@@ -87,10 +87,12 @@ public class Mind : MonoBehaviour
 
     void Update()
     {
-        humores.Regen(Time.deltaTime);
-        RefreshFieldsIfDue();
-        ApplyFieldHumors(Time.deltaTime);
-        SenseSurroundings(Time.deltaTime);
+        if (_tick.Due(6, GetHashCode(), out float dt))
+        {
+            humores.Regen(dt);
+            ApplyFieldHumors(dt);
+        }
+        SenseSurroundings(Time.deltaTime);   // (cada 0,75 s por su cuenta: sigue recibiendo el dt del frame, como siempre)
         if (Time.time < _nextThink) return;
         _nextThink = Time.time + thinkInterval;
         Think();
@@ -129,17 +131,10 @@ public class Mind : MonoBehaviour
         if (neutral > 0) humores.Produce(Humor.Serotonina, 0.01f * dt);   // no estar solo tranquiliza un poco (pertenencia)
     }
 
-    void RefreshFieldsIfDue()
-    {
-        if (Time.time < _nextFieldRefresh) return;
-        _nextFieldRefresh = Time.time + 1f;
-        _fields = FindObjectsOfType<ThoughtField>();
-    }
-
     /// <summary>Los campos que cubren a este ser mueven sus humores (guiarlo por el entorno).</summary>
     void ApplyFieldHumors(float dt)
     {
-        foreach (ThoughtField f in _fields)
+        foreach (ThoughtField f in ThoughtField.All)
             if (f != null && f.nudgesHumor && f.Covers(transform.position))
                 humores.Produce(f.humor, f.humorPerSecond * dt);
     }
@@ -276,7 +271,7 @@ public class Mind : MonoBehaviour
             if (t != null) w[(int)t.tone] += 1f;
 
         // Empuje de los campos de pensamiento que cubren a este ser (guía por el entorno, docs §5).
-        foreach (ThoughtField f in _fields)
+        foreach (ThoughtField f in ThoughtField.All)
             if (f != null && f.Covers(transform.position))
                 w[(int)f.tone] += f.pull;
 

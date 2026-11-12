@@ -1,13 +1,13 @@
 using UnityEngine;
 
 /// <summary>
-/// GOLUIS, el JEFE de la cocina (docs/kitchen-simulation.md). Como Linduarda con la salud y la Magnate con el yoga, su
+/// GOLUIS, el ENCARGADO de la cocina (Berón 2026-11-08; los rangos más altos son Maite y Amykhuz; docs/kitchen-simulation.md). Como Linduarda con la salud y la Magnate con el yoga, su
 /// **pensamiento custom** es INICIAR a los recién llegados en la cocina: a quien la Magnate ya presentó, le lanza «sígueme»
 /// (<see cref="FollowSpell"/>), lo trae a la cocina y le ENSEÑA —por <see cref="TeachSpell"/>, respetando requisitos
 /// (primero limpiar, luego las recetas)— lo que él sabe (es omnisciente de cocina: `Grimoire.knowsAll`). "Conocer = poder
 /// enseñar". Al terminar, marca `kitchenTrained`. Emergente, no scriptado. (La enseñanza paso-a-paso interactiva de la
 /// limpieza/recetas puede migrar luego a <see cref="TeachingSession"/>, como el yoga.)
-/// </summary>
+/// Ficha: docs/personajes/goluis.md.</summary>
 [RequireComponent(typeof(Anima))]
 public class KitchenBoss : MonoBehaviour
 {
@@ -49,6 +49,9 @@ public class KitchenBoss : MonoBehaviour
         foreach (SanctuaryOnboarding o in FindObjectsOfType<SanctuaryOnboarding>())
         {
             if (o == null || !o.presented || o.kitchenTrained) continue;
+            // La iniciación de la cocina la da ahora el trabajador de turno (AreaInitiator), cuando la Magnate lo trae tras el río:
+            // el jefe solo lo recibe si no hubo quien (antes lo llamaba en mitad de la clase de yoga).
+            if (Magnate.Guiding(o) || AreaInitiator.Owns(o)) continue;
             float sq = (o.transform.position - transform.position).sqrMagnitude;
             if (sq < bestSq) { bestSq = sq; best = o; }
         }

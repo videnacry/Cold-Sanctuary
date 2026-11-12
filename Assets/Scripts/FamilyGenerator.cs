@@ -45,6 +45,7 @@ public class FamilyGenerator : MonoBehaviour
                 continue;
             }
 
+            if (!PopulationPlan.InsectsInSanctuary1 && InsectPurge.IsSanctuary1(gameObject.scene) && CubeCreature.IsInsect(family.animalPrefab.name)) continue;   // (sin insectos por ahora)
             Animal template = family.animalPrefab.GetComponent<Animal>();
             if (template == null)
             {

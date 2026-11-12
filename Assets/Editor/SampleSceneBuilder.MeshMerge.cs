@@ -13,12 +13,11 @@ public static partial class SampleSceneBuilder
 {
     static readonly HashSet<string> KeepRendererNames = new HashSet<string> { "Celdilla", "Piquera" };
 
-    /// <summary>Combina las mallas de cada hijo directo de <paramref name="forest"/> (un árbol). Devuelve cuántos renderers quitó.</summary>
-    internal static int MergeTreeMeshes(Transform forest)
+    /// <summary>Combina las mallas de cada árbol de <paramref name="trees"/>. Devuelve cuántos renderers quitó.</summary>
+    internal static int MergeTreeMeshes(IEnumerable<Transform> trees)
     {
-        if (forest == null) return 0;
         int removed = 0;
-        foreach (Transform tree in forest)
+        foreach (Transform tree in trees)
         {
             var byMat = new Dictionary<Material, List<CombineInstance>>();
             var done = new List<MeshRenderer>();

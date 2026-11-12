@@ -35,13 +35,14 @@ public class MythMission : MonoBehaviour
     void Start()
     {
         _card = GetComponent<HistoryCard>();
+        if (_card.lineTruth.Length == 0) _card.lineTruth = LineTruth.ForStory("Egina");   // regla M39
         Recruits.Clear();
         Recruits.AddRange(FindObjectsByType<MythRecruit>(FindObjectsSortMode.None));
     }
 
     public void Say(string who, string line)
     {
-        _note = string.IsNullOrEmpty(who) ? line : $"{who}: {line}";
+        _note = string.IsNullOrEmpty(who) ? line : $"{who}: {LineTruth.Tagged("Egina", line)}";
         _noteUntil = Time.time + 5f;
         Debug.Log($"[Egina] {_note}");
     }
@@ -74,8 +75,8 @@ public class MythMission : MonoBehaviour
         if (GameKeys.DialogOpen || !GameKeys.GetKeyDown(KeyCode.E)) return;
         MythRecruit r = Near();
         if (r == null) return;
-        if (r.CanJoin(JoinedFraction, Stage)) Recruit(r, "Kushal");
-        else Say(r.displayName, r.refusal);
+        if (r.CanJoin(JoinedFraction, Stage)) { Recruit(r, "Kushal"); KushalVoice.Reply(KushalVoice.Ctx.Thanks); }
+        else { Say(r.displayName, r.refusal); KushalVoice.Reply(KushalVoice.Ctx.Patience); }   // humilde ante el «aún no»
     }
 
     void Finish()

@@ -43,6 +43,7 @@ public class BodyMetabolism : MonoBehaviour
     public string species = "Human";
     [Range(0f, 1f)] public float hunger;   // 0 = saciado, 1 = hambre plena
     [Range(0f, 1f)] public float toilet;   // ganas de ir al baño: suben con el tiempo y con cada comida (≈ cada 5–6 h)
+    [Range(0f, 1f)] public float dirt;     // suciedad (LAVARSE): sube despierto (de 0 a 1 en ~18 h); el lavabo de casa la quita (HomeNeedSpell)
 
     Anima _a;
     BodyTemplate _t;
@@ -89,6 +90,7 @@ public class BodyMetabolism : MonoBehaviour
         float awakeFactor = _a.asleep ? 0.6f : 1f;   // dormido se gasta menos
         hunger = Mathf.Clamp01(hunger + gameHours / _t.hoursToHungry * kleiber * awakeFactor * needs);
         toilet = Mathf.Clamp01(toilet + gameHours / 6f * awakeFactor * needs);
+        dirt = Mathf.Clamp01(dirt + gameHours / 18f * awakeFactor * needs);
 
         // SUEÑO: presión homeostática (sube despierto, baja dormido) + empuje circadiano alrededor de sleepiestHour.
         if (_a.asleep) _a.sleepiness = Mathf.Clamp01(_a.sleepiness - gameHours / _t.hoursAsleepToRested);
@@ -104,26 +106,3 @@ public class BodyMetabolism : MonoBehaviour
     public void Feed(float meal) => hunger = Mathf.Clamp01(hunger - Mathf.Max(0f, meal));
 }
 
-/// <summary>
-/// CÉLULAS DE MAGO (docs/magic-metabolism-progression.md): la fracción de células sostenidas por magia no pide comida ni
-/// sueño; ese mantenimiento lo paga la reserva mágica. Sin energía mágica, la fracción deja de ayudar (vuelven el
-/// hambre y el sueño). La Magnate es fracción 1 con reserva inagotable.
-/// </summary>
-public class MageCells : MonoBehaviour, IMetabolicModifier
-{
-    [Range(0f, 1f)] public float fraction = 1f;
-    [Tooltip("Sin MagicReserves se considera que la reserva no se agota (p. ej. la Magnate).")]
-    public float upkeepEnergyPerHour = 1f;
-
-    MagicReserves _res;
-    void Awake() => _res = GetComponent<MagicReserves>();
-
-    public float NeedsScale
-    {
-        get
-        {
-            if (_res == null) return 1f - fraction;
-            return _res.energy > upkeepEnergyPerHour ? 1f - fraction : 1f;   // sin magia, el cuerpo vuelve a pedir
-        }
-    }
-}

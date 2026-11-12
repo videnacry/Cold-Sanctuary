@@ -76,14 +76,19 @@ public class RestaurantKitchen : MonoBehaviour
         return best.recipe;
     }
 
-    /// <summary>Un cocinero terminó un platillo: +1 al stock, libera el 'en marcha', y comprueba si la misión está lista.</summary>
-    public void Deliver(string dishName, CookingStation who)
+    /// <summary>Un cocinero terminó un platillo: +1 al stock (una ración INDIVIDUAL, como la de un turista), libera el 'en
+    /// marcha', y comprueba si la misión está lista.</summary>
+    public void Deliver(string dishName, CookingStation who) => Deliver(dishName, who, 1);
+
+    /// <summary>Terminó una tanda de <paramref name="servings"/> raciones (POR MAYOR, para el personal: todas al stock).</summary>
+    public void Deliver(string dishName, CookingStation who, int servings)
     {
+        servings = Mathf.Max(1, servings);
         foreach (DishStock d in dishes)
             if (d.recipe != null && d.recipe.dishName == dishName)
             {
                 d.inProgress = Mathf.Max(0, d.inProgress - 1);
-                if (d.container != null) d.container.Deposit(1);
+                if (d.container != null) d.container.Deposit(servings);
                 break;
             }
         CheckBalanced();
@@ -123,6 +128,29 @@ public class RestaurantKitchen : MonoBehaviour
     }
 
     public bool Balanced => _rewardedThisBalance;
+
+    /// <summary>Alguien empieza (Claim) o deja a medias (Release) una tanda de <paramref name="dishName"/>.</summary>
+    public void Claim(string dishName) { DishStock d = Of(dishName); if (d != null) d.inProgress++; }
+    public void Release(string dishName) { DishStock d = Of(dishName); if (d != null) d.inProgress = Mathf.Max(0, d.inProgress - 1); }
+
+    public DishStock Of(string dishName)
+    {
+        foreach (DishStock d in dishes) if (d != null && d.recipe != null && d.recipe.dishName == dishName) return d;
+        return null;
+    }
+
+    /// <summary>El platillo con MENOS stock (raciones listas; a igualdad, el que menos tiene en marcha): el que se cocina en la
+    /// iniciación de la cocina.</summary>
+    public DishStock LowestStock()
+    {
+        DishStock best = null;
+        foreach (DishStock d in dishes)
+        {
+            if (d == null || d.recipe == null) continue;
+            if (best == null || d.Have < best.Have || (d.Have == best.Have && d.inProgress < best.inProgress)) best = d;
+        }
+        return best;
+    }
 
     /// <summary>Vuelca el STOCK del área (lo lee `StatusSpell` al lanzarse sobre el santuario/restaurante).</summary>
     public void LogStocks()

@@ -22,7 +22,9 @@ public static class HudGate
         if (ShowAll) return true;
         Transform p = Player();
         if (p == null) return false;
-        Vector3 d = p.position - anchor; d.y = 0f;
+        Vector3 d = p.position - anchor;
+        if (Mathf.Abs(d.y) > 5f) return false;   // otro piso de la misma torre (p. ej. el hospital sobre la cocina): no es «cerca»
+        d.y = 0f;
         return d.sqrMagnitude <= radius * radius;
     }
 

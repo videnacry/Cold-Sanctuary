@@ -14,6 +14,12 @@ Base alimenticia propuesta: **plancton/kril** (marino) — el resto de la cadena
 **artificial** (obra de la maestra), se justifica **flora especial** adaptada: mutaciones vegetales fusionadas con
 microorganismos que viven **solo de agua y frío**.
 
+## Sin bosque (Berón 2026-11-05)
+
+> **Ya no hay bosque de hielo, árbol gigante ni casas de árbol.** En el suelo quedan abedules de la isla, solo flora, con 6 panales como máximo. El **árbol cazador** vive en una celda bajo el agua, con sus abejas y arañas: [contencion-arbol-cazador.md](contencion-arbol-cazador.md). §2 describe el diseño original, que sigue valiendo dentro de ella.
+
+**Lo que se pierde**: la caza en el suelo y las mudanzas largas de colmena. El ciclo de cadáveres, miel y polinización sigue, cerrado, dentro de la celda del Santuario Marino.
+
 ## 2. El árbol carnívoro de hielo (la pieza central)
 
 Un **árbol que sobrevive de agua+frío** (célula vegetal + microorganismo psicrófilo) y que, para conseguir **nutrientes**
@@ -116,3 +122,16 @@ Con **LOD** (`Lod`, los lejanos piensan más lento) + ánimas **inanimadas barat
 **integrales** (`SharedSoul` para un banco/bosque entero) + **población baja por especie** (2–4), el presupuesto da de
 sobra: el coste alto es solo el **Animal completo** (NavMesh+IA+O(n²)); lo demás es casi gratis. Ver el análisis en
 `docs/checklist.md`. Objetivo: **muchas ánimas** manteniendo pocos "animales completos" simultáneos activos cerca.
+
+## 2026-11-03: los grupos con individuos de verdad
+
+El banco/enjambre (`Swarm`) ya no es un cubo-plataforma con cubos hijos: es un padre vacío con peces plateados antárticos, kril
+antártico, medusas (*Diplulmaris antarctica*, *Desmonema glaciale*) o abejas de las nieves como hijos; un mordisco quita un individuo
+al momento y el grupo se rehace solo (sin ciclo de vida). Viven también bajo cada edificio-árbol y suben por su fondo abierto.
+Auditoría y detalle en [grupos-de-animales.md](grupos-de-animales.md).
+
+## 2026-11-05: la isla de tierra
+
+La fauna que aquí se guardaba «para un santuario templado» tiene ya sitio propio, en su versión polar: reno, lobo ártico, liebre ártica, zorro
+ártico y buey almizclero viven en la isla de tierra, con morsas en la laguna y emperadores en su colonia. El bioma de hielo de este doc sigue igual en
+los casquetes. Detalle en [territorio-polar.md](territorio-polar.md) y fichas en [reglas-animales.md](reglas-animales.md).

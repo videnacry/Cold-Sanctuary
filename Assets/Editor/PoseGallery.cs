@@ -101,9 +101,19 @@ public static class PoseGallery
 
     /// <summary>RETRATOS de las personas del santuario (de frente y de lado, a escala real) en Temp/PoseGallery/Personajes.png.</summary>
     [MenuItem("Tools/Cold Sanctuary/Character Gallery (PNG de las personas)")]
-    public static void Characters()
+    public static void Characters() => Portraits(new[] { "Player", "Magnate", "Linduarda", "Lizmibet", "JefeConstruccion", "Goluis", "Panterilia", "Gohageneis", "Irosene", "Andrea" }, "Personajes", "Caras");   // fichas: docs/personajes/
+
+    /// <summary>RETRATOS de la familia y los amigos de Berón (2026-11-04, de sus fotos; docs/diseno-personajes.md §Familia y amigos)
+    /// en Temp/PoseGallery/Familia.png y FamiliaCaras.png.</summary>
+    [MenuItem("Tools/Cold Sanctuary/Character Gallery (familia y amigos de Berón)")]
+    public static void FamilyCharacters()
     {
-        string[] names = { "Player", "Magnate", "Linduarda", "Lizmibet", "JefeConstruccion", "Goluis", "Panterilia", "Gohageneis", "Irosene", "Sadhguru", "Andrea" };
+        var names = new System.Collections.Generic.List<string>(System.Array.ConvertAll(SampleSceneBuilder.FamilyCharacters, c => c.id)) { "Neo", "Ducristin_Casual" };   // (Neo no va en la tabla; y la ropa informal de Ducristin)
+        Portraits(names.ToArray(), "Familia", "FamiliaCaras");
+    }
+
+    static void Portraits(string[] names, string file, string facesFile)
+    {
         string dir = Path.Combine(Application.dataPath, "..", "Temp", "PoseGallery");
         Directory.CreateDirectory(dir);
         Scene scene = EditorSceneManager.NewPreviewScene();
@@ -129,8 +139,11 @@ public static class PoseGallery
                     { "Linduarda", new Vector4(1.15f, 1.35f, 1.45f, 1.05f) }, { "Goluis", new Vector4(1.5f, 0.9f, 1.4f, 1.29f) },
                     { "Panterilia", new Vector4(0.7f, 0.95f, 0.9f, 0.79f) }, { "Gohageneis", new Vector4(1.1f, 1.2f, 1.3f, 1.09f) },
                     { "Irosene", new Vector4(1.2f, 1.2f, 1.3f, 1.29f) }, { "Lizmibet", new Vector4(0.95f, 1.05f, 1.2f, 1.05f) },
-                    { "JefeConstruccion", new Vector4(1.3f, 0.95f, 1.25f, 1.15f) }, { "Sadhguru", new Vector4(1.0f, 1.2f, 1.4f, 1.0f) }, { "Andrea", new Vector4(1.15f, 1.2f, 1.2f, 1.0f) },
+                    { "JefeConstruccion", new Vector4(1.3f, 0.95f, 1.25f, 1.15f) }, { "Sadhguru", new Vector4(1.0f, 1.2f, 1.4f, 1.0f) }, { "Andrea", new Vector4(1.6f, 1.2f, 1.3f, 1.05f) },
+                    { "ElonMusk", new Vector4(1.05f, 0.95f, 1.0f, 1.1f) }, { "Goku", new Vector4(1.6f, 1.5f, 1.6f, 1.1f) }, { "BillGates", new Vector4(0.95f, 0.95f, 1.0f, 1.0f) },
+                    { "WarrenBuffett", new Vector4(0.85f, 0.8f, 0.9f, 1.05f) }, { "MacKenzieScott", new Vector4(0.95f, 1.05f, 1.05f, 0.95f) }, { "IbrahimTraore", new Vector4(1.25f, 1.2f, 1.3f, 1.05f) },
                 };
+                foreach (var fc in SampleSceneBuilder.FamilyCharacters) st[fc.id] = new Vector4(fc.s, fc.ag, fc.en, fc.m);   // la familia y los amigos de Berón
                 if (an != null && st.TryGetValue(names[i], out Vector4 sv)) { an.strength = sv.x; an.agility = sv.y; an.endurance = sv.z; an.bodyMass = sv.w; }
                 if (who.TryGetComponent(out BodyShape bsh)) bsh.Apply(true);
                 for (int v = 0; v < 2; v++)
@@ -155,10 +168,10 @@ public static class PoseGallery
                 Object.DestroyImmediate(who);
             }
             tex.Apply(); RenderTexture.active = null;
-            File.WriteAllBytes(Path.Combine(dir, "Personajes.png"), tex.EncodeToPNG());
-            faces.Apply(); File.WriteAllBytes(Path.Combine(dir, "Caras.png"), faces.EncodeToPNG()); Object.DestroyImmediate(faces); frt.Release();
+            File.WriteAllBytes(Path.Combine(dir, file + ".png"), tex.EncodeToPNG());
+            faces.Apply(); File.WriteAllBytes(Path.Combine(dir, facesFile + ".png"), faces.EncodeToPNG()); Object.DestroyImmediate(faces); frt.Release();
             Object.DestroyImmediate(tex); rt.Release();
-            Debug.Log($"[Personajes] retratos en Temp/PoseGallery/Personajes.png: {string.Join(", ", names)}");
+            Debug.Log($"[Personajes] retratos en Temp/PoseGallery/{file}.png: {string.Join(", ", names)}");
         }
         finally { EditorSceneManager.ClosePreviewScene(scene); }
     }

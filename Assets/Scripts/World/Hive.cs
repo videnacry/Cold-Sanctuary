@@ -9,22 +9,30 @@ using UnityEngine;
 ///   néctar (ámbar brillante, lo dejan las pecoreadoras) → las procesadoras lo abanican hasta que pierde agua → miel
 ///   operculada (tapa de cera clara). Polen (naranja), junto a la cría: comida de las larvas.
 /// La disposición es la natural: miel arriba (en arco), polen alrededor de la cría y la cría abajo/centro.
-/// Un "día de abeja" dura <see cref="secondsPerDay"/> s de juego (los tiempos reales: huevo 3 días, larva 6, pupa 12).
+/// Un "día de abeja" es un día de vida del calendario del santuario (<see cref="DaySeconds"/>; los tiempos reales: huevo 3 días,
+/// larva 6, pupa 12 la obrera y 14,5 el ZÁNGANO, que sale de un huevo sin fecundar).
 /// </summary>
 public class Hive : MonoBehaviour
 {
     public enum Cell { Empty, Dirty, Egg, Larva, CappedBrood, Nectar, Honey, Pollen }
 
-    [Tooltip("Segundos reales por día de abeja; 0 = el día de juego del reloj (Clock: 1 h por defecto).")]
+    [Tooltip("Segundos reales por día de abeja; 0 = un día de VIDA del calendario del santuario (el año de 28 días de juego: ~4,6 min a ×1), el mismo de la gestación y las etapas de vida.")]
     public float secondsPerDay = 0f;
-    /// <summary>Segundos reales de un día de abeja (el del reloj del juego salvo que se fije otro).</summary>
-    public float DaySeconds => secondsPerDay > 0f ? secondsPerDay : (TimeController.timeController != null ? TimeController.timeController.SecondsPerGameDay : 3600f);
+    /// <summary>Segundos reales de un día de abeja: un día real de vida en el calendario del santuario (LifeStage.SecondsPerLifeDay),
+    /// salvo que se fije otro. Antes era un día de JUEGO entero (1 h): la cría de la colmena iba 13 veces más despacio que la
+    /// gestación de los mamíferos y que el resto del ciclo de vida (docs/ciclo-de-vida.md §Calendario).</summary>
+    public float DaySeconds => secondsPerDay > 0f ? secondsPerDay : LifeStage.SecondsPerLifeDay(TimeController.timeController);
     [Tooltip("Máximo de abejas de la colonia (las que nacen de más no se crean).")]
     public int maxBees = 12;
 
     public readonly List<Transform> cells = new List<Transform>();
     public readonly List<Cell> state = new List<Cell>();
     readonly List<float> _since = new List<float>();     // días en el estado actual
+    readonly List<bool> _drone = new List<bool>();      // ZÁNGANO: huevo sin fecundar en esa celdilla (más grande; 24 días)
+    /// <summary>Zánganos nacidos en esta colmena.</summary>
+    public int dronesBorn { get; private set; }
+    /// <summary>Cada nacimiento: (colmena, la abeja nueva, ¿es zángano?).</summary>
+    public static event System.Action<Hive, IceInsectLife, bool> Emerged;
     public float honeyStock { get; private set; }         // reserva (celdillas de miel) en gramos
     public int born { get; private set; }
     public Transform entrance;                            // la piquera
@@ -44,10 +52,10 @@ public class Hive : MonoBehaviour
 
     void Awake()
     {
-        cells.Clear(); state.Clear(); _since.Clear();
+        cells.Clear(); state.Clear(); _since.Clear(); _drone.Clear();
         foreach (Transform t in GetComponentsInChildren<Transform>())
         {
-            if (t.name == "Celdilla") { cells.Add(t); state.Add(Cell.Empty); _since.Add(0f); }
+            if (t.name == "Celdilla") { cells.Add(t); state.Add(Cell.Empty); _since.Add(0f); _drone.Add(false); }
             else if (t.name == "Piquera") entrance = t;
         }
         CombineCells();   // en juego, todas las celdillas en una malla (rendimiento)
@@ -62,17 +70,21 @@ public class Hive : MonoBehaviour
         honeyStock = Count(Cell.Honey) * 2f;
     }
 
+    /// <summary>Su ENJAMBRE de pecoreadoras (BeeSwarm: de día de árbol en árbol, de noche en la piquera; docs/grupos-de-animales.md).</summary>
+    public BeeSwarm BeeGroup { get; private set; }
+    void Start() { BeeGroup = BeeSwarm.EnsureFor(this); }
+
     void Update()
     {
         MoveAt6();
-        float days = Time.deltaTime / Mathf.Max(0.1f, DaySeconds);
+        float days = Time.deltaTime / Mathf.Max(0.01f, DaySeconds);
         for (int i = 0; i < cells.Count; i++)
         {
             _since[i] += days;
             switch (state[i])
             {
                 case Cell.Egg: if (_since[i] >= 3f) Set(i, Cell.Larva); break;              // eclosiona a los 3 días
-                case Cell.CappedBrood: if (_since[i] >= 12f) Emerge(i); break;            // pupa: sale a los 21 días del huevo
+                case Cell.CappedBrood: if (_since[i] >= (_drone[i] ? 14.5f : 12f)) Emerge(i); break;   // pupa: obrera a los 21 días del huevo, zángano a los 24
             }
         }
     }
@@ -84,10 +96,13 @@ public class Hive : MonoBehaviour
     int _movedDay = int.MinValue;
     public int moves { get; private set; }
 
+    /// <summary>No se muda (las colmenas del árbol guardián: son SUYAS; mudándose a las 6:00 se iban todas, prueba 91 «0 panales»).</summary>
+    public bool stays;
+
     void MoveAt6()
     {
         TimeController tc = TimeController.timeController;
-        if (tc == null || ColdSanctuary.TestRunner.Running) return;
+        if (tc == null || ColdSanctuary.TestRunner.Running || stays) return;
         if (_movedDay == int.MinValue) { _movedDay = tc.Hour >= 6f ? tc.Day : tc.Day - 1; return; }   // el día del arranque no cuenta
         if (tc.Day == _movedDay || tc.Hour < 6f) return;
         _movedDay = tc.Day;
@@ -128,6 +143,7 @@ public class Hive : MonoBehaviour
     public void Set(int i, Cell s)
     {
         state[i] = s; _since[i] = 0f;
+        if (s != Cell.Egg && s != Cell.Larva && s != Cell.CappedBrood) _drone[i] = false;
         if (_comb != null) { _dirty = true; return; }
         Renderer r = cells[i].GetComponent<Renderer>();
         if (r != null) r.sharedMaterial = KitchenProps.Mat(Colors[s]);
@@ -215,10 +231,15 @@ public class Hive : MonoBehaviour
 
     public void AddHoney(float grams) { honeyStock += grams; }
 
+    /// <summary>La reina pone un huevo: fecundado (obrera) o sin fecundar (ZÁNGANO: partenogénesis arrenotoca, haploide).</summary>
+    public void LayEgg(int i, bool drone) { Set(i, Cell.Egg); _drone[i] = drone; }
+    public bool IsDroneCell(int i) => i >= 0 && i < _drone.Count && _drone[i];
+
     void Emerge(int i)
     {
+        bool drone = _drone[i];
         Set(i, Cell.Dirty);   // queda la muda: una limpiadora la deja lista para otra puesta
-        born++;
+        born++; if (drone) dronesBorn++;
         IceInsectLife mother = null; int bees = 0;
         foreach (IceInsectLife b in FindObjectsByType<IceInsectLife>(FindObjectsSortMode.None))
             if (b.hive == this && b.kind == IceInsectLife.Kind.Bee) { bees++; if (mother == null || b.isQueen) mother = b; }
@@ -226,7 +247,9 @@ public class Hive : MonoBehaviour
         GameObject child = Instantiate(mother.gameObject, Perch(i), Quaternion.identity, mother.transform.parent);
         child.name = mother.name.Replace("(Clone)", "") + "_nacida";
         IceInsectLife life = child.GetComponent<IceInsectLife>();
-        if (life != null) { life.isQueen = false; life.ageDays = 0f; }
-        Debug.Log($"[Colmena] nace una obrera en «{name}» (días 0: empieza limpiando celdillas).");
+        if (life != null) { life.isQueen = false; life.ageDays = 0f; life.drone = drone; life.mated = true; }
+        if (child.TryGetComponent(out Animal ca)) { ca.sex = drone ? Sex.male : Sex.female; ca.lifeStage = LifeStage.adult; }
+        Emerged?.Invoke(this, life, drone);
+        Debug.Log(drone ? $"[Colmena] nace un ZÁNGANO en «{name}» (huevo sin fecundar; no trabaja: vuela a aparearse)." : $"[Colmena] nace una obrera en «{name}» (días 0: empieza limpiando celdillas).");
     }
 }

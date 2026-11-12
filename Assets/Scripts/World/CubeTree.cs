@@ -9,33 +9,35 @@ using UnityEngine;
 /// </summary>
 public static class CubeTree
 {
-    static Material _bark, _branch, _leaf, _platform, _nest;
+    static Material _bark, _branch, _leaf, _platform, _nest, _birchBark, _birchBranch, _birchLeaf;
 
-    static Material Mat(ref Material cache, Color c)
+    public static Material Mat(ref Material cache, Color c)
     {
         if (cache != null) return cache;
         Shader sh = Shader.Find("Universal Render Pipeline/Lit");
         if (sh == null) sh = Shader.Find("Standard");
         cache = new Material(sh) { color = c };
         if (cache.HasProperty("_BaseColor")) cache.SetColor("_BaseColor", c);
-        return cache;
+        return CheapMaterials.MakeCheap(cache);   // (2026-11-09) Simple Lit mate
     }
 
-    public static GameObject Build(Transform parent, string name, Vector3 groundPos, int seed, float height = 16f, bool carnivorous = true, System.Func<Vector3, bool> blocked = null)
+    public static GameObject Build(Transform parent, string name, Vector3 groundPos, int seed, float height = 16f, bool carnivorous = true, System.Func<Vector3, bool> blocked = null, float reachHeight = -1f, int maxNests = -1, bool birch = false)
     {
         // TAMAÑO BASE ×1,3: las áreas humanas están ahora a 12 m y los árboles deben seguir dominando el bosque (el árbol
-        // guardián, de 83 m, ya tiene su altura fijada y no se escala).
+        // gigante tiene su propio constructor).
         if (height < 80f) height *= 1.3f;
         var rnd = new System.Random(seed);
         float R(float a, float b) => a + (float)rnd.NextDouble() * (b - a);
 
-        Material bark = Mat(ref _bark, new Color(0.55f, 0.72f, 0.80f));       // hielo opaco azulado
-        Material branchMat = Mat(ref _branch, new Color(0.70f, 0.86f, 0.92f));
-        Material leaf = Mat(ref _leaf, new Color(0.45f, 0.75f, 0.85f));       // "follaje" de escarcha
-        Material platformMat = Mat(ref _platform, new Color(0.85f, 0.94f, 0.98f));
+        // (2026-11-05) El abedul de la isla: corteza blanca y hoja verde.
+        Material bark = birch ? Mat(ref _birchBark, new Color(0.86f, 0.85f, 0.8f)) : Mat(ref _bark, new Color(0.55f, 0.72f, 0.80f));       // hielo opaco azulado
+        Material branchMat = birch ? Mat(ref _birchBranch, new Color(0.42f, 0.34f, 0.28f)) : Mat(ref _branch, new Color(0.70f, 0.86f, 0.92f));
+        Material leaf = birch ? Mat(ref _birchLeaf, new Color(0.46f, 0.62f, 0.3f)) : Mat(ref _leaf, new Color(0.45f, 0.75f, 0.85f));       // "follaje" de escarcha
+        Material platformMat = birch ? leaf : Mat(ref _platform, new Color(0.85f, 0.94f, 0.98f));
         Material nestMat = Mat(ref _nest, new Color(0.90f, 0.78f, 0.35f));    // nidos de miel de las abejas
 
         GameObject root = new GameObject(name);
+        if (height >= 6f) root.AddComponent<NestTree>();   // (2026-11-05) donde anidan abejas y arañas
         root.transform.SetParent(parent, false);
         root.transform.position = groundPos;
 
@@ -59,7 +61,7 @@ public static class CubeTree
             float a = k * 360f / roots + R(-15f, 15f);
             Vector3 d = Quaternion.Euler(0f, a, 0f) * Vector3.forward;
             Block(root.transform, "Raiz", d * 1.6f * girth + Vector3.up * 0.4f * girth, new Vector3(0.7f, 0.8f, 2.2f) * girth,
-                  Quaternion.LookRotation(d) * Quaternion.Euler(18f, 0f, 0f), bark, true);
+                  Quaternion.LookRotation(d) * Quaternion.Euler(18f, 0f, 0f), bark, false);   // (2026-11-04) sin collider: los pingüinos que se acicalan en el borde del hielo quedaban «dentro» de una raíz (jornada 50)
         }
 
         // RAMAS: 3 pisos; cada rama es una cadena de bloques que sube y se abre, con plataforma en la punta.
@@ -69,7 +71,7 @@ public static class CubeTree
             float tf = tiers > 1 ? tier / (float)(tiers - 1) : 0.5f;
             float y = height * Mathf.Lerp(0.38f, 0.82f, tf);
             int count = height < 6f ? 3 : 5 - tier;
-            float reach = Mathf.Lerp(7f, 3.5f, tf) * (height / 16f);
+            float reach = Mathf.Lerp(7f, 3.5f, tf) * ((reachHeight > 0f ? reachHeight : height) / 16f);   // (el de la guardia crece en alto, no en ancho)
             float offset = R(0f, 360f);
             for (int b = 0; b < count; b++)
             {
@@ -106,7 +108,7 @@ public static class CubeTree
                                         Quaternion.Euler(0f, yaw, 0f), platformMat, true);
                 Block(root.transform, "Escarcha", p + Vector3.up * 0.75f, Vector3.one * R(0.9f, 1.4f),
                       Quaternion.Euler(R(0f, 30f), R(0f, 90f), 0f), leaf, false);
-                if (height >= 12f && (b + tier) % 2 == 0)
+                if (height >= 12f && (b + tier) % 2 == 0 && (maxNests < 0 || nests < maxNests))
                 {
                     Honeycomb(plat.transform.parent, p + new Vector3(0.5f, -0.05f, 0.2f), nestMat, (b * 7 + tier) * 13);
                     nests++;
@@ -122,7 +124,7 @@ public static class CubeTree
         Block(root.transform, "Copa", new Vector3(0f, height + 0.8f * girth, 0f), new Vector3(2.6f, 1.6f, 2.6f) * Mathf.Max(0.45f, girth), Quaternion.Euler(0f, 20f, 0f), leaf, false);
         Block(root.transform, "Copa", new Vector3(0f, height + 2.0f * girth, 0f), new Vector3(1.6f, 1.2f, 1.6f) * Mathf.Max(0.45f, girth), Quaternion.Euler(0f, 55f, 0f), leaf, false);
 
-        if (height < 6f || !carnivorous) return root;   // un brote aún no caza (y el árbol de la guardia no caza nunca)
+        if (height < 6f || !carnivorous) return root;   // un brote aún no caza 
         // El árbol depredador, con radios a su escala (señuelo amplio, sopor bajo la copa).
         IceCarnivorousTree t = root.AddComponent<IceCarnivorousTree>();
         t.lureRadius = 10f + height;
@@ -136,8 +138,8 @@ public static class CubeTree
     // paralelas (panales) separadas por un "paso de abeja"; cada lámina tiene celdillas hexagonales a ambos lados (aquí,
     // en filas alternas desplazadas medio hueco), unas OPERCULADAS (tapadas de cera clara, con miel) y otras abiertas
     // (oscuras, con cría o néctar). Arriba, la cera que las pega a la rama; abajo, la piquera por donde entran.
-    static Material _wax, _honey, _cellDark, _capped, _propolis;
-    static void Honeycomb(Transform parent, Vector3 localTop, Material nestMat, int seed)
+    static Material _wax, _honey, _cellDark, _capped, _propolis, _hiveShell, _hiveBand;
+    public static Hive Honeycomb(Transform parent, Vector3 localTop, Material nestMat, int seed)
     {
         var rnd = new System.Random(seed);
         Material wax = Mat(ref _wax, new Color(0.93f, 0.8f, 0.42f));
@@ -173,8 +175,11 @@ public static class CubeTree
         // CAVIDAD que protege el panal (como el hueco de un árbol donde anidan las abejas melíferas): paredes de corteza
         // alrededor de las láminas, techo pegado a la rama y suelo con UNA sola abertura (la piquera) por donde entran y
         // salen. Las abejas sellan las rendijas con propóleo; dentro mantienen la cría a ~35 °C aunque fuera hiele.
-        Material barkM = Mat(ref _bark, new Color(0.55f, 0.72f, 0.80f));
+        // (2026-11-05, ronda 8: «las colmenas no se distinguen» de los cubos de escarcha de la punta de las ramas: la cavidad era del azul
+        // del tronco) La colmena se ve MIEL por fuera, con aros de propóleo y cúpula de cera: lo único cálido y escalonado de la copa.
+        Material barkM = Mat(ref _hiveShell, new Color(0.86f, 0.56f, 0.14f));
         Material prop = Mat(ref _propolis, new Color(0.4f, 0.26f, 0.12f));
+        Material band = Mat(ref _hiveBand, new Color(0.42f, 0.25f, 0.09f));
         float cw = 0.95f, cd = 1.05f, ch = 0.95f, wall = 0.08f;
         Block(root.transform, "Cavidad", new Vector3(0f, 0.12f, 0f), new Vector3(cw + wall * 2f, 0.1f, cd + wall * 2f), Quaternion.identity, barkM, false);   // techo
         for (int s = -1; s <= 1; s += 2)
@@ -187,10 +192,17 @@ public static class CubeTree
         Block(root.transform, "Cavidad", new Vector3(0f, floorY, hole * 0.5f + (cd * 0.5f - hole * 0.5f) * 0.5f + 0.02f), new Vector3(cw, wall, cd * 0.5f - hole * 0.5f + 0.04f), Quaternion.identity, barkM, false);    // suelo (delante)
         for (int s = -1; s <= 1; s += 2) Block(root.transform, "Cavidad", new Vector3(s * (hole * 0.5f + (cw * 0.5f - hole * 0.5f) * 0.5f + 0.01f), floorY, 0f), new Vector3(cw * 0.5f - hole * 0.5f, wall, hole), Quaternion.identity, barkM, false);
         Block(root.transform, "Propoleo", new Vector3(0f, floorY - wall * 0.5f - 0.005f, 0f), new Vector3(hole + 0.06f, 0.01f, hole + 0.06f), Quaternion.identity, prop, false);   // borde de propóleo de la piquera
-        root.AddComponent<Hive>();   // la colmena: estados de las celdillas (cría, néctar, miel, polen) que trabajan las abejas
+        for (int a = 0; a < 3; a++)   // aros oscuros alrededor de la cavidad
+            Block(root.transform, "Aro_colmena", new Vector3(0f, -0.14f - a * 0.26f, 0f), new Vector3(cw + wall * 2f + 0.06f, 0.07f, cd + wall * 2f + 0.06f), Quaternion.identity, band, false);
+        for (int a = 0; a < 3; a++)   // la cúpula, en escalones que se estrechan
+        {
+            float k = 1f - (a + 1) * 0.24f;
+            Block(root.transform, "Cupula_colmena", new Vector3(0f, 0.22f + a * 0.12f, 0f), new Vector3((cw + wall * 2f) * k, 0.12f, (cd + wall * 2f) * k), Quaternion.identity, a == 2 ? wax : barkM, false);
+        }
+        return root.AddComponent<Hive>();   // la colmena: estados de las celdillas (cría, néctar, miel, polen) que trabajan las abejas
     }
     // ¿Algún punto de la rama (cadena de segmentos y su plataforma de la punta, con margen) cae en zona bloqueada?
-    static bool BranchHits(Transform root, Vector3 p, float yaw, float pitch, float segLen, int segs, System.Func<Vector3, bool> blocked)
+    public static bool BranchHits(Transform root, Vector3 p, float yaw, float pitch, float segLen, int segs, System.Func<Vector3, bool> blocked)
     {
         for (int s = 0; s < segs; s++)
         {
@@ -201,7 +213,7 @@ public static class CubeTree
         return blocked(root.TransformPoint(p + Vector3.up * 0.8f)) || blocked(root.TransformPoint(p + Vector3.up * 1.6f));   // posadero y escarcha
     }
 
-    static GameObject Block(Transform parent, string name, Vector3 localPos, Vector3 size, Quaternion rot, Material m, bool solid)
+    public static GameObject Block(Transform parent, string name, Vector3 localPos, Vector3 size, Quaternion rot, Material m, bool solid)
     {
         GameObject g = GameObject.CreatePrimitive(PrimitiveType.Cube);
         g.name = name;
@@ -214,3 +226,5 @@ public static class CubeTree
         return g;
     }
 }
+
+/// <summary>Un árbol donde anidan las abejas y las arañas de las nieves: los abedules de la isla y el de la escena del ciclo de vida.</summary>

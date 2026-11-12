@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using UnityEngine;
 
@@ -24,6 +25,9 @@ public class EcosystemObservation : MonoBehaviour
     readonly Dictionary<string, Stat> _current = new Dictionary<string, Stat>();
     readonly Dictionary<string, int> _prevTotals = new Dictionary<string, int>();
     int _herbTotal, _predTotal, _liveTotal, _prevLiveTotal;
+    // (Berón 2026-11-09) LO QUE CUENTA PARA K × HUMANOS: la fauna salvaje del plan (PopulationPlan.Groups). Aparte: las crías de la Cría, los de los icebergs
+    // (fuera del total) y las especies que no son del plan (perros, insectos…).
+    int _planWild, _cria, _iceberg; readonly Dictionary<string, int> _outside = new Dictionary<string, int>();
     float _nextSample, _nextLog;
 
     void Update()
@@ -36,6 +40,7 @@ public class EcosystemObservation : MonoBehaviour
     {
         _current.Clear();
         _herbTotal = _predTotal = _liveTotal = 0;
+        _planWild = _cria = _iceberg = 0; _outside.Clear();
 
         foreach (GameObject go in Animal.wholePopulation)
         {
@@ -59,6 +64,10 @@ public class EcosystemObservation : MonoBehaviour
             if (pred) { s.predator++; _predTotal++; }
             _current[sp] = s;
             _liveTotal++;
+            if (!PopulationPlan.Groups.ContainsKey(sp)) _outside[sp] = (_outside.TryGetValue(sp, out int o) ? o : 0) + 1;
+            else if (go.GetComponent<CriaCareTarget>() != null) _cria++;
+            else if (go.GetComponent<IcebergVisitor>() != null) _iceberg++;
+            else _planWild++;
         }
     }
 
@@ -66,6 +75,7 @@ public class EcosystemObservation : MonoBehaviour
     {
         StringBuilder sb = new StringBuilder();
         sb.Append($"[ECO] vivos={_liveTotal} (Δ{_liveTotal - _prevLiveTotal:+0;-0;0}) · herbívoros={_herbTotal} · depredadores={_predTotal}");
+        sb.Append($" · plan (K × humanos): {_planWild}/{PopulationPlan.TotalCap} · fuera del total: Cría {_cria}, icebergs {_iceberg}, otras especies {_outside.Values.Sum()} ({string.Join(", ", _outside.Select(kv => $"{kv.Key} {kv.Value}"))})");
         foreach (KeyValuePair<string, Stat> kv in _current)
         {
             Stat s = kv.Value;

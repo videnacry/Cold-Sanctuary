@@ -81,6 +81,23 @@ public static partial class InsectMorphology
         return r.ToArray();
     }
 
+    static Seg[] Trunk(int n)
+    {
+        // Ciempiés: cabeza plana (con las forcípulas), n segmentos del tronco casi iguales (los del medio algo más anchos) y el pigidio.
+        var r = new List<Seg> { S("Cabeza", 0.055f, 0.075f, 0.03f) };
+        for (int i = 1; i <= n; i++) r.Add(S("Segmento_" + i, 0.88f / n, 0.07f + 0.012f * UnityEngine.Mathf.Sin(i / (float)(n + 1) * UnityEngine.Mathf.PI), 0.028f));
+        r.Add(S("Pigidio", 0.03f, 0.05f, 0.025f));
+        return r.ToArray();
+    }
+
+    static float[][] CentipedeLegs(int n)
+    {
+        // Patas cortas que se alargan un poco hacia atrás; el último par (terminal) el doble de largo.
+        var l = new float[n][];
+        for (int i = 0; i < n; i++) { float k = 1f + 0.25f * i / (n - 1); l[i] = i == n - 1 ? I(0.11f, 0.11f, 0.07f) : I(0.045f * k, 0.045f * k, 0.03f * k); }
+        return l;
+    }
+
     static Seg[] Pereion(int plates)
     {
         // Cochinilla: cabeza, 7 placas del pereion (la manca, la 7.ª aún diminuta), 2 del pleon y el telson.
@@ -117,6 +134,19 @@ public static partial class InsectMorphology
             body = new[] { S("Gnatosoma", 0.12f, 0.14f, 0.1f), S("Idiosoma", 0.88f, 0.8f, 0.55f) },
             legs = new[] { Sp(0.5f), Sp(0.42f), Sp(0.48f) },
             fx = new FaunaTraits { legFrom = 0.14f, legTo = 0.5f, waist = 0.45f } },
+
+        // ── MIRIÁPODOS ─────────────────────────────────────────────────────────────────────────────────────────
+        // Escolopendra (Scolopendra subspinipes, nativa de Hong Kong y el sur de Asia, hasta ~20 cm; S. cingulata en el Mediterráneo,
+        // 7–12 cm): cabeza plana con dos antenas de 17–20 artejos y las FORCÍPULAS (el 1.er par de patas del tronco convertido en
+        // uñas de veneno, bajo la cabeza); 21 segmentos del tronco con UN par de patas cada uno; el último par (patas terminales)
+        // largo y hacia atrás, para defenderse y tantear. Desarrollo EPIMÓRFICO: la cría sale del huevo con todos sus segmentos
+        // (sin metamorfosis, como un adulto pequeño) y la MADRE se enrosca sobre los huevos y las crías hasta la 1.ª muda
+        // (Lewis 1981, The Biology of Centipedes; Edgecombe y Giribet 2007, Annu. Rev. Entomol. 52:151). Sin dimorfismo visible.
+        // (Para la genealogía de las eras civilizadas: «una mariquita… y tener un hijo ciempiés como el tatarabuelo».)
+        ["Centipede"] = new Spec { name = "Centipede", juvenileScale = 0.2f,  antenna = 0.22f, mandible = 0.05f, mandibleOpen = 35f, bodyHeight = 0.03f, legWidth = 0.012f,
+            body = Trunk(21),
+            legs = CentipedeLegs(21),
+            fx = new FaunaTraits { legFrom = 0.07f, legTo = 0.95f, waist = 0.3f } },
 
         // ── CRUSTÁCEOS ─────────────────────────────────────────────────────────────────────────────────────────
         // Cochinilla de humedad (Porcellio scaber 10–17 mm; Armadillidium vulgare se hace bola): 7 placas, 7 pares de patas,

@@ -26,7 +26,7 @@ Código: `Assets/Scripts/Mind/VisualAttention.cs`. La cámara usa el resultado e
   | Equilibrado | todo por igual |
   | Vigilante | movimiento y cercanía (Gohageneis) |
   | Esteta | colores que destacan (Irosene, Goluis) |
-  | Contemplativo | lo quieto y apagado: pesos de movimiento y contraste negativos (Sadhguru, la Magnate) |
+  | Contemplativo | lo quieto y apagado: pesos de movimiento y contraste negativos (la Magnate) |
   | Afectivo | los vínculos (Lizmibet, Andrea) |
 
 - **Enfocar inconscientemente**: cada 0,25 s el anima enfoca lo más saliente (evento `Focused`). Si está dormido, no ve nada.

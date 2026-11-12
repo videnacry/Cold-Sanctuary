@@ -26,6 +26,8 @@ public class SanctuaryOnboarding : MonoBehaviour
     public bool initiated = false;
     [Tooltip("Goluis lo pone a true tras enseñarle a limpiar y las recetas base de la cocina.")]
     public bool kitchenTrained = false;
+    [Tooltip("El trabajador de turno del huerto lo pone a true tras prepararle el suelo con él (iniciación del huerto).")]
+    public bool gardenTrained = false;
 
     [Header("Solo para escenas AUTO (prueba en vivo de toda la cadena)")]
     public bool autoCompleteForDemo = false;

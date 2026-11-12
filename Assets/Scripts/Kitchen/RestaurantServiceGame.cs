@@ -88,6 +88,8 @@ public class RestaurantServiceGame : MonoBehaviour
         Transform passMark = Mark(go.transform, "Pase", pf); passMark.rotation = pass.rotation;
         g.pass = passMark;
         Transform caja = VirtualInPlace.FindDeep(area, "Caja_registradora"), stair = VirtualInPlace.FindDeep(area, "Escalera_comedor_norte");
+        if (stair == null)   // ya no hay escalera (Berón 2026-10-28): se llega al comedor en alfombra, a su área del anillo
+            foreach (CarpetPad cp in area.GetComponentsInChildren<CarpetPad>()) if (cp.surface.Contains("#anillo")) { stair = cp.transform; break; }
         if (caja != null && stair != null)
         {
             // COMEDOR EN ANILLO (docs/restaurant-plan.md): los turistas llegan por el PUENTE, suben su escalera, piden en la
@@ -175,7 +177,7 @@ public class RestaurantServiceGame : MonoBehaviour
     {
         if (copies)
         {
-            string[] who = { "Goluis", "Panterilia", "Irosene", "Lizmibet", "JefeConstruccion", "Sadhguru" };   // el camarero (WaiterSource) no se sienta a comer
+            string[] who = { "Goluis", "Panterilia", "Irosene", "Lizmibet", "JefeConstruccion", "Nesvitor" };   // (Nesvitor en vez de Sadhguru, 2026-11-04) el camarero (WaiterSource) no se sienta a comer
             GameObject c = WorkdayDirector.SpawnBodyCopy(who[n % who.Length], $"Turista_{n}");
             c.transform.SetParent(transform, true);
             return c.transform;

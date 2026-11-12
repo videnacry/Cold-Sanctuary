@@ -5,6 +5,9 @@ los personajes las **usen** durante el entrenamiento diario (14:00–16:00).
 
 ## 0. Estado actual (resumen)
 
+> **2026-11-04**: este resumen es el del 2026-10-27. Hoy las máquinas llevan `GymStation` y `GymFit`, y cada humano entrena con
+> su plan (series, repeticiones, descanso, progresión y entrenador): ver [§15](#15-entrenamientos-reales-planes-series-progresión-y-entrenador-2026-11-04).
+
 - **Construcción**: `FurnishGym` (`Assets/Editor/SampleSceneBuilder.Training.cs:18`) coloca 30 máquinas en una
   rejilla de 5 × 3 por piso (paso 2,6 m en X y 3,2 m en Z, `:36-37`). Las primeras 15 (`k < 15`), es decir **los tipos
   0–4** (pecho, hombros, jalón, remo y prensa), van **abajo**. Los **tipos 5–9** (extensión, curl femoral, hip thrust,
@@ -575,6 +578,9 @@ Las 3 máquinas de este tipo pueden alternar el ejercicio: serie de curl (A → 
 
 ## 13. La sesión diaria de entrenamiento en el gimnasio
 
+> **Sustituido el 2026-11-04 por [§15](#15-entrenamientos-reales-planes-series-progresión-y-entrenador-2026-11-04)**: ya no hay
+> un circuito igual para todos; cada persona sigue la rutina de su plan. Se mantiene por la historia y las medidas de tiempo.
+
 **Cuánto dura.** El entrenamiento va de 14:00 a 16:00, 2 h de juego. Un día de juego dura 1 h real, así que 1 min de
 juego son 2,5 s reales y la sesión entera unos **5 min reales**.
 
@@ -645,6 +651,347 @@ vez**. En cada piso se alternan tren superior e inferior:
 5. Corregir el comentario de `Training.cs:23` (la entreplanta está a 4 m, no a 3) y el `<summary>` duplicado
    (`:14-17`).
 
+
+## 14. Colgarse siendo alto (2026-11-04)
+
+El cuerpo se ajusta a cada máquina con `GymFit.Fit`. En las posturas colgadas (dominadas, escalera horizontal, anillas…), el cuerpo sube o baja hasta que las manos llegan al agarre.
+
+Quien mide más de lo que la barra permite, como Elon Musk (1,88 m) bajo la escalera horizontal a 2,4 m, tenía los pies en el suelo antes de que las manos llegaran a la barra. Se quedaba con las manos a 15 cm del agarre (GymUsabilityTest).
+
+Ahora baja hasta el agarre y **dobla las rodillas** (`GymFit.TuckLegs`, IK de dos huesos): los pies suben lo que falta y van algo hacia atrás. Hasta 0,4 m de diferencia; con más, el cuerpo se queda sobre el suelo como antes.
+
+### 14.1 Ronda 6 de GymUsabilityTest (2026-11-04)
+
+- **Saltos de unos 1,1 m andando entre máquinas** (Goluis hacia el remo, Lizmibet hacia el curl, Adaguchi hacia las dominadas).
+  - Causa probable: `PathMover` pegaba los pies a lo más alto que hubiera a un escalón (hasta 0,8 m por encima). Junto a esas
+    máquinas, eso era una pieza de la máquina vecina, y al paso siguiente caía de golpe.
+  - Ahora las piezas de una `GymStation` no cuentan como suelo para andar.
+  - Al levantarse, el pivote se coloca con `PathMover.OnGround`, a la misma altura con la que anda.
+- **Banca plana**: la espinilla izquierda de Adaguchi entraba 2 cm en el «Banco» en A y en B. Los muslos se abren 26° en vez de
+  20°.
+
+## 15. Entrenamientos reales: planes, series, progresión y entrenador (2026-11-04)
+
+Berón: «acabo de ver a Lizmibet usar las máquinas para hacer un ejercicio … hay que actualizar a los demás humanos para que
+realicen entrenamientos reales (series, repeticiones, entiendo que existen rutinas donde se varían músculos por días, se debe
+investigar y esto también serviría para el trabajo de entrenador del gym)».
+
+Sustituye al circuito igual para todos de §13: ahora cada persona sigue **su plan**. Código: `GymProgramming` (datos puros:
+planes, rutinas, progresión), `GymTrainingSession` (la sesión en vivo), `GymCoach` (el entrenador) y `WorkdayDirector.GymSession`.
+Reglas J19–J22 del [manual](manual-de-diseno.md). Prueba: `GymTrainingTest` (grupo 87).
+
+### 15.1 Investigación: cómo se programa el entrenamiento de fuerza
+
+**Repartos de la semana («splits»).**
+- **Cuerpo entero** (2–3 días): todos los grupos musculares en cada sesión. Es lo que el ACSM recomienda para empezar
+  (2–3 días por semana para principiantes; 3–4 intermedios; 4–5 avanzados).
+- **Torso / pierna** (4 días): dos sesiones de torso y dos de pierna; cada músculo, 2 veces por semana.
+- **Empuje / tirón / pierna** (3 o 6 días): pecho-hombros-tríceps, espalda-bíceps y piernas; con 6 días, cada músculo 2 veces.
+- **Weider o «bro split»** (5 días): un grupo muscular por día; cada músculo, 1 vez por semana.
+- Con el **volumen semanal igualado**, el reparto casi no cambia la fuerza ni la hipertrofia (Ramos-Campo et al. 2024, 14
+  estudios): se puede elegir por preferencia y agenda. Sin igualar el volumen, entrenar cada músculo **≥ 2 veces por semana**
+  dio más hipertrofia que una sola (Schoenfeld, Ogborn y Krieger 2016); con el volumen igualado, la frecuencia apenas importa y
+  **manda el volumen semanal**.
+- **Volumen**: hay relación dosis-respuesta; ≥ 10 series por músculo y semana dan más hipertrofia que < 5 (Schoenfeld, Ogborn y
+  Krieger 2017).
+
+**Series, repeticiones, descanso y esfuerzo por objetivo** (NSCA, *Essentials of Strength Training and Conditioning*; ACSM 2009):
+
+| Objetivo | Series | Repeticiones | Intensidad | Descanso | RPE |
+|---|---|---|---|---|---|
+| Fuerza | 3–5 (multiarticulares) | ≤ 6 | ≥ 80–85 % 1RM | 2–5 min | 8 (quedan 2) |
+| Hipertrofia | 3–6 | 6–12 | 67–85 % | 30–90 s (NSCA); > 60 s, algo mejor (Singer et al. 2024) | 7–9 |
+| Resistencia muscular | 2–3 | 12–20 | ≤ 67 % | ≤ 30–90 s | 6–7 |
+| Salud y mayores | 1–3 | 10–15 | moderada | 1–2 min | 5–7 |
+
+- **RPE por repeticiones en reserva** (Zourdos et al. 2016; Helms et al. 2016): RPE 10 = no queda ninguna; 9 = queda 1; 8 =
+  quedan 2. Sirve para ajustar la carga del día.
+- **Descanso**: largo (2–3 min) en los multiarticulares pesados; con gente entrenada, los descansos largos dan algo más de
+  hipertrofia (Grgic et al. 2017).
+- **Sobrecarga progresiva** (ACSM 2009): subir la carga un 2–10 % cuando se hacen 1–2 repeticiones más de las previstas en dos
+  sesiones seguidas. En la práctica, **progresión doble**: subir repeticiones dentro del rango y, al llegar arriba, subir la carga
+  y volver abajo.
+- **Descargas** (Bell et al. 2023, consenso Delphi de entrenadores): un periodo de menos estrés de entrenamiento para quitar
+  fatiga y llegar mejor a lo siguiente; se programan cada pocas semanas (aquí, 1 de cada 4), bajando sobre todo el **volumen**
+  (series) y algo la carga.
+- **Mayores**: la OMS (2020) pide fortalecer los grandes grupos musculares **≥ 2 días por semana** también a partir de los 65.
+  Máquinas guiadas y RPE moderado.
+- **Calentamiento**: mejoró el rendimiento en el 79 % de los criterios estudiados (Fradkin et al. 2010). 5–10 min de cardio suave,
+  movilidad y **series de aproximación** (≈ 50 % de la carga) antes del primer multiarticular.
+- **Vuelta a la calma**: apenas cambia la recuperación ni las agujetas (Van Hooren y Peake 2018), pero no estorba: 5 min de
+  cardio suave o estiramientos para acabar.
+
+### 15.2 Lo que hace el juego
+
+**Objetivos** (`GymProgramming.Spec`):
+
+| Objetivo | Series (multi / accesorio) | Reps (rango) | Descanso | RPE |
+|---|---|---|---|---|
+| Fuerza | 4 / 3 (los accesorios, como en hipertrofia: 8–12) | 4–6 | 180 s | 8 |
+| Hipertrofia | 3 / 3 | 8–12 | 90 s | 8 |
+| Resistencia | 3 / 2 | 15–20 | 45 s | 7 |
+| Salud | 2 / 2 | 10–15 | 90 s | 6 |
+
+**Rutinas de cada reparto** (`GymProgramming.Templates`; máquinas de §2–§11 y de los pisos de peso libre, cardio y calistenia):
+- Cuerpo entero A: sentadilla en jaula, press de banca, remo sentado, hip thrust y abdominales. B: peso muerto, press de hombros,
+  jalón, curl femoral y gemelos. Con objetivo **salud**, solo máquinas guiadas (A: prensa, press de pecho, remo, curl femoral y
+  abdominales; B: extensión de cuádriceps, press de hombros, jalón, hip thrust y gemelos).
+- Torso A: banca, remo, press de hombros, jalón y bíceps-tríceps. Pierna A: sentadilla, curl femoral, prensa, gemelos y
+  abdominales. Torso B: banca inclinada, remo con mancuerna, dominadas, press de pecho y bíceps-tríceps. Pierna B: peso muerto,
+  Smith, extensión, hip thrust y elevación de piernas.
+- Empuje: banca, press de hombros, banca inclinada y fondos. Tirón: jalón, remo, remo con mancuerna, bíceps-tríceps e
+  hiperextensiones. Pierna: sentadilla, curl femoral, prensa, gemelos y abdominales.
+- Weider: pecho · espalda · hombros y abdomen · pierna · brazos.
+
+Las sesiones de un reparto **rotan** de un día de gimnasio al siguiente (A, B, A… y de semana en semana).
+
+**La rutina de un día** (`GymProgramming.Prescribe`):
+1. 5 min de cardio suave (bici; cinta en resistencia).
+2. Los ejercicios del día con sus series × reps, carga, descanso y RPE. La primera serie del primer multiarticular con carga es
+   de **aproximación**, al 50 %.
+3. 5 min de estiramientos (en la máquina de isquios o, si está ocupada, de pie).
+
+Si la rotación manda a alguien al gimnasio un día sin gimnasio en su plan (solo pasa si no hay otro entrenamiento abierto):
+**recuperación activa**, 10 min de bici suave y estiramientos.
+
+**Cargas de partida**: la carga base de cada máquina (un adulto medio que ya entrena: banca 40 kg, prensa 90 kg, jalón 40 kg…;
+0 = peso corporal) × el objetivo (fuerza ×1,25, hipertrofia ×1, resistencia ×0,7, salud ×0,6) × la fuerza de cada persona (de
+0,45 a 1,4), redondeada a 1,25 kg.
+
+### 15.3 Progresión y descarga
+
+- **Cada semana** (`AdvanceWeek`, al cambiar de semana: días 7, 14…): +1 repetición (+2 en resistencia) hasta arriba del rango;
+  arriba, **+2,5 kg** tren superior o **+5 kg** inferior (la mitad en salud) y vuelta abajo del rango. Peso corporal: +1 rep
+  (tope 30).
+- Lo que quedó **sin acabar** esa semana (se acabó el bloque, no había máquina) **no sube** (`TrainingPlan.missed`).
+- **Descarga**: la 4.ª semana de cada 4 (semanas 4, 8…): la mitad de series, −10 % de carga y RPE −2. Esa semana no progresa.
+
+### 15.4 La sesión en vivo (14–16 h)
+
+- **Quién va**: quien tiene gimnasio ese día en su plan (y el entrenador, siempre). Si la rotación `(i + d) mod n` le daba
+  gimnasio un día sin gimnasio en su plan, va al siguiente entrenamiento abierto (`GymProgramming.ApplyGymDays`).
+- **Orden** (`GymTrainingSession`): calentamiento (en la clase del entrenador, si la hay) → cada ejercicio → vuelta a la calma.
+- **Máquina**: la copia libre más cercana (la del mismo piso primero).
+- **Si está ocupada**: una alternativa del mismo músculo (banca ↔ press de pecho, sentadilla ↔ Smith ↔ prensa, jalón ↔
+  dominadas, remo ↔ remo con mancuerna…; la carga, en proporción). Si no hay ninguna libre, **espera** hasta 8 s y lo deja para
+  el final; a la segunda, lo salta (y queda sin acabar). Si en 45 s no llega andando, prueba otra copia.
+- **Series**: cada repetición es A → B → A y cuenta al volver a A; en las dos últimas pone cara de esfuerzo.
+- **Descanso**: se queda en la máquina, en la postura A, el descanso real pasado a tiempo de juego (90 s = 1,5 min de juego =
+  3,75 s reales; entre 2 y 10 s).
+- **Ritmo**: el de las repeticiones se ajusta para que la rutina quepa en el bloque (de 0,3 s al ritmo real del equipo por mitad).
+- **Necesidades** (comer, baño, dormir): suelta la máquina y, al volver, repite la serie en curso. A las 15:55 se acaba: lo que
+  falta queda sin acabar.
+- **Registro**: una línea por serie, por ejemplo
+  `[Gimnasio] Amahuz · Torso A · Press de banca plano · serie 2/3 · 9 reps · 42,5 kg · RPE 8` (las de aproximación dicen
+  «aproximación»).
+
+### 15.5 El entrenador: Andrea
+
+**Por qué Andrea** (`GymProgramming.Trainer`). Berón (2026-11-04): «el personaje con más fuerza es Andrea».
+- Su fuerza es la más alta del personal: `Anima.strength` 1,6 (`SampleSceneBuilder.MakeCharacter`). Le sigue Goluis, con 1,5
+  (`Archetypes`). `GymTrainingTest` lo comprueba en escena.
+- Con Leo salía a correr y al gimnasio ([character-andrea.md](character-andrea.md)).
+- Por eso deja de ser maestro de yoga: las dos clases son a las 14 h. El yoga pasa a **Josedrilo** (Berón; lo aplica la rama de personajes, con `WorkdayDirector.YogaTeacher` y las pruebas de yoga;
+  ver [personajes-mesocosmos.md](personajes-mesocosmos.md) §Reparto de papeles).
+- **Goluis** (el primer entrenador, unas horas del 2026-11-04) mantiene su plan de **fuerza**.
+- Andrea sigue en la rotación de la mañana como todos; sale en el gimnasio y su área es el Gimnasio.
+
+- **Su misión de la jornada**: «Entrenador: revisar el registro de series y ajustar los planes» (`gym_planes`, 1 h, en el
+  Gimnasio).
+  - Es una **misión de papel fijo** (`WorkRoster.Mission.owner`): se le asigna a él antes que nada y, si no está, nadie la hace
+    ni queda pendiente.
+  - Al terminarla (`GymProgramming.Review`): escribe el plan de quien no lo tenía, mantiene la carga de lo que quedó sin acabar,
+    avisa de la semana de descarga y deja escrita la rutina de mañana de cada uno.
+- **En el bloque de las 14 h** (`GymCoach`), con los mismos datos de rutina:
+  1. **Clase de calentamiento** (10 min de juego desde que **él llega** a la zona libre, no desde las 14:00; de otra torre se tarda
+     35–95 s reales y la clase dura 25 s). Sentadillas con peso corporal y saltos de tijera. Quien va a calentar anda hasta su sitio,
+     en filas de 4 delante de él, y repite cada movimiento a su compás. La clase espera a los que vienen de camino; tope: 30 min de
+     juego más para reunirse. Si la clase acaba tarde, cada uno reajusta el ritmo de sus repeticiones para acabar la rutina.
+  2. **Rondas**: va a quien está en plena serie y le **corrige** la técnica (`GymProgramming.Cue`: «escápulas atrás y codos a
+     unos 45°», «rodillas alineadas con los pies»…). En banca y sentadilla con RPE ≥ 7,5 hace de **spotter** hasta que acaba la
+     serie. Como mucho: andar 60 s, corregir 5 s y hacer de spotter 20 s. Sin nadie a quien corregir, vuelve andando al gimnasio.
+  3. Los días de su propio plan (torso/pierna de fuerza, lun-mié-jue-sáb), de 15:00 a 15:55 hace **su rutina**.
+
+### 15.6 Los planes asignados
+
+| Persona | Reparto | Días | Objetivo | Por qué |
+|---|---|---|---|---|
+| Kushal (jugador) | Cuerpo entero | lun-mié-vie | Hipertrofia | Principiante: 2–3 d de cuerpo entero (ACSM). |
+| Linduarda | Empuje/tirón/pierna | lun–sáb | Hipertrofia | «Deportista, gimnasio a diario». |
+| Lizmibet | Cuerpo entero (máquinas) | mar-vie | Salud | Más de 70 años: 2 d (OMS, ACSM). |
+| Goluis | Torso/pierna | lun-mar-jue-vie | Fuerza | Corpulento, jefe de cocina. |
+| Panterilia | Cuerpo entero | mar-jue-sáb | Hipertrofia | Delgada: ganar músculo. |
+| Gohageneis | Empuje/tirón/pierna | lun-mié-vie | Fuerza | Artes marciales y Guardia (el resto, su dojo). |
+| Irosene | Cuerpo entero | mié-sáb | Resistencia | Más de 70; corre, escala y bucea. |
+| Tote (`JefeConstruccion`) | Torso/pierna | mar-mié-vie-sáb | Resistencia | Robusto; jornadas de obra. |
+| Andrea (entrenador) | Torso/pierna | lun-mié-jue-sáb | Fuerza | El de más fuerza; corredor de fondo (la fuerza pesada mejora la economía de carrera). |
+| Nesvitor | Cuerpo entero (máquinas) | lun-jue | Salud | El mayor de las cuentas. |
+| Amahuz | Torso/pierna | lun-mar-jue-vie | Hipertrofia | Delgado: ganar masa. |
+| Karen | Cuerpo entero | lun-mié-vie | Resistencia | Entrena con Amahuz los lunes. |
+| Alicita | Empuje/tirón/pierna | mar-jue-sáb | Hipertrofia | Huerto: cargar cajas. |
+| Ducristin | Torso/pierna | lun-mié-jue-sáb | Fuerza | Mecánico: levantar piezas. |
+| Josedrilo | Empuje/tirón/pierna | mar-jue-sáb | Hipertrofia | El profesional del yoga: los demás días, el yoga. |
+| Maite | Cuerpo entero | mar-jue-sáb | Resistencia | Mucho de pie (registros y vacunación). |
+| Shalva | Torso/pierna | mar-mié-vie-sáb | Hipertrofia | Personal general. |
+| Adaguchi | Weider | lun–vie | Hipertrofia | Estilo culturista (sudadera sin mangas); cada músculo 1×/sem. |
+
+Las complexiones salen de [diseno-personajes.md](diseno-personajes.md); no se suponen edades más allá de lo documentado.
+
+**Humanos-insecto**: no usan estos planes del santuario (`GymProgramming.Eligible`), sino los de **su época**, en el lugar de entrenar de su pueblo (§16). (El 2026-11-04 se dijo aquí que «en sus eras no hay gimnasio»: era falso; Berón: «desde la antigua Grecia se entrenaba físicamente».)
+
+### 15.7 Ver la rutina
+
+- **Consola**: `rutina` abre o cierra el panel; `rutina(Amahuz)` lo abre en esa persona; ◀ ▶ cambian de persona
+  (`GymRoutinePanel`). Muestra:
+  - el plan: reparto, días, objetivo, frecuencia por músculo, semana, descarga y quién lo revisó;
+  - la rutina de hoy, con lo que hace ahora (ejercicio, serie i/n, repetición);
+  - las últimas líneas del registro de series;
+  - si es el entrenador, su estado: alumnos de la clase, correcciones y veces de spotter.
+- **Registro**: `[Gimnasio]` (series, cambios de máquina, esperas) y `[Entrenador]` (clase, correcciones, spotter, revisión de
+  planes).
+
+## Microcosmos: lugares de entrenar por época (gancho para los planes de entrenamiento, 2026-11-04)
+
+Los pueblos de las historias del microcosmos tienen ahora su lugar de entrenar de época. Son la regla 16 de [microcosmos-reglas-edificacion.md](microcosmos-reglas-edificacion.md); su investigación y sus fuentes están en [microcosmos-entrenamiento-eras.md](microcosmos-entrenamiento-eras.md).
+
+El hilo «entreno» escribe los planes de entrenamiento de los insectos-humanos y los ejercicios de cada era. Para hacerlo, puede contar con esto, que no cambiará:
+
+- **Categoría.** `AreaFunctionSite.activity == AreaFunctionSite.Entrenamiento` («entrenamiento»). La llevan las plantillas «Centro de entrenamiento» y «Dojo» (la palestra de Milón, el kwoon de Yip Man).
+- **Clase estable.** `AreaFunctionSite.training` es una de estas:
+  - `juegos_heroicos`, `gimnasio_griego`, `palestra_romana`;
+  - `patio_lucha_egipcio`, `patio_lucha`, `akhara`;
+  - `furusiyya`, `tekke_guresh`, `juego_pelota`;
+  - `wuguan`, `dojo`, `sala_armas`, `sala_esgrima`;
+  - `prado_juegos`, `garrote_coleo`, `turnplatz_schwingen`;
+  - `turnhalle`, `hebert`, `futbol_tregua`;
+  - `club_deportivo`, `estadio`, `gimnasio_moderno`.
+
+  Sale de `MicroStyles.TrainingKind(estilo, año)`.
+- **Puestos.** Son `AreaFunctionStation.station`, con la clave del aparato. La tabla dice qué función del registro sirve cada uno. Las funciones son de la plantilla «Centro de entrenamiento» (`AreaFunctions.Buildings`).
+
+| Función | Qué se hace | Puestos que la sirven |
+|---|---|---|
+| `ent_entrenar` | Entrenar (rol «todos») | tatami, pista, foso_lucha, pista_carreras, campo |
+| `ent_ensenar` | Dirigir el entrenamiento (rol «maestro») | los mismos que `ent_entrenar` |
+| `ent_lucha` | Luchar en el foso | foso_lucha, tatami |
+| `ent_correr` | Correr | pista_carreras, campo |
+| `ent_pesos` | Levantar pesos | halteres, piedras, mazas, pesas |
+| `ent_golpear` | Golpear el saco, el poste o el muñeco | saco, makiwara, muneco |
+| `ent_aparatos` | Gimnasia en aparatos | barra_fija, paralelas, potro, anillas |
+| `ent_armas` | Esgrima y armas | pista_esgrima, armero |
+| `ent_tiro` | Tiro con arco | diana |
+| `ent_pelota` | Juegos de pelota | balon, campo, pista |
+
+- **Aparatos de cada clase.** Los da `CivicBuilder.TrainingKit(clase)`. Por ejemplo, un `gimnasio_griego` tiene xisto, skamma, halteres, kórykos, discos y jabalinas, y una `akhara` tiene foso de tierra, gada y mugdar, y nal. Un plan de entrenamiento puede elegir los ejercicios por la clase y buscar el puesto con `site.StationFor(AreaFunctions.Get("ent_pesos"))`.
+- **En el horario libre.** Los sitios de entrenamiento entran como hasta ahora: una actividad por plantilla, del tipo «ocio» del roster (`LeisureDirector`).
+
+
+## 16. Entrenar como en su época: los planes de los insectos-humanos (2026-11-04)
+
+Berón: «¿en ninguna época de microcosmos hay gimnasio? desde la antigua Grecia se entrenaba físicamente…». Tenía razón. Los pueblos
+tienen ya su lugar de entrenar de época (la sección anterior, de la rama de los pueblos). Aquí van los **planes**, el **catálogo de
+ejercicios de cada época** y la **sesión**, con el mismo motor que el gimnasio del santuario (§15).
+
+- **Código**:
+  - `HistoricTraining`: el catálogo y los planes, datos puros.
+  - `HistoricSession`: la sesión en vivo. `HistoricCoach`: el maestro del pueblo.
+  - `HistoricClass`: la clase del día en un edificio, con sus sitios.
+- **El gancho**: `MicroJornada`, en el bloque de la práctica (14–16 h). Si su sitio de práctica es de entrenamiento
+  (`activity == "entrenamiento"`, o la plantilla «Centro de entrenamiento» o «Dojo»), lo lleva `HistoricClass.Drive`. Si no,
+  sigue como siempre.
+- **La clave**: la **clase estable** del edificio, `AreaFunctionSite.training`. Si viene vacía, se usa
+  `MicroStyles.TrainingKind(estilo, año)`. No hace falta nada más del constructor de los pueblos.
+- **Regla J23** del [manual](manual-de-diseno.md). Prueba: `GymTrainingTest` (grupo 87).
+
+### 16.1 Los lugares de entrenar de la historia y sus ejercicios
+
+Cada clase tiene su tradición (`HistoricTraining.All`), con su maestro y sus sesiones. Cada ejercicio lleva los años en que existe:
+una sesión de ese año solo usa los que ya existían, y se descarta si le quedan menos de 3.
+
+| Clase (`training`) | Lugar · maestro | Ejercicios de época | Microcosmos |
+|---|---|---|---|
+| `juegos_heroicos` | Juegos de la Ilíada XXIII · el héroe más anciano | carrera, lucha, pugilato con correas, peso (disco), jabalina, arco | Egina (−1250) |
+| `gimnasio_griego` | Gimnasio y palestra · paidotribes | carrera de un estadio, **halteres** (desde −708), disco, jabalina, lucha, **kórykos** (desde −500), **el ternero de Milón** (desde −540) | Crotona (−530), Alejandría (−240) |
+| `palestra_romana` | Palestra de las termas · magister | halteres, pelota (trigón, harpastum), lucha, kórykos, **palus** de los legionarios; después, la natatio | (ninguno aún) |
+| `patio_lucha_egipcio` | Patio de lucha · maestro de lucha | lucha (Beni Hasan), **tahtib** (palos, desde −2000), sacos de arena, carrera | Menfis (−450) |
+| `patio_lucha` | Patio de lucha · maestro de lucha | lucha de cinturón, piedras, carrera, honda | Mesopotamia (−3500) |
+| `akhara` | Akhāṛā · guru | lucha (malla-yuddha; kushti desde 1500), **gada**, **mudgar**, la piedra, **dand** y **baithak** (desde 1500), mallakhamb (desde 1135); el **kalari** (desde 1100: meippayattu, patadas, bastón) | Kapilavastu (−530), Patanjali (−150), Velliangiri (1999) |
+| `furusiyya` | Maydān de furusiyya · ustādh | arco, lanza al blanco, espada al poste, lucha (koshti) | Bagdad (820) |
+| `zurkhaneh` | Zurkhaneh · morshed y miandar | **meel**, **sang**, **shena**, **kabbadeh**, giros (charkh), lucha | (ninguno aún) |
+| `tekke_guresh` | Tekke de luchadores · üstat | **yağlı güreş**, mazas, tiro con arco; el peşrev para calentar | Escútari (1854) |
+| `wuguan` | Escuela de artes marciales · shifu | mabu, taolu, **shisuo** (desde 702), patadas, bastón; **muñeco de madera** y chi sao (desde 1850), saco, pesas | Aldea de la montaña (1930), Bruce Lee (1964) |
+| `dojo` | Dojo · sensei | suburi, shiko, **ishi sashi**, randori, kyūdō | (ninguno aún) |
+| `juego_pelota` | Juego de pelota · maestro | golpes de cadera a la pelota de hule, carrera, átlatl | Palenque (683) |
+| `sala_armas` | Sala de armas · maestro de armas | el poste (pell), la quintana, lucha, piedra | (ninguno aún) |
+| `sala_esgrima` | Sala de esgrima · maestro de esgrima | estocadas, paradas, asaltos, poste | (ninguno aún) |
+| `prado_juegos` | Prado de los juegos (Cotswold Olimpicks) · el organizador | lucha, garrote, carreras, salto, el mazo | Woolsthorpe (1666), Berkeley (1796) |
+| `garrote_coleo` | Garrote y manga de coleo · maestro de garrote | juego de garrote, lanza llanera, machete, carreras | Angostura (1819) |
+| `turnplatz_schwingen` | Turnplatz y ruedo de schwingen · Turnwart | **schwingen**, **steinstossen** (piedra de Unspunnen, desde 1805), barra fija, paralelas | Sils Maria (1881) |
+| `turnhalle` | Turnhalle · Turnwart | barra fija, paralelas, potro, anillas, cuerda (desde 1811, Jahn), **mazas indias** (desde 1850); gimnasia sueca de Ling para calentar | Dayton, Colorado Springs, París 1898, Berna, Planta Atómica, Irena Sendler |
+| `hebert` | Parcours del método natural · moniteur | marcha, cuadrupedia, trepar, saltar, levantar y lanzar (desde 1905) | Le Chambon-sur-Lignon (1942) |
+| `futbol_tregua` | Partido de la tregua · el capitán | pases, regate, tiros a puerta, carreras | Tregua 1914 |
+| `club_deportivo` | Club deportivo · trener | **girya**, dominadas del GTO, flexiones, saco, pista | Chernóbil (1986) |
+| `estadio` | Estadio · entrenador | fútbol, atletismo, lutte traditionnelle | Uagadugú (2024) |
+| `gimnasio_moderno` | Gimnasio · entrenador | barra (banca, sentadilla, peso muerto, remo), dominadas, saco, comba; máquinas de placas desde 1970 | Pasadena, Albuquerque, Omaha, Hawthorne, Prairie View |
+
+La prehistoria (Sakshi, Ambrosio, Cocina, Huerto, Yoga…) no tiene lugar de entrenar.
+
+**Dónde se hace cada ejercicio** (`HistoricTraining.KeysOf`): en el aparato del pueblo (`AreaFunctionStation.station`, de
+`CivicBuilder.TrainingKit`).
+- Halteres en `halteres`; piedras y el ternero en `piedras`; mazas, girya y shisuo en `mazas`; barras en `pesas`.
+- Kórykos y saco en `saco`; poste, pell y muñeco en `muneco` o `makiwara`.
+- Barra fija, paralelas, potro y anillas en el suyo. Arcos en `diana`. Pelotas en `balon`, `campo` o `pista`.
+- Armas y esgrima en `pista_esgrima`, `tatami` o `foso_lucha` (cogen el arma del `armero`).
+- Lucha en `foso_lucha` o `tatami`. Carrera en `pista_carreras`, `campo` o `pista`.
+- Si el edificio no tiene ese aparato, cualquier suelo de entrenar.
+
+**Sitios** (`HistoricClass`):
+- Cada suelo (tatami, foso, pista, campo, sala) se parte en sitios a **2 m**, la distancia de dos personas.
+- Cada aparato da un sitio delante.
+- Nunca hay dos personas en el mismo sitio.
+
+### 16.2 Planes y sesión
+
+- **El plan** (`HistoricTraining.PlanFor`):
+  - El objetivo: los soldados, guardias y guerreros entrenan fuerza; el resto, hipertrofia, resistencia o fuerza (fijo por su
+    nombre).
+  - 3 o 4 días por semana. Las sesiones de su tradición rotan de un día al siguiente.
+  - Series, repeticiones, descanso y RPE salen de `GymProgramming.Spec`, como en §15.
+  - La carga de partida es la del aparato de la época: halteres de 2 kg, mazas de 5–8 kg, la girya de 16 kg, el ternero de
+    30 kg…
+- **Progresión** (la del santuario): +1 repetición hasta arriba del rango; arriba, **un paso de carga** (un halter más pesado,
+  la girya siguiente, un ternero más grande, como Milón) y vuelta abajo. Descarga cada 4.ª semana. Lo que queda sin acabar no
+  sube.
+- **La sesión** (`HistoricSession`):
+  1. Calentamiento: la clase del maestro o la carrera suave; en el tekke, el peşrev; en la Turnhalle, la gimnasia de Ling.
+  2. Cada ejercicio: coge el arma del armero si hace falta y va a su sitio. Si está ocupado, espera hasta 8 s y lo deja para el
+     final; a la segunda, lo salta.
+  3. Las series × repeticiones contadas (A → B → A), con el descanso real pasado a tiempo de juego (2–10 s) entre series.
+  4. Vuelta a la calma: estiramientos y masaje con aceite; en Roma, el baño.
+  - Anima el cuerpo de insecto con `CubeInsect.Martial`/`Push` según el movimiento: levantar, empujar, balancear, luchar,
+    correr, lanzar, golpear, sostener o saltar.
+  - Si llega una necesidad (comer, el baño), suelta su sitio y, al volver, repite la serie.
+- **Registro**: `[Entreno micro] Teano · Palestra · Cargar el ternero (como Milón de Crotona) · serie 2/4 · 5 reps · 37,5 kg`.
+
+### 16.3 El maestro del pueblo
+
+- **Quién es** (`HistoricClass.Drive`): quien **trabaja** en ese edificio (su `MicroJornada.work`). Si nadie, el primero por nombre
+  de los que practican allí. Su título es el de la tradición: paidotribes, guru, ustādh, üstat, shifu, sensei, maestro de armas,
+  Turnwart, moniteur, trener…
+- **Qué hace** (`HistoricCoach`):
+  - Los primeros 10 min de juego, la **clase de calentamiento**: los alumnos en filas de 4 delante de él, a 2 m, repiten su
+    movimiento.
+  - Después, **rondas**: va junto a quien está en plena serie y le corrige con las indicaciones de su tradición, por ejemplo
+    «balancea los halteres antes de saltar» o «rodillas hacia fuera en el mabu».
+- **Lo que no hace aún**: su propia rutina. En el santuario, el entrenador sí la hace (§15.5).
+
+### 16.4 Lo que queda para la rama de los pueblos
+
+- El maestro sale de quien tiene ese edificio como trabajo. Conviene que cada pueblo con lugar de entrenar tenga un insecto-humano
+  con `work` = ese edificio y el papel «maestro».
+- Si un pueblo nuevo usa una clase que no está en la tabla, hay que añadirla a `HistoricTraining`. La prueba 87 falla si a una
+  clase le falta su tradición.
+
 ## Fuentes
 
 - Press de pecho:
@@ -695,6 +1042,48 @@ vez**. En cada piso se alternan tren superior e inferior:
   - [Core 3-Tier Dumbbell Rack](https://www.corehandf.com/products/3-tier-dumbbell-rack)
   - [Hammer Strength 3-Tier Rack](https://gymequipment.co.uk/hammer-strength-dumbbell-rack-3-tier)
   - [Gym Gear Classic 3-Tier](https://gymgear.com/products/classic-series-3-tier-dumbbell-rack-without-saddles)
+- Programación del entrenamiento (§15):
+  - [ACSM 2009: Progression models in resistance training for healthy adults (PubMed)](https://pubmed.ncbi.nlm.nih.gov/19204579/)
+  - [Schoenfeld, Ogborn y Krieger 2016: frecuencia e hipertrofia (PubMed)](https://pubmed.ncbi.nlm.nih.gov/27102172/)
+  - [Schoenfeld, Ogborn y Krieger 2017: dosis-respuesta del volumen semanal (core.ac.uk, PDF)](https://core.ac.uk/download/200371264.pdf)
+  - [Ramos-Campo et al. 2024: rutina dividida frente a cuerpo entero (PubMed)](https://pubmed.ncbi.nlm.nih.gov/38595233/)
+  - [Grgic et al. 2017: descansos cortos y largos e hipertrofia (PubMed)](https://pubmed.ncbi.nlm.nih.gov/28641044/)
+  - [Singer et al. 2024: descanso entre series, metaanálisis bayesiano (Frontiers)](https://www.frontiersin.org/articles/10.3389/fspor.2024.1429789/full)
+  - [Zourdos et al. 2016 y Helms et al. 2016: escala RPE por repeticiones en reserva (AUT)](https://openrepository.aut.ac.nz/items/efef3b25-6701-4fb5-bb82-55fcd2a26027/full)
+  - [Bell et al. 2023: descargas, consenso Delphi (Sports Medicine – Open)](https://doi.org/10.1186/s40798-023-00633-0)
+  - [Fradkin, Zazryn y Smoliga 2010: calentamiento y rendimiento (PubMed)](https://pubmed.ncbi.nlm.nih.gov/19996770/)
+  - [Van Hooren y Peake 2018: ¿hace falta la vuelta a la calma? (PMC)](https://pmc.ncbi.nlm.nih.gov/articles/PMC5999142/)
+  - [OMS 2020: directrices de actividad física y comportamiento sedentario](https://www.who.int/publications/i/item/9789240015128)
+  - NSCA, *Essentials of Strength Training and Conditioning* (Haff y Triplett, 4.ª ed., 2016): series, repeticiones y descansos
+    por objetivo (libro, sin enlace).
+- Entrenar en la historia (§16):
+  - [Halteres (Wikipedia)](https://en.wikipedia.org/wiki/Halteres_(ancient_Greece)): de piedra o metal, de 2 a 9 kg; Filóstrato
+    (*Gymnasticus* 55) los recomienda para hombros y manos.
+  - [Milón de Crotona (Wikipedia)](https://en.wikipedia.org/wiki/Milo_of_Croton): el ternero que crece cada día, la imagen clásica
+    de la sobrecarga progresiva (leyenda).
+  - [Gimnasio de la antigua Grecia (Wikipedia)](https://en.wikipedia.org/wiki/Gymnasium_(ancient_Greece)) y [Palestra](https://en.wikipedia.org/wiki/Palaestra);
+    [Termas romanas](https://en.wikipedia.org/wiki/Thermae).
+  - [Historia de la lucha (Wikipedia)](https://en.wikipedia.org/wiki/History_of_wrestling): Beni Hasan (unos 400 pares de luchadores,
+    XI–XII dinastías) y los luchadores sumerios.
+  - [Tahtib (Wikipedia)](https://en.wikipedia.org/wiki/Tahtib): la esgrima de palos en tres tumbas de Beni Hasan; con el arco y la
+    lucha, parte de la instrucción de los soldados.
+  - [Pahlevani y rituales del zurkhaneh (Wikipedia)](https://en.wikipedia.org/wiki/Pahlevani_and_zoorkhaneh_rituals): meel, sang,
+    shena y kabbadeh; Patrimonio Inmaterial de la UNESCO (2010).
+  - [Akhara](https://en.wikipedia.org/wiki/Akhara), [Pehlwani](https://en.wikipedia.org/wiki/Pehlwani),
+    [Mallakhamb](https://en.wikipedia.org/wiki/Mallakhamba) y [Kalaripayattu](https://en.wikipedia.org/wiki/Kalaripayattu) (Wikipedia).
+  - [Furusiyya (Wikipedia)](https://en.wikipedia.org/wiki/Furusiyya).
+  - [Okmeydanı (Wikipedia)](https://en.wikipedia.org/wiki/Okmeydan%C4%B1) y [The Archers' Lodge (İstanbul Tarihi)](https://istanbultarihi.ist/505-the-archers-lodge):
+    el tekke de los arqueros; [Yağlı güreş](https://en.wikipedia.org/wiki/Turkish_oil_wrestling).
+  - [Stone locks y armas pesadas en las artes marciales chinas (Chinese Martial Studies)](https://chinesemartialstudies.com/2014/03/10/through-a-lens-darkly-22-heavy-knives-and-stone-locks-strength-training-in-the-traditional-chinese-martial-arts/):
+    los shisuo, parte de los exámenes militares; [Hojo undō (Wikipedia)](https://en.wikipedia.org/wiki/Hojo_und%C5%8D): ishi sashi y chi ishi.
+  - [Juego de pelota mesoamericano (Wikipedia)](https://en.wikipedia.org/wiki/Mesoamerican_ballgame).
+  - [Unspunnenfest (Wikipedia)](https://en.wikipedia.org/wiki/Unspunnenfest) y [Deportes nacionales suizos](https://en.wikipedia.org/wiki/Swiss_national_sports):
+    la piedra (1805) y el schwingen.
+  - [Turnverein](https://en.wikipedia.org/wiki/Turnverein), [Indian club](https://en.wikipedia.org/wiki/Indian_club),
+    [Kettlebell (girya)](https://en.wikipedia.org/wiki/Kettlebell) y [Georges Hébert](https://en.wikipedia.org/wiki/Georges_H%C3%A9bert) (Wikipedia).
+  - Lo que **no** se ha podido confirmar con fuentes y queda como supuesto: el ciclo de cuatro días (tetrada) de Filóstrato, la
+    fecha exacta de las primeras mazas (mudgar) y del dand y el baithak (se pone 1500), y que la lucha de Uruk ya existiera en el
+    −3500 (las primeras imágenes son de hacia el −2900/−2600).
 - Espacios libres:
   - [Livestrong: Gym Equipment Placement Standards](https://livestrong.com/article/415103-gym-equipment-placement-standards)
   - [Achievable (CSCS): facility layout](https://app.achievable.me/study/cscs/learn/facility-design-layout-and-organization)

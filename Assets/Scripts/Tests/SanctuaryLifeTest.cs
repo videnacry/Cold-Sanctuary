@@ -26,7 +26,8 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         TestProbe.Check("sobre el colchón de musgo el golpe se amortigua", soft < hard * 0.2f, $"{soft:0} vs {hard:0}");
         TestProbe.Check("saltar un escalón no hace daño", fi.Land(1f, 0f) == 0f);
         Destroy(probe);
-        TestProbe.Greater("hay colchones de musgo bajo lo construido", FindObjectsByType<SoftGround>(FindObjectsSortMode.None).Length, 6f);
+        // (Los edificios-árbol no llevan colchón: no tienen nada a poca altura sobre el suelo, que queda para la naturaleza.)
+        // (2026-11-05: la central ya es un árbol en el mar; quedan la arboleda residencial y la casa de la guardia.)
 
         // Áreas elevadas.
         GameObject kitchen = GameObject.Find("Kitchen_Area");
@@ -46,6 +47,18 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         foreach (Transform t in FindObjectsByType<Transform>(FindObjectsSortMode.None)) if (t.name == "Llama") { flame = true; break; }
         TestProbe.Check("las cocinas son de inducción (sin llama de gas)", !flame);
 
+        if (PopulationPlan.InsectsInSanctuary1)
+        {
+        // (Berón 2026-11-09, rendimiento) MATERIALES BARATOS: ni iridiscencia ni brillo. Todo Simple Lit, mate, sin metal; transparente solo el
+        // cristal (y el agua de una pecera). Y cuántos materiales distintos hay (para comparar antes y después).
+        { var (unique, expensive, worst) = CheapMaterials.Census();
+          Debug.Log($"[Rendimiento] Materiales distintos en escena: {unique}; caros: {expensive}.");
+          TestProbe.Check("ningún material caro (todo Simple Lit mate y opaco; transparente solo el cristal)", expensive == 0, $"{unique} distintos, {expensive} caros: {worst}"); }
+        { var urp = UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline as UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset;   // (2026-11-09) sombras baratas
+          int extra = FindObjectsByType<Light>(FindObjectsSortMode.None).Count(l => l.shadows != LightShadows.None && l != RenderSettings.sun && !(RenderSettings.sun == null && l.type == LightType.Directional));
+          TestProbe.Check("sombras baratas: el sol hasta 60 m con 1 cascada y ninguna otra luz con sombra", !ShadowQuality.Cheap || (urp != null && urp.shadowDistance <= ShadowQuality.MaxDistance + 0.01f && urp.shadowCascadeCount == 1 && extra == 0),
+              urp != null ? $"{urp.shadowDistance:0} m, {urp.shadowCascadeCount} cascadas, {extra} luces más con sombra; {ShadowQuality.RenderersOff} piezas sin sombra" : "sin URP"); }
+
         // Insectos de hielo a tamaño modificado.
         int bees = 0; float maxBee = 0f; Vector3 firstScale = Vector3.zero;
         foreach (IceInsectLife b in FindObjectsByType<IceInsectLife>(FindObjectsSortMode.None))
@@ -58,6 +71,10 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         }
         TestProbe.Greater("las abejas de las nieves viven (vuelan) en el bosque", bees, 0f);
         TestProbe.Check("la abeja de las nieves mide ~20 cm", bees == 0 || (maxBee > 0.1f && maxBee < 0.45f), $"{maxBee:0.00} m (escala {firstScale})");
+        }
+        else Debug.Log("[TEST] SKIP · abejas de las nieves a su tamaño — sin insectos en el santuario 1 por ahora (PopulationPlan.InsectsInSanctuary1, Berón 2026-11-09)");
+        if (!PopulationPlan.InsectsInSanctuary1)   // (y que de verdad no queden: ni insectos, ni colmenas, ni enjambres de abejas)
+            TestProbe.Check("sin insectos en el santuario 1 (interruptor apagado)", FindObjectsByType<IceInsectLife>(FindObjectsSortMode.None).Length == 0 && FindObjectsByType<Hive>(FindObjectsSortMode.None).Length == 0 && !Swarm.All.Any(s => s != null && s.kind == SwarmKind.Bee), $"{FindObjectsByType<IceInsectLife>(FindObjectsSortMode.None).Length} insectos, {FindObjectsByType<Hive>(FindObjectsSortMode.None).Length} colmenas; quitados {InsectPurge.Removed}");
 
         // Energía = metabolismo: sin grasa, se recupera gastando masa del cuerpo.
         GameObject g = new GameObject("Metabolismo_TEST");
@@ -83,7 +100,7 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
             TestProbe.Check("…y se cierra (campo apagado)", !tank.HatchOpen && !tank.FieldOn);
         }
 
-        // Carne cultivada: el laboratorio pasa por todas las fases y deja raciones de carne en el comedero de los depredadores.
+        // Carne cultivada: el laboratorio pasa por todas las fases y deja raciones de carne en el almacén del alimentador.
         CulturedMeatLab lab = CulturedMeatLab.All.Count > 0 ? CulturedMeatLab.All[0] : null;
         TestProbe.Check("hay laboratorio de carne cultivada", lab != null);
         if (lab != null)
@@ -97,16 +114,21 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
             TestProbe.Greater("…y cosecha raciones de carne para los depredadores", lab.portionsMade, 0f, $"{lab.portionsMade} raciones");
         }
 
+        if (PopulationPlan.InsectsInSanctuary1)
+        {
         // Colmena: la reina pone huevos en las celdillas y las obreras tienen oficios distintos según su edad.
         Hive hv = null;
         // Una colmena con abejas y SIN araña al lado (con una araña acechando, la reina huye en vez de poner: es otra prueba).
         var spiders = FindObjectsByType<SnowSpiderBehavior>(FindObjectsSortMode.None);
+        var insects = FindObjectsByType<IceInsectLife>(FindObjectsSortMode.None);
+        // Con su reina VIVA y apareada: una colonia que perdió a la reina (ronda 7: muerta=True, 0 huevos) no puede poner, es otra prueba.
+        System.Func<Hive, bool> liveQueen = h => insects.Any(b => b != null && b.hive == h && b.isQueen && b.mated && b.GetComponent<Animal>() != null && !b.GetComponent<Animal>().death);
         foreach (Hive h in Hive.All)
         {
-            if (spiders.Any(s => s != null && Vector3.Distance(s.transform.position, h.combCenter) < 5f)) continue;
-            foreach (IceInsectLife b in FindObjectsByType<IceInsectLife>(FindObjectsSortMode.None)) if (b.hive == h) { hv = h; break; }
-            if (hv != null) break;
+            if (!liveQueen(h) || spiders.Any(s => s != null && Vector3.Distance(s.transform.position, h.combCenter) < 5f)) continue;
+            hv = h; break;
         }
+        if (hv == null) foreach (Hive h in Hive.All) if (liveQueen(h)) { hv = h; break; }   // todas con araña cerca: la primera con reina
         if (hv == null) foreach (Hive h in Hive.All) { foreach (IceInsectLife b in FindObjectsByType<IceInsectLife>(FindObjectsSortMode.None)) if (b.hive == h) { hv = h; break; } if (hv != null) break; }   // todas tienen araña cerca: la primera
         TestProbe.Check("hay una colmena con abejas", hv != null);
         if (hv != null)
@@ -114,7 +136,7 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
             var roles = new System.Collections.Generic.HashSet<IceInsectLife.Role>();
             bool queen = false;
             foreach (IceInsectLife b in FindObjectsByType<IceInsectLife>(FindObjectsSortMode.None)) if (b.hive == hv) { roles.Add(b.role); queen |= b.isQueen; }
-            TestProbe.Check("la colonia tiene reina", queen);
+            TestProbe.Check("la colonia tiene reina", queen, $"{Hive.All.Count(h => liveQueen(h))}/{Hive.All.Count} colmenas con reina viva y apareada; colmena «{hv.name}»");
             float old = hv.secondsPerDay; hv.secondsPerDay = 1f;
             float t2 = Time.time;
             while (hv.Count(Hive.Cell.Egg) + hv.Count(Hive.Cell.Larva) == 0 && Time.time - t2 < 40f) yield return null;
@@ -122,13 +144,18 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
                               $"huevos {hv.Count(Hive.Cell.Egg)} larvas {hv.Count(Hive.Cell.Larva)} miel {hv.Count(Hive.Cell.Honey)} polen {hv.Count(Hive.Cell.Pollen)} vacías {hv.Count(Hive.Cell.Empty)} · {QueenInfo(hv)}");
             hv.secondsPerDay = old;
         }
+        }
+        else Debug.Log("[TEST] SKIP · colmena: reina, huevos y oficios — sin insectos en el santuario 1 por ahora (PopulationPlan.InsectsInSanctuary1, Berón 2026-11-09)");
 
         // Restaurante gourmet, estudio textil y telarañas.
         GameObject dining = GameObject.Find("Comedor_Gourmet");
         int tables = 0; if (dining != null) foreach (Transform tt in dining.GetComponentsInChildren<Transform>()) if (tt.name.StartsWith("Mesa_")) tables++;
         TestProbe.Greater("el restaurante tiene comedor con mesas vestidas", tables, 7f, $"{tables} mesas");
         int upTables = 0; if (dining != null) foreach (Transform tt in dining.GetComponentsInChildren<Transform>()) if (tt.name.StartsWith("Mesa_") && tt.position.y > dining.transform.position.y + 1.5f) upTables++;
-        TestProbe.Check("el comedor va en un anillo de 10 m sobre la cocina, con caja y su escalera (plataforma hija)", upTables >= 12 && GameObject.Find("Escalera_comedor_norte") != null && GameObject.Find("Caja_registradora") != null, $"{upTables} mesas arriba");
+        // (En un edificio-árbol, al anillo no se sube en alfombra: tiene su puerta en el tronco y se llega nadando.)
+        bool diningCarpets = dining != null && (System.Array.Exists(dining.GetComponentsInChildren<CarpetPad>(), cp => cp.surface.Contains("#anillo"))
+            || ArbolCampos.All.Exists(t => t != null && t.levels.Exists(l => l.kind == TreeLevel.Kind.Ring && l.deck != null && l.field != null && l.deck.IsChildOf(dining.transform))));
+        TestProbe.Check("el comedor va en un anillo de 10 m sobre la cocina, con caja y sus alfombras (sin escalera)", upTables >= 12 && diningCarpets && GameObject.Find("Escalera_comedor_norte") == null && GameObject.Find("Caja_registradora") != null, $"{upTables} mesas arriba, alfombras del anillo {diningCarpets}");
         int pierced = 0; GameObject flora = GameObject.Find("FloraHielo_AUTO");
         var piercedWho = new System.Collections.Generic.List<string>();
         if (flora != null)
@@ -165,14 +192,14 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
             TestProbe.Check("la Magnate cuenta la entreplanta de las camas como parte del hospital (y fuera, no)",
                 ha.Contains(bed.transform.position + Vector3.up * 1.1f) && !ha.Contains(outside), $"cama en {bed.transform.position}");
         }
-        // El EDIFICIO entero cuenta (Berón 2026-10-23): quien trabaja en el gimnasio puede subir al dojo de encima; el suelo
+        // El EDIFICIO entero cuenta (Berón 2026-10-23): quien trabaja en el gimnasio puede subir a la calistenia (2 pisos más arriba); el suelo
         // de debajo del hospital, no.
         SanctuaryArea gymA = GameObject.Find("Gym_Area")?.GetComponent<SanctuaryArea>();
-        SanctuaryArea dojoA = GameObject.Find("MartialArts_Area")?.GetComponent<SanctuaryArea>();
+        SanctuaryArea dojoA = GameObject.Find("Calisthenics_Area")?.GetComponent<SanctuaryArea>();
         if (gymA != null && dojoA != null && ha != null)
-            TestProbe.Check("el puesto es el edificio entero (gimnasio → dojo de arriba sí; bajo el hospital, no)",
+            TestProbe.Check("el puesto es el edificio entero (gimnasio → calistenia de arriba sí; bajo el hospital, no)",
                 gymA.InBuilding(dojoA.transform.position + Vector3.up * 1.1f) && !ha.InBuilding(new Vector3(hosp.transform.position.x, 1f, hosp.transform.position.z)),
-                $"dojo en {dojoA.transform.position}");
+                $"calistenia en {dojoA.transform.position}");
         // El espacio de la tarea: quien repara en la Cocina con una misión de Construcción sigue en su puesto; con el
         // inventario del almacén (solo Construcción), en la Cocina no.
         GameObject kitchenGo = GameObject.Find("Kitchen_Area");
@@ -189,25 +216,38 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         {
             GameObject who = GameObject.FindGameObjectWithTag("Player");
             object key = new object();
-            MagnateWarden.Lock(key, true); bool locked = MagnateWarden.Blocked(who);
-            MagnateWarden.Lock(key, false); bool free = !MagnateWarden.Blocked(who);
-            TestProbe.Check("el alcance de la Magnate se puede bloquear (y se libera al quitar el bloqueo)", locked && free);
+            // (2026-11-01) «Libre» es volver a como estaba ANTES del bloqueo: si en ese momento Kushal va en alfombra, está en una
+            // orquesta o en el microcosmos, o lo bloquea otra prueba, ya estaba fuera del alcance y la prueba fallaba al azar.
+            bool before = MagnateWarden.Blocked(who), lockedBefore = MagnateWarden.Locked;
+            MagnateWarden.Lock(key, true); bool locked = MagnateWarden.Blocked(who) && MagnateWarden.Locked;
+            MagnateWarden.Lock(key, false); bool free = MagnateWarden.Blocked(who) == before && MagnateWarden.Locked == lockedBefore;
+            TestProbe.Check("el alcance de la Magnate se puede bloquear (y se libera al quitar el bloqueo)", locked && free,
+                $"antes {(before ? "ya fuera de su alcance" : "a su alcance")}, con el bloqueo {locked}, al quitarlo como antes {free}");
         }
         TestProbe.Check("el estudio textil tiene telar, rueca y tintes", GameObject.Find("Telar_de_pie") != null && GameObject.Find("Rueca") != null && GameObject.Find("Tina_Añil") != null);
+        if (PopulationPlan.InsectsInSanctuary1)
+        {
         TestProbe.Greater("las arañas de las nieves tejen su tela junto a los panales", SpiderWeb.All.Count, 0f, $"{SpiderWeb.All.Count} telas");
         TestProbe.Check("la colmena está en una cavidad con piquera (entrada)", FindByPrefix("Piquera"));
+        }
+        else Debug.Log("[TEST] SKIP · telarañas y piquera de la colmena — sin insectos en el santuario 1 por ahora (PopulationPlan.InsectsInSanctuary1, Berón 2026-11-09)");
 
         // Servicios para turistas y personal: aseos, médica, guardia.
         int wcs = 0; foreach (Transform tt in FindObjectsByType<Transform>(FindObjectsSortMode.None)) if (tt.name.StartsWith("Aseos")) wcs++;
         TestProbe.Greater("hay aseos en las áreas humanas", wcs, 4f, $"{wcs}");
-        TestProbe.Check("Lizmibet (médica, amiga de Irosene) está en el santuario", FindByPrefix("Lizmibet"));
+        // Su casa puede ser otro santuario (el reparto la pone en el 2): existe, aquí o apagada mientras pasa el día allí.
+        GameObject liz = null; foreach (Transform tt in FindObjectsByType<Transform>(FindObjectsInactive.Include, FindObjectsSortMode.None)) if (tt.name.StartsWith("Lizmibet") && tt.GetComponent<Anima>() != null) { liz = tt.gameObject; break; }
+        TestProbe.Check("Lizmibet (médica, amiga de Irosene) está en el santuario", liz != null && (liz.activeInHierarchy || RemoteStaff.Hidden(liz)), liz == null ? "no existe" : liz.activeInHierarchy ? "aquí" : RemoteStaff.Hidden(liz) ? "en otro santuario" : "apagada sin estar fuera");
         Clock clock = FindAnyObjectByType<Clock>();
         float dayMin = TimeController.timeController.RealMinutesPerDay;
         TestProbe.Check("un día de juego dura lo configurado en el reloj (1 h por defecto)", clock != null && Mathf.Abs(dayMin - clock.realMinutesPerDay) < 0.5f, $"{dayMin:0.#} min");
         TestProbe.Check("hay área de Construcción con maquinaria y material", FindByPrefix("Construction_Area") && FindByPrefix("Miniexcavadora") && FindByPrefix("Hormigonera"));
-        TestProbe.Check("el jefe de construcción, Sadhguru y Andrea están en el santuario", FindByPrefix("JefeConstruccion") && FindByPrefix("Sadhguru") && FindByPrefix("Andrea"));
+        TestProbe.Check("el jefe de construcción (Tote) y Andrea están en el santuario", FindByPrefix("JefeConstruccion") && FindByPrefix("Andrea"));
+        // (2026-11-04) Los famosos se fueron a sus microcosmos: ninguno sigue en el santuario.
+        string famous = string.Join(" ", new[] { "Sadhguru", "ElonMusk", "Goku", "BillGates", "WarrenBuffett", "MacKenzieScott", "IbrahimTraore" }.Where(n => WorkdayDirector.Body(n) != null && WorkdayDirector.Body(n).scene == UnityEngine.SceneManagement.SceneManager.GetActiveScene()));
+        TestProbe.Check("ningún famoso (Sadhguru ni los seis del mesocosmos) sigue en el santuario", famous.Length == 0, famous);
         CarnivoreKeeper keeper = FindAnyObjectByType<CarnivoreKeeper>();
-        TestProbe.Check("un guardia patrulla y alimenta a los carnívoros", keeper != null, keeper != null ? keeper.name : "ninguno");
+        TestProbe.Check("un guardia patrulla los puestos", keeper != null, keeper != null ? keeper.name : "ninguno");
 
         // Cocina profesional: recetario coherente, equipo instalado, cultivos plantados y obrador que encadena elaboraciones.
         var missingEq = new System.Collections.Generic.List<string>();
@@ -251,7 +291,7 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         TestProbe.Check("el orden de áreas rota cada día (la última pasa a ser la primera)", d1.areaOrder[0] == "C" && d1.areaOrder[1] == "A", string.Join(",", d1.areaOrder));
         string firstD0 = d0.Of(w1).First().mission.area, firstD1 = d1.Of(w1).First().mission.area;
         TestProbe.Check("la primera persona empieza cada día por un área distinta", firstD0 != firstD1, $"{firstD0} → {firstD1}");
-        TestProbe.Check("nadie pasa de sus 5 h de trabajo", d0.work.GroupBy(a => a.worker).All(g => g.Sum(a => a.mission.hours) <= WorkRoster.WorkHours + 1e-3f));
+        TestProbe.Check("reparto puro (sin santuarios): nadie pasa de sus 5 h de trabajo", d0.work.GroupBy(a => a.worker).All(g => g.Sum(a => a.mission.hours) <= WorkRoster.WorkHours + 1e-3f));
         var cMission = d1.Of(w1).FirstOrDefault(a => a.mission.area == "C");
         TestProbe.Check("se da primero la misión que esa persona nunca ha hecho", cMission == null || w1.Count(cMission.mission.id) == 1, cMission != null ? cMission.mission.id : "—");
         var solo = new WorkRoster(); solo.areas.Add("X"); solo.Add("Solo");
@@ -259,7 +299,7 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         for (int i = 0; i < 6; i++) heavy.Add(new WorkRoster.Mission("X", "m" + i, "m" + i, 2f, true));
         heavy.Add(new WorkRoster.Mission("X", "extra", "extra", 2f));
         var hp = solo.Plan(0, heavy);
-        TestProbe.Check("si faltan personas, la Magnate se divide y cubre todas las obligatorias", hp.clones.Count > 0 && hp.backlog.All(m => !m.mandatory), $"{hp.clones.Count} clones, {hp.backlog.Count} pendientes");
+        TestProbe.Check("reparto puro (sin santuarios): si faltan personas, la Magnate se divide y cubre todas las obligatorias", hp.clones.Count > 0 && hp.backlog.All(m => !m.mandatory), $"{hp.clones.Count} clones, {hp.backlog.Count} pendientes");
         TestProbe.Check("las que no se cubren pasan a mañana y son las primeras", hp.backlog.Count == 1 && solo.Plan(1, new System.Collections.Generic.List<WorkRoster.Mission>()).work.Any(a => a.mission.id == "extra"));
         TestProbe.Check("el informe dice si faltan personas", WorkRoster.Balance(hp, 1).Any(s => s.StartsWith("Faltan personas")));
 
@@ -268,29 +308,100 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         TestProbe.Check("hay director de la jornada", wd != null);
         if (wd != null)
         {
+            // (Las obras cargan su partida guardada al empezar Play, antes de que corran las pruebas: terminadas allí, aquí no habría ninguna.)
+            foreach (ConstructionProject cp0 in ConstructionProject.All) cp0.Restore(0, false);
             var plan = wd.PlanDay(100);
             TestProbe.Greater("la jornada reparte misiones al personal", plan.work.Count, 5f, $"{plan.work.Count} misiones, {wd.roster.workers.Count} personas, {plan.clones.Count} clones");
-            TestProbe.Check("todas las obligatorias quedan cubiertas", plan.backlog.All(m => !m.mandatory));
+            TestProbe.Check("todas las tareas quedan cubiertas, obligatorias o no: nada pasa a mañana", plan.backlog.Count == 0 && plan.impossible.Count == 0 && wd.roster.pending.Count == 0, string.Join(", ", plan.backlog.Concat(plan.impossible).Take(6).Select(m => m.id)));
+            // (Berón 2026-11-08) EL REPARTO POR SANTUARIOS: partes iguales; la Magnate, para las áreas sin nadie y para lo que no cabe en los humanos
+            TestProbe.Check("la jornada usa el reparto por santuarios: cada clon con su área", wd.roster.sanctuaryModel && plan.clones.Count == plan.cloneAreas.Count, string.Join(", ", plan.cloneAreas));
+            TestProbe.Check("nadie pasa de sus 5 h de trabajo", plan.work.Where(a => !a.worker.clone).GroupBy(a => a.worker).All(g => g.Sum(a => a.mission.hours) <= WorkRoster.WorkHours + 1e-3f));
             TestProbe.Check("cada persona tiene entrenamiento (yoga o gimnasio)", wd.roster.workers.All(w => plan.training.ContainsKey(w)), string.Join(", ", wd.OpenTraining()));
             TestProbe.Check("hay misiones de obra para las áreas en construcción", plan.work.Any(a => a.mission.id.StartsWith("obra_trabajo_")));
+            // CADA OBRA TIENE SU EQUIPO (Berón 2026-10-28): la jornada pone a trabajar a tantas personas distintas como pide.
+            foreach (ConstructionProject p in ConstructionProject.All.Where(p => !p.Finished))
+            {
+                int crew = plan.work.Where(a => a.mission.id.StartsWith("obra_trabajo_" + p.title)).Select(a => a.worker.name).Distinct().Count();
+                TestProbe.Check($"la obra «{p.title}» tiene su equipo cada día ({p.crewNeeded} personas)", crew >= p.crewNeeded, $"{crew}/{p.crewNeeded}");
+            }
             ConstructionProject site = ConstructionProject.All.FirstOrDefault(p => !p.Finished);
             if (site != null)
             {
+                Restock(MaterialStore.Instance);
                 int before = site.daysDone;
                 WorkdayDirector.Apply(new WorkRoster.Mission("Construcción", "obra_material_" + site.title, "", 1f), "test");
+                for (int k = 0; k < site.crewNeeded - 1; k++) WorkdayDirector.Apply(new WorkRoster.Mission("Construcción", $"obra_trabajo_{site.title}#{k + 2}", "", 2f), $"test{k}");
+                bool notYet = site.crewNeeded == 1 || site.daysDone == before;   // falta una persona: aún no cuenta el día
                 WorkdayDirector.Apply(new WorkRoster.Mission("Construcción", "obra_trabajo_" + site.title, "", 2f), "test");
-                TestProbe.Check("llevar el material y trabajar la obra la avanza un día", site.daysDone == before + 1, $"{site.title}: {site.daysDone}/{site.daysRequired}");
+                TestProbe.Check("llevar el material y trabajar la obra con todo el equipo la avanza un día (con uno menos, no)", notYet && site.daysDone == before + 1, $"{site.title}: {site.daysDone}/{site.daysRequired}, equipo de {site.crewNeeded}");
             }
             TestProbe.Check("la máquina ofrece misiones de virtualización del área", AreaWork.OfArea("Cocina", ConstructionProject.All, 0).Count > 0);
         }
         TestProbe.Check("la salida de la enfermería está vigilada (iniciación bloqueante)", FindAnyObjectByType<InfirmaryGate>() != null);
-        TestProbe.Check("ballet, dojo y calistenia están en obras; el gimnasio abierto", ConstructionProject.All.Count >= 3 && FindByPrefix("Gym_Area"));
+        TestProbe.Check("ballet y dojo están en obras; el gimnasio y la calistenia, abiertos", ConstructionProject.All.Count >= 2 && FindByPrefix("Gym_Area") && FindByPrefix("Calistenia"));
+        // LÍMITE DE LA ESTRUCTURA: ningún edificio pasa de los pisos que aguantan sus columnas (StructuralLimits).
+        // Pisos DE VERDAD: en un edificio-árbol el número de la alfombra cuenta plataformas (cada nivel, 2 pisos y 2 puntas de rama) y las puntas no son pisos. Aquí, sus pisos más el techo.
+        var towers = new System.Collections.Generic.Dictionary<string, int>();
+        foreach (ArbolCampos ac in ArbolCampos.All) if (ac != null) towers[ac.building] = ac.levels.Count(l => l.kind == TreeLevel.Kind.Floor && !l.tip) + 1;
+        int FloorsOfPad(CarpetPad c) => towers.TryGetValue(c.building, out int n) ? n : c.floor;
+        int maxFloor = CarpetPad.All.Count > 0 ? CarpetPad.All.Max(FloorsOfPad) : 0;
+        TestProbe.Check($"ningún edificio pasa de {StructuralLimits.MaxFloors} pisos (lo que aguantan las columnas)", maxFloor > 0 && maxFloor <= StructuralLimits.MaxFloors, $"el más alto: {maxFloor} pisos ({CarpetPad.All.First(c => FloorsOfPad(c) == maxFloor).building})");
+        // TORRES TEMÁTICAS (Berón 2026-10-29; docs/plano-edificios.md): pocos edificios con muchos pisos: Servicios, Entrenamiento,
+        // Ciencias y Producción (y el Árbol de los Campos); los reactores, en el sitio nuclear. Desde el 2026-10-31 las torres son
+        // ÁRBOLES (docs/edificio-arbol.md §Migración): alfombras de edificio SOLO en el suelo (0) y en el techo; entre pisos se nada.
+        // Las que aún no se han migrado siguen apiladas (pisos con alfombras = los de la torre + el techo).
+        var stackedFloors = new System.Collections.Generic.Dictionary<string, int> { { "Servicios", 7 }, { "Entrenamiento", 7 }, { "Ciencias", 8 }, { "Producción", 4 } };
+        var trees = ArbolCampos.All.Where(t => t != null).ToList();
+        var treeNames = trees.Select(t => t.building).ToList();
+        var edif = CarpetPad.All.Where(c => c.kind == CarpetPad.Kind.Edificio && !c.building.Contains("(esterillas")).GroupBy(c => c.building).ToDictionary(g => g.Key, g => g.Select(c => c.floor).Distinct().OrderBy(f => f).ToList());
+        var tall = edif.Where(kv => kv.Value.Max() >= 3).ToDictionary(kv => kv.Key, kv => kv.Value.Max());
+        var expectTall = stackedFloors.Keys.Union(treeNames).Union(new[] { TreeSpec.Building }).ToList();
+        TestProbe.Check("4 torres temáticas (Servicios, Entrenamiento, Ciencias, Producción) y el Árbol de los Campos con sus pisos, y ningún otro edificio de varios pisos",
+            tall.Count == expectTall.Count && expectTall.All(n => tall.ContainsKey(n)) && stackedFloors.Where(kv => !treeNames.Contains(kv.Key)).All(kv => tall[kv.Key] == kv.Value),
+            string.Join(", ", tall.Select(kv => $"{kv.Key} {kv.Value}")));
+        foreach (ArbolCampos t in trees)
+        {
+            var fl = edif.TryGetValue(t.building, out var l) ? l : new System.Collections.Generic.List<int>();
+            int top = t.Top != null ? t.Top.index : -1;
+            TestProbe.Check($"«{t.building}» (árbol): alfombras de edificio solo en el suelo y en el techo", fl.Count == 2 && fl[0] == 0 && fl[1] == top, string.Join(", ", fl));
+        }
+        TestProbe.Check("la Central Nuclear está bajo el mar, en el Santuario Marino (docs/sitio-nuclear.md §25): sin alfombras de edificio y sin árbol del sitio en el santuario 1", !CarpetPad.All.Any(c => c.kind == CarpetPad.Kind.Edificio && (c.building == "Central Nuclear" || c.building == NuclearSiteRule.Building)) && !treeNames.Contains(NuclearSiteRule.Building));
+        // Cada torre: sus áreas, de abajo arriba. Apiladas (mismo x, z, cada una más alta) o, en un árbol, en sus pisos en orden
+        // (cada una en un piso de número mayor y nunca más abajo).
+        bool Stacked(params string[] names)
+        {
+            var gs = names.Select(n => GameObject.Find(n)).ToArray();
+            if (gs.Any(g => g == null)) return false;
+            for (int k = 1; k < gs.Length; k++)
+            {
+                Vector3 a = gs[k - 1].transform.position, b = gs[k].transform.position;
+                TreeFloor fa = gs[k - 1].GetComponent<TreeFloor>(), fb = gs[k].GetComponent<TreeFloor>();
+                if (fa != null && fb != null) { if (fb.index <= fa.index || b.y < a.y - 0.1f) return false; continue; }
+                if (Mathf.Abs(a.x - b.x) > 0.5f || Mathf.Abs(a.z - b.z) > 0.5f || b.y < a.y + 10f) return false;
+            }
+            return true;
+        }
+        TestProbe.Check("las áreas de cada torre van de abajo arriba (apiladas, o en orden en los pisos de su árbol)",
+            Stacked("Kitchen_Area", "Infirmary_Area", "CubCare_Area", "CulturedMeatLab_Area") && Stacked("Gym_Area", "Calisthenics_Area", "YogaRoom_Area", "Ballet_Area", "MartialArts_Area")
+            && (GameObject.Find("NuclearPower_Area") == null || Stacked("NuclearPower_Area", "AtomicPlant_Area")) &&   // (ronda 31: la central está bajo el mar, en el Santuario Marino; lo comprueba la línea de arriba)
+            Stacked("Chemistry_Area", "Biology_Area") && Stacked("Construction_Area", "VehicleWorkshop_Area", "TextileStudio_Area"));
+        // La Cría va ENCIMA de la planta más alta del hospital (la veterinaria): apilada, 11 m sobre ella; en el árbol, su piso siguiente.
+        GameObject vetFloor = GameObject.Find("Planta_veterinaria"), criaGo = GameObject.Find("CubCare_Area");
+        if (vetFloor != null && criaGo != null)
+        {
+            TreeFloor tv = vetFloor.GetComponent<TreeFloor>(), tc = criaGo.GetComponent<TreeFloor>();
+            if (tv != null && tc != null)
+                TestProbe.Check("la Cría va en el piso del árbol que sigue a la planta veterinaria (la más alta del hospital)", tc.index > tv.index && criaGo.transform.position.y >= vetFloor.transform.position.y + 10f, $"piso {tv.index} → {tc.index}, {criaGo.transform.position.y - vetFloor.transform.position.y:0.0} m más arriba");
+            else
+                TestProbe.Check("la Cría va 11 m sobre la planta veterinaria (la más alta del hospital)", Mathf.Abs(criaGo.transform.position.y - vetFloor.transform.position.y - 11f) < 0.5f, $"{criaGo.transform.position.y - vetFloor.transform.position.y:0.0} m");
+        }
 
         // OBRA SOSTENIBLE: el material sale del bambusal, el barro con paja, el micelio y el cáñamo.
         MaterialStore ms = MaterialStore.Instance;
         TestProbe.Check("hay almacén de material de construcción", ms != null);
         if (ms != null)
         {
+            Restock(ms);
             int g0 = ms.Have(MaterialStore.Guadua), grove0 = ms.groveMature;
             bool kit = ms.TakeDayKit("test", "prueba");
             TestProbe.Check("un día de obra gasta guadua, bahareque, micelio y cuerda", kit && ms.Have(MaterialStore.Guadua) == g0 - 4, ms.Summary());
@@ -340,16 +451,20 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         // ALFOMBRAS (docs/alfombras-plan.md): sin puentes; cada piso con su área, y en cada techo las de edificio y santuario.
         TestProbe.Check("ya no hay puentes entre plataformas", !FindObjectsByType<Transform>(FindObjectsSortMode.None).Any(t => (t.name.StartsWith("Puente_") && t.name != "Puente_piscina") || (t.name == "Pasarela" && t.parent != null && t.parent.name != "Puente_piscina")));   // (el puente de la piscina del reactor es equipo)
         var pads = CarpetPad.All;
-        int hospFloors = pads.Where(p => p.building == AreaWork.Hospital && p.kind == CarpetPad.Kind.Edificio).Select(p => p.floor).Distinct().Count();
-        TestProbe.Greater("el hospital tiene alfombras en cada piso, en el hielo y en el techo (5)", hospFloors, 4f, $"{hospFloors} pisos con alfombras");
+        // El hospital está en la torre de SERVICIOS (docs/plano-edificios.md): su red de alfombras es la de la torre.
+        int hospFloors = pads.Where(p => p.building == "Servicios" && p.kind == CarpetPad.Kind.Edificio).Select(p => p.floor).Distinct().Count();
+        bool servTree = ArbolCampos.All.Exists(t => t != null && t.building == "Servicios");
+        if (servTree) TestProbe.Check("la torre-árbol de Servicios (con el hospital) tiene alfombras en el hielo y en el techo (entre pisos se nada)", hospFloors == 2, $"{hospFloors} pisos con alfombras");
+        else TestProbe.Greater("la torre de Servicios (con el hospital) tiene alfombras en cada piso, en el hielo y en el techo (8)", hospFloors, 7f, $"{hospFloors} pisos con alfombras");
         int roofs = pads.Count(p => p.kind == CarpetPad.Kind.Santuario);
-        TestProbe.Greater("cada edificio tiene en su techo las alfombras del santuario", roofs, 15f, $"{roofs} techos");
-        TestProbe.Check("en el techo, las de edificio y las del santuario están en el mismo piso", pads.Where(p => p.kind == CarpetPad.Kind.Santuario && p.building != "Residencia").All(s => pads.Any(e => e.kind == CarpetPad.Kind.Edificio && e.surface == s.surface)));
+        TestProbe.Greater("cada edificio tiene en su techo las alfombras del santuario (4 torres, la central, el Árbol de los Campos, la residencia)", roofs, 6f, $"{roofs} techos");
+        TestProbe.Check("en el techo, las de edificio y las del santuario están en el mismo piso", pads.Where(p => p.kind == CarpetPad.Kind.Santuario && p.building != "Residencia" && p.building != AereoRule.Building && (p.surface == null || !p.surface.EndsWith("#linea"))).All(s => pads.Any(e => e.kind == CarpetPad.Kind.Edificio && e.surface == s.surface)));
         TestProbe.Check("cada casa del árbol tiene su alfombra (y la residencia, la de cada habitación)", pads.Count(p => p.kind == CarpetPad.Kind.Habitacion) >= 12 && pads.Any(p => p.kind == CarpetPad.Kind.Residencia));
-        CarpetPad anyB = pads.FirstOrDefault(p => p.kind == CarpetPad.Kind.Edificio && p.floor == 1);
+        CarpetPad anyB = pads.FirstOrDefault(p => p.kind == CarpetPad.Kind.Edificio && p.Destinations().Count > 0);   // (en un árbol no hay piso 1 con alfombras: van en el hielo y en el techo)
         TestProbe.Check("el selector de una alfombra de edificio solo ofrece sus pisos", anyB != null && anyB.Destinations().Count > 0 && anyB.Destinations().All(d => d.building == anyB.building));
         // De un piso del hospital a la cama de Kushal: piso → techo → residencia → su habitación, sin escaleras.
-        CarpetPad start = pads.FirstOrDefault(p => p.building == AreaWork.Hospital && p.kind == CarpetPad.Kind.Edificio && p.floor == 2);
+        CarpetPad start = servTree ? pads.Where(p => p.building == "Servicios" && p.kind == CarpetPad.Kind.Edificio).OrderByDescending(p => p.floor).FirstOrDefault()   // árbol: desde su techo (a él se llega nadando)
+            : pads.FirstOrDefault(p => p.building == "Servicios" && p.kind == CarpetPad.Kind.Edificio && p.floor == 2);   // la planta baja del hospital (piso 2 de Servicios)
         Bedroom home = player != null ? Bedroom.Of(player.GetComponent<Anima>()) : null;
         if (start != null && home != null && home.bed != null)
         {
@@ -367,18 +482,79 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
             }
             foreach (FlyingCarpet fc in FlyingCarpet.All) fc.speed = 18f;
             Vector3 left = home.bed.position - traveler.transform.position;
-            TestProbe.Check("un trabajador va de un piso del hospital a su casa del árbol en alfombras (3 vuelos)", left.magnitude < 4f && FlyingCarpet.Trips - flights >= 3, $"{FlyingCarpet.Trips - flights} vuelos, a {left.magnitude:0.0} m de la cama");
+            TestProbe.Check(servTree ? "un trabajador va del techo de Servicios a su casa del árbol en alfombra y nadando (1 vuelo)" : "un trabajador va de un piso del hospital a su casa del árbol en alfombras (3 vuelos)", left.magnitude < 4f && FlyingCarpet.Trips - flights >= (servTree ? 1 : 3), $"{FlyingCarpet.Trips - flights} vuelos, a {left.magnitude:0.0} m de la cama");
             Destroy(traveler);
         }
-        var census = new System.Collections.Generic.Dictionary<string, int>();
-        foreach (Animal a in FindObjectsByType<Animal>(FindObjectsSortMode.None)) if (a != null && !a.death && Mathf.Abs(a.transform.position.x) < 250f && Mathf.Abs(a.transform.position.z) < 250f) census[a.SpeciesName] = (census.TryGetValue(a.SpeciesName, out int cn) ? cn : 0) + 1;
-        int bears = census.TryGetValue("Bear", out int bc) ? bc : 0, penguins = census.TryGetValue("Penguin", out int pc) ? pc : 0;
-        TestProbe.Check("la fauna va en proporción a los humanos (más pingüinos que osos)", penguins > bears && bears <= PopulationPlan.Cap("Bear"), string.Join(", ", census.Select(kv => $"{kv.Key} {kv.Value}")));
+        // (Berón 2026-11-09) LA FAUNA SALVAJE: las especies del plan (PopulationPlan.Groups), sin las crías que crían los humanos en la Cría (CriaCareTarget), sin
+        // los que viven en los icebergs (fuera del total, IcebergVisitor) y sin los que no son fauna del plan (los malamutes, perros del santuario; los insectos).
+        var census = new System.Collections.Generic.Dictionary<string, int>(); var wild = new System.Collections.Generic.Dictionary<string, int>();
+        foreach (Animal a in FindObjectsByType<Animal>(FindObjectsSortMode.None))
+        {
+            if (a == null || a.death || Mathf.Abs(a.transform.position.x) >= 250f || Mathf.Abs(a.transform.position.z) >= 250f) continue;
+            census[a.SpeciesName] = (census.TryGetValue(a.SpeciesName, out int cn) ? cn : 0) + 1;
+            if (PopulationPlan.Groups.ContainsKey(a.SpeciesName) && a.GetComponent<CriaCareTarget>() == null && a.GetComponent<IcebergVisitor>() == null) wild[a.SpeciesName] = (wild.TryGetValue(a.SpeciesName, out int wn) ? wn : 0) + 1;
+        }
+        int bears = wild.TryGetValue("Bear", out int bc) ? bc : 0, penguins = wild.TryGetValue("Penguin", out int pc) ? pc : 0;
+        int Level(PopulationPlan.Trophic t) => wild.Where(kv => PopulationPlan.LevelOf(kv.Key) == t).Sum(kv => kv.Value);
+        string seen = $"salvaje: {string.Join(", ", wild.Select(kv => $"{kv.Key} {kv.Value}/{PopulationPlan.Cap(kv.Key)}"))} · todos: {string.Join(", ", census.Select(kv => $"{kv.Key} {kv.Value}"))}";
+        TestProbe.Check("la fauna va en proporción a los humanos (más pingüinos que osos, y osos dentro de lo que les toca)", penguins > bears && bears <= PopulationPlan.Cap("Bear"), seen);
+        TestProbe.Check($"la fauna salvaje no pasa de K × humanos ({PopulationPlan.TotalCap})", wild.Values.Sum() <= PopulationPlan.TotalCap, seen);
+        TestProbe.Check("la pirámide: muchas más presas que depredadores ápice", Level(PopulationPlan.Trophic.Prey) > 3 * Level(PopulationPlan.Trophic.Apex), $"presas {Level(PopulationPlan.Trophic.Prey)} · ápice {Level(PopulationPlan.Trophic.Apex)}");
         int machines = 0; foreach (Transform t in FindObjectsByType<Transform>(FindObjectsSortMode.None)) if (t.name.StartsWith("Maquina_")) machines++;
         TestProbe.Greater("el gimnasio tiene 10 tipos de máquina × 3", machines, 29f, $"{machines} máquinas");
-        GameObject gym = GameObject.Find("Gym_Area");
-        int tight = gym != null ? FurnitureSpacing.Violations(gym.transform).Count : -1;
-        TestProbe.Check("las máquinas del gimnasio tienen su pasillo (no se apilan)", tight == 0, $"{tight} pares demasiado juntos");
+        // 2 m LIBRES entre muebles en TODAS las plataformas (Berón 2026-10-28; FurnitureSpacing): cada área, y la planta de la
+        // cocina del restaurante (que cuelga de Restaurante_AUTO, no del área). Lo que va unido (baterías, líneas, parejas) no cuenta.
+        var spaced = new System.Collections.Generic.List<(string name, Transform t)>();
+        foreach (SanctuaryArea sa in FindObjectsByType<SanctuaryArea>(FindObjectsSortMode.None)) spaced.Add((sa.displayName, sa.transform));
+        Transform kitchenFloor = GameObject.Find("Restaurante_AUTO")?.transform.Find("Sala");
+        if (kitchenFloor != null) spaced.Add(("Cocina (planta)", kitchenFloor));
+        spaced.Sort((x, y) => string.CompareOrdinal(x.name, y.name));
+        foreach (var (spName, spRoot) in spaced)
+        {
+            var bad = FurnitureSpacing.Violations(spRoot);
+            TestProbe.Check($"{spName}: 2 m libres entre muebles (y ninguno sobre un área de alfombras)", bad.Count == 0, $"{bad.Count} pares: {FurnitureSpacing.Worst(bad)}");
+        }
+        // SIN ESCALERAS (Berón 2026-10-28): a cada ANILLO se sube en alfombra, desde los pisos de su edificio, y de él se vuela a ellos.
+        int rings = 0, ringsOk = 0, stairs = 0; var noPad = new System.Collections.Generic.List<string>();
+        foreach (Transform t in FindObjectsByType<Transform>(FindObjectsSortMode.None))
+        {
+            if (t.name.StartsWith("Escalera") && !t.name.StartsWith("Escalera_horizontal") && t.Find("Peldano") != null && t.GetComponentInParent<SanctuaryArea>() != null) stairs++;
+            if (!t.name.StartsWith("Anillo_") || t.Find("Losa_anillo") == null) continue;
+            rings++;
+            if (t.Find("Balcon_tronco") != null)   // anillo de un piso de un edificio-árbol: su puerta en el tronco (se llega nadando)
+            {
+                if (ArbolCampos.All.Exists(tr => tr != null && tr.levels.Exists(l => l.deck == t && l.field != null))) ringsOk++; else if (noPad.Count < 4) noPad.Add(t.name + " (sin puerta)");
+                continue;
+            }
+            CarpetPad pad = t.GetComponentInChildren<CarpetPad>();
+            bool there = pad != null && pad.Destinations().Count > 0 && CarpetPad.All.Exists(o => o != pad && o.FliesTo(pad) && o.surface.Contains("#") && !o.surface.Contains("#anillo"));
+            if (there) ringsOk++; else if (noPad.Count < 4) noPad.Add(t.name);
+        }
+        TestProbe.Check("cada anillo tiene su área de alfombras unida a los pisos de su edificio", rings > 0 && ringsOk == rings, $"{ringsOk}/{rings} anillos; sin alfombras: {string.Join(", ", noPad)}");
+        TestProbe.Check("ninguna área tiene escaleras (se sube en alfombra)", stairs == 0, $"{stairs} escaleras");
+        // POSICIONES RESERVADAS del microcosmos (regla 8, PlatformSlots; Berón 2026-10-28): cada área deja sitio en su piso para la
+        // historia, los personajes, la fauna y la flora de su microcosmos, y ninguna plaza cae junto a un mueble (a < 1 m). Si se
+        // cambia una plataforma (más muebles, menos suelo) y ya no caben, esto falla: ampliar el piso o recolocar.
+        foreach (SanctuaryArea sa in FindObjectsByType<SanctuaryArea>(FindObjectsSortMode.None).OrderBy(a => a.displayName, System.StringComparer.Ordinal))
+        {
+            PlatformSlots ps = sa.GetComponent<PlatformSlots>();
+            bool room = ps != null && ps.story.Count >= PlatformSlots.MinStory && ps.characters.Count >= PlatformSlots.MinCharacters
+                     && ps.fauna.Count >= PlatformSlots.MinFauna && ps.flora.Count >= PlatformSlots.MinFlora;
+            TestProbe.Check($"{sa.displayName}: posiciones reservadas para su microcosmos (≥ {PlatformSlots.MinStory} historia, {PlatformSlots.MinCharacters} personajes, {PlatformSlots.MinFauna} fauna, {PlatformSlots.MinFlora} flora)",
+                            room, ps != null ? ps.Summary() : "sin PlatformSlots (reconstruye la escena principal)");
+            if (ps == null) continue;
+            int close = 0; string who = "";
+            var items = FurnitureSpacing.Items(sa.transform);   // los mismos muebles que miden los 2 m de paso
+            foreach (PlatformSlots.Kind k in System.Enum.GetValues(typeof(PlatformSlots.Kind)))
+                for (int i = 0; i < ps.Count(k); i++)
+                {
+                    Vector3 w = FurnitureSpacing.Local(sa.transform, ps.World(k, i));   // (en un piso que gira, en su marco)
+                    foreach (var (t, b) in items)
+                        if (Mathf.Abs(b.min.y - w.y) < 1.5f && FurnitureSpacing.DistXZ(b, w) < 0.99f)   // (mismo piso)
+                        { close++; if (who.Length < 160) who += $"{k} {i} junto a «{t.name}»; "; break; }
+                }
+            TestProbe.Check($"{sa.displayName}: ninguna posición reservada a menos de 1 m de un mueble", close == 0, $"{close} plazas: {who}");
+        }
         int fullSt = 0;
         for (int i = 1; i <= 8; i++)
         {
@@ -387,7 +563,13 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
             if (Gastronomy.Menu.All(d => eqs.Contains("Equipo_" + d.equipment))) fullSt++;
         }
         TestProbe.Check("la cocina ocupa la planta: ocho puestos completos (todo el equipo de la carta) en anillo, cámaras y obradores dobles", fullSt == 8 && FindByPrefix("Camara_de_refrigeracion") && FindByPrefix("Panaderia_2") && FindByPrefix("Queseria_2"), $"{fullSt} puestos completos");
-        TestProbe.Check("la sala de yoga tiene la plataforma en el centro, alfombras-esterilla en la sala y en su anillo, y las estatuas en él", FindByPrefix("Tarima del maestro") && CarpetPad.All.Count(c => c.building == "Sala de Yoga" && c.surface.EndsWith("#anillo")) >= 8 && FindByPrefix("Estatuas_anillo"));
+        // LOS PISOS DE YOGA (Berón 2026-11-04): sin anillo; cuatro salas (Hatha y Ashtanga, occidental y tradicional), cada una con
+        // su tarima en el centro y sus alfombras-esterilla alrededor (lo demás lo mira YogaFloorsTest, grupo 64).
+        var yogaHalls = YogaHall.All.Where(h => h != null).ToList();
+        int yMem = AreaCapacity.Members(), yExpect = 2 * (TrainingCentres.FloorsFor("Yoga Hatha", yMem) + TrainingCentres.FloorsFor("Yoga Ashtanga", yMem));   // (regla J16: los pisos que piden los miembros)
+        TestProbe.Check($"los pisos de yoga: sin anillo, {yExpect} salas (Hatha y Ashtanga × occidental y tradicional, en los pisos que pide la regla J16) con su tarima en el centro y sus alfombras-esterilla",
+            GameObject.Find("Anillo_yoga") == null && yogaHalls.Count == yExpect && yogaHalls.All(h => h.tarima != null && h.Mats().Count >= 6 && h.Mats().All(m => m.building.StartsWith("Entrenamiento"))),
+            string.Join(" · ", yogaHalls.Select(h => $"{h.Label} (piso {h.floorNo}): {h.Mats().Count} esterillas")));
         // PROGRESO (hechizo «progreso»): abre el checklist de historias y misiones, y lo vuelve a cerrar.
         SpellConsole scp = FindAnyObjectByType<SpellConsole>();
         if (scp != null)
@@ -398,6 +580,14 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
             TestProbe.Check("el hechizo «progreso» abre el checklist de historias y misiones", open && said.StartsWith("Progreso:") && !ProgressPanel.Open, said);
         }
         TestProbe.End();
+    }
+
+    /// <summary>Repone lo que falte para un día de obra. Aquí se prueba el equipo y el gasto, no las existencias: el almacén empieza
+    /// con 3 días de obra (12 guaduas) y las obras de la jornada ya pudieron gastarlos.</summary>
+    static void Restock(MaterialStore ms)
+    {
+        if (ms == null) return;
+        foreach (var k in MaterialStore.DayKit) if (ms.Have(k.item) < k.n) ms.Add(k.item, k.n - ms.Have(k.item));
     }
 
     static bool FindByPrefix(string prefix)

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 /// <summary>
 /// CATÁLOGO DE MISIONES DE TRABAJO por área (docs/jornada-y-rotacion.md; base: docs/area-missions-spec.md, los
@@ -8,67 +9,17 @@ using System.Collections.Generic;
 /// </summary>
 public static class AreaWork
 {
-    public const string Guard = "Guardia";   // no es un SanctuaryArea: la torre y los puestos de vigía
+    public const string Guard = "Guardia";   // no es un SanctuaryArea: la patrulla, los puestos de vigía y el alimentador
+    public const string GuardRoom = "Sala de guardia";   // un sitio de la jornada, no un SanctuaryArea (docs/sala-de-guardia.md)
     public const string Hospital = "Hospital";   // la antigua Enfermería (docs/hospital.md)
 
     static WorkRoster.Mission M(string area, string id, string title, float h, bool mandatory = false) => new WorkRoster.Mission(area, id, title, h, mandatory);
     static WorkRoster.Mission Also(WorkRoster.Mission m, params string[] areas) { m.also = areas; return m; }   // la tarea hace ir también a esas áreas
-    static WorkRoster.Mission G(string area, string id, string title, string group) => new WorkRoster.Mission(area, id, title, 1f, true) { group = group };   // misión de grupo (a la vez)
 
     /// <summary>Misiones fijas de cada área (sin las de obras, que dependen de qué obras haya abiertas).</summary>
-    public static readonly WorkRoster.Mission[] Catalog =
-    {
-        M(Hospital, "enf_iniciacion", "Iniciación de recién llegados y turistas (análisis, vacuna, primera virtualización)", 1f, true),
-        M(Hospital, "enf_visita", "Pasar visita y curas en las salas de camas", 2f, true),
-        Also(M(Hospital, "enf_animales", "Análisis y vacunas de animales", 1f), "Cría"),
-        M(Hospital, "enf_inventario", "Limpieza, esterilización e inventario del hospital", 1f),
-        M(Hospital, "hos_urgencias", "Guardia de urgencias (triaje y reanimación)", 2f, true),
-        M(Hospital, "hos_quirofano", "Quirófano: cirugía programada (cirujano + anestesista)", 2f),
-        M(Hospital, "hos_uci", "Cuidados intensivos (UCI)", 2f),
-        M(Hospital, "hos_veterinaria", "Hospital veterinario (planta alta): consulta y hospitalización de animales", 2f),
-        M("Cocina", "coc_servicio", "Servicio del restaurante (cocinar la carta)", 2f, true),
-        M("Cocina", "coc_limpieza", "Limpieza e inventario de la cocina", 1f, true),
-        M("Cocina", "coc_obrador", "Elaboraciones del obrador (pan, quesos, fermentos)", 2f),
-        M("Cocina", "coc_sala", "Atender a los turistas en sala", 1f),
-        M("Huerto", "hue_riego", "Riego y deshierbe de los huertos", 2f, true),
-        Also(M("Huerto", "hue_cosecha", "Cosecha para la cocina", 1f), "Cocina"),
-        M("Huerto", "hue_visitantes", "Alimentar a los visitantes del huerto", 1f),
-        G("Sala de Yoga", "yog_guia", "Clase de yoga: guiar desde la plataforma central (objetivo 1)", "clase_yoga"),
-        G("Sala de Yoga", "yog_demo", "Clase de yoga: demostrar entre los alumnos (objetivo 2)", "clase_yoga"),
-        G("Sala de Yoga", "yog_corrige_1", "Clase de yoga: corregir posturas a los alumnos", "clase_yoga"),
-        G("Sala de Yoga", "yog_corrige_2", "Clase de yoga: corregir posturas a los alumnos", "clase_yoga"),
-        M("Cocina", "coc_atender", "Atender a los comensales en la barra (servir los pedidos)", 2f, true),
-        M("Sala de Yoga", "yog_sala", "Preparar y limpiar la sala de yoga", 1f),
-        M("Mecánica", "mec_vehiculos", "Mantenimiento de vehículos", 2f),
-        new WorkRoster.Mission("Mecánica", "mec_maquinas", "Reparar maquinaria de las áreas", 1f) { roams = true },
-        M("Estudio Textil", "tex_tejer", "Tejer y teñir", 2f),
-        M("Estudio Textil", "tex_coser", "Coser y reparar ropa", 1f),
-        M("Carne Cultivada", "lab_biorreactor", "Supervisar los biorreactores (glucosa, pH, oxígeno)", 1f, true),
-        M("Carne Cultivada", "lab_iniciar", "Iniciar un lote: vial del banco, medio y siembra en el biorreactor", 1f, true),
-        Also(M("Carne Cultivada", "lab_cosechar", "Cosechar el lote y dar forma a la carne (cocina y comedero)", 1f, true), "Cocina", "Cría"),
-        M("Carne Cultivada", "lab_limpieza", "Limpieza y esterilización del laboratorio", 1f),
-        M("Cocina", "coc_comedor", "Limpieza del comedor y de los aseos", 1f, true),
-        M("Sala de Yoga", "yog_aseos", "Limpieza de los aseos de la sala de yoga", 0.5f),
-        M("Estudio Textil", "tex_limpieza", "Limpieza e inventario del estudio textil", 0.5f),
-        M("Mecánica", "mec_limpieza", "Limpieza e inventario del taller", 0.5f),
-        M("Construcción", "con_almacen", "Inventario del almacén de material y herramientas", 0.5f),
-        M("Cría", "cri_tomas", "Tomas y pesaje de las crías (anotar en la pizarra)", 1f, true),
-        M("Cría", "cri_recintos", "Limpiar los recintos y cambiar la paja", 1f, true),
-        M("Cría", "cri_vinculo", "Cuidar una cría hasta ganar su vínculo (leer, calmar, alimentar, asear)", 2f),
-        M("Gimnasio", "gym_limpieza", "Limpieza del gimnasio", 0.5f),
-        M("Gimnasio", "gym_mantener", "Mantenimiento del gimnasio", 1f),
-        M("Planta Atómica", "pla_operar", "Operar el reactor: arranque, subir a potencia y parada (consola)", 1f),
-        Also(M("Planta Atómica", "pla_isotopos", "Irradiar molibdeno para el generador de Tc-99m del hospital", 1f), Hospital),
-        M("Planta Atómica", "pla_ronda", "Ronda de la planta: resinas, bomba, torre y protección radiológica", 1f),
-        Also(M("Planta Atómica", "pla_ciclotron", "Producir F-18 en el ciclotrón y sintetizar FDG para el PET del hospital", 1f), Hospital),
-        M("Planta Atómica", "fis_experimentos", "Experimentos de física: doble rendija, Michelson, Millikan y el péndulo de Foucault", 1f),
-        M("Química", "qui_sintesis", "Síntesis en la campana: pesar, reaccionar, evaporar y analizar el producto", 1f),
-        M("Química", "qui_residuos", "Recoger y separar los residuos químicos (ácidos, bases e inflamables)", 0.5f),
-        M("Biología", "bio_cultivo", "Cultivo celular: cabina, incubador, microscopio y biorreactor piloto (medios para la carne cultivada)", 1f),
-        M("Biología", "bio_pcr", "Del ADN a la secuencia: extracción, pre-PCR, termociclador y secuenciador", 1f),
-        M("Central Nuclear", "nuc_turno", "Turno de la central: acceso, sala de control, conversión de potencia y calefacción", 1f),
-        M(Guard, "gua_carnivoros", "Patrulla y raciones a los carnívoros", 2f, true),
-    };
+    /// <remarks>Sale del REGISTRO DE FUNCIONES (<see cref="AreaFunctions"/>, docs/microcosmos-civilizaciones.md §2): las mismas
+    /// misiones y en el mismo orden de siempre, ahora definidas una vez y reutilizables por los edificios de los microcosmos.</remarks>
+    public static readonly WorkRoster.Mission[] Catalog = AreaFunctions.SanctuaryMissions();
 
     static readonly (string area, string what)[] Repairs =
     {
@@ -76,11 +27,39 @@ public static class AreaWork
         ("Estudio Textil", "puerta descolgada"), ("Mecánica", "tejado con goteras"), ("Gimnasio", "foco fundido"),
     };
 
+    /// <summary>Las misiones de una obra abierta: llevar el material del día (1 h) y el EQUIPO (una misión de 2 h por turno, del mismo grupo; el día de
+    /// obra cuenta cuando se han hecho todos los turnos). <paramref name="reform"/> (un área no básica en obra, <see cref="AreasEnObra"/>): opcionales,
+    /// las hace quien tenga tiempo y nunca piden un clon; las obras de siempre (Dojo, Ballet) son obligatorias.</summary>
+    public static List<WorkRoster.Mission> ObraMissions(string title, int crew, bool reform, string area = "Construcción")
+    {
+        var l = new List<WorkRoster.Mission>();
+        var carry = M(area, "obra_material_" + title, $"Llevar el material del día a la obra «{title}»", 1f, !reform); carry.site = title;   // del almacén a la obra
+        l.Add(carry);
+        for (int k = 0; k < UnityEngine.Mathf.Max(1, crew); k++)
+        {
+            var work = M(area, "obra_trabajo_" + title + (k == 0 ? "" : $"#{k + 1}"), $"Trabajar la obra «{title}» (estructura de guadua, bahareque y paneles)", 2f, !reform);
+            work.site = title; work.group = "obra_" + title; l.Add(work);
+        }
+        foreach (var m in l) m.optional = reform;
+        return l;
+    }
+
     /// <summary>Las misiones del día <paramref name="day"/>: las fijas, las de cada obra abierta y una reparación.</summary>
     public static List<WorkRoster.Mission> Today(int day, IEnumerable<ConstructionProject> projects)
     {
         var l = new List<WorkRoster.Mission>();
         foreach (var m in Catalog) l.Add(m.Copy());
+        // FRUTALES DE LOS TECHOS (docs/jardines-frutales.md): la ronda diaria, partida en tantas personas como haga falta.
+        l.AddRange(FruitGardener.Missions());
+        // FOTOBIORREACTORES DEL ÁRBOL (docs/fotobiorreactores.md): el cuidado diario del cultivo de espirulina (1 h, en Biología).
+        l.AddRange(FotobioFacade.Missions());
+        // LANZADERA DE COHETES (docs/lanzadera-de-cohetes.md): control de misión, seguridad de la plataforma y la fábrica.
+        l.AddRange(LaunchSite.Missions());
+        // SITIO NUCLEAR (docs/sitio-nuclear.md): vigilancia, revisión de lo pasivo y el simulacro semanal.
+        l.AddRange(NuclearSite.Missions(day));
+        // PARQUE ENERGÉTICO (docs/energia.md): los paneles (mantener, instalar, reparar), las turbinas y el almacén.
+        l.AddRange(EnergySite.Missions(day));
+        l.AddRange(HunterCell.Missions(day));   // el árbol cazador (docs/contencion-arbol-cazador.md)
         // COCINA: cada elaboración que hace falta (harina, queso, pasta, masa madre…) es una misión, con su tiempo activo;
         // el reposo (fermentar, madurar) corre solo después.
         KitchenLarder larder = KitchenLarder.Instance;
@@ -88,13 +67,15 @@ public static class AreaWork
             foreach (Gastronomy.Prep p in larder.Needed(10))
                 l.Add(M("Cocina", "prep_" + p.name, $"Elaborar {p.name} ({p.equipment})", UnityEngine.Mathf.Clamp(UnityEngine.Mathf.Ceil(p.activeMin / 30f) * 0.5f, 0.5f, 2f)));
         int open = 0;
-        foreach (ConstructionProject p in projects)
+        var projectList = projects.Where(p => p != null).ToList();
+        // (Berón 2026-11-09) LAS ÁREAS EN OBRA (AreasEnObra): no dan tareas de área (salvo el O₂ y el material de obra); sus horas son las de su obra.
+        var enObra = new HashSet<string>(projectList.Where(p => p.reform && !p.Finished).Select(p => WorkRoster.AreaGroup(p.title)));
+        if (enObra.Count > 0) l = AreasEnObra.Filter(l, enObra);
+        foreach (ConstructionProject p in projectList)
         {
-            if (p == null || p.Finished) continue;
+            if (p.Finished) continue;
             open++;
-            var carry = M("Construcción", "obra_material_" + p.title, $"Llevar el material del día a la obra «{p.title}»", 1f, true); carry.site = p.title;   // del almacén a la obra
-            var work = M("Construcción", "obra_trabajo_" + p.title, $"Trabajar la obra «{p.title}» (estructura de guadua, bahareque y paneles)", 2f, true); work.site = p.title;
-            l.Add(carry); l.Add(work);
+            l.AddRange(ObraMissions(p.title, p.crewNeeded, p.reform, AreasEnObra.ObraArea(p.title)));
         }
         // MATERIAL: lo que el almacén necesita reponer (todo sale del bambusal, los huertos y el laboratorio).
         MaterialStore store = MaterialStore.Instance;

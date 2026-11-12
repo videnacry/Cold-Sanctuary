@@ -20,9 +20,12 @@ public static class Predation
     /// <summary>Poder depredador: capacidad de cazar/intimidar. Masa/fuerza/textura/agilidad + **arma ⟂ masa**
     /// (colmillo/veneno/garra/aguijón): el arma NO escala con la masa, así el pequeño-pero-armado puede cazar. La
     /// **enfermedad** (`sickness`) lo debilita.</summary>
-    public static float PredatorPower(Anima a) => a == null ? 0f
-        : (a.strength * 0.4f + a.bodyMass * 0.4f + a.armadura * 0.15f + a.agility * 0.05f + a.armament * ArmamentPower)
-          * (1f - Mathf.Clamp01(a.sickness));
+    public static float PredatorPower(Anima a) => a == null ? 0f : Power(a.strength, a.bodyMass, a.armadura, a.agility, a.armament, a.sickness);
+
+    /// <summary>LA FÓRMULA del poder depredador, en un solo sitio (2026-11-08): la usan <see cref="PredatorPower"/> y el poder de los humanos y de
+    /// los jefes de cada santuario (<see cref="SanctuaryPower"/>, docs/progresion-santuarios.md).</summary>
+    public static float Power(float strength, float bodyMass, float armadura, float agility, float armament, float sickness = 0f)
+        => (strength * 0.4f + bodyMass * 0.4f + armadura * 0.15f + agility * 0.05f + armament * ArmamentPower) * (1f - Mathf.Clamp01(sickness));
 
     /// <summary>Defensa: lo difícil que es someterlo/comerlo (masa/fuerza/textura). La **enfermedad** lo vuelve presa fácil.</summary>
     public static float Defense(Anima a) => a == null ? 0f

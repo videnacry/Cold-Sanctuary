@@ -14,6 +14,8 @@ public class GalleryExplorer : MonoBehaviour
     float _yaw, _pitch, _fall;
     CharacterController _cc;
     Camera _cam;
+    // El observador anda a su paso aunque el juego vaya a ×2–×8 (GameSpeed); en pausa (timeScale 0), quieto.
+    static float Dt => Time.timeScale > 0f ? Mathf.Min(Time.unscaledDeltaTime, 0.1f) : 0f;
 
     void Start()
     {
@@ -42,7 +44,7 @@ public class GalleryExplorer : MonoBehaviour
         move = move.normalized * v;
         if (walking)
         {
-            _fall = _cc.isGrounded ? -1f : _fall - 20f * Time.deltaTime;
+            _fall = _cc.isGrounded ? -1f : _fall - 20f * Dt;
             move.y = _fall;
         }
         else
@@ -50,7 +52,7 @@ public class GalleryExplorer : MonoBehaviour
             if (Input.GetKey(KeyCode.E)) move.y += v;
             if (Input.GetKey(KeyCode.Q)) move.y -= v;
         }
-        _cc.Move(move * Time.deltaTime);
+        _cc.Move(move * Dt);
     }
 
     /// <summary>Crea el explorador (cuerpo + cámara) en <paramref name="at"/>, mirando a <paramref name="yaw"/> grados.</summary>

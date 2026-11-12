@@ -15,7 +15,7 @@ public static class PhysicsSceneBuilder
     [MenuItem("Tools/Cold Sanctuary/Build Planta Atómica (Newton, Curie, Einstein)")]
     public static void BuildAll()
     {
-        MicrocosmTemplate.Build(new MicrocosmSpec(SceneName, "Planta Atómica", "final del verano (1666, 1898, 1905)", 15f, "AtomicPlant_Area") { tint = new Color(0.8f, 0.82f, 0.78f), story = Story }, new Vector3(6000f, 0f, 11000f));
+        MicrocosmTemplate.Build(new MicrocosmSpec(SceneName, "Planta Atómica", "final del verano (1666, 1898, 1905)", 15f, "AtomicPlant_Area") { tint = new Color(0.8f, 0.82f, 0.78f), story = t => Story(t) + CivicBuilder.Civilize(t, "Planta Atómica") }, new Vector3(6000f, 0f, 11000f));
         Debug.Log("[Planta] microcosmos de la física generado.");
     }
 
@@ -35,7 +35,7 @@ public static class PhysicsSceneBuilder
         Object.DestroyImmediate(earthGo.GetComponent<Collider>());
         earthGo.GetComponent<Renderer>().sharedMaterial = AreaMicrocosmos.Mat("Fis_Tierra", new Color(0.25f, 0.45f, 0.75f));
         AreaMicrocosmos.Box(earthGo.transform, "Montaña_de_Newton", new Vector3(0f, 0.52f, 0f), new Vector3(0.06f, 0.06f, 0.06f), rock, false);
-        GameObject newton = AreaMicrocosmos.Ant(t, "Isaac Newton", nw.localPosition + new Vector3(2.2f, 0f, 0.5f), new Color(0.4f, 0.27f, 0.18f), 1.8f, 1f);
+        GameObject newton = AreaMicrocosmos.Folk(t, "Isaac Newton", nw.localPosition + new Vector3(2.2f, 0f, 0.5f), 1.8f, 1f);
         CubeInsect.Wear1940s(newton, new Color(0.55f, 0.15f, 0.15f), CubeInsect.Hat.None); n++;   // casaca roja (el cuerpo de cubos aún no tiene peluca)
         NewtonCannonLesson nl = nw.gameObject.AddComponent<NewtonCannonLesson>();
         nl.teacher = "Isaac Newton"; nl.topic = "la gravedad: ¿por qué no se cae la Luna?"; nl.teacherBody = newton.transform;
@@ -46,7 +46,6 @@ public static class PhysicsSceneBuilder
         Transform cu = Spot(t, "Curie · la radiactividad", new Vector3(16f, 0f, 8f));
         Material wood = AreaMicrocosmos.Mat("Fis_Madera", Wood), brass = AreaMicrocosmos.Mat("Fis_Laton", Brass), iron = AreaMicrocosmos.Mat("Fis_Hierro", Iron);
         AreaMicrocosmos.Box(cu, "Suelo_cobertizo", new Vector3(0f, 0.05f, 2f), new Vector3(7f, 0.1f, 5f), wood, true);
-        AreaMicrocosmos.Box(cu, "Tejado_cobertizo", new Vector3(0f, 3.6f, 2f), new Vector3(7.4f, 0.15f, 5.4f), Quaternion.Euler(-6f, 0f, 0f), AreaMicrocosmos.Mat("Fis_Cristal", new Color(0.75f, 0.85f, 0.9f)), false);
         for (int s = -1; s <= 1; s += 2) AreaMicrocosmos.Box(cu, "Poste", new Vector3(s * 3.4f, 1.8f, 4.3f), new Vector3(0.2f, 3.6f, 0.2f), wood, true);
         AreaMicrocosmos.Box(cu, "Mesa", new Vector3(0f, 0.45f, 2.5f), new Vector3(3f, 0.9f, 1.2f), wood, true);
         AreaMicrocosmos.Box(cu, "Condensador", new Vector3(-0.9f, 1.05f, 2.5f), new Vector3(0.5f, 0.3f, 0.5f), brass, false);
@@ -54,9 +53,9 @@ public static class PhysicsSceneBuilder
         AreaMicrocosmos.Box(cu, "Cuarzo_piezoelectrico", new Vector3(0.9f, 1.3f, 2.5f), new Vector3(0.1f, 0.8f, 0.1f), AreaMicrocosmos.Mat("Fis_Cuarzo", new Color(0.92f, 0.92f, 0.95f)), false);
         AreaMicrocosmos.Box(cu, "Pesa", new Vector3(0.9f, 0.95f, 2.5f), new Vector3(0.25f, 0.15f, 0.25f), iron, false);
         AreaMicrocosmos.Box(cu, "Regla_luz", new Vector3(0f, 1.6f, 3f), new Vector3(1.4f, 0.12f, 0.04f), AreaMicrocosmos.Mat("Fis_Regla", new Color(0.95f, 0.92f, 0.8f)), false);
-        GameObject marie = AreaMicrocosmos.Ant(t, "Marie Curie", cu.localPosition + new Vector3(0f, 0f, 0.6f), new Color(0.38f, 0.25f, 0.17f), 1.7f, 0.95f);
+        GameObject marie = AreaMicrocosmos.Folk(t, "Marie Curie", cu.localPosition + new Vector3(0f, 0f, 0.6f), 1.7f, 0.95f);
         CubeInsect.Wear1940s(marie, new Color(0.12f, 0.12f, 0.14f), CubeInsect.Hat.None); n++;   // su vestido oscuro de laboratorio
-        GameObject pierre = AreaMicrocosmos.Ant(t, "Pierre Curie", cu.localPosition + new Vector3(2.4f, 0f, 1f), new Color(0.4f, 0.27f, 0.18f), 1.8f, 1f);
+        GameObject pierre = AreaMicrocosmos.Folk(t, "Pierre Curie", cu.localPosition + new Vector3(2.4f, 0f, 1f), 1.8f, 1f);
         CubeInsect.Wear1940s(pierre, new Color(0.18f, 0.18f, 0.2f), CubeInsect.Hat.None); n++;
         CurieElectrometerLesson cl = cu.gameObject.AddComponent<CurieElectrometerLesson>();
         cl.teacher = "Marie Curie"; cl.topic = "la radiactividad: medir lo invisible"; cl.teacherBody = marie.transform;
@@ -69,7 +68,7 @@ public static class PhysicsSceneBuilder
         Transform beam = new GameObject("Brazo").transform; beam.SetParent(ei, false); beam.localPosition = new Vector3(0f, 2.45f, 0f);
         AreaMicrocosmos.Box(beam, "Brazo_barra", Vector3.zero, new Vector3(4f, 0.1f, 0.1f), brass, false);
         Transform left = Pan(beam, "Platillo_antes", -1.9f, brass), right = Pan(beam, "Platillo_despues", 1.9f, brass);
-        GameObject einstein = AreaMicrocosmos.Ant(t, "Albert Einstein", ei.localPosition + new Vector3(0f, 0f, -2.4f), new Color(0.4f, 0.27f, 0.18f), 1.75f, 1f);
+        GameObject einstein = AreaMicrocosmos.Folk(t, "Albert Einstein", ei.localPosition + new Vector3(0f, 0f, -2.4f), 1.75f, 1f);
         CubeInsect.Wear1940s(einstein, new Color(0.45f, 0.42f, 0.38f), CubeInsect.Hat.None); n++;
         EinsteinMassLesson el = ei.gameObject.AddComponent<EinsteinMassLesson>();
         el.teacher = "Albert Einstein"; el.topic = "E = mc²: de dónde sale la energía del átomo"; el.teacherBody = einstein.transform;
@@ -81,7 +80,7 @@ public static class PhysicsSceneBuilder
         for (int i = 0; i < cast.Length; i++)
         {
             float a = (210f + i * 24f) * Mathf.Deg2Rad;
-            AreaMicrocosmos.Ant(t, cast[i], new Vector3(Mathf.Cos(a) * 9f, 0f, 8f + Mathf.Sin(a) * 9f), new Color(0.4f, 0.26f, 0.18f), 1.75f, 1f); n++;
+            AreaMicrocosmos.Folk(t, cast[i], new Vector3(Mathf.Cos(a) * 9f, 0f, 8f + Mathf.Sin(a) * 9f), 1.75f, 1f); n++;
         }
 
         var card = t.gameObject.AddComponent<HistoryCard>();

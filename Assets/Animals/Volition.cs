@@ -15,20 +15,45 @@ public class Volition : MonoBehaviour
     [Tooltip("Necesidad mínima para actuar un deseo (por debajo, no hace nada).")]
     public float minNeed = 0.0001f;
 
-    float _nextTick;
+    float _nextTick, _nextChoice, _nextStep;
+    static bool Continues(string key) => key == "explore" || key == "homebound" || key == "mate" || key == "heel";   // (heel: la cría sigue a su madre que anda)
+    /// <summary>Diagnóstico: decisiones tomadas y saltadas (dormido / ocupado / reaccionando a una amenaza).</summary>
+    [System.NonSerialized] public int Choices, SkippedAsleep, SkippedBusy, SkippedAware;
 
     /// <summary>Un tick de decisión (throttled como ActiveBehaveTick): sensa amenaza (reflejo) y, si está libre,
     /// elige y despacha el deseo de mayor necesidad.</summary>
     public void Tick(Animal self)
     {
-        if (self == null || self.death || Time.time < _nextTick) return;
-        // LOD: los lejanos deciden menos veces (SenseThreats es O(n²) → el mayor ahorro).
-        _nextTick = Time.time + TimeController.timeController.TimeSpeedMinuteSecs / Random.Range(0.8f, 1.2f) * Lod.SlowFactor(self.transform.position);
+        if (self == null || self.death) return;
+        float baseSecs = TimeController.timeController.TimeSpeedMinuteSecs / Random.Range(0.8f, 1.2f), lod = Lod.SlowFactor(self.transform.position);
 
         // Deseos volitivos: solo si está libre (mismo guard que hoy para comer). D3b2 mete la amenaza como deseo.
-        if (!self.asleep && !self.busy) SelectAndDispatch(self);
+        // Ni mientras REACCIONA a una amenaza (aware: huye, pelea): esa corrutina lleva el cuerpo. Antes el deseo de turno
+        // («volver a casa») re-apuntaba el agente cada decisión y la huida lo volvía a apartar: el pingüino iba y venía
+        // («da vueltas en círculo (homebound)»).
+        // El LOD aquí, como mucho ×2: elegir es barato y la volición es lo ÚNICO que mueve al animal (el ciclo de vida ya no
+        // lo pasea); con ×8 un animal lejano pasaba ~20 s parado entre un paseo y el siguiente.
+        if (Time.time >= _nextChoice)
+        {
+            _nextChoice = Time.time + baseSecs * Mathf.Min(2f, lod);
+            if (self.asleep) SkippedAsleep++; else if (self.busy) SkippedBusy++; else if (self.aware) SkippedAware++;
+            else { Choices++; SelectAndDispatch(self); }
+        }
+        // ENTRE DECISIONES, el paseo sigue: el deseo de moverse que ganó (pasear, volver a casa, buscar pareja) se re-despacha
+        // cada segundo (barato: su viaje no re-apunta a medio camino; solo encadena pausa → siguiente salto). Antes, al acabar
+        // un salto, el animal esperaba quieto a la siguiente decisión (un minuto de juego o más): «atascado > 20 s».
+        else if (Time.time >= _nextStep && _last != null && Continues(_last.key) && !self.asleep && !self.busy && !self.aware)
+        {
+            _nextStep = Time.time + 1f;
+            // Solo mientras lo siga sintiendo. Sin esto, ya en casa seguía «volviendo a casa» cada segundo, y al estar encima del sitio
+            // salía «no puede volver a casa» a 2 m de ella; y constaba como «quiere X y no se mueve» hasta la decisión siguiente.
+            if (_last.NeedProbe(self) > minNeed) _last.Dispatch(self);
+            else { _last = null; _lastScore = 0f; }
+        }
 
-        // Reflejo de amenaza: siempre (paridad con ActiveBehaveTick, que llamaba SenseThreats cada tick).
+        // Reflejo de amenaza (paridad con ActiveBehaveTick). LOD pleno: SenseThreats es O(n²), el mayor ahorro.
+        if (Time.time < _nextTick) return;
+        _nextTick = Time.time + baseSecs * lod;
         self.SenseThreats();
     }
 
@@ -58,11 +83,16 @@ public class Volition : MonoBehaviour
         }
 
         // DISCIPLINA (histéresis): un ser disciplinado se mantiene en su deseo salvo que otro lo supere por un margen.
-        if (_last != null && best != _last && bestScore < _lastScore + self.discipline * disciplineHysteresis)
+        // Solo si el deseo actual SIGUE vivo (necesidad > mínimo): antes un deseo ya satisfecho («eat» tras comer) se quedaba
+        // por histéresis para siempre y el animal saciado constaba como «quiere comer y no se mueve».
+        if (_last != null && best != _last && _last.NeedProbe(self) > minNeed && bestScore < _lastScore + self.discipline * disciplineHysteresis)
         {
             best = _last;
             bestScore = _last.NeedProbe(self) * (1f + self.Confidence(_last.capability) / 100f * habitWeight);
         }
+
+        // Nada lo mueve ahora (saciado, en calma): deja de «querer» lo último (LastDesire vacío = descansa).
+        if (best == null) { if (_last != null) DesireCatalog.Handover(self, ""); _last = null; _lastScore = 0f; return; }
 
         if (best != null)
         {
@@ -78,6 +108,7 @@ public class Volition : MonoBehaviour
             else if (q != null) { if (q.Player.Count == 0) q.EnqueuePlayer(best.Conjure(self)); }   // deseo → SUPRAHECHIZO en la cola
             else best.Dispatch(self);
             self.RecordUse(best.capability, true, 1f);   // el USO construye el hábito (confianza-por-uso, más rápido de joven)
+            if (_last == null || _last.key != best.key) DesireCatalog.Handover(self, best.key);   // (2026-11-11) un solo dueño: el que gana
             _last = best; _lastScore = bestScore;
         }
     }

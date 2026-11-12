@@ -7,12 +7,11 @@ using UnityEngine;
 /// neumático, la purificación del agua, la bomba y el intercambiador; en la sala de control, la consola; la celda
 /// caliente; la torre de refrigeración; y el rincón de enseñanza (cámara de niebla y contador Geiger). La piscina baja
 /// como un pilar de hormigón hasta el suelo: el núcleo está a ~7 m bajo el agua, como en los TRIGA reales (7,3–8,2 m).
-/// En el sur, en el lóbulo libre del casquete Sur (el huerto de rotación subió sobre el Huerto).
+/// Desde el 2026-11-05 está en el SITIO NUCLEAR (docs/sitio-nuclear.md), junto a la Central Nuclear: encima, el ciclotrón y la sala de experimentos.
 /// </summary>
 public static partial class SampleSceneBuilder
 {
-    public static readonly Vector2 AtomicPlantSize = new Vector2(24f, 18f);
-    static readonly Vector3 AtomicPlantCenter = new Vector3(15f, 0f, -101f);
+    // Su área mide CienciasSize (32 × 20) y la distribución, de 24 × 18, va centrada en ella.
 
     static readonly Color ApConcrete = new Color(0.72f, 0.72f, 0.7f), ApSteel = new Color(0.62f, 0.66f, 0.7f), ApWater = new Color(0.25f, 0.55f, 0.85f, 0.45f),
         ApLead = new Color(0.38f, 0.4f, 0.44f), ApGlass = new Color(0.75f, 0.85f, 0.75f, 0.35f), ApYellow = new Color(0.95f, 0.8f, 0.2f);
@@ -21,13 +20,13 @@ public static partial class SampleSceneBuilder
     static SanctuaryArea BuildAtomicPlant(Transform areasGroup)
     {
         SanctuaryArea a = BuildAreaBox(areasGroup, "AtomicPlant_Area", "Planta Atómica", SanctuaryAreaType.AtomicPlant, 3,
-            AtomicPlantCenter, AtomicPlantSize, new Color(0.8f, 0.82f, 0.78f));
-        Elevate(a.transform, AtomicPlantSize, ElevatedHeight);
-        FurnishAtomicPlant(a.transform, ElevatedHeight);
+            CienciasCenter, _marineFloors ? NuclearSize : CienciasSize, new Color(0.8f, 0.82f, 0.78f));
+        TowerFloor(a.transform);   // la planta baja de la torre (la piscina del reactor baja hasta el suelo)
+        FurnishAtomicPlant(a.transform, NuclearSiteRule.PoolDepth - 0.1f);   // en el sitio nuclear, la piscina baja por el casquete hasta su cajón sumergido (docs/sitio-nuclear.md)
         // PLANTA DE ARRIBA: el CICLOTRÓN médico (Berón, 2026-10-23: un acelerador de partículas). Un piso apilado, como la
         // planta veterinaria del hospital: el F-18 del PET se hace aquí, junto a su celda de síntesis.
-        Transform up = new GameObject("Planta_ciclotron").transform; up.SetParent(a.transform, false);
-        FurnishCyclotronFloor(up, StackOn(up, a.transform, AtomicPlantSize));
+        Transform up = InnerFloor(a.transform, "Planta_ciclotron", a.transform);
+        FurnishCyclotronFloor(up, FloorSize(up, CienciasSize));
         return a;
     }
 
@@ -38,7 +37,7 @@ public static partial class SampleSceneBuilder
     static void FurnishCyclotronFloor(Transform up, Vector2 size)
     {
         Solid(up, new Vector3(0f, 0.05f, 0f), new Vector3(size.x, 0.1f, size.y), new Color(0.78f, 0.8f, 0.76f), "Suelo_ciclotron");
-        Transform r = new GameObject("Ciclotron_sala").transform; r.SetParent(up, false); r.localPosition = new Vector3(0f, 0.1f, 0f);
+        Transform r = new GameObject("Ciclotron_sala").transform; r.SetParent(up, false); r.localPosition = new Vector3(0f, 0.1f, _marineFloors ? MarineCyclotronShiftZ : 0f);   // (bajo el mar, al sur: lejos de la banda de columnas, T16)
 
         // ── CICLOTRÓN: el imán (yugo de hierro y bobinas), las «Des», el blanco de agua y el autoblindaje ──
         Transform cyc = Equip(r, "Ciclotron", new Vector3(-5f, 0f, -3.5f), 0f, (t) =>
@@ -73,7 +72,7 @@ public static partial class SampleSceneBuilder
 
     static void FurnishAtomicPlant(Transform area, float h)
     {
-        Transform r = new GameObject("Planta").transform; r.SetParent(area, false); r.localPosition = new Vector3(0f, 0.1f, 0f);
+        Transform r = new GameObject("Planta").transform; r.SetParent(area, false); r.localPosition = new Vector3(_marineFloors ? MarineAtomicShiftX : 0f, 0.1f, 0f);   // (bajo el mar, corrida al este: la columna oeste de su sala queda libre, T16)
 
         // ── EL REACTOR: piscina de hormigón que baja hasta el suelo (pilar), con el agua, el núcleo y su luz ──
         Transform pool = KitchenProps.Root(r, "Piscina_reactor", new Vector3(-6.5f, 0f, -2.5f));
@@ -185,7 +184,7 @@ public static partial class SampleSceneBuilder
             KitchenProps.C(t, new Vector3(0f, 2.5f, 0f), new Vector3(1.2f, 0.2f, 1.2f), ApSteel, 0f, "Ventilador");
         }, "Torre de refrigeración (secundario)").gameObject.AddComponent<PlantEquipment>().kind = PlantEquipment.Kind.CoolingTower;
 
-        Aseos(r, new Vector3(0f, 0f, -8.2f), 0f, 1);   // al fondo, entre el conejo y la consola
+        Aseos(r, new Vector3(10.1f, 0f, -8.2f), 0f, 1);   // al fondo, en la esquina +X (entre el conejo y la consola no quedaban 2 m)
     }
 
     /// <summary>Un equipo de la planta: raíz + piezas + collider sólido que lo envuelve (sin apilarse: cada uno en su

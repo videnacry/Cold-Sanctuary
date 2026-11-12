@@ -121,6 +121,10 @@ public class WalkSpell : SpellBase
         for (int i = 0; i < n; i++)
             if (!_hits[i].transform.IsChildOf(transform) && _hits[i].collider.GetComponentInParent<Anima>() == null && _hits[i].point.y <= feet + 0.6f && _hits[i].point.y > best)
                 best = _hits[i].point.y;
+        // Nada debajo en 40 m y lejos del agua: es el VACÍO (un piso alto de una torre), no el mar. Antes se tomaba por agua
+        // y Andrea anduvo por el aire junto a Mecánica · planta 3 hasta que la salvaguarda la bajó 45 m de golpe (JornadaTest
+        // 2026-10-29: el NavMesh conserva un trozo en (32,45,-91) donde ya no hay suelo y su «ir a» la llevaba por ahí).
+        if (float.IsNegativeInfinity(best) && feet > 0.5f) return;
         if (!float.IsNegativeInfinity(best) && best > -0.5f)
         {
             if (best < feet - 1.2f) return;            // borde: no salta al vacío

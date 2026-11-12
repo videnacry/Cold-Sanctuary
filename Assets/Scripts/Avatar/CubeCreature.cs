@@ -16,7 +16,7 @@ using UnityEngine;
 /// </summary>
 public static class CubeCreature
 {
-    public enum Plan { Quadruped, Cetacean, Pinniped, Bird, Insect }
+    public enum Plan { Quadruped, Cetacean, Pinniped, Bird, Insect, FlyingBird }
 
     public class Spec
     {
@@ -29,6 +29,10 @@ public static class CubeCreature
         public float bulk = 0.42f;                                // grosor del tronco respecto a la altura
         public Color fur = Color.white, belly = Color.white, eye = new Color(0.15f, 0.12f, 0.1f), accent = Color.gray;
         public bool antlers, wings, tallDorsal;
+        // Rasgos de ficha (docs/reglas-animales.md): colmillos y bigotera (morsa), cuernos y faldón de lana (buey), puntas negras en las
+        // orejas (liebre), parches auriculares (emperador), anillo blanco del ojo (Adelia), sin manchas, y colores propios de cabeza y patas.
+        public bool tusks, horns, skirt, earTips, earPatch, eyeRing, noSpots;
+        public Color headFur = Color.clear, legs = Color.clear, patch = Color.gray;
     }
 
     static Color C(float r, float g, float b) => new Color(r, g, b);
@@ -39,8 +43,20 @@ public static class CubeCreature
         string s = (species ?? "").ToLowerInvariant();
         if (s.Contains("whale")) return new Spec { plan = Plan.Cetacean, length = 12f, height = 2.6f, width = 2.4f, head = new Vector3(2.2f, 2.2f, 3f), snout = 0f, fur = C(0.48f, 0.58f, 0.68f), belly = C(0.86f, 0.9f, 0.92f), tail = 0f };
         if (s.Contains("orca")) return new Spec { plan = Plan.Cetacean, length = 7f, height = 1.6f, width = 1.4f, head = new Vector3(1.3f, 1.3f, 1.6f), snout = 0f, fur = C(0.16f, 0.17f, 0.2f), belly = C(0.96f, 0.96f, 0.96f), tallDorsal = true };
+        // TERRITORIO POLAR (medidas y colores de su ficha, docs/reglas-animales.md).
+        if (s.Contains("polarskua")) return new Spec { plan = Plan.FlyingBird, length = 0.53f, height = 0.14f, width = 1.35f, head = new Vector3(0.08f, 0.08f, 0.09f), snout = 0.04f, ear = Vector2.zero, fur = C(0.42f, 0.34f, 0.26f), belly = C(0.62f, 0.52f, 0.4f), accent = C(0.1f, 0.1f, 0.1f) };
+        if (s.Contains("capepetrel")) return new Spec { plan = Plan.FlyingBird, length = 0.38f, height = 0.1f, width = 0.85f, head = new Vector3(0.06f, 0.06f, 0.07f), snout = 0.025f, ear = Vector2.zero, fur = C(0.2f, 0.2f, 0.22f), belly = C(0.95f, 0.95f, 0.95f), accent = C(0.1f, 0.1f, 0.1f) };
+        if (s.Contains("wanderingalbatross")) return new Spec { plan = Plan.FlyingBird, length = 1.2f, height = 0.26f, width = 3.0f, head = new Vector3(0.14f, 0.14f, 0.16f), snout = 0.12f, ear = Vector2.zero, fur = C(0.97f, 0.97f, 0.96f), belly = C(0.98f, 0.98f, 0.98f), accent = C(0.9f, 0.7f, 0.7f) };
+        if (s.Contains("arctictern")) return new Spec { plan = Plan.FlyingBird, length = 0.35f, height = 0.07f, width = 0.8f, head = new Vector3(0.05f, 0.05f, 0.06f), snout = 0.04f, ear = Vector2.zero, fur = C(0.82f, 0.84f, 0.88f), belly = C(0.95f, 0.95f, 0.96f), headFur = C(0.08f, 0.08f, 0.1f), accent = C(0.8f, 0.15f, 0.12f) };
+        if (s.Contains("snowpetrel")) return new Spec { plan = Plan.FlyingBird, length = 0.36f, height = 0.11f, width = 0.78f, head = new Vector3(0.06f, 0.06f, 0.07f), snout = 0.025f, ear = Vector2.zero, fur = C(0.97f, 0.97f, 0.98f), belly = C(0.98f, 0.98f, 0.99f), eye = C(0.05f, 0.05f, 0.06f), accent = C(0.08f, 0.08f, 0.1f) };   // blanco entero, ojo y pico negros; envergadura 76–79 cm
+        if (s.Contains("walrus")) return new Spec { plan = Plan.Pinniped, length = 3.0f, height = 1.0f, width = 1.05f, head = new Vector3(0.42f, 0.4f, 0.44f), snout = 0.16f, ear = Vector2.zero, fur = C(0.62f, 0.46f, 0.38f), belly = C(0.52f, 0.38f, 0.32f), patch = C(0.82f, 0.72f, 0.6f), tusks = true, noSpots = true };
+        if (s.Contains("emperorpenguin")) return new Spec { plan = Plan.Bird, length = 0.42f, height = 1.0f, width = 0.46f, head = new Vector3(0.18f, 0.18f, 0.2f), snout = 0.12f, ear = Vector2.zero, fur = C(0.24f, 0.26f, 0.31f), headFur = C(0.07f, 0.07f, 0.09f), belly = C(0.97f, 0.97f, 0.95f), accent = C(0.98f, 0.9f, 0.62f), patch = C(0.98f, 0.8f, 0.2f), earPatch = true };
+        if (s.Contains("reindeer")) return new Spec { length = 1.9f, height = 1.15f, width = 0.46f, head = new Vector3(0.24f, 0.26f, 0.38f), snout = 0.18f, neck = 0.42f, ear = new Vector2(0.07f, 0.1f), tail = 0.14f, tailThick = 0.09f, bulk = 0.42f, fur = C(0.55f, 0.47f, 0.4f), belly = C(0.92f, 0.9f, 0.86f), antlers = true };
+        if (s.Contains("muskox")) return new Spec { length = 2.2f, height = 1.25f, width = 0.82f, head = new Vector3(0.36f, 0.4f, 0.46f), snout = 0.14f, neck = 0.16f, ear = new Vector2(0.06f, 0.05f), tail = 0.08f, tailThick = 0.08f, bulk = 0.62f, fur = C(0.22f, 0.17f, 0.14f), belly = C(0.18f, 0.14f, 0.12f), legs = C(0.78f, 0.72f, 0.62f), patch = C(0.68f, 0.58f, 0.46f), horns = true, skirt = true };
+        if (s.Contains("arctichare")) return new Spec { length = 0.55f, height = 0.34f, width = 0.2f, head = new Vector3(0.13f, 0.13f, 0.16f), snout = 0.04f, ear = new Vector2(0.05f, 0.14f), tail = 0.07f, tailThick = 0.07f, bulk = 0.6f, fur = C(0.97f, 0.97f, 0.98f), belly = C(0.99f, 0.99f, 0.99f), earTips = true };
+        if (s.Contains("arcticfox")) return new Spec { length = 0.6f, height = 0.3f, width = 0.19f, head = new Vector3(0.14f, 0.13f, 0.15f), snout = 0.07f, ear = new Vector2(0.05f, 0.06f), tail = 0.28f, tailThick = 0.1f, fur = C(0.95f, 0.95f, 0.97f), belly = C(0.99f, 0.99f, 0.99f) };
         if (s.Contains("seal")) return new Spec { plan = Plan.Pinniped, length = 1.7f, height = 0.45f, width = 0.5f, head = new Vector3(0.26f, 0.24f, 0.28f), snout = 0.1f, ear = Vector2.zero, fur = C(0.72f, 0.75f, 0.8f), belly = C(0.86f, 0.88f, 0.9f) };
-        if (s.Contains("penguin")) return new Spec { plan = Plan.Bird, length = 0.38f, height = 1.0f, width = 0.42f, head = new Vector3(0.2f, 0.2f, 0.22f), snout = 0.12f, ear = Vector2.zero, fur = C(0.15f, 0.16f, 0.2f), belly = C(0.97f, 0.97f, 0.95f), accent = C(0.98f, 0.8f, 0.35f) };
+        if (s.Contains("penguin")) return new Spec { plan = Plan.Bird, length = 0.25f, height = 0.6f, width = 0.27f, head = new Vector3(0.13f, 0.13f, 0.14f), snout = 0.06f, ear = Vector2.zero, fur = C(0.1f, 0.11f, 0.14f), belly = C(0.97f, 0.97f, 0.95f), accent = C(0.1f, 0.11f, 0.14f), patch = C(0.98f, 0.98f, 0.98f), eyeRing = true };   // pingüino de Adelia (el emperador va arriba)
         if (s.Contains("polarbear") || s == "bear") return new Spec { length = 2.2f, height = 1.3f, width = 0.75f, head = new Vector3(0.38f, 0.36f, 0.46f), snout = 0.22f, ear = new Vector2(0.1f, 0.08f), tail = 0.12f, tailThick = 0.1f, bulk = 0.55f, fur = C(0.95f, 0.93f, 0.86f), belly = C(0.92f, 0.9f, 0.82f) };
         if (s.Contains("wolf")) return new Spec { length = 1.2f, height = 0.8f, width = 0.32f, head = new Vector3(0.26f, 0.25f, 0.3f), snout = 0.17f, ear = new Vector2(0.08f, 0.13f), tail = 0.45f, tailThick = 0.1f, fur = C(0.84f, 0.85f, 0.88f), belly = C(0.96f, 0.96f, 0.97f), eye = C(0.85f, 0.65f, 0.2f) };
         if (s.Contains("malamute") || s.Contains("husky")) return new Spec { length = 1.0f, height = 0.63f, width = 0.32f, head = new Vector3(0.25f, 0.24f, 0.28f), snout = 0.13f, ear = new Vector2(0.08f, 0.1f), tail = 0.38f, tailThick = 0.11f, fur = C(0.62f, 0.64f, 0.7f), belly = C(0.97f, 0.97f, 0.97f), eye = C(0.45f, 0.65f, 0.9f) };
@@ -50,7 +66,7 @@ public static class CubeCreature
         if (s.Contains("meerkat")) return new Spec { length = 0.3f, height = 0.15f, width = 0.1f, head = new Vector3(0.07f, 0.07f, 0.08f), snout = 0.04f, ear = new Vector2(0.02f, 0.02f), tail = 0.22f, tailThick = 0.03f, fur = C(0.86f, 0.78f, 0.64f), belly = C(0.93f, 0.88f, 0.78f) };
         // INSECTOS DE HIELO MODIFICADOS (santuario 1): a su tamaño real agrandado — abeja de las nieves ~20 cm, araña ~30 cm.
         if (s.Contains("snowspider")) return new Spec { plan = Plan.Insect, length = 0.3f, height = 0.12f, width = 0.12f, head = new Vector3(0.07f, 0.06f, 0.06f), fur = C(0.86f, 0.9f, 0.96f), belly = C(0.78f, 0.84f, 0.92f), accent = C(0.35f, 0.42f, 0.55f) };
-        if (s.Contains("snowbee")) return new Spec { plan = Plan.Insect, length = 0.2f, height = 0.09f, width = 0.09f, head = new Vector3(0.06f, 0.055f, 0.05f), fur = C(0.98f, 0.95f, 0.75f), belly = C(0.96f, 0.96f, 0.92f), accent = C(0.55f, 0.62f, 0.75f), wings = true };
+        if (s.Contains("snowbee")) return new Spec { plan = Plan.Insect, length = 0.2f, height = 0.09f, width = 0.09f, head = new Vector3(0.06f, 0.055f, 0.05f), fur = C(0.62f, 0.62f, 0.6f), belly = C(0.55f, 0.55f, 0.53f), accent = C(0.12f, 0.12f, 0.13f), wings = true };   // (2026-11-04, Berón: casi blancas y lisas, deslumbraban como luces: pelusa gris blanquecina mate, bandas oscuras)
         if (s.Contains("bee")) return new Spec { plan = Plan.Insect, length = 0.5f, height = 0.22f, width = 0.22f, head = new Vector3(0.15f, 0.14f, 0.13f), fur = C(0.98f, 0.92f, 0.6f), belly = C(0.95f, 0.95f, 0.9f), accent = C(0.3f, 0.28f, 0.3f), wings = true };
         if (PlanForInsect(s)) return new Spec { plan = Plan.Insect, length = 0.5f, height = 0.2f, width = 0.2f, head = new Vector3(0.14f, 0.12f, 0.12f), fur = InsectColor(s), belly = InsectColor(s) * 0.85f + new Color(0, 0, 0, 1), accent = C(0.2f, 0.2f, 0.22f), wings = s.Contains("ladybug") || s.Contains("beetle") };
         return new Spec();
@@ -73,9 +89,10 @@ public static class CubeCreature
     public static Material Mat(Color c)
     {
         if (_mats.TryGetValue(c, out Material m) && m != null) return m;
-        Shader sh = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
+        Shader sh = CheapMaterials.Simple;   // (2026-11-09) mate y opaco
         m = new Material(sh) { color = c, name = $"Cubo_{ColorUtility.ToHtmlStringRGB(c)}" };
         if (m.HasProperty("_BaseColor")) m.SetColor("_BaseColor", c);
+        CheapMaterials.MakeCheap(m);
 #if UNITY_EDITOR
         // En el editor (prefabs de animales) el material tiene que ser un ASSET: si no, el prefab guardado pierde el color.
         if (!Application.isPlaying)
@@ -115,6 +132,7 @@ public static class CubeCreature
             case Plan.Cetacean: Cetacean(body, sp, rig); break;
             case Plan.Pinniped: Pinniped(body, sp, rig); break;
             case Plan.Bird: Bird(body, sp, rig); break;
+            case Plan.FlyingBird: FlyingBird(body, sp, rig); break;
             case Plan.Insect: Insect(body, sp, rig); break;
             default: Quadruped(body, sp, rig); break;
         }
@@ -141,6 +159,14 @@ public static class CubeCreature
         neck.transform.localRotation = Quaternion.Euler(-40f, 0f, 0f);
         Head(neck.transform, new Vector3(0f, 0f, neckLen), Quaternion.Euler(40f, 0f, 0f), sp, rig);
 
+        if (sp.skirt)   // el buey: faldón de lana hasta media pata y la silla clara del lomo
+        {
+            Seg(chest.transform, new Vector3(0f, -thick * 0.62f, L * 0.08f), new Vector3(W * 1.12f, thick * 0.75f, L * 0.42f), sp.fur * 0.85f + new Color(0f, 0f, 0f, 1f));
+            Seg(hips.transform, new Vector3(0f, -thick * 0.62f, L * 0.06f), new Vector3(W * 1.1f, thick * 0.75f, L * 0.44f), sp.fur * 0.85f + new Color(0f, 0f, 0f, 1f));
+            Seg(hips.transform, new Vector3(0f, thick * 0.52f, L * 0.08f), new Vector3(W * 0.6f, thick * 0.08f, L * 0.3f), sp.patch);
+            Seg(chest.transform, new Vector3(0f, thick * 0.6f, L * 0.06f), new Vector3(W * 0.7f, thick * 0.28f, L * 0.24f), sp.fur);   // la giba de los hombros
+        }
+
         // Cola en tres tramos (hacia atrás y algo caída).
         Tail(hips.transform, new Vector3(0f, thick * 0.25f, -L * 0.15f), sp, rig);
 
@@ -149,9 +175,9 @@ public static class CubeCreature
         {
             bool left = s < 0;
             float fl = legLen - thick * 0.3f;
-            Leg(chest.transform, new Vector3(W * 0.36f * s, -thick * 0.3f, L * 0.2f), fl, legW, sp.fur,
+            Leg(chest.transform, new Vector3(W * 0.36f * s, -thick * 0.3f, L * 0.2f), fl, legW, sp.legs.a > 0f ? sp.legs : sp.fur,
                 left ? BodyPart.ShoulderLeft : BodyPart.ShoulderRight, left ? BodyPart.ForearmLeft : BodyPart.ForearmRight, left ? BodyPart.HandLeft : BodyPart.HandRight, rig, false);
-            Leg(hips.transform, new Vector3(W * 0.36f * s, -thick * 0.3f, -L * 0.04f), fl, legW * 1.1f, sp.fur,
+            Leg(hips.transform, new Vector3(W * 0.36f * s, -thick * 0.3f, -L * 0.04f), fl, legW * 1.1f, sp.legs.a > 0f ? sp.legs : sp.fur,
                 left ? BodyPart.ThighLeft : BodyPart.ThighRight, left ? BodyPart.ShinLeft : BodyPart.ShinRight, left ? BodyPart.FootLeft : BodyPart.FootRight, rig, true);
         }
     }
@@ -191,6 +217,7 @@ public static class CubeCreature
                 CubeJoint e = J(head.transform, s < 0 ? BodyPart.EarLeft : BodyPart.EarRight, new Vector3(hs.x * 0.3f * s, hs.y * 0.48f, hs.z * 0.15f),
                                 new Vector3(sp.ear.x, sp.ear.y, sp.ear.x * 0.45f), new Vector3(0f, sp.ear.y * 0.5f, 0f), sp.fur, rig);
                 e.transform.localRotation = Quaternion.Euler(-8f, 0f, 12f * s);
+                if (sp.earTips) Seg(e.transform, new Vector3(0f, sp.ear.y * 0.93f, 0f), new Vector3(sp.ear.x * 1.04f, sp.ear.y * 0.16f, sp.ear.x * 0.5f), C(0.06f, 0.06f, 0.07f));
                 if (s < 0) earL = e.transform; else earR = e.transform;
             }
         if (sp.antlers)   // cornamenta de reno: ramas de cubos
@@ -203,6 +230,19 @@ public static class CubeCreature
                 Seg(a, new Vector3(0f, 0.3f, 0.1f), new Vector3(0.03f, 0.03f, 0.22f), C(0.85f, 0.8f, 0.7f));
                 Seg(a, new Vector3(0.05f * s, 0.5f, -0.05f), new Vector3(0.12f, 0.03f, 0.03f), C(0.85f, 0.8f, 0.7f));
             }
+        for (int s = -1; s <= 1; s += 2)
+        {
+            if (sp.tusks) Seg(head.transform, new Vector3(hs.x * 0.24f * s, -hs.y * 0.8f, hs.z * 0.72f), new Vector3(0.055f, 0.55f, 0.055f), C(0.93f, 0.9f, 0.8f));   // colmillos: media 50 cm
+            if (sp.earPatch) Seg(head.transform, new Vector3(hs.x * 0.5f * s, -hs.y * 0.05f, hs.z * 0.12f), new Vector3(0.02f, hs.y * 0.5f, hs.z * 0.38f), sp.patch);   // parche auricular amarillo
+            if (sp.eyeRing) Seg(head.transform, new Vector3(hs.x * 0.5f * s, hs.y * 0.14f, hs.z * 0.36f), new Vector3(0.012f, hs.y * 0.34f, hs.y * 0.34f), sp.patch);   // anillo blanco del ojo
+            if (sp.horns)   // cuernos: salen de la testuz, bajan y suben con la punta negra
+            {
+                Seg(head.transform, new Vector3(hs.x * 0.42f * s, hs.y * 0.52f, hs.z * 0.15f), new Vector3(hs.x * 0.62f, 0.09f, 0.14f), C(0.85f, 0.8f, 0.68f));
+                Seg(head.transform, new Vector3(hs.x * 0.82f * s, hs.y * 0.22f, hs.z * 0.15f), new Vector3(0.08f, hs.y * 0.62f, 0.09f), C(0.85f, 0.8f, 0.68f));
+                Seg(head.transform, new Vector3(hs.x * 0.84f * s, -hs.y * 0.12f, hs.z * 0.26f), new Vector3(0.06f, 0.09f, 0.16f), C(0.1f, 0.1f, 0.1f));
+            }
+        }
+        if (sp.tusks) Seg(head.transform, new Vector3(0f, -hs.y * 0.3f, hs.z * 0.82f), new Vector3(hs.x * 0.86f, hs.y * 0.42f, 0.1f), sp.patch);   // la bigotera
         CubeFace.Build(head.transform, new Vector3(0f, 0f, hs.z * 0.3f), hs, sp.snout, sp.fur, sp.eye, rig, earL, earR);
     }
 
@@ -236,12 +276,12 @@ public static class CubeCreature
 
     static void Pinniped(Transform body, Spec sp, CreatureRig rig)
     {
-        float L = sp.length, H = sp.height, W = sp.width;
+        float L = sp.length, H = sp.height, W = sp.width, k = L / 1.7f;   // k: las aletas crecen con el cuerpo (la foca mide 1,7 m)
         CubeJoint chest = J(body, BodyPart.Chest, new Vector3(0f, H * 0.5f, L * 0.05f), new Vector3(W, H, L * 0.35f), Vector3.zero, sp.fur, rig);
         CubeJoint back = J(chest.transform, BodyPart.Back, new Vector3(0f, -H * 0.05f, -L * 0.17f), new Vector3(W * 0.85f, H * 0.82f, L * 0.3f), new Vector3(0f, 0f, -L * 0.14f), sp.fur, rig);
         CubeJoint tail = J(back.transform, BodyPart.Tail, new Vector3(0f, -H * 0.05f, -L * 0.28f), new Vector3(W * 0.5f, H * 0.5f, L * 0.16f), new Vector3(0f, 0f, -L * 0.08f), sp.fur, rig);
         Seg(chest.transform, new Vector3(0f, -H * 0.4f, 0f), new Vector3(W * 0.8f, H * 0.2f, L * 0.34f), sp.belly);
-        for (int i = 0; i < 6; i++)   // manchas
+        for (int i = 0; i < 6 && !sp.noSpots; i++)   // manchas
             Seg(i < 3 ? chest.transform : back.transform, new Vector3((i % 2 == 0 ? 0.2f : -0.25f) * W, H * 0.48f, ((i % 3) - 1) * L * 0.08f), new Vector3(W * 0.12f, 0.01f, W * 0.1f), sp.fur * 0.75f + new Color(0, 0, 0, 1));
         CubeJoint neck = J(chest.transform, BodyPart.Neck, new Vector3(0f, H * 0.1f, L * 0.17f), new Vector3(W * 0.6f, H * 0.6f, sp.head.z * 0.6f), new Vector3(0f, 0f, sp.head.z * 0.3f), sp.fur, rig);
         neck.transform.localRotation = Quaternion.Euler(-25f, 0f, 0f);
@@ -251,14 +291,31 @@ public static class CubeCreature
             bool left = s < 0;
             // Aletas delanteras: hombro → antebrazo → mano, apoyadas en el suelo.
             CubeJoint sh = J(chest.transform, left ? BodyPart.ShoulderLeft : BodyPart.ShoulderRight, new Vector3(W * 0.45f * s, -H * 0.2f, L * 0.08f),
-                             new Vector3(0.06f, H * 0.3f, 0.08f), new Vector3(0f, -H * 0.15f, 0f), sp.fur, rig);
+                             new Vector3(0.06f * k, H * 0.3f, 0.08f * k), new Vector3(0f, -H * 0.15f, 0f), sp.fur, rig);
             sh.transform.localRotation = Quaternion.Euler(-30f, 0f, 25f * s);
-            CubeJoint fa = J(sh.transform, left ? BodyPart.ForearmLeft : BodyPart.ForearmRight, new Vector3(0f, -H * 0.3f, 0f), new Vector3(0.05f, H * 0.18f, 0.12f), new Vector3(0f, -H * 0.09f, 0.03f), sp.fur, rig);
-            J(fa.transform, left ? BodyPart.HandLeft : BodyPart.HandRight, new Vector3(0f, -H * 0.18f, 0f), new Vector3(0.04f, 0.03f, 0.16f), new Vector3(0f, 0f, 0.06f), sp.fur * 0.85f + new Color(0, 0, 0, 1), rig);
+            CubeJoint fa = J(sh.transform, left ? BodyPart.ForearmLeft : BodyPart.ForearmRight, new Vector3(0f, -H * 0.3f, 0f), new Vector3(0.05f * k, H * 0.18f, 0.12f * k), new Vector3(0f, -H * 0.09f, 0.03f), sp.fur, rig);
+            J(fa.transform, left ? BodyPart.HandLeft : BodyPart.HandRight, new Vector3(0f, -H * 0.18f, 0f), new Vector3(0.04f * k, 0.03f * k, 0.16f * k), new Vector3(0f, 0f, 0.06f * k), sp.fur * 0.85f + new Color(0, 0, 0, 1), rig);
             // Aletas traseras hacia atrás, al final de la cola.
-            CubeJoint th = J(tail.transform, left ? BodyPart.ThighLeft : BodyPart.ThighRight, new Vector3(W * 0.12f * s, 0f, -L * 0.16f), new Vector3(0.08f, 0.04f, L * 0.1f), new Vector3(0f, 0f, -L * 0.05f), sp.fur, rig);
+            CubeJoint th = J(tail.transform, left ? BodyPart.ThighLeft : BodyPart.ThighRight, new Vector3(W * 0.12f * s, 0f, -L * 0.16f), new Vector3(0.08f * k, 0.04f * k, L * 0.1f), new Vector3(0f, 0f, -L * 0.05f), sp.fur, rig);
             th.transform.localRotation = Quaternion.Euler(0f, 15f * s, 0f);
-            J(th.transform, left ? BodyPart.FootLeft : BodyPart.FootRight, new Vector3(0f, 0f, -L * 0.1f), new Vector3(0.14f, 0.02f, L * 0.08f), new Vector3(0f, 0f, -L * 0.04f), sp.fur * 0.85f + new Color(0, 0, 0, 1), rig);
+            J(th.transform, left ? BodyPart.FootLeft : BodyPart.FootRight, new Vector3(0f, 0f, -L * 0.1f), new Vector3(0.14f * k, 0.02f * k, L * 0.08f), new Vector3(0f, 0f, -L * 0.04f), sp.fur * 0.85f + new Color(0, 0, 0, 1), rig);
+        }
+    }
+
+    // Ave voladora: cuerpo horizontal y dos alas largas que bate SnowPetrelLife desde el hombro.
+    static void FlyingBird(Transform body, Spec sp, CreatureRig rig)
+    {
+        float L = sp.length, H = sp.height, span = sp.width;
+        CubeJoint chest = J(body, BodyPart.Chest, new Vector3(0f, H * 0.5f + 0.03f, 0f), new Vector3(H * 0.9f, H, L * 0.6f), Vector3.zero, sp.fur, rig);
+        J(chest.transform, BodyPart.Tail, new Vector3(0f, 0f, -L * 0.3f), new Vector3(H * 0.8f, H * 0.2f, L * 0.3f), new Vector3(0f, 0f, -L * 0.14f), sp.fur, rig);
+        CubeJoint neck = J(chest.transform, BodyPart.Neck, new Vector3(0f, H * 0.2f, L * 0.28f), new Vector3(H * 0.55f, H * 0.55f, L * 0.1f), new Vector3(0f, 0f, L * 0.04f), sp.fur, rig);
+        Head(neck.transform, new Vector3(0f, 0f, L * 0.09f), Quaternion.identity, sp, rig);
+        for (int s = -1; s <= 1; s += 2)
+        {
+            bool left = s < 0;
+            float half = span * 0.5f - H * 0.4f;
+            J(chest.transform, left ? BodyPart.ShoulderLeft : BodyPart.ShoulderRight, new Vector3(H * 0.45f * s, H * 0.3f, 0f), new Vector3(half, 0.012f, L * 0.3f), new Vector3(half * 0.5f * s, 0f, 0f), sp.fur, rig);
+            J(chest.transform, left ? BodyPart.FootLeft : BodyPart.FootRight, new Vector3(H * 0.25f * s, -H * 0.5f, -L * 0.05f), new Vector3(0.012f, 0.03f, 0.03f), new Vector3(0f, -0.015f, 0f), sp.accent, rig);
         }
     }
 
@@ -272,7 +329,7 @@ public static class CubeCreature
         Seg(hips.transform, new Vector3(0f, H * 0.09f, D * 0.42f), new Vector3(W * 0.8f, H * 0.18f, D * 0.2f), sp.belly);
         CubeJoint neck = J(chest.transform, BodyPart.Neck, new Vector3(0f, torso, 0f), new Vector3(W * 0.55f, H * 0.08f, D * 0.6f), new Vector3(0f, H * 0.04f, 0f), sp.fur, rig);
         Seg(neck.transform, new Vector3(0f, H * 0.04f, D * 0.25f), new Vector3(W * 0.5f, H * 0.07f, D * 0.15f), sp.accent);   // mancha amarilla
-        Spec headSpec = new Spec { head = sp.head, snout = sp.snout, ear = Vector2.zero, fur = sp.fur, belly = sp.belly, eye = sp.eye };
+        Spec headSpec = new Spec { head = sp.head, snout = sp.snout, ear = Vector2.zero, fur = sp.headFur.a > 0f ? sp.headFur : sp.fur, belly = sp.belly, eye = sp.eye, earPatch = sp.earPatch, eyeRing = sp.eyeRing, patch = sp.patch };
         Head(neck.transform, new Vector3(0f, H * 0.08f + sp.head.y * 0.5f, 0f), Quaternion.identity, headSpec, rig);
         for (int s = -1; s <= 1; s += 2)
         {
@@ -283,9 +340,9 @@ public static class CubeCreature
             sh.transform.localRotation = Quaternion.Euler(0f, 0f, 8f * s);
             J(sh.transform, left ? BodyPart.ForearmLeft : BodyPart.ForearmRight, new Vector3(0f, -torso * 0.45f, 0f), new Vector3(0.03f, torso * 0.3f, D * 0.32f), new Vector3(0f, -torso * 0.15f, 0f), sp.fur, rig);
             // Patas cortas con pie palmeado.
-            CubeJoint th = J(hips.transform, left ? BodyPart.ThighLeft : BodyPart.ThighRight, new Vector3(W * 0.2f * s, 0f, 0f), new Vector3(0.07f, leg * 0.6f, 0.07f), new Vector3(0f, -leg * 0.3f, 0f), sp.fur, rig);
-            CubeJoint sn = J(th.transform, left ? BodyPart.ShinLeft : BodyPart.ShinRight, new Vector3(0f, -leg * 0.6f, 0f), new Vector3(0.05f, leg * 0.35f, 0.05f), new Vector3(0f, -leg * 0.17f, 0f), C(0.3f, 0.3f, 0.32f), rig);
-            J(sn.transform, left ? BodyPart.FootLeft : BodyPart.FootRight, new Vector3(0f, -leg * 0.38f, 0f), new Vector3(0.1f, 0.025f, 0.14f), new Vector3(0f, -0.012f, 0.05f), C(0.35f, 0.35f, 0.38f), rig);
+            CubeJoint th = J(hips.transform, left ? BodyPart.ThighLeft : BodyPart.ThighRight, new Vector3(W * 0.2f * s, 0f, 0f), new Vector3(0.07f * H, leg * 0.6f, 0.07f * H), new Vector3(0f, -leg * 0.3f, 0f), sp.fur, rig);
+            CubeJoint sn = J(th.transform, left ? BodyPart.ShinLeft : BodyPart.ShinRight, new Vector3(0f, -leg * 0.6f, 0f), new Vector3(0.05f * H, leg * 0.35f, 0.05f * H), new Vector3(0f, -leg * 0.17f, 0f), C(0.3f, 0.3f, 0.32f), rig);
+            J(sn.transform, left ? BodyPart.FootLeft : BodyPart.FootRight, new Vector3(0f, -leg * 0.38f, 0f), new Vector3(0.1f * H, 0.025f * H, 0.14f * H), new Vector3(0f, -0.012f * H, 0.05f * H), C(0.35f, 0.35f, 0.38f), rig);
         }
         CubeJoint tail = J(hips.transform, BodyPart.Tail, new Vector3(0f, H * 0.04f, -D * 0.45f), new Vector3(W * 0.4f, 0.03f, D * 0.3f), new Vector3(0f, 0f, -D * 0.12f), sp.fur, rig);
         tail.transform.localRotation = Quaternion.Euler(-25f, 0f, 0f);
@@ -310,7 +367,7 @@ public static class CubeCreature
             if (sp.wings)
             {
                 CubeJoint w = J(thorax.transform, s < 0 ? BodyPart.ScapulaLeft : BodyPart.ScapulaRight, new Vector3(W * 0.3f * s, H * 0.32f, 0f),
-                                new Vector3(L * 0.35f, 0.006f, L * 0.18f), new Vector3(L * 0.17f * s, 0f, -L * 0.05f), C(0.92f, 0.96f, 0.99f), rig);
+                                new Vector3(L * 0.35f, 0.006f, L * 0.18f), new Vector3(L * 0.17f * s, 0f, -L * 0.05f), C(0.6f, 0.64f, 0.68f), rig);   // (alas grises: blancas y opacas brillaban como una lámpara)
                 w.transform.localRotation = Quaternion.Euler(0f, 25f * s, 10f * s);
             }
         }

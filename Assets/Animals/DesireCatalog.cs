@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 /// <summary>
 /// Un DESEO seleccionable (docs/volition-selection-engine.md §3): cuánto lo quiere el ser AHORA (`NeedProbe`, de sus
@@ -60,8 +61,13 @@ public static class DesireCatalog
     {
         // COMER: necesidad = hambre (>0 cuando hungry>=0, como el guard actual). Despacha el Feed existente
         // (Forager.Hunt/Graze) — idéntico a lo que hacía RespondToHunger.
+        // No lo siente quien NO PUEDE forrajear (la cría lactante, la pupa: su hambre la atiende «nurse», abajo) ni quien
+        // acaba de comprobar que no tiene comida a su alcance (Forager.GaveUp: el lobo en su perrera, el pingüino lejos del
+        // banco): antes «eat» ganaba igual, Feed no hacía nada y el animal se quedaba plantado queriendo comer.
         new Desire("eat",
-            self => self.hungry >= 0f ? Mathf.Max(0.01f, self.hungry) : 0f,
+            // (el animal ENCERRADO —cría de un recinto de la Cría, paciente de la perrera— no forrajea: se la dan sus cuidadores,
+            // ver «nurse» abajo; antes salía a cazar a las crías del recinto de al lado o a pescar desde la Cría y se plantaba)
+            self => self.hungry >= 0f && Metamorphosis.CanForage(self) && !Confined(self) && (self.Forage == null || !self.Forage.GaveUp) ? Mathf.Max(0.01f, self.hungry) : 0f,
             self => self.StartCoroutine(self.Feed()),
             "forage",
             // SUPRAHECHIZO de comer: LEVANTARSE (paso compartido) → ANALIZAR → COMER. El 'levantarse' es la MISMA factory
@@ -82,11 +88,37 @@ public static class DesireCatalog
             self =>
             {
                 if (self.nav == null || !self.nav.isOnNavMesh) return;
+                if (PenWander(self)) return;   // en un recinto de la Cría: no hay pareja que alcanzar; curiosea por su recinto
+                // Todo destino, ALCANZABLE (camino completo por el NavMesh): antes iba hacia la pareja/llamada/rastro aunque
+                // estuviera en otra placa de hielo o tras un muro, llegaba al final del camino posible y se plantaba ahí
+                // «queriendo pareja» (JornadaTest: pingüinos atascados > 20 s con «mate»).
                 // Si alguien de su especie LLAMA (destellos de luciérnaga, canto de cigarra) y lo percibe, va hacia él.
                 MatingSignal caller = MatingSignal.NearestCaller(self, 40f * Mathf.Max(0.3f, self.perception));
-                if (caller != null && self.sex == Sex.female) { self.nav.SetDestination(caller.transform.position); return; }
-                Vector3 g = TraceField.Trail(self.transform.position, TraceChannel.Estrus);
-                if (g.sqrMagnitude > 0.0001f) self.nav.SetDestination(self.transform.position + g.normalized * 6f);
+                if (caller != null && self.sex == Sex.female && Flat(caller.transform.position - self.transform.position) > 2.5f && GoTo(self, "mate", caller.transform.position)) return;
+                // Sin llamada: hacia el adulto del otro sexo de su especie más cercano que VE; si no ve ninguno, sigue el rastro del
+                // celo y, sin rastro, un paseo de búsqueda (antes se quedaba plantado «queriendo pareja» todo el día).
+                // (2026-11-02) El rastro, solo si no ve pareja, y cada tramo de 6 m hasta el final: en la colonia el rastro es el de
+                // todos (también el SUYO: cada adulto en celo deja Estrus) y su pendiente cambiaba a cada decisión; re-apuntando
+                // cada 2,5 s el pingüino iba y venía 30 m en 20 s para 1,5 m netos («da vueltas en círculo (mate)», en vivo).
+                Animal mate = null; float md = 40f;
+                foreach (GameObject o in self.Population)
+                {
+                    if (o == null || o == self.gameObject || !o.TryGetComponent(out Animal oa) || oa.death || oa.lifeStage != LifeStage.adult || oa.sex == self.sex) continue;
+                    float dd = Vector3.Distance(o.transform.position, self.transform.position);
+                    if (dd < md) { md = dd; mate = oa; }
+                }
+                // JUNTO A LA PAREJA: el cortejo es ir y venir a su lado, con pausas (antes, a < 2 m, el paseo al azar de 8 m
+                // lo alejaba y el «ir hacia ella» lo traía: daba vueltas en círculo, 16 m en 20 s para 0,3 m netos).
+                if (mate != null && md <= 2.5f) { Transform mt = mate.transform; Stroll(self, "cortejo", () => mt.position + Ring(1f, 2.5f), 1.5f, 3.5f, 0.6f); return; }
+                if (mate != null && GoTo(self, "mate", mate.transform.position)) return;
+                if (mate == null)
+                {
+                    Trip tr = TripOf(self, "rastro");
+                    if (Going(self, tr)) return;
+                    Vector3 g = TraceField.Trail(self.transform.position, TraceChannel.Estrus);
+                    if (g.sqrMagnitude > 0.0001f && Time.time >= tr.failUntil && NavReach.Reachable(self, self.transform.position + g.normalized * 6f, out Vector3 at) && Flat(at - self.transform.position) >= 2f) { Walk(self, tr, at); return; }
+                }
+                Explore(self, "buscar pareja");
             },
             "mate"),
 
@@ -109,6 +141,16 @@ public static class DesireCatalog
             self => NurseCub(self),
             "tend"),
 
+        // SER NUTRIDA (el otro lado de «nurse»): la CRÍA que aún no forrajea y tiene hambre no sale a cazar ni a pescar —
+        // llama y se arrima a su madre/padre (el adulto vinculado más cercano) para que la alimente, o, sin él (la cría
+        // huérfana de un recinto de la Cría), espera la toma en su sitio (su HomeOrigin). Antes «eat» ganaba, Feed no hacía
+        // nada (CanForage = false) y la cría se quedaba plantada «queriendo comer» o daba vueltas por el recinto.
+        new Desire("nurse",
+            // También el ENCERRADO (recinto de la Cría, perrera del hospital): sus cuidadores le dan la toma (CriaFeeder, VetCare).
+            self => self.hungry >= 0f && ((self.lifeStage == LifeStage.child && !Metamorphosis.CanForage(self)) || Confined(self)) ? Mathf.Max(0.01f, self.hungry) : 0f,
+            self => AwaitFeeding(self),
+            "follow"),
+
         // GUARDAR EL NIDO (tijereta, solífugo, escorpión; BroodRide.Guards): la madre con crías pequeñas VINCULADAS se queda
         // en casa vigilándolas (las tijeretas: juntan, limpian y defienden la puesta, Kölliker 2007). Necesidad = vínculo
         // con sus crías × afabilidad → una madre poco afable o hambrienta (eat gana) las deja más; el resto, no lo siente.
@@ -117,10 +159,32 @@ public static class DesireCatalog
             self =>
             {
                 if (self.nav == null || !self.nav.isOnNavMesh) return;
-                if (Vector3.Distance(self.transform.position, self.HomeOrigin) > 1.5f) self.nav.SetDestination(self.HomeOrigin);
-                else { self.nav.ResetPath(); self.Loco?.Idle(1f); self.alertness = Mathf.Max(self.alertness, 0.3f); }   // en el nido, atenta
+                if (Vector3.Distance(self.transform.position, self.HomeOrigin) > 1.5f) Move(self, self.HomeOrigin);
+                else { NavTrace.Reset(self, "brood (vigila el nido)"); self.Loco?.Idle(1f); self.alertness = Mathf.Max(self.alertness, 0.3f); }   // en el nido, atenta
             },
             "tend"),
+
+        // ── PROCESOS NATURALES (LifeHistory; docs/ciclo-de-vida.md) ──
+        // BEBER: con sed, al bebedero o comer nieve (los que sacan el agua de la comida no lo sienten: Hydration).
+        new Desire("drink",
+            self => { Hydration h = self.GetComponent<Hydration>(); return h != null && !Confined(self) ? h.Need * W_DRINK : 0f; },
+            self => Drink(self),
+            "forage"),
+        // GUARIDA DE MATERNIDAD (oso polar, malamute): la preñada entra antes del parto, pare y cría dentro, y sale con las crías.
+        new Desire("den",
+            self => DenNeed(self),
+            self => StayInDen(self),
+            "tend"),
+        // INCUBAR (pingüino emperador): con el huevo sobre las patas, quieto y en ayunas; el macho va a por el huevo.
+        new Desire("incubate",
+            self => Egg.ToIncubate(self) != null ? W_INCUBATE : 0f,
+            self => Incubate(self),
+            "tend"),
+        // LA CRÍA SIGUE A SU MADRE en tierra (osezno, cachorro, polluelo junto a sus padres; LifeHistory.youngFollow).
+        new Desire("heel",
+            self => HeelNeed(self),
+            self => Heel(self),
+            "follow"),
 
         // SEGUIR/COHESIÓN: acercarse al ser querido más cercano (mantener la manada unida). Necesidad = vínculo × lejanía,
         // amplificada por la sociabilidad. Débil por diseño (fondo) → el hambre/amenaza lo superan; los muy sociales lo sienten más.
@@ -133,15 +197,19 @@ public static class DesireCatalog
         // Restore pasivo recupera). Compite con todo → un ser agotado prioriza parar sobre deambular/comer un poco.
         new Desire("rest",
             self => Mathf.Clamp01((self.sleepiness + self.mentalFatigue) * 0.5f),
-            self => { if (self.nav != null && self.nav.isOnNavMesh) self.nav.ResetPath(); self.Loco?.Idle(1f); },
+            self => { if (self.nav != null && self.nav.isOnNavMesh) NavTrace.Reset(self, "rest (descansa)"); self.Loco?.Idle(1f); },
             "rest"),
 
         // VOLVER AL HOGAR (cohesión de nido / territorialidad): deriva hacia el `HomeOrigin` cuando se aleja y no hay
         // apremio. Cubre el LADO CRÍA de la migración postnatal (quedarse cerca del nido) y a cualquier ser territorial.
         // Débil (fondo) → el hambre/amenaza/social lo superan. docs/sanctuary1-level-and-live-tests §3.
+        // En casa (dentro de su zona) no lo siente; si su casa no se puede alcanzar desde donde está, deja de sentirlo un rato
+        // (antes: SetDestination al punto exacto del hogar cada decisión → la colonia entera se arremolinaba en ese punto
+        // —«da vueltas en círculo (homebound)»— y el que tenía la casa fuera de su trozo de NavMesh llegaba al final del
+        // camino posible y se plantaba allí para siempre —«atascado > 20 s (homebound)»—).
         new Desire("homebound",
-            self => W_HOME * Mathf.Clamp01(Vector3.Distance(self.transform.position, self.HomeOrigin) / Mathf.Max(1f, self.HomeRadius)),
-            self => { if (self.nav != null && self.nav.isOnNavMesh) self.nav.SetDestination(self.HomeOrigin); },
+            self => HomeNeed(self),
+            self => GoHome(self),
             "homebound"),
 
         // HÁBITO NATURAL (docs/natural-interactions.md): lo que la especie HACE en la naturaleza con su entorno —chupar
@@ -168,10 +236,314 @@ public static class DesireCatalog
         // → los curiosos exploran más; los apáticos se quedan. Despacha un vagabundeo corto.
         new Desire("explore",
             self => W_EXPLORE * Mathf.Clamp01((self.reasoning + self.creativity) * 0.5f),
-            // UnityEngine.Random explícito: el `using System` de arriba trae System.Random y el nombre corto es ambiguo (CS0104).
-            self => { if (self.nav != null && self.nav.isOnNavMesh) { Vector2 r = UnityEngine.Random.insideUnitCircle * 8f; self.nav.SetDestination(self.transform.position + new Vector3(r.x, 0f, r.y)); } },
+            // Paseo a SALTOS con pausas (andar, pararse a mirar, seguir) sesgado hacia delante (LifeStage.WanderTarget: no vuelve por
+            // donde vino) y siempre a un sitio alcanzable. Antes: un punto al azar a ≤ 8 m EN CADA DECISIÓN (cada ~2,5 s), aunque
+            // aún fuera hacia el anterior → zigzag sin avanzar («da vueltas en círculo (explore)»), o un punto fuera del NavMesh
+            // en el que se quedaba plantado. (la cría de un recinto de la Cría curiosea por su recinto: PenWander)
+            self => { if (self.nav != null && self.nav.isOnNavMesh && !PenWander(self)) Explore(self, "explore"); },
             "explore"),
     };
+
+    /// <summary>¿Está ENCERRADO al cuidado de alguien? Cría de un recinto de la Cría (hijo de un <see cref="CriaFeeder"/>) o
+    /// animal ingresado en el hospital veterinario (<see cref="VetCare.Admitted"/>, el lobo de la perrera). No forrajea (se lo
+    /// dan) y pasea solo por su recinto.</summary>
+    public static bool Confined(Animal self) => self != null && (self.GetComponentInParent<CriaFeeder>() != null || VetCare.Admitted(self));
+
+    /// <summary>
+    /// UN ANIMAL ENCERRADO (recinto de la Cría, perrera) curiosea por su recinto: va a un sitio ALCANZABLE a 0,8–2,2 m del
+    /// suyo, se para unos segundos y vuelta a empezar. Antes: un sitio al azar sin comprobar que se pudiera llegar (tras la
+    /// guarida, una roca o el muro el agente nunca llegaba y, como «aún iba», no elegía otro: «atascado > 20 s queriendo
+    /// explorar»), y sin pausas daba vueltas al recinto («da vueltas en círculo»). Devuelve false si no está encerrado.
+    /// </summary>
+    static bool PenWander(Animal self)
+    {
+        if (!Confined(self)) return false;
+        // (2026-11-11, vivo59) Su sitio, si sigue cerca; si no, donde está: con la Cría en el piso del árbol (a 108 m) su HomeOrigin se quedó en el
+        // recinto viejo, los pasitos caían lejos de todo NavMesh y las crías no se movían nunca («recinto» 1 802 s sin moverse, Cachorro_1/2/3).
+        // (2026-11-11, vivo61) Y A UN SITIO DE VERDAD: con pasitos de 0,8–2,2 m el punto alcanzable más cercano era su propio sitio (meta =
+        // su posición: «llegaba» al momento, 124–283 viajes en 800–1 700 llamadas, 1 800 s sin moverse: Polluelo_1/2/3, Osezno_2). Ahora un punto
+        // de 1,5 a 5 m, con camino completo (PenGoal); si no hay ninguno, descansa (sin viaje).
+        Trip t = TripOf(self, "recinto");
+        t.calls++; t.lastCall = Time.time;
+        if (t.going) { if (Going(self, t)) return true; t.pauseUntil = Time.time + UnityEngine.Random.Range(4f, 9f); self.Loco?.Idle(1f); return true; }   // llegó (o se atascó): mira y olfatea
+        if (Time.time < t.pauseUntil || Time.time < t.failUntil) return true;
+        if (PenGoal(self, out Vector3 goal)) { Walk(self, t, goal); return true; }
+        t.pauseUntil = Time.time + UnityEngine.Random.Range(4f, 9f); self.Loco?.Idle(1f);
+        return true;
+    }
+
+    /// <summary>(2026-11-11) Un sitio del recinto de 1,5 a 5 m de la cría (alrededor de su sitio, o de donde está si su sitio guardado quedó lejos),
+    /// con camino completo. false si no hay ninguno en 16 intentos.</summary>
+    public static bool PenGoal(Animal self, out Vector3 goal)
+    {
+        goal = self != null ? self.transform.position : Vector3.zero;
+        if (self == null) return false;
+        Vector3 here = self.transform.position;
+        Vector3 home = Vector3.Distance(self.HomeOrigin, here) > 6f ? here : self.HomeOrigin;
+        for (int i = 0; i < 16; i++)
+        {
+            Vector3 p = home + Ring(1.5f, 5f);
+            if (NavReach.Reachable(self, p, out Vector3 at, 1f) && Flat(at - here) >= 1.5f && Flat(at - here) <= 5.5f && !Detour(self, at, here)) { goal = at; return true; }   // (sin rodeos: Polluelo_2, 2,3 m por 6 esquinas, vivo62)
+        }
+        return false;
+    }
+
+    // ══ MOVIMIENTO DE LOS DESEOS: siempre a sitios ALCANZABLES, con tope y sin re-apuntar en cada decisión ══════════════
+    // Un «viaje» por animal: hacia dónde va, por qué deseo, desde cuándo y cuánto ha avanzado. Si en 5 s no se acerca (un muro,
+    // otro animal en medio) o tarda más de 40 s, lo deja; ese deseo no vuelve a intentar ese viaje en unos segundos.
+    class Trip { public string key; public Vector3 goal; public bool going; public float since, best, bestAt, pauseUntil, failUntil, lastCall, reissueAt; public int calls, started; }
+    /// <summary>Viajes que se quedaron sin camino lejos de su meta (diagnóstico).</summary>
+    public static int NoPathTrips;
+    static int _noPathLogs;
+    /// <summary>(Pruebas) Un viaje a <paramref name="goal"/> recién empezado cuyo agente se ha quedado sin camino: ¿Going lo sigue llevando?</summary>
+    public static bool GoingWithoutPathForTest(Animal a, Vector3 goal)
+    {
+        if (a == null || a.nav == null || !a.nav.isOnNavMesh) return false;
+        a.nav.ResetPath();
+        var t = new Trip { key = "prueba", goal = goal, going = true, since = Time.time, bestAt = Time.time, best = float.MaxValue };
+        return Going(a, t);
+    }
+    /// <summary>Diagnóstico: el viaje de un animal (deseo, si va, destino, pausas, llamadas).</summary>
+    /// <summary>(2026-11-11) El estado del agente de un animal, para los avisos de «atascado»: camino, cálculo pendiente, estado, velocidad,
+    /// sobre el NavMesh y distancia al destino.</summary>
+    /// <summary>(2026-11-11) UN SOLO DUEÑO DEL CUERPO: al ganar <paramref name="newKey"/> (Volition), el viaje de otro deseo se acaba (sin
+    /// tocar el agente: el nuevo pone su camino) y el hábito, si no es él quien gana, suelta al animal.</summary>
+    public static void Handover(Animal a, string newKey)
+    {
+        if (a == null) return;
+        if (_trips.TryGetValue(a, out Trip t) && t.going && t.key != newKey && !SameTrip(t.key, newKey)) t.going = false;
+        if (newKey != "habit" && a.TryGetComponent(out Habit h) && h.Active) h.Release();
+    }
+    // (el deseo «habit» y el viaje del deseo se llaman igual; «explore» usa el viaje «explore»; «buscar pareja», «cortejo» y «rastro» son de «mate»; «recinto», de «explore»)
+    static bool SameTrip(string tripKey, string desireKey) => tripKey == desireKey || (desireKey == "mate" && (tripKey == "buscar pareja" || tripKey == "cortejo" || tripKey == "rastro")) || (desireKey == "explore" && tripKey == "recinto");
+
+    /// <summary>(Pruebas) Empieza un viaje <paramref name="key"/> a <paramref name="goal"/>.</summary>
+    public static void StartTripForTest(Animal a, string key, Vector3 goal) { if (a == null) return; Trip t = TripOf(a, key); Walk(a, t, goal); }
+
+    /// <summary>(2026-11-11) ¿Lleva un viaje de deseo en marcha (para NavTrace)?</summary>
+    public static bool LiveTrip(Animal a, out string key) { key = null; if (a == null || !_trips.TryGetValue(a, out Trip t) || !t.going) return false; key = t.key; return true; }
+
+    public static string NavInfo(Animal a)
+    {
+        NavMeshAgent n = a != null ? a.nav : null;
+        if (n == null) return "sin agente";
+        if (!n.isActiveAndEnabled) return "agente apagado";
+        return $"agente: en NavMesh {n.isOnNavMesh}, camino {n.hasPath}, pendiente {n.pathPending}, estado {n.pathStatus}, velocidad {n.velocity.magnitude:0.00} (pedida {n.speed:0.0}), destino a {Vector3.Distance(n.transform.position, n.destination):0.0} m, parado {n.isStopped}";
+    }
+
+    public static string TripInfo(Animal a) => a != null && _trips.TryGetValue(a, out Trip t) ? $"viaje «{t.key}» va={t.going} meta={t.goal:F1} pausa={t.pauseUntil - Time.time:0.0} fallo={t.failUntil - Time.time:0.0} llamadas={t.calls} (hace {Time.time - t.lastCall:0.0} s) empezados={t.started}" : "sin viaje";
+    static readonly Dictionary<Animal, Trip> _trips = new Dictionary<Animal, Trip>();
+    static readonly Dictionary<Animal, float> _homeBlocked = new Dictionary<Animal, float>();
+    static int _homeLogs;
+    /// <summary>Contadores para el diagnóstico (viajes empezados, atascados, paseos sin sitio alcanzable).</summary>
+    public static int TripsStarted, TripsStalled, StrollNoPick, Strolls;
+
+    static int _noPickLogs, _stallLogs, _stillLogs;
+    static readonly Dictionary<Animal, (Vector3 at, float since, float logged)> _still = new Dictionary<Animal, (Vector3, float, float)>();
+    static Trip TripOf(Animal a, string key)
+    {
+        if (!_trips.TryGetValue(a, out Trip t)) _trips[a] = t = new Trip();
+        if (t.key != key) { t.key = key; t.going = false; t.pauseUntil = 0f; t.failUntil = 0f; }   // otro deseo: viaje nuevo
+        return t;
+    }
+
+    static float Flat(Vector3 v) => new Vector2(v.x, v.z).magnitude;
+    static Vector3 Ring(float rMin, float rMax) { Vector2 r = UnityEngine.Random.insideUnitCircle.normalized * UnityEngine.Random.Range(rMin, rMax); return new Vector3(r.x, 0f, r.y); }
+
+    // ¿Sigue de camino? true mientras avanza hacia su destino; false al llegar o al atascarse (y entonces lo deja).
+    static bool Going(Animal self, Trip t)
+    {
+        if (!t.going) return false;
+        NavMeshAgent nav = self.nav;
+        if (nav == null || !nav.isOnNavMesh) { t.going = false; return false; }
+        if (nav.pathPending) { if (Time.time - t.since > 3f) { t.going = false; t.failUntil = Time.time + 4f; TripsStalled++; NavTrace.Reset(self, "deseo: camino pendiente > 3 s"); return false; } return true; }   // (camino que no llega a calcularse: tope)
+        // Con camino y sin velocidad: una pausa (Idle, velocidad 0) de otra conducta, como «no alcanza comida; descansa», le dejaba quieto con
+        // el viaje en marcha hasta darlo por atascado (osos, lobos, crías: «velocidad pedida 0,0 … sin WalkSpell»). Quien lleva el viaje, anda.
+        if (nav.hasPath && nav.speed < 0.05f && !self.busy) self.Loco?.SetGait(false, 0.1f);
+        // (2026-11-11) SIN CAMINO NO ES «LLEGÓ»: si el agente se queda sin camino (un SetPath descartado, un ResetPath de otra conducta) lejos de su
+        // meta, el viaje vuelve a pedirlo; si en 3 s sigue sin él, se da por fallido (con su pausa) en vez de empezar otro cada segundo sin
+        // moverse («[Fauna] atascado … empezados=136 · camino False … destino a 0,0 m», 333 líneas en vivo: renos, pingüinos, zorros, insectos).
+        if (!nav.hasPath && Flat(t.goal - self.transform.position) > nav.stoppingDistance + 0.6f)
+        {
+            if (Time.time - t.since > 3f)
+            {
+                t.going = false; t.failUntil = Time.time + 4f; TripsStalled++; NoPathTrips++;
+                if (_noPathLogs < 30) { _noPathLogs++; Debug.Log($"[Fauna] «{self.name}» se queda sin camino hacia {t.goal} ({Flat(t.goal - self.transform.position):0.0} m): {NavInfo(self)} · {NavTrace.Last(self)}."); }
+                return false;
+            }
+            if (Time.time >= t.reissueAt) { t.reissueAt = Time.time + 0.5f; self.Loco?.SetGait(false, 0.1f); NavTrace.Dest(self, nav, t.goal, "deseo: lo vuelve a pedir"); }
+            return true;
+        }
+        float rem = nav.hasPath ? Remaining(nav) : 0f;
+        if (rem <= nav.stoppingDistance + 0.35f) { t.going = false; return false; }   // llegó
+        if (rem < t.best - 0.25f) { t.best = rem; t.bestAt = Time.time; }
+        if (Time.time - t.bestAt > 5f || Time.time - t.since > 40f)                    // atascado o tope
+        {
+            if (_stallLogs < 30) { _stallLogs++; Debug.Log($"[Fauna] «{self.name}» se atasca yendo a {t.goal} desde {self.transform.position}: quedan {rem:0.0} m, velocidad pedida {nav.speed:0.0}, real {nav.velocity.magnitude:0.0}, parado {nav.isStopped}, camino {nav.pathStatus}{(nav.speed < 0.05f ? $", sin velocidad: {(self.Walk != null && self.Walk.IsCharging ? "en postura de carga" : self.TryGetComponent(out CharacterLevel cl) ? $"energía {cl.currentEnergy:0.0}/{cl.MaxEnergy:0.0}" : "sin WalkSpell ni energía")}" : "")}."); }
+            t.going = false; t.failUntil = Time.time + 8f; TripsStalled++;
+            NavTrace.Reset(self, "deseo: atascado o tope");
+            return false;
+        }
+        return true;
+    }
+
+    // Lo que le queda por el camino. remainingDistance es Infinito cuando el camino tiene más esquinas de las que el agente ya calculó: con
+    // eso nunca «mejoraba» ni «llegaba», y a los 5 s el viaje se daba por atascado aunque fuera a toda velocidad (ronda 22: liebres, renos,
+    // pingüinos y bueyes «quedan Infinito m … real 5,0»). Entonces se suma el camino de esquina en esquina.
+    static float Remaining(NavMeshAgent nav)
+    {
+        float r = nav.remainingDistance;
+        if (!float.IsInfinity(r) && !float.IsNaN(r)) return r;
+        Vector3[] c = nav.path.corners;
+        if (c == null || c.Length == 0) return Vector3.Distance(nav.transform.position, nav.destination);
+        float sum = Vector3.Distance(nav.transform.position, c[Mathf.Min(1, c.Length - 1)]);
+        for (int i = 1; i < c.Length - 1; i++) sum += Vector3.Distance(c[i], c[i + 1]);
+        return sum;
+    }
+
+    static void Walk(Animal self, Trip t, Vector3 at)
+    {
+        TripsStarted++; t.started++; t.goal = at; t.since = t.bestAt = Time.time; t.best = float.MaxValue;
+        // (2026-11-11, ronda 59) Un camino que no lleva (parcial, de una esquina, o que acaba a < 1 m de donde empieza: otra isla del NavMesh)
+        // no es un viaje: el agente «llegaba» al momento, se quedaba sin camino y el paseo esperaba. Se da por fallido ya, con su pausa.
+        t.going = Move(self, at);
+        if (!t.going) { t.failUntil = Time.time + 4f; TripsStalled++; BadPaths++; }
+    }
+    /// <summary>Viajes que no se empezaron porque el camino no llevaba a ninguna parte (diagnóstico).</summary>
+    public static int BadPaths;
+
+    // Ir andando: destino Y paso de andar (la pausa anterior lo dejó en «quieto», velocidad 0: con solo SetDestination el
+    // agente tenía destino pero no andaba). true = lleva camino de verdad.
+    static bool Move(Animal self, Vector3 to)
+    {
+        NavMeshAgent nav = self.nav;
+        if (nav == null || !nav.isOnNavMesh) return false;
+        // (2026-11-11) EL AGENTE CON EL CUERPO: si su posición interna se ha quedado lejos del cuerpo (lo movió otra cosa sin Warp), el camino
+        // sale de allí y el agente «llega» enseguida sin moverse (lo mismo que le pasaba a la gente del microcosmos, MicroMove).
+        Vector3 gap = nav.nextPosition - self.transform.position; gap.y = 0f;
+        if (gap.sqrMagnitude > 0.25f) { NavTrace.Mark(self, $"deseo: agente desfasado {gap.magnitude:0.0} m (Warp)", self.transform.position); nav.Warp(self.transform.position); }
+        self.Loco?.SetGait(false, 1f);
+        // Con el camino YA calculado (NavReach acaba de comprobar que se llega): SetPath, sin esperar a que el agente lo pida y lo calcule otra
+        // vez (con cientos de obstáculos tallando, SetDestination podía quedarse «pendiente» y el animal quieto).
+        if (NavReach.LastPathTo(self, to, out NavMeshPath p))
+        {
+            int n = p.corners.Length; float span = n > 1 ? Flat(p.corners[n - 1] - p.corners[0]) : 0f;
+            NavTrace.Mark(self, $"deseo: SetPath ({p.status}, {n} esquinas, {span:0.0} m)", to);
+            if (p.status != NavMeshPathStatus.PathComplete || n < 2 || span < 0.5f) return false;   // (0,5 m: los pasitos de las crías del recinto son de 0,6–2,2 m)
+            if (nav.SetPath(p) && (nav.hasPath || nav.pathPending)) return true;
+        }
+        NavTrace.Dest(self, nav, to, "deseo: SetDestination");
+        return nav.hasPath || nav.pathPending;
+    }
+
+    /// <summary>Va hacia <paramref name="dest"/> si se puede llegar (camino completo); true si va (o ya iba). Re-apunta solo
+    /// si el destino se movió (una pareja que anda). false si no se puede llegar, si ya está allí o si se acaba de atascar.</summary>
+    static bool GoTo(Animal self, string key, Vector3 dest)
+    {
+        Trip t = TripOf(self, key);
+        if (Time.time < t.failUntil) return false;
+        if (t.going && Flat(dest - t.goal) < 1.5f) { if (Going(self, t)) return true; if (Time.time < t.failUntil) return false; }
+        if (!NavReach.Reachable(self, dest, out Vector3 at)) return false;
+        if (Flat(at - self.transform.position) < 0.8f) return false;
+        Walk(self, t, at);
+        return true;
+    }
+
+    /// <summary>PASEO A SALTOS: anda a un sitio alcanzable que elige <paramref name="pick"/>, al llegar se para
+    /// <paramref name="pauseMin"/>–<paramref name="pauseMax"/> s (mira, olfatea) y elige otro. Nunca re-apunta a medio camino.</summary>
+    static void Stroll(Animal self, string key, Func<Vector3> pick, float pauseMin, float pauseMax, float minHop)
+    {
+        Trip t = TripOf(self, key);
+        bool was = t.going; Strolls++; t.calls++; t.lastCall = Time.time;
+        // (2026-11-11) DIAGNÓSTICO EN VIVO: un paseo (explore, el recinto) que en 20 s no le ha movido medio metro lo dice, una vez por minuto y
+        // animal, con su viaje y su agente (rondas 50–51: renos, zorros, orcas y las crías de la Cría «quieren explore y no se mueven»).
+        {
+            Vector3 pos = self.transform.position;
+            if (!_still.TryGetValue(self, out var st) || Flat(pos - st.at) > 0.5f) _still[self] = st = (pos, Time.time, st.logged);
+            else if (Time.time - st.since >= 20f && Time.time >= st.logged && _stillLogs < 200)
+            {
+                _stillLogs++; _still[self] = (st.at, st.since, Time.time + 60f);
+                Debug.Log($"[Fauna] atascado «{self.name}» ({key}) {Time.time - st.since:0} s sin moverse en ({pos.x:0.0},{pos.y:0.0},{pos.z:0.0}): {TripInfo(self)} · {NavInfo(self)}");
+            }
+        }
+        if (Going(self, t)) return;
+        if (was) { t.pauseUntil = Time.time + UnityEngine.Random.Range(pauseMin, pauseMax); self.Loco?.Idle(t.pauseUntil - Time.time); }
+        if (Time.time < t.pauseUntil) return;
+        Vector3 here = self.transform.position;
+        for (int i = 0; i < 8; i++)
+        {
+            Vector3 p = pick();
+            if (Flat(p - here) < minHop) continue;
+            if (NavReach.Reachable(self, p, out Vector3 at) && Flat(at - here) >= minHop && !Detour(self, at, here)) { Walk(self, t, at); return; }
+        }
+        // Al borde de una colonia sobre el hielo o en un recinto pequeño, los saltos largos caen en el agua o tras la valla: saltos cortos.
+        for (int i = 0; i < 8; i++)
+        {
+            Vector2 r = UnityEngine.Random.insideUnitCircle.normalized * UnityEngine.Random.Range(Mathf.Max(0.9f, minHop * 0.5f), Mathf.Max(2f, minHop));
+            Vector3 p = here + new Vector3(r.x, 0f, r.y);
+            if (NavReach.Reachable(self, p, out Vector3 at) && Flat(at - here) >= 0.8f && !Detour(self, at, here)) { Walk(self, t, at); return; }
+        }
+        StrollNoPick++; t.pauseUntil = Time.time + 1f;   // nada alcanzable ahora: lo reintenta en un momento
+        if (_noPickLogs < 30 && self.nav != null) { _noPickLogs++; Debug.Log($"[Fauna] «{self.name}» ({key}) no encuentra adónde ir en {here}: agente tipo {self.nav.agentTypeID}, área {self.nav.areaMask}, nextPosition a {(self.nav.nextPosition - here).magnitude:0.00} m, velocidad {self.nav.speed:0.0}, en NavMesh {self.nav.isOnNavMesh}."); }
+    }
+
+    // ¿El camino hasta ese sitio da un RODEO (más del doble de la distancia recta + 1,5 m)? En el recinto de la Cría (la guarida,
+    // el comedero, el muro) un sitio a 2 m se alcanzaba por un camino de 5–6 m alrededor de la guarida: el polluelo y el
+    // cachorro iban y venían 15–17 m en 20 s para 1 m netos («da vueltas en círculo», en vivo). Un paseo es a un sitio que se ve.
+    static bool Detour(Animal self, Vector3 at, Vector3 here)
+    {
+        if (Flat(at - here) >= 4f) return false;   // (solo los paseos cortos: el recinto, la cría; el adulto explora a 4–10 m)
+        if (!NavReach.LastPathTo(self, at, out NavMeshPath p) || p.corners.Length < 3) return false;
+        float len = 0f;
+        for (int i = 1; i < p.corners.Length; i++) len += Vector3.Distance(p.corners[i - 1], p.corners[i]);
+        return len > 2f * Flat(at - here) + 1.5f;
+    }
+
+    // Explorar: saltos de 4–10 m (según su territorio) sesgados hacia delante, con pausas cortas.
+    static void Explore(Animal self, string key)
+    {
+        // LA CRÍA no se aleja: curiosea a 1–2,5 m de donde está, con pausas largas para mirar y olfatear (los polluelos de
+        // pingüino en su guardería, los cachorros junto a la guarida). Con los saltos de 4–10 m de un adulto y su colonia o su
+        // recinto alrededor, casi todo «hacia delante» quedaba fuera y solo se alcanzaba volver: iba y venía 15–17 m en 20 s
+        // para 0,5–2 m netos («da vueltas en círculo», Polluelo_1/2/3 y Cachorro_2/3, JornadaTest 2026-11-01).
+        if (self.lifeStage == LifeStage.child)
+        {
+            Transform ct = self.transform;
+            Stroll(self, key, () => ct.position + Ring(1f, 2.5f), 4f, 8f, 0.8f);
+            return;
+        }
+        float step = Mathf.Clamp(self.HomeRadius * 0.08f, 4f, 10f);
+        Transform tr = self.transform;
+        Stroll(self, key, () => LifeStage.WanderTarget(tr.position, tr.forward, step, UnityEngine.Random.insideUnitCircle), 1f, 3f, 2f);
+    }
+
+    // Su zona de casa: dentro, «volver a casa» no se siente.
+    static float HomeZone(Animal self) => Mathf.Clamp(self.HomeRadius * 0.08f, 3f, 10f);
+
+    static float HomeNeed(Animal self)
+    {
+        if (_homeBlocked.TryGetValue(self, out float until) && Time.time < until) return 0f;
+        float d = Flat(self.transform.position - self.HomeOrigin);
+        if (d <= HomeZone(self)) return 0f;
+        return W_HOME * Mathf.Clamp01(d / Mathf.Max(1f, self.HomeRadius));
+    }
+
+    // Vuelve a SU sitio de la zona de casa (cada uno el suyo: no todos al mismo punto). Si no hay camino completo, un trecho
+    // hacia allí si el NavMesh lo permite; si tampoco, «casa inalcanzable desde aquí» y deja de sentirlo 90 s.
+    static void GoHome(Animal self)
+    {
+        if (self.nav == null || !self.nav.isOnNavMesh) return;
+        // Ya en casa: Volition re-despacha el deseo cada segundo, y estando encima del sitio GoTo decía «no» y salía «no puede volver a casa» a 2 m de ella.
+        if (HomeNeed(self) <= 0f) return;
+        float a = (self.GetHashCode() % 360) * Mathf.Deg2Rad;
+        Vector3 spot = self.HomeOrigin + new Vector3(Mathf.Cos(a), 0f, Mathf.Sin(a)) * HomeZone(self) * 0.5f;
+        if (GoTo(self, "homebound", spot)) return;
+        Trip t = TripOf(self, "homebound");
+        if (Time.time < t.failUntil) return;   // (se acaba de atascar: lo reintenta; no es que no haya camino)
+        if (Time.time >= t.failUntil && NavReach.PartialEnd(self, spot, out Vector3 end) && Flat(end - self.transform.position) > 2f) { Walk(self, t, end); return; }
+        _homeBlocked[self] = Time.time + 90f;
+        if (_homeLogs++ < 20) Debug.Log($"[Fauna] «{self.name}» no puede volver a casa desde ({self.transform.position.x:0},{self.transform.position.z:0}) (hogar en ({self.HomeOrigin.x:0},{self.HomeOrigin.z:0})): lo deja estar un rato.");
+    }
 
     // ── PESOS DE LA ARENA (docs/consciousness-mechanics.md §4) — afinables. Filosofía: la SUPERVIVENCIA gana cuando
     // aprieta (eat = hambre, que puede ser >1; la amenaza es reflejo aparte), pero lo SOCIAL gana cuando el ser está
@@ -184,6 +556,11 @@ public static class DesireCatalog
     const float W_HOME    = 0.12f;   // volver al nido: de fondo → solo gana cuando el ser está saciado y lejos de casa
     const float W_BROOD   = 0.5f;    // guardar el nido: por debajo de nutrir y del hambre fuerte, por encima de los hábitos
     const float W_HABIT   = 0.2f;    // hábitos naturales: por encima del merodeo y del volver a casa; el hambre/social/cría lo superan
+    const float W_DRINK   = 0.8f;    // beber (× sed 1–1,5): como un hambre media; el hambre fuerte y la amenaza la superan
+    const float W_DEN     = 1.2f;    // guarida de la perra: por encima del hambre media (sale si tiene MUCHA hambre y vuelve)
+    const float W_DEN_FAST = 2.5f;   // guarida de la osa: no sale (ayuna) hasta que las crías tengan ~3 meses
+    const float W_INCUBATE = 2.5f;   // incubar: el emperador no deja el huevo en 2 meses (ayuna)
+    const float W_HEEL    = 0.7f;    // la cría sigue a su madre: por encima de explorar/volver a casa/hábitos
 
     // Vínculo con las crías propias aún pequeñas (0..1): el más fuerte. 0 si no tiene.
     static float BroodTie(Animal self)
@@ -191,7 +568,7 @@ public static class DesireCatalog
         float best = 0f;
         foreach (Bond b in self.bonds)
         {
-            if (b == null || b.value <= 0f || b.target == null) continue;
+            if (b == null || b.value <= 0f || Gone(b.target)) continue;
             Animal cub = (b.target as Component)?.GetComponentInParent<Animal>();
             if (cub == null || cub == self || cub.death || cub.lifeStage != LifeStage.child) continue;
             best = Mathf.Max(best, Mathf.Clamp01(b.value / 100f));
@@ -205,7 +582,7 @@ public static class DesireCatalog
         need = 0f; Animal best = null;
         foreach (Bond b in self.bonds)
         {
-            if (b == null || b.value <= 0f || b.target == null) continue;
+            if (b == null || b.value <= 0f || Gone(b.target)) continue;
             Animal cub = (b.target as Component)?.GetComponentInParent<Animal>();
             if (cub == null || cub == self || cub.death || cub.lifeStage != LifeStage.child) continue;
             float urg = Mathf.Clamp01(b.value / 100f) * Mathf.Clamp01(cub.hungry);
@@ -219,13 +596,172 @@ public static class DesireCatalog
     {
         Animal cub = CubNeed(self, out _);
         if (cub == null) return;
-        if (self.nav != null && self.nav.isOnNavMesh) self.nav.SetDestination(cub.transform.position);
-        if (Vector3.Distance(self.transform.position, cub.transform.position) <= 2.5f)
+        // A su lado se para: seguía re-apuntando a la cría, que a su vez la seguía a ella («heel»), y daban vueltas juntas (lobo: 25 m en 20 s para 0 netos).
+        // (2026-11-11, vivo62) CERCA, LA MADRE ESPERA y la cría va a ella: a ≤ 4 m las dos iban a donde estaba la otra y se cambiaban el sitio
+        // (lobos «nurse» 16–17 m en 20 s para 0–1,9 m netos, con MeetPoint). Lejos, a medio camino.
+        float dc = Vector3.Distance(self.transform.position, cub.transform.position);
+        if (dc > 2.5f && dc <= 4f) { if (self.nav != null && self.nav.isOnNavMesh) NavTrace.Reset(self, "nurse (espera a la cría)"); self.Loco?.Idle(1f); return; }
+        if (dc <= 2.5f) { if (self.nav != null && self.nav.isOnNavMesh) NavTrace.Reset(self, "nurse (junto a la cría)"); FeedCub(self, cub); return; }
+        if (self.nav != null && self.nav.isOnNavMesh) Move(self, MeetPoint(self.transform.position, cub.transform.position));
+    }
+
+    /// <summary>(2026-11-11) DONDE SE ENCUENTRAN la madre que va a dar la toma y la cría que la busca: lejos, a MEDIO CAMINO; cerca (≤ 4 m), donde
+    /// está el otro. Antes cada uno iba a donde estaba el otro al decidir: se cruzaban, quedaban otra vez a la misma distancia y volvían a
+    /// cambiarse el sitio (lobos «da vueltas en círculo (nurse)», 18–22 m en 20 s, rondas 50 y 51).</summary>
+    static Vector3 MeetPoint(Vector3 me, Vector3 other) => Vector3.Distance(me, other) > 4f ? Vector3.Lerp(me, other, 0.5f) : other;
+
+    /// <summary>Cada toma: (madre o padre, cría). Para las escenas de ciclo de vida (la crianza vista, no supuesta).</summary>
+    public static event Action<Animal, Animal> CubFed;
+
+    /// <summary>Una toma: AMAMANTA (mamíferos) o REGURGITA (pingüino) — baja el hambre de la cría; cuidar cansa un poco.</summary>
+    public static void FeedCub(Animal self, Animal cub)
+    {
+        cub.hungry = Mathf.Max(0f, cub.hungry - 0.3f);
+        self.exhaustion += 0.5f;
+        CubFed?.Invoke(self, cub);
+    }
+
+    // En la guarida: amamanta a las crías vinculadas que tenga al lado y tengan hambre.
+    static void FeedCubsNear(Animal self, float within)
+    {
+        foreach (Bond b in self.bonds)
         {
-            cub.hungry = Mathf.Max(0f, cub.hungry - 0.3f);   // amamantar/compartir comida
-            self.exhaustion += 0.5f;                          // cuidar cansa un poco
+            if (b == null || b.value <= 0f || Gone(b.target)) continue;
+            Animal cub = (b.target as Component)?.GetComponentInParent<Animal>();
+            if (cub == null || cub == self || cub.death || cub.lifeStage != LifeStage.child || cub.hungry < 0f) continue;
+            if (Vector3.Distance(self.transform.position, cub.transform.position) <= within) FeedCub(self, cub);
         }
     }
+
+    // ── PROCESOS NATURALES de las especies del santuario (LifeHistory; docs/ciclo-de-vida.md) ──────────────────────────
+
+    // BEBER: al bebedero si lo hay a mano; si no, come nieve allí mismo (el pingüino en tierra, el malamute sin bebedero).
+    static void Drink(Animal self)
+    {
+        Hydration h = self.GetComponent<Hydration>();
+        if (h == null) return;
+        if (h.Life != null && h.Life.water == LifeHistory.Water.Drinks)
+        {
+            WaterSource w = WaterSource.Nearest(self.transform.position, 60f);
+            if (w != null)
+            {
+                if (Flat(w.transform.position - self.transform.position) <= 1.8f) { Stop(self, 3f); h.Drink("bebe del bebedero"); return; }
+                if (GoTo(self, "drink", w.transform.position)) return;
+            }
+        }
+        Stop(self, 2f);
+        h.Drink("come nieve");
+    }
+
+    static void Stop(Animal self, float seconds)
+    {
+        if (self.nav != null && self.nav.enabled && self.nav.isOnNavMesh) NavTrace.Reset(self, "DesireCatalog línea 594");
+        self.Loco?.Idle(seconds);
+    }
+
+    // GUARIDA: va a su guarida y se queda dentro (ayunando si es la osa) amamantando a las crías que tenga al lado.
+    static float DenNeed(Animal self)
+    {
+        MaternityDen md = self.GetComponent<MaternityDen>();
+        if (md == null || !md.Wants || md.Life == null) return 0f;
+        return md.Life.denFasts ? W_DEN_FAST : W_DEN;
+    }
+
+    static void StayInDen(Animal self)
+    {
+        MaternityDen md = self.GetComponent<MaternityDen>();
+        if (md == null || !md.hasSite) return;
+        if (md.Life != null && md.Life.denFasts) self.hungry = Mathf.Min(self.hungry, -0.05f);   // ayuna: vive de su grasa
+        if (Flat(md.site - self.transform.position) > 1.2f)
+        {
+            if (GoTo(self, "den", md.site)) return;
+            md.site = self.transform.position;   // la guarida no se alcanza desde aquí: se hace la suya donde está
+        }
+        Stop(self, 1f);
+        FeedCubsNear(self, 3f);
+    }
+
+    // INCUBAR: el que tiene el huevo sobre las patas se queda quieto (y ayuna); el macho del emperador va a por él.
+    static void Incubate(Animal self)
+    {
+        Egg e = Egg.ToIncubate(self);
+        if (e == null) return;
+        self.hungry = Mathf.Min(self.hungry, -0.05f);   // incubando no come: el emperador ayuna ~115 días
+        if ((e.incubator != self || (e.Life != null && e.Life.eggNest)) && Flat(e.transform.position - self.transform.position) > 0.8f && GoTo(self, "incubate", e.transform.position)) return;
+        Stop(self, 1f);
+    }
+
+    /// <summary>(2026-11-11) El adulto vinculado (madre o padre, de su especie, vivo) de una cría; null = huérfana (PredatorRound.Orphan).</summary>
+    public static Animal ParentOfCub(Animal cub) => cub == null ? null : ParentOf(cub);
+
+    // LA CRÍA SIGUE A SU MADRE (o a su padre: el adulto vinculado más cercano) en tierra.
+    static Animal ParentOf(Animal self)
+    {
+        Animal best = null; float bd = float.MaxValue;
+        foreach (Bond b in self.bonds)
+        {
+            if (b == null || b.value <= 0f || Gone(b.target)) continue;
+            Animal o = (b.target as Component)?.GetComponentInParent<Animal>();
+            if (o == null || o == self || o.death || o.lifeStage != LifeStage.adult || o.LifeSpecies != self.LifeSpecies) continue;
+            float d = Vector3.Distance(o.transform.position, self.transform.position);
+            if (d < bd) { bd = d; best = o; }
+        }
+        return best;
+    }
+
+    static float HeelNeed(Animal self)
+    {
+        if (self.lifeStage != LifeStage.child || self.nav == null || !self.nav.enabled) return 0f;
+        LifeHistory life = LifeHistory.Of(self.LifeSpecies);
+        if (!life.youngFollow) return 0f;
+        Animal p = ParentOf(self);
+        if (p == null) return 0f;
+        float d = Flat(p.transform.position - self.transform.position);
+        if (d <= life.followDistance) return 0f;
+        return W_HEEL * (0.3f + 0.7f * Mathf.Clamp01(d / (life.followDistance * 4f)));
+    }
+
+    static void Heel(Animal self)
+    {
+        Animal p = ParentOf(self);
+        if (p == null) return;
+        float r = LifeHistory.Of(self.LifeSpecies).followDistance;
+        if (!GoTo(self, "heel", p.transform.position + Ring(0.4f, Mathf.Max(0.5f, r * 0.6f)))) GoTo(self, "heel", p.transform.position);
+    }
+
+    // La cría hambrienta se arrima al adulto vinculado más cercano (su madre/padre) o, si no lo tiene, se queda en su sitio
+    // esperando la toma. Pasos cortos y con destino fijo (sin vagar por el recinto).
+    static void AwaitFeeding(Animal self)
+    {
+        if (self.nav == null || !self.nav.enabled || !self.nav.isOnNavMesh) return;
+        Transform parent = null; float best = 30f;
+        foreach (Bond b in self.bonds)
+        {
+            if (b == null || b.value <= 0f || Gone(b.target)) continue;
+            Animal o = (b.target as Component)?.GetComponentInParent<Animal>();
+            if (o == null || o == self || o.death || o.lifeStage != LifeStage.adult || o.SpeciesName != self.SpeciesName) continue;
+            float d = Vector3.Distance(o.transform.position, self.transform.position);
+            if (d < best) { best = d; parent = o.transform; }
+        }
+        Vector3 to = parent != null ? MeetPoint(self.transform.position, parent.position) : self.HomeOrigin;
+        if (Vector3.Distance(self.transform.position, parent != null ? parent.position : to) > (parent != null ? 2f : 1.5f)) Move(self, to);
+        else
+        {
+            NavTrace.Reset(self, "AwaitFeeding (pide la toma)"); self.Loco?.Idle(1f);
+            // PIDE Y LE DAN: la cría pegada a su madre (o padre) mama, o pide con el pico y le regurgitan: una toma cada 2 s de
+            // juego. La toma no esperaba solo a que el «nurse» del adulto ganara a sus otros deseos: en la isla del pingüino el
+            // macho (hambriento tras 2 meses incubando) y la hembra (que vuelve del mar) casi nunca lo elegían y el polluelo
+            // crecía sin una toma (grupo 58: «Crianza» no se vio). En la naturaleza la súplica de la cría desencadena la toma.
+            Animal p = parent != null ? parent.GetComponent<Animal>() : null;
+            if (p != null && self.lifeStage == LifeStage.child && !p.asleep && BroodRide.ParentalCare(self.LifeSpecies) && Time.time >= (_begAt.TryGetValue(self, out float at) ? at : 0f))
+            { _begAt[self] = Time.time + 2f; FeedCub(p, self); }
+        }
+    }
+    static readonly System.Collections.Generic.Dictionary<Animal, float> _begAt = new System.Collections.Generic.Dictionary<Animal, float>();
+
+    // ¿El ser del vínculo ya no está? b.target es una interfaz (Animal.ITarget): «== null» no ve el objeto DESTRUIDO de Unity y su
+    // .transform lanzaba MissingReferenceException (812 veces en la batería del 2026-11-02: PenguinBehavior destruido, SocialNeed).
+    static bool Gone(object target) => target == null || (target is UnityEngine.Object o && o == null);
 
     // Necesidad social: recorre los bonds POSITIVOS y devuelve la mayor "urgencia" — cuidar = vínculo×apuro del otro;
     // seguir = vínculo×lejanía. 0..1+. No mueve; solo puntúa (lo usa NeedProbe).
@@ -234,7 +770,7 @@ public static class DesireCatalog
         float best = 0f;
         foreach (Bond b in self.bonds)
         {
-            if (b == null || b.value <= 0f || b.target == null) continue;
+            if (b == null || b.value <= 0f || Gone(b.target)) continue;
             Transform t = b.target.transform; if (t == null) continue;
             Anima o = t.GetComponentInParent<Anima>(); if (o == null || o == self) continue;
             float tie = Mathf.Clamp01(b.value / 100f);
@@ -252,7 +788,7 @@ public static class DesireCatalog
         Transform best = null; float bestScore = 0f;
         foreach (Bond b in self.bonds)
         {
-            if (b == null || b.value <= 0f || b.target == null) continue;
+            if (b == null || b.value <= 0f || Gone(b.target)) continue;
             Transform t = b.target.transform; if (t == null) continue;
             Anima o = t.GetComponentInParent<Anima>(); if (o == null || o == self) continue;
             float tie = Mathf.Clamp01(b.value / 100f);
@@ -261,6 +797,46 @@ public static class DesireCatalog
             float score = tie * urg;
             if (score > bestScore) { bestScore = score; best = t; }
         }
-        if (best != null) self.nav.SetDestination(best.position);
+        if (best != null) Move(self, best.position);
+    }
+}
+
+/// <summary>
+/// ¿SE PUEDE LLEGAR? Lo comparten los deseos, la huida y el mantenimiento del animal: el punto del NavMesh más cercano a un
+/// sitio (≤ 2 m) con un camino COMPLETO desde donde está el agente. Un destino fuera del NavMesh (en el agua, dentro de un
+/// mueble, en otra placa de hielo, tras el muro de un recinto) hacía que el agente fuera al final del camino posible y se
+/// quedara allí plantado para siempre.
+/// </summary>
+public static class NavReach
+{
+    static readonly NavMeshPath _path = new NavMeshPath();
+    static Animal _lastOwner; static Vector3 _lastTo;
+
+    /// <summary>El último camino calculado (Reachable/PartialEnd), si era de este animal hacia ese punto.</summary>
+    public static bool LastPathTo(Animal self, Vector3 to, out NavMeshPath path)
+    {
+        path = _path;
+        return self != null && self == _lastOwner && (to - _lastTo).sqrMagnitude < 0.01f && _path.corners.Length > 0;
+    }
+
+    public static bool Reachable(Animal self, Vector3 p, out Vector3 at, float sample = 2f)
+    {
+        at = p;
+        if (self == null || self.nav == null || !self.nav.enabled || !self.nav.isOnNavMesh) return false;
+        if (!NavMesh.SamplePosition(p, out NavMeshHit h, sample, self.nav.areaMask)) return false;
+        if (!self.nav.CalculatePath(h.position, _path) || _path.status != NavMeshPathStatus.PathComplete) return false;
+        at = h.position; _lastOwner = self; _lastTo = at;
+        return true;
+    }
+
+    /// <summary>El final del camino POSIBLE hacia un sitio al que no se llega del todo (camino parcial).</summary>
+    public static bool PartialEnd(Animal self, Vector3 p, out Vector3 end)
+    {
+        end = p;
+        if (self == null || self.nav == null || !self.nav.enabled || !self.nav.isOnNavMesh) return false;
+        if (!NavMesh.SamplePosition(p, out NavMeshHit h, 6f, self.nav.areaMask)) return false;
+        if (!self.nav.CalculatePath(h.position, _path) || _path.status != NavMeshPathStatus.PathPartial || _path.corners.Length == 0) return false;
+        end = _path.corners[_path.corners.Length - 1]; _lastOwner = self; _lastTo = end;
+        return true;
     }
 }

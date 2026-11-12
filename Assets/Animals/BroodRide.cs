@@ -28,8 +28,10 @@ public class BroodRide : MonoBehaviour
     /// <summary>La madre se queda guardando el nido mientras tenga crías pequeñas (vínculo + etapa de cría).</summary>
     public static bool Guards(string species) => species == "Earwig" || species == "CamelSpider" || species == "Scorpion";
 
-    /// <summary>La madre se encariña con lo que pare (base de «nurse»/«brood»). Las especies sin cuidado no.</summary>
-    public static bool ParentalCare(string species) => Carries(species) || Guards(species);
+    /// <summary>La madre se encariña con lo que pare (base de «nurse»/«brood»). Las especies sin cuidado no.
+    /// Y los del santuario que crían (LifeHistory.care: lactancia de oso, foca, ballena, orca y malamute; regurgitación del
+    /// pingüino). La araña de las nieves solo guarda su saco (Egg; las arañitas viven del vitelo) y la abeja cría en el panal.</summary>
+    public static bool ParentalCare(string species) => Carries(species) || Guards(species) || (LifeHistory.Of(species).care == LifeHistory.Care.Lactation || LifeHistory.Of(species).care == LifeHistory.Care.Regurgitation);
 
     public Animal mother;
     Animal _a;
@@ -96,7 +98,7 @@ public class BroodRide : MonoBehaviour
     void SetNav(bool on)
     {
         if (_a == null || _a.nav == null) return;
-        if (!on) { if (_a.nav.enabled && _a.nav.isOnNavMesh) _a.nav.ResetPath(); _a.nav.enabled = false; return; }
+        if (!on) { if (_a.nav.enabled && _a.nav.isOnNavMesh) NavTrace.Reset(_a, "BroodRide: sube al lomo"); _a.nav.enabled = false; return; }
         _a.nav.enabled = true;
         if (UnityEngine.AI.NavMesh.SamplePosition(transform.position, out UnityEngine.AI.NavMeshHit hit, 5f, UnityEngine.AI.NavMesh.AllAreas)) _a.nav.Warp(hit.position);
     }

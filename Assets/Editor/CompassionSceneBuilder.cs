@@ -31,7 +31,7 @@ public static class CompassionSceneBuilder
     {
         int i = 0;
         foreach (var s in Sims)   // la plantilla: fecha, hora y plataforma
-            MicrocosmTemplate.Build(new MicrocosmSpec(s.scene, s.display, Dates[s.display].date, Dates[s.display].hour, s.areaGo) { tint = s.tint, story = s.story }, new Vector3(6000f + i++ * 900f, 0f, 8000f));
+            MicrocosmTemplate.Build(new MicrocosmSpec(s.scene, s.display, Dates[s.display].date, Dates[s.display].hour, s.areaGo) { tint = s.tint, story = tr => s.story(tr) + CivicBuilder.Civilize(tr, s.display) }, new Vector3(6000f + i++ * 900f, 0f, 8000f));
         Debug.Log($"[Compasión] {i} simulaciones de compasión generadas.");
     }
 
@@ -59,6 +59,12 @@ public static class CompassionSceneBuilder
         var pf = print.gameObject.AddComponent<PaperForge>(); pf.label = "el taller de Oscar"; pf.blanks = 6;
         Transform swiss = Sign(t, "Camino a Suiza (con la Cimade)", new Vector3(24f, 0f, -24f));
         swiss.gameObject.AddComponent<SafeHaven>().label = "el camino a Suiza";
+        // EL PASO de Le Chambon (2026-11-01: la simulación no tenía ninguno): el TREN DE LA CIMADE. Las monitoras de la Cimade
+        // (Madeleine Barot, Mireille Philip) llevaban a pequeños grupos desde la estación del plateau, en tren y luego a pie, hasta la
+        // frontera suiza cerca de Ginebra (USHMM, «Le Chambon-sur-Lignon»; Yad Vashem, «Mireille Philip»). Su entrada, al otro lado
+        // de la estación (lejos de donde esperan los recién llegados: si no, E cruzaba en vez de decirles «sígueme»); su salida,
+        // junto al camino a Suiza. Caben 3 por viaje y el tren tarda 20 s en volver.
+        PassagePair(t, "el tren de la Cimade (a la frontera suiza)", new Vector3(-31f, 0f, 22f), new Vector3(20f, 0f, -27f), 3, 20f, false);
 
         int n = 0;
         n += Person(t, "André Trocmé", new Vector3(-2f, 0f, 16f), new Color(0.15f, 0.15f, 0.18f), Hat.Brimmed);
@@ -115,10 +121,14 @@ public static class CompassionSceneBuilder
         // El GUETO: un recinto amurallado al oeste, sin más salidas que los pasos.
         Vector3 g = new Vector3(-14f, 0f, 0f); float gx = 8f, gz = 10f;
         Material wm = AreaMicrocosmos.Mat("Compasion_Muro", wall);
-        AreaMicrocosmos.Box(t, "Muro_N", g + new Vector3(0f, 1.75f, gz), new Vector3(gx * 2f, 3.5f, 0.5f), wm, true);
-        AreaMicrocosmos.Box(t, "Muro_S", g + new Vector3(0f, 1.75f, -gz), new Vector3(gx * 2f, 3.5f, 0.5f), wm, true);
-        AreaMicrocosmos.Box(t, "Muro_O", g + new Vector3(-gx, 1.75f, 0f), new Vector3(0.5f, 3.5f, gz * 2f), wm, true);
-        AreaMicrocosmos.Box(t, "Muro_E", g + new Vector3(gx, 1.75f, 0f), new Vector3(0.5f, 3.5f, gz * 2f), wm, true);
+        // El muro del gueto NO es un muro de edificio: es la historia (las salidas son los pasos). Se marca «historico»
+        // (docs/microcosmos-reglas-edificacion.md, regla 2: la excepción) y no lleva los nombres de los muros del piso.
+        Transform ghetto = new GameObject("Muro del gueto").transform; ghetto.SetParent(t, false);
+        var gmp = ghetto.gameObject.AddComponent<MicroPiece>(); gmp.kind = "historico"; gmp.walkable = true;
+        AreaMicrocosmos.Box(ghetto, "Muro_del_gueto_N", g + new Vector3(0f, 1.75f, gz), new Vector3(gx * 2f, 3.5f, 0.5f), wm, true);
+        AreaMicrocosmos.Box(ghetto, "Muro_del_gueto_S", g + new Vector3(0f, 1.75f, -gz), new Vector3(gx * 2f, 3.5f, 0.5f), wm, true);
+        AreaMicrocosmos.Box(ghetto, "Muro_del_gueto_O", g + new Vector3(-gx, 1.75f, 0f), new Vector3(0.5f, 3.5f, gz * 2f), wm, true);
+        AreaMicrocosmos.Box(ghetto, "Muro_del_gueto_E", g + new Vector3(gx, 1.75f, 0f), new Vector3(0.5f, 3.5f, gz * 2f), wm, true);
         Label(t, "El gueto", g + Vector3.up * 5f);
         Building(t, "Casa del gueto", g + new Vector3(-4f, 0f, 6f), new Vector3(5f, 4f, 4f), brick, roof);
         Building(t, "Casa del gueto", g + new Vector3(-4f, 0f, -6f), new Vector3(5f, 4f, 4f), brick, roof);
@@ -205,21 +215,21 @@ public static class CompassionSceneBuilder
     {
         Transform b = new GameObject(label).transform; b.SetParent(parent, false); b.localPosition = pos;
         Vector3 flat = new Vector3(-pos.x, 0f, -pos.z);
-        if (flat.sqrMagnitude > 0.01f) b.localRotation = Quaternion.LookRotation(flat.normalized);   // la puerta mira a la plaza
+        // La puerta mira a la plaza, A ESCUADRA (0/90/180/270°, como las calles): girado en ángulo, sus muebles (CivicBuilder.Porch,
+        // 2 m de paso entre ellos en sus locales) ocupan cajas en el mundo más anchas, y MicroBuildRules.Validate, que mide el paso
+        // en el mundo, daba 0,67–1,93 m entre la cocina, el banco, la mesa, el retrete y el lavabo (Le Chambon, Varsovia; 2026-11-01).
+        if (flat.sqrMagnitude > 0.01f) b.localRotation = Quaternion.Euler(0f, Mathf.Round(Quaternion.LookRotation(flat.normalized).eulerAngles.y / 90f) * 90f, 0f);
         Material wm = AreaMicrocosmos.Mat($"Compasion_Pared_{ColorUtility.ToHtmlStringRGB(walls)}", walls);
         Material rm = AreaMicrocosmos.Mat($"Compasion_Tejado_{ColorUtility.ToHtmlStringRGB(roofColor)}", roofColor);
         Material dark = AreaMicrocosmos.Mat("Compasion_Puerta", new Color(0.25f, 0.17f, 0.12f)), glass = AreaMicrocosmos.Mat("Compasion_Ventana", new Color(0.55f, 0.65f, 0.72f));
-        AreaMicrocosmos.Box(b, "Cuerpo", new Vector3(0f, size.y * 0.5f, 0f), size, wm, true);
-        float half = size.x * 0.5f + 0.3f, rise = Mathf.Min(size.x * 0.35f, 2.5f), slope = Mathf.Atan2(rise, half) * Mathf.Rad2Deg, len = Mathf.Sqrt(half * half + rise * rise);
-        AreaMicrocosmos.Box(b, "Tejado", new Vector3(-half * 0.5f, size.y + rise * 0.5f, 0f), new Vector3(len, 0.2f, size.z + 0.6f), Quaternion.Euler(0f, 0f, slope), rm, false);
-        AreaMicrocosmos.Box(b, "Tejado", new Vector3(half * 0.5f, size.y + rise * 0.5f, 0f), new Vector3(len, 0.2f, size.z + 0.6f), Quaternion.Euler(0f, 0f, -slope), rm, false);
-        AreaMicrocosmos.Box(b, "Puerta", new Vector3(0f, 1.1f, size.z * 0.5f + 0.03f), new Vector3(1.2f, 2.2f, 0.06f), dark, false);
-        for (int k = -1; k <= 1; k += 2)
-        {
-            AreaMicrocosmos.Box(b, "Ventana", new Vector3(k * size.x * 0.3f, size.y * 0.6f, size.z * 0.5f + 0.03f), new Vector3(1f, 1f, 0.06f), glass, false);
-            AreaMicrocosmos.Box(b, "Ventana", new Vector3(k * (size.x * 0.5f + 0.03f), size.y * 0.6f, 0f), new Vector3(0.06f, 1f, 1f), glass, false);
-        }
-        Label(b, label, Vector3.up * (size.y + rise + 0.8f));
+        // ABIERTO (docs/microcosmos-reglas-edificacion.md, regla 2: sin muros ni techo, como en el santuario): el «Cuerpo» es la
+        // losa de su planta (con el color de sus muros), una franja del color del tejado en el borde y los postes de las esquinas.
+        // Los muebles los pone CivicBuilder.Porch encima.
+        AreaMicrocosmos.Box(b, "Cuerpo", new Vector3(0f, 0.05f, 0f), new Vector3(size.x, 0.1f, size.z), wm, false);
+        for (int k = -1; k <= 1; k += 2) AreaMicrocosmos.Box(b, "Borde_del_suelo", new Vector3(k * (size.x * 0.5f - 0.15f), 0.11f, 0f), new Vector3(0.3f, 0.02f, size.z), rm, false);
+        foreach (var (x, z) in new[] { (-1, -1), (1, -1), (-1, 1), (1, 1) }) AreaMicrocosmos.Box(b, "Poste", new Vector3(x * (size.x * 0.5f - 0.15f), 1.2f, z * (size.z * 0.5f - 0.15f)), new Vector3(0.2f, 2.4f, 0.2f), dark, true);
+        _ = glass;
+        Label(b, label, Vector3.up * 3.2f);
         return b;
     }
 
@@ -262,7 +272,7 @@ public static class CompassionSceneBuilder
     // Un MIRMIDÓN con ropa de los años 40: abrigo del color dado y sombrero (el cuerpo de cubos dibuja la ropa en detalle).
     static int Person(Transform parent, string name, Vector3 pos, Color coat, Hat hat)
     {
-        GameObject p = AreaMicrocosmos.Ant(parent, name, pos, coat, 1.8f, 1f);
+        GameObject p = AreaMicrocosmos.Folk(parent, name, pos, 1.8f, 1f);
         Dress1940s(p.transform, 1.8f, hat);
         return 1;
     }
@@ -276,7 +286,7 @@ public static class CompassionSceneBuilder
     static int RefugeeAt(Transform parent, string name, Vector3 pos, float height, float homeRadius)
     {
         Color[] coats = { new Color(0.35f, 0.3f, 0.25f), new Color(0.25f, 0.3f, 0.4f), new Color(0.45f, 0.38f, 0.3f), new Color(0.3f, 0.35f, 0.3f) };
-        GameObject g = AreaMicrocosmos.Ant(parent, name, pos, coats[Mathf.Abs(name.GetHashCode()) % coats.Length], height, height < 1.5f ? 0.8f : 1f);
+        GameObject g = AreaMicrocosmos.Folk(parent, name, pos, height, height < 1.5f ? 0.8f : 1f);
         Dress1940s(g.transform, height, height < 1.5f ? Hat.Cap : Hat.None);
         var r = g.AddComponent<Refugee>(); r.displayName = name; r.homeRadius = homeRadius;
         return 1;
@@ -284,7 +294,7 @@ public static class CompassionSceneBuilder
 
     static void PatrolAt(Transform parent, string name, Vector3[] route)
     {
-        GameObject g = AreaMicrocosmos.Ant(parent, name, route[0], new Color(0.32f, 0.33f, 0.3f), 1.9f, 1.05f);
+        GameObject g = AreaMicrocosmos.Folk(parent, name, route[0], 1.9f, 1.05f);
         Dress1940s(g.transform, 1.9f, Hat.Cap);
         var p = g.AddComponent<Patrol>();
         p.route = new Vector3[route.Length];

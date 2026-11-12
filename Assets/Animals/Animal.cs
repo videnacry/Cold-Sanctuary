@@ -87,6 +87,10 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
     public override float MaxFatReserves      => Prof.maxFatReserves;
     public override float FatAccumulationRate => Prof.fatAccumulationRate;
 
+    // Al descargar un microcosmos sus animales se destruyen, pero seguían en estos conjuntos: cada escena dejaba sus entradas muertas, y cada animal y cada grupo
+    // las recorren al sentir amenazas y al morder (el coste crece con cada microcosmos visitado).
+    protected virtual void OnDestroy() { wholePopulation.Remove(gameObject); Population?.Remove(gameObject); }
+
     public float Consume(float biteSize)
     {
         float effectiveBite = biteSize / (1f + Toughness);
@@ -97,6 +101,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
             Population.Remove(gameObject);
             wholePopulation.Remove(gameObject);
             lifeStage = LifeStage.soul;
+            Debug.Log($"[Muerte] «{name}» ({SpeciesName}): se lo han comido entero.");
         }
         return effectiveBite * Nutrition;
     }
@@ -147,6 +152,13 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
     /// <summary>Clave del FÍSICO (tamaño/masa, `Physiognomy`) cuando una variante comparte todo lo demás con su especie
     /// base (la araña de las nieves es una araña de ~30 cm). Por defecto, el arquetipo.</summary>
     protected virtual string BodyArchetype => SpeciesArchetype;
+    /// <summary>Clave de la HISTORIA DE VIDA (etapas, calendario reproductor, crianza, agua, comida: `StageProfile`,
+    /// `Reproduction.Calendar`, `LifeHistory`, `Forager`) cuando una variante vive distinto que su especie base (la araña de
+    /// las nieves: araña orbicular de ~30 cm de clima frío, no una araña lobo). Por defecto, el arquetipo.</summary>
+    protected virtual string LifeArchetype => SpeciesArchetype;
+    /// <summary>La especie de su ciclo de vida (ver <see cref="LifeArchetype"/>): la que leen las tablas de vida y las escenas
+    /// de ciclo de vida.</summary>
+    public string LifeSpecies => LifeArchetype ?? SpeciesName;
     // La especie para relaciones/karma sale del componente SpeciesBody (etapa 5); si aún no está, del arquetipo de la clase.
     public override string SpeciesName => _speciesBody != null && !string.IsNullOrEmpty(_speciesBody.species)
         ? _speciesBody.species : SpeciesArchetype;
@@ -240,15 +252,23 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         if (Loco == null) Loco = gameObject.AddComponent<Locomotion>();
         Forage = GetComponent<Forager>();                                // etapa 3: política "qué/dónde comer"
         if (Forage == null) Forage = gameObject.AddComponent<Forager>();
-        Forage.ConfigureForSpecies(SpeciesArchetype);                    // flags de comida por especie (data)
+        Forage.ConfigureForSpecies(LifeArchetype);                   // flags de comida por especie (data)
         if (GetComponent<EstrusState>() == null) gameObject.AddComponent<EstrusState>();   // celo (hechizo-estado): ciclo → deposita Estrus. Reproducción paso 1.
         if (GetComponent<Reproduction>() == null) gameObject.AddComponent<Reproduction>();  // cortejo→concepción→parto (gateado OFF por defecto). Reproducción pasos 2-3.
         if (GetComponent<SicknessState>() == null) gameObject.AddComponent<SicknessState>();  // enfermedad (hechizo-estado): presa fácil + rastro Sickness; cura = enfermería.
         if (GetComponent<DefecationNeed>() == null) gameObject.AddComponent<DefecationNeed>();   // ir al baño: antes ningún animal lo tenía
         if (GetComponent<AnimalVitals>() == null) gameObject.AddComponent<AnimalVitals>();       // registro de su día (comió, durmió, baño, recorrido) para el censo
+        // AGUA y GUARIDA (LifeHistory; docs/ciclo-de-vida.md): beber / comer nieve / el agua de la comida, y la guarida de
+        // maternidad de la osa y la perra.
+        LifeHistory life = LifeHistory.Of(LifeArchetype);
+        if (life.water != LifeHistory.Water.None && GetComponent<Hydration>() == null) gameObject.AddComponent<Hydration>();
+        if (life.den && GetComponent<MaternityDen>() == null) gameObject.AddComponent<MaternityDen>();
         if (SpeciesScaleFix.Has(SpeciesName) && GetComponent<SpeciesScaleFix>() == null) gameObject.AddComponent<SpeciesScaleFix>();   // tamaño real respecto al humano (el oso no mide 8 m)
         string spm = SpeciesArchetype;
-        if ((spm == "Seal" || spm == "Whale" || spm == "Orca") && GetComponent<MarineLife>() == null) gameObject.AddComponent<MarineLife>();   // nadan por la laguna (fuera del NavMesh)
+        // Nadan por la laguna (fuera del NavMesh)… salvo las crías de un RECINTO de la Cría (con sus tomas, CriaFeeder): viven
+        // en su recinto con piscina, no en el mar; con MarineLife salían nadando a por los peces a través de muros y hielo.
+        if ((spm == "Seal" || spm == "Walrus" || spm == "Whale" || spm == "Orca" || GetComponent<IcebergVisitor>() != null) && GetComponent<MarineLife>() == null && GetComponentInParent<CriaFeeder>() == null) gameObject.AddComponent<MarineLife>();
+        if (ColdBirds.Is(spm) && GetComponent<SnowPetrelLife>() == null) gameObject.AddComponent<SnowPetrelLife>();   // vuela (sin NavMesh)
         SleepCycle sleep = GetComponent<SleepCycle>();
         if (sleep == null) { sleep = gameObject.AddComponent<SleepCycle>(); sleep.nocturnal = SleepCycle.IsNocturnal(spm); }   // sueño día/noche por el reloj (Clock); los nocturnos duermen de día; despierta ante amenazas.
         // Conductas propias de especie que son COMPONENTES (docs/era-species-behavior.md): acorazarse (bola/concha),
@@ -268,7 +288,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
                 Walk.maxPowerWithChanneling = Mathf.Max(0f, ActsPrep.run.navSpeed - ActsPrep.walk.navSpeed);
         }
         Body = Physiognomy.Of(BodyArchetype);   // físico de la especie desde el catálogo (data); ANTES de Fatten, que lo usa
-        _stages = StageProfile.Of(SpeciesArchetype);   // ciclo de vida de la especie (data); las etapas se crean ANTES de Fatten (usa ChildStage)
+        _stages = StageProfile.Of(LifeArchetype);   // ciclo de vida de la especie (data); las etapas se crean ANTES de Fatten (usa ChildStage)
         if (_stages.development == StageProfile.Development.Complete && GetComponent<Metamorphosis>() == null)
             gameObject.AddComponent<Metamorphosis>();   // larva → pupa (quieta, no come) → adulto. docs/insect-biology-audit.md
         ChildStage = new Childhood(_stages.childDays, _stages.childMin, _stages.childMax);
@@ -354,8 +374,9 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
             trauma = Mathf.Max(0f, trauma - 0.2f);
             stress = Mathf.Max(0f, stress - 0.05f);
             EvolveAptitudes(interval);
+            KeepOnNavMesh();
             CorrectMedium(interval);
-            Suffocate();              // ahogo/asfixia si sigue en un medio de baja afinidad (CorrectMedium intenta sacarlo antes)
+            Suffocate();             // ahogo/asfixia si sigue en un medio de baja afinidad (CorrectMedium intenta sacarlo antes)
             Starve();                 // inanición si el hambre es prolongada (grasa→masa→enfermedad→muerte)
             FeedWalkSpeed(interval);
             DecayConfidence(0.02f);   // la maestría se enfría lentamente sin uso (D-cola); el uso activo la supera. Tunable.
@@ -408,6 +429,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         if (death || asphyxiaThreshold <= 0f || rig == null) return;
         float deficit = asphyxiaThreshold - MediumFactor;
         if (deficit <= 0f) return;                          // medio soportable → sin asfixia
+        _hurtBy = "asfixia";
         Hurt(deficit * asphyxiaRate * rig.mass);            // ahogo: proporcional a lo malo del medio y a la masa
     }
 
@@ -423,23 +445,49 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
 
         // Sin grasa: el cuerpo se consume (baja masa → menos poder/defensa = debilitado) y el hambre prolongada
         // LANZA la enfermedad (el "punto físico" que necesita tratamiento).
-        rig.mass = Mathf.Max(0.1f, rig.mass * (1f - starvationMassRate));
+        // (2026-11-01) Suelo de 0,1 g, no de 0,1 kg: con 0,1 kg un insecto de 20 g «engordaba» al pasar hambre (0,02 → 0,1).
+        rig.mass = Mathf.Max(1e-4f, rig.mass * (1f - starvationMassRate));
         GetComponent<SicknessState>()?.MakeSick(starvationSickness);
 
         // Por debajo de un mínimo vital → muerte por inanición (por el mismo camino que cualquier daño letal).
-        if (rig.mass <= Body.baseMass * lethalMassFrac) Hurt(rig.mass);
+        if (rig.mass <= Body.baseMass * lethalMassFrac) { _hurtBy = "inanición"; Hurt(rig.mass); }
+    }
+
+    // DE VUELTA AL NAVMESH: un agente activo que NO está sobre el NavMesh no puede ir a ningún sitio (todas las conductas
+    // comprueban isOnNavMesh y no hacen nada) y se queda quieto para siempre: la cría que cayó al nacer sobre la guarida o una
+    // roca de su recinto (JornadaTest: «Osezno … NavMeshAgent fuera del NavMesh»), el oso que acabó en el agua tras una
+    // foca —dentro del «Casquete», sin poder salir: CorrectMedium también necesita el NavMesh—. Se lo recoloca en el punto
+    // del NavMesh más cercano (a ≤ 6 m: sale del agua a la orilla, baja de la roca). Los que nadan (MarineLife), van en
+    // alfombra o en el viaje del Árbol no tienen agente activo o no se tocan.
+    static int _offNavLogs;
+    void KeepOnNavMesh()
+    {
+        if (death || nav == null || !nav.enabled || nav.isOnNavMesh) return;
+        if (GetComponent<MarineLife>() != null || FlyingCarpet.Riding(gameObject) || TreeTrip.Busy(gameObject)) return;
+        if (!NavMesh.SamplePosition(transform.position, out NavMeshHit h, 6f, nav.areaMask)) return;
+        Vector3 from = transform.position;
+        NavTrace.Mark(this, "KeepOnNavMesh (Warp)", h.position);
+        if (nav.Warp(h.position) && _offNavLogs++ < 20)
+            Debug.Log($"[Fauna] «{name}» estaba fuera del NavMesh en ({from.x:0.0},{from.y:0.0},{from.z:0.0}): vuelve a él en ({h.position.x:0.0},{h.position.y:0.0},{h.position.z:0.0}).");
     }
 
     void CorrectMedium(float dt)
     {
         if (busy || asleep || nav == null || !nav.isOnNavMesh) return;
         bool prefersWater = WaterAffinity > LandAffinity;
-        if (prefersWater && currentMedium != Medium.Water)
+        // (2026-11-02) El tirón hacia el agua, solo a quien está LIBRE: sin camino propio (un deseo, un hábito, la huida), sin hábito
+        // en marcha, adulto y no encerrado. Cada pocos segundos mandaba al pingüino al marcador de agua más cercano encima de lo
+        // que estuviera haciendo: el del guijarro o el que se acicalaba en el borde iban y venían 16–38 m en 20 s, y los polluelos
+        // del recinto de la Cría salían hacia el mar del suelo (camino parcial a la esquina del recinto) y volvían (en vivo).
+        if (prefersWater && currentMedium != Medium.Water && !nav.hasPath && !nav.pathPending && lifeStage != LifeStage.child && !DesireCatalog.Confined(this) && !(TryGetComponent(out Habit hb) && hb.Active))
         {
             Swarm water = Swarm.Nearest(transform.position);   // marcadores de agua
             if (water != null) Loco.Walk(water.transform.position, dt);
         }
-        else if (!prefersWater && currentMedium == Medium.Water)
+        // (2026-11-02) Solo si de verdad está EN el agua: el trigger del mar llega a ras del hielo y el oso que iba al borde de la
+        // placa (a un respiradero) lo rozaba: «en el agua» → corría a casa, al salir del trigger el hábito lo devolvía al
+        // respiradero, y así sin fin (Bear «da vueltas en círculo» 68–80 m en 20 s, «acecha junto a un respiradero», en vivo).
+        else if (!prefersWater && currentMedium == Medium.Water && MediumZone.Submerged(transform.position))
         {
             Loco.Run(HomeOrigin, dt);   // salir del agua hacia tierra
         }
@@ -454,16 +502,30 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
     {
         if (busy || aware || asleep || rig == null) return;
         float range = HomeRadius * (0.5f + perception * 0.5f);   // la percepción amplía la alerta
+        bool landBound = currentMedium != Medium.Water && GetComponent<MarineLife>() == null;
         GameObject threat = null;
         float nearest = range;
-        foreach (GameObject go in wholePopulation)
+        foreach (Animal predator in HuntersNow())
         {
-            if (go == null || go == gameObject) continue;
-            Animal predator = go.GetComponent<Animal>();   // "depredador" = come presa (Forager.eatsPrey), ya no el tipo Carnivore
-            if (predator == null || predator.death || predator.Forage == null || !predator.Forage.HuntsNow(predator)) continue;
+            if (predator == null || predator == this) continue;
+            GameObject go = predator.gameObject;
+            // Un cazador marino NADANDO no alcanza a quien anda por el hielo (la orca de la laguna y el pingüino de la orilla):
+            // no es amenaza para él. Antes la colonia huía de las orcas de la laguna sin parar.
+            if (landBound && predator.TryGetComponent(out MarineLife pm) && !pm.OnIce) continue;
+            // La MISMA ESPECIE no es amenaza: Forager nunca caza a la propia especie (ni al hermano de camada ni a la pareja). Antes
+            // solo se excluían las crías (los cachorros del recinto se «huían» unos a otros) y dos orcas adultas se tenían en alerta
+            // máxima todo el día (HuntsNow es «come presas», no «tiene hambre»): alerta 1 y nunca iban al baño (DefecationNeed solo
+            // alivia en calma; grupo 58, isla de la orca).
+            if (predator.SpeciesName == SpeciesName) continue;
             float d = Vector3.Distance(transform.position, go.transform.position);
             if (d <= nearest && EvaluateThreat(go) > ThreatThreshold) { nearest = d; threat = go; }
         }
+        // Un cazador que NO PUEDE LLEGAR hasta aquí (al otro lado del muro de su recinto en la Cría, en otra placa de hielo)
+        // tampoco es amenaza: antes las crías de recintos vecinos se pasaban el día «huyendo» y peleando contra el muro, y
+        // mientras reaccionaban no hacían nada más (atascadas > 20 s). Solo si los dos están en el NavMesh (si no, no se sabe).
+        if (threat != null && nav != null && nav.enabled && nav.isOnNavMesh && threat.TryGetComponent(out Animal ta) && ta.nav != null && ta.nav.enabled && ta.nav.isOnNavMesh
+            && (!ta.nav.CalculatePath(transform.position, _threatPath ??= new NavMeshPath()) || _threatPath.status != NavMeshPathStatus.PathComplete))
+            threat = null;
         // PERCEPCIÓN → ALERTNESS → AWARE: la amenaza percibida sube la alerta (más cerca dentro del alcance = más alerta);
         // el ser solo REACCIONA (aware) cuando su alerta CRUZA el umbral → reacciona a lo que percibe, no a todo. Sin
         // amenaza a la vista, la alerta decae. docs/consciousness-mechanics.md §3.3.
@@ -476,6 +538,23 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
             if (alertness >= react) RespondToThreat(threat);
         }
         else alertness = Mathf.MoveTowards(alertness, 0f, 0.5f * TimeController.timeController.TimeSpeedMinuteSecs / 60f);
+    }
+    static NavMeshPath _threatPath;
+    // (Ronda 31) LOS QUE CAZAN AHORA, una vez por fotograma: cada animal recorría toda la población con un GetComponent por cada uno para
+    // quedarse con los cazadores (O(n²); AnimaController.Update, 46 ms por fotograma en Buda). Mismo filtro, misma lista para todos.
+    static readonly List<Animal> _hunters = new List<Animal>(); static int _huntersFrame = -1;
+    static List<Animal> HuntersNow()
+    {
+        if (_huntersFrame == Time.frameCount) return _hunters;
+        _huntersFrame = Time.frameCount; _hunters.Clear();
+        foreach (GameObject go in wholePopulation)
+        {
+            if (go == null) continue;
+            Animal p = go.GetComponent<Animal>();   // "depredador" = come presa (Forager.eatsPrey), ya no el tipo Carnivore
+            if (p == null || p.death || p.Forage == null || !p.Forage.HuntsNow(p)) continue;
+            _hunters.Add(p);
+        }
+        return _hunters;
     }
     const float ALERT_TO_REACT = 0.3f;   // alerta mínima para que la amenaza dispare la respuesta (reacciona a lo percibido)
 
@@ -557,7 +636,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         busy = true;
         try
         {
-            if (nav != null && nav.isOnNavMesh) nav.ResetPath();
+            if (nav != null && nav.isOnNavMesh) NavTrace.Reset(this, "Hold (defensa pasiva)");
             Loco?.Idle(1f);
             pd.Begin();
             float until = Time.time + pd.HoldSeconds(this);
@@ -583,15 +662,47 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
     {
         // N1 (docs/environmental-navigation.md): huir LEJOS de la amenaza leyendo su posición, no hacia un ave al azar
         // (el placeholder anterior podía llevar la presa HACIA el peligro). Re-orienta cada tick mientras el peligro sigue cerca.
-        while (threat != null && Vector3.Distance(transform.position, threat.transform.position) < 620)
+        // CON FIN (JornadaTest: pingüinos que huían del oso hasta el borde del hielo, a 240 m de su colonia, y se quedaban allí
+        // plantados o yendo y viniendo): antes huía mientras la amenaza estuviera a < 620 m —más que el mapa entero (500 m)—,
+        // así que no paraba nunca y, contra el borde del NavMesh, quedaba clavado. Ahora para al quedar FUERA DE LO QUE PERCIBE
+        // (el mismo alcance con el que la detectó), si en 5 s no consigue alejarse (acorralado) o al minuto. Y huye hacia un
+        // sitio ALCANZABLE: si lo de detrás es agua o un muro, prueba en abanico hacia los lados.
+        float safe = Mathf.Max(25f, HomeRadius * (0.5f + perception * 0.5f) + 5f);
+        float start = Time.time, farthest = 0f, farthestAt = Time.time, nextPick = 0f;
+        while (threat != null && !death)
         {
+            float d = Vector3.Distance(transform.position, threat.transform.position);
+            if (d > safe || d > 620f) break;
+            if (d > farthest + 0.5f) { farthest = d; farthestAt = Time.time; }
+            else if (Time.time - farthestAt > 5f) break;   // acorralado: no se aleja más
+            if (Time.time - start > 60f) break;
             Loco.SetGait(true, (short)(this.ActsPrep.run.energyCost / 10));
             Vector3 away = transform.position - threat.transform.position; away.y = 0f;
             if (away.sqrMagnitude < 0.01f) { Vector2 r = Random.insideUnitCircle.normalized; away = new Vector3(r.x, 0f, r.y); }
-            if (nav != null && nav.isOnNavMesh) Loco.GoTo(transform.position + away.normalized * fleeStep);
+            if (nav != null && nav.isOnNavMesh && Time.time >= nextPick)   // (re-elige el rumbo cada segundo: calcular caminos cuesta)
+            {
+                nextPick = Time.time + 1f;
+                Vector3 best = transform.position + away.normalized * fleeStep; float bestD = -1f;
+                // (2026-11-02) Si a fleeStep no hay nada alcanzable (contra el agua, en la colonia), prueba más cerca: antes iba
+                // hacia el punto recto de 40 m FUERA del NavMesh y el agente se quedaba con el camino «pendiente», quieto, huyendo
+                // (pingüinos «atascados > 20 s» en su colonia con aware y pathPending, comprobado en vivo).
+                for (float step = fleeStep; step >= fleeStep * 0.25f - 0.01f && bestD < 0f; step *= 0.5f)
+                    foreach (float turn in FleeFan)
+                    {
+                        if (!NavReach.Reachable(this, transform.position + Quaternion.Euler(0f, turn, 0f) * away.normalized * step, out Vector3 at, 6f)) continue;
+                        float dd = Vector3.Distance(at, threat.transform.position);
+                        if (dd > bestD + 1f) { bestD = dd; best = at; }
+                        if (turn == 0f) break;   // recto hacia atrás se puede: por ahí
+                    }
+                if (bestD < 0f) break;   // ningún sitio alcanzable lejos de la amenaza: acorralado
+                // Con el camino YA calculado (como los deseos, DesireCatalog.Move): SetDestination podía quedarse «pendiente»
+                // con cientos de obstáculos tallando, y el animal no se movía.
+                if (!(NavReach.Reachable(this, best, out Vector3 bestAt, 0.5f) && NavReach.LastPathTo(this, bestAt, out NavMeshPath fp) && nav.SetPath(fp))) Loco.GoTo(best);
+            }
             yield return new WaitForSeconds(TimeController.timeController.TimeSpeedMinuteSecs / 20);
         }
     }
+    static readonly float[] FleeFan = { 0f, 40f, -40f, 80f, -80f, 120f, -120f };
 
     // Reclutaba aliados con "ally.StartCoroutine(ally.Fight(threat))" en cada entrada, sin
     // comprobar si ese aliado YA estaba peleando — cada aliado reclutado volvía a reclutar al
@@ -619,12 +730,16 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
                         ally.StartCoroutine(ally.Fight(threat));
                 }
             }
-            while (!threatTarget.Dead &&
-                   Vector3.Distance(transform.position, threat.transform.position) < HomeRadius)
+            // CON TOPE (como la huida): 30 s, o si en 6 s no logra acercarse (la amenaza está tras un muro, en el agua). Antes
+            // peleaba mientras la amenaza siguiera a menos de su radio de hogar (100–300 m): para siempre, y mientras tanto
+            // (aware) no hacía nada más.
+            float fightStart = Time.time, closest = float.MaxValue, closestAt = Time.time;
+            while (threat != null && !threatTarget.Dead && !death && Time.time - fightStart < 30f &&
+                   Vector3.Distance(transform.position, threat.transform.position) < HomeRadius && !Stalled(threat, ref closest, ref closestAt))
             {
                 Loco.GoTo(threat.transform.position);
                 if (Vector3.Distance(transform.position, threat.transform.position) < 4f)
-                    threatTarget.Hurt((rig.mass - exhaustion) / 10f);
+                    { if (threat.TryGetComponent(out Animal ta)) ta.CauseOfHarm = $"la pelea con «{name}» ({SpeciesName})"; threatTarget.Hurt(CombatDamage(threat, (rig.mass - exhaustion) / 10f)); }
                 yield return new WaitForSeconds(interval);
             }
         }
@@ -637,21 +752,45 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         }
     }
 
+    /// <summary>(2026-11-11) EL GOLPE SEGÚN EL PODER (Predation): el daño de la pelea o del acoso escala con (poder del que golpea / defensa del
+    /// golpeado)², entre 0,02 y 1,5; antes era la masa del atacante sin más, y un reno de 140 kg mataba a un oso adulto (suite 58: dos osos «el acoso
+    /// de / la pelea con Reindeer», un lobo «el acoso de MuskOx»). Y un HERBÍVORO que se defiende ahuyenta, no mata a un depredador: su golpe no lo
+    /// deja por debajo del 75 % de su vida (la muerte es por debajo del 70 %). La caza (Forager) no pasa por aquí.</summary>
+    public float CombatDamage(GameObject target, float raw)
+    {
+        if (target == null || !target.TryGetComponent(out Animal t)) return raw;
+        float att = Predation.PredatorPower(this), def = Mathf.Max(0.05f, Predation.Defense(t));
+        float k = Mathf.Clamp((att / def) * (att / def), 0.02f, 1.5f);
+        float dmg = Mathf.Max(0f, raw) * k;
+        bool herbivore = Forage == null || !Forage.eatsPrey;
+        if (herbivore && t.Forage != null && t.Forage.eatsPrey && t.rig != null) dmg = Mathf.Min(dmg, Mathf.Max(0f, t.lp - t.rig.mass * 0.75f));
+        return dmg;
+    }
+
+    // ¿Lleva 6 s sin acercarse a la amenaza (y sin estar ya encima, < 4 m)? Entonces no la alcanza: deja la pelea.
+    bool Stalled(GameObject threat, ref float closest, ref float closestAt)
+    {
+        float d = Vector3.Distance(transform.position, threat.transform.position);
+        if (d < 4f || d < closest - 0.5f) { closest = Mathf.Min(closest, d); closestAt = Time.time; return false; }
+        return Time.time - closestAt > 6f;
+    }
+
     // Ataca solo por la espalda; retrocede cuando la amenaza encara al animal.
     protected virtual IEnumerator HitAndRun(GameObject threat)
     {
         ITarget threatTarget = threat.GetComponent<ITarget>();
         if (threatTarget == null) yield break;
         float interval = TimeController.timeController.TimeSpeedMinuteSecs / 30f;
-        while (!threatTarget.Dead &&
-               Vector3.Distance(transform.position, threat.transform.position) < HomeRadius)
+        float fightStart = Time.time, closest = float.MaxValue, closestAt = Time.time;   // con tope, como Fight
+        while (threat != null && !threatTarget.Dead && !death && Time.time - fightStart < 30f &&
+               Vector3.Distance(transform.position, threat.transform.position) < HomeRadius && !Stalled(threat, ref closest, ref closestAt))
         {
             Vector3 dirToMe = (transform.position - threat.transform.position).normalized;
             if (Vector3.Dot(threat.transform.forward, dirToMe) > 0)
             {
                 Loco.GoTo(threat.transform.position);
                 if (Vector3.Distance(transform.position, threat.transform.position) < 4f)
-                    threatTarget.Hurt((rig.mass - exhaustion) / 15f);
+                    { if (threat.TryGetComponent(out Animal ta)) ta.CauseOfHarm = $"el acoso de «{name}» ({SpeciesName})"; threatTarget.Hurt(CombatDamage(threat, (rig.mass - exhaustion) / 15f)); }
             }
             else
             {
@@ -670,6 +809,9 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
     /// Inflict damage, remove gameObject from population and wholePopulation fields, set lifestage to soul and rig.mass to 0
     /// </summary>
     /// <param name="damage"></param>
+    string _hurtBy;   // (la causa, para el log: una muerte sin rastro no se puede explicar)
+    /// <summary>Quién o qué le está haciendo daño (para el log de <c>[Muerte]</c>): «la caza de «Wolf(Clone)» (Wolf)».</summary>
+    public string CauseOfHarm { get => _hurtBy; set => _hurtBy = value; }
     public virtual void Hurt(float damage)
     {
         lp -= damage;
@@ -679,6 +821,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         {
             transform.Rotate(Vector3.forward, 90);
             death = true;
+            Debug.Log($"[Muerte] «{name}» ({SpeciesName}, {lifeStage}) muere de {_hurtBy ?? "un golpe o un ataque"}: hambre {hungry:0.00}, masa {rig.mass:0.0}, en ({transform.position.x:0},{transform.position.y:0},{transform.position.z:0}).");
             BroadcastGrief();                 // los que tenían un VÍNCULO con este ser (+ o −) entran en DUELO
             StopAllCoroutines();
             ani.enabled = false;

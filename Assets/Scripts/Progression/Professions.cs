@@ -1,0 +1,192 @@
+using System.Collections.Generic;
+
+/// <summary>
+/// LAS PROFESIONES DEL PERSONAL (Berón 2026-11-04; docs/personajes-mesocosmos.md §Profesiones y parejas).
+/// La profesión da a cada uno su papel en la jornada sin quitarle la rotación (regla J2, todos aprenden todo):
+///  · <see cref="WorkRoster"/> le da cada día, ANTES de las vueltas, UNA misión de cada área de su profesión (la que menos ha hecho; si
+///    la profesión nombra misiones —«rep_» las reparaciones, «obra_» la obra nueva—, de esas);
+///  · en una misión de GRUPO de su profesión (la clase de yoga, una obra), el profesional, si está libre, entra en el grupo y, si hay
+///    papel que dirige, lo dirige;
+///  · su área de salida (<see cref="SanctuaryDirector"/>) y su rótulo.
+/// Las áreas son las de las misiones (<see cref="AreaFunctions"/>, <see cref="AreaWork"/>): «Sala de Yoga», «Construcción», «Cocina»,
+/// «Huerto», «Química», «Aula», «Mecánica», «Hospital», «Guardia», «Estudio Textil»…
+/// </summary>
+public static class Professions
+{
+    public struct Entry
+    {
+        public string who, title;
+        /// <summary>«Área» o «Área:prefijo1,prefijo2» (solo esas misiones del área).</summary>
+        public string[] areas;
+        public Entry(string w, string t, params string[] a) { who = w; title = t; areas = a; }
+    }
+
+    /// <summary>El personal sanitario de verdad (lo primero que busca el equipo de los submarinos): Lizmibet, médica; Linduarda, la doctora
+    /// de la iniciación; Ivelyna, pediatra.</summary>
+    public static readonly string[] Medical = { "Lizmibet", "Linduarda", "Ivelyna" };   // fichas: linduarda.md, lizmibet.md, ivelyna.md
+
+    public static readonly Entry[] All =   // el puesto de cada uno va también en su ficha: docs/personajes/<nombre>.md
+    {
+        // Josedrilo: MAESTRO JEFE DE HATHA (YogaTeacher), JEFE DE OBRA NUEVA (las obras: «obra_») y bioconstrucción (el material: «mat_»).
+        new Entry("Josedrilo", "maestro de Hatha, jefe de obra nueva y bioconstrucción", "Sala de Yoga", "Construcción:obra_,mat_"),   // ficha: docs/personajes/josedrilo.md
+        // Consol (2026-11-05): MAESTRA JEFA DE ASHTANGA (AshtangaTeacher). Da la clase de las 14 h y prepara la del día (yog_ashtanga). Las de grupo
+        // «clase_yoga» son Hatha: no entran en su profesión.
+        new Entry("Consol", "maestra de Ashtanga", "Sala de Yoga:yog_ashtanga"),   // ficha: docs/personajes/consol.md
+        // Fernando (2026-11-05): PANELES SOLARES. Sus misiones son las del área Energía: los paneles («sol_») y las revisiones del parque («ene_»; docs/energia.md).
+        new Entry("Fernando", "instalador y reparador de paneles solares", EnergyRule.Area),   // ficha: docs/personajes/fernando.md
+        // Tote: JEFE DE REPARACIONES («rep_») y guardia.
+        new Entry("JefeConstruccion", "jefe de reparaciones y guardia", "Construcción:rep_", "Guardia", AreaWork.GuardRoom),   // ficha: docs/personajes/tote.md
+        // Los guardias: Gohageneis (y las artes marciales), Nesvitor (y agricultor) y Tote.
+        new Entry("Gohageneis", "guardia, artes marciales y maestro de baile", "Guardia", AreaWork.GuardRoom),   // ficha: docs/personajes/gohageneis.md
+        // Panterilia: MAESTRA DE BAILE y FINANZAS (la mesa de cuentas del restaurante). Dejó de ser segunda maestra de yoga (2026-11-05: sin base documentada).
+        new Entry("Panterilia", "maestra de baile y finanzas", "Cocina:coc_cuentas"),   // ficha: docs/personajes/panterilia.md
+        // Julian: DIRECCIÓN DE PROYECTOS, con Alicita (con_proyectos y con_proyectos2: uno cada uno).
+        new Entry("Julian", "dirección de proyectos", "Construcción:con_proyectos"),   // ficha: docs/personajes/julian.md
+        new Entry("Nesvitor", "guardia y agricultor", "Guardia", AreaWork.GuardRoom, "Huerto"),   // ficha: docs/personajes/nesvitor.md
+        // Maite: jefa de cocina con Amykhuz, y CURANDERA (las plantas medicinales y las curas del hospital).
+        new Entry("Maite", "jefa de cocina y curandera", "Cocina", "Hospital:hos_plantas,enf_visita"),   // ficha: docs/personajes/maite.md
+        new Entry("Amykhuz", "jefe de cocina y química", "Cocina", "Química"),   // ficha: docs/personajes/amykhuz.md
+        // Goluis (Berón 2026-11-08): ENCARGADO DE COCINA; los rangos más altos de la cocina son Maite y Amykhuz.
+        new Entry("Goluis", "encargado de cocina", "Cocina"),   // ficha: docs/personajes/goluis.md
+        // Shalva, profesional de cultivo: EL JARDINERO FRUTAL (su misión de profesión en el Huerto es una ronda de frutales; la experta de los
+        // frutales era Irosene, que ahora es de letras y textil). El riego y la cosecha del huerto le llegan por la rotación, como a todos.
+        new Entry("Shalva", "cultivo (jardinero frutal) y bioconstrucción", "Huerto:jar_frutales", "Construcción:mat_"),   // ficha: docs/personajes/shalva.md
+        // Submarinismo: los submarinos (el de obra y la ambulancia) y las tareas bajo el agua de los árboles salen de Construcción.
+        new Entry("Adaguchi", "submarinismo y cocina", "Construcción", "Cocina"),   // ficha: docs/personajes/adaguchi.md
+        // Asuntos legales y lenguas: aún no hay área propia; su mesa está en la sala de estudio del Aula, donde da clase de lenguas.
+        new Entry("Karen", "asuntos legales y lenguas", "Aula:aul_legal,aul_lenguas"),   // ficha: docs/personajes/karen.md
+        new Entry("Alicita", "contabilidad y dirección de proyectos", "Cocina:coc_cuentas", "Construcción:con_proyectos"),   // ficha: docs/personajes/alicita.md
+        // Ducristin: GERENTE DE BANCA Y PROFESOR. No hay banco: lleva las finanzas en la mesa de cuentas del restaurante (donde entra el
+        // dinero del santuario) y da clase en el Aula. Su mecánica pasa a Fausto.
+        new Entry("Ducristin", "gerente de banca y profesor", "Cocina:coc_cuentas", "Aula:aul_clase"),   // ficha: docs/personajes/ducristin.md
+        new Entry("Fausto", "mecánico", "Mecánica"),   // ficha: docs/personajes/fausto.md
+        // Andrea: COMUNICACIÓN (los avisos del santuario y la radio, en el comedor del restaurante —la torre de Servicios—, donde coinciden
+        // todos a la hora de comer). Su papel de entrenador del gimnasio lo pone la rama del entrenamiento.
+        new Entry("Andrea", "comunicación", "Cocina:coc_avisos"),   // ficha: docs/personajes/andrea.md
+        // Irosene: LETRAS (clases de poesía y narración y lecturas en la sala de estudio del Aula) y su textil.
+        new Entry("Irosene", "letras (poesía y narración) y textil", "Aula:aul_letras", "Estudio Textil"),   // ficha: docs/personajes/irosene.md
+        // LOS SEIS NUEVOS (Berón 2026-11-04). Informática: el clúster de IA (sistemas, refrigeración y energía).
+        new Entry("David", "informática", "Informática"),   // ficha: docs/personajes/david.md
+        new Entry("Adonis", "informática", "Informática"),   // ficha: docs/personajes/adonis.md
+        // Biotecnología: el laboratorio de carne cultivada y la biología (con los fotobiorreactores del árbol, que se cuidan desde Biología).
+        new Entry("Yulo", "biotecnología", "Carne Cultivada", "Biología"),   // ficha: docs/personajes/yulo.md
+        new Entry("Lale", "biotecnología", "Carne Cultivada", "Biología"),   // ficha: docs/personajes/lale.md
+        // Pediatra: en el Hospital (pediatría de los niños de las personas; la Cría es de animales y le toca en la rotación como a todos).
+        new Entry("Ivelyna", "pediatría", "Hospital:hos_pediatria,enf_"),   // ficha: docs/personajes/ivelyna.md
+        new Entry("Malena", "pediatría", "Hospital:hos_pediatria,enf_"),   // ficha: docs/personajes/malena.md
+        // Piloto: la flota de alfombras voladoras y el transporte aéreo (en la Mecánica) y el vuelo y el control de misión de la lanzadera.
+        // Los submarinos siguen con Adaguchi.
+        new Entry("Luciana", "piloto y artes marciales: alfombras, transporte aéreo y lanzadera", "Mecánica:mec_alfombras", "Control de misión"),   // ficha: docs/personajes/luciana.md
+    };
+
+    /// <summary>(2026-11-04) Los MAESTROS de una clase de entrenamiento o de ocio que no es misión de grupo: el baile (Berón: «Panterilia y
+    /// Gohageneis, maestros de baile»). Se turnan por días (el día d, el d mod n). En la jornada dan el entrenamiento de la Sala de Ballet
+    /// cuando está terminada; en el horario libre guían el baile de las 20 h en su sitio (la Sala de Ballet o, mientras está en obras, la
+    /// calistenia o el gimnasio).</summary>
+    public static readonly Dictionary<string, string[]> ClassLeads = new Dictionary<string, string[]>
+    {
+        { "Sala de Ballet", new[] { "Panterilia", "Gohageneis" } },
+        { "baile", new[] { "Panterilia", "Gohageneis" } },
+        // (2026-11-05) Las ARTES MARCIALES: Gohageneis y Luciana, los días contrarios a los del baile de Gohageneis (no le coinciden las dos).
+        { "Dojo (artes marciales)", new[] { "Gohageneis", "Luciana" } },
+        { "artes", new[] { "Gohageneis", "Luciana" } },
+        // (2026-11-05) El ASHTANGA: Consol da la clase de las 14 h (entrenamiento de la Sala de Yoga) y guía el autoguiado de las 20 h.
+        { "Sala de Yoga", new[] { WorkdayDirector.AshtangaTeacher } },
+        { "ashtanga", new[] { WorkdayDirector.AshtangaTeacher } },
+    };
+    /// <summary>El maestro de <paramref name="cls"/> el día <paramref name="day"/> (null si no tiene).</summary>
+    public static string LeadOn(string cls, int day) => ClassLeads.TryGetValue(cls, out string[] l) && l.Length > 0 ? l[((day % l.Length) + l.Length) % l.Length] : null;
+
+    /// <summary>LAS PERSONAS DEL MESOCOSMOS (docs/reglas-personajes.md, R2): el personal de la jornada, la Magnate y Neo. Cada una con su ficha.</summary>
+    public static IEnumerable<string> Mesocosmos
+    {
+        get
+        {
+            foreach (string s in WorkdayDirector.Staff) yield return s;
+            yield return "Magnate";
+            yield return "Neo";
+        }
+    }
+
+    /// <summary>El nombre de su ficha: docs/personajes/&lt;nombre&gt;.md.</summary>
+    public static string DocName(string who) => who == "Player" ? "kushal" : who == "JefeConstruccion" ? "tote" : who.ToLowerInvariant();   // índice, plantilla y tabla de lo completa que está cada ficha: docs/personajes/README.md
+
+    /// <summary>LA BASE DOCUMENTADA DE CADA PUESTO (Berón 2026-11-05; docs/reglas-personajes.md, R7): de dónde sale.
+    /// Lo que queda por confirmar va en <see cref="Unconfirmed"/>. Al añadir o cambiar un puesto, se cambia aquí y en su ficha.</summary>
+    public static readonly Dictionary<string, string> Basis = new Dictionary<string, string>
+    {
+        { "Josedrilo", "Berón 2026-11-04: «el profesional de yoga es Josedrilo», bioconstrucción y jefe de obra nueva; 2026-11-05: jefe de Hatha" },
+        { "Consol", "Berón 2026-11-05: profesora de yoga, experta en Ashtanga; candidata a superar a Josedrilo. Decisión: jefa de su estilo" },
+        { "Fernando", "Berón 2026-11-05: instala y repara paneles solares" },
+        { "JefeConstruccion", "Berón 2026-11-04: jefe de reparaciones y guardia" },
+        { "Gohageneis", "Berón 2026-11-04: guardia y maestro de baile (las artes marciales, ver Unconfirmed)" },
+        { "Panterilia", "Berón 2026-11-04: enseña baile y lleva finanzas" },
+        { "Julian", "Berón 2026-11-04: dirección de proyectos" },
+        { "Nesvitor", "Berón 2026-11-04: guardia y agricultor" },
+        { "Maite", "Berón 2026-11-04: jefa de cocina con Amykhuz y curandera" },
+        { "Amykhuz", "Berón 2026-11-04: profesional de cocina y química, jefe de cocina con Maite" },
+        { "Goluis", "Berón 2026-11-08: encargado de cocina (los rangos más altos de la cocina son Maite y Amykhuz)" },
+        { "Shalva", "Berón 2026-11-04: profesional de cultivo y bioconstrucción" },
+        { "Adaguchi", "Berón 2026-11-04: profesional de submarinismo y cocina" },
+        { "Karen", "Berón 2026-11-04: profesional de asuntos legales y lenguas" },
+        { "Alicita", "Berón 2026-11-04: profesional de contabilidad y project manager" },
+        { "Ducristin", "Berón 2026-11-04: gerente de banca y profesor" },
+        { "Fausto", "Berón 2026-11-04: mecánico" },
+        { "Andrea", "Berón 2026-11-04: profesional de comunicación y el de más fuerza, entrenador del gimnasio" },
+        { "Irosene", "Berón 2026-11-04: profesional de letras (poesía y narración); ficha 2026-07-15: destaca en el textil" },
+        { "David", "Berón 2026-11-04: informática" },
+        { "Adonis", "Berón 2026-11-04: informática" },
+        { "Yulo", "Berón 2026-11-04: biotecnología" },
+        { "Lale", "Berón 2026-11-04: biotecnología" },
+        { "Ivelyna", "Berón 2026-11-04: pediatra" },
+        { "Malena", "Berón 2026-11-05: pediatra" },
+        { "Luciana", "Berón 2026-11-04: piloto; 2026-11-05: experta en artes marciales" },
+    };
+
+    /// <summary>LOS PUESTOS O PARTES DE UN PUESTO SIN CONFIRMAR: los dedujimos nosotros; quedan así hasta que Berón diga (docs/reglas-personajes.md §Auditoría).</summary>
+    public static readonly Dictionary<string, string> Unconfirmed = new Dictionary<string, string>
+    {
+        { "Gohageneis", "artes marciales: salió del reparto provisional («ágil y atlético»), sin palabra de Berón; la experta documentada es Luciana" },
+        { "Gallarle", "sin profesión" },
+        { "Luciana", "control de misión de la lanzadera: deducido de «piloto»" },
+        { "Maite", "curas del hospital (enf_visita): deducido de «curandera»" },
+        { "Shalva", "jardinero frutal (jar_frutales): deducido de «cultivo»" },
+        { "Yulo", "Biología y fotobiorreactores: deducido de «biotecnología»" },
+        { "Lale", "Biología y fotobiorreactores: deducido de «biotecnología»" },
+        { "Adaguchi", "toda el área de Construcción: deducido de «submarinismo», porque los submarinos salen de allí" },
+        { "Panterilia", "sale en el huerto y su ficha aún dice que dirige la limpieza y la farmacia" },
+    };
+
+    static Dictionary<string, Entry> _by;
+    public static Entry? Of(string who)
+    {
+        if (_by == null) { _by = new Dictionary<string, Entry>(); foreach (Entry e in All) _by[e.who] = e; }
+        return who != null && _by.TryGetValue(who.Replace("_Post", ""), out Entry x) ? x : (Entry?)null;
+    }
+
+    /// <summary>Las áreas de su profesión (sin los prefijos).</summary>
+    public static string[] AreasOf(string who)
+    {
+        Entry? e = Of(who);
+        if (!e.HasValue) return new string[0];
+        var l = new string[e.Value.areas.Length];
+        for (int i = 0; i < l.Length; i++) { string s = e.Value.areas[i]; int c = s.IndexOf(':'); l[i] = c < 0 ? s : s.Substring(0, c); }
+        return l;
+    }
+
+    /// <summary>¿Es de su profesión el área (y, si se da, la misión <paramref name="missionId"/>)?</summary>
+    public static bool Practises(string who, string area, string missionId = null)
+    {
+        Entry? e = Of(who);
+        if (!e.HasValue) return false;
+        foreach (string s in e.Value.areas)
+        {
+            int c = s.IndexOf(':');
+            string a = c < 0 ? s : s.Substring(0, c);
+            if (a != area) continue;
+            if (c < 0 || missionId == null) return true;
+            foreach (string p in s.Substring(c + 1).Split(',')) if (missionId.StartsWith(p)) return true;
+        }
+        return false;
+    }
+}

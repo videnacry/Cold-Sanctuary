@@ -44,7 +44,7 @@ public static class MobWorldSceneBuilder
         var ground = GameObject.CreatePrimitive(PrimitiveType.Plane);
         ground.name = "Ground";
         ground.transform.position   = O;
-        ground.transform.localScale = new Vector3(4f, 1f, 4f);
+        ground.transform.localScale = new Vector3(12f, 1f, 12f);   // 120 × 120 m: cabe la ciudad (los edificios a ±31 m)
         ground.GetComponent<Renderer>().sharedMaterial = MakeMat("MobGround", new Color(0.80f, 0.72f, 0.55f));
 
         // Spawn del jugador (junto al portal, mirando hacia la ciudad).
@@ -52,11 +52,18 @@ public static class MobWorldSceneBuilder
         spawnGO.transform.SetPositionAndRotation(O + new Vector3(0f, 1f, -6f), Quaternion.LookRotation(Vector3.forward));
         spawnGO.AddComponent<MobSpawnPoint>();
 
-        // Chozas de adobe + anclas (estructura representativa de la era).
-        Color mud = new Color(0.72f, 0.55f, 0.36f);
-        AddResidentWithHut("Guardián del Fuego", "El Hogar",   O + new Vector3(0f, 1f, 0f),  mud, new Color(0.95f, 0.50f, 0.20f));
-        AddResidentWithHut("El Tallador",        "La Fragua",  O + new Vector3(4f, 1f, 2f),  mud, new Color(0.60f, 0.60f, 0.65f));
-        AddResidentWithHut("La Recolectora",     "El Granero", O + new Vector3(-4f, 1f, 2f), mud, new Color(0.50f, 0.70f, 0.35f));
+        // URUK (~3500 a. C.; docs/microcosmos-civilizaciones.md §8): la ciudad de verdad en vez de tres chozas-cubo. Su fecha (MicroEra:
+        // las conductas y el bloqueo de humanos la leen), sus edificios de adobe (CivicBuilder.Uruk: casas con patio, el Templo Blanco
+        // al pie de la terraza de Anu, la alfarería de los cuencos de borde biselado, el granero) con su gente, jornadas y familias,
+        // y los tres vecinos de siempre (MobResident) como insectos-humanos delante de su edificio.
+        var city = new GameObject("Uruk"); city.transform.position = O;
+        MicroEra era = city.AddComponent<MicroEra>(); era.year = -3500; era.place = "Uruk, en el amanecer de las ciudades"; era.date = "~3500 a. C."; era.hour = 10f; era.platform = "Cocina";
+        Transform people = new GameObject("Gente").transform; people.SetParent(city.transform, false);
+        CivicBuilder.Civilize(people, "Mesopotamia");
+        AddResident(people, "Guardián del Fuego", "El Hogar",   "Casa de adobe con patio");
+        AddResident(people, "El Tallador",        "La Fragua",  "Alfarería (cuencos de borde biselado)");
+        AddResident(people, "La Recolectora",     "El Granero", "Granero del templo");
+        CivicBuilder.Homes(people, new CivicBuilder.Lots(people), "Mesopotamia");   // regla 6: los tres vecinos llegan tras Civilize: también con hogar
 
         // Yoga-portal de salida.
         var portal = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -89,6 +96,13 @@ public static class MobWorldSceneBuilder
 
         missionGO.AddComponent<MobWorldMission>(); // arranca la misión al entrar a la escena
 
+        // Navegación para la gente de la ciudad (rodean los edificios).
+        var nav = city.AddComponent<Unity.AI.Navigation.NavMeshSurface>();
+        nav.collectObjects = Unity.AI.Navigation.CollectObjects.Volume; nav.useGeometry = UnityEngine.AI.NavMeshCollectGeometry.PhysicsColliders;
+        nav.center = Vector3.up * 10f; nav.size = new Vector3(124f, 40f, 124f);
+        Physics.SyncTransforms(); nav.BuildNavMesh();
+        InsectOnly.EnforceRoot(city.transform);
+
         MicroWater.SurroundScene(scene);
         EditorSceneManager.SaveScene(scene, ScenePath);
         AddToBuildSettings(ScenePath);
@@ -97,6 +111,17 @@ public static class MobWorldSceneBuilder
 
         Debug.Log($"[MobWorldSceneBuilder] Escena guardada en {ScenePath} y añadida a Build Settings. " +
                   $"Pon '{SceneName}' en 'mobWorldSceneName' de la VirtualizationMachine de la cocina.");
+    }
+
+    // Un vecino de siempre (MobResident: el tablero de la ciudad), insecto-humano de Uruk, delante de la puerta de su edificio.
+    static void AddResident(Transform people, string residentName, string role, string building)
+    {
+        Transform b = people.Find(building);
+        Vector3 at = b != null ? b.localPosition + new Vector3(0f, 0f, -7f) : new Vector3(0f, 0f, 4f);
+        GameObject go = AreaMicrocosmos.Folk(people, residentName, at, 1.75f);
+        var res = go.AddComponent<MobResident>();
+        res.residentName = residentName;
+        res.role = role;
     }
 
     static void AddResidentWithHut(string residentName, string role, Vector3 pos, Color hutColor, Color bodyColor)

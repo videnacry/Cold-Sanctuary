@@ -18,7 +18,7 @@ Código: `Assets/Scripts/Kitchen/Gastronomy.cs` (recetario), `KitchenLarder.cs` 
   - Milpa: borde de achiote y azafrán. Arrozal: wasabi en la orilla húmeda.
   - Bosque comestible: aguacate, clavo, café, babaco; borde de caña, naranjilla y mortiño.
 - **Carne**: solo **carne cultivada**. El laboratorio rota nueve líneas celulares (res, pollo, salmón, cerdo, atún,
-  conejo, bacalao, calamar, gamba). Cada lote deja raciones en el comedero de los depredadores y 4 en la cocina.
+  conejo, bacalao, calamar, gamba). Cada lote deja raciones en el almacén del alimentador y 4 en la cocina.
   Las líneas de pez y marisco crecen a menor temperatura (≈27 °C) que las de mamífero y ave (37 °C).
 - **Leche y huevo**: sin animales, por **fermentación de precisión** (levaduras que producen caseína, suero y
   ovoalbúmina). Con ellas se hacen leche, nata, mantequilla, yogur y quesos con **cuajo microbiano**.

@@ -267,8 +267,13 @@ public class SpellConsole : MonoBehaviour
     {
         ("reemplazar", "reemplazar({destiny:\"Magnate\", quitar:\"\", poner:\"\"})"),   // cambiar una CONVICCIÓN (Convictions)
         ("admin",     "admin({on:true})"),   // lanzador admin: todos los hechizos, sin aprenderlos
+        ("tercera",   "tercera({on:true})"),   // la cámara en 3.ª persona siempre (para probar en vivo)
         ("miembro",   "miembro({destiny:\"Kushal\"})"),   // (admin) hace a alguien miembro del santuario: se salta la iniciación
+        ("arbol",     "arbol({vueltaHoras:6})"),   // el Árbol de los Campos: horas del juego por vuelta (0 = quieto)
+        ("piso",      "piso({n:5})"),   // subir o bajar a un piso del Árbol de los Campos (0–8, anillo1–4, techo): andando a su puerta y nadando por el tronco
         ("progreso",  "progreso()"),   // checklist de la historia y las misiones (ProgressPanel)
+        ("recursos",  "recursos()"),   // ventana de recursos (también F3; HudModals)
+        ("misiones",  "misiones()"),   // ventana de misiones aceptadas y jornada de hoy (también F4; HudModals)
         ("walkTo",    "walkTo({destiny:\"\", maxSpeed:false, distance:1})"),
         ("use",       "use({destiny:\"Nevera\"})"),
         ("take",      "take({item:\"Huevos\"})"),
@@ -316,6 +321,21 @@ public class SpellConsole : MonoBehaviour
 
     /// <summary>LANZADOR ADMIN (hechizo <c>admin</c>): se conocen TODOS los hechizos del juego, sin aprenderlos.</summary>
     public static bool Admin;
+
+    /// <summary>MIEMBRO DEL SANTUARIO sin examen ni iniciaciones (hechizo admin <c>miembro</c> y la entrada «Kushal iniciado»
+    /// de Inicio): suelta al iniciador que lo llevara, marca todo el onboarding hecho y le devuelve el cuerpo y la cámara.
+    /// Devuelve el mensaje, o null si <paramref name="mg"/> no tiene onboarding (ya es del santuario o no existe).</summary>
+    public static string MakeMember(GameObject mg)
+    {
+        SanctuaryOnboarding ob = mg != null ? mg.GetComponent<SanctuaryOnboarding>() : null;
+        if (ob == null) return null;
+        foreach (NewcomerInitiator ni in FindObjectsByType<NewcomerInitiator>(FindObjectsSortMode.None)) if (ni.InProgress) ni.ResetState();   // suelta al que lo examinaba o lo llevaba
+        ob.introMissionsDone = ob.introMissionsRequired; ob.apt = ob.presented = ob.initiated = ob.kitchenTrained = ob.gardenTrained = true;
+        if (mg.TryGetComponent(out HealthRecord hr)) { hr.analyzed = true; hr.vaccinated = true; }   // sin esto InfirmaryGate lo devolvía a la enfermería
+        if (mg.TryGetComponent(out PlayerController mpc)) mpc.ReleaseBody();
+        if (CameraManager.Instance != null) { CameraManager.Instance.ClearRobbery(); CameraManager.Instance.SwitchTo(CameraManager.Instance.preferredMode, forced: true); }
+        return $"«{mg.name}» ya es miembro del santuario: sin examen ni iniciación, puede explorar.";
+    }
 
     public static bool KnowsSpell(Anima self, string spell)
     {
@@ -497,6 +517,9 @@ public class SpellConsole : MonoBehaviour
             case "rendimiento": case "perf":   // mide unos segundos y escribe en el log qué cuesta (fases, dibujado, scripts)
                 { PerfProbe probe = PerfProbe.Instance != null ? PerfProbe.Instance : new GameObject("PerfProbe").AddComponent<PerfProbe>(); probe.Run(); Log("Midiendo el rendimiento (240 frames)… mira el log [Rendimiento]."); }
                 break;
+            case "rendimiento-ab": case "perf-ab":   // lo mismo con los lotes estáticos, sin ellos y otra vez con ellos (docs/rendimiento.md)
+                { PerfProbe probe = PerfProbe.Instance != null ? PerfProbe.Instance : new GameObject("PerfProbe").AddComponent<PerfProbe>(); probe.RunAB(); Log("Midiendo con lotes, sin lotes y con lotes otra vez (360 frames): el resultado va al log, [Rendimiento]."); }
+                break;
             case "enfocar": case "focus":   // ATENCIÓN VISUAL a conciencia: fija la mirada en algo (la cámara en 1ª persona lo acerca)
                 {
                     VisualAttention va = self.GetComponent<VisualAttention>() ?? self.gameObject.AddComponent<VisualAttention>();
@@ -530,13 +553,25 @@ public class SpellConsole : MonoBehaviour
                     if (!Admin) { Log("«miembro» es de administrador: lanza antes admin()."); break; }
                     string mw = args.TryGetValue("destiny", out string md) ? Clean(md) : "";
                     GameObject mg = mw.Length == 0 || mw == "Kushal" ? GameObject.FindGameObjectWithTag("Player") : GameObject.Find(mw);
-                    SanctuaryOnboarding ob = mg != null ? mg.GetComponent<SanctuaryOnboarding>() : null;
-                    if (ob == null) { Log(mg == null ? $"¿Dónde está «{mw}»?" : $"«{mg.name}» ya es del santuario."); break; }
-                    foreach (NewcomerInitiator ni in FindObjectsByType<NewcomerInitiator>(FindObjectsSortMode.None)) if (ni.InProgress) ni.ResetState();   // suelta al que lo examinaba o lo llevaba
-                    ob.introMissionsDone = ob.introMissionsRequired; ob.apt = ob.presented = ob.initiated = ob.kitchenTrained = true;
-                    if (mg.TryGetComponent(out PlayerController mpc)) mpc.ReleaseBody();
-                    if (CameraManager.Instance != null) { CameraManager.Instance.ClearRobbery(); CameraManager.Instance.SwitchTo(CameraManager.Instance.preferredMode, forced: true); }
-                    Log($"«{mg.name}» ya es miembro del santuario: sin examen ni iniciación, puede explorar.");
+                    string mr = MakeMember(mg);
+                    Log(mr ?? (mg == null ? $"¿Dónde está «{mw}»?" : $"«{mg.name}» ya es del santuario."));
+                }
+                break;
+            case "tercera": case "third":   // 3.ª PERSONA SIEMPRE: ninguna zona, examen ni robo de cámara la pasa a 1.ª
+                CameraManager.ThirdAlways = !args.TryGetValue("on", out string to3) || Clean(to3) != "false";
+                Log(CameraManager.ThirdAlways ? "Cámara: 3.ª persona siempre." : "Cámara: normal (la V y las zonas vuelven a cambiarla).");
+                break;
+            case "arbol": case "árbol": case "tree":   // GIRO DEL ÁRBOL DE LOS CAMPOS: arbol({vueltaHoras:N}), N horas del juego por vuelta; 0 lo para
+                {
+                    string vh = args.TryGetValue("vueltahoras", out string v1) ? v1 : args.TryGetValue("destiny", out string v2) ? v2 : "6";
+                    if (float.TryParse(Clean(vh), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float hrs)) Log(TreeRotator.Set(hrs));
+                    else Log($"«{vh}» no es un número de horas (0 = quieto).");
+                }
+                break;
+            case "piso": case "floor":   // SUBIR/BAJAR AL PISO N del Árbol de los Campos: anda a la puerta y nada por la raíz (sin teletransporte)
+                {
+                    string pn = args.TryGetValue("n", out string n1) ? n1 : args.TryGetValue("destiny", out string n2) ? n2 : "";
+                    Log(ArbolCampos.GoTo(self.gameObject, Clean(pn)));
                 }
                 break;
             case "progreso": case "progress":   // CHECKLIST de la historia y las misiones (ProgressPanel): abre o cierra la ventana
@@ -546,6 +581,19 @@ public class SpellConsole : MonoBehaviour
                 if (WorkdayDirector.Instance == null) { Log("No hay jornada en esta escena."); break; }
                 if (WorkdayDirector.Instance.today == null && TimeController.timeController != null) WorkdayDirector.Instance.PlanDay(TimeController.timeController.Day);
                 foreach (string jl in WorkdayDirector.Instance.Report()) Log("  " + jl);
+                break;
+            case "rutina": case "routine":   // RUTINA DEL GIMNASIO (docs/gimnasio-maquinas.md §15): el plan y la rutina de hoy de una persona; rutina(Nombre)
+                Log(GymRoutinePanel.Toggle(args.TryGetValue("destiny", out string rw) ? Clean(rw) : null));
+                break;
+            case "recursos": case "resources":   // VENTANA DE RECURSOS (F3; docs/interfaz-botones.md)
+                if (HudModals.Available(HudModals.Modal.Recursos)) { HudModals.Toggle(HudModals.Modal.Recursos); Log(HudModals.Current == HudModals.Modal.Recursos ? "Recursos: abierto." : "Recursos: cerrado."); } else Log("No hay recursos en esta escena.");
+                break;
+            case "misiones": case "missions":   // VENTANA DE MISIONES ACEPTADAS Y JORNADA (F4; docs/interfaz-botones.md)
+                if (HudModals.Available(HudModals.Modal.Misiones)) { HudModals.Toggle(HudModals.Modal.Misiones); Log(HudModals.Current == HudModals.Modal.Misiones ? "Misiones y jornada: abierto." : "Misiones y jornada: cerrado."); } else Log("No hay misiones en esta escena.");
+                break;
+            case "horario": case "ocio":   // HORARIO LIBRE de la semana (docs/horario-libre.md): abre o cierra el panel y escribe el de hoy
+                Log(HorarioPanel.Toggle());
+                if (LeisureDirector.Instance != null) foreach (LeisureDirector.Group hg in LeisureDirector.Instance.groups) foreach (string hl in LeisureDirector.Instance.Report(hg)) Log("  " + hl);
                 break;
             case "hora": case "hour": if (TimeController.timeController != null && float.TryParse(args.TryGetValue("destiny", out string hv) ? hv : "", System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float hh)) { TimeController.timeController.SetHour(hh); Log($"Son las {hh:00}:00."); } break;
             case "dia": case "día": case "day":   // dia(N): un día de juego dura N minutos reales (sin N: muestra el calendario)
@@ -659,6 +707,7 @@ public class SpellConsole : MonoBehaviour
     // walkTo/take/putIn/beat (encolados), se adelantaban (un `step` avanzaba la receta antes que el `putIn` pendiente).
     void Step(Anima self)
     {
+        if (AreaInitiator.StudentStep(self)) { Log($"«{self.name}» hace el paso que le pide el trabajador del huerto."); return; }   // iniciación del huerto
         CookingStation cs = self.GetComponent<CookingStation>();
         if (cs == null) { Log($"«{self.name}» no está cocinando."); return; }
         Enqueue(self, new ActionNowSpell("siguiente paso de cocina", a => { cs.AdvanceStep(); Log($"«{a.name}»: siguiente paso de cocina."); }));

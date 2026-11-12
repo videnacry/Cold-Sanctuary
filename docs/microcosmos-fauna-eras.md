@@ -150,3 +150,44 @@ Para comparar las formas con las fichas (iNaturalist, fotos con licencia libre p
 - Clemson HGIC, «Cicadas». https://hgic.clemson.edu/factsheet/cicadas
 - UF/IFAS, «Oriental cockroach». https://entnemdept.ufl.edu/projex/gallery/dl/cockroaches/text/oriental_cockroach.htm
 - Banglapedia, «Firefly». https://en.banglapedia.org/index.php/Firefly
+
+## Ciempiés (2026-11-01)
+
+Para la genealogía de las eras civilizadas (Berón: «una mariquita se podría casar con una araña y tener un hijo ciempiés
+como el tatarabuelo», docs/microcosmos-civilizaciones.md §7). Ficha `Centipede` (`InsectMorphology.Fauna.cs`):
+
+- **Escolopendra** (*Scolopendra subspinipes*, nativa de Hong Kong y el sur de Asia, hasta ~20 cm; *S. cingulata* en el
+  Mediterráneo, 7–12 cm). Cabeza plana con antenas de 17–20 artejos y las **forcípulas** (el 1.er par de patas del tronco
+  convertido en uñas de veneno: se dibujan como mandíbulas abiertas 35°); **21 segmentos del tronco con un par de patas cada
+  uno** (42 patas), que se alargan un poco hacia atrás; el **último par, terminal, el doble de largo** (defensa y tacto).
+- Ciclo: desarrollo **epimórfico** (la cría sale con todos sus segmentos, como un adulto pequeño: fase «joven», ×0,2) y la
+  madre se enrosca sobre los huevos y las crías hasta su primera muda. Sin dimorfismo visible.
+- Erguido (insecto-humano): se levanta el 30 % delantero del cuerpo (cabeza y 6 segmentos), el 1.er par son los brazos.
+- Fuentes: Lewis, J. G. E. (1981), *The Biology of Centipedes*, Cambridge UP; Edgecombe, G. D. y Giribet, G. (2007),
+  «Evolutionary biology of centipedes», *Annu. Rev. Entomol.* 52:151–170.
+- Pendiente: su `StageProfile` (vida, muda) y su entrada en algún bioma (`MicroBiome`), y verlo en la galería.
+
+## Los animales del pueblo (2026-11-01)
+
+Berón (2026-11-01): «al-Juarismi, Curie, Einstein y Patterson no tienen fauna». En las ciudades no hay bichos salvajes, pero
+sí los **animales de la ciudad**: los caballos de los carros y los fiacres, los asnos y los camellos, los gatos y los perros de
+las casas, las ratas de las alcantarillas. En un mundo de insectos van con el cuerpo de su **análogo entre los artrópodos** y a
+la **talla del animal real** (el pueblo es a escala humana), por las calles (`MicroBiome.Biome.townFauna`,
+`AreaMicrocosmos.Nature`, modo pueblo). Ninguno usa un cuerpo de la gente (`InsectCast.Folk`).
+
+| Animal de la ciudad | Análogo | Por qué | Talla |
+|---|---|---|---|
+| Caballo, mula, asno, camello (tiro y carga) | **Pulgón** (`Aphid`) | Las hormigas «crían ganado» de pulgones: el canon ya hace de las vacas pulgones (Blossom, Berkeley) | caballo 2,4 m, asno 1,6 m, camello 3 m |
+| Gato, perro (los de casa) | **Cochinilla hormiguera** (`Woodlouse`, *Platyarthrus hoffmannseggii*) | El huésped blanco que vive dentro de los hormigueros con permiso de las hormigas: el animal de casa | 0,5–0,7 m |
+| Rata (sótanos y alcantarillas) | **Cucaracha** (`Cockroach`) | La misma plaga urbana | 0,3 m |
+
+| Ciudad | Animales del pueblo | Por qué así |
+|---|---|---|
+| París, diciembre de 1898 | 4 caballos de fiacre, 2 gatos, 3 ratas | Los ómnibus y fiacres de caballos (la Compagnie générale des omnibus tenía unos 17 000 caballos hacia 1900); el alcantarillado de Belgrand |
+| Berna, mayo de 1905 | 3 caballos de reparto, 3 gatos | El tranvía era eléctrico desde 1901, pero el reparto (cerveza, leche) seguía en carros de caballos. Los osos del Bärengraben (desde 1857) viven en su foso, fuera del piso |
+| Pasadena, 1953 | 3 perros, 2 gatos | Una ciudad de coches, sin caballos por la calle |
+| Bagdad, ~820 | 3 asnos de aguador, 2 camellos de caravana, 3 gatos | El agua iba a lomo de asno; las caravanas llegaban al zoco de al-Karj; los gatos, queridos en el islam (Abu Hurayra, «el del gatito») |
+
+Las **aves** (palomas, gorriones; las palomas mensajeras de los califas) no tienen análogo con alas fuera de la gente y no se
+ponen. En los demás pueblos (campo y aldeas: Woolsthorpe, Berkeley, Crotona…) siguen sus bichos del lugar, pero **a la talla
+de un animal grande del pueblo como mucho (2,4 m)**: a escala de hormiga una mantis medía 12 m entre las casas de Kowloon.

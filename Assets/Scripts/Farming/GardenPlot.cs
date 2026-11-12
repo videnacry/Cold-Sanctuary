@@ -15,12 +15,50 @@ public class GardenPlot : MonoBehaviour
     public Guild guild;
     public Vector2 size = new Vector2(20f, 16f);
     public int seed = 1;
+    [Tooltip("Bosque comestible: por qué especie del dosel y de los árboles bajos empieza (dos bancales del mismo gremio, p. ej. los dos pisos del Árbol de los Campos, plantan especies distintas).")]
+    public int speciesOffset;
 
     public static readonly List<GardenPlot> All = new List<GardenPlot>();
     void OnEnable() { All.Add(this); }
     void OnDisable() { All.Remove(this); }
 
     public int Plants { get; private set; }
+
+    // ── EL SUELO (docs/garden-simulation.md §8, receta base: abonar · arar): lo prepara la iniciación del huerto ──
+    /// <summary>¿El suelo está listo para sembrar (abonado, labrado, con surcos y rastrillado)?</summary>
+    public bool SoilPrepared { get; private set; }
+    /// <summary>Cuánto se ha preparado (0 = sin tocar, 1 = listo).</summary>
+    public float SoilProgress { get; private set; }
+
+    /// <summary>Marca el paso <paramref name="done"/> de <paramref name="total"/> de preparar el suelo y lo deja VER: la capa
+    /// de abono (más oscura) al esparcirlo y los surcos al labrar.</summary>
+    public void PrepareSoil(int done, int total)
+    {
+        SoilProgress = Mathf.Clamp01(done / (float)Mathf.Max(1, total));
+        if (done >= 2 && transform.Find("Abono") == null)   // abono esparcido: una capa oscura sobre el bancal
+            SoilPiece("Abono", new Vector3(0f, 0.07f, 0f), new Vector3(size.x, 0.02f, size.y), new Color(0.24f, 0.17f, 0.11f));
+        if (done >= 4 && transform.Find("Surcos") == null)   // surcos: caballones a un palmo y medio, a lo largo del bancal
+        {
+            Transform s = new GameObject("Surcos").transform; s.SetParent(transform, false);
+            for (float x = -size.x * 0.5f + 0.4f; x <= size.x * 0.5f - 0.4f; x += 0.6f)
+                SoilPiece("Caballón", new Vector3(x, 0.1f, 0f), new Vector3(0.22f, 0.06f, size.y - 0.4f), new Color(0.3f, 0.21f, 0.14f), s);
+        }
+        if (done >= total)
+        {
+            SoilPrepared = true;
+            Debug.Log($"[Huerto] el suelo de «{name}» está preparado: abonado, labrado y con surcos.");
+        }
+    }
+
+    void SoilPiece(string n, Vector3 local, Vector3 scale, Color c, Transform parent = null)
+    {
+        GameObject g = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        Destroy(g.GetComponent<Collider>());   // se ve, no se pisa (el NavMesh es el del suelo)
+        g.name = n; g.transform.SetParent(parent != null ? parent : transform, false);
+        g.transform.localPosition = local; g.transform.localScale = scale;
+        g.GetComponent<Renderer>().sharedMaterial = KitchenProps.Mat(c);
+    }
+
     System.Random _rnd;
     Transform _root;
     float R(float a, float b) => a + (float)_rnd.NextDouble() * (b - a);
@@ -44,6 +82,7 @@ public class GardenPlot : MonoBehaviour
     public void Generate()
     {
         if (_root != null) return;
+        if (GetComponent<WeedPatch>() == null) gameObject.AddComponent<WeedPatch>();   // sus malas hierbas (docs/deshierbe-cuidadoso.md)
         _rnd = new System.Random(seed);
         _root = new GameObject("Plantas").transform;
         _root.SetParent(transform, false);
@@ -81,7 +120,10 @@ public class GardenPlot : MonoBehaviour
                 for (float x = -hx + 1f; x <= hx - 1f; x += 1.4f)
                     Plant(((int)x) % 2 == 0 ? GardenCrop.Kind.Amaranto : GardenCrop.Kind.Chile, new Vector3(x, 0f, hz - 1f));
                 for (float x = -hx + 1f; x <= hx - 1f; x += 2f) Plant(GardenCrop.Kind.Nopal, new Vector3(x, 0f, -hz - 0.8f));
-                for (float x = -hx + 1.6f; x <= hx - 1.6f; x += 2.4f) Plant(((int)x) % 2 == 0 ? GardenCrop.Kind.Achiote : GardenCrop.Kind.Azafran, new Vector3(x, 0f, hz + 0.1f));   // achiote y azafrán (color y aroma de la carta)
+                // Achiote y azafrán (color y aroma de la carta), alternos por su PUESTO en la fila: con ((int)x) % 2, en el bancal
+                // de 8,6 m de las puntas del árbol (x = −2,7, −0,3, 2,1) salían tres achiotes y ningún azafrán.
+                int spice = 0;
+                for (float x = -hx + 1.6f; x <= hx - 1.6f; x += 2.4f) Plant(spice++ % 2 == 0 ? GardenCrop.Kind.Achiote : GardenCrop.Kind.Azafran, new Vector3(x, 0f, hz + 0.1f));
                 break;
 
             case Guild.ChacraAndina:
@@ -138,7 +180,7 @@ public class GardenPlot : MonoBehaviour
             default:   // BOSQUE COMESTIBLE por capas: dosel, árboles bajos, arbustos, herbáceas, trepadoras y hongos a la sombra
                 GardenCrop.Kind[] canopy = { GardenCrop.Kind.Mango, GardenCrop.Kind.Coco, GardenCrop.Kind.Guanabana, GardenCrop.Kind.Datil, GardenCrop.Kind.Almendro, GardenCrop.Kind.Olivo, GardenCrop.Kind.Aguacate, GardenCrop.Kind.Clavo };
                 GardenCrop.Kind[] small = { GardenCrop.Kind.Limon, GardenCrop.Kind.Naranja, GardenCrop.Kind.Cacao, GardenCrop.Kind.Lima, GardenCrop.Kind.Canela, GardenCrop.Kind.Laurel, GardenCrop.Kind.Cafe, GardenCrop.Kind.Babaco };
-                int c = 0, s = 0;
+                int c = speciesOffset, s = speciesOffset;
                 for (float x = -hx + 4f; x <= hx - 3f; x += 7.5f)
                     for (float z = -hz + 4f; z <= hz - 3f; z += 7.5f)
                     {
@@ -196,18 +238,26 @@ public class GardenPlot : MonoBehaviour
         // Busca agua (el rayo no toca hielo: cae al fondo marino) en anillos alrededor de la parcela. Antes plantaba solo
         // alrededor del PRIMER punto de agua y se rendía: si era un canal estrecho (o algo nuevo tapaba el agua junto a la
         // orilla), no quedaba ni un alga y la carta perdía nori y kombu. Ahora sigue buscando hasta plantar las n.
+        // (En el Árbol de los Campos el bancal va a 60–80 m y gira: se busca el agua a ras del mar, y el alga no cuelga del
+        // bancal (giraría con el árbol por encima del mar) sino de un grupo quieto.)
+        Transform holder = _root;
+        if (GetComponentInParent<ArbolCampos>() != null)
+        {
+            holder = new GameObject("Algas_" + name).transform;
+            holder.SetParent(transform.root != transform ? transform.root : null, true);
+        }
         int placed = 0;
         for (float rad = size.x * 0.6f; rad < 120f && placed < n; rad += 3f)
             for (int a = 0; a < 24 && placed < n; a++)
             {
                 float ang = a * Mathf.PI / 12f;
-                Vector3 p = transform.position + new Vector3(Mathf.Cos(ang), 0f, Mathf.Sin(ang)) * rad;
+                Vector3 p = transform.position + new Vector3(Mathf.Cos(ang), 0f, Mathf.Sin(ang)) * rad; p.y = 0f;
                 if (!IsWater(p)) continue;
                 for (int k = 0; k < n * 3 && placed < n; k++)
                 {
                     Vector3 q = p + new Vector3(R(-4f, 4f), 0f, R(-4f, 4f));
                     if (!IsWater(q)) continue;
-                    GardenCrop.Build(_root, GardenCrop.Kind.Alga, new Vector3(q.x, -0.35f, q.z), seed * 31 + placed);
+                    GardenCrop.Build(holder, GardenCrop.Kind.Alga, new Vector3(q.x, -0.35f, q.z), seed * 31 + placed);
                     placed++; Plants++;
                 }
             }
@@ -251,6 +301,6 @@ public class GardenPlot : MonoBehaviour
         Shader sh = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
         m = new Material(sh) { color = c };
         if (m.HasProperty("_BaseColor")) m.SetColor("_BaseColor", c);
-        return _bedMats[c] = m;
+        return _bedMats[c] = CheapMaterials.MakeCheap(m);   // (2026-11-09) Simple Lit mate
     }
 }

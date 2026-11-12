@@ -22,6 +22,10 @@ public class GroundGuard : MonoBehaviour
         _next = Time.time + checkEvery;
         if (_cc != null && !_cc.enabled) return;   // trepando / en transición de escena: no tocar
         if (FlyingCarpet.Riding(gameObject)) return;   // volando en alfombra
+        if (SwimBody.Swimming(gameObject)) return;     // nadando (el mar, la columna de agua del árbol): ni se le baja al fondo ni se le sube
+        if (TreeTrip.Busy(gameObject)) return;
+        if (PersonLife.HeldByHand(gameObject)) return;   // (2026-11-11) el niño de la mano de su madre (Neo): lo coloca ella       // cruzando la raíz del Árbol de los Campos (de una puerta a otra): lo lleva el viaje
+        if (InTreeWater(transform.position)) return;   // (2026-11-11) en el agua de un tronco: se sale nadando (ArbolCampos.Route), no se le baja 64 m al pie (Panterilia al acabar su ronda, suite 58)
         if (TryGetComponent(out PlayerController pc) && pc.BodyHeld) return;   // lo sujeta alguien (lo llevan de la mano, sentado en el examen…): lo coloca quien lo sujeta
         if (GymStation.Seated(gameObject)) return;   // en una máquina del gimnasio (el asiento de la prensa y el banco del curl están altos): lo coloca la jornada
 
@@ -52,6 +56,8 @@ public class GroundGuard : MonoBehaviour
         if (_cc != null) _cc.enabled = true;
         Debug.Log($"[Suelo] «{name}» estaba {(best - feet):0.0} m bajo el suelo en ({p.x:0},{p.z:0}) → recolocado encima.");
     }
+
+    static bool InTreeWater(Vector3 p) { if (WaterZone.Underwater(p + Vector3.up * 0.5f)) return true; foreach (ArbolCampos t in ArbolCampos.All) if (t != null && t.InRootWater(p)) return true; return false; }
 
     // ¿Hay suelo justo bajo su origen? (los pies estimados del cuerpo a veces quedan por debajo y el techo de alfombras, a
     // ras de los pies, no contaba: lo «bajaba» al piso de abajo nada más aterrizar.)

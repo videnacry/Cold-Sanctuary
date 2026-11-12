@@ -128,7 +128,8 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
         if (areaName == "Construcción") { opts.Add("Simulación: Egina, el reino de los mirmidones (Éaco y Zeus)"); acts.Add(() => EnterWithTank(GameObject.FindGameObjectWithTag("Player")?.transform, "Microcosmos_Egina")); }
         // FÍSICA (docs/atomic-plant.md): la escalera de la física vive en la planta atómica. «El microcosmos del área» (arriba) es el
         // de Newton, Curie y Einstein; Eratóstenes, el primer tramo, tiene el suyo.
-        if (areaName == "Planta Atómica" && Application.CanStreamedLevelBeLoaded("Microcosmos_Eratostenes")) { opts.Add("Simulación: Eratóstenes mide la Tierra (~240 a. C.)"); acts.Add(() => EnterWithTank(GameObject.FindGameObjectWithTag("Player")?.transform, "Microcosmos_Eratostenes")); }
+        if (areaName == "Aula" && Application.CanStreamedLevelBeLoaded("Microcosmos_Eratostenes"))   // (2026-11-04) al Aula (la biblioteca de Alejandría)
+            { opts.Add("Simulación: Eratóstenes mide la Tierra (~240 a. C.)"); acts.Add(() => EnterWithTank(GameObject.FindGameObjectWithTag("Player")?.transform, "Microcosmos_Eratostenes")); }
         // HISTORIAS (docs/microcosmos-historias.md): grandes figuras sobre el área que mejor las cuenta.
         foreach (var (area, label, scene) in StoryScenes)
             if (areaName == area) { string sc = scene; opts.Add(label); acts.Add(() => EnterWithTank(GameObject.FindGameObjectWithTag("Player")?.transform, sc)); }
@@ -142,6 +143,57 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
         (AreaWork.Hospital, "Simulación: Florence Nightingale en Escútari, 1854", "Microcosmos_Nightingale"),
         (AreaWork.Hospital, "Simulación: Siddhārtha y los cuatro encuentros (Buda)", "Microcosmos_Buda"),
         ("Mecánica",     "Simulación: los hermanos Wright, de la bicicleta al avión (1903)", "Microcosmos_Wright"),
+        // BRUCE LEE (docs/microcosmos-bruce-lee.md): el microcosmos es el del DOJO, que sigue en obras y aún no tiene máquina; mientras,
+        // se entra desde la del Gimnasio (la misma torre de Entrenamiento).
+        ("Dojo (artes marciales)", "Simulación: Bruce Lee, del Wing Chun al Jeet Kune Do (1957–1971)", "Microcosmos_BruceLee"),
+        ("Gimnasio",     "Simulación del Dojo: Bruce Lee, del Wing Chun al Jeet Kune Do (1957–1971)", "Microcosmos_BruceLee"),
+        // PAKAL DE PALENQUE (docs/microcosmos-maya-pakal.md): pendiente de su piso representativo (un templo de los antepasados); hoy, el Huerto (la milpa).
+        ("Huerto", "Simulación: Pakal de Palenque, el rey que renace como el maíz (683)", "Microcosmos_Pakal"),
+        // LA TANDA 3 (docs/microcosmos-historias-3.md). Viena va en el piso de Música.
+        ("Mecánica", "Simulación: Eloy Alfaro y el tren de Guayaquil a Quito (1908)", "Microcosmos_EloyAlfaro"),
+        (AreaWork.Hospital, "Simulación: Galvarino vuelve con su gente (Arauco, 1557)", "Microcosmos_Galvarino"),
+        ("Estudio Textil", "Simulación: Atahualpa y los incas: cómo vivían, Cajamarca (1532)", "Microcosmos_Atahualpa"),
+        ("Sala de asambleas", "Simulación: la Gran Ley de la Paz de los Haudenosaunee (lago Onondaga)", "Microcosmos_GranLeyDeLaPaz"),
+        ("Cocina", "Simulación: Cleopatra en Alejandría: los años sin crecida (42 a. C.)", "Microcosmos_Cleopatra"),
+        ("Informática", "Simulación: las calculadoras de Langley: Johnson, Vaughan y Jackson (1962)", "Microcosmos_Langley"),
+        ("Música", "Simulación: Beethoven en Viena: el estreno de la Novena (1824)", "Microcosmos_Beethoven"),
+        ("Aula", "Simulación: Descartes en Leiden: el Discurso del método (1637)", "Microcosmos_Descartes"),
+        (AreaWork.Hospital, "Simulación: Ernesto Guevara y Alberto Granado en San Pablo (1952)", "Microcosmos_CheGuevara"),
+        ("Sala de asambleas", "Simulación: el Congreso de los Diputados: la moción de censura de 2018", "Microcosmos_PedroSanchez"),
+        ("Sala de asambleas", "Simulación: Lincoln en Gettysburg (1863)", "Microcosmos_Lincoln"),
+        ("Sala de asambleas", "Simulación: la Feria de las Hazañas de presidentes", "Microcosmos_Hazanas"),
+        // LOS FAMOSOS (docs/microcosmos-famosos.md): una historia de su vida pública, en su pueblo real.
+        ("Sala de Yoga", "Simulación: Sadhguru en Velliangiri: el Dhyanalinga (1999)", "Microcosmos_Sadhguru"),
+        (LaunchSite.ControlArea, "Simulación: Elon Musk en Hawthorne: el Falcon 1 llega a órbita (2008)", "Microcosmos_ElonMusk"),
+        ("Dojo (artes marciales)", "Simulación: Goku en la aldea de la montaña (homenaje original)", "Microcosmos_Goku"),
+        ("Gimnasio", "Simulación del Dojo: Goku en la aldea de la montaña (homenaje original)", "Microcosmos_Goku"),
+        ("Informática", "Simulación: Bill Gates y Paul Allen en Albuquerque: el BASIC del Altair (1975)", "Microcosmos_BillGates"),
+        ("Estudio Textil", "Simulación: Warren Buffett y la señora B en Omaha: un apretón de manos (1983)", "Microcosmos_WarrenBuffett"),
+        ("Aula", "Simulación: MacKenzie Scott y Prairie View A&M: dar sin condiciones (2020)", "Microcosmos_MacKenzieScott"),
+        ("Huerto", "Simulación: Uagadugú 2024: tractores para los productores (Ibrahim Traoré)", "Microcosmos_IbrahimTraore"),
+        ("Música", "Simulación: grandes aportes de las canciones (seis que cambiaron algo)", "Microcosmos_GrandesCanciones"),
+        ("Música", "Simulación: Public Enemy en Long Island: el noticiero del barrio (1989)", "Microcosmos_PublicEnemy"),
+        ("Música", "Simulación: U2 en Belfast: el concierto del Sí (1998)", "Microcosmos_U2"),
+        ("Música", "Simulación: Bob Marley y los Wailers: de Trench Town al One Love Peace Concert (1978)", "Microcosmos_Wailers"),
+        ("Sala de Ballet", "Simulación: BLACKPINK en Seúl: cuatro aprendizas ante el espejo (2016)", "Microcosmos_Blackpink"),
+        ("Gimnasio", "Simulación de la Sala de Ballet: BLACKPINK en Seúl (2016)", "Microcosmos_Blackpink"),
+        ("Música", "Simulación: Michael Jackson y los suyos en Gary: una familia del acero (1966)", "Microcosmos_MichaelJackson"),
+        ("Música", "Simulación: John Lennon y Yoko Ono en Montreal: una cama por la paz (1969)", "Microcosmos_JohnLennon"),
+        ("Música", "Simulación: Bad Bunny en Vega Baja: del empaque del súper a SoundCloud (2016)", "Microcosmos_BadBunny"),
+        ("Aula", "Simulación: Shakira en Barranquilla: el colegio Pies Descalzos de La Playa (2009)", "Microcosmos_Shakira"),
+        // Científicos e históricos (docs/microcosmos-cientificos.md): el pueblo donde ocurrió, sobre el área que mejor lo cuenta.
+        ("Aula", "Simulación: Pitágoras en Crotona: el número, la música y Milón (~530 a. C.)", "Microcosmos_Pitagoras"),
+        ("Aula", "Simulación: Heródoto en Egipto: «el don del río» (~450 a. C.)", "Microcosmos_Herodoto"),
+        ("Aula", "Simulación: al-Juarismi en Bagdad: el álgebra y los números indios (~820)", "Microcosmos_AlJuarismi"),
+        ("Planta Atómica", "Simulación: Newton en Woolsthorpe: el año de la peste (1665–1666)", "Microcosmos_Newton"),
+        ("Biología", "Simulación: Edward Jenner en Berkeley: la primera vacuna (1796)", "Microcosmos_Jenner"),
+        ("Sala de asambleas", "Simulación: Bolívar en Angostura: el Congreso y el Orinoco (1819)", "Microcosmos_Bolivar"),
+        ("Aula", "Simulación: Nietzsche en Sils Maria: caminar y el eterno retorno (1881)", "Microcosmos_Nietzsche"),
+        ("Química", "Simulación: Marie y Pierre Curie: el polonio y el radio (París, 1898)", "Microcosmos_Curie"),
+        ("Construcción", "Simulación: Tesla en Colorado Springs: el rayo artificial (1899)", "Microcosmos_Tesla"),
+        ("Planta Atómica", "Simulación: Einstein en Berna: el año milagroso (1905)", "Microcosmos_Einstein"),
+        ("Química", "Simulación: Clair Patterson: la edad de la Tierra y el plomo (1953)", "Microcosmos_Patterson"),
+        ("Central Nuclear", "Simulación: Chernóbil 1986: Ananenko, Bespalov y Baranov bajan al agua", "Microcosmos_Chernobil"),
     };
 
     void ShowArea(string area)

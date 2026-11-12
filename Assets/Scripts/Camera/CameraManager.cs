@@ -96,7 +96,9 @@ public class CameraManager : MonoBehaviour
 
         // EJERCICIOS DE CUELLO (y cualquier asana que mueva la cabeza): la cámara pasa a los OJOS de Kushal y gira con su
         // cabeza (barbilla al pecho → mira al suelo; cabeza atrás → al cielo; cara a un lado → mira a ese lado).
-        Transform head = HeadUnderYoga(anchor.root);
+        // SOLO en 1.ª persona: en 3.ª la cámara se metía igualmente en la cabeza y la «V» no hacía nada en la clase de
+        // upa-yoga (Berón 2026-10-29): en 3.ª se ve el cuerpo entero haciendo el ejercicio.
+        Transform head = _currentMode == CameraMode.FirstPerson ? HeadUnderYoga(anchor.root) : null;
         _headBlend = Mathf.MoveTowards(_headBlend, head != null ? 1f : 0f, Time.deltaTime * 2.5f);
         if (_headBlend > 0f && (head != null || _lastHead != null))
         {
@@ -150,11 +152,21 @@ public class CameraManager : MonoBehaviour
         return best < dist ? pivot + dir * Mathf.Max(0.4f, best - 0.1f) : anchor.position;
     }
 
+    /// <summary>3.ª PERSONA SIEMPRE (Berón 2026-10-29: para probar en vivo): ninguna zona, robo, examen ni hechizo la cambia
+    /// a 1.ª. Se activa con el hechizo <c>tercera({on:true})</c> y se guarda entre partidas (PlayerPrefs «Camara3aSiempre»).</summary>
+    public static bool ThirdAlways
+    {
+        get { if (_thirdAlways < 0) _thirdAlways = PlayerPrefs.GetInt("Camara3aSiempre", 0); return _thirdAlways == 1 && !ColdSanctuary.TestRunner.Running; }   // (las pruebas comprueban la cámara de cada momento)
+        set { _thirdAlways = value ? 1 : 0; PlayerPrefs.SetInt("Camara3aSiempre", _thirdAlways); PlayerPrefs.Save(); if (value && Instance != null) { Instance.ClearRobbery(); Instance.SwitchTo(CameraMode.ThirdPerson, forced: true); } }
+    }
+    static int _thirdAlways = -1;
+
     // ── Public API ───────────────────────────────────────────────────────────
 
     /// <summary>Switch to a camera mode. Respects the player's preference unless forced.</summary>
     public void SwitchTo(CameraMode mode, bool forced = false)
     {
+        if (ThirdAlways) mode = CameraMode.ThirdPerson;   // 3.ª persona siempre: nada la cambia
         if (_inRobbery && !forced) return;
         preferredMode = mode;
         ApplyMode(mode);
@@ -163,7 +175,7 @@ public class CameraManager : MonoBehaviour
     /// <summary>Request a camera robbery (cinematic steal). Ignored if player disabled them.</summary>
     public void RequestRobbery(CameraRobbery robbery)
     {
-        if (!allowCameraRobberies) return;
+        if (!allowCameraRobberies || ThirdAlways) return;
         if (_inRobbery) return;
         StartCoroutine(ExecuteRobbery(robbery));
     }

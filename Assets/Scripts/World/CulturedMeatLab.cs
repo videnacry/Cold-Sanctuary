@@ -28,8 +28,32 @@ public class CulturedMeatLab : MonoBehaviour
     [Header("Lote")]
     public double seedCells = 1e9;          // un vial del banco
     public double cellsPerGram = 2.5e8;     // músculo: ≈ 2–3·10⁸ células por gramo
-    public float batchGrams = 2000f;        // 2 kg por lote → 4 raciones de 500 g
-    public int maxPortionsWaiting = 6;
+    /// <summary>Lo que da cada máquina (regla P19, docs/produccion-maquinaria.md): 10⁷ células/mL ÷ <see cref="cellsPerGram"/> = 40 g por litro.</summary>
+    // (2026-11-11) LA MAQUINARIA SE DIMENSIONA CON EL PLAN (fauna = K × humanos, PopulationPlan): tres biorreactores de producción del tamaño
+    // estándar más pequeño que da la carne del plan (500, 750, 1000 o 1500 L; más grandes no caben a 2 m) y seis unidades de perfusión con las
+    // alturas que hagan falta (2 a 4, de 6 kg cada una). Se decide al montar el laboratorio (Build) y queda en el laboratorio construido; sin él,
+    // lo que daría el plan. Antes: 500 L y dos alturas fijos (60 kg).
+    public const float GramsPerLitre = 40f, ScaffoldKgPerLevel = 6f;
+    public const int ProductionReactors = 3, Scaffolds = 6;
+    public static readonly float[] StandardLitres = { 500f, 750f, 1000f, 1500f };
+    /// <summary>La carne al día que pide el plan de los depredadores de tierra (más 2 kg de margen, como la línea de producción).</summary>
+    public static float PlannedKgPerDay => ProductionAudit.PlannedPredatorKg() + 2f;
+    public static float LitresFor(float kg) { foreach (float l in StandardLitres) if (ProductionReactors * l * GramsPerLitre / 1000f >= kg) return l; return StandardLitres[StandardLitres.Length - 1]; }
+    public static int LevelsFor(float kg) => Mathf.Clamp(Mathf.CeilToInt(kg / (Scaffolds * ScaffoldKgPerLevel)), 2, 4);
+    public static float GramsOf(float litres, int levels) => Mathf.Min(ProductionReactors * litres * GramsPerLitre, Scaffolds * levels * ScaffoldKgPerLevel * 1000f);
+    [Tooltip("Litros de cada biorreactor de producción (lo fija Build con el plan).")] public float reactorLitres = 500f;
+    [Tooltip("Alturas de cada unidad de perfusión (lo fija Build con el plan).")] public int scaffoldLevels = 2;
+    static CulturedMeatLab BuiltLab { get { foreach (CulturedMeatLab l in All) if (l != null) return l; return Object.FindAnyObjectByType<CulturedMeatLab>(); } }
+    /// <summary>Litros de cada biorreactor de producción: los del laboratorio construido; sin él, los del plan.</summary>
+    public static float ReactorLitres { get { CulturedMeatLab b = BuiltLab; return b != null ? b.reactorLitres : LitresFor(PlannedKgPerDay); } }
+    /// <summary>Kg al día de cada unidad de perfusión (sus alturas × 6 kg).</summary>
+    public static float ScaffoldKg { get { CulturedMeatLab b = BuiltLab; return (b != null ? b.scaffoldLevels : LevelsFor(PlannedKgPerDay)) * ScaffoldKgPerLevel; } }
+    /// <summary>El lote que permite la maquinaria: la etapa más corta.</summary>
+    public static float MachineryGrams => GramsOf(ReactorLitres, Mathf.RoundToInt(ScaffoldKg / ScaffoldKgPerLevel));
+    public float batchGrams = 60000f;   // (lo fija Build: GramsOf de su maquinaria; 60 kg = 3 × 500 L, dos alturas)
+    public int maxPortionsWaiting = 160;
+    /// <summary>Raciones en el almacén, listas para el alimentador (<see cref="PredatorRound"/>).</summary>
+    public int rationsStored;
     [Tooltip("En el santuario el laboratorio NO va solo: iniciar cada lote y cosecharlo son MISIONES de la jornada (alguien tiene que hacerlas). Proliferar y diferenciar sí van solos en el biorreactor.")]
     public bool requiresStaff = true;
     bool _startOrdered, _harvestOrdered;
@@ -38,7 +62,7 @@ public class CulturedMeatLab : MonoBehaviour
     public void OrderStart(string who) { _startOrdered = true; Debug.Log($"[Carne cultivada] {who} inicia el lote de {Line} (vial del banco, medio y siembra en el biorreactor)."); }
     /// <summary>Misión «Cosechar el lote»: cosecha y formado (si aún no está listo, queda encargado).</summary>
     public void OrderHarvest(string who) { _harvestOrdered = true; Debug.Log($"[Carne cultivada] {who} cosecha y da forma al lote de {Line}."); }
-    [Tooltip("Raciones de cada lote que van a la cocina del restaurante (el resto, al comedero de los depredadores).")]
+    [Tooltip("Raciones de cada lote que van a la cocina del restaurante (el resto, al almacén del alimentador).")]
     public int kitchenPortions = 4;
 
     /// <summary>Líneas celulares del banco: cada lote cultiva la siguiente. Los mamíferos y aves desde células satélite
@@ -47,7 +71,7 @@ public class CulturedMeatLab : MonoBehaviour
     public string Line => Lines[batches % Lines.Length];
 
     [Header("Destino")]
-    public Transform feeder;                // comedero de los depredadores
+    public Transform feeder;                // el almacén de raciones (docs/alimentador.md): ya no hay comedero
     public WorldLabel console;              // pantalla de la consola (estado del lote)
 
     public Stage stage { get; private set; } = Stage.Biopsia;
@@ -61,12 +85,29 @@ public class CulturedMeatLab : MonoBehaviour
 
     public static readonly List<CulturedMeatLab> All = new List<CulturedMeatLab>();
     void OnEnable() { All.Add(this); }
+
+    /// <summary>LA RESERVA DEL PRIMER DÍA (ronda 26): el almacén empezaba vacío y el primer lote no está antes del turno de las 12; los
+    /// alimentadores «recogen 0 raciones» y los osos, con hambre desde el arranque, morían a mediodía. Un día de raciones de los depredadores
+    /// de tierra del plan (cada uno, sus 3 rondas), en el primer laboratorio, si está vacío.</summary>
+    public static int FirstDayStock()
+    {
+        int n = 0;
+        foreach (string sp in new[] { "Bear", "Wolf", "ArcticFox" }) n += PopulationPlan.Raw(sp) * PredatorRound.RationsFor(sp) * 3;
+        return n;
+    }
+    void Start()
+    {
+        if (rationsStored > 0 || All.Count == 0 || All[0] != this) return;
+        rationsStored = Mathf.Min(maxPortionsWaiting, FirstDayStock());
+        Debug.Log($"[Carne cultivada] Reserva del primer día en el almacén del alimentador: {rationsStored} raciones de 500 g.");
+    }
     void OnDisable() { All.Remove(this); }
 
     double TargetCells => batchGrams * cellsPerGram;
 
     void Update()
     {
+        if (All.Count > 0 && All[0] == this) PredatorRound.EmergencyTick();   // (2026-11-11) el que se muere de hambre fuera de turno
         float dt = Time.deltaTime * speed;
         _t += dt;
         switch (stage)
@@ -102,24 +143,11 @@ public class CulturedMeatLab : MonoBehaviour
     {
         batches++;
         int n = Mathf.Max(1, Mathf.RoundToInt(batchGrams / 500f));
-        int waiting = 0;
-        if (feeder != null) foreach (Transform c in feeder) if (c.GetComponent<FoodItem>() != null) waiting++;
-        n = Mathf.Min(n, maxPortionsWaiting - waiting);
-        for (int i = 0; i < n; i++)
-        {
-            Vector3 p = feeder != null ? feeder.position + new Vector3((i % 2) * 0.6f - 0.3f, 0.15f, (i / 2) * 0.6f - 0.3f) : transform.position;
-            GameObject g = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            g.name = "Carne_cultivada";
-            Object.Destroy(g.GetComponent<Collider>());
-            if (feeder != null) g.transform.SetParent(feeder, true);
-            g.transform.position = p; g.transform.localScale = new Vector3(0.22f, 0.08f, 0.16f);
-            g.GetComponent<Renderer>().sharedMaterial = KitchenProps.Mat(new Color(0.72f, 0.3f, 0.3f));
-            FoodItem fi = g.AddComponent<FoodItem>(); fi.material = OrganicMaterial.Meat; fi.grams = 500f;
-            portionsMade++;
-        }
+        n = Mathf.Max(0, Mathf.Min(n, maxPortionsWaiting - rationsStored));
+        rationsStored += n; portionsMade += n;   // (en cajas: una ración suelta atraía a los carnívoros por el olor)
         string line = Lines[(batches - 1) % Lines.Length];
         if (KitchenLarder.Instance != null) KitchenLarder.Instance.ReceiveMeat(MeatItem(line), kitchenPortions);
-        Debug.Log($"[Carne cultivada] lote {batches} ({line}) cosechado: {n} raciones de 500 g al comedero de los depredadores{(KitchenLarder.Instance != null ? $" y {kitchenPortions} a la cocina" : "")}.");
+        Debug.Log($"[Carne cultivada] lote {batches} ({line}) cosechado: {n} raciones de 500 g al almacén del alimentador{(KitchenLarder.Instance != null ? $" y {kitchenPortions} a la cocina" : "")}.");
         cells = 0;
     }
 
@@ -158,6 +186,7 @@ public class CulturedMeatLab : MonoBehaviour
         float hx = size.x * 0.5f, hz = size.y * 0.5f;
         void L(Transform t, string text, float h) { WorldLabel wl = t.gameObject.AddComponent<WorldLabel>(); wl.text = text; wl.height = h; }
 
+        // Entre equipo y equipo, 2 m libres (FurnitureSpacing.Standard, Berón 2026-10-28); la mesa del microscopio va pegada a la campana.
         // 1 · Campana de flujo laminar (cabina de bioseguridad) para la biopsia, con microscopio al lado.
         Transform hood = KitchenProps.Root(r, "Campana_flujo_laminar", new Vector3(-hx + 1.2f, 0f, -hz + 1f));
         KitchenProps.C(hood, new Vector3(0f, 0.45f, 0f), new Vector3(1.6f, 0.9f, 0.8f), white, 0f, "Mueble");
@@ -177,7 +206,7 @@ public class CulturedMeatLab : MonoBehaviour
         KitchenProps.C(cryo, new Vector3(0f, 1.15f, 0f), new Vector3(0.35f, 0.1f, 0.35f), dark, 0f, "Tapa");
         KitchenProps.C(cryo, new Vector3(0f, 1.25f, 0f), new Vector3(0.6f, 0.08f, 0.6f), new Color(0.9f, 0.97f, 1f, 0.35f), 0f, "Vapor_N2");
         L(cryo, "Banco de células (N₂ líquido, −196 °C)", 1.6f);
-        Transform inc = KitchenProps.Root(r, "Incubadora_CO2", new Vector3(-hx + 0.8f, 0f, 1.6f));
+        Transform inc = KitchenProps.Root(r, "Incubadora_CO2", new Vector3(-hx + 0.8f, 0f, 3.2f));
         KitchenProps.C(inc, new Vector3(0f, 0.6f, 0f), new Vector3(0.75f, 1.2f, 0.75f), white, 0f, "Incubadora");
         KitchenProps.C(inc, new Vector3(0.38f, 0.6f, 0f), new Vector3(0.02f, 1f, 0.6f), glass, 0f, "Puerta");
         L(inc, "Incubadora (37 °C, 5 % CO₂)", 1.5f);
@@ -189,47 +218,69 @@ public class CulturedMeatLab : MonoBehaviour
         KitchenProps.C(med, new Vector3(0.7f, 0.9f, 0f), new Vector3(0.25f, 0.5f, 0.25f), white, 0f, "Filtro_0_2um");
         KitchenProps.C(med, new Vector3(0.35f, 0.9f, 0f), new Vector3(0.5f, 0.05f, 0.05f), steel, 0f, "Tubo");
         L(med, "Medio de cultivo (sin suero) + filtro estéril 0,2 µm", 1.7f);
-        Transform auto = KitchenProps.Root(r, "Autoclave", new Vector3(-hx + 2.8f, 0f, hz - 1.0f));
+        Transform auto = KitchenProps.Root(r, "Autoclave", new Vector3(-hx + 5.2f, 0f, hz - 1.0f));
         KitchenProps.C(auto, new Vector3(0f, 0.5f, 0f), new Vector3(0.8f, 1f, 0.7f), steel, 0f, "Autoclave");
         KitchenProps.C(auto, new Vector3(0f, 0.55f, 0.36f), new Vector3(0.45f, 0.45f, 0.03f), dark, 0f, "Puerta_redonda");
         L(auto, "Autoclave (esteriliza)", 1.3f);
 
         // 4 · Biorreactores de tanque agitado: semilla (pequeño) y producción (grande), con camisa, sensores y agitador.
-        Bioreactor(r, "Biorreactor_semilla", new Vector3(-0.8f, 0f, -hz + 1.4f), 0.45f, 1.2f, glass, broth, steel, dark);
+        Bioreactor(r, "Biorreactor_semilla", new Vector3(-3.2f, 0f, -hz + 1.4f), 0.45f, 1.2f, glass, broth, steel, dark);
         L(r.Find("Biorreactor_semilla"), "Biorreactor semilla (50 L, microportadores)", 1.9f);
-        Bioreactor(r, "Biorreactor_produccion", new Vector3(1.4f, 0f, -hz + 1.6f), 0.8f, 2.1f, glass, broth, steel, dark);
-        L(r.Find("Biorreactor_produccion"), "Biorreactor de producción (500 L · 37 °C · pH 7,3 · O₂)", 2.9f);
+        float plannedKg = PlannedKgPerDay, litres = LitresFor(plannedKg); int levels = LevelsFor(plannedKg);
+        float k3 = Mathf.Pow(litres / 500f, 1f / 3f), rad = 0.8f * k3, tall = 2.1f * k3;   // (mismas proporciones; a 1500 L, 1,15 m de radio: 2 m libres entre ellos)
+        Bioreactor(r, "Biorreactor_produccion", new Vector3(1.4f, 0f, -hz + 1.6f), rad, tall, glass, broth, steel, dark);
+        L(r.Find("Biorreactor_produccion"), $"Biorreactor de producción ({litres:0} L · 37 °C · pH 7,3 · O₂)", tall + 0.8f);
+        Bioreactor(r, "Biorreactor_produccion_2", new Vector3(5.75f, 0f, -hz + 1.6f), rad, tall, glass, broth, steel, dark);   // regla P19: la demanda pide tres
+        L(r.Find("Biorreactor_produccion_2"), $"Biorreactor de producción 2 ({litres:0} L)", tall + 0.8f);
+        Bioreactor(r, "Biorreactor_produccion_3", new Vector3(-1f, 0f, -4f), rad, tall, glass, broth, steel, dark);
+        L(r.Find("Biorreactor_produccion_3"), $"Biorreactor de producción 3 ({litres:0} L)", tall + 0.8f);
 
         // 5 · Biorreactor de perfusión con andamio (diferenciación en fibras, con estiramiento).
-        Transform perf = KitchenProps.Root(r, "Biorreactor_andamio", new Vector3(hx - 1.5f, 0f, -0.4f));
+        for (int u = 0; u < Scaffolds; u++)   // regla P19: seis unidades, en dos alturas
+        {
+        Transform perf = KitchenProps.Root(r, u == 0 ? "Biorreactor_andamio" : $"Biorreactor_andamio_{u + 1}", new Vector3(hx - 1.5f - (u % 3) * 3.9f, 0f, u < 3 ? -0.4f : -3.6f));
         KitchenProps.C(perf, new Vector3(0f, 0.45f, 0f), new Vector3(1.8f, 0.9f, 1f), steel, 0f, "Base");
         KitchenProps.C(perf, new Vector3(0f, 1.1f, 0f), new Vector3(1.7f, 0.4f, 0.9f), glass, 0f, "Camara");
+        KitchenProps.C(perf, new Vector3(0f, 1.65f, 0f), new Vector3(1.7f, 0.4f, 0.9f), glass, 0f, "Camara_alta");
+        for (int lv = 2; lv < levels; lv++) KitchenProps.C(perf, new Vector3(0f, 1.1f + 0.55f * lv, 0f), new Vector3(1.7f, 0.4f, 0.9f), glass, 0f, $"Camara_alta_{lv}");   // (2026-11-11) más alturas si el plan las pide
         for (int i = 0; i < 6; i++)   // tiras de andamio con el tejido creciendo
             KitchenProps.C(perf, new Vector3(-0.7f + i * 0.28f, 1.05f, 0f), new Vector3(0.12f, 0.06f, 0.75f), new Color(0.85f, 0.55f, 0.5f), 0f, "Andamio_tejido");
         KitchenProps.C(perf, new Vector3(-0.95f, 1.1f, 0f), new Vector3(0.1f, 0.3f, 0.8f), dark, 0f, "Estirador");
         L(perf, "Perfusión con andamio comestible (fibras musculares)", 1.8f);
+        }
 
         // 6 · Cosecha: centrífuga, formadora y cámara fría.
         Transform cen = KitchenProps.Root(r, "Centrifuga", new Vector3(hx - 1.0f, 0f, hz - 1.4f));
         KitchenProps.C(cen, new Vector3(0f, 0.45f, 0f), new Vector3(0.8f, 0.9f, 0.8f), white, 0f, "Centrifuga");
         KitchenProps.C(cen, new Vector3(0f, 0.92f, 0f), new Vector3(0.6f, 0.04f, 0.6f), dark, 45f, "Tapa");
         L(cen, "Centrífuga (cosecha y lavado)", 1.3f);
-        Transform form = KitchenProps.Root(r, "Formadora", new Vector3(hx - 2.4f, 0f, hz - 1.3f));
+        Transform cen2 = KitchenProps.Root(r, "Centrifuga_2", new Vector3(hx - 7f, 0f, hz - 1.4f));
+        KitchenProps.C(cen2, new Vector3(0f, 0.45f, 0f), new Vector3(0.8f, 0.9f, 0.8f), white, 0f, "Centrifuga");
+        KitchenProps.C(cen2, new Vector3(0f, 0.92f, 0f), new Vector3(0.6f, 0.04f, 0.6f), dark, 45f, "Tapa");
+        L(cen2, "Centrífuga 2", 1.3f);
+        Transform form = KitchenProps.Root(r, "Formadora", new Vector3(hx - 4.0f, 0f, hz - 1.3f));
         KitchenProps.C(form, new Vector3(0f, 0.45f, 0f), new Vector3(1f, 0.9f, 0.7f), steel, 0f, "Mesa");
         KitchenProps.C(form, new Vector3(0f, 1.1f, 0f), new Vector3(0.5f, 0.4f, 0.5f), dark, 0f, "Prensa");
         L(form, "Formadora de piezas", 1.6f);
-        Transform cold = KitchenProps.Root(r, "Camara_fria", new Vector3(hx - 0.6f, 0f, 1.6f));
+        Transform form2 = KitchenProps.Root(r, "Formadora_2", new Vector3(hx - 10f, 0f, hz - 1.3f));
+        KitchenProps.C(form2, new Vector3(0f, 0.45f, 0f), new Vector3(1f, 0.9f, 0.7f), steel, 0f, "Mesa");
+        KitchenProps.C(form2, new Vector3(0f, 1.1f, 0f), new Vector3(0.5f, 0.4f, 0.5f), dark, 0f, "Prensa");
+        L(form2, "Formadora de piezas 2", 1.6f);
+        Transform cold = KitchenProps.Root(r, "Camara_fria", new Vector3(hx - 0.6f, 0f, 3.5f));
         KitchenProps.C(cold, new Vector3(0f, 1f, 0f), new Vector3(0.9f, 2f, 1.4f), white, 0f, "Camara");
         KitchenProps.C(cold, new Vector3(-0.46f, 1f, 0f), new Vector3(0.02f, 1.8f, 1.2f), steel, 0f, "Puerta");
         L(cold, "Cámara fría (4 °C)", 2.3f);
 
         // Consola de control con el estado del lote.
-        Transform con = KitchenProps.Root(r, "Consola_lote", new Vector3(0.3f, 0f, 0.8f));
+        Transform con = KitchenProps.Root(r, "Consola_lote", new Vector3(0f, 0f, 0.8f));
         KitchenProps.C(con, new Vector3(0f, 0.5f, 0f), new Vector3(1.2f, 1f, 0.5f), white, 0f, "Mueble");
         KitchenProps.C(con, new Vector3(0f, 1.3f, 0f), new Vector3(1.1f, 0.6f, 0.05f), screen, 0f, "Pantalla");
 
         CulturedMeatLab lab = r.gameObject.AddComponent<CulturedMeatLab>();
         lab.feeder = feeder;
+        lab.reactorLitres = litres; lab.scaffoldLevels = levels;
+        lab.batchGrams = GramsOf(litres, levels);
+        Debug.Log($"[Carne cultivada] Maquinaria para el plan ({plannedKg:0.#} kg/día): {ProductionReactors} biorreactores de {litres:0} L y {Scaffolds} perfusiones de {levels} alturas → {lab.batchGrams / 1000f:0.#} kg por lote.");
         lab.console = con.gameObject.AddComponent<WorldLabel>(); lab.console.height = 2f; lab.console.text = "Carne cultivada";
         return lab;
     }

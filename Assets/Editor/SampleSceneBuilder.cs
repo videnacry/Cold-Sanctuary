@@ -48,6 +48,19 @@ public static partial class SampleSceneBuilder
         Build();
     }
 
+    /// <summary>Si es true, <see cref="Build"/> hace solo el santuario (SampleScene) y NO las escenas hermanas (microcosmos,
+    /// historias, compasión, Egina, planta atómica). Existe porque construirlo todo en una sola pasada del editor llena la
+    /// memoria (los pueblos ×100 tienen decenas de miles de renderers cada uno; el 2026-11-03 el PC de 16 GB se colgó a media
+    /// pasada). Con esto, las hermanas se rehacen después una a una, guardando y liberando memoria entre cada una.</summary>
+    public static bool SkipSiblingScenes;
+
+    [MenuItem("Tools/Cold Sanctuary/Build Sample Scene Blockout (solo el santuario, sin microcosmos)")]
+    public static void BuildSanctuaryOnly()
+    {
+        SkipSiblingScenes = true;
+        try { Build(); } finally { SkipSiblingScenes = false; }
+    }
+
     [MenuItem("Tools/Cold Sanctuary/Build Sample Scene Blockout")]
     public static void Build()
     {
@@ -126,29 +139,46 @@ public static partial class SampleSceneBuilder
         new GameObject("AnimaNameplate_AUTO").AddComponent<AnimaNameplate>().transform.SetParent(root.transform);  // ETIQUETAS de nombre sobre las animas (para dirigir hechizos por teclado) — docs typed-spells-and-queues
         BuildAnimaStatusPanels(root.transform);  // HUD DECLARATIVO generado por CÓDIGO (paneles-GameObject por elemento) — demuestra prefabs-por-código
         BuildRestaurantSandbox(root.transform);  // RESTAURANTE jugable (cocinar platillos para todos → stock → XP + inventario). docs/kitchen-simulation.md
-        BuildGoluisKitchen(root.transform);      // GOLUIS, jefe de cocina: inicia a los recién llegados (sígueme→limpiar→recetas). docs/kitchen-simulation.md
+        BuildGoluisKitchen(root.transform);      // GOLUIS, encargado de cocina: inicia a los recién llegados (sígueme→limpiar→recetas). docs/kitchen-simulation.md
         BuildMagnate(root.transform);            // LA MAGNATE: maestra-guardiana (estado infinito; pacifica; enseña yoga al rezagado). docs/anyma-factory-and-control.md
         BuildLinduarda(root.transform);          // LINDUARDA (enfermería): guardiana de salud emergente (status→vacuna/analiza al que tenga HealthRecord false, p.ej. Kushal)
-        BuildGuardTower(root.transform);          // TORRE DE GUARDIA (tablero de misiones de vigía) + puestos de patrulla
-        ResidentialBuilder.Build(root.transform, new Vector3(-60f, 0f, 95f));   // ARBOLEDA RESIDENCIAL: un dormitorio elevado por persona
+        BuildPatrolPosts(root.transform);          // los puestos de vigía de la patrulla
         BuildGourmetDining(root.transform);      // RESTAURANTE: el comedor gourmet para 30, en la misma plataforma que la cocina abierta
+        RelocateTanks();       // los tanques, donde quedan 2 m libres con todos los muebles ya puestos
         PlaceCarpetAreas();    // alfombras voladoras: un área en cada piso y el piso de alfombras en el techo (ya con los muebles puestos)
+        FinishNuclearSite();   // el sitio nuclear: contención, agua pasiva, chimenea, vigilancia y exclusión (docs/sitio-nuclear.md)
         SpotAtCarpets("CocinaSpot", "Kitchen_Area");   // la Magnate deja al nuevo donde se llega a la cocina: junto a sus alfombras
         PlaceRooftopSolar();   // paneles en el piso más alto de cada edificio, en un borde libre (antes del bosque: sus ramas los esquivan)
+        BuildAereoDock(root.transform);   // el muelle del Santuario Aéreo y la lógica de la energía (docs/sitio-nuclear.md §23)
+        PlaceRooftopOrchards();   // FRUTALES en maceta en el resto de cada techo, con su punto de cuidados (docs/jardines-frutales.md)
+        BuildMedicalSubmarines(root.transform);   // SUBMARINO-AMBULANCIA anfibio y LEVIATÁN de animales gigantes (docs/submarinos-medicos.md)
         BuildIceFlora(root.transform);           // FLORA de hielo: árbol carnívoro (señuelo+sopor) + abejas de las nieves — docs/ice-sanctuary-ecology.md
         new GameObject("Jornada_AUTO").AddComponent<WorkdayDirector>().transform.SetParent(root.transform);   // jornada de 8 h y rotación diaria (docs/jornada-y-rotacion.md)
         { GameObject inf = GameObject.Find("Infirmary_Area"); if (inf != null) inf.AddComponent<InfirmaryGate>(); }   // la iniciación es bloqueante: la Magnate guarda la salida
-        PlaceStaff();       // cada personaje nuevo en su área (Sadhguru en la tarima de yoga, el jefe de obra en Construcción…)
+        PlaceStaff();       // cada personaje nuevo en su área (Andrea en la tarima de yoga, el jefe de obra en Construcción…)
         DressHumanoids();   // Kushal, la Magnate, compañeros y seres de prueba → cuerpo de cubos articulado (sin .fbx)
+        BuildIcebergs(root.transform);   // dos icebergs, lejos de todo (docs/sitio-nuclear.md §14)
         BuildPolarIce(root.transform);   // banquisa: casquetes de hielo con canales y puentes + sotobosque polar
         PlaceGroundCarpetAreas();        // al pie de cada edificio, en el hielo (ya hecho), sus alfombras para subir
         FurnitureSpacing.Report();       // muebles sin su pasillo mínimo (máquinas, mesas, camas…): aviso por consola
+        EnsureFloorForms();              // cada piso con su forma finalizada y su forma en construcción (FloorForms; los microcosmos, sobre la finalizada)
+        ValidateNuclearSite("al final del Blockout");   // la regla del sitio nuclear, con todo ya puesto
+        ValidateEnergySite("al final del Blockout");   // oferta ≥ demanda, con todos los pisos ya puestos (docs/energia.md)
+        // (2026-11-04) ALERTA DE PISO NUEVO (manual §11): TODOS los pisos de la escena (también los que no salen de BuildAreaStructures,
+        // como el control de misión de la lanzadera) contra los microcosmos «pendiente de piso representativo». Y la REGLA DE CAPACIDAD (S13).
+        { var fl = new List<(string, string)>(); foreach (SanctuaryArea sa in Object.FindObjectsByType<SanctuaryArea>(FindObjectsInactive.Include, FindObjectsSortMode.None)) fl.Add((sa.name, sa.displayName)); MicroFloors.AlertFloors(fl); AreaCapacity.LogScene(); }
+        ProductionAudit.Log();   // la maquinaria de cada área de producción contra lo que se le pide (regla P19)
+        FoodChain.Log();   // la cadena alimenticia, con todo ya puesto: quién come qué y si a alguien le falta (docs/reglas-animales.md, regla E15)
         BakeNavMesh();
 
         // Genera también las ESCENAS HERMANAS del MICROCOSMOS (cada una es su propia .unity, no van en el mesocosmos):
         //  · Scene1 (Ambrosio/alba) — el nivel introductorio de la cueva/pulgón (anterior en la historia).
         //  · Mesopotamia (mundo mob) — la ciudad-insecto; la cocina ya apunta a ella (mobWorldSceneName).
         // Todo listo de un click. Guardado en try por si la API de escenas falla.
+        // Con SkipSiblingScenes (menú «solo el santuario») se saltan: se rehacen luego una a una (memoria; ver SkipSiblingScenes).
+        if (SkipSiblingScenes) Debug.Log("[SampleSceneBuilder] Solo el santuario: las escenas hermanas (microcosmos) no se rehacen en esta pasada.");
+        else
+        {
         try { MicrocosmosSceneBuilder.BuildScene0(); }
         catch (System.Exception e) { Debug.LogWarning($"[SampleSceneBuilder] No se pudo generar la escena Microcosmos Scene0 (Sakshi): {e.Message}"); }
         try { MicrocosmosSceneBuilder.BuildScene1(); }
@@ -165,99 +195,20 @@ public static partial class SampleSceneBuilder
         catch (System.Exception e) { Debug.LogWarning($"[SampleSceneBuilder] No se pudo generar el microcosmos de la planta atómica: {e.Message}"); }
         try { StorySceneBuilder.BuildAll(); }
         catch (System.Exception e) { Debug.LogWarning($"[SampleSceneBuilder] No se pudieron generar los microcosmos de historias: {e.Message}"); }
+        }
 
         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
-        GameObject flora = GameObject.Find("FloraHielo_AUTO");   // rendimiento: cada árbol de hielo, una malla por material
-        Debug.Log($"[Rendimiento] árboles de hielo combinados: {MergeTreeMeshes(flora != null ? flora.transform : null)} cubos ya no se dibujan uno a uno.");
+        var homeTrees = new List<Transform>();   // rendimiento: cada abedul de la isla, una malla por material
+        foreach (Transform tr in root.GetComponentsInChildren<Transform>(true)) if (tr.name.StartsWith(IslandTreePrefix)) homeTrees.Add(tr);
+        Debug.Log($"[Rendimiento] abedules de la isla combinados: {MergeTreeMeshes(homeTrees)} cubos ya no se dibujan uno a uno.");
         Debug.Log("[SampleSceneBuilder] Blockout listo bajo 'LevelDressing_AUTO'. Revisar y ajustar posiciones a mano.");
-    }
-
-    // ── ESCENAS DE PRUEBA (una por grupo) ─────────────────────────────────────
-    //
-    // Antes ~30 sandboxes vivían a la vez en la escena principal: tardaba en cargar, sus paneles se pisaban y se
-    // interferían (p. ej. la posesión le quitaba el mando al jugador al arrancar). Ahora la escena principal es solo el
-    // santuario jugable y cada grupo de pruebas se genera en su propia escena (copia de la principal → base mínima +
-    // el grupo). Se abren desde Assets/Scenes/Pruebas o desde Build Settings.
-    const string TestScenesFolder = "Assets/Scenes/Pruebas";
-
-    static readonly (string scene, System.Action<Transform>[] build)[] TestScenes =
-    {
-        ("Prueba_Farming",        new System.Action<Transform>[] { BuildFarmingSandbox }),
-        ("Prueba_Mente",          new System.Action<Transform>[] { BuildMindSandbox }),
-        ("Prueba_Posesion",       new System.Action<Transform>[] { BuildPossessionSandbox }),
-        ("Prueba_Hospital",      new System.Action<Transform>[] { BuildLinduarda, PlacePlayerAtInfirmary }),   // hospital equipado + Linduarda + análisis clínico
-        ("Prueba_TorreGuardia",  new System.Action<Transform>[] { BuildGuardTower, PlacePlayerAtTower }),
-        ("Prueba_Restaurante",   new System.Action<Transform>[] { BuildRestaurantSandbox, PlacePlayerAtKitchen }),   // cocina real: 4 cocineros + misión «Preparar platillos»
-        ("Prueba_Cocina",         new System.Action<Transform>[] { BuildKitchenSandbox, BuildKitchenOnboarding, BuildVirtualizationSandbox, BuildDecompositionSandbox }),
-        ("Prueba_Oficios",        new System.Action<Transform>[] { BuildGardenVirtualization, BuildForgeVirtualization, BuildExertionSandbox,
-                                                                   BuildMechanicsBeginner, BuildTruckMaintenance, BuildConstructionBeginner,
-                                                                   BuildDispatchDemo, BuildCriaBeginner }),
-        ("Prueba_Prologo",        new System.Action<Transform>[] { BuildPrologueSandbox }),
-        ("Prueba_Yoga",           new System.Action<Transform>[] { BuildUpaYogaSandbox }),   // minijuego de virtualización (cuello por teclas)
-        // UNA ESCENA POR SESIÓN de yoga (demostrador que ejecuta la secuencia en bucle; se revisan por separado).
-        ("Yoga_UpaCuello",        new System.Action<Transform>[] { BuildYogaUpaNeck }),
-        ("Yoga_Namaskar",         new System.Action<Transform>[] { BuildYogaNamaskar }),
-        ("Yoga_SaludoSol",        new System.Action<Transform>[] { BuildYogaSaludoSol }),
-        ("Yoga_Ashtanga1",        new System.Action<Transform>[] { BuildYogaAshtanga1 }),
-        ("Prueba_CamaraEmocion",  new System.Action<Transform>[] { BuildScreenEffectsSandbox, BuildEmotionOrchestraSandbox }),
-        ("Prueba_Magia",          new System.Action<Transform>[] { BuildMagicSandbox, BuildSpellDemoSandbox, BuildWalkUniversalSandbox }),
-        ("Prueba_Alma",           new System.Action<Transform>[] { BuildSoulBlendSandbox, BuildSharedSoulSandbox }),
-        ("Prueba_Fauna",          new System.Action<Transform>[] { BuildFamilyLifeTest, BuildInteractionTests, BuildSpeciesScenarios }),
-    };
-
-    [MenuItem("Tools/Cold Sanctuary/Build Test Scenes (una escena por prueba)")]
-    public static void BuildTestScenes()
-    {
-        string main = "Assets/Scenes/SampleScene.unity";
-        EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
-        if (!AssetDatabase.IsValidFolder(TestScenesFolder)) AssetDatabase.CreateFolder("Assets/Scenes", "Pruebas");
-
-        var buildScenes = new List<EditorBuildSettingsScene>(EditorBuildSettings.scenes);
-        foreach (var (sceneName, build) in TestScenes)
+        // Las ESCENAS DE PRUEBA DE UN ÁREA (sala de yoga, enfermería, cocina) salen de ESTE santuario recién construido: se guarda
+        // y cada una se queda solo con su piso (SampleSceneBuilder.TestScenes.cs). Así nunca quedan desfasadas.
+        if (AlsoAreaTestScenes)
         {
-            string path = $"{TestScenesFolder}/{sceneName}.unity";
-            AssetDatabase.DeleteAsset(path);
-            AssetDatabase.CopyAsset(main, path);          // misma cámara, luz y Player que la principal
-            EditorSceneManager.OpenScene(path, OpenSceneMode.Single);
-
-            GameObject old = GameObject.Find(RootName);
-            if (old != null) Object.DestroyImmediate(old);
-            GameObject root = new GameObject(RootName);
-            BuildTestBase(root.transform);
-            foreach (var b in build)
-            {
-                try { b(root.transform); }
-                catch (System.Exception e) { Debug.LogError($"[TestScenes] {sceneName}: {b.Method.Name} falló: {e}"); }
-            }
-            DressHumanoids();
-            PlaceCarpetAreas();
-            PlaceRooftopSolar();
-            BakeNavMesh();
-            EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
-            if (!buildScenes.Exists(s => s.path == path)) buildScenes.Add(new EditorBuildSettingsScene(path, true));
-            Debug.Log($"[TestScenes] {path}: {build.Length} sandbox(es).");
+            try { BuildAreaTestScenes(); }
+            catch (System.Exception e) { Debug.LogError($"[TestScenes] No se pudieron generar las escenas de prueba de área: {e}"); }
         }
-        EditorBuildSettings.scenes = buildScenes.ToArray();
-        EditorSceneManager.OpenScene(main, OpenSceneMode.Single);
-        Debug.Log($"[TestScenes] {TestScenes.Length} escenas de prueba en {TestScenesFolder}.");
-    }
-
-    // Lo mínimo para que una prueba funcione: suelo, sistemas del mundo, áreas (algunas pruebas las usan), HUD/UI,
-    // sistemas del jugador, economía (recompensas), rastros, reloj y los HUD de estado/pensamiento/nombres.
-    static void BuildTestBase(Transform root)
-    {
-        BuildGround(root);
-        BuildWorldSystems(root);
-        SanctuaryArea[] areas = BuildAreaStructures(root);
-        WireSanctuaryDirector(areas);
-        BuildUI(root);
-        EnsurePlayerSystems();
-        BuildSanctuaryEconomy(root);
-        new GameObject("TraceField_AUTO").AddComponent<TraceField>().transform.SetParent(root);
-        new GameObject("Clock_AUTO").AddComponent<Clock>().transform.SetParent(root);
-        new GameObject("AnimaStatusHUD_AUTO").AddComponent<AnimaStatusHUD>().transform.SetParent(root);
-        new GameObject("AnimaThoughtHUD_AUTO").AddComponent<AnimaThoughtHUD>().transform.SetParent(root);
-        new GameObject("AnimaNameplate_AUTO").AddComponent<AnimaNameplate>().transform.SetParent(root);
     }
 
     // ── Economía de santuario (recursos + HUD) ─────────────────────────────────
@@ -1376,7 +1327,7 @@ public static partial class SampleSceneBuilder
         drop.AddComponent<HoneydewPickup>().lifetime = 120f;
 
         // ── Kushal (jugador) ─────────────────────────────────────────────────
-        // Hormiga jugadora: FormicAcidSpray (Q) + PullSpell (E→target) + HoneydewSpell (E→honeydew).
+        // Hormiga jugadora: FormicAcidSpray (Q) + PullSpell (F→target) + HoneydewSpell (punto «.»→honeydew; la E es solo interactuar).
         // En el sandbox es una cápsula; el avatar real se conecta desde la escena de Unity.
         Vector3 kushalPos = new Vector3(0f, 0.5f, 2f);
         GameObject kushal = GameObject.CreatePrimitive(PrimitiveType.Capsule);
@@ -1416,7 +1367,7 @@ public static partial class SampleSceneBuilder
 
         var honeydew = kushal.AddComponent<HoneydewSpell>();
         honeydew.range = 3f; honeydew.energyRestore = 40f; honeydew.maxCharges = 5;
-        honeydew.castKey = KeyCode.E;
+        honeydew.castKey = KeyCode.Period;   // (2026-11-04) la E es solo la tecla de interactuar (tareas con E, docs/tareas-del-jugador.md)
 
         // Defensa corporal (ácido fórmico, Q).
         // FormicAcidSpray hereda SpellBase: range = radio del spray, force = estrés por hit.
@@ -2122,7 +2073,7 @@ public static partial class SampleSceneBuilder
 
         WorldCharacter playerWC = player.GetComponent<WorldCharacter>();
         if (playerWC == null) playerWC = player.AddComponent<WorldCharacter>();
-        playerWC.characterName = "Player";
+        playerWC.characterName = "Player";   // Kushal, el jugador: ficha en docs/personajes/kushal.md
         playerWC.isPlayer = true;
     }
 
@@ -2192,7 +2143,7 @@ public static partial class SampleSceneBuilder
         Material mat = new Material(shader) { name = name };
         if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", color);
         if (mat.HasProperty("_Color")) mat.SetColor("_Color", color);
-        return mat;
+        return CheapMaterials.MakeCheap(mat);   // (2026-11-09) Simple Lit mate (CheapMaterials)
     }
 
     // Material de AGUA transparente (URP Lit en modo Transparent, mezcla alfa): deja ver peces, focas y el borde
@@ -2207,7 +2158,7 @@ public static partial class SampleSceneBuilder
             m.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
             m.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
             m.SetFloat("_ZWrite", 0f);
-            m.SetFloat("_Smoothness", 0.9f);
+            m.SetFloat("_Smoothness", 0.6f);
             m.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
             m.SetOverrideTag("RenderType", "Transparent");
             m.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
@@ -2269,7 +2220,7 @@ public static partial class SampleSceneBuilder
                 va.fieldOfView = 200f; va.range = 30f;   // ojos humanos: ~200° de campo, ~120° binocular al frente
                 string nm = a.name;
                 va.ApplyProfile(nm.StartsWith("Gohageneis") ? VisualAttention.Profile.Vigilante : nm.StartsWith("Irosene") || nm.StartsWith("Goluis") ? VisualAttention.Profile.Esteta
-                    : nm.StartsWith("Sadhguru") || nm.StartsWith("Magnate") ? VisualAttention.Profile.Contemplativo : nm.StartsWith("Lizmibet") || nm.StartsWith("Andrea") ? VisualAttention.Profile.Afectivo : VisualAttention.Profile.Equilibrado);
+                    : nm.StartsWith("Magnate") ? VisualAttention.Profile.Contemplativo : nm.StartsWith("Lizmibet") || nm.StartsWith("Andrea") ? VisualAttention.Profile.Afectivo : VisualAttention.Profile.Equilibrado);
             }
             if (a.GetComponent<Magnate>() != null && a.GetComponent<MageCells>() == null) a.gameObject.AddComponent<MageCells>().fraction = 1f;
             n++;
@@ -2323,13 +2274,16 @@ public static partial class SampleSceneBuilder
         Object.DestroyImmediate(ground.GetComponent<MeshRenderer>());
         Object.DestroyImmediate(ground.GetComponent<MeshFilter>());
         ground.transform.localScale = Vector3.one;
-        int boxes = PolarLandscapeBuilder.BuildFloes(ground.transform, MakeMaterial("Ice_Floe_MAT", new Color(0.86f, 0.91f, 0.95f)));
+        int boxes = PolarLandscapeBuilder.BuildFloes(ground.transform, MakeMaterial("Ice_Floe_MAT", new Color(0.86f, 0.91f, 0.95f)),
+            MakeMaterial("Tierra_tundra_MAT", new Color(0.44f, 0.45f, 0.3f)), MakeMaterial("Orilla_grava_MAT", new Color(0.46f, 0.44f, 0.42f)), MakeMaterial("Zocalo_roca_MAT", new Color(0.3f, 0.29f, 0.28f)));
+        CutIceUnderAll();   // los troncos de los edificios-árbol no tienen suelo: su hueco en el hielo (los árboles se hicieron antes)
         int links = PolarLandscapeBuilder.BuildSwimLinks(ground.transform);
-        Debug.Log($"[Islas] {PolarLandscapeBuilder.CapCount} casquetes ({PolarLandscapeBuilder.Islands.Length} lóbulos, {boxes} placas de hielo) alrededor de la laguna central; {links} enlaces de nado para la IA.");
+        Debug.Log($"[Islas] {PolarLandscapeBuilder.CapCount} masas: 5 casquetes y la isla de tierra ({PolarLandscapeBuilder.Islands.Length} lóbulos, {boxes} placas) alrededor de la laguna central; {links} enlaces de nado para la IA.");
 
         GameObject under = new GameObject("SotobosquePolar_AUTO");
         under.transform.SetParent(root, false);
-        under.AddComponent<PolarUnderstory>();
+        PolarUnderstory understory = under.AddComponent<PolarUnderstory>();
+        understory.tundraArea = new Rect(-PolarLandscapeBuilder.Half, -PolarLandscapeBuilder.Half, 2f * PolarLandscapeBuilder.Half, PolarLandscapeBuilder.Half);   // la mitad sur del mapa: ahí está la isla de tierra
 
         // Lo que la fauna polar USA (docs/natural-interactions.md): descansaderos y respiraderos de foca, guijarros de la
         // colonia de pingüinos, guaridas de nieve de los osos y grava de las ballenas.
@@ -2341,18 +2295,72 @@ public static partial class SampleSceneBuilder
         ph.pebbleBeach = pc + toLagoon.normalized * (penguins.r - 4f);   // la orilla de la colonia que da a la laguna
         var dens = new System.Collections.Generic.List<Vector3>();
         foreach (var lobe in PolarLandscapeBuilder.Islands)
-            if (lobe.name == "Este:Mecanica_Osos" || lobe.name.StartsWith("BosqueNorte")) dens.Add(new Vector3(lobe.x + lobe.r * 0.4f, 0f, lobe.z - lobe.r * 0.3f));
+            if (lobe.name.StartsWith("BosqueNorte")) dens.Add(new Vector3(lobe.x + lobe.r * 0.4f, 0f, lobe.z - lobe.r * 0.3f));
         ph.denSites = dens.ToArray();
+        ph.emperorColony = EmperorColony;
+        Territorio ter = BuildTerritorio(root);   // barreras, cuevas, acantilados, lomas, charcas y bivalvos (docs/territorio-polar.md)
+        ph.walrusBeachAngle = 205f;
     }
 
     static void BakeNavMesh()
     {
         GameObject ground = GameObject.Find("Ground_Placeholder");
         if (ground == null) return;
+        // EL ÁRBOL DE LOS CAMPOS gira: tiene su PROPIO NavMesh (en sus coordenadas; TreeRotator lo recoloca al girar). Fuera
+        // del horneado general, y el pie de la raíz (la columna de agua) no se anda.
+        GameObject tree = GameObject.Find(TreeSpec.RootName);
+        if (tree != null) { RootNoWalk(tree.transform); tree.SetActive(false); }
+        // Las TORRES-ÁRBOL (quietas) van en el NavMesh general, sin su agua, sus campos, sus tubos ni su pared; su pie no se anda.
+        foreach (ArbolCampos t in Object.FindObjectsByType<ArbolCampos>(FindObjectsSortMode.None))
+            if (tree == null || t.gameObject != tree) { HelixNavIgnore(t.transform); RootNoWalk(t.transform, square: true); }
         NavMeshSurface surface = ground.GetComponent<NavMeshSurface>();
         if (surface == null) surface = ground.AddComponent<NavMeshSurface>();
         surface.collectObjects = CollectObjects.All;
         surface.BuildNavMesh();
+        if (tree != null) { tree.SetActive(true); BakeTreeNavMesh(tree); }
+    }
+
+    // El NavMesh del árbol: solo sus hijos; sin el agua, los campos magnéticos, las cascadas, el exoesqueleto ni los tubos de
+    // las ramas y sus campanas (encima de un tubo a 35° el NavMesh dejaría «andar» de la raíz a un anillo).
+    static void BakeTreeNavMesh(GameObject tree)
+    {
+        foreach (Transform t in tree.GetComponentsInChildren<Transform>(true))
+        {
+            string n = t.name;
+            if (n.StartsWith("Agua") || n == "Campo_magnetico" || n == "Cascada" || n == "Exoesqueleto" || n.StartsWith("Rama_") || n.StartsWith("Campana_rama_")
+                || n == "Nervio_rama" || n.StartsWith("Tornapunta") || n == "Tapa_raiz" || n == "Cartel_raiz" || n == "Encepado_raiz" || n == "Fondo_raiz" || n == "Perchero_mascaras" || n == "Estacion_mascaras")
+                t.GetOrAdd<NavMeshModifier>().ignoreFromBuild = true;
+        }
+        NavMeshSurface s = tree.GetOrAdd<NavMeshSurface>();
+        s.collectObjects = CollectObjects.Children;
+        s.BuildNavMesh();
+        Debug.Log($"[Árbol] NavMesh propio del árbol horneado (gira con él: {nameof(TreeRotator)} lo recoloca).");
+    }
+
+    // Al pie del tronco, en el NavMesh general (quieto): el círculo inscrito del tronco cuadrado (con sus nervios) no se anda
+    // (franjas de 2 m que lo cubren). Sus esquinas, al girar, barren hasta 15,6 m (a 0,1 m/s): ahí se choca con ellas, pero la
+    // puerta del suelo (a 14 m del eje, delante de su cara) sigue siendo andable.
+    static void RootNoWalk(Transform tree, bool square = false)
+    {
+        Transform old = tree.parent != null ? tree.parent.Find("Raiz_no_andable_" + tree.name) : null;
+        if (old != null) Object.DestroyImmediate(old.gameObject);
+        Transform g = new GameObject("Raiz_no_andable_" + tree.name).transform; g.SetParent(tree.parent, false); g.position = tree.position;
+        float R = TreeSpec.OuterHalf + 0.8f;
+        if (square)   // un tronco QUIETO (las torres): su cuadrado entero (las esquinas, a 15,6 m del eje, también), con su giro
+        {
+            g.rotation = tree.rotation;
+            NavMeshModifierVolume sq = g.gameObject.AddComponent<NavMeshModifierVolume>();
+            sq.center = new Vector3(0f, 1f, 0f); sq.size = new Vector3(2f * R, 4f, 2f * R); sq.area = 1;
+            return;
+        }
+        for (float z0 = -R; z0 < R - 0.01f; z0 += 2f)
+        {
+            float z1 = Mathf.Min(R, z0 + 2f), zn = Mathf.Min(Mathf.Abs(z0), Mathf.Abs(z1));
+            if (z0 < 0f && z1 > 0f) zn = 0f;
+            float hx = Mathf.Sqrt(Mathf.Max(0f, R * R - zn * zn));
+            NavMeshModifierVolume v = g.gameObject.AddComponent<NavMeshModifierVolume>();
+            v.center = new Vector3(0f, 1f, (z0 + z1) * 0.5f); v.size = new Vector3(2f * hx, 4f, z1 - z0); v.area = 1;   // 1 = no andable
+        }
     }
 
     // ── Sea + fog ────────────────────────────────────────────────────────────
@@ -2376,17 +2384,17 @@ public static partial class SampleSceneBuilder
         // cada uno ignora los objetos que no tienen su componente requerido.
         GameObject swimZone = new GameObject("Sea_SwimZone");
         swimZone.transform.SetParent(parent);
-        swimZone.transform.position = new Vector3(0f, PolarLandscapeBuilder.WaterLevel - 8f, 0f);
+        swimZone.transform.position = new Vector3(0f, SeaRule.Surface - SeaRule.Depth * 0.5f, 0f);
         BoxCollider swimCollider = swimZone.AddComponent<BoxCollider>();
         swimCollider.isTrigger = true;
-        swimCollider.size = new Vector3(1200f, 16f, 1200f); // todo el mar: bajo la banquisa, en los canales y alrededor
+        swimCollider.size = new Vector3(1200f, SeaRule.Depth, 1200f); // todo el mar: bajo la banquisa, en los canales y alrededor
         swimZone.AddComponent<WaterZone>();
         swimZone.AddComponent<MediumZone>().medium = Medium.Water;
 
         // Fondo marino: sin él, quien cae a un canal se hundiría para siempre. Invisible y fuera del NavMesh.
         GameObject seabed = new GameObject("FondoMarino");
         seabed.transform.SetParent(parent);
-        seabed.transform.position = new Vector3(0f, PolarLandscapeBuilder.WaterLevel - 17f, 0f);
+        seabed.transform.position = new Vector3(0f, SeaRule.FloorY - 1f, 0f);
         seabed.AddComponent<BoxCollider>().size = new Vector3(1200f, 2f, 1200f);
         PolarLandscapeBuilder.IgnoreForNav(seabed);
 
@@ -2466,7 +2474,7 @@ public static partial class SampleSceneBuilder
         var nests = new System.Collections.Generic.List<NestSpec>();
         var families = new System.Collections.Generic.List<FamilyGenerator.Family>();
         // EQUILIBRIO con los humanos (PopulationPlan): cada especie reparte su objetivo entre sus grupos.
-        var groupsOf = new System.Collections.Generic.Dictionary<string, int> { { "Bear", 1 }, { "Seal", 3 }, { "Whale", 2 }, { "Penguin", 2 }, { "Orca", 1 } };
+        var groupsOf = PopulationPlan.Groups;
         var used = new System.Collections.Generic.Dictionary<string, int>();
         void AddFamily(string species, Vector3 pos, float radius, NestKind kind, float height = 0f)
         {
@@ -2490,7 +2498,7 @@ public static partial class SampleSceneBuilder
         //   Reservados (santuario templado): Bunny×4, Deer×2, Wolf, Fox — ver git para las posiciones previas.
 
         // Oso Polar — apex del hielo; junto al borde de agua/hielo para cazar focas (homeRadius amplio ~300).
-        AddFamily("Bear", new Vector3(132f, 0f, -15f), 12f, NestKind.Predator);   // "Bear" = el prefab/catálogo real (el oso del hielo)
+        AddFamily("Bear", ProduccionCenter + new Vector3(19f, 0f, 0f), 12f, NestKind.Predator);   // "Bear" = el prefab/catálogo real (el oso del hielo)
 
         ValidateNestSeparation(nests);
 
@@ -2507,6 +2515,19 @@ public static partial class SampleSceneBuilder
         AddFamily("Penguin", new Vector3(60f, 0f, -22f), 6f, NestKind.Prey, 0f);      // colonia en el borde hielo/agua; presa de foca/orca
         AddFamily("Penguin", new Vector3(66f, 0f, -19f), 6f, NestKind.Prey, 0f);
         AddFamily("Orca", new Vector3(72f, -1f, 32f), 12f, NestKind.Predator, -1f);  // apex marino; caza focas/ballenas
+        // TERRITORIO POLAR (docs/territorio-polar.md, docs/reglas-animales.md). Morsas en la laguna (sus bivalvos, en los bajíos) y emperadores en
+        // su colonia; en la isla de tierra, los herbívoros repartidos y los lobos en su punta, junto a su cueva.
+        AddFamily("Walrus", new Vector3(52f, -1f, 34f), 8f, NestKind.Prey, -1f);
+        AddFamily("Walrus", new Vector3(70f, -1f, 12f), 8f, NestKind.Prey, -1f);
+        AddFamily("EmperorPenguin", EmperorColony + new Vector3(-3f, 0f, 2f), 5f, NestKind.Prey, 0f);
+        AddFamily("EmperorPenguin", EmperorColony + new Vector3(3f, 0f, -2f), 5f, NestKind.Prey, 0f);
+        AddFamily("Reindeer", new Vector3(-100f, 0f, -148f), 10f, NestKind.Prey, 0f);
+        AddFamily("Reindeer", new Vector3(-62f, 0f, -150f), 10f, NestKind.Prey, 0f);
+        AddFamily("MuskOx", new Vector3(-112f, 0f, -205f), 10f, NestKind.Prey, 0f);
+        AddFamily("ArcticHare", new Vector3(-205f, 0f, -112f), 8f, NestKind.Prey, 0f);
+        AddFamily("ArcticHare", new Vector3(-28f, 0f, -178f), 8f, NestKind.Prey, 0f);
+        AddFamily("ArcticFox", new Vector3(-118f, 0f, -132f), 6f, NestKind.Predator, 0f);
+        AddFamily("Wolf", new Vector3(-205f, 0f, -190f), 8f, NestKind.Predator, 0f);
 
         // NOTA (2026-09-01): los 5 insectos (Ant/Aphid/Ladybug/Spider/Cricket) NO van aquí — se crearon para el
         // Microcosmos Nivel 1 (mundo insecto), no para este bioma. Su generación irá en la escena del Microcosmos con
@@ -2553,7 +2574,7 @@ public static partial class SampleSceneBuilder
         int i = 0;
         foreach (NestSpec nest in nests)
         {
-            if (nest.kind != NestKind.Prey || nest.height < 0f) continue;
+            if (nest.kind != NestKind.Prey || nest.height < 0f || nest.species.Contains("Penguin") || nest.species == "ArcticHare") continue;   // (en el hielo no hay musgo; la liebre tiene sus sauces)
 
             GameObject patch = GameObject.CreatePrimitive(PrimitiveType.Cube);
             patch.name = $"GrassPatch_{i}";
@@ -2568,36 +2589,41 @@ public static partial class SampleSceneBuilder
         }
     }
 
-    // Bancos/enjambres marinos (Swarm, antes FishSchool): organismos-banco que derivan, huyen y crecen pastando el
-    // fitoplancton (ver BuildPhytoplankton). Los depredadores (oso/foca/pez) los comen por MORDISCO-POR-COLISIÓN
-    // (Swarm.OnTriggerStay). Repartidos cerca de donde viven las familias marinas (Whale 200,-1,15; Seal 180,-1,-20).
+    // Bancos/enjambres marinos (Swarm): GRUPOS de individuos (docs/grupos-de-animales.md, Berón 2026-11-03): un padre vacío que se
+    // mueve como grupo y sus peces, krill o medusas de verdad (SwarmModels) como hijos, que los crea el propio Swarm al empezar.
+    // Antes el padre era un CUBO translúcido escalado 10 × 2 × 10 (se veía como una plataforma). Los depredadores muerden al
+    // padre (Swarm.OnTriggerStay) y desaparece UN individuo; el grupo se rehace con el tiempo (sin ciclo de vida).
     static void BuildSwarms(Transform parent)
     {
         GameObject group = new GameObject("Swarms_AUTO");
         group.transform.SetParent(parent);
-
-        Vector3[] positions =
-        {
-            new Vector3(56f, -2f, 22f),
-            new Vector3(66f, -2f, 30f),
-        };
-
-        Material fishMat = MakeMaterial("Swarm_Fish_MAT", new Color(0.35f, 0.55f, 0.65f, 0.6f));
+        // Tantos bancos como pide la cadena alimenticia (FoodChain). Cada banco, de una especie real: el Ártico y la Antártida se mezclan en la laguna,
+        // como todo el santuario (docs/reglas-animales.md §Peces, crustáceos y medusas).
+        Vector3[] positions = LagoonRing(new Vector3(56f, -2f, 22f), new Vector3(66f, -2f, 30f), FoodChain.Banks(SwarmKind.Fish));
         for (int i = 0; i < positions.Length; i++)
-        {
-            GameObject school = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            school.name = $"Swarm_Fish_{i}";
-            PolarLandscapeBuilder.IgnoreForNav(school);   // los bancos no son suelo: sin esto había NavMesh «sobre» la laguna
-            school.transform.SetParent(group.transform);
-            school.transform.position = positions[i];
-            school.transform.localScale = new Vector3(10f, 2f, 10f);
-            school.GetComponent<Renderer>().sharedMaterial = fishMat;
-            Object.DestroyImmediate(school.GetComponent<Collider>()); // el trigger lo añade Swarm.Start en runtime
-            Swarm swarm = school.AddComponent<Swarm>();
-            swarm.kind = SwarmKind.Fish;
-            swarm.unitName = "Fish";
-        }
+            Swarm.Create<Swarm>(group.transform, $"Swarm_Fish_{i}", positions[i], SwarmKind.Fish, FishOf(i), 24f, 40f, 4f);
+        // Los mares de la isla de tierra: bacalao ártico y capelán, frente a sus costas (el Ártico, el mar de los osos y las morsas).
+        Swarm.Create<Swarm>(group.transform, "Swarm_Fish_Isla_Norte", new Vector3(-195f, -2f, -65f), SwarmKind.Fish, SwarmModels.Species.ArcticCod, 24f, 40f, 4f);
+        Swarm.Create<Swarm>(group.transform, "Swarm_Fish_Isla_Sur", new Vector3(-20f, -2f, -228f), SwarmKind.Fish, SwarmModels.Species.Capelin, 24f, 40f, 4f);
+        // MEDUSAS de McMurdo (mar de Ross): Diplulmaris antarctica (pequeña, anaranjada) y Desmonema glaciale (la grande).
+        GameObject jelly = new GameObject("Medusas_AUTO"); jelly.transform.SetParent(parent);
+        Swarm.Create<Swarm>(jelly.transform, "Medusas_Diplulmaris_0", new Vector3(58f, -4f, 14f), SwarmKind.Jellyfish, SwarmModels.Species.Diplulmaris, 10f, 14f, 3.5f);
+        Swarm.Create<Swarm>(jelly.transform, "Medusas_Desmonema_0", new Vector3(70f, -6f, 24f), SwarmKind.Jellyfish, SwarmModels.Species.Desmonema, 4f, 6f, 5f);
+        Swarm.Create<Swarm>(jelly.transform, "Medusas_Cyanea_0", new Vector3(46f, -5f, 30f), SwarmKind.Jellyfish, SwarmModels.Species.Cyanea, 4f, 6f, 5f);   // melena de león, la del Ártico
     }
+
+    // Los dos sitios de siempre y, si la cadena pide más bancos, repartidos en corro por la laguna.
+    static Vector3[] LagoonRing(Vector3 a, Vector3 b, int n)
+    {
+        var p = new Vector3[Mathf.Max(2, n)]; p[0] = a; p[1] = b;
+        for (int i = 2; i < p.Length; i++) p[i] = PolarLandscapeBuilder.Lagoon + Quaternion.Euler(0f, 25f + i * 137f, 0f) * Vector3.forward * 17f + Vector3.down * 2f;
+        return p;
+    }
+
+    /// <summary>La especie real del banco de peces número <paramref name="i"/>: se turnan.</summary>
+    public static SwarmModels.Species FishOf(int i) => i % 3 == 0 ? SwarmModels.Species.SilverFish : i % 3 == 1 ? SwarmModels.Species.ArcticCod : SwarmModels.Species.Capelin;
+    /// <summary>La especie real del banco de crustáceos número <paramref name="i"/>: se turnan.</summary>
+    public static SwarmModels.Species KrillOf(int i) => i % 3 == 0 ? SwarmModels.Species.Krill : i % 3 == 1 ? SwarmModels.Species.IceKrill : SwarmModels.Species.Themisto;
 
     // Krill: enjambre de clase Krill (dieta propia). Pasta el FITOPLANCTON para crecer; comido por pez (proximidad) y por
     // ballena/pingüino (mordisco-por-colisión). Sembrado en las mismas aguas, entre el fitoplancton y los peces.
@@ -2605,30 +2631,9 @@ public static partial class SampleSceneBuilder
     {
         GameObject group = new GameObject("Krill_AUTO");
         group.transform.SetParent(parent);
-
-        Vector3[] positions =
-        {
-            new Vector3(62f, -2f, 20f),
-            new Vector3(52f, -2f, 28f),
-        };
-
-        Material krillMat = MakeMaterial("Swarm_Krill_MAT", new Color(0.75f, 0.45f, 0.4f, 0.6f));
+        Vector3[] positions = LagoonRing(new Vector3(62f, -2f, 20f), new Vector3(52f, -2f, 28f), FoodChain.Banks(SwarmKind.Krill));
         for (int i = 0; i < positions.Length; i++)
-        {
-            GameObject school = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            school.name = $"Swarm_Krill_{i}";
-            PolarLandscapeBuilder.IgnoreForNav(school);   // los bancos no son suelo: sin esto había NavMesh «sobre» la laguna
-            school.transform.SetParent(group.transform);
-            school.transform.position = positions[i];
-            school.transform.localScale = new Vector3(8f, 1.5f, 8f);
-            school.GetComponent<Renderer>().sharedMaterial = krillMat;
-            Object.DestroyImmediate(school.GetComponent<Collider>()); // el trigger lo añade Swarm.Start en runtime
-            Swarm swarm = school.AddComponent<Swarm>();
-            swarm.kind = SwarmKind.Krill;
-            swarm.unitName = "Krill";
-            swarm.schoolSpread = 3f;      // banco más compacto que el de peces
-            swarm.perUnitMass = 0.05f;    // cada krill pesa poquísimo
-        }
+            Swarm.Create<Swarm>(group.transform, $"Swarm_Krill_{i}", positions[i], SwarmKind.Krill, KrillOf(i), 40f, 60f, 3f);
     }
 
     // Fitoplancton: el PRODUCTOR base de la cadena marina ("césped del mar", vive de agua+luz, se autoregenera).
@@ -2718,11 +2723,10 @@ public static partial class SampleSceneBuilder
         if (spot != null && area != null) spot.transform.position = area.transform.position;
     }
 
-    // TORRE DE GUARDIA + puestos de vigía para la patrulla (docs/spells-suprahechizo-and-thoughts.md §5b).
-    static void BuildGuardTower(Transform parent)
+    // Los puestos de vigía de la patrulla. La guardia está en BuildGuardRoom.
+    static void BuildPatrolPosts(Transform parent)
     {
-        GameObject root = new GameObject("Guardia_AUTO"); root.transform.SetParent(parent);
-        GuardTower.Build(root.transform, new Vector3(-20f, 0f, 57f));   // en su isla, al noroeste del hub
+        GameObject root = new GameObject("PuestosVigia_AUTO"); root.transform.SetParent(parent);
         (string name, Vector3 pos)[] posts =
         {
             ("PuestoVigia_1_Arrozal", new Vector3(-50f, 0f, -5f)),
@@ -2776,20 +2780,20 @@ public static partial class SampleSceneBuilder
     // GOLUIS en la cocina: jefe que inicia a los recién llegados (los hace seguirlo y les enseña limpiar + recetas base).
     static void BuildGoluisKitchen(Transform parent)
     {
-        // Un solo Goluis: el personaje (con alma, mente y ánimo) es también el jefe de cocina. Antes había otro Goluis
+        // Un solo Goluis: el personaje (con alma, mente y ánimo) es también el encargado de cocina. Antes había otro Goluis
         // (una cápsula) solo para la cocina: dos humanos con el mismo nombre.
         GameObject g = GameObject.Find("Goluis_Post");
-        if (g == null) { Debug.LogWarning("[Cocina] sin Goluis_Post: la cocina se queda sin jefe."); return; }
+        if (g == null) { Debug.LogWarning("[Cocina] sin Goluis_Post: la cocina se queda sin encargado."); return; }
         if (g.GetComponent<KitchenBoss>() == null) g.AddComponent<KitchenBoss>();
         WorldLabel wl = g.GetOrAdd<WorldLabel>();
-        wl.text = "Goluis (jefe de cocina)";
+        wl.text = "Goluis (encargado de cocina)";   // (Berón 2026-11-08: encargado; los rangos más altos de la cocina son Maite y Amykhuz)
     }
 
     // LA MAGNATE en el santuario: cápsula visual + Anima + Mind("Magnate") + Magnate (estado infinito/guardiana).
     static void BuildMagnate(Transform parent)
     {
         GameObject m = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-        m.name = "Magnate"; m.transform.SetParent(parent); m.transform.position = new Vector3(6f, 1f, 6f);
+        m.name = "Magnate"; m.transform.SetParent(parent); m.transform.position = new Vector3(6f, 1f, 6f);   // ficha: docs/personajes/magnate.md
         var r = m.GetComponent<Renderer>(); if (r != null) r.sharedMaterial = MakeMaterial("Magnate_MAT", new Color(0.85f, 0.8f, 0.95f));
         m.AddComponent<Anima>();
         m.AddComponent<Mind>().identity = "Magnate";
@@ -2910,15 +2914,11 @@ public static partial class SampleSceneBuilder
         FoodItem fi = f.AddComponent<FoodItem>(); fi.material = OrganicMaterial.Fish; fi.grams = 150f;
     }
 
-    // Mini-cardumen (pez o krill) para los escenarios por especie: cubo translúcido + Swarm (el trigger lo pone Swarm.Start).
+    // Mini-cardumen (pez o krill) para los escenarios por especie: un grupo con sus individuos (Swarm; el trigger lo pone Swarm.Start).
     static void MiniSwarm(Transform root, string name, SwarmKind kind, Vector3 pos)
     {
-        GameObject s = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        s.name = name; s.transform.SetParent(root); s.transform.position = pos; s.transform.localScale = new Vector3(6f, 1.5f, 6f);
-        Color col = kind == SwarmKind.Krill ? new Color(0.75f, 0.45f, 0.4f, 0.6f) : new Color(0.35f, 0.55f, 0.65f, 0.6f);
-        var r = s.GetComponent<Renderer>(); if (r != null) r.sharedMaterial = MakeMaterial($"{name}_MAT", col);
-        Object.DestroyImmediate(s.GetComponent<Collider>());
-        Swarm sw = s.AddComponent<Swarm>(); sw.kind = kind; sw.unitName = kind == SwarmKind.Krill ? "Krill" : "Fish";
+        bool krill = kind == SwarmKind.Krill;
+        Swarm.Create<Swarm>(root, name, pos, kind, krill ? SwarmModels.Species.Krill : SwarmModels.Species.SilverFish, krill ? 30f : 20f, krill ? 60f : 40f, krill ? 3f : 3.5f);
     }
 
     // ESCENARIOS POR ESPECIE (docs/ice-sanctuary-ecology.md): cada animal en un sandbox AISLADO con su CICLO/INTERACCIÓN
@@ -2974,121 +2974,38 @@ public static partial class SampleSceneBuilder
 
     // FLORA DE HIELO (docs/ice-sanctuary-ecology.md): el árbol carnívoro (atrae hambrientos con olor a comida → sopor →
     // muerte → crece) + una colonia de abejas de las nieves que anida cerca. Primitivas (independiente de modelos).
+    public const string IslandTreePrefix = "ArbolIsla_";
+
+    /// <summary>LOS ÁRBOLES DE LA ISLA (Berón 2026-11-05): solo flora, sin sostener nada. Abedul de montaña, el árbol real de los bordes del Ártico (docs/residencia.md §Los árboles de
+    /// la isla). Tienen los panales: una familia de abejas y arañas en dos de ellos.</summary>
     static void BuildIceFlora(Transform parent)
     {
-        // BOSQUE DE HIELO con EDADES: arboledas de un árbol madre (adulto o viejo) rodeado de jóvenes y brotes, y árboles
-        // sueltos, esparcidos por todo el hielo (docs/ice-sanctuary-ecology §2). Lejos de las áreas, del hub, de los nidos
-        // y de los canales, para no cortar el paso. Los brotes aún no cazan; los viejos tienen más raíces y una rama seca.
         GameObject root = new GameObject("FloraHielo_AUTO"); root.transform.SetParent(parent);
-        // VOLUMEN de cada área (todas sus piezas: plataforma, pisos superiores, galerías, barandillas, con 1,5 m de margen):
-        // las ramas lo esquivan, como en la arboleda residencial. Las áreas apiladas (el textil sobre la Construcción a
-        // 10 m) son su propio SanctuaryArea, así que su piso también cuenta.
-        var volumes = new List<Bounds>();
-        var built = new List<Component>(Object.FindObjectsOfType<SanctuaryArea>());
-        built.AddRange(Object.FindObjectsOfType<CarpetPad>());   // las áreas de alfombras
-        foreach (Transform t in _platforms.Keys) if (t != null) built.Add(t);   // todos los pisos y los techos de alfombras (con su losa)
-        foreach (Component sa in built)
+        var homes = new List<Vector3>();
+        Vector3 grove = new Vector3(-125f, 0f, -165f);
+        for (int k = 0, n = 0; k < 6; k++)
         {
-            bool any = false; Bounds bb = default;
-            foreach (Renderer rr in sa.GetComponentsInChildren<Renderer>())
-            {
-                if (rr.GetComponentInParent<Anima>() != null) continue;   // solo lo construido (no las crías ni los pacientes)
-                if (!any) { bb = rr.bounds; any = true; } else bb.Encapsulate(rr.bounds);
-            }
-            if (!any) continue;
-            bb.Expand(new Vector3(3f, 3f, 3f)); volumes.Add(bb);
+            Vector3 at = grove + Quaternion.Euler(0f, k * 60f, 0f) * Vector3.forward * 16f;
+            if (!PolarLandscapeBuilder.LandAt(at.x, at.z)) continue;
+            CubeTree.Build(root.transform, $"{IslandTreePrefix}{++n}", at, 7100 + k * 13, 10f, carnivorous: false, maxNests: 1, birch: true);
+            if (k % 3 == 0) homes.Add(at + new Vector3(3f, 0f, 0f));
         }
-        bool Built(Vector3 q) { foreach (Bounds bb in volumes) if (bb.Contains(q)) return true; return false; }
-        var avoid = new List<Vector3>
+        GameObject beePrefab = LoadAnimalPrefab("SnowBee"), spiderPrefab = LoadAnimalPrefab("SnowSpider");
+        if (beePrefab == null) Debug.LogWarning("[IceFlora] sin prefab SnowBee (genera prefabs — salen cubos si no hay .fbx), se omiten las abejas.");
+        for (int h = 0; h < homes.Count; h++)
         {
-            new Vector3(5f, 0f, 38f),       // hub
-            new Vector3(30f, -13f, 12f),    // aparición del jugador
-            new Vector3(130f, -10f, 34f),   // osos
-            new Vector3(155f, 5f, 24f),     // pingüinos
-        };
-        foreach (SanctuaryArea a in Object.FindObjectsOfType<SanctuaryArea>())
-            avoid.Add(new Vector3(a.transform.position.x, a.transform.position.z, 24f));
-        foreach (GardenPlot gp in Object.FindObjectsOfType<GardenPlot>())   // los huertos tampoco van bajo un árbol carnívoro
-            avoid.Add(new Vector3(gp.transform.position.x, gp.transform.position.z, gp.size.magnitude * 0.5f + 8f));
-        avoid.Add(new Vector3(-60f, 95f, 28f));   // la arboleda residencial (sus árboles no cazan)
-        GameObject tower = GameObject.Find("CasaArbolGuardia");   // ni junto a la casa del árbol
-        if (tower != null) avoid.Add(new Vector3(tower.transform.position.x, tower.transform.position.z - 6f, 22f));
-        var plan = PolarLandscapeBuilder.PlanForest(avoid, 9173, groves: 9, loose: 0);   // menos árboles: solo en los dos casquetes salvajes
-        GameObject first = null;
-        var hiveTrees = new List<Vector3>();
-        var count = new Dictionary<PolarLandscapeBuilder.TreeAge, int>();
-        for (int i = 0; i < plan.Count; i++)
-        {
-            var (pos, age, h) = plan[i];
-            GameObject tree = CubeTree.Build(root.transform, $"ArbolCarnivoroHielo_{age}_{i + 1}", pos, 1234 + i * 77, h, blocked: Built);
-            count[age] = count.TryGetValue(age, out int c) ? c + 1 : 1;
-            if (first == null && age != PolarLandscapeBuilder.TreeAge.Brote) first = tree;
-            if (age >= PolarLandscapeBuilder.TreeAge.Adulto && hiveTrees.Count < 4 && i % 3 == 0) hiveTrees.Add(pos);
-        }
-        if (first != null)
-        {
-            WorldLabel wl = first.AddComponent<WorldLabel>();
-            wl.text = "Bosque de árboles carnívoros de hielo";
-            wl.height = 24f;
-        }
-
-        GameObject beePrefab = LoadAnimalPrefab("SnowBee");
-        if (beePrefab != null)
-        {
-            // Colmenas de abejas de las nieves en árboles grandes (anidan en sus ramas, miel de los muertos).
-            for (int h = 0; h < hiveTrees.Count; h++)
+            if (beePrefab != null)
             {
                 GameObject bg = new GameObject($"Abejas_nieve_{h + 1}"); bg.transform.SetParent(root.transform);
-                FamilyGenerator fg = bg.AddComponent<FamilyGenerator>();
-                fg.families = new[] { new FamilyGenerator.Family { animalPrefab = beePrefab, position = hiveTrees[h] + new Vector3(4f, 0f, 0f), quantity = 5, minParentsCount = 1, radius = 5f } };
+                bg.AddComponent<FamilyGenerator>().families = new[] { new FamilyGenerator.Family { animalPrefab = beePrefab, position = homes[h], quantity = 5, minParentsCount = 1, radius = 5f } };
             }
-        }
-        GameObject spiderPrefab = LoadAnimalPrefab("SnowSpider");
-        if (spiderPrefab != null)   // ARAÑAS DE LAS NIEVES: dos por árbol con colmena (acechan en el tronco)
-            for (int h = 0; h < hiveTrees.Count; h++)
+            if (spiderPrefab != null)   // dos por colonia: acechan junto al panal
             {
                 GameObject sg = new GameObject($"Aranas_nieve_{h + 1}"); sg.transform.SetParent(root.transform);
-                FamilyGenerator sfg = sg.AddComponent<FamilyGenerator>();
-                sfg.families = new[] { new FamilyGenerator.Family { animalPrefab = spiderPrefab, position = hiveTrees[h] + new Vector3(-2f, 0f, 1f), quantity = 2, minParentsCount = 1, radius = 2f } };
-            }
-        else Debug.LogWarning("[IceFlora] sin prefab SnowBee (genera prefabs — salen cubos si no hay .fbx), se omiten las abejas.");
-        string ages = string.Join(", ", count.Select(kv => $"{kv.Value} {kv.Key.ToString().ToLowerInvariant()}"));
-        Debug.Log($"[IceFlora] Árboles carnívoros de bloques: {plan.Count} esparcidos ({ages}).");
-
-        // NATURALEZA Y ÁREAS FUSIONADAS: junto a cada área humana crecen árboles de hielo grandes (24–36 m) que NO cazan;
-        // las áreas elevadas quedan entre sus troncos (la gente vive con la naturaleza, no en un claro aparte).
-        var rndF = new System.Random(5150);
-        int fused = 0;
-        // Huella de cada área (sus piezas, con 3 m de margen): ningún árbol crece DENTRO de una plataforma.
-        var prints = new List<Bounds>();
-        foreach (SanctuaryArea sa in Object.FindObjectsOfType<SanctuaryArea>())
-        {
-            Renderer[] rs = sa.GetComponentsInChildren<Renderer>(); if (rs.Length == 0) continue;
-            Bounds bb = rs[0].bounds; foreach (Renderer rr in rs) bb.Encapsulate(rr.bounds);
-            bb.Expand(new Vector3(6f, 0f, 6f)); prints.Add(bb);
-        }
-        bool InsideArea(Vector3 q) { foreach (Bounds bb in prints) if (q.x > bb.min.x && q.x < bb.max.x && q.z > bb.min.z && q.z < bb.max.z) return true; return false; }
-        foreach (SanctuaryArea a in Object.FindObjectsOfType<SanctuaryArea>())
-        {
-            Vector3 c = a.transform.position; c.y = 0f;
-            Renderer[] ars = a.GetComponentsInChildren<Renderer>();
-            float reach = 16f;
-            if (ars.Length > 0) { Bounds ab = ars[0].bounds; foreach (Renderer rr in ars) ab.Encapsulate(rr.bounds); reach = Mathf.Max(16f, new Vector2(ab.extents.x, ab.extents.z).magnitude + 3f); }
-            for (int k = 0; k < 3; k++)
-            {
-                float ang = (k * 120f + 30f + (float)rndF.NextDouble() * 30f) * Mathf.Deg2Rad;   // nunca delante de la escalera (+Z)
-                if (Mathf.Sin(ang) > 0.85f) ang += 0.6f;
-                Vector3 p = c + new Vector3(Mathf.Cos(ang), 0f, Mathf.Sin(ang)) * (reach + (float)rndF.NextDouble() * 4f);
-                bool ice = true;   // con hielo alrededor (las raíces no cuelgan sobre el agua)
-                for (int q = 0; q < 8 && ice; q++) ice = PolarLandscapeBuilder.NaturalIce(p.x + Mathf.Cos(q * 0.785f) * 5f, p.z + Mathf.Sin(q * 0.785f) * 5f);
-                if (!ice || !PolarLandscapeBuilder.NaturalIce(p.x, p.z) || InsideArea(p)) continue;
-                GameObject dining = GameObject.Find("Comedor_Gourmet");
-                if (dining != null && Vector2.Distance(new Vector2(p.x, p.z), new Vector2(dining.transform.position.x, dining.transform.position.z)) < 15f) continue;
-                CubeTree.Build(root.transform, $"ArbolHielo_{a.displayName}_{k + 1}", p, 7000 + fused * 31, 24f + (float)rndF.NextDouble() * 12f, carnivorous: false, blocked: Built);
-                fused++;
+                sg.AddComponent<FamilyGenerator>().families = new[] { new FamilyGenerator.Family { animalPrefab = spiderPrefab, position = homes[h] + new Vector3(-2f, 0f, 1f), quantity = 2, minParentsCount = 1, radius = 2f } };
             }
         }
-        Debug.Log($"[IceFlora] {fused} árboles junto a las áreas (no cazan).");
+        Debug.Log($"[IceFlora] Abedules de la isla: {homes.Count} colonias.");
     }
 
     // LINDUARDA en la enfermería + un paciente demo (Kushal) con HealthRecord en false → ella, por su pensamiento de
@@ -3107,7 +3024,7 @@ public static partial class SampleSceneBuilder
         return g;
     }
 
-    static void BuildLinduarda(Transform parent)
+    static void BuildLinduarda(Transform parent)   // ficha: docs/personajes/linduarda.md (y lizmibet.md, tote.md, andrea.md, neo.md, que también se crean aquí)
     {
         GameObject root = new GameObject("Enfermeria_AUTO"); root.transform.SetParent(parent);
 
@@ -3123,20 +3040,36 @@ public static partial class SampleSceneBuilder
         // LIZMIBET (docs/character-irosene.md): la gran amiga de Irosene, de su misma edad (70+), llegada con ella desde
         // Ecuador, co-abuela de Leo; también MÉDICA: atiende con Linduarda en la enfermería.
         GameObject liz = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-        liz.name = "Lizmibet"; liz.transform.SetParent(root.transform); liz.transform.position = new Vector3(10f, 1f, 8f);
+        liz.name = "Lizmibet"; liz.transform.SetParent(root.transform); liz.transform.position = new Vector3(10f, 1f, 8f);   // ficha: docs/personajes/lizmibet.md
         var lr = liz.GetComponent<Renderer>(); if (lr != null) lr.sharedMaterial = MakeMaterial("Lizmibet_MAT", new Color(0.95f, 0.95f, 0.97f));
         Anima lza = liz.AddComponent<Anima>();
         lza.strength = 0.95f; lza.agility = 1.05f; lza.endurance = 1.2f; lza.bodyMass = 1.05f;   // activa a sus 70 y tantos
         liz.AddComponent<Mind>().identity = "Lizmibet";
-        WorldLabel lzl = liz.AddComponent<WorldLabel>(); lzl.text = "Lizmibet (médica)";
+        WorldLabel lzl = liz.AddComponent<WorldLabel>(); lzl.text = "Liz · Lizmibet (médica)";   // la suelen llamar Liz (Berón 2026-10-31)
         liz.AddComponent<WorldCharacter>().characterName = "Lizmibet";
 
         // Su ESPOSO, JEFE DE CONSTRUCCIÓN (docs/construction-simulation.md): repara y levanta las estructuras de las áreas
-        // humanas desde el área de Construcción (maquinaria y material). SADHGURU da las clases en el centro de yoga.
+        // humanas desde el área de Construcción (maquinaria y material). JOSEDRILO da las clases de yoga (el profesional; antes Andrea y Sadhguru).
         // ANDREA es uno de los DUEÑOS del santuario (los turistas son una de sus vías de ingresos).
-        MakeCharacter(root.transform, "JefeConstruccion", "Jefe de construcción (esposo de Lizmibet)", new Vector3(12f, 1f, 8f), new Color(0.78f, 0.8f, 0.82f), 1.3f, 0.95f, 1.25f, 1.15f);
-        MakeCharacter(root.transform, "Sadhguru", "Sadhguru (maestro de yoga)", new Vector3(14f, 1f, 8f), new Color(0.5f, 0.72f, 0.62f), 1.0f, 1.2f, 1.4f, 1.0f);
-        MakeCharacter(root.transform, "Andrea", "Andrea (dueño del santuario)", new Vector3(16f, 1f, 8f), new Color(0.08f, 0.08f, 0.09f), 1.15f, 1.2f, 1.2f, 1.0f);
+        MakeCharacter(root.transform, "JefeConstruccion", "Tote · Tofelite (jefe de construcción)",   // Tofelite, esposo de Lizmibet; lo suelen llamar Tote. El id sigue siendo JefeConstruccion (escenas y pruebas) · ficha: docs/personajes/tote.md
+             new Vector3(12f, 1f, 8f), new Color(0.78f, 0.8f, 0.82f), 1.3f, 0.95f, 1.25f, 1.15f);
+        MakeCharacter(root.transform, "Andrea", "Andrea (dueño del santuario y entrenador del gimnasio)", new Vector3(16f, 1f, 8f), new Color(0.08f, 0.08f, 0.09f), 1.6f, 1.2f, 1.3f, 1.05f);   // (2026-11-04) «el personaje con más fuerza es Andrea»: 1,6, por encima de Goluis (1,5) · ficha: docs/personajes/andrea.md
+        // (2026-11-04) SADHGURU y LOS SEIS DEL MESOCOSMOS ya no se construyen aquí: Berón los sacó a sus microcosmos («los personajes
+        // famosos … sácalos del mesocosmos y crea sus microcosmos respectivos»). Sus datos siguen en MesoCharacters y su aspecto en
+        // CubeHair.For; sus papeles los llevan otros (docs/personajes-mesocosmos.md §Reparto de papeles).
+        // LA FAMILIA Y LOS AMIGOS DE BERÓN (2026-11-04, de sus fotos; docs/diseno-personajes.md §Familia y amigos): personal
+        // de la rotación; cinco llevan además un papel de los famosos que se fueron. Entran en la jornada, el horario libre y la arboleda.
+        foreach (var (id, label, x, clothes, s, ag, en, m) in FamilyCharacters)   // cada uno: su ficha en docs/personajes/
+            MakeCharacter(root.transform, id, label, new Vector3(x, 1f, 8f), clothes, s, ag, en, m);
+        // (2026-11-04) NEO, niño, hijo de Ducristin y Gallarle (Berón). Con el ciclo de vida de los humanos (PersonLife:
+        // etapa de niño, crece comiendo y durmiendo) y sus padres enlazados: de niño va con Gallarle (FollowMother) y vive en su casa del
+        // árbol (Bedroom.kids). No está en la jornada (no trabaja). Sus padres llevan el mismo ciclo de vida, sin embarazos (female = false).
+        GameObject neo = MakeCharacter(root.transform, "Neo", "Neo (niño)", new Vector3(66f, 1f, 8f), new Color(0.3f, 0.55f, 0.75f), 0.5f, 1.1f, 0.8f, 0.45f);   // ficha: docs/personajes/neo.md
+        GameObject duc = root.transform.Find("Ducristin")?.gameObject, gal = root.transform.Find("Gallarle")?.gameObject;
+        PersonLife neoLife = PersonLife.Equip(neo, false, newborn: true);
+        if (neo.TryGetComponent(out BodyAging neoAge)) neoAge.growth = 0.35f;   // un niño (niño < 0,6 de crecimiento; BodyAging)
+        if (duc != null) neoLife.father = PersonLife.Equip(duc, false);
+        if (gal != null) neoLife.mother = PersonLife.Equip(gal, false);   // (el padre o la madre al que sigue de niño; pendiente de confirmar con Berón)
 
         GameObject wolf = LoadAnimalPrefab("Wolf");
         if (wolf != null)
@@ -3358,7 +3291,7 @@ public static partial class SampleSceneBuilder
 
         // Compañeros POR COMPOSICIÓN (fase 5, CompanionBase retirado): Anima + SoulComposition(arquetipo) +
         // Mind + MoodState(curvas+anchors) + su componente de comportamiento propio.
-        GameObject gohageneis = MakePlaceholderPerson("Gohageneis_Post", new Vector3(5f, 1f, -5f), new Color(0.95f, 0.5f, 0.2f));
+        GameObject gohageneis = MakePlaceholderPerson("Gohageneis_Post", new Vector3(5f, 1f, -5f), new Color(0.95f, 0.5f, 0.2f));   // ficha: docs/personajes/gohageneis.md
         gohageneis.transform.SetParent(charactersGroup.transform);
         MoodState gohaMood = MakeCompanionCore(gohageneis, "Gohageneis");
         gohaMood.restingMoodMin = 0.65f; gohaMood.restingMoodMax = 0.9f; gohaMood.moodModMin = 0.4f; gohaMood.moodModMax = 1.2f; gohaMood.fatigueRate = 0.00008f;
@@ -3367,10 +3300,10 @@ public static partial class SampleSceneBuilder
         gohaMood.anchors.Add(new ThoughtAnchor("hide_pain", 0.7f, 0.005f));
         gohaMood.anchors.Add(new ThoughtAnchor("trust_joy", 0.8f, 0.001f));
         gohageneis.AddComponent<Gohageneis>();
-        gohageneis.AddComponent<CarnivoreKeeper>();   // GUARDIA: patrulla y alimenta a los carnívoros para que no cacen
+        gohageneis.AddComponent<CarnivoreKeeper>();   // GUARDIA: patrulla (alimentar a los depredadores es la misión del alimentador)
         gohageneis.AddComponent<WorldCharacter>().characterName = "Gohageneis";
 
-        GameObject goluis = MakePlaceholderPerson("Goluis_Post", new Vector3(-5f, 1f, -5f), new Color(0.4f, 0.4f, 0.55f));
+        GameObject goluis = MakePlaceholderPerson("Goluis_Post", new Vector3(-5f, 1f, -5f), new Color(0.4f, 0.4f, 0.55f));   // ficha: docs/personajes/goluis.md
         goluis.transform.SetParent(charactersGroup.transform);
         MoodState golMood = MakeCompanionCore(goluis, "Goluis");
         golMood.restingMoodMin = 0.3f; golMood.restingMoodMax = 0.65f; golMood.moodModMin = -0.3f; golMood.moodModMax = 0.7f; golMood.fatigueRate = 0.0003f;
@@ -3381,7 +3314,7 @@ public static partial class SampleSceneBuilder
         goluis.AddComponent<Goluis>();
         goluis.AddComponent<WorldCharacter>().characterName = "Goluis";
 
-        GameObject panterilia = MakePlaceholderPerson("Panterilia_Post", new Vector3(0f, 1f, -12f), new Color(0.55f, 0.25f, 0.5f));
+        GameObject panterilia = MakePlaceholderPerson("Panterilia_Post", new Vector3(0f, 1f, -12f), new Color(0.55f, 0.25f, 0.5f));   // ficha: docs/personajes/panterilia.md
         panterilia.transform.SetParent(charactersGroup.transform);
         MoodState pantMood = MakeCompanionCore(panterilia, "Panterilia");
         pantMood.restingMoodMin = 0.55f; pantMood.restingMoodMax = 0.8f; pantMood.moodModMin = 0.3f; pantMood.moodModMax = 1f; pantMood.stressPenalty = 0.6f; pantMood.fatigueRate = 0.00015f;
@@ -3393,7 +3326,7 @@ public static partial class SampleSceneBuilder
         panterilia.AddComponent<WorldCharacter>().characterName = "Panterilia";
 
         // Irosene — compañera motivacional (canal primario = Satisfacción). Ver docs/character-irosene.md.
-        GameObject irosene = MakePlaceholderPerson("Irosene_Post", new Vector3(3f, 1f, -13f), new Color(0.90f, 0.55f, 0.40f));
+        GameObject irosene = MakePlaceholderPerson("Irosene_Post", new Vector3(3f, 1f, -13f), new Color(0.90f, 0.55f, 0.40f));   // ficha: docs/personajes/irosene.md
         irosene.transform.SetParent(charactersGroup.transform);
         MoodState iroMood = MakeCompanionCore(irosene, "Irosene");
         iroMood.primaryChannel = MindChannel.Satisfaction; iroMood.baseRestorationRate = 0.03f;
@@ -3425,111 +3358,182 @@ public static partial class SampleSceneBuilder
     // volver a colocar a mano más adelante — esto no los borra, solo deja de instanciarlos.
     static SanctuaryArea[] BuildAreaStructures(Transform parent)
     {
-        _platforms.Clear(); _upperOf.Clear();   // de una construcción a otra (estáticos)
+        _platforms.Clear(); _upperOf.Clear(); BuildingNames.Clear(); _helixes.Clear(); _helixFloor.Clear(); _floorSeq.Clear(); _orchardTips.Clear(); _towerHelix = null;   // de una construcción a otra (estáticos)
         GameObject areasGroup = new GameObject("Areas_Placed");
         areasGroup.transform.SetParent(parent);
 
+        // TORRES TEMÁTICAS (Berón 2026-10-29; docs/plano-edificios.md, SampleSceneBuilder.Towers.cs): cada área nace en el sitio
+        // de su torre con la planta de la torre (el «Mat»: el piso entero es suyo) y luego sube a su piso con TowerFloor.
         var areas = new List<SanctuaryArea>
         {
+            // ── SERVICIOS (personas y animales) ──
             BuildAreaBox(areasGroup.transform, "Kitchen_Area", "Cocina", SanctuaryAreaType.Kitchen, 1,
-                new Vector3(5f, 0f, 95f), new Vector2(40f, 38f), new Color(0.75f, 0.45f, 0.30f)),   // restaurante: cocina abierta en el CENTRO y el comedor (para 30+) alrededor
-
+                ServiciosCenter, ServiciosSize, new Color(0.75f, 0.45f, 0.30f)),   // P0 · restaurante: cocina abierta en el CENTRO y el comedor (para 30+) en su anillo
             BuildAreaBox(areasGroup.transform, "Infirmary_Area", AreaWork.Hospital, SanctuaryAreaType.Infirmary, 1,
-                new Vector3(63f, 0f, 97f), HospitalSize, new Color(0.85f, 0.95f, 0.90f)),   // HOSPITAL de 2 plantas: personas abajo, animales arriba (docs/hospital.md). A 22 m del restaurante (Berón 2026-10-24): sus anillos vuelan 8 m cada uno y entre ellos sube la escalera del comedor desde el puente
-
-            BuildAreaBox(areasGroup.transform, "YogaRoom_Area", "Sala de Yoga", SanctuaryAreaType.YogaRoom, 1,
-                new Vector3(105f, 0f, 35f), new Vector2(18f, 15f), new Color(0.75f, 0.65f, 0.85f)),
-
-            BuildAreaBox(areasGroup.transform, "VehicleWorkshop_Area", "Mecánica", SanctuaryAreaType.VehicleWorkshop, 2,
-                new Vector3(105f, 0f, -25f), new Vector2(10f, 9f), new Color(0.55f, 0.55f, 0.60f)),
-
-            BuildAreaBox(areasGroup.transform, "TextileStudio_Area", "Estudio Textil", SanctuaryAreaType.TextileStudio, 2,
-                new Vector3(55f, 0f, -55f), new Vector2(12f, 10f), new Color(0.85f, 0.60f, 0.65f)),   // más grande: telares, rueca, tintes…
-
-            // LABORATORIO DE CARNE CULTIVADA (área propia, nivel 3; docs/carne-cultivada.md): carne para los depredadores
-            // sin matar animales. En el casquete Este, cerca del territorio de los osos (su comedero).
-            BuildAreaBox(areasGroup.transform, "CulturedMeatLab_Area", "Carne Cultivada", SanctuaryAreaType.CulturedMeatLab, 3,
-                new Vector3(118f, 0f, 6f), new Vector2(16f, 12f), new Color(0.85f, 0.7f, 0.68f)),
-
-            // CONSTRUCCIÓN (docs/construction-simulation.md): obras y reparaciones de las áreas humanas; aquí se guardan la
-            // maquinaria y el material. La dirige el esposo de Lizmibet. En el hub, al oeste del huerto.
-            BuildAreaBox(areasGroup.transform, "Construction_Area", "Construcción", SanctuaryAreaType.Construction, 2,
-                new Vector3(-20f, 0f, 10f), new Vector2(18f, 14f), new Color(0.85f, 0.72f, 0.4f)),
-            // ENTRENAMIENTO (2 h diarias, docs/jornada-y-rotacion.md): gimnasio abierto; ballet, dojo y calistenia EN OBRAS.
-            BuildAreaBox(areasGroup.transform, "Gym_Area", "Gimnasio", SanctuaryAreaType.Gym, 1,
-                new Vector3(26f, 0f, 6f), new Vector2(22f, 16f), new Color(0.55f, 0.6f, 0.7f)),   // 30 máquinas (10 tipos × 3) + zona libre
-            BuildAreaBox(areasGroup.transform, "Ballet_Area", "Sala de Ballet", SanctuaryAreaType.Ballet, 1,
-                new Vector3(12f, 0f, 24f), new Vector2(10f, 9f), new Color(0.9f, 0.75f, 0.8f)),
-            BuildAreaBox(areasGroup.transform, "MartialArts_Area", "Dojo (artes marciales)", SanctuaryAreaType.MartialArts, 1,
-                new Vector3(-5f, 0f, 22f), new Vector2(10f, 9f), new Color(0.8f, 0.7f, 0.55f)),
-            BuildAreaBox(areasGroup.transform, "Calisthenics_Area", "Calistenia", SanctuaryAreaType.Calisthenics, 1,
-                new Vector3(-28f, 0f, -12f), new Vector2(10f, 9f), new Color(0.65f, 0.75f, 0.6f)),
-
+                ServiciosCenter, ServiciosSize, new Color(0.85f, 0.95f, 0.90f)),   // P1–P3 · HOSPITAL de 3 plantas: urgencias, quirófanos/UCI y veterinario (docs/hospital.md)
             // CRÍA (docs/cria-simulation.md): el corazón del santuario, una sala de crías del hielo (recintos con crías de
-            // verdad, cocina de leche, almacén). En el sitio que dejó el Estudio Textil al subir sobre la Construcción.
+            // verdad, cocina de leche, almacén), encima del hospital veterinario.
             BuildAreaBox(areasGroup.transform, "CubCare_Area", "Cría", SanctuaryAreaType.CubCare, 1,
-                new Vector3(55f, 0f, -55f), new Vector2(26f, 20f), new Color(0.8f, 0.72f, 0.55f)),
+                ServiciosCenter, ServiciosSize, new Color(0.8f, 0.72f, 0.55f)),   // P4
+            // LABORATORIO DE CARNE CULTIVADA (nivel 3; docs/carne-cultivada.md): carne para los depredadores sin matar animales.
+            BuildAreaBox(areasGroup.transform, "CulturedMeatLab_Area", "Carne Cultivada", SanctuaryAreaType.CulturedMeatLab, 3,
+                ServiciosCenter, ServiciosSize, new Color(0.85f, 0.7f, 0.68f)),   // P5
 
+            // ── ENTRENAMIENTO (2 h diarias, docs/jornada-y-rotacion.md y docs/entrenamiento-areas.md) ──
+            BuildAreaBox(areasGroup.transform, "Gym_Area", "Gimnasio", SanctuaryAreaType.Gym, 1,
+                EntrenamientoCenter, GymSize, new Color(0.55f, 0.6f, 0.7f)),   // P0 (P1: cardio y zona libre)
+            BuildAreaBox(areasGroup.transform, "Calisthenics_Area", "Calistenia", SanctuaryAreaType.Calisthenics, 1,
+                EntrenamientoCenter, GymSize, new Color(0.65f, 0.75f, 0.6f)),   // P2 · calistenia, parkour y crossfit
+            BuildAreaBox(areasGroup.transform, "YogaRoom_Area", "Sala de Yoga", SanctuaryAreaType.YogaRoom, 1,
+                EntrenamientoCenter, GymSize, new Color(0.75f, 0.65f, 0.85f)),   // P3 · con su anillo de estatuas
+            BuildAreaBox(areasGroup.transform, "Ballet_Area", "Sala de Ballet", SanctuaryAreaType.Ballet, 1,
+                EntrenamientoCenter, GymSize, new Color(0.9f, 0.75f, 0.8f)),   // P4 (en obras)
+            BuildAreaBox(areasGroup.transform, "MartialArts_Area", "Dojo (artes marciales)", SanctuaryAreaType.MartialArts, 1,
+                EntrenamientoCenter, GymSize, new Color(0.8f, 0.7f, 0.55f)),   // P5 (en obras)
+
+            // ── EL HUERTO, en el ÁRBOL DE LOS CAMPOS (docs/edificio-arbol.md): una franja de 24 × 9 m de su piso 5 (32 × 32 m: el tanque, a 3 m del borde) ──
             BuildAreaBox(areasGroup.transform, "Garden_Area", "Huerto", SanctuaryAreaType.Garden, 2,
-                new Vector3(5f, 0f, -30f), new Vector2(24f, 20f), new Color(0.50f, 0.70f, 0.40f)),
+                TreeSpec.Site, new Vector2(24f, 9f), new Color(0.50f, 0.70f, 0.40f)),
+            // ── PRODUCCIÓN (construcción, mecánica y textil; los cultivos se mudaron al Árbol de los Campos) ──
+            // CONSTRUCCIÓN (docs/construction-simulation.md): obras y reparaciones de las áreas humanas; aquí se guardan la
+            // maquinaria y el material. La dirige Tofelite («Tote»), el esposo de Lizmibet.
+            BuildAreaBox(areasGroup.transform, "Construction_Area", "Construcción", SanctuaryAreaType.Construction, 2,
+                ProduccionCenter, ProduccionSize, new Color(0.85f, 0.72f, 0.4f)),   // P0
+            BuildAreaBox(areasGroup.transform, "VehicleWorkshop_Area", "Mecánica", SanctuaryAreaType.VehicleWorkshop, 2,
+                ProduccionCenter, ProduccionSize, new Color(0.55f, 0.55f, 0.60f)),   // P1
+            BuildAreaBox(areasGroup.transform, "TextileStudio_Area", "Estudio Textil", SanctuaryAreaType.TextileStudio, 2,
+                ProduccionCenter, ProduccionSize, new Color(0.85f, 0.60f, 0.65f)),   // P2: telares, rueca, tintes…
         };
-        // ÁREAS ESPACIADAS (~50 m entre vecinas, antes 25): entre ellas caben árboles y animales sin cortar el paso.
-        // El HUERTO es más grande y tiene cultivos de verdad (flora modificada para el restaurante).
-        PlantGarden(areas[areas.Count - 1].transform);
-        // Todo lo construido, ELEVADO (6 m, sobre columnas, con escalera): el suelo queda para la naturaleza. El huerto no.
-        // UN SOLO HOSPITAL para personas y animales (docs/area-progression.md: "Una sola Enfermería que cuida a TODOS"; docs/hospital.md):
-        // ya no hay veterinaria aparte: el hospital veterinario (y el paciente lobo) es su planta alta.
-        Vector2[] sizes = { new Vector2(40f, 38f), HospitalSize, new Vector2(18f, 15f), new Vector2(10f, 9f), new Vector2(12f, 10f), new Vector2(16f, 12f), new Vector2(18f, 14f), new Vector2(22f, 16f), new Vector2(10f, 9f), new Vector2(10f, 9f), new Vector2(10f, 9f), new Vector2(26f, 20f) };
-        // PISOS (docs/construcciones-elevadas.md §Pisos): el BALLET es el piso de arriba de la sala de YOGA y el DOJO el del
-        // GIMNASIO (10 m más arriba, sin tapar la vista): una base, dos salas, sin plataforma ni puente aparte. Igual los
-        // TALLERES: el ESTUDIO TEXTIL sobre la CONSTRUCCIÓN. (La Mecánica, de 10 × 9, es pequeña para cargar otro piso.)
-        const int Ballet = 8, Dojo = 9, Textile = 4;
-        var upper = new Dictionary<int, int> { { Ballet, 2 }, { Dojo, 7 }, { Textile, 6 } };   // piso de arriba → el de abajo
-        for (int i = 0; i < sizes.Length; i++) if (!upper.ContainsKey(i)) ElevateArea(areas[i], sizes[i], ElevatedHeight);
-        foreach (var kv in upper) sizes[kv.Key] = StackOn(areas[kv.Key].transform, areas[kv.Value].transform, sizes[kv.Value]);
-        ElevateArea(areas[areas.Count - 1], new Vector2(24f, 20f), ElevatedHeight);   // el Huerto (área) también
-        UpperGarden(areas[areas.Count - 1].transform, new Vector2(24f, 20f));         // y encima, a 10 m, el segundo huerto
-        FurnishYoga(areas[2].transform, sizes[2]);
-        FurnishTextile(areas[4].transform, sizes[4]);   // el estudio textil de Irosene: telares, rueca, lanas, tintes, corte y costura
-        FurnishConstruction(areas[6].transform, sizes[6]);   // maquinaria, material, herramientas y taller de obra
-        FurnishGym(areas[7].transform, sizes[7]);                                                   // gimnasio abierto
-        FurnishCria(areas[11].transform, sizes[11]);                                                // la sala de crías
-        MakeConstructionSite(areas[8].transform, sizes[8], "Sala de Ballet", 5);                     // en obras: material de un día a pie de obra
-        MakeConstructionSite(areas[9].transform, sizes[9], "Dojo (artes marciales)", 6);
-        MakeConstructionSite(areas[10].transform, sizes[10], "Parque de calistenia", 4);
-        // ASEOS en cada área humana (el restaurante y la enfermería los ponen al amueblarse).
-        Aseos(areas[2].transform, new Vector3(-sizes[2].x * 0.5f + 0.9f, 0.1f, 0f), 90f);       // sala de yoga (en el lateral: las esquinas son de las estatuas)
-        Aseos(areas[3].transform, new Vector3(-sizes[3].x * 0.5f + 0.2f + 1.9f, 0.1f, sizes[3].y * 0.5f - 0.9f), 180f, 1);    // mecánica
-        Aseos(areas[4].transform, new Vector3(4.4f, 0.1f, -sizes[4].y * 0.5f + 0.9f), 0f, 1);    // textil (al fondo, junto a los ovillos: delante, a −X, llega la escalera del piso)
-        Aseos(areas[5].transform, new Vector3(sizes[5].x * 0.5f - 0.2f - 1.9f, 0.1f, -sizes[5].y * 0.5f + 0.9f), 0f, 1);      // laboratorio
-        Aseos(areas[6].transform, new Vector3(sizes[6].x * 0.5f - 0.2f - 1.9f, 0.1f, sizes[6].y * 0.5f - 0.9f), 180f, 1);    // construcción
-        // Comedero de los depredadores junto a los osos: ahí deja el laboratorio las raciones de carne cultivada.
-        GameObject feeder = new GameObject("Comedero_depredadores"); feeder.transform.SetParent(areasGroup.transform, false); feeder.transform.position = new Vector3(126f, 0f, -6f);
-        KitchenProps.C(feeder.transform, new Vector3(0f, 0.08f, 0f), new Vector3(1.6f, 0.16f, 1.6f), KitchenProps.DarkSteel, 0f, "Bandeja");
-        WorldLabel fwl = feeder.AddComponent<WorldLabel>(); fwl.text = "Comedero (carne cultivada)"; fwl.height = 1f;
-        CulturedMeatLab.Build(areas[5].transform, sizes[5], feeder.transform);
-        // Los EDIFICIOS (sus plantas bajas): sin puentes ni escaleras, cada uno con sus alfombras (docs/alfombras-plan.md).
-        var ground = new List<SanctuaryArea>();
-        for (int i = 0; i < areas.Count; i++)
+        SanctuaryArea A(string go) => areas.Find(x => x.name == go);
+        SanctuaryArea kitchen = A("Kitchen_Area"), hospital = A("Infirmary_Area"), yoga = A("YogaRoom_Area"), mech = A("VehicleWorkshop_Area"),
+            textile = A("TextileStudio_Area"), meat = A("CulturedMeatLab_Area"), works = A("Construction_Area"), gym = A("Gym_Area"),
+            ballet = A("Ballet_Area"), dojo = A("MartialArts_Area"), calis = A("Calisthenics_Area"), cria = A("CubCare_Area"), garden = A("Garden_Area");
+        // EL ÁRBOL DE LOS CAMPOS (Berón 2026-10-29; SampleSceneBuilder.Tree.cs): los 8 cultivos (antes parcelas sueltas junto al
+        // agua y el huerto con su rotación en la torre de Producción) en los pisos del árbol; el Huerto, en su piso 5.
+        BuildTree(areasGroup.transform, garden);
+        BuildFotobio(areasGroup.transform.Find(TreeSpec.RootName));   // su fachada de fotobiorreactores (docs/fotobiorreactores.md)
+        // POCOS EDIFICIOS CON MUCHOS PISOS (Berón 2026-10-29): todo lo construido va ELEVADO (12 m, sobre columnas: el suelo
+        // queda para la naturaleza) y los pisos de cada torre se apilan 11 m uno sobre otro, de abajo arriba (TowerFloor →
+        // StackOn); se sube y se baja en alfombra voladora. Las áreas con plantas propias (hospital, física, química, biología)
+        // las montan como hijas y la siguiente área va encima de la MÁS ALTA de ellas.
+        var size = new Dictionary<Transform, Vector2>();
+        void Floor(Transform t) => size[t] = TowerFloor(t);
+        Transform Child(Transform area, string name) { Transform c = new GameObject(name).transform; c.SetParent(area, false); return c; }
+        //  · SERVICIOS: Restaurante · Hospital (urgencias · quirófanos y UCI · veterinario) · Cría · Carne Cultivada · Sala de asambleas.
+        //    Un ÁRBOL (docs/edificio-arbol.md §Migración): 4 niveles de hélice (2026-11-05: el cuarto, para la Sala de asambleas: las mismas caras
+        //    del nivel 2, así que la planta no cambia), sus 7 pisos en orden (nivel 1, lados a y c; nivel 2, b y d; nivel 3, a y c; nivel 4, b) y uno libre.
+        BeginTreeTower(areasGroup.transform, TorreServicios, ServiciosCenter, ServiciosSize, ServiciosYaw, 4);
+        Floor(kitchen.transform);
+        Floor(hospital.transform); Floor(Child(hospital.transform, "Planta_hospitalizacion")); Floor(Child(hospital.transform, "Planta_veterinaria"));   // las amuebla BuildHospital
+        Floor(cria.transform); Floor(meat.transform);
+        SanctuaryArea assembly = BuildAssembly(areasGroup.transform); areas.Add(assembly);   // (2026-11-05) docs/piso-asambleas.md
+        BuildGuardRoom(areasGroup.transform);   // (2026-11-05) el piso libre del nivel 4: docs/sala-de-guardia.md
+        //  · ENTRENAMIENTO: Gimnasio · Cardio y zona libre · Calistenia, parkour y crossfit · Yoga (Hatha) · Yoga (Ashtanga) · Ballet
+        //    · Dojo. Lo pesado y ruidoso (las máquinas) abajo; lo silencioso (los dos pisos de yoga y las salas en obras) arriba.
+        //    Un ÁRBOL (Berón 2026-11-04: se quitó el anillo de yoga y el yoga pasó a sus propios pisos, docs/yoga-pisos.md): los niveles
+        //    que pidan sus pisos (regla J16, abajo) y sus pisos en orden; una punta con frutales en cada hueco de la hélice.
+        //    (2026-11-04, regla J16: «se pueden agregar pisos, si las 2 de yoga existentes no son suficientes se crea una más y lo mismo con
+        //    el dojo y demás áreas de estudio y entrenamiento») Cada centro lleva los PISOS que necesita para TODOS los miembros a la vez:
+        //    ⌈miembros / plazas de un piso⌉ (TrainingCentres; los miembros salen de la lista del personal, nunca un número fijo). Los pisos
+        //    de más de un centro van juntos, encima del primero; la torre sube los niveles que hagan falta (dos pisos por nivel) y
+        //    encima van los del Aula. Hoy (18 miembros) el yoga pide 2 pisos de Hatha y 2 de Ashtanga.
+        int members = AreaCapacity.DefaultMembers;   // la lista del personal (WorkdayDirector.Staff), como el Aula
+        Transform cardio = new GameObject("Cardio y zona libre").transform; cardio.SetParent(areasGroup.transform, false);   // un piso del gimnasio (no un área aparte)
+        Transform ashtanga = Child(yoga.transform, "Planta_ashtanga");   // el piso de Ashtanga: planta propia de la Sala de Yoga (sus misiones y su jornada son las del área)
+        List<Transform> Copies(Transform main, Transform parentOfCopies, string centre, string prefix)
         {
-            if (upper.ContainsKey(i)) continue;
-            ground.Add(areas[i]);
+            var l = new List<Transform> { main };
+            for (int k = 2; k <= TrainingCentres.FloorsFor(centre, members); k++) l.Add(Child(parentOfCopies, $"{prefix}_{k}"));
+            return l;
         }
-        _roofs.Clear();   // piso más alto de cada edificio: encima va su techo de alfombras, con sus paneles solares
-        // PLANTA ATÓMICA (docs/atomic-plant.md): reactor de investigación (isótopos para el hospital, física). Va aparte de la
-        // lista de arriba para no mover los índices (el Huerto es el último).
-        SanctuaryArea plant = BuildAtomicPlant(areasGroup.transform); areas.Add(plant); ground.Add(plant);
-        // INVESTIGACIÓN Y PRODUCCIÓN (docs/edificios-investigacion.md): la sala de experimentos de física sobre la planta atómica,
-        // y en el casquete Sur, junto a ella, Química, Biología y la central nuclear de producción.
-        BuildPhysicsHall(plant.transform);
-        SanctuaryArea chem = BuildChemistry(areasGroup.transform); areas.Add(chem); ground.Add(chem);
-        SanctuaryArea bio = BuildBiology(areasGroup.transform); areas.Add(bio); ground.Add(bio);
-        SanctuaryArea nuc = BuildNuclearPlant(areasGroup.transform); areas.Add(nuc); ground.Add(nuc);
-        for (int i = 0; i < sizes.Length; i++)
+        var gymF = Copies(gym.transform, gym.transform, "Gimnasio", "Planta_gimnasio");
+        var calF = Copies(calis.transform, calis.transform, "Calistenia", "Planta_calistenia");
+        var hatF = Copies(yoga.transform, yoga.transform, "Yoga Hatha", "Planta_hatha");
+        var ashF = Copies(ashtanga, yoga.transform, "Yoga Ashtanga", "Planta_ashtanga");
+        var balF = Copies(ballet.transform, ballet.transform, "Ballet", "Planta_ballet");
+        var dojF = Copies(dojo.transform, dojo.transform, "Dojo", "Planta_dojo");
+        var entFloors = new List<Transform>();
+        entFloors.AddRange(gymF); entFloors.Add(cardio); entFloors.AddRange(calF); entFloors.AddRange(hatF); entFloors.AddRange(ashF); entFloors.AddRange(balF); entFloors.AddRange(dojF);
+        // Dos pisos por nivel; encima, los del Aula (AulaFloors, docs/piso-aula.md: la sala de estudio, con la misma regla).
+        int entLevels = Mathf.CeilToInt((entFloors.Count + AulaFloors() + MusicFloors()) / 2f);   // + los pisos de Música (docs/piso-musica.md), encima del Aula
+        Debug.Log($"[Centros] {members} miembros: Gimnasio {gymF.Count}, Calistenia {calF.Count}, Yoga Hatha {hatF.Count}, Yoga Ashtanga {ashF.Count}, Ballet {balF.Count}, Dojo {dojF.Count} pisos; la torre del Entrenamiento, {entFloors.Count} pisos en {entLevels} niveles.");
+        BeginTreeTower(areasGroup.transform, TorreEntrenamiento, EntrenamientoCenter, GymSize, EntrenamientoYaw, entLevels);
+        foreach (Transform t in entFloors) Floor(t);
+        // (2026-11-04) EL AULA (docs/piso-aula.md): encima del Dojo: aula de clases y sala de estudio para todos.
+        SanctuaryArea aula = BuildClassroom(areasGroup.transform); areas.Add(aula);
+        // (2026-11-05) LA MÚSICA (docs/piso-musica.md): encima del Aula: sala de grabación y escenario de conciertos.
+        SanctuaryArea music = BuildMusic(areasGroup.transform); areas.Add(music);
+        //  · PRODUCCIÓN (más baja, junto al Árbol de los Campos): Construcción · Mecánica · Estudio Textil. La maquinaria
+        //    pesada, abajo.
+        //    Un ÁRBOL: sus 3 pisos en orden, el HUERTO VERTICAL (2026-11-08: los pisos de estantes LED que pida la demanda de verdura, regla P19;
+        //    docs/produccion-maquinaria.md) y el garaje del submarino en el primer piso libre; los niveles que hagan falta (2 pisos por nivel; hoy 3).
+        var (farmRacks, farmFloors) = VerticalFarmPlan();
+        int prodLevels = Mathf.Max(2, Mathf.CeilToInt((3 + farmFloors + 1) / 2f));
+        BeginTreeTower(areasGroup.transform, TorreProduccion, ProduccionCenter, ProduccionSize, ProduccionYaw, prodLevels, ProduccionFirstY, 4f);
+        Floor(works.transform); Floor(mech.transform); Floor(textile.transform);
+        if (farmRacks > 0) { SanctuaryArea farm = BuildVerticalFarm(areasGroup.transform); areas.Add(farm); }
+        Debug.Log($"[Torres] Producción: {prodLevels} niveles (Construcción, Mecánica, Estudio Textil, {farmFloors} piso(s) de Huerto vertical con {farmRacks} estantes y el garaje).");
+        BuildResidenceTower(areasGroup.transform);   // la Residencia: edificio-árbol en la isla (docs/residencia.md)
+        // Los EDIFICIOS que juntan varias áreas llevan el nombre de su torre (el de su planta baja diría solo una).
+        BuildingNames[kitchen.transform] = TorreServicios; BuildingNames[gym.transform] = TorreEntrenamiento; BuildingNames[works.transform] = TorreProduccion;
+        FurnishYogaFloors(hatF, ashF, size[yoga.transform]);   // los pisos de yoga (regla J16: los que pidan los miembros), cada uno con su sala occidental y su sala tradicional
+        FurnishTextile(textile.transform, size[textile.transform]);   // el estudio textil de Irosene: telares, rueca, lanas, tintes, corte y costura
+        FurnishConstruction(works.transform, size[works.transform]);   // maquinaria, material, herramientas y taller de obra
+        for (int k = 0; k < gymF.Count; k++) { FurnishGym(gymF[k], size[gymF[k]], 3 * k); Centre(gymF[k], "Gimnasio", k + 1); }   // máquinas de placas y peso libre (cada piso, sus copias 3k…3k+2)
+        FurnishGymCardio(cardio, size[cardio]);                          // cardio, abdominales, estiramientos y sacos
+        for (int k = 0; k < calF.Count; k++) { FurnishCalisthenics(calF[k], size[calF[k]]); Centre(calF[k], "Calistenia", k + 1); }   // calistenia, parkour y crossfit (ya construidos)
+        Vector2 criaLayout = new Vector2(26f, 20f);                      // la sala de crías y el laboratorio, con su distribución de 26 × 20, centrada en su piso
+        FurnishCria(cria.transform, criaLayout);
+        // EN OBRAS, con su equipo de 3 y su acabado ya diseñado (docs/obras-dojo-ballet.md): aparece al terminar.
+        for (int k = 0; k < balF.Count; k++) { PrepareSite(balF[k], size[balF[k]], k == 0 ? "Sala de Ballet" : $"Sala de Ballet (piso {k + 1})", 6, 3, FinishedBallet); Centre(balF[k], "Ballet", k + 1); }
+        for (int k = 0; k < dojF.Count; k++) { PrepareSite(dojF[k], size[dojF[k]], k == 0 ? "Dojo (MMA, kickboxing y karate)" : $"Dojo (piso {k + 1})", 6, 3, FinishedDojo); Centre(dojF[k], "Dojo", k + 1); }
+        // ASEOS en cada área humana (el restaurante y la enfermería los ponen al amueblarse).
+        Vector2 s2 = size[yoga.transform];
+        Aseos(yoga.transform, new Vector3(-s2.x * 0.5f + 3.1f, 0.1f, s2.y * 0.5f - 0.8f), 180f);   // piso de Hatha: contra el borde +Z, esquina −X (en la sala occidental; los del piso de Ashtanga los pone FurnishYoga)
+        s2 = size[mech.transform]; Aseos(mech.transform, new Vector3(-s2.x * 0.5f + 0.2f + 1.9f, 0.1f, s2.y * 0.5f - 0.9f), 180f, 1);
+        s2 = size[textile.transform]; Aseos(textile.transform, new Vector3(3.5f, 0.1f, -s2.y * 0.5f + 0.9f), 0f, 1);   // textil (al fondo, junto a los ovillos)
+        s2 = criaLayout; Aseos(meat.transform, new Vector3(s2.x * 0.5f - 0.2f - 1.9f, 0.1f, -s2.y * 0.5f + 0.9f), 0f, 1);   // laboratorio
+        s2 = size[works.transform]; Aseos(works.transform, new Vector3(s2.x * 0.5f - 0.2f - 1.9f, 0.1f, s2.y * 0.5f - 0.9f), 180f, 1);   // construcción
+        // El ALMACÉN DE RACIONES del alimentador, en el piso del laboratorio (Berón 2026-11-05: «retira el comedero»; docs/alimentador.md).
+        GameObject feeder = new GameObject("Almacen_raciones"); feeder.transform.SetParent(meat.transform, false);
+        feeder.transform.localPosition = new Vector3(7.5f, 0f, 4.5f);   // libre: 2 m de la cámara fría y de la formadora
+        KitchenProps.C(feeder.transform, new Vector3(0f, 0.7f, 0f), new Vector3(1.4f, 1.4f, 0.7f), KitchenProps.DarkSteel, 0f, "Camara_raciones");
+        WorldLabel fwl = feeder.AddComponent<WorldLabel>(); fwl.text = "Raciones para el alimentador"; fwl.height = 1.8f;
+        CulturedMeatLab.Build(meat.transform, criaLayout, feeder.transform);
+        //  · CIENCIAS (docs/edificios-investigacion.md): Física (reactor TRIGA, ciclotrón y la sala de experimentos con su anillo
+        //    y la torre de Foucault) · Química (síntesis y análisis) · Biología (cultivo y molecular). El reactor de
+        //    investigación va abajo: su piscina baja como un pilar hasta el suelo.
+        //    Un ÁRBOL: 4 niveles; sus 7 pisos en orden (el reactor abajo: su piscina cuelga 4 m bajo la losa) y uno libre; 8 puntas con frutales.
+        Helix ciencias = BeginTreeTower(areasGroup.transform, TorreCiencias, CienciasCenter, CienciasSize, CienciasYaw, 4);
+        SanctuaryArea chem = BuildChemistry(areasGroup.transform); areas.Add(chem);
+        SanctuaryArea bio = BuildBiology(areasGroup.transform); areas.Add(bio);
+        // (2026-11-04) INFORMÁTICA (docs/piso-informatica.md): el piso libre de Ciencias, encima de Biología: el clúster de IA local.
+        SanctuaryArea info = BuildInformatics(areasGroup.transform); areas.Add(info);
+        // (2026-11-08) LA SEGUNDA FACHADA DE FOTOBIORREACTORES (docs/fotobiorreactores.md §2026-11-08): en el tronco de Ciencias, junto a Biología, que la cuida.
+        BuildFotobioTower(ciencias);
+        // EL SITIO NUCLEAR (Berón 2026-11-05; docs/sitio-nuclear.md): lejos y a sotavento. Desde el 2026-11-08 (§25) la Central Nuclear y la Planta Atómica,
+        // con el ciclotrón, la sala de experimentos y el Centro de emergencias, están BAJO EL MAR, en el Santuario Marino (BuildMarinePlant). Aquí, solo su
+        // estación de alfombras con la Línea y la lógica del sitio.
+        BuildNuclearStation(areasGroup.transform);
+        // Los EDIFICIOS (sus plantas bajas): sin puentes ni escaleras, cada uno con sus alfombras (docs/alfombras-plan.md).
+        var ground = new List<SanctuaryArea>();   // (todos son edificios-árbol: llevan sus alfombras en el techo y en el suelo)
+        // Techo de cada edificio: sobre su piso MÁS ALTO (la cadena entera); encima va su techo de alfombras, con sus paneles.
+        _roofs.Clear();
+        foreach (SanctuaryArea g in ground)
         {
-            if (upper.ContainsKey(i)) continue;
-            int top = i; foreach (var kv in upper) if (kv.Value == i) top = kv.Key;
-            _roofs.Add((areas[top].transform, sizes[top], areas[i].displayName));
+            List<Transform> fl = FloorsOf(g.transform); Transform top = fl[fl.Count - 1];
+            _roofs.Add((top, _platforms.TryGetValue(top, out Vector2 ts) ? ts : size[g.transform], BuildingOf(g.transform, g.displayName)));
+        }
+        // Las columnas aguantan StructuralLimits.MaxFloors pisos: si un edificio pasa de ahí, hay que reforzarlas antes.
+        foreach (SanctuaryArea g in ground)
+        {
+            int nf = FloorsOf(g.transform).Count + 1;   // + el techo de alfombras
+            if (nf > StructuralLimits.MaxFloors) Debug.LogError($"[Estructura] «{BuildingOf(g.transform, g.displayName)}» tendría {nf} pisos y las columnas aguantan {StructuralLimits.MaxFloors}: refuérzalas (docs/columnas-sismicas.md).");
+        }
+        foreach (SanctuaryArea g in ground)
+        {
+            var names = new List<string>(); foreach (Transform f in FloorsOf(g.transform)) names.Add(f.GetComponent<SanctuaryArea>() is SanctuaryArea fa ? fa.displayName : f.name);
+            Debug.Log($"[Torres] «{BuildingOf(g.transform, g.displayName)}»: {names.Count} pisos ({string.Join(" · ", names)}), planta {FloorSize(g.transform, Vector2.zero).x:0} × {FloorSize(g.transform, Vector2.zero).y:0} m.");
         }
         RegisterBuildings(ground.ToArray());
         // ENERGÍA SOLAR: aquí no hay gas. Cada edificio lleva su fila de paneles en su piso MÁS ALTO (donde más sol
@@ -3540,30 +3544,9 @@ public static partial class SampleSceneBuilder
         return areas.ToArray();
     }
 
-    // HUERTOS POR GREMIO repartidos por el mapa (docs/huertos-y-cultivos.md): en vez de un único terreno, varias
-    // parcelas de policultivo —cada una con plantas que se ayudan— cerca del agua o de las áreas que las usan. Las
-    // plantas las genera GardenPlot al arrancar; aquí se pone el suelo (con collider, para el NavMesh) y el cartel.
-    static void PlantGarden(Transform garden)
-    {
-        // Hortalizas asociadas dentro del área del Huerto (delante de la máquina de virtualización).
-        MakePlot(garden, GardenPlot.Guild.Hortalizas, garden.TransformPoint(new Vector3(0f, 0.1f, -3.5f)), new Vector2(20f, 12f), 11, false);
-        Transform parent = garden.parent;
-        MakePlot(parent, GardenPlot.Guild.Milpa,            new Vector3(-45f, 0f, -75f), new Vector2(20f, 20f), 12, true);
-        MakePlot(parent, GardenPlot.Guild.ChacraAndina,     new Vector3(-10f, 0f, -118f), new Vector2(18f, 14f), 13, true);
-        MakePlot(parent, GardenPlot.Guild.Arrozal,          new Vector3(-60f, 0f, -15f),   new Vector2(22f, 16f), 14, true);
-        // (La ROTACIÓN ya no tiene base propia: es el piso de arriba del Huerto, ver UpperGarden.)
-        MakePlot(parent, GardenPlot.Guild.BosqueComestible, new Vector3(-78f, 0f, 45f),   new Vector2(30f, 26f), 16, true);
-        MakePlot(parent, GardenPlot.Guild.Bambusal,         new Vector3(-42f, 0f, 0f),    new Vector2(16f, 12f), 17, true);   // guadua y cáñamo: el material de Construcción
-    }
-
-    // SEGUNDO HUERTO en la misma base: el de ROTACIÓN, 10 m sobre el Huerto (dos huertos, una base, sin puente aparte).
-    static void UpperGarden(Transform garden, Vector2 gardenSize)
-    {
-        Vector2 size = new Vector2(gardenSize.x - 2f, gardenSize.y - SetBack - 2f);   // + 2 m de suelo alrededor = el piso
-        GameObject go = MakePlot(garden.parent, GardenPlot.Guild.Rotacion, garden.TransformPoint(new Vector3(0f, 0f, -SetBack * 0.5f)), size, 15, true, upperOf: garden);
-        go.transform.rotation = garden.rotation;
-    }
-
+    // HUERTOS POR GREMIO (docs/huertos-y-cultivos.md): parcelas de policultivo, cada una con plantas que se ayudan. Desde el
+    // 2026-10-29 están en los pisos del ÁRBOL DE LOS CAMPOS (SampleSceneBuilder.Tree.cs): el árbol las monta con MakePlot. Las
+    // plantas las genera GardenPlot al arrancar; aquí se pone el suelo (si lo lleva) y el cartel.
     static GameObject MakePlot(Transform parent, GardenPlot.Guild guild, Vector3 center, Vector2 size, int seed, bool withSoil, Transform upperOf = null)
     {
         GameObject go = new GameObject($"Huerto_{guild}");
@@ -3593,6 +3576,8 @@ public static partial class SampleSceneBuilder
     // CONSTRUCCIONES ELEVADAS (docs/construcciones-elevadas.md): el santuario no ocupa el suelo que pertenece a la
     // naturaleza. Cada área se sube a una PLATAFORMA a `height` m sobre columnas finas (bajo ella pasan animales y crece
     // la flora) y se sube y se baja en ALFOMBRA VOLADORA (docs/alfombras-plan.md); el borde queda libre para saltar.
+    /// <summary>Cada piso del ENTRENAMIENTO (docs/entrenamiento-areas.md §3.1): 2 m libres alrededor de cada máquina.</summary>
+    public static readonly Vector2 GymSize = new Vector2(36f, 26f);
     public const float ElevatedHeight = 12f;   // a 12 m las áreas humanas no tienen al bosque en sombra ni lo molestan con su ruido
 
     static void ElevateArea(SanctuaryArea a, Vector2 size, float h) => Elevate(a.transform, size, h);
@@ -3607,13 +3592,49 @@ public static partial class SampleSceneBuilder
         float hx = size.x * 0.5f, hz = size.y * 0.5f;
         Transform s = new GameObject("Estructura_Elevada").transform; s.SetParent(t, false);
 
-        // Losa bajo el suelo del área + columnas (esquinas y cada ~5 m).
+        // LOSA OCTOGONAL y ESQUELETO DE RASCACIELOS (Berón 2026-10-28): el suelo del área (rectangular, «Losa») queda dentro
+        // de un octógono que lo rodea: e m más por lado y las esquinas achaflanadas 2e, así los vértices del rectángulo tocan
+        // los chaflanes. En vez de una columna cada 5 m, UNA en cada punta del octógono: columnas MIXTAS (núcleo de acero
+        // revestido de hormigón, como las megacolumnas de los rascacielos), más gruesas y con zunchos de acero vistos.
         KitchenProps.C(s, new Vector3(0f, -0.18f, 0f), new Vector3(size.x + 0.4f, 0.3f, size.y + 0.4f), woodDark, 0f, "Losa");
-        for (float x = -hx + 0.4f; x <= hx - 0.39f; x += Mathf.Max(3f, (size.x - 0.8f) / Mathf.Ceil((size.x - 0.8f) / 5f)))
+        float e = Mathf.Clamp(Mathf.Min(size.x, size.y) * 0.08f, 1f, 2.5f), c = 2f * e, X = hx + e, Z = hz + e;
+        Color concrete = new Color(0.72f, 0.71f, 0.68f), steel = new Color(0.42f, 0.45f, 0.5f);
+        Solid(s, new Vector3(0f, -0.19f, 0f), new Vector3(2f * X, 0.3f, 2f * (Z - c)), woodDark, "Losa_octogono");
+        Solid(s, new Vector3(0f, -0.19f, 0f), new Vector3(2f * (X - c), 0.3f, 2f * Z), woodDark, "Losa_octogono");
+        for (int sx = -1; sx <= 1; sx += 2)
             for (int sz = -1; sz <= 1; sz += 2)
-                Solid(s, new Vector3(x, -h * 0.5f - 0.15f, sz * (hz - 0.4f)), new Vector3(0.4f, h, 0.4f), wood, "Columna");
-        Solid(s, new Vector3(-hx + 0.4f, -h * 0.5f - 0.15f, 0f), new Vector3(0.4f, h, 0.4f), wood, "Columna");
-        Solid(s, new Vector3(hx - 0.4f, -h * 0.5f - 0.15f, 0f), new Vector3(0.4f, h, 0.4f), wood, "Columna");
+                Solid(s, new Vector3(sx * (X - c), -0.19f, sz * (Z - c)), new Vector3(c * 1.4142f, 0.3f, c * 1.4142f), woodDark, "Losa_chaflan").localRotation = Quaternion.Euler(0f, 45f, 0f);
+        // MEGACOLUMNAS SÍSMICAS (docs/columnas-sismicas.md): en cada punta, un TUBO DE ACERO RELLENO DE HORMIGÓN (CFST, la
+        // familia de Taipei 101 o Tianjin 117), Ø 0,9 m (Ø 1,2 en las plantas grandes), con collar en la losa y collar de
+        // empalme a media altura; abajo, AISLADOR DE CAUCHO CON NÚCLEO DE PLOMO sobre pedestal y encepado; bajo cada losa, un
+        // ANILLO-CINTURÓN de acero que ata las 8 columnas como un tubo, y riostras de pandeo restringido (BRB) en X en 4 caras
+        // alternas (las otras 4 quedan libres).
+        Color tube = new Color(0.36f, 0.39f, 0.44f), collar = new Color(0.23f, 0.25f, 0.27f), rust = new Color(0.55f, 0.23f, 0.18f), brb = new Color(0.85f, 0.64f, 0.11f), rubber = new Color(0.08f, 0.08f, 0.09f);
+        float D = StructuralLimits.ColumnDiameter(Mathf.Max(size.x, size.y)), ci = D * 0.5f + 0.05f;   // para 30 pisos (StructuralLimits)
+        var tips = new List<Vector3>();   // las 8 puntas, en orden alrededor del octógono
+        tips.Add(new Vector3(X - ci, 0f, -(Z - c))); tips.Add(new Vector3(X - ci, 0f, Z - c)); tips.Add(new Vector3(X - c, 0f, Z - ci)); tips.Add(new Vector3(-(X - c), 0f, Z - ci));
+        tips.Add(new Vector3(-(X - ci), 0f, Z - c)); tips.Add(new Vector3(-(X - ci), 0f, -(Z - c))); tips.Add(new Vector3(-(X - c), 0f, -(Z - ci))); tips.Add(new Vector3(X - c, 0f, -(Z - ci)));
+        float baseH = groundBelow ? 1.42f : 0f, shaft = h - 0.3f - (groundBelow ? 1.27f : 0f);   // del collar de la losa al aislador (en el suelo) o a la losa de abajo
+        foreach (Vector3 tp in tips)
+        {
+            Transform cyl = Cyl(s, tp + new Vector3(0f, -0.3f - shaft * 0.5f, 0f), new Vector3(D, shaft * 0.5f, D), tube, "Columna", true);
+            Cyl(s, tp + new Vector3(0f, -0.6f, 0f), new Vector3(D + 0.3f, 0.3f, D + 0.3f), collar, "Collar_losa", false);
+            Cyl(s, tp + new Vector3(0f, -0.3f - shaft * 0.5f, 0f), new Vector3(D + 0.12f, 0.125f, D + 0.12f), collar, "Collar_empalme", false);
+            if (!groundBelow) continue;
+            float g = -h - 0.15f;   // el suelo
+            Solid(s, tp + new Vector3(0f, g + 0.2f, 0f), new Vector3(D + 1.7f, 1.2f, D + 1.7f), concrete, "Encepado");   // asoma 0,4 m
+            Cyl(s, tp + new Vector3(0f, g + 0.65f, 0f), new Vector3(D + 0.6f, 0.25f, D + 0.6f), concrete, "Pedestal", false);
+            KitchenProps.C(s, tp + new Vector3(0f, g + 0.93f, 0f), new Vector3(D + 0.5f, 0.06f, D + 0.5f), steel, 0f, "Placa_aislador");
+            Cyl(s, tp + new Vector3(0f, g + 1.16f, 0f), new Vector3(D + 0.2f, 0.2f, D + 0.2f), rubber, "Aislador_caucho_plomo", false);
+            KitchenProps.C(s, tp + new Vector3(0f, g + 1.39f, 0f), new Vector3(D + 0.5f, 0.06f, D + 0.5f), steel, 0f, "Placa_aislador");
+        }
+        for (int i = 0; i < 8; i++)
+        {
+            Vector3 a = tips[i], b = tips[(i + 1) % 8], mid = (a + b) * 0.5f, dir = b - a; float len = dir.magnitude;
+            float yaw = Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg;
+            KitchenProps.C(s, mid + new Vector3(0f, -0.95f, 0f), new Vector3(0.5f, 1.2f, Mathf.Max(0.1f, len - D)), rust, yaw, "Anillo_cinturon");
+            // (Sin riostras en X entre columnas: tapaban el paisaje, Berón 2026-10-29. El anillo-cinturón ata las 8 columnas.)
+        }
 
         // SIN BORDES NI ESCALERA (Berón 2026-10-27, docs/alfombras-plan.md): el borde queda libre para saltar de una
         // plataforma a otra, y se sube y se baja en ALFOMBRA VOLADORA (cada piso tiene su área de alfombras; se ponen al
@@ -3701,6 +3722,17 @@ public static partial class SampleSceneBuilder
         Debug.Log($"[Solar] {placed} filas de paneles en el piso más alto de cada edificio.");
     }
 
+    // Cilindro (la primitiva mide 2 de alto: escala y = media altura), con o sin collider.
+    static Transform Cyl(Transform parent, Vector3 local, Vector3 scale, Color c, string name, bool collider)
+    {
+        GameObject g = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        g.name = name; g.transform.SetParent(parent, false);
+        g.transform.localPosition = local; g.transform.localScale = scale;
+        g.GetComponent<Renderer>().sharedMaterial = KitchenProps.Mat(c);
+        if (!collider) Object.DestroyImmediate(g.GetComponent<Collider>());
+        return g.transform;
+    }
+
     static Transform Solid(Transform parent, Vector3 local, Vector3 size, Color c, string name)
     {
         GameObject g = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -3708,46 +3740,6 @@ public static partial class SampleSceneBuilder
         g.transform.localPosition = local; g.transform.localScale = size;
         g.GetComponent<Renderer>().sharedMaterial = KitchenProps.Mat(c);
         return g.transform;
-    }
-
-    // SALA DE YOGA para 30: esterillas en 6×5 con su espacio, tarima del maestro delante, cojines y campana.
-    static void FurnishYoga(Transform area, Vector2 size)
-    {
-        // SALA CÉNTRICA (Berón 2026-10-27): la PLATAFORMA del maestro en el centro y, alrededor, ALFOMBRAS VOLADORAS que son
-        // también las ESTERILLAS (2 × 3 m: ofrecen volar o las prácticas de yoga que sabe quien la pisa). Ocupan más que las
-        // esterillas viejas: seis caben en la sala y el resto va en un ANILLO (plataforma hija a 4 m, como el de los
-        // hospitales), con las cuatro estatuas en sus puntos cardinales. Al anillo se sube en alfombra (es otro «piso»).
-        Transform r = new GameObject("Esterillas").transform; r.SetParent(area, false); r.localPosition = new Vector3(0f, 0.1f, 0f);
-        const string yoga = "Sala de Yoga";
-        int k = 0;
-        // En la sala, SEIS (3 × 3,6 m cada una), alineadas con las paredes y a 2 m entre sí, de la tarima y del tanque de
-        // virtualización (la esquina +X+Z): dos por cada lado largo y una delante y otra detrás de la tarima. (Antes eran ocho
-        // giradas hacia el centro: se tocaban entre ellas y la de la esquina pisaba el tanque.)
-        float sx = Mathf.Min(5.8f, size.x * 0.5f - 3.0f), fz = Mathf.Min(5.3f, size.y * 0.5f - 2.2f);
-        foreach (Vector3 p in new[] { new Vector3(-sx, 0f, -4.8f), new Vector3(-sx, 0f, 0.2f), new Vector3(sx, 0f, -4.8f), new Vector3(sx, 0f, 0.2f),
-                                      new Vector3(0f, 0f, fz), new Vector3(0f, 0f, -fz) })
-        {
-            Quaternion face = Quaternion.LookRotation(Mathf.Abs(p.x) > 0.1f ? new Vector3(-p.x, 0f, 0f) : new Vector3(0f, 0f, -p.z));   // de cara a la plataforma
-            CarpetPad.BuildZone(r, r.TransformPoint(p + Vector3.up * 0.01f), area.rotation * face, CarpetPad.Kind.Edificio, yoga, 1, $"{yoga}#1", $"{yoga} · planta baja", 1, 3f, 3.6f).name = $"Esterilla_{++k}";
-        }
-        // EL ANILLO: 8 m de ancho, 20 % sobre la sala; alfombras cada ~5 m por su línea central (menos en esquinas y puntos cardinales).
-        const float W = 8f;
-        Transform ring = RingDeck(area, "Anillo_yoga", size, MezzanineHeight, W, 0.2f);
-        float len = RingLength(size, W), cx = size.x * 0.5f - W * 0.2f + W * 0.5f, cz = size.y * 0.5f - W * 0.2f + W * 0.5f;
-        for (float s = 2.5f; s < len; s += 5f)
-        {
-            var (p, yaw, corner) = RingPoint(size, s, W, 0.2f, 3.5f);
-            if (corner) continue;
-            if (Mathf.Abs(p.x) < 3f || Mathf.Abs(p.z) < 3f) continue;   // el punto cardinal: ahí va su estatua
-            Quaternion face = Quaternion.LookRotation(new Vector3(-p.x, 0f, -p.z));
-            CarpetPad.BuildZone(ring, ring.TransformPoint(p + Vector3.up * 0.01f), area.rotation * face, CarpetPad.Kind.Edificio, yoga, 1, $"{yoga}#anillo", $"{yoga} · anillo", 1, 3f, 3.6f).name = $"Esterilla_{++k}";
-        }
-        Transform statues = new GameObject("Estatuas_anillo").transform; statues.SetParent(ring, false);
-        YogaStatues.BuildCardinal(statues, cx + 1.5f, cz + 1.5f);   // Patanjali, Buda, Aum y Shiva, cada uno en un punto cardinal del anillo
-        Debug.Log($"[Yoga] {k} alfombras-esterilla (6 en la sala y {k - 6} en el anillo) y las estatuas en los cuatro puntos cardinales.");
-        KitchenProps.C(r, new Vector3(0f, 0.2f, 0f), new Vector3(2.6f, 0.4f, 2.6f), new Color(0.6f, 0.5f, 0.42f), 0f, "Tarima del maestro");
-        KitchenProps.C(r, new Vector3(0f, 0.41f, 0f), new Vector3(0.8f, 0.02f, 2f), new Color(0.95f, 0.88f, 0.6f), 0f, "Esterilla del maestro");
-        KitchenProps.C(r, new Vector3(1f, 0.5f, 0.9f), new Vector3(0.25f, 0.2f, 0.25f), new Color(0.85f, 0.7f, 0.35f), 0f, "Cuenco tibetano");
     }
 
     // Contorno, no muro: 2,4 m tapaban la vista del área desde fuera (se dibuja el espacio sin ocultarlo).
@@ -3927,12 +3919,12 @@ public static partial class SampleSceneBuilder
 
     static List<BodyPosition> BuildBodyPositionList()
     {
-        // Teclas elegidas para no chocar con WASD/Shift/Space/J-L-I-K/1-0/Tab/Enter/V/Escape/Z-X-C-V-B.
+        // Teclas elegidas para no chocar con WASD/Shift/Space/J-L-I-K/1-0/Tab/Enter/V/Escape/Z-X-C-V-B ni con la E (solo interactuar).
         // Ver docs/ui-holographic-menu.md para la tabla completa y la colision conocida de V.
         (BodyPart part, string description, KeyCode hotkey)[] defs =
         {
             (BodyPart.Elbows,    "Codos",    KeyCode.Q),
-            (BodyPart.Hands,     "Manos",    KeyCode.E),
+            (BodyPart.Hands,     "Manos",    KeyCode.N),   // (2026-11-04) antes E: la E es solo la de interactuar
             (BodyPart.Knees,     "Rodillas", KeyCode.R),
             (BodyPart.Feet,      "Pies",     KeyCode.T),
             (BodyPart.Hips,      "Caderas",  KeyCode.Y),
@@ -4116,7 +4108,17 @@ public static partial class SampleSceneBuilder
         WireMeditationArea(parent, "Gym_Area", "Gimnasio", new Color(0.55f, 0.6f, 0.7f), MissionKind.Channel, null, virtualOnly: true);
         WireMeditationArea(parent, "Construction_Area", "Construcción", new Color(0.85f, 0.72f, 0.4f), MissionKind.Channel, null, virtualOnly: true);
         WireMeditationArea(parent, "CubCare_Area", "Cría", new Color(0.8f, 0.72f, 0.55f), MissionKind.Channel, null, virtualOnly: true);
-        WireMeditationArea(parent, "AtomicPlant_Area", "Planta Atómica", new Color(0.8f, 0.82f, 0.78f), MissionKind.Channel, PhysicsSceneBuilder.SceneName);   // Newton, Curie, Einstein
+        // (2026-11-08) La Planta Atómica y la Central Nuclear están en el Santuario Marino: sus máquinas de virtualización las pone BuildMarinePlant.
+        // Química (Curie, Patterson), Biología (Jenner) y Central Nuclear (Chernóbil): sus historias (VirtualizationMachine.StoryScenes)
+        // se entran por la máquina de SU área (docs/microcosmos-cientificos.md).
+        WireMeditationArea(parent, "Chemistry_Area", "Química", new Color(0.78f, 0.85f, 0.9f), MissionKind.Channel, null, virtualOnly: true);
+        WireMeditationArea(parent, "Biology_Area", "Biología", new Color(0.78f, 0.9f, 0.78f), MissionKind.Channel, null, virtualOnly: true);
+        // (2026-11-04) Los pisos nuevos: Informática (Bill Gates en Albuquerque) y el Aula (MacKenzie Scott en Prairie View).
+        WireMeditationArea(parent, "Informatics_Area", "Informática", new Color(0.55f, 0.65f, 0.8f), MissionKind.Channel, null, virtualOnly: true);
+        WireMeditationArea(parent, EnergyFloorName, EnergyRule.Area, new Color(0.55f, 0.75f, 0.6f), MissionKind.Channel, null, virtualOnly: true);   // (2026-11-05) el Parque Energético
+        WireMeditationArea(parent, "Classroom_Area", "Aula", new Color(0.85f, 0.8f, 0.65f), MissionKind.Channel, null, virtualOnly: true);
+        WireMeditationArea(parent, AssemblyArea, AssemblyTitle, new Color(0.62f, 0.48f, 0.34f), MissionKind.Channel, null, virtualOnly: true);   // (2026-11-05) docs/piso-asambleas.md
+        WireMeditationArea(parent, MusicArea, "Música", new Color(0.62f, 0.5f, 0.72f), MissionKind.Channel, null, virtualOnly: true);   // (2026-11-05) docs/piso-musica.md
 
         // Segunda vía de entrada: el hechizo de loto (arranca bloqueado; se activa al aprenderlo).
         GameObject player = GameObject.Find("Player");
@@ -4148,13 +4150,15 @@ public static partial class SampleSceneBuilder
             return;
         }
 
-        // Máquina de virtualización en una ESQUINA del área (junto a la entrada, +X +Z), mirando al centro: no corta el paso.
+        // Máquina de virtualización junto al borde del área, mirando al centro, donde le queden 2 m libres a su alrededor
+        // (antes, siempre en la esquina +X +Z, encima de lo que hubiera allí).
         GameObject machineGO = new GameObject($"{areaName}_VirtualizationMachine");
         machineGO.transform.SetParent(area.transform, worldPositionStays: false);
         Transform mat = area.transform.Find("Mat");
         Vector2 sz = mat != null ? new Vector2(mat.localScale.x, mat.localScale.z) : new Vector2(10f, 10f);
-        machineGO.transform.localPosition = new Vector3(sz.x * 0.5f - 1.7f, 1f, sz.y * 0.5f - 1.9f);
-        machineGO.transform.localRotation = Quaternion.Euler(0f, 45f, 0f);   // la puerta (−Z del tanque) mira al centro del área
+        machineGO.transform.localPosition = TankSpot(area.transform, sz);   // el sitio con 2 m libres a su alrededor (regla de los 2 m)
+        Vector3 toC = -machineGO.transform.localPosition; toC.y = 0f;
+        machineGO.transform.localRotation = Quaternion.LookRotation(toC.sqrMagnitude > 0.01f ? -toC.normalized : Vector3.back);   // la puerta (−Z del tanque) mira al centro del área
         BoxCollider bc = machineGO.AddComponent<BoxCollider>();
         bc.isTrigger = true;
         bc.size = new Vector3(3f, 3f, 1.5f);

@@ -34,6 +34,14 @@ public static class DietPreference
     {
         _catalog = new Dictionary<string, Dictionary<string, float>>
         {
+            // Depredadores de tierra del santuario (docs/reglas-animales.md). Sin entrada todo valía 1: lobos y osos se cazaban entre sí y a los
+            // zorros. El lobo ártico caza buey almizclero y liebre (Mech 2007, Arctic) y reno; el oso polar vive de focas. Que lobo y oso
+            // no se coman entre sí ni al zorro es una simplificación [A]: se matan a veces como competidores, no como comida, y aquí cazar
+            // es solo para comer. 0 = no es su presa (Forager no la caza viva; su carroña sí se come).
+            { "Wolf", new Dictionary<string, float> { { "Bear", 0f }, { "PolarBear", 0f }, { "ArcticFox", 0f }, { "Malamute", 0f } } },
+            { "Bear", new Dictionary<string, float> { { "Wolf", 0f }, { "ArcticFox", 0f }, { "Malamute", 0f } } },
+            { "PolarBear", new Dictionary<string, float> { { "Wolf", 0f }, { "ArcticFox", 0f }, { "Malamute", 0f } } },
+            { "ArcticFox", new Dictionary<string, float> { { "Wolf", 0f }, { "Bear", 0f }, { "PolarBear", 0f } } },
             // Insectos del Microcosmos (cadena real): preferencias entre sus presas.
             // Mariquita: especialista en pulgón (también cochinillas y ácaros); un grillo le queda grande → casi nunca.
             { "Ladybug", new Dictionary<string, float> { { "Aphid", 3.0f }, { "Cricket", 0.05f } } },
@@ -66,6 +74,9 @@ public static class DietPreference
             { "Bunny", new Dictionary<string, float> { { "zanahoria", 3f }, { "col", 2.5f }, { "espinaca", 2.5f }, { "lenteja", 2f }, { "garbanzo", 1.5f },
                                                        { "cilantro", 1.2f }, { "maní", 1.5f }, { "soja", 2f }, { "albahaca", 0.4f }, { "cebolla", 0.2f },
                                                        { "ajo", 0.1f }, { "cebollín", 0.3f }, { "chile", 0.1f }, { "huacatay", 0.3f } } },
+            { "ArcticHare", new Dictionary<string, float> { { "zanahoria", 3f }, { "col", 2.5f }, { "espinaca", 2.5f }, { "lenteja", 2f }, { "albahaca", 0.4f }, { "cebolla", 0.2f }, { "ajo", 0.1f }, { "chile", 0.1f } } },
+            { "Reindeer", new Dictionary<string, float> { { "avena", 2.5f }, { "maíz", 2.5f }, { "col", 1.5f }, { "lenteja", 1.5f }, { "cebolla", 0.2f }, { "ajo", 0.1f }, { "chile", 0.1f } } },
+            { "MuskOx", new Dictionary<string, float> { { "avena", 2f }, { "maíz", 2f }, { "col", 1.2f }, { "cebolla", 0.2f }, { "ajo", 0.1f }, { "chile", 0.1f } } },
             { "Deer",  new Dictionary<string, float> { { "avena", 2.5f }, { "maíz", 2.5f }, { "arroz", 1.5f }, { "quinoa", 1.5f }, { "teff", 1.5f },
                                                        { "col", 1.5f }, { "lenteja", 1.5f }, { "calabaza", 1.2f }, { "tomate", 0.5f }, { "cebolla", 0.2f },
                                                        { "ajo", 0.1f }, { "chile", 0.1f } } },

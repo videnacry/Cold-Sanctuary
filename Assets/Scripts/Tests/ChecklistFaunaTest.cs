@@ -23,11 +23,38 @@ public class ChecklistFaunaTest : MonoBehaviour, ITestUnit
 
     readonly List<GameObject> _trash = new List<GameObject>();
 
+    // Cada miembro de una familia aparece en su radio, también con un número IMPAR de miembros: el bucle de posiciones daba
+    // 2·(n/2) vueltas y el último se quedaba en (0,0,0), dentro del Casquete (la cría de lobo que muere al empezar cada batería).
+    // NIVEL DE DETALLE (Berón 2026-11-09): cerca, cada fotograma; lejos y fuera de la vista, una vez cada intervalo (los relojes ponen al día).
+    void NivelDeDetalle()
+    {
+        float next = 0f; int ranNear = 0, ranFar = 0;
+        for (int f = 0; f < 10; f++) if (!SimulationLod.SkipNow(false, f * 0.1f, ref next, 0.75f)) ranNear++;
+        next = 0f;
+        for (int f = 0; f < 30; f++) if (!SimulationLod.SkipNow(true, f * 0.1f, ref next, 0.75f)) ranFar++;   // 3 s de juego
+        TestProbe.Check("nivel de detalle: cerca corre cada fotograma; lejos, una vez cada 0,75 s", ranNear == 10 && ranFar == 4, $"cerca {ranNear}/10, lejos {ranFar} en 3 s");
+    }
+
+    void AparicionDeFamilia()
+    {
+        GameObject tpl = new GameObject("Plantilla_familia_TEST");
+        foreach (int n in new[] { 1, 3, 5 })
+        {
+            Vector3 at = new Vector3(8700f, -600f, 8000f);
+            GameObject[] g = Family.RenderGroup(tpl, n, at, at.y, 6f);
+            int lejos = 0; foreach (GameObject x in g) { if (x == null || new Vector2(x.transform.position.x - at.x, x.transform.position.z - at.z).magnitude > 6.01f) lejos++; if (x != null) Destroy(x); }
+            TestProbe.Check($"una familia de {n} aparece entera en su radio (ninguno en el origen)", g.Length == n && lejos == 0, $"{lejos} de {g.Length} fuera");
+        }
+        Destroy(tpl);
+    }
+
     public IEnumerator Run()
     {
         TestProbe.Begin("ChecklistFauna (§23-45 forrajeo, amenaza, posesión, medio, rastros, copia de animal)");
         yield return null;
 
+        AparicionDeFamilia();             // las familias nacen en su sitio
+        NivelDeDetalle();                 // (2026-11-09) lo lejano corre menos, cerca siempre
         Decisiones();                     // §23/§24 ThreatResponder
         Forrajeo();                       // §23 Forager (fauna real, solo lectura)
         yield return Posesion();          // §23 IA + posesión
@@ -130,8 +157,14 @@ public class ChecklistFaunaTest : MonoBehaviour, ITestUnit
         {
             GameObject sel = herb.Forage.SelectTarget(herb);
             GrassPatch nearest = GrassPatch.Nearest(herb.transform.position);
-            TestProbe.Check("[1227] un herbívoro elige el GrassPatch más cercano", sel != null && nearest != null && sel == nearest.gameObject,
-                            $"{herb.SpeciesName} → {(sel != null ? sel.name : "nada")}");
+            // (2026-11-01) Forager.SelectTarget prefiere a la hierba una PLANTA del entorno más cercana (Affordance) o un cultivo
+            // del huerto que le apetezca más: «Hierba kusha» delante del saltamontes no es un error. Falla si elige algo más lejos
+            // que el GrassPatch más cercano sin ser un cultivo que prefiera.
+            float dSel = sel != null ? Vector3.Distance(herb.transform.position, sel.transform.position) : float.MaxValue;
+            float dGrass = nearest != null ? Vector3.Distance(herb.transform.position, nearest.transform.position) : float.MaxValue;
+            bool okPick = sel != null && nearest != null && (sel == nearest.gameObject || dSel <= dGrass + 0.01f || sel.GetComponent<GardenCrop>() != null);
+            TestProbe.Check("[1227] un herbívoro elige el GrassPatch más cercano (o algo comestible aún más cerca)", okPick,
+                            $"{herb.SpeciesName} → {(sel != null ? sel.name : "nada")} a {dSel:0.0} m (GrassPatch más cercano a {dGrass:0.0} m)");
         }
         else Debug.Log("[TEST] SKIP · [1227] herbívoro→GrassPatch — la escena no tiene herbívoro puro o pasto");
 

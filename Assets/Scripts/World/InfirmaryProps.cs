@@ -51,12 +51,13 @@ public static class InfirmaryProps
     public static Transform ExamTable(Transform parent, string name, Vector3 pos, float yaw)
     {
         Transform t = KitchenProps.Root(parent, name, pos, yaw);
-        // Plano de 2,00 × 0,70 m con la superficie a 0,80 m y sin respaldo inclinado (docs/medidas-muebles.md): el más alto
-        // (1,85 m) cabe tumbado del todo, con ~8 cm en cada punta. ArrivalExam.PatientSpot lee la altura del «Acolchado».
-        C(t, new Vector3(0f, 0.35f, 0f), new Vector3(0.6f, 0.7f, 1.8f), Wood, 0f, "Base");
-        C(t, new Vector3(0f, 0.75f, 0f), new Vector3(0.7f, 0.1f, 2f), Blue, 0f, "Acolchado");
-        C(t, new Vector3(0f, 0.8025f, 0f), new Vector3(0.55f, 0.005f, 1.95f), White, 0f, "Papel");
-        C(t, new Vector3(0.6f, 0.25f, 0.6f), new Vector3(0.35f, 0.5f, 0.35f), Dark, 0f, "Taburete");
+        // Plano de 2,20 × 0,85 m (Berón 2026-10-29: Kushal cabía muy justo; regla 1, la persona más grande ≈ 2 m: ~10 cm en
+        // cada punta y los brazos sobre el plano), superficie a 0,80 m y sin respaldo inclinado (docs/medidas-muebles.md). Antes
+        // 2,00 × 0,70 (para 1,85 m). ArrivalExam.PatientSpot lee la altura del «Acolchado».
+        C(t, new Vector3(0f, 0.35f, 0f), new Vector3(0.72f, 0.7f, 2.0f), Wood, 0f, "Base");
+        C(t, new Vector3(0f, 0.75f, 0f), new Vector3(0.85f, 0.1f, 2.2f), Blue, 0f, "Acolchado");
+        C(t, new Vector3(0f, 0.8025f, 0f), new Vector3(0.68f, 0.005f, 2.15f), White, 0f, "Papel");
+        C(t, new Vector3(0.7f, 0.25f, 0.6f), new Vector3(0.35f, 0.5f, 0.35f), Dark, 0f, "Taburete");
         KitchenProps.Fit(t);
         return t;
     }
@@ -344,6 +345,49 @@ public static class InfirmaryProps
             for (int k = 0; k < 4; k++)
                 C(t, new Vector3(-0.24f + k * 0.16f, 0.5f + lv * 0.36f, -0.1f), new Vector3(0.12f, 0.2f, 0.04f), H("9E1B2B"), 0f, "Bolsa_sangre");
         C(t, new Vector3(0.25f, 1.85f, -0.335f), new Vector3(0.15f, 0.06f, 0.005f), Glow, 0f, "Termometro");
+        KitchenProps.Fit(t);
+        return t;
+    }
+
+    /// <summary>EL RESTO DEL BANCO DE SANGRE, en fila desde <paramref name="start"/> (a lo largo de X): agitador de plaquetas a
+    /// 20–24 °C, congelador de plasma a ≤ −25 °C, descongelador a 37 °C y nevera veterinaria (perro DEA 1, gato A/B).</summary>
+    public static void BloodBankEquipment(Transform parent, Vector3 start)
+    {
+        Color bag = H("9E1B2B"), plasma = H("E8C25A"), plat = H("F0D27A");
+        Transform ag = KitchenProps.Root(parent, "Agitador_plaquetas", start, 180f);
+        C(ag, new Vector3(0f, 0.4f, 0f), new Vector3(0.6f, 0.8f, 0.55f), White, 0f, "Mueble");
+        C(ag, new Vector3(0f, 1.05f, 0f), new Vector3(0.6f, 0.5f, 0.55f), H("DDE6EA"), 0f, "Incubadora_22C");
+        for (int i = 0; i < 4; i++) C(ag, new Vector3(-0.2f + i * 0.13f, 1.02f, -0.1f), new Vector3(0.1f, 0.03f, 0.18f), plat, 0f, "Bolsa_plaquetas");
+        C(ag, new Vector3(0.2f, 1.25f, -0.28f), new Vector3(0.12f, 0.05f, 0.005f), Glow, 0f, "Termometro_22C");
+        KitchenProps.Fit(ag);
+        Transform fr = KitchenProps.Root(parent, "Congelador_plasma", start + new Vector3(0.9f, 0f, 0f), 180f);
+        C(fr, new Vector3(0f, 0.95f, 0f), new Vector3(0.8f, 1.9f, 0.7f), H("E9EEF2"), 0f, "Congelador");
+        C(fr, new Vector3(0f, 1f, -0.355f), new Vector3(0.7f, 1.7f, 0.01f), H("CFD8DE"), 0f, "Puerta");
+        C(fr, new Vector3(0.25f, 1.82f, -0.36f), new Vector3(0.18f, 0.06f, 0.005f), H("7CC4F5"), 0f, "Termometro_menos30C");
+        for (int i = 0; i < 3; i++) C(fr, new Vector3(-0.2f + i * 0.2f, 1.2f, -0.2f), new Vector3(0.15f, 0.04f, 0.2f), plasma, 0f, "Plasma_congelado");
+        KitchenProps.Fit(fr);
+        Transform th = KitchenProps.Root(parent, "Descongelador_plasma", start + new Vector3(1.75f, 0f, 0f), 180f);
+        C(th, new Vector3(0f, 0.45f, 0f), new Vector3(0.5f, 0.9f, 0.5f), Steel, 0f, "Mesa");
+        C(th, new Vector3(0f, 1.0f, 0f), new Vector3(0.45f, 0.2f, 0.35f), H("C8D7E0"), 0f, "Bano_37C");
+        KitchenProps.Fit(th);
+        Transform vet = KitchenProps.Root(parent, "Nevera_veterinaria", start + new Vector3(2.5f, 0f, 0f), 180f);
+        C(vet, new Vector3(0f, 0.7f, 0f), new Vector3(0.65f, 1.4f, 0.6f), White, 0f, "Nevera");
+        C(vet, new Vector3(0f, 0.75f, -0.305f), new Vector3(0.55f, 1.2f, 0.01f), Glass, 0f, "Puerta");
+        for (int i = 0; i < 3; i++) C(vet, new Vector3(-0.15f + i * 0.15f, 0.8f, -0.1f), new Vector3(0.1f, 0.16f, 0.04f), bag, 0f, "Sangre_perro_DEA1");
+        C(vet, new Vector3(0f, 1.25f, -0.31f), new Vector3(0.4f, 0.08f, 0.005f), H("F2C14E"), 0f, "Rotulo_perro_gato");
+        KitchenProps.Fit(vet);
+    }
+
+    /// <summary>Sillón de donante reclinable con báscula mezcladora para la bolsa (450 mL).</summary>
+    public static Transform DonorChair(Transform parent, string name, Vector3 pos, float yaw)
+    {
+        Transform t = KitchenProps.Root(parent, name, pos, yaw);
+        C(t, new Vector3(0f, 0.25f, 0f), new Vector3(0.5f, 0.5f, 0.5f), Dark, 0f, "Base");
+        C(t, new Vector3(0f, 0.55f, 0.15f), new Vector3(0.75f, 0.12f, 1.1f), Blue, 0f, "Asiento");
+        KitchenProps.C(t, new Vector3(0f, 0.85f, -0.5f), new Vector3(0.75f, 0.6f, 0.12f), Blue, new Vector3(-25f, 0f, 0f), "Respaldo");
+        C(t, new Vector3(0.45f, 0.7f, 0.1f), new Vector3(0.12f, 0.06f, 0.6f), Blue, 0f, "Brazo_donante");
+        C(t, new Vector3(0.45f, 0.35f, 0.55f), new Vector3(0.25f, 0.12f, 0.25f), Steel, 0f, "Bascula_mezcladora");
+        C(t, new Vector3(0.45f, 0.44f, 0.55f), new Vector3(0.14f, 0.05f, 0.18f), H("9E1B2B"), 0f, "Bolsa_donacion");
         KitchenProps.Fit(t);
         return t;
     }

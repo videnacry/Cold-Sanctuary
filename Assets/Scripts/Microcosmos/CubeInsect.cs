@@ -58,6 +58,7 @@ public partial class CubeInsect : MonoBehaviour
         float adult = length;
         length *= InsectMorphology.PhaseScale(species, phase);
         InsectMorphology.Spec sp = InsectMorphology.ForSex(InsectMorphology.For(species), female);   // macho o hembra (dimorfismo)
+        if (_dressingFolk) sp = InsectMorphology.ForFolk(sp);   // el insecto-humano: élitros recogidos (la mariquita no es una losa roja)
         // Las fases con forma PROPIA (la zoea y la megalopa del cangrejo, la ninfa excavadora de la cigarra, la manca de la
         // cochinilla, la larva de 6 patas del ácaro, el caracol sin labio, la lombriz sin clitelo…): CubeInsect.Fauna.cs.
         CubeInsect ci = FaunaStage(host, sp, body, length, phase, female);
@@ -520,7 +521,7 @@ public partial class CubeInsect : MonoBehaviour
             if (t.name.StartsWith("Pata_") && t.name.Length >= 8)
             {
                 Transform tr = t.Find("Trocanter_art");
-                var lg = new Leg { coxa = t, troch = tr, coxaRest = t.localRotation, trochRest = tr != null ? tr.localRotation : Quaternion.identity, side = t.name.EndsWith("I") ? -1 : 1, pair = t.name[5] - '0' };
+                var lg = new Leg { coxa = t, troch = tr, coxaRest = t.localRotation, trochRest = tr != null ? tr.localRotation : Quaternion.identity, side = t.name.EndsWith("I") ? -1 : 1, pair = PairOf(t.name) };
                 // Es BRAZO si cuelga del torso (las patas de andar cuelgan del pivote): el 1.er par, y el 2.º en la mantis.
                 lg.arm = t.parent != null && t.parent.name != "Pivote";
                 if (lg.arm) { lg.armCoxa = Quaternion.Euler(0f, lg.side * (lg.pair == 0 ? 168f : 145f), 0f); lg.armTroch = Quaternion.Euler(lg.pair == 0 ? -10f : -25f, 0f, 0f); lg.tibia = FindDeep(t, "Tibia_art"); if (lg.tibia != null) { lg.tibiaRest = lg.tibia.localRotation; lg.armTibia = Quaternion.Euler(lg.pair == 0 ? -70f : -40f, 0f, 0f); } }
@@ -608,7 +609,7 @@ public partial class CubeInsect : MonoBehaviour
                 tr = Quaternion.Slerp(tr, l.armTroch, _calm);
                 // EMPUJAR (Berón 2026-10-29: son humanoides, empujan con brazos y manos): brazos adelante a la altura del pecho y el
                 // codo se estira con cada empujón.
-                if (Time.time < _pushUntil && l.pair == 0) { tr = l.armTroch * Quaternion.Euler(-70f - 15f * _push, 0f, 0f); if (l.tibia != null) l.tibia.localRotation = Quaternion.Slerp(l.armTibia, l.tibiaRest, 0.35f + 0.6f * _push); l.coxa.localRotation = l.armCoxa; if (l.troch != null) l.troch.localRotation = tr; continue; }
+                if (Time.time < _pushUntil && l.pair == 0) { tr = l.armTroch * Quaternion.Euler(70f + 15f * _push, 0f, 0f);   /* (+: hacia delante; con − los brazos iban hacia atrás) */ if (l.tibia != null) l.tibia.localRotation = Quaternion.Slerp(l.armTibia, l.tibiaRest, 0.35f + 0.6f * _push); l.coxa.localRotation = l.armCoxa; if (l.troch != null) l.troch.localRotation = tr; continue; }
                 if (l.tibia != null) l.tibia.localRotation = Quaternion.Slerp(l.tibiaRest, l.armTibia, _calm);
             }
             l.coxa.localRotation = cx;

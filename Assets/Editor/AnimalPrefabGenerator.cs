@@ -32,6 +32,19 @@ public static class AnimalPrefabGenerator
         ("Whale",     "WhaleBehavior"),
         ("Penguin",   "PenguinBehavior"),   // fauna de hielo (necesita un .fbx en Assets/Animals/Penguin/Models/)
         ("Orca",      "OrcaBehavior"),       // fauna de hielo (necesita un .fbx en Assets/Animals/Orca/Models/)
+        // Territorio polar (docs/reglas-animales.md): cuerpo de cubos, no necesitan .fbx.
+        ("Walrus",         "WalrusBehavior"),
+        ("EmperorPenguin", "EmperorPenguinBehavior"),
+        ("Reindeer",       "ReindeerBehavior"),
+        ("ArcticHare",     "ArcticHareBehavior"),
+        ("ArcticFox",      "ArcticFoxBehavior"),
+        ("MuskOx",         "MuskOxBehavior"),
+        ("SnowPetrel",     "SnowPetrelBehavior"),
+        ("ArcticTern", "ArcticTernBehavior"),
+        ("WanderingAlbatross", "WanderingAlbatrossBehavior"),
+        ("CapePetrel", "CapePetrelBehavior"),
+        ("PolarSkua", "PolarSkuaBehavior"),
+
         // Insectos del Microcosmos (las clases YA existían; aquí se registran para que el generador los produzca).
         // Necesitan un .fbx en Assets/Animals/{Especie}/Models/ (si no, se saltan con log, como el resto).
         ("Ant",       "AntBehavior"),
