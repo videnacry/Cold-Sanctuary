@@ -152,7 +152,7 @@ public static partial class MicroStoryMaps
         MapBerna(),   // (2026-11-12) hecho: MicroStoryMaps.Cientificos.cs
         MapPasadena(),   // (2026-11-12) hecho: mapa a mano
         MapChernobil(),   // (2026-11-12) hecho: mapa a mano
-        Stub("Palenque", Base1, Base2, "el Palacio, el Templo de las Inscripciones, el río Otolum y la milpa"),
+        MapPalenque(),   // (2026-11-12) hecho: mapa a mano
         // (2026-11-05) Los siete famosos que salieron del mesocosmos (docs/personajes-mesocosmos.md).
         Stub("Velliangiri", Base1, Base2, "los montes Velliangiri, Coimbatore, el Dhyanalinga y su bosque"),
         Stub("Hawthorne", Base1, Base2, "la fábrica de SpaceX en Hawthorne, el control de misión y el Falcon 1"),

@@ -309,3 +309,17 @@ escenario) y la duna donde volaron. El mapa sigue el plano de Dayton y pone la d
 - **Fuentes:** Leatherbarrow, *Chernobyl 01:23:40* (2016); Plokhy, *Chernobyl: History of a Tragedy* (2018); IAEA, *Chernobyl's Legacy* (2006);
   el mapa de Prípiat de 1986; el plano del pueblo. **Inferido:** la extensión de los pinares en el mapa acortado.
 - **Menú:** `Build Microcosmos de historias: Chernóbil (Ananenko)`.
+
+### Palenque (Pakal), sobre el Huerto
+**Lakamha': la Gran Plaza, el Otolum, la sierra y las milpas, 28 de agosto de 683 (lluvias).**
+- **El piso:** las macetas y los bancales son la selva alta de la sierra de Don Juan; las cajas del huerto, las plataformas escalonadas del Palacio
+  y de los templos; las máquinas, roca.
+- **La flora (98):** en la sierra, ramones, ceibas, bromelias y hongos; helechos arborescentes en el Otolum; musgo sobre la caliza del escarpe y de
+  la colina de las Cruces; **las milpas** del llano y del oeste (maíz con calabaza); cacao y aguacate en los solares; la ceiba de la plaza.
+- **La fauna (24):** hormigas cortadoras en la selva y en la milpa, abejas meliponas en los solares, cigarras gigantes y arañas de seda dorada en
+  la selva, luciérnagas en el Baño de la Reina, saltamontes en el llano; perros y pavos (cochinillas y mariquitas oscuras en el microcosmos).
+- **Edificios:** el Templo de las Inscripciones, el Palacio, el Grupo de las Cruces, el Juego de Pelota, el Grupo Norte y el Baño de la Reina.
+- **Fuentes:** Barnhart, *The Palenque Mapping Project* (2001); Stuart y Stuart, *Palenque: Eternal City of the Maya* (2008); Martin y Grube,
+  *Chronicle of the Maya Kings and Queens* (2008); Ford y Nigh, *The Maya Forest Garden* (2015); el plano del pueblo. **Inferido:** el sitio de
+  los solares con cacao (los huertos no se conservan).
+- **Menú:** `Build Microcosmos de historias: Pakal (Palenque)`.

@@ -135,4 +135,51 @@ public static partial class MicroStoryMaps
         },
         todo = new[] { "en vivo: que la hierba de arenal quede en la orilla del Prípiat y no en el río; los pinos, todavía verdes (en mayo aún no eran rojos)" },
     };
+
+    // ══ PALENQUE, 28 de agosto de 683 (Pakal): sobre el Huerto ═════════════════════════════════════════════════════════════════════════════════
+    // Lakamha', «el lugar de las grandes aguas», en la estación de lluvias: la Gran Plaza con el Palacio y el Templo de las Inscripciones al pie del
+    // escarpe de la sierra de Don Juan (selva alta: ramón, ceiba, helechos arborescentes en el arroyo, bromelias en las ramas); el Otolum que baja de la
+    // sierra, pasa bajo el Palacio por su acueducto y cae en el Baño de la Reina; el Grupo de las Cruces en su colina al este; al norte, por el sacbé,
+    // el Grupo Norte y la llanura de las milpas (maíz con calabaza). En los solares, cacao y aguacate; las abejas meliponas, los perros, los pavos.
+    static Map MapPalenque() => new Map
+    {
+        display = "Palenque", place = "Palenque (Lakamha'), Chiapas: la Gran Plaza, el Otolum, la sierra y las milpas, 28 de agosto de 683", status = Status.Hecho,
+        source = "Barnhart, The Palenque Mapping Project (2001: el plano del sitio y del Otolum); Stuart y Stuart, Palenque: Eternal City of the Maya (2008); " +
+                 "Martin y Grube, Chronicle of the Maya Kings and Queens (2008: la muerte de Pakal); Ford y Nigh, The Maya Forest Garden (2015); el plano del pueblo",
+        floor = Natural(
+            new Piece("planta", Como, "las macetas y los bancales: la selva alta de la sierra de Don Juan", "planta"),
+            new Piece("caja", Como, "las cajas del huerto: las plataformas escalonadas del Palacio y de los templos", "escalera")),
+        flora = new[]
+        {
+            // La selva alta de la sierra, al sur: ramón, ceibas, bromelias en las ramas, hongos en la hojarasca.
+            new Plant("Ramón", -300f, -600f, 10, 150f), new Plant("Ramón", 300f, -650f, 8, 150f), new Plant("Ceiba (", -400f, -500f, 4, 120f),
+            new Plant("Bromelia", 0f, -700f, 6, 120f), new Plant("Hongo de la selva", -200f, -750f, 6, 120f),
+            // El Otolum, que baja de la sierra entre helechos arborescentes.
+            new Plant("Helecho arborescente", 70f, -480f, 8, 60f),
+            // La caliza del escarpe y de la colina de las Cruces, con su musgo.
+            new Plant("Musgo de la piedra caliza", 230f, -95f, 6, 60f), new Plant("Musgo de la piedra caliza", -200f, -400f, 6, 80f), new Plant("Caliza", 230f, -95f, 4, 40f),
+            // Las milpas del llano (norte) y del oeste: maíz con calabaza.
+            new Plant("Maíz de la milpa", 0f, 920f, 12, 200f), new Plant("Maíz de la milpa", -520f, 520f, 10, 150f), new Plant("Calabaza", 0f, 900f, 6, 150f),
+            // Los solares: cacao y aguacate; la ceiba de la plaza.
+            new Plant("Cacao del huerto", -310f, 310f, 6, 80f), new Plant("Aguacate", 210f, 250f, 4, 60f), new Plant("Ceiba de la plaza", -160f, 120f, 2, 40f),
+        },
+        fauna = new[]
+        {
+            new Animal("Ant", "Hormiga cortadora de hojas (Atta cephalotes), con su camino en la selva", -300f, -600f, 4, 1.2f, 150f),
+            new Animal("Ant", "Hormiga cortadora, cortando en la milpa del oeste", -520f, 520f, 3, 1.2f, 150f),
+            new Animal("SnowBee", "Abeja sin aguijón xunáan kab (Melipona beecheii), en los troncos del solar", -310f, 310f, 3, 0.9f, 80f),
+            new Animal("Cicada", "Cigarra gigante (Quesada gigas), en la selva de la sierra", 300f, -650f, 2, 6f, 150f),
+            new Animal("Firefly", "Luciérnaga (Photinus), en el Baño de la Reina", 75f, 620f, 3, 1.2f, 50f),
+            new Animal("Grasshopper", "Saltamontes de la milpa (Sphenarium), en el llano", 0f, 920f, 3, 4f, 200f),
+            new Animal("Spider", "Araña de seda dorada (Trichonephila clavipes), entre las ramas", 0f, -700f, 2, 4f, 120f),
+            new Animal("Woodlouse", "Perro del solar (en el microcosmos, una cochinilla)", 210f, 250f, 2, 0.6f, 60f),
+            new Animal("Ladybug", "Pavo de monte (en el microcosmos, una mariquita oscura), en el borde de la milpa", -400f, 700f, 2, 0.8f, 100f),
+        },
+        buildings = new[]
+        {
+            new Building("Templo de las Inscripciones", -130f, -40f), new Building("El Palacio", 0f, 30f), new Building("Grupo de las Cruces", 230f, -95f),
+            new Building("Juego de Pelota", 40f, 150f), new Building("Grupo Norte", 20f, 550f), new Building("Baño de la Reina", 75f, 620f),
+        },
+        todo = new[] { "en vivo: que los helechos queden en la orilla del Otolum y la selva arriba del escarpe, no en la Gran Plaza" },
+    };
 }
