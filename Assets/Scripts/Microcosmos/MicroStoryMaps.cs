@@ -140,7 +140,7 @@ public static partial class MicroStoryMaps
         Stub("Bruce Lee", Base1, Base2, "Hong Kong de los 50: Nathan Road, los tong lau y la escuela de Yip Man"),
         Stub("Irena Sendler", Base1, Base2, "el gueto de Varsovia: su muro, sus puertas y la ciudad de fuera"),
         Stub("Le Chambon-sur-Lignon", Base1, Base2, "el plateau del Vivarais-Lignon: pinares, granjas y la estación"),
-        Stub("Planta Atómica", Base1, Base2), Stub("Egina", Base1, Base2, "la isla de Egina, su puerto y el templo de Afaya"),
+        Stub("Planta Atómica", Base1, Base2), MapEgina()   /* (2026-11-12) hecho: mapa a mano */,
         Stub("Crotona", Base1, Base2, "la ciudad griega de Calabria, la escuela pitagórica y la palestra de Milón"),
         Stub("Menfis", Base1, Base2, "el Nilo en crecida, los campos inundados y los templos de Ptah"),
         MapBagdad(),   // (2026-11-12) hecho: mapa a mano

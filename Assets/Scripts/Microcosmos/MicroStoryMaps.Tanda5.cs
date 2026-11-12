@@ -50,4 +50,51 @@ public static partial class MicroStoryMaps
         },
         todo = new[] { "en vivo: que las cucarachas queden pegadas a las alas del cuartel (no en el patio) y los cipreses en los dos cementerios" },
     };
+
+    // ══ EGINA, la Grecia heroica (Éaco y los mirmidones): sobre la Construcción ═══════════════════════════════════════════════════════════════════
+    // La isla del golfo Sarónico a final de primavera: al oeste, el puerto y la colina de Kolona (el asentamiento de la Edad del Bronce y el santuario
+    // de Apolo); al sureste, el monte Oros con el santuario de Zeus Helenio (el Zeus al que Éaco rezó); en medio, los olivares y los campos de cebada ya
+    // secos. El mito (Ovidio, Met. VII; Estrabón VIII.6.16): Zeus convirtió en hombres a las hormigas que subían por su árbol; Estrabón lo explica por
+    // los eginetas, que cavaban la tierra pobre como hormigas. La garriga: tomillo, pimpinela espinosa, jara, salvia, gamones, lentisco sobre la caliza.
+    static Map MapEgina() => new Map
+    {
+        display = "Egina", place = "Egina, el puerto, Kolona y el monte Oros, final de la primavera (la Grecia heroica)", status = Status.Hecho,
+        source = "Pausanias, Descripción de Grecia II.29–30 (Kolona, el Eaceo y Zeus Helenio en el Oros); Ovidio, Metamorfosis VII.614–660 (los mirmidones); " +
+                 "Estrabón, Geografía VIII.6.16; Walter y Felten, Alt-Ägina III.1 (1981: el asentamiento de Kolona); el plano del pueblo",
+        floor = Natural(
+            new Piece("escalera", Como, "las escaleras: las terrazas de piedra seca de las laderas del Oros", "escalera"),
+            new Piece("caja", Como, "las cajas de herramientas: las casas de piedra apiñadas de Kolona", "caja")),
+        flora = new[]
+        {
+            // Kolona: el tomillo de las abejas sobre la caliza de la colina.
+            new Plant("Tomillo de Creta", -520f, 120f, 8, 80f), new Plant("Caliza", -520f, 120f, 4, 40f),
+            // La costa del Sarónico: lentisco.
+            new Plant("Lentisco", -650f, -300f, 8, 80f),
+            // Los olivares (con anémonas al pie y la tierra roja) y los campos de cebada ya agostados.
+            new Plant("Anémona", 300f, 250f, 8, 100f), new Plant("Tierra roja", 300f, 250f, 4, 80f), new Plant("Hierba seca", 250f, -250f, 10, 100f),
+            new Plant("Gamón", -300f, 350f, 6, 80f),
+            // El monte Oros: jara al pie, pimpinela espinosa y salvia en la ladera, caliza en la cima.
+            new Plant("Jara de Creta", 450f, -450f, 8, 100f), new Plant("Pimpinela espinosa", 650f, -650f, 10, 120f), new Plant("Salvia griega", 750f, -750f, 8, 100f),
+            new Plant("Caliza", 800f, -800f, 6, 80f),
+        },
+        fauna = new[]
+        {
+            new Animal("Ant", "Hormiga segadora (Messor), la del mito: su fila sube por el camino del Oros", 300f, -270f, 6, 0.8f, 80f),
+            new Animal("Ant", "Hormiga segadora, recogiendo el grano en los campos de cebada", 250f, -250f, 4, 0.8f, 80f),
+            new Animal("SnowBee", "Abeja melífera griega (Apis mellifera cecropia), en el tomillo de Kolona", -520f, 120f, 3, 1.3f, 60f),
+            new Animal("Cicada", "Cigarra del fresno (Cicada orni), cantando en los olivos", 300f, 250f, 3, 2.5f, 100f),
+            new Animal("Grasshopper", "Langosta egipcia (Anacridium aegyptium), en los olivares", 350f, 300f, 2, 5f, 80f),
+            new Animal("Mantis", "Mantis religiosa, en la salvia del Oros", 650f, -650f, 2, 6f, 100f),
+            new Animal("DungBeetle", "Escarabajo pelotero (Scarabaeus), en el camino del puerto", -300f, 50f, 2, 2.5f, 60f),
+            new Animal("Antlion", "Hormiga león (Myrmeleon), en la arena de la costa", -650f, -300f, 2, 1.2f, 60f),
+            new Animal("Scorpion", "Escorpión griego (Mesobuthus gibbosus), bajo las piedras de la cima", 800f, -800f, 2, 6f, 80f),
+        },
+        buildings = new[]
+        {
+            new Building("Santuario de Apolo en Kolona", -520f, 120f), new Building("Puerto de Egina", -600f, 0f),
+            new Building("Santuario de Zeus Helenio", 800f, -800f), new Building("Palacio de Éaco", -100f, 300f),
+            new Building("Talleres de los alfareros", -300f, 0f),
+        },
+        todo = new[] { "en vivo: que la fila de hormigas del camino del Oros se vea subiendo hacia el santuario" },
+    };
 }

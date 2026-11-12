@@ -244,3 +244,16 @@ escenario) y la duna donde volaron. El mapa sigue el plano de Dayton y pone la d
   Commission, Haidar Pasha Cemetery; Nightingale, *Notes on Matters Affecting the Health … of the British Army* (1858); el plano del pueblo.
   **Inferido:** la distancia a los dos cementerios (acortada al borde del mapa, en su dirección) y qué torre era la de Nightingale (la del noroeste).
 - **Menú:** `Build Microcosmos de historias: Nightingale (Escútari)`.
+
+### Egina (Éaco y los mirmidones), sobre la Construcción
+**El puerto, la colina de Kolona y el monte Oros, final de la primavera (la Grecia heroica).**
+- **El piso:** las escaleras son las terrazas de piedra seca del Oros; las cajas de herramientas, las casas apiñadas de Kolona; las máquinas, roca.
+- **La flora (80):** tomillo sobre la caliza de Kolona; lentisco en la costa del Sarónico; anémonas y tierra roja en los olivares; los campos de
+  cebada ya agostados (hierba seca); gamones; en el Oros, jara al pie, pimpinela espinosa y salvia en la ladera y caliza en la cima.
+- **La fauna (26):** **las hormigas segadoras del mito** en fila por el camino del Oros y en los campos de cebada; abejas en el tomillo de Kolona,
+  cigarras y langostas en los olivares, una mantis en la salvia, escarabajos peloteros en el camino del puerto, hormigas león en la arena y
+  escorpiones bajo las piedras de la cima.
+- **Edificios:** el santuario de Apolo en Kolona, el puerto, el santuario de Zeus Helenio en el Oros, el palacio de Éaco y los talleres de alfareros.
+- **Fuentes:** Pausanias II.29–30; Ovidio, *Metamorfosis* VII.614–660; Estrabón, *Geografía* VIII.6.16; Walter y Felten, *Alt-Ägina* III.1 (1981);
+  el plano del pueblo. **Inferido:** el sitio del palacio de Éaco (mítico) y el de los talleres.
+- **Menú:** ya tenía uno propio, `Build Egina (mirmidones)` (`MythSceneBuilder`).
