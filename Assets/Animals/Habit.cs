@@ -159,7 +159,7 @@ public class Habit : MonoBehaviour
     void Update()
     {
         if (_s == State.None) return;
-        if (_a == null || _a.death || _a.asleep || _a.busy || _a.aware || Time.time > _lease) { Stop(); return; }
+        if (_a == null || _a.death || _a.asleep || _a.busy || _a.aware || Time.time > _lease || MustYield(_a)) { Stop(); return; }
         switch (_s)
         {
             case State.Going:
@@ -351,4 +351,11 @@ public class Habit : MonoBehaviour
     }
 
     void OnDisable() { if (_s != State.None) Stop(); }
+
+    /// <summary>(2026-11-11) Suelta al animal (ha ganado otro deseo: Volition, DesireCatalog.Handover).</summary>
+    public void Release() { if (_s != State.None) Stop(); }
+
+    /// <summary>¿Debe ceder? Si lleva un viaje de OTRO deseo en marcha, el cuerpo es de ese deseo (NavTrace, vivo57: «Habit.Halt» ×31 le
+    /// quitaba el camino a paseos y cortejos en marcha).</summary>
+    public static bool MustYield(Animal a) => DesireCatalog.LiveTrip(a, out string k) && k != "habit";
 }

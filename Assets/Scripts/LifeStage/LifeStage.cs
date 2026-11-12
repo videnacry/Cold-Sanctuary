@@ -210,7 +210,7 @@ public abstract class LifeStage
     {
         return (Animal script, float duration) =>
         {
-            if (!DrivenElsewhere(script) && (Random.Range(1, 4) > 1 || script.exhaustion > 30)) script.ActsPrep.idle.Prep(script, duration);
+            if (!DrivenElsewhere(script) && !DesireCatalog.LiveTrip(script, out _) && (Random.Range(1, 4) > 1 || script.exhaustion > 30)) script.ActsPrep.idle.Prep(script, duration);
             if (script.exhaustion < 0) script.exhaustion = 0;
         };
     }
@@ -236,6 +236,7 @@ public abstract class LifeStage
         return (Animal script, float duration) =>
         {
             if (script.Group?.fed == null || script.Group.fed.Length == 0) return;
+            if (DesireCatalog.LiveTrip(script, out _)) return;   // (2026-11-11) con un viaje de deseo en marcha, el cuerpo es suyo (NavTrace: «LifeStage.Feed (al nido)»)
             if (script.hungry >= -script.Body.GetMealWeight(script.rig.mass)) return;
 
             ICarrier carrier = script as ICarrier;

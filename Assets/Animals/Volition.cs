@@ -92,7 +92,7 @@ public class Volition : MonoBehaviour
         }
 
         // Nada lo mueve ahora (saciado, en calma): deja de «querer» lo último (LastDesire vacío = descansa).
-        if (best == null) { _last = null; _lastScore = 0f; return; }
+        if (best == null) { if (_last != null) DesireCatalog.Handover(self, ""); _last = null; _lastScore = 0f; return; }
 
         if (best != null)
         {
@@ -108,6 +108,7 @@ public class Volition : MonoBehaviour
             else if (q != null) { if (q.Player.Count == 0) q.EnqueuePlayer(best.Conjure(self)); }   // deseo → SUPRAHECHIZO en la cola
             else best.Dispatch(self);
             self.RecordUse(best.capability, true, 1f);   // el USO construye el hábito (confianza-por-uso, más rápido de joven)
+            if (_last == null || _last.key != best.key) DesireCatalog.Handover(self, best.key);   // (2026-11-11) un solo dueño: el que gana
             _last = best; _lastScore = bestScore;
         }
     }

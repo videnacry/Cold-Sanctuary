@@ -94,6 +94,18 @@ public class FaunaChecks : MonoBehaviour, ITestUnit
             TestProbe.Check("…y vuelve a pedir su camino", w.nav.pathPending || w.nav.hasPath || Vector3.Distance(w.nav.destination, goal) < 0.6f, DesireCatalog.NavInfo(w));
             w.nav.ResetPath();
         }
+        // (2026-11-11) UN SOLO DUEÑO: cuando gana otro deseo, el viaje del anterior se acaba (y el hábito suelta al animal); el hábito y el
+        // ciclo de vida no tocan a quien lleva un viaje de otro deseo. NavTrace (vivo57): «Habit.Halt» ×31, «Habit.Move» ×7, «LifeStage.Feed» ×3
+        // y «Forager: se para a pescar» cambiaban el camino de un paseo en marcha; el paseo se quedaba sin camino y esperaba.
+        if (w != null && found)
+        {
+            DesireCatalog.StartTripForTest(w, "explore", goal);
+            TestProbe.Check("un paseo recién empezado es un viaje en marcha", DesireCatalog.LiveTrip(w, out string k0) && k0 == "explore");
+            TestProbe.Check("el hábito cede ante un viaje de otro deseo", Habit.MustYield(w));
+            DesireCatalog.Handover(w, "eat");
+            TestProbe.Check("si gana otro deseo, el paseo deja de ser suyo (sin viaje en marcha)", !DesireCatalog.LiveTrip(w, out _));
+            w.nav.ResetPath();
+        }
         else Debug.Log("[TEST] SKIP · viaje sin camino — ningún animal sobre el NavMesh con un sitio alcanzable a 6 m");
 
         TestProbe.End();
