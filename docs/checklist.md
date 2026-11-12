@@ -29,28 +29,28 @@ Las referencias «L» llevan al checklist tal como estaba en `b0add6e`, antes de
 - [ ] 10-27 · Todo microcosmos sale de la plantilla: fecha, hora y piso (#5) · manual M1, `MicrocosmTemplate`.
 - [ ] 10-27 · Ambrosio en el hospital al alba de la taiga; Sakshi, segunda anciana; mariquita de 2,4 m como depredador (#6) · [L157](https://github.com/videnacry/Cold-Sanctuary/blob/b0add6e/docs/checklist.md#L157) solo dice «reconstruir Ambrosio».
 - [ ] 10-28 · 2 m de paso entre lo que no va junto (#7) · manual S7, `FurnitureSpacing`.
-- [ ] 10-28 · Anillo opcional (`RingDeck`), sin escaleras, unido por alfombras (#8) · manual S5.
+- [x] 10-28 · Anillo opcional (`RingDeck`), sin escaleras, unido por alfombras (#8) · manual S5. · ✓ 2026-11-12: «cada anillo tiene su área de alfombras unida a los pisos de su edificio — 4/4 anillos»
 - [ ] 10-28 · Megacolumna por esquina para 30 pisos y aviso si se pasa (#9) · manual S9, `StructuralLimits.MaxFloors`; los octógonos los sustituyó el árbol v2.
-- [ ] 10-28 · Plazas reservadas en cada piso para flora, fauna, personajes e historia (#10) · manual S10, `PlatformSlots`.
-- [ ] 10-29 · El microcosmos es solo su piso, amurallado; nada fuera (#12) · manual M5.
-- [ ] 10-29 · Iniciaciones en «orquesta»: a ≤ 2 m, cada uno anda solo, sin tirones ni teletransportes (#13) · manual J5.
-- [ ] 10-29 · Pocas torres temáticas con muchos pisos (#14) · manual S2.
+- [x] 10-28 · Plazas reservadas en cada piso para flora, fauna, personajes e historia (#10) · manual S10, `PlatformSlots`. · ✓ 2026-11-12: «plazas reservadas suficientes (historia, personajes, fauna, flora)»
+- [x] 10-29 · El microcosmos es solo su piso, amurallado; nada fuera (#12) · manual M5. · ✓ 2026-11-12: «al construirlo no quedó nada fuera — 0 piezas fuera» (microcosmos)
+- [x] 10-29 · Iniciaciones en «orquesta»: a ≤ 2 m, cada uno anda solo, sin tirones ni teletransportes (#13) · manual J5. · ✓ 2026-11-12: «orquesta (cocina): sin saltos ni teletransportes de emergencia ni empujones de otros»
+- [x] 10-29 · Pocas torres temáticas con muchos pisos (#14) · manual S2. · ✓ 2026-11-12: «4 torres temáticas (servicios, entrenamiento, ciencias, producción) y el Árbol de los campos con sus pisos»
 - [ ] 10-30 · Árbol v2: tronco cuadrado, hélice, primer piso a ≥ 50 m, entradas solo abajo y en el techo, nado entre niveles (#15) · manual T1–T2, [edificio-arbol.md](edificio-arbol.md).
 - [ ] 10-31 · Migrar todos los edificios al modelo árbol antes de arreglar fallos de pruebas (#17) · manual S3.
 - [ ] 11-02 · Un hogar para cada personaje del pueblo, además de trabajo y servicios (#23) · manual M18.
-- [ ] 11-02 · El mismo ciclo de vida para humanos e insectos-humanos, con su escena de prueba (#24) · manual M19, [ciclo-de-vida.md](ciclo-de-vida.md).
+- [x] 11-02 · El mismo ciclo de vida para humanos e insectos-humanos, con su escena de prueba (#24) · manual M19, [ciclo-de-vida.md](ciclo-de-vida.md). · ✓ 2026-11-12: g59 CicloHumanoTest (ciclo de vida de humano e insecto-humano) en verde
 - [ ] 11-02 · Escala ×100, todo relativo a `AreaScale` (#25) · manual M11.
 - [ ] 11-02 · Se permiten los muros históricos que pida la historia (gueto, reactor) (#26) · [microcosmos-reglas-edificacion.md](microcosmos-reglas-edificacion.md).
 - [ ] 11-03 · Dejar siempre los docs y el checklist al día (#45) · regla de proceso; **incumplida** con lo del 11-09. La refuerza la regla de arriba.
 - [ ] 11-04 · Al cambiar un piso, área, árbol o microcosmos, revisar jornadas, reparto y horario libre (#64) · manual W9 y su gancho.
 - [ ] 11-05 · El refugio crece hasta que se pueda vivir en él, con áreas nuevas (#128) · [sitio-nuclear.md](sitio-nuclear.md); [L172](https://github.com/videnacry/Cold-Sanctuary/blob/b0add6e/docs/checklist.md#L172)–[L173](https://github.com/videnacry/Cold-Sanctuary/blob/b0add6e/docs/checklist.md#L173) solo dan 12 plazas para 1 mes.
 - [ ] 11-05 · Focos brillantes: revisar en vivo las medusas y todo lo que brilla (#138) · [L178](https://github.com/videnacry/Cold-Sanctuary/blob/b0add6e/docs/checklist.md#L178) es anterior; ver los materiales opacos del 11-09.
-- [ ] 11-08 · Para subir de santuario hay que superar al animal más poderoso; la magia como camino (#141) · [progresion-santuarios.md](progresion-santuarios.md).
-- [ ] 11-08 · Varias tareas a la vez en un área; las opcionales se saltan si nadie está libre (#148) · [jornada-y-rotacion.md](jornada-y-rotacion.md) §6.
-- [ ] 11-09 · Control de misión también en obra (#150) · commit `99516a0`.
-- [ ] 11-09 · Fauna = K × humanos, K = 3, por la pirámide trófica (#151) · manual E11, grupo 113, commit `6fa02b7`.
+- [x] 11-08 · Para subir de santuario hay que superar al animal más poderoso; la magia como camino (#141) · [progresion-santuarios.md](progresion-santuarios.md). · ✓ 2026-11-12: «cada jefe es al menos tan fuerte como el anterior (hay que superar a todos sus animales)»
+- [x] 11-08 · Varias tareas a la vez en un área; las opcionales se saltan si nadie está libre (#148) · [jornada-y-rotacion.md](jornada-y-rotacion.md) §6. · ✓ 2026-11-12: «un área sin tareas hoy (la B) no pide a nadie ni tiene clon» (g113)
+- [x] 11-09 · Control de misión también en obra (#150) · commit `99516a0`. · ✓ 2026-11-12: «Control de misión no es básico; en obra solo siguen sus emergencias»
+- [x] 11-09 · Fauna = K × humanos, K = 3, por la pirámide trófica (#151) · manual E11, grupo 113, commit `6fa02b7`. · ✓ 2026-11-12: «la fauna salvaje no pasa de K × humanos (81)»
 - [ ] 11-09 · Todo opaco, sin brillo, con materiales baratos (#152) · `CheapMaterials`, ya fusionado en edificios (`d0d8021`).
-- [ ] 11-09 · Sin insectos en el santuario 1 por ahora (#153) · ya fusionado en edificios (`d0d8021`).
+- [x] 11-09 · Sin insectos en el santuario 1 por ahora (#153) · ya fusionado en edificios (`d0d8021`). · ✓ 2026-11-12: «sin insectos en el santuario 1 (interruptor apagado) — 0 insectos, 0 colmenas»
 - [ ] 11-09 · Se pueden quitar las sombras o las columnas de los árboles (#154) · sombras baratas fusionadas (`d0d8021`); de las columnas solo hay un censo.
 
 ### 3. Abiertas (5)
