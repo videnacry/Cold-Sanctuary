@@ -190,7 +190,11 @@ public static partial class MicroBiome
                 new Plant(Kind.Grass, 6, "Heno de marisma (Spartina patens)", 50, C(0.7f, 0.62f, 0.4f), C(0.75f, 0.65f, 0.45f)),
                 new Plant(Kind.Shrub, 5, "Nopal oriental (Opuntia humifusa)", 20, C(0.35f, 0.55f, 0.3f), C(0.4f, 0.6f, 0.35f)),
                 new Plant(Kind.Shrub, 5, "Mirto de cera (Morella cerifera)", 150, C(0.4f, 0.48f, 0.3f), C(0.7f, 0.72f, 0.75f)),
-                new Plant(Kind.Sand, 40, "Arena de duna", 0, C(0.88f, 0.8f, 0.62f), Sand), new Plant(Kind.Stone, 4, "Concha", 0, C(0.9f, 0.88f, 0.82f), Stone) },
+                new Plant(Kind.Sand, 40, "Arena de duna", 0, C(0.88f, 0.8f, 0.62f), Sand), new Plant(Kind.Stone, 4, "Concha", 0, C(0.9f, 0.88f, 0.82f), Stone),
+                // (2026-11-12, mapa a mano) Las calles de Dayton en diciembre (los árboles sin hoja) y el bosque de ribera del Great Miami.
+                new Plant(Kind.Shrub, 1, "Olmo americano de la calle (Ulmus americana), sin hoja", 1800, C(0.45f, 0.38f, 0.3f), C(0.5f, 0.42f, 0.34f)),
+                new Plant(Kind.Shrub, 1, "Arce plateado de la calle (Acer saccharinum), sin hoja", 1500, C(0.5f, 0.45f, 0.4f), C(0.55f, 0.5f, 0.45f)),
+                new Plant(Kind.Shrub, 1, "Sicómoro del Great Miami (Platanus occidentalis), sin hoja", 2200, C(0.75f, 0.72f, 0.65f), C(0.85f, 0.82f, 0.75f)) },
               bugs = new[] {
                 new Bug("Antlion", 5, 12, C(0.8f, 0.74f, 0.6f), "Hormiga león (Myrmeleon immaculatus), aletargada en su embudo"),
                 new Bug("Spider", 3, 13, C(0.85f, 0.82f, 0.72f), "Araña lobo de playa (Arctosa littoralis)"),

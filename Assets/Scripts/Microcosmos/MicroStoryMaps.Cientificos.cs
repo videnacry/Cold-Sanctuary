@@ -170,4 +170,47 @@ public static partial class MicroStoryMaps
         },
         todo = new[] { "en vivo: que los olivos queden en el paseo del campus y no sobre el laboratorio; que las palmeras caigan en la acera de California Boulevard" },
     };
+
+    // ══ DAYTON Y KILL DEVIL HILLS, 17 de diciembre de 1903 (los Wright): sobre la Mecánica ═════════════════════════════════════════════════════
+    // La historia junta los dos sitios de los Wright: el taller de bicicletas de West Third Street en Dayton (el escenario) y la duna de Kill Devil Hills
+    // en los Outer Banks de Carolina del Norte, donde volaron ese día. El mapa sigue el plano de Dayton (las calles, la casa de Hawthorn Street, el
+    // Great Miami y el Wolf Creek, con sus árboles sin hoja en diciembre) y pone la duna al sureste, en su dirección (a ~800 km de verdad): el barrón y la
+    // avena de mar sobre la arena, el brezo de playa, el mirto de cera y la marisma del lado del estrecho, conchas; el cangrejo fantasma en su madriguera.
+    static Map MapDayton() => new Map
+    {
+        display = "Dayton", place = "Dayton (Ohio) y la duna de Kill Devil Hills (Carolina del Norte), 17 de diciembre de 1903", status = Status.Hecho,
+        source = "NPS, Dayton Aviation Heritage (Wright Cycle Company, 1127 West Third Street; la casa del 7 de Hawthorn Street); Sanborn Map, Dayton 1897 (el plano del pueblo); " +
+                 "NPS, Wright Brothers National Memorial (Big Kill Devil Hill, la duna de arena y su vegetación de barrón y avena de mar); diario de Orville Wright, 17-12-1903",
+        floor = Natural(
+            new Piece("alfombra", Apilar, "las alfombras, apiladas: Big Kill Devil Hill, la duna desde la que planeaban"),
+            new Piece("mesa", Como, "los bancos del taller: los bancos de arena de los Outer Banks", "mesa"),
+            new Piece("lavabo", Como, "los lavabos: el Great Miami y el Wolf Creek", "lavabo")),
+        flora = new[]
+        {
+            // Dayton en diciembre: olmos sin hoja en West Third Street, arces en Hawthorn Street, sicómoros en el Great Miami y en el Wolf Creek.
+            new Plant("Olmo americano de la calle", 300f, 30f, 6, 40f), new Plant("Olmo americano de la calle", -400f, 30f, 6, 40f),
+            new Plant("Arce plateado de la calle", 60f, -200f, 6, 40f),
+            new Plant("Sicómoro del Great Miami", 1050f, 200f, 8, 80f), new Plant("Sicómoro del Great Miami", 1080f, -400f, 8, 80f), new Plant("Sicómoro del Great Miami", -300f, 560f, 6, 60f),
+            // Al sureste, la duna de Kill Devil Hills: barrón y avena de mar sobre la arena, brezo, conchas; del lado del estrecho, mirto de cera y la marisma.
+            new Plant("Barrón americano", 600f, -900f, 30, 200f), new Plant("Avena de mar", 600f, -900f, 12, 150f), new Plant("Brezo de playa", 600f, -900f, 10, 150f),
+            new Plant("Arena de duna", 600f, -900f, 6, 150f), new Plant("Concha", 450f, -1050f, 4, 60f), new Plant("Nopal oriental", 650f, -850f, 6, 80f),
+            new Plant("Mirto de cera", 800f, -1000f, 6, 60f), new Plant("Heno de marisma", 800f, -1050f, 8, 80f),
+        },
+        fauna = new[]
+        {
+            new Animal("Aphid", "Caballo de carro en West Third Street (en el microcosmos, un pulgón de tiro)", 500f, 0f, 3, 2.4f, 60f),
+            new Animal("Aphid", "Caballo de reparto junto a Williams Street", -200f, 0f, 2, 2.4f, 40f),
+            new Animal("Woodlouse", "Gato de Hawthorn Street (en el microcosmos, una cochinilla hormiguera)", 60f, -200f, 2, 0.5f, 30f),
+            new Animal("Antlion", "Hormiga león (Myrmeleon immaculatus), aletargada en su embudo de la duna", 600f, -900f, 3, 1.2f, 150f),
+            new Animal("Spider", "Araña lobo de playa (Arctosa littoralis)", 600f, -900f, 2, 1.4f, 150f),
+            new Animal("Ladybug", "Mariquita de 9 puntos (Coccinella novemnotata), invernando en el mirto", 800f, -1000f, 2, 1f, 50f),
+            new Animal("GhostCrab", "Cangrejo fantasma (Ocypode quadrata), en su madriguera de invierno", 450f, -1050f, 2, 1.6f, 60f),
+        },
+        buildings = new[]
+        {
+            new Building("Wright Cycle Company (1127 West Third Street)", 0f, 0f), new Building("Casa de los Wright (7 Hawthorn Street)", 60f, -250f), new Building("Plaza", 700f, 60f),
+            new Building("Estación", 800f, -200f), new Building("Great Miami", 1050f, 0f), new Building("Duna de Kill Devil Hills (hacia el sureste)", 600f, -900f),
+        },
+        todo = new[] { "en vivo: que la duna quede lejos de las calles de Dayton y que los sicómoros caigan en la orilla del Great Miami, no en el río" },
+    };
 }

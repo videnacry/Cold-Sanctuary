@@ -187,3 +187,18 @@ origen están sus personas y sus sitios). Las distancias reales que no caben en 
 - **Fuentes:** Caltech Archives (el Olive Walk y el plano del campus); City of Pasadena, «Street Trees»; Christmas Tree Lane (Registro Nacional de
   Lugares Históricos); el encinar del Arroyo Seco (Arroyo Seco Foundation); el plano del pueblo. **Inferido:** las palmeras en California Boulevard.
 - **Menú:** `Build Microcosmos de historias: Patterson (Pasadena)`.
+
+### Dayton (los Wright), sobre la Mecánica
+**Dayton y la duna de Kill Devil Hills, 17 de diciembre de 1903.** La historia junta los dos sitios: el taller de bicicletas de West Third Street (el
+escenario) y la duna donde volaron. El mapa sigue el plano de Dayton y pone la duna **al sureste, en su dirección** (está a ~800 km).
+- **El piso:** las alfombras apiladas son Big Kill Devil Hill; los bancos del taller, los bancos de arena de los Outer Banks; los lavabos, el Great Miami
+  y el Wolf Creek; las máquinas, roca.
+- **La flora (122):** en Dayton, los árboles **sin hoja** de diciembre (olmos en West Third Street, arces en Hawthorn Street, sicómoros en el Great Miami
+  y el Wolf Creek); en la duna, barrón y avena de mar sobre la arena, brezo de playa, nopal, conchas, y del lado del estrecho el mirto de cera y la marisma.
+- **La fauna (16):** caballos de carro en West Third y Williams Street, un gato en Hawthorn Street; en la duna, hormigas león aletargadas, arañas lobo
+  de playa, mariquitas invernando en el mirto y cangrejos fantasma en su madriguera.
+- **El bioma** gana los árboles de Dayton (olmo, arce plateado, sicómoro).
+- **Fuentes:** NPS, Dayton Aviation Heritage (1127 West Third Street; 7 Hawthorn Street); el plano del pueblo (Sanborn, Dayton 1897); NPS, Wright Brothers
+  National Memorial (Big Kill Devil Hill y su vegetación); el diario de Orville Wright del 17-12-1903. **Inferido:** las especies de los árboles de
+  cada calle (las típicas de Ohio en 1900).
+- **Menú:** `Build Microcosmos de historias: Wright (Dayton y Kill Devil Hills)`.
