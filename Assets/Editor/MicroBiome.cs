@@ -232,7 +232,11 @@ public static partial class MicroBiome
                 new Plant(Kind.Shrub, 5, "Algodón de Sodoma (Calotropis procera)", 150, C(0.6f, 0.68f, 0.62f), C(0.75f, 0.6f, 0.85f)),
                 new Plant(Kind.Shrub, 4, "Taray del Nilo (Tamarix nilotica)", 200, C(0.55f, 0.6f, 0.55f), C(0.85f, 0.7f, 0.8f)),
                 new Plant(Kind.Sand, 26, "Arena del desierto", 0, C(0.9f, 0.78f, 0.55f), Sand), new Plant(Kind.Stone, 12, "Granito de Siene", 0, C(0.7f, 0.5f, 0.45f), Stone),
-                new Plant(Kind.Dung, 4, "Boñiga de asno", 0, DungC, DungC) },
+                new Plant(Kind.Dung, 4, "Boñiga de asno", 0, DungC, DungC),
+                // (2026-11-12, mapa a mano) Los jardines del barrio real y los viñedos de Mareotis.
+                new Plant(Kind.Shrub, 2, "Palmera datilera (Phoenix dactylifera)", 1500, C(0.35f, 0.5f, 0.25f), C(0.75f, 0.45f, 0.15f)),
+                new Plant(Kind.Shrub, 1, "Sicómoro egipcio (Ficus sycomorus)", 1200, C(0.25f, 0.45f, 0.2f), C(0.55f, 0.45f, 0.3f)),
+                new Plant(Kind.Shrub, 1, "Vid de Mareotis (Vitis vinifera)", 150, C(0.35f, 0.55f, 0.25f), C(0.35f, 0.15f, 0.35f)) },
               bugs = new[] {
                 new Bug("DungBeetle", 6, 30, C(0.06f, 0.06f, 0.06f), "Escarabajo sagrado (Scarabaeus sacer)"),
                 new Bug("Ant", 8, 10, C(0.6f, 0.2f, 0.1f), "Hormiga del desierto (Cataglyphis bicolor)"),

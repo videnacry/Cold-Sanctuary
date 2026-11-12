@@ -213,4 +213,51 @@ public static partial class MicroStoryMaps
         },
         todo = new[] { "en vivo: que la duna quede lejos de las calles de Dayton y que los sicómoros caigan en la orilla del Great Miami, no en el río" },
     };
+
+    // ══ ALEJANDRÍA, solsticio de verano de ~240 a. C. (Eratóstenes mide la Tierra): sobre el Aula ════════════════════════════════════════════════
+    // La retícula de Dinócrates entre el mar y el lago: el barrio real (Brucheion) con el Museion y sus jardines junto al Gran Puerto; la Vía Canópica;
+    // el Heptastadion a la isla de Faros; el Paneion. Al sur, la orilla norte del lago Mareotis con su papiro y sus tarays, y al otro lado los viñedos
+    // de Mareotis. Junio: el trigo ya segado (rastrojo) en los campos de la puerta de Canopo; asnos en la Vía Canópica. Al borde sur, en su dirección,
+    // el desierto y el granito de Siene, donde a mediodía del solsticio el sol cae a plomo en el pozo.
+    static Map MapAlejandria() => new Map
+    {
+        display = "Alejandría", place = "Alejandría, entre el Gran Puerto y el lago Mareotis, solsticio de verano de ~240 a. C.", status = Status.Hecho,
+        source = "Estrabón, Geografía XVII.1.6–10 y 14 (el puerto, el Heptastadion, el Paneion, el Museion, el lago Mareotis y sus viñedos); McKenzie, The Architecture of " +
+                 "Alexandria and Egypt (2007); Cleómedes, De motu circulari I.10 (el pozo de Siene y la medida de Eratóstenes); el plano del pueblo",
+        floor = Natural(
+            new Piece("mesa", Como, "pupitres y mesas: la colina del Paneion y la isla de Faros", "mesa"),
+            new Piece("pared", Como, "la pizarra y los paneles: las murallas de la ciudad", "pared")),
+        flora = new[]
+        {
+            // Los jardines del barrio real junto al Gran Puerto: palmeras, sicómoros y grama.
+            new Plant("Palmera datilera", 300f, 300f, 8, 80f), new Plant("Sicómoro egipcio", 420f, 250f, 3, 30f), new Plant("Grama", 300f, 300f, 12, 80f),
+            // La orilla norte del lago Mareotis: papiro, tarays y halfa.
+            new Plant("Papiro", -200f, -880f, 10, 100f), new Plant("Papiro", 300f, -880f, 8, 80f), new Plant("Taray del Nilo", -500f, -880f, 6, 60f), new Plant("Hierba halfa", 0f, -700f, 12, 150f),
+            // Los viñedos de Mareotis, al otro lado del lago.
+            new Plant("Vid de Mareotis", -300f, -1250f, 12, 100f),
+            // El rastrojo de trigo de los campos de la puerta de Canopo, y las boñigas de los asnos en la Vía Canópica.
+            new Plant("Rastrojo de trigo", 900f, -150f, 15, 150f), new Plant("Boñiga de asno", -700f, -150f, 3, 30f), new Plant("Boñiga de asno", 700f, -150f, 3, 30f),
+            // Al borde sur, hacia Siene: el desierto, su espina de camello, el algodón de Sodoma y el granito.
+            new Plant("Espina de camello", 0f, -1450f, 8, 150f), new Plant("Arena del desierto", 0f, -1450f, 6, 150f), new Plant("Granito de Siene", 0f, -1450f, 4, 80f),
+            new Plant("Algodón de Sodoma", 400f, -1450f, 4, 80f),
+        },
+        fauna = new[]
+        {
+            new Animal("Aphid", "Asno de la Vía Canópica (en el microcosmos, un pulgón de carga)", -700f, -150f, 3, 1.6f, 60f),
+            new Animal("DungBeetle", "Escarabajo sagrado (Scarabaeus sacer), con la boñiga de asno", 700f, -150f, 3, 2f, 30f),
+            new Animal("SnowBee", "Abeja egipcia (Apis mellifera lamarckii), en los jardines", 420f, 250f, 3, 1.4f, 40f),
+            new Animal("Mantis", "Mantis africana (Sphodromantis viridis), en los jardines", 300f, 300f, 2, 2.2f, 60f),
+            new Animal("Termite", "Termita de arena (Psammotermes hybostoma), en el taray", -500f, -880f, 3, 1f, 50f),
+            new Animal("Grasshopper", "Langosta del desierto (Schistocerca gregaria), en la halfa", 0f, -700f, 2, 2.6f, 120f),
+            new Animal("Ant", "Hormiga del desierto (Cataglyphis bicolor)", 0f, -1450f, 3, 1.2f, 120f),
+            new Animal("Antlion", "Hormiga león (Myrmeleon), en la arena", 200f, -1450f, 3, 1.2f, 80f),
+            new Animal("Scorpion", "Escorpión amarillo (Leiurus quinquestriatus), en el desierto", -200f, -1450f, 2, 2.2f, 80f),
+        },
+        buildings = new[]
+        {
+            new Building("Museion y Biblioteca (Brucheion)", 300f, 160f), new Building("Gran Puerto", 0f, 620f), new Building("Faro (isla de Faros)", 300f, 950f),
+            new Building("Heptastadion", -500f, 600f), new Building("Paneion", -330f, -300f), new Building("Lago Mareotis", 0f, -1050f),
+        },
+        todo = new[] { "en vivo: que el papiro quede en la orilla del Mareotis y no en el agua; que el desierto de Siene entre en el borde sur del mapa" },
+    };
 }

@@ -136,7 +136,7 @@ public static partial class MicroStoryMaps
         Stub("Escútari", Base1, Base2, "el hospital de los barracones de Selimiye junto al Bósforo"),
         MapKapilavastu(),   // (2026-11-12) hecho: MicroStoryMaps.Tanda4.cs
         MapDayton(),   // (2026-11-12) hecho: mapa a mano
-        Stub("Alejandría", Base1, Base2, "el puerto, el Faro, la Biblioteca y el pozo de Siena para la sombra"),
+        MapAlejandria(),   // (2026-11-12) hecho: mapa a mano
         Stub("Bruce Lee", Base1, Base2, "Hong Kong de los 50: Nathan Road, los tong lau y la escuela de Yip Man"),
         Stub("Irena Sendler", Base1, Base2, "el gueto de Varsovia: su muro, sus puertas y la ciudad de fuera"),
         Stub("Le Chambon-sur-Lignon", Base1, Base2, "el plateau del Vivarais-Lignon: pinares, granjas y la estación"),

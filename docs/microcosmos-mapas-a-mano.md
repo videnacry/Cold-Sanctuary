@@ -202,3 +202,16 @@ escenario) y la duna donde volaron. El mapa sigue el plano de Dayton y pone la d
   National Memorial (Big Kill Devil Hill y su vegetación); el diario de Orville Wright del 17-12-1903. **Inferido:** las especies de los árboles de
   cada calle (las típicas de Ohio en 1900).
 - **Menú:** `Build Microcosmos de historias: Wright (Dayton y Kill Devil Hills)`.
+
+### Alejandría (Eratóstenes), sobre el Aula
+**Entre el Gran Puerto y el lago Mareotis, solsticio de verano de ~240 a. C.**
+- **El piso:** pupitres y mesas son la colina del Paneion y la isla de Faros; la pizarra y los paneles, las murallas; las máquinas, roca.
+- **La flora (114):** los jardines del barrio real junto al Gran Puerto (palmeras datileras, sicómoros, grama); la orilla norte del Mareotis (papiro,
+  tarays, halfa) y, al otro lado, sus **viñedos**; el **rastrojo** de trigo (junio: ya segado) junto a la puerta de Canopo; las boñigas de los asnos
+  en la Vía Canópica; al borde sur, **hacia Siene** (en su dirección), el desierto con espina de camello, algodón de Sodoma y granito.
+- **La fauna (24):** asnos de la Vía Canópica (pulgones de carga) con sus escarabajos sagrados; abejas egipcias y mantis en los jardines; termitas en
+  el taray; langostas en la halfa; hormigas del desierto, hormigas león y escorpiones hacia Siene.
+- **El bioma** gana la palmera datilera, el sicómoro egipcio y la vid de Mareotis.
+- **Fuentes:** Estrabón, *Geografía* XVII.1.6–10 y 14; McKenzie, *The Architecture of Alexandria and Egypt* (2007); Cleómedes, *De motu circulari* I.10
+  (el pozo de Siene); el plano del pueblo. **Inferido:** la extensión de los jardines del Brucheion.
+- **Menú:** `Build Microcosmos de historias: Eratóstenes (Alejandría)`.
