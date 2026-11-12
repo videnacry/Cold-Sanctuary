@@ -136,7 +136,10 @@ public class PersonLife : MonoBehaviour
         if (_j == null) _j = GetComponent<MicroJornada>();
         if (_j != null) { _j.follow = mother.transform; return; }   // en el microcosmos la sigue su jornada
         if (NeedsDriver.Attending(GetComponent<ActionQueue>()) || (_a != null && _a.asleep)) return;
-        if (d > 1.2f * h) MicroMove.Step(transform, mother.transform.position - mother.transform.forward * 0.6f * h, 1.6f * h / 1.75f, 0.8f * h);
+        // (2026-11-11) EN EL SANTUARIO, con PathMover (alfombras y troncos de los edificios-árbol), no con MicroMove (solo NavMesh): siguiendo a su
+        // madre a los pisos altos, MicroMove le llevaba «a mano» por las esquinas con la altura del cuerpo y el agente en el piso de abajo, y
+        // GroundGuard lo bajaba de golpe («Neo flotaba 8, 14, 64, 86 m … baja al suelo», ×21, rondas 53–54).
+        if (d > 1.2f * h) { Vector3 to = mother.transform.position - mother.transform.forward * 0.6f * h; if (ArbolCampos.All.Count > 0) PathMover.Of(transform).StepToward(to, 1.6f * h / 1.75f); else MicroMove.Step(transform, to, 1.6f * h / 1.75f, 0.8f * h); }
     }
 
     // De joven deja de ir detrás de su madre: en el microcosmos hace la jornada de su madre (su casa, su comedor, su trabajo).
