@@ -97,4 +97,50 @@ public static partial class MicroStoryMaps
         },
         todo = new[] { "en vivo: que la fila de hormigas del camino del Oros se vea subiendo hacia el santuario" },
     };
+
+    // ══ CROTONA, verano de ~530 a. C. (Pitágoras): sobre el Aula ═══════════════════════════════════════════════════════════════════════════════
+    // La colonia aquea de la costa jónica de Calabria: la retícula de plateiai este-oeste, el río Esaro al norte, la acrópolis sobre el cabo del puerto
+    // y, en el borde sureste, el camino al cabo Lacinio con el santuario de Hera (su bosque sagrado y sus rebaños, Livio XXIV.3). Al oeste, los olivares
+    // hacia la Sila. Verano: el esparto seco, las cigarras en los olivos, el tomillo con abejas en la acrópolis; los campos de habas que los
+    // pitagóricos no tocaban; la palestra de Milón, el luchador pitagórico, con sus olivos.
+    static Map MapCrotona() => new Map
+    {
+        display = "Crotona", place = "Crotona (Crotone, Calabria), la ciudad, el Esaro y el camino del cabo Lacinio, verano de ~530 a. C.", status = Status.Hecho,
+        source = "Estrabón, Geografía VI.1.12 (Crotona, el Esaro y el Lacinio); Tito Livio XXIV.3 (el santuario de Hera Lacinia); Jámblico, Vida pitagórica; " +
+                 "Diógenes Laercio VIII.1 (Pitágoras y las habas); Spadea (ed.), Il tesoro di Hera (1996: el urbanismo de Crotona); el plano del pueblo",
+        floor = Natural(
+            new Piece("mesa", Como, "pupitres y mesas: las manzanas de la retícula entre las plateiai", "mesa"),
+            new Piece("pared", Como, "la pizarra y los paneles: la muralla de la ciudad", "pared")),
+        flora = new[]
+        {
+            // Los olivares de la llanura, hacia la Sila, y al norte del Esaro.
+            new Plant("Olivo", -650f, -250f, 10, 120f), new Plant("Olivo", -400f, 500f, 8, 100f),
+            // Los olivos de la palestra de Milón.
+            new Plant("Olivo", -260f, -190f, 4, 50f),
+            // El campo de habas, fuera de la ciudad.
+            new Plant("Haba", -700f, 150f, 6, 80f),
+            // La acrópolis del puerto: tomillo sobre la arenisca.
+            new Plant("Tomillo", 360f, 120f, 6, 60f), new Plant("Arenisca", 360f, 120f, 4, 40f),
+            // La costa: lentisco en el acantilado del cabo, arena del Jónico en la playa.
+            new Plant("Lentisco", 620f, -350f, 8, 80f), new Plant("Arena del Jónico", 560f, -50f, 6, 40f),
+            // El esparto seco del verano: en el camino del cabo Lacinio y en los cerros del suroeste.
+            new Plant("Esparto seco", 450f, -300f, 8, 80f), new Plant("Esparto seco", -600f, -500f, 8, 100f),
+        },
+        fauna = new[]
+        {
+            new Animal("Cicada", "Cigarra del fresno (Cicada orni), cantando en los olivos", -650f, -250f, 4, 2.5f, 120f),
+            new Animal("Cicada", "Cigarra del fresno, en los olivos del Esaro", -400f, 500f, 3, 2.5f, 100f),
+            new Animal("Ant", "Hormiga segadora (Messor barbarus), en el esparto", -600f, -500f, 3, 0.8f, 100f),
+            new Animal("SnowBee", "Abeja de la miel (Apis mellifera ligustica), en el tomillo de la acrópolis", 360f, 120f, 3, 1.3f, 60f),
+            new Animal("Mantis", "Mantis religiosa, en el lentisco del cabo", 620f, -350f, 2, 6f, 80f),
+            new Animal("Grasshopper", "Langosta egipcia (Anacridium aegyptium), en el camino del cabo", 450f, -300f, 2, 3f, 80f),
+            new Animal("Scorpion", "Escorpión (Euscorpius italicus), bajo la arenisca de la acrópolis", 360f, 120f, 2, 4f, 40f),
+        },
+        buildings = new[]
+        {
+            new Building("Escuela de Pitágoras (el homakoeion)", -150f, 150f), new Building("Palestra de Milón", -260f, -190f), new Building("Ágora", 0f, -75f),
+            new Building("Acrópolis del puerto", 360f, 120f), new Building("Camino al santuario de Hera Lacinia", 560f, -460f),
+        },
+        todo = new[] { "en vivo: que el campo de habas quede fuera de la retícula y la arena en la playa, no en el agua" },
+    };
 }

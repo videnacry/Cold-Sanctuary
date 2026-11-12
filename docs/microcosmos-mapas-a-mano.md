@@ -257,3 +257,17 @@ escenario) y la duna donde volaron. El mapa sigue el plano de Dayton y pone la d
 - **Fuentes:** Pausanias II.29–30; Ovidio, *Metamorfosis* VII.614–660; Estrabón, *Geografía* VIII.6.16; Walter y Felten, *Alt-Ägina* III.1 (1981);
   el plano del pueblo. **Inferido:** el sitio del palacio de Éaco (mítico) y el de los talleres.
 - **Menú:** ya tenía uno propio, `Build Egina (mirmidones)` (`MythSceneBuilder`).
+
+### Crotona (Pitágoras), sobre el Aula
+**La ciudad, el río Esaro y el camino del cabo Lacinio, verano de ~530 a. C.**
+- **El piso:** pupitres y mesas son las manzanas de la retícula entre las *plateiai*; la pizarra y los paneles, la muralla; las máquinas, roca.
+- **La flora (76):** olivares hacia la Sila y al norte del Esaro, y los olivos de la palestra de Milón; el **campo de habas** fuera de la ciudad;
+  tomillo sobre la arenisca de la acrópolis; lentisco en el acantilado del cabo y arena del Jónico en la playa; esparto seco en el camino del
+  Lacinio y en los cerros del suroeste.
+- **La fauna (19):** cigarras en los olivos, hormigas segadoras en el esparto, abejas en el tomillo de la acrópolis, una mantis en el lentisco,
+  langostas en el camino del cabo y escorpiones bajo la arenisca.
+- **Edificios:** la escuela de Pitágoras, la palestra de Milón, el ágora, la acrópolis y el camino al santuario de Hera Lacinia (en el borde,
+  en su dirección: está a 12 km).
+- **Fuentes:** Estrabón VI.1.12; Tito Livio XXIV.3; Jámblico, *Vida pitagórica*; Diógenes Laercio VIII.1; Spadea (ed.), *Il tesoro di Hera*
+  (1996); el plano del pueblo. **Inferido:** el sitio de la escuela (no se ha hallado) y el del campo de habas.
+- **Menú:** `Build Microcosmos de historias: Pitágoras (Crotona)`.

@@ -141,7 +141,7 @@ public static partial class MicroStoryMaps
         Stub("Irena Sendler", Base1, Base2, "el gueto de Varsovia: su muro, sus puertas y la ciudad de fuera"),
         Stub("Le Chambon-sur-Lignon", Base1, Base2, "el plateau del Vivarais-Lignon: pinares, granjas y la estación"),
         Stub("Planta Atómica", Base1, Base2), MapEgina()   /* (2026-11-12) hecho: mapa a mano */,
-        Stub("Crotona", Base1, Base2, "la ciudad griega de Calabria, la escuela pitagórica y la palestra de Milón"),
+        MapCrotona(),   // (2026-11-12) hecho: mapa a mano
         Stub("Menfis", Base1, Base2, "el Nilo en crecida, los campos inundados y los templos de Ptah"),
         MapBagdad(),   // (2026-11-12) hecho: mapa a mano
         MapWoolsthorpe(),   // (2026-11-12) hecho: MicroStoryMaps.Tanda4.cs
