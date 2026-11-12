@@ -81,6 +81,21 @@ public class FaunaChecks : MonoBehaviour, ITestUnit
         }
         else Debug.Log("[TEST] SKIP · par depredador/presa — la escena no tiene ambos → omitido (sin FAIL)");
 
+        // ── (2026-11-11) UN VIAJE SIN CAMINO NO HA LLEGADO ──────────────────────────────────────────────────────────────
+        // Vivo (a41fefc): 333 «[Fauna] atascado … va=False/True … empezados=136 · camino False … destino a 0,0 m»: el agente se quedaba sin
+        // camino justo tras empezar el paseo y Going lo daba por LLEGADO (sin camino, lo que queda = 0): empezaba otro, y otro, sin moverse.
+        Animal w = alive.Find(x => x.nav != null && x.nav.enabled && x.nav.isOnNavMesh && x.GetComponent<MarineLife>() == null && !x.busy);
+        Vector3 goal = Vector3.zero; bool found = false;
+        if (w != null) for (int i = 0; i < 12 && !found; i++) { Vector3 p = w.transform.position + Quaternion.Euler(0f, i * 30f, 0f) * Vector3.forward * 6f; found = NavReach.Reachable(w, p, out goal); }
+        if (w != null && found)
+        {
+            bool going = DesireCatalog.GoingWithoutPathForTest(w, goal);
+            TestProbe.Check("un viaje que se queda sin camino a 6 m de su meta no cuenta como llegado", going, w.name);
+            TestProbe.Check("…y vuelve a pedir su camino", w.nav.pathPending || w.nav.hasPath || Vector3.Distance(w.nav.destination, goal) < 0.6f, DesireCatalog.NavInfo(w));
+            w.nav.ResetPath();
+        }
+        else Debug.Log("[TEST] SKIP · viaje sin camino — ningún animal sobre el NavMesh con un sitio alcanzable a 6 m");
+
         TestProbe.End();
     }
 }
