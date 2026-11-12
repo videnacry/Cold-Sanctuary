@@ -150,6 +150,13 @@ public static partial class StorySceneBuilder
 
     /// <summary>Solo el de Buda (Kapilavastu), sin rehacer los demás (límite de memoria del PC).</summary>
     [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias: Buda (Kapilavastu)")]
+
+    /// <summary>(2026-11-12) Solo el de Newton (Woolsthorpe) o solo el de Jenner (Berkeley): sus mapas a mano (docs/microcosmos-mapas-a-mano.md §Tanda 4),
+    /// sin rehacer los doce científicos de una vez (límite de memoria del PC).</summary>
+    [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias: Newton (Woolsthorpe)")]
+    public static void BuildNewton() => BuildOne("Microcosmos_Newton");
+    [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias: Jenner (Berkeley)")]
+    public static void BuildJenner() => BuildOne("Microcosmos_Jenner");
     public static void BuildBuda() => BuildOne("Microcosmos_Buda");
 
     /// <summary>Genera un solo microcosmos de historia por su escena (en su mismo origen que en <see cref="BuildAll"/>).</summary>
