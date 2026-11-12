@@ -54,7 +54,13 @@ public class HieloMarinoTest : MonoBehaviour, ITestUnit
         }
         Collider sheet = FindObjectsByType<Collider>(FindObjectsSortMode.None).FirstOrDefault(c => c.name == MarineLife.ThinIce);
         TestProbe.Check("el hielo fijo mide lo que las placas y un oso puede acechar encima", sheet != null && Mathf.Abs(sheet.bounds.size.y - SeaRule.PlateThickness) < 0.1f && sheet.bounds.max.y > -0.1f);
-        TestProbe.Check("bajo el hielo fijo sí se nada", sheet != null && MarineLife.IceAbove(sheet.bounds.center) && !MarineLife.ThickAbove(sheet.bounds.center), sheet != null ? string.Join(", ", Physics.RaycastAll(new Vector3(sheet.bounds.center.x, 8f, sheet.bounds.center.z), Vector3.down, 14f, ~0, QueryTriggerInteraction.Ignore).Select(h => $"{h.collider.name} a {h.point.y:0.0}")) : "");
+        // (2026-11-11) POR LÁMINA, no la primera pieza que salga: cada lámina son cuatro piezas alrededor de su respiradero, y las de los lados
+        // (x ±0,8…5 m) tocan el frente del casquete a propósito («su borde sigue sobre el frente», 057fdb6). Mirar el centro de la primera pieza
+        // que devuelve la escena era a suerte: tras reconstruirla salía una con el casquete encima («Hielo_fijo a 0,0, Casquete a 0,0», suite 60).
+        // Ahora: en CADA lámina hay hielo fijo bajo el que se nada (alguna pieza con hielo encima y ninguno grueso).
+        var sheetsUnder = FindObjectsByType<Collider>(FindObjectsSortMode.None).Where(c => c.name == MarineLife.ThinIce && c.transform.parent != null).GroupBy(c => c.transform.parent).ToList();
+        var noSwim = sheetsUnder.Where(g => !g.Any(c => MarineLife.IceAbove(c.bounds.center) && !MarineLife.ThickAbove(c.bounds.center))).Select(g => g.Key.name).ToList();
+        TestProbe.Check("bajo el hielo fijo sí se nada", sheetsUnder.Count > 0 && noSwim.Count == 0, $"{sheetsUnder.Count} láminas{(noSwim.Count > 0 ? "; sin sitio para nadar debajo: " + string.Join(", ", noSwim) : "")}");
 
         // ── 3. SUBMARINO ──
         var trees = ArbolCampos.All.Where(a => a != null).ToList();

@@ -12,6 +12,8 @@ public class TreeTrip : MonoBehaviour
     public static bool Busy(GameObject g) => g != null && _busy.Contains(g);
     public static int Trips { get; private set; }
     public static int Stuck { get; private set; }
+    /// <summary>(2026-11-11) Quién se atascó (en orden), para que una prueba cuente solo a los suyos.</summary>
+    public static readonly List<string> StuckWho = new List<string>();
     /// <summary>Registro de cada tramo (las pruebas).</summary>
     public static bool Verbose;
     float _t0;
@@ -53,7 +55,7 @@ public class TreeTrip : MonoBehaviour
     public static void Start(GameObject g, ArbolCampos tree, List<Vector3> path, TreeLevel to, bool wetStart = false)
     {
         TreeTrip t = g.GetOrAdd<TreeTrip>(); t._wetStart = wetStart; t._maskDone = false; t._maskUntil = 0f;
-        t._tree = tree; t._path = path; t._i = 1; t._to = to; t.enabled = true;
+        t._tree = tree; t._path = path; t._i = 1; t._to = to; t.enabled = true; t._progI = -1; t._direct = false;
         t._ph = PathMover.Of(g.transform).PivotHeight;
         t._swim = SwimBody.Of(g.transform);
         float len = 0f; for (int i = 1; i < path.Count; i++) len += Vector3.Distance(path[i - 1], path[i]);
@@ -69,6 +71,7 @@ public class TreeTrip : MonoBehaviour
 
     // ¿El tramo i (del punto i−1 al i) va por el agua? Entra por la puerta (punto 2) y sale por la otra (antepenúltimo).
     bool _wetStart, _held, _ccOff;
+    int _progI = -1; float _progBest, _progAt; bool _direct;
     bool Wet(int i) => (i >= 2 || (_wetStart && i >= 1)) && i <= _path.Count - 2;
     // ¿El tramo i sube o baja por la columna (la corriente de la raíz lo lleva)? Casi vertical: más alto que ancho ×3.
     bool AlongColumn(int i) { if (i < 1 || i >= _path.Count) return false; Vector3 d = _path[i] - _path[i - 1]; return Mathf.Abs(d.y) > 3f * new Vector2(d.x, d.z).magnitude; }
@@ -85,9 +88,25 @@ public class TreeTrip : MonoBehaviour
         // cocina hacia el árbol, 130 m, a 1,67 m por fotograma, en el servicio del restaurante).
         if ((transform.position - _left).sqrMagnitude > 16f)
         { Debug.Log($"[Árbol] «{name}» ya no está donde lo dejó el viaje ({Vector3.Distance(transform.position, _left):0.0} m): deja el viaje a {_to?.name}."); Finish(false); return; }
-        if (Time.time > _until) { Stuck++; Debug.LogWarning($"[Árbol] «{name}» no llegó a {_to.name} a tiempo: se queda donde está (tramo {_i}/{_path.Count - 1}, en {transform.position}, hacia {_tree.World(_path[Mathf.Min(_i, _path.Count - 1)])}, {Time.time - _t0:0} s; máscara {BreathingMask.Has(gameObject)}, rescate {BreathingMask.IsRescuing(gameObject)})."); Finish(false); return; }
+        if (Time.time > _until) { Stuck++; StuckWho.Add(name); Debug.LogWarning($"[Árbol] «{name}» no llegó a {_to.name} a tiempo: se queda donde está (tramo {_i}/{_path.Count - 1}, en {transform.position}, hacia {_tree.World(_path[Mathf.Min(_i, _path.Count - 1)])}, {Time.time - _t0:0} s; máscara {BreathingMask.Has(gameObject)}, rescate {BreathingMask.IsRescuing(gameObject)})."); Finish(false); return; }
         if (MaskStep()) { _left = transform.position; return; }
         float budget = (Wet(_i) ? _tree.routeSwimSpeed + (Carried(_i) ? _tree.routeCurrent : 0f) : 1.8f) * Time.deltaTime;
+        // (2026-11-11) SIN AVANZAR: Julian, 225 s en el tramo 1/3 hacia la puerta del suelo del Árbol de los Campos sin moverse (suite 60). Si en 6 s
+        // no se acerca medio metro al punto del tramo, va derecho (sin SwimTo, que lo sube a la superficie del agua de ese punto) y lo dice una vez
+        // con el porqué (tramo, si es agua, si el punto está bajo el agua, la superficie que ve SwimTo).
+        if (_i < _path.Count)
+        {
+            Vector3 tgt = _tree.World(_path[_i]) + Vector3.up * _ph;
+            float dNow = Vector3.Distance(transform.position, tgt);
+            if (_i != _progI) { _progI = _i; _progBest = dNow; _progAt = Time.time; _direct = false; }
+            else if (dNow < _progBest - 0.5f) { _progBest = dNow; _progAt = Time.time; }
+            else if (!_direct && Time.time - _progAt > 6f)
+            {
+                _direct = true;
+                WaterZone wz = WaterZone.At(tgt);
+                Debug.LogWarning($"[Árbol] «{name}» no avanza en el tramo {_i}/{_path.Count - 1} hacia {tgt} (a {dNow:0.0} m; agua {Wet(_i)}, punto bajo el agua {WaterZone.Underwater(tgt)}, superficie {(wz != null ? wz.Surface.ToString("0.0") : "—")}): va derecho.");
+            }
+        }
         for (int guard = 0; guard < 4 && _i < _path.Count && budget > 1e-4f; guard++)
         {
             Vector3 target = _tree.World(_path[_i]) + Vector3.up * _ph;
@@ -95,7 +114,7 @@ public class TreeTrip : MonoBehaviour
             float dist = d.magnitude;
             // (Nadando solo hacia un punto DENTRO del agua: hacia el hueco de una puerta, que es aire, SwimTo lo bajaría a la
             // superficie del mar, que es el agua que queda «debajo» de ese punto; ahí se avanza en línea recta, como al andar.)
-            if (Wet(_i) && WaterZone.Underwater(target))
+            if (Wet(_i) && WaterZone.Underwater(target) && !_direct)
             {
                 Vector3 was = transform.position;
                 float left = _swim.SwimTo(target, budget / Mathf.Max(1e-4f, Time.deltaTime));

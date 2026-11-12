@@ -54,6 +54,22 @@ public class StaleNavCarver : MonoBehaviour
             o.carving = true; o.carveOnlyStationary = true;
             n++;
         }
+        // (2026-11-11) LA PARED DE LA RAÍZ de cada torre-árbol (cristal fino, MeshCollider): el NavMesh del hielo de alrededor no la veía y los
+        // animales se metían en ella (rondas 26, 58 y 61: reno y zorro ártico «dentro de Pared_raiz» en (-59,0,-92), (-61,0,…)). Su caja talla el
+        // NavMesh general: dentro está el agua del tronco, que no es para andar (los marinos entran por abajo, sin NavMesh). No en el árbol que gira.
+        int walls = 0;
+        foreach (MeshCollider mc in FindObjectsByType<MeshCollider>(FindObjectsSortMode.None))
+        {
+            if (mc == null || mc.name != "Pared_raiz" || mc.sharedMesh == null || mc.GetComponent<NavMeshObstacle>() != null) continue;
+            if (mc.GetComponentInParent<TreeRotator>() != null) continue;
+            NavMeshObstacle o = mc.gameObject.AddComponent<NavMeshObstacle>();
+            o.shape = NavMeshObstacleShape.Box;
+            Bounds mb = mc.sharedMesh.bounds;
+            float hy = Mathf.Min(mb.size.y, 4f); o.center = new Vector3(mb.center.x, mb.min.y + hy * 0.5f, mb.center.z); o.size = new Vector3(mb.size.x, hy, mb.size.z);   // (la altura que importa: el suelo)
+            o.carving = true; o.carveOnlyStationary = true;
+            walls++;
+        }
+        n += walls;
         Carved = n;
         Debug.Log($"[NavMesh] {n} muebles sin hueco en el NavMesh: ahora lo tallan (no se atraviesan).");
     }

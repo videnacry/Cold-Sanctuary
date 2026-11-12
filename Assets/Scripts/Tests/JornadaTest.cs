@@ -571,7 +571,10 @@ public class JornadaTest : MonoBehaviour, ITestUnit, IFastGameTime
             string head = Head(tr.g);
             bool needs = head != null && (head.StartsWith("comer") || head.StartsWith("pedir") || head.StartsWith("buscar mesa") || head.StartsWith("levantarse") || head.Contains("en la barra") || head.Contains("baño") || head.Contains("aseo") || head.Contains("dormir") || head.Contains("cama"));
             bool asleep = tr.anima != null && tr.anima.asleep;
-            bool atPost = area != null && PlayerWorkday.AtPost(cur?.mission, area, p);
+            // (2026-11-11) Quien ha bajado por la Línea a la planta bajo el mar o ha volado al santuario aéreo HACE SU MISIÓN ALLÍ (corre por el reloj,
+            // en otra escena): no está «fuera de su puesto». Lizmibet e Irosene (la planta), Luciana (la flota aérea) a 0 % en la suite 60.
+            bool awaySite = SiteLine.IsAway(tr.g) || AereoLink.IsAway(tr.g);
+            bool atPost = awaySite || (area != null && PlayerWorkday.AtPost(cur?.mission, area, p));
             bool full = Window(tr, out float path, out float net, out float reach);
             bool moving = !full || path > 1f;
             string status = StatusOf(tr.g);
@@ -628,7 +631,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit, IFastGameTime
             if (desire != tr.headLabel) { tr.headLabel = desire; tr.headSince = now; }
             bool same = now - tr.headSince >= 19f;
             if (full && same && !resting && path < 0.5f) Add(tr.name, "atascado > 20 s", $"quiere «{desire}» y no se mueve en {Where(p)} [{DesireCatalog.TripInfo(a)} · {DesireCatalog.NavInfo(a)}]", false);   // (2026-11-11) con su viaje y su agente
-            if (full && same && !flier && !marine && !a.busy && FlatPath(tr) > 15f && net < 2f && reach < FlatPath(tr) * 0.35f) Add(tr.name, "da vueltas en círculo", $"{path:0} m en 20 s para {net:0.0} m netos ({tr.activity})", false);
+            if (full && same && !flier && !marine && !a.busy && FlatPath(tr) > 15f && net < 2f && reach < FlatPath(tr) * 0.35f) Add(tr.name, "da vueltas en círculo", $"{path:0} m en 20 s para {net:0.0} m netos ({tr.activity}) [{DesireCatalog.TripInfo(a)} · {NavTrace.Last(a)}]", false);   // (2026-11-11) con su viaje y el último que le cambió el camino
             if (!(marine && inHabitat)) CheckBody(tr, p, riding, a.death || a.asleep || a.busy, false);   // (en su respiradero la foca asoma recta por la placa y al descansar se tumba: es su sitio, no un cuerpo dentro del hielo)
         }
 
