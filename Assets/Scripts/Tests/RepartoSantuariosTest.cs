@@ -332,6 +332,31 @@ public class RepartoSantuariosTest : MonoBehaviour, ITestUnit
             pnuc.lessons.Any(l => l.real.area == NuclearSite.PlantArea) && pnuc.work.Any(a => !a.lesson && !a.worker.clone && a.mission.area == NuclearSite.PlantArea) && !pnuc.cloneAreas.Contains(NuclearSite.PlantArea),
             $"clases {pnuc.lessons.Count}: {string.Join(", ", pnuc.lessons.Select(l => l.real.id))} · clones: {string.Join(", ", pnuc.cloneReasons)}");
 
+        // RONDA 54: la comida de la tarde llega para todos, dos veces (merienda y cena)
+        TestProbe.Check("las raciones de la tarde: platillos × raciones ≥ personas × 2 comidas; las de las 11, ≥ personas",
+            WorkdayDirector.RationsPerDish(31, 6, 2) * 6 >= 62 && WorkdayDirector.RationsPerDish(44, 6, 1) * 6 >= 44 && WorkdayDirector.RationsPerDish(29, 6, 2) * 6 >= 58);
+        // RONDA 54: aprender lo que otro del sitio ya sabe hacer va con las horas que sobran, no con las de las tareas (si no, cada clase es una hora de clon)
+        WorkRoster Budget(int easyTasks)
+        {
+            var r = new WorkRoster { sanctuaryModel = true, initiationModel = true, useProfessions = false };
+            r.areas.Add("A"); r.trainingAreas.Add("Sala de Yoga");
+            WorkRoster.Worker sabe = r.Add("Sabe"); sabe.taught.Add("qui_a"); r.Add("Aprende");
+            foreach (var w in r.workers) for (int i = 0; i < easyTasks; i++) w.taught.Add("limp_" + i);
+            return r;
+        }
+        List<WorkRoster.Mission> BudgetDay(int easyTasks) { var l = new List<WorkRoster.Mission> { new WorkRoster.Mission("A", "qui_a", "Riesgo", 1f) }; for (int i = 0; i < easyTasks; i++) l.Add(new WorkRoster.Mission("A", "limp_" + i, "Limpiar", 1f)); return l; }
+        WorkRoster bFull = Budget(9); WorkRoster.DayPlan pbFull = bFull.Plan(0, BudgetDay(9));
+        WorkRoster bSlack = Budget(4); WorkRoster.DayPlan pbSlack = bSlack.Plan(0, BudgetDay(4));
+        TestProbe.Check("sin horas libres, nadie aprende lo que otro ya sabe hacer (y no hay clon por ello); con horas libres, sí",
+            pbFull.lessons.Count == 0 && pbFull.clones.Count == 0 && pbSlack.lessons.Any(l => l.real.id == "qui_a"),
+            $"sin holgura: {pbFull.lessons.Count} clases, {pbFull.clones.Count} clones · con holgura: {pbSlack.lessons.Count} clases");
+        // RONDA 55: Kushal no hace el servicio del restaurante (a las 14 seguía en la cocina y perdía el Dojo) ni las rondas, ni tareas a trozos
+        WorkRoster kr = Roster(("Player", 0));
+        var kDay = new List<WorkRoster.Mission> { new WorkRoster.Mission("Cocina", "coc_servicio", "Servicio", 2f, true), new WorkRoster.Mission("Huerto", FruitGardener.MissionPrefix + "_2", "Ronda", 2f, true), new WorkRoster.Mission("Guardia", "gua_carnivoros", "Patrulla", 2f, true), new WorkRoster.Mission("A", "x_k", "X", 1f) };
+        WorkRoster.DayPlan pk2 = kr.Plan(0, kDay);
+        var kWork = pk2.Of(kr.Find("Player")).ToList();
+        TestProbe.Check("Kushal: ni el servicio del restaurante, ni rondas de frutales, ni trozos", kWork.Count > 0 && kWork.All(a => !WorkRoster.PlayerSkips(a.mission) && !a.mission.piece), string.Join(", ", kWork.Select(a => $"{a.mission.id} {a.mission.hours} h")));
+
         // RONDA 52: solo se inicia en lo que tiene riesgo (J31: lo demás se aprende haciéndolo); antes cada uno pasaba 2 h al día aprendiendo a hacer leche o a barrer
         var risk = new WorkRoster { sanctuaryModel = true, initiationModel = true, useProfessions = false };
         risk.areas.Add("A"); risk.trainingAreas.Add("Sala de Yoga"); risk.Add("Aprende");
