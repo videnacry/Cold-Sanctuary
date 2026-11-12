@@ -160,7 +160,7 @@ public static class DesireCatalog
             {
                 if (self.nav == null || !self.nav.isOnNavMesh) return;
                 if (Vector3.Distance(self.transform.position, self.HomeOrigin) > 1.5f) Move(self, self.HomeOrigin);
-                else { self.nav.ResetPath(); self.Loco?.Idle(1f); self.alertness = Mathf.Max(self.alertness, 0.3f); }   // en el nido, atenta
+                else { NavTrace.Reset(self, "brood (vigila el nido)"); self.Loco?.Idle(1f); self.alertness = Mathf.Max(self.alertness, 0.3f); }   // en el nido, atenta
             },
             "tend"),
 
@@ -197,7 +197,7 @@ public static class DesireCatalog
         // Restore pasivo recupera). Compite con todo → un ser agotado prioriza parar sobre deambular/comer un poco.
         new Desire("rest",
             self => Mathf.Clamp01((self.sleepiness + self.mentalFatigue) * 0.5f),
-            self => { if (self.nav != null && self.nav.isOnNavMesh) self.nav.ResetPath(); self.Loco?.Idle(1f); },
+            self => { if (self.nav != null && self.nav.isOnNavMesh) NavTrace.Reset(self, "rest (descansa)"); self.Loco?.Idle(1f); },
             "rest"),
 
         // VOLVER AL HOGAR (cohesión de nido / territorialidad): deriva hacia el `HomeOrigin` cuando se aleja y no hay
@@ -281,6 +281,9 @@ public static class DesireCatalog
     /// <summary>Diagnóstico: el viaje de un animal (deseo, si va, destino, pausas, llamadas).</summary>
     /// <summary>(2026-11-11) El estado del agente de un animal, para los avisos de «atascado»: camino, cálculo pendiente, estado, velocidad,
     /// sobre el NavMesh y distancia al destino.</summary>
+    /// <summary>(2026-11-11) ¿Lleva un viaje de deseo en marcha (para NavTrace)?</summary>
+    public static bool LiveTrip(Animal a, out string key) { key = null; if (a == null || !_trips.TryGetValue(a, out Trip t) || !t.going) return false; key = t.key; return true; }
+
     public static string NavInfo(Animal a)
     {
         NavMeshAgent n = a != null ? a.nav : null;
@@ -314,7 +317,7 @@ public static class DesireCatalog
         if (!t.going) return false;
         NavMeshAgent nav = self.nav;
         if (nav == null || !nav.isOnNavMesh) { t.going = false; return false; }
-        if (nav.pathPending) { if (Time.time - t.since > 3f) { t.going = false; t.failUntil = Time.time + 4f; TripsStalled++; nav.ResetPath(); return false; } return true; }   // (camino que no llega a calcularse: tope)
+        if (nav.pathPending) { if (Time.time - t.since > 3f) { t.going = false; t.failUntil = Time.time + 4f; TripsStalled++; NavTrace.Reset(self, "deseo: camino pendiente > 3 s"); return false; } return true; }   // (camino que no llega a calcularse: tope)
         // Con camino y sin velocidad: una pausa (Idle, velocidad 0) de otra conducta, como «no alcanza comida; descansa», le dejaba quieto con
         // el viaje en marcha hasta darlo por atascado (osos, lobos, crías: «velocidad pedida 0,0 … sin WalkSpell»). Quien lleva el viaje, anda.
         if (nav.hasPath && nav.speed < 0.05f && !self.busy) self.Loco?.SetGait(false, 0.1f);
@@ -326,10 +329,10 @@ public static class DesireCatalog
             if (Time.time - t.since > 3f)
             {
                 t.going = false; t.failUntil = Time.time + 4f; TripsStalled++; NoPathTrips++;
-                if (_noPathLogs < 30) { _noPathLogs++; Debug.Log($"[Fauna] «{self.name}» se queda sin camino hacia {t.goal} ({Flat(t.goal - self.transform.position):0.0} m): {NavInfo(self)}."); }
+                if (_noPathLogs < 30) { _noPathLogs++; Debug.Log($"[Fauna] «{self.name}» se queda sin camino hacia {t.goal} ({Flat(t.goal - self.transform.position):0.0} m): {NavInfo(self)} · {NavTrace.Last(self)}."); }
                 return false;
             }
-            if (Time.time >= t.reissueAt) { t.reissueAt = Time.time + 0.5f; self.Loco?.SetGait(false, 0.1f); nav.SetDestination(t.goal); }
+            if (Time.time >= t.reissueAt) { t.reissueAt = Time.time + 0.5f; self.Loco?.SetGait(false, 0.1f); NavTrace.Dest(self, nav, t.goal, "deseo: lo vuelve a pedir"); }
             return true;
         }
         float rem = nav.hasPath ? Remaining(nav) : 0f;
@@ -339,7 +342,7 @@ public static class DesireCatalog
         {
             if (_stallLogs < 30) { _stallLogs++; Debug.Log($"[Fauna] «{self.name}» se atasca yendo a {t.goal} desde {self.transform.position}: quedan {rem:0.0} m, velocidad pedida {nav.speed:0.0}, real {nav.velocity.magnitude:0.0}, parado {nav.isStopped}, camino {nav.pathStatus}{(nav.speed < 0.05f ? $", sin velocidad: {(self.Walk != null && self.Walk.IsCharging ? "en postura de carga" : self.TryGetComponent(out CharacterLevel cl) ? $"energía {cl.currentEnergy:0.0}/{cl.MaxEnergy:0.0}" : "sin WalkSpell ni energía")}" : "")}."); }
             t.going = false; t.failUntil = Time.time + 8f; TripsStalled++;
-            nav.ResetPath();
+            NavTrace.Reset(self, "deseo: atascado o tope");
             return false;
         }
         return true;
@@ -372,8 +375,8 @@ public static class DesireCatalog
         if (self.nav == null || !self.nav.isOnNavMesh) return;
         // Con el camino YA calculado (NavReach acaba de comprobar que se llega): SetPath, sin esperar a que el agente lo pida y
         // lo calcule otra vez (con cientos de obstáculos tallando, SetDestination podía quedarse «pendiente» y el animal quieto).
-        if (NavReach.LastPathTo(self, to, out NavMeshPath p)) { self.Loco?.SetGait(false, 1f); if (self.nav.SetPath(p) && (self.nav.hasPath || self.nav.pathPending)) return; }   // (2026-11-11: un SetPath que «sale bien» pero deja al agente sin camino → SetDestination)
-        if (self.Loco != null) self.Loco.Walk(to, 1f); else self.nav.SetDestination(to);
+        if (NavReach.LastPathTo(self, to, out NavMeshPath p)) { self.Loco?.SetGait(false, 1f); NavTrace.Mark(self, "deseo: SetPath", to); if (self.nav.SetPath(p) && (self.nav.hasPath || self.nav.pathPending)) return; }   // (2026-11-11: un SetPath que «sale bien» pero deja al agente sin camino → SetDestination)
+        self.Loco?.SetGait(false, 1f); NavTrace.Dest(self, self.nav, to, "deseo: SetDestination");
     }
 
     /// <summary>Va hacia <paramref name="dest"/> si se puede llegar (camino completo); true si va (o ya iba). Re-apunta solo
@@ -537,7 +540,7 @@ public static class DesireCatalog
         Animal cub = CubNeed(self, out _);
         if (cub == null) return;
         // A su lado se para: seguía re-apuntando a la cría, que a su vez la seguía a ella («heel»), y daban vueltas juntas (lobo: 25 m en 20 s para 0 netos).
-        if (Vector3.Distance(self.transform.position, cub.transform.position) <= 2.5f) { if (self.nav != null && self.nav.isOnNavMesh) self.nav.ResetPath(); FeedCub(self, cub); return; }
+        if (Vector3.Distance(self.transform.position, cub.transform.position) <= 2.5f) { if (self.nav != null && self.nav.isOnNavMesh) NavTrace.Reset(self, "nurse (junto a la cría)"); FeedCub(self, cub); return; }
         if (self.nav != null && self.nav.isOnNavMesh) Move(self, MeetPoint(self.transform.position, cub.transform.position));
     }
 
@@ -591,7 +594,7 @@ public static class DesireCatalog
 
     static void Stop(Animal self, float seconds)
     {
-        if (self.nav != null && self.nav.enabled && self.nav.isOnNavMesh) self.nav.ResetPath();
+        if (self.nav != null && self.nav.enabled && self.nav.isOnNavMesh) NavTrace.Reset(self, "DesireCatalog línea 594");
         self.Loco?.Idle(seconds);
     }
 
@@ -683,7 +686,7 @@ public static class DesireCatalog
         if (Vector3.Distance(self.transform.position, parent != null ? parent.position : to) > (parent != null ? 2f : 1.5f)) Move(self, to);
         else
         {
-            self.nav.ResetPath(); self.Loco?.Idle(1f);
+            NavTrace.Reset(self, "AwaitFeeding (pide la toma)"); self.Loco?.Idle(1f);
             // PIDE Y LE DAN: la cría pegada a su madre (o padre) mama, o pide con el pico y le regurgitan: una toma cada 2 s de
             // juego. La toma no esperaba solo a que el «nurse» del adulto ganara a sus otros deseos: en la isla del pingüino el
             // macho (hambriento tras 2 meses incubando) y la hembra (que vuelve del mar) casi nunca lo elegían y el polluelo

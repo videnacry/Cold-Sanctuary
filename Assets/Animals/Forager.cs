@@ -288,7 +288,7 @@ public class Forager : MonoBehaviour
                 self.Loco.Walk(to, walkInterval);
                 yield return new WaitForSeconds(walkInterval);
             }
-            if (school && self.nav != null && self.nav.isOnNavMesh) self.nav.ResetPath();   // en la orilla: se para a pescar
+            if (school && self.nav != null && self.nav.isOnNavMesh) NavTrace.Reset(self, "Forager: se para a pescar");   // en la orilla: se para a pescar
         }
 
         float interval = TimeController.timeController.TimeSpeedMinuteSecs / Random.Range(7, 12);

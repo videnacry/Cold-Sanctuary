@@ -31,7 +31,7 @@ public class Locomotion : MonoBehaviour
     /// <summary>Fija destino (si el agente está sobre NavMesh) y prepara el gait dado.</summary>
     public void Move(Vector3 dest, ActionPrep gait, float animTime)
     {
-        if (_nav != null && _nav.isOnNavMesh) _nav.SetDestination(dest);
+        if (_nav != null && _nav.isOnNavMesh) NavTrace.Dest(_animal, _nav, dest, "Locomotion.Move ← " + Caller());
         if (_animal != null) gait?.Prep(_animal, animTime);
     }
 
@@ -46,6 +46,14 @@ public class Locomotion : MonoBehaviour
     /// <summary>Solo fija el DESTINO (si está sobre NavMesh), sin cambiar el gait.</summary>
     public void GoTo(Vector3 dest)
     {
-        if (_nav != null && _nav.isOnNavMesh) _nav.SetDestination(dest);
+        if (_nav != null && _nav.isOnNavMesh) NavTrace.Dest(_animal, _nav, dest, "Locomotion.GoTo ← " + Caller());
+    }
+
+    // (2026-11-11, NavTrace) Quién pidió el movimiento: el método de fuera de Locomotion (Walk/Run/Move/GoTo).
+    static string Caller()
+    {
+        var st = new System.Diagnostics.StackTrace(2, false);
+        for (int i = 0; i < st.FrameCount && i < 4; i++) { var m = st.GetFrame(i)?.GetMethod(); if (m != null && m.DeclaringType != typeof(Locomotion)) return $"{m.DeclaringType?.Name}.{m.Name}"; }
+        return "?";
     }
 }

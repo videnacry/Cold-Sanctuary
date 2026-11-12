@@ -192,7 +192,7 @@ public abstract class LifeStage
             if (script.GetComponentInParent<CriaFeeder>() != null)
             {
                 Vector2 r = Random.insideUnitCircle * 1.5f;
-                script.nav.SetDestination(script.HomeOrigin + new Vector3(r.x, 0f, r.y));
+                NavTrace.Dest(script, script.nav, script.HomeOrigin + new Vector3(r.x, 0f, r.y), "LifeStage.Wander (recinto)");
                 return;
             }
             float step = Mathf.Clamp(script.HomeRadius, 5f, 25f);
@@ -203,7 +203,7 @@ public abstract class LifeStage
             // hacia la comida aun sin hambre). Sin rejilla/rastro, Trail devuelve 0 y esto NO cambia nada.
             Vector3 trail = TraceField.Trail(script.transform.position, TraceChannel.ScentFood);
             if (trail.sqrMagnitude > 0.0001f) dest += trail.normalized * step;
-            script.nav.SetDestination(dest);
+            NavTrace.Dest(script, script.nav, dest, "LifeStage.Wander");
         };
     }
     public SubEvent Rest()
@@ -227,7 +227,7 @@ public abstract class LifeStage
                 // hogar el punto caía más allá de los muros del recinto y el polluelo o el cachorro recorría el borde sin llegar.
                 Vector3 offset = script.GetComponentInParent<CriaFeeder>() != null ? Random.insideUnitSphere * 1.5f : Random.insideUnitSphere * script.HomeRadius;
                 Vector3 dest = script.HomeOrigin + new Vector3(offset.x, 0f, offset.z);
-                if (script.nav != null && script.nav.isOnNavMesh) script.nav.SetDestination(dest);
+                if (script.nav != null && script.nav.isOnNavMesh) NavTrace.Dest(script, script.nav, dest, "LifeStage.Homebound");
             }
         };
     }
@@ -247,7 +247,7 @@ public abstract class LifeStage
             if (carrier.CarriedFood != null)
             {
                 float dist = Vector3.Distance(script.transform.position, nestPos);
-                if (script.nav != null && script.nav.isOnNavMesh) script.nav.SetDestination(nestPos);
+                if (script.nav != null && script.nav.isOnNavMesh) NavTrace.Dest(script, script.nav, nestPos, "LifeStage.Feed (al nido)");
                 script.ActsPrep.run.Prep(script, duration);
                 if (dist < 10f)
                 {
@@ -269,7 +269,7 @@ public abstract class LifeStage
                     carrier.PickUp(nearby);
                 else
                 {
-                    if (script.nav != null && script.nav.isOnNavMesh) script.nav.SetDestination(nearby.transform.position);
+                    if (script.nav != null && script.nav.isOnNavMesh) NavTrace.Dest(script, script.nav, nearby.transform.position, "LifeStage.Feed (comida)");
                     script.ActsPrep.walk.Prep(script, duration);
                 }
                 return;
