@@ -158,7 +158,7 @@ public static partial class MicroStoryMaps
         MapHawthorne(),   // (2026-11-12) hecho: MicroStoryMaps.Famosos.cs
         MapAldeaMontana(),   // (2026-11-12) hecho: MicroStoryMaps.Famosos.cs
         MapAlbuquerque(),   // (2026-11-12) hecho: MicroStoryMaps.Famosos.cs
-        Stub("Omaha", Base1, Base2, "Omaha: la tienda de la señora B, sus alfombras y las calles de Nebraska"),
+        MapOmaha(),   // (2026-11-12) hecho: MicroStoryMaps.Famosos.cs
         Stub("Prairie View", Base1, Base2, "Prairie View A&M: el campus, su biblioteca y la pradera de Texas"),
         Stub("Uagadugú", Base1, Base2, "los huertos antes de las lluvias en Burkina Faso: el karité, el mijo y el agua"),
     };

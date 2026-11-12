@@ -374,3 +374,15 @@ es la naturaleza **real** del monte subtropical de China central, como en las al
 - **Fuentes:** Allen, *Idea Man* (2011); *Popular Electronics*, enero de 1975; Microsoft (fundación); USDA PLANTS; OpenStreetMap; el plano del
   pueblo. **Inferido:** las direcciones de MITS y del motel (no verificadas, como en el plano).
 - **Menú:** ya tenía uno propio, `Build Microcosmos de famosos/Bill Gates (Albuquerque, 1975)`.
+
+### Omaha (Warren Buffett), sobre el Taller Textil
+**La Nebraska Furniture Mart en la calle 72, Farnam Street y Memorial Park, 30 de agosto de 1983.** Plano acortado al este (como el plano del
+pueblo). Una ciudad: solo lo plantado y sus animales.
+- **El piso:** las alfombras son el gran almacén de alfombras de la señora B; las mesas de corte, las manzanas de la cuadrícula; las máquinas, roca.
+- **La flora (82):** un resto de pradera de hierba alta (andropogon y equináceas) al oeste; fresnos verdes en Dodge Street; arces plateados y
+  petunias en Farnam Street, frente a la casa de Buffett; robles en Memorial Park; céspedes; los bordillos del aparcamiento de la tienda.
+- **La fauna (9):** perros y gatos de las casas (cochinillas hormigueras en el microcosmos).
+- **Edificios:** la Nebraska Furniture Mart, la casa de Buffett, Kiewit Plaza, Memorial Park y la Universidad de Nebraska en Omaha.
+- **Fuentes:** Berkshire Hathaway, carta de 1983; Lowenstein, *Buffett* (1995); Nebraska Furniture Mart (historia); OpenStreetMap; Nebraska
+  Statewide Arboretum; el plano del pueblo. **Inferido:** las especies de cada calle.
+- **Menú:** ya tenía uno propio, `Build Microcosmos de famosos/Warren Buffett (Omaha, 1983)`.

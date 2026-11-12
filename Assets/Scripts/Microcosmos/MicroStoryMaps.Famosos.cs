@@ -162,4 +162,45 @@ public static partial class MicroStoryMaps
         },
         todo = new[] { "en vivo: que los álamos queden en la orilla del Río Grande y el desierto al este, más allá de San Mateo" },
     };
+
+    // ══ OMAHA, 30 de agosto de 1983 (Warren Buffett y la señora B): sobre el Taller Textil ══════════════════════════════════════════════════════
+    // La Nebraska Furniture Mart de Rose Blumkin en la calle 72, al sur de Dodge Street: Buffett la compra el día de su 53 cumpleaños con un apretón de
+    // manos. Al este (acortado), Farnam Street con la casa de Buffett y Kiewit Plaza (la oficina de Berkshire), Memorial Park con sus robles; al oeste,
+    // un resto de pradera de hierba alta. Agosto: fresnos y arces de calle, céspedes, petunias. Una ciudad: solo lo plantado y sus perros y gatos.
+    static Map MapOmaha() => new Map
+    {
+        display = "Omaha", place = "Omaha (Nebraska): la Nebraska Furniture Mart en la calle 72, Farnam Street y Memorial Park, 30 de agosto de 1983", status = Status.Hecho,
+        source = "Berkshire Hathaway, carta a los accionistas de 1983 (la compra de la Nebraska Furniture Mart); Lowenstein, Buffett (1995); Nebraska Furniture " +
+                 "Mart, historia (en la calle 72 desde 1970); OpenStreetMap (Farnam Street, Memorial Park); Nebraska Statewide Arboretum; el plano del pueblo",
+        floor = Natural(
+            new Piece("alfombra", Como, "las alfombras: el gran almacén de alfombras de la señora B", "suelo"),
+            new Piece("mesa", Como, "las mesas de corte: las manzanas de la cuadrícula de Omaha", "mesa")),
+        flora = new[]
+        {
+            // El resto de pradera de hierba alta del oeste.
+            new Plant("Andropogon", -1200f, -900f, 10, 200f), new Plant("Equinácea", -1100f, -800f, 6, 200f),
+            // Los fresnos verdes de Dodge Street.
+            new Plant("Fresno verde", -600f, 800f, 8, 150f), new Plant("Fresno verde", 600f, 800f, 8, 150f),
+            // Farnam Street: los arces plateados y las petunias frente a la casa de Buffett.
+            new Plant("Arce plateado", 1200f, 560f, 6, 100f), new Plant("Petunias", 1250f, 640f, 4, 60f),
+            // Memorial Park y sus robles; los céspedes de las casas.
+            new Plant("Roble rojo", 1000f, 1000f, 8, 150f), new Plant("Césped de la casa", 900f, 300f, 8, 150f), new Plant("Césped de la casa", -400f, -800f, 8, 150f),
+            // Los bordillos del aparcamiento de la tienda.
+            new Plant("Bordillo de hormigón", 100f, -200f, 4, 60f),
+        },
+        fauna = new[]
+        {
+            new Animal("Woodlouse", "Perro de la casa (en el microcosmos, una cochinilla hormiguera)", 900f, 300f, 3, 0.7f, 150f),
+            new Animal("Woodlouse", "Perro de la casa", -400f, -800f, 2, 0.7f, 150f),
+            new Animal("Woodlouse", "Gato de la casa (en el microcosmos, una cochinilla hormiguera)", 1200f, 600f, 2, 0.5f, 100f),
+            new Animal("Woodlouse", "Gato de la casa", -200f, -600f, 2, 0.5f, 150f),
+        },
+        buildings = new[]
+        {
+            new Building("Nebraska Furniture Mart", 60f, 80f), new Building("Casa de Warren Buffett (Farnam Street)", 1250f, 600f),
+            new Building("Kiewit Plaza (la oficina de Berkshire Hathaway)", 950f, 520f), new Building("Memorial Park", 1000f, 1000f),
+            new Building("Universidad de Nebraska en Omaha", 800f, 1100f),
+        },
+        todo = new[] { "en vivo: que los fresnos queden a los lados de Dodge Street y la pradera en el borde suroeste" },
+    };
 }
