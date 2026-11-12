@@ -469,7 +469,9 @@ public class WorkRoster
         var skills = workers.ToDictionary(w => w, w => options.Count(m => Learned(w, m)));
         options.Add(skill);
         var order = _staff.OrderBy(w => skills[w]).ToList();   // (estable: a igualdad, el orden del personal del día)
-        bool Wants(Worker w, Mission m) => !Learned(w, m) && (m != skill || skills[w] >= MinSkillsToInstruct);
+        // (ronda 52) Con el reparto por santuarios, solo se inicia en lo que tiene riesgo (MissionRequirements.NeedsLesson: J31, lo demás se aprende haciéndolo) y en
+        // saber iniciar. Antes cada uno pasaba 2 h al día aprendiendo a hacer leche o a barrer, y esas horas las cubrían 9 clones en la cocina.
+        bool Wants(Worker w, Mission m) => !Learned(w, m) && (m != skill || skills[w] >= MinSkillsToInstruct) && (!sanctuaryModel || m == skill || MissionRequirements.NeedsLesson(m.id));
         var scores = new Dictionary<Mission, int>();   // (se calcula una vez por hora: Practises parte cadenas)
         // (2026-11-08) UN ÁREA QUE HOY NADIE PUEDE HACER (todas sus tareas piden saber y nadie de su sitio sabe ninguna) va PRIMERO: alguien se inicia
         // en ella y la hace después; la Magnate la cubre solo si nadie pudo iniciarse ese día. Regla de oro: todos aprenden todo.

@@ -276,8 +276,8 @@ public class RepartoSantuariosTest : MonoBehaviour, ITestUnit
         WorkRoster.DayPlan pu0 = LiveRoster(false, liveDay).Plan(0, liveDay.Select(x => x.Copy()).ToList());
         Debug.Log($"[Reparto] Caso en vivo sin formar (iniciaciones de 2 h): {pu0.clones.Count} clones · {pu0.lessons.Count} clases · motivos: {string.Join(" | ", pu0.cloneReasons.Take(8))}");
         // CONTROL DE MISIÓN, TAMBIÉN EN OBRA (Berón 2026-11-09): su área vive en la escena aérea; la obra la llevan los del Aéreo
-        TestProbe.Check("Control de misión no es básico; su seguridad (diluvio, iceberg, vaciado) sigue aunque esté en obra",
-            !AreasEnObra.IsBasic(LaunchSite.ControlArea) && AreasEnObra.Filter(new List<WorkRoster.Mission> { new WorkRoster.Mission(LaunchSite.ControlArea, "lanz_control", "", 1f), new WorkRoster.Mission(LaunchSite.ControlArea, "lanz_seguridad", "", 1f), new WorkRoster.Mission(LaunchSite.ControlArea, Iceberg.LaunchTow, "", 2f, true) }, new HashSet<string> { LaunchSite.ControlArea }).Select(x => x.id).OrderBy(x => x).SequenceEqual(new[] { "lanz_remolque", "lanz_seguridad" }));
+        TestProbe.Check("Control de misión no es básico; en obra solo siguen sus emergencias (iceberg, vaciado), no la revisión de la plataforma",
+            !AreasEnObra.IsBasic(LaunchSite.ControlArea) && AreasEnObra.Filter(new List<WorkRoster.Mission> { new WorkRoster.Mission(LaunchSite.ControlArea, "lanz_control", "", 1f), new WorkRoster.Mission(LaunchSite.ControlArea, "lanz_seguridad", "", 1f), new WorkRoster.Mission(LaunchSite.ControlArea, Iceberg.LaunchTow, "", 2f, true) }, new HashSet<string> { LaunchSite.ControlArea }).Select(x => x.id).OrderBy(x => x).SequenceEqual(new[] { "lanz_remolque" }));
         var ctrlObra = AreaWork.ObraMissions(LaunchSite.ControlArea, 1, reform: true, area: AreasEnObra.ObraArea(LaunchSite.ControlArea));
         TestProbe.Check("la obra de Control de misión es del Aéreo (la hacen los de s3)", ctrlObra.All(x => SanctuaryPlacement.SanctuaryOfArea(x.area) == SanctuaryPlacement.Aerial) && AreaWork.ObraMissions("Música", 1, reform: true, area: AreasEnObra.ObraArea("Música")).All(x => x.area == "Construcción"));
         WorkRoster air = Roster(("Linda", 2));
@@ -332,15 +332,20 @@ public class RepartoSantuariosTest : MonoBehaviour, ITestUnit
             pnuc.lessons.Any(l => l.real.area == NuclearSite.PlantArea) && pnuc.work.Any(a => !a.lesson && !a.worker.clone && a.mission.area == NuclearSite.PlantArea) && !pnuc.cloneAreas.Contains(NuclearSite.PlantArea),
             $"clases {pnuc.lessons.Count}: {string.Join(", ", pnuc.lessons.Select(l => l.real.id))} · clones: {string.Join(", ", pnuc.cloneReasons)}");
 
+        // RONDA 52: solo se inicia en lo que tiene riesgo (J31: lo demás se aprende haciéndolo); antes cada uno pasaba 2 h al día aprendiendo a hacer leche o a barrer
+        var risk = new WorkRoster { sanctuaryModel = true, initiationModel = true, useProfessions = false };
+        risk.areas.Add("A"); risk.trainingAreas.Add("Sala de Yoga"); risk.Add("Aprende");
+        WorkRoster.DayPlan prisk = risk.Plan(0, new List<WorkRoster.Mission> { new WorkRoster.Mission("A", "limpiar_z", "Limpiar", 1f), new WorkRoster.Mission("Cocina", "prep_leche", "Leche", 0.5f), new WorkRoster.Mission("A", "qui_z", "Síntesis", 1f) });
+        TestProbe.Check("las iniciaciones son solo de lo que tiene riesgo (qui_), no de limpiar ni de la leche", prisk.lessons.Count == 1 && prisk.lessons[0].real.id == "qui_z", string.Join(", ", prisk.lessons.Select(l => l.real.id)));
         // RONDA 35: los huecos de verdad. Una clase a las 9 y un grupo a las 12 dejaban libre 10–11, y nada volvía atrás a llenarlo: ahora sí.
         var gapR = new WorkRoster { sanctuaryModel = true, initiationModel = true, useProfessions = false };
         gapR.areas.Add("A"); gapR.trainingAreas.Add("Sala de Yoga");
         var gapDay = new List<WorkRoster.Mission>
         {
-            new WorkRoster.Mission("A", "x_nueva", "Nueva", 1f), new WorkRoster.Mission("A", "y_1", "Y1", 1f), new WorkRoster.Mission("A", "y_2", "Y2", 1f), new WorkRoster.Mission("A", "y_3", "Y3", 1f),
+            new WorkRoster.Mission("A", "qui_nueva", "Nueva", 1f), new WorkRoster.Mission("A", "y_1", "Y1", 1f), new WorkRoster.Mission("A", "y_2", "Y2", 1f), new WorkRoster.Mission("A", "y_3", "Y3", 1f),
             new WorkRoster.Mission("A", "g_1", "Grupo 1", 2f, true) { group = "g" }, new WorkRoster.Mission("A", "g_2", "Grupo 2", 2f, true) { group = "g" },
         };
-        for (int i = 0; i < 2; i++) { WorkRoster.Worker gw = gapR.Add("Hueco" + i); foreach (var gm in gapDay) if (gm.id != "x_nueva") gw.taught.Add(MissionRequirements.KnowledgeKey(gm.id)); gw.taught.Add(WorkRoster.InstructSkill); }
+        for (int i = 0; i < 2; i++) { WorkRoster.Worker gw = gapR.Add("Hueco" + i); foreach (var gm in gapDay) if (gm.id != "qui_nueva") gw.taught.Add(MissionRequirements.KnowledgeKey(gm.id)); gw.taught.Add(WorkRoster.InstructSkill); }
         WorkRoster.DayPlan pgap = gapR.Plan(0, gapDay);
         TestProbe.Check("la hora de 10 a 11 que dejan la clase y el grupo se llena: todo hecho por los dos, sin clones",
             pgap.clones.Count == 0 && gapR.workers.All(w => Mathf.Approximately(Worked(pgap, w), 5f)) && pgap.work.Any(a => !a.lesson && Mathf.Approximately(a.start, 10f)),

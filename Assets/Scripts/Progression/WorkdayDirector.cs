@@ -265,7 +265,9 @@ public class WorkdayDirector : MonoBehaviour
         for (int i = _initiators.Count - 1; i >= 0; i--) if (_initiators[i].go == null || h >= _initiators[i].until) { if (_initiators[i].go != null) Destroy(_initiators[i].go); _initiators.RemoveAt(i); }
 
         if (!_lunchStocked && h >= WorkRoster.StartHour + WorkRoster.FirstBlock) { _lunchStocked = true; StockLunch(); }   // [Jornada] la comida de las 11:00
-        if (!_dinnerStocked && h >= DinnerHour) { _dinnerStocked = true; StockLunch("cena"); }   // (2026-11-11) y la cena
+        // (ronda 52) LA CENA: nadie ponía comida después de la de las 11, y de las 16 a la noche había «hambre pero no hay comida» (118 veces en 3 días). Al acabar
+        // la jornada, el servicio deja en la barra la de la tarde y la cena para todos (sin clones: ya se han ido).
+        if (!_dinnerStocked && h >= WorkRoster.StartHour + 8f) { _dinnerStocked = true; StockMeal("16:00 · la merienda y la cena", roster.workers.Count + 2); }
         if (!_placed) PlaceAtStart(h);
         UpdateInitiator(h);
         foreach (WorkRoster.Worker w in roster.workers)
@@ -830,10 +832,6 @@ public class WorkdayDirector : MonoBehaviour
     readonly Dictionary<GameObject, (QueuedSpell s, float t)> _needSince = new Dictionary<GameObject, (QueuedSpell, float)>();
     const float MaxNeed = 240f;   // s de juego: una necesidad que no acaba (no llega a la barra, a los aseos) no lo saca de su puesto para siempre
     bool _lunchStocked, _dinnerStocked;
-    /// <summary>(2026-11-11) LA CENA: el servicio vuelve a llenar la barra (INFERIDO: a las 19 h, tras el tiempo libre de la tarde). Solo se reponía
-    /// la comida de las 11 (una ración por persona): el desayuno es en casa, pero por la tarde y la noche la barra estaba vacía y en una partida
-    /// de 12 h el registro se llenaba de «tiene hambre pero no hay comida en ningún sitio» (6 500 avisos, a partir del día 2).</summary>
-    public const float DinnerHour = 19f;
     bool OwnNeeds(GameObject g, string area, string doing)
     {
         ActionQueue q = g.GetComponent<ActionQueue>(); if (q == null) return false;
@@ -861,11 +859,14 @@ public class WorkdayDirector : MonoBehaviour
 
     // [Jornada] LA COMIDA DE LAS 11:00: el servicio del restaurante (misión obligatoria de cada día) deja la carta en la barra con
     // raciones para todo el personal. Sin esto la barra estaba vacía a mediodía y nadie comía («no hay comida en ningún sitio»).
-    void StockLunch(string meal = "comida")
+    void StockLunch() => StockMeal("11:00 · la comida", roster.workers.Count + today.clones.Count + 2);
+
+    /// <summary>El servicio deja en la barra raciones para <paramref name="people"/> personas (repartidas entre los platillos).</summary>
+    void StockMeal(string what, int people)
     {
         RestaurantKitchen rk = FindAnyObjectByType<RestaurantKitchen>();
         if (rk == null || rk.dishes == null || rk.dishes.Length == 0 || today == null || !today.work.Any(a => a.mission.id == "coc_servicio")) return;
-        int per = Mathf.CeilToInt((roster.workers.Count + today.clones.Count + 2) / (float)rk.dishes.Length);
+        int per = Mathf.CeilToInt(people / (float)rk.dishes.Length);
         int added = 0;
         foreach (RestaurantKitchen.DishStock d in rk.dishes)
         {
@@ -873,7 +874,7 @@ public class WorkdayDirector : MonoBehaviour
             int need = per - d.Have;
             if (need > 0) { rk.Deliver(d.recipe.dishName, null, need); added += need; }
         }
-        Debug.Log($"[Jornada] {(meal == "cena" ? $"{DinnerHour:00}:00" : "11:00")} · el servicio deja la {meal} en la barra: +{added} raciones ({per} de cada uno de {rk.dishes.Length} platillos).");
+        Debug.Log($"[Jornada] {what}: el servicio deja en la barra +{added} raciones ({per} de cada uno de {rk.dishes.Length} platillos, para {people} personas).");
     }
 
     // ── PISOS DE YOGA (docs/yoga-pisos.md) ─────────────────────────────────────────────────────
