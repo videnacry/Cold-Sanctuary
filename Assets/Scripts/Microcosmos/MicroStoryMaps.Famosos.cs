@@ -123,4 +123,43 @@ public static partial class MicroStoryMaps
         },
         todo = new[] { "en vivo: que el bambú y los helechos queden en la orilla del torrente y no en el agua" },
     };
+
+    // ══ ALBUQUERQUE, primavera de 1975 (Bill Gates, Paul Allen y el Altair): sobre la Informática ══════════════════════════════════════════════
+    // El noreste de la ciudad junto a la Central Avenue (la Ruta 66): MITS, que fabricaba el Altair 8800, en un pequeño centro comercial; Micro-Soft
+    // nace aquí el 4 de abril. Al este, la sierra de Sandía y el alto desierto (grama azul, chamisa, cholla sobre la grava); al oeste, el valle del Río
+    // Grande con su bosque de álamos; en las calles, olmos siberianos, enebros y céspedes regados. Una ciudad: solo lo plantado y sus perros y gatos,
+    // y en el borde el desierto (sin bichos salvajes en el bioma).
+    static Map MapAlbuquerque() => new Map
+    {
+        display = "Albuquerque", place = "Albuquerque (Nuevo México): la Central Avenue (Ruta 66) junto a MITS, primavera de 1975", status = Status.Hecho,
+        source = "Allen, Idea Man (2011: MITS, el Altair y el motel de la Ruta 66); Popular Electronics, enero de 1975 (el Altair 8800); Microsoft, fundación " +
+                 "el 4-04-1975; USDA PLANTS y la Ciudad de Albuquerque (el alto desierto y el bosque del Río Grande); OpenStreetMap; el plano del pueblo",
+        floor = Natural(
+            new Piece("mesa", Como, "los escritorios: las mesetas del alto desierto al pie de la sierra de Sandía", "mesa"),
+            new Piece("pared", Como, "los paneles: la sierra de Sandía", "pared")),
+        flora = new[]
+        {
+            // El alto desierto al este, hacia la sierra de Sandía.
+            new Plant("Grama azul", 1200f, 0f, 10, 200f), new Plant("Chamisa", 1300f, 600f, 8, 200f), new Plant("Cholla", 1500f, 200f, 6, 200f),
+            new Plant("Grava del alto desierto", 1600f, 500f, 6, 200f),
+            // El bosque de álamos del Río Grande, al oeste.
+            new Plant("Álamo del Río Grande", -1350f, -200f, 10, 150f),
+            // Los olmos siberianos de la Central Avenue y de Lomas; los enebros y céspedes de las casas.
+            new Plant("Olmo siberiano", 600f, -220f, 8, 150f), new Plant("Olmo siberiano", -200f, 330f, 6, 150f), new Plant("Enebro del jardín", 700f, 650f, 6, 150f),
+            new Plant("Césped de la casa", 700f, -650f, 8, 150f), new Plant("Césped de la casa", -200f, 650f, 8, 150f),
+        },
+        fauna = new[]
+        {
+            new Animal("Woodlouse", "Perro de la casa (en el microcosmos, una cochinilla hormiguera)", 800f, 650f, 3, 0.7f, 150f),
+            new Animal("Woodlouse", "Perro de la casa", -200f, -650f, 2, 0.7f, 150f),
+            new Animal("Woodlouse", "Gato de la casa (en el microcosmos, una cochinilla hormiguera)", 700f, -650f, 2, 0.5f, 150f),
+            new Animal("Woodlouse", "Gato de la casa", -300f, 650f, 2, 0.5f, 150f),
+        },
+        buildings = new[]
+        {
+            new Building("MITS (el centro comercial de la Central Avenue)", -80f, 0f), new Building("Motel de la Ruta 66", 300f, -260f),
+            new Building("Universidad de Nuevo México", -900f, -100f), new Building("Sierra de Sandía", 1800f, 600f), new Building("Bosque del Río Grande", -1350f, 0f),
+        },
+        todo = new[] { "en vivo: que los álamos queden en la orilla del Río Grande y el desierto al este, más allá de San Mateo" },
+    };
 }

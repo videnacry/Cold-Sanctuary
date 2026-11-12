@@ -363,3 +363,14 @@ es la naturaleza **real** del monte subtropical de China central, como en las al
 - **Fuentes:** el plano inventado (CivicBuilder.Famosos); *Flora of China*; UNESCO, montes Wudang (1994). **Inferido:** todo el lugar (es ficción);
   solo las especies y su hábitat son reales.
 - **Menú:** ya tenía uno propio, `Build Microcosmos de famosos/Goku (aldea de la montaña, homenaje)`.
+
+### Albuquerque (Bill Gates), sobre la Informática
+**La Central Avenue (Ruta 66) junto a MITS, primavera de 1975 (Micro-Soft nace el 4 de abril).** Una ciudad, con el alto desierto en el borde.
+- **El piso:** los escritorios son las mesetas del alto desierto; los paneles, la sierra de Sandía; las máquinas, roca.
+- **La flora (76):** al este, grama azul, chamisa y cholla sobre la grava; al oeste, el bosque de álamos del Río Grande; olmos siberianos en la
+  Central y en Lomas; enebros y céspedes en las casas.
+- **La fauna (9):** perros y gatos de las casas (cochinillas hormigueras en el microcosmos).
+- **Edificios:** MITS, el motel de la Ruta 66, la Universidad de Nuevo México, la sierra de Sandía y el bosque del Río Grande.
+- **Fuentes:** Allen, *Idea Man* (2011); *Popular Electronics*, enero de 1975; Microsoft (fundación); USDA PLANTS; OpenStreetMap; el plano del
+  pueblo. **Inferido:** las direcciones de MITS y del motel (no verificadas, como en el plano).
+- **Menú:** ya tenía uno propio, `Build Microcosmos de famosos/Bill Gates (Albuquerque, 1975)`.
