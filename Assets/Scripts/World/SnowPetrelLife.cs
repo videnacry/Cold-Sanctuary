@@ -32,7 +32,9 @@ public class SnowPetrelLife : MonoBehaviour
     Transform _wingL, _wingR, _parent;
     public bool Perched => _perched;
     public Iceberg OnBerg => _perched ? _berg : null;
-    public SnowPetrelNest Nest => _nest;
+    // (2026-11-11) Sin nido al empezar (los nidos aún no estaban: escena que se monta después, o la isla de otra escena), lo pide cuando se le
+    // pregunta y cada pocos segundos en LateUpdate (suite 58, PetrelTest: «cada uno tiene su nido» FAIL).
+    public SnowPetrelNest Nest { get { if (_nest == null && _a != null && !_a.death) _nest = SnowPetrelNest.Claim(_a); return _nest; } }
 
     void Start()
     {
@@ -45,6 +47,7 @@ public class SnowPetrelLife : MonoBehaviour
     }
 
     /// <summary>Que vaya ya a posarse (pruebas).</summary>
+    float _nestRetry;
     public void RestNow(Iceberg on = null) { _nextRest = 0f; if (on != null) _berg = on; }
     /// <summary>¿Está criando (pollo, huevo que incubar, su pollo en el nido o en celo)? Entonces va al nido y no descansa en los icebergs.</summary>
     public bool Breeding => _a == null || _a.lifeStage == LifeStage.child || Egg.ToIncubate(_a) != null || NestChick() != null || (_a.lifeStage == LifeStage.adult && ((_estrus != null && _estrus.InEstrus) || (GetComponent<Reproduction>() is Reproduction r && r.Pregnant) || PartnerBreeding()));
@@ -52,6 +55,7 @@ public class SnowPetrelLife : MonoBehaviour
     void LateUpdate()
     {
         if (_a == null || _a.death) return;
+        if (_nest == null && Time.time >= _nestRetry) { _nestRetry = Time.time + 5f; _nest = SnowPetrelNest.Claim(_a); }
         if (TryGetComponent(out NavMeshAgent nav) && nav.enabled) nav.enabled = false;
         if (_a.lifeStage == LifeStage.child) { Sit(_nest != null ? _nest.transform.position : transform.position); return; }   // el pollo no sale del nido
         Egg egg = Egg.ToIncubate(_a);
