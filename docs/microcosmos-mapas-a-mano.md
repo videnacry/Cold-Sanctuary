@@ -99,3 +99,18 @@ origen están sus personas y sus sitios). Las distancias reales que no caben en 
   (Kudan, ~3 km al sur de Taulihawa, [LDT](https://lumbinidevtrust.gov.np/download/1042)); [Wikipedia, «Tilaurakot»](https://en.wikipedia.org/wiki/Tilaurakot)
   (orilla este del Banganga). **Inferido:** Kudan a ~6 km de Tilaurakot (3 km a cada lado de Taulihawa); la flora del Terai (sal, kans, kusha) es la
   del bioma ya investigado, no una lista del sitio.
+
+### Woolsthorpe (Newton), sobre la Planta Atómica
+**Woolsthorpe-by-Colsterworth, verano de 1666**, el año de la peste en casa. La casa es el escenario; el mapa, lo de alrededor.
+- **El piso** (la Planta Atómica, hoy bajo el mar: su microcosmos abre el Santuario Marino): la piscina del reactor es el remanso del Witham junto al
+  molino; bancos y consolas, la loma de caliza y las lindes altas de las franjas; los lavabos, los arroyos que bajan al Witham; las máquinas, roca.
+- **La flora (≈ 140):** el huerto de manzanos **delante de la casa** (8, con manzanas caídas); el campo abierto **en franjas** al oeste (cebada y
+  trigo, 40) y el campo de cebada al sur (16); el prado del Witham (ballico, trébol, botón de oro); setos de majuelo en Water Lane y en el camino de
+  Woolsthorpe; la loma de caliza con sus ovejas; el musgo de los muros de Colsterworth.
+- **La fauna (21):** pulgones, tijeretas en las manzanas caídas y mariquitas en el huerto; abejorros en el trébol; saltamontes y hormigas en las
+  franjas; arañas en el seto; afodios en el excremento de oveja.
+- **El bioma** gana la cebada y el trigo de las franjas.
+- **Fuentes:** National Trust, [«The story of our apple tree at Woolsthorpe Manor»](https://www.nationaltrust.org.uk/woolsthorpe-manor/features/the-story-of-our-apple-tree-at-woolsthorpe-manor)
+  (el árbol, en el huerto, rebrotó de la raíz tras caer en 1820); [Wikipedia, «Woolsthorpe Manor»](https://en.wikipedia.org/wiki/Woolsthorpe_Manor)
+  (el manzano delante de la casa); el plano del pueblo ya citado (National Trust; OS 1:2500 de 1887); Thirsk (ed.), *The Agrarian History of England
+  and Wales*, vol. IV (el campo abierto en franjas). **Inferido:** el sitio exacto del huerto (las fuentes dicen «delante de la casa», no a cuántos metros).

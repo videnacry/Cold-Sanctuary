@@ -62,4 +62,52 @@ public static partial class MicroStoryMaps
         },
         todo = new[] { "en vivo: que la caña kans y la arena caigan en la orilla del Banganga y no en su cauce; que Kudan y el bosque de sal entren en el mapa (borde sur y este)" },
     };
+
+    // ══ WOOLSTHORPE, verano de 1666 (Newton, el año de la peste en casa): sobre la Planta Atómica ═════════════════════════════════════════════════════
+    // La casa solariega de caliza es el escenario; delante, el huerto de manzanos (el manzano de la historia; el de hoy rebrotó de su raíz tras caer en
+    // 1820). Al este, el Witham y su prado; al otro lado, Colsterworth con su iglesia y la Great North Road. Al oeste, el campo abierto en franjas
+    // (cebada y trigo) y la loma de caliza. Setos de majuelo en los caminos, ovejas en los barbechos. Agosto: manzanas caídas, abejorros en el trébol.
+    static Map MapWoolsthorpe() => new Map
+    {
+        display = "Woolsthorpe", place = "Woolsthorpe-by-Colsterworth, Lincolnshire, verano de 1666", status = Status.Hecho,
+        source = "National Trust, «The story of our apple tree at Woolsthorpe Manor» (el manzano del huerto, delante de la casa; rebrote de 1820); " +
+                 "Wikipedia, «Woolsthorpe Manor»; Ordnance Survey 1:2500 (1887): el Witham, Water Lane, Colsterworth y la Great North Road (el plano del pueblo); " +
+                 "el campo abierto en franjas de Lincolnshire antes de los cercamientos (Thirsk, The Agrarian History of England and Wales, vol. IV)",
+        floor = Natural(
+            new Piece("banera", Como, "la piscina del reactor: el remanso del Witham junto al molino", "banera"),
+            new Piece("mesa", Como, "bancos y consolas: la loma de caliza de Woolsthorpe y las lindes altas de las franjas", "mesa"),
+            new Piece("lavabo", Como, "los lavabos: los arroyos que bajan al Witham", "lavabo")),
+        flora = new[]
+        {
+            // El huerto de manzanos delante de la casa (fuera del escenario), con manzanas caídas.
+            new Plant("Manzano", 70f, -60f, 8, 25f),
+            // El campo abierto en franjas al oeste (cebada y trigo) y el campo de cebada al sur del prado.
+            new Plant("Cebada", -420f, 300f, 20, 130f), new Plant("Trigo", -420f, -300f, 20, 130f), new Plant("Cebada", 220f, -360f, 16, 90f),
+            // El prado del Witham: ballico, trébol y botón de oro junto al río.
+            new Plant("Ballico", 220f, 360f, 24, 100f), new Plant("Trébol", 220f, 360f, 10, 80f), new Plant("Botón de oro", 380f, 200f, 8, 40f),
+            // Setos de majuelo en Water Lane y en el camino de Woolsthorpe.
+            new Plant("Majuelo", 200f, -30f, 4, 30f), new Plant("Majuelo", 420f, -40f, 4, 30f), new Plant("Majuelo", 640f, -40f, 4, 30f),
+            new Plant("Majuelo", -60f, 200f, 4, 30f), new Plant("Majuelo", -60f, -200f, 4, 30f),
+            // La loma de caliza al oeste con ovejas (sus excrementos); el musgo en los muros de Colsterworth.
+            new Plant("Piedra caliza", -760f, 0f, 6, 60f), new Plant("Excremento de oveja", -760f, 0f, 3, 60f), new Plant("Excremento de oveja", -420f, 300f, 4, 80f),
+            new Plant("Musgo de pared", 880f, 70f, 4, 15f),
+        },
+        fauna = new[]
+        {
+            new Animal("Aphid", "Pulgón verde del manzano (Aphis pomi)", 70f, -60f, 4, 1f, 22f),
+            new Animal("Earwig", "Tijereta (Forficula auricularia), en las manzanas caídas", 70f, -60f, 2, 1.4f, 22f),
+            new Animal("Ladybug", "Mariquita de 7 puntos (Coccinella septempunctata), cazando pulgones del huerto", 70f, -60f, 2, 1.2f, 22f),
+            new Animal("SnowBee", "Abejorro común (Bombus terrestris), en el trébol del prado", 220f, 360f, 3, 1.8f, 80f),
+            new Animal("Grasshopper", "Saltamontes de campo (Chorthippus brunneus), en las franjas", -420f, 300f, 3, 2f, 100f),
+            new Animal("Ant", "Hormiga negra (Lasius niger), en las lindes", -420f, -300f, 3, 1f, 100f),
+            new Animal("Spider", "Araña de jardín (Araneus diadematus), en el seto de Water Lane", 420f, -40f, 2, 1.6f, 25f),
+            new Animal("DungBeetle", "Afodio (Aphodius), en el excremento de oveja de la loma", -760f, 0f, 2, 1.2f, 50f),
+        },
+        buildings = new[]
+        {
+            new Building("Huerto de manzanos", 70f, -60f), new Building("Witham (el río)", 410f, 0f), new Building("Plaza de Colsterworth", 820f, -20f),
+            new Building("Mercado", 860f, 160f), new Building("Great North Road", 955f, 0f), new Building("Campo abierto (franjas)", -420f, 300f),
+        },
+        todo = new[] { "en vivo: que el huerto quede delante de la casa y fuera del escenario; que las franjas no caigan en el camino de Woolsthorpe" },
+    };
 }

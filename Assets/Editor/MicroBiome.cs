@@ -352,6 +352,9 @@ public static partial class MicroBiome
                 new Plant(Kind.Flower, 6, "Botón de oro (Ranunculus acris)", 50, C(0.35f, 0.55f, 0.25f), C(0.98f, 0.85f, 0.1f)),
                 new Plant(Kind.Shrub, 8, "Majuelo del seto (Crataegus monogyna)", 300, C(0.25f, 0.42f, 0.2f), C(0.7f, 0.12f, 0.1f)),
                 new Plant(Kind.Shrub, 6, "Manzano (Malus domestica), con manzanas caídas", 400, C(0.3f, 0.48f, 0.22f), C(0.75f, 0.2f, 0.12f)),
+                // (2026-11-12, mapa a mano) Las franjas del campo abierto: cebada (y trigo) de 1666.
+                new Plant(Kind.Grass, 6, "Cebada (Hordeum vulgare), en franjas del campo abierto", 80, C(0.6f, 0.68f, 0.35f), C(0.88f, 0.8f, 0.5f)),
+                new Plant(Kind.Grass, 4, "Trigo (Triticum aestivum), en franjas del campo abierto", 90, C(0.6f, 0.66f, 0.3f), C(0.9f, 0.78f, 0.4f)),
                 new Plant(Kind.Moss, 6, "Musgo de pared (Tortula muralis)", 2, C(0.45f, 0.55f, 0.25f), C(0.55f, 0.6f, 0.3f)),
                 new Plant(Kind.Stone, 8, "Piedra caliza", 0, C(0.82f, 0.78f, 0.65f), Stone), new Plant(Kind.Dung, 4, "Excremento de oveja", 0, DungC, DungC) },
               bugs = new[] {
