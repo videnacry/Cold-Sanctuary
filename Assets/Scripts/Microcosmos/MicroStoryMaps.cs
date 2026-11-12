@@ -142,7 +142,7 @@ public static partial class MicroStoryMaps
         Stub("Menfis", Base1, Base2, "el Nilo en crecida, los campos inundados y los templos de Ptah"),
         Stub("Bagdad", Base1, Base2, "la ciudad redonda de al-Mansur, el Tigris y la Casa de la Sabiduría"),
         MapWoolsthorpe(),   // (2026-11-12) hecho: MicroStoryMaps.Tanda4.cs
-        Stub("Berkeley", Base1, Base2, "Berkeley (Gloucestershire), la casa de Jenner, sus vacas y su templete de vacunar"),
+        MapBerkeley(),   // (2026-11-12) hecho: MicroStoryMaps.Tanda4.cs
         Stub("Sils Maria", Base1, "el lago de Silvaplana, la roca de Surlej y los senderos de la Engadina (la mesa como nevado)"),
         Stub("París 1898", Base1, Base2, "la calle Lhomond y el cobertizo de la Escuela de Física y Química"),
         Stub("Colorado Springs", Base1, Base2, "el laboratorio de Tesla en Knob Hill con Pikes Peak al oeste"),

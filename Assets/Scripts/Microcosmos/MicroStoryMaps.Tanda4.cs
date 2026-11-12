@@ -110,4 +110,49 @@ public static partial class MicroStoryMaps
         },
         todo = new[] { "en vivo: que el huerto quede delante de la casa y fuera del escenario; que las franjas no caigan en el camino de Woolsthorpe" },
     };
+
+    // ══ BERKELEY, 14 de mayo de 1796 (Jenner y la primera vacuna): sobre el Laboratorio de Biología ═══════════════════════════════════════════════════
+    // The Chantry (la casa de Jenner, junto a la iglesia de Santa María) es el escenario. Mayo en el valle del Severn: los prados de las vacas lecheras al
+    // suroeste, hacia el Little Avon y el estuario; el majuelo en flor en los setos (el «may»), prímulas en las orillas y botón de oro en los prados; el
+    // castillo de arenisca al sureste. La viruela vacuna salió de la mano de Sarah Nelmes, que ordeñaba a «Blossom»: en el microcosmos, las vacas son
+    // PULGONES (las hormigas ordeñan pulgones, docs/natural-interactions.md).
+    static Map MapBerkeley() => new Map
+    {
+        display = "Berkeley", place = "Berkeley, Gloucestershire (valle del Severn), 14 de mayo de 1796", status = Status.Hecho,
+        source = "Jenner, An Inquiry into the Causes and Effects of the Variolae Vaccinae (1798: el caso de James Phipps y Sarah Nelmes); Dr Jenner's House " +
+                 "(Jenner Museum, The Chantry junto a la iglesia de Santa María); Victoria County History, Gloucestershire, vol. 5 (Berkeley: el castillo, las " +
+                 "calles, los prados del Severn); el plano del pueblo ya citado",
+        floor = Natural(
+            new Piece("mesa", Como, "las mesas del laboratorio: la loma del castillo y la de Canonbury", "mesa"),
+            new Piece("lavabo", Como, "los lavabos: el Little Avon y sus acequias de prado", "lavabo"),
+            new Piece("silla", Como, "en mayo no hay nieve en el Severn: las sillas son los cerros de Stinchcombe, al este", "mesa")),
+        flora = new[]
+        {
+            // Los prados de las vacas lecheras al suroeste: cola de zorra, botón de oro y boñigas.
+            new Plant("Cola de zorra", -350f, -350f, 30, 150f), new Plant("Botón de oro", -350f, -350f, 12, 120f), new Plant("Boñiga", -350f, -350f, 5, 100f),
+            new Plant("Cola de zorra", -320f, 260f, 12, 60f),
+            // El majuelo en flor en los setos: el camino de la granja y Marybrook Street.
+            new Plant("Majuelo en flor", -250f, 200f, 4, 40f), new Plant("Majuelo en flor", -100f, 200f, 4, 40f), new Plant("Majuelo en flor", 150f, -260f, 4, 40f),
+            // Las prímulas de las orillas del Little Avon y el helecho de su arboleda.
+            new Plant("Prímula", -200f, -480f, 8, 40f), new Plant("Prímula", 400f, -310f, 6, 30f), new Plant("Helecho macho", 500f, -290f, 6, 40f),
+            // La arenisca del lecho del río y el musgo de las piedras del castillo.
+            new Plant("Piedra arenisca", 100f, -360f, 4, 30f), new Plant("Musgo", 200f, -150f, 5, 20f),
+        },
+        fauna = new[]
+        {
+            new Animal("Aphid", "Vaca lechera de Gloucester (en el microcosmos, un pulgón): Blossom y su rebaño", -350f, -350f, 4, 2.2f, 100f),
+            new Animal("Ant", "Hormiga amarilla (Lasius flavus), ordeñando los pulgones del prado", -350f, -350f, 3, 1f, 100f),
+            new Animal("SnowBee", "Abejorro cardador (Bombus pascuorum), en las prímulas", -200f, -480f, 3, 1.6f, 40f),
+            new Animal("Ladybug", "Mariquita de 7 puntos (Coccinella septempunctata), en el seto", -250f, 200f, 2, 1.2f, 40f),
+            new Animal("DungBeetle", "Afodio (Aphodius rufipes), en la boñiga", -350f, -350f, 2, 1.2f, 100f),
+            new Animal("Spider", "Araña lobo (Pardosa amentata), en la orilla", 500f, -290f, 2, 1.2f, 40f),
+            new Animal("Woodlouse", "Cochinilla (Oniscus asellus), en las piedras del castillo", 200f, -150f, 2, 1f, 20f),
+        },
+        buildings = new[]
+        {
+            new Building("Castillo de Berkeley", 160f, -200f), new Building("Plaza (Market Place)", 80f, 300f), new Building("Mercado", 120f, 335f),
+            new Building("Little Avon", 100f, -360f), new Building("Estuario del Severn", -1300f, 0f), new Building("Prados de pasto", -350f, -350f),
+        },
+        todo = new[] { "en vivo: que el rebaño (pulgones) quede en el prado y no en el Little Avon; que el estuario del oeste no tape los prados" },
+    };
 }

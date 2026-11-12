@@ -114,3 +114,24 @@ origen están sus personas y sus sitios). Las distancias reales que no caben en 
   (el árbol, en el huerto, rebrotó de la raíz tras caer en 1820); [Wikipedia, «Woolsthorpe Manor»](https://en.wikipedia.org/wiki/Woolsthorpe_Manor)
   (el manzano delante de la casa); el plano del pueblo ya citado (National Trust; OS 1:2500 de 1887); Thirsk (ed.), *The Agrarian History of England
   and Wales*, vol. IV (el campo abierto en franjas). **Inferido:** el sitio exacto del huerto (las fuentes dicen «delante de la casa», no a cuántos metros).
+
+### Berkeley (Jenner), sobre el Laboratorio de Biología
+**Berkeley, valle del Severn, 14 de mayo de 1796**: la vacuna de James Phipps con la viruela vacuna de la mano de Sarah Nelmes, que ordeñaba a
+«Blossom». The Chantry (la casa de Jenner, junto a Santa María) es el escenario.
+- **El piso:** las mesas del laboratorio son la loma del castillo y la de Canonbury; los lavabos, el Little Avon y sus acequias de prado; las sillas, los
+  cerros de Stinchcombe al este (no nieva en mayo); las máquinas y armarios, roca.
+- **La flora (100):** los prados de las vacas lecheras al suroeste (cola de zorra, botón de oro, boñigas) y otro junto al camino de la granja; el
+  majuelo **en flor** (el «may») en los setos del camino de la granja y de Marybrook Street; prímulas en las orillas del Little Avon y helecho en su
+  arboleda; arenisca en el lecho y musgo en las piedras del castillo.
+- **La fauna (18):** el rebaño de Blossom —en el microcosmos, **pulgones**— con las hormigas amarillas que lo ordeñan, afodios en la boñiga,
+  abejorros en las prímulas, mariquitas en el seto, arañas lobo en la orilla y cochinillas en el castillo.
+- **Fuentes:** Jenner, *An Inquiry into the Causes and Effects of the Variolae Vaccinae* (1798); Dr Jenner's House (Jenner Museum: The Chantry
+  junto a Santa María); *Victoria County History, Gloucestershire*, vol. 5 (Berkeley); el plano del pueblo ya citado. **Inferido:** la granja de
+  Sarah Nelmes no tiene sitio documentado: el rebaño va en los prados del plano.
+
+### Lo que no se ha hecho en esta tanda, y por qué
+- **Ambrosio (nivel 1) y Sakshi (el río):** no son un lugar real. Su bioma es una taiga «antes del fuego», y Ambrosio está ligado a Shanidar 1, un
+  neandertal de la cueva de Shanidar, en los Zagros (Kurdistán iraquí): bosque de robles y pistachos, no taiga. Hace falta decidir primero qué lugar
+  recrean (la taiga o la cueva de Shanidar) para hacer el mapa con fuentes. **Pregunta para Berón.**
+- El resto de los científicos y famosos (Escútari, Dayton, Alejandría, París 1898, Berna, Pasadena, Colorado Springs, Chernóbil, Palenque,
+  Velliangiri, Hawthorne, Albuquerque, Omaha, Prairie View, Uagadugú…) siguen en esbozo, con la siembra al azar de respaldo.
