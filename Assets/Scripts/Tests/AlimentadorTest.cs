@@ -51,7 +51,14 @@ public class AlimentadorTest : MonoBehaviour, ITestUnit
         // ── La lista compartida ──
         PredatorRound.NewRound();
         var list = PredatorRound.Today();
-        TestProbe.Check("la lista tiene a los depredadores de tierra (oso y lobo, y ni uno del mar)", list.Any(e => e.animal.SpeciesName == "Bear") && list.Any(e => e.animal.SpeciesName == "Wolf") && !list.Any(e => e.animal.SpeciesName == "Orca"), $"{list.Count}");
+        // (2026-11-11) Con las reglas de la lista de hoy: TODOS los servidos vivos están (los osos, lobos y zorros adultos de tierra y las crías
+        // huérfanas de oso, lobo, zorro y foca) y ninguno del mar ni ingresado. Antes exigía que hubiera oso Y lobo: en la suite 58 los dos osos
+        // adultos habían muerto antes de esta prueba y la lista (5) fallaba aunque estuviera bien.
+        var shouldBe = Object.FindObjectsByType<Animal>(FindObjectsSortMode.None).Where(PredatorRound.Served).ToList();
+        var missing = shouldBe.Where(x => !list.Any(e => e.animal == x)).Select(x => x.name).ToList();
+        TestProbe.Check("la lista tiene a todos los depredadores de tierra servidos (y ni uno del mar ni ingresado)", shouldBe.Count > 0 && missing.Count == 0
+            && !list.Any(e => e.animal.GetComponent<MarineLife>() != null || VetCare.Admitted(e.animal)),
+            $"{list.Count} en la lista: {string.Join(", ", list.GroupBy(e => e.animal.SpeciesName + (PredatorRound.Orphan(e.animal) ? " (cría)" : "")).Select(g => $"{g.Key} {g.Count()}"))}{(missing.Count > 0 ? " · faltan: " + string.Join(", ", missing) : "")}");
         // (2026-11-11) Un ingresado lo alimenta la veterinaria: en la lista de la ronda no se le alcanza nunca y, como la lista solo se renueva
         // completa, nadie más volvía a comer (tras 12 h de juego: lobos 4 → 1, el oso adulto muerto de inanición; «Lobo_paciente» 20 veces pendiente).
         var admitted = Object.FindObjectsByType<Animal>(FindObjectsSortMode.None).Where(x => x != null && !x.death && x.Forage != null && x.Forage.eatsPrey && VetCare.Admitted(x)).ToList();
