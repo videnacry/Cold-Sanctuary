@@ -603,7 +603,8 @@ public class JornadaTest : MonoBehaviour, ITestUnit, IFastGameTime
             if (full && !riding && !handled && !asleep && !magnate)
             {
                 if (Walking(head) && path < 0.5f && now - tr.headSince >= 19f) Add(tr.name, "atascado > 20 s", $"«{head}» sin avanzar en {Where(p)}", true);
-                bool rounds = (cur != null && cur.mission.id.StartsWith("yog_corrige")) || (status != null && (status.Contains("Gimnasio") || status.Contains("Entrenamiento")));
+                bool rounds = (cur != null && cur.mission.id.StartsWith("yog_corrige")) || (status != null && (status.Contains("Gimnasio") || status.Contains("Entrenamiento")))
+                    || (tr.g.TryGetComponent(out FruitGardener fgr) && fgr.enabled && !fgr.Finished);   // (2026-11-11) la ronda de frutales va de maceta en maceta alrededor del techo: vuelve cerca de donde empezó (Panterilia en Ciencias, 28 m en 20 s para 0,8 m netos, vivo62)
                 float flatPath = FlatPath(tr);
                 if (!rounds && head != "merodear" && flatPath > 12f && net < 2.5f && reach < flatPath * 0.35f && now - tr.headSince >= 19f)   // (merodear es ir y venir al azar a propósito; ir a algo, hacerlo y volver —la barra, el aseo— cambia lo que hace: eso no es dar vueltas)
                     Add(tr.name, "da vueltas en círculo", $"{flatPath:0} m en planta en 20 s ({path:0} m en 3D) para {net:0.0} m netos en {Where(p)} ({tr.activity})", true);
@@ -631,7 +632,9 @@ public class JornadaTest : MonoBehaviour, ITestUnit, IFastGameTime
             if (desire != tr.headLabel) { tr.headLabel = desire; tr.headSince = now; }
             bool same = now - tr.headSince >= 19f;
             if (full && same && !resting && path < 0.5f) Add(tr.name, "atascado > 20 s", $"quiere «{desire}» y no se mueve en {Where(p)} [{DesireCatalog.TripInfo(a)} · {DesireCatalog.NavInfo(a)}]", false);   // (2026-11-11) con su viaje y su agente
-            if (full && same && !flier && !marine && !a.busy && FlatPath(tr) > 15f && net < 2f && reach < FlatPath(tr) * 0.35f) Add(tr.name, "da vueltas en círculo", $"{path:0} m en 20 s para {net:0.0} m netos ({tr.activity}) [{DesireCatalog.TripInfo(a)} · {NavTrace.Last(a)}]", false);   // (2026-11-11) con su viaje y el último que le cambió el camino
+            // (2026-11-11) Ni el HÁBITO en marcha: pastar alrededor de la mata de camarina o ir y venir con un guijarro al nido es ir y volver a
+            // propósito (osos y pingüinos de vivo62, «hábito: come bayas…», «lleva un guijarro a su nido»), como «merodear» en las personas.
+            if (full && same && !flier && !marine && !a.busy && !habit && desire != "habit" && FlatPath(tr) > 15f && net < 2f && reach < FlatPath(tr) * 0.35f) Add(tr.name, "da vueltas en círculo", $"{path:0} m en 20 s para {net:0.0} m netos ({tr.activity}) [{DesireCatalog.TripInfo(a)} · {NavTrace.Last(a)}]", false);   // (2026-11-11) con su viaje y el último que le cambió el camino
             if (!(marine && inHabitat)) CheckBody(tr, p, riding, a.death || a.asleep || a.busy, false);   // (en su respiradero la foca asoma recta por la placa y al descansar se tumba: es su sitio, no un cuerpo dentro del hielo)
         }
 

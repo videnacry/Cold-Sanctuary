@@ -108,6 +108,20 @@ public class FaunaChecks : MonoBehaviour, ITestUnit
         }
         else Debug.Log("[TEST] SKIP · viaje sin camino — ningún animal sobre el NavMesh con un sitio alcanzable a 6 m");
 
+        // ── (2026-11-11) LAS CRÍAS DEL RECINTO VAN A UN SITIO DE VERDAD ──
+        // Vivo61: Polluelo_1/2/3 y Osezno_2 con la meta del paseo en su propio sitio, 1 800 s sin moverse.
+        var penned = alive.FindAll(x => x != null && DesireCatalog.Confined(x) && x.nav != null && x.nav.isOnNavMesh);
+        int withGoal = 0; string near = "";
+        foreach (Animal c in penned)
+        {
+            if (!DesireCatalog.PenGoal(c, out Vector3 g)) continue;
+            withGoal++;
+            float d = Vector3.Distance(new Vector3(g.x, 0f, g.z), new Vector3(c.transform.position.x, 0f, c.transform.position.z));
+            if (d < 1.5f) near += $"{c.name} {d:0.0} m; ";
+        }
+        if (penned.Count > 0) TestProbe.Check("el paseo de una cría del recinto va a un sitio a ≥ 1,5 m de ella", near.Length == 0, $"{withGoal}/{penned.Count} con sitio{(near.Length > 0 ? "; demasiado cerca: " + near : "")}");
+        else Debug.Log("[TEST] SKIP · paseo del recinto — no hay crías en un recinto sobre el NavMesh");
+
         TestProbe.End();
     }
 }
