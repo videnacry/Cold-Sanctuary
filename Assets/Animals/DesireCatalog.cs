@@ -283,7 +283,7 @@ public static class DesireCatalog
         for (int i = 0; i < 16; i++)
         {
             Vector3 p = home + Ring(1.5f, 5f);
-            if (NavReach.Reachable(self, p, out Vector3 at, 1f) && Flat(at - here) >= 1.5f && Flat(at - here) <= 5.5f) { goal = at; return true; }
+            if (NavReach.Reachable(self, p, out Vector3 at, 1f) && Flat(at - here) >= 1.5f && Flat(at - here) <= 5.5f && !Detour(self, at, here)) { goal = at; return true; }   // (sin rodeos: Polluelo_2, 2,3 m por 6 esquinas, vivo62)
         }
         return false;
     }
@@ -597,7 +597,11 @@ public static class DesireCatalog
         Animal cub = CubNeed(self, out _);
         if (cub == null) return;
         // A su lado se para: seguía re-apuntando a la cría, que a su vez la seguía a ella («heel»), y daban vueltas juntas (lobo: 25 m en 20 s para 0 netos).
-        if (Vector3.Distance(self.transform.position, cub.transform.position) <= 2.5f) { if (self.nav != null && self.nav.isOnNavMesh) NavTrace.Reset(self, "nurse (junto a la cría)"); FeedCub(self, cub); return; }
+        // (2026-11-11, vivo62) CERCA, LA MADRE ESPERA y la cría va a ella: a ≤ 4 m las dos iban a donde estaba la otra y se cambiaban el sitio
+        // (lobos «nurse» 16–17 m en 20 s para 0–1,9 m netos, con MeetPoint). Lejos, a medio camino.
+        float dc = Vector3.Distance(self.transform.position, cub.transform.position);
+        if (dc > 2.5f && dc <= 4f) { if (self.nav != null && self.nav.isOnNavMesh) NavTrace.Reset(self, "nurse (espera a la cría)"); self.Loco?.Idle(1f); return; }
+        if (dc <= 2.5f) { if (self.nav != null && self.nav.isOnNavMesh) NavTrace.Reset(self, "nurse (junto a la cría)"); FeedCub(self, cub); return; }
         if (self.nav != null && self.nav.isOnNavMesh) Move(self, MeetPoint(self.transform.position, cub.transform.position));
     }
 
