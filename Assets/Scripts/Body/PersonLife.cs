@@ -103,6 +103,7 @@ public class PersonLife : MonoBehaviour
         if (pregnant) _gestDays += dDays;
         _sinceBirthDays += dDays;
         _accDays += dDays;
+        if (_known && !_dead && _stage == LifeStage.child) FollowMother();   // (2026-11-11) cada fotograma: los pasos de PathMover y la mano usan Time.deltaTime (a 0,25 s iba a 1/15 de su paso)
         if (Time.time < _next) return;
         _next = Time.time + 0.25f;
         _tickDays = _accDays; _accDays = 0f;
@@ -121,7 +122,6 @@ public class PersonLife : MonoBehaviour
         }
         if (!_elder && Aging != null && Aging.IsElder) { _elder = true; Report(gameObject, "anciano"); Debug.Log($"[Vida] «{name}» llega a la vejez (desgaste {Aging.wear:0.00})."); }
 
-        if (st == LifeStage.child) FollowMother();
         if (female) { Courtship(); Conception(); }
         if (pregnant && _gestDays >= GestationTotalDays) GiveBirth();
     }
@@ -139,8 +139,39 @@ public class PersonLife : MonoBehaviour
         // (2026-11-11) EN EL SANTUARIO, con PathMover (alfombras y troncos de los edificios-árbol), no con MicroMove (solo NavMesh): siguiendo a su
         // madre a los pisos altos, MicroMove le llevaba «a mano» por las esquinas con la altura del cuerpo y el agente en el piso de abajo, y
         // GroundGuard lo bajaba de golpe («Neo flotaba 8, 14, 64, 86 m … baja al suelo», ×21, rondas 53–54).
-        if (d > 1.2f * h) { Vector3 to = mother.transform.position - mother.transform.forward * 0.6f * h; if (ArbolCampos.All.Count > 0) PathMover.Of(transform).StepToward(to, 1.6f * h / 1.75f); else MicroMove.Step(transform, to, 1.6f * h / 1.75f, 0.8f * h); }
+        Vector3 to = mother.transform.position - mother.transform.forward * 0.6f * h;
+        if (ArbolCampos.All.Count == 0) { if (d > 1.2f * h) MicroMove.Step(transform, to, 1.6f * h / 1.75f, 0.8f * h); return; }
+        // (2026-11-11, ronda 55) DE LA MANO: aun con PathMover, a los pisos de los árboles a 132–154 m («se detiene al borde … PathInvalid») no
+        // llegaba y seguía flotando ×9. Es pequeño para las rutas: si su madre va en alfombra, nada por un tronco, está en otro piso (> 3 m de
+        // altura) o él lleva 2 s sin camino, ella lo lleva DE LA MANO (sin su agente, a su lado; GroundGuard no lo toca: HeldByHand) hasta que
+        // vuelven a estar juntos en el mismo suelo.
+        GameObject mg = mother.gameObject;
+        bool travelling = FlyingCarpet.Riding(mg) || TreeTrip.Busy(mg) || SwimBody.Swimming(mg);
+        float dy = Mathf.Abs(mother.transform.position.y - transform.position.y);
+        PathMover pm = PathMover.Of(transform);
+        if (!_byHand)
+        {
+            if (d > 1.2f * h) pm.StepToward(to, 1.6f * h / 1.75f);
+            if (pm.NoRoute && d > 1.2f * h) { if (_noRouteSince < 0f) _noRouteSince = Time.time; } else _noRouteSince = -1f;
+            if (travelling || dy > 3f || (_noRouteSince > 0f && Time.time - _noRouteSince > 2f)) { _byHand = true; _noRouteSince = -1f; Debug.Log($"[Vida] «{name}» va de la mano de «{mother.name}» ({(travelling ? "de viaje" : dy > 3f ? "en otro piso" : "sin camino")})."); }
+            return;
+        }
+        if (_navAg == null) _navAg = GetComponent<UnityEngine.AI.NavMeshAgent>();
+        if (_navAg != null && _navAg.enabled) _navAg.enabled = false;
+        Vector3 hand = mother.transform.position - mother.transform.forward * 0.5f * h + mother.transform.right * 0.35f * h;
+        transform.position = Vector3.MoveTowards(transform.position, hand, Mathf.Max(6f, d * 4f) * Time.deltaTime);
+        Vector3 look = mother.transform.forward; look.y = 0f; if (look.sqrMagnitude > 0.01f) transform.rotation = Quaternion.LookRotation(look);
+        if (!travelling && dy < 1f && d < 1.5f * h && UnityEngine.AI.NavMesh.SamplePosition(transform.position, out UnityEngine.AI.NavMeshHit nh, 1.5f, UnityEngine.AI.NavMesh.AllAreas))
+        {
+            _byHand = false;
+            if (_navAg != null) { _navAg.enabled = true; if (_navAg.isOnNavMesh) _navAg.Warp(nh.position); }
+            pm.Restart();
+        }
     }
+
+    bool _byHand; float _noRouteSince = -1f; UnityEngine.AI.NavMeshAgent _navAg;
+    /// <summary>¿Lo lleva su madre de la mano (sin agente, colgado a su lado)? GroundGuard no lo «baja al suelo».</summary>
+    public static bool HeldByHand(GameObject g) => g != null && g.TryGetComponent(out PersonLife p) && p._byHand;
 
     // De joven deja de ir detrás de su madre: en el microcosmos hace la jornada de su madre (su casa, su comedor, su trabajo).
     void GrownUp()
