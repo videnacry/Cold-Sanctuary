@@ -172,7 +172,21 @@ public class JornadaSaberTest : MonoBehaviour, ITestUnit
         {
             WorkRoster.DayPlan t = wd.PlanDay(wd.plannedDay + 1);
             Debug.Log($"[Jornada] Prueba: {t.work.Count(a => !a.lesson)} tareas, {t.lessons.Count} iniciaciones, {t.clones.Count} clones, {t.blocked.Count} sin requisitos, {t.unqualified.Count} sin nadie que sepa, {t.backlog.Count} pendientes.");
-            TestProbe.Check("en el santuario hay entrenamiento e iniciaciones", t.morning.Count > 0 && t.lessons.Count > 0, string.Join(" · ", t.lessons.Take(6)));
+            // (2026-11-12, reparto por santuarios) Todos aprenden todo, pero lo que otro del sitio ya sabe se aprende con las horas que sobran; lo que nadie del sitio
+            // sabe, siempre y primero. Así que un día sin holgura y en el que cada tarea de riesgo tiene quien la sepa no tiene por qué tener iniciaciones. La prueba
+            // pide iniciaciones cuando hacen falta: una tarea de riesgo de hoy que nadie de su sitio sabe, o alguien que no la sabe en un sitio con horas libres.
+            var humans = wd.roster.workers.Where(w => !w.clone && t.place.ContainsKey(w)).ToList();
+            var risky = t.work.Where(a => !a.lesson && MissionRequirements.NeedsLesson(a.mission.id)).Select(a => a.mission).GroupBy(m => MissionRequirements.KnowledgeKey(m.id)).Select(g => g.First()).ToList();
+            float Slack(SanctuaryPlacement.Home p) => WorkRoster.WorkHours * humans.Count(w => t.place[w].Equals(p)) - (t.hoursAt.TryGetValue(p, out float hh) ? hh : 0f);
+            var due = risky.Where(m =>
+            {
+                var p = SanctuaryPlacement.PlaceOfArea(m.area);
+                var there = humans.Where(w => t.place[w].Equals(p)).ToList();
+                return there.Count > 0 && (!there.Any(w => wd.roster.Learned(w, m)) || (Slack(p) >= 1f && there.Any(w => !wd.roster.Learned(w, m))));
+            }).ToList();
+            TestProbe.Check("en el santuario hay entrenamiento, e iniciaciones cuando hacen falta (lo que nadie del sitio sabe, o hay horas libres)",
+                t.morning.Count > 0 && (t.lessons.Count > 0 || due.Count == 0),
+                $"{t.lessons.Count} clases ({string.Join(" · ", t.lessons.Take(4))}) · sin clase y debían: {string.Join(", ", due.Take(6).Select(m => m.id))} · holgura: {string.Join(", ", t.hoursAt.Keys.Select(p => $"{p} {Slack(p):0.#} h"))}");
             TestProbe.Check("en el santuario, nada fuera de las franjas", t.work.Where(a => !a.worker.clone).All(InSlot), string.Join(" · ", t.work.Where(a => !InSlot(a)).Take(6)));
         }
         TestProbe.End();

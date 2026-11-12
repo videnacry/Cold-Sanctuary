@@ -350,6 +350,9 @@ public class RepartoSantuariosTest : MonoBehaviour, ITestUnit
         TestProbe.Check("sin horas libres, nadie aprende lo que otro ya sabe hacer (y no hay clon por ello); con horas libres, sí",
             pbFull.lessons.Count == 0 && pbFull.clones.Count == 0 && pbSlack.lessons.Any(l => l.real.id == "qui_a"),
             $"sin holgura: {pbFull.lessons.Count} clases, {pbFull.clones.Count} clones · con holgura: {pbSlack.lessons.Count} clases");
+        WorkRoster bNone = Budget(9); bNone.workers[0].taught.Remove("qui_a");   // (un día lleno, y la tarea de riesgo no la sabe nadie)
+        WorkRoster.DayPlan pbNone = bNone.Plan(0, BudgetDay(9));
+        TestProbe.Check("aun sin horas libres, lo que nadie del sitio sabe se aprende (la clase aparece)", pbNone.lessons.Any(l => l.real.id == "qui_a"), $"{pbNone.lessons.Count} clases");
         // RONDA 55: Kushal no hace el servicio del restaurante (a las 14 seguía en la cocina y perdía el Dojo) ni las rondas, ni tareas a trozos
         WorkRoster kr = Roster(("Player", 0));
         var kDay = new List<WorkRoster.Mission> { new WorkRoster.Mission("Cocina", "coc_servicio", "Servicio", 2f, true), new WorkRoster.Mission("Huerto", FruitGardener.MissionPrefix + "_2", "Ronda", 2f, true), new WorkRoster.Mission("Guardia", "gua_carnivoros", "Patrulla", 2f, true), new WorkRoster.Mission("A", "x_k", "X", 1f) };
