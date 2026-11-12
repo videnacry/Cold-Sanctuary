@@ -258,7 +258,9 @@ public static class DesireCatalog
     static bool PenWander(Animal self)
     {
         if (!Confined(self)) return false;
-        Vector3 home = self.HomeOrigin;
+        // (2026-11-11, vivo59) Su sitio, si sigue cerca; si no, donde está: con la Cría en el piso del árbol (a 108 m) su HomeOrigin se quedó en el
+        // recinto viejo, los pasitos caían lejos de todo NavMesh y las crías no se movían nunca («recinto» 1 802 s sin moverse, Cachorro_1/2/3).
+        Vector3 home = Vector3.Distance(self.HomeOrigin, self.transform.position) > 6f ? self.transform.position : self.HomeOrigin;
         Stroll(self, "recinto", () => home + Ring(0.8f, 2.2f), 4f, 9f, 0.6f);   // (pausas largas: curiosea, no corretea por el recinto)
         return true;
     }
