@@ -631,7 +631,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit, IFastGameTime
             if (desire != tr.headLabel) { tr.headLabel = desire; tr.headSince = now; }
             bool same = now - tr.headSince >= 19f;
             if (full && same && !resting && path < 0.5f) Add(tr.name, "atascado > 20 s", $"quiere «{desire}» y no se mueve en {Where(p)} [{DesireCatalog.TripInfo(a)} · {DesireCatalog.NavInfo(a)}]", false);   // (2026-11-11) con su viaje y su agente
-            if (full && same && !flier && !marine && !a.busy && FlatPath(tr) > 15f && net < 2f && reach < FlatPath(tr) * 0.35f) Add(tr.name, "da vueltas en círculo", $"{path:0} m en 20 s para {net:0.0} m netos ({tr.activity})", false);
+            if (full && same && !flier && !marine && !a.busy && FlatPath(tr) > 15f && net < 2f && reach < FlatPath(tr) * 0.35f) Add(tr.name, "da vueltas en círculo", $"{path:0} m en 20 s para {net:0.0} m netos ({tr.activity}) [{DesireCatalog.TripInfo(a)} · {NavTrace.Last(a)}]", false);   // (2026-11-11) con su viaje y el último que le cambió el camino
             if (!(marine && inHabitat)) CheckBody(tr, p, riding, a.death || a.asleep || a.busy, false);   // (en su respiradero la foca asoma recta por la placa y al descansar se tumba: es su sitio, no un cuerpo dentro del hielo)
         }
 
