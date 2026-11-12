@@ -603,7 +603,8 @@ public class JornadaTest : MonoBehaviour, ITestUnit, IFastGameTime
             if (full && !riding && !handled && !asleep && !magnate)
             {
                 if (Walking(head) && path < 0.5f && now - tr.headSince >= 19f) Add(tr.name, "atascado > 20 s", $"«{head}» sin avanzar en {Where(p)}", true);
-                bool rounds = (cur != null && cur.mission.id.StartsWith("yog_corrige")) || (status != null && (status.Contains("Gimnasio") || status.Contains("Entrenamiento")));
+                bool rounds = (cur != null && cur.mission.id.StartsWith("yog_corrige")) || (status != null && (status.Contains("Gimnasio") || status.Contains("Entrenamiento")))
+                    || (tr.g.TryGetComponent(out FruitGardener fgr) && fgr.enabled && !fgr.Finished);   // (2026-11-11) la ronda de frutales va de maceta en maceta alrededor del techo: vuelve cerca de donde empezó (Panterilia en Ciencias, 28 m en 20 s para 0,8 m netos, vivo62)
                 float flatPath = FlatPath(tr);
                 if (!rounds && head != "merodear" && flatPath > 12f && net < 2.5f && reach < flatPath * 0.35f && now - tr.headSince >= 19f)   // (merodear es ir y venir al azar a propósito; ir a algo, hacerlo y volver —la barra, el aseo— cambia lo que hace: eso no es dar vueltas)
                     Add(tr.name, "da vueltas en círculo", $"{flatPath:0} m en planta en 20 s ({path:0} m en 3D) para {net:0.0} m netos en {Where(p)} ({tr.activity})", true);
