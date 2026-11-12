@@ -83,4 +83,44 @@ public static partial class MicroStoryMaps
         },
         todo = new[] { "en vivo: que las palmeras queden a los lados de Crenshaw y el césped entre las pistas, no sobre ellas" },
     };
+
+    // ══ ALDEA DE LA MONTAÑA, un amanecer de primavera (Goku; HOMENAJE, FICCIÓN): sobre las Artes Marciales ════════════════════════════════════════
+    // No es un lugar real ni de la obra: su plano es inventado (CivicBuilder.Famosos) al modo de las aldeas de los montes Wudang y Song. Lo que sí es
+    // real es su naturaleza, la del monte subtropical de China central en primavera: el torrente que baja de una cascada al norte, el monte del maestro
+    // al noroeste con pinos de Masson y azaleas, el bambú, los helechos y el musgo de la piedra húmeda; bancales de arroz y de té en las laderas.
+    static Map MapAldeaMontana() => new Map
+    {
+        display = "Aldea de la montaña", place = "La aldea de la montaña (homenaje a Dragon Ball; plano inventado, sin lugar real), un amanecer de primavera", status = Status.Hecho,
+        source = "Plano inventado (CivicBuilder.Famosos, homenaje a Toriyama, Dragon Ball); la naturaleza, real: Flora of China (Pinus massoniana, " +
+                 "Phyllostachys edulis, Rhododendron simsii, Camellia sinensis); UNESCO, Conjunto de edificios antiguos de los montes Wudang (1994)",
+        floor = Natural(
+            new Piece("alfombra", Como, "los tatamis: los bancales de arroz y de té de las laderas", "planta"),
+            new Piece("espejo", Como, "los espejos: la poza de la cascada", "banera")),
+        flora = new[]
+        {
+            // El monte del maestro y la colina de los pinos: pinos de Masson, azaleas, granito.
+            new Plant("Pino de Masson", 700f, 600f, 10, 150f), new Plant("Pino de Masson", -1000f, 700f, 8, 200f), new Plant("Azalea", -600f, 800f, 6, 150f),
+            new Plant("Granito del monte", -1100f, 850f, 6, 150f), new Plant("Granito del monte", 650f, -450f, 4, 80f),
+            // El bambú y los helechos junto al torrente; el musgo en el paredón de la cascada.
+            new Plant("Bambú (Phyllostachys edulis", -400f, 400f, 10, 150f), new Plant("Helecho del monte", -80f, 600f, 8, 80f), new Plant("Musgo de la piedra", -200f, 950f, 6, 60f),
+            // Los bancales de té, el bambú de los patios y la hierba del camino de la cumbre.
+            new Plant("Camelia del té", -500f, -300f, 12, 150f), new Plant("Bambú del patio", -300f, 180f, 4, 60f), new Plant("Hierba del sendero", 360f, -180f, 6, 100f),
+        },
+        fauna = new[]
+        {
+            new Animal("Cicada", "Cigarra (Cryptotympana atrata), en los pinos de la colina", 700f, 600f, 3, 4f, 150f),
+            new Animal("Firefly", "Luciérnaga del arrozal, en los bancales de arroz", 380f, -150f, 4, 1.2f, 150f),
+            new Animal("Grasshopper", "Saltamontes del bancal (Oxya chinensis)", 380f, -150f, 3, 3f, 150f),
+            new Animal("Mantis", "Mantis china (Tenodera sinensis), en el té", -500f, -300f, 2, 8f, 150f),
+            new Animal("Ant", "Hormiga del monte (Camponotus japonicus), en la cumbre del amanecer", 650f, -450f, 3, 0.8f, 80f),
+            new Animal("Ladybug", "Gallina de la aldea (en el microcosmos, una mariquita parda)", 200f, 250f, 3, 0.5f, 80f),
+            new Animal("Woodlouse", "Perro de la aldea (en el microcosmos, una cochinilla hormiguera)", -200f, -150f, 2, 0.7f, 60f),
+        },
+        buildings = new[]
+        {
+            new Building("Cabaña del maestro", -300f, 180f), new Building("Templo de la aldea", 150f, 320f), new Building("Cascada y su poza", -260f, 980f),
+            new Building("Cumbre del amanecer", 650f, -450f), new Building("Campo de entrenar", 520f, 300f),
+        },
+        todo = new[] { "en vivo: que el bambú y los helechos queden en la orilla del torrente y no en el agua" },
+    };
 }

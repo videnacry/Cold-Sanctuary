@@ -350,3 +350,16 @@ plantado y sus animales.
 - **Fuentes:** SpaceX, «Falcon 1 Flight 4»; Vance, *Elon Musk* (2015); OpenStreetMap; City of Hawthorne; el plano del pueblo. **Inferido:** las
   especies de cada calle (las típicas del sur de California).
 - **Menú:** ya tenía uno propio, `Build Microcosmos de famosos/Elon Musk (Hawthorne, 2008)`.
+
+### Aldea de la montaña (Goku, homenaje), sobre las Artes Marciales
+**Un amanecer de primavera. FICCIÓN:** el lugar no existe (ni en la obra ni en el mundo); el mapa sigue su **plano inventado** y lo que se coloca
+es la naturaleza **real** del monte subtropical de China central, como en las aldeas de los montes Wudang y Song.
+- **El piso:** los tatamis son los bancales de arroz y de té; los espejos, la poza de la cascada; las máquinas, roca.
+- **La flora (80):** pinos de Masson en la colina y en el monte del maestro, azaleas y granito arriba; bambú y helechos junto al torrente, musgo
+  en el paredón de la cascada; los bancales de té, el bambú de los patios y la hierba del camino de la cumbre.
+- **La fauna (20):** cigarras en los pinos, luciérnagas y saltamontes en los bancales de arroz, una mantis china en el té, hormigas en la cumbre;
+  gallinas y perros de la aldea (mariquitas pardas y cochinillas en el microcosmos).
+- **Edificios:** la cabaña del maestro, el templo, la cascada, la cumbre del amanecer y el campo de entrenar.
+- **Fuentes:** el plano inventado (CivicBuilder.Famosos); *Flora of China*; UNESCO, montes Wudang (1994). **Inferido:** todo el lugar (es ficción);
+  solo las especies y su hábitat son reales.
+- **Menú:** ya tenía uno propio, `Build Microcosmos de famosos/Goku (aldea de la montaña, homenaje)`.
