@@ -130,8 +130,8 @@ origen están sus personas y sus sitios). Las distancias reales que no caben en 
   Sarah Nelmes no tiene sitio documentado: el rebaño va en los prados del plano.
 
 ### Lo que no se ha hecho en esta tanda, y por qué
-- **Ambrosio (nivel 1) y Sakshi (el río):** no son un lugar real. Su bioma es una taiga «antes del fuego», y Ambrosio está ligado a Shanidar 1, un
-  neandertal de la cueva de Shanidar, en los Zagros (Kurdistán iraquí): bosque de robles y pistachos, no taiga. Hace falta decidir primero qué lugar
-  recrean (la taiga o la cueva de Shanidar) para hacer el mapa con fuentes. **Pregunta para Berón.**
+- **Ambrosio (nivel 1) y Sakshi (el río): escenario imaginado (Berón, 2026-10-27), sin mapa real.** Berón eligió para ellos la «taiga al amanecer»: un
+  lugar inventado, no uno que recrear. En `MicroStoryMaps` tienen el estado `Imaginado` (no es una tarea pendiente) y su bioma se siembra; el registro
+  dice «[Mapa] … escenario imaginado (Berón, 2026-10-27), sin mapa real».
 - El resto de los científicos y famosos (Escútari, Dayton, Alejandría, París 1898, Berna, Pasadena, Colorado Springs, Chernóbil, Palenque,
   Velliangiri, Hawthorne, Albuquerque, Omaha, Prairie View, Uagadugú…) siguen en esbozo, con la siembra al azar de respaldo.

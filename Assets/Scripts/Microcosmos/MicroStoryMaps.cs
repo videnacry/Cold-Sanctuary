@@ -20,7 +20,9 @@ using UnityEngine;
 /// </summary>
 public static partial class MicroStoryMaps
 {
-    public enum Status { Hecho, Esbozo }
+    /// <summary>Hecho: mapa a mano del lugar real. Esbozo: aún sin hacer (siembra al azar de respaldo). Imaginado: escenario inventado a propósito, sin lugar
+    /// real que recrear (Berón 2026-10-27: la taiga al amanecer de Ambrosio y Sakshi); su bioma se siembra al azar y no es una tarea pendiente.</summary>
+    public enum Status { Hecho, Esbozo, Imaginado }
 
     /// <summary>Una orden sobre las piezas del piso: las que tienen la clave (o empiezan por ella) o el elemento <see cref="match"/>.</summary>
     public sealed class Piece
@@ -61,6 +63,7 @@ public static partial class MicroStoryMaps
     }
 
     static Map Stub(string display, params string[] todo) => new Map { display = display, status = Status.Esbozo, todo = todo };
+    static Map Imagined(string display, string what) => new Map { display = display, status = Status.Imaginado, place = what, source = "escenario imaginado (Berón, 2026-10-27), sin mapa real" };
     const string Base1 = "colocar a mano la flora y la fauna del lugar y la época", Base2 = "ordenar los muebles del piso para el mapa real (qué pieza es qué)";
 
     /// <summary>LOS MAPAS. Angostura es el ejemplo completo; el resto, esbozos con lo que les falta.</summary>
@@ -121,8 +124,8 @@ public static partial class MicroStoryMaps
         },
 
         // ══ ESBOZOS: lo que le falta a cada historia ═══════════════════════════════════════════════════════════════════════
-        Stub("Sakshi (el río)", Base1, Base2, "el río del origen: su cauce con las esterillas de la Sala de Yoga como orillas"),
-        Stub("Ambrosio (nivel 1)", Base1, Base2, "la taiga del alba antes del fuego: la cueva, el camino y el bosque sobre las camas del hospital"),
+        Imagined("Sakshi (el río)", "la taiga al amanecer: el río del origen"),
+        Imagined("Ambrosio (nivel 1)", "la taiga al amanecer: la cueva, el camino y el bosque"),
         Stub("Hospital", Base1, Base2, "el hospital como paisaje: qué camas son colinas, qué máquinas son centrales; la tribu de antes del fuego"),
         Stub("Cocina", Base1, Base2, "la era del fuego: la guarida y los restos del hogar entre las encimeras"),
         Stub("Huerto", Base1, Base2, "la primera aldea (−9500): los campos de hongos y las casas redondas sobre los bancales"),

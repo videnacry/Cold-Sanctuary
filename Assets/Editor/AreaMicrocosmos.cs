@@ -1416,7 +1416,7 @@ public static class AreaMicrocosmos
         MicroStoryMaps.Map map = display != null ? MicroStoryMaps.For(display) : null;
         bool hand = map != null && map.status == MicroStoryMaps.Status.Hecho;
         _handPlaced.Clear();
-        if (display != null) Debug.Log(hand ? $"[Mapa] {display}: mapa a mano ({map.PlantCount} plantas, {map.AnimalCount} bichos, {map.floor.Length} órdenes sobre el piso; {map.place})." : $"[Mapa] {display}: SIN mapa a mano ({(map != null ? "esbozo: " + string.Join("; ", map.todo) : "ni esbozo")}): siembra al azar como respaldo.");
+        if (display != null) Debug.Log(hand ? $"[Mapa] {display}: mapa a mano ({map.PlantCount} plantas, {map.AnimalCount} bichos, {map.floor.Length} órdenes sobre el piso; {map.place})." : (map != null && map.status == MicroStoryMaps.Status.Imaginado ? $"[Mapa] {display}: {map.source} ({map.place}): siembra de su bioma." : $"[Mapa] {display}: SIN mapa a mano ({(map != null ? "esbozo: " + string.Join("; ", map.todo) : "ni esbozo")}): siembra al azar como respaldo."));
         float biomeWeight = 0f; if (biome != null) foreach (MicroBiome.Plant pl in biome.plants) biomeWeight += pl.weight;
         float R(float a, float b) => a + (float)rnd.NextDouble() * (b - a);
         Vector3 center = new Vector3(rect.center.x, groundY, rect.center.z);

@@ -42,7 +42,10 @@ public class MapasAManoTest : MonoBehaviour, ITestUnit
             TestProbe.Check($"«{d}»: ya no es un esbozo (sin «colocar a mano» pendiente)", !m.todo.Any(t => t.StartsWith("colocar a mano")), string.Join(" · ", m.todo));
         }
         int done = MicroStoryMaps.All.Count(x => x.status == MicroStoryMaps.Status.Hecho), stubs = MicroStoryMaps.All.Count(x => x.status == MicroStoryMaps.Status.Esbozo);
-        Debug.Log($"[Mapa] Tabla principal: {done} hechos y {stubs} esbozos: {string.Join(", ", MicroStoryMaps.All.Where(x => x.status == MicroStoryMaps.Status.Esbozo).Select(x => x.display))}.");
+        var imagined = MicroStoryMaps.All.Where(x => x.status == MicroStoryMaps.Status.Imaginado).ToList();
+        // Ambrosio y Sakshi: escenario imaginado (Berón, 2026-10-27), sin mapa real: no son un esbozo pendiente.
+        TestProbe.Check("Ambrosio y Sakshi: escenario imaginado (Berón, 2026-10-27), sin mapa real", new[] { "Ambrosio (nivel 1)", "Sakshi (el río)" }.All(d => MicroStoryMaps.For(d) != null && MicroStoryMaps.For(d).status == MicroStoryMaps.Status.Imaginado));
+        Debug.Log($"[Mapa] Tabla principal: {done} hechos, {imagined.Count} imaginados ({string.Join(", ", imagined.Select(x => x.display))}: escenario imaginado, sin mapa real) y {stubs} esbozos: {string.Join(", ", MicroStoryMaps.All.Where(x => x.status == MicroStoryMaps.Status.Esbozo).Select(x => x.display))}.");
         yield return null;
         TestProbe.End();
     }
