@@ -337,3 +337,16 @@ escenario) y la duna donde volaron. El mapa sigue el plano de Dayton y pone la d
 - **Fuentes:** Isha Foundation, «Dhyanalinga»; Tamil Nadu Forest Department, Boluvampatti Range; OpenStreetMap («Isha Yoga Center»); el plano del
   pueblo. **Inferido:** qué había construido en 1999 además del Dhyanalinga (la sala y las cabañas, aproximadas).
 - **Menú:** ya tenía uno propio, `Build Microcosmos de famosos/Sadhguru (Velliangiri, 1999)`.
+
+### Hawthorne (Elon Musk), sobre el Control de Misión
+**La sede de SpaceX en Rocket Road y sus calles, 28 de septiembre de 2008 (el cuarto Falcon 1, el primero en órbita).** Una ciudad: solo lo
+plantado y sus animales.
+- **El piso:** las mesas de las consolas son las naves de la fábrica y del aeropuerto; las pantallas y los paneles, los muros de sonido de la
+  autopista 105; las máquinas, roca.
+- **La flora (66):** palmeras de abanico en Crenshaw Boulevard; jacarandas, césped y buganvillas en las calles de casas; el césped entre las pistas
+  del aeropuerto; los bordillos de Rocket Road.
+- **La fauna (9):** perros y gatos de las casas (cochinillas hormigueras en el microcosmos).
+- **Edificios:** la nave de SpaceX, su control de misión, el aeropuerto municipal, la autopista 105 y las casas de estuco.
+- **Fuentes:** SpaceX, «Falcon 1 Flight 4»; Vance, *Elon Musk* (2015); OpenStreetMap; City of Hawthorne; el plano del pueblo. **Inferido:** las
+  especies de cada calle (las típicas del sur de California).
+- **Menú:** ya tenía uno propio, `Build Microcosmos de famosos/Elon Musk (Hawthorne, 2008)`.

@@ -45,4 +45,42 @@ public static partial class MicroStoryMaps
         },
         todo = new[] { "en vivo: que los cocotales queden en el llano de la aldea y la hierba del monte en la falda, no en el ashram" },
     };
+
+    // ══ HAWTHORNE, 28 de septiembre de 2008 (Elon Musk y el cuarto Falcon 1): sobre el Control de Misión ═══════════════════════════════════════
+    // La sede de SpaceX en la antigua nave de fuselajes de Northrop (Rocket Road, junto a Crenshaw Boulevard): desde su control de misión se siguió el
+    // cuarto lanzamiento del Falcon 1, el primero en llegar a órbita (desde Kwajalein). Al oeste de Crenshaw, el aeropuerto municipal; al norte, la
+    // autopista 105; alrededor, la cuadrícula de casas de estuco con césped, jacarandas y buganvillas, y las palmeras de abanico de los bulevares.
+    // Una ciudad: solo lo plantado y sus animales (perros y gatos de las casas).
+    static Map MapHawthorne() => new Map
+    {
+        display = "Hawthorne", place = "Hawthorne (Los Ángeles): la sede de SpaceX en Rocket Road y sus calles, 28 de septiembre de 2008", status = Status.Hecho,
+        source = "SpaceX, «Falcon 1 Flight 4» (28-09-2008, primer cohete de combustible líquido de financiación privada en órbita); Vance, Elon Musk (2015); " +
+                 "OpenStreetMap (1 Rocket Road, Crenshaw Boulevard, aeropuerto municipal de Hawthorne); City of Hawthorne, arbolado urbano; el plano del pueblo",
+        floor = Natural(
+            new Piece("mesa", Como, "las mesas de las consolas: las naves de la fábrica y del aeropuerto", "mesa"),
+            new Piece("pared", Como, "las pantallas y los paneles: los muros de sonido de la autopista 105", "pared")),
+        flora = new[]
+        {
+            // Las palmeras de abanico de Crenshaw Boulevard.
+            new Plant("Palmera de abanico", -80f, -600f, 10, 150f), new Plant("Palmera de abanico", -80f, 600f, 8, 150f),
+            // Las calles de casas: jacarandas, césped y buganvillas.
+            new Plant("Jacaranda", 800f, 600f, 8, 150f), new Plant("Jacaranda", 800f, -650f, 8, 150f), new Plant("Césped de la casa", 1000f, 600f, 8, 150f),
+            new Plant("Césped de la casa", -700f, -650f, 8, 150f), new Plant("Buganvilla", 600f, -650f, 6, 120f),
+            // El césped segado entre las pistas del aeropuerto y los bordillos de Rocket Road.
+            new Plant("Césped (Cynodon", -620f, 150f, 6, 200f), new Plant("Bordillo de hormigón", 250f, 120f, 4, 60f),
+        },
+        fauna = new[]
+        {
+            new Animal("Woodlouse", "Perro de la casa (en el microcosmos, una cochinilla hormiguera)", 900f, 600f, 3, 0.7f, 120f),
+            new Animal("Woodlouse", "Perro de la casa", -700f, -650f, 2, 0.7f, 120f),
+            new Animal("Woodlouse", "Gato de la casa (en el microcosmos, una cochinilla hormiguera)", 800f, -650f, 2, 0.5f, 120f),
+            new Animal("Woodlouse", "Gato de la casa", 1100f, 300f, 2, 0.5f, 100f),
+        },
+        buildings = new[]
+        {
+            new Building("Nave de SpaceX (antigua nave de fuselajes de Northrop)", 150f, 80f), new Building("Control de misión de SpaceX", 60f, 80f),
+            new Building("Aeropuerto municipal de Hawthorne", -620f, 150f), new Building("Autopista 105", 0f, 920f), new Building("Casas de estuco", 800f, 600f),
+        },
+        todo = new[] { "en vivo: que las palmeras queden a los lados de Crenshaw y el césped entre las pistas, no sobre ellas" },
+    };
 }

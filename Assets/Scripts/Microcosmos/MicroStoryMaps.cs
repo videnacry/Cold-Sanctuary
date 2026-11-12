@@ -155,7 +155,7 @@ public static partial class MicroStoryMaps
         MapPalenque(),   // (2026-11-12) hecho: mapa a mano
         // (2026-11-05) Los siete famosos que salieron del mesocosmos (docs/personajes-mesocosmos.md).
         MapVelliangiri(),   // (2026-11-12) hecho: MicroStoryMaps.Famosos.cs
-        Stub("Hawthorne", Base1, Base2, "la fábrica de SpaceX en Hawthorne, el control de misión y el Falcon 1"),
+        MapHawthorne(),   // (2026-11-12) hecho: MicroStoryMaps.Famosos.cs
         Stub("Aldea de la montaña", Base1, Base2, "la aldea de la montaña (homenaje, ficción): la cabaña, el bosque y el campo de entrenar"),
         Stub("Albuquerque", Base1, Base2, "Albuquerque en 1975: el garaje de MITS, el Altair y el desierto de Nuevo México"),
         Stub("Omaha", Base1, Base2, "Omaha: la tienda de la señora B, sus alfombras y las calles de Nebraska"),
