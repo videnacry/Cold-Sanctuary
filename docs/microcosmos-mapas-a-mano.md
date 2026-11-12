@@ -215,3 +215,18 @@ escenario) y la duna donde volaron. El mapa sigue el plano de Dayton y pone la d
 - **Fuentes:** Estrabón, *Geografía* XVII.1.6–10 y 14; McKenzie, *The Architecture of Alexandria and Egypt* (2007); Cleómedes, *De motu circulari* I.10
   (el pozo de Siene); el plano del pueblo. **Inferido:** la extensión de los jardines del Brucheion.
 - **Menú:** `Build Microcosmos de historias: Eratóstenes (Alejandría)`.
+
+### Bagdad (al-Juarismi), sobre el Aula
+**La Ciudad Redonda de al-Mansur y el barrio de al-Karj, hacia 820.** Una ciudad: solo lo plantado y sus animales.
+- **El piso:** pupitres y mesas son los *tells* (montículos de ciudades antiguas) de la llanura; la pizarra y los paneles, la muralla de la Ciudad
+  Redonda; las máquinas, roca.
+- **La flora (100):** palmerales en las orillas de los canales **Sarat** e **Isa** y del **Tigris**; en los patios entre las murallas, granados,
+  naranjos amargos, rosales de Damasco y setos de arrayán; el ladrillo cocido de la gran plaza.
+- **La fauna (12):** asnos de los aguadores en los dos canales, camellos de caravana en el zoco de al-Karj y gatos de patio (pulgones de carga y
+  cochinillas hormigueras en el microcosmos).
+- **Edificios:** el palacio de la Puerta de Oro y la gran mezquita en el centro, las puertas de Jorasán, Basora, Kufa y Siria, el puente de barcas
+  y el zoco de al-Karj.
+- **Fuentes:** Lassner, *The Topography of Baghdad in the Early Middle Ages* (1970); Le Strange, *Baghdad during the Abbasid Caliphate* (1900);
+  al-Yaʿqubi, *Kitab al-Buldan* (s. IX); Ruggles, *Islamic Gardens and Landscapes* (2008); el plano del pueblo. **Inferido:** el sitio de la Casa
+  de la Sabiduría (el escenario, en el origen) y qué jardín tenía cada patio.
+- **Menú:** `Build Microcosmos de historias: Al-Juarismi (Bagdad)`.

@@ -143,7 +143,7 @@ public static partial class MicroStoryMaps
         Stub("Planta Atómica", Base1, Base2), Stub("Egina", Base1, Base2, "la isla de Egina, su puerto y el templo de Afaya"),
         Stub("Crotona", Base1, Base2, "la ciudad griega de Calabria, la escuela pitagórica y la palestra de Milón"),
         Stub("Menfis", Base1, Base2, "el Nilo en crecida, los campos inundados y los templos de Ptah"),
-        Stub("Bagdad", Base1, Base2, "la ciudad redonda de al-Mansur, el Tigris y la Casa de la Sabiduría"),
+        MapBagdad(),   // (2026-11-12) hecho: mapa a mano
         MapWoolsthorpe(),   // (2026-11-12) hecho: MicroStoryMaps.Tanda4.cs
         MapBerkeley(),   // (2026-11-12) hecho: MicroStoryMaps.Tanda4.cs
         Stub("Sils Maria", Base1, "el lago de Silvaplana, la roca de Surlej y los senderos de la Engadina (la mesa como nevado)"),
