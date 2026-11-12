@@ -558,7 +558,21 @@ public class FruitGardener : MonoBehaviour
     void Begin(Phase p) { _phase = p; _targetSince = Time.time; PathMover.Of(this).Restart(); }
 
     void OnEnable() { if (TryGetComponent(out IdleBehavior idle)) idle.enabled = false; }
-    void OnDisable() { Hold(false); }
+    void OnDisable()
+    {
+        Hold(false);
+        // (2026-11-11) SE ACABA SU MISIÓN CON ÉL DENTRO DEL ÁRBOL (la jornada apaga la ronda a su hora): sale nadando por el suelo, no se queda en el
+        // agua del tronco a 65 m (Panterilia, suite 58: «flotaba 64,2 m … baja al suelo» en su tiempo libre).
+        if (gameObject.activeInHierarchy && !TreeTrip.Busy(gameObject))
+        {
+            ArbolCampos t = ArbolCampos.At(transform.position, out TreeLevel _, out bool wet);
+            if (t != null && wet && t.Ground != null)
+            {
+                var path = t.SwimPath(null, t.Ground, t.transform.InverseTransformPoint(transform.position) - Vector3.up * PathMover.Of(this).PivotHeight);
+                if (path != null && path.Count >= 2) TreeTrip.Start(gameObject, t, path, t.Ground, true);
+            }
+        }
+    }
 
     Leg CurLeg => _round != null && _leg < _round.legs.Count ? _round.legs[_leg] : null;
 
