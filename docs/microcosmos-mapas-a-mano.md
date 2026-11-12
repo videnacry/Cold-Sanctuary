@@ -271,3 +271,16 @@ escenario) y la duna donde volaron. El mapa sigue el plano de Dayton y pone la d
 - **Fuentes:** Estrabón VI.1.12; Tito Livio XXIV.3; Jámblico, *Vida pitagórica*; Diógenes Laercio VIII.1; Spadea (ed.), *Il tesoro di Hera*
   (1996); el plano del pueblo. **Inferido:** el sitio de la escuela (no se ha hallado) y el del campo de habas.
 - **Menú:** `Build Microcosmos de historias: Pitágoras (Crotona)`.
+
+### Menfis (Heródoto), sobre el Aula
+**El recinto de Ptah, el Nilo y el borde de Saqqara, al empezar la crecida (~450 a. C.).**
+- **El piso:** pupitres y mesas son los *koms* (montículos de la ciudad vieja); la pizarra y los paneles, la Muralla Blanca (Ineb-hedj); las
+  máquinas, roca.
+- **La flora (90):** papiro en la orilla del Nilo y caña en el canal del puerto; limo negro y loto azul en los campos que la crecida empieza a
+  cubrir y en el lago sagrado de Ptah; palmerales; el rastrojo del trigo emmer; boñigas de asno en la avenida procesional; arena en Saqqara.
+- **La fauna (19):** escarabajos sagrados en la avenida y en el borde del desierto, langostas en el rastrojo, grillos en los campos, y en la
+  meseta la hormiga *Cataglyphis* del mediodía, la mantis del desierto y el escorpión amarillo.
+- **Edificios:** el templo de Ptah, el coloso de Ramsés II, el patio del buey Apis, el puerto de Peru-nefer y la necrópolis de Saqqara.
+- **Fuentes:** Heródoto II.14, II.99–101 y II.153; Jeffreys, *The Survey of Memphis* (EES); Bonneau, *La crue du Nil* (1964); el plano del
+  pueblo. **Inferido:** el sitio del patio de Apis respecto al templo y la distancia a Saqqara (acortada, en su dirección).
+- **Menú:** `Build Microcosmos de historias: Heródoto (Menfis)`.

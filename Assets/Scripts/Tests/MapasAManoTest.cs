@@ -16,7 +16,7 @@ public class MapasAManoTest : MonoBehaviour, ITestUnit
     public bool ParallelSafe => true;
 
     /// <summary>Las historias de esta tanda (2026-11-12).</summary>
-    public static readonly string[] Targets = { "Kapilavastu", "Woolsthorpe", "Berkeley", "Berna", "París 1898", "Colorado Springs" , "Pasadena" , "Dayton" , "Alejandría" , "Bagdad" , "Escútari" , "Egina" , "Crotona" };
+    public static readonly string[] Targets = { "Kapilavastu", "Woolsthorpe", "Berkeley", "Berna", "París 1898", "Colorado Springs" , "Pasadena" , "Dayton" , "Alejandría" , "Bagdad" , "Escútari" , "Egina" , "Crotona" , "Menfis" };
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void Register()
