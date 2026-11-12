@@ -140,7 +140,7 @@ public static partial class MicroStoryMaps
         MapDayton(),   // (2026-11-12) hecho: mapa a mano
         MapAlejandria(),   // (2026-11-12) hecho: mapa a mano
         MapBruceLee(),   // (2026-11-12) hecho: MicroStoryMaps.Tanda7.cs
-        Stub("Irena Sendler", Base1, Base2, "el gueto de Varsovia: su muro, sus puertas y la ciudad de fuera"),
+        MapIrenaSendler(),   // (2026-11-12) hecho: MicroStoryMaps.Tanda7.cs
         Stub("Le Chambon-sur-Lignon", Base1, Base2, "el plateau del Vivarais-Lignon: pinares, granjas y la estación"),
         new Map { display = "Planta Atómica", status = Status.Imaginado, place = "un jardín de Europa occidental que junta Woolsthorpe 1666, París 1898 y Berna 1905", source = "escenario imaginado: mezcla de tres lugares, cada uno con su mapa a mano propio (Woolsthorpe, París 1898, Berna)" }, MapEgina()   /* (2026-11-12) hecho: mapa a mano */,
         MapCrotona(),   // (2026-11-12) hecho: mapa a mano

@@ -131,4 +131,43 @@ public static partial class MicroStoryMaps
         },
         todo = new[] { "en vivo: que la ladera quede al norte de Kowloon y la arena en la orilla del puerto, no en el agua" },
     };
+
+    // ══ IRENA SENDLER, otoño de 1942 (Varsovia): sobre la Enfermería ═══════════════════════════════════════════════════════════════════════════
+    // El gueto al oeste (en el claro de la historia), cerrado por su muro; Leszno lo cruza de este a oeste, con el tribunal cuyas dos entradas (una
+    // dentro y otra fuera del muro) sirvieron para sacar niños. Fuera, al este, Marszałkowska, el Jardín Sajón y el Vístula; al sur, Aleje
+    // Jerozolimskie y la estación central; en el borde suroeste, Ochota, donde los nombres de los niños se enterraron en frascos bajo un manzano.
+    // Otoño–invierno: hierbas ruderales en las grietas y los escombros (del asedio de 1939), escarcha; arañas y cucarachas en los sótanos.
+    static Map MapIrenaSendler() => new Map
+    {
+        display = "Irena Sendler", place = "Varsovia: el gueto, Leszno, el Jardín Sajón y el Vístula, otoño de 1942", status = Status.Hecho,
+        source = "Engelking y Leociak, The Warsaw Ghetto: A Guide to the Perished City (2009: el muro, Leszno y el tribunal); Mieszkowska, Irena Sendler: " +
+                 "Mother of the Children of the Holocaust (2011: las rutas y los frascos bajo el manzano de la calle Lekarska); USHMM, «Warsaw»; Plan Warszawy 1939",
+        floor = Natural(
+            new Piece("cama", Como, "las camas: las manzanas de casas de vecinos de Varsovia", "cama"),
+            new Piece("lavabo", Como, "los lavabos: el Vístula y las alcantarillas por las que salieron niños", "lavabo")),
+        flora = new[]
+        {
+            // Los escombros del asedio de 1939 dentro del muro, con ortigas y cenizos secos.
+            new Plant("Escombro", -500f, 400f, 8, 150f), new Plant("Escombro", -400f, -200f, 6, 120f), new Plant("Ortiga seca", -550f, -300f, 6, 120f),
+            new Plant("Cenizo seco", -400f, -200f, 6, 120f),
+            // Las grietas del empedrado de Leszno, con musgo plateado y llantén.
+            new Plant("Musgo plateado", -300f, 160f, 8, 60f), new Plant("Musgo plateado", 400f, 160f, 6, 60f), new Plant("Llantén mayor", 200f, 160f, 8, 60f),
+            // El Jardín Sajón: poa y dientes de león, y la escarcha de la mañana en la plaza.
+            new Plant("Poa anual", 420f, 380f, 10, 120f), new Plant("Diente de león", 480f, 420f, 6, 100f), new Plant("Escarcha", 500f, -200f, 6, 100f),
+        },
+        fauna = new[]
+        {
+            new Animal("Spider", "Araña doméstica (Eratigena atrica), en los sótanos", -300f, 300f, 3, 1.4f, 100f),
+            new Animal("Cockroach", "Cucaracha oriental, en los sótanos", -400f, -200f, 3, 2.4f, 120f),
+            new Animal("Woodlouse", "Cochinilla de humedad (Porcellio scaber), bajo el escombro", -500f, 400f, 3, 1.4f, 150f),
+            new Animal("Ladybug", "Mariquitas de 7 puntos invernando en grupo, en el muro del Jardín Sajón", 420f, 380f, 4, 0.7f, 100f),
+            new Animal("Ant", "Hormiga negra (Lasius niger), al sol del mediodía", 480f, 420f, 2, 0.4f, 100f),
+        },
+        buildings = new[]
+        {
+            new Building("Muro del gueto", -200f, 250f), new Building("Tribunal de Leszno (dos entradas)", -100f, 160f), new Building("Jardín Sajón", 420f, 380f),
+            new Building("Estación central", 560f, -640f), new Building("El manzano de la calle Lekarska (Ochota)", -750f, -750f), new Building("Vístula", 900f, 0f),
+        },
+        todo = new[] { "en vivo: que lo de dentro del muro quede al oeste de Marszałkowska y el Jardín Sajón al este" },
+    };
 }

@@ -462,3 +462,17 @@ civil y agrícola, la historia es de los campesinos. Plano acortado al norte (co
 - **Fuentes:** Polly, *Bruce Lee: A Life* (2018); Hong Kong Map 1957; Hong Kong Herbarium; Kroll's Map of Seattle (1960); el plano del pueblo.
   **Inferido:** el lado de Seattle usa el césped del bioma de Hong Kong (el bioma no tiene flora propia de Seattle; queda sobrio a propósito).
 - **Menú:** ya tenía uno propio, `Build Microcosmos de historias: Bruce Lee (Dojo)`.
+
+### Irena Sendler, sobre la Enfermería
+**Varsovia: el gueto, Leszno, el Jardín Sajón y el Vístula, otoño de 1942.** Sin violencia en el mapa: solo los lugares.
+- **El piso:** las camas son las manzanas de casas de vecinos; los lavabos, el Vístula y las alcantarillas por las que salieron niños; las
+  máquinas, roca.
+- **La flora (70):** escombros del asedio de 1939 dentro del muro, con ortigas y cenizos secos; musgo plateado y llantén en las grietas de Leszno;
+  poa y dientes de león en el Jardín Sajón; escarcha en la plaza.
+- **La fauna (15):** arañas domésticas y cucarachas en los sótanos, cochinillas bajo el escombro, mariquitas invernando en el muro del Jardín
+  Sajón y hormigas negras al sol.
+- **Edificios:** el muro del gueto, el tribunal de Leszno (con una entrada a cada lado), el Jardín Sajón, la estación central, **el manzano de la
+  calle Lekarska** (en el borde suroeste, en su dirección) y el Vístula.
+- **Fuentes:** Engelking y Leociak, *The Warsaw Ghetto: A Guide to the Perished City* (2009); Mieszkowska, *Irena Sendler* (2011); USHMM; Plan
+  Warszawy 1939. **Inferido:** el trazado exacto del muro en el plano (el gueto cambió de límites en 1941–42).
+- **Menú (nuevo):** `Build simulaciones de compasión: Irena Sendler (Varsovia)`.
