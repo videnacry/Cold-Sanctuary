@@ -739,7 +739,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
             {
                 Loco.GoTo(threat.transform.position);
                 if (Vector3.Distance(transform.position, threat.transform.position) < 4f)
-                    { if (threat.TryGetComponent(out Animal ta)) ta.CauseOfHarm = $"la pelea con «{name}» ({SpeciesName})"; threatTarget.Hurt((rig.mass - exhaustion) / 10f); }
+                    { if (threat.TryGetComponent(out Animal ta)) ta.CauseOfHarm = $"la pelea con «{name}» ({SpeciesName})"; threatTarget.Hurt(CombatDamage(threat, (rig.mass - exhaustion) / 10f)); }
                 yield return new WaitForSeconds(interval);
             }
         }
@@ -750,6 +750,21 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
             // se envalentona, como en la caza (D2). Solo victoria clara; no se penaliza que la amenaza se aleje.
             if (threatTarget.Dead) RecordUse(Capability.Combat, true);
         }
+    }
+
+    /// <summary>(2026-11-11) EL GOLPE SEGÚN EL PODER (Predation): el daño de la pelea o del acoso escala con (poder del que golpea / defensa del
+    /// golpeado)², entre 0,02 y 1,5; antes era la masa del atacante sin más, y un reno de 140 kg mataba a un oso adulto (suite 58: dos osos «el acoso
+    /// de / la pelea con Reindeer», un lobo «el acoso de MuskOx»). Y un HERBÍVORO que se defiende ahuyenta, no mata a un depredador: su golpe no lo
+    /// deja por debajo del 75 % de su vida (la muerte es por debajo del 70 %). La caza (Forager) no pasa por aquí.</summary>
+    public float CombatDamage(GameObject target, float raw)
+    {
+        if (target == null || !target.TryGetComponent(out Animal t)) return raw;
+        float att = Predation.PredatorPower(this), def = Mathf.Max(0.05f, Predation.Defense(t));
+        float k = Mathf.Clamp((att / def) * (att / def), 0.02f, 1.5f);
+        float dmg = Mathf.Max(0f, raw) * k;
+        bool herbivore = Forage == null || !Forage.eatsPrey;
+        if (herbivore && t.Forage != null && t.Forage.eatsPrey && t.rig != null) dmg = Mathf.Min(dmg, Mathf.Max(0f, t.lp - t.rig.mass * 0.75f));
+        return dmg;
     }
 
     // ¿Lleva 6 s sin acercarse a la amenaza (y sin estar ya encima, < 4 m)? Entonces no la alcanza: deja la pelea.
@@ -775,7 +790,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
             {
                 Loco.GoTo(threat.transform.position);
                 if (Vector3.Distance(transform.position, threat.transform.position) < 4f)
-                    { if (threat.TryGetComponent(out Animal ta)) ta.CauseOfHarm = $"el acoso de «{name}» ({SpeciesName})"; threatTarget.Hurt((rig.mass - exhaustion) / 15f); }
+                    { if (threat.TryGetComponent(out Animal ta)) ta.CauseOfHarm = $"el acoso de «{name}» ({SpeciesName})"; threatTarget.Hurt(CombatDamage(threat, (rig.mass - exhaustion) / 15f)); }
             }
             else
             {
