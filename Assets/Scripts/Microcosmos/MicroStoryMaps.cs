@@ -64,6 +64,8 @@ public static partial class MicroStoryMaps
 
     static Map Stub(string display, params string[] todo) => new Map { display = display, status = Status.Esbozo, todo = todo };
     static Map Imagined(string display, string what) => new Map { display = display, status = Status.Imaginado, place = what, source = "escenario imaginado (Berón, 2026-10-27), sin mapa real" };
+    /// <summary>(2026-11-12) Un microcosmos de ÁREA: su pueblo sale del área (no de un lugar real), así que no hay mapa real que recrear.</summary>
+    static Map ImaginedArea(string display, string what) => new Map { display = display, status = Status.Imaginado, place = what, source = "Imaginado (área): el pueblo sale del área, sin lugar real" };
     const string Base1 = "colocar a mano la flora y la fauna del lugar y la época", Base2 = "ordenar los muebles del piso para el mapa real (qué pieza es qué)";
 
     /// <summary>LOS MAPAS. Angostura es el ejemplo completo; el resto, esbozos con lo que les falta.</summary>
@@ -126,10 +128,10 @@ public static partial class MicroStoryMaps
         // ══ ESBOZOS: lo que le falta a cada historia ═══════════════════════════════════════════════════════════════════════
         Imagined("Sakshi (el río)", "la taiga al amanecer: el río del origen"),
         Imagined("Ambrosio (nivel 1)", "la taiga al amanecer: la cueva, el camino y el bosque"),
-        Stub("Hospital", Base1, Base2, "el hospital como paisaje: qué camas son colinas, qué máquinas son centrales; la tribu de antes del fuego"),
-        Stub("Cocina", Base1, Base2, "la era del fuego: la guarida y los restos del hogar entre las encimeras"),
-        Stub("Huerto", Base1, Base2, "la primera aldea (−9500): los campos de hongos y las casas redondas sobre los bancales"),
-        Stub("Sala de Yoga", Base1, Base2), Stub("Estudio Textil", Base1, Base2), Stub("Mecánica", Base1, Base2),
+        ImaginedArea("Hospital", "el hospital como paisaje: la tribu de antes del fuego en la taiga"),
+        ImaginedArea("Cocina", "la era del fuego: la guarida y los restos del hogar entre las encimeras"),
+        ImaginedArea("Huerto", "la primera aldea (−9500): los campos de hongos y las casas redondas sobre los bancales"),
+        ImaginedArea("Sala de Yoga", "la sala de yoga como paisaje"), ImaginedArea("Estudio Textil", "el estudio textil en el Paleolítico (otoño)"), ImaginedArea("Mecánica", "el taller mecánico en el Paleolítico (verano)"),
         Stub("Mesopotamia", Base1, Base2, "Uruk: el Éufrates, los canales y los campos de cebada; el templo blanco"),
         Stub("Patanjali", Base1, Base2, "el āśram en el bosque: el río, el pipal, las chozas"),
         Stub("Tregua 1914", Base1, "la tierra de nadie (alfombras quitadas), las trincheras de cada lado y los abetos de Navidad"),
@@ -140,7 +142,7 @@ public static partial class MicroStoryMaps
         Stub("Bruce Lee", Base1, Base2, "Hong Kong de los 50: Nathan Road, los tong lau y la escuela de Yip Man"),
         Stub("Irena Sendler", Base1, Base2, "el gueto de Varsovia: su muro, sus puertas y la ciudad de fuera"),
         Stub("Le Chambon-sur-Lignon", Base1, Base2, "el plateau del Vivarais-Lignon: pinares, granjas y la estación"),
-        Stub("Planta Atómica", Base1, Base2), MapEgina()   /* (2026-11-12) hecho: mapa a mano */,
+        new Map { display = "Planta Atómica", status = Status.Imaginado, place = "un jardín de Europa occidental que junta Woolsthorpe 1666, París 1898 y Berna 1905", source = "escenario imaginado: mezcla de tres lugares, cada uno con su mapa a mano propio (Woolsthorpe, París 1898, Berna)" }, MapEgina()   /* (2026-11-12) hecho: mapa a mano */,
         MapCrotona(),   // (2026-11-12) hecho: mapa a mano
         MapMenfis(),   // (2026-11-12) hecho: mapa a mano
         MapBagdad(),   // (2026-11-12) hecho: mapa a mano

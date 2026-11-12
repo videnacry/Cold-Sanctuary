@@ -411,3 +411,11 @@ civil y agrícola, la historia es de los campesinos. Plano acortado al norte (co
 - **Fuentes:** Ville de Ouagadougou y OpenStreetMap; FAO (los parques de karité y néré); AIB (la entrega de mayo de 2024); el plano del pueblo.
   **Inferido:** la distancia a la sabana (acortada, en su dirección).
 - **Menú:** ya tenía uno propio, `Build Microcosmos de famosos/Ibrahim Traoré (Uagadugú, 2024)`.
+
+## Imaginados: las áreas y la Planta Atómica (2026-11-12)
+- **Imaginado (área):** Hospital, Cocina, Huerto, Sala de Yoga, Estudio Textil y Mecánica son microcosmos **de área**: su pueblo sale del área
+  (la tribu de antes del fuego, la era del fuego, la primera aldea de −9500, el Paleolítico), no de un lugar real; ningún doc les da un sitio real.
+  Se siembran de su bioma, como Ambrosio y Sakshi, y ya no son esbozos pendientes.
+- **Planta Atómica:** junta en un jardín Woolsthorpe (1666), París (1898) y Berna (1905). No hay un lugar real único; cada uno de los tres ya
+  tiene su mapa a mano propio (Woolsthorpe, París 1898, Berna). Queda **imaginado**.
+- La prueba 115 comprueba que los siete están imaginados y que en la tabla principal no queda ningún esbozo.

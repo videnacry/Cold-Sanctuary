@@ -45,6 +45,10 @@ public class MapasAManoTest : MonoBehaviour, ITestUnit
         var imagined = MicroStoryMaps.All.Where(x => x.status == MicroStoryMaps.Status.Imaginado).ToList();
         // Ambrosio y Sakshi: escenario imaginado (Berón, 2026-10-27), sin mapa real: no son un esbozo pendiente.
         TestProbe.Check("Ambrosio y Sakshi: escenario imaginado (Berón, 2026-10-27), sin mapa real", new[] { "Ambrosio (nivel 1)", "Sakshi (el río)" }.All(d => MicroStoryMaps.For(d) != null && MicroStoryMaps.For(d).status == MicroStoryMaps.Status.Imaginado));
+        // (2026-11-12) Los microcosmos de ÁREA (su pueblo sale del área, sin lugar real) y la Planta Atómica (mezcla de Woolsthorpe 1666, París 1898 y Berna
+        // 1905, cada uno con su mapa propio): imaginados, no esbozos pendientes.
+        TestProbe.Check("Áreas y Planta Atómica: imaginados (sin lugar real)", new[] { "Hospital", "Cocina", "Huerto", "Sala de Yoga", "Estudio Textil", "Mecánica", "Planta Atómica" }.All(d => MicroStoryMaps.For(d) != null && MicroStoryMaps.For(d).status == MicroStoryMaps.Status.Imaginado));
+        TestProbe.Check("Ningún esbozo pendiente en la tabla principal", stubs == 0, string.Join(", ", MicroStoryMaps.All.Where(x => x.status == MicroStoryMaps.Status.Esbozo).Select(x => x.display)));
         Debug.Log($"[Mapa] Tabla principal: {done} hechos, {imagined.Count} imaginados ({string.Join(", ", imagined.Select(x => x.display))}: escenario imaginado, sin mapa real) y {stubs} esbozos: {string.Join(", ", MicroStoryMaps.All.Where(x => x.status == MicroStoryMaps.Status.Esbozo).Select(x => x.display))}.");
         yield return null;
         TestProbe.End();
