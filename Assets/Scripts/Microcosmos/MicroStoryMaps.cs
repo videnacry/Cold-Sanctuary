@@ -134,7 +134,7 @@ public static partial class MicroStoryMaps
         ImaginedArea("Sala de Yoga", "la sala de yoga como paisaje"), ImaginedArea("Estudio Textil", "el estudio textil en el Paleolítico (otoño)"), ImaginedArea("Mecánica", "el taller mecánico en el Paleolítico (verano)"),
         Stub("Mesopotamia", Base1, Base2, "Uruk: el Éufrates, los canales y los campos de cebada; el templo blanco"),
         MapPatanjali(),   // (2026-11-12) hecho: mapa a mano
-        Stub("Tregua 1914", Base1, "la tierra de nadie (alfombras quitadas), las trincheras de cada lado y los abetos de Navidad"),
+        MapTregua1914(),   // (2026-11-12) hecho: mapa a mano
         MapEscutari(),   // (2026-11-12) hecho: mapa a mano
         MapKapilavastu(),   // (2026-11-12) hecho: MicroStoryMaps.Tanda4.cs
         MapDayton(),   // (2026-11-12) hecho: mapa a mano

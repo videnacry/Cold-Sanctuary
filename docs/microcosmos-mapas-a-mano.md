@@ -434,3 +434,17 @@ civil y agrícola, la historia es de los campesinos. Plano acortado al norte (co
 - **Fuentes:** Bryant, *The Yoga Sūtras of Patañjali* (2009); el *Mahābhāṣya*; Thapar, *Early India* (2002); *Bhagavad Gītā* VI.11; el plano del
   pueblo. **Inferido:** el lugar exacto (las fuentes no lo fijan: es un āśrama típico de la llanura del Ganges en época Śuṅga).
 - **Menú:** `Build Microcosmos de historias: Patanjali (el āśrama del Ganges)`.
+
+### La tregua de Navidad de 1914, sobre el Gimnasio
+**Saint-Yvon (Ploegsteert, Flandes): las trincheras y la tierra de nadie, 25 de diciembre de 1914.**
+- **El piso:** las esterillas son la tierra de nadie (pasto escarchado y barro helado); los espejos, el Douve y los cráteres con agua helada;
+  las máquinas, roca.
+- **La flora (76):** pasto escarchado y escarcha en la tierra de nadie, barro helado en las dos trincheras; romazas y terrones en el campo de
+  remolachas; ortigas secas, pamplina y musgo en la trinchera de comunicación y el bosque de Ploegsteert; ranúnculos en el Douve; amapolas en
+  roseta hacia Messines.
+- **La fauna (17):** arañas de sábana activas en el pasto helado, carábidos de invierno en el bosque, lombrices en el campo, cochinillas en las
+  tablas de la trinchera y babosas.
+- **Edificios:** las dos trincheras, los árboles de Navidad del parapeto alemán, el campo del partido, el bosque, el puesto de socorro y Messines.
+- **Fuentes:** Brown y Seaton, *Christmas Truce* (1984); Bairnsfather, *Bullets & Billets* (1916); IWM, «The Christmas Truce»; CWGC, Lancashire
+  Cottage; el plano del pueblo. **Inferido:** el sitio del partido de fútbol (los testimonios no lo fijan).
+- **Menú:** `Build Microcosmos de historias: Tregua de Navidad (Saint-Yvon, 1914)`.
