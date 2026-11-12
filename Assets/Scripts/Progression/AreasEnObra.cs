@@ -26,7 +26,7 @@ public static class AreasEnObra
     /// <summary>Lo que se sigue haciendo aunque su área esté en obra: el O₂ (fotobiorreactores, «bio_fotobio»), el material de obra («mat_») y la
     /// SEGURIDAD de la lanzadera (el diluvio y la trinchera, el remolque de un iceberg y el vaciado de combustible: Control de misión, 2026-11-09).</summary>
     public static bool KeepsWhileEnObra(WorkRoster.Mission m) => m != null && m.id != null && (m.id.StartsWith("mat_") || m.id.StartsWith(FotobioFacade.MissionId) || SafetyIds.Contains(m.id));
-    static readonly HashSet<string> SafetyIds = new HashSet<string> { "lanz_seguridad", "lanz_vaciado", Iceberg.LaunchTow };
+    static readonly HashSet<string> SafetyIds = new HashSet<string> { "lanz_vaciado", Iceberg.LaunchTow };   // (ronda 52: la revisión rutinaria de la plataforma, lanz_seguridad, no: sin lanzamientos mientras está en obra)
 
     /// <summary>Dónde se hace la obra de un área: en la tierra, en Construcción (su equipo); en el Marino o el Aéreo, en el área misma, para que la
     /// hagan los que pasan allí el día (Control de misión: los de s3).</summary>
