@@ -94,6 +94,8 @@ public static partial class MicroBiome
 
             // ── Llanura del Ganges, s. II a. C., invierno seco – primavera (feb–mar) ──
             case "Patanjali": return new Biome { title = "Llanura del Ganges, s. II a. C. (invierno seco)", ground = C(0.7f, 0.6f, 0.45f), plants = new[] {
+                // (2026-11-12, mapa a mano) El pipal del āśrama, a cuya sombra se enseña.
+                new Plant(Kind.Shrub, 1, "Pipal (Ficus religiosa)", 1800, C(0.25f, 0.48f, 0.22f), C(0.45f, 0.38f, 0.3f)),
                 new Plant(Kind.Grass, 18, "Hierba kusha (Desmostachya bipinnata), el asiento de las ásanas", 90, C(0.55f, 0.62f, 0.5f), C(0.7f, 0.68f, 0.55f)),
                 new Plant(Kind.Grass, 16, "Cebada madurando (Hordeum vulgare)", 80, C(0.65f, 0.7f, 0.35f), C(0.88f, 0.8f, 0.5f)),
                 new Plant(Kind.Grass, 10, "Grama durva (Cynodon dactylon)", 20, C(0.4f, 0.65f, 0.25f), C(0.5f, 0.6f, 0.3f)),

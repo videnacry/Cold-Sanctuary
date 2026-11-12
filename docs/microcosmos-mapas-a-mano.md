@@ -419,3 +419,18 @@ civil y agrícola, la historia es de los campesinos. Plano acortado al norte (co
 - **Planta Atómica:** junta en un jardín Woolsthorpe (1666), París (1898) y Berna (1905). No hay un lugar real único; cada uno de los tres ya
   tiene su mapa a mano propio (Woolsthorpe, París 1898, Berna). Queda **imaginado**.
 - La prueba 115 comprueba que los siete están imaginados y que en la tabla principal no queda ningún esbozo.
+
+## Tanda 6: los últimos lugares reales
+
+### Patanjali, sobre la Sala de Yoga
+**Un āśrama a orillas del Ganges, con su aldea y sus campos, invierno seco del s. II a. C.**
+- **El piso:** las esterillas son los campos de cebada y mostaza; el espejo, el Ganges; las máquinas, roca.
+- **La flora (70):** el **pipal** del āśrama (nuevo en el bioma), la hierba kusha (el asiento de la práctica) y el tulsi del patio; grama durva,
+  juncia, la piedra del ghat y el limo seco en la orilla; la cebada madurando; kusha en las lindes de la mostaza; aak en el baldío; boñigas en
+  la calle de la aldea.
+- **La fauna (20):** termitas en el baldío, grillos en la cebada, abejas enanas, mariquitas y pulgones en la mostaza, escarabajos peloteros en la
+  calle y un escorpión de noche en la kusha.
+- **Edificios:** las chozas del āśrama, el ghat, la aldea con su pozo y los dos campos.
+- **Fuentes:** Bryant, *The Yoga Sūtras of Patañjali* (2009); el *Mahābhāṣya*; Thapar, *Early India* (2002); *Bhagavad Gītā* VI.11; el plano del
+  pueblo. **Inferido:** el lugar exacto (las fuentes no lo fijan: es un āśrama típico de la llanura del Ganges en época Śuṅga).
+- **Menú:** `Build Microcosmos de historias: Patanjali (el āśrama del Ganges)`.
