@@ -244,4 +244,47 @@ public static partial class MicroStoryMaps
         },
         todo = new[] { "en vivo: que los pinos queden en la loma del norte y las encinas a lo largo de la avenida del campus" },
     };
+
+    // ══ UAGADUGÚ, 6 de mayo de 2024 (la entrega de tractores y motobombas antes de las lluvias): sobre el Huerto ═══════════════════════════════
+    // Un acto civil y agrícola, contado con neutralidad: la historia es de los campesinos. El centro (el gran mercado Rood Woko, la plaza de la Nación,
+    // la estación del ferrocarril), las avenidas de nims y caobas de Senegal; al norte, los barrages de Tanghin con sus huertos y eucaliptos y el parque
+    // urbano Bangr-Weoogo con sus acacias; en el borde suroeste, la sabana del final de la estación seca: karités, nérés, algún baobab, la hierba seca
+    // sobre la coraza de laterita y los termiteros. Las cabras y gallinas de los patios, los asnos de carga del mercado.
+    static Map MapUagadugu() => new Map
+    {
+        display = "Uagadugú", place = "Uagadugú (Burkina Faso): el centro, los barrages de Tanghin y la sabana del borde, 6 de mayo de 2024", status = Status.Hecho,
+        source = "Ville de Ouagadougou y OpenStreetMap (Rood Woko, los barrages de Tanghin, el parque Bangr-Weoogo); FAO, los parques agroforestales de karité y " +
+                 "néré del Sahel sudanés; Agence d'Information du Burkina (AIB), la entrega de material agrícola de la Ofensiva agropastoral (mayo de 2024); el plano del pueblo",
+        floor = Natural(
+            new Piece("planta", Como, "las macetas y los bancales: los huertos del barrage de Tanghin", "planta"),
+            new Piece("caja", Como, "las cajas del huerto: los patios de adobe de los barrios", "caja")),
+        flora = new[]
+        {
+            // La sabana del borde suroeste: el parque de karités y nérés, un baobab, la hierba seca sobre la laterita.
+            new Plant("Karité", -1100f, -900f, 8, 200f), new Plant("Néré", -1000f, -800f, 6, 200f), new Plant("Baobab", -1200f, -700f, 2, 150f),
+            new Plant("Hierba seca de la sabana", -1100f, -900f, 10, 200f), new Plant("Coraza de laterita", -900f, -1000f, 6, 150f),
+            // Las acacias del parque Bangr-Weoogo.
+            new Plant("Acacia", 750f, 850f, 6, 150f),
+            // Los árboles de sombra de las avenidas: nims en Kwame Nkrumah, caobas de Senegal en la avenida de la Nación.
+            new Plant("Nim", 400f, 200f, 8, 120f), new Plant("Caoba de Senegal", -600f, -100f, 8, 150f),
+            // Los eucaliptos junto al barrage y la hierba de los patios.
+            new Plant("Eucalipto", -600f, 800f, 6, 120f), new Plant("Hierba del patio", -450f, 380f, 6, 120f),
+        },
+        fauna = new[]
+        {
+            new Animal("Termite", "Termita de los termiteros (Macrotermes subhyalinus), en la sabana", -1100f, -900f, 4, 1f, 200f),
+            new Animal("Ant", "Hormiga de la sabana (Pachycondyla), en el parque Bangr-Weoogo", 750f, 850f, 3, 0.8f, 150f),
+            new Animal("Grasshopper", "Saltamontes de la sabana (Kraussaria angulifera), en la hierba seca", -1000f, -800f, 2, 4f, 200f),
+            new Animal("DungBeetle", "Escarabajo pelotero, tras los asnos del mercado", -500f, -250f, 2, 2.5f, 80f),
+            new Animal("Aphid", "Cabra del patio (en el microcosmos, un pulgón)", -450f, 380f, 3, 1.2f, 120f),
+            new Animal("Ladybug", "Gallina del patio (en el microcosmos, una mariquita parda)", -700f, 100f, 3, 0.5f, 120f),
+            new Animal("Aphid", "Asno de carga del mercado (en el microcosmos, un pulgón de carga)", -500f, -300f, 2, 1.6f, 100f),
+        },
+        buildings = new[]
+        {
+            new Building("Gran mercado Rood Woko", -500f, -250f), new Building("Plaza de la Nación", -60f, -160f), new Building("Estación del ferrocarril", -200f, -560f),
+            new Building("Barrage n.º 2 de Tanghin", -300f, 950f), new Building("Huertos del barrage", -50f, 780f), new Building("Parque urbano Bangr-Weoogo", 750f, 850f),
+        },
+        todo = new[] { "en vivo: que los eucaliptos queden en la orilla del barrage y no en el agua; la sabana en el borde suroeste" },
+    };
 }

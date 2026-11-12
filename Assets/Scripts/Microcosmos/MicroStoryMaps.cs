@@ -160,7 +160,7 @@ public static partial class MicroStoryMaps
         MapAlbuquerque(),   // (2026-11-12) hecho: MicroStoryMaps.Famosos.cs
         MapOmaha(),   // (2026-11-12) hecho: MicroStoryMaps.Famosos.cs
         MapPrairieView(),   // (2026-11-12) hecho: MicroStoryMaps.Famosos.cs
-        Stub("Uagadugú", Base1, Base2, "los huertos antes de las lluvias en Burkina Faso: el karité, el mijo y el agua"),
+        MapUagadugu(),   // (2026-11-12) hecho: MicroStoryMaps.Famosos.cs
     };
 
     /// <summary>El mapa de la historia <paramref name="display"/> (o null si ni siquiera tiene esbozo).</summary>

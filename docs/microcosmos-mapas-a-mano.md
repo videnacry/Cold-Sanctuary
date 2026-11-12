@@ -398,3 +398,16 @@ pueblo). Una ciudad: solo lo plantado y sus animales.
 - **Fuentes:** PVAMU, «Campus Map» y el anuncio del donativo (2020); Scott, «384 Ways to Help» (15-12-2020); Texas Parks and Wildlife (sabana de
   robles post); OpenStreetMap; el plano del pueblo. **Inferido:** la posición de cada edificio del campus (plano aproximado).
 - **Menú:** ya tenía uno propio, `Build Microcosmos de famosos/MacKenzie Scott (Prairie View, 2020)`.
+
+### Uagadugú (la entrega de material agrícola), sobre el Huerto
+**El centro, los barrages de Tanghin y la sabana del borde, 6 de mayo de 2024 (final de la estación seca).** Contado con neutralidad: un acto
+civil y agrícola, la historia es de los campesinos. Plano acortado al norte (como el plano del pueblo).
+- **El piso:** las macetas y los bancales son los huertos del barrage; las cajas del huerto, los patios de adobe; las máquinas, roca.
+- **La flora (66):** en la sabana del suroeste, el parque de karités y nérés, un baobab y la hierba seca sobre la coraza de laterita; acacias en el
+  parque Bangr-Weoogo; nims y caobas de Senegal en las avenidas; eucaliptos junto al barrage; la hierba de los patios.
+- **La fauna (19):** termitas de los termiteros y saltamontes en la sabana, hormigas en el parque, escarabajos peloteros tras los asnos del
+  mercado; cabras, gallinas y asnos (pulgones y mariquitas pardas en el microcosmos).
+- **Edificios:** el mercado Rood Woko, la plaza de la Nación, la estación, el barrage n.º 2, sus huertos y el parque Bangr-Weoogo.
+- **Fuentes:** Ville de Ouagadougou y OpenStreetMap; FAO (los parques de karité y néré); AIB (la entrega de mayo de 2024); el plano del pueblo.
+  **Inferido:** la distancia a la sabana (acortada, en su dirección).
+- **Menú:** ya tenía uno propio, `Build Microcosmos de famosos/Ibrahim Traoré (Uagadugú, 2024)`.
