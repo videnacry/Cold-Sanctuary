@@ -487,6 +487,18 @@ public class WorkRoster
         int Score(Mission m) => scores[m];
         var done = workers.ToDictionary(w => w, w => 0f);
         var waiting = new HashSet<Worker>();
+        // (ronda 54) LAS INICIACIONES, CON LO QUE SOBRA: con el reparto por santuarios, aprender lo que otro del sitio ya sabe hacer gasta horas libres del sitio
+        // (5 h × sus humanos − sus horas de tareas), no las de las tareas: si no, cada hora de clase era una hora de clon en la cocina. Lo que nadie del sitio sabe
+        // hacer (un área vacía) se aprende siempre, primero.
+        var budget = new Dictionary<SanctuaryPlacement.Home, float>();
+        if (sanctuaryModel)
+            foreach (var pw in _place) if (!pw.Key.clone && !budget.ContainsKey(pw.Value))
+            {
+                int n = _place.Count(x => !x.Key.clone && x.Value.Equals(pw.Value));
+                budget[pw.Value] = System.Math.Max(0f, WorkHours * n - (plan.hoursAt.TryGetValue(pw.Value, out float hh) ? hh : 0f));
+            }
+        bool Afford(Worker w) => !sanctuaryModel || !_place.TryGetValue(w, out var p) || (budget.TryGetValue(p, out float b) && b >= LessonHours - 1e-3f);
+        void Spend(Worker w) { if (sanctuaryModel && _place.TryGetValue(w, out var p) && budget.ContainsKey(p)) budget[p] -= LessonHours; }
         for (int hour = 0; hour < WorkHours; hour++)
         {
             float clock = -1f;
@@ -505,6 +517,10 @@ public class WorkRoster
                 // abre su clase aunque ya haya 6: la Magnate se divide para darla, y así nadie la cubre con un clon por no saber.
                 Mission empty = mine.Where(OpenHere).OrderByDescending(Score).FirstOrDefault();
                 Lesson c = empty != null ? null : classes.Where(x => x.learners.Count < LessonGroupSize && mine.Contains(x.real)).OrderByDescending(x => Score(x.real)).FirstOrDefault();
+                Mission target = c != null ? c.real : empty ?? mine.OrderByDescending(Score).First();
+                // urgente: abrir la clase de una tarea que nadie de su sitio sabe (el primero que se inicia; los que se suman, con las horas libres)
+                bool urgent = c == null && target != skill && !workers.Any(x => !x.clone && Allowed(x, target) && Learned(x, target));
+                if (!urgent && !Afford(w)) continue;   // (sin horas libres en su sitio: hoy no aprende lo que otros ya hacen)
                 if (c == null)
                 {
                     if (classes.Count >= MaxLessonGroups && empty == null) { waiting.Add(w); continue; }
@@ -515,6 +531,7 @@ public class WorkRoster
                     classes.Add(c);
                 }
                 c.learners.Add(w);
+                if (!urgent) Spend(w);
                 w.taught.Add(MissionRequirements.KnowledgeKey(c.real.id));
                 used[w] = hour + LessonHours; done[w] += LessonHours;
                 plan.work.Add(new Assignment { worker = w, mission = c.mission, start = clock, lesson = true });
@@ -681,13 +698,13 @@ public class WorkRoster
                     foreach (Mission m in kv.Value)
                     {
                         if ((IsNewcomer(w, plan.day) && m.lead) || !Qualified(w, m) || !Allowed(w, m)) continue;
-                        if (w.name == "Player" && FruitGardener.IsRound(m.id)) continue;   // (la ronda de frutales la lleva FruitGardener, que no mueve al jugador)
+                        if (w.name == "Player" && PlayerSkips(m)) continue;   // (ronda 55) lo que lleva una conducta que no mueve al jugador
                         // El mejor tramo para ella: uno que llene justa (entera o, si es divisible, un trozo); si no, el más largo que quepa.
                         float h = -1f, at = -1f; bool exact = false;
                         foreach (var t in free[w])
                         {
                             float len = t.to - t.from;
-                            float hh = m.hours <= len + 1e-4f ? m.hours : m.divisible ? (float)System.Math.Floor(System.Math.Min(len, m.hours - MinPiece) / MinPiece + 1e-4f) * MinPiece : -1f;
+                            float hh = m.hours <= len + 1e-4f ? m.hours : m.divisible && w.name != "Player" ? (float)System.Math.Floor(System.Math.Min(len, m.hours - MinPiece) / MinPiece + 1e-4f) * MinPiece : -1f;
                             if (hh < MinPiece - 1e-4f && hh < m.hours - 1e-4f) continue;
                             if (hh <= 0f) continue;
                             if (FarAfterLunch(w, m.area, Clock(t.from))) continue;
@@ -791,6 +808,9 @@ public class WorkRoster
     /// <summary>(2026-11-11) ¿Queda lejos del restaurante? Lo pone la jornada en juego (por el viaje estimado): de la comida en Servicios a la
     /// sala de yoga de Entrenamiento son 97 m de tronco, una alfombra y 172 m más, y Kushal llegaba a mitad de la misión de las 12 (47 %).</summary>
     public static System.Func<string, bool> FarFromLunch;
+    /// <summary>(ronda 55) Lo que Kushal no hace: la ronda de frutales (la lleva FruitGardener, que no mueve al jugador) y el servicio del restaurante (lo lleva
+    /// RestaurantService con la brigada: con Kushal en «Servicio del restaurante» a las 12, a las 14 seguía en la cocina sin acabar sus pasos y perdía el Dojo).</summary>
+    public static bool PlayerSkips(Mission m) => m != null && (FruitGardener.IsRound(m.id) || m.id == "coc_servicio" || m.id == "coc_atender" || m.id == "coc_sala");
 
     Mission Choose(Worker w, List<Mission> pool, float used)
     {
@@ -798,7 +818,7 @@ public class WorkRoster
         foreach (Mission m in pool)
         {
             if (PlaceFor(w, used, m.hours, out float at) < 0f || FarAfterLunch(w, m.area, at)) continue;
-            if (w.name == "Player" && FruitGardener.IsRound(m.id)) continue;   // (2026-11-05) la ronda de frutales la hace la conducta FruitGardener, que no mueve al jugador: con Kushal, ese día se quedaba sin hacer
+            if (w.name == "Player" && PlayerSkips(m)) continue;   // (2026-11-05) la ronda de frutales la hace la conducta FruitGardener, que no mueve al jugador: con Kushal, ese día se quedaba sin hacer
             if (best == null) { best = m; continue; }
             int cm = w.Count(m.id), cb = w.Count(best.id);
             // (2026-11-08) Con el reparto por santuarios, a igualdad, la MÁS LARGA primero: las franjas son de 2, 2 y 1 h, y con la de 1 h delante
