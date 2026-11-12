@@ -708,6 +708,7 @@ public class WorkRoster
                             if (hh < MinPiece - 1e-4f && hh < m.hours - 1e-4f) continue;
                             if (hh <= 0f) continue;
                             if (FarAfterLunch(w, m.area, Clock(t.from))) continue;
+                            if (ShortAndFar(plan, w, m.area, Clock(t.from), hh)) continue;
                             bool ex = System.Math.Abs(hh - len) < 1e-4f;
                             bool better = h < 0f || (ex && !exact) || (ex == exact && hh > h + 1e-4f);
                             if (better) { h = hh; at = t.from; exact = ex; }
@@ -808,6 +809,19 @@ public class WorkRoster
     /// <summary>(2026-11-11) ¿Queda lejos del restaurante? Lo pone la jornada en juego (por el viaje estimado): de la comida en Servicios a la
     /// sala de yoga de Entrenamiento son 97 m de tronco, una alfombra y 172 m más, y Kushal llegaba a mitad de la misión de las 12 (47 %).</summary>
     public static System.Func<string, bool> FarFromLunch;
+
+    /// <summary>(2026-11-11) ¿Están lejos dos áreas (más de 0,2 h de viaje)? Lo pone la jornada en juego (WorkdayDirector); sin él, nunca.</summary>
+    public static System.Func<string, string, bool> FarApart;
+    /// <summary>(2026-11-11) A KUSHAL, una media hora no se le pone en otra torre justo detrás de lo suyo: el viaje se la comía entera («Inventario del
+    /// almacén» en Construcción tras limpiar las salas de yoga, 36 %; «Comunicación» en la Cocina tras el gimnasio, 59 %; 0/3 pasos cada suite: llegaba
+    /// al acabar la media hora).</summary>
+    static bool ShortAndFar(DayPlan plan, Worker w, string area, float clock, float hours)
+    {
+        if (w.name != "Player" || FarApart == null || hours > 0.5f + 1e-4f || clock < 0f) return false;
+        foreach (Assignment a in plan.work)
+            if (a.worker == w && System.Math.Abs(a.start + a.mission.hours - clock) < 0.01f && a.mission.area != area && FarApart(a.mission.area, area)) return true;
+        return false;
+    }
     /// <summary>(ronda 55) Lo que Kushal no hace: la ronda de frutales (la lleva FruitGardener, que no mueve al jugador) y el servicio del restaurante (lo lleva
     /// RestaurantService con la brigada: con Kushal en «Servicio del restaurante» a las 12, a las 14 seguía en la cocina sin acabar sus pasos y perdía el Dojo).</summary>
     public static bool PlayerSkips(Mission m) => m != null && (FruitGardener.IsRound(m.id) || m.id == "coc_servicio" || m.id == "coc_atender" || m.id == "coc_sala");
