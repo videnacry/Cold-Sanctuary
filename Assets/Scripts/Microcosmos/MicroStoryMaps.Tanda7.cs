@@ -87,4 +87,48 @@ public static partial class MicroStoryMaps
         },
         todo = new[] { "en vivo: que el pasto de la tierra de nadie quede entre las dos trincheras y nada caiga dentro de ellas salvo el barro" },
     };
+
+    // ══ BRUCE LEE, de 1957 (Kowloon) a 1964 (Seattle): sobre el Dojo ═══════════════════════════════════════════════════════════════════════════
+    // Dos barrios en un piso. Al oeste, Kowloon en los años 50: Nathan Road con sus banianos (la casa de la familia Lee, en el 218), Temple Street y
+    // Shanghai Street, la escuela de Wing Chun de Yip Man en Lee Tat Street (Yau Ma Tei), el puerto Victoria al sur y, al norte, la ladera de la Roca del
+    // León con su monte bajo subtropical (cogón, helechos, mirto de rosa, melastoma) en septiembre. Al este, Seattle: el restaurante de Ruby Chow en
+    // Broadway y Jefferson, donde Bruce trabajó al llegar (1959), y la Universidad de Washington junto al lago Union.
+    static Map MapBruceLee() => new Map
+    {
+        display = "Bruce Lee", place = "Kowloon (Yau Ma Tei y Nathan Road, 1957) y Seattle (Broadway y la Universidad de Washington, 1959–64)", status = Status.Hecho,
+        source = "Polly, Bruce Lee: A Life (2018: el 218 de Nathan Road, la escuela de Yip Man, Ruby Chow y la Universidad de Washington); Hong Kong Map 1957 " +
+                 "(Crown Lands and Survey Office); Hong Kong Herbarium (la flora de las laderas y los árboles de calle); Kroll's Map of Seattle (1960); el plano del pueblo",
+        floor = Natural(
+            new Piece("alfombra", Como, "los tatamis: las calles en cuadrícula de Kowloon y de Seattle", "suelo"),
+            new Piece("espejo", Como, "los espejos: el puerto Victoria y el lago Union", "banera")),
+        flora = new[]
+        {
+            // Kowloon: los banianos de Nathan Road, la bauhinia y el césped del parque, los setos de ixora de la plaza, las buganvillas.
+            new Plant("Baniano de calle", -300f, 250f, 8, 150f), new Plant("Baniano de calle", -280f, -250f, 8, 150f), new Plant("Árbol de orquídeas", -430f, 120f, 6, 80f),
+            new Plant("Césped de grama", -430f, 120f, 6, 80f), new Plant("Seto de ixora", -220f, 110f, 6, 80f), new Plant("Buganvilla", -520f, 80f, 4, 80f),
+            // La arena de la orilla del puerto.
+            new Plant("Arena de la bahía", -400f, -480f, 4, 30f),
+            // La ladera de la Roca del León: cogón, helechos, mirto de rosa, melastoma, setas de termitero y granito.
+            new Plant("Cogón", -400f, 800f, 10, 150f), new Plant("Helecho dicotómico", -250f, 750f, 8, 150f), new Plant("Mirto de rosa", -550f, 750f, 6, 150f),
+            new Plant("Melastoma", -400f, 650f, 6, 120f), new Plant("Seta", -300f, 700f, 4, 100f), new Plant("Granito", -400f, 900f, 4, 100f),
+            // Seattle: el césped de la Universidad de Washington y de los barrios.
+            new Plant("Césped de grama", 520f, 300f, 8, 150f), new Plant("Césped de grama", 300f, 300f, 6, 120f),
+        },
+        fauna = new[]
+        {
+            new Animal("Termite", "Termita de Formosa, con las setas de su termitero en la ladera", -300f, 700f, 4, 0.6f, 100f),
+            new Animal("Grasshopper", "Saltamontes del arroz (Oxya chinensis), en el cogón", -400f, 800f, 3, 3f, 150f),
+            new Animal("Mantis", "Mantis (Hierodula patellifera), en el mirto de rosa", -550f, 750f, 2, 8f, 150f),
+            new Animal("Spider", "Araña de seda dorada (Nephila pilipes), entre los helechos", -250f, 750f, 2, 4f, 150f),
+            new Animal("Firefly", "Luciérnaga (Luciola), en la melastoma", -400f, 650f, 3, 1f, 120f),
+            new Animal("Ladybug", "Mariquita zigzag, en los setos de ixora de Kowloon", -220f, 110f, 2, 0.5f, 80f),
+        },
+        buildings = new[]
+        {
+            new Building("Escuela de Yip Man (Lee Tat Street)", -300f, 50f), new Building("Casa de la familia Lee (218 Nathan Road)", -300f, -300f),
+            new Building("Puerto Victoria", -400f, -640f), new Building("Restaurante de Ruby Chow", 300f, -100f), new Building("Universidad de Washington", 520f, 300f),
+            new Building("Roca del León", -400f, 980f),
+        },
+        todo = new[] { "en vivo: que la ladera quede al norte de Kowloon y la arena en la orilla del puerto, no en el agua" },
+    };
 }

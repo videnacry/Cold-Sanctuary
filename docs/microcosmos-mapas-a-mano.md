@@ -448,3 +448,17 @@ civil y agrícola, la historia es de los campesinos. Plano acortado al norte (co
 - **Fuentes:** Brown y Seaton, *Christmas Truce* (1984); Bairnsfather, *Bullets & Billets* (1916); IWM, «The Christmas Truce»; CWGC, Lancashire
   Cottage; el plano del pueblo. **Inferido:** el sitio del partido de fútbol (los testimonios no lo fijan).
 - **Menú:** `Build Microcosmos de historias: Tregua de Navidad (Saint-Yvon, 1914)`.
+
+### Bruce Lee, sobre el Dojo
+**Kowloon (Yau Ma Tei y Nathan Road, 1957) al oeste y Seattle (1959–64) al este, en un mismo piso, como en el plano del pueblo.**
+- **El piso:** los tatamis son las calles en cuadrícula de los dos barrios; los espejos, el puerto Victoria y el lago Union; las máquinas, roca.
+- **La flora (94):** en Kowloon, los banianos de Nathan Road, la bauhinia y el césped del parque, setos de ixora y buganvillas; arena en la orilla
+  del puerto; en la ladera de la Roca del León, cogón, helechos, mirto de rosa, melastoma, setas de termitero y granito; en Seattle, el césped
+  de la Universidad de Washington y de los barrios.
+- **La fauna (16):** en la ladera, termitas, saltamontes, una mantis, arañas de seda dorada y luciérnagas; mariquitas zigzag en los setos de
+  Kowloon.
+- **Edificios:** la escuela de Yip Man en Lee Tat Street, la casa de la familia (218 Nathan Road), el puerto, el restaurante de Ruby Chow, la
+  Universidad de Washington y la Roca del León.
+- **Fuentes:** Polly, *Bruce Lee: A Life* (2018); Hong Kong Map 1957; Hong Kong Herbarium; Kroll's Map of Seattle (1960); el plano del pueblo.
+  **Inferido:** el lado de Seattle usa el césped del bioma de Hong Kong (el bioma no tiene flora propia de Seattle; queda sobrio a propósito).
+- **Menú:** ya tenía uno propio, `Build Microcosmos de historias: Bruce Lee (Dojo)`.
