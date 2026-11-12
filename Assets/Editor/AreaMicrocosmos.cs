@@ -1684,7 +1684,7 @@ public static class AreaMicrocosmos
                 MicroBiome.Plant pl = found.Value;
                 foreach (Vector2 s in MicroStoryMaps.Spots(hp.at, hp.count, hp.spread))
                 {
-                    Vector3 w = ClampXZ(storyOrigin + new Vector3(s.x, 0f, s.y), inner);
+                    Vector3 w = ClampXZ(storyOrigin + new Vector3(s.x, 0f, s.y) * _mapScale, inner);
                     Vector3 p = new Vector3(w.x - center.x, groundY - center.y, w.z - center.z);
                     int before = flora.childCount;
                     if (town)
@@ -1968,7 +1968,7 @@ public static class AreaMicrocosmos
                 // Cada uno nace junto a lo que usa: la hormiga león en la arena fina, el pelotero junto a una boñiga; el resto, en la
                 // siguiente plaza de fauna del piso y, tomadas todas, en suelo libre DENTRO de los muros (nunca fuera: regla 11).
                 Vector3 p;
-                if (handAt) { Vector3 w = storyOrigin + new Vector3(handSpots[i].x, 0f, handSpots[i].y); p = new Vector3(w.x - center.x, (town ? FloorNearOr(w, floors, groundY, groundY) : groundY) - center.y, w.z - center.z); }
+                if (handAt) { Vector3 w = storyOrigin + new Vector3(handSpots[i].x, 0f, handSpots[i].y) * _mapScale; p = new Vector3(w.x - center.x, (town ? FloorNearOr(w, floors, groundY, groundY) : groundY) - center.y, w.z - center.z); }
                 else if (street && _streets.Count > 0)
                 {
                     // Por una calle (a lo largo de un tramo al azar, por su centro: a ≥ 2 m de los solares).
@@ -2072,6 +2072,36 @@ public static class AreaMicrocosmos
     static int _faunaOnSlots;   // cuántos bichos fueron a las plazas de fauna (el último Nature)
     // (2026-11-04) Lo que el último Nature puso desde el MAPA A MANO (MicroStoryMaps): cae desde el aire en Build (MicroGround.Drop).
     static readonly List<Transform> _handPlaced = new List<Transform>();
+    // (2026-11-12) Metros del mapa a mano → metros de la escena. 1 en los microcosmos de área (su piso ×100 tiene el tamaño del plano);
+    // menor en un suelo pequeño (el MobWorld de Uruk, 120 m), para que el mapa entero quepa en él en su forma.
+    static float _mapScale = 1f;
+
+    /// <summary>(2026-11-12; petición 75) Siembra el MAPA A MANO de <paramref name="display"/> (MicroStoryMaps) en un suelo propio que no es un
+    /// área agrandada (el MobWorld de Mesopotamia): la misma <see cref="Nature"/> en modo pueblo (a escala humana, fuera de las huellas de los
+    /// edificios de <paramref name="town"/>), con el mapa ESCALADO para que quepa entero en <paramref name="ground"/> (menos el margen del muro).
+    /// <paramref name="clear"/>: lo que se deja libre (el portal y el punto de entrada). Devuelve los bichos puestos; las plantas van a «Flora_a_escala».</summary>
+    internal static int HandMapOnto(Transform root, Transform town, string display, Bounds ground, float groundY, Bounds clear)
+    {
+        MicroStoryMaps.Map map = MicroStoryMaps.For(display);
+        if (map == null || map.status != MicroStoryMaps.Status.Hecho) { Debug.LogWarning($"[Mapa] {display}: sin mapa a mano hecho: el suelo queda sin sembrar."); return 0; }
+        // El alcance del mapa (cada rodal con su dispersión) y la escala que lo mete en el suelo.
+        float reach = 1f;
+        foreach (MicroStoryMaps.Plant p in map.flora) reach = Mathf.Max(reach, Mathf.Abs(p.at.x) + p.spread, Mathf.Abs(p.at.y) + p.spread);
+        foreach (MicroStoryMaps.Animal a in map.fauna) reach = Mathf.Max(reach, Mathf.Abs(a.at.x) + a.spread, Mathf.Abs(a.at.y) + a.spread);
+        Bounds inner = Inner(ground, WallInset);
+        float scale = Mathf.Min(1f, Mathf.Min(inner.extents.x, inner.extents.z) / reach);
+        _blocked.Clear(); _handPlaced.Clear();
+        int feet = TownFootprints(town, groundY);
+        _mapScale = scale;
+        try
+        {
+            int animals = Nature(root, ground, ground, groundY, display.GetHashCode(), clear, new List<Renderer>(), MicroBiome.For(display),
+                                 null, null, null, null, true, display, new Vector3(ground.center.x, groundY, ground.center.z));
+            Debug.Log($"[Mapa] {display}: mapa a mano sembrado en un suelo de {ground.size.x:0} × {ground.size.z:0} m a escala 1:{1f / scale:0.#} ({feet} huellas del pueblo esquivadas; {animals} bichos).");
+            return animals;
+        }
+        finally { _mapScale = 1f; _blocked.Clear(); _handPlaced.Clear(); _townFeet.Clear(); _streets.Clear(); _hasCore = false; }
+    }
     /// <summary>Lado del vóxel del NavMesh de un microcosmos (m). Más grande, más rápido y menos fino en los pasos estrechos: no bajar de 0,25 sin mirar la regla de los 2 m.</summary>
     const float MicroNavVoxel = 0.25f;
     // La planta del bioma cuyo nombre empieza por <paramref name="name"/> (sus plantas y las del pueblo), o null.

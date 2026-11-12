@@ -252,6 +252,6 @@ public static partial class MicroStoryMaps
             new Building("Templo Blanco sobre la terraza de Anu", -260f, 80f), new Building("Recinto del Eanna", 100f, 0f), new Building("Canal del Eanna", 0f, 75f),
             new Building("Embarcadero del Éufrates", -680f, 0f), new Building("Talleres de los alfareros", 150f, -200f), new Building("Campos de cebada", 620f, 420f),
         },
-        todo = new[] { "en vivo: que los cañaverales queden en la orilla del Éufrates; ojo: el MobWorld de Mesopotamia aún no siembra con AreaMicrocosmos.Nature (ver doc)" },
+        todo = new[] { "en vivo: que los cañaverales queden en la orilla del Éufrates; que nada caiga sobre las casas ni en el portal (el MobWorld lo siembra escalado a 120 m)" },
     };
 }

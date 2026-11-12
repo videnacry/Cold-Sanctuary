@@ -502,5 +502,8 @@ civil y agrícola, la historia es de los campesinos. Plano acortado al norte (co
 - **Edificios:** el Templo Blanco, el recinto del Eanna, el canal, el embarcadero, los talleres de alfareros y los campos.
 - **Fuentes:** Nissen (1988); Crüsemann et al., *Uruk: First City of the Ancient World* (2019); Postgate, *Early Mesopotamia* (1992); Pournelle,
   *Marshland of Cities* (2003); el plano del pueblo. **Inferido:** la estación (primavera, la siega) y el sitio de los talleres.
-- **Ojo:** Mesopotamia no se construye como microcosmos de área sino como `MobWorld_Mesopotamia` (`Build MobWorld Mesopotamia`), y ese constructor
-  **no llama** a `AreaMicrocosmos.Nature`: el mapa está hecho y cuenta para la prueba 115, pero no se verá hasta que el MobWorld siembre con él.
+- **En el MobWorld (2026-11-12):** Mesopotamia no es un microcosmos de área sino `MobWorld_Mesopotamia` (`Build MobWorld Mesopotamia`), con un
+  suelo de 120 m. `MobWorldSceneBuilder` siembra ahora el mapa con `AreaMicrocosmos.HandMapOnto`: la misma `Nature` en modo pueblo (a escala
+  humana, fuera de las huellas de los edificios y del portal), con el mapa **escalado** para que quepa entero (unos 1:20; los rodales guardan
+  su forma y su orientación). Prueba `MobWorldMapaTest` (grupo 116): carga la escena y mira que estén las plantas del mapa (≥ la mitad, ≥ 6
+  rodales), ≥ 8 bichos y todo dentro del suelo.
