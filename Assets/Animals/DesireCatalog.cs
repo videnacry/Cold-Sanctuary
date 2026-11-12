@@ -258,7 +258,9 @@ public static class DesireCatalog
     static bool PenWander(Animal self)
     {
         if (!Confined(self)) return false;
-        Vector3 home = self.HomeOrigin;
+        // (2026-11-11, vivo59) Su sitio, si sigue cerca; si no, donde está: con la Cría en el piso del árbol (a 108 m) su HomeOrigin se quedó en el
+        // recinto viejo, los pasitos caían lejos de todo NavMesh y las crías no se movían nunca («recinto» 1 802 s sin moverse, Cachorro_1/2/3).
+        Vector3 home = Vector3.Distance(self.HomeOrigin, self.transform.position) > 6f ? self.transform.position : self.HomeOrigin;
         Stroll(self, "recinto", () => home + Ring(0.8f, 2.2f), 4f, 9f, 0.6f);   // (pausas largas: curiosea, no corretea por el recinto)
         return true;
     }
@@ -378,19 +380,37 @@ public static class DesireCatalog
 
     static void Walk(Animal self, Trip t, Vector3 at)
     {
-        Move(self, at);
-        TripsStarted++; t.started++; t.goal = at; t.going = true; t.since = t.bestAt = Time.time; t.best = float.MaxValue;
+        TripsStarted++; t.started++; t.goal = at; t.since = t.bestAt = Time.time; t.best = float.MaxValue;
+        // (2026-11-11, ronda 59) Un camino que no lleva (parcial, de una esquina, o que acaba a < 1 m de donde empieza: otra isla del NavMesh)
+        // no es un viaje: el agente «llegaba» al momento, se quedaba sin camino y el paseo esperaba. Se da por fallido ya, con su pausa.
+        t.going = Move(self, at);
+        if (!t.going) { t.failUntil = Time.time + 4f; TripsStalled++; BadPaths++; }
     }
+    /// <summary>Viajes que no se empezaron porque el camino no llevaba a ninguna parte (diagnóstico).</summary>
+    public static int BadPaths;
 
     // Ir andando: destino Y paso de andar (la pausa anterior lo dejó en «quieto», velocidad 0: con solo SetDestination el
-    // agente tenía destino pero no andaba).
-    static void Move(Animal self, Vector3 to)
+    // agente tenía destino pero no andaba). true = lleva camino de verdad.
+    static bool Move(Animal self, Vector3 to)
     {
-        if (self.nav == null || !self.nav.isOnNavMesh) return;
-        // Con el camino YA calculado (NavReach acaba de comprobar que se llega): SetPath, sin esperar a que el agente lo pida y
-        // lo calcule otra vez (con cientos de obstáculos tallando, SetDestination podía quedarse «pendiente» y el animal quieto).
-        if (NavReach.LastPathTo(self, to, out NavMeshPath p)) { self.Loco?.SetGait(false, 1f); NavTrace.Mark(self, "deseo: SetPath", to); if (self.nav.SetPath(p) && (self.nav.hasPath || self.nav.pathPending)) return; }   // (2026-11-11: un SetPath que «sale bien» pero deja al agente sin camino → SetDestination)
-        self.Loco?.SetGait(false, 1f); NavTrace.Dest(self, self.nav, to, "deseo: SetDestination");
+        NavMeshAgent nav = self.nav;
+        if (nav == null || !nav.isOnNavMesh) return false;
+        // (2026-11-11) EL AGENTE CON EL CUERPO: si su posición interna se ha quedado lejos del cuerpo (lo movió otra cosa sin Warp), el camino
+        // sale de allí y el agente «llega» enseguida sin moverse (lo mismo que le pasaba a la gente del microcosmos, MicroMove).
+        Vector3 gap = nav.nextPosition - self.transform.position; gap.y = 0f;
+        if (gap.sqrMagnitude > 0.25f) { NavTrace.Mark(self, $"deseo: agente desfasado {gap.magnitude:0.0} m (Warp)", self.transform.position); nav.Warp(self.transform.position); }
+        self.Loco?.SetGait(false, 1f);
+        // Con el camino YA calculado (NavReach acaba de comprobar que se llega): SetPath, sin esperar a que el agente lo pida y lo calcule otra
+        // vez (con cientos de obstáculos tallando, SetDestination podía quedarse «pendiente» y el animal quieto).
+        if (NavReach.LastPathTo(self, to, out NavMeshPath p))
+        {
+            int n = p.corners.Length; float span = n > 1 ? Flat(p.corners[n - 1] - p.corners[0]) : 0f;
+            NavTrace.Mark(self, $"deseo: SetPath ({p.status}, {n} esquinas, {span:0.0} m)", to);
+            if (p.status != NavMeshPathStatus.PathComplete || n < 2 || span < 0.5f) return false;   // (0,5 m: los pasitos de las crías del recinto son de 0,6–2,2 m)
+            if (nav.SetPath(p) && (nav.hasPath || nav.pathPending)) return true;
+        }
+        NavTrace.Dest(self, nav, to, "deseo: SetDestination");
+        return nav.hasPath || nav.pathPending;
     }
 
     /// <summary>Va hacia <paramref name="dest"/> si se puede llegar (camino completo); true si va (o ya iba). Re-apunta solo
