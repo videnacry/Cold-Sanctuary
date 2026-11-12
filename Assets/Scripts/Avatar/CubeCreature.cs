@@ -100,7 +100,7 @@ public static class CubeCreature
             const string dir = "Assets/Generated/CubeMats";
             string path = $"{dir}/{m.name}.mat";
             Material existing = UnityEditor.AssetDatabase.LoadAssetAtPath<Material>(path);
-            if (existing != null) m = existing;
+            if (existing != null) { m = existing; if (CheapMaterials.Expensive(m) != null || (m.HasProperty("_Smoothness") && m.GetFloat("_Smoothness") > CheapMaterials.Smoothness + 1e-3f)) { CheapMaterials.MakeCheap(m); UnityEditor.EditorUtility.SetDirty(m); } }   // (2026-11-11) los de antes del 2026-11-09 eran brillantes (#152)
             else
             {
                 if (!UnityEditor.AssetDatabase.IsValidFolder("Assets/Generated")) UnityEditor.AssetDatabase.CreateFolder("Assets", "Generated");
