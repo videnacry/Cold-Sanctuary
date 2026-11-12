@@ -404,7 +404,7 @@ public static class DesireCatalog
         {
             int n = p.corners.Length; float span = n > 1 ? Flat(p.corners[n - 1] - p.corners[0]) : 0f;
             NavTrace.Mark(self, $"deseo: SetPath ({p.status}, {n} esquinas, {span:0.0} m)", to);
-            if (p.status != NavMeshPathStatus.PathComplete || n < 2 || span < 1f) return false;
+            if (p.status != NavMeshPathStatus.PathComplete || n < 2 || span < 0.5f) return false;   // (0,5 m: los pasitos de las crías del recinto son de 0,6–2,2 m)
             if (nav.SetPath(p) && (nav.hasPath || nav.pathPending)) return true;
         }
         NavTrace.Dest(self, nav, to, "deseo: SetDestination");

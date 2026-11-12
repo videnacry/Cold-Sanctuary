@@ -224,7 +224,7 @@ public class WorkdayDirector : MonoBehaviour
     public void TickLive(float h) => Tick(h, true);
 
     /// <summary>La orden guardada de una persona (dónde, qué y qué misión). <c>early</c>: es de antes de las 8.</summary>
-    struct Order { public string where, doing, mid; public bool early; }
+    struct Order { public string where, doing, mid; public bool early; public float at; }
     readonly Dictionary<WorkRoster.Worker, Order> _orders = new Dictionary<WorkRoster.Worker, Order>(), _cloneOrders = new Dictionary<WorkRoster.Worker, Order>();
 
     bool _feastApplied;
@@ -277,13 +277,15 @@ public class WorkdayDirector : MonoBehaviour
             if (w.name == GymProgramming.Trainer && h >= WorkRoster.StartHour + 5f && h < WorkRoster.StartHour + 6f && g != null && (RemoteStaff.Hidden(g) || OnOwnDuty(g)) && (!_traceDay.TryGetValue(w.name + "·salta", out int sd) || sd != today.day))
             { _traceDay[w.name + "·salta"] = today.day; Debug.Log($"[Jornada] {h:00.00} h · la jornada no lleva a {w.name}: {(RemoteStaff.Hidden(g) ? "en otro santuario" : MagnateWarden.Instance.Handling(g) ? "la Magnate" : AreaInitiator.Leading(g) ? "inicia a alguien" : "otra conducta propia")}."); }
             if (g == null || RemoteStaff.Hidden(g) || g.CompareTag("Player") || OnOwnDuty(g)) continue;   // (en otro santuario: no se simula)
-            if (fresh || !_orders.TryGetValue(w, out Order o) || o.early)
+            // (2026-11-11) Y al menos cada segundo: con el reparto por rebanadas una orden vieja duraba demasiado. Luciana seguía «Trabajar la
+            // obra» (y su gesto) 20 s después de que le tocara salir hacia la comida (vivo59, «parado fuera de su puesto … De camino a la comida»).
+            if (fresh || !_orders.TryGetValue(w, out Order o) || o.early || Time.time - o.at > 1f)
             {
                 string where = Where(w, h, out string doing);
                 string mid = Current(w, h)?.mission.id;
                 WorkRoster.Assignment early = HeadingEarly(w, g, h);
                 if (early != null) { where = early.mission.area; doing = early.mission.title; mid = null; }   // ya va hacia lo siguiente (otra torre)
-                _orders[w] = o = new Order { where = where, doing = doing, mid = mid };
+                _orders[w] = o = new Order { where = where, doing = doing, mid = mid, at = Time.time };
             }
             Drive(g, o.where, o.doing, o.mid);
         }
