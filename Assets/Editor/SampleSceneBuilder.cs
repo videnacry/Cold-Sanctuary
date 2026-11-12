@@ -167,6 +167,7 @@ public static partial class SampleSceneBuilder
         // (2026-11-04) ALERTA DE PISO NUEVO (manual §11): TODOS los pisos de la escena (también los que no salen de BuildAreaStructures,
         // como el control de misión de la lanzadera) contra los microcosmos «pendiente de piso representativo». Y la REGLA DE CAPACIDAD (S13).
         { var fl = new List<(string, string)>(); foreach (SanctuaryArea sa in Object.FindObjectsByType<SanctuaryArea>(FindObjectsInactive.Include, FindObjectsSortMode.None)) fl.Add((sa.name, sa.displayName)); MicroFloors.AlertFloors(fl); AreaCapacity.LogScene(); }
+        CheapMaterialsPass.Run(true);   // (2026-11-11, #152) los materiales ASSET también, mates y opacos (CheapMaterials solo toca los de la escena)
         ProductionAudit.Log();   // la maquinaria de cada área de producción contra lo que se le pide (regla P19)
         FoodChain.Log();   // la cadena alimenticia, con todo ya puesto: quién come qué y si a alguien le falta (docs/reglas-animales.md, regla E15)
         BakeNavMesh();
