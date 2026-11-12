@@ -46,4 +46,46 @@ public static partial class MicroStoryMaps
         },
         todo = new[] { "en vivo: que los castaños caigan en la plataforma y no en la Münstergasse; que los caballos queden en la calle y no bajo los soportales" },
     };
+
+    // ══ PARÍS, diciembre de 1898 (Marie y Pierre Curie aíslan el radio): sobre el Laboratorio de Química ═════════════════════════════════════
+    // El cobertizo de la Escuela de Física y Química (rue Lhomond) es el escenario. El Barrio Latino en invierno: los plátanos sin hoja del boulevard
+    // Saint-Michel y de Port-Royal; el Jardín del Luxemburgo al oeste y el Jardin des Plantes al este, con césped de invierno, boj y castaños; la hiedra
+    // de las verjas del Panteón; el mercado de la rue Mouffetard; ómnibus y fiacres de caballos; las ratas del alcantarillado de Belgrand.
+    static Map MapParis1898() => new Map
+    {
+        display = "París 1898", place = "París, el Barrio Latino alrededor de la rue Lhomond, diciembre de 1898", status = Status.Hecho,
+        source = "Plan de Paris (Alphand, 1889; el plano del pueblo); Alphand, Les Promenades de Paris (1867–1873: los plátanos de los bulevares y los squares); " +
+                 "Quinn, Marie Curie: A Life (1995: el cobertizo de la rue Lhomond y la casa de la rue de la Glacière, 24); " +
+                 "Compagnie générale des omnibus (~17 000 caballos hacia 1900)",
+        floor = Natural(
+            new Piece("mesa", Como, "las poyatas: la Montagne Sainte-Geneviève", "mesa"),
+            new Piece("lavabo", Como, "las pilas: el Sena, al norte", "lavabo"),
+            new Piece("silla", Como, "sin montañas en el Barrio Latino: los taburetes son las cúpulas y los tejados del barrio (el Panteón, la Sorbona)", "mesa")),
+        flora = new[]
+        {
+            // Los plátanos sin hoja del boulevard Saint-Michel y del boulevard de Port-Royal.
+            new Plant("Plátano de sombra del bulevar", -520f, -500f, 6, 40f), new Plant("Plátano de sombra del bulevar", -520f, 0f, 6, 40f), new Plant("Plátano de sombra del bulevar", -520f, 500f, 6, 40f),
+            new Plant("Plátano de sombra del bulevar", -400f, -380f, 6, 40f), new Plant("Plátano de sombra del bulevar", 200f, -380f, 6, 40f),
+            // El Jardín del Luxemburgo: castaños sin hoja, césped de invierno y setos de boj.
+            new Plant("Castaño de Indias del square", -860f, 350f, 10, 90f), new Plant("Césped del square", -860f, 350f, 20, 110f), new Plant("Seto de boj", -860f, 350f, 8, 90f),
+            // El Jardin des Plantes: plátanos, césped y la hiedra de sus verjas.
+            new Plant("Plátano de sombra del bulevar", 650f, 450f, 8, 80f), new Plant("Césped del square", 650f, 450f, 12, 80f), new Plant("Hiedra de la verja", 650f, 450f, 6, 90f),
+            // La hiedra de las verjas del Panteón y el adoquín de la rue Mouffetard.
+            new Plant("Hiedra de la verja", -250f, 320f, 6, 40f), new Plant("Adoquín", 220f, -150f, 4, 30f),
+        },
+        fauna = new[]
+        {
+            new Animal("Aphid", "Caballo de ómnibus (en el microcosmos, un pulgón de tiro), en el boulevard Saint-Michel", -520f, 0f, 4, 2.4f, 60f),
+            new Animal("Aphid", "Caballo de fiacre, en la plaza del Panteón", -250f, 320f, 2, 2.4f, 30f),
+            new Animal("Woodlouse", "Gato de los patios de la rue Mouffetard (en el microcosmos, una cochinilla hormiguera)", 200f, 100f, 2, 0.5f, 30f),
+            new Animal("Cockroach", "Rata del alcantarillado (en el microcosmos, una cucaracha), junto al mercado de la Mouffetard", 260f, -150f, 3, 0.3f, 30f),
+            new Animal("Cockroach", "Rata de los muelles del Sena", 0f, 960f, 2, 0.3f, 40f),
+        },
+        buildings = new[]
+        {
+            new Building("Panteón", -300f, 380f), new Building("Jardín del Luxemburgo", -860f, 350f), new Building("Jardin des Plantes (Muséum)", 650f, 450f),
+            new Building("Mercado de la rue Mouffetard", 260f, -150f), new Building("Sorbona", -420f, 620f), new Building("Casa de los Curie (rue de la Glacière)", -770f, -650f),
+        },
+        todo = new[] { "en vivo: que los plátanos caigan en las aceras de los bulevares y no en la calzada; que el Luxemburgo no tape el boulevard Saint-Michel" },
+    };
 }

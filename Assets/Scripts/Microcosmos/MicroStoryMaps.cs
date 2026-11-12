@@ -147,7 +147,7 @@ public static partial class MicroStoryMaps
         MapWoolsthorpe(),   // (2026-11-12) hecho: MicroStoryMaps.Tanda4.cs
         MapBerkeley(),   // (2026-11-12) hecho: MicroStoryMaps.Tanda4.cs
         Stub("Sils Maria", Base1, "el lago de Silvaplana, la roca de Surlej y los senderos de la Engadina (la mesa como nevado)"),
-        Stub("París 1898", Base1, Base2, "la calle Lhomond y el cobertizo de la Escuela de Física y Química"),
+        MapParis1898(),   // (2026-11-12) hecho: MicroStoryMaps.Cientificos.cs
         Stub("Colorado Springs", Base1, Base2, "el laboratorio de Tesla en Knob Hill con Pikes Peak al oeste"),
         MapBerna(),   // (2026-11-12) hecho: MicroStoryMaps.Cientificos.cs
         Stub("Pasadena", Base1, Base2, "Caltech, las San Gabriel y las calles de 1953"),

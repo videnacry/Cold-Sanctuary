@@ -148,3 +148,16 @@ origen están sus personas y sus sitios). Las distancias reales que no caben en 
 - **Fuentes:** el plano del pueblo (Stadtplan Bern 1905); [Einstein-Haus Bern](https://www.einstein-bern.ch/) (Kramgasse 49); Stadtgrün Bern
   (Münsterplattform, Kleine Schanze); el Palacio Federal (1902). **Inferido:** el número de árboles de cada plaza.
 - **Menú:** `Build Microcosmos de historias: Einstein (Berna)`.
+
+### París 1898 (Marie y Pierre Curie), sobre el Laboratorio de Química
+**El Barrio Latino alrededor de la rue Lhomond, diciembre de 1898**: aíslan el radio en el cobertizo de la Escuela de Física y Química (el escenario).
+- **El piso:** las poyatas son la Montagne Sainte-Geneviève; las pilas, el Sena al norte; los taburetes, las cúpulas y tejados del barrio (el Panteón,
+  la Sorbona); campanas y máquinas, roca.
+- **La flora (104):** los plátanos **sin hoja** del boulevard Saint-Michel y de Port-Royal; el Jardín del Luxemburgo (castaños sin hoja, césped de
+  invierno, boj) al oeste y el Jardin des Plantes al este (plátanos, césped, hiedra de sus verjas); la hiedra de las verjas del Panteón; el adoquín
+  de la rue Mouffetard.
+- **Los animales del pueblo (13):** caballos de ómnibus en el Saint-Michel y de fiacre en la plaza del Panteón; gatos de los patios de la
+  Mouffetard; ratas del alcantarillado junto al mercado y en los muelles del Sena (cucarachas en el microcosmos).
+- **Fuentes:** el plano del pueblo (Plan de Paris, Alphand 1889); Alphand, *Les Promenades de Paris* (1867–1873); Quinn, *Marie Curie: A Life* (1995):
+  el cobertizo de la rue Lhomond y la casa de la rue de la Glacière, 24; la Compagnie générale des omnibus (~17 000 caballos hacia 1900).
+- **Menú:** `Build Microcosmos de historias: Curie (París 1898)`.
