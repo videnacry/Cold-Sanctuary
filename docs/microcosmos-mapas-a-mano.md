@@ -284,3 +284,15 @@ escenario) y la duna donde volaron. El mapa sigue el plano de Dayton y pone la d
 - **Fuentes:** Heródoto II.14, II.99–101 y II.153; Jeffreys, *The Survey of Memphis* (EES); Bonneau, *La crue du Nil* (1964); el plano del
   pueblo. **Inferido:** el sitio del patio de Apis respecto al templo y la distancia a Saqqara (acortada, en su dirección).
 - **Menú:** `Build Microcosmos de historias: Heródoto (Menfis)`.
+
+### Sils Maria (Nietzsche), sobre el Aula
+**El pueblo, Chastè, el valle de Fex y la roca de Surlej, agosto de 1881.**
+- **El piso:** pupitres y mesas son los nevados (Corvatsch y Lagrev); la pizarra y los paneles, las paredes de roca del valle; las máquinas, roca.
+- **La flora (76):** pastos de cervuno con gencianas en el Fex y junto al pueblo; rododendro en las laderas del Corvatsch y del Lagrev; pinos
+  cembros en Chastè; edelweiss y gneis arriba; **la roca de Surlej** (gneis con líquenes de mapa) en la orilla de Silvaplana.
+- **La fauna (16):** saltamontes alpinos sin alas en el Fex, abejorros alpinos en el rododendro, hormigueros de *Formica lugubris* bajo los cembros,
+  arañas lobo al sol sobre la roca, mariquitas en los pastos y la mosca escorpión de la nieve, quieta en el musgo hasta el invierno.
+- **Edificios:** la casa Durisch (la habitación de Nietzsche), la roca de Surlej, Chastè, la entrada del Fex y la pensión Edelweiss.
+- **Fuentes:** Nietzsche, *Ecce Homo* («Así habló Zaratustra» §1); Siegfriedkarte 1:50 000, hoja 518 (1878); Stiftung Nietzsche-Haus; Info Flora;
+  el plano del pueblo. **Inferido:** el sitio exacto de la roca (al suroeste del lago, hacia Surlej).
+- **Menú:** `Build Microcosmos de historias: Nietzsche (Sils Maria)`.

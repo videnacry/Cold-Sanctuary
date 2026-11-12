@@ -146,7 +146,7 @@ public static partial class MicroStoryMaps
         MapBagdad(),   // (2026-11-12) hecho: mapa a mano
         MapWoolsthorpe(),   // (2026-11-12) hecho: MicroStoryMaps.Tanda4.cs
         MapBerkeley(),   // (2026-11-12) hecho: MicroStoryMaps.Tanda4.cs
-        Stub("Sils Maria", Base1, "el lago de Silvaplana, la roca de Surlej y los senderos de la Engadina (la mesa como nevado)"),
+        MapSilsMaria(),   // (2026-11-12) hecho: mapa a mano
         MapParis1898(),   // (2026-11-12) hecho: MicroStoryMaps.Cientificos.cs
         MapColoradoSprings(),   // (2026-11-12) hecho: MicroStoryMaps.Cientificos.cs
         MapBerna(),   // (2026-11-12) hecho: MicroStoryMaps.Cientificos.cs

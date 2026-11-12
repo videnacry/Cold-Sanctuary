@@ -163,6 +163,8 @@ public static partial class StorySceneBuilder
     public static void BuildCurie() => BuildOne("Microcosmos_Curie");
     [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias: Tesla (Colorado Springs)")]
     public static void BuildTesla() => BuildOne("Microcosmos_Tesla");
+    [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias: Nietzsche (Sils Maria)")]
+    public static void BuildNietzsche() => BuildOne("Microcosmos_Nietzsche");
     [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias: Heródoto (Menfis)")]
     public static void BuildHerodoto() => BuildOne("Microcosmos_Herodoto");
     [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias: Pitágoras (Crotona)")]
