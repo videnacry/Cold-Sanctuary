@@ -203,4 +203,45 @@ public static partial class MicroStoryMaps
         },
         todo = new[] { "en vivo: que los fresnos queden a los lados de Dodge Street y la pradera en el borde suroeste" },
     };
+
+    // ══ PRAIRIE VIEW, 15 de diciembre de 2020 (MacKenzie Scott y Prairie View A&M): sobre el Aula ═══════════════════════════════════════════════
+    // El campus de la universidad históricamente negra de Texas, sobre la antigua finca de Alta Vista (condado de Waller): University Drive, la avenida
+    // del campus con la administración y la biblioteca John B. Coleman, las residencias y la granja experimental; al sur, la autopista 290 y el pueblo;
+    // al norte, la loma de los pinos taeda. La sabana de robles post del este de Texas en diciembre: pastos agostados, yaupon con sus bayas rojas;
+    // en el campus, encinas de Virginia y árboles de Júpiter. Las hormigas de fuego y las arañas lobo; los perros del pueblo.
+    static Map MapPrairieView() => new Map
+    {
+        display = "Prairie View", place = "Prairie View A&M (condado de Waller, Texas): el campus, la granja y el pueblo, 15 de diciembre de 2020", status = Status.Hecho,
+        source = "Prairie View A&M University, «Campus Map» y el anuncio del donativo de MacKenzie Scott (diciembre de 2020); Scott, «384 Ways to Help» " +
+                 "(15-12-2020); Texas Parks and Wildlife, ecorregión de la sabana de robles post; OpenStreetMap; el plano del pueblo",
+        floor = Natural(
+            new Piece("mesa", Como, "los pupitres: los edificios del campus en su cuadrícula", "mesa"),
+            new Piece("pared", Como, "la pizarra y los paneles: el pinar de la loma, al norte", "pared")),
+        flora = new[]
+        {
+            // La sabana de robles post y los pastos del condado de Waller, al noreste.
+            new Plant("Roble post", 1000f, 700f, 8, 200f), new Plant("Pasto del condado", 1000f, 700f, 10, 200f),
+            // La loma de los pinos taeda, al norte, con yaupon.
+            new Plant("Pino taeda", -400f, 900f, 10, 150f), new Plant("Yaupon", -200f, 800f, 6, 120f),
+            // La granja experimental.
+            new Plant("Pasto del condado", -800f, 450f, 8, 150f),
+            // El campus: encinas de Virginia, árboles de Júpiter y el césped de la plaza.
+            new Plant("Encina de Virginia", -100f, 300f, 6, 100f), new Plant("Encina de Virginia", 100f, -250f, 6, 100f), new Plant("Árbol de Júpiter", -250f, 450f, 4, 80f),
+            new Plant("Césped del campus", 200f, -250f, 8, 100f),
+        },
+        fauna = new[]
+        {
+            new Animal("Ant", "Hormiga roja de fuego (Solenopsis invicta), con sus montículos en los pastos", 1000f, 700f, 4, 0.4f, 200f),
+            new Animal("Ant", "Hormiga roja de fuego, en la granja experimental", -800f, 450f, 3, 0.4f, 150f),
+            new Animal("Spider", "Araña lobo (Hogna), en la hojarasca del pinar", -400f, 900f, 2, 1f, 150f),
+            new Animal("Spider", "Araña lobo, en los pastos", 1100f, 600f, 2, 1f, 150f),
+            new Animal("Woodlouse", "Perro del pueblo (en el microcosmos, una cochinilla hormiguera)", 700f, -600f, 3, 0.7f, 150f),
+        },
+        buildings = new[]
+        {
+            new Building("Administración de Prairie View A&M", 60f, 120f), new Building("Biblioteca John B. Coleman", -140f, 140f),
+            new Building("Granja experimental", -800f, 450f), new Building("Pueblo de Prairie View", 700f, -600f), new Building("Autopista 290", 0f, -880f),
+        },
+        todo = new[] { "en vivo: que los pinos queden en la loma del norte y las encinas a lo largo de la avenida del campus" },
+    };
 }

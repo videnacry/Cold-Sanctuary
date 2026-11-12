@@ -379,10 +379,22 @@ es la naturaleza **real** del monte subtropical de China central, como en las al
 **La Nebraska Furniture Mart en la calle 72, Farnam Street y Memorial Park, 30 de agosto de 1983.** Plano acortado al este (como el plano del
 pueblo). Una ciudad: solo lo plantado y sus animales.
 - **El piso:** las alfombras son el gran almacén de alfombras de la señora B; las mesas de corte, las manzanas de la cuadrícula; las máquinas, roca.
-- **La flora (82):** un resto de pradera de hierba alta (andropogon y equináceas) al oeste; fresnos verdes en Dodge Street; arces plateados y
+- **La flora (70):** un resto de pradera de hierba alta (andropogon y equináceas) al oeste; fresnos verdes en Dodge Street; arces plateados y
   petunias en Farnam Street, frente a la casa de Buffett; robles en Memorial Park; céspedes; los bordillos del aparcamiento de la tienda.
 - **La fauna (9):** perros y gatos de las casas (cochinillas hormigueras en el microcosmos).
 - **Edificios:** la Nebraska Furniture Mart, la casa de Buffett, Kiewit Plaza, Memorial Park y la Universidad de Nebraska en Omaha.
 - **Fuentes:** Berkshire Hathaway, carta de 1983; Lowenstein, *Buffett* (1995); Nebraska Furniture Mart (historia); OpenStreetMap; Nebraska
   Statewide Arboretum; el plano del pueblo. **Inferido:** las especies de cada calle.
 - **Menú:** ya tenía uno propio, `Build Microcosmos de famosos/Warren Buffett (Omaha, 1983)`.
+
+### Prairie View (MacKenzie Scott), sobre el Aula
+**El campus de Prairie View A&M, la granja y el pueblo, 15 de diciembre de 2020 (el día del anuncio).**
+- **El piso:** los pupitres son los edificios del campus; la pizarra y los paneles, el pinar de la loma; las máquinas, roca.
+- **La flora (66):** la sabana de robles post con sus pastos al noreste; pinos taeda y yaupon en la loma del norte; los pastos de la granja
+  experimental; en el campus, encinas de Virginia, árboles de Júpiter y el césped de la plaza.
+- **La fauna (14):** hormigas rojas de fuego en los pastos y en la granja, arañas lobo en el pinar y en los pastos, y los perros del pueblo
+  (cochinillas hormigueras en el microcosmos).
+- **Edificios:** la administración, la biblioteca John B. Coleman, la granja experimental, el pueblo y la autopista 290.
+- **Fuentes:** PVAMU, «Campus Map» y el anuncio del donativo (2020); Scott, «384 Ways to Help» (15-12-2020); Texas Parks and Wildlife (sabana de
+  robles post); OpenStreetMap; el plano del pueblo. **Inferido:** la posición de cada edificio del campus (plano aproximado).
+- **Menú:** ya tenía uno propio, `Build Microcosmos de famosos/MacKenzie Scott (Prairie View, 2020)`.
