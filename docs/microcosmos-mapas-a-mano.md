@@ -476,3 +476,16 @@ civil y agrícola, la historia es de los campesinos. Plano acortado al norte (co
 - **Fuentes:** Engelking y Leociak, *The Warsaw Ghetto: A Guide to the Perished City* (2009); Mieszkowska, *Irena Sendler* (2011); USHMM; Plan
   Warszawy 1939. **Inferido:** el trazado exacto del muro en el plano (el gueto cambió de límites en 1941–42).
 - **Menú (nuevo):** `Build simulaciones de compasión: Irena Sendler (Varsovia)`.
+
+### Le Chambon-sur-Lignon, sobre la Cocina
+**El pueblo y el plateau del Vivarais-Lignon (Alto Loira), otoño de 1942.**
+- **El piso:** las encimeras son el plateau; los fregaderos, el Lignon y sus gargantas; las máquinas, roca.
+- **La flora (84):** los **pinares** del plateau (el pino silvestre, nuevo en el bioma) con musgo de Schreber, matamoscas y boletos; arándano, brezo
+  y piorno en el monte Lizieux; helecho águila rojizo en las lindes; los prados de siega de las granjas; granito en las gargantas.
+- **La fauna (18):** hormigas rojas de bosque y geotrupos en los pinares, saltamontes, mariquitas y lombrices en los prados, arañas de jardín en el
+  helecho y abejorros en el último brezo.
+- **Edificios:** el templo protestante, el presbiterio de los Trocmé, la estación del tren del Vivarais, la Escuela Nueva Cevenol, las granjas y
+  el monte Lizieux.
+- **Fuentes:** Hallie, *Lest Innocent Blood Be Shed* (1979); Moorehead, *Village of Secrets* (2014); Yad Vashem (1990); Carte de l'État-major; ONF;
+  el plano del pueblo. **Inferido:** el sitio de la Escuela Nueva Cevenol en el plano.
+- **Menú (nuevo):** `Build simulaciones de compasión: Le Chambon-sur-Lignon`.

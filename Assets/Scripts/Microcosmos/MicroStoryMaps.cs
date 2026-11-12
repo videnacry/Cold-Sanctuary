@@ -141,7 +141,7 @@ public static partial class MicroStoryMaps
         MapAlejandria(),   // (2026-11-12) hecho: mapa a mano
         MapBruceLee(),   // (2026-11-12) hecho: MicroStoryMaps.Tanda7.cs
         MapIrenaSendler(),   // (2026-11-12) hecho: MicroStoryMaps.Tanda7.cs
-        Stub("Le Chambon-sur-Lignon", Base1, Base2, "el plateau del Vivarais-Lignon: pinares, granjas y la estación"),
+        MapLeChambon(),   // (2026-11-12) hecho: MicroStoryMaps.Tanda7.cs
         new Map { display = "Planta Atómica", status = Status.Imaginado, place = "un jardín de Europa occidental que junta Woolsthorpe 1666, París 1898 y Berna 1905", source = "escenario imaginado: mezcla de tres lugares, cada uno con su mapa a mano propio (Woolsthorpe, París 1898, Berna)" }, MapEgina()   /* (2026-11-12) hecho: mapa a mano */,
         MapCrotona(),   // (2026-11-12) hecho: mapa a mano
         MapMenfis(),   // (2026-11-12) hecho: mapa a mano

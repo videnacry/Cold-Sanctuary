@@ -170,4 +170,47 @@ public static partial class MicroStoryMaps
         },
         todo = new[] { "en vivo: que lo de dentro del muro quede al oeste de Marszałkowska y el Jardín Sajón al este" },
     };
+
+    // ══ LE CHAMBON-SUR-LIGNON, otoño de 1942: sobre la Cocina ══════════════════════════════════════════════════════════════════════════════════
+    // El pueblo del plateau del Vivarais-Lignon (~1000 m) que, con el pastor André Trocmé y Magda, escondió y alimentó a miles de refugiados: el templo
+    // protestante y el presbiterio, la calle mayor, la estación del tren del Vivarais por la que llegaban, la Escuela Nueva Cevenol, las granjas. Al
+    // sur, el Lignon y sus gargantas de granito; al noroeste, el monte Lizieux con brezo, arándano y piorno; alrededor, los pinares con su musgo, sus
+    // matamoscas y sus boletos, y los prados de siega. Otoño: el helecho águila rojizo.
+    static Map MapLeChambon() => new Map
+    {
+        display = "Le Chambon-sur-Lignon", place = "Le Chambon-sur-Lignon y el plateau del Vivarais-Lignon (Alto Loira), otoño de 1942", status = Status.Hecho,
+        source = "Hallie, Lest Innocent Blood Be Shed (1979); Moorehead, Village of Secrets (2014); Yad Vashem, Justos entre las Naciones: Le Chambon-sur-Lignon " +
+                 "(1990); Carte de l'État-major; ONF (los pinares del plateau); el plano del pueblo",
+        floor = Natural(
+            new Piece("mesa", Como, "las encimeras: el plateau del Vivarais-Lignon", "mesa"),
+            new Piece("lavabo", Como, "los fregaderos: el Lignon y sus gargantas", "lavabo")),
+        flora = new[]
+        {
+            // Los pinares, con musgo de Schreber, matamoscas y boletos.
+            new Plant("Pino silvestre", -600f, 400f, 10, 150f), new Plant("Pino silvestre", 600f, 400f, 8, 150f), new Plant("Musgo de Schreber", -600f, 400f, 8, 120f),
+            new Plant("Matamoscas", -650f, 350f, 4, 100f), new Plant("Boleto", 550f, 450f, 4, 100f),
+            // El monte Lizieux: arándano, brezo y piorno.
+            new Plant("Arándano", -900f, 600f, 8, 150f), new Plant("Brezo", -750f, 550f, 8, 150f), new Plant("Piorno", -950f, 700f, 6, 150f),
+            // El helecho águila rojizo en las lindes y los prados de siega de las granjas.
+            new Plant("Helecho águila", -400f, 300f, 8, 100f), new Plant("Prado de siega", -400f, -250f, 8, 80f), new Plant("Prado de siega", 500f, 100f, 8, 120f),
+            // El granito de las gargantas del Lignon.
+            new Plant("Granito", 400f, -420f, 4, 60f),
+        },
+        fauna = new[]
+        {
+            new Animal("Ant", "Hormiga roja de bosque (Formica rufa), con su hormiguero de agujas en el pinar", -600f, 400f, 4, 0.7f, 150f),
+            new Animal("DungBeetle", "Geotrupo de bosque (Anoplotrupes stercorosus), en el pinar del este", 550f, 450f, 3, 1.6f, 120f),
+            new Animal("Grasshopper", "Saltamontes de prado, en el prado de siega", 500f, 100f, 3, 1.8f, 120f),
+            new Animal("Spider", "Araña de jardín (Araneus diadematus), en el helecho", -400f, 300f, 2, 1.2f, 100f),
+            new Animal("SnowBee", "Abejorro, en el último brezo en flor", -750f, 550f, 2, 1.8f, 150f),
+            new Animal("Ladybug", "Mariquita de 7 puntos, en el prado de la granja", -400f, -250f, 2, 0.7f, 80f),
+            new Animal("Earthworm", "Lombriz de tierra, en el prado", 500f, 100f, 2, 15f, 120f),
+        },
+        buildings = new[]
+        {
+            new Building("Templo protestante", -260f, 70f), new Building("Presbiterio de los Trocmé", -200f, 0f), new Building("Estación del tren del Vivarais", 300f, -210f),
+            new Building("Escuela Nueva Cevenol", 420f, 250f), new Building("Granjas del plateau", -400f, -250f), new Building("Monte Lizieux", -950f, 650f),
+        },
+        todo = new[] { "en vivo: que el prado de las granjas quede al norte del Lignon y no en el río" },
+    };
 }

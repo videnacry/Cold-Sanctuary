@@ -130,6 +130,8 @@ public static partial class MicroBiome
 
             // ── Le Chambon-sur-Lignon (meseta del Vivarais-Lignon, ~1000 m), otoño de 1942 ──
             case "Le Chambon-sur-Lignon": return new Biome { title = "Meseta del Vivarais-Lignon, 1942 (otoño)", ground = C(0.36f, 0.3f, 0.22f), plants = new[] {
+                // (2026-11-12, mapa a mano) Los pinares del plateau (pino silvestre, con hayas en las umbrías): ONF, forêts du plateau Vivarais-Lignon.
+                new Plant(Kind.Shrub, 6, "Pino silvestre (Pinus sylvestris)", 2000, C(0.22f, 0.38f, 0.22f), C(0.6f, 0.4f, 0.25f)),
                 new Plant(Kind.Shrub, 14, "Arándano (Vaccinium myrtillus)", 30, C(0.6f, 0.3f, 0.2f), C(0.2f, 0.2f, 0.4f)),
                 new Plant(Kind.Shrub, 12, "Brezo (Calluna vulgaris)", 35, C(0.3f, 0.35f, 0.22f), C(0.7f, 0.45f, 0.7f)),
                 new Plant(Kind.Shrub, 6, "Piorno (Cytisus oromediterraneus)", 70, C(0.2f, 0.35f, 0.18f), C(0.25f, 0.4f, 0.2f)),
