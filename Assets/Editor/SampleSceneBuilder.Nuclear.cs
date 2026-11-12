@@ -28,8 +28,7 @@ public static partial class SampleSceneBuilder
         // El casquete pequeño: una losa flotante de 40 × 40 m, su pretil y sus 4 tendones al fondo somero (docs/sitio-nuclear.md §9).
         Transform cap = new GameObject("Casquete_artificial").transform; cap.SetParent(st, false); cap.localPosition = Vector3.zero;
         Solid(cap, new Vector3(0f, -0.75f, 0f), new Vector3(2f * H, 1.5f, 2f * H), capC, "Casquete_artificial");
-        for (int s = 0; s < 4; s++)
-            KitchenProps.C(cap, Quaternion.Euler(0f, s * 90f, 0f) * new Vector3(0f, 0.6f, H - 0.5f), new Vector3(2f * H, 1.2f, 1f), new Color(0.55f, 0.57f, 0.6f), s * 90f, "Pretil_casquete");
+        // (2026-11-11, petición #1: sin barandillas ni pretiles de borde) el casquete ya no lleva pretil: el borde se ve y se salta, como las placas.
         float tendon = -SeaRule.FloorY;
         for (int a = -1; a <= 1; a += 2)
             for (int b = -1; b <= 1; b += 2)
