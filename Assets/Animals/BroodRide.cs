@@ -98,7 +98,7 @@ public class BroodRide : MonoBehaviour
     void SetNav(bool on)
     {
         if (_a == null || _a.nav == null) return;
-        if (!on) { if (_a.nav.enabled && _a.nav.isOnNavMesh) _a.nav.ResetPath(); _a.nav.enabled = false; return; }
+        if (!on) { if (_a.nav.enabled && _a.nav.isOnNavMesh) NavTrace.Reset(_a, "BroodRide: sube al lomo"); _a.nav.enabled = false; return; }
         _a.nav.enabled = true;
         if (UnityEngine.AI.NavMesh.SamplePosition(transform.position, out UnityEngine.AI.NavMeshHit hit, 5f, UnityEngine.AI.NavMesh.AllAreas)) _a.nav.Warp(hit.position);
     }

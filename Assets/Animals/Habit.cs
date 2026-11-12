@@ -202,8 +202,8 @@ public class Habit : MonoBehaviour
         // ha llegado. Antes los pingüinos con su guijarro y el oso del respiradero rodeaban el punto sin fin (vueltas en círculo).
         if ((to - _moveTo).sqrMagnitude > 1f) { _moveTo = to; _moveBest = d.magnitude; _moveSince = Time.time; }
         else if (d.magnitude < _moveBest - 0.4f) { _moveBest = d.magnitude; _moveSince = Time.time; }
-        else if (Time.time - _moveSince > 5f && d.magnitude < Arrive + 6f) { if (_a.nav != null && _a.nav.enabled && _a.nav.isOnNavMesh) _a.nav.ResetPath(); return true; }
-        else if (Time.time - _moveSince > 10f) { if (_a.nav != null && _a.nav.enabled && _a.nav.isOnNavMesh) _a.nav.ResetPath(); Avoid(); Stop(); return false; }   // lejos y sin camino: lo deja (y ese sitio, un rato)
+        else if (Time.time - _moveSince > 5f && d.magnitude < Arrive + 6f) { if (_a.nav != null && _a.nav.enabled && _a.nav.isOnNavMesh) NavTrace.Reset(_a, "Habit: llegó cerca"); return true; }
+        else if (Time.time - _moveSince > 10f) { if (_a.nav != null && _a.nav.enabled && _a.nav.isOnNavMesh) NavTrace.Reset(_a, "Habit: lejos y sin avanzar"); Avoid(); Stop(); return false; }   // lejos y sin camino: lo deja (y ese sitio, un rato)
         if (_a.nav != null && _a.nav.enabled && _a.nav.isOnNavMesh)
         {
             if (Time.time >= _nextWalk) { _nextWalk = Time.time + 1f; _a.Loco?.Walk(to, 1f); }
@@ -237,7 +237,7 @@ public class Habit : MonoBehaviour
         }
     }
 
-    void Halt() { if (_a.nav != null && _a.nav.enabled && _a.nav.isOnNavMesh) _a.nav.ResetPath(); _a.Loco?.Idle(1f); }
+    void Halt() { if (_a.nav != null && _a.nav.enabled && _a.nav.isOnNavMesh) NavTrace.Reset(_a, "Habit.Halt"); _a.Loco?.Idle(1f); }
 
     float MealWeight => _a.Body != null && _a.rig != null ? _a.Body.GetMealWeight(_a.rig.mass) : 0.1f;
 

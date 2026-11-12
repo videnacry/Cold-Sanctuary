@@ -466,6 +466,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         if (GetComponent<MarineLife>() != null || FlyingCarpet.Riding(gameObject) || TreeTrip.Busy(gameObject)) return;
         if (!NavMesh.SamplePosition(transform.position, out NavMeshHit h, 6f, nav.areaMask)) return;
         Vector3 from = transform.position;
+        NavTrace.Mark(this, "KeepOnNavMesh (Warp)", h.position);
         if (nav.Warp(h.position) && _offNavLogs++ < 20)
             Debug.Log($"[Fauna] «{name}» estaba fuera del NavMesh en ({from.x:0.0},{from.y:0.0},{from.z:0.0}): vuelve a él en ({h.position.x:0.0},{h.position.y:0.0},{h.position.z:0.0}).");
     }
@@ -635,7 +636,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         busy = true;
         try
         {
-            if (nav != null && nav.isOnNavMesh) nav.ResetPath();
+            if (nav != null && nav.isOnNavMesh) NavTrace.Reset(this, "Hold (defensa pasiva)");
             Loco?.Idle(1f);
             pd.Begin();
             float until = Time.time + pd.HoldSeconds(this);
