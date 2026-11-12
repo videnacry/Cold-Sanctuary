@@ -74,6 +74,11 @@ public static partial class MicroBiome
                 new Plant(Kind.Flower, 8, "Caña kans en flor (Saccharum spontaneum)", 150, C(0.5f, 0.62f, 0.35f), C(0.97f, 0.97f, 0.95f)),
                 new Plant(Kind.Shrub, 7, "Albahaca sagrada, tulsi (Ocimum tenuiflorum)", 45, C(0.35f, 0.5f, 0.25f), C(0.55f, 0.3f, 0.55f)),
                 new Plant(Kind.Fern, 6, "Plántula de sal (Shorea robusta)", 40, C(0.3f, 0.55f, 0.25f), C(0.35f, 0.3f, 0.2f)),
+                // (2026-11-12, mapa a mano) Los árboles del lugar: el bosque de sal de Lumbini, el baniano del Nigrodhārāma, el pipal y los mangos.
+                new Plant(Kind.Shrub, 4, "Árbol de sal (Shorea robusta)", 2500, C(0.22f, 0.42f, 0.2f), C(0.4f, 0.3f, 0.2f)),
+                new Plant(Kind.Shrub, 2, "Baniano (Ficus benghalensis)", 2000, C(0.2f, 0.4f, 0.18f), C(0.45f, 0.35f, 0.25f)),
+                new Plant(Kind.Shrub, 2, "Pipal (Ficus religiosa)", 1800, C(0.25f, 0.48f, 0.22f), C(0.45f, 0.38f, 0.3f)),
+                new Plant(Kind.Shrub, 2, "Mango (Mangifera indica)", 1200, C(0.18f, 0.38f, 0.16f), C(0.85f, 0.6f, 0.15f)),
                 new Plant(Kind.Fungus, 8, "Seta de termitero (Termitomyces)", 15, C(0.9f, 0.86f, 0.75f), C(0.8f, 0.7f, 0.55f)),
                 new Plant(Kind.Stone, 10, "Piedra", 0, Stone, Stone), new Plant(Kind.Sand, 4, "Arena del río", 0, Sand, Sand), new Plant(Kind.Dung, 3, "Boñiga de vaca", 0, DungC, DungC) },
               bugs = new[] {
@@ -89,6 +94,8 @@ public static partial class MicroBiome
 
             // ── Llanura del Ganges, s. II a. C., invierno seco – primavera (feb–mar) ──
             case "Patanjali": return new Biome { title = "Llanura del Ganges, s. II a. C. (invierno seco)", ground = C(0.7f, 0.6f, 0.45f), plants = new[] {
+                // (2026-11-12, mapa a mano) El pipal del āśrama, a cuya sombra se enseña.
+                new Plant(Kind.Shrub, 1, "Pipal (Ficus religiosa)", 1800, C(0.25f, 0.48f, 0.22f), C(0.45f, 0.38f, 0.3f)),
                 new Plant(Kind.Grass, 18, "Hierba kusha (Desmostachya bipinnata), el asiento de las ásanas", 90, C(0.55f, 0.62f, 0.5f), C(0.7f, 0.68f, 0.55f)),
                 new Plant(Kind.Grass, 16, "Cebada madurando (Hordeum vulgare)", 80, C(0.65f, 0.7f, 0.35f), C(0.88f, 0.8f, 0.5f)),
                 new Plant(Kind.Grass, 10, "Grama durva (Cynodon dactylon)", 20, C(0.4f, 0.65f, 0.25f), C(0.5f, 0.6f, 0.3f)),
@@ -123,6 +130,8 @@ public static partial class MicroBiome
 
             // ── Le Chambon-sur-Lignon (meseta del Vivarais-Lignon, ~1000 m), otoño de 1942 ──
             case "Le Chambon-sur-Lignon": return new Biome { title = "Meseta del Vivarais-Lignon, 1942 (otoño)", ground = C(0.36f, 0.3f, 0.22f), plants = new[] {
+                // (2026-11-12, mapa a mano) Los pinares del plateau (pino silvestre, con hayas en las umbrías): ONF, forêts du plateau Vivarais-Lignon.
+                new Plant(Kind.Shrub, 6, "Pino silvestre (Pinus sylvestris)", 2000, C(0.22f, 0.38f, 0.22f), C(0.6f, 0.4f, 0.25f)),
                 new Plant(Kind.Shrub, 14, "Arándano (Vaccinium myrtillus)", 30, C(0.6f, 0.3f, 0.2f), C(0.2f, 0.2f, 0.4f)),
                 new Plant(Kind.Shrub, 12, "Brezo (Calluna vulgaris)", 35, C(0.3f, 0.35f, 0.22f), C(0.7f, 0.45f, 0.7f)),
                 new Plant(Kind.Shrub, 6, "Piorno (Cytisus oromediterraneus)", 70, C(0.2f, 0.35f, 0.18f), C(0.25f, 0.4f, 0.2f)),
@@ -185,7 +194,11 @@ public static partial class MicroBiome
                 new Plant(Kind.Grass, 6, "Heno de marisma (Spartina patens)", 50, C(0.7f, 0.62f, 0.4f), C(0.75f, 0.65f, 0.45f)),
                 new Plant(Kind.Shrub, 5, "Nopal oriental (Opuntia humifusa)", 20, C(0.35f, 0.55f, 0.3f), C(0.4f, 0.6f, 0.35f)),
                 new Plant(Kind.Shrub, 5, "Mirto de cera (Morella cerifera)", 150, C(0.4f, 0.48f, 0.3f), C(0.7f, 0.72f, 0.75f)),
-                new Plant(Kind.Sand, 40, "Arena de duna", 0, C(0.88f, 0.8f, 0.62f), Sand), new Plant(Kind.Stone, 4, "Concha", 0, C(0.9f, 0.88f, 0.82f), Stone) },
+                new Plant(Kind.Sand, 40, "Arena de duna", 0, C(0.88f, 0.8f, 0.62f), Sand), new Plant(Kind.Stone, 4, "Concha", 0, C(0.9f, 0.88f, 0.82f), Stone),
+                // (2026-11-12, mapa a mano) Las calles de Dayton en diciembre (los árboles sin hoja) y el bosque de ribera del Great Miami.
+                new Plant(Kind.Shrub, 1, "Olmo americano de la calle (Ulmus americana), sin hoja", 1800, C(0.45f, 0.38f, 0.3f), C(0.5f, 0.42f, 0.34f)),
+                new Plant(Kind.Shrub, 1, "Arce plateado de la calle (Acer saccharinum), sin hoja", 1500, C(0.5f, 0.45f, 0.4f), C(0.55f, 0.5f, 0.45f)),
+                new Plant(Kind.Shrub, 1, "Sicómoro del Great Miami (Platanus occidentalis), sin hoja", 2200, C(0.75f, 0.72f, 0.65f), C(0.85f, 0.82f, 0.75f)) },
               bugs = new[] {
                 new Bug("Antlion", 5, 12, C(0.8f, 0.74f, 0.6f), "Hormiga león (Myrmeleon immaculatus), aletargada en su embudo"),
                 new Bug("Spider", 3, 13, C(0.85f, 0.82f, 0.72f), "Araña lobo de playa (Arctosa littoralis)"),
@@ -223,7 +236,11 @@ public static partial class MicroBiome
                 new Plant(Kind.Shrub, 5, "Algodón de Sodoma (Calotropis procera)", 150, C(0.6f, 0.68f, 0.62f), C(0.75f, 0.6f, 0.85f)),
                 new Plant(Kind.Shrub, 4, "Taray del Nilo (Tamarix nilotica)", 200, C(0.55f, 0.6f, 0.55f), C(0.85f, 0.7f, 0.8f)),
                 new Plant(Kind.Sand, 26, "Arena del desierto", 0, C(0.9f, 0.78f, 0.55f), Sand), new Plant(Kind.Stone, 12, "Granito de Siene", 0, C(0.7f, 0.5f, 0.45f), Stone),
-                new Plant(Kind.Dung, 4, "Boñiga de asno", 0, DungC, DungC) },
+                new Plant(Kind.Dung, 4, "Boñiga de asno", 0, DungC, DungC),
+                // (2026-11-12, mapa a mano) Los jardines del barrio real y los viñedos de Mareotis.
+                new Plant(Kind.Shrub, 2, "Palmera datilera (Phoenix dactylifera)", 1500, C(0.35f, 0.5f, 0.25f), C(0.75f, 0.45f, 0.15f)),
+                new Plant(Kind.Shrub, 1, "Sicómoro egipcio (Ficus sycomorus)", 1200, C(0.25f, 0.45f, 0.2f), C(0.55f, 0.45f, 0.3f)),
+                new Plant(Kind.Shrub, 1, "Vid de Mareotis (Vitis vinifera)", 150, C(0.35f, 0.55f, 0.25f), C(0.35f, 0.15f, 0.35f)) },
               bugs = new[] {
                 new Bug("DungBeetle", 6, 30, C(0.06f, 0.06f, 0.06f), "Escarabajo sagrado (Scarabaeus sacer)"),
                 new Bug("Ant", 8, 10, C(0.6f, 0.2f, 0.1f), "Hormiga del desierto (Cataglyphis bicolor)"),
@@ -347,6 +364,9 @@ public static partial class MicroBiome
                 new Plant(Kind.Flower, 6, "Botón de oro (Ranunculus acris)", 50, C(0.35f, 0.55f, 0.25f), C(0.98f, 0.85f, 0.1f)),
                 new Plant(Kind.Shrub, 8, "Majuelo del seto (Crataegus monogyna)", 300, C(0.25f, 0.42f, 0.2f), C(0.7f, 0.12f, 0.1f)),
                 new Plant(Kind.Shrub, 6, "Manzano (Malus domestica), con manzanas caídas", 400, C(0.3f, 0.48f, 0.22f), C(0.75f, 0.2f, 0.12f)),
+                // (2026-11-12, mapa a mano) Las franjas del campo abierto: cebada (y trigo) de 1666.
+                new Plant(Kind.Grass, 6, "Cebada (Hordeum vulgare), en franjas del campo abierto", 80, C(0.6f, 0.68f, 0.35f), C(0.88f, 0.8f, 0.5f)),
+                new Plant(Kind.Grass, 4, "Trigo (Triticum aestivum), en franjas del campo abierto", 90, C(0.6f, 0.66f, 0.3f), C(0.9f, 0.78f, 0.4f)),
                 new Plant(Kind.Moss, 6, "Musgo de pared (Tortula muralis)", 2, C(0.45f, 0.55f, 0.25f), C(0.55f, 0.6f, 0.3f)),
                 new Plant(Kind.Stone, 8, "Piedra caliza", 0, C(0.82f, 0.78f, 0.65f), Stone), new Plant(Kind.Dung, 4, "Excremento de oveja", 0, DungC, DungC) },
               bugs = new[] {
@@ -433,7 +453,9 @@ public static partial class MicroBiome
                 new Plant(Kind.Shrub, 8, "Yuca (Yucca glauca)", 80, C(0.4f, 0.52f, 0.4f), C(0.95f, 0.95f, 0.85f)),
                 new Plant(Kind.Shrub, 6, "Nopal de la pradera (Opuntia polyacantha)", 25, C(0.4f, 0.55f, 0.3f), C(0.95f, 0.85f, 0.3f)),
                 new Plant(Kind.Flower, 6, "Margarita de la pradera (Ratibida columnifera)", 50, C(0.35f, 0.5f, 0.28f), C(0.8f, 0.25f, 0.1f)),
-                new Plant(Kind.Stone, 10, "Arenisca roja", 0, C(0.7f, 0.4f, 0.3f), Stone) },
+                new Plant(Kind.Stone, 10, "Arenisca roja", 0, C(0.7f, 0.4f, 0.3f), Stone),
+                // (2026-11-12, mapa a mano) El bosque de ribera del Monument Creek.
+                new Plant(Kind.Shrub, 3, "Álamo de Virginia (Populus deltoides), en la ribera del Monument Creek", 1800, C(0.3f, 0.5f, 0.25f), C(0.55f, 0.5f, 0.4f)) },
               bugs = new[] {
                 new Bug("Grasshopper", 6, 25, C(0.55f, 0.5f, 0.35f), "Saltamontes migratorio (Melanoplus sanguinipes)"),
                 new Bug("Ant", 6, 7, C(0.6f, 0.25f, 0.12f), "Hormiga segadora (Pogonomyrmex occidentalis), con su montículo de grava"),
@@ -530,12 +552,34 @@ public static partial class MicroBiome
                 new Plant(Kind.Shrub, 3, "Encina de la costa (Quercus agrifolia)", 1200, C(0.22f, 0.38f, 0.2f), C(0.4f, 0.35f, 0.25f)),
                 new Plant(Kind.Grass, 14, "Césped de la casa (Cynodon dactylon), segado", 5, C(0.4f, 0.62f, 0.28f), C(0.5f, 0.6f, 0.3f)),
                 new Plant(Kind.Flower, 5, "Rosal del jardín (Rosa)", 120, C(0.25f, 0.42f, 0.22f), C(0.85f, 0.15f, 0.25f)),
-                new Plant(Kind.Shrub, 4, "Seto de pitósporo (Pittosporum tobira)", 150, C(0.22f, 0.4f, 0.22f), C(0.95f, 0.95f, 0.85f)) },
+                new Plant(Kind.Shrub, 4, "Seto de pitósporo (Pittosporum tobira)", 150, C(0.22f, 0.4f, 0.22f), C(0.95f, 0.95f, 0.85f)),
+                // (2026-11-12, mapa a mano) Los olivos del Olive Walk de Caltech.
+                new Plant(Kind.Shrub, 2, "Olivo del Olive Walk de Caltech (Olea europaea)", 700, C(0.45f, 0.52f, 0.4f), C(0.4f, 0.38f, 0.32f)) },
               // Una ciudad de coches (sin caballos): los perros y los gatos de las casas.
               townFauna = new[] {
                 new Pet("Woodlouse", 3, 0.7f, C(0.8f, 0.72f, 0.6f), "Perro de la casa (en el microcosmos, una cochinilla hormiguera)"),
                 new Pet("Woodlouse", 2, 0.5f, C(0.85f, 0.83f, 0.78f), "Gato de la casa (en el microcosmos, una cochinilla hormiguera)") },
               bugs = new Bug[0] };
+            // ── (2026-11-12, mapa a mano) URUK (Mesopotamia), primavera de ~3500 a. C.: la cebada en sazón, los palmerales de los canales, los
+            //    cañaverales y tarays del Éufrates, el regaliz de los barbechos y la espina de camello del borde seco (Postgate 1992; Pournelle 2003).
+            case "Mesopotamia": return new Biome { title = "Uruk, llanura del Éufrates (primavera, ~3500 a. C.)", ground = C(0.72f, 0.62f, 0.45f), plants = new[] {
+                new Plant(Kind.Grass, 16, "Cebada en sazón (Hordeum vulgare)", 80, C(0.65f, 0.68f, 0.35f), C(0.88f, 0.8f, 0.45f)),
+                new Plant(Kind.Shrub, 8, "Palmera datilera (Phoenix dactylifera)", 1500, C(0.35f, 0.5f, 0.25f), C(0.75f, 0.45f, 0.15f)),
+                new Plant(Kind.Grass, 10, "Caña (Phragmites australis)", 300, C(0.45f, 0.58f, 0.3f), C(0.6f, 0.5f, 0.4f)),
+                new Plant(Kind.Shrub, 5, "Taray (Tamarix)", 300, C(0.4f, 0.52f, 0.4f), C(0.9f, 0.65f, 0.75f)),
+                new Plant(Kind.Flower, 5, "Regaliz silvestre (Glycyrrhiza glabra)", 80, C(0.35f, 0.5f, 0.3f), C(0.65f, 0.6f, 0.85f)),
+                new Plant(Kind.Shrub, 6, "Espina de camello (Alhagi maurorum)", 60, C(0.45f, 0.55f, 0.35f), C(0.75f, 0.3f, 0.35f)),
+                new Plant(Kind.Sand, 8, "Limo del Éufrates", 0, C(0.6f, 0.52f, 0.4f), C(0.6f, 0.52f, 0.4f)),
+                new Plant(Kind.Stone, 6, "Adobe y ladrillo crudo", 0, C(0.75f, 0.62f, 0.45f), Stone) },
+              bugs = new[] {
+                new Bug("Ant", 8, 8, C(0.2f, 0.12f, 0.1f), "Hormiga segadora (Messor), en la cebada"),
+                new Bug("Grasshopper", 5, 55, C(0.75f, 0.65f, 0.3f), "Langosta del desierto (Schistocerca gregaria)"),
+                new Bug("DungBeetle", 4, 25, C(0.1f, 0.1f, 0.1f), "Escarabajo pelotero (Scarabaeus)"),
+                new Bug("Mantis", 2, 60, C(0.5f, 0.6f, 0.35f), "Mantis (Mantis religiosa), en el taray"),
+                new Bug("Scorpion", 2, 90, C(0.25f, 0.2f, 0.12f), "Escorpión de cola gruesa (Androctonus crassicauda), de noche") },
+              townFauna = new[] {
+                new Pet("Aphid", 3, 1.6f, C(0.55f, 0.5f, 0.45f), "Asno de carga (en el microcosmos, un pulgón de carga)"),
+                new Pet("Aphid", 3, 1.2f, C(0.9f, 0.88f, 0.8f), "Oveja del rebaño del templo (en el microcosmos, un pulgón)") } };
             case "Bagdad": return new Biome { title = "Bagdad, la Ciudad Redonda (~820): ciudad, sin naturaleza salvaje", ground = C(0.78f, 0.68f, 0.5f), plants = new[] {
                 new Plant(Kind.Shrub, 8, "Palmera datilera de los jardines (Phoenix dactylifera), plantada", 1500, C(0.35f, 0.5f, 0.25f), C(0.75f, 0.45f, 0.15f)),
                 new Plant(Kind.Shrub, 4, "Granado del patio (Punica granatum), plantado", 300, C(0.3f, 0.45f, 0.22f), C(0.8f, 0.15f, 0.12f)),

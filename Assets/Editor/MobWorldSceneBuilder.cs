@@ -65,6 +65,14 @@ public static class MobWorldSceneBuilder
         AddResident(people, "La Recolectora",     "El Granero", "Granero del templo");
         CivicBuilder.Homes(people, new CivicBuilder.Lots(people), "Mesopotamia");   // regla 6: los tres vecinos llegan tras Civilize: también con hogar
 
+        // (2026-11-12; petición 75, regla M9) EL MAPA A MANO DE URUK (MicroStoryMaps «Mesopotamia»): su flora y su fauna en su sitio (los palmerales
+        // de los canales, la cebada del este, los cañaverales del Éufrates…), escalado al suelo de 120 m y fuera de las huellas de los edificios
+        // y del portal. Nature pone sus plantas en coordenadas del mundo: su raíz va en el origen de la escena, no bajo la ciudad.
+        var nature = new GameObject("Naturaleza de Uruk (mapa a mano)").transform;
+        Bounds groundBox = new Bounds(O, new Vector3(120f, 0f, 120f));
+        Bounds entry = new Bounds(O + new Vector3(0f, 1f, -5.5f), new Vector3(4f, 2f, 4f));   // el portal y el punto de entrada
+        AreaMicrocosmos.HandMapOnto(nature, people, "Mesopotamia", groundBox, O.y, entry);
+
         // Yoga-portal de salida.
         var portal = GameObject.CreatePrimitive(PrimitiveType.Cube);
         portal.name = "WorldExitPortal";

@@ -150,6 +150,43 @@ public static partial class StorySceneBuilder
 
     /// <summary>Solo el de Buda (Kapilavastu), sin rehacer los demás (límite de memoria del PC).</summary>
     [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias: Buda (Kapilavastu)")]
+
+    /// <summary>(2026-11-12) Solo el de Newton (Woolsthorpe) o solo el de Jenner (Berkeley): sus mapas a mano (docs/microcosmos-mapas-a-mano.md §Tanda 4),
+    /// sin rehacer los doce científicos de una vez (límite de memoria del PC).</summary>
+    [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias: Newton (Woolsthorpe)")]
+    public static void BuildNewton() => BuildOne("Microcosmos_Newton");
+    [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias: Jenner (Berkeley)")]
+    public static void BuildJenner() => BuildOne("Microcosmos_Jenner");
+    [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias: Einstein (Berna)")]
+    public static void BuildEinstein() => BuildOne("Microcosmos_Einstein");
+    [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias: Curie (París 1898)")]
+    public static void BuildCurie() => BuildOne("Microcosmos_Curie");
+    [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias: Tesla (Colorado Springs)")]
+    public static void BuildTesla() => BuildOne("Microcosmos_Tesla");
+    [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias: Tregua de Navidad (Saint-Yvon, 1914)")]
+    public static void BuildTregua1914() => BuildOne("Microcosmos_Tregua1914");
+    [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias: Patanjali (el āśrama del Ganges)")]
+    public static void BuildPatanjali() => BuildOne("Microcosmos_Patanjali");
+    [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias: Pakal (Palenque)")]
+    public static void BuildPakal() => BuildOne("Microcosmos_Pakal");
+    [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias: Chernóbil (Ananenko)")]
+    public static void BuildChernobil() => BuildOne("Microcosmos_Chernobil");
+    [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias: Nietzsche (Sils Maria)")]
+    public static void BuildNietzsche() => BuildOne("Microcosmos_Nietzsche");
+    [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias: Heródoto (Menfis)")]
+    public static void BuildHerodoto() => BuildOne("Microcosmos_Herodoto");
+    [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias: Pitágoras (Crotona)")]
+    public static void BuildPitagoras() => BuildOne("Microcosmos_Pitagoras");
+    [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias: Nightingale (Escútari)")]
+    public static void BuildNightingale() => BuildOne("Microcosmos_Nightingale");
+    [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias: Al-Juarismi (Bagdad)")]
+    public static void BuildAlJuarismi() => BuildOne("Microcosmos_AlJuarismi");
+    [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias: Eratóstenes (Alejandría)")]
+    public static void BuildEratostenes() => BuildOne("Microcosmos_Eratostenes");
+    [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias: Wright (Dayton y Kill Devil Hills)")]
+    public static void BuildWright() => BuildOne("Microcosmos_Wright");
+    [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias: Patterson (Pasadena)")]
+    public static void BuildPatterson() => BuildOne("Microcosmos_Patterson");
     public static void BuildBuda() => BuildOne("Microcosmos_Buda");
 
     /// <summary>Genera un solo microcosmos de historia por su escena (en su mismo origen que en <see cref="BuildAll"/>).</summary>

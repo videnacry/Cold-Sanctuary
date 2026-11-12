@@ -35,6 +35,24 @@ public static class CompassionSceneBuilder
         Debug.Log($"[Compasión] {i} simulaciones de compasión generadas.");
     }
 
+    /// <summary>(2026-11-12, mapas a mano) Genera SOLO una simulación (con la escena principal abierta), para reconstruirla sola.</summary>
+    static void BuildOneSim(string scene)
+    {
+        for (int i = 0; i < Sims.Length; i++)
+        {
+            var s = Sims[i];
+            if (s.scene != scene) continue;
+            MicrocosmTemplate.Build(new MicrocosmSpec(s.scene, s.display, Dates[s.display].date, Dates[s.display].hour, s.areaGo) { tint = s.tint, story = tr => s.story(tr) + CivicBuilder.Civilize(tr, s.display) }, new Vector3(6000f + i * 900f, 0f, 8000f));
+            Debug.Log($"[Compasión] {scene} generado.");
+            return;
+        }
+        Debug.LogWarning($"[Compasión] {scene}: no está en la lista.");
+    }
+    [MenuItem("Tools/Cold Sanctuary/Build simulaciones de compasión: Irena Sendler (Varsovia)")]
+    public static void BuildIrenaSendler() => BuildOneSim("Microcosmos_IrenaSendler");
+    [MenuItem("Tools/Cold Sanctuary/Build simulaciones de compasión: Le Chambon-sur-Lignon")]
+    public static void BuildLeChambon() => BuildOneSim("Microcosmos_LeChambon");
+
     // ── LE CHAMBON-SUR-LIGNON, 1942 ──────────────────────────────────────────────────────────────────────────────
 
     static int LeChambon(Transform t)
