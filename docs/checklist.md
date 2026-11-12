@@ -27,19 +27,19 @@ Las referencias «L» llevan al checklist tal como estaba en `b0add6e`, antes de
 - [ ] 10-27 · Alfombras de 4 tipos (edificio, santuario, residencia, habitación) y rutas de los NPC por `CarpetPad.Route` (#3) · [transporte-alfombras.md](transporte-alfombras.md); [L154](https://github.com/videnacry/Cold-Sanctuary/blob/b0add6e/docs/checklist.md#L154) solo cubre el grosor.
 - [ ] 10-27 · Muebles para la persona más alta, 1,85 m (#4) · [medidas-muebles.md](medidas-muebles.md).
 - [ ] 10-27 · Todo microcosmos sale de la plantilla: fecha, hora y piso (#5) · manual M1, `MicrocosmTemplate`.
-- [ ] 10-27 · Ambrosio en el hospital al alba de la taiga; Sakshi, segunda anciana; mariquita de 2,4 m como depredador (#6) · [L157](https://github.com/videnacry/Cold-Sanctuary/blob/b0add6e/docs/checklist.md#L157) solo dice «reconstruir Ambrosio».
-- [ ] 10-28 · 2 m de paso entre lo que no va junto (#7) · manual S7, `FurnitureSpacing`.
+- [x] 10-27 · Ambrosio en el hospital al alba de la taiga; Sakshi, segunda anciana; mariquita de 2,4 m como depredador (#6) · [L157](https://github.com/videnacry/Cold-Sanctuary/blob/b0add6e/docs/checklist.md#L157) solo dice «reconstruir Ambrosio». · ✓ 2026-11-12: g40 ExperienciaJugadorTest (iniciación → Ambrosio → vuelta) en verde; ronda 13 en vivo: Ambrosio, Sakshi y la mariquita en la historia
+- [x] 10-28 · 2 m de paso entre lo que no va junto (#7) · manual S7, `FurnitureSpacing`. · ✓ 2026-11-12: «…: 2 m libres entre muebles (y ninguno sobre un área de alfombras) — 0 pares» (21 comprobaciones, una por área)
 - [x] 10-28 · Anillo opcional (`RingDeck`), sin escaleras, unido por alfombras (#8) · manual S5. · ✓ 2026-11-12: «cada anillo tiene su área de alfombras unida a los pisos de su edificio — 4/4 anillos»
 - [ ] 10-28 · Megacolumna por esquina para 30 pisos y aviso si se pasa (#9) · manual S9, `StructuralLimits.MaxFloors`; los octógonos los sustituyó el árbol v2.
 - [x] 10-28 · Plazas reservadas en cada piso para flora, fauna, personajes e historia (#10) · manual S10, `PlatformSlots`. · ✓ 2026-11-12: «plazas reservadas suficientes (historia, personajes, fauna, flora)»
 - [x] 10-29 · El microcosmos es solo su piso, amurallado; nada fuera (#12) · manual M5. · ✓ 2026-11-12: «al construirlo no quedó nada fuera — 0 piezas fuera» (microcosmos)
 - [x] 10-29 · Iniciaciones en «orquesta»: a ≤ 2 m, cada uno anda solo, sin tirones ni teletransportes (#13) · manual J5. · ✓ 2026-11-12: «orquesta (cocina): sin saltos ni teletransportes de emergencia ni empujones de otros»
 - [x] 10-29 · Pocas torres temáticas con muchos pisos (#14) · manual S2. · ✓ 2026-11-12: «4 torres temáticas (servicios, entrenamiento, ciencias, producción) y el Árbol de los campos con sus pisos»
-- [ ] 10-30 · Árbol v2: tronco cuadrado, hélice, primer piso a ≥ 50 m, entradas solo abajo y en el techo, nado entre niveles (#15) · manual T1–T2, [edificio-arbol.md](edificio-arbol.md).
+- [x] 10-30 · Árbol v2: tronco cuadrado, hélice, primer piso a ≥ 50 m, entradas solo abajo y en el techo, nado entre niveles (#15) · manual T1–T2, [edificio-arbol.md](edificio-arbol.md). · ✓ 2026-11-12: g57 y g53: «Ciencias: en cada nivel, pisos en dos lados opuestos y ramas a las puntas…, alternando (hélice)» y las puertas cuadradas de 7 × 7 m
 - [ ] 10-31 · Migrar todos los edificios al modelo árbol antes de arreglar fallos de pruebas (#17) · manual S3.
 - [ ] 11-02 · Un hogar para cada personaje del pueblo, además de trabajo y servicios (#23) · manual M18.
 - [x] 11-02 · El mismo ciclo de vida para humanos e insectos-humanos, con su escena de prueba (#24) · manual M19, [ciclo-de-vida.md](ciclo-de-vida.md). · ✓ 2026-11-12: g59 CicloHumanoTest (ciclo de vida de humano e insecto-humano) en verde
-- [ ] 11-02 · Escala ×100, todo relativo a `AreaScale` (#25) · manual M11.
+- [x] 11-02 · Escala ×100, todo relativo a `AreaScale` (#25) · manual M11. · ✓ 2026-11-12: ronda 30 en vivo: «[Microcosmos] Kapilavastu: piso ×100 con muros…»; g43 en verde
 - [ ] 11-02 · Se permiten los muros históricos que pida la historia (gueto, reactor) (#26) · [microcosmos-reglas-edificacion.md](microcosmos-reglas-edificacion.md).
 - [ ] 11-03 · Dejar siempre los docs y el checklist al día (#45) · regla de proceso; **incumplida** con lo del 11-09. La refuerza la regla de arriba.
 - [ ] 11-04 · Al cambiar un piso, área, árbol o microcosmos, revisar jornadas, reparto y horario libre (#64) · manual W9 y su gancho.
