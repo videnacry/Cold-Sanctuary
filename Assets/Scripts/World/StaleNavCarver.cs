@@ -61,7 +61,22 @@ public class StaleNavCarver : MonoBehaviour
         foreach (MeshCollider mc in FindObjectsByType<MeshCollider>(FindObjectsSortMode.None))
         {
             if (mc == null || mc.name != "Pared_raiz" || mc.sharedMesh == null || mc.GetComponent<NavMeshObstacle>() != null) continue;
-            if (mc.GetComponentInParent<TreeRotator>() != null) continue;
+            TreeRotator spin = mc.GetComponentInParent<TreeRotator>();
+            if (spin != null)
+            {
+                // (2026-11-11) EL ÁRBOL QUE GIRA (vivo64: un reno «dentro de Pared_raiz» en (-65,0,-86), pastando junto a él): un obstáculo QUIETO y
+                // redondo (lo mismo da el giro), fuera del árbol que gira, en el centro de su raíz. Radio: el medio lado de fuera ×1,25, pero sin pasar
+                // de 1,8 m más (la espera de la puerta del suelo está a 2,5 m de la pared).
+                Bounds wb = mc.bounds; float ext = mc.sharedMesh.bounds.extents.x * Mathf.Abs(mc.transform.lossyScale.x);
+                var go = new GameObject("Obstaculo_raiz_giratoria");
+                go.transform.SetParent(spin.transform.parent, false);
+                go.transform.position = new Vector3(spin.transform.position.x, wb.min.y, spin.transform.position.z);
+                NavMeshObstacle so = go.AddComponent<NavMeshObstacle>();
+                so.shape = NavMeshObstacleShape.Capsule; so.radius = Mathf.Min(ext * 1.25f, ext + 1.8f); so.height = 4f; so.center = Vector3.up * 2f;
+                so.carving = true; so.carveOnlyStationary = true;
+                walls++;
+                continue;
+            }
             NavMeshObstacle o = mc.gameObject.AddComponent<NavMeshObstacle>();
             o.shape = NavMeshObstacleShape.Box;
             Bounds mb = mc.sharedMesh.bounds;

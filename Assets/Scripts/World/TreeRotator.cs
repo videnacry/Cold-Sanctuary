@@ -24,7 +24,11 @@ public class TreeRotator : MonoBehaviour
     /// eje, el NavMesh va como mucho 35 cm por detrás del piso. Antes, 0,05°: a pocos FPS, en cada frame.</summary>
     public const float NavRefreshDegrees = 0.5f;
     /// <summary>Giro mínimo que se aplica de una vez (a 0,4 °/s, 4 veces por segundo).</summary>
-    public const float StepDegrees = 0.1f;
+    // (2026-11-11) 0,25° (antes 0,1°): el paquete AI Navigation vuelve a colocar el NavMesh del árbol (NavMeshSurface.UpdateDataIfTransformChanged,
+    // en NavMesh.onPreUpdate) CADA VEZ que su transform cambia; con pasos de 0,1° eran 4 veces por segundo, y cada vez los agentes que no quedaban
+    // justo sobre el NavMesh nuevo daban «Failed to create agent because it is not close enough to the NavMesh» (193 en vivo64). A 40 m del eje,
+    // 0,25° son 17 cm por paso, cada ~0,6 s.
+    public const float StepDegrees = 0.25f;
     float _pendingDeg;
 
     /// <summary>Grados girados desde que empezó (con signo).</summary>
@@ -96,14 +100,12 @@ public class TreeRotator : MonoBehaviour
                 Carry(dq, pivot);
             }
         }
+        // (2026-11-11) Sin recolocar el NavMesh a mano: el paquete ya lo hace solo cuando el transform cambia (ver StepDegrees); hacerlo también aquí
+        // era quitarlo y ponerlo dos veces. Se cuenta igual para las pruebas.
         if (_surface != null && Time.time >= _navAt)
         {
             _navAt = Time.time + navRefresh;
-            if (Quaternion.Angle(_navRot, transform.rotation) > NavRefreshDegrees)
-            {
-                _surface.RemoveData(); _surface.AddData();
-                _navRot = transform.rotation; NavRefreshes++;
-            }
+            if (Quaternion.Angle(_navRot, transform.rotation) > NavRefreshDegrees) { _navRot = transform.rotation; NavRefreshes++; }
         }
     }
 
