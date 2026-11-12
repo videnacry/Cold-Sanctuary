@@ -539,10 +539,25 @@ public class FruitGardener : MonoBehaviour
         else
         {
             Phytoplankton b = leg.beds[_task - leg.masks.Count];
-            if (_task == leg.masks.Count) _wps.Add(() => t.transform.position + Vector3.up * 0.5f);   // al centro del fondo, sobre el hueco
-            _wps.Add(() => b != null ? b.transform.position + new Vector3(0f, 0.2f, -1.2f) : transform.position);
+            if (_task == leg.masks.Count) _wps.Add(() => Clear(t.transform.position + Vector3.up * 0.5f));   // al centro del fondo, sobre el hueco
+            _wps.Add(() => b != null ? Clear(b.transform.position + new Vector3(0f, 0.2f, -1.2f)) : transform.position);
         }
         _phase = Phase.TreeSwim; _targetSince = Time.time;
+    }
+
+    // (2026-11-11) FUERA DE LA ROCA: el sitio para cuidar una cortina del fondo caía dentro del «Zocalo_rocoso» de Residencia y Fausto trabajaba
+    // metido en él (ronda 61). Si el punto cae en algo sólido, se sube de medio en medio metro (hasta 3 m) al primer sitio libre.
+    Vector3 Clear(Vector3 p)
+    {
+        for (int i = 0; i <= 6; i++)
+        {
+            Vector3 q = p + Vector3.up * (0.5f * i);
+            bool solid = false;
+            foreach (Collider c in Physics.OverlapSphere(q, 0.45f, ~0, QueryTriggerInteraction.Ignore))
+                if (c != null && !c.transform.IsChildOf(transform) && c.GetComponentInParent<Anima>() == null && c.GetComponentInParent<Phytoplankton>() == null) { solid = true; break; }
+            if (!solid) return q;
+        }
+        return p;
     }
 
     void ArriveTask(ArbolCampos t, Leg leg)
