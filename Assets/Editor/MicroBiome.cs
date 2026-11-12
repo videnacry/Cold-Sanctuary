@@ -560,6 +560,26 @@ public static partial class MicroBiome
                 new Pet("Woodlouse", 3, 0.7f, C(0.8f, 0.72f, 0.6f), "Perro de la casa (en el microcosmos, una cochinilla hormiguera)"),
                 new Pet("Woodlouse", 2, 0.5f, C(0.85f, 0.83f, 0.78f), "Gato de la casa (en el microcosmos, una cochinilla hormiguera)") },
               bugs = new Bug[0] };
+            // ── (2026-11-12, mapa a mano) URUK (Mesopotamia), primavera de ~3500 a. C.: la cebada en sazón, los palmerales de los canales, los
+            //    cañaverales y tarays del Éufrates, el regaliz de los barbechos y la espina de camello del borde seco (Postgate 1992; Pournelle 2003).
+            case "Mesopotamia": return new Biome { title = "Uruk, llanura del Éufrates (primavera, ~3500 a. C.)", ground = C(0.72f, 0.62f, 0.45f), plants = new[] {
+                new Plant(Kind.Grass, 16, "Cebada en sazón (Hordeum vulgare)", 80, C(0.65f, 0.68f, 0.35f), C(0.88f, 0.8f, 0.45f)),
+                new Plant(Kind.Shrub, 8, "Palmera datilera (Phoenix dactylifera)", 1500, C(0.35f, 0.5f, 0.25f), C(0.75f, 0.45f, 0.15f)),
+                new Plant(Kind.Grass, 10, "Caña (Phragmites australis)", 300, C(0.45f, 0.58f, 0.3f), C(0.6f, 0.5f, 0.4f)),
+                new Plant(Kind.Shrub, 5, "Taray (Tamarix)", 300, C(0.4f, 0.52f, 0.4f), C(0.9f, 0.65f, 0.75f)),
+                new Plant(Kind.Flower, 5, "Regaliz silvestre (Glycyrrhiza glabra)", 80, C(0.35f, 0.5f, 0.3f), C(0.65f, 0.6f, 0.85f)),
+                new Plant(Kind.Shrub, 6, "Espina de camello (Alhagi maurorum)", 60, C(0.45f, 0.55f, 0.35f), C(0.75f, 0.3f, 0.35f)),
+                new Plant(Kind.Sand, 8, "Limo del Éufrates", 0, C(0.6f, 0.52f, 0.4f), C(0.6f, 0.52f, 0.4f)),
+                new Plant(Kind.Stone, 6, "Adobe y ladrillo crudo", 0, C(0.75f, 0.62f, 0.45f), Stone) },
+              bugs = new[] {
+                new Bug("Ant", 8, 8, C(0.2f, 0.12f, 0.1f), "Hormiga segadora (Messor), en la cebada"),
+                new Bug("Grasshopper", 5, 55, C(0.75f, 0.65f, 0.3f), "Langosta del desierto (Schistocerca gregaria)"),
+                new Bug("DungBeetle", 4, 25, C(0.1f, 0.1f, 0.1f), "Escarabajo pelotero (Scarabaeus)"),
+                new Bug("Mantis", 2, 60, C(0.5f, 0.6f, 0.35f), "Mantis (Mantis religiosa), en el taray"),
+                new Bug("Scorpion", 2, 90, C(0.25f, 0.2f, 0.12f), "Escorpión de cola gruesa (Androctonus crassicauda), de noche") },
+              townFauna = new[] {
+                new Pet("Aphid", 3, 1.6f, C(0.55f, 0.5f, 0.45f), "Asno de carga (en el microcosmos, un pulgón de carga)"),
+                new Pet("Aphid", 3, 1.2f, C(0.9f, 0.88f, 0.8f), "Oveja del rebaño del templo (en el microcosmos, un pulgón)") } };
             case "Bagdad": return new Biome { title = "Bagdad, la Ciudad Redonda (~820): ciudad, sin naturaleza salvaje", ground = C(0.78f, 0.68f, 0.5f), plants = new[] {
                 new Plant(Kind.Shrub, 8, "Palmera datilera de los jardines (Phoenix dactylifera), plantada", 1500, C(0.35f, 0.5f, 0.25f), C(0.75f, 0.45f, 0.15f)),
                 new Plant(Kind.Shrub, 4, "Granado del patio (Punica granatum), plantado", 300, C(0.3f, 0.45f, 0.22f), C(0.8f, 0.15f, 0.12f)),

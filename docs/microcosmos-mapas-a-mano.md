@@ -489,3 +489,18 @@ civil y agrícola, la historia es de los campesinos. Plano acortado al norte (co
 - **Fuentes:** Hallie, *Lest Innocent Blood Be Shed* (1979); Moorehead, *Village of Secrets* (2014); Yad Vashem (1990); Carte de l'État-major; ONF;
   el plano del pueblo. **Inferido:** el sitio de la Escuela Nueva Cevenol en el plano.
 - **Menú (nuevo):** `Build simulaciones de compasión: Le Chambon-sur-Lignon`.
+
+### Mesopotamia (Uruk)
+**El Eanna, la terraza de Anu, los canales y el Éufrates, primavera de ~3500 a. C.**
+- **El bioma es nuevo** (no tenía): cebada en sazón, palmera datilera, caña, taray, regaliz silvestre, espina de camello, limo y adobe; hormigas
+  segadoras, langostas, peloteros, mantis y escorpiones; asnos y ovejas del templo como animales del pueblo.
+- **El piso:** las escaleras son la terraza escalonada de Anu (el zigurat temprano); los lavabos, el Éufrates y los canales; las máquinas, roca.
+- **La flora (80):** la cebada de los campos del este; palmerales en el canal del Eanna y en la orilla del Éufrates; cañaverales, tarays y limo en
+  el río; regaliz en los barbechos, espina de camello en el borde seco y el adobe de la terraza de Anu.
+- **La fauna (19):** hormigas segadoras en la cebada, langostas en los campos del sur, peloteros tras los asnos, escorpiones en el borde seco, una
+  mantis en los tarays; asnos de carga y las ovejas del templo.
+- **Edificios:** el Templo Blanco, el recinto del Eanna, el canal, el embarcadero, los talleres de alfareros y los campos.
+- **Fuentes:** Nissen (1988); Crüsemann et al., *Uruk: First City of the Ancient World* (2019); Postgate, *Early Mesopotamia* (1992); Pournelle,
+  *Marshland of Cities* (2003); el plano del pueblo. **Inferido:** la estación (primavera, la siega) y el sitio de los talleres.
+- **Ojo:** Mesopotamia no se construye como microcosmos de área sino como `MobWorld_Mesopotamia` (`Build MobWorld Mesopotamia`), y ese constructor
+  **no llama** a `AreaMicrocosmos.Nature`: el mapa está hecho y cuenta para la prueba 115, pero no se verá hasta que el MobWorld siembre con él.

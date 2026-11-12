@@ -213,4 +213,45 @@ public static partial class MicroStoryMaps
         },
         todo = new[] { "en vivo: que el prado de las granjas quede al norte del Lignon y no en el río" },
     };
+
+    // ══ MESOPOTAMIA: URUK, primavera de ~3500 a. C. (la ciudad-insecto del amanecer de Mesopotamia) ═════════════════════════════════════════════
+    // La primera ciudad: el recinto del Eanna y, al oeste, la terraza de Anu con el Templo Blanco; los canales que cruzan la ciudad (el del Eanna y el
+    // del sur) y el viejo curso del Éufrates al oeste con sus cañaverales y tarays; fuera, al este, los campos de cebada en sazón y, más allá, el borde
+    // seco con espina de camello. Palmerales en las orillas, regaliz en los barbechos; asnos de carga y los rebaños de ovejas del templo.
+    static Map MapMesopotamia() => new Map
+    {
+        display = "Mesopotamia", place = "Uruk (Warka, Irak): el Eanna, la terraza de Anu, los canales y el Éufrates, primavera de ~3500 a. C.", status = Status.Hecho,
+        source = "Nissen, The Early History of the Ancient Near East (1988); Crüsemann et al. (eds.), Uruk: First City of the Ancient World (2019: el Eanna, el " +
+                 "Templo Blanco y los canales); Postgate, Early Mesopotamia (1992: cebada, palmeras y rebaños del templo); Pournelle, Marshland of Cities (2003); el plano del pueblo",
+        floor = Natural(
+            new Piece("escalera", Como, "las escaleras: la terraza escalonada de Anu, el zigurat temprano", "escalera"),
+            new Piece("lavabo", Como, "los lavabos: el Éufrates y los canales de riego", "lavabo")),
+        flora = new[]
+        {
+            // Los campos de cebada en sazón del este.
+            new Plant("Cebada en sazón", 620f, 420f, 12, 150f), new Plant("Cebada en sazón", 620f, -460f, 10, 150f),
+            // Los palmerales del canal del Eanna y de la orilla del Éufrates.
+            new Plant("Palmera datilera", 300f, 180f, 8, 80f), new Plant("Palmera datilera", -550f, -400f, 10, 100f),
+            // Los cañaverales y tarays del Éufrates, y su limo.
+            new Plant("Caña", -600f, 500f, 10, 80f), new Plant("Taray", -600f, -700f, 6, 100f), new Plant("Limo del Éufrates", -600f, 200f, 6, 60f),
+            // El regaliz de los barbechos, la espina de camello del borde seco y el adobe de la terraza de Anu.
+            new Plant("Regaliz silvestre", 500f, -150f, 6, 100f), new Plant("Espina de camello", 900f, 0f, 8, 150f), new Plant("Adobe", -260f, 80f, 4, 40f),
+        },
+        fauna = new[]
+        {
+            new Animal("Ant", "Hormiga segadora (Messor), recogiendo el grano de la cebada", 620f, 420f, 4, 0.8f, 150f),
+            new Animal("Grasshopper", "Langosta del desierto, en los campos del sur", 620f, -460f, 3, 5.5f, 150f),
+            new Animal("DungBeetle", "Escarabajo pelotero, tras los asnos de la calle del Eanna", 100f, -200f, 2, 2.5f, 50f),
+            new Animal("Scorpion", "Escorpión de cola gruesa, de noche en el borde seco", 900f, 0f, 2, 9f, 150f),
+            new Animal("Mantis", "Mantis, en los tarays del Éufrates", -600f, -700f, 2, 6f, 100f),
+            new Animal("Aphid", "Asno de carga (en el microcosmos, un pulgón de carga), en la calle del Eanna", 300f, -100f, 3, 1.6f, 80f),
+            new Animal("Aphid", "Oveja del rebaño del templo (en el microcosmos, un pulgón), en el rastrojo", 700f, -300f, 3, 1.2f, 120f),
+        },
+        buildings = new[]
+        {
+            new Building("Templo Blanco sobre la terraza de Anu", -260f, 80f), new Building("Recinto del Eanna", 100f, 0f), new Building("Canal del Eanna", 0f, 75f),
+            new Building("Embarcadero del Éufrates", -680f, 0f), new Building("Talleres de los alfareros", 150f, -200f), new Building("Campos de cebada", 620f, 420f),
+        },
+        todo = new[] { "en vivo: que los cañaverales queden en la orilla del Éufrates; ojo: el MobWorld de Mesopotamia aún no siembra con AreaMicrocosmos.Nature (ver doc)" },
+    };
 }
