@@ -323,3 +323,17 @@ escenario) y la duna donde volaron. El mapa sigue el plano de Dayton y pone la d
   *Chronicle of the Maya Kings and Queens* (2008); Ford y Nigh, *The Maya Forest Garden* (2015); el plano del pueblo. **Inferido:** el sitio de
   los solares con cacao (los huertos no se conservan).
 - **Menú:** `Build Microcosmos de historias: Pakal (Palenque)`.
+
+## Tanda 5: los famosos
+
+### Velliangiri (Sadhguru), sobre la Sala de Yoga
+**El Isha Yoga Center al pie de los montes Velliangiri, 24 de junio de 1999 (la consagración del Dhyanalinga).**
+- **El piso:** las esterillas son los cocotales y arrozales del llano; los cojines, las siete colinas de Velliangiri; las máquinas, roca.
+- **La flora (84):** en la falda y el monte, bambú, teca, hierba del monte sobre el granito, lantana en los caminos y la flor de la gloria; en la
+  aldea, cocotales, platanares, nims y el patio; el jazmín y un nim junto al Dhyanalinga.
+- **La fauna (20):** hormigas tejedoras en la teca y en los nims, abejas gigantes en las peñas, cigarras en el bambú, luciérnagas en el arroyo,
+  una mantis en la lantana; las vacas y los perros de la aldea (pulgones y cochinillas en el microcosmos).
+- **Edificios:** el Dhyanalinga, la sala de práctica, las cabañas, la aldea de Ikkarai Boluvampatti y los montes.
+- **Fuentes:** Isha Foundation, «Dhyanalinga»; Tamil Nadu Forest Department, Boluvampatti Range; OpenStreetMap («Isha Yoga Center»); el plano del
+  pueblo. **Inferido:** qué había construido en 1999 además del Dhyanalinga (la sala y las cabañas, aproximadas).
+- **Menú:** ya tenía uno propio, `Build Microcosmos de famosos/Sadhguru (Velliangiri, 1999)`.
