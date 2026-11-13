@@ -964,6 +964,20 @@ public static class DesireCatalog
 
     // La cría hambrienta se arrima al adulto vinculado más cercano (su madre/padre) o, si no lo tiene, se queda en su sitio
     // esperando la toma. Pasos cortos y con destino fijo (sin vagar por el recinto).
+    /// <summary>(2026-11-13, ronda 85) ¿Es una CRÍA con su madre (o padre) vinculada a ≤ <paramref name="within"/> m? La cría que pide la toma va
+    /// donde va su madre (MeetPoint): si la madre anda por la guarida, la cría la sigue, y eso no es «dar vueltas» (lobo #57, «AwaitFeeding»).</summary>
+    public static bool WithParent(Animal self, float within = 5f)
+    {
+        if (self == null || self.lifeStage != LifeStage.child) return false;
+        foreach (Bond b in self.bonds)
+        {
+            if (b == null || b.value <= 0f || Gone(b.target)) continue;
+            Animal o = (b.target as Component)?.GetComponentInParent<Animal>();
+            if (o != null && o != self && !o.death && o.lifeStage == LifeStage.adult && o.SpeciesName == self.SpeciesName && Vector3.Distance(o.transform.position, self.transform.position) <= within) return true;
+        }
+        return false;
+    }
+
     static void AwaitFeeding(Animal self)
     {
         if (self.nav == null || !self.nav.enabled || !self.nav.isOnNavMesh) return;
