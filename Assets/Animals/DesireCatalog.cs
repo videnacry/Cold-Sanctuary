@@ -711,6 +711,10 @@ public static class DesireCatalog
         // (2026-11-11, vivo62) CERCA, LA MADRE ESPERA y la cría va a ella: a ≤ 4 m las dos iban a donde estaba la otra y se cambiaban el sitio
         // (lobos «nurse» 16–17 m en 20 s para 0–1,9 m netos, con MeetPoint). Lejos, a medio camino.
         float dc = Vector3.Distance(self.transform.position, cub.transform.position);
+        // (2026-11-13, vivo75) …pero solo si la cría VIENE (se mueve): la que espera la toma quieta en casa (sin vínculo hacia la madre, AwaitFeeding
+        // sin madre) no venía nunca, y la madre la esperaba a 2,5–4 m para siempre. Con la cría quieta, la madre va hasta ella.
+        bool cubComing = cub.nav != null && cub.nav.isActiveAndEnabled && cub.nav.velocity.magnitude > 0.2f;
+        if (dc > 2.5f && dc <= 4f && !cubComing) { if (self.nav != null && self.nav.isOnNavMesh) Move(self, cub.transform.position); return; }
         if (dc > 2.5f && dc <= 4f) { if (self.nav != null && self.nav.isOnNavMesh) NavTrace.Reset(self, "nurse (espera a la cría)"); self.Loco?.Idle(1f); return; }
         if (dc <= 2.5f) { if (self.nav != null && self.nav.isOnNavMesh) NavTrace.Reset(self, "nurse (junto a la cría)"); FeedCub(self, cub); return; }
         if (self.nav != null && self.nav.isOnNavMesh) Move(self, MeetPoint(self.transform.position, cub.transform.position));
@@ -855,7 +859,10 @@ public static class DesireCatalog
             if (d < best) { best = d; parent = o.transform; }
         }
         Vector3 to = parent != null ? MeetPoint(self.transform.position, parent.position) : self.HomeOrigin;
-        if (Vector3.Distance(self.transform.position, parent != null ? parent.position : to) > (parent != null ? 2f : 1.5f)) Move(self, to);
+        // (2026-11-13, vivo75) Sin madre cerca, la toma se espera EN CASA, no en su punto exacto: las crías de la guarida de los lobos tenían el mismo
+        // HomeOrigin (-205,-190) y, a 1,5 m, se empujaban unas a otras alrededor de él sin llegar nunca («da vueltas en círculo (nurse)», 19–27 m
+        // en 20 s para 0–1,5 m netos, «deseo: SetDestination» hacia (-205,-190) cada pocos segundos). A ≤ 4 m de casa ya está en casa.
+        if (Vector3.Distance(self.transform.position, parent != null ? parent.position : to) > (parent != null ? 2f : 4f)) Move(self, to);
         else
         {
             NavTrace.Reset(self, "AwaitFeeding (pide la toma)"); self.Loco?.Idle(1f);
