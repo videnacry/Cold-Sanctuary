@@ -45,9 +45,10 @@ public class Carried : MonoBehaviour
         transform.SetParent(_oldParent, true);
         transform.SetPositionAndRotation(at, facing);
         if (_rb != null) { _rb.isKinematic = _kinematic; _rb.useGravity = _gravity; }
-        foreach (Behaviour b in _off) if (b != null) b.enabled = true;
-        NavMeshAgent ag = GetComponent<NavMeshAgent>();
-        if (ag != null && ag.enabled && NavMesh.SamplePosition(at, out NavMeshHit hit, 3f, NavMesh.AllAreas)) ag.Warp(hit.position);
+        // (2026-11-11) El agente, el último y con NavAgentSafe: encendido donde queda el cuerpo, sin NavMesh debajo, daba «Failed to create agent».
+        NavMeshAgent ag = GetComponent<NavMeshAgent>(); bool agWas = false;
+        foreach (Behaviour b in _off) if (b != null) { if (b == ag) { agWas = true; continue; } b.enabled = true; }
+        if (ag != null && agWas) { if (NavMesh.SamplePosition(at, out NavMeshHit hit, 3f, NavMesh.AllAreas)) transform.position = hit.position + Vector3.up * ag.baseOffset; NavAgentSafe.Enable(ag, "lo bajan"); }
         _off.Clear();
         Destroy(this);
     }

@@ -92,7 +92,7 @@ public class AereoLink : MonoBehaviour
         FlyingCarpet.Carry(g, false);
         if (g == null) yield break;
         g.transform.position = transform.position + Vector3.up;
-        if (agent != null) { agent.enabled = agentWas; if (agent.enabled && agent.isOnNavMesh) agent.Warp(g.transform.position); }
+        NavAgentSafe.Restore(agent, agentWas, "vuelve del muelle aéreo");
     }
 
     // KUSHAL, en persona.
