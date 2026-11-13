@@ -95,3 +95,21 @@ ya estaba tras `#if UNITY_EDITOR` (CubeCreature, CheapMaterials, los menús de l
   - le pone el primer sombreador bueno (Simple Lit, Lit, Unlit o Unlit/Color) con su color.
 - **Itinerario en medio de la pantalla**: en la web, «Tu jornada de hoy…» es una sola línea durante 5 s («Hoy: 09:00 … y N más · la jornada
   entera, en «Misiones y jornada»»). La lista entera está en esa ventana. La línea de la misión sigue abajo.
+
+## Tercera prueba (builds 45b2aa7 y ac560b9)
+- **El RefugeMarker seguía con el sombreador de error.** El material por defecto de las primitivas no va en el build web. Los cambios:
+  - En la web, el marcador lleva el mate **ámbar** de las misiones (`WebLigera.Mat`), copiado del material de
+    `Resources/WebLigeraShaders/URP_SimpleLit_opaco`: ese sombreador va seguro y no depende de `Shader.Find`.
+  - `CheapMaterials.Simple` y el arreglo de magenta también lo usan si `Shader.Find` falla.
+- **El «Hoy: …» no se iba.**
+  - Ahora sale una sola vez por día.
+  - En la web, `LessonPrompt` cuenta con el reloj real (con la pestaña en segundo plano o el juego frenado no se quedaba) y se borra al
+    vencer.
+  - Va **arriba** (al 14 % de la altura), sin tapar al jugador ni los joysticks.
+- **La intro de la historia no se cerraba.** El Intro (o la tecla) abría a ciegas el lanzador de hechizos, cuya barra la web oculta. Con el
+  lanzador abierto, el teclado del juego quedaba **mudo**: ni E, ni la E táctil, ni Intro.
+  - En la web el lanzador no existe (`SpellConsole` no se abre).
+  - La tarjeta se cierra con E (tecla o botón), con Intro o con un **toque en cualquier sitio**, y lo dice («Toca la pantalla…»).
+  - La E táctil va por `GameKeys.TapVirtual`, el mismo camino que la tecla.
+- **La misión WASD del santuario dentro del microcosmos**: con el «Microcosmos ligero» y Kushal dentro, ni la línea ni el marcador. En la web,
+  la línea va abajo entre los dos joysticks, a su tamaño.

@@ -199,6 +199,8 @@ public class PlayerWorkday : MonoBehaviour
         return n;
     }
 
+    static int _webShownDay = int.MinValue;   // (2026-11-13, web ligera) el día cuyo «Hoy: …» ya se enseñó: una vez por día
+
     void NewDay(WorkdayDirector wd, WorkRoster.Worker me)
     {
         _plan = wd.today;
@@ -211,7 +213,7 @@ public class PlayerWorkday : MonoBehaviour
         string items = string.Join(" · ", _records.Select(r => $"{r.a.start:00.0} h «{r.a.mission.title}» ({r.a.mission.area}{(r.a.firstTime ? ", nueva" : "")})"));
         Debug.Log($"[Jornada] Día {_plan.day} · itinerario de Kushal: {items} · 11:00 comida · 14:00 entrenamiento: {TrainingArea ?? "—"} · 16:00 libre.");
         if (_records.Count > 0)
-            if (WebLigera.Active) LessonPrompt.Show($"Hoy: {_records[0].a.start:00}:00 {_records[0].a.mission.title}{(_records.Count > 1 ? $" y {_records.Count - 1} más" : "")} · la jornada entera, en «Misiones y jornada».", null, 5f);   // (2026-11-13, web ligera: en el móvil, una línea y unos segundos; la lista va en la ventana)
+            if (WebLigera.Active) { if (_webShownDay != _plan.day) { _webShownDay = _plan.day; LessonPrompt.Show($"Hoy: {_records[0].a.start:00}:00 {_records[0].a.mission.title}{(_records.Count > 1 ? $" y {_records.Count - 1} más" : "")} · la jornada entera, en «Misiones y jornada».", null, 5f); } }   // (una vez por día) (2026-11-13, web ligera: en el móvil, una línea y unos segundos; la lista va en la ventana)
             else LessonPrompt.Show($"Tu jornada de hoy: {string.Join(" · ", _records.Select(r => $"{r.a.start:00}:00 {r.a.mission.title} ({r.a.mission.area})"))} · 11:00 comida · 14:00 {TrainingArea ?? "entrenamiento"} · 16:00 libre.", null, 12f);
         if (_records.Count > 0) KushalVoice.Reply(KushalVoice.Ctx.Mission);
     }

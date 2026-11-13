@@ -166,6 +166,7 @@ public static class WebLigera
     /// Devuelve cuántos materiales arregló.</summary>
     public static int FixBrokenShaders(string when)
     {
+        if (_fallback == null) { Material res = Resources.Load<Material>(SimpleLitResource); if (res != null && !Broken(res.shader)) _fallback = res.shader; }   // primero, el que va en el build seguro
         if (_fallback == null) foreach (string n in FallbackNames) { Shader s = Shader.Find(n); if (!Broken(s)) { _fallback = s; break; } }
         int fixedN = 0;
         foreach (Renderer r in Object.FindObjectsByType<Renderer>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
@@ -191,6 +192,24 @@ public static class WebLigera
     }
 
     static string Path(Transform t) { string p = t.name; for (Transform q = t.parent; q != null; q = q.parent) p = q.name + "/" + p; return p; }
+
+    /// <summary>El material de Simple Lit mate que el build web SÍ lleva (Resources/WebLigeraShaders, lo crea el menú de build): su sombreador
+    /// no depende de Shader.Find.</summary>
+    public const string SimpleLitResource = "WebLigeraShaders/URP_SimpleLit_opaco";
+    static readonly Dictionary<Color, Material> _mats = new Dictionary<Color, Material>();
+
+    /// <summary>Un material mate de color <paramref name="c"/> que no sale en magenta en la web: copia del de Resources; si no está, el de
+    /// <see cref="CheapMaterials.Opaque"/>. Uno por color.</summary>
+    public static Material Mat(Color c)
+    {
+        if (_mats.TryGetValue(c, out Material m) && m != null) return m;
+        Material src = Resources.Load<Material>(SimpleLitResource);
+        if (src == null || Broken(src.shader)) return _mats[c] = CheapMaterials.Opaque(c, "Web");
+        m = new Material(src) { name = "Web_" + ColorUtility.ToHtmlStringRGB(c) };
+        if (m.HasProperty("_BaseColor")) m.SetColor("_BaseColor", c);
+        m.color = c;
+        return _mats[c] = m;
+    }
 }
 
 /// <summary>Lo de la web ligera que va por fotogramas: hacer miembro a Kushal, entrar en el microcosmos y el botón de resolución.</summary>

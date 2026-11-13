@@ -30,6 +30,9 @@ public class SpellConsole : MonoBehaviour
 
     void Update()
     {
+        // (2026-11-13, web ligera) En el móvil no hay lanzador: su barra no se ve, y abierto a ciegas (con el Intro de una tarjeta) dejaba el
+        // teclado del juego MUDO (Capturing) y la intro de la historia sin poder cerrarse.
+        if (WebLigera.Active) { _open = false; Capturing = false; return; }
         // Un DIÁLOGO abierto secuestra Intro: el lanzador se oculta (y no se abre con el Intro que cierra el diálogo).
         if (GameKeys.DialogOpen || Time.frameCount - ChoiceDialog.ClosedFrame <= 1)
         {
