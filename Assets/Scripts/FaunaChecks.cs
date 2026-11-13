@@ -214,6 +214,15 @@ public class FaunaChecks : MonoBehaviour, ITestUnit
             TestProbe.Check("una sola comida a la vez: la segunda no arranca mientras va la primera, y después sí", firstRuns && !secondRuns && thirdRuns, $"{firstRuns}/{secondRuns}/{thirdRuns}");
         }
 
+        // ── (2026-11-14, ronda 93) CADA CRÍA ESPERA LA TOMA EN SU SITIO: a 2,5 m de casa y separadas entre sí (no todas en el mismo punto) ──
+        {
+            Vector3 home = new Vector3(-205f, 0f, -190f); float minGap = float.MaxValue; bool ring = true;
+            var spots = new List<Vector3>();
+            for (int id = 1000; id < 1006; id++) { Vector3 cs = DesireCatalog.CubWaitSpot(home, id); ring &= Mathf.Abs(Vector3.Distance(cs, home) - DesireCatalog.CubSpotRadius) < 0.01f; spots.Add(cs); }
+            for (int i = 0; i < spots.Count; i++) for (int j = i + 1; j < spots.Count; j++) minGap = Mathf.Min(minGap, Vector3.Distance(spots[i], spots[j]));
+            TestProbe.Check("las crías de una guarida esperan la toma cada una en su sitio (a 2,5 m de casa, ≥ 1 m entre ellas)", ring && minGap >= 1f, $"separación mínima {minGap:0.00} m");
+        }
+
         TestProbe.End();
     }
 }

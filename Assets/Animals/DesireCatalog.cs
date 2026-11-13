@@ -1012,6 +1012,16 @@ public static class DesireCatalog
         return false;
     }
 
+    /// <summary>(2026-11-14) El sitio de espera de una cría en su casa: a <see cref="CubSpotRadius"/> m de su HomeOrigin, en un ángulo propio (de su
+    /// id): dos crías de la misma guarida no esperan en el mismo punto.</summary>
+    public const float CubSpotRadius = 2.5f;
+    public static Vector3 CubWaitSpot(Animal self) => CubWaitSpot(self.HomeOrigin, self.GetHashCode());
+    public static Vector3 CubWaitSpot(Vector3 home, int id)
+    {
+        float a = (Mathf.Abs(id * 137) % 360) * Mathf.Deg2Rad;   // (137: reparte ids seguidos por todo el círculo)
+        return home + new Vector3(Mathf.Cos(a), 0f, Mathf.Sin(a)) * CubSpotRadius;
+    }
+
     static void AwaitFeeding(Animal self)
     {
         if (self.nav == null || !self.nav.enabled || !self.nav.isOnNavMesh) return;
@@ -1034,11 +1044,15 @@ public static class DesireCatalog
         bool atHome = false;
         if (parent == null)
         {
-            if (NavReach.Reachable(self, self.HomeOrigin, out Vector3 hs, 6f)) to = hs;
+            // (2026-11-14, ronda 93) CADA CRÍA, SU SITIO: todas esperaban la toma en el mismo punto de la guarida y se apartaban unas a otras a
+            // empujones (lobos #2, #22: «da vueltas» 16–23 m en 20 s junto a (-205,-190)). Ahora cada una tiene el suyo, a 2,5 m de casa en
+            // su propio ángulo (como el sitio de cada uno al volver a casa, GoHome).
+            Vector3 own = CubWaitSpot(self);
+            if (NavReach.Reachable(self, own, out Vector3 hs, 3f) || NavReach.Reachable(self, self.HomeOrigin, out hs, 6f)) to = hs;
             // (2026-11-13, ronda 78) Y una vez en casa, no sale por un empujón: hasta 7 m sigue «en casa» (#16: SetPath de 4,9–6,7 m al punto de
             // casa cada 2–7 s, 18–25 m en 20 s; los otros lobos de la guarida la apartaban y volvía).
             bool was = _homeWait.Contains(self);
-            atHome = was ? Flat(self.transform.position - self.HomeOrigin) <= 7f : Flat(self.transform.position - self.HomeOrigin) <= 4f || Flat(self.transform.position - to) <= 2f;
+            atHome = was ? Flat(self.transform.position - to) <= 3f : Flat(self.transform.position - to) <= 1f;
         }
         if (atHome) _homeWait.Add(self); else _homeWait.Remove(self);
         // (2026-11-13, ronda 78) La madre que SE VA (anda alejándose de la cría) no se persigue: la cría la llama quieta (#83: «AwaitFeeding»
