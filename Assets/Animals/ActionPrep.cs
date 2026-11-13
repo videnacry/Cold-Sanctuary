@@ -17,8 +17,15 @@ public class ActionPrep
         this.aniSpeed = pAniSpeed;
         this.energyCost = pEnergyCost/TimeController.timeController.TimeSpeedMinuteSecs/4;
     }
+    /// <summary>Pausas («idle») de otra conducta que no se aplicaron porque el animal llevaba un viaje de deseo en marcha (diagnóstico).</summary>
+    public static int IdleRefused;
     public void Prep(Animal pScript, float pAnimationTime)
     {
+        // (2026-11-13, vivo77) EL VIAJE EN MARCHA ES DUEÑO DE LA VELOCIDAD: «idle» pone nav.speed = 0, y lo llamaban conductas que no llevan el
+        // cuerpo (PostNatalManager con madres y crías, el Forager que sigue comiendo, un hábito): el animal quedaba con camino completo y
+        // «pedida 0,0» (osos, pingüinos, crías de la Cría; los animales no llevan WalkSpell, así que nada se la devolvía). Mientras el viaje
+        // vaya, la pausa de otro no se aplica; al acabar el viaje, quien lo lleva ya se para él solo.
+        if (pScript != null && pScript.ActsPrep != null && this == pScript.ActsPrep.idle && DesireCatalog.LiveTrip(pScript, out _)) { IdleRefused++; return; }
         // ROBUSTEZ: el sistema reproduce clips POR NOMBRE (ani.Play("Idle"/"Walk"/"Run"+especie)). Si el prefab no trae
         // Animator/Controller o le falta ese estado, NO reventamos (antes NPE-aba al primer movimiento): saltamos la
         // animación y seguimos con nav/exhaustion. Ver docs/unity-editor-manual.md §1.

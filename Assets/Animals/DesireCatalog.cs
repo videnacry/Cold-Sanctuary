@@ -334,7 +334,7 @@ public static class DesireCatalog
         turned = 0f;
         if (a == null) return false;
         Trip t = TripOf(a, "explore"); t.going = false; t.pauseUntil = 0f; t.lastDir = Vector3.right;
-        Stroll(a, "explore", () => a.transform.position, 1f, 3f, 3f);
+        Stroll(a, "explore", () => a.transform.position, 1f, 3f, 1e5f);   // (ronda 77: con 3 m, el salto de repuesto de PickHop sí encontraba sitio; a 100 km no hay)
         turned = Vector3.Angle(Vector3.right, t.lastDir);
         return RestingByChoice(a);
     }
@@ -447,13 +447,13 @@ public static class DesireCatalog
         int fz = FrozenStep(t, nav.hasPath && nav.speed > 0.05f && !nav.isStopped && !self.busy, nav.velocity.magnitude, Time.time);
         if (fz > 0)
         {
-            if (_frozenLogs < 40) { _frozenLogs++; Debug.Log($"[Fauna] «{self.name}» ({t.key}) quieto con camino {FrozenSeconds:0.0} s ({(fz == 1 ? "reinicia el agente" : "deja el viaje y prueba otro lado")}): {NavInfo(self)} · {NavTrace.Last(self)}."); }
+            if (_frozenLogs < 40) { _frozenLogs++; Debug.Log($"[Fauna] «{self.name}» ({t.key}) quieto con camino {FrozenSeconds:0.0} s ({(fz == 1 ? "vuelve a andar" : "deja el viaje y prueba otro lado")}): {NavInfo(self)} · {NavTrace.Last(self)}."); }
             if (fz == 1)
             {
+                // (2026-11-13, ronda 77) Sin Warp ni camino nuevo (86 reinicios y más atascados, 17 → 34): solo se le devuelve el paso de andar.
                 FrozenRestarts++; t.bestAt = Time.time;
-                NavTrace.Mark(self, "deseo: quieto con camino (Warp y otra vez)", self.transform.position);
-                nav.Warp(self.transform.position);
-                if (Move(self, t.goal)) return true;
+                self.Loco?.SetGait(false, 0.1f);
+                return true;
             }
             t.going = false; t.failUntil = Time.time + 4f; TripsStalled++; FrozenTrips++; TurnAway(self, t);
             NavTrace.Reset(self, "deseo: quieto con camino");
@@ -862,7 +862,16 @@ public static class DesireCatalog
         // (2026-11-13, vivo75) Sin madre cerca, la toma se espera EN CASA, no en su punto exacto: las crías de la guarida de los lobos tenían el mismo
         // HomeOrigin (-205,-190) y, a 1,5 m, se empujaban unas a otras alrededor de él sin llegar nunca («da vueltas en círculo (nurse)», 19–27 m
         // en 20 s para 0–1,5 m netos, «deseo: SetDestination» hacia (-205,-190) cada pocos segundos). A ≤ 4 m de casa ya está en casa.
-        if (Vector3.Distance(self.transform.position, parent != null ? parent.position : to) > (parent != null ? 2f : 4f)) Move(self, to);
+        // (2026-11-13, ronda 77) …y el «en casa» es el punto del NavMesh más cercano a ella: el HomeOrigin de la guarida (y = 0) no está sobre el NavMesh
+        // (la guarida lo talla), Move no tenía camino calculado y caía en SetDestination; el agente acababa a > 4 m y seguía dando vueltas
+        // (#85, #90: «deseo: SetDestination» hacia (-205,0,0,0,-190,0) cada 4–5 s, 19–28 m en 20 s para 0–1,9 m netos).
+        bool atHome = false;
+        if (parent == null)
+        {
+            if (NavReach.Reachable(self, self.HomeOrigin, out Vector3 hs, 6f)) to = hs;
+            atHome = Flat(self.transform.position - self.HomeOrigin) <= 4f || Flat(self.transform.position - to) <= 2f;
+        }
+        if (parent != null ? Vector3.Distance(self.transform.position, parent.position) > 2f : !atHome) Move(self, to);
         else
         {
             NavTrace.Reset(self, "AwaitFeeding (pide la toma)"); self.Loco?.Idle(1f);
