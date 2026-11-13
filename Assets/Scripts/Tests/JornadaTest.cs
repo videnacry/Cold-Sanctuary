@@ -638,7 +638,9 @@ public class JornadaTest : MonoBehaviour, ITestUnit, IFastGameTime
             // (2026-11-11) Ni el HÁBITO en marcha: pastar alrededor de la mata de camarina o ir y venir con un guijarro al nido es ir y volver a
             // propósito (osos y pingüinos de vivo62, «hábito: come bayas…», «lleva un guijarro a su nido»), como «merodear» en las personas.
             // (ronda 74) Ni PELEANDO: la pelea re-apunta al rival cada momento y se le da la vuelta (pingüinos «Locomotion.GoTo ← Fight»).
-            if (full && same && !flier && !marine && !a.busy && !a.fighting && !habit && desire != "habit" && FlatPath(tr) > 15f && net < 2f && reach < FlatPath(tr) * 0.35f) Add(tr.name, "da vueltas en círculo", $"{path:0} m en 20 s para {net:0.0} m netos ({tr.activity}) [{DesireCatalog.TripInfo(a)} · {NavTrace.Last(a)}]", false);   // (2026-11-11) con su viaje y el último que le cambió el camino
+            // (2026-11-13, ronda 78) Ni EXPLORANDO DE VERDAD: metas distintas que alcanza en la ventana, sin fallos ni metas repetidas (DesireCatalog.
+            // FreshExploring), son explorar un sitio pequeño (Polluelo_1, emperador #37, oso #45). Un salto fallido o volver a la misma meta, sí cuenta.
+            if (full && same && !flier && !marine && !a.busy && !a.fighting && !habit && desire != "habit" && !DesireCatalog.ExploringFreshly(a, 20f) && FlatPath(tr) > 15f && net < 2f && reach < FlatPath(tr) * 0.35f) Add(tr.name, "da vueltas en círculo", $"{path:0} m en 20 s para {net:0.0} m netos ({tr.activity}) [{DesireCatalog.TripInfo(a)} · {NavTrace.Last(a)}]", false);   // (2026-11-11) con su viaje y el último que le cambió el camino
             if (!(marine && inHabitat)) CheckBody(tr, p, riding, a.death || a.asleep || a.busy, false);   // (en su respiradero la foca asoma recta por la placa y al descansar se tumba: es su sitio, no un cuerpo dentro del hielo)
         }
 
