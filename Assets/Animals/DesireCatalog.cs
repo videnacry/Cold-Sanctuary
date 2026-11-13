@@ -353,13 +353,17 @@ public static class DesireCatalog
         foreach (var s in steps) r.Add(FrozenStep(t, s.wants, s.speed, s.time).ToString());
         return string.Join(",", r);
     }
-    /// <summary>(2026-11-13) OTRA DIRECCIÓN: tras un viaje que no avanzó o un paseo sin salto, el «hacia delante» del siguiente gira 90–270°
+    /// <summary>(2026-11-13) OTRA DIRECCIÓN: tras un viaje que no avanzó o un paseo sin salto, el «hacia delante» del siguiente gira 60–120° a un lado
     /// (no vuelve a probar contra lo mismo).</summary>
     static void TurnAway(Animal self, Trip t)
     {
         Vector3 f = t.lastDir.sqrMagnitude > 0.5f ? t.lastDir : self.transform.forward; f.y = 0f;
         if (f.sqrMagnitude < 1e-4f) f = Vector3.forward;
-        t.lastDir = (Quaternion.Euler(0f, UnityEngine.Random.Range(90f, 270f), 0f) * f.normalized).normalized;
+        // (2026-11-13, ronda 90) DE LADO, NO DE VUELTA: con 90–270° el siguiente salto podía volver justo por donde vino, y con el vigilante de
+        // viajes (más viajes dados por acabados) los lobos y el emperador iban y venían en un sitio pequeño («da vueltas», 4 en la ronda 90). Ahora
+        // gira 60–120° a un lado u otro: prueba otra dirección sin deshacer el camino.
+        float turn = UnityEngine.Random.Range(60f, 120f) * (UnityEngine.Random.value < 0.5f ? -1f : 1f);
+        t.lastDir = (Quaternion.Euler(0f, turn, 0f) * f.normalized).normalized;
     }
     /// <summary>(Pruebas) Un paseo «explore» cuyo salto nunca vale (siempre su propio sitio): ¿descansa a propósito y cambia de dirección?</summary>
     public static bool StrollWithoutHopForTest(Animal a, out float turned)

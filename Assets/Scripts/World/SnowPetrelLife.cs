@@ -50,6 +50,8 @@ public class SnowPetrelLife : MonoBehaviour
     float _nestRetry;
     // (2026-11-11, vivo73) EN EL NIDO, ENCIMA: el nido es un punto de la repisa a ras de su roca, y el pájaro se posaba con el CENTRO del cuerpo en él:
     // los pies quedaban a y −0,38 («en el agua sin ser acuático», petreles en (−65,0,−215)). Como en el iceberg (PerchClearance), el cuerpo encima.
+    /// <summary>Altura (m) a la que pasa sobre el banco de peces o kril para coger comida de la superficie (por encima del agua, y = 0).</summary>
+    public const float SurfaceDip = 0.3f;
     Vector3 NestSeat => _nest.transform.position + Vector3.up * (Iceberg.PerchClearance + 0.25f);
     public void RestNow(Iceberg on = null) { _nextRest = 0f; if (on != null) _berg = on; }
     /// <summary>¿Está criando (pollo, huevo que incubar, su pollo en el nido o en celo)? Entonces va al nido y no descansa en los icebergs.</summary>
@@ -80,7 +82,10 @@ public class SnowPetrelLife : MonoBehaviour
             Unperch();
             Swarm krill = Swarm.Nearest(transform.position, SwarmKind.Krill), fish = Swarm.Nearest(transform.position, SwarmKind.Fish);
             Swarm s = krill == null ? fish : fish == null ? krill : (krill.transform.position - transform.position).sqrMagnitude <= (fish.transform.position - transform.position).sqrMagnitude ? krill : fish;
-            if (s != null) { Vector3 at = s.transform.position; at.y = Mathf.Max(at.y, -1f); Fly(at, false); return; }
+            // (2026-11-13, ronda 90) Coge el alimento DE LA SUPERFICIE, en vuelo o posado un instante: no se mete en el agua. Con el destino a
+            // y = −1 los petreles bajaban hasta meter las patas en el mar («en el agua sin ser acuático», pies a −1,00 en (−66,−1,−215), tres a la vez
+            // sobre el mismo banco). El petrel níveo casi nunca se posa en el mar; se queda a 0,3 m sobre el agua.
+            if (s != null) { Vector3 at = s.transform.position; at.y = Mathf.Max(at.y, SurfaceDip); Fly(at, false); return; }
         }
         if (_perched)
         {
