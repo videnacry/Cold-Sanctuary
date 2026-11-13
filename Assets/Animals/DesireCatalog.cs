@@ -504,7 +504,9 @@ public static class DesireCatalog
         // «esquinas 0» y «deseada» 3–15: ninguno andaba y el agente no lo recalculaba solo. Se le vuelve a pedir el camino (cada 0,5 s como mucho),
         // y eso no cuenta como estar quieto (el tope de 5 s sin acercarse sigue valiendo).
         bool repathed = false;
-        if (nav.hasPath && Time.time >= t.reissueAt && (nav.isPathStale || nav.path.corners.Length == 0))
+        // (ronda 85) Solo si NO anda y no está ya calculando: pedirlo otra vez cada 0,5 s mientras estaba «pendiente» volvía a empezar el cálculo
+        // y el agente no salía nunca (reno #34: «camino True, pendiente True … deseada 5, velocidad 0»).
+        if (nav.hasPath && !nav.pathPending && nav.velocity.magnitude < 0.1f && Time.time >= t.reissueAt && (nav.isPathStale || nav.path.corners.Length == 0))
         {
             t.reissueAt = Time.time + 0.5f; t.frozenSince = -1f; StaleRepaths++;
             self.Loco?.SetGait(false, 0.1f);
@@ -717,7 +719,7 @@ public static class DesireCatalog
     /// <summary>Largo de cada tramo del camino a casa (m).</summary>
     public const float HomeLeg = 35f;
     /// <summary>Tramos de vuelta a casa empezados (diagnóstico).</summary>
-    public static int HomeLegs;
+    public static int HomeLegs, StraightLegs;
     /// <summary>(2026-11-13) El punto a <paramref name="d"/> m a lo largo de una polilínea (false si es más corta).</summary>
     public static bool PointAlong(Vector3[] corners, float d, out Vector3 at)
     {
@@ -749,6 +751,22 @@ public static class DesireCatalog
         if (Flat(spot - self.transform.position) > HomeLeg && Time.time >= t.failUntil && NavReach.Reachable(self, spot, out Vector3 full)
             && NavReach.LastPathTo(self, full, out NavMeshPath fp) && PointAlong(fp.corners, HomeLeg, out Vector3 leg) && NavReach.Reachable(self, leg, out Vector3 legAt))
         { HomeLegs++; Walk(self, t, legAt); return; }
+        // (2026-11-13, ronda 85) Y LEJOS, NUNCA DE UNA VEZ: si el tramo por el camino no sale (camino que no vale, cálculo lento), un tramo en LÍNEA
+        // RECTA hacia casa (o algo desviado) a HomeLeg m. Antes se caía en GoTo(casa entera): SetDestination a 150 m quedaba «pendiente» > 3 s y
+        // fallaba, una vez y otra (zorro #38: «camino False, pendiente True … destino a 154 m», 116 viajes; zorros y bueyes atascados).
+        if (Flat(spot - self.transform.position) > HomeLeg)
+        {
+            if (Time.time < t.failUntil) return;
+            Vector3 dir = spot - self.transform.position; dir.y = 0f; dir.Normalize();
+            foreach (float ang in new[] { 0f, 25f, -25f, 50f, -50f })
+            {
+                Vector3 p = self.transform.position + Quaternion.Euler(0f, ang, 0f) * dir * HomeLeg;
+                if (NavReach.Reachable(self, p, out Vector3 sAt, 8f) && Flat(sAt - self.transform.position) > 10f) { HomeLegs++; StraightLegs++; Walk(self, t, sAt); return; }
+            }
+            _homeBlocked[self] = Time.time + 90f;
+            if (_homeLogs++ < 20) Debug.Log($"[Fauna] «{self.name}» no encuentra tramo hacia casa desde ({self.transform.position.x:0},{self.transform.position.z:0}) (hogar en ({self.HomeOrigin.x:0},{self.HomeOrigin.z:0}), a {Flat(spot - self.transform.position):0} m): lo deja estar un rato.");
+            return;
+        }
         if (GoTo(self, "homebound", spot)) return;
         if (Time.time < t.failUntil) return;   // (se acaba de atascar: lo reintenta; no es que no haya camino)
         if (Time.time >= t.failUntil && NavReach.PartialEnd(self, spot, out Vector3 end) && Flat(end - self.transform.position) > 2f) { Walk(self, t, end); return; }
