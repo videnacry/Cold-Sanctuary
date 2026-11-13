@@ -72,6 +72,10 @@ public class MarineLife : MonoBehaviour
     }
 
     /// <summary>¿Hay hielo (o algo sólido: un edificio sobre el hielo) encima del mar en (x, z)?</summary>
+    /// <summary>(2026-11-13, ronda 82) Un destino de nado con hielo encima va por debajo de su cara inferior: a −1 m quedaba DENTRO de la placa del
+    /// hielo fijo (0 a −1,5 m) y la foca que exploraba se quedaba allí («Seal dentro de Hielo_fijo» en (52,−1,6)).</summary>
+    Vector3 BelowIce(Vector3 t) { if (IceAbove(t) && t.y > UnderIceY) t.y = UnderIceY; return t; }
+
     public static bool IceAbove(Vector3 p)
     {
         int n = Physics.RaycastNonAlloc(new Vector3(p.x, 8f, p.z), Vector3.down, _hits, 14f, ~0, QueryTriggerInteraction.Ignore);
@@ -144,7 +148,7 @@ public class MarineLife : MonoBehaviour
                 _onIce = false; _restCooldown = Time.time + Random.Range(40f, 90f);
                 if (_haul != null) { _haul.Release(_a); _haul = null; _beach = Vector3.zero; }
                 if (_visitor != null) { transform.SetParent(_parent, true); _target = _visitor.berg.Approach; _target.y = SwimY; }
-                else { _target = Lagoon + Random.insideUnitSphere * 10f; _target.y = SwimY; }
+                else { _target = Lagoon + Random.insideUnitSphere * 10f; _target.y = SwimY; _target = BelowIce(_target); }
             }
             else if ((night || (_a.hungry < -0.2f && Time.time > _restCooldown)) && _a.lifeStage != LifeStage.child)
             {
@@ -226,7 +230,7 @@ public class MarineLife : MonoBehaviour
         {
             Vector2 r = Random.insideUnitCircle * LagoonRadius;
             if (_visitor != null && _visitor.berg != null) r = Random.insideUnitCircle.normalized * _visitor.berg.SwimRadius;   // en corro, fuera de la quilla
-            _target = new Vector3(Home.x + r.x, SwimY - Random.Range(0f, 2.5f), Home.z + r.y);
+            _target = BelowIce(new Vector3(Home.x + r.x, SwimY - Random.Range(0f, 2.5f), Home.z + r.y));
             _nextPick = Time.time + Random.Range(8f, 18f);
         }
         Move(_target, speed * 0.6f, false);
