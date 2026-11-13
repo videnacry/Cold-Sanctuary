@@ -101,11 +101,11 @@ public class FaunaChecks : MonoBehaviour, ITestUnit
         {
             DesireCatalog.StartTripForTest(w, "explore", goal);
             TestProbe.Check("un paseo recién empezado es un viaje en marcha", DesireCatalog.LiveTrip(w, out string k0) && k0 == "explore");
-            TestProbe.Check("el hábito cede ante un viaje de otro deseo", Habit.MustYield(w));
+            TestProbe.Check("[CV-05] el hábito cede ante un viaje de otro deseo", Habit.MustYield(w));
             // (2026-11-13, vivo77) La pausa de OTRA conducta (Forager comiendo, PostNatalManager, un hábito) no le quita la velocidad a un viaje en
             // marcha: «Idle» ponía nav.speed = 0 y el animal quedaba con camino y «pedida 0,0» (osos, pingüinos, crías).
             w.Loco?.Idle(1f);
-            TestProbe.Check("la pausa de otra conducta no deja sin velocidad a un viaje en marcha", w.nav.speed > 0.05f && DesireCatalog.LiveTrip(w, out _), $"velocidad pedida {w.nav.speed:0.0}");
+            TestProbe.Check("[CV-04] la pausa de otra conducta no deja sin velocidad a un viaje en marcha", w.nav.speed > 0.05f && DesireCatalog.LiveTrip(w, out _), $"velocidad pedida {w.nav.speed:0.0}");
             DesireCatalog.Handover(w, "eat");
             TestProbe.Check("si gana otro deseo, el paseo deja de ser suyo (sin viaje en marcha)", !DesireCatalog.LiveTrip(w, out _));
             w.nav.ResetPath();

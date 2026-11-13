@@ -11,12 +11,13 @@ using UnityEngine;
 public static class TestResults
 {
     public const string Path = "Logs/test-results.tsv";
-    public const string Header = "grupo\tunidad\tpass\tfail\tsegundos\testado\tfallos";
+    // «casos» (2026-11-13, sistema de QA): los IDs de caso de los checks de la unidad, «CV-03 OK, CV-07 FAIL». Va al final para no mover las otras.
+    public const string Header = "grupo\tunidad\tpass\tfail\tsegundos\testado\tfallos\tcasos";
 
     public class Row
     {
-        public int group; public string unit = ""; public int pass, fail; public float seconds; public string status = ""; public List<string> fails = new List<string>();
-        public string ToTsv() => $"{group}\t{Clean(unit)}\t{pass}\t{fail}\t{seconds.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture)}\t{status}\t{string.Join(" | ", fails.Select(Clean))}";
+        public int group; public string unit = ""; public int pass, fail; public float seconds; public string status = ""; public List<string> fails = new List<string>(); public string cases = "";
+        public string ToTsv() => $"{group}\t{Clean(unit)}\t{pass}\t{fail}\t{seconds.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture)}\t{status}\t{string.Join(" | ", fails.Select(Clean))}\t{Clean(cases)}";
     }
 
     static string Clean(string s) => (s ?? "").Replace('\t', ' ').Replace('\n', ' ').Replace('\r', ' ');
@@ -59,6 +60,7 @@ public static class TestResults
         int.TryParse(c[2], out r.pass); int.TryParse(c[3], out r.fail);
         float.TryParse(c[4], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out r.seconds);
         if (c.Length > 6 && c[6].Length > 0) r.fails.AddRange(c[6].Split(new[] { " | " }, System.StringSplitOptions.None));
+        if (c.Length > 7) r.cases = c[7].Trim();
         return r;
     }
 }
