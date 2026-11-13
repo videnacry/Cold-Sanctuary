@@ -72,7 +72,11 @@ public static class PopulationPlan
     public static int MinOf(string species) => species != null && MinViable.TryGetValue(species, out int m) ? m : 2;
 
     /// <summary>El total de animales para <paramref name="humans"/> humanos: K × humanos.</summary>
-    public static int TotalFor(int humans) => Mathf.Max(0, AnimalsPerHuman * humans);
+    public static int TotalFor(int humans) => Mathf.Min(Mathf.Max(0, AnimalsPerHuman * humans), AnimalCap > 0 ? AnimalCap : int.MaxValue);
+
+    /// <summary>(2026-11-13, web ligera) TOPE DURO de animales por santuario (0 = sin tope). La web para el móvil lo pone en ~30
+    /// (<see cref="WebLigera.AnimalCap"/>): la escena trae los de K × humanos y <see cref="WebLigera"/> quita los que sobran al cargar.</summary>
+    public static int AnimalCap = 0;
 
     /// <summary>LOS HUMANOS QUE VIVEN en un santuario: los de la jornada, por su casa de hoy; los demás de la lista (y sin jornada, todos), por su casa de inicio
     /// o su poder (<see cref="SanctuaryPlacement"/>).</summary>

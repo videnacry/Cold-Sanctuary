@@ -130,7 +130,8 @@ public class AereoLink : MonoBehaviour
         AsyncOperation op = null;
         if (!SceneManager.GetSceneByName(AereoRule.Scene).isLoaded)
         {
-            if (Application.CanStreamedLevelBeLoaded(AereoRule.Scene)) op = SceneManager.LoadSceneAsync(AereoRule.Scene, LoadSceneMode.Additive);
+            if (WebLigera.Active) Debug.Log("[Aéreo] Web ligera: sin el santuario aéreo (no se carga su escena).");
+            else if (Application.CanStreamedLevelBeLoaded(AereoRule.Scene)) op = SceneManager.LoadSceneAsync(AereoRule.Scene, LoadSceneMode.Additive);
             else Debug.LogWarning($"[Aéreo] Falta {AereoRule.Scene} en Build Settings: Tools/Cold Sanctuary/Build Santuario Aéreo.");
         }
         float w = 0f;
