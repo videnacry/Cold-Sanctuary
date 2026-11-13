@@ -278,6 +278,6 @@ public class PlayableCreature : MonoBehaviour, IInteractable
 
     void Tint(Color c)
     {
-        if (_renderer != null) _renderer.material.color = c;
+        if (_renderer != null) _renderer.sharedMaterial = CheapMaterials.Opaque(c);   // (2026-11-11, #152: el material compartido mate de ese color, no una copia «Lit (Instance)» brillante)
     }
 }

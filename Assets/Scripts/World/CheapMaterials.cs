@@ -93,27 +93,32 @@ public static class CheapMaterials
         UnityEngine.SceneManagement.SceneManager.sceneLoaded += Loaded;
         for (int i = 0; i < UnityEngine.SceneManagement.SceneManager.sceneCount; i++) CheapenScene(UnityEngine.SceneManagement.SceneManager.GetSceneAt(i));
     }
-    static void Loaded(UnityEngine.SceneManagement.Scene s, UnityEngine.SceneManagement.LoadSceneMode m) => CheapenScene(s);
+    static void Loaded(UnityEngine.SceneManagement.Scene s, UnityEngine.SceneManagement.LoadSceneMode m) => CheapenScene(s, true);   // (con los dueños en el registro: ronda 72)
 
     public static int Cheapened { get; private set; }
-    public static int CheapenScene(UnityEngine.SceneManagement.Scene s)
+    public static int CheapenScene(UnityEngine.SceneManagement.Scene s) => CheapenScene(s, false);
+    /// <summary><paramref name="tellOwners"/>: dice de quién eran los que convierte (el barrido de después de cargar: ronda 72, «Lit» y «Lit (Instance)» sin dueño conocido).</summary>
+    public static int CheapenScene(UnityEngine.SceneManagement.Scene s, bool tellOwners)
     {
         if (!s.IsValid() || !s.isLoaded) return 0;
-        var done = new HashSet<Material>(); int n = 0;
+        var done = new HashSet<Material>(); int n = 0; var owners = tellOwners ? new List<string>() : null;
         foreach (GameObject root in s.GetRootGameObjects())
             foreach (Renderer r in root.GetComponentsInChildren<Renderer>(true))
                 foreach (Material m in r.sharedMaterials)
                 {
                     if (m == null || !done.Add(m) || Expensive(m) == null) continue;
+                    if (owners != null && owners.Count < 12) owners.Add($"{m.name} en {Path(r.transform)}");
 #if UNITY_EDITOR
                     if (UnityEditor.EditorUtility.IsPersistent(m)) { ReplaceWithClone(r, m); n++; continue; }   // (2026-11-11) un asset que no se puede tocar (los de dentro de un FBX: «Skin», «Teshirt» de Kushal): en este renderer, una copia mate
 #endif
                     MakeCheap(m); n++;
                 }
         Cheapened += n;
-        if (n > 0) Debug.Log($"[Rendimiento] {s.name}: {n} materiales pasados a Simple Lit mate (de {done.Count} distintos).");
+        if (n > 0) Debug.Log($"[Rendimiento] {s.name}: {n} materiales pasados a Simple Lit mate (de {done.Count} distintos){(owners != null && owners.Count > 0 ? " — " + string.Join("; ", owners) : "")}.");
         return n;
     }
+
+    static string Path(Transform t) { string p = t.name; for (Transform u = t.parent; u != null && p.Length < 120; u = u.parent) p = u.name + "/" + p; return p; }
 
     // (2026-11-11, #152) COPIAS MATES de los assets que no se pueden cambiar (los materiales de dentro de un modelo FBX): una por material.
     static readonly Dictionary<Material, Material> _clones = new Dictionary<Material, Material>();
@@ -127,12 +132,14 @@ public static class CheapMaterials
 
     /// <summary>(2026-11-11, #152) LAS COPIAS DE DESPUÉS: los materiales que se crean en juego al vestir o colorear a la gente y a los animales
     /// («Lit (Instance)», «Gris», «DarkGreen» de la ronda 70) no existían al cargar la escena. Cada 15 s se pasan a mate los de los cuerpos (Anima).</summary>
-    public static int CheapenBodies()
+    static readonly HashSet<Anima> _bodiesDone = new HashSet<Anima>();
+    public static int CheapenBodies(bool onlyNew = false)
     {
         int n = 0;
         foreach (Anima a in Object.FindObjectsByType<Anima>(FindObjectsSortMode.None))
         {
             if (a == null) continue;
+            if (onlyNew && !_bodiesDone.Add(a)) continue;   // (cada cuerpo, una vez: sus materiales ya quedaron mates)
             foreach (Renderer r in a.GetComponentsInChildren<Renderer>(true))
                 foreach (Material m in r.sharedMaterials)
                 {

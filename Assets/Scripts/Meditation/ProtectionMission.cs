@@ -101,7 +101,7 @@ public class ProtectionMission : MonoBehaviour
             go.transform.position = transform.position;
             go.transform.localScale = Vector3.one * 0.8f;
             var col = go.GetComponent<Collider>(); if (col != null) Destroy(col);
-            var rend = go.GetComponent<Renderer>(); if (rend != null) rend.material.color = wardColor;
+            var rend = go.GetComponent<Renderer>(); if (rend != null) rend.sharedMaterial = CheapMaterials.Opaque(wardColor);
             _ward = go.AddComponent<ProtectMob>();
         }
 
@@ -139,7 +139,7 @@ public class ProtectionMission : MonoBehaviour
             go.transform.position = pos;
             go.transform.localScale = Vector3.one * 0.6f;
             var col = go.GetComponent<Collider>(); if (col != null) Destroy(col);
-            var rend = go.GetComponent<Renderer>(); if (rend != null) rend.material.color = attackerColor;
+            var rend = go.GetComponent<Renderer>(); if (rend != null) rend.sharedMaterial = CheapMaterials.Opaque(attackerColor);   // (2026-11-11, #152: el material compartido mate de ese color, no una copia «Lit (Instance)» brillante)
             mob = go.AddComponent<WardAttackerMob>();
         }
 

@@ -109,7 +109,7 @@ public static class DesireCatalog
                 }
                 // JUNTO A LA PAREJA: el cortejo es ir y venir a su lado, con pausas (antes, a < 2 m, el paseo al azar de 8 m
                 // lo alejaba y el «ir hacia ella» lo traía: daba vueltas en círculo, 16 m en 20 s para 0,3 m netos).
-                if (mate != null && md <= 2.5f) { Transform mt = mate.transform; Stroll(self, "cortejo", () => mt.position + Ring(1f, 2.5f), 1.5f, 3.5f, 0.6f); return; }
+                if (mate != null && md <= 2.5f) { Transform mt = mate.transform; Stroll(self, "cortejo", () => mt.position + Ring(1.5f, 3f), 1.5f, 3.5f, 1.5f); return; }   // (ronda 72: el mínimo de un salto, 1,5 m)
                 if (mate != null && GoTo(self, "mate", mate.transform.position)) return;
                 if (mate == null)
                 {
@@ -480,21 +480,43 @@ public static class DesireCatalog
         if (was) { t.pauseUntil = Time.time + UnityEngine.Random.Range(pauseMin, pauseMax); self.Loco?.Idle(t.pauseUntil - Time.time); }
         if (Time.time < t.pauseUntil) return;
         Vector3 here = self.transform.position;
+        if (PickHop(self, pick, minHop, out Vector3 hop)) { Walk(self, t, hop); return; }
+        StrollNoPick++; t.pauseUntil = Time.time + 1f;   // nada alcanzable ahora: lo reintenta en un momento
+        if (_noPickLogs < 30 && self.nav != null) { _noPickLogs++; Debug.Log($"[Fauna] «{self.name}» ({key}) no encuentra adónde ir en {here}: agente tipo {self.nav.agentTypeID}, área {self.nav.areaMask}, nextPosition a {(self.nav.nextPosition - here).magnitude:0.00} m, velocidad {self.nav.speed:0.0}, en NavMesh {self.nav.isOnNavMesh}."); }
+    }
+
+    /// <summary>(2026-11-11, ronda 72) EL SALTO DE UN PASEO: a ≥ <paramref name="minHop"/> (nunca menos de 1,5 m), con camino completo y sin rodeo.
+    /// Antes, si los saltos largos no valían, se aceptaba uno «corto» desde 0,8 m: la meta quedaba a 0,5–2 m («EmperorPenguin (explore) … meta en
+    /// su sitio», un oso a 1,6 m, un pingüino a 1,8 m) y el viaje «llegaba» al momento, una y otra vez. Ahora el corto también respeta el mínimo;
+    /// si nada vale, no hay salto (pausa y se reintenta).</summary>
+    static bool PickHop(Animal self, Func<Vector3> pick, float minHop, out Vector3 at)
+    {
+        at = self.transform.position; minHop = Mathf.Max(minHop, 1.5f);
+        Vector3 here = self.transform.position;
         for (int i = 0; i < 8; i++)
         {
             Vector3 p = pick();
             if (Flat(p - here) < minHop) continue;
-            if (NavReach.Reachable(self, p, out Vector3 at) && Flat(at - here) >= minHop && !Detour(self, at, here)) { Walk(self, t, at); return; }
+            if (NavReach.Reachable(self, p, out at) && Flat(at - here) >= minHop && !Detour(self, at, here)) return true;
         }
-        // Al borde de una colonia sobre el hielo o en un recinto pequeño, los saltos largos caen en el agua o tras la valla: saltos cortos.
+        // Al borde de una colonia sobre el hielo o en un recinto pequeño, los saltos largos caen en el agua o tras la valla: saltos más cortos, pero
+        // no por debajo del mínimo.
         for (int i = 0; i < 8; i++)
         {
-            Vector2 r = UnityEngine.Random.insideUnitCircle.normalized * UnityEngine.Random.Range(Mathf.Max(0.9f, minHop * 0.5f), Mathf.Max(2f, minHop));
+            Vector2 r = UnityEngine.Random.insideUnitCircle.normalized * UnityEngine.Random.Range(minHop, Mathf.Max(minHop * 1.5f, 3f));
             Vector3 p = here + new Vector3(r.x, 0f, r.y);
-            if (NavReach.Reachable(self, p, out Vector3 at) && Flat(at - here) >= 0.8f && !Detour(self, at, here)) { Walk(self, t, at); return; }
+            if (NavReach.Reachable(self, p, out at) && Flat(at - here) >= minHop && !Detour(self, at, here)) return true;
         }
-        StrollNoPick++; t.pauseUntil = Time.time + 1f;   // nada alcanzable ahora: lo reintenta en un momento
-        if (_noPickLogs < 30 && self.nav != null) { _noPickLogs++; Debug.Log($"[Fauna] «{self.name}» ({key}) no encuentra adónde ir en {here}: agente tipo {self.nav.agentTypeID}, área {self.nav.areaMask}, nextPosition a {(self.nav.nextPosition - here).magnitude:0.00} m, velocidad {self.nav.speed:0.0}, en NavMesh {self.nav.isOnNavMesh}."); }
+        at = here; return false;
+    }
+
+    /// <summary>(Pruebas) La meta que elegiría el paseo «explore» de un adulto: a ≥ 3 m y con camino completo.</summary>
+    public static bool ExploreGoalForTest(Animal a, out Vector3 at)
+    {
+        at = a != null ? a.transform.position : Vector3.zero;
+        if (a == null || a.nav == null || !a.nav.isOnNavMesh) return false;
+        float step = Mathf.Clamp(a.HomeRadius * 0.08f, 4f, 10f); Transform tr = a.transform;
+        return PickHop(a, () => LifeStage.WanderTarget(tr.position, tr.forward, step, UnityEngine.Random.insideUnitCircle), 3f, out at);
     }
 
     // ¿El camino hasta ese sitio da un RODEO (más del doble de la distancia recta + 1,5 m)? En el recinto de la Cría (la guarida,
@@ -519,12 +541,12 @@ public static class DesireCatalog
         if (self.lifeStage == LifeStage.child)
         {
             Transform ct = self.transform;
-            Stroll(self, key, () => ct.position + Ring(1f, 2.5f), 4f, 8f, 0.8f);
+            Stroll(self, key, () => ct.position + Ring(1.5f, 3f), 4f, 8f, 1.5f);   // (ronda 72: ≥ 1,5 m)
             return;
         }
         float step = Mathf.Clamp(self.HomeRadius * 0.08f, 4f, 10f);
         Transform tr = self.transform;
-        Stroll(self, key, () => LifeStage.WanderTarget(tr.position, tr.forward, step, UnityEngine.Random.insideUnitCircle), 1f, 3f, 2f);
+        Stroll(self, key, () => LifeStage.WanderTarget(tr.position, tr.forward, step, UnityEngine.Random.insideUnitCircle), 1f, 3f, 3f);   // (ronda 72: ≥ 3 m)
     }
 
     // Su zona de casa: dentro, «volver a casa» no se siente.

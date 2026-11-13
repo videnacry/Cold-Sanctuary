@@ -50,7 +50,7 @@ public class EinsteinMassLesson : PhysicsLesson
         Destroy(g.GetComponent<Collider>());
         g.name = name; g.transform.SetParent(pan, false);
         g.transform.localPosition = offset + Vector3.up * (0.1f + size * 0.5f); g.transform.localScale = Vector3.one * size;
-        Renderer r = g.GetComponent<Renderer>(); r.material.color = c;
+        Renderer r = g.GetComponent<Renderer>(); r.sharedMaterial = CheapMaterials.Opaque(c);   // (2026-11-11, #152: el material compartido mate de ese color, no una copia «Lit (Instance)» brillante)
         var list = new System.Collections.Generic.List<Transform>(_pieces) { g.transform };
         _pieces = list.ToArray();
     }

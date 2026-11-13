@@ -170,8 +170,7 @@ public class HungryVisitorMob : MeditationMob, IInteractable, IHungryVisitor
         g.transform.localPosition = lp;
         g.transform.localScale = size;
         Renderer r = g.GetComponent<Renderer>();
-        r.material.color = c;
-        if (r.material.HasProperty("_BaseColor")) r.material.SetColor("_BaseColor", c);
+        r.sharedMaterial = CheapMaterials.Opaque(c);   // (2026-11-11, #152: el material compartido mate de ese color, no una copia «Lit (Instance)» brillante)
     }
 }
 

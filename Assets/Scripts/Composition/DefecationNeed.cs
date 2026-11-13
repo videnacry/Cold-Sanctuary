@@ -126,8 +126,7 @@ public class DefecationNeed : MonoBehaviour
         if (r != null)
         {
             Color c = new Color(0.32f, 0.22f, 0.1f);
-            r.material.color = c;
-            if (r.material.HasProperty("_BaseColor")) r.material.SetColor("_BaseColor", c);
+            r.sharedMaterial = CheapMaterials.Opaque(c);   // (2026-11-11, #152: el material compartido mate de ese color, no una copia «Lit (Instance)» brillante)
         }
         return g;
     }

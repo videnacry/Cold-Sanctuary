@@ -22,6 +22,9 @@ public class CheapMaterialsSweeper : MonoBehaviour
     {
         if (Time.unscaledTime < _next) return;
         _next = Time.unscaledTime + 15f;
-        CheapMaterials.CheapenBodies();
+        // (2026-11-11) Solo los cuerpos NUEVOS (nacimientos, clones de la Magnate, crías): sus cubos se hacen con primitivas (el «Lit» por defecto) y
+        // algunos se colorean en juego. Las escenas enteras, solo al cargar (CheapMaterials.OnLoad): recorrer todos los renderers cada minuto era un
+        // tirón en este PC.
+        CheapMaterials.CheapenBodies(true);
     }
 }

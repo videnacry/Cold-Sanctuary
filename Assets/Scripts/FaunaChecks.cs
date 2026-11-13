@@ -108,6 +108,15 @@ public class FaunaChecks : MonoBehaviour, ITestUnit
         }
         else Debug.Log("[TEST] SKIP · viaje sin camino — ningún animal sobre el NavMesh con un sitio alcanzable a 6 m");
 
+        // ── (2026-11-11, ronda 72) EL PASEO DE UN ADULTO VA A UN SITIO DE VERDAD: a ≥ 3 m y con camino completo ──
+        Animal ex = alive.Find(x => x != null && x.lifeStage == LifeStage.adult && x.nav != null && x.nav.isOnNavMesh && x.GetComponent<MarineLife>() == null && !DesireCatalog.Confined(x));
+        if (ex != null)
+        {
+            int ok = 0, tries = 0; float worst = float.MaxValue;
+            for (int k = 0; k < 10; k++) { if (!DesireCatalog.ExploreGoalForTest(ex, out Vector3 g)) continue; tries++; float d = Vector3.Distance(new Vector3(g.x, 0f, g.z), new Vector3(ex.transform.position.x, 0f, ex.transform.position.z)); worst = Mathf.Min(worst, d); if (d >= 3f - 1e-3f) ok++; }
+            TestProbe.Check("el paseo de un adulto elige sitios a ≥ 3 m (no a su lado)", tries == 0 || ok == tries, $"{ex.name}: {ok}/{tries}, el más cerca a {(tries > 0 ? worst.ToString("0.0") : "—")} m");
+        }
+
         // ── (2026-11-11) LAS CRÍAS DEL RECINTO VAN A UN SITIO DE VERDAD ──
         // Vivo61: Polluelo_1/2/3 y Osezno_2 con la meta del paseo en su propio sitio, 1 800 s sin moverse.
         var penned = alive.FindAll(x => x != null && DesireCatalog.Confined(x) && x.nav != null && x.nav.isOnNavMesh);

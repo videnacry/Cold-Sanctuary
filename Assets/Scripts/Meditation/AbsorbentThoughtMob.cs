@@ -41,7 +41,7 @@ public class AbsorbentThoughtMob : MeditationMob
         _marker.transform.position = worldPos + Vector3.up * 0.5f;
         _marker.transform.localScale = Vector3.one * 0.5f;
         var col = _marker.GetComponent<Collider>(); if (col != null) Destroy(col);
-        var rend = _marker.GetComponent<Renderer>(); if (rend != null) rend.material.color = markerColor;
+        var rend = _marker.GetComponent<Renderer>(); if (rend != null) rend.sharedMaterial = CheapMaterials.Opaque(markerColor);   // (2026-11-11, #152: el material compartido mate de ese color, no una copia «Lit (Instance)» brillante)
 
         // Visible thread from the thought to its root (readability). Best-effort — skipped if the
         // built-in sprite shader isn't available.

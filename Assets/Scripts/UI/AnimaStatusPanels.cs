@@ -46,7 +46,7 @@ public class AnimaStatusPanels : MonoBehaviour
             (ElementLevel level, Color color) = ElementsStatus.Evaluate(p.element, actual, massKg);
 
             Renderer r = p.panel.GetComponentInChildren<Renderer>();
-            if (r != null && r.material != null) r.material.color = color;
+            if (r != null) r.sharedMaterial = CheapMaterials.Opaque(color);   // (2026-11-11, #152: el material compartido mate de ese color, no una copia «Lit (Instance)» brillante)
             TextMesh tm = p.panel.GetComponentInChildren<TextMesh>();
             if (tm != null) { tm.text = $"{p.element} {ElementsStatus.Format(actual)}"; tm.color = color; }
         }

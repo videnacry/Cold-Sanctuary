@@ -63,8 +63,10 @@ public class PeticionesSondaTest : MonoBehaviour, ITestUnit
         // #152 TODO MATE Y OPACO (transparente solo cristal o agua: alfa < 0,99)
         var mats = new HashSet<Material>();
         CheapMaterials.CheapenBodies();   // (lo que hace el barrido de cada 15 s, ya)
-        foreach (Renderer r in FindObjectsByType<Renderer>(FindObjectsSortMode.None)) if (r != null) foreach (Material m in r.sharedMaterials) if (m != null) mats.Add(m);
-        var shiny = mats.Where(m => m.HasProperty("_Smoothness") && m.GetFloat("_Smoothness") > 0.2f && m.shader != null && (m.shader.name.Contains("Lit") || m.shader.name == "Standard")).Select(m => m.name).ToList();
+        for (int i = 0; i < UnityEngine.SceneManagement.SceneManager.sceneCount; i++) CheapMaterials.CheapenScene(UnityEngine.SceneManagement.SceneManager.GetSceneAt(i), true);   // (y el de cada minuto)
+        var owner = new Dictionary<Material, string>();
+        foreach (Renderer r in FindObjectsByType<Renderer>(FindObjectsSortMode.None)) if (r != null) foreach (Material m in r.sharedMaterials) if (m != null) { mats.Add(m); if (!owner.ContainsKey(m)) owner[m] = (r.transform.parent != null ? r.transform.parent.name + "/" : "") + r.name; }
+        var shiny = mats.Where(m => m.HasProperty("_Smoothness") && m.GetFloat("_Smoothness") > 0.2f && m.shader != null && (m.shader.name.Contains("Lit") || m.shader.name == "Standard")).Select(m => $"{m.name} (en {owner[m]})").ToList();   // (ronda 72: con su dueño)
         var fakeGlass = mats.Where(m => m.HasProperty("_Surface") && m.GetFloat("_Surface") > 0.5f && (m.HasProperty("_BaseColor") ? m.GetColor("_BaseColor") : m.color).a >= 0.99f && !CheapMaterials.IsWater(m)).Select(m => m.name).ToList();   // (el agua, como el mar del horizonte, sí)
         TestProbe.Check("#152 ningún material brillante (suavidad ≤ 0,2)", shiny.Count == 0, $"{mats.Count} materiales{(shiny.Count > 0 ? $"; brillantes {shiny.Count}: " + string.Join(", ", shiny.Take(6)) : "")}");
         TestProbe.Check("#152 transparente solo el cristal y el agua (alfa < 0,99)", fakeGlass.Count == 0, fakeGlass.Count > 0 ? string.Join(", ", fakeGlass.Take(6)) : "");

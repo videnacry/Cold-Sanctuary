@@ -83,7 +83,7 @@ public class MicroForager : MonoBehaviour
         Destroy(_load.GetComponent<Collider>());
         _load.transform.SetParent(transform, false);
         _load.transform.localPosition = Vector3.up * 2.1f; _load.transform.localScale = new Vector3(0.5f, 0.4f, 0.6f);
-        _load.GetComponent<Renderer>().material.color = _source.kind == AffordanceKind.Honeydew ? new Color(0.95f, 0.75f, 0.2f) : new Color(0.75f, 0.6f, 0.35f);
+        _load.GetComponent<Renderer>().sharedMaterial = CheapMaterials.Opaque(_source.kind == AffordanceKind.Honeydew ? new Color(0.95f, 0.75f, 0.2f) : new Color(0.75f, 0.6f, 0.35f));
         _source = null;
     }
 
