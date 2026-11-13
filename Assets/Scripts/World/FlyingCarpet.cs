@@ -202,7 +202,7 @@ public class FlyingCarpet : MonoBehaviour
         if (a != null) DailyPoses.Stand().ApplyFinal(a);
         who.transform.position = dest + Vector3.up * (Thickness + 0.02f + rootAbove);   // de pie ENCIMA de la alfombra (antes se bajaba 1,6 m a un lado y en una casa del árbol caía al vacío)
         if (cc != null) cc.enabled = ccWas;
-        if (agent != null) { agent.enabled = agentWas; if (agent.enabled && agent.isOnNavMesh) agent.Warp(who.transform.position); }
+        NavAgentSafe.Restore(agent, agentWas, "baja de la alfombra");
         if (pc != null) pc.HoldBody(false);
         if (player && CameraManager.Instance != null) CameraManager.Instance.SwitchTo(CameraManager.Instance.preferredMode, forced: true);
         _riders.Remove(who);

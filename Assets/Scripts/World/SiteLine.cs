@@ -282,7 +282,7 @@ public class SiteLine : MonoBehaviour
         FlyingCarpet.Carry(g, false);
         if (g == null) yield break;
         g.transform.position = ExitPoint + Vector3.up * 0.02f;
-        if (agent != null) { agent.enabled = agentWas; if (agent.enabled && agent.isOnNavMesh) agent.Warp(g.transform.position); }
+        NavAgentSafe.Restore(agent, agentWas, "sale de la Línea");
     }
 
     // ── EN PERSONA: la escena de abajo ─────────────────────────────────────────────────────────────────────────────
@@ -402,7 +402,7 @@ public class SiteLine : MonoBehaviour
         if (r.a != null) DailyPoses.Stand().ApplyFinal(r.a);
         r.who.transform.position = at + Vector3.up * (0.02f + r.above);
         if (r.cc != null) r.cc.enabled = r.ccWas;
-        if (r.agent != null) { r.agent.enabled = r.agentWas; if (r.agent.enabled && r.agent.isOnNavMesh) r.agent.Warp(r.who.transform.position); }
+        NavAgentSafe.Restore(r.agent, r.agentWas, "sale de la Línea");
         if (r.pc != null) r.pc.HoldBody(false);
         if (r.player)
         {

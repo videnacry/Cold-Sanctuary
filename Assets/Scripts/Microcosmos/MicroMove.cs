@@ -13,8 +13,8 @@ public static class MicroMove
     {
         _hand.Remove(t);
         if (ag == null) return;
-        ag.enabled = true;
-        if (UnityEngine.AI.NavMesh.SamplePosition(t.position, out UnityEngine.AI.NavMeshHit h, 3f, UnityEngine.AI.NavMesh.AllAreas)) ag.Warp(h.position);
+        if (UnityEngine.AI.NavMesh.SamplePosition(t.position, out UnityEngine.AI.NavMeshHit h, 3f, UnityEngine.AI.NavMesh.AllAreas)) t.position = h.position + Vector3.up * ag.baseOffset;   // (2026-11-11: se le pone en el NavMesh ANTES de encender)
+        NavAgentSafe.Enable(ag, "acaba el paseo a mano");
     }
     public static bool Step(Transform t, Vector3 to, float speed, float arrive = 1.2f)
     {
