@@ -167,6 +167,30 @@ public class FaunaChecks : MonoBehaviour, ITestUnit
         if (penned.Count > 0) TestProbe.Check("el paseo de una cría del recinto va a un sitio a ≥ 1,5 m de ella", near.Length == 0, $"{withGoal}/{penned.Count} con sitio{(near.Length > 0 ? "; demasiado cerca: " + near : "")}");
         else Debug.Log("[TEST] SKIP · paseo del recinto — no hay crías en un recinto sobre el NavMesh");
 
+        // ── (2026-11-13, ronda 82) LAS CRÍAS DEL RECINTO ANDAN SIN NAVMESH (PenWalker): el recinto gira con el árbol ──
+        // El sitio: dentro del suelo con 0,6 m a los muros y fuera de lo que abulta (la guarida, las rocas).
+        var den = new List<Rect> { Rect.MinMaxRect(-3f, -2.2f, -0.6f, -1f) };
+        Vector2 half = new Vector2(3.5f, 3f);
+        TestProbe.Check("recinto: el centro del suelo vale", PenWalker.GoalOk(Vector2.zero, half, den, 0.25f));
+        TestProbe.Check("recinto: pegado al muro no vale (0,6 m de margen)", !PenWalker.GoalOk(new Vector2(3.2f, 0f), half, den, 0.25f));
+        TestProbe.Check("recinto: dentro de la guarida no vale", !PenWalker.GoalOk(new Vector2(-1.8f, -1.6f), half, den, 0.25f));
+        TestProbe.Check("recinto: un tramo que atraviesa la guarida se descarta", PenWalker.Crosses(new Vector2(-2f, 0f), new Vector2(-2f, -2.5f), den, 0.25f) && !PenWalker.Crosses(new Vector2(0f, 0f), new Vector2(2f, 1f), den, 0.25f));
+        int walkers = 0, picked = 0; string bad = "";
+        foreach (Animal c in alive.FindAll(x => x != null && x.GetComponentInParent<CriaFeeder>() != null))
+        {
+            PenWalker pw = PenWalker.For(c);
+            if (pw == null) continue;
+            walkers++;
+            if (!pw.PickGoal()) continue;
+            picked++;
+            Vector3 g = pw.GoalLocalForTest, here = c.transform.localPosition;
+            if (!PenWalker.GoalOk(new Vector2(g.x, g.z), pw.HalfForTest, pw.BlocksForTest, 0.2f) || new Vector2(g.x - here.x, g.z - here.z).magnitude < 0.8f) bad += $"{c.name} ({g.x:0.0},{g.z:0.0}); ";
+            if (c.nav != null && c.nav.enabled) bad += $"{c.name} con el agente encendido; ";
+            pw.Stop();
+        }
+        if (walkers > 0) TestProbe.Check("las crías del recinto andan sin NavMesh, a un sitio de su suelo (dentro, lejos de muros y de la guarida)", picked > 0 && bad.Length == 0, $"{picked}/{walkers} con sitio{(bad.Length > 0 ? "; mal: " + bad : "")}");
+        else Debug.Log("[TEST] SKIP · andador del recinto — no hay crías en un recinto de la Cría");
+
         TestProbe.End();
     }
 }

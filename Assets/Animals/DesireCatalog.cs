@@ -265,6 +265,18 @@ public static class DesireCatalog
         // de 1,5 a 5 m, con camino completo (PenGoal); si no hay ninguno, descansa (sin viaje).
         Trip t = TripOf(self, "recinto");
         t.calls++; t.lastCall = Time.time;
+        // (2026-11-13, ronda 82) EN UN RECINTO DE LA CRÍA, SIN NAVMESH: el recinto gira con el árbol y su NavMesh se recoloca a cada paso; la cría
+        // anda en las coordenadas del recinto (PenWalker). Mismo ritmo: un sitio a 1,5–4 m, se para 4–9 s, otro.
+        PenWalker pw = PenWalker.For(self);
+        if (pw != null)
+        {
+            if (pw.Going) return true;
+            if (pw.TakeArrival()) { Outcome(self, t, true); t.pauseUntil = Time.time + UnityEngine.Random.Range(4f, 9f); return true; }
+            if (Time.time < t.pauseUntil) return true;
+            if (pw.PickGoal()) { t.restNoSpot = false; t.goal = pw.GoalWorld; t.started++; TripsStarted++; return true; }
+            t.restNoSpot = true; t.pauseUntil = Time.time + UnityEngine.Random.Range(4f, 9f); self.Loco?.Idle(1f);
+            return true;
+        }
         if (t.going) { if (Going(self, t)) return true; t.pauseUntil = Time.time + UnityEngine.Random.Range(4f, 9f); self.Loco?.Idle(1f); return true; }   // llegó (o se atascó): mira y olfatea
         if (Time.time < t.pauseUntil || Time.time < t.failUntil) return true;
         if (PenGoal(self, out Vector3 goal)) { t.restNoSpot = false; Walk(self, t, goal); return true; }
@@ -1055,11 +1067,12 @@ public static class NavReach
         // el agente en el cuerpo y se calcula otra vez; si aun así no sale de él o no acaba en el sitio, no se llega.
         if (!PathFits(self, h.position, out float startOff, out float endOff))
         {
-            if (startOff > 1f) { self.nav.Warp(self.transform.position); if (!self.nav.CalculatePath(h.position, _path) || _path.status != NavMeshPathStatus.PathComplete) return false; }
+            Vector3 gap = self.nav.nextPosition - self.transform.position; gap.y = 0f;
+            if (startOff > 1f && gap.magnitude > 1f) { self.nav.Warp(self.transform.position); if (!self.nav.CalculatePath(h.position, _path) || _path.status != NavMeshPathStatus.PathComplete) return false; }
             if (!PathFits(self, h.position, out startOff, out endOff))
             {
                 BadPaths++;
-                if (_badLogs++ < 20) Debug.Log($"[Fauna] «{self.name}»: camino «completo» que no vale hacia {h.position} ({Vector3.Distance(self.transform.position, h.position):0.0} m): empieza a {startOff:0.0} m del cuerpo y acaba a {endOff:0.0} m del sitio, {_path.corners.Length} esquinas.");
+                if (_badLogs++ < 20) Debug.Log($"[Fauna] «{self.name}»: camino «completo» que no vale hacia {h.position} ({Vector3.Distance(self.transform.position, h.position):0.0} m): empieza a {startOff:0.0} m del agente y acaba a {endOff:0.0} m del sitio, {_path.corners.Length} esquinas.");
                 return false;
             }
         }
@@ -1074,7 +1087,9 @@ public static class NavReach
         Vector3[] c = _path.corners;
         startOff = endOff = float.MaxValue;
         if (c == null || c.Length == 0) return false;
-        Vector3 s = c[0] - self.transform.position, e = c[c.Length - 1] - to; s.y = 0f; e.y = 0f;
+        // (ronda 82) El inicio se mide desde el AGENTE, no desde el cuerpo: los 16 zorros de vivo82 empezaban siempre a 3,1 m del cuerpo (el cuerpo
+        // sobre algo fuera del NavMesh; el agente, en el punto del NavMesh más cercano, y el Warp lo deja igual). Ese camino sí vale: sale del agente.
+        Vector3 s = c[0] - self.nav.nextPosition, e = c[c.Length - 1] - to; s.y = 0f; e.y = 0f;
         startOff = s.magnitude; endOff = e.magnitude;
         return startOff <= 1f && endOff <= 1f;
     }
