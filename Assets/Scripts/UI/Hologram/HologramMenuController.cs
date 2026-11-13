@@ -47,6 +47,7 @@ public class HologramMenuController : MonoBehaviour
 
     void Start()
     {
+        if (WebLigera.Active) menuCorner = HologramCorner.TopRight;   // (2026-11-13, web ligera: abajo a la derecha está el joystick de la cámara)
         _menuHologram = pool.Acquire();
         _menuHologram.SetAnchoredPosition(GetCornerBase(menuCorner));
         _menuHologram.SetContent("Menú", null, OpenRoot);

@@ -33,6 +33,7 @@ public class AnimaStatusHUD : MonoBehaviour
 
     void OnGUI()
     {
+        if (WebLigera.Active) return;   // (2026-11-13, web ligera: en el móvil, sin paneles de depuración ni rótulos flotantes)
         Anima a = Target();
         if (a == null) return;
         if (_style == null) _style = new GUIStyle(GUI.skin.label) { fontSize = 13, richText = true };

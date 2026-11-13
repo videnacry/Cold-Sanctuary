@@ -369,6 +369,7 @@ public class SpellConsole : MonoBehaviour
 
     void OnGUI()
     {
+        if (WebLigera.Active) return;   // (2026-11-13, web ligera: en el móvil, sin paneles de depuración ni rótulos flotantes)
         if (GameKeys.DialogOpen) return;   // oculto mientras hay un diálogo
         if (!_open) { DrawClosedBar(); return; }
         float w = 560f, h = 24f, x = 12f, y = Screen.height - 260f;

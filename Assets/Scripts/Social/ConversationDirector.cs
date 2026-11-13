@@ -498,6 +498,7 @@ public class ConversationDirector : MonoBehaviour
 
     void OnGUI()
     {
+        if (WebLigera.Active) return;   // (2026-11-13, web ligera: en el móvil, sin paneles de depuración ni rótulos flotantes)
         if (Event.current.type != EventType.Repaint || Active.Count == 0) return;
         Camera cam = Camera.main;
         if (cam == null) return;

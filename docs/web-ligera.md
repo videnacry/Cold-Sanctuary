@@ -57,3 +57,30 @@ Si pasa de 60 MB, el paso siguiente es subir un servidor con Brotli. Lo dirá el
 `verify-wt.sh` compila el editor y el runtime. Además, una compilación de **jugador** del runtime: sin `UNITY_EDITOR` ni los ensamblados
 `UnityEditor*`, con `UNITY_WEBGL` y con `WEB_LIGERA` (y `WEB_LIGERA_MICRO`). Da 0 errores: todo el código de runtime que usa UnityEditor
 ya estaba tras `#if UNITY_EDITOR` (CubeCreature, CheapMaterials, los menús de las pruebas).
+
+## Tras la primera prueba en el móvil (2026-11-13)
+- **Joystick de la cámara** (Berón): abajo a la derecha, fijo. Gira a velocidad constante según cuánto se empuja (a tope, ~100 °/s de giro y
+  ~60 °/s de cabeceo) y **manda sobre arrastrar** (arrastrar en el resto de la mitad derecha sigue mirando).
+  - Los botones **E, F, Saltar y Correr** van en **arco** encima de él (E arriba del todo, Correr a la izquierda).
+  - En una pantalla estrecha (vertical), el botón que pisaría el joystick de andar se oculta. E se ve siempre. Si Correr se oculta, deja de
+    correr.
+  - **Intro** va pequeño arriba en el centro.
+  - Todo mide ~13 % del lado corto de la pantalla y se recoloca cada fotograma, así que vale en horizontal y en vertical.
+- **Cubo magenta**: los sombreadores de los materiales hechos en juego no iban en el build (nadie los referenciaba). El menú ahora crea, en
+  `Assets/Resources/WebLigeraShaders/`, un material de cada sombreador del URP que se usa en juego, con las palabras clave del juego (mate,
+  opaco y transparente):
+  - Simple Lit, Lit, Unlit y Particles/Unlit.
+  - Así el build guarda esos sombreadores y solo esas variantes.
+  - Los pequeños (Sprites/Default, Unlit/Color, Unlit/Transparent) van a «Always Included Shaders».
+  - Lo registra: `[Web] Sombreadores…`.
+- **Plantilla para el móvil**: el menú escribe `Assets/WebGLTemplates/WebLigera/index.html` y la elige (`PROJECT:WebLigera`). Trae:
+  - el lienzo al 100 % de ancho y alto (`100dvh`) y el meta viewport sin zoom;
+  - la densidad de píxeles con tope 1,5;
+  - una barra de carga y un botón ⛶ de pantalla completa (si el navegador la permite; en Safari del iPhone, no).
+- **Sin paneles de depuración** en la web:
+  - fuera: los rótulos flotantes (`AnimaNameplate`), las lecturas de emoción y de estado de las ánimas, el pensamiento, los bocadillos de
+    las charlas, la barra de hechizos, el itinerario de la jornada (arriba a la derecha) y el «F1: ver paneles de prueba»;
+  - se quedan: la misión, la voz de Kushal, los subtítulos y las tarjetas de las historias, los diálogos, y las ventanas de Horario,
+    Recursos y Misiones;
+  - esas tres ventanas salen sin «F2/F3/F4», arriba a la izquierda (bajo el botón «½ res»), y el holograma «Menú» va arriba a la derecha.
+- **Texto legible**: la piel IMGUI por defecto (la de todos los paneles que no fijan su tamaño) va a ~3,5 % del lado corto de la pantalla.

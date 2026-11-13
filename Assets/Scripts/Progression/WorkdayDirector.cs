@@ -1451,6 +1451,7 @@ public class WorkdayDirector : MonoBehaviour
 
     void OnGUI()
     {
+        if (WebLigera.Active) return;   // (2026-11-13, web ligera: en el móvil, sin paneles de depuración ni rótulos flotantes)
         List<string> lines = Itinerary();
         if (lines == null) return;
         GUI.Box(new Rect(Screen.width - 330, 10, 320, 22 + lines.Count * 18), "");

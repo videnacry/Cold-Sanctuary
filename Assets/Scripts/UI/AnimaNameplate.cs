@@ -79,6 +79,7 @@ public class AnimaNameplate : MonoBehaviour
 
     void OnGUI()
     {
+        if (WebLigera.Active) return;   // (2026-11-13, web ligera: en el móvil, sin paneles de depuración ni rótulos flotantes)
         if (Event.current.type != EventType.Repaint) return;   // solo se pinta en Repaint (antes se recorría todo también en Layout)
         Camera cam = Camera.main;
         if (cam == null) return;

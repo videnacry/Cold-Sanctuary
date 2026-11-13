@@ -187,11 +187,23 @@ public class WebLigeraRunner : MonoBehaviour
     }
 
     GUIStyle _s;
+    int _fontFor = -1;
 
     void OnGUI()
     {
-        if (_s == null) _s = new GUIStyle(GUI.skin.button) { fontSize = Mathf.Max(14, Screen.height / 45) };
-        float w = Mathf.Max(70f, Screen.height / 9f), h = w * 0.45f;
-        if (GUI.Button(new Rect(Screen.width - w - 8f, 8f, w, h), WebLigera.HalfRes ? "½ res" : "1× res", _s)) WebLigera.HalfRes = !WebLigera.HalfRes;
+        // TEXTO LEGIBLE EN EL MÓVIL: la piel IMGUI por defecto (compartida por todos los paneles del juego que no fijan su tamaño) a ~3,5 % del
+        // lado corto de la pantalla (el lienzo va a ≤ 1,5 píxeles por píxel CSS: la plantilla WebLigera). Se rehace al girar el móvil.
+        float shortSide = Mathf.Min(Screen.width, Screen.height);
+        int fs = Mathf.Max(14, Mathf.RoundToInt(shortSide * 0.035f));
+        if (fs != _fontFor)
+        {
+            _fontFor = fs;
+            foreach (GUIStyle st in new[] { GUI.skin.label, GUI.skin.button, GUI.skin.box, GUI.skin.toggle, GUI.skin.textField, GUI.skin.textArea, GUI.skin.window })
+                if (st != null) st.fontSize = fs;
+            _s = new GUIStyle(GUI.skin.button) { fontSize = fs };
+        }
+        // El botón de resolución, arriba a la izquierda (encima de la pila de ventanas de HudModals; abajo están los joysticks).
+        float h = Mathf.Max(32f, shortSide * 0.07f), w = h * 2.2f;
+        if (GUI.Button(new Rect(8f, 8f, w, h), WebLigera.HalfRes ? "½ res" : "1× res", _s)) WebLigera.HalfRes = !WebLigera.HalfRes;
     }
 }

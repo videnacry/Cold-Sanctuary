@@ -34,7 +34,9 @@ public class HudModals : MonoBehaviour
     }
 
     /// <summary>El sitio de la pila número <paramref name="slot"/>: el 0, justo encima del botón de F10.</summary>
-    public static Rect Slot(int slot) => new Rect(Screen.width - MarginRight, Screen.height - PauseButtonTop - (slot + 1) * (Height + Gap), Width, Height);
+    public static Rect Slot(int slot) => WebLigera.Active ? WebSlot(slot) : new Rect(Screen.width - MarginRight, Screen.height - PauseButtonTop - (slot + 1) * (Height + Gap), Width, Height);
+    /// <summary>(2026-11-13, web ligera) En el móvil, la pila va arriba a la izquierda (abajo están los joysticks) y a la medida del dedo.</summary>
+    static Rect WebSlot(int slot) { float s = Mathf.Min(Screen.width, Screen.height), h = Mathf.Max(32f, s * 0.07f), w = Mathf.Min(h * 4.2f, s * 0.48f); return new Rect(8f, 8f + h * 1.1f + slot * (h + 6f), w, h); }
 
     /// <summary>¿Tiene esta escena lo que enseña la ventana?</summary>
     public static bool Available(Modal m)
@@ -68,7 +70,7 @@ public class HudModals : MonoBehaviour
     }
 
     static readonly Modal[] Order = { Modal.Horario, Modal.Recursos, Modal.Misiones };
-    static string Label(Modal m) => m == Modal.Horario ? "F2: Horario libre" : m == Modal.Recursos ? "F3: Recursos" : "F4: Misiones y jornada";
+    static string Label(Modal m) => WebLigera.Active ? (m == Modal.Horario ? "Horario libre" : m == Modal.Recursos ? "Recursos" : "Misiones y jornada") : m == Modal.Horario ? "F2: Horario libre" : m == Modal.Recursos ? "F3: Recursos" : "F4: Misiones y jornada";
 
     float _nextRefresh;
     Vector2 _scroll;
