@@ -62,27 +62,10 @@ public class StaleNavCarver : MonoBehaviour
         foreach (MeshCollider mc in FindObjectsByType<MeshCollider>(FindObjectsSortMode.None))
         {
             if (mc == null || mc.name != "Pared_raiz" || mc.sharedMesh == null || mc.GetComponent<NavMeshObstacle>() != null) continue;
-            TreeRotator spin = mc.GetComponentInParent<TreeRotator>();
-            if (spin != null)
-            {
-                // (2026-11-11) EL ÁRBOL QUE GIRA (vivo64: un reno «dentro de Pared_raiz» en (-65,0,-86), pastando junto a él): un obstáculo QUIETO y
-                // redondo (lo mismo da el giro), fuera del árbol que gira, en el centro de su raíz. Radio: el medio lado de fuera ×1,25, pero sin pasar
-                // de 1,8 m más (la espera de la puerta del suelo está a 2,5 m de la pared).
-                Bounds wb = mc.bounds; float ext = mc.sharedMesh.bounds.extents.x * Mathf.Abs(mc.transform.lossyScale.x);
-                var go = new GameObject("Obstaculo_raiz_giratoria");
-                go.transform.SetParent(spin.transform.parent, false);
-                // (ronda 72: 28 «dentro de Pared_raiz» en esta raíz con la cápsula puesta) A LA ALTURA DEL SUELO DE VERDAD: la base de la malla de la
-                // pared puede quedar bajo el hielo (el agua del tronco baja al mar) y 4 m desde ahí no llegaban al NavMesh de fuera. Se mide el suelo
-                // junto a la pared (el NavMesh a 3 m de su cara) y la cápsula va de 1 m por debajo a 3 m por encima.
-                float ground = GroundBeside(spin.transform.position, ext, wb.min.y);
-                go.transform.position = new Vector3(spin.transform.position.x, ground - 1f, spin.transform.position.z);
-                NavMeshObstacle so = go.AddComponent<NavMeshObstacle>();
-                so.shape = NavMeshObstacleShape.Capsule; so.radius = Mathf.Min(ext * 1.25f, ext + 1.8f); so.height = 4f; so.center = Vector3.up * 2f;
-                Debug.Log($"[NavMesh] Obstáculo de la raíz que gira: radio {so.radius:0.0} m (pared de medio lado {ext:0.0} m), de y {go.transform.position.y:0.0} a {go.transform.position.y + so.height:0.0}.");
-                so.carving = true; so.carveOnlyStationary = true;
-                walls++;
-                continue;
-            }
+            // (2026-11-11, ronda 73) EL ÁRBOL QUE GIRA, CON SU CAJA, que gira con él y vuelve a tallar al moverse (carveOnlyStationary = false). La
+            // cápsula quieta de eddf04d (radio 12,8 m) dejaba fuera las ESQUINAS de la pared cuadrada (a 15,6 m del eje): los 8 «dentro de Pared_raiz»
+            // de vivo73 entraban a 12–15,5 m del centro. Y como se mueve, ya no hace falta apagarla y encenderla tras cada paso (65 «Failed to create agent»).
+            bool spinning = mc.GetComponentInParent<TreeRotator>() != null;
             NavMeshObstacle o = mc.gameObject.AddComponent<NavMeshObstacle>();
             o.shape = NavMeshObstacleShape.Box;
             Bounds mb = mc.sharedMesh.bounds;
@@ -91,7 +74,8 @@ public class StaleNavCarver : MonoBehaviour
             float gy = GroundBeside(mc.transform.TransformPoint(mb.center), mb.extents.x * Mathf.Abs(mc.transform.lossyScale.x), mc.bounds.min.y);
             float ly = mc.transform.InverseTransformPoint(new Vector3(0f, gy, 0f)).y;
             o.center = new Vector3(mb.center.x, ly + 1f, mb.center.z); o.size = new Vector3(mb.size.x, 4f, mb.size.z);
-            o.carving = true; o.carveOnlyStationary = true;
+            o.carving = true; o.carveOnlyStationary = !spinning;
+            if (spinning) Debug.Log($"[NavMesh] Obstáculo de la raíz que gira: caja de {o.size.x:0.0} × {o.size.z:0.0} m que gira con ella (talla al moverse).");
             walls++;
         }
         n += walls;

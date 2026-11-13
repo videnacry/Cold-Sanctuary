@@ -30,11 +30,11 @@ public static class CheapMaterialsPass
             float smooth = m.HasProperty("_Smoothness") ? m.GetFloat("_Smoothness") : m.HasProperty("_Glossiness") ? m.GetFloat("_Glossiness") : 0f;
             bool transparent = m.HasProperty("_Surface") && m.GetFloat("_Surface") > 0.5f;
             Color c = m.HasProperty("_BaseColor") ? m.GetColor("_BaseColor") : m.color;
-            bool needs = sn != "Universal Render Pipeline/Simple Lit" || smooth > CheapMaterials.Smoothness + 1e-3f || (m.HasProperty("_Metallic") && m.GetFloat("_Metallic") > 0.01f) || (transparent && c.a >= 0.99f);
-            if (transparent && c.a < 0.99f) keptTransparent.Add(m.name);
+            bool needs = sn != "Universal Render Pipeline/Simple Lit" || smooth > CheapMaterials.Smoothness + 1e-3f || (m.HasProperty("_Metallic") && m.GetFloat("_Metallic") > 0.01f) || (transparent && c.a >= 0.99f && !CheapMaterials.IsWater(m));
+            if (transparent && (c.a < 0.99f || CheapMaterials.IsWater(m))) keptTransparent.Add(m.name);
             if (!needs) continue;
             CheapMaterials.MakeCheap(m);
-            if (transparent && c.a >= 0.99f && m.HasProperty("_Surface"))   // transparente sin serlo: opaco
+            if (transparent && c.a >= 0.99f && m.HasProperty("_Surface") && !CheapMaterials.IsWater(m))   // transparente sin serlo: opaco (el cristal y el agua por su nombre, no: ronda 73, «Arbol_cristal»)
             {
                 m.SetFloat("_Surface", 0f); m.SetFloat("_ZWrite", 1f);
                 m.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.One); m.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.Zero);

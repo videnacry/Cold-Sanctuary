@@ -65,7 +65,8 @@ public static class CheapMaterials
     }
 
     /// <summary>(2026-11-11) El agua (el mar del horizonte, el agua de los troncos): puede ser transparente aunque su color sea opaco (lo pone la textura).</summary>
-    public static bool IsWater(Material m) => m != null && (m.name.StartsWith("Mar_") || m.name.StartsWith("Agua") || m.name.Contains("_agua") || m.name.Contains("Water"));
+    public static bool IsWater(Material m) => m != null && (m.name.StartsWith("Mar_") || m.name.StartsWith("Agua") || m.name.Contains("_agua") || m.name.Contains("Water")
+        || m.name.Contains("cristal") || m.name.Contains("Cristal") || m.name.Contains("Glass") || m.name.Contains("Vidrio") || m.name.Contains("vidrio"));   // (ronda 73: y el CRISTAL, «Arbol_cristal», que la pasada de assets dejaba opaco)
 
     /// <summary>¿Es un material «caro» de los que pide quitar Berón? (URP Lit o Standard, suavidad &gt; 0,3, metálico o con capa clara; o
     /// transparente sin ser cristal o agua: alfa del color ≥ 0,99).</summary>
