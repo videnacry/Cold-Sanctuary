@@ -199,6 +199,21 @@ public class FaunaChecks : MonoBehaviour, ITestUnit
         if (walkers > 0) TestProbe.Check("las crías del recinto andan sin NavMesh, a un sitio de su suelo (dentro, lejos de muros y de la guarida)", picked > 0 && bad.Length == 0, $"{picked}/{walkers} con sitio{(bad.Length > 0 ? "; mal: " + bad : "")}");
         else Debug.Log("[TEST] SKIP · andador del recinto — no hay crías en un recinto de la Cría");
 
+        // ── (2026-11-13, ronda 92) UNA SOLA COMIDA A LA VEZ: mientras una caza o un pasto va, otra no arranca; al acabar, sí ──
+        Animal fa = alive.Find(x => x != null && x.Forage != null && !x.Forage.Running);
+        if (fa != null)
+        {
+            IEnumerator Steps(int n) { for (int i = 0; i < n; i++) yield return null; }
+            IEnumerator first = fa.Forage.Guarded(Steps(2));
+            bool firstRuns = first.MoveNext();
+            IEnumerator second = fa.Forage.Guarded(Steps(2));
+            bool secondRuns = second.MoveNext();
+            while (first.MoveNext()) { }
+            IEnumerator third = fa.Forage.Guarded(Steps(1));
+            bool thirdRuns = third.MoveNext(); while (third.MoveNext()) { }
+            TestProbe.Check("una sola comida a la vez: la segunda no arranca mientras va la primera, y después sí", firstRuns && !secondRuns && thirdRuns, $"{firstRuns}/{secondRuns}/{thirdRuns}");
+        }
+
         TestProbe.End();
     }
 }

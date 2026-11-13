@@ -49,6 +49,23 @@ public class Forager : MonoBehaviour
     /// <summary>¿Acaba de comprobar que no hay comida que pueda alcanzar? Mientras, el deseo «eat» calla (descansa o hace
     /// otra cosa) en vez de quedarse plantado queriendo comer. Acotado: a los <see cref="giveUpSeconds"/> lo reintenta.</summary>
     public bool GaveUp => Time.time < _noFoodUntil;
+    // (2026-11-13, ronda 92) UNA SOLA COMIDA A LA VEZ. El deseo «eat» lanzaba Feed() (Hunt o Graze) en cada decisión, sin mirar si ya había
+    // una en marcha: varias corrutinas llevaban al lobo a la vez, y al acabar una ponía busy = false mientras otra seguía corriendo a 22 m/s
+    // («quiere eat … pedida 22,0 … sin viaje», lobos #64 y #88). Guarded deja pasar una sola: la que va marca su «latido» en cada paso.
+    float _beat = -99f, _eatAt = -99f;
+    /// <summary>¿Hay una comida (caza o pasto) en marcha (latido de hace menos de 10 s)?</summary>
+    public bool Running => Time.time - _beat < 10f;
+    /// <summary>¿Está comiendo AHÍ (un bocado, pastando o pescando desde la orilla, hace menos de 6 s)? Para JornadaTest: comer en su sitio no es
+    /// estar atascado.</summary>
+    public bool EatingNow => Time.time - _eatAt < 6f;
+    public static int FeedSkipped;
+    public IEnumerator Guarded(IEnumerator inner)
+    {
+        if (Running) { FeedSkipped++; yield break; }
+        _beat = Time.time;
+        while (inner.MoveNext()) { _beat = Time.time; yield return inner.Current; _beat = Time.time; }
+        _beat = -99f;
+    }
     void GiveUp(Animal self, string why)
     {
         _noFoodUntil = Time.time + giveUpSeconds * Random.Range(0.8f, 1.2f);
@@ -226,6 +243,7 @@ public class Forager : MonoBehaviour
     public float Eat(Animal self, IEdible food, GameObject foodObject, float biteSize)
     {
         if (self == null || food == null) return 0f;
+        _eatAt = Time.time;
         float nutrition = food.Consume(biteSize);
         self.hungry -= nutrition;
         self.GetComponent<Metabolism>()?.AbsorbFood(nutrition, food.Material);   // opt-in: construye stats / grasa
@@ -307,6 +325,7 @@ public class Forager : MonoBehaviour
             bool shore = gap > 3f && gap < shoreFishingReach;
             // Cada zambullida saca unos peces del banco y sacia como una comida (Swarm.Consume da solo la masa de las
             // crías del banco —gramos—, muy poco para un pingüino de 30 kg: seguía con hambre y «eat» ganaba siempre).
+            if (shore) _eatAt = Time.time;
             if (shore) { fs.Consume(1f); self.hungry -= feed; }
             else if (gap >= shoreFishingReach) GiveUp(self, $"banco a {gap:0} m de la orilla");
             yield return new WaitForSeconds(interval);
