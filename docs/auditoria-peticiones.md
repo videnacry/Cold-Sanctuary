@@ -3,6 +3,10 @@
 Cada petición de Berón de esas dos semanas, con su estado en el checklist. Hecha el 2026-11-10. Las pendientes están arriba del
 [checklist](checklist.md), en «Pendiente de verificar en vivo y peticiones sin anotar».
 
+> **2026-11-13: esta auditoría pasa a ser histórico.** Cada fila es ahora una petición del sistema de QA con el mismo número
+> (#152 → [PB-152](qa/peticiones.md)), con sus casos en [qa/casos.md](qa/casos.md) y su estado en [qa/registro.md](qa/registro.md).
+> Las peticiones nuevas van a [qa/peticiones.md](qa/peticiones.md), no aquí. Ver [qa/README.md](qa/README.md).
+
 **Fuente**: `docs/checklist.md` de `claude/edificios` en el commit `b0add6e` (2026-11-10, 07:28). Los enlaces «L» llevan a esa
 versión, así que siguen valiendo aunque el checklist cambie. Las copias de `claude/areas-en-obra` y `claude/rendimiento-1109` eran
 iguales (1244 líneas): las peticiones del 11-09 no estaban en ninguna.

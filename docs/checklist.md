@@ -13,6 +13,11 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 
 ## Pendiente de verificar en vivo y peticiones sin anotar (auditoría 2026-11-10)
 
+> **SISTEMA DE QA (2026-11-13, aprobado por Berón)**: el estado de cada petición y de cada caso vive ahora en [`qa/`](qa/README.md):
+> peticiones en [`qa/peticiones.md`](qa/peticiones.md) (PB-001…PB-155 = los # de la auditoría; la siguiente es PB-156), casos en
+> [`qa/casos.md`](qa/casos.md) y estados en [`qa/registro.md`](qa/registro.md). **Lo pendiente de verificar en vivo** es lo que el
+> registro tiene en `Solo código` y `Sin probar`. Esta sección se queda como histórico de la auditoría del 2026-11-10: no se marca aquí.
+
 Las 155 peticiones del 10-27 al 11-09, una por fila, están en [`auditoria-peticiones.md`](auditoria-peticiones.md) (el número con #).
 Las referencias «L» llevan al checklist tal como estaba en `b0add6e`, antes de añadir esta sección.
 
