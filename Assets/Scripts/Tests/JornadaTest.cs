@@ -747,6 +747,11 @@ public class JornadaTest : MonoBehaviour, ITestUnit, IFastGameTime
             TestProbe.Check($"{tag}: entrenan en su sala (14–15 h)", trainers > 0 && trainedOk >= 0.7f * trainers, $"{trainedOk}/{trainers}: " + string.Join(", ", _training.Select(kv => $"{kv.Key} {(kv.Value.y > 0 ? kv.Value.x / kv.Value.y : 0f):P0}")));
             int staff = _tracks.Count(tr => tr.human && !tr.player && tr.g != null && _t._wd.roster.Find(tr.g.name.Replace("_Post", "")) != null);
             TestProbe.Check($"{tag}: a mediodía come en el restaurante al menos la mitad del personal", _ate.Count(n => n != "Kushal") >= staff / 2, $"{_ate.Count(n => n != "Kushal")}/{staff}: {string.Join(", ", _ate)}");
+            // (2026-11-13, CV-15) Con las pruebas en marcha RemoteStaff no apaga a nadie: quien «pasa el día en otro santuario» sigue aquí
+            // (Lizmibet y Linduarda faltaban en g50).
+            var off = _tracks.Where(tr => tr.human && !tr.player && tr.g != null && RemoteStaff.Hidden(tr.g)).Select(tr => tr.name).ToList();
+            TestProbe.Check($"[CV-15] {tag}: con las pruebas en marcha no hay nadie del personal apagado por RemoteStaff", !RemoteStaff.Enabled && off.Count == 0,
+                $"RemoteStaff {(RemoteStaff.Enabled ? "ENCENDIDO" : "apagado")}{(off.Count > 0 ? "; apagados: " + string.Join(", ", off) : "")}");
             HumanChecks(tag);
         }
 
@@ -756,9 +761,9 @@ public class JornadaTest : MonoBehaviour, ITestUnit, IFastGameTime
         {
             string Of(params string[] kinds) => string.Join("; ", _anom.Values.Where(a => a.human && kinds.Contains(a.kind) && Since(a) > 0).Select(a => $"{a.who} ×{Since(a)} ({a.detail}, {a.firstAt})").Take(10));
             int Num(params string[] kinds) => _anom.Values.Where(a => a.human && kinds.Contains(a.kind)).Sum(a => Since(a));
-            TestProbe.Check($"{tag}: ninguna persona atascada > 20 s ni parada fuera de su puesto", Num("atascado > 20 s", "parado fuera de su puesto en turno", "atascado (tiempo libre)") == 0, Of("atascado > 20 s", "parado fuera de su puesto en turno", "atascado (tiempo libre)"));
-            TestProbe.Check($"{tag}: nadie salta ni se teletransporta sin motivo", Num("salto/teletransporte sin motivo") == 0, Of("salto/teletransporte sin motivo"));
-            TestProbe.Check($"{tag}: nadie da vueltas en círculo", Num("da vueltas en círculo") == 0, Of("da vueltas en círculo"));
+            TestProbe.Check($"[CV-14] {tag}: ninguna persona atascada > 20 s ni parada fuera de su puesto", Num("atascado > 20 s", "parado fuera de su puesto en turno", "atascado (tiempo libre)") == 0, Of("atascado > 20 s", "parado fuera de su puesto en turno", "atascado (tiempo libre)"));
+            TestProbe.Check($"[CV-01] {tag}: nadie salta ni se teletransporta sin motivo", Num("salto/teletransporte sin motivo") == 0, Of("salto/teletransporte sin motivo"));
+            TestProbe.Check($"[CV-07] {tag}: nadie da vueltas en círculo", Num("da vueltas en círculo") == 0, Of("da vueltas en círculo"));
             TestProbe.Check($"{tag}: nadie dentro de muebles, en el agua, cayendo ni volcado", Num("dentro de un objeto", "en el agua sin ser acuático", "cae", "bajo el mundo", "volcado / tumbado mal") == 0, Of("dentro de un objeto", "en el agua sin ser acuático", "cae", "bajo el mundo", "volcado / tumbado mal"));
         }
 
@@ -768,7 +773,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit, IFastGameTime
             string Grave(Anomaly a) => a.kind == "dentro de un objeto" || a.kind == "en el agua sin ser acuático" || a.kind == "cae" || a.kind == "bajo el mundo" ? "grave" : "leve";
             int grave = animals.Where(a => Grave(a) == "grave").Sum(a => a.count);
             TestProbe.Check("fauna: ningún animal dentro de muebles, en el agua sin ser acuático ni cayendo", grave == 0, string.Join("; ", animals.Where(a => Grave(a) == "grave").Select(a => $"{a.who}: {a.kind} ({a.detail})").Take(10)));
-            TestProbe.Check("fauna: ningún animal atascado > 20 s, dando vueltas o volcado", animals.Where(a => Grave(a) == "leve").Sum(a => a.count) == 0, string.Join("; ", animals.Where(a => Grave(a) == "leve").GroupBy(a => a.kind).Select(g => $"{g.Key}: {g.Count()} ({string.Join(", ", g.Select(a => a.who).Take(6))})")));
+            TestProbe.Check("[CV-03] fauna: ningún animal atascado > 20 s, dando vueltas o volcado", animals.Where(a => Grave(a) == "leve").Sum(a => a.count) == 0, string.Join("; ", animals.Where(a => Grave(a) == "leve").GroupBy(a => a.kind).Select(g => $"{g.Key}: {g.Count()} ({string.Join(", ", g.Select(a => a.who).Take(6))})")));
             Log($"══ RESUMEN DEL VIGÍA: {_anom.Count} anomalías distintas ({_anom.Values.Where(a => a.human).Sum(a => a.count)} muestras en personas, {animals.Sum(a => a.count)} en animales) ══");
             foreach (Anomaly a in _anom.Values.OrderBy(a => a.human ? 0 : 1).ThenByDescending(a => a.count).Take(60))
                 Log($"  {(a.human ? "persona" : "animal")} · {a.who}: {a.kind} ×{a.count} — {a.detail} (desde {a.firstAt})");

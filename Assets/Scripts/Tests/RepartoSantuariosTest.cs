@@ -207,7 +207,7 @@ public class RepartoSantuariosTest : MonoBehaviour, ITestUnit
         List<WorkRoster.Mission> Busy() { var l = Ms("A", "req", 5); l.Add(new WorkRoster.Mission("Aula", "aul_estudio", "Estudiar", 1f)); l.Add(new WorkRoster.Mission("Música", "son_grabar", "Grabar", 1f)); l.Add(new WorkRoster.Mission("Cocina", "coc_cuentas", "Cuentas", 0.5f)); return l; }
         WorkRoster full = Roster(("Llena", 0));
         WorkRoster.DayPlan pfull = full.Plan(0, Busy());
-        TestProbe.Check("sin tiempo libre, las opcionales se omiten y no hay clon para ellas (ni pendientes)",
+        TestProbe.Check("[CV-10] sin tiempo libre, las opcionales se omiten y no hay clon para ellas (ni pendientes)",
             pfull.clones.Count == 0 && pfull.skipped.Count == 3 && !pfull.work.Any(a => a.mission.optional) && pfull.backlog.Count == 0 && full.pending.Count == 0 && Mathf.Approximately(Worked(pfull, full.Find("Llena")), 5f),
             $"{pfull.clones.Count} clones · omitidas: {string.Join(", ", pfull.skipped.Select(m => m.id))}");
         WorkRoster roomy = Roster(("Holgada0", 0), ("Holgada1", 0));
@@ -295,7 +295,7 @@ public class RepartoSantuariosTest : MonoBehaviour, ITestUnit
             string.Join(", ", alloc.OrderByDescending(kv => kv.Value).Select(kv => $"{kv.Key} {kv.Value}")));
         var small = PopulationPlan.Allocate(20, PopulationPlan.Groups.Keys, out List<string> dropped20);
         TestProbe.Check("con muy pocos humanos no se pasa del total: cae el depredador más raro", small.Values.Sum() <= 20 && dropped20.Count > 0 && dropped20[0] == "Orca" && small.Where(kv => kv.Value > 0).All(kv => kv.Value >= PopulationPlan.MinOf(kv.Key)), $"fuera: {string.Join(", ", dropped20)}");
-        TestProbe.Check("el techo de la reproducción es lo que toca con K, no 1,5× un plan viejo", PopulationPlan.Cap("Bear") == PopulationPlan.Target("Bear") && PopulationPlan.Raw("ArcticFox") >= 4);
+        TestProbe.Check("[CV-12] el techo de la reproducción es lo que toca con K, no 1,5× un plan viejo", PopulationPlan.Cap("Bear") == PopulationPlan.Target("Bear") && PopulationPlan.Raw("ArcticFox") >= 4);
         Debug.Log($"[Fauna] Santuario 1 ({PopulationPlan.HumansIn(SanctuaryPlacement.Land)} humanos × {PopulationPlan.AnimalsPerHuman}): {string.Join(", ", PopulationPlan.Groups.Keys.Select(s => $"{s} {PopulationPlan.Raw(s)}"))}.");
 
         // RONDA 33: TAREAS A TROZOS. Las rondas de frutales, la patrulla, el alimentador y el vínculo se pueden partir (de media en media hora) para llenar

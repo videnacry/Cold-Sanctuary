@@ -289,7 +289,7 @@ public class HorarioLibreTest : MonoBehaviour, ITestUnit
             for (int d = p.firstDay; d < p.firstDay + LeisureRoster.DaysPerWeek; d++)
                 for (int sl = 0; sl < LeisureRoster.SlotHours.Length; sl++)
                     if (p.At(q, d, sl) == null) { missing++; if (miss.Length < 200) miss += $"{q.name} d{d} {LeisureRoster.SlotHours[sl]:00}h; "; }
-        TestProbe.Check($"{tag}: todas las horas libres de la semana llenas ({p.people.Count} personas × {slots} franjas)", p.people.Count >= minPeople && missing == 0, missing > 0 ? $"{missing} vacías: {miss}" : $"{p.entries.Count} franjas");
+        TestProbe.Check($"[CV-09] {tag}: todas las horas libres de la semana llenas ({p.people.Count} personas × {slots} franjas)", p.people.Count >= minPeople && missing == 0, missing > 0 ? $"{missing} vacías: {miss}" : $"{p.entries.Count} franjas");
         var over = LeisureRoster.OverCapacity(p);
         TestProbe.Check($"{tag}: ninguna actividad pasa de sus plazas", over.Count == 0, string.Join("; ", over.Take(5)));
         foreach (LeisureRoster.Activity wa in p.activities.Where(x => x.together && LeisureDirector.WeeklySessions.ContainsKey(x.id)))

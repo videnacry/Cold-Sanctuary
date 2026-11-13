@@ -157,6 +157,11 @@ public class GymUsabilityTest : MonoBehaviour, ITestUnit
         MagnateWarden.Lock(this, false);
         foreach (Behaviour b in storyOn) if (b != null) b.enabled = true;
         if (wd != null) wd.enabled = wdWas;
+        // (2026-11-13, CV-02) El paso de 0,04 s no se hereda: un fotograma después, el tiempo sigue como lo encontró la unidad (si no, el
+        // grupo siguiente corre con él y Sanear lo cuenta como FUGA).
+        yield return null;
+        TestProbe.Check("[CV-02] al acabar, el tiempo queda como lo encontró (timeScale y maximumDeltaTime): el grupo siguiente no hereda el paso de 0,04 s",
+            Mathf.Approximately(Time.timeScale, oldScale) && Mathf.Approximately(Time.maximumDeltaTime, oldMax), $"timeScale {Time.timeScale} (era {oldScale}) · maximumDeltaTime {Time.maximumDeltaTime} (era {oldMax})");
         TestProbe.End();
     }
 
