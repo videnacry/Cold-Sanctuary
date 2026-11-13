@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Unity.AI.Navigation;
 using UnityEngine;
+using UnityEngine.AI;
 
 /// <summary>
 /// EL ÁRBOL GIRA (docs/edificio-arbol.md; Berón 2026-10-29): toda la copa, el tronco y las ramas giran sobre la raíz en
@@ -23,6 +24,14 @@ public class TreeRotator : MonoBehaviour
     /// <summary>Grados girados antes de recolocar el NavMesh (quitarlo y ponerlo cuesta lo suyo). A 0,4 °/s, una vez cada ~1,2 s; a 40 m del
     /// eje, el NavMesh va como mucho 35 cm por detrás del piso. Antes, 0,05°: a pocos FPS, en cada frame.</summary>
     public const float NavRefreshDegrees = 0.5f;
+    /// <summary>(2026-11-14, ronda 93) El NavMesh del árbol lo coloca ESTE componente (no el paquete): cada vez que se quita y se pone un NavMeshData,
+    /// el NavMesh entero cambia, y en las rondas 75–93 los agentes de TODA la escena (renos, bueyes, zorros, pingüinos, lejos del árbol) se
+    /// quedaban con camino, «deseada» = su velocidad y velocidad 0 hasta un Warp (FrozenWarps = 2112 en 2 días). Inferido, sin comprobar en vivo:
+    /// el paquete lo recolocaba a CADA paso de giro (0,25°: hasta 5 veces por segundo con el tiempo rápido de las pruebas). Ahora, cada
+    /// <see cref="NavRefreshDegrees"/> (la mitad de veces; a 60 m del eje, el NavMesh va como mucho 0,5 m por detrás del piso).</summary>
+    public static bool ManualNav = true;
+    NavMeshData _data;
+    NavMeshDataInstance _inst;
     /// <summary>Giro mínimo que se aplica de una vez (a 0,4 °/s, 4 veces por segundo).</summary>
     // (2026-11-11) 0,25° (antes 0,1°): el paquete AI Navigation vuelve a colocar el NavMesh del árbol (NavMeshSurface.UpdateDataIfTransformChanged,
     // en NavMesh.onPreUpdate) CADA VEZ que su transform cambia; con pasos de 0,1° eran 4 veces por segundo, y cada vez los agentes que no quedaban
@@ -47,7 +56,18 @@ public class TreeRotator : MonoBehaviour
 
     void OnEnable() { Instance = this; }
     void OnDisable() { if (Instance == this) Instance = null; }
-    void Start() { _surface = GetComponent<NavMeshSurface>(); _navRot = transform.rotation; }
+    void Start()
+    {
+        _surface = GetComponent<NavMeshSurface>(); _navRot = transform.rotation;
+        if (ManualNav && _surface != null && _surface.navMeshData != null)
+        {
+            _data = _surface.navMeshData;
+            _surface.enabled = false;   // (quita su instancia: ya no la recoloca el paquete en cada paso)
+            _inst = NavMesh.AddNavMeshData(_data, transform.position, transform.rotation);
+            _inst.owner = this;
+        }
+    }
+    void OnDestroy() { if (_inst.valid) _inst.Remove(); }
 
     /// <summary>Cambia la velocidad (hechizo «arbol»): horas del juego por vuelta; 0 lo para.</summary>
     public static string Set(float hours)
@@ -105,7 +125,11 @@ public class TreeRotator : MonoBehaviour
         if (_surface != null && Time.time >= _navAt)
         {
             _navAt = Time.time + navRefresh;
-            if (Quaternion.Angle(_navRot, transform.rotation) > NavRefreshDegrees) { _navRot = transform.rotation; NavRefreshes++; }
+            if (Quaternion.Angle(_navRot, transform.rotation) > NavRefreshDegrees)
+            {
+                _navRot = transform.rotation; NavRefreshes++;
+                if (_data != null) { if (_inst.valid) _inst.Remove(); _inst = NavMesh.AddNavMeshData(_data, transform.position, transform.rotation); _inst.owner = this; }
+            }
         }
     }
 
