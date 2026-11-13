@@ -84,3 +84,14 @@ ya estaba tras `#if UNITY_EDITOR` (CubeCreature, CheapMaterials, los menús de l
     Recursos y Misiones;
   - esas tres ventanas salen sin «F2/F3/F4», arriba a la izquierda (bajo el botón «½ res»), y el holograma «Menú» va arriba a la derecha.
 - **Texto legible**: la piel IMGUI por defecto (la de todos los paneles que no fijan su tamaño) va a ~3,5 % del lado corto de la pantalla.
+
+## Segunda prueba (build 65aecfe)
+- **Bloque magenta junto al jugador**: el `RefugeMarker` de la misión WASD (un `CreatePrimitive`, con el material por defecto del URP que la
+  pasada de CheapMaterials pasa a Simple Lit). El menú guarda ahora en `WebLigeraShaders` también el material por defecto de las primitivas,
+  tal cual y en barato. Además, en la web, `WebLigera.FixBrokenShaders` busca los materiales que saldrían en magenta (sin sombreador, no
+  soportado o el de error):
+  - al arrancar, a los 3, 10 y 30 s, y luego cada minuto;
+  - **registra** cada uno (`[Web] MAGENTA …: material «…» con el sombreador «…» en «ruta»`), que dice qué sombreador falta añadir;
+  - le pone el primer sombreador bueno (Simple Lit, Lit, Unlit o Unlit/Color) con su color.
+- **Itinerario en medio de la pantalla**: en la web, «Tu jornada de hoy…» es una sola línea durante 5 s («Hoy: 09:00 … y N más · la jornada
+  entera, en «Misiones y jornada»»). La lista entera está en esa ventana. La línea de la misión sigue abajo.

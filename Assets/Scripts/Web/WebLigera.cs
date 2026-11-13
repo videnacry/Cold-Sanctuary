@@ -151,6 +151,46 @@ public static class WebLigera
         Debug.Log($"[Web] {s.name}: {removed} animales quitados ({total} → {total - removed}; tope de la web, {cap}).");
         return removed;
     }
+
+    // ── LOS SOMBREADORES QUE FALTAN (2026-11-13: un bloque magenta junto al jugador en el build web) ─────────────────────────────────────
+    static readonly HashSet<Material> _checked = new HashSet<Material>();
+    static readonly HashSet<string> _reported = new HashSet<string>();
+    static Shader _fallback;
+    static readonly string[] FallbackNames = { "Universal Render Pipeline/Simple Lit", "Universal Render Pipeline/Lit", "Universal Render Pipeline/Unlit", "Unlit/Color" };
+
+    /// <summary>¿Se pinta en magenta? (sin sombreador, sombreador que esta GPU no soporta, o el de error).</summary>
+    public static bool Broken(Shader sh) => sh == null || !sh.isSupported || sh.name == "Hidden/InternalErrorShader";
+
+    /// <summary>Busca los renderers activos con un material que sale MAGENTA. REGISTRA cada uno (material, sombreador y dónde, una vez; así se
+    /// sabe qué sombreador añadir a WebLigeraShaders) y le pone el primer sombreador bueno de <see cref="FallbackNames"/>, con su color.
+    /// Devuelve cuántos materiales arregló.</summary>
+    public static int FixBrokenShaders(string when)
+    {
+        if (_fallback == null) foreach (string n in FallbackNames) { Shader s = Shader.Find(n); if (!Broken(s)) { _fallback = s; break; } }
+        int fixedN = 0;
+        foreach (Renderer r in Object.FindObjectsByType<Renderer>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
+        {
+            Material[] mats = r.sharedMaterials;
+            for (int i = 0; i < mats.Length; i++)
+            {
+                Material m = mats[i];
+                if (m == null || !_checked.Add(m)) continue;
+                if (!Broken(m.shader)) continue;
+                string sn = m.shader != null ? m.shader.name : "(ninguno)";
+                if (_reported.Add(sn + "|" + m.name)) Debug.LogWarning($"[Web] MAGENTA ({when}): material «{m.name}» con el sombreador «{sn}» (soportado: {(m.shader != null && m.shader.isSupported)}) en «{Path(r.transform)}». Añádelo a WebLigeraShaders.");
+                if (_fallback == null) continue;
+                Color c = m.HasProperty("_BaseColor") ? m.GetColor("_BaseColor") : m.HasProperty("_Color") ? m.GetColor("_Color") : Color.gray;
+                m.shader = _fallback;
+                if (m.HasProperty("_BaseColor")) m.SetColor("_BaseColor", c);
+                if (m.HasProperty("_Color")) m.SetColor("_Color", c);
+                fixedN++;
+            }
+        }
+        if (fixedN > 0) Debug.Log($"[Web] {fixedN} materiales magenta ({when}) pasados a «{(_fallback != null ? _fallback.name : "—")}».");
+        return fixedN;
+    }
+
+    static string Path(Transform t) { string p = t.name; for (Transform q = t.parent; q != null; q = q.parent) p = q.name + "/" + p; return p; }
 }
 
 /// <summary>Lo de la web ligera que va por fotogramas: hacer miembro a Kushal, entrar en el microcosmos y el botón de resolución.</summary>
@@ -163,6 +203,7 @@ public class WebLigeraRunner : MonoBehaviour
         GameObject p = GameObject.FindGameObjectWithTag("Player");
         string r = SpellConsole.MakeMember(p);
         Debug.Log("[Web] " + (r ?? "Kushal ya es del santuario."));
+        StartCoroutine(MagentaWatch());
         if (!WebLigera.Micro) yield break;
         // EL MICROCOSMOS: directo dentro, como «Inicio → microcosmos» (SceneLauncher.EnterMicro). Espera acotada al jugador.
         float until = Time.realtimeSinceStartup + 10f;
@@ -174,6 +215,18 @@ public class WebLigeraRunner : MonoBehaviour
         if (!MobWorldLoader.Instance.IsInMobWorld) { Debug.LogWarning($"[Web] {WebLigera.MicroScene}: no se entró en 120 s."); yield break; }
         // Mientras Kushal está dentro, la fauna del santuario (de fondo, lejos) no hace falta: se apaga, y vuelve al salir.
         StartCoroutine(SanctuaryFaunaWhileInside());
+    }
+
+    /// <summary>Lo magenta, al arrancar y unas veces más (muchos materiales se hacen en juego, más tarde: marcadores, cultivos, el microcosmos);
+    /// luego cada minuto. Cada material se mira una sola vez.</summary>
+    IEnumerator MagentaWatch()
+    {
+        foreach (float wait in new[] { 0f, 3f, 10f, 30f })
+        {
+            if (wait > 0f) yield return new WaitForSecondsRealtime(wait);
+            WebLigera.FixBrokenShaders($"a los {Time.realtimeSinceStartup:0} s");
+        }
+        while (true) { yield return new WaitForSecondsRealtime(60f); WebLigera.FixBrokenShaders($"a los {Time.realtimeSinceStartup:0} s"); }
     }
 
     IEnumerator SanctuaryFaunaWhileInside()

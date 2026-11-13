@@ -111,6 +111,16 @@ public static class WebLigeraBuild
             // Tal cual (sin palabras clave del juego): los que crean el material sin pasarlo a barato.
             SaveMat(new Material(sh) { name = baseName + "_base" }, made);
         }
+        // (2026-11-13, el bloque magenta junto al jugador: el RefugeMarker de la misión WASD, un CreatePrimitive) El material de las primitivas
+        // hechas en juego es el material por defecto del URP; la pasada de CheapMaterials lo pasa a Simple Lit mate. Esa combinación exacta, también.
+        Material def = GraphicsSettings.defaultRenderPipeline != null ? GraphicsSettings.defaultRenderPipeline.defaultMaterial : null;
+        if (def != null)
+        {
+            var prim = new Material(def) { name = "Primitiva_por_defecto_barata" };
+            CheapMaterials.MakeCheap(prim);
+            SaveMat(prim, made);
+            SaveMat(new Material(def) { name = "Primitiva_por_defecto" }, made);
+        }
         // «Always Included Shaders» (ProjectSettings/GraphicsSettings.asset, m_AlwaysIncludedShaders).
         var added = new System.Collections.Generic.List<string>();
         Object gs = GraphicsSettings.GetGraphicsSettings();
