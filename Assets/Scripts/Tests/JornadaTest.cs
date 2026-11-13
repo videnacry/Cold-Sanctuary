@@ -574,7 +574,10 @@ public class JornadaTest : MonoBehaviour, ITestUnit, IFastGameTime
             // (2026-11-11) Quien ha bajado por la Línea a la planta bajo el mar o ha volado al santuario aéreo HACE SU MISIÓN ALLÍ (corre por el reloj,
             // en otra escena): no está «fuera de su puesto». Lizmibet e Irosene (la planta), Luciana (la flota aérea) a 0 % en la suite 60.
             bool awaySite = SiteLine.IsAway(tr.g) || AereoLink.IsAway(tr.g);
-            bool atPost = awaySite || (area != null && PlayerWorkday.AtPost(cur?.mission, area, p));
+            // (ronda 74) La RONDA DEL JARDINERO es su puesto allá donde va (roams): Consol, «Ronda 13/24 … fitoplancton de Árbol de los Campos», 1 %
+            // nadando por el tronco del árbol que gira, que no es el área «Huerto» de la misión.
+            bool onRound = cur != null && FruitGardener.IsRound(cur.mission.id) && tr.g.TryGetComponent(out FruitGardener fgp) && fgp.enabled && !fgp.Finished;
+            bool atPost = awaySite || onRound || (area != null && PlayerWorkday.AtPost(cur?.mission, area, p));
             bool full = Window(tr, out float path, out float net, out float reach);
             bool moving = !full || path > 1f;
             string status = StatusOf(tr.g);
@@ -634,7 +637,8 @@ public class JornadaTest : MonoBehaviour, ITestUnit, IFastGameTime
             if (full && same && !resting && path < 0.5f) Add(tr.name, "atascado > 20 s", $"quiere «{desire}» y no se mueve en {Where(p)} [{DesireCatalog.TripInfo(a)} · {DesireCatalog.NavInfo(a)}]", false);   // (2026-11-11) con su viaje y su agente
             // (2026-11-11) Ni el HÁBITO en marcha: pastar alrededor de la mata de camarina o ir y venir con un guijarro al nido es ir y volver a
             // propósito (osos y pingüinos de vivo62, «hábito: come bayas…», «lleva un guijarro a su nido»), como «merodear» en las personas.
-            if (full && same && !flier && !marine && !a.busy && !habit && desire != "habit" && FlatPath(tr) > 15f && net < 2f && reach < FlatPath(tr) * 0.35f) Add(tr.name, "da vueltas en círculo", $"{path:0} m en 20 s para {net:0.0} m netos ({tr.activity}) [{DesireCatalog.TripInfo(a)} · {NavTrace.Last(a)}]", false);   // (2026-11-11) con su viaje y el último que le cambió el camino
+            // (ronda 74) Ni PELEANDO: la pelea re-apunta al rival cada momento y se le da la vuelta (pingüinos «Locomotion.GoTo ← Fight»).
+            if (full && same && !flier && !marine && !a.busy && !a.fighting && !habit && desire != "habit" && FlatPath(tr) > 15f && net < 2f && reach < FlatPath(tr) * 0.35f) Add(tr.name, "da vueltas en círculo", $"{path:0} m en 20 s para {net:0.0} m netos ({tr.activity}) [{DesireCatalog.TripInfo(a)} · {NavTrace.Last(a)}]", false);   // (2026-11-11) con su viaje y el último que le cambió el camino
             if (!(marine && inHabitat)) CheckBody(tr, p, riding, a.death || a.asleep || a.busy, false);   // (en su respiradero la foca asoma recta por la placa y al descansar se tumba: es su sitio, no un cuerpo dentro del hielo)
         }
 
