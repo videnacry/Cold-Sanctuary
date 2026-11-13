@@ -147,7 +147,7 @@ public class FaunaChecks : MonoBehaviour, ITestUnit
         {
             bool rests = DesireCatalog.StrollWithoutHopForTest(sw, out float turned);
             TestProbe.Check("un paseo sin salto posible descansa a propósito (no está atascado)", rests, sw.name);
-            TestProbe.Check("…y prueba otra dirección (gira ≥ 90°)", turned >= 89f, $"{turned:0} °");
+            TestProbe.Check("…y prueba otra dirección de lado (gira 60–120°, nunca de vuelta)", turned >= 59f && turned <= 121f, $"{turned:0} °");
         }
 
         // ── (2026-11-11, ronda 72) EL PASEO DE UN ADULTO VA A UN SITIO DE VERDAD: a ≥ 3 m y con camino completo ──
