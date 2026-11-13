@@ -430,6 +430,30 @@ public static class DesireCatalog
 
     public static string TripInfo(Animal a) => a != null && _trips.TryGetValue(a, out Trip t) ? $"viaje «{t.key}» va={t.going} meta={t.goal:F1} pausa={t.pauseUntil - Time.time:0.0} fallo={t.failUntil - Time.time:0.0} llamadas={t.calls} (hace {Time.time - t.lastCall:0.0} s) empezados={t.started}" : "sin viaje";
     static readonly Dictionary<Animal, Trip> _trips = new Dictionary<Animal, Trip>();
+    // (2026-11-13, ronda 88) EL VIGILANTE DE VIAJES. Going (quieto con camino, atascado, sin camino, llegó) solo corría cuando el deseo se volvía
+    // a despachar, y eso pasaba cada 10–15 s (ronda 88: 20 adultos «atascados > 20 s» con «deseada 3–5, velocidad 0», 14 llamadas en minutos,
+    // y FrozenRestarts = 2 en toda la partida): un viaje parado esperaba ese rato sin que nadie lo viera. Ahora cada 0,5 s se pasa por los
+    // viajes en marcha; el deseo, al volver, encuentra el viaje ya acabado y sigue (pausa o siguiente salto).
+    static float _superviseAt;
+    static readonly List<Animal> _superviseList = new List<Animal>();
+    public static int Supervised;
+    public static void SuperviseTrips() { if (Time.time < _superviseAt) return; _superviseAt = Time.time + 0.5f; SuperviseTripsNow(); }
+    public static void SuperviseTripsNow()
+    {
+        _superviseList.Clear(); _superviseList.AddRange(_trips.Keys);
+        foreach (Animal a in _superviseList)
+        {
+            if (a == null) { _trips.Remove(a); continue; }
+            if (!_trips.TryGetValue(a, out Trip t) || !t.going) continue;
+            if (a.death || a.asleep || a.busy) continue;
+            Supervised++;
+            bool on = a.nav != null && a.nav.isActiveAndEnabled && a.nav.isOnNavMesh;
+            if (!on) { t.going = false; continue; }
+            // Si el viaje acaba aquí (llegó, se atascó), la pausa de mirar y olfatear que ponía el paseo al volver.
+            if (!Going(a, t) && !t.going) { t.pauseUntil = Mathf.Max(t.pauseUntil, Time.time + UnityEngine.Random.Range(1f, 3f)); a.Loco?.Idle(1f); }
+        }
+    }
+
     // (2026-11-13, ronda 78) CÓMO ACABAN LOS PASEOS (explore y el recinto): cuándo, adónde y si llegó. Para JornadaTest: quien explora un sitio
     // pequeño con metas distintas que alcanza no «da vueltas» (Polluelo_1, el emperador #37 y el oso #45: caminos completos de 4–13 m, sin fallos).
     static readonly Dictionary<Animal, List<(float t, Vector3 goal, bool reached)>> _outcomes = new Dictionary<Animal, List<(float, Vector3, bool)>>();
@@ -504,9 +528,9 @@ public static class DesireCatalog
         // «esquinas 0» y «deseada» 3–15: ninguno andaba y el agente no lo recalculaba solo. Se le vuelve a pedir el camino (cada 0,5 s como mucho),
         // y eso no cuenta como estar quieto (el tope de 5 s sin acercarse sigue valiendo).
         bool repathed = false;
-        // (ronda 85) Solo si NO anda y no está ya calculando: pedirlo otra vez cada 0,5 s mientras estaba «pendiente» volvía a empezar el cálculo
-        // y el agente no salía nunca (reno #34: «camino True, pendiente True … deseada 5, velocidad 0»).
-        if (nav.hasPath && !nav.pathPending && nav.velocity.magnitude < 0.1f && Time.time >= t.reissueAt && (nav.isPathStale || nav.path.corners.Length == 0))
+        // (ronda 85) Solo si no está ya calculando: pedirlo otra vez cada 0,5 s mientras estaba «pendiente» volvía a empezar el cálculo (reno #34).
+        // (ronda 88) Sin la condición de «no anda» que se añadió entonces (20 atascados en la ronda 88).
+        if (nav.hasPath && !nav.pathPending && Time.time >= t.reissueAt && (nav.isPathStale || nav.path.corners.Length == 0))
         {
             t.reissueAt = Time.time + 0.5f; t.frozenSince = -1f; StaleRepaths++;
             self.Loco?.SetGait(false, 0.1f);

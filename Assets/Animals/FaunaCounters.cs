@@ -23,11 +23,12 @@ public class FaunaCounters : MonoBehaviour
     public static string Line() =>
         $"[Fauna] contadores: StaleRepaths={DesireCatalog.StaleRepaths} NavReach.BadPaths={NavReach.BadPaths} HomeLegs={DesireCatalog.HomeLegs} (rectos {DesireCatalog.StraightLegs}) " +
         $"EdgeNudges={DesireCatalog.EdgeNudges} FrozenRestarts={DesireCatalog.FrozenRestarts} FrozenTrips={DesireCatalog.FrozenTrips} " +
-        $"BadPaths(viajes)={DesireCatalog.BadPaths} NoPathTrips={DesireCatalog.NoPathTrips} IdleRefused={ActionPrep.IdleRefused} " +
+        $"BadPaths(viajes)={DesireCatalog.BadPaths} NoPathTrips={DesireCatalog.NoPathTrips} IdleRefused={ActionPrep.IdleRefused} Vigilados={DesireCatalog.Supervised} " +
         $"PenWalker={PenWalker.Started}/{PenWalker.Arrived}/{PenWalker.Gave} (empezados/llegados/sin sitio)";
 
     void Update()
     {
+        DesireCatalog.SuperviseTrips();   // (ronda 88) los viajes de los deseos, vigilados cada 0,5 s aunque el deseo no se despache
         if (Time.unscaledTime < _next) return;
         _next = Time.unscaledTime + Every;
         string l = Line();
