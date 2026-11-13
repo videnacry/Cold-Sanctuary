@@ -26,7 +26,7 @@ public class MicroGardener : MonoBehaviour
                 _cut = GameObject.CreatePrimitive(PrimitiveType.Cube); _cut.name = "Hoja_cortada";
                 Destroy(_cut.GetComponent<Collider>());
                 _cut.transform.SetParent(transform, false); _cut.transform.localPosition = Vector3.up * 2.1f; _cut.transform.localScale = new Vector3(1.6f, 0.08f, 1f);
-                _cut.GetComponent<Renderer>().material.color = new Color(0.3f, 0.55f, 0.25f);
+                _cut.GetComponent<Renderer>().sharedMaterial = CheapMaterials.Opaque(new Color(0.3f, 0.55f, 0.25f));   // (2026-11-11, #152: el material compartido mate de ese color, no una copia «Lit (Instance)» brillante)
             }
             _fern = null;
             return;

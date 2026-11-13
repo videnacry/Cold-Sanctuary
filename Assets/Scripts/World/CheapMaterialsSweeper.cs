@@ -7,7 +7,7 @@ using UnityEngine;
 /// </summary>
 public class CheapMaterialsSweeper : MonoBehaviour
 {
-    float _next, _nextScene = 60f;
+    float _next;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void Boot()
@@ -22,12 +22,9 @@ public class CheapMaterialsSweeper : MonoBehaviour
     {
         if (Time.unscaledTime < _next) return;
         _next = Time.unscaledTime + 15f;
-        CheapMaterials.CheapenBodies();
-        // (ronda 72) Y cada minuto, las escenas enteras: quedaban 15 «Lit» y «Lit (Instance)» que no eran de ningún cuerpo; dice de quién eran.
-        if (Time.unscaledTime >= _nextScene)
-        {
-            _nextScene = Time.unscaledTime + 60f;
-            for (int i = 0; i < UnityEngine.SceneManagement.SceneManager.sceneCount; i++) CheapMaterials.CheapenScene(UnityEngine.SceneManagement.SceneManager.GetSceneAt(i), true);
-        }
+        // (2026-11-11) Solo los cuerpos NUEVOS (nacimientos, clones de la Magnate, crías): sus cubos se hacen con primitivas (el «Lit» por defecto) y
+        // algunos se colorean en juego. Las escenas enteras, solo al cargar (CheapMaterials.OnLoad): recorrer todos los renderers cada minuto era un
+        // tirón en este PC.
+        CheapMaterials.CheapenBodies(true);
     }
 }

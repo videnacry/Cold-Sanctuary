@@ -74,7 +74,7 @@ public class VisitorAnimaMob : MeditationMob, IInteractable, IHungryVisitor
         Destroy(food.GetComponent<Collider>());
         food.transform.position = transform.position + fwd.normalized * 0.8f + Vector3.up * 0.08f;
         food.transform.localScale = new Vector3(0.45f, 0.16f, 0.45f);
-        Renderer fr = food.GetComponent<Renderer>(); if (fr != null) fr.material.color = new Color(0.55f, 0.75f, 0.3f);
+        Renderer fr = food.GetComponent<Renderer>(); if (fr != null) fr.sharedMaterial = CheapMaterials.Opaque(new Color(0.55f, 0.75f, 0.3f));   // (2026-11-11, #152: el material compartido mate de ese color, no una copia «Lit (Instance)» brillante)
         Vector3 scale = transform.localScale;
         transform.localScale = new Vector3(scale.x, scale.y * 0.82f, scale.z);   // sentado / agachado comiendo
         float until = Time.time + 6f;

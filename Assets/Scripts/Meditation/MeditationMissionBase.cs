@@ -233,7 +233,7 @@ public abstract class MeditationMissionBase : MonoBehaviour
         go.transform.position   = pos;
         go.transform.localScale = Vector3.one * scale;
         var col = go.GetComponent<Collider>(); if (col != null) Destroy(col);
-        var rend = go.GetComponent<Renderer>(); if (rend != null) rend.material.color = color;
+        var rend = go.GetComponent<Renderer>(); if (rend != null) rend.sharedMaterial = CheapMaterials.Opaque(color);   // (2026-11-11, #152: el material compartido mate de ese color, no una copia «Lit (Instance)» brillante)
         return go;
     }
 }

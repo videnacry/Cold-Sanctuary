@@ -93,7 +93,7 @@ public static class CheapMaterials
         UnityEngine.SceneManagement.SceneManager.sceneLoaded += Loaded;
         for (int i = 0; i < UnityEngine.SceneManagement.SceneManager.sceneCount; i++) CheapenScene(UnityEngine.SceneManagement.SceneManager.GetSceneAt(i));
     }
-    static void Loaded(UnityEngine.SceneManagement.Scene s, UnityEngine.SceneManagement.LoadSceneMode m) => CheapenScene(s);
+    static void Loaded(UnityEngine.SceneManagement.Scene s, UnityEngine.SceneManagement.LoadSceneMode m) => CheapenScene(s, true);   // (con los dueños en el registro: ronda 72)
 
     public static int Cheapened { get; private set; }
     public static int CheapenScene(UnityEngine.SceneManagement.Scene s) => CheapenScene(s, false);
@@ -132,12 +132,14 @@ public static class CheapMaterials
 
     /// <summary>(2026-11-11, #152) LAS COPIAS DE DESPUÉS: los materiales que se crean en juego al vestir o colorear a la gente y a los animales
     /// («Lit (Instance)», «Gris», «DarkGreen» de la ronda 70) no existían al cargar la escena. Cada 15 s se pasan a mate los de los cuerpos (Anima).</summary>
-    public static int CheapenBodies()
+    static readonly HashSet<Anima> _bodiesDone = new HashSet<Anima>();
+    public static int CheapenBodies(bool onlyNew = false)
     {
         int n = 0;
         foreach (Anima a in Object.FindObjectsByType<Anima>(FindObjectsSortMode.None))
         {
             if (a == null) continue;
+            if (onlyNew && !_bodiesDone.Add(a)) continue;   // (cada cuerpo, una vez: sus materiales ya quedaron mates)
             foreach (Renderer r in a.GetComponentsInChildren<Renderer>(true))
                 foreach (Material m in r.sharedMaterials)
                 {
