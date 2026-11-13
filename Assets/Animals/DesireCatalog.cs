@@ -265,6 +265,18 @@ public static class DesireCatalog
         // de 1,5 a 5 m, con camino completo (PenGoal); si no hay ninguno, descansa (sin viaje).
         Trip t = TripOf(self, "recinto");
         t.calls++; t.lastCall = Time.time;
+        // (2026-11-13, ronda 82) EN UN RECINTO DE LA CRÍA, SIN NAVMESH: el recinto gira con el árbol y su NavMesh se recoloca a cada paso; la cría
+        // anda en las coordenadas del recinto (PenWalker). Mismo ritmo: un sitio a 1,5–4 m, se para 4–9 s, otro.
+        PenWalker pw = PenWalker.For(self);
+        if (pw != null)
+        {
+            if (pw.Going) return true;
+            if (pw.TakeArrival()) { Outcome(self, t, true); t.pauseUntil = Time.time + UnityEngine.Random.Range(4f, 9f); return true; }
+            if (Time.time < t.pauseUntil) return true;
+            if (pw.PickGoal()) { t.restNoSpot = false; t.goal = pw.GoalWorld; t.started++; TripsStarted++; return true; }
+            t.restNoSpot = true; t.pauseUntil = Time.time + UnityEngine.Random.Range(4f, 9f); self.Loco?.Idle(1f);
+            return true;
+        }
         if (t.going) { if (Going(self, t)) return true; t.pauseUntil = Time.time + UnityEngine.Random.Range(4f, 9f); self.Loco?.Idle(1f); return true; }   // llegó (o se atascó): mira y olfatea
         if (Time.time < t.pauseUntil || Time.time < t.failUntil) return true;
         if (PenGoal(self, out Vector3 goal)) { t.restNoSpot = false; Walk(self, t, goal); return true; }
