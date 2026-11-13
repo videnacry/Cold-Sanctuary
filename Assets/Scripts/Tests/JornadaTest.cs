@@ -622,7 +622,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit, IFastGameTime
             // (2026-11-02) UN CADÁVER no está «atascado»: las abejas que caza la araña, la foca que caza la orca… quedaban con su último
             // deseo («explore») y contaban como atascadas > 20 s (las 6 SnowBee del grupo 50 estaban muertas, comprobado en vivo).
             bool perched = a.TryGetComponent(out SnowPetrelLife petrel) && (petrel.Perched || petrel.Breeding);
-            bool resting = perched || a.death || a.asleep || a.busy || habit || inHabitat || desire == "rest" || desire == "brood" || desire == "den" || desire == "incubate" || desire == "drink" || desire == "nurse" || desire == "tend" || desire == "habit" || desire == "";
+            bool resting = DesireCatalog.RestingByChoice(a) || perched || a.death || a.asleep || a.busy || habit || inHabitat || desire == "rest" || desire == "brood" || desire == "den" || desire == "incubate" || desire == "drink" || desire == "nurse" || desire == "tend" || desire == "habit" || desire == "";
             bool full = Window(tr, out float path, out float net, out float reach);
             tr.activity = a.asleep ? "durmiendo" : a.busy ? "comiendo/cazando" : habit ? $"hábito: {hb.Doing}" : inHabitat ? "en su hábitat" : full && path > 1f ? $"moviéndose ({desire})" : $"quieto ({desire})";
             bool flier = a.AirAffinity >= 0.5f;

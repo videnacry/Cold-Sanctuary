@@ -64,6 +64,9 @@ public static class CheapMaterials
         m.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
     }
 
+    /// <summary>(2026-11-11) El agua (el mar del horizonte, el agua de los troncos): puede ser transparente aunque su color sea opaco (lo pone la textura).</summary>
+    public static bool IsWater(Material m) => m != null && (m.name.StartsWith("Mar_") || m.name.StartsWith("Agua") || m.name.Contains("_agua") || m.name.Contains("Water"));
+
     /// <summary>¿Es un material «caro» de los que pide quitar Berón? (URP Lit o Standard, suavidad &gt; 0,3, metálico o con capa clara; o
     /// transparente sin ser cristal o agua: alfa del color ≥ 0,99).</summary>
     public static string Expensive(Material m)
@@ -72,11 +75,11 @@ public static class CheapMaterials
         string sn = m.shader.name;
         if (sn != LitName && sn != SimpleName && sn != "Standard") return null;   // (partículas, cielo, texto, sin luz: fuera de esta regla)
         if (sn != SimpleName) return "sombreador " + sn;
-        if (m.HasProperty("_Smoothness") && m.GetFloat("_Smoothness") > 0.3f) return $"suavidad {m.GetFloat("_Smoothness"):0.00}";
+        if (m.HasProperty("_Smoothness") && m.GetFloat("_Smoothness") > 0.2f) return $"suavidad {m.GetFloat("_Smoothness"):0.00}";   // (2026-11-11: 0,2, la de la petición #152; antes 0,3)
         if (m.HasProperty("_Metallic") && m.GetFloat("_Metallic") > 0.05f) return "metálico";
         bool transparent = m.HasProperty("_Surface") && m.GetFloat("_Surface") > 0.5f;
         Color c = m.HasProperty("_BaseColor") ? m.GetColor("_BaseColor") : m.color;
-        if (transparent && c.a >= 0.99f) return "transparente sin ser cristal";
+        if (transparent && c.a >= 0.99f && !IsWater(m)) return "transparente sin ser cristal";
         return null;
     }
 
@@ -103,12 +106,44 @@ public static class CheapMaterials
                 {
                     if (m == null || !done.Add(m) || Expensive(m) == null) continue;
 #if UNITY_EDITOR
-                    if (UnityEditor.EditorUtility.IsPersistent(m)) continue;
+                    if (UnityEditor.EditorUtility.IsPersistent(m)) { ReplaceWithClone(r, m); n++; continue; }   // (2026-11-11) un asset que no se puede tocar (los de dentro de un FBX: «Skin», «Teshirt» de Kushal): en este renderer, una copia mate
 #endif
                     MakeCheap(m); n++;
                 }
         Cheapened += n;
         if (n > 0) Debug.Log($"[Rendimiento] {s.name}: {n} materiales pasados a Simple Lit mate (de {done.Count} distintos).");
+        return n;
+    }
+
+    // (2026-11-11, #152) COPIAS MATES de los assets que no se pueden cambiar (los materiales de dentro de un modelo FBX): una por material.
+    static readonly Dictionary<Material, Material> _clones = new Dictionary<Material, Material>();
+    static void ReplaceWithClone(Renderer r, Material m)
+    {
+        if (!_clones.TryGetValue(m, out Material c) || c == null) { c = new Material(m) { name = m.name }; MakeCheap(c); _clones[m] = c; }
+        Material[] ms = r.sharedMaterials;
+        for (int i = 0; i < ms.Length; i++) if (ms[i] == m) ms[i] = c;
+        r.sharedMaterials = ms;
+    }
+
+    /// <summary>(2026-11-11, #152) LAS COPIAS DE DESPUÉS: los materiales que se crean en juego al vestir o colorear a la gente y a los animales
+    /// («Lit (Instance)», «Gris», «DarkGreen» de la ronda 70) no existían al cargar la escena. Cada 15 s se pasan a mate los de los cuerpos (Anima).</summary>
+    public static int CheapenBodies()
+    {
+        int n = 0;
+        foreach (Anima a in Object.FindObjectsByType<Anima>(FindObjectsSortMode.None))
+        {
+            if (a == null) continue;
+            foreach (Renderer r in a.GetComponentsInChildren<Renderer>(true))
+                foreach (Material m in r.sharedMaterials)
+                {
+                    if (m == null || Expensive(m) == null) continue;
+#if UNITY_EDITOR
+                    if (UnityEditor.EditorUtility.IsPersistent(m)) { ReplaceWithClone(r, m); n++; continue; }
+#endif
+                    MakeCheap(m); n++;
+                }
+        }
+        Cheapened += n;
         return n;
     }
 

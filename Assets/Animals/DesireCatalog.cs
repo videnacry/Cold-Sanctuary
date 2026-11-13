@@ -267,7 +267,8 @@ public static class DesireCatalog
         t.calls++; t.lastCall = Time.time;
         if (t.going) { if (Going(self, t)) return true; t.pauseUntil = Time.time + UnityEngine.Random.Range(4f, 9f); self.Loco?.Idle(1f); return true; }   // llegó (o se atascó): mira y olfatea
         if (Time.time < t.pauseUntil || Time.time < t.failUntil) return true;
-        if (PenGoal(self, out Vector3 goal)) { Walk(self, t, goal); return true; }
+        if (PenGoal(self, out Vector3 goal)) { t.restNoSpot = false; Walk(self, t, goal); return true; }
+        t.restNoSpot = true;
         t.pauseUntil = Time.time + UnityEngine.Random.Range(4f, 9f); self.Loco?.Idle(1f);
         return true;
     }
@@ -291,7 +292,9 @@ public static class DesireCatalog
     // ══ MOVIMIENTO DE LOS DESEOS: siempre a sitios ALCANZABLES, con tope y sin re-apuntar en cada decisión ══════════════
     // Un «viaje» por animal: hacia dónde va, por qué deseo, desde cuándo y cuánto ha avanzado. Si en 5 s no se acerca (un muro,
     // otro animal en medio) o tarda más de 40 s, lo deja; ese deseo no vuelve a intentar ese viaje en unos segundos.
-    class Trip { public string key; public Vector3 goal; public bool going; public float since, best, bestAt, pauseUntil, failUntil, lastCall, reissueAt; public int calls, started; }
+    class Trip { public string key; public Vector3 goal; public bool going, restNoSpot; public float since, best, bestAt, pauseUntil, failUntil, lastCall, reissueAt; public int calls, started; }
+    /// <summary>(2026-11-11) ¿Descansa a propósito? La cría del recinto sin sitio a 1,5–5 m (PenGoal) se queda mirando: no está «atascada».</summary>
+    public static bool RestingByChoice(Animal a) => a != null && _trips.TryGetValue(a, out Trip t) && t.key == "recinto" && t.restNoSpot && !t.going;
     /// <summary>Viajes que se quedaron sin camino lejos de su meta (diagnóstico).</summary>
     public static int NoPathTrips;
     static int _noPathLogs;
@@ -328,7 +331,14 @@ public static class DesireCatalog
         NavMeshAgent n = a != null ? a.nav : null;
         if (n == null) return "sin agente";
         if (!n.isActiveAndEnabled) return "agente apagado";
-        return $"agente: en NavMesh {n.isOnNavMesh}, camino {n.hasPath}, pendiente {n.pathPending}, estado {n.pathStatus}, velocidad {n.velocity.magnitude:0.00} (pedida {n.speed:0.0}), destino a {Vector3.Distance(n.transform.position, n.destination):0.0} m, parado {n.isStopped}";
+        // (2026-11-11) Y lo que puede tenerlo quieto con camino: el agente desfasado del cuerpo, la evitación, un enlace, updatePosition, el agente
+        // más cercano y la distancia al borde del NavMesh (un borde tallado lo frena).
+        Vector3 gap = n.nextPosition - n.transform.position; gap.y = 0f;
+        float nearest = float.MaxValue;
+        foreach (NavMeshAgent o in UnityEngine.Object.FindObjectsByType<NavMeshAgent>(FindObjectsSortMode.None)) if (o != null && o != n && o.isActiveAndEnabled) nearest = Mathf.Min(nearest, Vector3.Distance(o.transform.position, n.transform.position));
+        string edge = n.isOnNavMesh && NavMesh.FindClosestEdge(n.nextPosition, out NavMeshHit eh, n.areaMask) ? $"{eh.distance:0.00} m" : "—";
+        string more = $", interno a {gap.magnitude:0.00} m del cuerpo, evitación {n.obstacleAvoidanceType} (prioridad {n.avoidancePriority}), en enlace {n.isOnOffMeshLink}, updatePosition {n.updatePosition}, agente más cercano a {(nearest < float.MaxValue ? nearest.ToString("0.0") : "—")} m, borde a {edge}";
+        return $"agente: en NavMesh {n.isOnNavMesh}, camino {n.hasPath}, pendiente {n.pathPending}, estado {n.pathStatus}, velocidad {n.velocity.magnitude:0.00} (pedida {n.speed:0.0}){more}, destino a {Vector3.Distance(n.transform.position, n.destination):0.0} m, parado {n.isStopped}";
     }
 
     public static string TripInfo(Animal a) => a != null && _trips.TryGetValue(a, out Trip t) ? $"viaje «{t.key}» va={t.going} meta={t.goal:F1} pausa={t.pauseUntil - Time.time:0.0} fallo={t.failUntil - Time.time:0.0} llamadas={t.calls} (hace {Time.time - t.lastCall:0.0} s) empezados={t.started}" : "sin viaje";

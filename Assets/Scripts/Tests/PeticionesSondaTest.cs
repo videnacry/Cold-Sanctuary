@@ -56,14 +56,16 @@ public class PeticionesSondaTest : MonoBehaviour, ITestUnit
             .Where(t => t != null && (t.name == "Cama" || t.name.StartsWith("Cama ") || t.name.StartsWith("Cama_") || t.name.StartsWith("Camilla")) && !t.name.StartsWith("Camara")
                         && (t.parent == null || !(t.parent.name.StartsWith("Cama") || t.parent.name.StartsWith("Camilla"))))
             .ToList();
-        var shortBeds = beds.Select(t => (t, len: Mathf.Max(LocalBounds(t).size.x, LocalBounds(t).size.z))).Where(x => x.len < 2.0f - 1e-3f).Select(x => $"{x.t.name} {x.len:0.00}").ToList();
+        // (2026-11-11) Con la escala del propio objeto: la camilla del submarino es un cubo escalado (0,6 × 0,15 × 2,0) y medida en su espacio daba 1,00.
+        var shortBeds = beds.Select(t => (t, len: Mathf.Max(LocalBounds(t).size.x * Mathf.Abs(t.localScale.x), LocalBounds(t).size.z * Mathf.Abs(t.localScale.z)))).Where(x => x.len < 2.0f - 1e-3f).Select(x => $"{x.t.name} {x.len:0.00}").ToList();
         TestProbe.Check("#4 camas y camillas de ≥ 2,00 m (gente de 1,85 m)", beds.Count > 0 && shortBeds.Count == 0, $"{beds.Count} camas y camillas{(shortBeds.Count > 0 ? "; cortas: " + string.Join(", ", shortBeds.Take(8)) : "")}");
 
         // #152 TODO MATE Y OPACO (transparente solo cristal o agua: alfa < 0,99)
         var mats = new HashSet<Material>();
+        CheapMaterials.CheapenBodies();   // (lo que hace el barrido de cada 15 s, ya)
         foreach (Renderer r in FindObjectsByType<Renderer>(FindObjectsSortMode.None)) if (r != null) foreach (Material m in r.sharedMaterials) if (m != null) mats.Add(m);
         var shiny = mats.Where(m => m.HasProperty("_Smoothness") && m.GetFloat("_Smoothness") > 0.2f && m.shader != null && (m.shader.name.Contains("Lit") || m.shader.name == "Standard")).Select(m => m.name).ToList();
-        var fakeGlass = mats.Where(m => m.HasProperty("_Surface") && m.GetFloat("_Surface") > 0.5f && (m.HasProperty("_BaseColor") ? m.GetColor("_BaseColor") : m.color).a >= 0.99f).Select(m => m.name).ToList();
+        var fakeGlass = mats.Where(m => m.HasProperty("_Surface") && m.GetFloat("_Surface") > 0.5f && (m.HasProperty("_BaseColor") ? m.GetColor("_BaseColor") : m.color).a >= 0.99f && !CheapMaterials.IsWater(m)).Select(m => m.name).ToList();   // (el agua, como el mar del horizonte, sí)
         TestProbe.Check("#152 ningún material brillante (suavidad ≤ 0,2)", shiny.Count == 0, $"{mats.Count} materiales{(shiny.Count > 0 ? $"; brillantes {shiny.Count}: " + string.Join(", ", shiny.Take(6)) : "")}");
         TestProbe.Check("#152 transparente solo el cristal y el agua (alfa < 0,99)", fakeGlass.Count == 0, fakeGlass.Count > 0 ? string.Join(", ", fakeGlass.Take(6)) : "");
 
@@ -72,7 +74,10 @@ public class PeticionesSondaTest : MonoBehaviour, ITestUnit
         foreach (ArbolCampos t in ArbolCampos.All)
         {
             if (t == null) continue;
-            var sizes = t.levels.Where(l => l != null && l.kind == TreeLevel.Kind.Floor && l.deck != null).Select(l => Mathf.Round(l.half * 2f * 10f) / 10f).Distinct().ToList();
+            // (2026-11-11) Los pisos pegados al tronco; las PUNTAS (l.tip: los campos de 20 m al final de una rama) son otra pieza y se comparan entre ellas.
+            var tips = t.levels.Where(l => l != null && l.kind == TreeLevel.Kind.Floor && l.deck != null && l.tip).Select(l => Mathf.Round(l.half * 2f * 10f) / 10f).Distinct().ToList();
+            if (tips.Count > 1) unequal.Add($"{t.building} (puntas): {string.Join(" / ", tips.Select(s => $"{s:0.0} m"))}");
+            var sizes = t.levels.Where(l => l != null && l.kind == TreeLevel.Kind.Floor && l.deck != null && !l.tip).Select(l => Mathf.Round(l.half * 2f * 10f) / 10f).Distinct().ToList();
             if (sizes.Count > 1) unequal.Add($"{t.building}: {string.Join(" / ", sizes.Select(s => $"{s:0.0} m"))}");
         }
         TestProbe.Check("#2 todos los pisos de cada edificio del mismo tamaño", unequal.Count == 0, string.Join("; ", unequal));
