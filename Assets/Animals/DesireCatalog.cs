@@ -300,7 +300,7 @@ public static class DesireCatalog
     /// <summary>(2026-11-13, vivo75) Segundos con camino, velocidad pedida y sin moverse antes de reiniciar el agente (y, a la segunda, dejar el viaje).</summary>
     const float FrozenSeconds = 1.5f;
     /// <summary>Agentes reiniciados por estar quietos con camino, y viajes dejados por seguir quietos tras reiniciar (diagnóstico).</summary>
-    public static int FrozenRestarts, FrozenTrips, EdgeNudges;
+    public static int FrozenRestarts, FrozenTrips, EdgeNudges, StaleRepaths;
     static int _frozenLogs;
     /// <summary>(2026-11-13) Si el agente está a &lt; 0,3 m del borde del NavMesh, el punto 0,6 m hacia dentro (de los dos lados de la normal del
     /// borde, el que queda más lejos de él).</summary>
@@ -485,11 +485,23 @@ public static class DesireCatalog
         }
         float rem = nav.hasPath ? Remaining(nav) : 0f;
         if (rem <= nav.stoppingDistance + 0.35f) { t.going = false; Outcome(self, t, true); return false; }   // llegó
+        // (2026-11-13, suite 80) CAMINO CADUCADO O SIN ESQUINAS: las 8 crías de la Cría quietas a la vez tenían «caducado True» (el NavMesh del árbol
+        // que gira se vuelve a colocar cada paso y su camino deja de valer) y el zorro y el buey que volvían a casa desde 145–209 m, camino con
+        // «esquinas 0» y «deseada» 3–15: ninguno andaba y el agente no lo recalculaba solo. Se le vuelve a pedir el camino (cada 0,5 s como mucho),
+        // y eso no cuenta como estar quieto (el tope de 5 s sin acercarse sigue valiendo).
+        bool repathed = false;
+        if (nav.hasPath && Time.time >= t.reissueAt && (nav.isPathStale || nav.path.corners.Length == 0))
+        {
+            t.reissueAt = Time.time + 0.5f; t.frozenSince = -1f; StaleRepaths++;
+            self.Loco?.SetGait(false, 0.1f);
+            NavTrace.Dest(self, nav, t.goal, nav.isPathStale ? "deseo: camino caducado, lo vuelve a pedir" : "deseo: camino sin esquinas, lo vuelve a pedir");
+            repathed = true;
+        }
         // (2026-11-13, vivo75) QUIETO CON CAMINO: 17 «atascado > 20 s» (osos, bueyes, renos, zorros, lobos y las crías de la Cría) tenían camino
         // completo, velocidad pedida 2–5, sin parar, el agente pegado al cuerpo… y velocidad 0,00, viaje tras viaje (cada uno esperaba 5 s a darse
         // por atascado y el siguiente salía igual de quieto). A los 1,5 s se reinicia el agente donde está (Warp) y se le vuelve a dar el camino;
         // si sigue quieto, se deja el viaje y el siguiente sale hacia otro lado. El aviso dice qué quería hacer el agente (velocidad deseada, rumbo).
-        int fz = FrozenStep(t, nav.hasPath && nav.speed > 0.05f && !nav.isStopped && !self.busy, nav.velocity.magnitude, Time.time);
+        int fz = FrozenStep(t, !repathed && nav.hasPath && nav.speed > 0.05f && !nav.isStopped && !self.busy, nav.velocity.magnitude, Time.time);
         if (fz > 0)
         {
             if (_frozenLogs < 40) { _frozenLogs++; Debug.Log($"[Fauna] «{self.name}» ({t.key}) quieto con camino {FrozenSeconds:0.0} s ({(fz == 1 ? "vuelve a andar" : "deja el viaje y prueba otro lado")}): {NavInfo(self)} · {NavTrace.Last(self)}."); }
