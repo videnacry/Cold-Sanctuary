@@ -367,11 +367,31 @@ public class Forager : MonoBehaviour
             if (prey == null) break;   // la presa/carcasa desapareció (comida por otro, destruida)
             float interval = TimeController.timeController.TimeSpeedMinuteSecs / 60;
             location = prey.transform.position;
-            self.Loco.GoTo(location);
             distance = Vector3.Distance(location, self.transform.position);
+            // (2026-11-13, ronda 91) A LA CARCASA, ANDANDO Y AL PUNTO DEL NAVMESH QUE LLEGA. Las presas que los lobos llevan a las crías quedan en
+            // la guarida, a (-205, 0,7, -190), donde el NavMesh no llega (la guarida lo talla): cada lobo con hambre corría hacia allí a 22 m/s
+            // («Locomotion.GoTo ← Hunt»), no se acercaba a < 6 m, seguía corriendo hasta 60 vueltas y, en la guarida llena, apartaba a empujones
+            // a las crías que esperaban la toma («dan vueltas» 17–69 m en 20 s para 0 m netos: #69, #93, #37) o se quedaba plantado con «pedida
+            // 22» y sin camino. Ahora va andando al punto alcanzable más cercano (a ≤ 4 m) y come desde allí; si no hay ninguno, lo deja antes.
+            bool nearCarcass = false;
             if (victim.Dead)
             {
-                if (distance < 6)
+                nearCarcass = distance < 6f;
+                if (!nearCarcass)
+                {
+                    if (NavReach.Reachable(self, location, out Vector3 at, 4f))
+                    {
+                        Vector3 gap = at - self.transform.position; gap.y = 0f;
+                        nearCarcass = gap.magnitude < 1.5f;
+                        if (!nearCarcass) self.Loco.GoTo(at);
+                    }
+                    else unreachable += 10;
+                }
+            }
+            else self.Loco.GoTo(location);
+            if (victim.Dead)
+            {
+                if (nearCarcass)
                 {
                     IEdible food = prey.GetComponent<IEdible>();
                     if (food == null || food.Consumed) break;
@@ -381,8 +401,8 @@ public class Forager : MonoBehaviour
                 }
                 else
                 {
-                    self.Loco.SetGait(true, TimeController.timeController.TimeSpeedMinuteSecs / 30);
-                    if (++unreachable > 60) break;   // ~2 min de juego sin alcanzarla
+                    self.Loco.SetGait(false, TimeController.timeController.TimeSpeedMinuteSecs / 30);   // (andando: la carcasa no huye)
+                    if (++unreachable > 60) { GiveUp(self, $"no llega a la carcasa «{prey.name}»"); break; }   // ~2 min de juego sin alcanzarla
                 }
                 yield return new WaitForSeconds(TimeController.timeController.TimeSpeedMinuteSecs / 30);
             }
