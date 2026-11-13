@@ -302,6 +302,12 @@ Berón (2026-11-05): «debe existir una lista de reglas para la creación de per
 | W13 | **Nada recorre la escena en cada frame** (`FindObjects…`, `GameObject.Find`): con temporizador o `SceneCache`. Con 63 000 objetos, una búsqueda cuesta milisegundos. | `EmotionReader` lo hacía. | **solo en docs** | ídem |
 | W14 | **Repartir trabajo entre frames, solo si no integra tiempo**: lo que usa el `Time.deltaTime` de un frame (andar, entrenar, actuar) corre en cada frame; se reparte la búsqueda cara o se acumula el tiempo con `GameTick`. | Repartir `WorkdayDirector.Drive` hizo andar a todo el personal a 1/8 de la velocidad. | 50 (`JornadaTest` usa `TickLive`, el mismo paso que el juego), 112 | [rendimiento.md](rendimiento.md) |
 | W15 | **Un MonoBehaviour que se guarda en la escena va en su propio archivo, con el nombre de la clase.** | Si no, en Play queda «Missing Script»: nidos de petrel, pantallas de guardia y árboles de la isla desaparecían en silencio. | 91, 109, 50 | [rendimiento.md](rendimiento.md) |
+| W16 | **Sistema de QA** (Berón 2026-11-13; [qa/README.md](qa/README.md)): toda petición es una `PB-nnn` de [qa/peticiones.md](qa/peticiones.md) con sus casos en [qa/casos.md](qa/casos.md); **solo el probador** pone un caso en `Probado (…)`, en [qa/registro.md](qa/registro.md), con commit y run log de [qa/runs/](qa/runs/); el estado de una PB **se calcula** de sus casos. En una prueba, el texto del `TestProbe.Check` empieza por el ID del caso (`"[CV-03] …"`). El comprobador `QaCheck` hace cuadrar catálogo, registro, peticiones, manual y pruebas. | Programado no es hecho; un `[x]` a mano se pierde o miente (`82878fc` vació el checklist). | `QaCheckTest` (grupo 118, en la lista rápida); menú «Tools/Cold Sanctuary/QA/Comprobar» | [qa-propuesta.md](qa-propuesta.md), [qa/README.md](qa/README.md) |
+
+**Cómo se cita una prueba en el sistema de QA (W16).** En [qa/casos.md](qa/casos.md), la prueba de un caso va en columnas «Unidad» y
+«Grupo» separadas (`JornadaTest` · `50`) o en una sola columna como «JornadaTest (g50)», «JornadaTest g50», «YogaTest (grupo 15)» o solo
+«g40». El `TestRunner` escribe en `Logs/test-results.tsv` una columna más, `casos`, con los IDs que encabezan los checks de cada unidad
+(«CV-03 OK, CV-07 FAIL»). Detalle, decisiones y modo de uso del comprobador: [qa/README.md §El comprobador](qa/README.md).
 
 ## 11. Sincronización mesocosmos ↔ microcosmos
 
@@ -394,7 +400,7 @@ reconstruir. Vale para TODOS los pisos, no solo el hospital. Cada piso del santu
 ## 12. Recuento y reglas sin comprobación automática
 
 
-**Total: 215 reglas** (S 15 · F 14 · T 24 · C 7 · G 8 · H 8 · M 39 · A 5 · J 38 · P 24 · E 17 · W 15 = 214 —W9, W10 y W11 van en §11; P11 repite J30; P1–P11 y P24 (2026-11-08, fichas) son de personajes y P12–P23 de territorio, producción y fauna (§13)—, más la regla de
+**Total: 216 reglas** (S 15 · F 14 · T 24 · C 7 · G 8 · H 8 · M 39 · A 5 · J 38 · P 24 · E 17 · W 16 = 215 —W9, W10 y W11 van en §11; P11 repite J30; P1–P11 y P24 (2026-11-08, fichas) son de personajes y P12–P23 de territorio, producción y fauna (§13)—, más la regla de
 sincronización de §11). (Recontado por el probador al integrar actividades, tareasE, entreno, personajes, hospital y cohetes, 2026-11-04:
 las J18 en adelante se renumeraron en una sola secuencia —J18–J21 actividades y uniformes, J22 tareas con «E», J23–J27 entrenamientos
 y entrenador, J28 profesiones, J29 nada en pisos en obras—.)

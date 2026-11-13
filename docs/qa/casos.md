@@ -40,6 +40,8 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | FAU-28 | FAU | Regla E14: Mente propia: `Archetypes` y `PhrasePools`. | TerritorioTest | 99 | E14 | — | manual §«Se comprueba en» |
 | FAU-29 | FAU | Regla E16: Sin comederos fijos para depredadores: los atiende el alimentador por rotación, con lista compartida, a distancia segura y sin compartir espacio. | AlimentadorTest | 105 | E16 | — | manual §«Se comprueba en» |
 | FAU-30 | FAU | Regla E17: Deshierbe con raíz: lo nativo al vivero y a la tundra; lo no nativo a bolsa cerrada e incinerador, nunca al suelo. | DeshierbeTest | 102 | E17 | — | manual §«Se comprueba en» |
+| FAU-31 | FAU | Regla E10: hábitat real: vive donde vive; si hace falta, el mundo se adapta | TerritorioTest | 99 | E10 | — | manual §«Se comprueba en» (también fotos); añadido a mano el 2026-11-13 |
+| FAU-32 | FAU | Regla E15: cadena alimenticia: FoodChain lee dietas y poblaciones y sube bancos, plantas o presas para que nadie pase hambre | CadenaAlimenticiaTest | 85 | E15 | — | manual §«Se comprueba en» (también el registro [Cadena]); añadido a mano el 2026-11-13 |
 
 ## JOR · Jornada y horario libre
 
@@ -300,6 +302,7 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | MIC-80 | MIC | Regla M32: La vegetación crece siempre ENCIMA de las superficies, nunca debajo, y nunca dentro de un collider: cada planta (y cada bicho) se apoya en la superficie más alta de encima de su pie (`MicroGround.Settle`: un rayo desde a… | StarvationTest | 7 | M32 | — | manual §«Se comprueba en» |
 | MIC-81 | MIC | Regla M33: Capa de tierra de 10 cm (APAGADA por defecto desde el 2026-11-04: `MicroGround.SoilEnabled = false`, colgaba el NavMesh de la Cocina; Berón: «se puede desactivar si es tan pesado») (`MicroGround.SoilThickness`, metros de… | SleepTest | 8 | M33 | — | manual §«Se comprueba en» |
 | MIC-82 | MIC | Regla M34: Toda estatua humana tiene su versión insecto-humano en los microcosmos (`MicroStatue`): el cuerpo de un insecto-humano de verdad (su especie por el papel que representa), de pie, de piedra o bronce, en la misma pose y co… | YogaTest | 15 | M34 | — | manual §«Se comprueba en» |
+| MIC-83 | MIC | Regla M30: sillas y bancos se pueden usar: cada asiento lleva su MicroSeat (una silla, un sitio; un banco de plaza, tres asientos) | MicroSueloTest | 68 | M30 | — | manual §«Se comprueba en» (también ValidateCivicScale regla 13 y g67); añadido a mano el 2026-11-13 |
 
 ## HOS · Hospital
 
@@ -364,6 +367,8 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | PER-20 | PER | Regla P21: Quien usa un iceberg tiene su motivo: por qué va, cuánto se queda y por qué se va, según la especie y la estación; nada de figuras, también en las aves; contado en la cadena alimenticia. | IcebergVidaTest | 108 | P21 | — | manual §«Se comprueba en» |
 | PER-21 | PER | Regla P22: El O₂ y la verdura se dimensionan para las personas de la lista (`PopulationPlan.People`: el personal de `WorkdayDirector.Staff`, la Magnate y el recién llegado; hoy 32), al construir y en juego, no para los ya iniciados… | ProduccionTest | 103 | P22 | — | manual §«Se comprueba en» |
 | PER-22 | PER | Regla P23: Cada carga de cultivo con luz paga su energía y cada cultivo tiene su cuidado diario de ≤ 1 h: las fachadas de fotobiorreactores declaran sus LED (potencia media del año; en la noche polar, la entera, que el reactor debe… | AreaFunctionRegistryTest | 61 | P23 | — | manual §«Se comprueba en» |
+| PER-23 | PER | Regla P7: ningún puesto sin base documentada (Professions.Basis); lo deducido, en Professions.Unconfirmed, hasta que Berón confirme | PersonajesReglasTest | 95 | P7 | — | manual §«Se comprueba en» (también tools/check-personajes.sh); añadido a mano el 2026-11-13 |
+| PER-24 | PER | Regla P19: las áreas de producción escalan su maquinaria a lo que se les pide (ProductionAudit) | ProduccionTest | 103 | P19 | — | manual §«Se comprueba en» (también el registro [Producción]); añadido a mano el 2026-11-13 |
 
 ## UI · Interfaz
 
@@ -382,6 +387,7 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | REN-05 | REN | Regla W12: Una clase que mueva u oculte piezas hijas por script va en `LoteEstatico.Blocked` (o en `Anchors` si se mueve entera y rígida); sin eso funciona, pero la pieza tarda hasta una vuelta de barrida en reaccionar. | LoteEstaticoTest | 112 | W12 | — | manual §«Se comprueba en» |
 | REN-06 | REN | Regla W14: Repartir trabajo entre frames, solo si no integra tiempo: lo que usa el `Time.deltaTime` de un frame (andar, entrenar, actuar) corre en cada frame; se reparte la búsqueda cara o se acumula el tiempo con `GameTick`. | JornadaTest | 50 | W14 | — | manual §«Se comprueba en», también g112 |
 | REN-07 | REN | Regla W15: Un MonoBehaviour que se guarda en la escena va en su propio archivo, con el nombre de la clase. | JornadaTest | 50 | W15 | — | manual §«Se comprueba en» |
+| REN-08 | REN | Regla W16: sistema de QA: catálogo, registro, peticiones, manual y pruebas cuadran (QaCheck) | QaCheckTest | 118 | W16 | — | manual §10; añadido a mano el 2026-11-13 |
 
 ## PX · Recorridos en vivo
 

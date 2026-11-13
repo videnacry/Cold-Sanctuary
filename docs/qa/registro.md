@@ -352,8 +352,14 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | OP-06 | No aplica | — | — | — | — | regla de proceso: la mira el probador en cada run log |
 | OP-07 | No aplica | — | — | — | — | regla de proceso: la mira el probador en cada run log |
 | OP-08 | No aplica | — | — | — | — | regla de proceso: la mira el probador en cada run log |
+| MIC-83 | Sin probar | — | — | — | — | añadido a mano el 2026-11-13; su grupo pasó en la suite 63 (d0542db): el probador decide si pasa a Probado |
+| PER-23 | Sin probar | — | — | — | — | añadido a mano el 2026-11-13; su grupo pasó en la suite 63 (d0542db): el probador decide si pasa a Probado |
+| PER-24 | Sin probar | — | — | — | — | añadido a mano el 2026-11-13; su grupo pasó en la suite 63 (d0542db): el probador decide si pasa a Probado |
+| FAU-31 | Sin probar | — | — | — | — | añadido a mano el 2026-11-13; su grupo pasó en la suite 63 (d0542db): el probador decide si pasa a Probado |
+| FAU-32 | Sin probar | — | — | — | — | añadido a mano el 2026-11-13; su grupo pasó en la suite 63 (d0542db): el probador decide si pasa a Probado |
+| REN-08 | Sin probar | — | — | — | — | añadido a mano el 2026-11-13; g118 es nuevo (QaCheckTest) |
 
-**Recuento:** No aplica 8 · Parcial 9 · Probado (retro) 285 · Sin probar 25 · Solo código 16 · total 343.
+**Recuento:** No aplica 8 · Parcial 9 · Probado (retro) 285 · Sin probar 31 · Solo código 16 · total 349.
 
 ## Inestables y crónicos
 

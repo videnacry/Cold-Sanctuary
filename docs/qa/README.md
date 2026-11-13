@@ -86,14 +86,66 @@ tiene un `HC` o le falta código.
 
 ## El comprobador (`QaCheck`)
 
-Lo escribe otro trabajador (`Assets/Scripts/QaCheck.cs`, `QaCheckTest`, menú «Tools/Cold Sanctuary/Pruebas/Comprobar QA» y un
-`qa-check.sh` sin Unity). Las reglas que mira están en [qa-propuesta.md §6](../qa-propuesta.md). Para que pueda leer estos ficheros:
+Regla W16 del [manual](../manual-de-diseno.md) §10. Código: `Assets/Scripts/QaCheck.cs` (lógica pura sobre texto, sin Unity, como
+`TestImpact`), `Assets/Scripts/Tests/QaCheckTest.cs` y `Assets/Editor/QaCheckTool.cs`. Las reglas que mira: [qa-propuesta.md §6](../qa-propuesta.md).
 
-- **Tablas con cabecera fija**, una fila por ID, el ID en la primera columna y sin `|` dentro de las celdas. Las cabeceras son:
-  - peticiones: `| PB | Fecha | Petición | Reglas | Casos | Estado | Origen |`
-  - casos: `| ID | Área | Qué tiene que pasar | Unidad | Grupo | Reglas | PB | Origen |`
-  - bugs y huecos: `| ID | Tipo | Qué | Casos | Dueño | Estado | Hallazgo |`
-  - registro: `| ID | Estado | Fecha | Commit | Run log | B/HC | Nota |`
-  - inestables y crónicos: `| Check | Grupo | Estado | Rondas | B/HC | Dueño | Nota |`
-- «—» es una celda vacía. Varias cosas en una celda van separadas por «, ».
-- El run log se enlaza en Markdown: `[runs/<fichero>.md](runs/<fichero>.md)`.
+### Cómo se corre
+
+| Dónde | Cómo | Resultado |
+|---|---|---|
+| Lista rápida | **Grupo 118, `QaCheckTest`** (0 s), dentro del preset «rápida» (`TestPresetsData`): 42 checks sobre textos de ejemplo y después sobre los docs de verdad | PASS/FAIL como cualquier grupo |
+| Editor | Menú **«Tools/Cold Sanctuary/QA/Comprobar»** | En la consola y en `Logs/qa-check.txt` |
+| Línea de órdenes, con Unity | `Unity -batchmode -projectPath <proyecto> -executeMethod QaCheckTool.FromCommandLine [-qaRoot RUTA]` | Sale con 0 si cuadra, 1 si hay problemas, 2 si no encuentra `docs/qa` |
+| Línea de órdenes, sin Unity | `QaCheck.Cli(args)` con `[--root RUTA]` (o la ruta sola), compilando `QaCheck.cs` con el dotnet del Editor: es lo que llama el `qa-check.sh` del probador, antes de `verify-wt.sh` | Los mismos códigos de salida |
+
+**Dónde busca los docs.** El proyecto de Unity no tiene `docs/qa`: `tools/sync-to-unity.sh` deja en **`Temp/qa-root.txt`** del
+proyecto la ruta del repositorio que acaba de sincronizar. El comprobador lee esa ruta; si no está, `COLD_SANCTUARY_REPO`; si no, el
+propio proyecto. `-qaRoot` / `--root` mandan sobre todo eso.
+
+### Cómo se citan las pruebas y los casos
+
+- **En casos.md**, la prueba de un caso va en columnas **«Unidad»** y **«Grupo»** separadas (`JornadaTest` · `50`), o en una sola
+  columna cuya cabecera diga «Prueba», «Unidad», «Test» o «Grupo», escrita como **«JornadaTest (g50)»**, «JornadaTest g50», «YogaTest
+  (grupo 15)» o solo «g40». La unidad debe existir en `Assets/` y su `int Group =>` ser el citado. Las reglas del manual van en una
+  columna «Regla(s)». Un ID tachado (`~~FAU-03~~`) es un caso retirado.
+- **En la prueba**, el texto del `TestProbe.Check` empieza por el ID: `"[CV-03] la fauna con viaje…"`. Cada `[CV-nn]` del catálogo
+  necesita al menos un check así, y un check no puede citar un ID que no exista.
+- **En `Logs/test-results.tsv`** el `TestRunner` añade al final la columna **`casos`**: los IDs con que empiezan los checks de cada
+  unidad y cómo acabaron («CV-03 OK, CV-07 FAIL»). La cabecera queda
+  `grupo unidad pass fail segundos estado fallos casos`. Así un FAIL se liga solo a su caso.
+- **En registro.md**, «Probado (suite gN)» debe citar un grupo que esté en la prueba del caso.
+
+### Decisiones aceptadas (2026-11-13)
+
+**Casos sin prueba** (sin unidad ni grupo en casos.md):
+
+| Se permiten | Son un error |
+|---|---|
+| los casos `OP-` y `PX-`, y cualquier caso en `Sin probar`, `Solo código`, `No aplica`, `Retirado` o `Probado (retro)` (y `Probado (en vivo)`) | `Probado (suite gN)`, `FAIL`, `Parcial`, `Inestable`, `Crónico` y `Solo test` |
+
+**Estado calculado de una PB**, tal como lo implementa el comprobador (la columna «Estado» de peticiones.md debe coincidir):
+
+| La PB… | Estado que le toca |
+|---|---|
+| está en `Retirado` o `No aplica` | no se comprueba |
+| no tiene casos y está marcada `Doc` | `Doc` |
+| no tiene casos pero tiene un `HC-nn` | `Abierta` |
+| no tiene casos, ni `HC`, ni `Doc` | error «pb-sin-casos» |
+| tiene un `HC-nn` (con casos) | `Abierta` |
+| todos sus casos (sin contar `No aplica` ni `Retirado`) están en `Probado (…)` | `Hecha` |
+| alguno está en `Solo código` | `Sin verificar` |
+| los demás casos (`Sin probar`, `FAIL`, `Parcial`…) | `Sin verificar` o `Abierta` (falta verificar o falta código) |
+| solo tiene casos en `No aplica` o `Retirado` y está marcada `Doc` | `Doc` también vale |
+
+### Formato de las tablas
+
+Tablas con cabecera fija, una fila por ID, el ID en la primera columna y sin `|` dentro de las celdas:
+
+- peticiones: `| PB | Fecha | Petición | Reglas | Casos | Estado | Origen |`
+- casos: `| ID | Área | Qué tiene que pasar | Unidad | Grupo | Reglas | PB | Origen |`
+- bugs y huecos: `| ID | Tipo | Qué | Casos | Dueño | Estado | Hallazgo |`
+- registro: `| ID | Estado | Fecha | Commit | Run log | B/HC | Nota |`
+- inestables y crónicos: `| Check | Grupo | Estado | Rondas | B/HC | Dueño | Nota |`
+
+«—» es una celda vacía. Varias cosas en una celda van separadas por «, ». El run log se enlaza en Markdown:
+`[runs/<fichero>.md](runs/<fichero>.md)`.
