@@ -337,7 +337,8 @@ public static class DesireCatalog
         float nearest = float.MaxValue;
         foreach (NavMeshAgent o in UnityEngine.Object.FindObjectsByType<NavMeshAgent>(FindObjectsSortMode.None)) if (o != null && o != n && o.isActiveAndEnabled) nearest = Mathf.Min(nearest, Vector3.Distance(o.transform.position, n.transform.position));
         string edge = n.isOnNavMesh && NavMesh.FindClosestEdge(n.nextPosition, out NavMeshHit eh, n.areaMask) ? $"{eh.distance:0.00} m" : "—";
-        string more = $", interno a {gap.magnitude:0.00} m del cuerpo, evitación {n.obstacleAvoidanceType} (prioridad {n.avoidancePriority}), en enlace {n.isOnOffMeshLink}, updatePosition {n.updatePosition}, agente más cercano a {(nearest < float.MaxValue ? nearest.ToString("0.0") : "—")} m, borde a {edge}";
+        CharacterLevel cl = a.GetComponent<CharacterLevel>();
+        string more = $", energía {(cl != null ? $"{cl.currentEnergy:0}/{cl.MaxEnergy:0}" : "—")}, interno a {gap.magnitude:0.00} m del cuerpo, evitación {n.obstacleAvoidanceType} (prioridad {n.avoidancePriority}), en enlace {n.isOnOffMeshLink}, updatePosition {n.updatePosition}, agente más cercano a {(nearest < float.MaxValue ? nearest.ToString("0.0") : "—")} m, borde a {edge}";
         return $"agente: en NavMesh {n.isOnNavMesh}, camino {n.hasPath}, pendiente {n.pathPending}, estado {n.pathStatus}, velocidad {n.velocity.magnitude:0.00} (pedida {n.speed:0.0}){more}, destino a {Vector3.Distance(n.transform.position, n.destination):0.0} m, parado {n.isStopped}";
     }
 

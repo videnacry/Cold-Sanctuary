@@ -412,10 +412,17 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
 
     // OPT-IN: si el animal lleva un WalkSpell, su velocidad de NavMesh sale del hechizo (correr = channeling → sube
     // gradual a la punta; andar → decae; con su gasto). El NavMesh sigue navegando (pathfinding). Ver docs.
+    /// <summary>Veces que un animal sin energía anduvo despacio en vez de quedarse quieto (diagnóstico).</summary>
+    public static int TiredCrawls;
     void FeedWalkSpeed(float dt)
     {
         if (Walk == null || nav == null || !nav.isOnNavMesh) return;
-        nav.speed = Walk.StepSpeed(false, Running, nav.hasPath, dt);   // charging=false; channeling=Running; moving=tiene ruta
+        float s = Walk.StepSpeed(false, Running, nav.hasPath, dt);   // charging=false; channeling=Running; moving=tiene ruta
+        // (2026-11-11, vivo73) SIN ENERGÍA, DESPACIO, NO QUIETO: el metabolismo basal gasta la energía del alma (CharacterLevel) y solo la devuelve el
+        // comer; a 0, StepSpeed daba velocidad 0 aunque tuviera camino («camino True … velocidad 0,00 (pedida 0,0)», lobos explorando con cientos
+        // de llamadas): el animal agotado no llegaba ni a la comida. Con camino, va a un tercio de su paso.
+        if (s <= 0f && nav.hasPath && !Walk.IsCharging && ActsPrep != null && ActsPrep.walk != null) { s = ActsPrep.walk.navSpeed * 0.35f; TiredCrawls++; }
+        nav.speed = s;
     }
 
     // Comportamiento de medio: los acuáticos buscan agua si quedan en tierra; los terrestres salen
