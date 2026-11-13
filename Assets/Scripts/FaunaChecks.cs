@@ -118,6 +118,10 @@ public class FaunaChecks : MonoBehaviour, ITestUnit
         TestProbe.Check("quieto con camino: a los 1,5 s se reinicia el agente y, si sigue quieto, se deja el viaje", fz == "0,0,1,0,2", fz);
         string fm = DesireCatalog.FrozenStepsForTest((true, 0f, 0f), (true, 1f, 1f), (true, 0f, 2f), (true, 0f, 3f), (false, 0f, 9f));
         TestProbe.Check("…andando (o sin querer andar) no cuenta como quieto", fm == "0,0,0,0,0", fm);
+        // (2026-11-13, ronda 78) CASA LEJOS, POR TRAMOS: el punto a 35 m a lo largo del camino (0,0,0) → (10,0,0) → (10,0,30) es (10,0,25); a 50 m no hay.
+        bool along = DesireCatalog.PointAlong(new[] { Vector3.zero, new Vector3(10f, 0f, 0f), new Vector3(10f, 0f, 30f) }, DesireCatalog.HomeLeg, out Vector3 legAt);
+        bool beyond = DesireCatalog.PointAlong(new[] { Vector3.zero, new Vector3(10f, 0f, 0f), new Vector3(10f, 0f, 30f) }, 50f, out _);
+        TestProbe.Check("el tramo de vuelta a casa cae a 35 m por el camino (y no más allá de su final)", along && Vector3.Distance(legAt, new Vector3(10f, 0f, 25f)) < 0.01f && !beyond, $"{legAt}");
         // Un paseo sin ningún salto posible se para y mira (descanso, como la cría del recinto) y el siguiente salto sale hacia otro lado.
         Animal sw = alive.Find(x => x.nav != null && x.nav.enabled && x.nav.isOnNavMesh && x.GetComponent<MarineLife>() == null && !x.busy);
         if (sw != null)

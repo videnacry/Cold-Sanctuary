@@ -300,8 +300,27 @@ public static class DesireCatalog
     /// <summary>(2026-11-13, vivo75) Segundos con camino, velocidad pedida y sin moverse antes de reiniciar el agente (y, a la segunda, dejar el viaje).</summary>
     const float FrozenSeconds = 1.5f;
     /// <summary>Agentes reiniciados por estar quietos con camino, y viajes dejados por seguir quietos tras reiniciar (diagnóstico).</summary>
-    public static int FrozenRestarts, FrozenTrips;
+    public static int FrozenRestarts, FrozenTrips, EdgeNudges;
     static int _frozenLogs;
+    /// <summary>(2026-11-13) Si el agente está a &lt; 0,3 m del borde del NavMesh, el punto 0,6 m hacia dentro (de los dos lados de la normal del
+    /// borde, el que queda más lejos de él).</summary>
+    static bool InwardFromEdge(NavMeshAgent nav, out Vector3 inside)
+    {
+        inside = nav.nextPosition;
+        if (!NavMesh.FindClosestEdge(nav.nextPosition, out NavMeshHit eh, nav.areaMask) || eh.distance >= 0.3f) return false;
+        Vector3 n = new Vector3(eh.normal.x, 0f, eh.normal.z);
+        if (n.sqrMagnitude < 1e-4f) { n = nav.nextPosition - eh.position; n.y = 0f; }
+        if (n.sqrMagnitude < 1e-4f) return false;
+        n.Normalize();
+        float bestEdge = eh.distance; bool found = false;
+        foreach (float s in new[] { 1f, -1f })
+        {
+            if (!NavMesh.SamplePosition(eh.position + n * (0.6f * s), out NavMeshHit h, 0.4f, nav.areaMask)) continue;
+            if (!NavMesh.FindClosestEdge(h.position, out NavMeshHit e2, nav.areaMask) || e2.distance <= bestEdge + 0.1f) continue;
+            bestEdge = e2.distance; inside = h.position; found = true;
+        }
+        return found;
+    }
     /// <summary>(2026-11-13) QUIETO CON CAMINO: 0 = anda o no le toca andar; 1 = lleva más de <see cref="FrozenSeconds"/> quieto (primera vez:
     /// reiniciar el agente); 2 = otra vez quieto tras reiniciarlo (dejar el viaje y probar otra dirección).</summary>
     static int FrozenStep(Trip t, bool wants, float speedNow, float now)
@@ -455,6 +474,10 @@ public static class DesireCatalog
                 self.Loco?.SetGait(false, 0.1f);
                 return true;
             }
+            // (2026-11-13, ronda 78) PEGADO AL BORDE: Osezno_1 y Polluelo_2 (recinto de la Cría) seguían quietos con camino y el agente a 0,00–0,16 m
+            // del borde del NavMesh («deseada 0,00» con 2 esquinas a 1,9–2,7 m), viaje tras viaje. A la segunda vez quieto, si está pegado al
+            // borde, se le mete 0,6 m hacia dentro (una vez por viaje: no es el reinicio de cada 1,5 s de la ronda 77).
+            if (InwardFromEdge(nav, out Vector3 inside)) { EdgeNudges++; NavTrace.Mark(self, "deseo: pegado al borde (0,6 m hacia dentro)", inside); nav.Warp(inside); }
             t.going = false; t.failUntil = Time.time + 4f; TripsStalled++; FrozenTrips++; TurnAway(self, t);
             NavTrace.Reset(self, "deseo: quieto con camino");
             return false;
@@ -639,6 +662,24 @@ public static class DesireCatalog
         return W_HOME * Mathf.Clamp01(d / Mathf.Max(1f, self.HomeRadius));
     }
 
+    /// <summary>Largo de cada tramo del camino a casa (m).</summary>
+    public const float HomeLeg = 35f;
+    /// <summary>Tramos de vuelta a casa empezados (diagnóstico).</summary>
+    public static int HomeLegs;
+    /// <summary>(2026-11-13) El punto a <paramref name="d"/> m a lo largo de una polilínea (false si es más corta).</summary>
+    public static bool PointAlong(Vector3[] corners, float d, out Vector3 at)
+    {
+        at = Vector3.zero;
+        if (corners == null || corners.Length < 2) return false;
+        for (int i = 0; i < corners.Length - 1; i++)
+        {
+            float seg = Vector3.Distance(corners[i], corners[i + 1]);
+            if (seg >= d) { at = Vector3.Lerp(corners[i], corners[i + 1], d / Mathf.Max(seg, 1e-4f)); return true; }
+            d -= seg;
+        }
+        return false;
+    }
+
     // Vuelve a SU sitio de la zona de casa (cada uno el suyo: no todos al mismo punto). Si no hay camino completo, un trecho
     // hacia allí si el NavMesh lo permite; si tampoco, «casa inalcanzable desde aquí» y deja de sentirlo 90 s.
     static void GoHome(Animal self)
@@ -648,8 +689,15 @@ public static class DesireCatalog
         if (HomeNeed(self) <= 0f) return;
         float a = (self.GetHashCode() % 360) * Mathf.Deg2Rad;
         Vector3 spot = self.HomeOrigin + new Vector3(Mathf.Cos(a), 0f, Mathf.Sin(a)) * HomeZone(self) * 0.5f;
-        if (GoTo(self, "homebound", spot)) return;
+        // (2026-11-13, ronda 78) CASA LEJOS, POR TRAMOS: un zorro a 187 m y un reno a 140 m de casa no llegaban a moverse (camino con 0 esquinas y
+        // velocidad 0, o «pendiente» > 3 s: 56–132 viajes fallidos). Más allá de HomeLeg m va a un punto de su camino a HomeLeg m y, al llegar,
+        // al siguiente. Un tramo (o el trecho de un camino parcial) en marcha se sigue hasta el final, sin re-apuntar cada segundo.
         Trip t = TripOf(self, "homebound");
+        if (t.going && Flat(t.goal - spot) > 1.5f) { if (Going(self, t)) return; if (Time.time < t.failUntil) return; }
+        if (Flat(spot - self.transform.position) > HomeLeg && Time.time >= t.failUntil && NavReach.Reachable(self, spot, out Vector3 full)
+            && NavReach.LastPathTo(self, full, out NavMeshPath fp) && PointAlong(fp.corners, HomeLeg, out Vector3 leg) && NavReach.Reachable(self, leg, out Vector3 legAt))
+        { HomeLegs++; Walk(self, t, legAt); return; }
+        if (GoTo(self, "homebound", spot)) return;
         if (Time.time < t.failUntil) return;   // (se acaba de atascar: lo reintenta; no es que no haya camino)
         if (Time.time >= t.failUntil && NavReach.PartialEnd(self, spot, out Vector3 end) && Flat(end - self.transform.position) > 2f) { Walk(self, t, end); return; }
         _homeBlocked[self] = Time.time + 90f;
@@ -869,8 +917,17 @@ public static class DesireCatalog
         if (parent == null)
         {
             if (NavReach.Reachable(self, self.HomeOrigin, out Vector3 hs, 6f)) to = hs;
-            atHome = Flat(self.transform.position - self.HomeOrigin) <= 4f || Flat(self.transform.position - to) <= 2f;
+            // (2026-11-13, ronda 78) Y una vez en casa, no sale por un empujón: hasta 7 m sigue «en casa» (#16: SetPath de 4,9–6,7 m al punto de
+            // casa cada 2–7 s, 18–25 m en 20 s; los otros lobos de la guarida la apartaban y volvía).
+            bool was = _homeWait.Contains(self);
+            atHome = was ? Flat(self.transform.position - self.HomeOrigin) <= 7f : Flat(self.transform.position - self.HomeOrigin) <= 4f || Flat(self.transform.position - to) <= 2f;
         }
+        if (atHome) _homeWait.Add(self); else _homeWait.Remove(self);
+        // (2026-11-13, ronda 78) La madre que SE VA (anda alejándose de la cría) no se persigue: la cría la llama quieta (#83: «AwaitFeeding»
+        // hacia un punto que se movía, (-202,-193) → (-209,-191), 18–22 m en 20 s). Cuando la madre viene o se para, va a ella.
+        if (parent != null && Vector3.Distance(self.transform.position, parent.position) > 2f && parent.TryGetComponent(out NavMeshAgent pn) && pn.isActiveAndEnabled
+            && pn.velocity.magnitude > 0.5f && Vector3.Dot(pn.velocity, self.transform.position - parent.position) <= 0f)
+        { NavTrace.Reset(self, "AwaitFeeding (la madre se va: la llama)"); self.Loco?.Idle(1f); return; }
         if (parent != null ? Vector3.Distance(self.transform.position, parent.position) > 2f : !atHome) Move(self, to);
         else
         {
@@ -885,6 +942,7 @@ public static class DesireCatalog
         }
     }
     static readonly System.Collections.Generic.Dictionary<Animal, float> _begAt = new System.Collections.Generic.Dictionary<Animal, float>();
+    static readonly HashSet<Animal> _homeWait = new HashSet<Animal>();   // crías que ya esperan la toma en casa (histéresis 4 → 7 m)
 
     // ¿El ser del vínculo ya no está? b.target es una interfaz (Animal.ITarget): «== null» no ve el objeto DESTRUIDO de Unity y su
     // .transform lanzaba MissingReferenceException (812 veces en la batería del 2026-11-02: PenguinBehavior destruido, SocialNeed).
