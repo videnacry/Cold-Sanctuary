@@ -236,6 +236,9 @@ public abstract class LifeStage
         return (Animal script, float duration) =>
         {
             if (script.Group?.fed == null || script.Group.fed.Length == 0) return;
+            // (2026-11-11, vivo74) Con la VOLICIÓN al mando, alimentar a las crías es su deseo «nurse» (FeedCub): este evento viejo mandaba a la vez
+            // al lobo «al nido» y el deseo hacia la cría, y daba vueltas (lobos #11, #18, #57: «LifeStage.Feed (al nido)», 19–57 m en 20 s).
+            if (DrivenElsewhere(script)) return;
             if (DesireCatalog.LiveTrip(script, out _)) return;   // (2026-11-11) con un viaje de deseo en marcha, el cuerpo es suyo (NavTrace: «LifeStage.Feed (al nido)»)
             if (script.hungry >= -script.Body.GetMealWeight(script.rig.mass)) return;
 
