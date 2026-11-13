@@ -917,8 +917,17 @@ public static class DesireCatalog
         if (parent == null)
         {
             if (NavReach.Reachable(self, self.HomeOrigin, out Vector3 hs, 6f)) to = hs;
-            atHome = Flat(self.transform.position - self.HomeOrigin) <= 4f || Flat(self.transform.position - to) <= 2f;
+            // (2026-11-13, ronda 78) Y una vez en casa, no sale por un empujón: hasta 7 m sigue «en casa» (#16: SetPath de 4,9–6,7 m al punto de
+            // casa cada 2–7 s, 18–25 m en 20 s; los otros lobos de la guarida la apartaban y volvía).
+            bool was = _homeWait.Contains(self);
+            atHome = was ? Flat(self.transform.position - self.HomeOrigin) <= 7f : Flat(self.transform.position - self.HomeOrigin) <= 4f || Flat(self.transform.position - to) <= 2f;
         }
+        if (atHome) _homeWait.Add(self); else _homeWait.Remove(self);
+        // (2026-11-13, ronda 78) La madre que SE VA (anda alejándose de la cría) no se persigue: la cría la llama quieta (#83: «AwaitFeeding»
+        // hacia un punto que se movía, (-202,-193) → (-209,-191), 18–22 m en 20 s). Cuando la madre viene o se para, va a ella.
+        if (parent != null && Vector3.Distance(self.transform.position, parent.position) > 2f && parent.TryGetComponent(out NavMeshAgent pn) && pn.isActiveAndEnabled
+            && pn.velocity.magnitude > 0.5f && Vector3.Dot(pn.velocity, self.transform.position - parent.position) <= 0f)
+        { NavTrace.Reset(self, "AwaitFeeding (la madre se va: la llama)"); self.Loco?.Idle(1f); return; }
         if (parent != null ? Vector3.Distance(self.transform.position, parent.position) > 2f : !atHome) Move(self, to);
         else
         {
@@ -933,6 +942,7 @@ public static class DesireCatalog
         }
     }
     static readonly System.Collections.Generic.Dictionary<Animal, float> _begAt = new System.Collections.Generic.Dictionary<Animal, float>();
+    static readonly HashSet<Animal> _homeWait = new HashSet<Animal>();   // crías que ya esperan la toma en casa (histéresis 4 → 7 m)
 
     // ¿El ser del vínculo ya no está? b.target es una interfaz (Animal.ITarget): «== null» no ve el objeto DESTRUIDO de Unity y su
     // .transform lanzaba MissingReferenceException (812 veces en la batería del 2026-11-02: PenguinBehavior destruido, SocialNeed).
