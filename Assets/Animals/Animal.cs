@@ -566,7 +566,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
     const float ALERT_TO_REACT = 0.3f;   // alerta mínima para que la amenaza dispare la respuesta (reacciona a lo percibido)
 
     // Forrajear: cazar si come presa, si no pastar/pescar. Reemplaza los Feed de Carnivore/Herbivore (concreto, etapa 5).
-    public IEnumerator Feed() => Forage.HuntsNow(this) && !Forage.NextIsPlant(this) ? Forage.Hunt(this) : Forage.Graze(this);   // el omnívoro pasta si lo vegetal está más cerca
+    public IEnumerator Feed() => Forage.Guarded(Forage.HuntsNow(this) && !Forage.NextIsPlant(this) ? Forage.Hunt(this) : Forage.Graze(this));   // (ronda 92: una sola comida a la vez)   // el omnívoro pasta si lo vegetal está más cerca
 
 
 

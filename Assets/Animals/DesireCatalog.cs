@@ -306,7 +306,7 @@ public static class DesireCatalog
     // ══ MOVIMIENTO DE LOS DESEOS: siempre a sitios ALCANZABLES, con tope y sin re-apuntar en cada decisión ══════════════
     // Un «viaje» por animal: hacia dónde va, por qué deseo, desde cuándo y cuánto ha avanzado. Si en 5 s no se acerca (un muro,
     // otro animal en medio) o tarda más de 40 s, lo deja; ese deseo no vuelve a intentar ese viaje en unos segundos.
-    class Trip { public string key; public Vector3 goal; public bool going, restNoSpot, unfroze; public Vector3 lastDir; public float since, best, bestAt, pauseUntil, failUntil, lastCall, reissueAt, frozenSince = -1f; public int calls, started; }
+    class Trip { public string key; public Vector3 goal; public bool going, restNoSpot, unfroze; public Vector3 lastDir; public float since, best, bestAt, pauseUntil, failUntil, lastCall, reissueAt, frozenSince = -1f, unfrozeWarpAt; public int calls, started; }
     /// <summary>(2026-11-11) ¿Descansa a propósito? La cría del recinto sin sitio a 1,5–5 m (PenGoal) se queda mirando: no está «atascada».
     /// (2026-11-13, vivo75) Y cualquier paseo sin salto posible (Stroll: PickHop no encuentra nada): se para y mira, como la cría del recinto.</summary>
     public static bool RestingByChoice(Animal a) => a != null && _trips.TryGetValue(a, out Trip t) && t.restNoSpot && !t.going;
@@ -314,7 +314,7 @@ public static class DesireCatalog
     /// <summary>(2026-11-13, vivo75) Segundos con camino, velocidad pedida y sin moverse antes de reiniciar el agente (y, a la segunda, dejar el viaje).</summary>
     const float FrozenSeconds = 1.5f;
     /// <summary>Agentes reiniciados por estar quietos con camino, y viajes dejados por seguir quietos tras reiniciar (diagnóstico).</summary>
-    public static int FrozenRestarts, FrozenTrips, EdgeNudges, StaleRepaths;
+    public static int FrozenRestarts, FrozenTrips, EdgeNudges, StaleRepaths, FrozenWarps;
     static int _frozenLogs;
     /// <summary>(2026-11-13) Si el agente está a &lt; 0,3 m del borde del NavMesh, el punto 0,6 m hacia dentro (de los dos lados de la normal del
     /// borde, el que queda más lejos de él).</summary>
@@ -560,6 +560,10 @@ public static class DesireCatalog
             // del borde del NavMesh («deseada 0,00» con 2 esquinas a 1,9–2,7 m), viaje tras viaje. A la segunda vez quieto, si está pegado al
             // borde, se le mete 0,6 m hacia dentro (una vez por viaje: no es el reinicio de cada 1,5 s de la ronda 77).
             if (InwardFromEdge(nav, out Vector3 inside)) { EdgeNudges++; NavTrace.Mark(self, "deseo: pegado al borde (0,6 m hacia dentro)", inside); nav.Warp(inside); }
+            // (ronda 92) Y tras ≥ 3 s quieto con camino, el agente se reinicia una vez donde está (no cada 1,5 s como en la ronda 77): la velocidad
+            // deseada 3–5 con velocidad 0 que no se arregla sola.
+            else if (Time.time >= t.unfrozeWarpAt) { t.unfrozeWarpAt = Time.time + 15f; FrozenWarps++; nav.ResetPath(); nav.Warp(self.transform.position); }
+            t.unfroze = false;
             t.going = false; t.failUntil = Time.time + 4f; TripsStalled++; Outcome(self, t, false); FrozenTrips++; TurnAway(self, t);
             NavTrace.Reset(self, "deseo: quieto con camino");
             return false;
@@ -592,7 +596,9 @@ public static class DesireCatalog
     static void Walk(Animal self, Trip t, Vector3 at)
     {
         TripsStarted++; t.started++; Vector3 dir = at - self.transform.position; dir.y = 0f; if (dir.sqrMagnitude > 1f) t.lastDir = dir.normalized; t.goal = at; t.since = t.bestAt = Time.time; t.best = float.MaxValue;
-        t.restNoSpot = false; t.frozenSince = -1f; t.unfroze = false;
+        // (ronda 92) El reloj de «quieto con camino» NO se pone a cero con cada viaje: los animales que empezaban un salto tras otro sin moverse
+        // nunca llegaban a 1,5 s en el mismo viaje (FrozenTrips = 0 con decenas de animales a velocidad 0). FrozenStep lo pone a cero al andar.
+        t.restNoSpot = false;
         // (2026-11-11, ronda 59) Un camino que no lleva (parcial, de una esquina, o que acaba a < 1 m de donde empieza: otra isla del NavMesh)
         // no es un viaje: el agente «llegaba» al momento, se quedaba sin camino y el paseo esperaba. Se da por fallido ya, con su pausa.
         t.going = Move(self, at);
