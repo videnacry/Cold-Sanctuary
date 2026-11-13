@@ -28,6 +28,7 @@ vueltas en círculo: N» del primer FAIL de fauna de g50, y las líneas TOTAL. �
 | r86 | 2026-11-13 | cfd8be3 | rápida + QA | rápida | rápida 1065/0 | — | — | 0 | 0 | — | — | — | 8 min | [r86](runs/2026-11-13-1731-r86-rapida-QA.md) |
 | r88 | 2026-11-13 | 9eea10d | grupos + vivo | 1 50 | 84/1 | 20 | 1 | 0 | 0 | — | — | — | 48 min | [r88](runs/2026-11-13-1822-r88-grupos-vivo.md) |
 | r90 | 2026-11-13 | b0c7f3c | grupos + vivo | 1 50 | 84/2 | 2 | 4 | 0 | 0 | — | — | — | 47 min | [r90](runs/2026-11-13-1955-r90-grupos-vivo.md) |
+| r91 | 2026-11-13 | 8689b5a | grupos + vivo | 1 50 | 85/1 | 3 | 3 | 0 | 0 | — | — | — | 47 min | [r91](runs/2026-11-13-2045-r91-grupos-vivo.md) |
 
 **Lo que se ve en fila** (propuesta §1.3): «atascado > 20 s» saltó a 27 y 34 en r76–r77, justo cuando se quitó el Warp (`52d2949`), y
 bajó a 5–6 en r78–r79. Es el caso CV-03. En todas las rondas que corrieron g50 desde r71, el check de fauna falló: B-01, crónico.
