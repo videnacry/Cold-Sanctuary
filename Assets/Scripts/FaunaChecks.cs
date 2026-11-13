@@ -186,7 +186,9 @@ public class FaunaChecks : MonoBehaviour, ITestUnit
             Vector3 g = pw.GoalLocalForTest, here = c.transform.localPosition;
             if (!PenWalker.GoalOk(new Vector2(g.x, g.z), pw.HalfForTest, pw.BlocksForTest, 0.2f) || new Vector2(g.x - here.x, g.z - here.z).magnitude < 0.8f) bad += $"{c.name} ({g.x:0.0},{g.z:0.0}); ";
             if (c.nav != null && c.nav.enabled) bad += $"{c.name} con el agente encendido; ";
+            if (PenWalker.Pausing(c)) bad += $"{c.name} «en pausa» mientras anda; ";   // (ronda 83) andando no es descanso…
             pw.Stop();
+            if (!PenWalker.Pausing(c)) bad += $"{c.name} parado sin contar como pausa; ";   // …y parado entre dos paseos, sí
         }
         if (walkers > 0) TestProbe.Check("las crías del recinto andan sin NavMesh, a un sitio de su suelo (dentro, lejos de muros y de la guarida)", picked > 0 && bad.Length == 0, $"{picked}/{walkers} con sitio{(bad.Length > 0 ? "; mal: " + bad : "")}");
         else Debug.Log("[TEST] SKIP · andador del recinto — no hay crías en un recinto de la Cría");

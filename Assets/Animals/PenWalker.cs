@@ -26,6 +26,9 @@ public class PenWalker : MonoBehaviour
     float _until;
     bool _arrived;
 
+    /// <summary>(2026-11-13, ronda 83) ¿Está la cría en la pausa entre dos paseos de su recinto (para JornadaTest: descanso, no «atascada»)?</summary>
+    public static bool Pausing(Animal a) => a != null && a.TryGetComponent(out PenWalker w) && w._pen != null && !w.Going;
+
     /// <summary>¿Va andando hacia su sitio?</summary>
     public bool Going { get; private set; }
     /// <summary>El sitio al que va, en el mundo.</summary>

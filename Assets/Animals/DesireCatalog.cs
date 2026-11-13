@@ -87,8 +87,8 @@ public static class DesireCatalog
             self => { EstrusState e = self.GetComponent<EstrusState>(); return e != null && e.InEstrus ? W_MATE : 0f; },
             self =>
             {
+                if (PenWander(self)) return;   // en un recinto de la Cría: no hay pareja que alcanzar; curiosea por su recinto (ANTES del NavMesh: ronda 83, PenWalker lo apaga)
                 if (self.nav == null || !self.nav.isOnNavMesh) return;
-                if (PenWander(self)) return;   // en un recinto de la Cría: no hay pareja que alcanzar; curiosea por su recinto
                 // Todo destino, ALCANZABLE (camino completo por el NavMesh): antes iba hacia la pareja/llamada/rastro aunque
                 // estuviera en otra placa de hielo o tras un muro, llegaba al final del camino posible y se plantaba ahí
                 // «queriendo pareja» (JornadaTest: pingüinos atascados > 20 s con «mate»).
@@ -240,7 +240,9 @@ public static class DesireCatalog
             // donde vino) y siempre a un sitio alcanzable. Antes: un punto al azar a ≤ 8 m EN CADA DECISIÓN (cada ~2,5 s), aunque
             // aún fuera hacia el anterior → zigzag sin avanzar («da vueltas en círculo (explore)»), o un punto fuera del NavMesh
             // en el que se quedaba plantado. (la cría de un recinto de la Cría curiosea por su recinto: PenWander)
-            self => { if (self.nav != null && self.nav.isOnNavMesh && !PenWander(self)) Explore(self, "explore"); },
+            // (2026-11-13, ronda 83) PenWander ANTES de mirar el NavMesh: la cría del recinto anda sin agente (PenWalker) y con la comprobación delante
+            // nunca se llegaba a PenWander tras el primer paseo (PenWalker 10/10 en 2 días; «quiere explore, sin viaje, agente apagado»).
+            self => { if (PenWander(self)) return; if (self.nav != null && self.nav.isOnNavMesh) Explore(self, "explore"); },
             "explore"),
     };
 
