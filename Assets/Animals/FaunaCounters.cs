@@ -21,7 +21,7 @@ public class FaunaCounters : MonoBehaviour
 
     /// <summary>La línea de contadores (también para las pruebas).</summary>
     public static string Line() =>
-        $"[Fauna] contadores: StaleRepaths={DesireCatalog.StaleRepaths} NavReach.BadPaths={NavReach.BadPaths} HomeLegs={DesireCatalog.HomeLegs} " +
+        $"[Fauna] contadores: StaleRepaths={DesireCatalog.StaleRepaths} NavReach.BadPaths={NavReach.BadPaths} HomeLegs={DesireCatalog.HomeLegs} (rectos {DesireCatalog.StraightLegs}) " +
         $"EdgeNudges={DesireCatalog.EdgeNudges} FrozenRestarts={DesireCatalog.FrozenRestarts} FrozenTrips={DesireCatalog.FrozenTrips} " +
         $"BadPaths(viajes)={DesireCatalog.BadPaths} NoPathTrips={DesireCatalog.NoPathTrips} IdleRefused={ActionPrep.IdleRefused} " +
         $"PenWalker={PenWalker.Started}/{PenWalker.Arrived}/{PenWalker.Gave} (empezados/llegados/sin sitio)";
