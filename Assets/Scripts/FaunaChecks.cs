@@ -108,6 +108,21 @@ public class FaunaChecks : MonoBehaviour, ITestUnit
         }
         else Debug.Log("[TEST] SKIP · viaje sin camino — ningún animal sobre el NavMesh con un sitio alcanzable a 6 m");
 
+        // ── (2026-11-13) QUIETO CON CAMINO (vivo75: 17 «atascado > 20 s» con camino, velocidad pedida 2–5 y velocidad 0,00) ────────────────────
+        // A los 1,5 s quieto con camino se reinicia el agente (1); si vuelve a quedarse quieto, se deja el viaje (2). Andar o no querer andar, nada.
+        string fz = DesireCatalog.FrozenStepsForTest((true, 0f, 0f), (true, 0f, 1f), (true, 0f, 1.6f), (true, 0f, 2f), (true, 0f, 3.6f));
+        TestProbe.Check("quieto con camino: a los 1,5 s se reinicia el agente y, si sigue quieto, se deja el viaje", fz == "0,0,1,0,2", fz);
+        string fm = DesireCatalog.FrozenStepsForTest((true, 0f, 0f), (true, 1f, 1f), (true, 0f, 2f), (true, 0f, 3f), (false, 0f, 9f));
+        TestProbe.Check("…andando (o sin querer andar) no cuenta como quieto", fm == "0,0,0,0,0", fm);
+        // Un paseo sin ningún salto posible se para y mira (descanso, como la cría del recinto) y el siguiente salto sale hacia otro lado.
+        Animal sw = alive.Find(x => x.nav != null && x.nav.enabled && x.nav.isOnNavMesh && x.GetComponent<MarineLife>() == null && !x.busy);
+        if (sw != null)
+        {
+            bool rests = DesireCatalog.StrollWithoutHopForTest(sw, out float turned);
+            TestProbe.Check("un paseo sin salto posible descansa a propósito (no está atascado)", rests, sw.name);
+            TestProbe.Check("…y prueba otra dirección (gira ≥ 90°)", turned >= 89f, $"{turned:0} °");
+        }
+
         // ── (2026-11-11, ronda 72) EL PASEO DE UN ADULTO VA A UN SITIO DE VERDAD: a ≥ 3 m y con camino completo ──
         Animal ex = alive.Find(x => x != null && x.lifeStage == LifeStage.adult && x.nav != null && x.nav.isOnNavMesh && x.GetComponent<MarineLife>() == null && !DesireCatalog.Confined(x));
         if (ex != null)
