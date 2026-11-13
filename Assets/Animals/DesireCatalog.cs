@@ -292,9 +292,52 @@ public static class DesireCatalog
     // ══ MOVIMIENTO DE LOS DESEOS: siempre a sitios ALCANZABLES, con tope y sin re-apuntar en cada decisión ══════════════
     // Un «viaje» por animal: hacia dónde va, por qué deseo, desde cuándo y cuánto ha avanzado. Si en 5 s no se acerca (un muro,
     // otro animal en medio) o tarda más de 40 s, lo deja; ese deseo no vuelve a intentar ese viaje en unos segundos.
-    class Trip { public string key; public Vector3 goal; public bool going, restNoSpot; public Vector3 lastDir; public float since, best, bestAt, pauseUntil, failUntil, lastCall, reissueAt; public int calls, started; }
-    /// <summary>(2026-11-11) ¿Descansa a propósito? La cría del recinto sin sitio a 1,5–5 m (PenGoal) se queda mirando: no está «atascada».</summary>
-    public static bool RestingByChoice(Animal a) => a != null && _trips.TryGetValue(a, out Trip t) && t.key == "recinto" && t.restNoSpot && !t.going;
+    class Trip { public string key; public Vector3 goal; public bool going, restNoSpot, unfroze; public Vector3 lastDir; public float since, best, bestAt, pauseUntil, failUntil, lastCall, reissueAt, frozenSince = -1f; public int calls, started; }
+    /// <summary>(2026-11-11) ¿Descansa a propósito? La cría del recinto sin sitio a 1,5–5 m (PenGoal) se queda mirando: no está «atascada».
+    /// (2026-11-13, vivo75) Y cualquier paseo sin salto posible (Stroll: PickHop no encuentra nada): se para y mira, como la cría del recinto.</summary>
+    public static bool RestingByChoice(Animal a) => a != null && _trips.TryGetValue(a, out Trip t) && t.restNoSpot && !t.going;
+
+    /// <summary>(2026-11-13, vivo75) Segundos con camino, velocidad pedida y sin moverse antes de reiniciar el agente (y, a la segunda, dejar el viaje).</summary>
+    const float FrozenSeconds = 1.5f;
+    /// <summary>Agentes reiniciados por estar quietos con camino, y viajes dejados por seguir quietos tras reiniciar (diagnóstico).</summary>
+    public static int FrozenRestarts, FrozenTrips;
+    static int _frozenLogs;
+    /// <summary>(2026-11-13) QUIETO CON CAMINO: 0 = anda o no le toca andar; 1 = lleva más de <see cref="FrozenSeconds"/> quieto (primera vez:
+    /// reiniciar el agente); 2 = otra vez quieto tras reiniciarlo (dejar el viaje y probar otra dirección).</summary>
+    static int FrozenStep(Trip t, bool wants, float speedNow, float now)
+    {
+        if (!wants || speedNow > 0.05f) { t.frozenSince = -1f; return 0; }
+        if (t.frozenSince < 0f) { t.frozenSince = now; return 0; }
+        if (now - t.frozenSince <= FrozenSeconds) return 0;
+        t.frozenSince = -1f;
+        if (!t.unfroze) { t.unfroze = true; return 1; }
+        return 2;
+    }
+    /// <summary>(Pruebas) FrozenStep sobre una serie (quiere andar, velocidad, tiempo): los resultados separados por comas.</summary>
+    public static string FrozenStepsForTest(params (bool wants, float speed, float time)[] steps)
+    {
+        var t = new Trip(); var r = new List<string>();
+        foreach (var s in steps) r.Add(FrozenStep(t, s.wants, s.speed, s.time).ToString());
+        return string.Join(",", r);
+    }
+    /// <summary>(2026-11-13) OTRA DIRECCIÓN: tras un viaje que no avanzó o un paseo sin salto, el «hacia delante» del siguiente gira 90–270°
+    /// (no vuelve a probar contra lo mismo).</summary>
+    static void TurnAway(Animal self, Trip t)
+    {
+        Vector3 f = t.lastDir.sqrMagnitude > 0.5f ? t.lastDir : self.transform.forward; f.y = 0f;
+        if (f.sqrMagnitude < 1e-4f) f = Vector3.forward;
+        t.lastDir = (Quaternion.Euler(0f, UnityEngine.Random.Range(90f, 270f), 0f) * f.normalized).normalized;
+    }
+    /// <summary>(Pruebas) Un paseo «explore» cuyo salto nunca vale (siempre su propio sitio): ¿descansa a propósito y cambia de dirección?</summary>
+    public static bool StrollWithoutHopForTest(Animal a, out float turned)
+    {
+        turned = 0f;
+        if (a == null) return false;
+        Trip t = TripOf(a, "explore"); t.going = false; t.pauseUntil = 0f; t.lastDir = Vector3.right;
+        Stroll(a, "explore", () => a.transform.position, 1f, 3f, 3f);
+        turned = Vector3.Angle(Vector3.right, t.lastDir);
+        return RestingByChoice(a);
+    }
     /// <summary>Viajes que se quedaron sin camino lejos de su meta (diagnóstico).</summary>
     public static int NoPathTrips;
     static int _noPathLogs;
@@ -339,7 +382,17 @@ public static class DesireCatalog
         string edge = n.isOnNavMesh && NavMesh.FindClosestEdge(n.nextPosition, out NavMeshHit eh, n.areaMask) ? $"{eh.distance:0.00} m" : "—";
         CharacterLevel cl = a.GetComponent<CharacterLevel>();
         string more = $", energía {(cl != null ? $"{cl.currentEnergy:0}/{cl.MaxEnergy:0}" : "—")}, interno a {gap.magnitude:0.00} m del cuerpo, evitación {n.obstacleAvoidanceType} (prioridad {n.avoidancePriority}), en enlace {n.isOnOffMeshLink}, updatePosition {n.updatePosition}, agente más cercano a {(nearest < float.MaxValue ? nearest.ToString("0.0") : "—")} m, borde a {edge}";
-        return $"agente: en NavMesh {n.isOnNavMesh}, camino {n.hasPath}, pendiente {n.pathPending}, estado {n.pathStatus}, velocidad {n.velocity.magnitude:0.00} (pedida {n.speed:0.0}){more}, destino a {Vector3.Distance(n.transform.position, n.destination):0.0} m, parado {n.isStopped}";
+        return $"agente: en NavMesh {n.isOnNavMesh}, camino {n.hasPath}, pendiente {n.pathPending}, estado {n.pathStatus}, velocidad {n.velocity.magnitude:0.00} (pedida {n.speed:0.0}){more}, destino a {Vector3.Distance(n.transform.position, n.destination):0.0} m, parado {n.isStopped} · {SteerInfo(n)}";
+    }
+    /// <summary>(2026-11-13, vivo75) Lo que el agente QUIERE hacer (velocidad deseada, rumbo, esquinas, camino caducado, aceleración, frenada):
+    /// con camino y velocidad pedida, si la deseada también es 0 el problema es el camino o el rumbo; si no, lo frena otra cosa (evitación, cuerpo).</summary>
+    static string SteerInfo(NavMeshAgent n)
+    {
+        if (n == null || !n.isOnNavMesh) return "sin rumbo";
+        Vector3 st = n.steeringTarget - n.transform.position; st.y = 0f;
+        Rigidbody rb = n.GetComponent<Rigidbody>();
+        string body = rb == null ? "sin Rigidbody" : rb.isKinematic ? "cinemático" : $"físico a {rb.linearVelocity.magnitude:0.0} m/s";
+        return $"deseada {n.desiredVelocity.magnitude:0.00}, rumbo a {st.magnitude:0.00} m, esquinas {(n.hasPath ? n.path.corners.Length : 0)}, caducado {n.isPathStale}, aceleración {n.acceleration:0.0}, frenada {n.stoppingDistance:0.0} m (autoBraking {n.autoBraking}), queda {n.remainingDistance:0.0} m, altura interna {n.nextPosition.y - n.transform.position.y:0.00} m, cuerpo {body}";
     }
 
     public static string TripInfo(Animal a) => a != null && _trips.TryGetValue(a, out Trip t) ? $"viaje «{t.key}» va={t.going} meta={t.goal:F1} pausa={t.pauseUntil - Time.time:0.0} fallo={t.failUntil - Time.time:0.0} llamadas={t.calls} (hace {Time.time - t.lastCall:0.0} s) empezados={t.started}" : "sin viaje";
@@ -354,7 +407,7 @@ public static class DesireCatalog
     static Trip TripOf(Animal a, string key)
     {
         if (!_trips.TryGetValue(a, out Trip t)) _trips[a] = t = new Trip();
-        if (t.key != key) { t.key = key; t.going = false; t.pauseUntil = 0f; t.failUntil = 0f; }   // otro deseo: viaje nuevo
+        if (t.key != key) { t.key = key; t.going = false; t.restNoSpot = false; t.pauseUntil = 0f; t.failUntil = 0f; }   // otro deseo: viaje nuevo
         return t;
     }
 
@@ -387,11 +440,30 @@ public static class DesireCatalog
         }
         float rem = nav.hasPath ? Remaining(nav) : 0f;
         if (rem <= nav.stoppingDistance + 0.35f) { t.going = false; return false; }   // llegó
+        // (2026-11-13, vivo75) QUIETO CON CAMINO: 17 «atascado > 20 s» (osos, bueyes, renos, zorros, lobos y las crías de la Cría) tenían camino
+        // completo, velocidad pedida 2–5, sin parar, el agente pegado al cuerpo… y velocidad 0,00, viaje tras viaje (cada uno esperaba 5 s a darse
+        // por atascado y el siguiente salía igual de quieto). A los 1,5 s se reinicia el agente donde está (Warp) y se le vuelve a dar el camino;
+        // si sigue quieto, se deja el viaje y el siguiente sale hacia otro lado. El aviso dice qué quería hacer el agente (velocidad deseada, rumbo).
+        int fz = FrozenStep(t, nav.hasPath && nav.speed > 0.05f && !nav.isStopped && !self.busy, nav.velocity.magnitude, Time.time);
+        if (fz > 0)
+        {
+            if (_frozenLogs < 40) { _frozenLogs++; Debug.Log($"[Fauna] «{self.name}» ({t.key}) quieto con camino {FrozenSeconds:0.0} s ({(fz == 1 ? "reinicia el agente" : "deja el viaje y prueba otro lado")}): {NavInfo(self)} · {NavTrace.Last(self)}."); }
+            if (fz == 1)
+            {
+                FrozenRestarts++; t.bestAt = Time.time;
+                NavTrace.Mark(self, "deseo: quieto con camino (Warp y otra vez)", self.transform.position);
+                nav.Warp(self.transform.position);
+                if (Move(self, t.goal)) return true;
+            }
+            t.going = false; t.failUntil = Time.time + 4f; TripsStalled++; FrozenTrips++; TurnAway(self, t);
+            NavTrace.Reset(self, "deseo: quieto con camino");
+            return false;
+        }
         if (rem < t.best - 0.25f) { t.best = rem; t.bestAt = Time.time; }
         if (Time.time - t.bestAt > 5f || Time.time - t.since > 40f)                    // atascado o tope
         {
             if (_stallLogs < 30) { _stallLogs++; Debug.Log($"[Fauna] «{self.name}» se atasca yendo a {t.goal} desde {self.transform.position}: quedan {rem:0.0} m, velocidad pedida {nav.speed:0.0}, real {nav.velocity.magnitude:0.0}, parado {nav.isStopped}, camino {nav.pathStatus}{(nav.speed < 0.05f ? $", sin velocidad: {(self.Walk != null && self.Walk.IsCharging ? "en postura de carga" : self.TryGetComponent(out CharacterLevel cl) ? $"energía {cl.currentEnergy:0.0}/{cl.MaxEnergy:0.0}" : "sin WalkSpell ni energía")}" : "")}."); }
-            t.going = false; t.failUntil = Time.time + 8f; TripsStalled++;
+            t.going = false; t.failUntil = Time.time + 8f; TripsStalled++; TurnAway(self, t);   // (2026-11-13) el siguiente, hacia otro lado
             NavTrace.Reset(self, "deseo: atascado o tope");
             return false;
         }
@@ -415,6 +487,7 @@ public static class DesireCatalog
     static void Walk(Animal self, Trip t, Vector3 at)
     {
         TripsStarted++; t.started++; Vector3 dir = at - self.transform.position; dir.y = 0f; if (dir.sqrMagnitude > 1f) t.lastDir = dir.normalized; t.goal = at; t.since = t.bestAt = Time.time; t.best = float.MaxValue;
+        t.restNoSpot = false; t.frozenSince = -1f; t.unfroze = false;
         // (2026-11-11, ronda 59) Un camino que no lleva (parcial, de una esquina, o que acaba a < 1 m de donde empieza: otra isla del NavMesh)
         // no es un viaje: el agente «llegaba» al momento, se quedaba sin camino y el paseo esperaba. Se da por fallido ya, con su pausa.
         t.going = Move(self, at);
@@ -482,7 +555,9 @@ public static class DesireCatalog
         if (Time.time < t.pauseUntil) return;
         Vector3 here = self.transform.position;
         if (PickHop(self, pick, minHop, out Vector3 hop)) { Walk(self, t, hop); return; }
-        StrollNoPick++; t.pauseUntil = Time.time + 1f;   // nada alcanzable ahora: lo reintenta en un momento
+        // Nada alcanzable ahora: se para y mira (descanso, como la cría del recinto sin sitio: RestingByChoice) y lo reintenta en un momento
+        // hacia OTRO lado (2026-11-13, vivo75: el siguiente salto volvía a buscar contra lo mismo).
+        StrollNoPick++; t.pauseUntil = Time.time + 1f; t.restNoSpot = true; TurnAway(self, t);
         if (_noPickLogs < 30 && self.nav != null) { _noPickLogs++; Debug.Log($"[Fauna] «{self.name}» ({key}) no encuentra adónde ir en {here}: agente tipo {self.nav.agentTypeID}, área {self.nav.areaMask}, nextPosition a {(self.nav.nextPosition - here).magnitude:0.00} m, velocidad {self.nav.speed:0.0}, en NavMesh {self.nav.isOnNavMesh}."); }
     }
 
