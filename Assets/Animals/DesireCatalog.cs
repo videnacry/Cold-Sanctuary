@@ -292,7 +292,7 @@ public static class DesireCatalog
     // ══ MOVIMIENTO DE LOS DESEOS: siempre a sitios ALCANZABLES, con tope y sin re-apuntar en cada decisión ══════════════
     // Un «viaje» por animal: hacia dónde va, por qué deseo, desde cuándo y cuánto ha avanzado. Si en 5 s no se acerca (un muro,
     // otro animal en medio) o tarda más de 40 s, lo deja; ese deseo no vuelve a intentar ese viaje en unos segundos.
-    class Trip { public string key; public Vector3 goal; public bool going, restNoSpot; public float since, best, bestAt, pauseUntil, failUntil, lastCall, reissueAt; public int calls, started; }
+    class Trip { public string key; public Vector3 goal; public bool going, restNoSpot; public Vector3 lastDir; public float since, best, bestAt, pauseUntil, failUntil, lastCall, reissueAt; public int calls, started; }
     /// <summary>(2026-11-11) ¿Descansa a propósito? La cría del recinto sin sitio a 1,5–5 m (PenGoal) se queda mirando: no está «atascada».</summary>
     public static bool RestingByChoice(Animal a) => a != null && _trips.TryGetValue(a, out Trip t) && t.key == "recinto" && t.restNoSpot && !t.going;
     /// <summary>Viajes que se quedaron sin camino lejos de su meta (diagnóstico).</summary>
@@ -414,7 +414,7 @@ public static class DesireCatalog
 
     static void Walk(Animal self, Trip t, Vector3 at)
     {
-        TripsStarted++; t.started++; t.goal = at; t.since = t.bestAt = Time.time; t.best = float.MaxValue;
+        TripsStarted++; t.started++; Vector3 dir = at - self.transform.position; dir.y = 0f; if (dir.sqrMagnitude > 1f) t.lastDir = dir.normalized; t.goal = at; t.since = t.bestAt = Time.time; t.best = float.MaxValue;
         // (2026-11-11, ronda 59) Un camino que no lleva (parcial, de una esquina, o que acaba a < 1 m de donde empieza: otra isla del NavMesh)
         // no es un viaje: el agente «llegaba» al momento, se quedaba sin camino y el paseo esperaba. Se da por fallido ya, con su pausa.
         t.going = Move(self, at);
@@ -547,7 +547,10 @@ public static class DesireCatalog
         }
         float step = Mathf.Clamp(self.HomeRadius * 0.08f, 4f, 10f);
         Transform tr = self.transform;
-        Stroll(self, key, () => LifeStage.WanderTarget(tr.position, tr.forward, step, UnityEngine.Random.insideUnitCircle), 1f, 3f, 3f);   // (ronda 72: ≥ 3 m)
+        // (2026-11-11, vivo74) «HACIA DELANTE» ES HACIA DONDE IBA (el último salto), no hacia donde mira el cuerpo: al llegar se paraba girado y el
+        // siguiente salto volvía por donde vino (zorros, bueyes, pingüinos: saltos de 11–13 m, 17–43 m en 20 s para 0–1,9 m netos).
+        Trip et = TripOf(self, key);
+        Stroll(self, key, () => LifeStage.WanderTarget(tr.position, et.lastDir.sqrMagnitude > 0.5f ? et.lastDir : tr.forward, step, UnityEngine.Random.insideUnitCircle), 1f, 3f, 3f);   // (ronda 72: ≥ 3 m)
     }
 
     // Su zona de casa: dentro, «volver a casa» no se siente.
