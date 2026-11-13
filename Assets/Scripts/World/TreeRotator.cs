@@ -98,6 +98,7 @@ public class TreeRotator : MonoBehaviour
                 TotalDegrees += deg;
                 Physics.SyncTransforms();
                 Carry(dq, pivot);
+                _stepped = true;
             }
         }
         // (2026-11-11) Sin recolocar el NavMesh a mano: el paquete ya lo hace solo cuando el transform cambia (ver StepDegrees); hacerlo también aquí
@@ -107,6 +108,27 @@ public class TreeRotator : MonoBehaviour
             _navAt = Time.time + navRefresh;
             if (Quaternion.Angle(_navRot, transform.rotation) > NavRefreshDegrees) { _navRot = transform.rotation; NavRefreshes++; }
         }
+    }
+
+    // (2026-11-11, ronda 72) EL OBSTÁCULO DE LA RAÍZ TALLA OTRA VEZ tras cada paso: el paquete quita y vuelve a poner el NavMesh del árbol cuando su
+    // transform cambia (UpdateDataIfTransformChanged), y un obstáculo QUIETO (carveOnlyStationary) no vuelve a tallar el NavMesh nuevo hasta
+    // que se mueve o se enciende: los renos, bueyes y zorros entraban a la raíz del Árbol de los Campos (28 «dentro de Pared_raiz») con la
+    // cápsula puesta. INFERIDO. Se apaga y se enciende (una vez por segundo como mucho) para que tale el NavMesh recién puesto.
+    bool _stepped; float _recarveAt, _findAt;
+    UnityEngine.AI.NavMeshObstacle _rootObstacle;
+    void LateUpdate()
+    {
+        if (!_stepped) return;
+        _stepped = false;
+        if (_rootObstacle == null && Time.time >= _findAt)
+        {
+            _findAt = Time.time + 5f;
+            GameObject go = GameObject.Find("Obstaculo_raiz_giratoria");
+            if (go != null) _rootObstacle = go.GetComponent<UnityEngine.AI.NavMeshObstacle>();
+        }
+        if (_rootObstacle == null || Time.time < _recarveAt) return;
+        _recarveAt = Time.time + 1f;
+        _rootObstacle.enabled = false; _rootObstacle.enabled = true;
     }
 
     // Los cuerpos de pie sobre el árbol giran con él: cada 0,5 s se buscan los cuerpos cerca (jugador, personajes,
