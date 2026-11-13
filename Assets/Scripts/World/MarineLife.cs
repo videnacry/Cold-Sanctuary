@@ -368,7 +368,10 @@ public class MarineLife : MonoBehaviour
         }
         Vector3 at = _spot.transform.position;
         if (sp == "Orca") { Vector3 off = (Lagoon - at); off.y = 0f; at += off.normalized * 4f; }
-        at.y = SwimY;
+        // (2026-11-13, ronda 78) LA FOCA LLEGA AL RESPIRADERO POR DEBAJO DEL HIELO FIJO: a SwimY (−1 m) el destino quedaba dentro de la placa
+        // (0 a −1,5 m) y las que no conseguían el agujero (solo cabe una) se quedaban allí, dentro de «Hielo_fijo» (tres focas en (61,−1,−1)).
+        // Se acerca a nado por debajo de su cara inferior; solo la que lo ocupa sube por el agujero (abajo, «asoma de morro»).
+        at.y = sp == "Seal" ? UnderIceY : SwimY;
         if (_spotUntil < 0f)
         {
             if (Move(at, speed, false) > 1.2f) return true;
