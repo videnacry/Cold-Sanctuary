@@ -109,6 +109,12 @@ public class FaunaChecks : MonoBehaviour, ITestUnit
             DesireCatalog.Handover(w, "eat");
             TestProbe.Check("si gana otro deseo, el paseo deja de ser suyo (sin viaje en marcha)", !DesireCatalog.LiveTrip(w, out _));
             w.nav.ResetPath();
+            // (2026-11-13, ronda 88) EL VIAJE SE VIGILA AUNQUE EL DESEO NO SE DESPACHE: con el agente apagado, el vigilante lo da por acabado.
+            DesireCatalog.StartTripForTest(w, "explore", goal);
+            Vector3 wp = w.transform.position; w.nav.enabled = false;
+            DesireCatalog.SuperviseTripsNow();
+            TestProbe.Check("el vigilante de viajes acaba el viaje de un animal sin agente (sin esperar a su deseo)", !DesireCatalog.LiveTrip(w, out _));
+            w.nav.enabled = true; if (w.nav.isOnNavMesh) w.nav.Warp(wp);
         }
         else Debug.Log("[TEST] SKIP · viaje sin camino — ningún animal sobre el NavMesh con un sitio alcanzable a 6 m");
 
