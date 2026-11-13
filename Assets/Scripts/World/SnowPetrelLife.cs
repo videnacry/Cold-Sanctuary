@@ -48,6 +48,9 @@ public class SnowPetrelLife : MonoBehaviour
 
     /// <summary>Que vaya ya a posarse (pruebas).</summary>
     float _nestRetry;
+    // (2026-11-11, vivo73) EN EL NIDO, ENCIMA: el nido es un punto de la repisa a ras de su roca, y el pájaro se posaba con el CENTRO del cuerpo en él:
+    // los pies quedaban a y −0,38 («en el agua sin ser acuático», petreles en (−65,0,−215)). Como en el iceberg (PerchClearance), el cuerpo encima.
+    Vector3 NestSeat => _nest.transform.position + Vector3.up * (Iceberg.PerchClearance + 0.25f);
     public void RestNow(Iceberg on = null) { _nextRest = 0f; if (on != null) _berg = on; }
     /// <summary>¿Está criando (pollo, huevo que incubar, su pollo en el nido o en celo)? Entonces va al nido y no descansa en los icebergs.</summary>
     public bool Breeding => _a == null || _a.lifeStage == LifeStage.child || Egg.ToIncubate(_a) != null || NestChick() != null || (_a.lifeStage == LifeStage.adult && ((_estrus != null && _estrus.InEstrus) || (GetComponent<Reproduction>() is Reproduction r && r.Pregnant) || PartnerBreeding()));
@@ -57,7 +60,7 @@ public class SnowPetrelLife : MonoBehaviour
         if (_a == null || _a.death) return;
         if (_nest == null && Time.time >= _nestRetry) { _nestRetry = Time.time + 5f; _nest = SnowPetrelNest.Claim(_a); }
         if (TryGetComponent(out NavMeshAgent nav) && nav.enabled) nav.enabled = false;
-        if (_a.lifeStage == LifeStage.child) { Sit(_nest != null ? _nest.transform.position : transform.position); return; }   // el pollo no sale del nido
+        if (_a.lifeStage == LifeStage.child) { Sit(_nest != null ? NestSeat : transform.position); return; }   // el pollo no sale del nido
         Egg egg = Egg.ToIncubate(_a);
         if (egg != null) { Unperch(); Fly(egg.transform.position + Vector3.up * 0.1f, true); return; }
         Animal chick = NestChick();
@@ -71,7 +74,7 @@ public class SnowPetrelLife : MonoBehaviour
         }
         Reproduction rep = GetComponent<Reproduction>();
         bool courting = _a.lifeStage == LifeStage.adult && ((_estrus != null && _estrus.InEstrus) || (rep != null && rep.Pregnant) || PartnerBreeding());
-        if (courting && _nest != null && _a.hungry < 0f) { Unperch(); Fly(_nest.transform.position, true); return; }   // (cría en la roca, nunca en un iceberg)
+        if (courting && _nest != null && _a.hungry < 0f) { Unperch(); Fly(NestSeat, true); return; }   // (cría en la roca, nunca en un iceberg)
         if (_a.hungry >= 0f)
         {
             Unperch();
@@ -88,7 +91,7 @@ public class SnowPetrelLife : MonoBehaviour
         if (Time.time >= _nextRest)
         {
             if (_berg == null) _berg = NearestBerg();   // (uno por descanso: elegido en cada fotograma, con dos icebergs cambiaba de rumbo y no llegaba nunca)
-            _perch = _berg != null ? _berg.PerchSpot(_phase) : _nest != null ? _nest.transform.position : transform.position;
+            _perch = _berg != null ? _berg.PerchSpot(_phase) : _nest != null ? NestSeat : transform.position;
             if (Fly(_perch, true) < 1f)
             {
                 _perched = true;
