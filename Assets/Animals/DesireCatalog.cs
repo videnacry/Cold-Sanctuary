@@ -300,7 +300,7 @@ public static class DesireCatalog
     /// <summary>(2026-11-13, vivo75) Segundos con camino, velocidad pedida y sin moverse antes de reiniciar el agente (y, a la segunda, dejar el viaje).</summary>
     const float FrozenSeconds = 1.5f;
     /// <summary>Agentes reiniciados por estar quietos con camino, y viajes dejados por seguir quietos tras reiniciar (diagnóstico).</summary>
-    public static int FrozenRestarts, FrozenTrips, EdgeNudges;
+    public static int FrozenRestarts, FrozenTrips, EdgeNudges, StaleRepaths;
     static int _frozenLogs;
     /// <summary>(2026-11-13) Si el agente está a &lt; 0,3 m del borde del NavMesh, el punto 0,6 m hacia dentro (de los dos lados de la normal del
     /// borde, el que queda más lejos de él).</summary>
@@ -485,11 +485,23 @@ public static class DesireCatalog
         }
         float rem = nav.hasPath ? Remaining(nav) : 0f;
         if (rem <= nav.stoppingDistance + 0.35f) { t.going = false; Outcome(self, t, true); return false; }   // llegó
+        // (2026-11-13, suite 80) CAMINO CADUCADO O SIN ESQUINAS: las 8 crías de la Cría quietas a la vez tenían «caducado True» (el NavMesh del árbol
+        // que gira se vuelve a colocar cada paso y su camino deja de valer) y el zorro y el buey que volvían a casa desde 145–209 m, camino con
+        // «esquinas 0» y «deseada» 3–15: ninguno andaba y el agente no lo recalculaba solo. Se le vuelve a pedir el camino (cada 0,5 s como mucho),
+        // y eso no cuenta como estar quieto (el tope de 5 s sin acercarse sigue valiendo).
+        bool repathed = false;
+        if (nav.hasPath && Time.time >= t.reissueAt && (nav.isPathStale || nav.path.corners.Length == 0))
+        {
+            t.reissueAt = Time.time + 0.5f; t.frozenSince = -1f; StaleRepaths++;
+            self.Loco?.SetGait(false, 0.1f);
+            NavTrace.Dest(self, nav, t.goal, nav.isPathStale ? "deseo: camino caducado, lo vuelve a pedir" : "deseo: camino sin esquinas, lo vuelve a pedir");
+            repathed = true;
+        }
         // (2026-11-13, vivo75) QUIETO CON CAMINO: 17 «atascado > 20 s» (osos, bueyes, renos, zorros, lobos y las crías de la Cría) tenían camino
         // completo, velocidad pedida 2–5, sin parar, el agente pegado al cuerpo… y velocidad 0,00, viaje tras viaje (cada uno esperaba 5 s a darse
         // por atascado y el siguiente salía igual de quieto). A los 1,5 s se reinicia el agente donde está (Warp) y se le vuelve a dar el camino;
         // si sigue quieto, se deja el viaje y el siguiente sale hacia otro lado. El aviso dice qué quería hacer el agente (velocidad deseada, rumbo).
-        int fz = FrozenStep(t, nav.hasPath && nav.speed > 0.05f && !nav.isStopped && !self.busy, nav.velocity.magnitude, Time.time);
+        int fz = FrozenStep(t, !repathed && nav.hasPath && nav.speed > 0.05f && !nav.isStopped && !self.busy, nav.velocity.magnitude, Time.time);
         if (fz > 0)
         {
             if (_frozenLogs < 40) { _frozenLogs++; Debug.Log($"[Fauna] «{self.name}» ({t.key}) quieto con camino {FrozenSeconds:0.0} s ({(fz == 1 ? "vuelve a andar" : "deja el viaje y prueba otro lado")}): {NavInfo(self)} · {NavTrace.Last(self)}."); }
@@ -1035,9 +1047,36 @@ public static class NavReach
         at = p;
         if (self == null || self.nav == null || !self.nav.enabled || !self.nav.isOnNavMesh) return false;
         if (!NavMesh.SamplePosition(p, out NavMeshHit h, sample, self.nav.areaMask)) return false;
+        _lastOwner = null;
         if (!self.nav.CalculatePath(h.position, _path) || _path.status != NavMeshPathStatus.PathComplete) return false;
+        // (2026-11-13, suite 80) UN CAMINO QUE NO SALE DE DONDE ESTÁ O NO LLEGA AL SITIO NO VALE: zorros que volvían a casa desde 88–174 m
+        // recibían un camino «completo» de 2 esquinas y 2,7–9,7 m («SetPath (PathComplete, 2 esquinas, 2,7 m)» hacia una meta a 174 m) y a
+        // los pocos segundos se quedaban sin camino, una vez y otra. Si el camino empieza lejos del cuerpo (el agente desfasado), se coloca
+        // el agente en el cuerpo y se calcula otra vez; si aun así no sale de él o no acaba en el sitio, no se llega.
+        if (!PathFits(self, h.position, out float startOff, out float endOff))
+        {
+            if (startOff > 1f) { self.nav.Warp(self.transform.position); if (!self.nav.CalculatePath(h.position, _path) || _path.status != NavMeshPathStatus.PathComplete) return false; }
+            if (!PathFits(self, h.position, out startOff, out endOff))
+            {
+                BadPaths++;
+                if (_badLogs++ < 20) Debug.Log($"[Fauna] «{self.name}»: camino «completo» que no vale hacia {h.position} ({Vector3.Distance(self.transform.position, h.position):0.0} m): empieza a {startOff:0.0} m del cuerpo y acaba a {endOff:0.0} m del sitio, {_path.corners.Length} esquinas.");
+                return false;
+            }
+        }
         at = h.position; _lastOwner = self; _lastTo = at;
         return true;
+    }
+    /// <summary>Caminos «completos» descartados porque no salían del cuerpo o no acababan en el sitio (diagnóstico).</summary>
+    public static int BadPaths;
+    static int _badLogs;
+    static bool PathFits(Animal self, Vector3 to, out float startOff, out float endOff)
+    {
+        Vector3[] c = _path.corners;
+        startOff = endOff = float.MaxValue;
+        if (c == null || c.Length == 0) return false;
+        Vector3 s = c[0] - self.transform.position, e = c[c.Length - 1] - to; s.y = 0f; e.y = 0f;
+        startOff = s.magnitude; endOff = e.magnitude;
+        return startOff <= 1f && endOff <= 1f;
     }
 
     /// <summary>El final del camino POSIBLE hacia un sitio al que no se llega del todo (camino parcial).</summary>
