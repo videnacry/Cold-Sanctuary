@@ -96,24 +96,29 @@ public static class CheapMaterials
     static void Loaded(UnityEngine.SceneManagement.Scene s, UnityEngine.SceneManagement.LoadSceneMode m) => CheapenScene(s);
 
     public static int Cheapened { get; private set; }
-    public static int CheapenScene(UnityEngine.SceneManagement.Scene s)
+    public static int CheapenScene(UnityEngine.SceneManagement.Scene s) => CheapenScene(s, false);
+    /// <summary><paramref name="tellOwners"/>: dice de quién eran los que convierte (el barrido de después de cargar: ronda 72, «Lit» y «Lit (Instance)» sin dueño conocido).</summary>
+    public static int CheapenScene(UnityEngine.SceneManagement.Scene s, bool tellOwners)
     {
         if (!s.IsValid() || !s.isLoaded) return 0;
-        var done = new HashSet<Material>(); int n = 0;
+        var done = new HashSet<Material>(); int n = 0; var owners = tellOwners ? new List<string>() : null;
         foreach (GameObject root in s.GetRootGameObjects())
             foreach (Renderer r in root.GetComponentsInChildren<Renderer>(true))
                 foreach (Material m in r.sharedMaterials)
                 {
                     if (m == null || !done.Add(m) || Expensive(m) == null) continue;
+                    if (owners != null && owners.Count < 12) owners.Add($"{m.name} en {Path(r.transform)}");
 #if UNITY_EDITOR
                     if (UnityEditor.EditorUtility.IsPersistent(m)) { ReplaceWithClone(r, m); n++; continue; }   // (2026-11-11) un asset que no se puede tocar (los de dentro de un FBX: «Skin», «Teshirt» de Kushal): en este renderer, una copia mate
 #endif
                     MakeCheap(m); n++;
                 }
         Cheapened += n;
-        if (n > 0) Debug.Log($"[Rendimiento] {s.name}: {n} materiales pasados a Simple Lit mate (de {done.Count} distintos).");
+        if (n > 0) Debug.Log($"[Rendimiento] {s.name}: {n} materiales pasados a Simple Lit mate (de {done.Count} distintos){(owners != null && owners.Count > 0 ? " — " + string.Join("; ", owners) : "")}.");
         return n;
     }
+
+    static string Path(Transform t) { string p = t.name; for (Transform u = t.parent; u != null && p.Length < 120; u = u.parent) p = u.name + "/" + p; return p; }
 
     // (2026-11-11, #152) COPIAS MATES de los assets que no se pueden cambiar (los materiales de dentro de un modelo FBX): una por material.
     static readonly Dictionary<Material, Material> _clones = new Dictionary<Material, Material>();
