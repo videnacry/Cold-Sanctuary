@@ -332,8 +332,8 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | CV-01 | Sin probar | — | — | — | — | caso nuevo: falta el Check con [CV-01] (lo añade quien toque la prueba) |
 | CV-02 | Sin probar | — | — | — | — | caso nuevo: falta el Check con [CV-02] (lo añade quien toque la prueba) |
 | CV-03 | Sin probar | — | — | — | — | caso nuevo: falta el Check con [CV-03] (lo añade quien toque la prueba) |
-| CV-04 | Sin probar | — | — | — | — | caso nuevo: falta el Check con [CV-04] (lo añade quien toque la prueba) |
-| CV-05 | Sin probar | — | — | — | — | caso nuevo: falta el Check con [CV-05] (lo añade quien toque la prueba) |
+| CV-04 | Probado (suite g1) | 2026-11-13 | 41716c9 | [runs/2026-11-13-1636-r85-rapida-grupos-vivo.md](runs/2026-11-13-1636-r85-rapida-grupos-vivo.md) | — | r85: g1 FaunaChecks 36/0 |
+| CV-05 | Probado (suite g1) | 2026-11-13 | 41716c9 | [runs/2026-11-13-1636-r85-rapida-grupos-vivo.md](runs/2026-11-13-1636-r85-rapida-grupos-vivo.md) | — | r85: g1 FaunaChecks 36/0 |
 | CV-06 | Sin probar | — | — | — | — | caso nuevo: falta el Check con [CV-06] (lo añade quien toque la prueba) |
 | CV-07 | Sin probar | — | — | — | — | caso nuevo: falta el Check con [CV-07] (lo añade quien toque la prueba) |
 | CV-08 | Sin probar | — | — | — | — | caso nuevo: falta el Check con [CV-08] (lo añade quien toque la prueba) |

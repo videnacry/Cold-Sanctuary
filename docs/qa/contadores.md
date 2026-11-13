@@ -23,7 +23,8 @@ vueltas en círculo: N» del primer FAIL de fauna de g50, y las líneas TOTAL. �
 | r81 | 2026-11-13 | — | build WebGL | — | builds OK (65 y 31 min) | — | — | 0 | 0 | — | — | — | 1 h 52 min | — |
 | r82 | 2026-11-13 | ee35741 | rápida + grupos + vivo | 1 50 | rápida 1012/0 · 76/2 | 7 | 2 | 0 | 0 | — | — | — | 71 min | — |
 | r83 | 2026-11-13 | e35cea2 | rápida + grupos + vivo | 1 50 | rápida 1017/0 · 82/1 | 14 | 3 | 0 | 0 | — | — | — | 51 min | — |
-| r84 | 2026-11-13 | — | build WebGL | — | sin terminar en la salida | — | — | 0 | 0 | — | — | — | — | — |
+| r84 | 2026-11-13 | 65aecfe (web-ligera) | build WebGL | — | builds OK (29 y 20 min) · cs-web-pages 1193cbb · compila limpio | — | — | 0 | 0 | — | — | — | 62 min | — |
+| r85 | 2026-11-13 | 41716c9 | rápida + grupos + vivo | 1 50 | rápida 1018/0 · 82/1 | 5 | 2 | 0 | 0 | — | — | — | 51 min | [r85](runs/2026-11-13-1636-r85-rapida-grupos-vivo.md) |
 
 **Lo que se ve en fila** (propuesta §1.3): «atascado > 20 s» saltó a 27 y 34 en r76–r77, justo cuando se quitó el Warp (`52d2949`), y
 bajó a 5–6 en r78–r79. Es el caso CV-03. En todas las rondas que corrieron g50 desde r71, el check de fauna falló: B-01, crónico.
