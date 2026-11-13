@@ -122,6 +122,19 @@ public class FaunaChecks : MonoBehaviour, ITestUnit
         bool along = DesireCatalog.PointAlong(new[] { Vector3.zero, new Vector3(10f, 0f, 0f), new Vector3(10f, 0f, 30f) }, DesireCatalog.HomeLeg, out Vector3 legAt);
         bool beyond = DesireCatalog.PointAlong(new[] { Vector3.zero, new Vector3(10f, 0f, 0f), new Vector3(10f, 0f, 30f) }, 50f, out _);
         TestProbe.Check("el tramo de vuelta a casa cae a 35 m por el camino (y no más allá de su final)", along && Vector3.Distance(legAt, new Vector3(10f, 0f, 25f)) < 0.01f && !beyond, $"{legAt}");
+        // (2026-11-13, ronda 78) EXPLORAR UN SITIO PEQUEÑO NO ES DAR VUELTAS: metas distintas y alcanzadas en la ventana sí son explorar; un salto
+        // fallido o una meta repetida (a < 1 m de otra) siguen siendo «dar vueltas», y sin ningún salto acabado tampoco se le disculpa.
+        Vector3 g1 = new Vector3(0f, 0f, 0f), g2 = new Vector3(4f, 0f, 0f), g3 = new Vector3(4f, 0f, 4f);
+        TestProbe.Check("explorar: tres metas distintas y alcanzadas en 20 s no es dar vueltas",
+            DesireCatalog.FreshExploring(new[] { (90f, g1, true), (95f, g2, true), (99f, g3, true) }, 100f, 20f));
+        TestProbe.Check("…un salto fallido en la ventana sí cuenta",
+            !DesireCatalog.FreshExploring(new[] { (90f, g1, true), (95f, g2, false), (99f, g3, true) }, 100f, 20f));
+        TestProbe.Check("…una meta repetida (ir y volver al mismo sitio) sí cuenta",
+            !DesireCatalog.FreshExploring(new[] { (90f, g1, true), (95f, g2, true), (99f, g1 + new Vector3(0.5f, 0f, 0f), true) }, 100f, 20f));
+        TestProbe.Check("…sin ningún salto acabado en la ventana, no se le disculpa",
+            !DesireCatalog.FreshExploring(new (float, Vector3, bool)[0], 100f, 20f));
+        TestProbe.Check("…lo de antes de la ventana no cuenta (un fallo y la misma meta hace 30 s)",
+            DesireCatalog.FreshExploring(new[] { (60f, g2, false), (70f, g3, true), (90f, g1, true), (99f, g3, true) }, 100f, 20f));
         // Un paseo sin ningún salto posible se para y mira (descanso, como la cría del recinto) y el siguiente salto sale hacia otro lado.
         Animal sw = alive.Find(x => x.nav != null && x.nav.enabled && x.nav.isOnNavMesh && x.GetComponent<MarineLife>() == null && !x.busy);
         if (sw != null)

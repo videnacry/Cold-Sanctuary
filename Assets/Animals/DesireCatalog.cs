@@ -416,6 +416,32 @@ public static class DesireCatalog
 
     public static string TripInfo(Animal a) => a != null && _trips.TryGetValue(a, out Trip t) ? $"viaje «{t.key}» va={t.going} meta={t.goal:F1} pausa={t.pauseUntil - Time.time:0.0} fallo={t.failUntil - Time.time:0.0} llamadas={t.calls} (hace {Time.time - t.lastCall:0.0} s) empezados={t.started}" : "sin viaje";
     static readonly Dictionary<Animal, Trip> _trips = new Dictionary<Animal, Trip>();
+    // (2026-11-13, ronda 78) CÓMO ACABAN LOS PASEOS (explore y el recinto): cuándo, adónde y si llegó. Para JornadaTest: quien explora un sitio
+    // pequeño con metas distintas que alcanza no «da vueltas» (Polluelo_1, el emperador #37 y el oso #45: caminos completos de 4–13 m, sin fallos).
+    static readonly Dictionary<Animal, List<(float t, Vector3 goal, bool reached)>> _outcomes = new Dictionary<Animal, List<(float, Vector3, bool)>>();
+    static void Outcome(Animal self, Trip t, bool reached)
+    {
+        if (self == null || t == null || (t.key != "explore" && t.key != "recinto")) return;
+        if (!_outcomes.TryGetValue(self, out var l)) _outcomes[self] = l = new List<(float, Vector3, bool)>();
+        l.Add((Time.time, t.goal, reached));
+        if (l.Count > 24) l.RemoveAt(0);
+    }
+    /// <summary>(2026-11-13) ¿Explora de verdad? En los últimos <paramref name="window"/> s: al menos un paseo acabado, todos llegaron y ninguna meta
+    /// repite otra (a &lt; 1 m). Un fallo o una meta repetida = sí puede estar dando vueltas.</summary>
+    public static bool FreshExploring(IEnumerable<(float t, Vector3 goal, bool reached)> events, float now, float window)
+    {
+        var seen = new List<Vector3>();
+        foreach (var e in events)
+        {
+            if (now - e.t > window) continue;
+            if (!e.reached) return false;
+            foreach (Vector3 s in seen) if (Flat(s - e.goal) < 1f) return false;
+            seen.Add(e.goal);
+        }
+        return seen.Count > 0;
+    }
+    /// <summary>¿Este animal explora de verdad en los últimos <paramref name="window"/> s? (ver <see cref="FreshExploring"/>)</summary>
+    public static bool ExploringFreshly(Animal a, float window = 20f) => a != null && _outcomes.TryGetValue(a, out var l) && FreshExploring(l, Time.time, window);
     static readonly Dictionary<Animal, float> _homeBlocked = new Dictionary<Animal, float>();
     static int _homeLogs;
     /// <summary>Contadores para el diagnóstico (viajes empezados, atascados, paseos sin sitio alcanzable).</summary>
@@ -439,7 +465,7 @@ public static class DesireCatalog
         if (!t.going) return false;
         NavMeshAgent nav = self.nav;
         if (nav == null || !nav.isOnNavMesh) { t.going = false; return false; }
-        if (nav.pathPending) { if (Time.time - t.since > 3f) { t.going = false; t.failUntil = Time.time + 4f; TripsStalled++; NavTrace.Reset(self, "deseo: camino pendiente > 3 s"); return false; } return true; }   // (camino que no llega a calcularse: tope)
+        if (nav.pathPending) { if (Time.time - t.since > 3f) { t.going = false; t.failUntil = Time.time + 4f; TripsStalled++; Outcome(self, t, false); NavTrace.Reset(self, "deseo: camino pendiente > 3 s"); return false; } return true; }   // (camino que no llega a calcularse: tope)
         // Con camino y sin velocidad: una pausa (Idle, velocidad 0) de otra conducta, como «no alcanza comida; descansa», le dejaba quieto con
         // el viaje en marcha hasta darlo por atascado (osos, lobos, crías: «velocidad pedida 0,0 … sin WalkSpell»). Quien lleva el viaje, anda.
         if (nav.hasPath && nav.speed < 0.05f && !self.busy) self.Loco?.SetGait(false, 0.1f);
@@ -450,7 +476,7 @@ public static class DesireCatalog
         {
             if (Time.time - t.since > 3f)
             {
-                t.going = false; t.failUntil = Time.time + 4f; TripsStalled++; NoPathTrips++;
+                t.going = false; t.failUntil = Time.time + 4f; TripsStalled++; Outcome(self, t, false); NoPathTrips++;
                 if (_noPathLogs < 30) { _noPathLogs++; Debug.Log($"[Fauna] «{self.name}» se queda sin camino hacia {t.goal} ({Flat(t.goal - self.transform.position):0.0} m): {NavInfo(self)} · {NavTrace.Last(self)}."); }
                 return false;
             }
@@ -458,7 +484,7 @@ public static class DesireCatalog
             return true;
         }
         float rem = nav.hasPath ? Remaining(nav) : 0f;
-        if (rem <= nav.stoppingDistance + 0.35f) { t.going = false; return false; }   // llegó
+        if (rem <= nav.stoppingDistance + 0.35f) { t.going = false; Outcome(self, t, true); return false; }   // llegó
         // (2026-11-13, vivo75) QUIETO CON CAMINO: 17 «atascado > 20 s» (osos, bueyes, renos, zorros, lobos y las crías de la Cría) tenían camino
         // completo, velocidad pedida 2–5, sin parar, el agente pegado al cuerpo… y velocidad 0,00, viaje tras viaje (cada uno esperaba 5 s a darse
         // por atascado y el siguiente salía igual de quieto). A los 1,5 s se reinicia el agente donde está (Warp) y se le vuelve a dar el camino;
@@ -478,7 +504,7 @@ public static class DesireCatalog
             // del borde del NavMesh («deseada 0,00» con 2 esquinas a 1,9–2,7 m), viaje tras viaje. A la segunda vez quieto, si está pegado al
             // borde, se le mete 0,6 m hacia dentro (una vez por viaje: no es el reinicio de cada 1,5 s de la ronda 77).
             if (InwardFromEdge(nav, out Vector3 inside)) { EdgeNudges++; NavTrace.Mark(self, "deseo: pegado al borde (0,6 m hacia dentro)", inside); nav.Warp(inside); }
-            t.going = false; t.failUntil = Time.time + 4f; TripsStalled++; FrozenTrips++; TurnAway(self, t);
+            t.going = false; t.failUntil = Time.time + 4f; TripsStalled++; Outcome(self, t, false); FrozenTrips++; TurnAway(self, t);
             NavTrace.Reset(self, "deseo: quieto con camino");
             return false;
         }
@@ -486,7 +512,7 @@ public static class DesireCatalog
         if (Time.time - t.bestAt > 5f || Time.time - t.since > 40f)                    // atascado o tope
         {
             if (_stallLogs < 30) { _stallLogs++; Debug.Log($"[Fauna] «{self.name}» se atasca yendo a {t.goal} desde {self.transform.position}: quedan {rem:0.0} m, velocidad pedida {nav.speed:0.0}, real {nav.velocity.magnitude:0.0}, parado {nav.isStopped}, camino {nav.pathStatus}{(nav.speed < 0.05f ? $", sin velocidad: {(self.Walk != null && self.Walk.IsCharging ? "en postura de carga" : self.TryGetComponent(out CharacterLevel cl) ? $"energía {cl.currentEnergy:0.0}/{cl.MaxEnergy:0.0}" : "sin WalkSpell ni energía")}" : "")}."); }
-            t.going = false; t.failUntil = Time.time + 8f; TripsStalled++; TurnAway(self, t);   // (2026-11-13) el siguiente, hacia otro lado
+            t.going = false; t.failUntil = Time.time + 8f; TripsStalled++; Outcome(self, t, false); TurnAway(self, t);   // (2026-11-13) el siguiente, hacia otro lado
             NavTrace.Reset(self, "deseo: atascado o tope");
             return false;
         }
@@ -514,7 +540,7 @@ public static class DesireCatalog
         // (2026-11-11, ronda 59) Un camino que no lleva (parcial, de una esquina, o que acaba a < 1 m de donde empieza: otra isla del NavMesh)
         // no es un viaje: el agente «llegaba» al momento, se quedaba sin camino y el paseo esperaba. Se da por fallido ya, con su pausa.
         t.going = Move(self, at);
-        if (!t.going) { t.failUntil = Time.time + 4f; TripsStalled++; BadPaths++; }
+        if (!t.going) { t.failUntil = Time.time + 4f; TripsStalled++; Outcome(self, t, false); BadPaths++; }
     }
     /// <summary>Viajes que no se empezaron porque el camino no llevaba a ninguna parte (diagnóstico).</summary>
     public static int BadPaths;
