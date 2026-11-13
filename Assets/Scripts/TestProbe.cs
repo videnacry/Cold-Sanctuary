@@ -27,6 +27,9 @@ public static class TestProbe
     public static int ContextGroup { get; private set; }
     public static string ContextUnit { get; private set; } = "";
     public static readonly List<string> Fails = new List<string>();
+    /// <summary>(2026-11-13, sistema de QA, docs/qa-propuesta.md §3) Los checks cuyo texto empieza por un ID de caso («[CV-03] …»): el ID y si
+    /// pasó. El TestRunner los lleva a la columna «casos» de Logs/test-results.tsv, así un FAIL se liga solo a su caso.</summary>
+    public static readonly List<(string id, bool ok)> Cases = new List<(string id, bool ok)>();
     public static void Context(int group, string unit) { ContextGroup = group; ContextUnit = unit ?? ""; }
     /// <summary>La línea de un FAIL: «[TEST] FAIL · g50 JornadaTest · nombre — detalle» (sin contexto, como antes). Sigue empezando por «[TEST] FAIL ·».</summary>
     public static string FailLine(string name, string detail) => $"[TEST] FAIL · {(ContextUnit.Length > 0 ? $"g{ContextGroup} {ContextUnit} · " : "")}{name}{Tail(detail)}";
@@ -51,6 +54,8 @@ public static class TestProbe
     /// <summary>Un aserto booleano. Loguea PASS/FAIL y cuenta. Devuelve la condición (para encadenar).</summary>
     public static bool Check(string name, bool ok, string detail = "")
     {
+        string caseId = QaCheck.CaseIdOf(name);
+        if (caseId != null) Cases.Add((caseId, ok));
         if (ok) { _pass++; _grandPass++; Debug.Log($"[TEST] PASS · {name}{Tail(detail)}"); }
         else    { _fail++; _grandFail++; Debug.LogWarning(FailLine(name, detail)); Fails.Add(name + Tail(detail)); }
         return ok;

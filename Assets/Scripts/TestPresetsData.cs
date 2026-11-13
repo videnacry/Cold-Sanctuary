@@ -55,5 +55,6 @@ public static class TestPresetsData
         ("TraceFieldTest", 0, 6f),
         ("YogaTest", 15, 0f),
         ("TestPipelineTest", 17, 0f),
+        ("QaCheckTest", 118, 0f),   // (2026-11-13) el comprobador de QA, docs/qa-propuesta.md §5 N1
     };
 }
