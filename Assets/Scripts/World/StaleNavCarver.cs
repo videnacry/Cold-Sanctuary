@@ -16,6 +16,7 @@ using Unity.AI.Navigation;
 public class StaleNavCarver : MonoBehaviour
 {
     public static int Carved { get; private set; }
+    public static int DoorsMoved { get; private set; }
 
     /// <summary>(2026-11-14) Decorados que no se pisan y se tallan aunque el NavMesh ya los rodee (los montículos de tierra).</summary>
     static bool AlwaysCarve(string name) => name.StartsWith("Monticulo");
@@ -31,6 +32,15 @@ public class StaleNavCarver : MonoBehaviour
     IEnumerator Start()
     {
         yield return new WaitForSeconds(1f);   // (la escena termina de montarse: obras, gimnasio)
+        // (2026-11-14, ronda 113) LA BOCA DE LA MADRIGUERA DEL ZORRO, 2 m MÁS AFUERA: estaba a 2,2 m del montículo, que ahora talla el NavMesh (ef6f847),
+        // y quedaba un paso estrecho entre él y el borde (a 1,8 m) donde los zorros descansan, los lobos los cazan y el oso cortejaba (atasco de
+        // (−118,−123), lobo #27). En juego, sin volver a construir la escena; el constructor ya la pone ahí.
+        foreach (Den d in FindObjectsByType<Den>(FindObjectsSortMode.None))
+        {
+            if (d == null || d.name != "Entrada_madriguera" || d.transform.parent == null || d.transform.localPosition.z < -6.5f) continue;
+            Vector3 dir = d.transform.position - d.transform.parent.position; dir.y = 0f;
+            if (dir.sqrMagnitude > 0.01f) { d.transform.position += dir.normalized * 2f; DoorsMoved++; }
+        }
         int n = 0;
         foreach (BoxCollider c in FindObjectsByType<BoxCollider>(FindObjectsSortMode.None))
         {

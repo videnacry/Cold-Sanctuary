@@ -77,7 +77,7 @@ public static partial class SampleSceneBuilder
         foreach (Transform m in mound) if (m.name == "Monticulo") { var mod = m.gameObject.AddComponent<Unity.AI.Navigation.NavMeshModifier>(); mod.overrideArea = true; mod.area = 1; }
         for (int i = 0; i < 4; i++) Block(mound, "Boca_madriguera", mound.position + Quaternion.Euler(0f, 45f + i * 90f, 0f) * Vector3.forward * 4.2f + Vector3.up * 0.03f, new Vector3(0.7f, 0.05f, 0.7f), rock, 0f, false);
         // La guarida es la boca sur (el centro del montículo no se pisa).
-        Transform foxDoor = new GameObject("Entrada_madriguera").transform; foxDoor.SetParent(mound, false); foxDoor.localPosition = new Vector3(0f, 0f, -5.2f);
+        Transform foxDoor = new GameObject("Entrada_madriguera").transform; foxDoor.SetParent(mound, false); foxDoor.localPosition = new Vector3(0f, 0f, -7.2f);   // (ronda 113: 2 m más afuera; el montículo talla el NavMesh)
         Den foxDen = foxDoor.gameObject.AddComponent<Den>(); foxDen.species = "ArcticFox";
         Affordance.Put(foxDoor.gameObject, AffordanceKind.Den, 2);
 
