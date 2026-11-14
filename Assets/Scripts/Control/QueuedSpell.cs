@@ -156,6 +156,15 @@ public class WanderSpell : QueuedSpell
     // (JornadaTest 2026-10-29). Ahora el punto sale del NavMesh de su mismo piso y anda por él con PathMover, despacio, y al
     // llegar se queda un rato mirando (no va y viene sin parar: eso parecía dar vueltas en círculo). Todo con tope de tiempo.
     // ¿Cabe de pie una persona en ese punto del suelo? (Ivelyna se quedó mirando dentro de «Fila interior 4» de la sala de asambleas.)
+    // (2026-11-15, ronda 115) ¿Atraviesa el camino algo sólido a la altura de la cintura? En los pisos del árbol el NavMesh pasa por debajo de los
+    // bancales de frutales (Gallarle, merodeando, «dentro de Bancal_andino_2» en (−51,110,−96)): el sitio estaba libre, pero el camino cruzaba el bancal.
+    static bool Blocked(Vector3[] corners)
+    {
+        for (int i = 1; i < corners.Length; i++)
+            foreach (RaycastHit hit in Physics.RaycastAll(corners[i - 1] + Vector3.up * 0.5f, corners[i] - corners[i - 1], Vector3.Distance(corners[i - 1], corners[i]), ~0, QueryTriggerInteraction.Ignore))
+                if (hit.collider.GetComponentInParent<Anima>() == null) return true;
+        return false;
+    }
     static bool Occupied(Vector3 floor)
     {
         foreach (Collider c in Physics.OverlapCapsule(floor + Vector3.up * 0.3f, floor + Vector3.up * 1.6f, 0.25f, ~0, QueryTriggerInteraction.Ignore))
@@ -181,7 +190,8 @@ public class WanderSpell : QueuedSpell
                 UnityEngine.AI.NavMeshPath path = new UnityEngine.AI.NavMeshPath();
                 if (!UnityEngine.AI.NavMesh.SamplePosition(here, out UnityEngine.AI.NavMeshHit from, 1.5f, UnityEngine.AI.NavMesh.AllAreas)) break;
                 if (!UnityEngine.AI.NavMesh.CalculatePath(from.position, h.position, UnityEngine.AI.NavMesh.AllAreas, path) || path.status != UnityEngine.AI.NavMeshPathStatus.PathComplete) continue;
-                if (Occupied(h.position)) continue;   // el NavMesh pasa por encima de muebles bajos (las filas de la sala de asambleas): ahí no se queda
+                if (Occupied(h.position)) continue;
+                if (Blocked(path.corners)) continue;   // (2026-11-15, ronda 115) ni un camino que atraviese un mueble (Gallarle dentro de «Bancal_andino_2»)   // el NavMesh pasa por encima de muebles bajos (las filas de la sala de asambleas): ahí no se queda
                 _dest = h.position; found = true;
             }
             if (!found) { _arrived = true; _restUntil = Time.time + Random.Range(4f, 8f); }   // sin sitio al que ir: se queda mirando

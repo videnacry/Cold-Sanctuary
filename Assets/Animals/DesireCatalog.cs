@@ -453,7 +453,7 @@ public static class DesireCatalog
     {
         if (a == null) return "";
         Volition v = a.GetComponent<Volition>();
-        return $" · estado: dormido {a.asleep}, ocupado {a.busy}, alerta {a.aware}, peleando {a.fighting}, rescate: {RescueState(a)}" + (v != null ? $", decisiones {v.Choices} (saltadas: dormido {v.SkippedAsleep}, ocupado {v.SkippedBusy}, alerta {v.SkippedAware})" : "");
+        return $" · estado: {a.lifeStage}, dormido {a.asleep}, ocupado {a.busy}, alerta {a.aware}, peleando {a.fighting}, rescate: {RescueState(a)}" + (v != null ? $", decisiones {v.Choices} (saltadas: dormido {v.SkippedAsleep}, ocupado {v.SkippedBusy}, alerta {v.SkippedAware})" : "");
     }
     static readonly Dictionary<Animal, Trip> _trips = new Dictionary<Animal, Trip>();
     // (2026-11-13, ronda 88) EL VIGILANTE DE VIAJES. Going (quieto con camino, atascado, sin camino, llegó) solo corría cuando el deseo se volvía
@@ -701,7 +701,7 @@ public static class DesireCatalog
 
     static void Walk(Animal self, Trip t, Vector3 at)
     {
-        TripsStarted++; t.started++; Vector3 dir = at - self.transform.position; dir.y = 0f; if (dir.sqrMagnitude > 1f) t.lastDir = dir.normalized; t.goal = at; t.since = t.bestAt = Time.time; t.sinceFrame = t.bestFrame = Time.frameCount; t.best = float.MaxValue;
+        TripsStarted++; t.started++; Vector3 dir = at - self.transform.position; dir.y = 0f; if (dir.sqrMagnitude > 1f && (t.key == "explore" || t.key == "buscar pareja")) t.lastDir = dir.normalized;   // (2026-11-15, ronda 115) solo los paseos: la vuelta a casa (o el beber) le cambiaba el «hacia delante» al paseo siguiente t.goal = at; t.since = t.bestAt = Time.time; t.sinceFrame = t.bestFrame = Time.frameCount; t.best = float.MaxValue;
         // (ronda 92) El reloj de «quieto con camino» NO se pone a cero con cada viaje: los animales que empezaban un salto tras otro sin moverse
         // nunca llegaban a 1,5 s en el mismo viaje (FrozenTrips = 0 con decenas de animales a velocidad 0). FrozenStep lo pone a cero al andar.
         t.restNoSpot = false;
@@ -1106,7 +1106,10 @@ public static class DesireCatalog
             // (ronda 106) Directo a la CRÍA siempre (la cría espera quieta mientras su madre anda: AwaitFeeding). El punto de encuentro a medio camino
             // cambiaba cada segundo y, cuando LongWay no salía (sitio sin muestrear), el destino saltaba entre la cría y el medio camino: la zorra
             // #89 iba y venía 180 m en 20 s por un camino de 92 m (4de779a no lo cubría).
-            Vector3 meet = cub.transform.position;
+            // (2026-11-15, ronda 115) No al punto de la cría, sino a SU sitio junto a ella (a 1,8 m, en su ángulo): dos adultos que iban a la misma
+            // cría (o la madre y otro) llegaban al mismo punto y daban vueltas uno alrededor del otro (lobos #58 y #95: 38–41 m en 20 s, los dos
+            // con «SetPath calculado» hacia (−212,−186,5)).
+            Vector3 meet = Slot(cub.transform.position, self.GetHashCode(), 1.8f);
             if (self.nav.hasPath && Flat(self.nav.destination - meet) < 2f) return;
             MoveOrNearest(self, meet);
         }
@@ -1262,6 +1265,12 @@ public static class DesireCatalog
     /// <summary>(2026-11-14) Prioridad de evitación de la cría que espera la toma (más baja = más importante: los demás la rodean) y la normal.</summary>
     public const int WaitingPriority = 20, DefaultPriority = 50;
     public static Vector3 CubWaitSpot(Animal self) => CubWaitSpot(self.HomeOrigin, self.GetHashCode());
+    /// <summary>(2026-11-15) El sitio de <paramref name="id"/> a <paramref name="radius"/> m de <paramref name="center"/>, en su ángulo propio.</summary>
+    public static Vector3 Slot(Vector3 center, int id, float radius)
+    {
+        float a = (Mathf.Abs(id * 137) % 360) * Mathf.Deg2Rad;
+        return center + new Vector3(Mathf.Cos(a), 0f, Mathf.Sin(a)) * radius;
+    }
     public static Vector3 CubWaitSpot(Vector3 home, int id)
     {
         float a = (Mathf.Abs(id * 137) % 360) * Mathf.Deg2Rad;   // (137: reparte ids seguidos por todo el círculo)
@@ -1284,7 +1293,8 @@ public static class DesireCatalog
         // la cría volvía a su sitio a 5–8 m, una y otra vez (lobos #1, #5: «da vueltas» 19–27 m en 20 s, «SetPath … 4,9–7,6 m» a su sitio cada
         // 3–5 s). Si la madre anda, la cría espera en su sitio; la madre que va a darle la toma va a ella (NurseCub).
         if (parent != null && parent.TryGetComponent(out NavMeshAgent pm) && pm.isActiveAndEnabled && pm.velocity.magnitude > 0.5f) parent = null;
-        Vector3 to = parent != null ? MeetPoint(self.transform.position, parent.position) : self.HomeOrigin;
+        // (ronda 115) Cerca de la madre, a SU sitio junto a ella (a 1,8 m, en su ángulo), no al punto de la madre: dos crías iban al mismo punto.
+        Vector3 to = parent != null ? (Vector3.Distance(self.transform.position, parent.position) > 4f ? MeetPoint(self.transform.position, parent.position) : Slot(parent.position, self.GetHashCode(), 1.8f)) : self.HomeOrigin;
         // (2026-11-13, vivo75) Sin madre cerca, la toma se espera EN CASA, no en su punto exacto: las crías de la guarida de los lobos tenían el mismo
         // HomeOrigin (-205,-190) y, a 1,5 m, se empujaban unas a otras alrededor de él sin llegar nunca («da vueltas en círculo (nurse)», 19–27 m
         // en 20 s para 0–1,5 m netos, «deseo: SetDestination» hacia (-205,-190) cada pocos segundos). A ≤ 4 m de casa ya está en casa.
@@ -1316,7 +1326,7 @@ public static class DesireCatalog
         if (parent != null && Vector3.Distance(self.transform.position, parent.position) > 2f && parent.TryGetComponent(out NavMeshAgent pn) && pn.isActiveAndEnabled
             && pn.velocity.magnitude > 0.5f && Vector3.Dot(pn.velocity, self.transform.position - parent.position) <= 0f)
         { NavTrace.Reset(self, "AwaitFeeding (la madre se va: la llama)"); self.Loco?.Idle(1f); return; }
-        if (parent != null ? Vector3.Distance(self.transform.position, parent.position) > 2f : !atHome) MoveOrNearest(self, to);
+        if (parent != null ? Vector3.Distance(self.transform.position, parent.position) > 2.5f : !atHome) MoveOrNearest(self, to);
         else
         {
             NavTrace.Reset(self, "AwaitFeeding (pide la toma)"); self.Loco?.Idle(1f);
