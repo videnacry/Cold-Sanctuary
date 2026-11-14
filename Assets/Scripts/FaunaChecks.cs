@@ -229,6 +229,10 @@ public class FaunaChecks : MonoBehaviour, ITestUnit
             TestProbe.Check("las crías de una guarida esperan la toma cada una en su sitio (a 2,5 m de casa, ≥ 1 m entre ellas)", ring && minGap >= 1f, $"separación mínima {minGap:0.00} m");
         }
 
+        // ── (2026-11-14, ronda 97) EL PASO DE CADA SEGUNDO NO DEPENDE DE QUE NO TOQUE DECIDIR (reno #20: «explore» sin llamar 21 s) ──
+        TestProbe.Check("volición: si la decisión de este tick no despachó el deseo (solo lo encoló), el paso de cada segundo sí lo re-despacha",
+            Volition.StepDue(false, 10f, 9f, true, true) && !Volition.StepDue(true, 10f, 9f, true, true) && !Volition.StepDue(false, 10f, 11f, true, true) && !Volition.StepDue(false, 10f, 9f, true, false));
+
         TestProbe.End();
     }
 }
