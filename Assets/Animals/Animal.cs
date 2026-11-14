@@ -193,6 +193,11 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
     // State — hunger/exhaustion/lp are animal-specific; stress/trauma/fatReserves/temperature/death/asleep live in Anima
     public bool  busy = false;
     public bool  fighting = false;   // guard propio de Fight() — ver comentario en Fight()
+    /// <summary>(2026-11-14) Segundos sin volver a pelear con la misma amenaza tras una pelea que no la abatió.</summary>
+    public const float FightCooldown = 60f;
+    GameObject _cooldownThreat; float _fightCooldownUntil;
+    /// <summary>¿Está en la pausa tras pelear con <paramref name="threat"/>?</summary>
+    public bool CoolingFrom(GameObject threat) => threat != null && threat == _cooldownThreat && Time.time < _fightCooldownUntil;
     public float hungry, exhaustion, lp, sensibility;
 
     [Header("Asfixia (medio de baja afinidad)")]
@@ -524,6 +529,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
             // máxima todo el día (HuntsNow es «come presas», no «tiene hambre»): alerta 1 y nunca iban al baño (DefecationNeed solo
             // alivia en calma; grupo 58, isla de la orca).
             if (predator.SpeciesName == SpeciesName) continue;
+            if (CoolingFrom(predator.gameObject)) continue;   // (ronda 101) recién peleó con ella y no cayó: no la toma por amenaza nueva
             float d = Vector3.Distance(transform.position, go.transform.position);
             if (d <= nearest && EvaluateThreat(go) > ThreatThreshold) { nearest = d; threat = go; }
         }
@@ -722,6 +728,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
     protected virtual IEnumerator Fight(GameObject threat)
     {
         if (fighting) yield break;
+        if (threat == _cooldownThreat && Time.time < _fightCooldownUntil) yield break;   // (ronda 101) a ese ya le plantó cara hace poco
         ITarget threatTarget = threat.GetComponent<ITarget>();
         if (threatTarget == null) yield break;
         fighting = true;
@@ -753,6 +760,10 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         finally
         {
             fighting = false;
+            // (2026-11-14, ronda 101) PELEA SIN FINAL: al acabar la pelea por el tope (30 s) o porque no se acercaba, la amenaza seguía a la vista y
+            // SenseThreats lanzaba otra en el acto, una tras otra: los lobos #26 y #10 pasaban el día «alerta, peleando» pegados (a 0,0 m) a su
+            // rival en la guarida. Si la amenaza no cayó, a ESA no se le vuelve a plantar cara en 60 s.
+            if (threat != null && !threatTarget.Dead) { _cooldownThreat = threat; _fightCooldownUntil = Time.time + FightCooldown; }
             // Confianza-por-uso (D-cola): GANAR la pelea (amenaza abatida) refuerza el combate → el que vence
             // se envalentona, como en la caza (D2). Solo victoria clara; no se penaliza que la amenaza se aleje.
             if (threatTarget.Dead) RecordUse(Capability.Combat, true);
