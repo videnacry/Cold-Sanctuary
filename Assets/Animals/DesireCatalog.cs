@@ -582,7 +582,7 @@ public static class DesireCatalog
                 if (_noPathLogs < 30) { _noPathLogs++; Debug.Log($"[Fauna] «{self.name}» se queda sin camino hacia {t.goal} ({Flat(t.goal - self.transform.position):0.0} m): {NavInfo(self)} · {NavTrace.Last(self)}."); }
                 return false;
             }
-            if (Time.time >= t.reissueAt) { t.reissueAt = Time.time + 0.5f; self.Loco?.SetGait(false, 0.1f); NavTrace.Dest(self, nav, t.goal, "deseo: lo vuelve a pedir"); }
+            if (Time.time >= t.reissueAt) { t.reissueAt = Time.time + 0.5f; self.Loco?.SetGait(false, 0.1f); SyncPath(self, nav, t.goal, "deseo: lo vuelve a pedir"); }
             return true;
         }
         float rem = nav.hasPath ? Remaining(nav) : 0f;
@@ -598,7 +598,7 @@ public static class DesireCatalog
         {
             t.reissueAt = Time.time + 0.5f; t.frozenSince = -1f; StaleRepaths++;
             self.Loco?.SetGait(false, 0.1f);
-            NavTrace.Dest(self, nav, t.goal, nav.isPathStale ? "deseo: camino caducado, lo vuelve a pedir" : "deseo: camino sin esquinas, lo vuelve a pedir");
+            SyncPath(self, nav, t.goal, nav.isPathStale ? "deseo: camino caducado, lo vuelve a pedir" : "deseo: camino sin esquinas, lo vuelve a pedir");
             repathed = true;
         }
         // (2026-11-13, vivo75) QUIETO CON CAMINO: 17 «atascado > 20 s» (osos, bueyes, renos, zorros, lobos y las crías de la Cría) tenían camino
@@ -673,6 +673,15 @@ public static class DesireCatalog
 
     // Ir andando: destino Y paso de andar (la pausa anterior lo dejó en «quieto», velocidad 0: con solo SetDestination el
     // agente tenía destino pero no andaba). true = lleva camino de verdad.
+    /// <summary>(2026-11-14, ronda 104) Volver a pedir el camino a <paramref name="to"/> AL MOMENTO (CalculatePath + SetPath). Lo que quedaba
+    /// con SetDestination (el viaje sin camino y el camino caducado) se calculaba en segundo plano y daba los «pendiente» que quedaban.</summary>
+    static bool SyncPath(Animal self, NavMeshAgent nav, Vector3 to, string why)
+    {
+        NavMeshPath p = new NavMeshPath();
+        NavTrace.Mark(self, why, to);
+        return nav.CalculatePath(to, p) && p.status == NavMeshPathStatus.PathComplete && p.corners.Length >= 2 && nav.SetPath(p);
+    }
+
     static bool Move(Animal self, Vector3 to)
     {
         NavMeshAgent nav = self.nav;
@@ -700,8 +709,10 @@ public static class DesireCatalog
             NavTrace.Mark(self, $"deseo: SetPath calculado ({own.corners.Length} esquinas)", to);
             if (nav.SetPath(own) && nav.hasPath) return true;
         }
-        NavTrace.Dest(self, nav, to, "deseo: SetDestination");
-        return nav.hasPath || nav.pathPending;
+        // (ronda 104) Y si tampoco hay camino completo, no se pide en segundo plano (SetDestination quedaba «pendiente» y el viaje fallaba igual,
+        // más tarde: «último final=«pendiente»» en 8 de 16 rescates, zorro #86 «pendiente True, PathInvalid»): el viaje no empieza y lo dice.
+        NavTrace.Mark(self, "deseo: sin camino completo (no se pide)", to);
+        return false;
     }
 
     /// <summary>Va hacia <paramref name="dest"/> si se puede llegar (camino completo); true si va (o ya iba). Re-apunta solo
