@@ -17,6 +17,8 @@ public class StaleNavCarver : MonoBehaviour
 {
     public static int Carved { get; private set; }
 
+    /// <summary>(2026-11-14) Decorados que no se pisan y se tallan aunque el NavMesh ya los rodee (los montículos de tierra).</summary>
+    static bool AlwaysCarve(string name) => name.StartsWith("Monticulo");
     static readonly string[] Skip = { "Cria_", "Cuadra", "Trineo", "Barrera_agua", "Inodoro", "Cabina", "Puerta", "Cama", "Silla", "Asiento" };
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -48,10 +50,16 @@ public class StaleNavCarver : MonoBehaviour
             // Lo que tiene su PROPIO NavMesh (el Árbol de los Campos, que gira con él) no talla el general.
             NavMeshSurface own = c.GetComponentInParent<NavMeshSurface>();
             if (own != null && own.collectObjects == CollectObjects.Children) continue;
-            if (!NavInside(b) && !NavThrough(c, b)) continue;
+            // (2026-11-14, ronda 110) LOS MONTÍCULOS SE TALLAN SIEMPRE, también por ENCIMA: el de la madriguera del zorro ártico ((−118,−118), dos
+            // cajas de 1 y 1,45 m) tenía NavMesh en su cara de arriba, una isla a la que se llegaba por un Warp o un rescate (el punto del NavMesh
+            // más cercano) y de la que no se salía; el zorro #68 «dentro de Monticulo» con los pies a 1,3 m, y el atasco de los zorros, renos y el
+            // oso de (−118,−123), junto a la boca sur de la madriguera (rondas 102–103, 110). Su caja talla 0,6 m más alta para llevarse esa isla.
+            bool always = AlwaysCarve(c.name);
+            if (!always && !NavInside(b) && !NavThrough(c, b)) continue;
             NavMeshObstacle o = c.gameObject.AddComponent<NavMeshObstacle>();
             o.shape = NavMeshObstacleShape.Box;
             o.center = c.center; o.size = c.size;
+            if (always) { float extra = 0.6f / Mathf.Max(0.01f, c.transform.lossyScale.y); o.size += new Vector3(0f, extra, 0f); o.center += new Vector3(0f, extra * 0.5f, 0f); }
             o.carving = true; o.carveOnlyStationary = true;
             n++;
         }
