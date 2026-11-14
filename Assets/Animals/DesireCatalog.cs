@@ -551,6 +551,7 @@ public static class DesireCatalog
             if (_frozenLogs < 40) { _frozenLogs++; Debug.Log($"[Fauna] «{self.name}» ({t.key}) quieto con camino {FrozenSeconds:0.0} s ({(fz == 1 ? "vuelve a andar" : "deja el viaje y prueba otro lado")}): {NavInfo(self)} · {NavTrace.Last(self)}."); }
             if (fz == 1)
             {
+                FrozenProbe.Attach(self, $"quieto con camino {FrozenSeconds:0.0} s en «{t.key}»");   // (rondas 94–95) sonda de los primeros
                 // (2026-11-13, ronda 77) Sin Warp ni camino nuevo (86 reinicios y más atascados, 17 → 34): solo se le devuelve el paso de andar.
                 FrozenRestarts++; t.bestAt = Time.time;
                 self.Loco?.SetGait(false, 0.1f);
