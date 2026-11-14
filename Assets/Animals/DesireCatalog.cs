@@ -517,7 +517,7 @@ public static class DesireCatalog
             for (int i = 0; i < 8; i++)
             {
                 Vector3 p = pos + Quaternion.Euler(0f, i * 45f + ring * 22.5f, 0f) * Vector3.forward * (repeat ? (ring == 0 ? 6f : 10f) : (ring == 0 ? 3f : 6f));
-                if (!NavMesh.SamplePosition(p, out NavMeshHit hit, 2f, a.nav.areaMask) || CrowdedSpot(a, hit.position)) continue;
+                if (!NavMesh.SamplePosition(p, out NavMeshHit hit, 2f, a.nav.areaMask) || CrowdedSpot(a, hit.position) || Mathf.Abs(hit.position.y - pos.y) > 0.5f) continue;   // (ronda 110: a su altura, no encima de un montículo o una roca)
                 SelfRecoveries++;
                 string why = TripInfo(a);
                 if (repeat) RepeatRescues++;
