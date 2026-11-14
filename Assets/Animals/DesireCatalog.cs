@@ -273,7 +273,7 @@ public static class DesireCatalog
         if (pw != null)
         {
             if (pw.Going) return true;
-            if (pw.TakeArrival()) { Outcome(self, t, true); t.pauseUntil = Time.time + UnityEngine.Random.Range(4f, 9f); return true; }
+            if (pw.TakeArrival()) { Outcome(self, t, true, "llegó (recinto)"); t.pauseUntil = Time.time + UnityEngine.Random.Range(4f, 9f); return true; }
             if (Time.time < t.pauseUntil) return true;
             if (pw.PickGoal()) { t.restNoSpot = false; t.goal = pw.GoalWorld; t.started++; TripsStarted++; return true; }
             t.restNoSpot = true; t.pauseUntil = Time.time + UnityEngine.Random.Range(4f, 9f); self.Loco?.Idle(1f);
@@ -306,7 +306,7 @@ public static class DesireCatalog
     // ══ MOVIMIENTO DE LOS DESEOS: siempre a sitios ALCANZABLES, con tope y sin re-apuntar en cada decisión ══════════════
     // Un «viaje» por animal: hacia dónde va, por qué deseo, desde cuándo y cuánto ha avanzado. Si en 5 s no se acerca (un muro,
     // otro animal en medio) o tarda más de 40 s, lo deja; ese deseo no vuelve a intentar ese viaje en unos segundos.
-    class Trip { public string key; public Vector3 goal; public bool going, restNoSpot, unfroze; public Vector3 lastDir; public float since, best, bestAt, pauseUntil, failUntil, lastCall, reissueAt, frozenSince = -1f, unfrozeWarpAt; public int calls, started, sinceFrame, bestFrame, frozenFrame; public Vector3 frozenPos; }
+    class Trip { public string key; public Vector3 goal; public bool going, restNoSpot, unfroze; public Vector3 lastDir; public float since, best, bestAt, pauseUntil, failUntil, lastCall, reissueAt, frozenSince = -1f, unfrozeWarpAt; public int calls, started, sinceFrame, bestFrame, frozenFrame; public Vector3 frozenPos; public string endWhy; public float endAt; }
     /// <summary>(2026-11-11) ¿Descansa a propósito? La cría del recinto sin sitio a 1,5–5 m (PenGoal) se queda mirando: no está «atascada».
     /// (2026-11-13, vivo75) Y cualquier paseo sin salto posible (Stroll: PickHop no encuentra nada): se para y mira, como la cría del recinto.</summary>
     public static bool RestingByChoice(Animal a) => a != null && _trips.TryGetValue(a, out Trip t) && t.restNoSpot && !t.going;
@@ -442,7 +442,7 @@ public static class DesireCatalog
         return $"deseada {n.desiredVelocity.magnitude:0.00}, rumbo a {st.magnitude:0.00} m, esquinas {(n.hasPath ? n.path.corners.Length : 0)}, caducado {n.isPathStale}, aceleración {n.acceleration:0.0}, frenada {n.stoppingDistance:0.0} m (autoBraking {n.autoBraking}), queda {n.remainingDistance:0.0} m, altura interna {n.nextPosition.y - n.transform.position.y:0.00} m, cuerpo {body}";
     }
 
-    public static string TripInfo(Animal a) => (a != null && _trips.TryGetValue(a, out Trip t) ? $"viaje «{t.key}» va={t.going} meta={t.goal:F1} pausa={t.pauseUntil - Time.time:0.0} fallo={t.failUntil - Time.time:0.0} llamadas={t.calls} (hace {Time.time - t.lastCall:0.0} s) empezados={t.started}" : "sin viaje") + StateInfo(a);
+    public static string TripInfo(Animal a) => (a != null && _trips.TryGetValue(a, out Trip t) ? $"viaje «{t.key}» va={t.going} meta={t.goal:F1} pausa={t.pauseUntil - Time.time:0.0} fallo={t.failUntil - Time.time:0.0} último final={(t.endWhy != null ? $"«{t.endWhy}» hace {Time.time - t.endAt:0.0} s" : "—")} llamadas={t.calls} (hace {Time.time - t.lastCall:0.0} s) empezados={t.started}" : "sin viaje") + StateInfo(a);
     /// <summary>(2026-11-14, ronda 99) Lo que puede tener a un animal sin que su deseo se despache: dormido, ocupado, alerta, peleando, y cuántas
     /// decisiones de su volición se saltaron por eso (el lobo #75 y el oso #61 «sin llamar» 19 y 149 s junto a la guarida).</summary>
     public static string StateInfo(Animal a)
@@ -479,8 +479,9 @@ public static class DesireCatalog
     // (2026-11-13, ronda 78) CÓMO ACABAN LOS PASEOS (explore y el recinto): cuándo, adónde y si llegó. Para JornadaTest: quien explora un sitio
     // pequeño con metas distintas que alcanza no «da vueltas» (Polluelo_1, el emperador #37 y el oso #45: caminos completos de 4–13 m, sin fallos).
     static readonly Dictionary<Animal, List<(float t, Vector3 goal, bool reached)>> _outcomes = new Dictionary<Animal, List<(float, Vector3, bool)>>();
-    static void Outcome(Animal self, Trip t, bool reached)
+    static void Outcome(Animal self, Trip t, bool reached, string why)
     {
+        if (t != null) { t.endWhy = why; t.endAt = Time.time; }   // (ronda 102) cómo acabó el último viaje, para TripInfo
         if (self == null || t == null || (t.key != "explore" && t.key != "recinto")) return;
         if (!_outcomes.TryGetValue(self, out var l)) _outcomes[self] = l = new List<(float, Vector3, bool)>();
         l.Add((Time.time, t.goal, reached));
@@ -525,7 +526,7 @@ public static class DesireCatalog
         if (!t.going) return false;
         NavMeshAgent nav = self.nav;
         if (nav == null || !nav.isOnNavMesh) { t.going = false; return false; }
-        if (nav.pathPending) { if (Past(t.since, t.sinceFrame, 3f)) { t.going = false; t.failUntil = Time.time + 4f; TripsStalled++; Outcome(self, t, false); NavTrace.Reset(self, "deseo: camino pendiente > 3 s"); return false; } return true; }   // (camino que no llega a calcularse: tope)
+        if (nav.pathPending) { if (Past(t.since, t.sinceFrame, 3f)) { t.going = false; t.failUntil = Time.time + 4f; TripsStalled++; Outcome(self, t, false, "pendiente"); NavTrace.Reset(self, "deseo: camino pendiente > 3 s"); return false; } return true; }   // (camino que no llega a calcularse: tope)
         // Con camino y sin velocidad: una pausa (Idle, velocidad 0) de otra conducta, como «no alcanza comida; descansa», le dejaba quieto con
         // el viaje en marcha hasta darlo por atascado (osos, lobos, crías: «velocidad pedida 0,0 … sin WalkSpell»). Quien lleva el viaje, anda.
         if (nav.hasPath && nav.speed < 0.05f && !self.busy) self.Loco?.SetGait(false, 0.1f);
@@ -536,7 +537,7 @@ public static class DesireCatalog
         {
             if (Past(t.since, t.sinceFrame, 3f))
             {
-                t.going = false; t.failUntil = Time.time + 4f; TripsStalled++; Outcome(self, t, false); NoPathTrips++;
+                t.going = false; t.failUntil = Time.time + 4f; TripsStalled++; Outcome(self, t, false, "sin camino"); NoPathTrips++;
                 if (_noPathLogs < 30) { _noPathLogs++; Debug.Log($"[Fauna] «{self.name}» se queda sin camino hacia {t.goal} ({Flat(t.goal - self.transform.position):0.0} m): {NavInfo(self)} · {NavTrace.Last(self)}."); }
                 return false;
             }
@@ -544,7 +545,7 @@ public static class DesireCatalog
             return true;
         }
         float rem = nav.hasPath ? Remaining(nav) : 0f;
-        if (rem <= nav.stoppingDistance + 0.35f) { t.going = false; Outcome(self, t, true); return false; }   // llegó
+        if (rem <= nav.stoppingDistance + 0.35f) { t.going = false; Outcome(self, t, true, "llegó"); return false; }   // llegó
         // (2026-11-13, suite 80) CAMINO CADUCADO O SIN ESQUINAS: las 8 crías de la Cría quietas a la vez tenían «caducado True» (el NavMesh del árbol
         // que gira se vuelve a colocar cada paso y su camino deja de valer) y el zorro y el buey que volvían a casa desde 145–209 m, camino con
         // «esquinas 0» y «deseada» 3–15: ninguno andaba y el agente no lo recalculaba solo. Se le vuelve a pedir el camino (cada 0,5 s como mucho),
@@ -586,7 +587,7 @@ public static class DesireCatalog
             // deseada 3–5 con velocidad 0 que no se arregla sola.
             else if (Time.time >= t.unfrozeWarpAt) { t.unfrozeWarpAt = Time.time + 15f; FrozenWarps++; nav.ResetPath(); nav.Warp(self.transform.position); }
             t.unfroze = false;
-            t.going = false; t.failUntil = Time.time + 4f; TripsStalled++; Outcome(self, t, false); FrozenTrips++; TurnAway(self, t);
+            t.going = false; t.failUntil = Time.time + 4f; TripsStalled++; Outcome(self, t, false, "quieto con camino"); FrozenTrips++; TurnAway(self, t);
             NavTrace.Reset(self, "deseo: quieto con camino");
             return false;
         }
@@ -594,7 +595,7 @@ public static class DesireCatalog
         if (Past(t.bestAt, t.bestFrame, 5f) || Past(t.since, t.sinceFrame, 40f))                    // atascado o tope
         {
             if (_stallLogs < 30) { _stallLogs++; Debug.Log($"[Fauna] «{self.name}» se atasca yendo a {t.goal} desde {self.transform.position}: quedan {rem:0.0} m, velocidad pedida {nav.speed:0.0}, real {nav.velocity.magnitude:0.0}, parado {nav.isStopped}, camino {nav.pathStatus}{(nav.speed < 0.05f ? $", sin velocidad: {(self.Walk != null && self.Walk.IsCharging ? "en postura de carga" : self.TryGetComponent(out CharacterLevel cl) ? $"energía {cl.currentEnergy:0.0}/{cl.MaxEnergy:0.0}" : "sin WalkSpell ni energía")}" : "")}."); }
-            t.going = false; t.failUntil = Time.time + 8f; TripsStalled++; Outcome(self, t, false); TurnAway(self, t);   // (2026-11-13) el siguiente, hacia otro lado
+            t.going = false; t.failUntil = Time.time + 8f; TripsStalled++; Outcome(self, t, false, "atascado o tope"); TurnAway(self, t);   // (2026-11-13) el siguiente, hacia otro lado
             NavTrace.Reset(self, "deseo: atascado o tope");
             return false;
         }
@@ -624,7 +625,7 @@ public static class DesireCatalog
         // (2026-11-11, ronda 59) Un camino que no lleva (parcial, de una esquina, o que acaba a < 1 m de donde empieza: otra isla del NavMesh)
         // no es un viaje: el agente «llegaba» al momento, se quedaba sin camino y el paseo esperaba. Se da por fallido ya, con su pausa.
         t.going = Move(self, at);
-        if (!t.going) { t.failUntil = Time.time + 4f; TripsStalled++; Outcome(self, t, false); BadPaths++; }
+        if (!t.going) { t.failUntil = Time.time + 4f; TripsStalled++; Outcome(self, t, false, "camino que no lleva"); BadPaths++; }
     }
     /// <summary>Viajes que no se empezaron porque el camino no llevaba a ninguna parte (diagnóstico).</summary>
     public static int BadPaths;
@@ -719,6 +720,21 @@ public static class DesireCatalog
         return (w - d * k).magnitude < CubClearance;
     }
 
+    // (ronda 102) Para todos los paseos, no solo las crías: los pingüinos #19 y #42 de la colonia saltaban a sitios con otro pingüino encima,
+    // se atascaban contra él, giraban y volvían a probar («da vueltas» 31–33 m en 20 s, «deseo: atascado o tope»).
+    /// <summary>(2026-11-14, ronda 101) ¿Hay otro animal a menos de 1,2 m de <paramref name="at"/>? Las crías de la guarida (lobos #10, #79) daban
+    /// pasitos de 1,6–1,9 m que acababan encima de otra cría (a 0,8–1,5 m) y su agente no avanzaba («deseada 0,00»).</summary>
+    static bool CrowdedSpot(Animal self, Vector3 at)
+    {
+        foreach (GameObject g in Animal.wholePopulation)
+        {
+            if (g == null || g == self.gameObject) continue;
+            Vector3 d = g.transform.position - at; d.y = 0f;
+            if (d.sqrMagnitude < 1.44f) return true;
+        }
+        return false;
+    }
+
     static bool PickHop(Animal self, Func<Vector3> pick, float minHop, out Vector3 at)
     {
         at = self.transform.position; minHop = Mathf.Max(minHop, 1.5f);
@@ -727,7 +743,7 @@ public static class DesireCatalog
         {
             Vector3 p = pick();
             if (Flat(p - here) < minHop) continue;
-            if (NavReach.Reachable(self, p, out at) && Flat(at - here) >= minHop && !Detour(self, at, here) && !ThroughWaitingCubs(self, here, at)) return true;
+            if (NavReach.Reachable(self, p, out at) && Flat(at - here) >= minHop && !Detour(self, at, here) && !ThroughWaitingCubs(self, here, at) && !CrowdedSpot(self, at)) return true;
         }
         // Al borde de una colonia sobre el hielo o en un recinto pequeño, los saltos largos caen en el agua o tras la valla: saltos más cortos, pero
         // no por debajo del mínimo.
@@ -735,7 +751,7 @@ public static class DesireCatalog
         {
             Vector2 r = UnityEngine.Random.insideUnitCircle.normalized * UnityEngine.Random.Range(minHop, Mathf.Max(minHop * 1.5f, 3f));
             Vector3 p = here + new Vector3(r.x, 0f, r.y);
-            if (NavReach.Reachable(self, p, out at) && Flat(at - here) >= minHop && !Detour(self, at, here) && !ThroughWaitingCubs(self, here, at)) return true;
+            if (NavReach.Reachable(self, p, out at) && Flat(at - here) >= minHop && !Detour(self, at, here) && !ThroughWaitingCubs(self, here, at) && !CrowdedSpot(self, at)) return true;
         }
         at = here; return false;
     }
