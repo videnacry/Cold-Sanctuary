@@ -720,6 +720,8 @@ public static class DesireCatalog
         return (w - d * k).magnitude < CubClearance;
     }
 
+    // (ronda 102) Para todos los paseos, no solo las crías: los pingüinos #19 y #42 de la colonia saltaban a sitios con otro pingüino encima,
+    // se atascaban contra él, giraban y volvían a probar («da vueltas» 31–33 m en 20 s, «deseo: atascado o tope»).
     /// <summary>(2026-11-14, ronda 101) ¿Hay otro animal a menos de 1,2 m de <paramref name="at"/>? Las crías de la guarida (lobos #10, #79) daban
     /// pasitos de 1,6–1,9 m que acababan encima de otra cría (a 0,8–1,5 m) y su agente no avanzaba («deseada 0,00»).</summary>
     static bool CrowdedSpot(Animal self, Vector3 at)
@@ -741,7 +743,7 @@ public static class DesireCatalog
         {
             Vector3 p = pick();
             if (Flat(p - here) < minHop) continue;
-            if (NavReach.Reachable(self, p, out at) && Flat(at - here) >= minHop && !Detour(self, at, here) && !ThroughWaitingCubs(self, here, at) && !(self.lifeStage == LifeStage.child && CrowdedSpot(self, at))) return true;
+            if (NavReach.Reachable(self, p, out at) && Flat(at - here) >= minHop && !Detour(self, at, here) && !ThroughWaitingCubs(self, here, at) && !CrowdedSpot(self, at)) return true;
         }
         // Al borde de una colonia sobre el hielo o en un recinto pequeño, los saltos largos caen en el agua o tras la valla: saltos más cortos, pero
         // no por debajo del mínimo.
@@ -749,7 +751,7 @@ public static class DesireCatalog
         {
             Vector2 r = UnityEngine.Random.insideUnitCircle.normalized * UnityEngine.Random.Range(minHop, Mathf.Max(minHop * 1.5f, 3f));
             Vector3 p = here + new Vector3(r.x, 0f, r.y);
-            if (NavReach.Reachable(self, p, out at) && Flat(at - here) >= minHop && !Detour(self, at, here) && !ThroughWaitingCubs(self, here, at) && !(self.lifeStage == LifeStage.child && CrowdedSpot(self, at))) return true;
+            if (NavReach.Reachable(self, p, out at) && Flat(at - here) >= minHop && !Detour(self, at, here) && !ThroughWaitingCubs(self, here, at) && !CrowdedSpot(self, at)) return true;
         }
         at = here; return false;
     }
