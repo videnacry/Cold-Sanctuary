@@ -597,6 +597,10 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
             if (scare * _threat.alertReach - dist <= sensibility)
             {
                 Loco.SetGait(Random.Range(1, 3) <= 1, (short)(this.ActsPrep.run.energyCost / 10));
+                // (2026-11-14, ronda 102) Los NERVIOS no son una reacción: sin «aware» mientras dura. Con fotogramas lentos (2–4 s de juego) esta espera
+                // cruzaba al fotograma siguiente y la volición lo encontraba siempre «alerta»: zorros con 71–75 decisiones saltadas, el zorro #5 con
+                // las 10 primeras (todas), quieto queriendo explorar.
+                aware = false;
                 yield return new WaitForSeconds(TimeController.timeController.TimeSpeedMinuteSecs / 20);
                 yield break;
             }
