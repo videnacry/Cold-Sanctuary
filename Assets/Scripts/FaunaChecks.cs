@@ -240,6 +240,18 @@ public class FaunaChecks : MonoBehaviour, ITestUnit
             && !DesireCatalog.PassesNear(Vector3.zero, new Vector3(10f, 0f, 0f), new Vector3(5f, 0f, 4f))
             && !DesireCatalog.PassesNear(Vector3.zero, new Vector3(10f, 0f, 0f), new Vector3(14f, 0f, 0f)));
 
+        // ── (2026-11-14, ronda 113) EL SALTO DE UN PASEO SIGUE HACIA DELANTE (nunca hacia atrás; desvío ≤ 45°) ──
+        {
+            int back = 0; float worstAng = 0f;
+            for (int i = 0; i < 200; i++)
+            {
+                Vector3 hop = DesireCatalog.ForwardHop(Vector3.zero, Vector3.forward, 6f); hop.y = 0f;
+                float ang = Vector3.Angle(Vector3.forward, hop); worstAng = Mathf.Max(worstAng, ang);
+                if (Vector3.Dot(hop, Vector3.forward) <= 0f) back++;
+            }
+            TestProbe.Check("el salto de un paseo sigue hacia delante (0 de 200 hacia atrás, desvío ≤ 45°)", back == 0 && worstAng <= 45.5f, $"{back} hacia atrás, desvío máximo {worstAng:0}°");
+        }
+
         TestProbe.End();
     }
 }

@@ -847,6 +847,18 @@ public static class DesireCatalog
     // se atascaban contra él, giraban y volvían a probar («da vueltas» 31–33 m en 20 s, «deseo: atascado o tope»).
     /// <summary>(2026-11-14, ronda 101) ¿Hay otro animal a menos de 1,2 m de <paramref name="at"/>? Las crías de la guarida (lobos #10, #79) daban
     /// pasitos de 1,6–1,9 m que acababan encima de otra cría (a 0,8–1,5 m) y su agente no avanzaba («deseada 0,00»).</summary>
+    /// <summary>(2026-11-14) Cuántos animales hay a menos de <paramref name="r"/> m de <paramref name="at"/> (sin contarse).</summary>
+    static int CrowdCount(Animal self, Vector3 at, float r)
+    {
+        int n = 0; float r2 = r * r;
+        foreach (GameObject g in Animal.wholePopulation)
+        {
+            if (g == null || g == self.gameObject) continue;
+            Vector3 d = g.transform.position - at; d.y = 0f;
+            if (d.sqrMagnitude < r2) n++;
+        }
+        return n;
+    }
     static bool CrowdedSpot(Animal self, Vector3 at)
     {
         foreach (GameObject g in Animal.wholePopulation)
@@ -862,12 +874,21 @@ public static class DesireCatalog
     {
         at = self.transform.position; minHop = Mathf.Max(minHop, 1.5f);
         Vector3 here = self.transform.position;
-        for (int i = 0; i < 8; i++)
+        // (2026-11-14, ronda 113) EL MENOS CONCURRIDO de hasta 3 saltos válidos: la mayoría de los 119 rescates de la ronda 113 eran lobos (87) y
+        // emperadores (61) explorando en su guarida y su colonia, donde todos pasean alrededor del mismo sitio y quedan encajados. Entre los
+        // saltos que valen, el que tiene menos animales a < 5 m.
+        Vector3 bestAt = here; int bestCrowd = int.MaxValue, valid = 0;
+        for (int i = 0; i < 8 && valid < 3; i++)
         {
             Vector3 p = pick();
             if (Flat(p - here) < minHop) continue;
-            if (NavReach.Reachable(self, p, out at) && Flat(at - here) >= minHop && !Detour(self, at, here) && !ThroughWaitingCubs(self, here, at) && !CrowdedSpot(self, at)) return true;
+            if (!(NavReach.Reachable(self, p, out at) && Flat(at - here) >= minHop && !Detour(self, at, here) && !ThroughWaitingCubs(self, here, at) && !CrowdedSpot(self, at))) continue;
+            valid++;
+            int crowd = CrowdCount(self, at, 5f);
+            if (crowd < bestCrowd) { bestCrowd = crowd; bestAt = at; }
+            if (crowd == 0) break;
         }
+        if (valid > 0) { at = bestAt; return true; }
         // Al borde de una colonia sobre el hielo o en un recinto pequeño, los saltos largos caen en el agua o tras la valla: saltos más cortos, pero
         // no por debajo del mínimo.
         for (int i = 0; i < 8; i++)
@@ -914,6 +935,16 @@ public static class DesireCatalog
     /// <summary>(2026-11-14, ronda 112) Salto mínimo del paseo de un adulto (antes 3 m). En la guarida los saltos de 2 m acababan junto a otro animal
     /// y no echaban a andar (lobo #98: salto de 2,3 m, «deseada 0», 35 viajes). La cría, 3–5 m (antes 1,5–3).</summary>
     public const float ExploreMinHop = 5f;
+    /// <summary>(2026-11-14, ronda 113) EL SALTO SIGUE HACIA DELANTE. WanderTarget sumaba un azar de hasta 1× el paso a 0,6× el paso hacia delante:
+    /// muchos saltos salían hacia atrás y, con el mínimo de 5 m, ir-volver-ir (zorro #99: 16 m en 20 s para 0,7 m netos; emperador #98: 21 m para
+    /// 1,3 m). Ahora: el paso entero hacia delante más un azar de 0,7× el paso, siempre por delante del animal (desvío de 45° como mucho).</summary>
+    public static Vector3 ForwardHop(Vector3 pos, Vector3 forward, float step)
+    {
+        forward.y = 0f;
+        if (forward.sqrMagnitude < 0.01f) { Vector2 r0 = UnityEngine.Random.insideUnitCircle.normalized; forward = new Vector3(r0.x, 0f, r0.y); }
+        Vector2 r = UnityEngine.Random.insideUnitCircle * 0.7f;
+        return pos + forward.normalized * step + new Vector3(r.x, 0f, r.y) * step;
+    }
     static void Explore(Animal self, string key)
     {
         // LA CRÍA no se aleja: curiosea a 1–2,5 m de donde está, con pausas largas para mirar y olfatear (los polluelos de
@@ -931,7 +962,7 @@ public static class DesireCatalog
         // (2026-11-11, vivo74) «HACIA DELANTE» ES HACIA DONDE IBA (el último salto), no hacia donde mira el cuerpo: al llegar se paraba girado y el
         // siguiente salto volvía por donde vino (zorros, bueyes, pingüinos: saltos de 11–13 m, 17–43 m en 20 s para 0–1,9 m netos).
         Trip et = TripOf(self, key);
-        Stroll(self, key, () => LifeStage.WanderTarget(tr.position, et.lastDir.sqrMagnitude > 0.5f ? et.lastDir : tr.forward, step, UnityEngine.Random.insideUnitCircle), 1f, 3f, ExploreMinHop);   // (ronda 72: ≥ 3 m; ronda 112: ≥ 5 m)
+        Stroll(self, key, () => ForwardHop(tr.position, et.lastDir.sqrMagnitude > 0.5f ? et.lastDir : tr.forward, step), 1f, 3f, ExploreMinHop);   // (ronda 72: ≥ 3 m; ronda 112: ≥ 5 m)
     }
 
     // Su zona de casa: dentro, «volver a casa» no se siente.
@@ -971,7 +1002,9 @@ public static class DesireCatalog
         // Ya en casa: Volition re-despacha el deseo cada segundo, y estando encima del sitio GoTo decía «no» y salía «no puede volver a casa» a 2 m de ella.
         if (HomeNeed(self) <= 0f) return;
         float a = (self.GetHashCode() % 360) * Mathf.Deg2Rad;
-        Vector3 spot = self.HomeOrigin + new Vector3(Mathf.Cos(a), 0f, Mathf.Sin(a)) * HomeZone(self) * 0.5f;
+        // (ronda 113) Repartidos por el círculo de casa, no todos a la misma distancia (0,3–0,9 de su zona, también de su id).
+        float rr = 0.3f + 0.6f * (Mathf.Abs(self.GetHashCode() / 360) % 100) / 100f;
+        Vector3 spot = self.HomeOrigin + new Vector3(Mathf.Cos(a), 0f, Mathf.Sin(a)) * HomeZone(self) * rr;
         // (2026-11-13, ronda 78) CASA LEJOS, POR TRAMOS: un zorro a 187 m y un reno a 140 m de casa no llegaban a moverse (camino con 0 esquinas y
         // velocidad 0, o «pendiente» > 3 s: 56–132 viajes fallidos). Más allá de HomeLeg m va a un punto de su camino a HomeLeg m y, al llegar,
         // al siguiente. Un tramo (o el trecho de un camino parcial) en marcha se sigue hasta el final, sin re-apuntar cada segundo.
@@ -1119,8 +1152,10 @@ public static class DesireCatalog
             WaterSource w = WaterSource.Nearest(self.transform.position, 60f);
             if (w != null)
             {
-                if (Flat(w.transform.position - self.transform.position) <= 1.8f) { Stop(self, 3f); h.Drink("bebe del bebedero"); return; }
-                if (GoTo(self, "drink", w.transform.position)) return;
+                // (ronda 113) Cada uno a SU orilla de la charca (a 2,5 m del centro, en su ángulo), no todos al centro.
+                Vector3 bank = CubWaitSpot(w.transform.position, self.GetHashCode() + 7);
+                if (Flat(w.transform.position - self.transform.position) <= 3.5f) { Stop(self, 3f); h.Drink("bebe del bebedero"); return; }
+                if (GoTo(self, "drink", bank) || GoTo(self, "drink", w.transform.position)) return;
             }
         }
         Stop(self, 2f);
