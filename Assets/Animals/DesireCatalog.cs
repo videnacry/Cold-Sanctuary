@@ -687,6 +687,27 @@ public static class DesireCatalog
     /// Antes, si los saltos largos no valían, se aceptaba uno «corto» desde 0,8 m: la meta quedaba a 0,5–2 m («EmperorPenguin (explore) … meta en
     /// su sitio», un oso a 1,6 m, un pingüino a 1,8 m) y el viaje «llegaba» al momento, una y otra vez. Ahora el corto también respeta el mínimo;
     /// si nada vale, no hay salto (pausa y se reintenta).</summary>
+    /// <summary>(2026-11-14, ronda 98) ¿El salto de <paramref name="from"/> a <paramref name="to"/> acaba o pasa a menos de <see cref="CubClearance"/> m de
+    /// una cría que espera la toma? Esas no se apartan (prioridad de evitación 20): el adulto que exploraba por la guarida se quedaba sin avanzar
+    /// contra ellas, se «atascaba», giraba y volvía a intentarlo (lobo #87: 44–62 m en 20 s, «deseo: atascado o tope»).</summary>
+    public const float CubClearance = 2.5f;
+    static bool ThroughWaitingCubs(Animal self, Vector3 from, Vector3 to)
+    {
+        foreach (Animal c in _homeWait)
+        {
+            if (c == null || c == self) continue;
+            if (PassesNear(from, to, c.transform.position)) return true;
+        }
+        return false;
+    }
+    /// <summary>¿Pasa el tramo a menos de <see cref="CubClearance"/> m del punto <paramref name="cub"/>?</summary>
+    public static bool PassesNear(Vector3 from, Vector3 to, Vector3 cub)
+    {
+        Vector3 d = to - from; d.y = 0f; Vector3 w = cub - from; w.y = 0f;
+        float k = d.sqrMagnitude > 1e-4f ? Mathf.Clamp01(Vector3.Dot(w, d) / d.sqrMagnitude) : 0f;
+        return (w - d * k).magnitude < CubClearance;
+    }
+
     static bool PickHop(Animal self, Func<Vector3> pick, float minHop, out Vector3 at)
     {
         at = self.transform.position; minHop = Mathf.Max(minHop, 1.5f);
@@ -695,7 +716,7 @@ public static class DesireCatalog
         {
             Vector3 p = pick();
             if (Flat(p - here) < minHop) continue;
-            if (NavReach.Reachable(self, p, out at) && Flat(at - here) >= minHop && !Detour(self, at, here)) return true;
+            if (NavReach.Reachable(self, p, out at) && Flat(at - here) >= minHop && !Detour(self, at, here) && !ThroughWaitingCubs(self, here, at)) return true;
         }
         // Al borde de una colonia sobre el hielo o en un recinto pequeño, los saltos largos caen en el agua o tras la valla: saltos más cortos, pero
         // no por debajo del mínimo.
@@ -703,7 +724,7 @@ public static class DesireCatalog
         {
             Vector2 r = UnityEngine.Random.insideUnitCircle.normalized * UnityEngine.Random.Range(minHop, Mathf.Max(minHop * 1.5f, 3f));
             Vector3 p = here + new Vector3(r.x, 0f, r.y);
-            if (NavReach.Reachable(self, p, out at) && Flat(at - here) >= minHop && !Detour(self, at, here)) return true;
+            if (NavReach.Reachable(self, p, out at) && Flat(at - here) >= minHop && !Detour(self, at, here) && !ThroughWaitingCubs(self, here, at)) return true;
         }
         at = here; return false;
     }
@@ -1047,6 +1068,10 @@ public static class DesireCatalog
             float d = Vector3.Distance(o.transform.position, self.transform.position);
             if (d < best) { best = d; parent = o.transform; }
         }
+        // (2026-11-14, ronda 98) A la madre solo si ESTÁ (quieta o casi): la cría iba hacia la madre que andaba por la guarida, la madre seguía y
+        // la cría volvía a su sitio a 5–8 m, una y otra vez (lobos #1, #5: «da vueltas» 19–27 m en 20 s, «SetPath … 4,9–7,6 m» a su sitio cada
+        // 3–5 s). Si la madre anda, la cría espera en su sitio; la madre que va a darle la toma va a ella (NurseCub).
+        if (parent != null && parent.TryGetComponent(out NavMeshAgent pm) && pm.isActiveAndEnabled && pm.velocity.magnitude > 0.5f) parent = null;
         Vector3 to = parent != null ? MeetPoint(self.transform.position, parent.position) : self.HomeOrigin;
         // (2026-11-13, vivo75) Sin madre cerca, la toma se espera EN CASA, no en su punto exacto: las crías de la guarida de los lobos tenían el mismo
         // HomeOrigin (-205,-190) y, a 1,5 m, se empujaban unas a otras alrededor de él sin llegar nunca («da vueltas en círculo (nurse)», 19–27 m
