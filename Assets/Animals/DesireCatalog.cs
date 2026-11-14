@@ -1254,7 +1254,9 @@ public static class DesireCatalog
             // (2026-11-13, ronda 78) Y una vez en casa, no sale por un empujón: hasta 7 m sigue «en casa» (#16: SetPath de 4,9–6,7 m al punto de
             // casa cada 2–7 s, 18–25 m en 20 s; los otros lobos de la guarida la apartaban y volvía).
             bool was = _homeWait.Contains(self);
-            atHome = was ? Flat(self.transform.position - to) <= 3f : Flat(self.transform.position - to) <= 1f;
+            // (2026-11-14, ronda 111) Hasta 5 m (antes 3): el lobo #10 de la guarida, apartado a 3–4 m de su sitio por los que pasan, volvía con un SetPath
+            // de 3,5 m cada 4 s y en medio dejaba de «esperar» («da vueltas» 21 m en 20 s para 0 netos).
+            atHome = was ? Flat(self.transform.position - to) <= 5f : Flat(self.transform.position - to) <= 1f;
         }
         if (atHome) _homeWait.Add(self); else _homeWait.Remove(self);
         // (2026-11-14, ronda 97) LA CRÍA QUE ESPERA NO SE APARTA: en la guarida los adultos que pasan la apartaban (el NavMesh separa a los agentes
