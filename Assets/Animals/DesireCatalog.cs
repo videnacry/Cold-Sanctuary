@@ -109,7 +109,11 @@ public static class DesireCatalog
                 }
                 // JUNTO A LA PAREJA: el cortejo es ir y venir a su lado, con pausas (antes, a < 2 m, el paseo al azar de 8 m
                 // lo alejaba y el «ir hacia ella» lo traía: daba vueltas en círculo, 16 m en 20 s para 0,3 m netos).
-                if (mate != null && md <= 2.5f) { Transform mt = mate.transform; Stroll(self, "cortejo", () => mt.position + Ring(1.5f, 3f), 1.5f, 3.5f, 1.5f); return; }   // (ronda 72: el mínimo de un salto, 1,5 m)
+                // (2026-11-14, ronda 103) CON MARGEN: el oso de (−118, −123) estaba a ~2,5 m de su pareja y cada decisión cambiaba de «cortejo» (a ≤ 2,5 m) a
+                // «ir hacia la pareja» o «buscar pareja» (a más): al cambiar de clave su viaje se ponía a cero (pausa y fallo a 0) y no hacía ni lo uno ni lo
+                // otro, quieto 100–200 s, con otros animales encajados contra él. Ya en cortejo, sigue en cortejo hasta 4 m.
+                bool courting = _trips.TryGetValue(self, out Trip ct) && ct.key == "cortejo";
+                if (mate != null && md <= (courting ? CourtingKeep : 2.5f)) { Transform mt = mate.transform; Stroll(self, "cortejo", () => mt.position + Ring(1.5f, 3f), 1.5f, 3.5f, 1.5f); return; }   // (ronda 72: el mínimo de un salto, 1,5 m)
                 if (mate != null && GoTo(self, "mate", mate.transform.position)) return;
                 if (mate == null)
                 {
@@ -1120,6 +1124,8 @@ public static class DesireCatalog
     /// <summary>(2026-11-14) El sitio de espera de una cría en su casa: a <see cref="CubSpotRadius"/> m de su HomeOrigin, en un ángulo propio (de su
     /// id): dos crías de la misma guarida no esperan en el mismo punto.</summary>
     public const float CubSpotRadius = 2.5f;
+    /// <summary>(2026-11-14) Distancia a la pareja hasta la que sigue el cortejo una vez empezado (empieza a ≤ 2,5 m).</summary>
+    public const float CourtingKeep = 4f;
     /// <summary>(2026-11-14) Prioridad de evitación de la cría que espera la toma (más baja = más importante: los demás la rodean) y la normal.</summary>
     public const int WaitingPriority = 20, DefaultPriority = 50;
     public static Vector3 CubWaitSpot(Animal self) => CubWaitSpot(self.HomeOrigin, self.GetHashCode());
