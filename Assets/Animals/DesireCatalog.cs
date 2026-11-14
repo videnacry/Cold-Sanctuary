@@ -914,6 +914,16 @@ public static class DesireCatalog
     /// <summary>(2026-11-14, ronda 112) Salto mínimo del paseo de un adulto (antes 3 m). En la guarida los saltos de 2 m acababan junto a otro animal
     /// y no echaban a andar (lobo #98: salto de 2,3 m, «deseada 0», 35 viajes). La cría, 3–5 m (antes 1,5–3).</summary>
     public const float ExploreMinHop = 5f;
+    /// <summary>(2026-11-14, ronda 113) EL SALTO SIGUE HACIA DELANTE. WanderTarget sumaba un azar de hasta 1× el paso a 0,6× el paso hacia delante:
+    /// muchos saltos salían hacia atrás y, con el mínimo de 5 m, ir-volver-ir (zorro #99: 16 m en 20 s para 0,7 m netos; emperador #98: 21 m para
+    /// 1,3 m). Ahora: el paso entero hacia delante más un azar de 0,7× el paso, siempre por delante del animal (desvío de 45° como mucho).</summary>
+    public static Vector3 ForwardHop(Vector3 pos, Vector3 forward, float step)
+    {
+        forward.y = 0f;
+        if (forward.sqrMagnitude < 0.01f) { Vector2 r0 = UnityEngine.Random.insideUnitCircle.normalized; forward = new Vector3(r0.x, 0f, r0.y); }
+        Vector2 r = UnityEngine.Random.insideUnitCircle * 0.7f;
+        return pos + forward.normalized * step + new Vector3(r.x, 0f, r.y) * step;
+    }
     static void Explore(Animal self, string key)
     {
         // LA CRÍA no se aleja: curiosea a 1–2,5 m de donde está, con pausas largas para mirar y olfatear (los polluelos de
@@ -931,7 +941,7 @@ public static class DesireCatalog
         // (2026-11-11, vivo74) «HACIA DELANTE» ES HACIA DONDE IBA (el último salto), no hacia donde mira el cuerpo: al llegar se paraba girado y el
         // siguiente salto volvía por donde vino (zorros, bueyes, pingüinos: saltos de 11–13 m, 17–43 m en 20 s para 0–1,9 m netos).
         Trip et = TripOf(self, key);
-        Stroll(self, key, () => LifeStage.WanderTarget(tr.position, et.lastDir.sqrMagnitude > 0.5f ? et.lastDir : tr.forward, step, UnityEngine.Random.insideUnitCircle), 1f, 3f, ExploreMinHop);   // (ronda 72: ≥ 3 m; ronda 112: ≥ 5 m)
+        Stroll(self, key, () => ForwardHop(tr.position, et.lastDir.sqrMagnitude > 0.5f ? et.lastDir : tr.forward, step), 1f, 3f, ExploreMinHop);   // (ronda 72: ≥ 3 m; ronda 112: ≥ 5 m)
     }
 
     // Su zona de casa: dentro, «volver a casa» no se siente.
