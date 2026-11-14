@@ -185,17 +185,17 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | MIC-51 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | MIC-52 | Probado (suite g77) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g77 AsambleaTest 46/0 |
 | MIC-53 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
-| ARB-59 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
-| ARB-60 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
-| ARB-61 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
+| ARB-59 | Probado (suite g53) | 2026-11-14 | 9a12e54 | [runs/2026-11-14-2335-r94-grupos-vivo.md](runs/2026-11-14-2335-r94-grupos-vivo.md) | — | r94: g53 TreeOfFieldsTest 46/0 |
+| ARB-60 | Probado (suite g53) | 2026-11-14 | 9a12e54 | [runs/2026-11-14-2335-r94-grupos-vivo.md](runs/2026-11-14-2335-r94-grupos-vivo.md) | — | r94: g53 TreeOfFieldsTest 46/0 |
+| ARB-61 | Probado (suite g53) | 2026-11-14 | 9a12e54 | [runs/2026-11-14-2335-r94-grupos-vivo.md](runs/2026-11-14-2335-r94-grupos-vivo.md) | — | r94: g53 TreeOfFieldsTest 46/0 |
 | ARB-62 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | ARB-63 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | ARB-64 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | ARB-65 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | ARB-66 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | ARB-67 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
-| ARB-68 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
-| ARB-69 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
+| ARB-68 | Probado (suite g53) | 2026-11-14 | 9a12e54 | [runs/2026-11-14-2335-r94-grupos-vivo.md](runs/2026-11-14-2335-r94-grupos-vivo.md) | — | r94: g53 TreeOfFieldsTest 46/0 |
+| ARB-69 | Probado (suite g53) | 2026-11-14 | 9a12e54 | [runs/2026-11-14-2335-r94-grupos-vivo.md](runs/2026-11-14-2335-r94-grupos-vivo.md) | — | r94: g53 TreeOfFieldsTest 46/0 |
 | ARB-70 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | ARB-71 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | ARB-72 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
@@ -221,7 +221,7 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | ARB-92 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | ARB-93 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | ARB-94 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
-| ARB-95 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
+| ARB-95 | Probado (suite g53) | 2026-11-14 | 9a12e54 | [runs/2026-11-14-2335-r94-grupos-vivo.md](runs/2026-11-14-2335-r94-grupos-vivo.md) | — | r94: g53 TreeOfFieldsTest 46/0 |
 | ARB-96 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | HOS-05 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | HOS-06 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
@@ -329,21 +329,21 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | PER-20 | Probado (suite g108) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g108 IcebergVidaTest 14/0 |
 | PER-21 | Probado (suite g103) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g103 ProduccionTest 16/0 |
 | PER-22 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
-| CV-01 | Probado (suite g50) | 2026-11-13 | c8d5e09 | [runs/2026-11-13-2235-r93-grupos-vivo.md](runs/2026-11-13-2235-r93-grupos-vivo.md) | — | r93: check [CV-01] PASS ×3 |
+| CV-01 | Probado (suite g50) | 2026-11-14 | 9a12e54 | [runs/2026-11-14-2335-r94-grupos-vivo.md](runs/2026-11-14-2335-r94-grupos-vivo.md) | — | r94: check [CV-01] PASS ×3 |
 | CV-02 | Sin probar | — | — | — | — | caso nuevo: falta el Check con [CV-02] (lo añade quien toque la prueba) |
 | CV-03 | Probado (suite g50) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: check [CV-03] PASS ×1 |
-| CV-04 | Probado (suite g1) | 2026-11-13 | c8d5e09 | [runs/2026-11-13-2235-r93-grupos-vivo.md](runs/2026-11-13-2235-r93-grupos-vivo.md) | — | r93: check [CV-04] PASS ×1 |
-| CV-05 | Probado (suite g1) | 2026-11-13 | c8d5e09 | [runs/2026-11-13-2235-r93-grupos-vivo.md](runs/2026-11-13-2235-r93-grupos-vivo.md) | — | r93: check [CV-05] PASS ×1 |
-| CV-06 | Sin probar | — | — | — | — | caso nuevo: falta el Check con [CV-06] (lo añade quien toque la prueba) |
-| CV-07 | Probado (suite g50) | 2026-11-13 | c8d5e09 | [runs/2026-11-13-2235-r93-grupos-vivo.md](runs/2026-11-13-2235-r93-grupos-vivo.md) | — | r93: check [CV-07] PASS ×3 |
+| CV-04 | Probado (suite g1) | 2026-11-14 | 9a12e54 | [runs/2026-11-14-2335-r94-grupos-vivo.md](runs/2026-11-14-2335-r94-grupos-vivo.md) | — | r94: check [CV-04] PASS ×1 |
+| CV-05 | Probado (suite g1) | 2026-11-14 | 9a12e54 | [runs/2026-11-14-2335-r94-grupos-vivo.md](runs/2026-11-14-2335-r94-grupos-vivo.md) | — | r94: check [CV-05] PASS ×1 |
+| CV-06 | Probado (suite g53) | 2026-11-14 | 9a12e54 | [runs/2026-11-14-2335-r94-grupos-vivo.md](runs/2026-11-14-2335-r94-grupos-vivo.md) | — | r94: check [CV-06] PASS ×1 |
+| CV-07 | Probado (suite g50) | 2026-11-14 | 9a12e54 | [runs/2026-11-14-2335-r94-grupos-vivo.md](runs/2026-11-14-2335-r94-grupos-vivo.md) | — | r94: check [CV-07] PASS ×3 |
 | CV-08 | Sin probar | — | — | — | — | caso nuevo: falta el Check con [CV-08] (lo añade quien toque la prueba) |
 | CV-09 | Sin probar | — | — | — | — | caso nuevo: falta el Check con [CV-09] (lo añade quien toque la prueba) |
 | CV-10 | Sin probar | — | — | — | — | caso nuevo: falta el Check con [CV-10] (lo añade quien toque la prueba) |
 | CV-11 | Probado (suite g105) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: check [CV-11] PASS ×3 |
 | CV-12 | Sin probar | — | — | — | — | caso nuevo: falta el Check con [CV-12] (lo añade quien toque la prueba) |
 | CV-13 | Sin probar | — | — | — | — | caso nuevo: falta el Check con [CV-13] (lo añade quien toque la prueba) |
-| CV-14 | Probado (suite g50) | 2026-11-13 | c8d5e09 | [runs/2026-11-13-2235-r93-grupos-vivo.md](runs/2026-11-13-2235-r93-grupos-vivo.md) | — | r93: check [CV-14] PASS ×3 |
-| CV-15 | Probado (suite g50) | 2026-11-13 | c8d5e09 | [runs/2026-11-13-2235-r93-grupos-vivo.md](runs/2026-11-13-2235-r93-grupos-vivo.md) | — | r93: check [CV-15] PASS ×2 |
+| CV-14 | Probado (suite g50) | 2026-11-14 | 9a12e54 | [runs/2026-11-14-2335-r94-grupos-vivo.md](runs/2026-11-14-2335-r94-grupos-vivo.md) | — | r94: check [CV-14] PASS ×3 |
+| CV-15 | Probado (suite g50) | 2026-11-14 | 9a12e54 | [runs/2026-11-14-2335-r94-grupos-vivo.md](runs/2026-11-14-2335-r94-grupos-vivo.md) | — | r94: check [CV-15] PASS ×2 |
 | OP-01 | No aplica | — | — | — | — | regla de proceso: la mira el probador en cada run log |
 | OP-02 | No aplica | — | — | — | — | regla de proceso: la mira el probador en cada run log |
 | OP-03 | No aplica | — | — | — | — | regla de proceso: la mira el probador en cada run log |
