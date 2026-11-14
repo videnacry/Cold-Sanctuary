@@ -470,8 +470,10 @@ public static class DesireCatalog
     // Para lo que quede, una regla de rescate: el animal que quiere moverse (explorar, volver a casa, buscar pareja, seguir a su madre), que no
     // duerme, no come, no pelea y no se ha movido 0,5 m en ≥ 15 s y ≥ 8 fotogramas, se coloca en el punto libre del NavMesh más cercano
     // (a 3–6 m, sin nadie a < 1,2 m). Como mucho una vez cada 30 s, y lo dice («[Fauna] rescate …»), para no tapar fallos sistemáticos.
-    public const float RescueStill = 15f, RescueEvery = 30f;
-    public static int SelfRecoveries;
+    public const float RescueStill = 12f, RescueEvery = 20f;
+    /// <summary>(Diagnóstico) Por qué no se rescató al último que lo necesitaba (espera entre rescates, sin sitio libre).</summary>
+    public static string RescueBlocked = "";
+    public static int SelfRecoveries, RescueNoSpot;
     static int _rescueLogs;
     static readonly Dictionary<Animal, (Vector3 at, float since, int frame, float last)> _rescue = new Dictionary<Animal, (Vector3, float, int, float)>();
     static void SelfRecover(Animal a)
@@ -480,9 +482,13 @@ public static class DesireCatalog
         Vector3 pos = a.transform.position;
         if (!_rescue.TryGetValue(a, out var r) || Flat(pos - r.at) > 0.5f) { _rescue[a] = (pos, Time.time, Time.frameCount, r.last); return; }
         string desire = a.TryGetComponent(out Volition v) ? v.LastDesire : "";
-        bool wantsToMove = desire == "explore" || desire == "homebound" || desire == "mate" || desire == "heel";
-        if (!wantsToMove || a.death || a.asleep || a.busy || a.fighting || RestingByChoice(a) || PenWalker.Pausing(a)) { _rescue[a] = (pos, Time.time, Time.frameCount, r.last); return; }
-        if (Time.time - r.since < RescueStill || Time.frameCount - r.frame < 8 || Time.time - r.last < RescueEvery) return;
+        // (ronda 104) Más amplio: cualquiera que quiera algo que se hace andando (no descansar, incubar, la guarida, beber, un hábito ni la cría que
+        // espera la toma en su sitio), salvo dormido, comiendo o peleando. Antes solo explore/homebound/mate/heel y sin «descanso a propósito»:
+        // los lobos de la guarida y el zorro #86 quedaban fuera. Y 12 s y 5 fotogramas (con 8 fotogramas, a 2,5 s cada uno, la prueba los marcaba antes).
+        bool idleDesire = desire == "" || desire == "rest" || desire == "brood" || desire == "den" || desire == "incubate" || desire == "drink" || desire == "habit" || _homeWait.Contains(a);
+        if (idleDesire || a.death || a.asleep || a.busy || a.fighting || (a.Forage != null && a.Forage.EatingNow)) { _rescue[a] = (pos, Time.time, Time.frameCount, r.last); return; }
+        if (Time.time - r.since < RescueStill || Time.frameCount - r.frame < 5) return;
+        if (Time.time - r.last < RescueEvery) { RescueBlocked = "espera"; return; }
         for (int ring = 0; ring < 2; ring++)
             for (int i = 0; i < 8; i++)
             {
@@ -497,7 +503,8 @@ public static class DesireCatalog
                 _rescue[a] = (hit.position, Time.time, Time.frameCount, Time.time);
                 return;
             }
-        _rescue[a] = (pos, Time.time, Time.frameCount, Time.time);   // (sin sitio libre: lo reintenta en 30 s)
+        RescueBlocked = "sin sitio libre"; RescueNoSpot++;
+        _rescue[a] = (pos, Time.time, Time.frameCount, Time.time);   // (sin sitio libre: lo reintenta en 20 s)
     }
 
     public static void SuperviseTripsNow()
@@ -582,7 +589,7 @@ public static class DesireCatalog
                 if (_noPathLogs < 30) { _noPathLogs++; Debug.Log($"[Fauna] «{self.name}» se queda sin camino hacia {t.goal} ({Flat(t.goal - self.transform.position):0.0} m): {NavInfo(self)} · {NavTrace.Last(self)}."); }
                 return false;
             }
-            if (Time.time >= t.reissueAt) { t.reissueAt = Time.time + 0.5f; self.Loco?.SetGait(false, 0.1f); NavTrace.Dest(self, nav, t.goal, "deseo: lo vuelve a pedir"); }
+            if (Time.time >= t.reissueAt) { t.reissueAt = Time.time + 0.5f; self.Loco?.SetGait(false, 0.1f); SyncPath(self, nav, t.goal, "deseo: lo vuelve a pedir"); }
             return true;
         }
         float rem = nav.hasPath ? Remaining(nav) : 0f;
@@ -598,7 +605,7 @@ public static class DesireCatalog
         {
             t.reissueAt = Time.time + 0.5f; t.frozenSince = -1f; StaleRepaths++;
             self.Loco?.SetGait(false, 0.1f);
-            NavTrace.Dest(self, nav, t.goal, nav.isPathStale ? "deseo: camino caducado, lo vuelve a pedir" : "deseo: camino sin esquinas, lo vuelve a pedir");
+            SyncPath(self, nav, t.goal, nav.isPathStale ? "deseo: camino caducado, lo vuelve a pedir" : "deseo: camino sin esquinas, lo vuelve a pedir");
             repathed = true;
         }
         // (2026-11-13, vivo75) QUIETO CON CAMINO: 17 «atascado > 20 s» (osos, bueyes, renos, zorros, lobos y las crías de la Cría) tenían camino
@@ -673,6 +680,30 @@ public static class DesireCatalog
 
     // Ir andando: destino Y paso de andar (la pausa anterior lo dejó en «quieto», velocidad 0: con solo SetDestination el
     // agente tenía destino pero no andaba). true = lleva camino de verdad.
+    /// <summary>(2026-11-14, ronda 104) Volver a pedir el camino a <paramref name="to"/> AL MOMENTO (CalculatePath + SetPath). Lo que quedaba
+    /// con SetDestination (el viaje sin camino y el camino caducado) se calculaba en segundo plano y daba los «pendiente» que quedaban.</summary>
+    static bool SyncPath(Animal self, NavMeshAgent nav, Vector3 to, string why)
+    {
+        NavMeshPath p = new NavMeshPath();
+        NavTrace.Mark(self, why, to);
+        return nav.CalculatePath(to, p) && p.status == NavMeshPathStatus.PathComplete && p.corners.Length >= 2 && nav.SetPath(p);
+    }
+
+    /// <summary>(2026-11-14) Para la madre y la cría (NurseCub, AwaitFeeding): ir al sitio y, si no hay camino completo hasta él (b2fe17d: Move ya
+    /// no lo pide en segundo plano), al punto más cercano al que sí se llega (el final del camino parcial), calculado al momento (SyncPath).
+    /// Así no se quedan quietas ante un sitio al que no se llega del todo (la guarida, la madre sobre algo).</summary>
+    public static int NearestFallbacks;
+    static bool MoveOrNearest(Animal self, Vector3 to)
+    {
+        if (Move(self, to)) return true;
+        NavMeshAgent nav = self.nav;
+        if (nav == null || !nav.isOnNavMesh) return false;
+        if (!NavReach.PartialEnd(self, to, out Vector3 end) || Flat(end - self.transform.position) < 0.5f) return false;
+        NearestFallbacks++;
+        self.Loco?.SetGait(false, 1f);
+        return SyncPath(self, nav, end, "deseo: al punto más cercano (camino parcial)");
+    }
+
     static bool Move(Animal self, Vector3 to)
     {
         NavMeshAgent nav = self.nav;
@@ -700,8 +731,10 @@ public static class DesireCatalog
             NavTrace.Mark(self, $"deseo: SetPath calculado ({own.corners.Length} esquinas)", to);
             if (nav.SetPath(own) && nav.hasPath) return true;
         }
-        NavTrace.Dest(self, nav, to, "deseo: SetDestination");
-        return nav.hasPath || nav.pathPending;
+        // (ronda 104) Y si tampoco hay camino completo, no se pide en segundo plano (SetDestination quedaba «pendiente» y el viaje fallaba igual,
+        // más tarde: «último final=«pendiente»» en 8 de 16 rescates, zorro #86 «pendiente True, PathInvalid»): el viaje no empieza y lo dice.
+        NavTrace.Mark(self, "deseo: sin camino completo (no se pide)", to);
+        return false;
     }
 
     /// <summary>Va hacia <paramref name="dest"/> si se puede llegar (camino completo); true si va (o ya iba). Re-apunta solo
@@ -975,10 +1008,10 @@ public static class DesireCatalog
         // (2026-11-13, vivo75) …pero solo si la cría VIENE (se mueve): la que espera la toma quieta en casa (sin vínculo hacia la madre, AwaitFeeding
         // sin madre) no venía nunca, y la madre la esperaba a 2,5–4 m para siempre. Con la cría quieta, la madre va hasta ella.
         bool cubComing = cub.nav != null && cub.nav.isActiveAndEnabled && cub.nav.velocity.magnitude > 0.2f;
-        if (dc > 2.5f && dc <= 4f && !cubComing) { if (self.nav != null && self.nav.isOnNavMesh) Move(self, cub.transform.position); return; }
+        if (dc > 2.5f && dc <= 4f && !cubComing) { if (self.nav != null && self.nav.isOnNavMesh) MoveOrNearest(self, cub.transform.position); return; }
         if (dc > 2.5f && dc <= 4f) { if (self.nav != null && self.nav.isOnNavMesh) NavTrace.Reset(self, "nurse (espera a la cría)"); self.Loco?.Idle(1f); return; }
         if (dc <= 2.5f) { if (self.nav != null && self.nav.isOnNavMesh) NavTrace.Reset(self, "nurse (junto a la cría)"); FeedCub(self, cub); return; }
-        if (self.nav != null && self.nav.isOnNavMesh) Move(self, MeetPoint(self.transform.position, cub.transform.position));
+        if (self.nav != null && self.nav.isOnNavMesh) MoveOrNearest(self, MeetPoint(self.transform.position, cub.transform.position));
     }
 
     /// <summary>(2026-11-11) DONDE SE ENCUENTRAN la madre que va a dar la toma y la cría que la busca: lejos, a MEDIO CAMINO; cerca (≤ 4 m), donde
@@ -1181,7 +1214,7 @@ public static class DesireCatalog
         if (parent != null && Vector3.Distance(self.transform.position, parent.position) > 2f && parent.TryGetComponent(out NavMeshAgent pn) && pn.isActiveAndEnabled
             && pn.velocity.magnitude > 0.5f && Vector3.Dot(pn.velocity, self.transform.position - parent.position) <= 0f)
         { NavTrace.Reset(self, "AwaitFeeding (la madre se va: la llama)"); self.Loco?.Idle(1f); return; }
-        if (parent != null ? Vector3.Distance(self.transform.position, parent.position) > 2f : !atHome) Move(self, to);
+        if (parent != null ? Vector3.Distance(self.transform.position, parent.position) > 2f : !atHome) MoveOrNearest(self, to);
         else
         {
             NavTrace.Reset(self, "AwaitFeeding (pide la toma)"); self.Loco?.Idle(1f);
