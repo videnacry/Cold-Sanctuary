@@ -14,6 +14,28 @@ public static class NavTrace
     static readonly Dictionary<Animal, (string why, float at, Vector3 to)> _last = new Dictionary<Animal, (string, float, Vector3)>();
     static readonly HashSet<string> _stackLogged = new HashSet<string>();
 
+    // (2026-11-14, ronda 108) UN CAMINO NUEVO NO EN CADA FOTOGRAMA. Con los fotogramas lentos de las pruebas (2–4 s de juego) un agente tarda 1–2
+    // fotogramas en echar a andar tras un camino nuevo; quien le ponía uno cada segundo (perseguir, pelear, el hábito, ir hacia la pareja, la
+    // huida, el pasto) le ponía uno por fotograma y no andaba nunca (renos #8 y #67). Regla común a todas las conductas:
+    // - si ya lleva (o calcula) un camino que acaba a < KeepWithin m del sitio nuevo, se deja;
+    // - si se le puso uno hace < RepathSeconds s o < RepathFrames fotogramas, también (solo para quien lo pide sin parar: Dest).
+    public const float KeepWithin = 3f, RepathSeconds = 1f;
+    public const int RepathFrames = 3;
+    public static int KeptPaths;
+    static readonly Dictionary<NavMeshAgent, (float t, int f)> _pathed = new Dictionary<NavMeshAgent, (float, int)>();
+    /// <summary>¿Se le deja el camino que lleva en vez de ponerle uno hacia <paramref name="to"/>? <paramref name="rateLimit"/>: también si se le
+    /// puso uno hace muy poco.</summary>
+    public static bool KeepPath(NavMeshAgent nav, Vector3 to, bool rateLimit)
+    {
+        if (nav == null || !nav.isOnNavMesh || !(nav.hasPath || nav.pathPending)) return false;
+        Vector3 d = nav.destination - to; d.y = 0f;
+        if (d.magnitude < KeepWithin) { KeptPaths++; return true; }
+        if (rateLimit && _pathed.TryGetValue(nav, out var l) && (Time.time - l.t < RepathSeconds || Time.frameCount - l.f < RepathFrames)) { KeptPaths++; return true; }
+        return false;
+    }
+    /// <summary>Apunta que a este agente se le acaba de poner un camino.</summary>
+    public static void Pathed(NavMeshAgent nav) { if (nav != null) _pathed[nav] = (Time.time, Time.frameCount); }
+
     /// <summary>ResetPath con su porqué.</summary>
     public static void Reset(Animal a, string why)
     {
@@ -27,6 +49,8 @@ public static class NavTrace
     public static bool Dest(Animal a, NavMeshAgent nav, Vector3 to, string why)
     {
         if (nav == null || !nav.enabled || !nav.isOnNavMesh) return false;
+        if (KeepPath(nav, to, true)) return true;   // (ronda 108) mismo sitio, o camino recién puesto: se deja
+        Pathed(nav);
         if (a != null) Note(a, why, to);
         return nav.SetDestination(to);
     }

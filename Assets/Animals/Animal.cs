@@ -685,7 +685,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         // (el mismo alcance con el que la detectó), si en 5 s no consigue alejarse (acorralado) o al minuto. Y huye hacia un
         // sitio ALCANZABLE: si lo de detrás es agua o un muro, prueba en abanico hacia los lados.
         float safe = Mathf.Max(25f, HomeRadius * (0.5f + perception * 0.5f) + 5f);
-        float start = Time.time, farthest = 0f, farthestAt = Time.time, nextPick = 0f;
+        float start = Time.time, farthest = 0f, farthestAt = Time.time, nextPick = 0f; int nextPickFrame = 0;
         while (threat != null && !death)
         {
             float d = Vector3.Distance(transform.position, threat.transform.position);
@@ -696,9 +696,11 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
             Loco.SetGait(true, (short)(this.ActsPrep.run.energyCost / 10));
             Vector3 away = transform.position - threat.transform.position; away.y = 0f;
             if (away.sqrMagnitude < 0.01f) { Vector2 r = Random.insideUnitCircle.normalized; away = new Vector3(r.x, 0f, r.y); }
-            if (nav != null && nav.isOnNavMesh && Time.time >= nextPick)   // (re-elige el rumbo cada segundo: calcular caminos cuesta)
+            if (nav != null && nav.isOnNavMesh && Time.time >= nextPick && Time.frameCount >= nextPickFrame)   // (re-elige el rumbo cada segundo: calcular caminos cuesta)
             {
-                nextPick = Time.time + 1f;
+                // (2026-11-14, ronda 108) Y cada 3 fotogramas como poco: con fotogramas lentos (2–4 s de juego) «cada segundo» era cada fotograma, y
+                // un camino nuevo en cada uno no dejaba arrancar al agente (reno #67 huyendo: camino de 41 m, «deseada 0», velocidad 0).
+                nextPick = Time.time + 1f; nextPickFrame = Time.frameCount + 3;
                 Vector3 best = transform.position + away.normalized * fleeStep; float bestD = -1f;
                 // (2026-11-02) Si a fleeStep no hay nada alcanzable (contra el agua, en la colonia), prueba más cerca: antes iba
                 // hacia el punto recto de 40 m FUERA del NavMesh y el agente se quedaba con el camino «pendiente», quieto, huyendo
@@ -712,9 +714,10 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
                         if (turn == 0f) break;   // recto hacia atrás se puede: por ahí
                     }
                 if (bestD < 0f) break;   // ningún sitio alcanzable lejos de la amenaza: acorralado
+                bool sameWay = nav.hasPath && Vector3.Distance(nav.destination, best) < 3f;   // (ronda 108) va ya hacia ahí: no se le cambia el camino
                 // Con el camino YA calculado (como los deseos, DesireCatalog.Move): SetDestination podía quedarse «pendiente»
                 // con cientos de obstáculos tallando, y el animal no se movía.
-                if (!(NavReach.Reachable(this, best, out Vector3 bestAt, 0.5f) && NavReach.LastPathTo(this, bestAt, out NavMeshPath fp) && nav.SetPath(fp))) Loco.GoTo(best);
+                if (!sameWay && !(NavReach.Reachable(this, best, out Vector3 bestAt, 0.5f) && NavReach.LastPathTo(this, bestAt, out NavMeshPath fp) && nav.SetPath(fp))) Loco.GoTo(best);
             }
             yield return new WaitForSeconds(TimeController.timeController.TimeSpeedMinuteSecs / 20);
         }

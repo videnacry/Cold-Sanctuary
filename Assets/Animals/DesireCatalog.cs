@@ -703,6 +703,8 @@ public static class DesireCatalog
     /// con SetDestination (el viaje sin camino y el camino caducado) se calculaba en segundo plano y daba los «pendiente» que quedaban.</summary>
     static bool SyncPath(Animal self, NavMeshAgent nav, Vector3 to, string why)
     {
+        if (NavTrace.KeepPath(nav, to, false)) return true;   // (ronda 108) ya va hacia ahí
+        NavTrace.Pathed(nav);
         NavMeshPath p = new NavMeshPath();
         NavTrace.Mark(self, why, to);
         return nav.CalculatePath(to, p) && p.status == NavMeshPathStatus.PathComplete && p.corners.Length >= 2 && nav.SetPath(p);
@@ -731,6 +733,9 @@ public static class DesireCatalog
         // sale de allí y el agente «llega» enseguida sin moverse (lo mismo que le pasaba a la gente del microcosmos, MicroMove).
         Vector3 gap = nav.nextPosition - self.transform.position; gap.y = 0f;
         if (gap.sqrMagnitude > 0.25f) { NavTrace.Mark(self, $"deseo: agente desfasado {gap.magnitude:0.0} m (Warp)", self.transform.position); nav.Warp(self.transform.position); }
+        // (ronda 108) Ya va hacia ahí (camino que acaba a < 3 m): no se le pone otro (la madre, la cría, ir hacia la pareja: cada segundo).
+        if (NavTrace.KeepPath(nav, to, false)) { self.Loco?.SetGait(false, 1f); return true; }
+        NavTrace.Pathed(nav);
         self.Loco?.SetGait(false, 1f);
         // Con el camino YA calculado (NavReach acaba de comprobar que se llega): SetPath, sin esperar a que el agente lo pida y lo calcule otra
         // vez (con cientos de obstáculos tallando, SetDestination podía quedarse «pendiente» y el animal quieto).
