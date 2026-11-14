@@ -276,6 +276,9 @@ public class Forager : MonoBehaviour
 
         GameObject food = SelectTarget(self);
         Transform foodSource = food != null ? food.transform : null;
+        // (2026-11-14, ronda 108) SIN COMIDA A LA VISTA, NO «COME»: seguía con la pausa de comer sin nada delante, acababa, y la decisión siguiente
+        // volvía a «eat»: el reno #8 quieto «queriendo comer» sin camino ni bocado. Se rinde (GiveUp: «eat» calla un rato).
+        if (food == null) { GiveUp(self, "nada que pastar a la vista"); self.busy = false; yield break; }
 
         // Los marinos nadan sobre mar abierto sin NavMesh horneado debajo → guardar (Loco.Walk ya lo respeta,
         // pero sin el guard el while no avanzaría nunca).
@@ -310,7 +313,10 @@ public class Forager : MonoBehaviour
                 if (d < best - 0.3f) { best = d; stallSince = Time.time; }
                 else if (Time.time - stallSince > 4f) break;
                 if (Time.time - startedAt > 90f) break;   // tope: nunca más de 90 s de camino por una comida
-                self.Loco.Walk(to, walkInterval);
+                // (ronda 108) El camino, una vez y al momento (SetPath), no un SetDestination en cada paso: con fotogramas lentos cada paso era un
+                // camino nuevo y el agente, que tarda 1–2 fotogramas en arrancar, no llegaba a andar.
+                if (self.nav.hasPath || self.nav.pathPending) self.Loco.SetGait(false, walkInterval);
+                else { UnityEngine.AI.NavMeshPath gp = new UnityEngine.AI.NavMeshPath(); if (self.nav.CalculatePath(to, gp) && gp.status != UnityEngine.AI.NavMeshPathStatus.PathInvalid && gp.corners.Length >= 2) { self.nav.SetPath(gp); self.Loco.SetGait(false, walkInterval); } else self.Loco.Walk(to, walkInterval); }
                 yield return new WaitForSeconds(walkInterval);
             }
             if (school && self.nav != null && self.nav.isOnNavMesh) NavTrace.Reset(self, "Forager: se para a pescar");   // en la orilla: se para a pescar
