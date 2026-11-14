@@ -470,8 +470,10 @@ public static class DesireCatalog
     // Para lo que quede, una regla de rescate: el animal que quiere moverse (explorar, volver a casa, buscar pareja, seguir a su madre), que no
     // duerme, no come, no pelea y no se ha movido 0,5 m en ≥ 15 s y ≥ 8 fotogramas, se coloca en el punto libre del NavMesh más cercano
     // (a 3–6 m, sin nadie a < 1,2 m). Como mucho una vez cada 30 s, y lo dice («[Fauna] rescate …»), para no tapar fallos sistemáticos.
-    public const float RescueStill = 15f, RescueEvery = 30f;
-    public static int SelfRecoveries;
+    public const float RescueStill = 12f, RescueEvery = 20f;
+    /// <summary>(Diagnóstico) Por qué no se rescató al último que lo necesitaba (espera entre rescates, sin sitio libre).</summary>
+    public static string RescueBlocked = "";
+    public static int SelfRecoveries, RescueNoSpot;
     static int _rescueLogs;
     static readonly Dictionary<Animal, (Vector3 at, float since, int frame, float last)> _rescue = new Dictionary<Animal, (Vector3, float, int, float)>();
     static void SelfRecover(Animal a)
@@ -480,9 +482,13 @@ public static class DesireCatalog
         Vector3 pos = a.transform.position;
         if (!_rescue.TryGetValue(a, out var r) || Flat(pos - r.at) > 0.5f) { _rescue[a] = (pos, Time.time, Time.frameCount, r.last); return; }
         string desire = a.TryGetComponent(out Volition v) ? v.LastDesire : "";
-        bool wantsToMove = desire == "explore" || desire == "homebound" || desire == "mate" || desire == "heel";
-        if (!wantsToMove || a.death || a.asleep || a.busy || a.fighting || RestingByChoice(a) || PenWalker.Pausing(a)) { _rescue[a] = (pos, Time.time, Time.frameCount, r.last); return; }
-        if (Time.time - r.since < RescueStill || Time.frameCount - r.frame < 8 || Time.time - r.last < RescueEvery) return;
+        // (ronda 104) Más amplio: cualquiera que quiera algo que se hace andando (no descansar, incubar, la guarida, beber, un hábito ni la cría que
+        // espera la toma en su sitio), salvo dormido, comiendo o peleando. Antes solo explore/homebound/mate/heel y sin «descanso a propósito»:
+        // los lobos de la guarida y el zorro #86 quedaban fuera. Y 12 s y 5 fotogramas (con 8 fotogramas, a 2,5 s cada uno, la prueba los marcaba antes).
+        bool idleDesire = desire == "" || desire == "rest" || desire == "brood" || desire == "den" || desire == "incubate" || desire == "drink" || desire == "habit" || _homeWait.Contains(a);
+        if (idleDesire || a.death || a.asleep || a.busy || a.fighting || (a.Forage != null && a.Forage.EatingNow)) { _rescue[a] = (pos, Time.time, Time.frameCount, r.last); return; }
+        if (Time.time - r.since < RescueStill || Time.frameCount - r.frame < 5) return;
+        if (Time.time - r.last < RescueEvery) { RescueBlocked = "espera"; return; }
         for (int ring = 0; ring < 2; ring++)
             for (int i = 0; i < 8; i++)
             {
@@ -497,7 +503,8 @@ public static class DesireCatalog
                 _rescue[a] = (hit.position, Time.time, Time.frameCount, Time.time);
                 return;
             }
-        _rescue[a] = (pos, Time.time, Time.frameCount, Time.time);   // (sin sitio libre: lo reintenta en 30 s)
+        RescueBlocked = "sin sitio libre"; RescueNoSpot++;
+        _rescue[a] = (pos, Time.time, Time.frameCount, Time.time);   // (sin sitio libre: lo reintenta en 20 s)
     }
 
     public static void SuperviseTripsNow()
