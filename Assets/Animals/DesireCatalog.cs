@@ -1026,6 +1026,8 @@ public static class DesireCatalog
     /// <summary>(2026-11-14) El sitio de espera de una cría en su casa: a <see cref="CubSpotRadius"/> m de su HomeOrigin, en un ángulo propio (de su
     /// id): dos crías de la misma guarida no esperan en el mismo punto.</summary>
     public const float CubSpotRadius = 2.5f;
+    /// <summary>(2026-11-14) Prioridad de evitación de la cría que espera la toma (más baja = más importante: los demás la rodean) y la normal.</summary>
+    public const int WaitingPriority = 20, DefaultPriority = 50;
     public static Vector3 CubWaitSpot(Animal self) => CubWaitSpot(self.HomeOrigin, self.GetHashCode());
     public static Vector3 CubWaitSpot(Vector3 home, int id)
     {
@@ -1066,6 +1068,10 @@ public static class DesireCatalog
             atHome = was ? Flat(self.transform.position - to) <= 3f : Flat(self.transform.position - to) <= 1f;
         }
         if (atHome) _homeWait.Add(self); else _homeWait.Remove(self);
+        // (2026-11-14, ronda 97) LA CRÍA QUE ESPERA NO SE APARTA: en la guarida los adultos que pasan la apartaban (el NavMesh separa a los agentes
+        // que se tocan), y la cría volvía a su sitio una y otra vez (#60, #38: «da vueltas» 18–26 m en 20 s junto a su sitio, con «pide la toma»
+        // o un camino de 4–5 m a él). Esperando, su agente es más importante (prioridad de evitación más baja): son los que pasan quienes la rodean.
+        self.nav.avoidancePriority = atHome ? WaitingPriority : DefaultPriority;
         // (2026-11-13, ronda 78) La madre que SE VA (anda alejándose de la cría) no se persigue: la cría la llama quieta (#83: «AwaitFeeding»
         // hacia un punto que se movía, (-202,-193) → (-209,-191), 18–22 m en 20 s). Cuando la madre viene o se para, va a ella.
         if (parent != null && Vector3.Distance(self.transform.position, parent.position) > 2f && parent.TryGetComponent(out NavMeshAgent pn) && pn.isActiveAndEnabled
@@ -1075,6 +1081,7 @@ public static class DesireCatalog
         else
         {
             NavTrace.Reset(self, "AwaitFeeding (pide la toma)"); self.Loco?.Idle(1f);
+            self.nav.avoidancePriority = WaitingPriority;   // (junto a su madre, pidiendo: tampoco se la aparta)
             // PIDE Y LE DAN: la cría pegada a su madre (o padre) mama, o pide con el pico y le regurgitan: una toma cada 2 s de
             // juego. La toma no esperaba solo a que el «nurse» del adulto ganara a sus otros deseos: en la isla del pingüino el
             // macho (hambriento tras 2 meses incubando) y la hembra (que vuelve del mar) casi nunca lo elegían y el polluelo
