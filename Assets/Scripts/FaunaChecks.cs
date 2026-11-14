@@ -161,8 +161,8 @@ public class FaunaChecks : MonoBehaviour, ITestUnit
         if (ex != null)
         {
             int ok = 0, tries = 0; float worst = float.MaxValue;
-            for (int k = 0; k < 10; k++) { if (!DesireCatalog.ExploreGoalForTest(ex, out Vector3 g)) continue; tries++; float d = Vector3.Distance(new Vector3(g.x, 0f, g.z), new Vector3(ex.transform.position.x, 0f, ex.transform.position.z)); worst = Mathf.Min(worst, d); if (d >= 3f - 1e-3f) ok++; }
-            TestProbe.Check("el paseo de un adulto elige sitios a ≥ 3 m (no a su lado)", tries == 0 || ok == tries, $"{ex.name}: {ok}/{tries}, el más cerca a {(tries > 0 ? worst.ToString("0.0") : "—")} m");
+            for (int k = 0; k < 10; k++) { if (!DesireCatalog.ExploreGoalForTest(ex, out Vector3 g)) continue; tries++; float d = Vector3.Distance(new Vector3(g.x, 0f, g.z), new Vector3(ex.transform.position.x, 0f, ex.transform.position.z)); worst = Mathf.Min(worst, d); if (d >= DesireCatalog.ExploreMinHop - 1e-3f) ok++; }
+            TestProbe.Check("el paseo de un adulto elige sitios a ≥ 5 m (no a su lado; ronda 112)", tries == 0 || ok == tries, $"{ex.name}: {ok}/{tries}, el más cerca a {(tries > 0 ? worst.ToString("0.0") : "—")} m");
         }
 
         // ── (2026-11-11) LAS CRÍAS DEL RECINTO VAN A UN SITIO DE VERDAD ──

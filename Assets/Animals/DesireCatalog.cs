@@ -875,7 +875,7 @@ public static class DesireCatalog
         at = a != null ? a.transform.position : Vector3.zero;
         if (a == null || a.nav == null || !a.nav.isOnNavMesh) return false;
         float step = Mathf.Clamp(a.HomeRadius * 0.08f, 4f, 10f); Transform tr = a.transform;
-        return PickHop(a, () => LifeStage.WanderTarget(tr.position, tr.forward, step, UnityEngine.Random.insideUnitCircle), 3f, out at);
+        return PickHop(a, () => LifeStage.WanderTarget(tr.position, tr.forward, step, UnityEngine.Random.insideUnitCircle), ExploreMinHop, out at);
     }
 
     /// <summary>(2026-11-14, ronda 105) ¿El camino a <paramref name="to"/> es mucho más largo que la recta (&gt; 2× + 5 m)? (a cualquier distancia; Detour
@@ -901,6 +901,9 @@ public static class DesireCatalog
     }
 
     // Explorar: saltos de 4–10 m (según su territorio) sesgados hacia delante, con pausas cortas.
+    /// <summary>(2026-11-14, ronda 112) Salto mínimo del paseo de un adulto (antes 3 m). En la guarida los saltos de 2 m acababan junto a otro animal
+    /// y no echaban a andar (lobo #98: salto de 2,3 m, «deseada 0», 35 viajes). La cría, 3–5 m (antes 1,5–3).</summary>
+    public const float ExploreMinHop = 5f;
     static void Explore(Animal self, string key)
     {
         // LA CRÍA no se aleja: curiosea a 1–2,5 m de donde está, con pausas largas para mirar y olfatear (los polluelos de
@@ -910,7 +913,7 @@ public static class DesireCatalog
         if (self.lifeStage == LifeStage.child)
         {
             Transform ct = self.transform;
-            Stroll(self, key, () => ct.position + Ring(1.5f, 3f), 4f, 8f, 1.5f);   // (ronda 72: ≥ 1,5 m)
+            Stroll(self, key, () => ct.position + Ring(3f, 5f), 4f, 8f, 3f);   // (ronda 72: ≥ 1,5 m; ronda 112: la cría, 3–5 m)
             return;
         }
         float step = Mathf.Clamp(self.HomeRadius * 0.08f, 4f, 10f);
@@ -918,7 +921,7 @@ public static class DesireCatalog
         // (2026-11-11, vivo74) «HACIA DELANTE» ES HACIA DONDE IBA (el último salto), no hacia donde mira el cuerpo: al llegar se paraba girado y el
         // siguiente salto volvía por donde vino (zorros, bueyes, pingüinos: saltos de 11–13 m, 17–43 m en 20 s para 0–1,9 m netos).
         Trip et = TripOf(self, key);
-        Stroll(self, key, () => LifeStage.WanderTarget(tr.position, et.lastDir.sqrMagnitude > 0.5f ? et.lastDir : tr.forward, step, UnityEngine.Random.insideUnitCircle), 1f, 3f, 3f);   // (ronda 72: ≥ 3 m)
+        Stroll(self, key, () => LifeStage.WanderTarget(tr.position, et.lastDir.sqrMagnitude > 0.5f ? et.lastDir : tr.forward, step, UnityEngine.Random.insideUnitCircle), 1f, 3f, ExploreMinHop);   // (ronda 72: ≥ 3 m; ronda 112: ≥ 5 m)
     }
 
     // Su zona de casa: dentro, «volver a casa» no se siente.
