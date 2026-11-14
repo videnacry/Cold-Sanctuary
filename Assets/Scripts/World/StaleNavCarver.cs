@@ -17,6 +17,7 @@ public class StaleNavCarver : MonoBehaviour
 {
     public static int Carved { get; private set; }
     public static int DoorsMoved { get; private set; }
+    public static int MoundsSeen { get; private set; }
 
     /// <summary>(2026-11-14) Decorados que no se pisan y se tallan aunque el NavMesh ya los rodee (los montículos de tierra).</summary>
     static bool AlwaysCarve(string name) => name.StartsWith("Monticulo");
@@ -51,7 +52,11 @@ public class StaleNavCarver : MonoBehaviour
             // Suelos, losas, muros largos y el hielo (su cara de arriba es el suelo: max.y ≤ 0,35). Antes se descartaba todo lo
             // que bajara de −0,5 m, y con eso las RAÍCES grandes —inclinadas, se hunden en el hielo— no tallaban nunca: el
             // pingüino de (−134, 0, 18) seguía metiéndose en la «Raiz».
-            if (b.size.y < 0.4f || b.size.x > 10f || b.size.z > 10f || b.max.y < 0.35f) continue;
+            // (2026-11-15, ronda 115) Los montículos, sin los filtros de tamaño (el oso #55 cruzaba un «Monticulo» en (−105,0,−122): en la escena
+            // puede ser mayor de 10 m o estar más bajo, y se descartaba antes de mirar su nombre).
+            bool alwaysEarly = AlwaysCarve(c.name);
+            if (alwaysEarly) MoundsSeen++;
+            if (!alwaysEarly && (b.size.y < 0.4f || b.size.x > 10f || b.size.z > 10f || b.max.y < 0.35f)) continue;
             // (la PUERTA de un recinto de la Cría sí talla: está cerrada; sin hueco en el NavMesh, el recinto quedaba unido al
             // pasillo y a los demás recintos: las crías «alcanzaban» a las del recinto de al lado —huían, peleaban contra el
             // muro— y sus paseos apuntaban fuera)
