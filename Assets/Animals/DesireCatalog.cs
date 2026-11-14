@@ -453,7 +453,7 @@ public static class DesireCatalog
     {
         if (a == null) return "";
         Volition v = a.GetComponent<Volition>();
-        return $" · estado: dormido {a.asleep}, ocupado {a.busy}, alerta {a.aware}, peleando {a.fighting}, rescate: {RescueState(a)}" + (v != null ? $", decisiones {v.Choices} (saltadas: dormido {v.SkippedAsleep}, ocupado {v.SkippedBusy}, alerta {v.SkippedAware})" : "");
+        return $" · estado: {a.lifeStage}, dormido {a.asleep}, ocupado {a.busy}, alerta {a.aware}, peleando {a.fighting}, rescate: {RescueState(a)}" + (v != null ? $", decisiones {v.Choices} (saltadas: dormido {v.SkippedAsleep}, ocupado {v.SkippedBusy}, alerta {v.SkippedAware})" : "");
     }
     static readonly Dictionary<Animal, Trip> _trips = new Dictionary<Animal, Trip>();
     // (2026-11-13, ronda 88) EL VIGILANTE DE VIAJES. Going (quieto con camino, atascado, sin camino, llegó) solo corría cuando el deseo se volvía
@@ -701,7 +701,7 @@ public static class DesireCatalog
 
     static void Walk(Animal self, Trip t, Vector3 at)
     {
-        TripsStarted++; t.started++; Vector3 dir = at - self.transform.position; dir.y = 0f; if (dir.sqrMagnitude > 1f) t.lastDir = dir.normalized; t.goal = at; t.since = t.bestAt = Time.time; t.sinceFrame = t.bestFrame = Time.frameCount; t.best = float.MaxValue;
+        TripsStarted++; t.started++; Vector3 dir = at - self.transform.position; dir.y = 0f; if (dir.sqrMagnitude > 1f && (t.key == "explore" || t.key == "buscar pareja")) t.lastDir = dir.normalized;   // (2026-11-15, ronda 115) solo los paseos: la vuelta a casa (o el beber) le cambiaba el «hacia delante» al paseo siguiente t.goal = at; t.since = t.bestAt = Time.time; t.sinceFrame = t.bestFrame = Time.frameCount; t.best = float.MaxValue;
         // (ronda 92) El reloj de «quieto con camino» NO se pone a cero con cada viaje: los animales que empezaban un salto tras otro sin moverse
         // nunca llegaban a 1,5 s en el mismo viaje (FrozenTrips = 0 con decenas de animales a velocidad 0). FrozenStep lo pone a cero al andar.
         t.restNoSpot = false;
