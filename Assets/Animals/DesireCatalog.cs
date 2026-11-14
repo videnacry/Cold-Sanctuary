@@ -689,6 +689,21 @@ public static class DesireCatalog
         return nav.CalculatePath(to, p) && p.status == NavMeshPathStatus.PathComplete && p.corners.Length >= 2 && nav.SetPath(p);
     }
 
+    /// <summary>(2026-11-14) Para la madre y la cría (NurseCub, AwaitFeeding): ir al sitio y, si no hay camino completo hasta él (b2fe17d: Move ya
+    /// no lo pide en segundo plano), al punto más cercano al que sí se llega (el final del camino parcial), calculado al momento (SyncPath).
+    /// Así no se quedan quietas ante un sitio al que no se llega del todo (la guarida, la madre sobre algo).</summary>
+    public static int NearestFallbacks;
+    static bool MoveOrNearest(Animal self, Vector3 to)
+    {
+        if (Move(self, to)) return true;
+        NavMeshAgent nav = self.nav;
+        if (nav == null || !nav.isOnNavMesh) return false;
+        if (!NavReach.PartialEnd(self, to, out Vector3 end) || Flat(end - self.transform.position) < 0.5f) return false;
+        NearestFallbacks++;
+        self.Loco?.SetGait(false, 1f);
+        return SyncPath(self, nav, end, "deseo: al punto más cercano (camino parcial)");
+    }
+
     static bool Move(Animal self, Vector3 to)
     {
         NavMeshAgent nav = self.nav;
@@ -993,10 +1008,10 @@ public static class DesireCatalog
         // (2026-11-13, vivo75) …pero solo si la cría VIENE (se mueve): la que espera la toma quieta en casa (sin vínculo hacia la madre, AwaitFeeding
         // sin madre) no venía nunca, y la madre la esperaba a 2,5–4 m para siempre. Con la cría quieta, la madre va hasta ella.
         bool cubComing = cub.nav != null && cub.nav.isActiveAndEnabled && cub.nav.velocity.magnitude > 0.2f;
-        if (dc > 2.5f && dc <= 4f && !cubComing) { if (self.nav != null && self.nav.isOnNavMesh) Move(self, cub.transform.position); return; }
+        if (dc > 2.5f && dc <= 4f && !cubComing) { if (self.nav != null && self.nav.isOnNavMesh) MoveOrNearest(self, cub.transform.position); return; }
         if (dc > 2.5f && dc <= 4f) { if (self.nav != null && self.nav.isOnNavMesh) NavTrace.Reset(self, "nurse (espera a la cría)"); self.Loco?.Idle(1f); return; }
         if (dc <= 2.5f) { if (self.nav != null && self.nav.isOnNavMesh) NavTrace.Reset(self, "nurse (junto a la cría)"); FeedCub(self, cub); return; }
-        if (self.nav != null && self.nav.isOnNavMesh) Move(self, MeetPoint(self.transform.position, cub.transform.position));
+        if (self.nav != null && self.nav.isOnNavMesh) MoveOrNearest(self, MeetPoint(self.transform.position, cub.transform.position));
     }
 
     /// <summary>(2026-11-11) DONDE SE ENCUENTRAN la madre que va a dar la toma y la cría que la busca: lejos, a MEDIO CAMINO; cerca (≤ 4 m), donde
@@ -1199,7 +1214,7 @@ public static class DesireCatalog
         if (parent != null && Vector3.Distance(self.transform.position, parent.position) > 2f && parent.TryGetComponent(out NavMeshAgent pn) && pn.isActiveAndEnabled
             && pn.velocity.magnitude > 0.5f && Vector3.Dot(pn.velocity, self.transform.position - parent.position) <= 0f)
         { NavTrace.Reset(self, "AwaitFeeding (la madre se va: la llama)"); self.Loco?.Idle(1f); return; }
-        if (parent != null ? Vector3.Distance(self.transform.position, parent.position) > 2f : !atHome) Move(self, to);
+        if (parent != null ? Vector3.Distance(self.transform.position, parent.position) > 2f : !atHome) MoveOrNearest(self, to);
         else
         {
             NavTrace.Reset(self, "AwaitFeeding (pide la toma)"); self.Loco?.Idle(1f);
