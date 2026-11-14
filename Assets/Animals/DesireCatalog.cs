@@ -401,7 +401,7 @@ public static class DesireCatalog
     public static void Handover(Animal a, string newKey)
     {
         if (a == null) return;
-        if (_trips.TryGetValue(a, out Trip t) && t.going && t.key != newKey && !SameTrip(t.key, newKey)) t.going = false;
+        if (_trips.TryGetValue(a, out Trip t) && t.going && t.key != newKey && !SameTrip(t.key, newKey)) { t.going = false; Outcome(a, t, false, $"otro deseo («{newKey}»)"); }
         if (newKey != "habit" && a.TryGetComponent(out Habit h) && h.Active) h.Release();
         // (2026-11-14, ronda 99) La cría que deja de esperar la toma vuelve a la prioridad de evitación normal: el lobo #75, ya explorando, seguía
         // con la 20 de esperar (los demás lo rodeaban como si estuviera quieto).
@@ -470,7 +470,7 @@ public static class DesireCatalog
             if (a.death || a.asleep || a.busy) continue;
             Supervised++;
             bool on = a.nav != null && a.nav.isActiveAndEnabled && a.nav.isOnNavMesh;
-            if (!on) { t.going = false; continue; }
+            if (!on) { t.going = false; Outcome(a, t, false, "sin agente"); continue; }
             // Si el viaje acaba aquí (llegó, se atascó), la pausa de mirar y olfatear que ponía el paseo al volver.
             if (!Going(a, t) && !t.going) { t.pauseUntil = Mathf.Max(t.pauseUntil, Time.time + UnityEngine.Random.Range(1f, 3f)); a.Loco?.Idle(1f); }
         }
@@ -649,6 +649,15 @@ public static class DesireCatalog
             NavTrace.Mark(self, $"deseo: SetPath ({p.status}, {n} esquinas, {span:0.0} m)", to);
             if (p.status != NavMeshPathStatus.PathComplete || n < 2 || span < 0.5f) return false;   // (0,5 m: los pasitos de las crías del recinto son de 0,6–2,2 m)
             if (nav.SetPath(p) && (nav.hasPath || nav.pathPending)) return true;
+        }
+        // (2026-11-14, ronda 102) Sin camino ya calculado, se calcula AQUÍ (CalculatePath, al momento) y se pone con SetPath. SetDestination lo
+        // pide en segundo plano: con cientos de agentes quedaba «pendiente» > 3 s y el viaje fallaba (zorro #5: «último final=«pendiente»», y
+        // otra vez «pendiente True» en el viaje siguiente).
+        NavMeshPath own = new NavMeshPath();
+        if (nav.CalculatePath(to, own) && own.status == NavMeshPathStatus.PathComplete && own.corners.Length >= 2)
+        {
+            NavTrace.Mark(self, $"deseo: SetPath calculado ({own.corners.Length} esquinas)", to);
+            if (nav.SetPath(own) && nav.hasPath) return true;
         }
         NavTrace.Dest(self, nav, to, "deseo: SetDestination");
         return nav.hasPath || nav.pathPending;
