@@ -477,6 +477,10 @@ public static class DesireCatalog
     static int _rescueLogs;
     static readonly Dictionary<Animal, (Vector3 at, float since, int frame, float last)> _rescue = new Dictionary<Animal, (Vector3, float, int, float)>();
     static readonly Dictionary<Animal, string> _rescueWhy = new Dictionary<Animal, string>();
+    static readonly Dictionary<Animal, float> _wantSince = new Dictionary<Animal, float>();
+    /// <summary>(2026-11-14, ronda 107) ¿Es una cría que espera la toma en su sitio (ahí, a ≤ 3 m)? Empujada por los de su colonia o su guarida va y
+    /// vuelve a él: no es «dar vueltas» (pingüino #94, «rescate: espera la toma en su sitio»).</summary>
+    public static bool WaitingAtSpot(Animal a) => a != null && _homeWait.Contains(a);
     /// <summary>(2026-11-14) Lo último que dijo el rescate de este animal (por qué no, o cuánto lleva quieto).</summary>
     public static string RescueState(Animal a) => a != null && _rescueWhy.TryGetValue(a, out string w) ? w : "—";
     /// <summary>(2026-11-14, ronda 105) ¿Lo rescató el vigilante hace menos de <paramref name="secs"/> s? (JornadaTest: el salto de 3–6 m del rescate no es
@@ -496,7 +500,12 @@ public static class DesireCatalog
         bool idleDesire = desire == "" || desire == "nurse" || desire == "rest" || desire == "brood" || desire == "den" || desire == "incubate" || desire == "drink" || desire == "habit" || _homeWait.Contains(a);
         // (ronda 106) Por qué no se le rescata (TripInfo lo dice: el lobo #54 de la guarida no se rescató y no había forma de saber por qué).
         string no = idleDesire ? (_homeWait.Contains(a) ? "espera la toma en su sitio" : $"deseo «{desire}» sin andar") : a.death ? "muerto" : a.asleep ? "dormido" : a.busy ? "ocupado" : a.fighting ? "peleando" : (a.Forage != null && a.Forage.EatingNow) ? "comiendo" : null;
-        if (no != null) { _rescueWhy[a] = no; _rescue[a] = (pos, Time.time, Time.frameCount, r.last); return; }
+        // (ronda 107) Un estado de «no» NO pone a cero el reloj de quieto (solo moverse lo hace): un instante «ocupado» o sin deseo entre dos
+        // decisiones lo reiniciaba, y los atascados de la ronda 107 tenían «rescate: quieto 2 s, 1 fotogramas» tras 20 s sin moverse. Para
+        // rescatar, además, el estado de «quiere andar» tiene que durar ≥ 3 s (no se rescata a quien acaba de dejar de comer).
+        if (no != null) { _rescueWhy[a] = no; _wantSince.Remove(a); return; }
+        if (!_wantSince.TryGetValue(a, out float want)) _wantSince[a] = want = Time.time;
+        if (Time.time - want < 3f) { _rescueWhy[a] = $"quiere andar desde hace {Time.time - want:0} s"; return; }
         if (Time.time - r.since < RescueStill || Time.frameCount - r.frame < 5) { _rescueWhy[a] = $"quieto {Time.time - r.since:0} s, {Time.frameCount - r.frame} fotogramas"; return; }
         if (Time.time - r.last < RescueEvery) { RescueBlocked = "espera"; _rescueWhy[a] = $"rescatado hace {Time.time - r.last:0} s"; return; }
         for (int ring = 0; ring < 2; ring++)
