@@ -453,7 +453,7 @@ public static class DesireCatalog
     {
         if (a == null) return "";
         Volition v = a.GetComponent<Volition>();
-        return $" · estado: dormido {a.asleep}, ocupado {a.busy}, alerta {a.aware}, peleando {a.fighting}" + (v != null ? $", decisiones {v.Choices} (saltadas: dormido {v.SkippedAsleep}, ocupado {v.SkippedBusy}, alerta {v.SkippedAware})" : "");
+        return $" · estado: dormido {a.asleep}, ocupado {a.busy}, alerta {a.aware}, peleando {a.fighting}, rescate: {RescueState(a)}" + (v != null ? $", decisiones {v.Choices} (saltadas: dormido {v.SkippedAsleep}, ocupado {v.SkippedBusy}, alerta {v.SkippedAware})" : "");
     }
     static readonly Dictionary<Animal, Trip> _trips = new Dictionary<Animal, Trip>();
     // (2026-11-13, ronda 88) EL VIGILANTE DE VIAJES. Going (quieto con camino, atascado, sin camino, llegó) solo corría cuando el deseo se volvía
@@ -476,6 +476,9 @@ public static class DesireCatalog
     public static int SelfRecoveries, RescueNoSpot;
     static int _rescueLogs;
     static readonly Dictionary<Animal, (Vector3 at, float since, int frame, float last)> _rescue = new Dictionary<Animal, (Vector3, float, int, float)>();
+    static readonly Dictionary<Animal, string> _rescueWhy = new Dictionary<Animal, string>();
+    /// <summary>(2026-11-14) Lo último que dijo el rescate de este animal (por qué no, o cuánto lleva quieto).</summary>
+    public static string RescueState(Animal a) => a != null && _rescueWhy.TryGetValue(a, out string w) ? w : "—";
     /// <summary>(2026-11-14, ronda 105) ¿Lo rescató el vigilante hace menos de <paramref name="secs"/> s? (JornadaTest: el salto de 3–6 m del rescate no es
     /// «dar vueltas».)</summary>
     public static bool RescuedRecently(Animal a, float secs) => a != null && _rescue.TryGetValue(a, out var r) && r.last > 0f && Time.time - r.last < secs && SelfRecoveries > 0;
@@ -483,7 +486,7 @@ public static class DesireCatalog
     {
         if (a.nav == null || !a.nav.isActiveAndEnabled || !a.nav.isOnNavMesh) return;
         Vector3 pos = a.transform.position;
-        if (!_rescue.TryGetValue(a, out var r) || Flat(pos - r.at) > 0.5f) { _rescue[a] = (pos, Time.time, Time.frameCount, r.last); return; }
+        if (!_rescue.TryGetValue(a, out var r) || Flat(pos - r.at) > 0.5f) { _rescue[a] = (pos, Time.time, Time.frameCount, r.last); _rescueWhy[a] = "se mueve"; return; }
         string desire = a.TryGetComponent(out Volition v) ? v.LastDesire : "";
         // (ronda 105) Ni «nurse»: la madre que espera a 2,5–4 m a que su cría llegue está quieta a propósito (los rescates de la ronda 105 movían
         // 3 m cada 20 s a zorras con «nurse»).
@@ -491,9 +494,11 @@ public static class DesireCatalog
         // espera la toma en su sitio), salvo dormido, comiendo o peleando. Antes solo explore/homebound/mate/heel y sin «descanso a propósito»:
         // los lobos de la guarida y el zorro #86 quedaban fuera. Y 12 s y 5 fotogramas (con 8 fotogramas, a 2,5 s cada uno, la prueba los marcaba antes).
         bool idleDesire = desire == "" || desire == "nurse" || desire == "rest" || desire == "brood" || desire == "den" || desire == "incubate" || desire == "drink" || desire == "habit" || _homeWait.Contains(a);
-        if (idleDesire || a.death || a.asleep || a.busy || a.fighting || (a.Forage != null && a.Forage.EatingNow)) { _rescue[a] = (pos, Time.time, Time.frameCount, r.last); return; }
-        if (Time.time - r.since < RescueStill || Time.frameCount - r.frame < 5) return;
-        if (Time.time - r.last < RescueEvery) { RescueBlocked = "espera"; return; }
+        // (ronda 106) Por qué no se le rescata (TripInfo lo dice: el lobo #54 de la guarida no se rescató y no había forma de saber por qué).
+        string no = idleDesire ? (_homeWait.Contains(a) ? "espera la toma en su sitio" : $"deseo «{desire}» sin andar") : a.death ? "muerto" : a.asleep ? "dormido" : a.busy ? "ocupado" : a.fighting ? "peleando" : (a.Forage != null && a.Forage.EatingNow) ? "comiendo" : null;
+        if (no != null) { _rescueWhy[a] = no; _rescue[a] = (pos, Time.time, Time.frameCount, r.last); return; }
+        if (Time.time - r.since < RescueStill || Time.frameCount - r.frame < 5) { _rescueWhy[a] = $"quieto {Time.time - r.since:0} s, {Time.frameCount - r.frame} fotogramas"; return; }
+        if (Time.time - r.last < RescueEvery) { RescueBlocked = "espera"; _rescueWhy[a] = $"rescatado hace {Time.time - r.last:0} s"; return; }
         for (int ring = 0; ring < 2; ring++)
             for (int i = 0; i < 8; i++)
             {
@@ -1032,8 +1037,10 @@ public static class DesireCatalog
         // el camino mientras el que lleva acabe a < 2 m del destino nuevo.
         if (self.nav != null && self.nav.isOnNavMesh)
         {
-            Vector3 meet = MeetPoint(self.transform.position, cub.transform.position);
-            if (LongWay(self, meet)) meet = cub.transform.position;
+            // (ronda 106) Directo a la CRÍA siempre (la cría espera quieta mientras su madre anda: AwaitFeeding). El punto de encuentro a medio camino
+            // cambiaba cada segundo y, cuando LongWay no salía (sitio sin muestrear), el destino saltaba entre la cría y el medio camino: la zorra
+            // #89 iba y venía 180 m en 20 s por un camino de 92 m (4de779a no lo cubría).
+            Vector3 meet = cub.transform.position;
             if (self.nav.hasPath && Flat(self.nav.destination - meet) < 2f) return;
             MoveOrNearest(self, meet);
         }
