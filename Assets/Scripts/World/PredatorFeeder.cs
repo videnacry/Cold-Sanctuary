@@ -76,7 +76,13 @@ public class PredatorFeeder : MonoBehaviour
                 }
                 if (d <= safe + 1.5f) { Serve(a); return; }
                 PathMover pm = PathMover.Of(this);
-                pm.StepToward(PredatorRound.StandOff(a, transform.position), speed);
+                // (2026-11-14, ronda 111) UN SITIO FIJO DESDE EL QUE MIRARLO: el punto a su distancia se calculaba en cada fotograma en la línea entre el
+                // animal y él, y con algo en medio (el montículo de la madriguera del zorro, que ahora talla el NavMesh, ef6f847) el camino lo rodeaba,
+                // el punto giraba con él y daba vueltas al montículo (Nesvitor: 28 m en 20 s para 1,8 m netos en (−133,−120), «sigue a los
+                // depredadores»). Se fija al empezar y solo se recalcula si el animal se aleja > 3 m de donde estaba o a los 10 s.
+                if (_standAnimal != a || Flat(a.transform.position - _standFrom) > 3f || Time.time >= _standUntil)
+                { _standAnimal = a; _standFrom = a.transform.position; _standUntil = Time.time + 10f; _stand = PredatorRound.StandOff(a, transform.position); }
+                pm.StepToward(_stand, speed);
                 // (2026-11-11) Sin camino que llegue: a la cola en 12 s, no en 120 (vivo49: los turnos se iban siguiendo pingüinos por el hielo).
                 if (pm.NoRoute) { if (_noRouteSince < 0f) _noRouteSince = Time.time; else if (Time.time - _noRouteSince > NoRouteAfter) { PredatorRound.Requeue(_e, "no hay camino hasta él"); _e = null; _duty = Duty.Seek; return; } }
                 else _noRouteSince = -1f;
@@ -112,5 +118,6 @@ public class PredatorFeeder : MonoBehaviour
         _duty = Rations < 2 ? Duty.Load : Duty.Seek;
     }
 
+    Animal _standAnimal; Vector3 _standFrom, _stand; float _standUntil;   // (ronda 111) el sitio desde el que mirarlo, fijo
     static float Flat(Vector3 v) => new Vector2(v.x, v.z).magnitude;
 }
