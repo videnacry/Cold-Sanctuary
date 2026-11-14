@@ -470,7 +470,11 @@ public static class DesireCatalog
     // Para lo que quede, una regla de rescate: el animal que quiere moverse (explorar, volver a casa, buscar pareja, seguir a su madre), que no
     // duerme, no come, no pelea y no se ha movido 0,5 m en ≥ 15 s y ≥ 8 fotogramas, se coloca en el punto libre del NavMesh más cercano
     // (a 3–6 m, sin nadie a < 1,2 m). Como mucho una vez cada 30 s, y lo dice («[Fauna] rescate …»), para no tapar fallos sistemáticos.
-    public const float RescueStill = 12f, RescueEvery = 20f;
+    // (ronda 109) 12 s entre rescates (antes 20): el lobo #82 de la guarida, rescatado, volvió a quedarse quieto y a los 20 s la prueba lo marcó
+    // antes de que el rescate pudiera volver a actuar. Y el rescate REPETIDO (< 60 s del anterior) lo lleva más lejos (6–10 m) y gira su paseo
+    // hacia allí, para que no vuelva al mismo sitio.
+    public const float RescueStill = 12f, RescueEvery = 12f, RepeatWindow = 60f;
+    public static int RepeatRescues;
     /// <summary>(Diagnóstico) Por qué no se rescató al último que lo necesitaba (espera entre rescates, sin sitio libre).</summary>
     public static string RescueBlocked = "";
     public static int SelfRecoveries, RescueNoSpot;
@@ -508,16 +512,18 @@ public static class DesireCatalog
         if (Time.time - want < 3f) { _rescueWhy[a] = $"quiere andar desde hace {Time.time - want:0} s"; return; }
         if (Time.time - r.since < RescueStill || Time.frameCount - r.frame < 5) { _rescueWhy[a] = $"quieto {Time.time - r.since:0} s, {Time.frameCount - r.frame} fotogramas"; return; }
         if (Time.time - r.last < RescueEvery) { RescueBlocked = "espera"; _rescueWhy[a] = $"rescatado hace {Time.time - r.last:0} s"; return; }
+        bool repeat = r.last > 0f && Time.time - r.last < RepeatWindow;
         for (int ring = 0; ring < 2; ring++)
             for (int i = 0; i < 8; i++)
             {
-                Vector3 p = pos + Quaternion.Euler(0f, i * 45f + ring * 22.5f, 0f) * Vector3.forward * (ring == 0 ? 3f : 6f);
+                Vector3 p = pos + Quaternion.Euler(0f, i * 45f + ring * 22.5f, 0f) * Vector3.forward * (repeat ? (ring == 0 ? 6f : 10f) : (ring == 0 ? 3f : 6f));
                 if (!NavMesh.SamplePosition(p, out NavMeshHit hit, 2f, a.nav.areaMask) || CrowdedSpot(a, hit.position)) continue;
                 SelfRecoveries++;
                 string why = TripInfo(a);
-                if (_rescueLogs++ < 40) Debug.Log($"[Fauna] rescate «{a.name}» ({desire}): {Time.time - r.since:0} s sin moverse en ({pos.x:0.0},{pos.z:0.0}) → ({hit.position.x:0.0},{hit.position.z:0.0}) · {why} · {NavInfo(a)}");
+                if (repeat) RepeatRescues++;
+                if (_rescueLogs++ < 40) Debug.Log($"[Fauna] rescate {(repeat ? "REPETIDO " : "")}«{a.name}» ({desire}): {Time.time - r.since:0} s sin moverse en ({pos.x:0.0},{pos.z:0.0}) → ({hit.position.x:0.0},{hit.position.z:0.0}) · {why} · {NavInfo(a)}");
                 a.nav.ResetPath(); a.nav.Warp(hit.position);
-                if (_trips.TryGetValue(a, out Trip t)) { t.going = false; t.pauseUntil = 0f; t.failUntil = 0f; t.frozenSince = -1f; t.unfroze = false; }
+                if (_trips.TryGetValue(a, out Trip t)) { t.going = false; t.pauseUntil = 0f; t.failUntil = 0f; t.frozenSince = -1f; t.unfroze = false; if (repeat) { Vector3 away = hit.position - pos; away.y = 0f; if (away.sqrMagnitude > 0.01f) t.lastDir = away.normalized; } }
                 NavTrace.Mark(a, "rescate (punto libre cercano)", hit.position);
                 _rescue[a] = (hit.position, Time.time, Time.frameCount, Time.time);
                 return;

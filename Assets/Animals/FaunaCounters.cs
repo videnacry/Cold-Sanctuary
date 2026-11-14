@@ -23,7 +23,7 @@ public class FaunaCounters : MonoBehaviour
     public static string Line() =>
         $"[Fauna] contadores: StaleRepaths={DesireCatalog.StaleRepaths} NavReach.BadPaths={NavReach.BadPaths} HomeLegs={DesireCatalog.HomeLegs} (rectos {DesireCatalog.StraightLegs}) " +
         $"EdgeNudges={DesireCatalog.EdgeNudges} FrozenRestarts={DesireCatalog.FrozenRestarts} FrozenTrips={DesireCatalog.FrozenTrips} FrozenWarps={DesireCatalog.FrozenWarps} ComidasRepetidas={Forager.FeedSkipped} " +
-        $"BadPaths(viajes)={DesireCatalog.BadPaths} NoPathTrips={DesireCatalog.NoPathTrips} IdleRefused={ActionPrep.IdleRefused} Vigilados={DesireCatalog.Supervised} Rescates={DesireCatalog.SelfRecoveries} CaminosMantenidos={NavTrace.KeptPaths} AlMasCercano={DesireCatalog.NearestFallbacks} (sin sitio {DesireCatalog.RescueNoSpot}) " +
+        $"BadPaths(viajes)={DesireCatalog.BadPaths} NoPathTrips={DesireCatalog.NoPathTrips} IdleRefused={ActionPrep.IdleRefused} Vigilados={DesireCatalog.Supervised} Rescates={DesireCatalog.SelfRecoveries} (repetidos {DesireCatalog.RepeatRescues}) CaminosMantenidos={NavTrace.KeptPaths} AlMasCercano={DesireCatalog.NearestFallbacks} (sin sitio {DesireCatalog.RescueNoSpot}) " +
         $"PenWalker={PenWalker.Started}/{PenWalker.Arrived}/{PenWalker.Gave} (empezados/llegados/sin sitio)";
 
     void Update()
