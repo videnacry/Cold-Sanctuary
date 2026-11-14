@@ -109,7 +109,11 @@ public static class DesireCatalog
                 }
                 // JUNTO A LA PAREJA: el cortejo es ir y venir a su lado, con pausas (antes, a < 2 m, el paseo al azar de 8 m
                 // lo alejaba y el «ir hacia ella» lo traía: daba vueltas en círculo, 16 m en 20 s para 0,3 m netos).
-                if (mate != null && md <= 2.5f) { Transform mt = mate.transform; Stroll(self, "cortejo", () => mt.position + Ring(1.5f, 3f), 1.5f, 3.5f, 1.5f); return; }   // (ronda 72: el mínimo de un salto, 1,5 m)
+                // (2026-11-14, ronda 103) CON MARGEN: el oso de (−118, −123) estaba a ~2,5 m de su pareja y cada decisión cambiaba de «cortejo» (a ≤ 2,5 m) a
+                // «ir hacia la pareja» o «buscar pareja» (a más): al cambiar de clave su viaje se ponía a cero (pausa y fallo a 0) y no hacía ni lo uno ni lo
+                // otro, quieto 100–200 s, con otros animales encajados contra él. Ya en cortejo, sigue en cortejo hasta 4 m.
+                bool courting = _trips.TryGetValue(self, out Trip ct) && ct.key == "cortejo";
+                if (mate != null && md <= (courting ? CourtingKeep : 2.5f)) { Transform mt = mate.transform; Stroll(self, "cortejo", () => mt.position + Ring(1.5f, 3f), 1.5f, 3.5f, 1.5f); return; }   // (ronda 72: el mínimo de un salto, 1,5 m)
                 if (mate != null && GoTo(self, "mate", mate.transform.position)) return;
                 if (mate == null)
                 {
@@ -460,12 +464,49 @@ public static class DesireCatalog
     static readonly List<Animal> _superviseList = new List<Animal>();
     public static int Supervised;
     public static void SuperviseTrips() { if (Time.time < _superviseAt) return; _superviseAt = Time.time + 0.5f; SuperviseTripsNow(); }
+    // (2026-11-14, ronda 103) AUTORRECUPERACIÓN. Rondas 101–103: 13 «atascados» con «último final» variado (llegó 7, sin camino 4, pendiente 2),
+    // 2–5 por ronda entre más de 100 animales. Cinco de ellos (zorros #5 y #69, renos #42 y #76, oso #18) en el MISMO sitio, (−118, −123):
+    // un oso en cortejo quieto allí y otros animales pegados a él (a 0,0–0,8 m). Agentes encajados unos en otros: con camino y «deseada 0».
+    // Para lo que quede, una regla de rescate: el animal que quiere moverse (explorar, volver a casa, buscar pareja, seguir a su madre), que no
+    // duerme, no come, no pelea y no se ha movido 0,5 m en ≥ 15 s y ≥ 8 fotogramas, se coloca en el punto libre del NavMesh más cercano
+    // (a 3–6 m, sin nadie a < 1,2 m). Como mucho una vez cada 30 s, y lo dice («[Fauna] rescate …»), para no tapar fallos sistemáticos.
+    public const float RescueStill = 15f, RescueEvery = 30f;
+    public static int SelfRecoveries;
+    static int _rescueLogs;
+    static readonly Dictionary<Animal, (Vector3 at, float since, int frame, float last)> _rescue = new Dictionary<Animal, (Vector3, float, int, float)>();
+    static void SelfRecover(Animal a)
+    {
+        if (a.nav == null || !a.nav.isActiveAndEnabled || !a.nav.isOnNavMesh) return;
+        Vector3 pos = a.transform.position;
+        if (!_rescue.TryGetValue(a, out var r) || Flat(pos - r.at) > 0.5f) { _rescue[a] = (pos, Time.time, Time.frameCount, r.last); return; }
+        string desire = a.TryGetComponent(out Volition v) ? v.LastDesire : "";
+        bool wantsToMove = desire == "explore" || desire == "homebound" || desire == "mate" || desire == "heel";
+        if (!wantsToMove || a.death || a.asleep || a.busy || a.fighting || RestingByChoice(a) || PenWalker.Pausing(a)) { _rescue[a] = (pos, Time.time, Time.frameCount, r.last); return; }
+        if (Time.time - r.since < RescueStill || Time.frameCount - r.frame < 8 || Time.time - r.last < RescueEvery) return;
+        for (int ring = 0; ring < 2; ring++)
+            for (int i = 0; i < 8; i++)
+            {
+                Vector3 p = pos + Quaternion.Euler(0f, i * 45f + ring * 22.5f, 0f) * Vector3.forward * (ring == 0 ? 3f : 6f);
+                if (!NavMesh.SamplePosition(p, out NavMeshHit hit, 2f, a.nav.areaMask) || CrowdedSpot(a, hit.position)) continue;
+                SelfRecoveries++;
+                string why = TripInfo(a);
+                if (_rescueLogs++ < 40) Debug.Log($"[Fauna] rescate «{a.name}» ({desire}): {Time.time - r.since:0} s sin moverse en ({pos.x:0.0},{pos.z:0.0}) → ({hit.position.x:0.0},{hit.position.z:0.0}) · {why} · {NavInfo(a)}");
+                a.nav.ResetPath(); a.nav.Warp(hit.position);
+                if (_trips.TryGetValue(a, out Trip t)) { t.going = false; t.pauseUntil = 0f; t.failUntil = 0f; t.frozenSince = -1f; t.unfroze = false; }
+                NavTrace.Mark(a, "rescate (punto libre cercano)", hit.position);
+                _rescue[a] = (hit.position, Time.time, Time.frameCount, Time.time);
+                return;
+            }
+        _rescue[a] = (pos, Time.time, Time.frameCount, Time.time);   // (sin sitio libre: lo reintenta en 30 s)
+    }
+
     public static void SuperviseTripsNow()
     {
         _superviseList.Clear(); _superviseList.AddRange(_trips.Keys);
         foreach (Animal a in _superviseList)
         {
             if (a == null) { _trips.Remove(a); continue; }
+            SelfRecover(a);
             if (!_trips.TryGetValue(a, out Trip t) || !t.going) continue;
             if (a.death || a.asleep || a.busy) continue;
             Supervised++;
@@ -1083,6 +1124,8 @@ public static class DesireCatalog
     /// <summary>(2026-11-14) El sitio de espera de una cría en su casa: a <see cref="CubSpotRadius"/> m de su HomeOrigin, en un ángulo propio (de su
     /// id): dos crías de la misma guarida no esperan en el mismo punto.</summary>
     public const float CubSpotRadius = 2.5f;
+    /// <summary>(2026-11-14) Distancia a la pareja hasta la que sigue el cortejo una vez empezado (empieza a ≤ 2,5 m).</summary>
+    public const float CourtingKeep = 4f;
     /// <summary>(2026-11-14) Prioridad de evitación de la cría que espera la toma (más baja = más importante: los demás la rodean) y la normal.</summary>
     public const int WaitingPriority = 20, DefaultPriority = 50;
     public static Vector3 CubWaitSpot(Animal self) => CubWaitSpot(self.HomeOrigin, self.GetHashCode());
