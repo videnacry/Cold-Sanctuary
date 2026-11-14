@@ -33,16 +33,21 @@ public class Volition : MonoBehaviour
         // («da vueltas en círculo (homebound)»).
         // El LOD aquí, como mucho ×2: elegir es barato y la volición es lo ÚNICO que mueve al animal (el ciclo de vida ya no
         // lo pasea); con ×8 un animal lejano pasaba ~20 s parado entre un paseo y el siguiente.
+        // (2026-11-14, ronda 97) La decisión y el paso de cada segundo, por separado: antes eran «if … else if», y cuando la decisión tocaba en cada
+        // tick (pocos FPS con el tiempo rápido de las pruebas: 2–4 s por fotograma) el paso no corría nunca; si además la decisión solo encolaba el
+        // deseo (ActionQueue, que AcuteStressResponse añade) o no despachaba, el deseo de turno no se volvía a llamar (reno #20: «explore» sin
+        // llamar 21 s tras un salto fallido).
+        bool dispatched = false;
         if (Time.time >= _nextChoice)
         {
             _nextChoice = Time.time + baseSecs * Mathf.Min(2f, lod);
             if (self.asleep) SkippedAsleep++; else if (self.busy) SkippedBusy++; else if (self.aware) SkippedAware++;
-            else { Choices++; SelectAndDispatch(self); }
+            else { Choices++; dispatched = SelectAndDispatch(self); }
         }
         // ENTRE DECISIONES, el paseo sigue: el deseo de moverse que ganó (pasear, volver a casa, buscar pareja) se re-despacha
         // cada segundo (barato: su viaje no re-apunta a medio camino; solo encadena pausa → siguiente salto). Antes, al acabar
         // un salto, el animal esperaba quieto a la siguiente decisión (un minuto de juego o más): «atascado > 20 s».
-        else if (Time.time >= _nextStep && _last != null && Continues(_last.key) && !self.asleep && !self.busy && !self.aware)
+        if (StepDue(dispatched, Time.time, _nextStep, _last != null && Continues(_last.key), !self.asleep && !self.busy && !self.aware))
         {
             _nextStep = Time.time + 1f;
             // Solo mientras lo siga sintiendo. Sin esto, ya en casa seguía «volviendo a casa» cada segundo, y al estar encima del sitio
@@ -68,7 +73,12 @@ public class Volition : MonoBehaviour
     /// <summary>El último deseo que ganó (diagnóstico del censo).</summary>
     public string LastDesire => _last != null ? _last.key : "";
 
-    void SelectAndDispatch(Animal self)
+    /// <summary>(2026-11-14) ¿Toca re-despachar el deseo de turno? Si este tick no lo despachó ya la decisión, ha pasado su segundo, sigue un deseo
+    /// que se re-despacha (pasear, volver a casa, pareja, seguir a la madre) y el animal está libre.</summary>
+    public static bool StepDue(bool dispatchedNow, float now, float nextStep, bool continuing, bool free) => !dispatchedNow && now >= nextStep && continuing && free;
+
+    /// <returns>true si despachó el deseo directamente (no por la cola ni «nada que hacer»).</returns>
+    bool SelectAndDispatch(Animal self)
     {
         // ARENA de arbitraje (docs/consciousness-mechanics.md §4): los deseos COMPITEN; la resolución depende de los
         // STATS propios → personalidad. Se pondera por: NECESIDAD (drives) × HÁBITO (confianza-por-uso: lo practicado
@@ -92,7 +102,7 @@ public class Volition : MonoBehaviour
         }
 
         // Nada lo mueve ahora (saciado, en calma): deja de «querer» lo último (LastDesire vacío = descansa).
-        if (best == null) { if (_last != null) DesireCatalog.Handover(self, ""); _last = null; _lastScore = 0f; return; }
+        if (best == null) { if (_last != null) DesireCatalog.Handover(self, ""); _last = null; _lastScore = 0f; return false; }
 
         if (best != null)
         {
@@ -104,13 +114,16 @@ public class Volition : MonoBehaviour
             // bloqueado; pero ese reflejo es justo «la IA conduce»: el deseo se despacha DIRECTO. Antes se quedaba en
             // cola sin ejecutarse nunca → un animal con hambre/alerta ni comía ni hacía nada (fauna congelada, 2026-10-23).
             ActionQueue q = useQueue ? self.GetComponent<ActionQueue>() : null;
-            if (q != null && q.Own.Count > 0) best.Dispatch(self);
+            bool direct = false;
+            if (q != null && q.Own.Count > 0) { best.Dispatch(self); direct = true; }
             else if (q != null) { if (q.Player.Count == 0) q.EnqueuePlayer(best.Conjure(self)); }   // deseo → SUPRAHECHIZO en la cola
-            else best.Dispatch(self);
+            else { best.Dispatch(self); direct = true; }
             self.RecordUse(best.capability, true, 1f);   // el USO construye el hábito (confianza-por-uso, más rápido de joven)
             if (_last == null || _last.key != best.key) DesireCatalog.Handover(self, best.key);   // (2026-11-11) un solo dueño: el que gana
             _last = best; _lastScore = bestScore;
+            return direct;
         }
+        return false;
     }
 
     [Tooltip("Despachar los deseos POR LA ActionQueue (el ser 'lanza' sus acciones como el jugador). Si no hay cola, directo.")]
