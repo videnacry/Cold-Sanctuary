@@ -233,6 +233,13 @@ public class FaunaChecks : MonoBehaviour, ITestUnit
         TestProbe.Check("volición: si la decisión de este tick no despachó el deseo (solo lo encoló), el paso de cada segundo sí lo re-despacha",
             Volition.StepDue(false, 10f, 9f, true, true) && !Volition.StepDue(true, 10f, 9f, true, true) && !Volition.StepDue(false, 10f, 11f, true, true) && !Volition.StepDue(false, 10f, 9f, true, false));
 
+        // ── (2026-11-14, ronda 98) LOS SALTOS DE UN PASEO NO PASAN POR ENCIMA DE LAS CRÍAS QUE ESPERAN LA TOMA (a < 2,5 m) ──
+        TestProbe.Check("un salto que pasa junto a una cría que espera (a 1 m del tramo, o a 2 m de su final) se descarta; a 4 m o más allá del final, no",
+            DesireCatalog.PassesNear(Vector3.zero, new Vector3(10f, 0f, 0f), new Vector3(5f, 0f, 1f))
+            && DesireCatalog.PassesNear(Vector3.zero, new Vector3(10f, 0f, 0f), new Vector3(12f, 0f, 0f))
+            && !DesireCatalog.PassesNear(Vector3.zero, new Vector3(10f, 0f, 0f), new Vector3(5f, 0f, 4f))
+            && !DesireCatalog.PassesNear(Vector3.zero, new Vector3(10f, 0f, 0f), new Vector3(14f, 0f, 0f)));
+
         TestProbe.End();
     }
 }
