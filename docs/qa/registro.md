@@ -38,13 +38,13 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | MIC-10 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo |
 | MIC-11 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | MIC-12 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
-| FAU-01 | Probado (suite g99) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g99 TerritorioTest 80/0 |
+| FAU-01 | Probado (suite g99) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g99 TerritorioTest 80/0 |
 | ARB-15 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | MIC-13 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo |
 | JOR-03 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | JOR-04 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | MIC-14 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
-| MIC-15 | Probado (suite g66) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g66 PakalStoryTest 23/0 |
+| MIC-15 | Probado (suite g66) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g66 PakalStoryTest 23/0 |
 | MIC-16 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo |
 | ARB-16 | Sin probar | — | — | — | — | abierta en la auditoría: falta código |
 | ARB-17 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
@@ -74,12 +74,12 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | MIC-25 | Solo código | — | — | — | — | sin anotar en el checklist (auditoría); hay código |
 | JOR-05 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | JOR-06 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
-| ARB-23 | Probado (suite g74) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g74 InformaticaAulaTest 28/0 |
-| ARB-24 | Probado (suite g74) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g74 InformaticaAulaTest 28/0 |
+| ARB-23 | Probado (suite g74) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g74 InformaticaAulaTest 28/0 |
+| ARB-24 | Probado (suite g74) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g74 InformaticaAulaTest 28/0 |
 | NUC-01 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
-| MIC-26 | Probado (suite g76) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g76 AlertaPisoNuevoTest 13/0 |
-| ARB-25 | Probado (suite g75) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g75 CapacidadPisosTest 36/0 |
-| ARB-26 | Probado (suite g75) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g75 CapacidadPisosTest 36/0 |
+| MIC-26 | Probado (suite g76) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g76 AlertaPisoNuevoTest 13/0 |
+| ARB-25 | Probado (suite g75) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g75 CapacidadPisosTest 36/0 |
+| ARB-26 | Probado (suite g75) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g75 CapacidadPisosTest 36/0 |
 | JOR-07 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | MIC-27 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12; también runs/2026-11-10-0949-r34-retro.md |
 | MIC-28 | Probado (retro) | 2026-11-12 | 2ac2bbc | [runs/2026-11-12-2056-r66-retro.md](runs/2026-11-12-2056-r66-retro.md) | — | auditoría: verificado en vivo 2026-11-12; también runs/2026-11-12-2144-r67-retro.md, runs/2026-11-12-2314-r68-retro.md |
@@ -90,24 +90,24 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | JOR-10 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | MIC-29 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | MIC-30 | Solo código | — | — | — | HC-02 | auditoría: Sin verificar; una parte abierta |
-| PER-02 | Probado (suite g95) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g95 PersonajesReglasTest 12/0 |
+| PER-02 | Probado (suite g95) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g95 PersonajesReglasTest 12/0 |
 | JOR-11 | Sin probar | — | — | — | — | abierta en la auditoría: falta código |
 | ARB-27 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | NUC-02 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12; también runs/2026-11-08-2045-r30-retro.md |
 | MIC-31 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | MIC-32 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | MIC-33 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
-| UI-01 | Probado (suite g93) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g93 HudModalsTest 13/0 |
+| UI-01 | Probado (suite g93) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g93 HudModalsTest 13/0 |
 | YOG-02 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | ENE-01 | Solo código | — | — | — | — | auditoría: Sin verificar en vivo |
 | ENE-02 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | ENE-03 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | FAU-04 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
-| FAU-05 | Probado (suite g99) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g99 TerritorioTest 80/0 |
+| FAU-05 | Probado (suite g99) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g99 TerritorioTest 80/0 |
 | MIC-34 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | MIC-35 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | ARB-28 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
-| FAU-06 | Probado (suite g85) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g85 CadenaAlimenticiaTest 58/0 |
+| FAU-06 | Probado (suite g85) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g85 CadenaAlimenticiaTest 58/0 |
 | ARB-29 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | MIC-36 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | MIC-37 | Sin probar | — | — | — | — | abierta en la auditoría: falta código |
@@ -116,27 +116,27 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | MIC-38 | Solo código | — | — | — | — | auditoría: Sin verificar en vivo |
 | NUC-04 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | ARB-30 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
-| FAU-08 | Probado (suite g105) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g105 AlimentadorTest 44/0 |
+| FAU-08 | Probado (suite g105) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g105 AlimentadorTest 44/0 |
 | JOR-12 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | JOR-13 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
-| MIC-39 | Probado (suite g77) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g77 AsambleaTest 46/0 |
+| MIC-39 | Probado (suite g77) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g77 AsambleaTest 46/0 |
 | ARB-31 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | PER-03 | Solo código | — | — | — | — | auditoría: Hecho (doc); sin verificar |
 | ARB-32 | Solo código | — | — | — | — | auditoría: Sin verificar en vivo |
 | NUC-05 | Solo código | — | — | — | — | auditoría: Sin verificar en vivo |
-| FAU-09 | Probado (suite g85) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g85 CadenaAlimenticiaTest 58/0 |
-| ARB-33 | Probado (suite g103) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g103 ProduccionTest 16/0 |
+| FAU-09 | Probado (suite g85) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g85 CadenaAlimenticiaTest 58/0 |
+| ARB-33 | Probado (suite g103) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g103 ProduccionTest 16/0 |
 | FAU-10 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | NUC-06 | Solo código | — | — | — | — | auditoría: Sin verificar en vivo |
 | JOR-14 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | NUC-07 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | NUC-08 | Sin probar | — | — | — | — | sin anotar en el checklist (auditoría); sin código localizado |
-| FAU-11 | Probado (suite g108) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g108 IcebergVidaTest 14/0 |
-| NUC-09 | Probado (suite g110) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g110 AereoTest 27/0 |
-| FAU-12 | Probado (suite g111) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g111 FaunaFriaTest 22/0 |
-| ARB-34 | Probado (suite g91) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g91 GuardRoomTest 45/0 |
+| FAU-11 | Probado (suite g108) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g108 IcebergVidaTest 14/0 |
+| NUC-09 | Probado (suite g110) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g110 AereoTest 27/0 |
+| FAU-12 | Probado (suite g111) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g111 FaunaFriaTest 22/0 |
+| ARB-34 | Probado (suite g91) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g91 GuardRoomTest 45/0 |
 | ARB-35 | Solo código | — | — | — | — | auditoría: Sin verificar en vivo |
-| ARB-36 | Probado (suite g91) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g91 GuardRoomTest 45/0 |
+| ARB-36 | Probado (suite g91) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g91 GuardRoomTest 45/0 |
 | ARB-37 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | ARB-38 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | REN-02 | Sin probar | — | — | — | — | sin anotar en el checklist (auditoría); sin código localizado |
@@ -144,9 +144,9 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | FAU-13 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | NUC-10 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | JOR-16 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
-| ARB-39 | Probado (suite g75) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g75 CapacidadPisosTest 36/0 |
+| ARB-39 | Probado (suite g75) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g75 CapacidadPisosTest 36/0 |
 | PER-04 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12; también runs/2026-11-08-1136-r23-retro.md |
-| PER-05 | Probado (suite g95) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g95 PersonajesReglasTest 12/0 |
+| PER-05 | Probado (suite g95) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g95 PersonajesReglasTest 12/0 |
 | ARB-40 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12; también runs/2026-11-08-1136-r23-retro.md |
 | JOR-17 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | ARB-41 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12; también runs/2026-11-09-1823-r31-retro.md |
@@ -167,11 +167,11 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | ARB-52 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | ARB-53 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | ARB-54 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
-| ARB-55 | Probado (suite g75) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g75 CapacidadPisosTest 36/0 |
-| ARB-56 | Probado (suite g77) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g77 AsambleaTest 46/0 |
+| ARB-55 | Probado (suite g75) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g75 CapacidadPisosTest 36/0 |
+| ARB-56 | Probado (suite g77) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g77 AsambleaTest 46/0 |
 | ARB-57 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
-| ARB-58 | Probado (suite g91) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g91 GuardRoomTest 45/0 |
-| MIC-40 | Probado (suite g60) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g60 BruceLeeStoryTest 49/0 |
+| ARB-58 | Probado (suite g91) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g91 GuardRoomTest 45/0 |
+| MIC-40 | Probado (suite g60) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g60 BruceLeeStoryTest 49/0 |
 | MIC-41 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | MIC-42 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | MIC-43 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
@@ -183,19 +183,19 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | MIC-49 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | MIC-50 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | MIC-51 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
-| MIC-52 | Probado (suite g77) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g77 AsambleaTest 46/0 |
+| MIC-52 | Probado (suite g77) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g77 AsambleaTest 46/0 |
 | MIC-53 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
-| ARB-59 | Probado (suite g53) | 2026-11-14 | 15021c8 | [runs/2026-11-14-0332-r98-grupos-vivo.md](runs/2026-11-14-0332-r98-grupos-vivo.md) | — | r98: g53 TreeOfFieldsTest 46/0 |
-| ARB-60 | Probado (suite g53) | 2026-11-14 | 15021c8 | [runs/2026-11-14-0332-r98-grupos-vivo.md](runs/2026-11-14-0332-r98-grupos-vivo.md) | — | r98: g53 TreeOfFieldsTest 46/0 |
-| ARB-61 | Probado (suite g53) | 2026-11-14 | 15021c8 | [runs/2026-11-14-0332-r98-grupos-vivo.md](runs/2026-11-14-0332-r98-grupos-vivo.md) | — | r98: g53 TreeOfFieldsTest 46/0 |
+| ARB-59 | Probado (suite g53) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g53 TreeOfFieldsTest 46/0 |
+| ARB-60 | Probado (suite g53) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g53 TreeOfFieldsTest 46/0 |
+| ARB-61 | Probado (suite g53) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g53 TreeOfFieldsTest 46/0 |
 | ARB-62 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | ARB-63 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | ARB-64 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | ARB-65 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | ARB-66 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | ARB-67 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
-| ARB-68 | Probado (suite g53) | 2026-11-14 | 15021c8 | [runs/2026-11-14-0332-r98-grupos-vivo.md](runs/2026-11-14-0332-r98-grupos-vivo.md) | — | r98: g53 TreeOfFieldsTest 46/0 |
-| ARB-69 | Probado (suite g53) | 2026-11-14 | 15021c8 | [runs/2026-11-14-0332-r98-grupos-vivo.md](runs/2026-11-14-0332-r98-grupos-vivo.md) | — | r98: g53 TreeOfFieldsTest 46/0 |
+| ARB-68 | Probado (suite g53) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g53 TreeOfFieldsTest 46/0 |
+| ARB-69 | Probado (suite g53) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g53 TreeOfFieldsTest 46/0 |
 | ARB-70 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | ARB-71 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | ARB-72 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
@@ -207,7 +207,7 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | ARB-78 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | ARB-79 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | ARB-80 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
-| ARB-81 | Probado (suite g110) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g110 AereoTest 27/0 |
+| ARB-81 | Probado (suite g110) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g110 AereoTest 27/0 |
 | ARB-82 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | ARB-83 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | ARB-84 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
@@ -221,7 +221,7 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | ARB-92 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | ARB-93 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | ARB-94 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
-| ARB-95 | Probado (suite g53) | 2026-11-14 | 15021c8 | [runs/2026-11-14-0332-r98-grupos-vivo.md](runs/2026-11-14-0332-r98-grupos-vivo.md) | — | r98: g53 TreeOfFieldsTest 46/0 |
+| ARB-95 | Probado (suite g53) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g53 TreeOfFieldsTest 46/0 |
 | ARB-96 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | HOS-05 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | HOS-06 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
@@ -229,39 +229,39 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | HOS-08 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | HOS-09 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | MIC-54 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
-| MIC-55 | Probado (suite g60) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g60 BruceLeeStoryTest 49/0 |
+| MIC-55 | Probado (suite g60) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g60 BruceLeeStoryTest 49/0 |
 | MIC-56 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
-| MIC-57 | Probado (suite g60) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g60 BruceLeeStoryTest 49/0 |
+| MIC-57 | Probado (suite g60) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g60 BruceLeeStoryTest 49/0 |
 | MIC-58 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | MIC-59 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | MIC-60 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
-| MIC-61 | Probado (suite g13) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g13 IdealStateTest 9/0 |
+| MIC-61 | Probado (suite g13) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g13 IdealStateTest 9/0 |
 | MIC-62 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | MIC-63 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
-| MIC-64 | Probado (suite g63) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g63 MicroBuildRulesTest 16/0 |
+| MIC-64 | Probado (suite g63) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g63 MicroBuildRulesTest 16/0 |
 | MIC-65 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | MIC-66 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | MIC-67 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
-| MIC-68 | Probado (suite g11) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g11 ObservationTest 4/0 |
-| MIC-69 | Probado (suite g12) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g12 StateSpellsTest 6/0 |
+| MIC-68 | Probado (suite g11) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g11 ObservationTest 4/0 |
+| MIC-69 | Probado (suite g12) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g12 StateSpellsTest 6/0 |
 | MIC-70 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | MIC-71 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | MIC-72 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
-| MIC-73 | Probado (suite g63) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g63 MicroBuildRulesTest 16/0 |
-| MIC-74 | Probado (suite g63) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g63 MicroBuildRulesTest 16/0 |
-| MIC-75 | Probado (suite g63) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g63 MicroBuildRulesTest 16/0 |
+| MIC-73 | Probado (suite g63) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g63 MicroBuildRulesTest 16/0 |
+| MIC-74 | Probado (suite g63) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g63 MicroBuildRulesTest 16/0 |
+| MIC-75 | Probado (suite g63) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g63 MicroBuildRulesTest 16/0 |
 | MIC-76 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
-| MIC-77 | Probado (suite g9) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g9 RiverCurrentTest 5/0 |
-| MIC-78 | Probado (suite g9) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g9 RiverCurrentTest 5/0 |
-| MIC-79 | Probado (suite g10) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g10 DietPreferenceTest 5/0 |
-| MIC-80 | Probado (suite g7) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g7 StarvationTest 2/0 |
-| MIC-81 | Probado (suite g8) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g8 SleepTest 4/0 |
-| MIC-82 | Probado (suite g15) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g15 YogaTest 4/0 |
+| MIC-77 | Probado (suite g9) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g9 RiverCurrentTest 5/0 |
+| MIC-78 | Probado (suite g9) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g9 RiverCurrentTest 5/0 |
+| MIC-79 | Probado (suite g10) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g10 DietPreferenceTest 5/0 |
+| MIC-80 | Probado (suite g7) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g7 StarvationTest 2/0 |
+| MIC-81 | Probado (suite g8) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g8 SleepTest 4/0 |
+| MIC-82 | Probado (suite g15) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g15 YogaTest 4/0 |
 | FAU-15 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | FAU-16 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | FAU-17 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | FAU-18 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
-| FAU-19 | Probado (suite g11) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g11 ObservationTest 4/0 |
+| FAU-19 | Probado (suite g11) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g11 ObservationTest 4/0 |
 | JOR-19 | Parcial | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | B-01 | g50 con 4 FAIL en la suite 63 (fauna atascada, B-01, y las misiones de Kushal) |
 | JOR-20 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | JOR-21 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
@@ -276,7 +276,7 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | JOR-30 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | JOR-31 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | JOR-32 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
-| JOR-33 | Probado (suite g75) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g75 CapacidadPisosTest 36/0 |
+| JOR-33 | Probado (suite g75) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g75 CapacidadPisosTest 36/0 |
 | JOR-34 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | JOR-35 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | JOR-36 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
@@ -298,52 +298,52 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | JOR-52 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | JOR-53 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | JOR-54 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
-| PER-06 | Probado (suite g95) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g95 PersonajesReglasTest 12/0 |
+| PER-06 | Probado (suite g95) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g95 PersonajesReglasTest 12/0 |
 | PER-07 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | PER-08 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | PER-09 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | PER-10 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | PER-11 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
-| PER-12 | Probado (suite g95) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g95 PersonajesReglasTest 12/0 |
-| REN-05 | Probado (suite g112) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g112 LoteEstaticoTest 16/0 |
+| PER-12 | Probado (suite g95) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g95 PersonajesReglasTest 12/0 |
+| REN-05 | Probado (suite g112) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g112 LoteEstaticoTest 16/0 |
 | REN-06 | Parcial | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | B-01 | g50 con 4 FAIL en la suite 63 (fauna atascada, B-01, y las misiones de Kushal) |
 | REN-07 | Parcial | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | B-01 | g50 con 4 FAIL en la suite 63 (fauna atascada, B-01, y las misiones de Kushal) |
-| FAU-20 | Probado (suite g99) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g99 TerritorioTest 80/0 |
-| FAU-21 | Probado (suite g99) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g99 TerritorioTest 80/0 |
-| FAU-22 | Probado (suite g99) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g99 TerritorioTest 80/0 |
-| FAU-23 | Probado (suite g99) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g99 TerritorioTest 80/0 |
-| FAU-24 | Probado (suite g99) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g99 TerritorioTest 80/0 |
+| FAU-20 | Probado (suite g99) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g99 TerritorioTest 80/0 |
+| FAU-21 | Probado (suite g99) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g99 TerritorioTest 80/0 |
+| FAU-22 | Probado (suite g99) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g99 TerritorioTest 80/0 |
+| FAU-23 | Probado (suite g99) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g99 TerritorioTest 80/0 |
+| FAU-24 | Probado (suite g99) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g99 TerritorioTest 80/0 |
 | FAU-25 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
-| FAU-26 | Probado (suite g99) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g99 TerritorioTest 80/0 |
+| FAU-26 | Probado (suite g99) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g99 TerritorioTest 80/0 |
 | FAU-27 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
-| FAU-28 | Probado (suite g99) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g99 TerritorioTest 80/0 |
-| FAU-29 | Probado (suite g105) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g105 AlimentadorTest 44/0 |
+| FAU-28 | Probado (suite g99) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g99 TerritorioTest 80/0 |
+| FAU-29 | Probado (suite g105) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g105 AlimentadorTest 44/0 |
 | FAU-30 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
-| PER-13 | Probado (suite g99) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g99 TerritorioTest 80/0 |
-| PER-14 | Probado (suite g99) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g99 TerritorioTest 80/0 |
+| PER-13 | Probado (suite g99) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g99 TerritorioTest 80/0 |
+| PER-14 | Probado (suite g99) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g99 TerritorioTest 80/0 |
 | PER-15 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
-| PER-16 | Probado (suite g99) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g99 TerritorioTest 80/0 |
-| PER-17 | Probado (suite g99) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g99 TerritorioTest 80/0 |
+| PER-16 | Probado (suite g99) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g99 TerritorioTest 80/0 |
+| PER-17 | Probado (suite g99) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g99 TerritorioTest 80/0 |
 | PER-18 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | PER-19 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
-| PER-20 | Probado (suite g108) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g108 IcebergVidaTest 14/0 |
-| PER-21 | Probado (suite g103) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g103 ProduccionTest 16/0 |
+| PER-20 | Probado (suite g108) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g108 IcebergVidaTest 14/0 |
+| PER-21 | Probado (suite g103) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g103 ProduccionTest 16/0 |
 | PER-22 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
-| CV-01 | Probado (suite g50) | 2026-11-14 | 15021c8 | [runs/2026-11-14-0332-r98-grupos-vivo.md](runs/2026-11-14-0332-r98-grupos-vivo.md) | — | r98: check [CV-01] PASS ×3 |
+| CV-01 | Probado (suite g50) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: check [CV-01] PASS ×5 |
 | CV-02 | Sin probar | — | — | — | — | caso nuevo: falta el Check con [CV-02] (lo añade quien toque la prueba) |
 | CV-03 | Probado (suite g50) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: check [CV-03] PASS ×1 |
-| CV-04 | Probado (suite g1) | 2026-11-14 | 15021c8 | [runs/2026-11-14-0332-r98-grupos-vivo.md](runs/2026-11-14-0332-r98-grupos-vivo.md) | — | r98: check [CV-04] PASS ×1 |
-| CV-05 | Probado (suite g1) | 2026-11-14 | 15021c8 | [runs/2026-11-14-0332-r98-grupos-vivo.md](runs/2026-11-14-0332-r98-grupos-vivo.md) | — | r98: check [CV-05] PASS ×1 |
-| CV-06 | Probado (suite g53) | 2026-11-14 | 15021c8 | [runs/2026-11-14-0332-r98-grupos-vivo.md](runs/2026-11-14-0332-r98-grupos-vivo.md) | — | r98: check [CV-06] PASS ×1 |
-| CV-07 | Probado (suite g50) | 2026-11-14 | 15021c8 | [runs/2026-11-14-0332-r98-grupos-vivo.md](runs/2026-11-14-0332-r98-grupos-vivo.md) | — | r98: check [CV-07] PASS ×3 |
+| CV-04 | Probado (suite g1) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: check [CV-04] PASS ×2 |
+| CV-05 | Probado (suite g1) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: check [CV-05] PASS ×2 |
+| CV-06 | Probado (suite g53) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: check [CV-06] PASS ×1 |
+| CV-07 | Probado (suite g50) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: check [CV-07] PASS ×4 |
 | CV-08 | Sin probar | — | — | — | — | caso nuevo: falta el Check con [CV-08] (lo añade quien toque la prueba) |
 | CV-09 | Sin probar | — | — | — | — | caso nuevo: falta el Check con [CV-09] (lo añade quien toque la prueba) |
 | CV-10 | Sin probar | — | — | — | — | caso nuevo: falta el Check con [CV-10] (lo añade quien toque la prueba) |
-| CV-11 | Probado (suite g105) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: check [CV-11] PASS ×3 |
+| CV-11 | Probado (suite g105) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: check [CV-11] PASS ×3 |
 | CV-12 | Sin probar | — | — | — | — | caso nuevo: falta el Check con [CV-12] (lo añade quien toque la prueba) |
 | CV-13 | Sin probar | — | — | — | — | caso nuevo: falta el Check con [CV-13] (lo añade quien toque la prueba) |
-| CV-14 | Probado (suite g50) | 2026-11-14 | 15021c8 | [runs/2026-11-14-0332-r98-grupos-vivo.md](runs/2026-11-14-0332-r98-grupos-vivo.md) | — | r98: check [CV-14] PASS ×3 |
-| CV-15 | Probado (suite g50) | 2026-11-14 | 15021c8 | [runs/2026-11-14-0332-r98-grupos-vivo.md](runs/2026-11-14-0332-r98-grupos-vivo.md) | — | r98: check [CV-15] PASS ×2 |
+| CV-14 | Probado (suite g50) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: check [CV-14] PASS ×3 |
+| CV-15 | Probado (suite g50) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: check [CV-15] PASS ×2 |
 | OP-01 | No aplica | — | — | — | — | regla de proceso: la mira el probador en cada run log |
 | OP-02 | No aplica | — | — | — | — | regla de proceso: la mira el probador en cada run log |
 | OP-03 | No aplica | — | — | — | — | regla de proceso: la mira el probador en cada run log |
@@ -353,11 +353,11 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | OP-07 | No aplica | — | — | — | — | regla de proceso: la mira el probador en cada run log |
 | OP-08 | No aplica | — | — | — | — | regla de proceso: la mira el probador en cada run log |
 | MIC-83 | Sin probar | — | — | — | — | añadido a mano el 2026-11-13; su grupo pasó en la suite 63 (d0542db): el probador decide si pasa a Probado |
-| PER-23 | Probado (suite g95) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g95 PersonajesReglasTest 12/0 |
-| PER-24 | Probado (suite g103) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g103 ProduccionTest 16/0 |
-| FAU-31 | Probado (suite g99) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g99 TerritorioTest 80/0 |
-| FAU-32 | Probado (suite g85) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g85 CadenaAlimenticiaTest 58/0 |
-| REN-08 | Probado (suite g118) | 2026-11-13 | cfd8be3 | [runs/2026-11-13-1731-r86-rapida-QA.md](runs/2026-11-13-1731-r86-rapida-QA.md) | — | r86: g118 QaCheckTest 44/0 |
+| PER-23 | Probado (suite g95) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g95 PersonajesReglasTest 12/0 |
+| PER-24 | Probado (suite g103) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g103 ProduccionTest 16/0 |
+| FAU-31 | Probado (suite g99) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g99 TerritorioTest 80/0 |
+| FAU-32 | Probado (suite g85) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g85 CadenaAlimenticiaTest 58/0 |
+| REN-08 | Probado (suite g118) | 2026-11-14 | 7ae301b | [runs/2026-11-14-0425-r99-rapida-grupos-vivo.md](runs/2026-11-14-0425-r99-rapida-grupos-vivo.md) | — | r99: g118 QaCheckTest 44/0 |
 
 **Recuento:** No aplica 8 · Parcial 9 · Probado (retro) 285 · Sin probar 31 · Solo código 16 · total 349.
 
