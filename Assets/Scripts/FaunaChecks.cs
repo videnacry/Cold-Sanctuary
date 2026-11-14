@@ -120,10 +120,16 @@ public class FaunaChecks : MonoBehaviour, ITestUnit
 
         // ── (2026-11-13) QUIETO CON CAMINO (vivo75: 17 «atascado > 20 s» con camino, velocidad pedida 2–5 y velocidad 0,00) ────────────────────
         // A los 1,5 s quieto con camino se reinicia el agente (1); si vuelve a quedarse quieto, se deja el viaje (2). Andar o no querer andar, nada.
-        string fz = DesireCatalog.FrozenStepsForTest((true, 0f, 0f), (true, 0f, 1f), (true, 0f, 1.6f), (true, 0f, 2f), (true, 0f, 3.6f));
-        TestProbe.Check("quieto con camino: a los 1,5 s se reinicia el agente y, si sigue quieto, se deja el viaje", fz == "0,0,1,0,2", fz);
-        string fm = DesireCatalog.FrozenStepsForTest((true, 0f, 0f), (true, 1f, 1f), (true, 0f, 2f), (true, 0f, 3f), (false, 0f, 9f));
+        // (2026-11-14, ronda 96) Y EN FOTOGRAMAS TAMBIÉN: con el tiempo ×6 de las pruebas y pocos FPS cada fotograma son 2–4 s de juego (sonda96:
+        // media 1,9 s, máximo 3,8 s); el agente hace el salto entero ENTRE dos fotogramas y en medio se le ve «quieto». Hace falta ≥ 1,5 s Y
+        // ≥ 4 fotogramas sin moverse el cuerpo (más de 0,2 m).
+        string fz = DesireCatalog.FrozenStepsForTest((true, 0f, 0f, 0), (true, 0f, 0.5f, 1), (true, 0f, 1f, 2), (true, 0f, 1.6f, 3), (true, 0f, 2.1f, 4),
+                                                     (true, 0f, 2.6f, 5), (true, 0f, 3.1f, 6), (true, 0f, 3.6f, 7), (true, 0f, 4.2f, 9));
+        TestProbe.Check("quieto con camino: a ≥ 1,5 s y ≥ 4 fotogramas se le devuelve el paso y, si sigue quieto, se deja el viaje", fz == "0,0,0,0,1,0,0,0,2", fz);
+        string fm = DesireCatalog.FrozenStepsForTest((true, 0f, 0f, 0), (true, 1f, 1f, 1), (true, 0f, 2f, 2), (true, 0f, 3f, 3), (false, 0f, 9f, 4));
         TestProbe.Check("…andando (o sin querer andar) no cuenta como quieto", fm == "0,0,0,0,0", fm);
+        string fb = DesireCatalog.FrozenStepsForTest((true, 0f, 0f, 0), (true, 0f, 2f, 1), (true, 0f, 4f, 2));
+        TestProbe.Check("…a 2 s de juego por fotograma, dos fotogramas sin moverse no es estar quieto (tiempo rápido de las pruebas)", fb == "0,0,0", fb);
         // (2026-11-13, ronda 78) CASA LEJOS, POR TRAMOS: el punto a 35 m a lo largo del camino (0,0,0) → (10,0,0) → (10,0,30) es (10,0,25); a 50 m no hay.
         bool along = DesireCatalog.PointAlong(new[] { Vector3.zero, new Vector3(10f, 0f, 0f), new Vector3(10f, 0f, 30f) }, DesireCatalog.HomeLeg, out Vector3 legAt);
         bool beyond = DesireCatalog.PointAlong(new[] { Vector3.zero, new Vector3(10f, 0f, 0f), new Vector3(10f, 0f, 30f) }, 50f, out _);

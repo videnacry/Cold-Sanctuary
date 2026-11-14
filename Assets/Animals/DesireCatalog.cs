@@ -306,13 +306,18 @@ public static class DesireCatalog
     // ══ MOVIMIENTO DE LOS DESEOS: siempre a sitios ALCANZABLES, con tope y sin re-apuntar en cada decisión ══════════════
     // Un «viaje» por animal: hacia dónde va, por qué deseo, desde cuándo y cuánto ha avanzado. Si en 5 s no se acerca (un muro,
     // otro animal en medio) o tarda más de 40 s, lo deja; ese deseo no vuelve a intentar ese viaje en unos segundos.
-    class Trip { public string key; public Vector3 goal; public bool going, restNoSpot, unfroze; public Vector3 lastDir; public float since, best, bestAt, pauseUntil, failUntil, lastCall, reissueAt, frozenSince = -1f, unfrozeWarpAt; public int calls, started; }
+    class Trip { public string key; public Vector3 goal; public bool going, restNoSpot, unfroze; public Vector3 lastDir; public float since, best, bestAt, pauseUntil, failUntil, lastCall, reissueAt, frozenSince = -1f, unfrozeWarpAt; public int calls, started, sinceFrame, bestFrame, frozenFrame; public Vector3 frozenPos; }
     /// <summary>(2026-11-11) ¿Descansa a propósito? La cría del recinto sin sitio a 1,5–5 m (PenGoal) se queda mirando: no está «atascada».
     /// (2026-11-13, vivo75) Y cualquier paseo sin salto posible (Stroll: PickHop no encuentra nada): se para y mira, como la cría del recinto.</summary>
     public static bool RestingByChoice(Animal a) => a != null && _trips.TryGetValue(a, out Trip t) && t.restNoSpot && !t.going;
 
     /// <summary>(2026-11-13, vivo75) Segundos con camino, velocidad pedida y sin moverse antes de reiniciar el agente (y, a la segunda, dejar el viaje).</summary>
     const float FrozenSeconds = 1.5f;
+    /// <summary>(2026-11-14, ronda 96) Fotogramas mínimos de cada tope de un viaje (quieto, atascado, sin camino, pendiente): con el tiempo ×6 de
+    /// las pruebas un fotograma son hasta 4 s de juego, y un tope en segundos saltaba en 1–2 fotogramas, antes de que el agente pudiera andar.</summary>
+    public const int MinFrames = 4;
+    /// <summary>¿Han pasado <paramref name="secs"/> s de juego Y <see cref="MinFrames"/> fotogramas desde (<paramref name="since"/>, <paramref name="frame"/>)?</summary>
+    static bool Past(float since, int frame, float secs) => Time.time - since > secs && Time.frameCount - frame >= MinFrames;
     /// <summary>Agentes reiniciados por estar quietos con camino, y viajes dejados por seguir quietos tras reiniciar (diagnóstico).</summary>
     public static int FrozenRestarts, FrozenTrips, EdgeNudges, StaleRepaths, FrozenWarps;
     static int _frozenLogs;
@@ -337,20 +342,22 @@ public static class DesireCatalog
     }
     /// <summary>(2026-11-13) QUIETO CON CAMINO: 0 = anda o no le toca andar; 1 = lleva más de <see cref="FrozenSeconds"/> quieto (primera vez:
     /// reiniciar el agente); 2 = otra vez quieto tras reiniciarlo (dejar el viaje y probar otra dirección).</summary>
-    static int FrozenStep(Trip t, bool wants, float speedNow, float now)
+    /// (2026-11-14, ronda 96) «Moverse» es que el CUERPO se haya movido (no la velocidad del agente, que tras un salto hecho entre dos fotogramas
+    /// lentos ya es 0), y hacen falta ≥ <see cref="FrozenSeconds"/> Y ≥ <see cref="MinFrames"/> fotogramas.
+    static int FrozenStep(Trip t, bool wants, float speedNow, float now, int frame)
     {
         if (!wants || speedNow > 0.05f) { t.frozenSince = -1f; return 0; }
-        if (t.frozenSince < 0f) { t.frozenSince = now; return 0; }
-        if (now - t.frozenSince <= FrozenSeconds) return 0;
+        if (t.frozenSince < 0f) { t.frozenSince = now; t.frozenFrame = frame; return 0; }
+        if (now - t.frozenSince <= FrozenSeconds || frame - t.frozenFrame < MinFrames) return 0;
         t.frozenSince = -1f;
         if (!t.unfroze) { t.unfroze = true; return 1; }
         return 2;
     }
     /// <summary>(Pruebas) FrozenStep sobre una serie (quiere andar, velocidad, tiempo): los resultados separados por comas.</summary>
-    public static string FrozenStepsForTest(params (bool wants, float speed, float time)[] steps)
+    public static string FrozenStepsForTest(params (bool wants, float speed, float time, int frame)[] steps)
     {
         var t = new Trip(); var r = new List<string>();
-        foreach (var s in steps) r.Add(FrozenStep(t, s.wants, s.speed, s.time).ToString());
+        foreach (var s in steps) r.Add(FrozenStep(t, s.wants, s.speed, s.time, s.frame).ToString());
         return string.Join(",", r);
     }
     /// <summary>(2026-11-13) OTRA DIRECCIÓN: tras un viaje que no avanzó o un paseo sin salto, el «hacia delante» del siguiente gira 60–120° a un lado
@@ -507,7 +514,7 @@ public static class DesireCatalog
         if (!t.going) return false;
         NavMeshAgent nav = self.nav;
         if (nav == null || !nav.isOnNavMesh) { t.going = false; return false; }
-        if (nav.pathPending) { if (Time.time - t.since > 3f) { t.going = false; t.failUntil = Time.time + 4f; TripsStalled++; Outcome(self, t, false); NavTrace.Reset(self, "deseo: camino pendiente > 3 s"); return false; } return true; }   // (camino que no llega a calcularse: tope)
+        if (nav.pathPending) { if (Past(t.since, t.sinceFrame, 3f)) { t.going = false; t.failUntil = Time.time + 4f; TripsStalled++; Outcome(self, t, false); NavTrace.Reset(self, "deseo: camino pendiente > 3 s"); return false; } return true; }   // (camino que no llega a calcularse: tope)
         // Con camino y sin velocidad: una pausa (Idle, velocidad 0) de otra conducta, como «no alcanza comida; descansa», le dejaba quieto con
         // el viaje en marcha hasta darlo por atascado (osos, lobos, crías: «velocidad pedida 0,0 … sin WalkSpell»). Quien lleva el viaje, anda.
         if (nav.hasPath && nav.speed < 0.05f && !self.busy) self.Loco?.SetGait(false, 0.1f);
@@ -516,7 +523,7 @@ public static class DesireCatalog
         // moverse («[Fauna] atascado … empezados=136 · camino False … destino a 0,0 m», 333 líneas en vivo: renos, pingüinos, zorros, insectos).
         if (!nav.hasPath && Flat(t.goal - self.transform.position) > nav.stoppingDistance + 0.6f)
         {
-            if (Time.time - t.since > 3f)
+            if (Past(t.since, t.sinceFrame, 3f))
             {
                 t.going = false; t.failUntil = Time.time + 4f; TripsStalled++; Outcome(self, t, false); NoPathTrips++;
                 if (_noPathLogs < 30) { _noPathLogs++; Debug.Log($"[Fauna] «{self.name}» se queda sin camino hacia {t.goal} ({Flat(t.goal - self.transform.position):0.0} m): {NavInfo(self)} · {NavTrace.Last(self)}."); }
@@ -545,7 +552,10 @@ public static class DesireCatalog
         // completo, velocidad pedida 2–5, sin parar, el agente pegado al cuerpo… y velocidad 0,00, viaje tras viaje (cada uno esperaba 5 s a darse
         // por atascado y el siguiente salía igual de quieto). A los 1,5 s se reinicia el agente donde está (Warp) y se le vuelve a dar el camino;
         // si sigue quieto, se deja el viaje y el siguiente sale hacia otro lado. El aviso dice qué quería hacer el agente (velocidad deseada, rumbo).
-        int fz = FrozenStep(t, !repathed && nav.hasPath && nav.speed > 0.05f && !nav.isStopped && !self.busy, nav.velocity.magnitude, Time.time);
+        // (ronda 96) Se mueve si el CUERPO se ha movido > 0,2 m desde la última vez que se le vio quieto (la velocidad del agente engaña con fotogramas lentos).
+        float bodyMoved = t.frozenSince < 0f ? 0f : Flat(self.transform.position - t.frozenPos);
+        int fz = FrozenStep(t, !repathed && nav.hasPath && nav.speed > 0.05f && !nav.isStopped && !self.busy, bodyMoved > 0.2f ? 1f : 0f, Time.time, Time.frameCount);
+        if (t.frozenSince == Time.time) t.frozenPos = self.transform.position;
         if (fz > 0)
         {
             if (_frozenLogs < 40) { _frozenLogs++; Debug.Log($"[Fauna] «{self.name}» ({t.key}) quieto con camino {FrozenSeconds:0.0} s ({(fz == 1 ? "vuelve a andar" : "deja el viaje y prueba otro lado")}): {NavInfo(self)} · {NavTrace.Last(self)}."); }
@@ -569,8 +579,8 @@ public static class DesireCatalog
             NavTrace.Reset(self, "deseo: quieto con camino");
             return false;
         }
-        if (rem < t.best - 0.25f) { t.best = rem; t.bestAt = Time.time; }
-        if (Time.time - t.bestAt > 5f || Time.time - t.since > 40f)                    // atascado o tope
+        if (rem < t.best - 0.25f) { t.best = rem; t.bestAt = Time.time; t.bestFrame = Time.frameCount; }
+        if (Past(t.bestAt, t.bestFrame, 5f) || Past(t.since, t.sinceFrame, 40f))                    // atascado o tope
         {
             if (_stallLogs < 30) { _stallLogs++; Debug.Log($"[Fauna] «{self.name}» se atasca yendo a {t.goal} desde {self.transform.position}: quedan {rem:0.0} m, velocidad pedida {nav.speed:0.0}, real {nav.velocity.magnitude:0.0}, parado {nav.isStopped}, camino {nav.pathStatus}{(nav.speed < 0.05f ? $", sin velocidad: {(self.Walk != null && self.Walk.IsCharging ? "en postura de carga" : self.TryGetComponent(out CharacterLevel cl) ? $"energía {cl.currentEnergy:0.0}/{cl.MaxEnergy:0.0}" : "sin WalkSpell ni energía")}" : "")}."); }
             t.going = false; t.failUntil = Time.time + 8f; TripsStalled++; Outcome(self, t, false); TurnAway(self, t);   // (2026-11-13) el siguiente, hacia otro lado
@@ -596,7 +606,7 @@ public static class DesireCatalog
 
     static void Walk(Animal self, Trip t, Vector3 at)
     {
-        TripsStarted++; t.started++; Vector3 dir = at - self.transform.position; dir.y = 0f; if (dir.sqrMagnitude > 1f) t.lastDir = dir.normalized; t.goal = at; t.since = t.bestAt = Time.time; t.best = float.MaxValue;
+        TripsStarted++; t.started++; Vector3 dir = at - self.transform.position; dir.y = 0f; if (dir.sqrMagnitude > 1f) t.lastDir = dir.normalized; t.goal = at; t.since = t.bestAt = Time.time; t.sinceFrame = t.bestFrame = Time.frameCount; t.best = float.MaxValue;
         // (ronda 92) El reloj de «quieto con camino» NO se pone a cero con cada viaje: los animales que empezaban un salto tras otro sin moverse
         // nunca llegaban a 1,5 s en el mismo viaje (FrozenTrips = 0 con decenas de animales a velocidad 0). FrozenStep lo pone a cero al andar.
         t.restNoSpot = false;
