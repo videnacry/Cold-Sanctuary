@@ -22,6 +22,10 @@ public class PostNatalManager : MonoBehaviour
     // etapas/destete/lactancia se mantiene aquí. Por defecto false (sin regresión); ponlo true tras validar la emergencia.
     [Tooltip("Delegar el MOVIMIENTO de cuidado a la Volición (deseos nurse/tend/follow/homebound). El calendario sigue aquí.")]
     public bool delegateMovementToVolition = false;
+    // (2026-11-14, ronda 97) LOS ANIMALES CON VOLICIÓN SE MUEVEN POR SUS DESEOS: este gestor les cambiaba el destino (SetDestination directo, sin
+    // NavTrace) y el paso (correr, andar, quieto) encima de lo que hacía su deseo. El reno #13 explorando con «pedida 18» (su correr) y las
+    // madres que volvían al nido a la carrera en medio de un paseo. Con un AiBrain con volición, no toca ni el camino ni el paso.
+    bool Delegated(Animal a) => delegateMovementToVolition || (a != null && a.TryGetComponent(out AiBrain b) && b.useVolition);
 
     // Distancia a la que se considera que la madre está en el nido
     const float MotherProximity     = 12f;
@@ -133,8 +137,8 @@ public class PostNatalManager : MonoBehaviour
             {
                 Vector3 away = mother.HomeOrigin + Random.insideUnitSphere * mother.HomeRadius * 0.7f;
                 away.y = mother.transform.position.y;
-                if (!delegateMovementToVolition && mother.nav != null && mother.nav.isOnNavMesh) mother.nav.SetDestination(away);
-                mother.ActsPrep.walk.Prep(mother, duration);
+                if (!Delegated(mother) && mother.nav != null && mother.nav.isOnNavMesh) mother.nav.SetDestination(away);
+                if (!Delegated(mother)) mother.ActsPrep.walk.Prep(mother, duration);
             }
             yield break;
         }
@@ -143,8 +147,8 @@ public class PostNatalManager : MonoBehaviour
         float distToNest = Vector3.Distance(mother.transform.position, cub.HomeOrigin);
         if (distToNest > MotherProximity)
         {
-            if (!delegateMovementToVolition && mother.nav != null && mother.nav.isOnNavMesh) mother.nav.SetDestination(cub.HomeOrigin);
-            mother.ActsPrep.run.Prep(mother, duration);
+            if (!Delegated(mother) && mother.nav != null && mother.nav.isOnNavMesh) mother.nav.SetDestination(cub.HomeOrigin);
+            if (!Delegated(mother)) mother.ActsPrep.run.Prep(mother, duration);
             yield break;
         }
 
@@ -178,7 +182,7 @@ public class PostNatalManager : MonoBehaviour
 
         // 6. Descansar y acicalar
         yield return StartCoroutine(DoMotherAction(MotherAction.Clean, stage));
-        mother.ActsPrep.idle.Prep(mother, duration);
+        if (!Delegated(mother)) mother.ActsPrep.idle.Prep(mother, duration);
     }
 
     // ──────────────────────────────────────────────
@@ -194,7 +198,7 @@ public class PostNatalManager : MonoBehaviour
         {
             case MotherAction.Clean:
             case MotherAction.Stimulate:
-                mother.ActsPrep.idle.Prep(mother, d);
+                if (!Delegated(mother)) mother.ActsPrep.idle.Prep(mother, d);
                 ForEachCub(cubs, cub =>
                 {
                     cub.stress = Mathf.Max(0f, cub.stress - 0.2f);
@@ -203,11 +207,11 @@ public class PostNatalManager : MonoBehaviour
                 break;
 
             case MotherAction.GuideTeat:
-                mother.ActsPrep.idle.Prep(mother, d);
+                if (!Delegated(mother)) mother.ActsPrep.idle.Prep(mother, d);
                 break;
 
             case MotherAction.FirstMilk:
-                mother.ActsPrep.idle.Prep(mother, d);
+                if (!Delegated(mother)) mother.ActsPrep.idle.Prep(mother, d);
                 nurseTimer = 0f;
                 ForEachCub(cubs, cub =>
                 {
@@ -221,7 +225,7 @@ public class PostNatalManager : MonoBehaviour
                 break;
 
             case MotherAction.Nurse:
-                mother.ActsPrep.idle.Prep(mother, d);
+                if (!Delegated(mother)) mother.ActsPrep.idle.Prep(mother, d);
                 nurseTimer = 0f;
                 float nutrition = stage.feedingMethod == FeedingMethod.Regurgitate ? d : d * 2f;
                 ForEachCub(cubs, cub =>
@@ -234,7 +238,7 @@ public class PostNatalManager : MonoBehaviour
                 break;
 
             case MotherAction.Regurgitate:
-                mother.ActsPrep.idle.Prep(mother, d);
+                if (!Delegated(mother)) mother.ActsPrep.idle.Prep(mother, d);
                 Animal first = PrimaryCub;
                 if (first != null)
                 {
@@ -248,12 +252,12 @@ public class PostNatalManager : MonoBehaviour
                 break;
 
             case MotherAction.Rest:
-                mother.ActsPrep.idle.Prep(mother, d * 3f);
+                if (!Delegated(mother)) mother.ActsPrep.idle.Prep(mother, d * 3f);
                 mother.exhaustion = Mathf.Max(0f, mother.exhaustion - d * 2f);
                 break;
 
             case MotherAction.Guard:
-                mother.ActsPrep.idle.Prep(mother, d);
+                if (!Delegated(mother)) mother.ActsPrep.idle.Prep(mother, d);
                 break;
 
             case MotherAction.MarkHidingSpot:
@@ -276,22 +280,22 @@ public class PostNatalManager : MonoBehaviour
         // Temperatura crítica → buscar calor / volver al nido
         if (cub.temperature < TempCritical)
         {
-            if (!delegateMovementToVolition && cub.nav != null && cub.nav.isOnNavMesh) cub.nav.SetDestination(cub.HomeOrigin);
-            cub.ActsPrep.run.Prep(cub, duration);
+            if (!Delegated(cub) && cub.nav != null && cub.nav.isOnNavMesh) cub.nav.SetDestination(cub.HomeOrigin);
+            if (!Delegated(cub)) cub.ActsPrep.run.Prep(cub, duration);
             yield break;
         }
 
         // Inmovilidad: stress alto + nido inseguro (venado, conejo)
         if (cub.stress > ImmobilityStress && cub.NestSecurityLevel < 0.35f)
         {
-            cub.ActsPrep.idle.Prep(cub, duration);
+            if (!Delegated(cub)) cub.ActsPrep.idle.Prep(cub, duration);
             yield break;
         }
 
         // Hambre alta + agotamiento → letargo
         if (cub.hungry > cub.VocalizationThreshold * 1.5f && cub.exhaustion > 60f)
         {
-            cub.ActsPrep.idle.Prep(cub, duration * 2f);
+            if (!Delegated(cub)) cub.ActsPrep.idle.Prep(cub, duration * 2f);
             cub.stress = Mathf.Min(1f, cub.stress + 0.03f * duration);
             yield break;
         }
@@ -300,7 +304,7 @@ public class PostNatalManager : MonoBehaviour
         if (cub.hungry > cub.VocalizationThreshold)
         {
             cub.stress = Mathf.Min(1f, cub.stress + 0.08f * duration);
-            cub.ActsPrep.idle.Prep(cub, duration);
+            if (!Delegated(cub)) cub.ActsPrep.idle.Prep(cub, duration);
             // aquí iría animación/sonido de llanto
             yield break;
         }
@@ -308,8 +312,8 @@ public class PostNatalManager : MonoBehaviour
         // Temperatura baja → buscar calor (sin ser crítica)
         if (cub.temperature < TempAlone + 0.5f)
         {
-            if (!delegateMovementToVolition && cub.nav != null && cub.nav.isOnNavMesh) cub.nav.SetDestination(cub.HomeOrigin);
-            cub.ActsPrep.walk.Prep(cub, duration);
+            if (!Delegated(cub) && cub.nav != null && cub.nav.isOnNavMesh) cub.nav.SetDestination(cub.HomeOrigin);
+            if (!Delegated(cub)) cub.ActsPrep.walk.Prep(cub, duration);
             yield break;
         }
 
@@ -318,8 +322,8 @@ public class PostNatalManager : MonoBehaviour
         float exploreRadius = Mathf.Min(cub.HomeRadius * 0.3f, 8f);
         Vector3 wander = cub.HomeOrigin + Random.insideUnitSphere * exploreRadius;
         wander.y = cub.transform.position.y;
-        if (!delegateMovementToVolition && cub.nav != null && cub.nav.isOnNavMesh) cub.nav.SetDestination(wander);
-        cub.ActsPrep.walk.Prep(cub, duration);
+        if (!Delegated(cub) && cub.nav != null && cub.nav.isOnNavMesh) cub.nav.SetDestination(wander);
+        if (!Delegated(cub)) cub.ActsPrep.walk.Prep(cub, duration);
         if (!cub.firstNestExit &&
             Vector3.Distance(cub.transform.position, cub.HomeOrigin) > exploreRadius * 0.5f)
             cub.firstNestExit = true;
