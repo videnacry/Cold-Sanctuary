@@ -399,7 +399,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit, IFastGameTime
         public GameObject g; public string name; public bool human, player;
         public Anima anima; public Animal animal; public Renderer[] rends;
         public Vector3 lastFrame; public bool lastRiding; public int ignoreFrames;
-        public readonly List<(float t, Vector3 p, bool riding)> hist = new List<(float, Vector3, bool)>();
+        public readonly List<(float t, Vector3 p, bool riding, int frame)> hist = new List<(float, Vector3, bool, int)>();
         public int inside, water, tilted; public string insideOf;
         public float offSince = -1f, rodeAt = -99f, movedAt = -99f;   // fuera de su puesto desde; última vez en alfombra; último teletransporte de la prueba
         public string activity = "";
@@ -492,7 +492,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit, IFastGameTime
                 if (tr.g == null || (tr.anima != null && tr.anima.death)) continue;
                 Vector3 p = tr.g.transform.position;
                 bool riding = FlyingCarpet.Riding(tr.g) || TreeTrip.Busy(tr.g) || MagnateWarden.Instance.Handling(tr.g);   // (la Magnate lo trae: no es andar)
-                tr.hist.Add((now, p, riding));
+                tr.hist.Add((now, p, riding, Time.frameCount));
                 while (tr.hist.Count > 0 && now - tr.hist[0].t > 25f) tr.hist.RemoveAt(0);
                 if (tr.human) SampleHuman(tr, p, riding, h, shift); else SampleAnimal(tr, p, riding);
             }
@@ -502,6 +502,8 @@ public class JornadaTest : MonoBehaviour, ITestUnit, IFastGameTime
         // reach: lo más lejos que llegó del punto de partida de la ventana. Dar vueltas es recorrer mucho SIN alejarse; ir a
         // algo a 30 m y volver (la guardia: de la pista de alfombras al comedero y de vuelta, 60 m en 20 s y 1,2 m netos) se
         // aleja la mitad de lo recorrido: eso es un recado, no una vuelta (2026-11-01).
+        /// <summary>(2026-11-14) Fotogramas mínimos de la ventana de 20 s para juzgar «atascado» o «da vueltas».</summary>
+        public const int MinWindowFrames = 8;
         static bool Window(Track tr, out float path, out float net) => Window(tr, out path, out net, out _);
         static bool Window(Track tr, out float path, out float net, out float reach)
         {
@@ -509,6 +511,9 @@ public class JornadaTest : MonoBehaviour, ITestUnit, IFastGameTime
             if (tr.hist.Count < 2 || tr.hist[tr.hist.Count - 1].t - tr.hist[0].t < 19f) return false;
             int i0 = tr.hist.FindIndex(x => tr.hist[tr.hist.Count - 1].t - x.t <= 20.5f);
             if (i0 < 0) return false;
+            // (2026-11-14, ronda 97) Y EN FOTOGRAMAS: con el tiempo ×6 de las pruebas y pocos FPS cada fotograma son 2–4 s de juego; una ventana de
+            // 20 s eran 5–10 fotogramas y un salto hecho entre dos de ellos parecía «quieto» o «ir y volver». Sin ≥ MinWindowFrames, no se juzga.
+            if (tr.hist[tr.hist.Count - 1].frame - tr.hist[i0].frame < MinWindowFrames) return false;
             for (int i = i0; i < tr.hist.Count; i++) { if (tr.hist[i].riding) return false; if (i > i0) { path += Vector3.Distance(tr.hist[i].p, tr.hist[i - 1].p); reach = Mathf.Max(reach, Flat(tr.hist[i].p - tr.hist[i0].p)); } }
             net = Flat(tr.hist[tr.hist.Count - 1].p - tr.hist[i0].p);
             return true;
