@@ -476,16 +476,21 @@ public static class DesireCatalog
     public static int SelfRecoveries, RescueNoSpot;
     static int _rescueLogs;
     static readonly Dictionary<Animal, (Vector3 at, float since, int frame, float last)> _rescue = new Dictionary<Animal, (Vector3, float, int, float)>();
+    /// <summary>(2026-11-14, ronda 105) ¿Lo rescató el vigilante hace menos de <paramref name="secs"/> s? (JornadaTest: el salto de 3–6 m del rescate no es
+    /// «dar vueltas».)</summary>
+    public static bool RescuedRecently(Animal a, float secs) => a != null && _rescue.TryGetValue(a, out var r) && r.last > 0f && Time.time - r.last < secs && SelfRecoveries > 0;
     static void SelfRecover(Animal a)
     {
         if (a.nav == null || !a.nav.isActiveAndEnabled || !a.nav.isOnNavMesh) return;
         Vector3 pos = a.transform.position;
         if (!_rescue.TryGetValue(a, out var r) || Flat(pos - r.at) > 0.5f) { _rescue[a] = (pos, Time.time, Time.frameCount, r.last); return; }
         string desire = a.TryGetComponent(out Volition v) ? v.LastDesire : "";
+        // (ronda 105) Ni «nurse»: la madre que espera a 2,5–4 m a que su cría llegue está quieta a propósito (los rescates de la ronda 105 movían
+        // 3 m cada 20 s a zorras con «nurse»).
         // (ronda 104) Más amplio: cualquiera que quiera algo que se hace andando (no descansar, incubar, la guarida, beber, un hábito ni la cría que
         // espera la toma en su sitio), salvo dormido, comiendo o peleando. Antes solo explore/homebound/mate/heel y sin «descanso a propósito»:
         // los lobos de la guarida y el zorro #86 quedaban fuera. Y 12 s y 5 fotogramas (con 8 fotogramas, a 2,5 s cada uno, la prueba los marcaba antes).
-        bool idleDesire = desire == "" || desire == "rest" || desire == "brood" || desire == "den" || desire == "incubate" || desire == "drink" || desire == "habit" || _homeWait.Contains(a);
+        bool idleDesire = desire == "" || desire == "nurse" || desire == "rest" || desire == "brood" || desire == "den" || desire == "incubate" || desire == "drink" || desire == "habit" || _homeWait.Contains(a);
         if (idleDesire || a.death || a.asleep || a.busy || a.fighting || (a.Forage != null && a.Forage.EatingNow)) { _rescue[a] = (pos, Time.time, Time.frameCount, r.last); return; }
         if (Time.time - r.since < RescueStill || Time.frameCount - r.frame < 5) return;
         if (Time.time - r.last < RescueEvery) { RescueBlocked = "espera"; return; }
@@ -848,6 +853,16 @@ public static class DesireCatalog
         return PickHop(a, () => LifeStage.WanderTarget(tr.position, tr.forward, step, UnityEngine.Random.insideUnitCircle), 3f, out at);
     }
 
+    /// <summary>(2026-11-14, ronda 105) ¿El camino a <paramref name="to"/> es mucho más largo que la recta (&gt; 2× + 5 m)? (a cualquier distancia; Detour
+    /// solo mira los paseos cortos)</summary>
+    static bool LongWay(Animal self, Vector3 to)
+    {
+        if (!NavReach.Reachable(self, to, out Vector3 at, 3f) || !NavReach.LastPathTo(self, at, out NavMeshPath p) || p.corners.Length < 3) return false;
+        float len = 0f;
+        for (int i = 1; i < p.corners.Length; i++) len += Vector3.Distance(p.corners[i - 1], p.corners[i]);
+        return len > 2f * Flat(at - self.transform.position) + 5f;
+    }
+
     // ¿El camino hasta ese sitio da un RODEO (más del doble de la distancia recta + 1,5 m)? En el recinto de la Cría (la guarida,
     // el comedero, el muro) un sitio a 2 m se alcanzaba por un camino de 5–6 m alrededor de la guarida: el polluelo y el
     // cachorro iban y venían 15–17 m en 20 s para 1 m netos («da vueltas en círculo», en vivo). Un paseo es a un sitio que se ve.
@@ -1011,7 +1026,17 @@ public static class DesireCatalog
         if (dc > 2.5f && dc <= 4f && !cubComing) { if (self.nav != null && self.nav.isOnNavMesh) MoveOrNearest(self, cub.transform.position); return; }
         if (dc > 2.5f && dc <= 4f) { if (self.nav != null && self.nav.isOnNavMesh) NavTrace.Reset(self, "nurse (espera a la cría)"); self.Loco?.Idle(1f); return; }
         if (dc <= 2.5f) { if (self.nav != null && self.nav.isOnNavMesh) NavTrace.Reset(self, "nurse (junto a la cría)"); FeedCub(self, cub); return; }
-        if (self.nav != null && self.nav.isOnNavMesh) MoveOrNearest(self, MeetPoint(self.transform.position, cub.transform.position));
+        // (2026-11-14, ronda 105) UN DESTINO QUE NO CAMBIA A CADA SEGUNDO: con la cría al otro lado de algo (camino de 89,8 m para unos pocos en línea
+        // recta), el punto de encuentro a medio camino caía cada segundo en otro sitio y el camino cambiaba de lado del obstáculo: la madre (zorro
+        // #57, «nurse») iba y venía 174 m en 20 s para 1,2 m netos. Con rodeo, va a la cría misma (que espera quieta), y no se vuelve a pedir
+        // el camino mientras el que lleva acabe a < 2 m del destino nuevo.
+        if (self.nav != null && self.nav.isOnNavMesh)
+        {
+            Vector3 meet = MeetPoint(self.transform.position, cub.transform.position);
+            if (LongWay(self, meet)) meet = cub.transform.position;
+            if (self.nav.hasPath && Flat(self.nav.destination - meet) < 2f) return;
+            MoveOrNearest(self, meet);
+        }
     }
 
     /// <summary>(2026-11-11) DONDE SE ENCUENTRAN la madre que va a dar la toma y la cría que la busca: lejos, a MEDIO CAMINO; cerca (≤ 4 m), donde
