@@ -660,7 +660,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit, IFastGameTime
             float r = Mathf.Clamp(Mathf.Min(b.extents.x, b.extents.y, b.extents.z) * 0.5f, 0.02f, 0.12f);
             string inside = riding ? null : InsideOf(b.center, r, tr.g.transform);
             if (inside != null && !lyingOk) { tr.inside++; tr.insideOf = inside; } else tr.inside = 0;
-            if (tr.inside == 3) Add(tr.name, "dentro de un objeto", $"«{tr.insideOf}» en {Where(p)} ({tr.activity})", human);
+            if (tr.inside == 3) Add(tr.name, "dentro de un objeto", $"«{tr.insideOf}» en {Where(p)} ({tr.activity}) [cuerpo: centro y {b.center.y:0.00}, pies {b.min.y:0.00}, raíz y {tr.g.transform.position.y:0.00}{(tr.animal != null ? " · " + DesireCatalog.NavInfo(tr.animal) + " · " + NavTrace.Last(tr.animal) : "")}]", human);   // (ronda 99: zorro #27 «dentro de Tierra», sin datos para saber cómo)
 
             bool aquatic = !human && (tr.animal != null && (tr.animal.WaterAffinity >= 0.5f || tr.animal.GetComponent<MarineLife>() != null));
             // (2026-11-01) Una PERSONA que cruza a nado entre casquetes (los enlaces de nado del NavMesh, IslandsTest: «cruzando a

@@ -403,6 +403,9 @@ public static class DesireCatalog
         if (a == null) return;
         if (_trips.TryGetValue(a, out Trip t) && t.going && t.key != newKey && !SameTrip(t.key, newKey)) t.going = false;
         if (newKey != "habit" && a.TryGetComponent(out Habit h) && h.Active) h.Release();
+        // (2026-11-14, ronda 99) La cría que deja de esperar la toma vuelve a la prioridad de evitación normal: el lobo #75, ya explorando, seguía
+        // con la 20 de esperar (los demás lo rodeaban como si estuviera quieto).
+        if (newKey != "nurse") { _homeWait.Remove(a); if (a.nav != null && a.nav.isActiveAndEnabled && a.nav.avoidancePriority == WaitingPriority) a.nav.avoidancePriority = DefaultPriority; }
     }
     // (el deseo «habit» y el viaje del deseo se llaman igual; «explore» usa el viaje «explore»; «buscar pareja», «cortejo» y «rastro» son de «mate»; «recinto», de «explore»)
     static bool SameTrip(string tripKey, string desireKey) => tripKey == desireKey || (desireKey == "mate" && (tripKey == "buscar pareja" || tripKey == "cortejo" || tripKey == "rastro")) || (desireKey == "explore" && tripKey == "recinto");
@@ -439,7 +442,15 @@ public static class DesireCatalog
         return $"deseada {n.desiredVelocity.magnitude:0.00}, rumbo a {st.magnitude:0.00} m, esquinas {(n.hasPath ? n.path.corners.Length : 0)}, caducado {n.isPathStale}, aceleración {n.acceleration:0.0}, frenada {n.stoppingDistance:0.0} m (autoBraking {n.autoBraking}), queda {n.remainingDistance:0.0} m, altura interna {n.nextPosition.y - n.transform.position.y:0.00} m, cuerpo {body}";
     }
 
-    public static string TripInfo(Animal a) => a != null && _trips.TryGetValue(a, out Trip t) ? $"viaje «{t.key}» va={t.going} meta={t.goal:F1} pausa={t.pauseUntil - Time.time:0.0} fallo={t.failUntil - Time.time:0.0} llamadas={t.calls} (hace {Time.time - t.lastCall:0.0} s) empezados={t.started}" : "sin viaje";
+    public static string TripInfo(Animal a) => (a != null && _trips.TryGetValue(a, out Trip t) ? $"viaje «{t.key}» va={t.going} meta={t.goal:F1} pausa={t.pauseUntil - Time.time:0.0} fallo={t.failUntil - Time.time:0.0} llamadas={t.calls} (hace {Time.time - t.lastCall:0.0} s) empezados={t.started}" : "sin viaje") + StateInfo(a);
+    /// <summary>(2026-11-14, ronda 99) Lo que puede tener a un animal sin que su deseo se despache: dormido, ocupado, alerta, peleando, y cuántas
+    /// decisiones de su volición se saltaron por eso (el lobo #75 y el oso #61 «sin llamar» 19 y 149 s junto a la guarida).</summary>
+    public static string StateInfo(Animal a)
+    {
+        if (a == null) return "";
+        Volition v = a.GetComponent<Volition>();
+        return $" · estado: dormido {a.asleep}, ocupado {a.busy}, alerta {a.aware}, peleando {a.fighting}" + (v != null ? $", decisiones {v.Choices} (saltadas: dormido {v.SkippedAsleep}, ocupado {v.SkippedBusy}, alerta {v.SkippedAware})" : "");
+    }
     static readonly Dictionary<Animal, Trip> _trips = new Dictionary<Animal, Trip>();
     // (2026-11-13, ronda 88) EL VIGILANTE DE VIAJES. Going (quieto con camino, atascado, sin camino, llegó) solo corría cuando el deseo se volvía
     // a despachar, y eso pasaba cada 10–15 s (ronda 88: 20 adultos «atascados > 20 s» con «deseada 3–5, velocidad 0», 14 llamadas en minutos,
