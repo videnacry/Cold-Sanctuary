@@ -1032,8 +1032,10 @@ public static class DesireCatalog
         // el camino mientras el que lleva acabe a < 2 m del destino nuevo.
         if (self.nav != null && self.nav.isOnNavMesh)
         {
-            Vector3 meet = MeetPoint(self.transform.position, cub.transform.position);
-            if (LongWay(self, meet)) meet = cub.transform.position;
+            // (ronda 106) Directo a la CRÍA siempre (la cría espera quieta mientras su madre anda: AwaitFeeding). El punto de encuentro a medio camino
+            // cambiaba cada segundo y, cuando LongWay no salía (sitio sin muestrear), el destino saltaba entre la cría y el medio camino: la zorra
+            // #89 iba y venía 180 m en 20 s por un camino de 92 m (4de779a no lo cubría).
+            Vector3 meet = cub.transform.position;
             if (self.nav.hasPath && Flat(self.nav.destination - meet) < 2f) return;
             MoveOrNearest(self, meet);
         }
