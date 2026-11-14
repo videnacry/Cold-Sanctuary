@@ -279,6 +279,13 @@ public class Forager : MonoBehaviour
 
         // Los marinos nadan sobre mar abierto sin NavMesh horneado debajo → guardar (Loco.Walk ya lo respeta,
         // pero sin el guard el while no avanzaría nunca).
+        // (ronda 107) Comida a la que no se llega por el NavMesh: ni lo intenta.
+        if (foodSource != null && self.nav != null && self.nav.isOnNavMesh && foodSource.GetComponent<Swarm>() == null && !NavReach.Reachable(self, foodSource.position, out _, 3f))
+        {
+            GiveUp(self, $"«{foodSource.name}» fuera del NavMesh");
+            self.busy = false;
+            yield break;
+        }
         if (foodSource != null && self.nav != null && self.nav.isOnNavMesh)
         {
             float walkInterval = TimeController.timeController.TimeSpeedMinuteSecs / 30;
@@ -307,6 +314,15 @@ public class Forager : MonoBehaviour
                 yield return new WaitForSeconds(walkInterval);
             }
             if (school && self.nav != null && self.nav.isOnNavMesh) NavTrace.Reset(self, "Forager: se para a pescar");   // en la orilla: se para a pescar
+            // (2026-11-14, ronda 107) Y SI NO LLEGÓ, NO COME ALLÍ: tras rendirse (sin avanzar 4 s, o 90 s de camino) seguía «comiendo» a distancia y
+            // volvía a intentarlo en la decisión siguiente, quieto («quiere eat … camino False», buey #88 a 180 m de su pasto). Ahora lo deja
+            // estar un rato (GiveUp: «eat» calla) y queda libre para otro deseo.
+            if (!school && foodSource != null && Vector3.Distance(self.transform.position, foodSource.position) > 3f)
+            {
+                GiveUp(self, $"no llega a «{foodSource.name}»");
+                self.busy = false;
+                yield break;
+            }
         }
 
         float interval = TimeController.timeController.TimeSpeedMinuteSecs / Random.Range(7, 12);
