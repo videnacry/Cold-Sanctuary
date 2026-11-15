@@ -19,9 +19,12 @@ public class StaleNavCarver : MonoBehaviour
     public static int DoorsMoved { get; private set; }
     public static int MoundsSeen { get; private set; }
     public static int HillsCarved { get; private set; }
+    public static int CaveWalls { get; private set; }
 
     /// <summary>(2026-11-14) Decorados que no se pisan y se tallan aunque el NavMesh ya los rodee (los montículos de tierra).</summary>
-    static bool AlwaysCarve(string name) => name.StartsWith("Monticulo");
+    // (2026-11-15, suite 119) Y las CUEVAS (SampleSceneBuilder.Territorio.Cave): paredes de 1,4 × 3,2 × 11 m y el fondo, girados. Con 11 m de fondo, a
+    // 0° o 90° su caja pasa de 10 m y el filtro de tamaño las dejaba sin tallar: la cría de lobo #40 cruzaba una «Pared_cueva» en (−202,0,−85).
+    static bool AlwaysCarve(string name) => name.StartsWith("Monticulo") || name == "Pared_cueva" || name == "Fondo_cueva";
     /// <summary>(2026-11-15, suite 118) Las LOMAS de la isla (SampleSceneBuilder.Territorio.Hill): tres losas «Tierra» de 0,25 m apiladas, de 20–34 m
     /// de lado. No están en el NavMesh horneado (pasa por debajo, a ras de suelo) y el filtro de tamaño (> 10 m) las dejaba sin tallar: el lobo #57
     /// andaba DENTRO de una (pies a 0,09, centro a 0,53, «dentro de Tierra» en (−202,0,−154)). Se tallan las losas elevadas (las de encima de la
@@ -62,7 +65,8 @@ public class StaleNavCarver : MonoBehaviour
             // puede ser mayor de 10 m o estar más bajo, y se descartaba antes de mirar su nombre).
             bool alwaysEarly = AlwaysCarve(c.name) || RaisedLand(c, b);
             if (RaisedLand(c, b)) HillsCarved++;
-            if (AlwaysCarve(c.name)) MoundsSeen++;
+            if (c.name.StartsWith("Monticulo")) MoundsSeen++;
+            if (c.name == "Pared_cueva" || c.name == "Fondo_cueva") CaveWalls++;
             if (!alwaysEarly && (b.size.y < 0.4f || b.size.x > 10f || b.size.z > 10f || b.max.y < 0.35f)) continue;
             // (la PUERTA de un recinto de la Cría sí talla: está cerrada; sin hueco en el NavMesh, el recinto quedaba unido al
             // pasillo y a los demás recintos: las crías «alcanzaban» a las del recinto de al lado —huían, peleaban contra el

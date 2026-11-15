@@ -402,7 +402,7 @@ public class Forager : MonoBehaviour
         float distance = Vector3.Distance(self.transform.position, location);
         float cansancio = 0;
         int unreachable = 0;   // la carcasa donde no llega (en el agua): no esperarla para siempre
-        float chaseBest = float.MaxValue, chaseSince = Time.time;
+        float chaseBest = float.MaxValue, chaseSince = Time.time, noRouteSince = -1f;
         do
         {
             if (prey == null) break;   // la presa/carcasa desapareció (comida por otro, destruida)
@@ -453,7 +453,12 @@ public class Forager : MonoBehaviour
                 bool preyAware = victimLiving != null && victimLiving.aware;
                 // Presa a la que no llega (otra isla, fuera de su perrera/recinto): si en 8 s no se acerca nada, lo deja.
                 if (distance < chaseBest - 0.5f) { chaseBest = distance; chaseSince = Time.time; }
-                else if (Time.time - chaseSince > 8f) { GiveUp(self, $"no alcanza a «{prey.name}»"); break; }
+                // (2026-11-15, ronda 119) Presa a la que el NavMesh no lleva (camino inválido o parcial: está en el agua, en otra placa, en una isla del
+                // NavMesh): se rinde a los 4 s aunque la distancia oscile (zorro #9 «quiere eat», «PathInvalid», 21 decisiones saltadas por ocupado).
+                if (self.nav != null && self.nav.isOnNavMesh && !self.nav.pathPending && (!self.nav.hasPath || self.nav.pathStatus != UnityEngine.AI.NavMeshPathStatus.PathComplete))
+                { if (noRouteSince < 0f) noRouteSince = Time.time; else if (Time.time - noRouteSince > 4f) { GiveUp(self, $"no hay camino hasta «{prey.name}»"); break; } }
+                else noRouteSince = -1f;
+                if (Time.time - chaseSince > 8f) { GiveUp(self, $"no alcanza a «{prey.name}»"); break; }
                 if (distance < 300 || preyAware)
                 {
                     self.Loco.SetGait(true, interval);

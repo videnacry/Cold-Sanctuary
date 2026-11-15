@@ -1320,7 +1320,10 @@ public static class DesireCatalog
         // (2026-11-14, ronda 98) A la madre solo si ESTÁ (quieta o casi): la cría iba hacia la madre que andaba por la guarida, la madre seguía y
         // la cría volvía a su sitio a 5–8 m, una y otra vez (lobos #1, #5: «da vueltas» 19–27 m en 20 s, «SetPath … 4,9–7,6 m» a su sitio cada
         // 3–5 s). Si la madre anda, la cría espera en su sitio; la madre que va a darle la toma va a ella (NurseCub).
-        if (parent != null && parent.TryGetComponent(out NavMeshAgent pm) && pm.isActiveAndEnabled && pm.velocity.magnitude > 0.5f) parent = null;
+        // (2026-11-15, ronda 119) …y mientras la madre ANDA, la cría se queda donde está (la llama), sin ir a su sitio de casa: con la madre a ratos
+        // quieta y a ratos andando, la cría iba a su sitio junto a ella y luego a su sitio de casa, a 8 m, y vuelta (lobo #95: 48 m en 20 s para
+        // 0 netos, «SetPath … 8,1 m»). La madre que va a darle la toma va hasta ella (NurseCub).
+        if (parent != null && parent.TryGetComponent(out NavMeshAgent pm) && pm.isActiveAndEnabled && pm.velocity.magnitude > 0.5f) { NavTrace.Reset(self, "AwaitFeeding (la madre anda: la llama quieta)"); self.Loco?.Idle(1f); return; }
         // (ronda 115) Cerca de la madre, a SU sitio junto a ella (a 1,8 m, en su ángulo), no al punto de la madre: dos crías iban al mismo punto.
         Vector3 to = parent != null ? (Vector3.Distance(self.transform.position, parent.position) > 4f ? MeetPoint(self.transform.position, parent.position) : Slot(parent.position, self.GetHashCode(), 1.8f)) : self.HomeOrigin;
         // (2026-11-13, vivo75) Sin madre cerca, la toma se espera EN CASA, no en su punto exacto: las crías de la guarida de los lobos tenían el mismo
@@ -1394,6 +1397,7 @@ public static class DesireCatalog
     }
 
     // Despacho social: navega hacia el ser querido elegido (el más urgente por cuidado, o el más cercano por cohesión).
+    static readonly HashSet<Animal> _withBond = new HashSet<Animal>();   // ya junto a su vínculo (seguir/cuidar): no se mueve hasta que se aleje > 8 m
     static void ApproachBondTarget(Animal self, bool care)
     {
         if (self.nav == null || !self.nav.isOnNavMesh) return;
@@ -1412,7 +1416,11 @@ public static class DesireCatalog
         // (2026-11-15, suite 118) A SU LADO, NO ENCIMA: iba al punto mismo del otro en cada decisión; al llegar se empujaban y, si el otro se movía, lo
         // seguía en círculo (lobo #57 «follow», «da vueltas»). A ≤ 4 m ya está con él y se queda; si no, va a su sitio a 2,5 m de él (Slot).
         if (best == null) return;
-        if (Flat(best.position - self.transform.position) <= 4f) { Stop(self, 1f); return; }
+        // (2026-11-15, suite 119) Con margen: ya junto al otro, sigue «con él» hasta 8 m. El que cuida a uno con estrés («tend», lobos #97, #55, #40 de
+        // la guarida) lo tenía a 4–5 m, el otro se movía un poco y volvía a ir a su sitio junto a él, y vuelta: daba vueltas a su alrededor.
+        float dBond = Flat(best.position - self.transform.position);
+        if (dBond <= 4f || (_withBond.Contains(self) && dBond <= 8f)) { _withBond.Add(self); Stop(self, 1f); return; }
+        _withBond.Remove(self);
         MoveOrNearest(self, Slot(best.position, self.GetHashCode(), 2.5f));
     }
 }
