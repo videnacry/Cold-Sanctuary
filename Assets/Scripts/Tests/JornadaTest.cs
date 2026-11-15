@@ -259,9 +259,15 @@ public class JornadaTest : MonoBehaviour, ITestUnit, IFastGameTime
         _watch.Rebase();
         int returned0 = MagnateWarden.Returned;
         Vector3 at = _player.transform.position;
-        yield return Until(() => { DriveDirector(); _watch.Frame(); return false; }, 15f);
+        // (2026-11-15, ronda 116) QUIÉN LO MOVIÓ: «se movió 1,2 m solo» en «Carne Cultivada» (torre Servicios, que NO gira: solo gira el Árbol de los
+        // Campos). El aviso dice ahora qué lo condujo en esos 15 s: pasos de su PathMover, las acciones que pasaron por la cabeza de su cola y el suelo.
+        int steps0 = _player.TryGetComponent(out PathMover pm0) ? pm0.Steps : 0;
+        var heads = new HashSet<string>();
+        yield return Until(() => { DriveDirector(); _watch.Frame(); if (_player.TryGetComponent(out ActionQueue q0)) { if (q0.Own.Count > 0) heads.Add(q0.Own[0].Label); else if (q0.Player.Count > 0) heads.Add(q0.Player[0].Label); } return false; }, 15f);
         float drift = Flat(_player.transform.position - at);
-        TestProbe.Check("a las 16:00 es libre: nada lo mueve (ni la jornada ni la Magnate)", drift < 1f && !MagnateWarden.Instance.Handling(_player), $"se movió {drift:0.0} m solo");
+        int steps = (_player.TryGetComponent(out PathMover pm1) ? pm1.Steps : 0) - steps0;
+        string floor = Physics.Raycast(_player.transform.position + Vector3.up * 0.5f, Vector3.down, out RaycastHit fh, 3f, ~0, QueryTriggerInteraction.Ignore) ? fh.collider.name + (TreeRotator.Instance != null && fh.transform.IsChildOf(TreeRotator.Instance.transform) ? " (árbol que gira)" : "") : "—";
+        TestProbe.Check("a las 16:00 es libre: nada lo mueve (ni la jornada ni la Magnate)", drift < 1f && !MagnateWarden.Instance.Handling(_player), $"se movió {drift:0.0} m solo (pasos de PathMover {steps}, cola: {(heads.Count > 0 ? string.Join(", ", heads) : "vacía")}, suelo «{floor}»)");
         _watch.Snapshot($"{_tc.Hour:00.00} h (libre)");
 
         // Torres: un área por edificio (de alfombras), de la más lejana a la más cercana a cada paso.
