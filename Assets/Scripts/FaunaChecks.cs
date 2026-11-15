@@ -252,6 +252,13 @@ public class FaunaChecks : MonoBehaviour, ITestUnit
             TestProbe.Check("el salto de un paseo sigue hacia delante (0 de 200 hacia atrás, desvío ≤ 45°)", back == 0 && worstAng <= 45.5f, $"{back} hacia atrás, desvío máximo {worstAng:0}°");
         }
 
+        // ── (2026-11-15, ronda 118) LA VUELTA A CASA POR TRAMOS SIGUE UN SOLO CAMINO: dónde queda uno a lo largo de él ──
+        {
+            Vector3[] c = { Vector3.zero, new Vector3(10f, 0f, 0f), new Vector3(10f, 0f, 10f) };
+            float s1 = DesireCatalog.AlongPolyline(c, new Vector3(10f, 0f, 4f)), s2 = DesireCatalog.AlongPolyline(c, new Vector3(5f, 0f, 1f));
+            TestProbe.Check("a lo largo del camino guardado: (10,0,4) queda a 14 m y (5,0,1) a 5 m", Mathf.Abs(s1 - 14f) < 0.01f && Mathf.Abs(s2 - 5f) < 0.01f, $"{s1:0.00} / {s2:0.00}");
+        }
+
         TestProbe.End();
     }
 }
