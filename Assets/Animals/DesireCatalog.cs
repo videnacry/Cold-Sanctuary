@@ -922,13 +922,24 @@ public static class DesireCatalog
     // ¿El camino hasta ese sitio da un RODEO (más del doble de la distancia recta + 1,5 m)? En el recinto de la Cría (la guarida,
     // el comedero, el muro) un sitio a 2 m se alcanzaba por un camino de 5–6 m alrededor de la guarida: el polluelo y el
     // cachorro iban y venían 15–17 m en 20 s para 1 m netos («da vueltas en círculo», en vivo). Un paseo es a un sitio que se ve.
+    // (2026-11-15, suite 120) También los saltos de los adultos (hasta 15 m) y más estricto: un camino más de 1,8 veces la recta, o de más de 6 esquinas,
+    // es un rodeo. En la colonia los pingüinos #81 y el emperador #44 daban saltos de 6,3 m por caminos de 10 esquinas entre la gente y los
+    // icebergs varados, se atascaban y giraban («da vueltas»).
+    public const float DetourRatio = 1.8f; public const int DetourCorners = 6;
     static bool Detour(Animal self, Vector3 at, Vector3 here)
     {
-        if (Flat(at - here) >= 4f) return false;   // (solo los paseos cortos: el recinto, la cría; el adulto explora a 4–10 m)
+        float straight = Flat(at - here);
+        if (straight > 15f) return false;
         if (!NavReach.LastPathTo(self, at, out NavMeshPath p) || p.corners.Length < 3) return false;
+        return IsDetour(p.corners, straight);
+    }
+    /// <summary>(Pruebas) ¿Es un rodeo un camino con estas esquinas para un salto de <paramref name="straight"/> m en recta?</summary>
+    public static bool IsDetour(Vector3[] corners, float straight)
+    {
+        if (corners.Length > DetourCorners + 1) return true;
         float len = 0f;
-        for (int i = 1; i < p.corners.Length; i++) len += Vector3.Distance(p.corners[i - 1], p.corners[i]);
-        return len > 2f * Flat(at - here) + 1.5f;
+        for (int i = 1; i < corners.Length; i++) len += Vector3.Distance(corners[i - 1], corners[i]);
+        return len > DetourRatio * straight + 0.5f;
     }
 
     // Explorar: saltos de 4–10 m (según su territorio) sesgados hacia delante, con pausas cortas.
@@ -1325,7 +1336,16 @@ public static class DesireCatalog
         // 0 netos, «SetPath … 8,1 m»). La madre que va a darle la toma va hasta ella (NurseCub).
         if (parent != null && parent.TryGetComponent(out NavMeshAgent pm) && pm.isActiveAndEnabled && pm.velocity.magnitude > 0.5f) { NavTrace.Reset(self, "AwaitFeeding (la madre anda: la llama quieta)"); self.Loco?.Idle(1f); return; }
         // (ronda 115) Cerca de la madre, a SU sitio junto a ella (a 1,8 m, en su ángulo), no al punto de la madre: dos crías iban al mismo punto.
-        Vector3 to = parent != null ? (Vector3.Distance(self.transform.position, parent.position) > 4f ? MeetPoint(self.transform.position, parent.position) : Slot(parent.position, self.GetHashCode(), 1.8f)) : self.HomeOrigin;
+        // (2026-11-15, suite 120) Su sitio junto a la madre se fija: si la madre se ha movido > 1,5 m desde que se calculó, la cría se queda quieta
+        // (3 s) en vez de re-apuntar a cada paso de la madre (cría de lobo #13: «SetPath calculado» hacia su sitio, 15 m en 20 s para 1 m netos).
+        if (parent != null && Vector3.Distance(self.transform.position, parent.position) <= 4f && _cubSlot.TryGetValue(self, out var cs) && Flat(parent.position - cs.mother) > 1.5f)
+        {
+            if (Time.time < cs.holdUntil) { NavTrace.Reset(self, "AwaitFeeding (la madre se movió: espera)"); self.Loco?.Idle(1f); return; }
+            if (cs.holdUntil < 0f) { _cubSlot[self] = (cs.mother, Time.time + 3f); NavTrace.Reset(self, "AwaitFeeding (la madre se movió: espera)"); self.Loco?.Idle(1f); return; }
+            _cubSlot.Remove(self);
+        }
+        if (parent != null && !_cubSlot.ContainsKey(self)) _cubSlot[self] = (parent.position, -1f);
+        Vector3 to = parent != null ? (Vector3.Distance(self.transform.position, parent.position) > 4f ? MeetPoint(self.transform.position, parent.position) : Slot(_cubSlot[self].mother, self.GetHashCode(), 1.8f)) : self.HomeOrigin;
         // (2026-11-13, vivo75) Sin madre cerca, la toma se espera EN CASA, no en su punto exacto: las crías de la guarida de los lobos tenían el mismo
         // HomeOrigin (-205,-190) y, a 1,5 m, se empujaban unas a otras alrededor de él sin llegar nunca («da vueltas en círculo (nurse)», 19–27 m
         // en 20 s para 0–1,5 m netos, «deseo: SetDestination» hacia (-205,-190) cada pocos segundos). A ≤ 4 m de casa ya está en casa.
@@ -1372,7 +1392,8 @@ public static class DesireCatalog
         }
     }
     static readonly System.Collections.Generic.Dictionary<Animal, float> _begAt = new System.Collections.Generic.Dictionary<Animal, float>();
-    static readonly HashSet<Animal> _homeWait = new HashSet<Animal>();   // crías que ya esperan la toma en casa (histéresis 4 → 7 m)
+    static readonly HashSet<Animal> _homeWait = new HashSet<Animal>();
+    static readonly Dictionary<Animal, (Vector3 mother, float holdUntil)> _cubSlot = new Dictionary<Animal, (Vector3, float)>();   // (suite 120) dónde estaba la madre al fijar el sitio de la cría   // crías que ya esperan la toma en casa (histéresis 4 → 7 m)
 
     // ¿El ser del vínculo ya no está? b.target es una interfaz (Animal.ITarget): «== null» no ve el objeto DESTRUIDO de Unity y su
     // .transform lanzaba MissingReferenceException (812 veces en la batería del 2026-11-02: PenguinBehavior destruido, SocialNeed).

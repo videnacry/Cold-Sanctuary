@@ -108,6 +108,9 @@ public class MarineLife : MonoBehaviour
     float UnderIceY => IceBottom - _halfH - 0.15f;
 
     // ¿Hay hielo sobre el cuerpo, no solo sobre su pivote? Una orca mide 6–8 m: con el pivote en agua abierta, el cuerpo entra en la placa.
+    float _strandedSince = -1f;
+    /// <summary>(2026-11-15) Marinos devueltos al mar por varados, y veces que el paso se bajó a la cara inferior del hielo fijo (diagnóstico).</summary>
+    public static int Rescued, UnderIceClamps;
     bool IceOverBody(Vector3 p)
     {
         float r = _halfLen * 0.6f;
@@ -117,6 +120,19 @@ public class MarineLife : MonoBehaviour
     void LateUpdate()   // después de la IA genérica (que intentaba moverlos por el NavMesh)
     {
         if (_a == null || _a.death) return;
+        // (2026-11-15, suite 120) VARADA FUERA DEL MAR: un marino que no sale a tierra (no foca ni morsa) por encima del agua (y > 0,5) más de 5 s vuelve
+        // nadando a su sitio (la orca #58, «atascada > 20 s» en (46,2,114), junto a la torre Servicios, días 4 y 5). Lo dice.
+        if (!hauls && !_onIce && transform.position.y > 0.5f)
+        {
+            if (_strandedSince < 0f) _strandedSince = Time.time;
+            else if (Time.time - _strandedSince > 5f)
+            {
+                Vector3 back = new Vector3(Home.x, SwimY, Home.z);
+                Debug.Log($"[Marinos] «{name}» varada fuera del mar en ({transform.position.x:0.0},{transform.position.y:0.0},{transform.position.z:0.0}): vuelve a ({back.x:0},{back.z:0}).");
+                transform.position = back; _strandedSince = -1f; Rescued++;
+            }
+        }
+        else _strandedSince = -1f;
         if (TryGetComponent(out NavMeshAgent nav) && nav.enabled) nav.enabled = false;
         // Siempre se endereza (el balanceo de frotarse lo vuelve a fijar Habitat en el mismo fotograma): ninguna física ni
         // giro acumulado la deja de lado o panza arriba.
@@ -346,6 +362,10 @@ public class MarineLife : MonoBehaviour
             // (2026-11-04) Los EDIFICIOS-ÁRBOL tienen el fondo abierto (docs/edificio-arbol.md): ballenas, orcas y focas no se meten por el
             // hueco a su tronco («cae» en el tronco de Entrenamiento, jornada 50): si el paso entra bajo un tronco, se queda fuera.
             if (!onIce && UnderTree(np, 2f) && !UnderTree(cur, 2f)) { np.x = cur.x; np.z = cur.z; np.y = Mathf.Min(np.y, cur.y); }
+            // (2026-11-15, suite 120) NUNCA DENTRO DEL HIELO FIJO: con hielo fijo sobre el cuerpo (no una placa: esas se bordean) y por encima de su cara
+            // inferior, baja a ella. La orca #69 «dentro de Hielo_fijo» en (52,−2,5), con el centro a −1,59: los avisos del hocico y de la panza no la
+            // bajaban del todo antes de meterse.
+            if (!onIce && np.y > UnderIceY && !ThickAbove(np) && IceOverBody(np)) { np.y = UnderIceY; UnderIceClamps++; }
             transform.position = np;
             Vector3 flat = step; flat.y = 0f;
             if (flat.sqrMagnitude > 1e-6f) transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(flat), 4f * Time.deltaTime);
