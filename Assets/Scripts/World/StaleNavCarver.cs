@@ -18,9 +18,15 @@ public class StaleNavCarver : MonoBehaviour
     public static int Carved { get; private set; }
     public static int DoorsMoved { get; private set; }
     public static int MoundsSeen { get; private set; }
+    public static int HillsCarved { get; private set; }
 
     /// <summary>(2026-11-14) Decorados que no se pisan y se tallan aunque el NavMesh ya los rodee (los montículos de tierra).</summary>
     static bool AlwaysCarve(string name) => name.StartsWith("Monticulo");
+    /// <summary>(2026-11-15, suite 118) Las LOMAS de la isla (SampleSceneBuilder.Territorio.Hill): tres losas «Tierra» de 0,25 m apiladas, de 20–34 m
+    /// de lado. No están en el NavMesh horneado (pasa por debajo, a ras de suelo) y el filtro de tamaño (> 10 m) las dejaba sin tallar: el lobo #57
+    /// andaba DENTRO de una (pies a 0,09, centro a 0,53, «dentro de Tierra» en (−202,0,−154)). Se tallan las losas elevadas (las de encima de la
+    /// primera: cara de arriba a ≥ 0,35 m y apoyadas en el suelo, no las placas de tierra, cuya cara de arriba es y = 0).</summary>
+    static bool RaisedLand(Collider c, Bounds b) => c.name == "Tierra" && b.max.y >= 0.35f && b.min.y > -0.05f && b.min.y < 1f && Mathf.Max(b.size.x, b.size.z) >= 10f;   // (solo las lomas del suelo: grandes y a ras de suelo, no la tierra de un microcosmos o de un piso)
     static readonly string[] Skip = { "Cria_", "Cuadra", "Trineo", "Barrera_agua", "Inodoro", "Cabina", "Puerta", "Cama", "Silla", "Asiento" };
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -54,8 +60,9 @@ public class StaleNavCarver : MonoBehaviour
             // pingüino de (−134, 0, 18) seguía metiéndose en la «Raiz».
             // (2026-11-15, ronda 115) Los montículos, sin los filtros de tamaño (el oso #55 cruzaba un «Monticulo» en (−105,0,−122): en la escena
             // puede ser mayor de 10 m o estar más bajo, y se descartaba antes de mirar su nombre).
-            bool alwaysEarly = AlwaysCarve(c.name);
-            if (alwaysEarly) MoundsSeen++;
+            bool alwaysEarly = AlwaysCarve(c.name) || RaisedLand(c, b);
+            if (RaisedLand(c, b)) HillsCarved++;
+            if (AlwaysCarve(c.name)) MoundsSeen++;
             if (!alwaysEarly && (b.size.y < 0.4f || b.size.x > 10f || b.size.z > 10f || b.max.y < 0.35f)) continue;
             // (la PUERTA de un recinto de la Cría sí talla: está cerrada; sin hueco en el NavMesh, el recinto quedaba unido al
             // pasillo y a los demás recintos: las crías «alcanzaban» a las del recinto de al lado —huían, peleaban contra el
@@ -69,7 +76,7 @@ public class StaleNavCarver : MonoBehaviour
             // cajas de 1 y 1,45 m) tenía NavMesh en su cara de arriba, una isla a la que se llegaba por un Warp o un rescate (el punto del NavMesh
             // más cercano) y de la que no se salía; el zorro #68 «dentro de Monticulo» con los pies a 1,3 m, y el atasco de los zorros, renos y el
             // oso de (−118,−123), junto a la boca sur de la madriguera (rondas 102–103, 110). Su caja talla 0,6 m más alta para llevarse esa isla.
-            bool always = AlwaysCarve(c.name);
+            bool always = alwaysEarly;
             if (!always && !NavInside(b) && !NavThrough(c, b)) continue;
             NavMeshObstacle o = c.gameObject.AddComponent<NavMeshObstacle>();
             o.shape = NavMeshObstacleShape.Box;

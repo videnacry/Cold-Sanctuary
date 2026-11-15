@@ -954,7 +954,10 @@ public static class DesireCatalog
         if (self.lifeStage == LifeStage.child)
         {
             Transform ct = self.transform;
-            Stroll(self, key, () => ct.position + Ring(3f, 5f), 4f, 8f, 3f);   // (ronda 72: ≥ 1,5 m; ronda 112: la cría, 3–5 m)
+            // (ronda 118) La cría también sigue hacia delante (ForwardHop, paso de 4 m): con saltos de 3–5 m en cualquier dirección iba y volvía
+            // (reno #97, cría: 17 m en 20 s para 1,9 m netos).
+            Trip cTrip = TripOf(self, key);
+            Stroll(self, key, () => ForwardHop(ct.position, cTrip.lastDir.sqrMagnitude > 0.5f ? cTrip.lastDir : ct.forward, 4f), 4f, 8f, 3f);   // (ronda 72: ≥ 1,5 m; ronda 112: la cría, 3–5 m)
             return;
         }
         float step = Mathf.Clamp(self.HomeRadius * 0.08f, 4f, 10f);
@@ -981,6 +984,21 @@ public static class DesireCatalog
     /// <summary>Tramos de vuelta a casa empezados (diagnóstico).</summary>
     public static int HomeLegs, StraightLegs;
     /// <summary>(2026-11-13) El punto a <paramref name="d"/> m a lo largo de una polilínea (false si es más corta).</summary>
+    static readonly Dictionary<Animal, (Vector3[] corners, float at)> _homePaths = new Dictionary<Animal, (Vector3[], float)>();
+    /// <summary>(2026-11-15) Cuántos metros a lo largo de la polilínea queda el punto más cercano a <paramref name="p"/>.</summary>
+    public static float AlongPolyline(Vector3[] c, Vector3 p)
+    {
+        float best = float.MaxValue, bestS = 0f, s = 0f;
+        for (int i = 0; i + 1 < c.Length; i++)
+        {
+            Vector3 a = c[i], b = c[i + 1]; Vector3 d = b - a; d.y = 0f; Vector3 w = p - a; w.y = 0f;
+            float len = d.magnitude, k = len > 1e-4f ? Mathf.Clamp01(Vector3.Dot(w, d) / (len * len)) : 0f;
+            float dist = (w - d * k).magnitude;
+            if (dist < best) { best = dist; bestS = s + len * k; }
+            s += Vector3.Distance(a, b);
+        }
+        return bestS;
+    }
     public static bool PointAlong(Vector3[] corners, float d, out Vector3 at)
     {
         at = Vector3.zero;
@@ -1010,9 +1028,19 @@ public static class DesireCatalog
         // al siguiente. Un tramo (o el trecho de un camino parcial) en marcha se sigue hasta el final, sin re-apuntar cada segundo.
         Trip t = TripOf(self, "homebound");
         if (t.going && Flat(t.goal - spot) > 1.5f) { if (Going(self, t)) return; if (Time.time < t.failUntil) return; }
-        if (Flat(spot - self.transform.position) > HomeLeg && Time.time >= t.failUntil && NavReach.Reachable(self, spot, out Vector3 full)
-            && NavReach.LastPathTo(self, full, out NavMeshPath fp) && PointAlong(fp.corners, HomeLeg, out Vector3 leg) && NavReach.Reachable(self, leg, out Vector3 legAt))
-        { HomeLegs++; Walk(self, t, legAt); return; }
+        // (2026-11-15, ronda 118) UN SOLO CAMINO A CASA, por tramos: cada tramo nuevo recalculaba el camino entero desde donde estaba, y si había dos
+        // formas de rodear algo (una charca, el montículo) el camino cambiaba de lado entre tramos: el reno #81 iba y venía 97 m en 20 s para 1,4 m
+        // netos con tramos de 35 m. Ahora el camino se guarda (hasta 120 s, y mientras acabe en su sitio de casa) y cada tramo sigue ESE camino.
+        if (Flat(spot - self.transform.position) > HomeLeg && Time.time >= t.failUntil)
+        {
+            if (!_homePaths.TryGetValue(self, out var hp) || Time.time - hp.at > 120f || Flat(hp.corners[hp.corners.Length - 1] - spot) > 3f)
+            {
+                hp = (null, 0f);
+                if (NavReach.Reachable(self, spot, out Vector3 full) && NavReach.LastPathTo(self, full, out NavMeshPath fp) && fp.corners.Length >= 2) { hp = (fp.corners, Time.time); _homePaths[self] = hp; }
+            }
+            if (hp.corners != null && PointAlong(hp.corners, AlongPolyline(hp.corners, self.transform.position) + HomeLeg, out Vector3 leg) && NavReach.Reachable(self, leg, out Vector3 legAt))
+            { HomeLegs++; Walk(self, t, legAt); return; }
+        }
         // (2026-11-13, ronda 85) Y LEJOS, NUNCA DE UNA VEZ: si el tramo por el camino no sale (camino que no vale, cálculo lento), un tramo en LÍNEA
         // RECTA hacia casa (o algo desviado) a HomeLeg m. Antes se caía en GoTo(casa entera): SetDestination a 150 m quedaba «pendiente» > 3 s y
         // fallaba, una vez y otra (zorro #38: «camino False, pendiente True … destino a 154 m», 116 viajes; zorros y bueyes atascados).
@@ -1381,7 +1409,11 @@ public static class DesireCatalog
             float score = tie * urg;
             if (score > bestScore) { bestScore = score; best = t; }
         }
-        if (best != null) Move(self, best.position);
+        // (2026-11-15, suite 118) A SU LADO, NO ENCIMA: iba al punto mismo del otro en cada decisión; al llegar se empujaban y, si el otro se movía, lo
+        // seguía en círculo (lobo #57 «follow», «da vueltas»). A ≤ 4 m ya está con él y se queda; si no, va a su sitio a 2,5 m de él (Slot).
+        if (best == null) return;
+        if (Flat(best.position - self.transform.position) <= 4f) { Stop(self, 1f); return; }
+        MoveOrNearest(self, Slot(best.position, self.GetHashCode(), 2.5f));
     }
 }
 
