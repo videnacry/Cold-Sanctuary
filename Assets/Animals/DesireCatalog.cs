@@ -1320,7 +1320,10 @@ public static class DesireCatalog
         // (2026-11-14, ronda 98) A la madre solo si ESTÁ (quieta o casi): la cría iba hacia la madre que andaba por la guarida, la madre seguía y
         // la cría volvía a su sitio a 5–8 m, una y otra vez (lobos #1, #5: «da vueltas» 19–27 m en 20 s, «SetPath … 4,9–7,6 m» a su sitio cada
         // 3–5 s). Si la madre anda, la cría espera en su sitio; la madre que va a darle la toma va a ella (NurseCub).
-        if (parent != null && parent.TryGetComponent(out NavMeshAgent pm) && pm.isActiveAndEnabled && pm.velocity.magnitude > 0.5f) parent = null;
+        // (2026-11-15, ronda 119) …y mientras la madre ANDA, la cría se queda donde está (la llama), sin ir a su sitio de casa: con la madre a ratos
+        // quieta y a ratos andando, la cría iba a su sitio junto a ella y luego a su sitio de casa, a 8 m, y vuelta (lobo #95: 48 m en 20 s para
+        // 0 netos, «SetPath … 8,1 m»). La madre que va a darle la toma va hasta ella (NurseCub).
+        if (parent != null && parent.TryGetComponent(out NavMeshAgent pm) && pm.isActiveAndEnabled && pm.velocity.magnitude > 0.5f) { NavTrace.Reset(self, "AwaitFeeding (la madre anda: la llama quieta)"); self.Loco?.Idle(1f); return; }
         // (ronda 115) Cerca de la madre, a SU sitio junto a ella (a 1,8 m, en su ángulo), no al punto de la madre: dos crías iban al mismo punto.
         Vector3 to = parent != null ? (Vector3.Distance(self.transform.position, parent.position) > 4f ? MeetPoint(self.transform.position, parent.position) : Slot(parent.position, self.GetHashCode(), 1.8f)) : self.HomeOrigin;
         // (2026-11-13, vivo75) Sin madre cerca, la toma se espera EN CASA, no en su punto exacto: las crías de la guarida de los lobos tenían el mismo
