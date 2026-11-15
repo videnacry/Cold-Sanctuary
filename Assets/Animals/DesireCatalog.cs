@@ -1397,6 +1397,7 @@ public static class DesireCatalog
     }
 
     // Despacho social: navega hacia el ser querido elegido (el más urgente por cuidado, o el más cercano por cohesión).
+    static readonly HashSet<Animal> _withBond = new HashSet<Animal>();   // ya junto a su vínculo (seguir/cuidar): no se mueve hasta que se aleje > 8 m
     static void ApproachBondTarget(Animal self, bool care)
     {
         if (self.nav == null || !self.nav.isOnNavMesh) return;
@@ -1415,7 +1416,11 @@ public static class DesireCatalog
         // (2026-11-15, suite 118) A SU LADO, NO ENCIMA: iba al punto mismo del otro en cada decisión; al llegar se empujaban y, si el otro se movía, lo
         // seguía en círculo (lobo #57 «follow», «da vueltas»). A ≤ 4 m ya está con él y se queda; si no, va a su sitio a 2,5 m de él (Slot).
         if (best == null) return;
-        if (Flat(best.position - self.transform.position) <= 4f) { Stop(self, 1f); return; }
+        // (2026-11-15, suite 119) Con margen: ya junto al otro, sigue «con él» hasta 8 m. El que cuida a uno con estrés («tend», lobos #97, #55, #40 de
+        // la guarida) lo tenía a 4–5 m, el otro se movía un poco y volvía a ir a su sitio junto a él, y vuelta: daba vueltas a su alrededor.
+        float dBond = Flat(best.position - self.transform.position);
+        if (dBond <= 4f || (_withBond.Contains(self) && dBond <= 8f)) { _withBond.Add(self); Stop(self, 1f); return; }
+        _withBond.Remove(self);
         MoveOrNearest(self, Slot(best.position, self.GetHashCode(), 2.5f));
     }
 }
