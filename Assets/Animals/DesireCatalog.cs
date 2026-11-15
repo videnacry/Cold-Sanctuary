@@ -1409,7 +1409,11 @@ public static class DesireCatalog
             float score = tie * urg;
             if (score > bestScore) { bestScore = score; best = t; }
         }
-        if (best != null) Move(self, best.position);
+        // (2026-11-15, suite 118) A SU LADO, NO ENCIMA: iba al punto mismo del otro en cada decisión; al llegar se empujaban y, si el otro se movía, lo
+        // seguía en círculo (lobo #57 «follow», «da vueltas»). A ≤ 4 m ya está con él y se queda; si no, va a su sitio a 2,5 m de él (Slot).
+        if (best == null) return;
+        if (Flat(best.position - self.transform.position) <= 4f) { Stop(self, 1f); return; }
+        MoveOrNearest(self, Slot(best.position, self.GetHashCode(), 2.5f));
     }
 }
 
