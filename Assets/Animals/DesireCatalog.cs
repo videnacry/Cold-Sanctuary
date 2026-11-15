@@ -922,13 +922,24 @@ public static class DesireCatalog
     // ¿El camino hasta ese sitio da un RODEO (más del doble de la distancia recta + 1,5 m)? En el recinto de la Cría (la guarida,
     // el comedero, el muro) un sitio a 2 m se alcanzaba por un camino de 5–6 m alrededor de la guarida: el polluelo y el
     // cachorro iban y venían 15–17 m en 20 s para 1 m netos («da vueltas en círculo», en vivo). Un paseo es a un sitio que se ve.
+    // (2026-11-15, suite 120) También los saltos de los adultos (hasta 15 m) y más estricto: un camino más de 1,8 veces la recta, o de más de 6 esquinas,
+    // es un rodeo. En la colonia los pingüinos #81 y el emperador #44 daban saltos de 6,3 m por caminos de 10 esquinas entre la gente y los
+    // icebergs varados, se atascaban y giraban («da vueltas»).
+    public const float DetourRatio = 1.8f; public const int DetourCorners = 6;
     static bool Detour(Animal self, Vector3 at, Vector3 here)
     {
-        if (Flat(at - here) >= 4f) return false;   // (solo los paseos cortos: el recinto, la cría; el adulto explora a 4–10 m)
+        float straight = Flat(at - here);
+        if (straight > 15f) return false;
         if (!NavReach.LastPathTo(self, at, out NavMeshPath p) || p.corners.Length < 3) return false;
+        return IsDetour(p.corners, straight);
+    }
+    /// <summary>(Pruebas) ¿Es un rodeo un camino con estas esquinas para un salto de <paramref name="straight"/> m en recta?</summary>
+    public static bool IsDetour(Vector3[] corners, float straight)
+    {
+        if (corners.Length > DetourCorners + 1) return true;
         float len = 0f;
-        for (int i = 1; i < p.corners.Length; i++) len += Vector3.Distance(p.corners[i - 1], p.corners[i]);
-        return len > 2f * Flat(at - here) + 1.5f;
+        for (int i = 1; i < corners.Length; i++) len += Vector3.Distance(corners[i - 1], corners[i]);
+        return len > DetourRatio * straight + 0.5f;
     }
 
     // Explorar: saltos de 4–10 m (según su territorio) sesgados hacia delante, con pausas cortas.

@@ -259,6 +259,15 @@ public class FaunaChecks : MonoBehaviour, ITestUnit
             TestProbe.Check("a lo largo del camino guardado: (10,0,4) queda a 14 m y (5,0,1) a 5 m", Mathf.Abs(s1 - 14f) < 0.01f && Mathf.Abs(s2 - 5f) < 0.01f, $"{s1:0.00} / {s2:0.00}");
         }
 
+        // ── (2026-11-15, suite 120) UN SALTO POR UN CAMINO DE RODEO NO VALE (> 1,8 veces la recta, o más de 6 esquinas) ──
+        {
+            bool recto = DesireCatalog.IsDetour(new[] { Vector3.zero, new Vector3(5f, 0f, 0f) }, 5f);
+            bool rodeo = DesireCatalog.IsDetour(new[] { Vector3.zero, new Vector3(0f, 0f, 4f), new Vector3(5f, 0f, 4f), new Vector3(5f, 0f, 0f) }, 5f);
+            var zig = new Vector3[9]; for (int i = 0; i < 9; i++) zig[i] = new Vector3(i * 0.6f, 0f, 0f);
+            bool esquinas = DesireCatalog.IsDetour(zig, 4.8f);
+            TestProbe.Check("rodeo: el camino recto vale; uno de 13 m para 5 m en recta, o de 8 tramos, no", !recto && rodeo && esquinas, $"{recto}/{rodeo}/{esquinas}");
+        }
+
         TestProbe.End();
     }
 }
