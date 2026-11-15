@@ -954,7 +954,10 @@ public static class DesireCatalog
         if (self.lifeStage == LifeStage.child)
         {
             Transform ct = self.transform;
-            Stroll(self, key, () => ct.position + Ring(3f, 5f), 4f, 8f, 3f);   // (ronda 72: ≥ 1,5 m; ronda 112: la cría, 3–5 m)
+            // (ronda 118) La cría también sigue hacia delante (ForwardHop, paso de 4 m): con saltos de 3–5 m en cualquier dirección iba y volvía
+            // (reno #97, cría: 17 m en 20 s para 1,9 m netos).
+            Trip cTrip = TripOf(self, key);
+            Stroll(self, key, () => ForwardHop(ct.position, cTrip.lastDir.sqrMagnitude > 0.5f ? cTrip.lastDir : ct.forward, 4f), 4f, 8f, 3f);   // (ronda 72: ≥ 1,5 m; ronda 112: la cría, 3–5 m)
             return;
         }
         float step = Mathf.Clamp(self.HomeRadius * 0.08f, 4f, 10f);
