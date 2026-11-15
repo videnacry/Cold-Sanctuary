@@ -549,6 +549,10 @@ public class JornadaTest : MonoBehaviour, ITestUnit, IFastGameTime
             foreach (Collider col in Physics.OverlapSphere(c, r, ~0, QueryTriggerInteraction.Ignore))
             {
                 if (col == null || col.transform.IsChildOf(self) || col is TerrainCollider || col is CharacterController) continue;
+                // (2026-11-15, ronda 119) Una losa de suelo BAJA (≤ 0,3 m de alto, cara de arriba ≤ 0,35 m: la primera losa de las lomas, que se pisa
+                // como un escalón y no se talla, 669f9d0) es suelo, no un objeto: la liebre #74 ramoneando en una loma, «dentro de Tierra» con el
+                // centro a 0,19 y los pies a 0,10.
+                if (col.bounds.size.y <= 0.3f && col.bounds.max.y <= 0.35f) continue;
                 if (col.GetComponentInParent<Anima>() != null) continue;
                 if (col.attachedRigidbody != null && !col.attachedRigidbody.isKinematic) continue;   // cosas sueltas (comida, herramientas)
                 return col.name;
