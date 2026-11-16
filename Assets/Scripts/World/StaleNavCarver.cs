@@ -19,6 +19,7 @@ public class StaleNavCarver : MonoBehaviour
     public static int DoorsMoved { get; private set; }
     public static int MoundsSeen { get; private set; }
     public static int HillsCarved { get; private set; }
+    public static int OtherLandCarved { get; private set; }
     public static int CaveWalls { get; private set; }
 
     /// <summary>(2026-11-14) Decorados que no se pisan y se tallan aunque el NavMesh ya los rodee (los montículos de tierra).</summary>
@@ -91,6 +92,18 @@ public class StaleNavCarver : MonoBehaviour
             if (always) { float extra = 0.6f / Mathf.Max(0.01f, c.transform.lossyScale.y); o.size += new Vector3(0f, extra, 0f); o.center += new Vector3(0f, extra * 0.5f, 0f); }
             o.carving = true; o.carveOnlyStationary = true;
             n++;
+        }
+        // (2026-11-16, ronda 122) Las «Tierra» elevadas que NO son una caja (MeshCollider u otro: el bucle de arriba solo mira BoxCollider): una caja de
+        // obstáculo con su volumen, en un hijo. El lobo #2 seguía dentro de «Tierra» en sitios sin loma del constructor; si es una de estas, la talla.
+        foreach (Collider oc in FindObjectsByType<Collider>(FindObjectsSortMode.None))
+        {
+            if (oc == null || oc is BoxCollider || oc.isTrigger || !oc.enabled || oc.name != "Tierra" || !RaisedLand(oc, oc.bounds)) continue;
+            if (oc.GetComponentInChildren<NavMeshObstacle>() != null) continue;
+            Bounds ob = oc.bounds;
+            var go = new GameObject("Talla_Tierra"); go.transform.SetParent(oc.transform, true); go.transform.position = ob.center + Vector3.up * 0.3f; go.transform.rotation = Quaternion.identity;
+            NavMeshObstacle obx = go.AddComponent<NavMeshObstacle>(); obx.shape = NavMeshObstacleShape.Box; obx.size = new Vector3(ob.size.x / Mathf.Max(0.01f, go.transform.lossyScale.x), (ob.size.y + 0.6f) / Mathf.Max(0.01f, go.transform.lossyScale.y), ob.size.z / Mathf.Max(0.01f, go.transform.lossyScale.z)); obx.carving = true; obx.carveOnlyStationary = true;
+            HillsCarved++; OtherLandCarved++;
+            Debug.Log($"[Fauna] «Tierra» elevada sin caja ({oc.GetType().Name}) tallada: centro ({ob.center.x:0.0},{ob.center.y:0.00},{ob.center.z:0.0}), tamaño ({ob.size.x:0.0}×{ob.size.y:0.00}×{ob.size.z:0.0}).");
         }
         // (2026-11-11) LA PARED DE LA RAÍZ de cada torre-árbol (cristal fino, MeshCollider): el NavMesh del hielo de alrededor no la veía y los
         // animales se metían en ella (rondas 26, 58 y 61: reno y zorro ártico «dentro de Pared_raiz» en (-59,0,-92), (-61,0,…)). Su caja talla el
