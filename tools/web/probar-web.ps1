@@ -12,7 +12,7 @@
 # Uso:
 #   powershell -ExecutionPolicy Bypass -File tools\web\probar-web.ps1
 #   powershell -ExecutionPolicy Bypass -File tools\web\probar-web.ps1 -Base https://videnacry.github.io/Cold-sanctuary-web/ -Solo Buda,santuario
-#   Sitio local: sirve BuildsWebsitio (p. ej. un HttpListener de PowerShell en el puerto 18080) y pasa -Base http://127.0.0.1:18080/
+#   Sitio local: sirve Builds/Web/sitio (p. ej. un HttpListener de PowerShell en el puerto 18080) y pasa -Base http://127.0.0.1:18080/
 #   (-Base es la raiz del sitio: de alli lee escenas.json y abre cada pagina con ?prueba=1)
 # Todo lo que espera esta acotado: Edge y DevTools 30 s, cada orden 30 s, cada escena -TimeoutEscena s, todo -TimeoutTotal s.
 
