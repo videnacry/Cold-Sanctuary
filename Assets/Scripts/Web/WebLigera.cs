@@ -31,7 +31,78 @@ public static class WebLigera
 #endif
     /// <summary>El microcosmos de la web «Microcosmos ligero»: Siddhārtha en Kapilavastu (el más completo: historia, paseo por su NavMesh,
     /// mapa a mano, jornada con franjas libres y charlas).</summary>
-    public const string MicroScene = "Microcosmos_Buda";
+    public const string DefaultMicroScene = "Microcosmos_Buda";
+
+    // ── LA WEB CONTINUA (2026-11-16): una página por microcosmos ──────────────────────────────────────────────────────────────────────────
+    /// <summary>Un parámetro de la URL de la página (<c>?escena=Buda&amp;prueba=1</c>); null si no está (o fuera de la web).</summary>
+    public static string Param(string key)
+    {
+        string url = Application.absoluteURL;
+        int q = string.IsNullOrEmpty(url) ? -1 : url.IndexOf('?');
+        if (q < 0) return null;
+        string query = url.Substring(q + 1); int hash = query.IndexOf('#'); if (hash >= 0) query = query.Substring(0, hash);
+        foreach (string kv in query.Split('&'))
+        {
+            int e = kv.IndexOf('=');
+            string k = e < 0 ? kv : kv.Substring(0, e);
+            if (System.Uri.UnescapeDataString(k) == key) return e < 0 ? "" : System.Uri.UnescapeDataString(kv.Substring(e + 1).Replace('+', ' '));
+        }
+        return null;
+    }
+
+    /// <summary>¿Modo de prueba (<c>?prueba=1</c>)? Lo corre <see cref="WebPrueba"/> en el propio jugador.</summary>
+    public static bool Prueba { get { string p = Param("prueba"); return p != null && p != "0" && p != "no"; } }
+
+    /// <summary>Los microcosmos de ESTE build (los escribe el menú de build en Resources/WebEscenas.txt: «escena|nombre visible» por línea).</summary>
+    public static List<(string scene, string display)> Escenas
+    {
+        get
+        {
+            if (_escenas != null) return _escenas;
+            _escenas = new List<(string, string)>();
+            TextAsset t = Resources.Load<TextAsset>("WebEscenas");
+            if (t != null)
+                foreach (string line in t.text.Split('\n'))
+                {
+                    string l = line.Trim(); if (l.Length == 0) continue;
+                    int bar = l.IndexOf('|');
+                    _escenas.Add(bar < 0 ? (l, l) : (l.Substring(0, bar), l.Substring(bar + 1)));
+                }
+            return _escenas;
+        }
+    }
+    static List<(string scene, string display)> _escenas;
+
+    static string _micro; static bool _microResolved;
+    /// <summary>El microcosmos en el que entra Kushal al arrancar: el de <c>?escena=</c> (el nombre corto, «Buda», o la escena entera); sin
+    /// parámetro, el primero del build; <c>?escena=santuario</c> (o fuera de un build de microcosmos), ninguno: se queda en el santuario.</summary>
+    public static string MicroScene
+    {
+        get
+        {
+            if (_microResolved) return _micro;
+            _microResolved = true;
+            if (!Micro) return _micro = null;
+            string want = Param("escena");
+            if (!string.IsNullOrEmpty(want))
+            {
+                if (want.ToLowerInvariant() == "santuario") return _micro = null;
+                foreach (string c in new[] { want, "Microcosmos_" + want, "MobWorld_" + want })
+                    if (Application.CanStreamedLevelBeLoaded(c)) return _micro = c;
+                foreach (var e in Escenas) if (string.Equals(e.display, want, System.StringComparison.OrdinalIgnoreCase)) return _micro = e.scene;
+                Debug.LogWarning($"[Web] ?escena={want}: no está en este build.");
+            }
+            if (Escenas.Count > 0) return _micro = Escenas[0].scene;
+            return _micro = Application.CanStreamedLevelBeLoaded(DefaultMicroScene) ? DefaultMicroScene : null;
+        }
+    }
+
+    /// <summary>El nombre visible de una escena de microcosmos (del manifiesto del build; si no está, el de la escena sin prefijo).</summary>
+    public static string DisplayOf(string scene)
+    {
+        foreach (var e in Escenas) if (e.scene == scene) return e.display;
+        return scene == null ? null : scene.Replace("Microcosmos_", "").Replace("MobWorld_", "");
+    }
     /// <summary>Tope duro de animales en el santuario (en lugar de K × humanos, ~90).</summary>
     public const int AnimalCap = 30;
     public const float LodBias = 0.4f;
@@ -72,7 +143,7 @@ public static class WebLigera
         var go = new GameObject("WebLigera");
         Object.DontDestroyOnLoad(go);
         go.AddComponent<WebLigeraRunner>();
-        if (Touch) TouchControls.Ensure();
+        if (Touch || Prueba) TouchControls.Ensure();   // (en la prueba, también: se comprueba que responden)
         Debug.Log($"[Web] Web ligera{(Micro ? " (microcosmos: " + MicroScene + ")" : "")}: tope de {AnimalCap} animales, sin sombras, LOD {LodBias}, {TargetFps} fps{(Touch ? ", controles táctiles" : "")}.");
     }
 
@@ -153,6 +224,8 @@ public static class WebLigera
     }
 
     // ── LOS SOMBREADORES QUE FALTAN (2026-11-13: un bloque magenta junto al jugador en el build web) ─────────────────────────────────────
+    /// <summary>(Para la prueba de la web) Cuántos materiales salían en magenta (ya arreglados) y cuáles.</summary>
+    public static int MagentaTotal; public static readonly List<string> MagentaList = new List<string>();
     static readonly HashSet<Material> _checked = new HashSet<Material>();
     static readonly HashSet<string> _reported = new HashSet<string>();
     static Shader _fallback;
@@ -177,6 +250,7 @@ public static class WebLigera
                 Material m = mats[i];
                 if (m == null || !_checked.Add(m)) continue;
                 if (!Broken(m.shader)) continue;
+                MagentaTotal++; if (MagentaList.Count < 20) MagentaList.Add($"{m.name} ({(m.shader != null ? m.shader.name : "sin sombreador")}) en {Path(r.transform)}");
                 string sn = m.shader != null ? m.shader.name : "(ninguno)";
                 if (_reported.Add(sn + "|" + m.name)) Debug.LogWarning($"[Web] MAGENTA ({when}): material «{m.name}» con el sombreador «{sn}» (soportado: {(m.shader != null && m.shader.isSupported)}) en «{Path(r.transform)}». Añádelo a WebLigeraShaders.");
                 if (_fallback == null) continue;
@@ -223,15 +297,17 @@ public class WebLigeraRunner : MonoBehaviour
         string r = SpellConsole.MakeMember(p);
         Debug.Log("[Web] " + (r ?? "Kushal ya es del santuario."));
         StartCoroutine(MagentaWatch());
-        if (!WebLigera.Micro) yield break;
+        string micro = WebLigera.MicroScene;
+        if (micro == null) { if (WebLigera.Prueba) gameObject.AddComponent<WebPrueba>().Run(null); yield break; }   // el santuario
         // EL MICROCOSMOS: directo dentro, como «Inicio → microcosmos» (SceneLauncher.EnterMicro). Espera acotada al jugador.
         float until = Time.realtimeSinceStartup + 10f;
         while (GameObject.FindGameObjectWithTag("Player") == null && Time.realtimeSinceStartup < until) yield return null;
-        if (!Application.CanStreamedLevelBeLoaded(WebLigera.MicroScene)) { Debug.LogWarning($"[Web] {WebLigera.MicroScene} no está en el build."); yield break; }
-        MobWorldLoader.Instance.EnterMobWorld(WebLigera.MicroScene);
+        if (!Application.CanStreamedLevelBeLoaded(micro)) { Debug.LogWarning($"[Web] {micro} no está en el build."); if (WebLigera.Prueba) gameObject.AddComponent<WebPrueba>().Run(micro); yield break; }
+        MobWorldLoader.Instance.EnterMobWorld(micro);
         until = Time.realtimeSinceStartup + 120f;
         while (!MobWorldLoader.Instance.IsInMobWorld && Time.realtimeSinceStartup < until) yield return null;
-        if (!MobWorldLoader.Instance.IsInMobWorld) { Debug.LogWarning($"[Web] {WebLigera.MicroScene}: no se entró en 120 s."); yield break; }
+        if (WebLigera.Prueba) gameObject.AddComponent<WebPrueba>().Run(micro);   // (también si no entró: lo dice como fallo)
+        if (!MobWorldLoader.Instance.IsInMobWorld) { Debug.LogWarning($"[Web] {micro}: no se entró en 120 s."); yield break; }
         // Mientras Kushal está dentro, la fauna del santuario (de fondo, lejos) no hace falta: se apaga, y vuelve al salir.
         StartCoroutine(SanctuaryFaunaWhileInside());
     }

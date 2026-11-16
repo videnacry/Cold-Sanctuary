@@ -41,6 +41,9 @@ public class TouchControls : MonoBehaviour
     Vector2 MoveRest => new Vector2(Margin + StickRadius, Screen.height - Margin - StickRadius);
     Vector2 LookCenter => new Vector2(Screen.width - Margin - StickRadius, Screen.height - Margin - StickRadius);
 
+    /// <summary>(2026-11-16, prueba de la web: WebPrueba) Un empuje del joystick de andar sin dedo; null = el del dedo.</summary>
+    public static Vector2? TestMove;
+
     public static TouchControls Ensure()
     {
         TouchControls t = FindAnyObjectByType<TouchControls>();
@@ -119,7 +122,7 @@ public class TouchControls : MonoBehaviour
         if (_lookFinger >= 0) { lookHeld = true; look = ls == Vector2.zero ? Vector2.zero : new Vector2(ls.x * stickYawSpeed, ls.y * stickPitchSpeed) * Time.unscaledDeltaTime; }
         GameKeys.VirtualLook = look;
         GameKeys.SetVirtual(LookButton, lookHeld);
-        GameKeys.VirtualMove = MoveStick;
+        GameKeys.VirtualMove = TestMove ?? MoveStick;   // (la prueba de la web empuja el joystick sin dedo)
     }
 
     /// <summary>El joystick de andar (−1..1, con zona muerta); arriba en la pantalla = adelante.</summary>

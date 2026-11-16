@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
@@ -19,32 +21,265 @@ public static class WebLigeraBuild
     const string Sanctuary = "Assets/Scenes/SampleScene.unity";
 
     [MenuItem("Tools/Cold Sanctuary/Web/Build WebGL: Santuario ligero")]
-    public static void BuildSantuario() => Build("SantuarioLigero", new[] { Sanctuary }, new[] { "WEB_LIGERA" });
+    public static void BuildSantuario() => Single("SantuarioLigero", new[] { Sanctuary }, new[] { "WEB_LIGERA" }, new string[0]);
 
     [MenuItem("Tools/Cold Sanctuary/Web/Build WebGL: Microcosmos ligero")]
-    public static void BuildMicrocosmos() => Build("MicrocosmosLigero", new[] { Sanctuary, "Assets/Scenes/" + WebLigera.MicroScene + ".unity" }, new[] { "WEB_LIGERA", "WEB_LIGERA_MICRO" });
+    public static void BuildMicrocosmos() => Single("MicrocosmosLigero", new[] { Sanctuary, "Assets/Scenes/" + WebLigera.DefaultMicroScene + ".unity" }, new[] { "WEB_LIGERA", "WEB_LIGERA_MICRO" }, new[] { WebLigera.DefaultMicroScene });
 
-    static void Build(string name, string[] scenes, string[] defines)
+    /// <summary>Un build suelto (los dos ligeros): prepara, construye y deja el editor en Windows.</summary>
+    static void Single(string name, string[] scenes, string[] defines, string[] micros)
+    {
+        try
+        {
+            if (!Prepare(scenes)) return;
+            BuildOne(name, scenes, defines, Path.Combine(Root, name), micros, out _);
+        }
+        finally { BackToWindows(); }
+    }
+
+    /// <summary>Lo de antes de cada tanda de builds: que estén las escenas y el módulo, los ajustes, link.xml, sombreadores y plantilla.</summary>
+    static bool Prepare(string[] scenes)
     {
         foreach (string s in scenes)
-            if (!File.Exists(s)) { Debug.LogError($"[Web] Falta {s}: genérala antes (Build Sample Scene / su menú de microcosmos)."); return; }
-        if (!BuildPipeline.IsBuildTargetSupported(BuildTargetGroup.WebGL, BuildTarget.WebGL)) { Debug.LogError("[Web] El módulo WebGL no está instalado (Unity Hub → Installs → Add modules → WebGL Build Support)."); return; }
+            if (!File.Exists(s)) { Debug.LogError($"[Web] Falta {s}: genérala antes (Build Sample Scene / su menú de microcosmos)."); return false; }
+        if (!BuildPipeline.IsBuildTargetSupported(BuildTargetGroup.WebGL, BuildTarget.WebGL)) { Debug.LogError("[Web] El módulo WebGL no está instalado (Unity Hub → Installs → Add modules → WebGL Build Support)."); return false; }
         ApplyPlayerSettings();
         EnsureLinkXml();
         EnsureRuntimeShaders();
         EnsureTemplate();
-        string outDir = Path.Combine(Root, name);
+        return true;
+    }
+
+    /// <summary>Un build WebGL de <paramref name="scenes"/> en <paramref name="outDir"/>, con su manifiesto de microcosmos
+    /// (Resources/WebEscenas.txt: lo lee <see cref="WebLigera.Escenas"/>). Devuelve si salió y el tamaño de su .data (MB).</summary>
+    static bool BuildOne(string name, string[] scenes, string[] defines, string outDir, string[] micros, out float dataMB)
+    {
+        dataMB = 0f;
+        WriteManifest(micros);
+        if (Directory.Exists(outDir)) Directory.Delete(outDir, true);
         var opts = new BuildPlayerOptions
         {
             scenes = scenes, locationPathName = outDir, target = BuildTarget.WebGL, targetGroup = BuildTargetGroup.WebGL,
             options = BuildOptions.None, extraScriptingDefines = defines,
         };
-        Debug.Log($"[Web] Build «{name}»: {string.Join(", ", scenes)} con {string.Join(";", defines)} → {outDir}");
+        Debug.Log($"[Web] Build «{name}»: {scenes.Length} escenas ({string.Join(", ", scenes.Select(Path.GetFileNameWithoutExtension))}) con {string.Join(";", defines)} → {outDir}");
         BuildReport r = BuildPipeline.BuildPlayer(opts);
+        EditorUtility.UnloadUnusedAssetsImmediate(); System.GC.Collect();   // (el PC de 16 GB: suelta lo de este build antes del siguiente)
         long bytes = DirSize(outDir);
+        foreach (string f in Directory.Exists(outDir + "/Build") ? Directory.GetFiles(outDir + "/Build", "*.data") : new string[0]) dataMB = new FileInfo(f).Length / (1024f * 1024f);
         if (r.summary.result == BuildResult.Succeeded)
-            Debug.Log($"[Web] «{name}» listo en {Path.GetFullPath(outDir)}: {bytes / (1024f * 1024f):0.0} MB en disco (sin comprimir), {r.summary.totalTime.TotalMinutes:0.0} min. Súbelo tal cual a un servidor estático y abre index.html.");
-        else Debug.LogError($"[Web] «{name}» falló: {r.summary.result}, {r.summary.totalErrors} errores (mira la consola).");
+        {
+            Debug.Log($"[Web] «{name}» listo en {Path.GetFullPath(outDir)}: {bytes / (1024f * 1024f):0.0} MB en disco (sin comprimir; .data {dataMB:0.0} MB), {r.summary.totalTime.TotalMinutes:0.0} min.");
+            return true;
+        }
+        Debug.LogError($"[Web] «{name}» falló: {r.summary.result}, {r.summary.totalErrors} errores (mira la consola).");
+        return false;
+    }
+
+    /// <summary>El editor, de vuelta a Windows (un build WebGL lo deja en WebGL, y el resto del equipo trabaja en Windows).</summary>
+    static void BackToWindows()
+    {
+        if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.StandaloneWindows64) return;
+        bool ok = EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Standalone, BuildTarget.StandaloneWindows64);
+        Debug.Log($"[Web] Editor de vuelta a StandaloneWindows64: {(ok ? "hecho" : "NO se pudo (cámbialo a mano en Build Profiles)")}.");
+    }
+
+    /// <summary>El manifiesto de microcosmos del build (Resources/WebEscenas.txt, «escena|nombre visible» por línea; vacío en el santuario).</summary>
+    static void WriteManifest(string[] micros)
+    {
+        if (!AssetDatabase.IsValidFolder("Assets/Resources")) AssetDatabase.CreateFolder("Assets", "Resources");
+        var reg = Microcosmos().ToDictionary(m => m.scene, m => m.display);
+        File.WriteAllText("Assets/Resources/WebEscenas.txt", string.Join("\n", micros.Select(s => s + "|" + (reg.TryGetValue(s, out string d) ? d : Slug(s)))) + "\n");
+        AssetDatabase.ImportAsset("Assets/Resources/WebEscenas.txt");
+    }
+
+    // ══ LA WEB CONTINUA (2026-11-16; Berón: «una página por microcosmo existente y futuro» y subidas continuas) ═══════════════════════════════
+    // UN SITIO entero en Builds/Web/sitio/, listo para copiar a cs-web-pages (tools/web/subir-web.ps1):
+    //   santuario/            el Santuario ligero (SampleScene sola)
+    //   grupos/gNN/           builds de «santuario + unos cuantos microcosmos» (?escena=<nombre> elige cuál abre)
+    //   microcosmos/<nombre>/ una página por microcosmos: redirige a su grupo con ?escena=<nombre> (y pasa ?prueba=1)
+    //   index.html            el portal: todos, con «abrir» y «probar»;  escenas.json: la lista (la lee tools/web/probar-web.ps1);  version.txt
+    // Los microcosmos salen SOLOS de la carpeta Assets/Scenes (Microcosmos_*, MobWorld_*): uno nuevo aparece sin tocar código; su nombre y su
+    // historia, del registro de la Sala de Eras (EraHubSceneBuilder.All) si está.
+    // POR QUÉ EN GRUPOS: GitHub Pages no sirve archivos de más de 100 MB, y el .data de un build lleva TODAS sus escenas (63 microcosmos ≈ 1,3 GB
+    // de escena en texto ≈ 220 MB de .data). Cada grupo lleva el santuario (el anfitrión: el jugador, la cámara, el reloj) y los microcosmos que
+    // quepan hasta ~80 MB de .data; si uno sale de más de 90 MB, se parte en dos y se rehace. Las medidas reales afinan el plan de la vez siguiente.
+    const string Site = Root + "/sitio";
+    const string PlanFile = Root + "/plan-web.txt";
+    const float TargetMB = 80f, LimitMB = 90f;
+    const int MaxBuilds = 40;   // (tope de seguridad: partir grupos no puede seguir sin fin)
+
+    /// <summary>Los microcosmos que hay (escena, nombre visible, historia): la carpeta de escenas, con el registro de la Sala de Eras.</summary>
+    public static List<(string scene, string display, string story)> Microcosmos()
+    {
+        var reg = new Dictionary<string, (string display, string story)>();
+        foreach (var e in EraHubSceneBuilder.All) reg[e.scene] = (e.display, e.story);
+        var l = new List<(string, string, string)>();
+        if (!Directory.Exists("Assets/Scenes")) return l;
+        foreach (string f in Directory.GetFiles("Assets/Scenes", "*.unity").OrderBy(x => x, System.StringComparer.Ordinal))
+        {
+            string s = Path.GetFileNameWithoutExtension(f);
+            if (!s.StartsWith("Microcosmos_") && !s.StartsWith("MobWorld_")) continue;
+            l.Add(reg.TryGetValue(s, out var r) ? (s, r.display, r.story) : (s, Slug(s), ""));
+        }
+        return l;
+    }
+
+    /// <summary>El nombre corto de la URL: la escena sin su prefijo («Microcosmos_Buda» → «Buda»).</summary>
+    public static string Slug(string scene) => scene.StartsWith("Microcosmos_") ? scene.Substring("Microcosmos_".Length) : scene.StartsWith("MobWorld_") ? scene.Substring("MobWorld_".Length) : scene;
+
+    static float SceneMB(string scene) { var fi = new FileInfo($"Assets/Scenes/{scene}.unity"); return fi.Exists ? fi.Length / (1024f * 1024f) : 0f; }
+
+    /// <summary>Lo aprendido de los builds anteriores: el .data del santuario solo (MB) y cuántos MB de .data da cada MB de escena en texto.
+    /// Arranca con lo medido el 2026-11-13 (Santuario ligero 32,2 MB; + Kapilavastu, 58,7 MB de texto → 42,2 MB: ~0,17).</summary>
+    static (float baseMB, float ratio) LoadPlan()
+    {
+        float b = 33f, r = 0.17f;
+        if (File.Exists(PlanFile))
+            foreach (string line in File.ReadAllLines(PlanFile))
+            {
+                string[] kv = line.Split('=');
+                if (kv.Length == 2 && kv[0] == "base") float.TryParse(kv[1], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out b);
+                if (kv.Length == 2 && kv[0] == "ratio") float.TryParse(kv[1], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out r);
+            }
+        return (b, r);
+    }
+
+    static void SavePlan(float b, float r, IEnumerable<string> lines)
+    {
+        Directory.CreateDirectory(Root);
+        var ci = System.Globalization.CultureInfo.InvariantCulture;
+        File.WriteAllLines(PlanFile, new[] { "base=" + b.ToString("0.0", ci), "ratio=" + r.ToString("0.000", ci) }.Concat(lines));
+    }
+
+    /// <summary>Los grupos: en orden de nombre (uno nuevo suele caer en el último), llenando cada uno hasta ~<see cref="TargetMB"/> de .data.</summary>
+    static List<List<string>> Pack(List<string> scenes, float baseMB, float ratio)
+    {
+        var groups = new List<List<string>>(); var cur = new List<string>(); float est = baseMB;
+        foreach (string s in scenes)
+        {
+            float add = SceneMB(s) * ratio;
+            if (cur.Count > 0 && est + add > TargetMB) { groups.Add(cur); cur = new List<string>(); est = baseMB; }
+            cur.Add(s); est += add;
+        }
+        if (cur.Count > 0) groups.Add(cur);
+        return groups;
+    }
+
+    [MenuItem("Tools/Cold Sanctuary/Web/Web continua: ver el plan (sin construir)")]
+    public static void ShowPlan()
+    {
+        var (b, r) = LoadPlan();
+        var micro = Microcosmos();
+        var groups = Pack(micro.Select(m => m.scene).ToList(), b, r);
+        float totalData = b + groups.Sum(g => b + g.Sum(s => SceneMB(s) * r));
+        Debug.Log($"[Web] Plan de la web continua: {micro.Count} microcosmos en {groups.Count} grupos (+ el santuario). Base {b:0.0} MB, {r:0.000} MB de .data por MB de escena. " +
+                  $"Estimado: ~{totalData:0} MB de .data y ~{(groups.Count + 1) * 35:0} MB de .wasm (≈ 35 por build) → ~{totalData + (groups.Count + 1) * 35:0} MB en total.\n" +
+                  string.Join("\n", groups.Select((g, i) => $"  g{i + 1:00}: ~{b + g.Sum(s => SceneMB(s) * r):0} MB · {string.Join(", ", g.Select(Slug))}")));
+    }
+
+    [MenuItem("Tools/Cold Sanctuary/Web/Web continua: construir todo (santuario + todos los microcosmos)")]
+    public static void BuildContinuaMenu() => BuildContinua();
+
+    /// <summary>Para la línea de comandos: <c>Unity.exe -batchmode -quit -projectPath … -executeMethod WebLigeraBuild.BuildContinuaCI</c>
+    /// (con el editor CERRADO: el proyecto no se puede abrir dos veces). Sale con 0 si todo salió.</summary>
+    public static void BuildContinuaCI() { bool ok = false; try { ok = BuildContinua(); } finally { EditorApplication.Exit(ok ? 0 : 1); } }
+
+    /// <summary>EL SITIO ENTERO: el santuario, los grupos (partiendo los que salen grandes) y las páginas. Deja el editor en Windows.</summary>
+    public static bool BuildContinua()
+    {
+        var t0 = System.DateTime.Now;
+        var micro = Microcosmos();
+        try
+        {
+            if (!Prepare(new[] { Sanctuary }.Concat(micro.Select(m => $"Assets/Scenes/{m.scene}.unity")).ToArray())) return false;
+            var (b, r) = LoadPlan();
+            if (Directory.Exists(Site)) Directory.Delete(Site, true);
+            Directory.CreateDirectory(Site + "/grupos");
+            // 1) El santuario solo: también mide la BASE (lo que pesa el anfitrión en cada grupo).
+            if (!BuildOne("santuario", new[] { Sanctuary }, new[] { "WEB_LIGERA" }, Site + "/santuario", new string[0], out float sMB)) return false;
+            if (sMB > 0f) b = sMB;
+            // 2) Los grupos, con una cola: el que sale de más de LimitMB se parte en dos y vuelve a la cola.
+            var queue = new Queue<List<string>>(Pack(micro.Select(m => m.scene).ToList(), b, r));
+            var done = new List<(string name, List<string> scenes, float mb)>();
+            int builds = 1;
+            float worstRatio = 0f;
+            while (queue.Count > 0 && builds < MaxBuilds)
+            {
+                List<string> g = queue.Dequeue();
+                string name = $"g{done.Count + 1:00}", tmp = Site + "/grupos/_construyendo";
+                builds++;
+                bool ok = BuildOne(name, new[] { Sanctuary }.Concat(g.Select(s => $"Assets/Scenes/{s}.unity")).ToArray(), new[] { "WEB_LIGERA", "WEB_LIGERA_MICRO" }, tmp, g.ToArray(), out float mb);
+                float yaml = g.Sum(SceneMB);
+                if (ok && yaml > 0f) worstRatio = Mathf.Max(worstRatio, (mb - b) / yaml);
+                if (ok && mb > LimitMB && g.Count > 1)
+                {
+                    Debug.LogWarning($"[Web] {name}: .data de {mb:0.0} MB (> {LimitMB:0}): se parte en dos y se rehace.");
+                    Directory.Delete(tmp, true);
+                    var rest = queue.ToList(); queue.Clear();
+                    queue.Enqueue(g.Take(g.Count / 2).ToList()); queue.Enqueue(g.Skip(g.Count / 2).ToList());
+                    foreach (var x in rest) queue.Enqueue(x);
+                    continue;
+                }
+                if (!ok) { Debug.LogError($"[Web] {name} falló: el sitio queda sin {string.Join(", ", g.Select(Slug))}."); continue; }
+                if (mb > LimitMB) Debug.LogError($"[Web] {name}: un solo microcosmos ({g[0]}) da {mb:0.0} MB de .data: Pages no lo servirá (> 100 MB) si pasa de 100.");
+                Directory.Move(tmp, $"{Site}/grupos/{name}");
+                done.Add((name, g, mb));
+            }
+            if (worstRatio > 0f) r = Mathf.Max(0.05f, worstRatio * 1.05f);   // la próxima vez, con lo medido (y un 5 % de margen)
+            SavePlan(b, r, done.Select(d => $"{d.name} {d.mb:0.0} MB: {string.Join(" ", d.scenes)}"));
+            WriteSite(micro, done.Select(d => (d.name, d.scenes)).ToList());
+            long bytes = DirSize(Site);
+            Debug.Log($"[Web] Web continua lista en {Path.GetFullPath(Site)}: santuario + {done.Count} grupos con {done.Sum(d => d.scenes.Count)} de {micro.Count} microcosmos, " +
+                      $"{bytes / (1024f * 1024f):0} MB, {(System.DateTime.Now - t0).TotalMinutes:0} min. Súbela con tools/web/subir-web.ps1.");
+            return queue.Count == 0 && done.Sum(d => d.scenes.Count) == micro.Count;
+        }
+        finally { BackToWindows(); }
+    }
+
+    // ── LAS PÁGINAS DEL SITIO ─────────────────────────────────────────────────────────────────────────────────────────────────────────────
+    static string Esc(string s) => (s ?? "").Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;").Replace("\"", "&quot;");
+    static string Json(string s) => "\"" + (s ?? "").Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\n", "\\n") + "\"";
+
+    static void WriteSite(List<(string scene, string display, string story)> micro, List<(string name, List<string> scenes)> groups)
+    {
+        var groupOf = new Dictionary<string, string>();
+        foreach (var g in groups) foreach (string s in g.scenes) groupOf[s] = g.name;
+        string stamp = System.DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm") + " UTC";
+        // Una página por microcosmos: redirige a su grupo con ?escena=<nombre> (y lo demás de la URL, p. ej. ?prueba=1).
+        foreach (var m in micro)
+        {
+            if (!groupOf.TryGetValue(m.scene, out string g)) continue;
+            string slug = Slug(m.scene), dir = $"{Site}/microcosmos/{slug}";
+            Directory.CreateDirectory(dir);
+            File.WriteAllText(dir + "/index.html",
+                $"<!DOCTYPE html><html lang=\"es\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>{Esc(m.display)}</title>" +
+                $"<script>var q = location.search ? '&' + location.search.substring(1) : ''; location.replace('../../grupos/{g}/?escena={System.Uri.EscapeDataString(slug)}' + q + location.hash);</script>" +
+                $"</head><body><a href=\"../../grupos/{g}/?escena={System.Uri.EscapeDataString(slug)}\">{Esc(m.display)}</a></body></html>");
+        }
+        // La lista (la lee el probador) y la versión (la espera el subidor tras el despliegue de Pages).
+        var items = new List<string> { $"{{\"nombre\":\"santuario\",\"titulo\":\"Santuario\",\"escena\":\"SampleScene\",\"grupo\":\"santuario\",\"url\":\"santuario/\"}}" };
+        foreach (var m in micro)
+            if (groupOf.TryGetValue(m.scene, out string g))
+                items.Add($"{{\"nombre\":{Json(Slug(m.scene))},\"titulo\":{Json(m.display)},\"historia\":{Json(m.story)},\"escena\":{Json(m.scene)},\"grupo\":{Json(g)},\"url\":{Json("microcosmos/" + Slug(m.scene) + "/")}}}");
+        File.WriteAllText(Site + "/escenas.json", "{\"version\":" + Json(stamp) + ",\"escenas\":[\n" + string.Join(",\n", items) + "\n]}\n");
+        File.WriteAllText(Site + "/version.txt", stamp + "\n");
+        File.WriteAllText(Site + "/.nojekyll", "");
+        // El portal.
+        var rows = new System.Text.StringBuilder();
+        rows.Append("<tr><td><b>Santuario</b></td><td>el santuario 1, con Kushal ya miembro</td><td><a href=\"santuario/\">abrir</a></td><td><a href=\"santuario/?prueba=1\">probar</a></td></tr>\n");
+        foreach (var m in micro)
+        {
+            string slug = Slug(m.scene);
+            if (!groupOf.ContainsKey(m.scene)) { rows.Append($"<tr class=\"no\"><td>{Esc(m.display)}</td><td>{Esc(m.story)}</td><td colspan=\"2\">no cupo en el build</td></tr>\n"); continue; }
+            rows.Append($"<tr><td><b>{Esc(m.display)}</b><br><small>{Esc(slug)} · {groupOf[m.scene]}</small></td><td>{Esc(m.story)}</td><td><a href=\"microcosmos/{slug}/\">abrir</a></td><td><a href=\"microcosmos/{slug}/?prueba=1\">probar</a></td></tr>\n");
+        }
+        File.WriteAllText(Site + "/index.html",
+            "<!DOCTYPE html><html lang=\"es\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>Cold Sanctuary · web</title>" +
+            "<style>body{font:15px system-ui,sans-serif;margin:16px;background:#101418;color:#eceff1}a{color:#80cbc4}table{border-collapse:collapse;width:100%}td{padding:6px;border-bottom:1px solid #263238;vertical-align:top}small{color:#90a4ae}.no{opacity:.5}</style>" +
+            $"</head><body><h1>Cold Sanctuary</h1><p>El santuario y cada microcosmos, en su página. «probar» corre la prueba en la página (<code>?prueba=1</code>). Versión: {Esc(stamp)} · {micro.Count} microcosmos.</p>" +
+            $"<table>{rows}</table></body></html>");
+        Debug.Log($"[Web] Sitio: portal, {groupOf.Count} páginas de microcosmos, escenas.json y version.txt en {Site}.");
     }
 
     /// <summary>Los ajustes de jugador WebGL para el móvil (solo tocan la plataforma WebGL).</summary>
@@ -192,7 +427,24 @@ public static class WebLigeraBuild
   <canvas id=""unity-canvas"" tabindex=""-1""></canvas>
   <div id=""loading""><div id=""bar""><div id=""fill""></div></div><p id=""msg"">Cargando {{{ PRODUCT_NAME }}}…</p></div>
   <button id=""fs"" title=""Pantalla completa"">⛶</button>
+  <pre id=""resultado"" hidden style=""position:fixed;left:8px;right:8px;bottom:8px;max-height:45vh;overflow:auto;margin:0;padding:8px;background:rgba(0,0,0,0.8);color:#c8e6c9;font:11px monospace;white-space:pre-wrap;z-index:20""></pre>
   <script>
+    // LA PRUEBA EN LA PÁGINA (?prueba=1, WebPrueba): el juego escribe «[PRUEBA-JSON] {…}» y «[PRUEBA-TITULO] OK|FALLOS n» en la consola;
+    // aquí pasan a #resultado y al título (los lee tools/web/probar-web.ps1). Se engancha ANTES de cargar Unity.
+    (function () {
+      var J = '[PRUEBA-JSON]', T = '[PRUEBA-TITULO]';
+      ['log', 'info', 'warn', 'error'].forEach(function (k) {
+        var orig = console[k];
+        console[k] = function () {
+          try {
+            var s = Array.prototype.join.call(arguments, ' '), i = s.indexOf(J);
+            if (i >= 0) { var el = document.getElementById('resultado'); var txt = s.slice(i + J.length).trim(); try { txt = JSON.stringify(JSON.parse(txt), null, 1); } catch (e) {} el.textContent = txt; el.hidden = false; }
+            i = s.indexOf(T); if (i >= 0) document.title = s.slice(i + T.length).trim();
+          } catch (e) {}
+          return orig.apply(console, arguments);
+        };
+      });
+    })();
     var canvas = document.querySelector('#unity-canvas');
     var config = {
       arguments: [],
@@ -236,7 +488,7 @@ public static class WebLigeraBuild
           };
         }
         canvas.focus();
-      }).catch(function (m) { document.querySelector('#msg').textContent = m; });
+      }).catch(function (m) { document.querySelector('#msg').textContent = m; document.title = 'FALLOS carga'; var el = document.getElementById('resultado'); el.textContent = JSON.stringify({ ok: false, fallos: 1, error: String(m) }); el.hidden = false; });
     };
     document.body.appendChild(script);
   </script>
