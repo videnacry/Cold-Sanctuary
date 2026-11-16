@@ -125,6 +125,7 @@ public class WorkRoster
         public List<Mission> skipped = new List<Mission>();            // opcionales que hoy no se hacen (nadie tenía tiempo): no pasan a mañana
         public List<string> cloneReasons = new List<string>();        // (2026-11-09) por qué salió cada clon: «clon para «área»: motivo …»
         public List<Mission> impossible = new List<Mission>();         // (solo registro) tareas que nadie, ni un clon, puede hacer hoy: debe quedar vacía
+        public List<Mission> unguarded = new List<Mission>();          // (Berón 2026-11-16) guardias que no cupieron en las personas: hoy sin guardia (sin clon, no pasan a mañana)
         public IEnumerable<Assignment> Of(Worker w) => work.Where(a => a.worker == w).OrderBy(a => a.start);
     }
 
@@ -132,6 +133,14 @@ public class WorkRoster
     public readonly List<Worker> workers = new List<Worker>();         // orden fijo del personal
     public readonly List<string> trainingAreas = new List<string>();   // entrenamientos abiertos (yoga, gimnasio…)
     public List<Mission> pending = new List<Mission>();                // pendientes de días anteriores
+
+    /// <summary>LA MAGNATE EN LAS GUARDIAS (Berón 2026-11-16: «retira a la magnate de las guardias por defecto … trae más peso por poca
+    /// ganancia, luego veremos cómo mejorar dicha lógica»). Apagado (por defecto): ningún clon hace la patrulla ni la sala de guardia; lo que no
+    /// cabe en las personas queda hoy sin guardia (<see cref="DayPlan.unguarded"/>) y no pasa a mañana. Encendido: como antes. Solo las guardias:
+    /// el resto de huecos (el alimentador incluido, que da de comer a seres vivos) sigue con clones.</summary>
+    public bool magnateGuards;
+    /// <summary>¿Es un turno de guardia? La patrulla de los puestos de vigía y la sala de guardia (no el alimentador ni la guardería).</summary>
+    public static bool IsGuardShift(Mission m) => m != null && (m.area == AreaWork.GuardRoom || (m.area == AreaWork.Guard && !m.id.StartsWith("gua_alimentador")));
 
     /// <summary>(2026-11-05) La mañana nueva y los requisitos. Apagado, el reparto puro de siempre (el que usan las pruebas de la rotación).</summary>
     public bool initiationModel;
@@ -300,6 +309,9 @@ public class WorkRoster
         AssignGroups(plan, pools, used);   // primero las de grupo: todas a la misma hora, cada una a una persona distinta
         ProfessionRound(plan, pools, used);   // (2026-11-04) luego, a cada profesional una misión de cada área de su profesión
         RunRounds(plan, pools, order, used);
+        // (Berón 2026-11-16) Las guardias que las personas no cubren, sin la Magnate (salvo con el interruptor): ni clon ni mañana.
+        if (!magnateGuards)
+            foreach (var kv in pools) { plan.unguarded.AddRange(kv.Value.Where(IsGuardShift)); kv.Value.RemoveAll(IsGuardShift); }
 
         if (sanctuaryModel)
         {

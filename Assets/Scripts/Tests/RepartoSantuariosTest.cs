@@ -474,6 +474,44 @@ public class RepartoSantuariosTest : MonoBehaviour, ITestUnit
                 if (hs.Count > 0) Debug.Log($"[Reparto] {kv.Key}: {hs.Count} personas, parte {t.share[kv.Key]:0.#} h, de {hs.Min():0.#} a {hs.Max():0.#} h (con iniciaciones, puestos y grupos).");
             }
         }
+
+        // ── 6. (Berón 2026-11-16) La Magnate fuera de las guardias por defecto; los clones no comen ni van al restaurante ──
+        List<WorkRoster.Mission> GuardDay()
+        {
+            var l = Ms("A", "req", 5, 1f, true);
+            l.Add(new WorkRoster.Mission(AreaWork.Guard, "gua_carnivoros", "Patrulla", 2f, true));
+            l.Add(new WorkRoster.Mission(AreaWork.GuardRoom, "gua_sala", "Sala de guardia", 2f, true));
+            l.Add(new WorkRoster.Mission(AreaWork.Guard, "gua_alimentador", "Alimentador", 2f, true));
+            return l;
+        }
+        // Sin personas: todo lo haría un clon (así el resultado no depende del reparto entre humanos).
+        WorkRoster RosterG(bool magnateGuards) { WorkRoster r = Roster(); r.areas.Add(AreaWork.Guard); r.areas.Add(AreaWork.GuardRoom); r.magnateGuards = magnateGuards; return r; }
+        WorkRoster.DayPlan noGuards = RosterG(false).Plan(0, GuardDay()), withGuards = RosterG(true).Plan(0, GuardDay());
+        bool CloneOn(WorkRoster.DayPlan p, string id) => p.work.Any(a => a.worker.clone && a.mission.id == id);
+        TestProbe.Check("las guardias son la patrulla y la sala de guardia; el alimentador da de comer a seres vivos y no lo es",
+            WorkRoster.IsGuardShift(new WorkRoster.Mission(AreaWork.Guard, "gua_carnivoros", "", 2f)) && WorkRoster.IsGuardShift(new WorkRoster.Mission(AreaWork.GuardRoom, "gua_sala", "", 2f))
+            && !WorkRoster.IsGuardShift(new WorkRoster.Mission(AreaWork.Guard, "gua_alimentador", "", 2f)) && !WorkRoster.IsGuardShift(new WorkRoster.Mission("Guardería", "gua_cuidar", "", 2f))
+            && !new WorkRoster().magnateGuards);
+        TestProbe.Check("por defecto ningún clon de la Magnate hace guardias: las que no caben en las personas quedan sin guardia hoy (no pasan a mañana)",
+            !CloneOn(noGuards, "gua_carnivoros") && !CloneOn(noGuards, "gua_sala") && noGuards.unguarded.Count == 2 && noGuards.backlog.Count == 0 && noGuards.impossible.Count == 0,
+            $"sin guardia: {string.Join(", ", noGuards.unguarded.Select(m => m.id))} · clones: {string.Join(", ", noGuards.work.Where(a => a.worker.clone).Select(a => a.mission.id))}");
+        TestProbe.Check("el resto de huecos sigue con clones (el alimentador también)", CloneOn(noGuards, "gua_alimentador"), string.Join(", ", noGuards.cloneReasons));
+        TestProbe.Check("con el interruptor encendido, los clones vuelven a hacer guardias (como antes)", CloneOn(withGuards, "gua_carnivoros") && CloneOn(withGuards, "gua_sala") && withGuards.unguarded.Count == 0,
+            string.Join(", ", withGuards.work.Where(a => a.worker.clone).Select(a => a.mission.id)));
+        var oldModel = new WorkRoster { sanctuaryModel = false, useProfessions = false }; oldModel.areas.AddRange(new[] { "A", AreaWork.Guard, AreaWork.GuardRoom }); // (sin personas: todo lo haría un clon)
+        WorkRoster.DayPlan pOld = oldModel.Plan(0, GuardDay());
+        TestProbe.Check("también con el reparto de siempre: ningún clon de guardia y nada de guardia pendiente para mañana", !CloneOn(pOld, "gua_carnivoros") && !CloneOn(pOld, "gua_sala") && !oldModel.pending.Any(WorkRoster.IsGuardShift),
+            string.Join(", ", pOld.work.Where(a => a.worker.clone).Select(a => a.mission.id)));
+
+        var cl = new WorkRoster.Worker("Magnate (clon 1)", clone: true); var hu = new WorkRoster.Worker("Persona");
+        var dp = new WorkRoster.DayPlan();
+        dp.work.Add(new WorkRoster.Assignment { worker = cl, mission = new WorkRoster.Mission("A", "a0", "A0", 2f, true), start = WorkRoster.StartHour });
+        float lunch = WorkRoster.StartHour + WorkRoster.FirstBlock + 0.5f;
+        string cLunch = WorkdayDirector.Slot(dp, cl, lunch, false, out _), hLunch = WorkdayDirector.Slot(dp, hu, lunch, false, out _), cWork = WorkdayDirector.Slot(dp, cl, WorkRoster.StartHour + 1f, false, out _);
+        TestProbe.Check("un clon fuera de su turno no va a comer al restaurante ni a entrenar (solo existe en su turno); una persona sí come", cLunch == null && hLunch == "Cocina" && cWork == "A"
+            && WorkdayDirector.CloneShows(dp, cl, WorkRoster.StartHour + 1f) && !WorkdayDirector.CloneShows(dp, cl, lunch), $"clon a mediodía: {cLunch ?? "nada"} · persona: {hLunch} · clon a las 9: {cWork}");
+        TestProbe.Check("los clones no cuentan como comensales", WorkdayDirector.Diners(10, 4) == 12, $"{WorkdayDirector.Diners(10, 4)} raciones por servicio para 10 personas y 4 clones");
+
         yield return null;
         TestProbe.End();
     }
