@@ -574,15 +574,17 @@ public static class DesireCatalog
     /// repite otra (a &lt; 1 m). Un fallo o una meta repetida = sí puede estar dando vueltas.</summary>
     public static bool FreshExploring(IEnumerable<(float t, Vector3 goal, bool reached)> events, float now, float window)
     {
-        var seen = new List<Vector3>();
+        // (2026-11-16, suite 121) Un solo salto fallido entre al menos 3 metas distintas alcanzadas sigue siendo explorar (en la colonia del emperador,
+        // #94: saltos de 7 m que llegaban y uno que se atascó contra otro pingüino). Dos fallos, o uno con menos de 3 metas alcanzadas, no.
+        var seen = new List<Vector3>(); int fails = 0;
         foreach (var e in events)
         {
             if (now - e.t > window) continue;
-            if (!e.reached) return false;
+            if (!e.reached) { fails++; continue; }
             foreach (Vector3 s in seen) if (Flat(s - e.goal) < 1f) return false;
             seen.Add(e.goal);
         }
-        return seen.Count > 0;
+        return seen.Count > 0 && (fails == 0 || (fails == 1 && seen.Count >= 3));
     }
     /// <summary>¿Este animal explora de verdad en los últimos <paramref name="window"/> s? (ver <see cref="FreshExploring"/>)</summary>
     public static bool ExploringFreshly(Animal a, float window = 20f) => a != null && _outcomes.TryGetValue(a, out var l) && FreshExploring(l, Time.time, window);
