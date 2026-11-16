@@ -29,7 +29,10 @@ public class StaleNavCarver : MonoBehaviour
     /// de lado. No están en el NavMesh horneado (pasa por debajo, a ras de suelo) y el filtro de tamaño (> 10 m) las dejaba sin tallar: el lobo #57
     /// andaba DENTRO de una (pies a 0,09, centro a 0,53, «dentro de Tierra» en (−202,0,−154)). Se tallan las losas elevadas (las de encima de la
     /// primera: cara de arriba a ≥ 0,35 m y apoyadas en el suelo, no las placas de tierra, cuya cara de arriba es y = 0).</summary>
-    static bool RaisedLand(Collider c, Bounds b) => c.name == "Tierra" && b.max.y >= 0.35f && b.min.y > -0.05f && b.min.y < 1f && Mathf.Max(b.size.x, b.size.z) >= 10f;   // (solo las lomas del suelo: grandes y a ras de suelo, no la tierra de un microcosmos o de un piso)
+    // (2026-11-16, suite 121) Más amplio: el lobo #2 andaba dentro de otra «Tierra» elevada en (−123,0,−178), con el centro a 0,53, que el filtro de
+    // 669f9d0 no tallaba (en el código no hay ninguna loma ahí: es de la escena). Ahora: cara de arriba a ≥ 0,35 m, la de abajo entre −0,6 y 1 m
+    // (también las que se hunden un poco en el suelo) y ≥ 3 m de lado. Los 12 primeros tallados se escriben con su caja.
+    static bool RaisedLand(Collider c, Bounds b) => c.name == "Tierra" && b.max.y >= 0.35f && b.min.y > -0.6f && b.min.y < 1f && Mathf.Max(b.size.x, b.size.z) >= 3f;
     static readonly string[] Skip = { "Cria_", "Cuadra", "Trineo", "Barrera_agua", "Inodoro", "Cabina", "Puerta", "Cama", "Silla", "Asiento" };
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -64,7 +67,7 @@ public class StaleNavCarver : MonoBehaviour
             // (2026-11-15, ronda 115) Los montículos, sin los filtros de tamaño (el oso #55 cruzaba un «Monticulo» en (−105,0,−122): en la escena
             // puede ser mayor de 10 m o estar más bajo, y se descartaba antes de mirar su nombre).
             bool alwaysEarly = AlwaysCarve(c.name) || RaisedLand(c, b);
-            if (RaisedLand(c, b)) HillsCarved++;
+            if (RaisedLand(c, b)) { HillsCarved++; if (HillsCarved <= 12) Debug.Log($"[Fauna] loma «Tierra» tallada: centro ({b.center.x:0.0},{b.center.y:0.00},{b.center.z:0.0}), tamaño ({b.size.x:0.0}×{b.size.y:0.00}×{b.size.z:0.0})."); }
             if (c.name.StartsWith("Monticulo")) MoundsSeen++;
             if (c.name == "Pared_cueva" || c.name == "Fondo_cueva") CaveWalls++;
             if (!alwaysEarly && (b.size.y < 0.4f || b.size.x > 10f || b.size.z > 10f || b.max.y < 0.35f)) continue;

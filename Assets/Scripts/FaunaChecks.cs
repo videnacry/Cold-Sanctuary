@@ -143,6 +143,8 @@ public class FaunaChecks : MonoBehaviour, ITestUnit
             !DesireCatalog.FreshExploring(new[] { (90f, g1, true), (95f, g2, false), (99f, g3, true) }, 100f, 20f));
         TestProbe.Check("…una meta repetida (ir y volver al mismo sitio) sí cuenta",
             !DesireCatalog.FreshExploring(new[] { (90f, g1, true), (95f, g2, true), (99f, g1 + new Vector3(0.5f, 0f, 0f), true) }, 100f, 20f));
+        TestProbe.Check("…un solo fallo entre 3 metas distintas alcanzadas sigue siendo explorar (suite 121)",
+            DesireCatalog.FreshExploring(new[] { (88f, g1, true), (91f, g2, true), (94f, g3, false), (97f, g3 + new Vector3(4f, 0f, 0f), true) }, 100f, 20f));
         TestProbe.Check("…sin ningún salto acabado en la ventana, no se le disculpa",
             !DesireCatalog.FreshExploring(new (float, Vector3, bool)[0], 100f, 20f));
         TestProbe.Check("…lo de antes de la ventana no cuenta (un fallo y la misma meta hace 30 s)",
