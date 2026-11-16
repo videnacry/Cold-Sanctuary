@@ -475,33 +475,45 @@ public class RepartoSantuariosTest : MonoBehaviour, ITestUnit
             }
         }
 
-        // ── 6. (Berón 2026-11-16) La Magnate fuera de las guardias por defecto; los clones no comen ni van al restaurante ──
+        // ── 6. (Berón 2026-11-16) Los turnos de guardia, desactivados para todos por defecto; los clones no comen ni van al restaurante ──
         List<WorkRoster.Mission> GuardDay()
         {
-            var l = Ms("A", "req", 5, 1f, true);
+            var l = Ms("A", "req", 3, 1f, true);
             l.Add(new WorkRoster.Mission(AreaWork.Guard, "gua_carnivoros", "Patrulla", 2f, true));
             l.Add(new WorkRoster.Mission(AreaWork.GuardRoom, "gua_sala", "Sala de guardia", 2f, true));
+            l.Add(new WorkRoster.Mission(AreaWork.GuardRoom, "cuar_ronda", "Lectura remota de la celda", 1f, true));
             l.Add(new WorkRoster.Mission(AreaWork.Guard, "gua_alimentador", "Alimentador", 2f, true));
             return l;
         }
-        // Sin personas: todo lo haría un clon (así el resultado no depende del reparto entre humanos).
-        WorkRoster RosterG(bool magnateGuards) { WorkRoster r = Roster(); r.areas.Add(AreaWork.Guard); r.areas.Add(AreaWork.GuardRoom); r.magnateGuards = magnateGuards; return r; }
-        WorkRoster.DayPlan noGuards = RosterG(false).Plan(0, GuardDay()), withGuards = RosterG(true).Plan(0, GuardDay());
-        bool CloneOn(WorkRoster.DayPlan p, string id) => p.work.Any(a => a.worker.clone && a.mission.id == id);
-        TestProbe.Check("las guardias son la patrulla y la sala de guardia; el alimentador da de comer a seres vivos y no lo es",
+        WorkRoster RosterG(bool guardShifts, params (string name, int home)[] people)
+        {
+            WorkRoster r = Roster(people); r.areas.Add(AreaWork.Guard); r.areas.Add(AreaWork.GuardRoom); r.guardShifts = guardShifts;
+            foreach (WorkRoster.Worker w in r.workers) foreach (WorkRoster.Mission m in GuardDay()) w.taught.Add(MissionRequirements.KnowledgeKey(m.id));
+            return r;
+        }
+        bool AnyOn(WorkRoster.DayPlan p, string id) => p.work.Any(a => a.mission.id == id || a.mission.id.StartsWith(id + "#"));
+        TestProbe.Check("los turnos de guardia son la patrulla y la sala de guardia; el alimentador y la lectura de la celda del árbol cazador no lo son",
             WorkRoster.IsGuardShift(new WorkRoster.Mission(AreaWork.Guard, "gua_carnivoros", "", 2f)) && WorkRoster.IsGuardShift(new WorkRoster.Mission(AreaWork.GuardRoom, "gua_sala", "", 2f))
-            && !WorkRoster.IsGuardShift(new WorkRoster.Mission(AreaWork.Guard, "gua_alimentador", "", 2f)) && !WorkRoster.IsGuardShift(new WorkRoster.Mission("Guardería", "gua_cuidar", "", 2f))
-            && !new WorkRoster().magnateGuards);
-        TestProbe.Check("por defecto ningún clon de la Magnate hace guardias: las que no caben en las personas quedan sin guardia hoy (no pasan a mañana)",
-            !CloneOn(noGuards, "gua_carnivoros") && !CloneOn(noGuards, "gua_sala") && noGuards.unguarded.Count == 2 && noGuards.backlog.Count == 0 && noGuards.impossible.Count == 0,
-            $"sin guardia: {string.Join(", ", noGuards.unguarded.Select(m => m.id))} · clones: {string.Join(", ", noGuards.work.Where(a => a.worker.clone).Select(a => a.mission.id))}");
-        TestProbe.Check("el resto de huecos sigue con clones (el alimentador también)", CloneOn(noGuards, "gua_alimentador"), string.Join(", ", noGuards.cloneReasons));
-        TestProbe.Check("con el interruptor encendido, los clones vuelven a hacer guardias (como antes)", CloneOn(withGuards, "gua_carnivoros") && CloneOn(withGuards, "gua_sala") && withGuards.unguarded.Count == 0,
-            string.Join(", ", withGuards.work.Where(a => a.worker.clone).Select(a => a.mission.id)));
-        var oldModel = new WorkRoster { sanctuaryModel = false, useProfessions = false }; oldModel.areas.AddRange(new[] { "A", AreaWork.Guard, AreaWork.GuardRoom }); // (sin personas: todo lo haría un clon)
+            && !WorkRoster.IsGuardShift(new WorkRoster.Mission(AreaWork.Guard, "gua_alimentador", "", 2f)) && !WorkRoster.IsGuardShift(new WorkRoster.Mission(AreaWork.GuardRoom, "cuar_ronda", "", 1f))
+            && !WorkRoster.IsGuardShift(new WorkRoster.Mission("Guardería", "gua_cuidar", "", 2f)) && !new WorkRoster().guardShifts);
+        // Sin personas (todo lo haría un clon) y con una persona que sabe hacerlo todo.
+        WorkRoster.DayPlan offClones = RosterG(false).Plan(0, GuardDay()), onClones = RosterG(true).Plan(0, GuardDay());
+        WorkRoster soloG = RosterG(false, ("Guardiana", 0)), soloOn = RosterG(true, ("Guardiana", 0));
+        WorkRoster.DayPlan offPerson = soloG.Plan(0, GuardDay()), onPerson = soloOn.Plan(0, GuardDay());
+        TestProbe.Check("apagado (por defecto): nadie hace guardias, ni personas ni clones, y no pasan a mañana",
+            !AnyOn(offClones, "gua_carnivoros") && !AnyOn(offClones, "gua_sala") && !AnyOn(offPerson, "gua_carnivoros") && !AnyOn(offPerson, "gua_sala")
+            && offClones.guardsOff.Count == 2 && offPerson.guardsOff.Count == 2 && !soloG.pending.Any(WorkRoster.IsGuardShift) && offPerson.backlog.Count == 0,
+            $"desactivadas: {string.Join(", ", offPerson.guardsOff.Select(m => m.id))} · trabajo: {string.Join(", ", offPerson.work.Select(a => a.worker.name + " " + a.mission.id))}");
+        TestProbe.Check("sus horas quedan para lo demás: las horas pedidas bajan las 4 h de guardia",
+            Mathf.Approximately(offPerson.hoursDemanded, onPerson.hoursDemanded - 4f), $"{offPerson.hoursDemanded} h apagado · {onPerson.hoursDemanded} h encendido");
+        TestProbe.Check("el alimentador y la lectura de la celda siguen haciéndose", AnyOn(offClones, "gua_alimentador") && AnyOn(offClones, "cuar_ronda"),
+            string.Join(", ", offClones.work.Select(a => a.mission.id)));
+        TestProbe.Check("con el interruptor encendido, las guardias vuelven (personas o clones, como antes)", AnyOn(onClones, "gua_carnivoros") && AnyOn(onClones, "gua_sala") && onClones.guardsOff.Count == 0 && onPerson.guardsOff.Count == 0,
+            string.Join(", ", onClones.work.Select(a => a.mission.id)));
+        var oldModel = new WorkRoster { sanctuaryModel = false, useProfessions = false }; oldModel.areas.AddRange(new[] { "A", AreaWork.Guard, AreaWork.GuardRoom }); oldModel.Add("Sola");
         WorkRoster.DayPlan pOld = oldModel.Plan(0, GuardDay());
-        TestProbe.Check("también con el reparto de siempre: ningún clon de guardia y nada de guardia pendiente para mañana", !CloneOn(pOld, "gua_carnivoros") && !CloneOn(pOld, "gua_sala") && !oldModel.pending.Any(WorkRoster.IsGuardShift),
-            string.Join(", ", pOld.work.Where(a => a.worker.clone).Select(a => a.mission.id)));
+        TestProbe.Check("también con el reparto de siempre: nadie hace guardias y no quedan pendientes para mañana", !AnyOn(pOld, "gua_carnivoros") && !AnyOn(pOld, "gua_sala") && !oldModel.pending.Any(WorkRoster.IsGuardShift),
+            string.Join(", ", pOld.work.Select(a => a.mission.id)));
 
         var cl = new WorkRoster.Worker("Magnate (clon 1)", clone: true); var hu = new WorkRoster.Worker("Persona");
         var dp = new WorkRoster.DayPlan();

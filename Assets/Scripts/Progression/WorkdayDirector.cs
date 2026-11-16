@@ -148,7 +148,7 @@ public class WorkdayDirector : MonoBehaviour
         today = roster.Plan(day, todays);
         Debug.Log($"[Reparto] Día {day} · opcionales omitidas: {(today.skipped.Count == 0 ? "ninguna" : string.Join(", ", today.skipped.Select(m => $"{m.id} ({m.area}, {m.hours:0.#} h)")))} · clones: {today.clones.Count}");
         foreach (string why in today.cloneReasons) Debug.Log($"[Reparto] Día {day} · {why}");   // (2026-11-09) cada clon, con su motivo
-        if (today.unguarded.Count > 0) Debug.Log($"[Reparto] Día {day} · sin guardia hoy (la Magnate no hace guardias: WorkRoster.magnateGuards apagado): {string.Join(", ", today.unguarded.Select(m => $"{m.id} ({m.hours:0.#} h)"))}");
+        if (!roster.guardShifts) Debug.Log($"[Reparto] Día {day} · turnos de guardia desactivados (WorkRoster.guardShifts apagado; Berón 2026-11-16): {today.guardsOff.Count} sin repartir, {today.guardsOff.Sum(m => m.hours):0.#} h para lo demás");
         _orders.Clear(); _cloneOrders.Clear();   // (las órdenes guardadas eran del plan de ayer)
         int gymDays = GymProgramming.ApplyGymDays(today, roster.trainingAreas, roster.workers);   // los días de gimnasio de cada plan
         if (gymDays > 0) Debug.Log($"[Gimnasio] Día {day}: {gymDays} cambios en el entrenamiento de las 14 h por los días de cada plan; al gimnasio: {string.Join(", ", today.training.Where(kv => kv.Value == GymArea).Select(kv => kv.Key.name))}.");
