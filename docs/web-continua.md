@@ -74,3 +74,21 @@ Todas las esperas están acotadas: 6 s para asentarse, 12 de observación y 2 de
      DevTools Protocol por el WebSocket de .NET; nada que instalar).
    - Abre cada página con `?prueba=1`, espera el título `OK`/`FALLOS` (acotado) y lee `#resultado`.
    - Imprime una tabla por escena (estado, fallos, gente, flora y fauna frente a lo esperado, y qué falla). Sale con 0 si todo da OK.
+
+## Compresión gzip (2026-11-16, por defecto)
+- **Qué es:** un interruptor en el menú (`Tools/Cold Sanctuary/Web/Compresión: gzip (con descompresión de reserva)` /
+  `… Compresión: sin comprimir`, guardado en EditorPrefs) y en `construir-web.ps1 -Compresion gzip|ninguna` (por defecto gzip; en batch,
+  `-webCompresion`).
+- **Cómo funciona:** con gzip y «decompression fallback», el cargador de Unity descomprime él mismo si el servidor no manda
+  Content-Encoding, así que vale en GitHub Pages y en cualquier servidor estático. Los archivos salen como `.unityweb`.
+- **El plan con gzip:** el límite de 100 MB cuenta el `.data` **comprimido**. Cada grupo tiene ahora dos topes:
+  - ≤ ~80 MB tal como se sube (se parte si pasa de 90);
+  - ≤ ~200 MB **sin comprimir** (se parte si pasa de 260), porque eso es lo que el navegador del móvil tiene en memoria (montón de
+    512→1024 MB).
+- **El modelo:** el `.data` del santuario sin comprimir, los MB por MB de escena y lo que deja gzip. Arranca con gzip al 30 %; el build del
+  santuario y cada grupo lo miden (descomprimiendo el `.data`) y lo guardan en `plan-web.txt`.
+- **Estimado con gzip:** 63 microcosmos en **2 grupos + el santuario = 3 builds** (antes, 6–7).
+  - Cada grupo: ~150–200 MB en memoria, ~45–60 MB a subir.
+  - El sitio, unos **~120 MB**: el santuario ~10 MB de `.data` + 2 grupos de ~45–60 MB + 3 `.wasm` de ~8 MB.
+  - Unos **1–1,5 h** de build.
+  - Cada subida añade ~120 MB al historial de `cs-web-pages`, en vez de ~700. `-Squash` sigue apagado hasta que Berón decida.

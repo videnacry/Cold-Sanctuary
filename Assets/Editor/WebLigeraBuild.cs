@@ -52,9 +52,12 @@ public static class WebLigeraBuild
 
     /// <summary>Un build WebGL de <paramref name="scenes"/> en <paramref name="outDir"/>, con su manifiesto de microcosmos
     /// (Resources/WebEscenas.txt: lo lee <see cref="WebLigera.Escenas"/>). Devuelve si salió y el tamaño de su .data (MB).</summary>
-    static bool BuildOne(string name, string[] scenes, string[] defines, string outDir, string[] micros, out float dataMB)
+    static bool BuildOne(string name, string[] scenes, string[] defines, string outDir, string[] micros, out float dataMB) => BuildOne(name, scenes, defines, outDir, micros, out dataMB, out _);
+
+    /// <summary>Como el otro, y además el tamaño del .data SIN comprimir (<paramref name="rawMB"/>: lo que ocupa en la memoria del navegador).</summary>
+    static bool BuildOne(string name, string[] scenes, string[] defines, string outDir, string[] micros, out float dataMB, out float rawMB)
     {
-        dataMB = 0f;
+        dataMB = 0f; rawMB = 0f;
         WriteManifest(micros);
         if (Directory.Exists(outDir)) Directory.Delete(outDir, true);
         var opts = new BuildPlayerOptions
@@ -66,14 +69,59 @@ public static class WebLigeraBuild
         BuildReport r = BuildPipeline.BuildPlayer(opts);
         EditorUtility.UnloadUnusedAssetsImmediate(); System.GC.Collect();   // (el PC de 16 GB: suelta lo de este build antes del siguiente)
         long bytes = DirSize(outDir);
-        foreach (string f in Directory.Exists(outDir + "/Build") ? Directory.GetFiles(outDir + "/Build", "*.data") : new string[0]) dataMB = new FileInfo(f).Length / (1024f * 1024f);
+        // El .data: «X.data» sin comprimir; «X.data.unityweb» (gzip con descompresión de reserva) o «X.data.gz» comprimido.
+        foreach (string f in Directory.Exists(outDir + "/Build") ? Directory.GetFiles(outDir + "/Build", "*.data*") : new string[0])
+        {
+            dataMB = new FileInfo(f).Length / (1024f * 1024f);
+            rawMB = f.EndsWith(".data") ? dataMB : GzipRawMB(f, dataMB);
+        }
         if (r.summary.result == BuildResult.Succeeded)
         {
-            Debug.Log($"[Web] «{name}» listo en {Path.GetFullPath(outDir)}: {bytes / (1024f * 1024f):0.0} MB en disco (sin comprimir; .data {dataMB:0.0} MB), {r.summary.totalTime.TotalMinutes:0.0} min.");
+            Debug.Log($"[Web] «{name}» listo en {Path.GetFullPath(outDir)}: {bytes / (1024f * 1024f):0.0} MB en disco ({CompresionLabel}; .data {dataMB:0.0} MB, {rawMB:0.0} MB sin comprimir), {r.summary.totalTime.TotalMinutes:0.0} min.");
             return true;
         }
         Debug.LogError($"[Web] «{name}» falló: {r.summary.result}, {r.summary.totalErrors} errores (mira la consola).");
         return false;
+    }
+
+    // ── LA COMPRESIÓN (2026-11-16): gzip con descompresión de reserva (por defecto) o sin comprimir ─────────────────────────────────────────
+    // Con gzip y «decompression fallback», el cargador de Unity descomprime él mismo si el servidor no manda Content-Encoding: vale en
+    // cualquier servidor estático (GitHub Pages incluido) y los archivos ocupan ~3–4 veces menos (el sitio entero, ~200 MB en vez de ~700),
+    // a cambio de descomprimir en el móvil al cargar. Se elige en el menú (se guarda en EditorPrefs) o con «-webCompresion gzip|ninguna».
+    public enum Compresion { Gzip, Ninguna }
+    const string CompresionPref = "ColdSanctuary.WebCompresion";
+    const string MenuGzip = "Tools/Cold Sanctuary/Web/Compresión: gzip (con descompresión de reserva)", MenuNone = "Tools/Cold Sanctuary/Web/Compresión: sin comprimir";
+
+    public static Compresion Modo
+    {
+        get
+        {
+            string[] args = System.Environment.GetCommandLineArgs();
+            int i = System.Array.IndexOf(args, "-webCompresion");
+            if (i >= 0 && i + 1 < args.Length) return args[i + 1].ToLowerInvariant().StartsWith("n") ? Compresion.Ninguna : Compresion.Gzip;
+            return (Compresion)EditorPrefs.GetInt(CompresionPref, (int)Compresion.Gzip);
+        }
+        set => EditorPrefs.SetInt(CompresionPref, (int)value);
+    }
+    static string CompresionLabel => Modo == Compresion.Gzip ? "gzip con descompresión de reserva" : "sin comprimir";
+
+    [MenuItem(MenuGzip, false, 100)] static void SetGzip() { Modo = Compresion.Gzip; Debug.Log("[Web] Compresión: gzip con descompresión de reserva."); }
+    [MenuItem(MenuGzip, true)] static bool SetGzipCheck() { Menu.SetChecked(MenuGzip, Modo == Compresion.Gzip); return true; }
+    [MenuItem(MenuNone, false, 101)] static void SetNone() { Modo = Compresion.Ninguna; Debug.Log("[Web] Compresión: ninguna."); }
+    [MenuItem(MenuNone, true)] static bool SetNoneCheck() { Menu.SetChecked(MenuNone, Modo == Compresion.Ninguna); return true; }
+
+    /// <summary>Lo que ocupa un archivo gzip sin comprimir (MB), leyéndolo entero (acotado: si falla, el comprimido × 3,5).</summary>
+    static float GzipRawMB(string path, float compMB)
+    {
+        try
+        {
+            long n = 0; var buf = new byte[1 << 20];
+            using (var fs = File.OpenRead(path))
+            using (var gz = new System.IO.Compression.GZipStream(fs, System.IO.Compression.CompressionMode.Decompress))
+                for (int k; (k = gz.Read(buf, 0, buf.Length)) > 0;) n += k;
+            return n / (1024f * 1024f);
+        }
+        catch (System.Exception e) { Debug.LogWarning($"[Web] No pude medir {path} sin comprimir ({e.Message}): se estima."); return compMB * 3.5f; }
     }
 
     /// <summary>El editor, de vuelta a Windows (un build WebGL lo deja en WebGL, y el resto del equipo trabaja en Windows).</summary>
@@ -101,12 +149,15 @@ public static class WebLigeraBuild
     //   index.html            el portal: todos, con «abrir» y «probar»;  escenas.json: la lista (la lee tools/web/probar-web.ps1);  version.txt
     // Los microcosmos salen SOLOS de la carpeta Assets/Scenes (Microcosmos_*, MobWorld_*): uno nuevo aparece sin tocar código; su nombre y su
     // historia, del registro de la Sala de Eras (EraHubSceneBuilder.All) si está.
-    // POR QUÉ EN GRUPOS: GitHub Pages no sirve archivos de más de 100 MB, y el .data de un build lleva TODAS sus escenas (63 microcosmos ≈ 1,3 GB
-    // de escena en texto ≈ 220 MB de .data). Cada grupo lleva el santuario (el anfitrión: el jugador, la cámara, el reloj) y los microcosmos que
-    // quepan hasta ~80 MB de .data; si uno sale de más de 90 MB, se parte en dos y se rehace. Las medidas reales afinan el plan de la vez siguiente.
+    // POR QUÉ EN GRUPOS: GitHub Pages no sirve archivos de más de 100 MB (el límite cuenta el archivo tal como se sube: con gzip, el .data
+    // COMPRIMIDO), y el .data de un build lleva TODAS sus escenas (63 microcosmos ≈ 1,3 GB de escena en texto ≈ 220 MB de .data sin comprimir).
+    // Cada grupo lleva el santuario (el anfitrión: el jugador, la cámara, el reloj) y los microcosmos que quepan con DOS topes:
+    //  · el .data tal como se sube, ≤ ~80 MB (si uno sale de más de 90, se parte en dos y se rehace);
+    //  · con gzip, además, el .data SIN comprimir ≤ ~200 MB: es lo que el navegador del móvil tiene en memoria (montón de 512→1024 MB).
+    // Con gzip caben 2 grupos (3 builds con el santuario); sin comprimir, 5–6 (6–7 builds). Las medidas reales afinan el plan de la vez siguiente.
     const string Site = Root + "/sitio";
     const string PlanFile = Root + "/plan-web.txt";
-    const float TargetMB = 80f, LimitMB = 90f;
+    const float TargetMB = 80f, LimitMB = 90f, RawTargetMB = 200f, RawLimitMB = 260f;
     const int MaxBuilds = 40;   // (tope de seguridad: partir grupos no puede seguir sin fin)
 
     /// <summary>Los microcosmos que hay (escena, nombre visible, historia): la carpeta de escenas, con el registro de la Sala de Eras.</summary>
@@ -130,59 +181,79 @@ public static class WebLigeraBuild
 
     static float SceneMB(string scene) { var fi = new FileInfo($"Assets/Scenes/{scene}.unity"); return fi.Exists ? fi.Length / (1024f * 1024f) : 0f; }
 
-    /// <summary>Lo aprendido de los builds anteriores: el .data del santuario solo (MB) y cuántos MB de .data da cada MB de escena en texto.
-    /// Arranca con lo medido el 2026-11-13 (Santuario ligero 32,2 MB; + Kapilavastu, 58,7 MB de texto → 42,2 MB: ~0,17).</summary>
-    static (float baseMB, float ratio) LoadPlan()
+    /// <summary>El modelo de tamaño, aprendido de los builds anteriores:
+    ///  · <c>b</c>: el .data del santuario solo, SIN comprimir (MB);
+    ///  · <c>r</c>: MB de .data sin comprimir por MB de escena en texto;
+    ///  · <c>z</c>: lo que queda del .data con gzip (comprimido ÷ sin comprimir).
+    /// Arranca con lo medido el 2026-11-13 (Santuario ligero 32,2 MB; + Kapilavastu, 58,7 MB de texto → 42,2 MB: r ≈ 0,17) y, para gzip, un
+    /// 0,30 prudente (las escenas de cubos se comprimen bien; el primer build con gzip lo mide).</summary>
+    struct Modelo { public float b, r, z; }
+
+    static Modelo LoadPlan()
     {
-        float b = 33f, r = 0.17f;
+        var m = new Modelo { b = 33f, r = 0.17f, z = 0.30f };
+        var ci = System.Globalization.CultureInfo.InvariantCulture; var st = System.Globalization.NumberStyles.Float;
         if (File.Exists(PlanFile))
             foreach (string line in File.ReadAllLines(PlanFile))
             {
                 string[] kv = line.Split('=');
-                if (kv.Length == 2 && kv[0] == "base") float.TryParse(kv[1], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out b);
-                if (kv.Length == 2 && kv[0] == "ratio") float.TryParse(kv[1], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out r);
+                if (kv.Length != 2) continue;
+                if (kv[0] == "base") float.TryParse(kv[1], st, ci, out m.b);
+                if (kv[0] == "ratio") float.TryParse(kv[1], st, ci, out m.r);
+                if (kv[0] == "gzip") float.TryParse(kv[1], st, ci, out m.z);
             }
-        return (b, r);
+        return m;
     }
 
-    static void SavePlan(float b, float r, IEnumerable<string> lines)
+    static void SavePlan(Modelo m, IEnumerable<string> lines)
     {
         Directory.CreateDirectory(Root);
         var ci = System.Globalization.CultureInfo.InvariantCulture;
-        File.WriteAllLines(PlanFile, new[] { "base=" + b.ToString("0.0", ci), "ratio=" + r.ToString("0.000", ci) }.Concat(lines));
+        File.WriteAllLines(PlanFile, new[] { "base=" + m.b.ToString("0.0", ci), "ratio=" + m.r.ToString("0.000", ci), "gzip=" + m.z.ToString("0.000", ci) }.Concat(lines));
     }
 
-    /// <summary>Los grupos: en orden de nombre (uno nuevo suele caer en el último), llenando cada uno hasta ~<see cref="TargetMB"/> de .data.</summary>
-    static List<List<string>> Pack(List<string> scenes, float baseMB, float ratio)
+    /// <summary>Lo que se sube (comprimido o no, según <see cref="Modo"/>) y lo que ocupa en memoria, para el santuario más esas escenas.</summary>
+    static (float up, float raw) Estimate(Modelo m, IEnumerable<string> scenes)
     {
-        var groups = new List<List<string>>(); var cur = new List<string>(); float est = baseMB;
+        float raw = m.b + scenes.Sum(s => SceneMB(s) * m.r);
+        return (Modo == Compresion.Gzip ? raw * m.z : raw, raw);
+    }
+
+    /// <summary>Los grupos: en orden de nombre (uno nuevo suele caer en el último), llenando cada uno hasta los dos topes.</summary>
+    static List<List<string>> Pack(List<string> scenes, Modelo m)
+    {
+        var groups = new List<List<string>>(); var cur = new List<string>();
         foreach (string s in scenes)
         {
-            float add = SceneMB(s) * ratio;
-            if (cur.Count > 0 && est + add > TargetMB) { groups.Add(cur); cur = new List<string>(); est = baseMB; }
-            cur.Add(s); est += add;
+            var e = Estimate(m, cur.Concat(new[] { s }));
+            bool full = e.up > TargetMB || (Modo == Compresion.Gzip && e.raw > RawTargetMB);
+            if (cur.Count > 0 && full) { groups.Add(cur); cur = new List<string>(); }
+            cur.Add(s);
         }
         if (cur.Count > 0) groups.Add(cur);
         return groups;
     }
 
+    /// <summary>~MB del .wasm de un build (medido sin comprimir: 34,5; con gzip, ~8).</summary>
+    static float WasmMB => Modo == Compresion.Gzip ? 8f : 35f;
+
     [MenuItem("Tools/Cold Sanctuary/Web/Web continua: ver el plan (sin construir)")]
     public static void ShowPlan()
     {
-        var (b, r) = LoadPlan();
+        Modelo m = LoadPlan();
         var micro = Microcosmos();
-        var groups = Pack(micro.Select(m => m.scene).ToList(), b, r);
-        float totalData = b + groups.Sum(g => b + g.Sum(s => SceneMB(s) * r));
-        Debug.Log($"[Web] Plan de la web continua: {micro.Count} microcosmos en {groups.Count} grupos (+ el santuario). Base {b:0.0} MB, {r:0.000} MB de .data por MB de escena. " +
-                  $"Estimado: ~{totalData:0} MB de .data y ~{(groups.Count + 1) * 35:0} MB de .wasm (≈ 35 por build) → ~{totalData + (groups.Count + 1) * 35:0} MB en total.\n" +
-                  string.Join("\n", groups.Select((g, i) => $"  g{i + 1:00}: ~{b + g.Sum(s => SceneMB(s) * r):0} MB · {string.Join(", ", g.Select(Slug))}")));
+        var groups = Pack(micro.Select(x => x.scene).ToList(), m);
+        float sanct = Estimate(m, new string[0]).up, total = sanct + groups.Sum(g => Estimate(m, g).up) + (groups.Count + 1) * WasmMB;
+        Debug.Log($"[Web] Plan de la web continua ({CompresionLabel}): {micro.Count} microcosmos en {groups.Count} grupos + el santuario = {groups.Count + 1} builds. " +
+                  $"Modelo: santuario {m.b:0.0} MB, {m.r:0.000} MB de .data por MB de escena, gzip deja el {m.z * 100f:0} %. Estimado: ~{total:0} MB a subir.\n" +
+                  string.Join("\n", groups.Select((g, i) => { var e = Estimate(m, g); return $"  g{i + 1:00}: ~{e.up:0} MB a subir, ~{e.raw:0} MB en memoria · {string.Join(", ", g.Select(Slug))}"; })));
     }
 
     [MenuItem("Tools/Cold Sanctuary/Web/Web continua: construir todo (santuario + todos los microcosmos)")]
     public static void BuildContinuaMenu() => BuildContinua();
 
-    /// <summary>Para la línea de comandos: <c>Unity.exe -batchmode -quit -projectPath … -executeMethod WebLigeraBuild.BuildContinuaCI</c>
-    /// (con el editor CERRADO: el proyecto no se puede abrir dos veces). Sale con 0 si todo salió.</summary>
+    /// <summary>Para la línea de comandos: <c>Unity.exe -batchmode -quit -projectPath … -executeMethod WebLigeraBuild.BuildContinuaCI
+    /// [-webCompresion gzip|ninguna]</c> (con el editor CERRADO: el proyecto no se puede abrir dos veces). Sale con 0 si todo salió.</summary>
     public static void BuildContinuaCI() { bool ok = false; try { ok = BuildContinua(); } finally { EditorApplication.Exit(ok ? 0 : 1); } }
 
     /// <summary>EL SITIO ENTERO: el santuario, los grupos (partiendo los que salen grandes) y las páginas. Deja el editor en Windows.</summary>
@@ -192,29 +263,33 @@ public static class WebLigeraBuild
         var micro = Microcosmos();
         try
         {
-            if (!Prepare(new[] { Sanctuary }.Concat(micro.Select(m => $"Assets/Scenes/{m.scene}.unity")).ToArray())) return false;
-            var (b, r) = LoadPlan();
+            if (!Prepare(new[] { Sanctuary }.Concat(micro.Select(x => $"Assets/Scenes/{x.scene}.unity")).ToArray())) return false;
+            Modelo m = LoadPlan();
+            Debug.Log($"[Web] Web continua, {CompresionLabel}.");
             if (Directory.Exists(Site)) Directory.Delete(Site, true);
             Directory.CreateDirectory(Site + "/grupos");
-            // 1) El santuario solo: también mide la BASE (lo que pesa el anfitrión en cada grupo).
-            if (!BuildOne("santuario", new[] { Sanctuary }, new[] { "WEB_LIGERA" }, Site + "/santuario", new string[0], out float sMB)) return false;
-            if (sMB > 0f) b = sMB;
-            // 2) Los grupos, con una cola: el que sale de más de LimitMB se parte en dos y vuelve a la cola.
-            var queue = new Queue<List<string>>(Pack(micro.Select(m => m.scene).ToList(), b, r));
-            var done = new List<(string name, List<string> scenes, float mb)>();
+            // 1) El santuario solo: también mide la BASE (lo que pesa el anfitrión en cada grupo) y lo que deja gzip.
+            if (!BuildOne("santuario", new[] { Sanctuary }, new[] { "WEB_LIGERA" }, Site + "/santuario", new string[0], out float sUp, out float sRaw)) return false;
+            if (sRaw > 0f) m.b = sRaw;
+            if (Modo == Compresion.Gzip && sRaw > 0f) m.z = Mathf.Clamp(sUp / sRaw * 1.05f, 0.1f, 1f);
+            // 2) Los grupos, con una cola: el que sale de más de LimitMB (o, con gzip, de más de RawLimitMB en memoria) se parte en dos.
+            var queue = new Queue<List<string>>(Pack(micro.Select(x => x.scene).ToList(), m));
+            var done = new List<(string name, List<string> scenes, float up, float raw)>();
             int builds = 1;
-            float worstRatio = 0f;
+            float worstR = 0f, worstZ = 0f;
             while (queue.Count > 0 && builds < MaxBuilds)
             {
                 List<string> g = queue.Dequeue();
                 string name = $"g{done.Count + 1:00}", tmp = Site + "/grupos/_construyendo";
                 builds++;
-                bool ok = BuildOne(name, new[] { Sanctuary }.Concat(g.Select(s => $"Assets/Scenes/{s}.unity")).ToArray(), new[] { "WEB_LIGERA", "WEB_LIGERA_MICRO" }, tmp, g.ToArray(), out float mb);
+                bool ok = BuildOne(name, new[] { Sanctuary }.Concat(g.Select(s => $"Assets/Scenes/{s}.unity")).ToArray(), new[] { "WEB_LIGERA", "WEB_LIGERA_MICRO" }, tmp, g.ToArray(), out float up, out float raw);
                 float yaml = g.Sum(SceneMB);
-                if (ok && yaml > 0f) worstRatio = Mathf.Max(worstRatio, (mb - b) / yaml);
-                if (ok && mb > LimitMB && g.Count > 1)
+                if (ok && yaml > 0f) worstR = Mathf.Max(worstR, (raw - m.b) / yaml);
+                if (ok && raw > 0f && Modo == Compresion.Gzip) worstZ = Mathf.Max(worstZ, up / raw);
+                bool tooBig = up > LimitMB || (Modo == Compresion.Gzip && raw > RawLimitMB);
+                if (ok && tooBig && g.Count > 1)
                 {
-                    Debug.LogWarning($"[Web] {name}: .data de {mb:0.0} MB (> {LimitMB:0}): se parte en dos y se rehace.");
+                    Debug.LogWarning($"[Web] {name}: .data de {up:0.0} MB ({raw:0.0} MB en memoria): se parte en dos y se rehace.");
                     Directory.Delete(tmp, true);
                     var rest = queue.ToList(); queue.Clear();
                     queue.Enqueue(g.Take(g.Count / 2).ToList()); queue.Enqueue(g.Skip(g.Count / 2).ToList());
@@ -222,12 +297,13 @@ public static class WebLigeraBuild
                     continue;
                 }
                 if (!ok) { Debug.LogError($"[Web] {name} falló: el sitio queda sin {string.Join(", ", g.Select(Slug))}."); continue; }
-                if (mb > LimitMB) Debug.LogError($"[Web] {name}: un solo microcosmos ({g[0]}) da {mb:0.0} MB de .data: Pages no lo servirá (> 100 MB) si pasa de 100.");
+                if (up > 100f) Debug.LogError($"[Web] {name}: un solo microcosmos ({g[0]}) da {up:0.0} MB de .data: Pages no lo servirá (> 100 MB).");
                 Directory.Move(tmp, $"{Site}/grupos/{name}");
-                done.Add((name, g, mb));
+                done.Add((name, g, up, raw));
             }
-            if (worstRatio > 0f) r = Mathf.Max(0.05f, worstRatio * 1.05f);   // la próxima vez, con lo medido (y un 5 % de margen)
-            SavePlan(b, r, done.Select(d => $"{d.name} {d.mb:0.0} MB: {string.Join(" ", d.scenes)}"));
+            if (worstR > 0f) m.r = Mathf.Max(0.05f, worstR * 1.05f);   // la próxima vez, con lo medido (y un 5 % de margen)
+            if (worstZ > 0f) m.z = Mathf.Clamp(Mathf.Max(m.z, worstZ * 1.05f), 0.1f, 1f);
+            SavePlan(m, done.Select(d => $"{d.name} {d.up:0.0} MB ({d.raw:0.0} en memoria): {string.Join(" ", d.scenes)}"));
             WriteSite(micro, done.Select(d => (d.name, d.scenes)).ToList());
             long bytes = DirSize(Site);
             Debug.Log($"[Web] Web continua lista en {Path.GetFullPath(Site)}: santuario + {done.Count} grupos con {done.Sum(d => d.scenes.Count)} de {micro.Count} microcosmos, " +
@@ -286,8 +362,9 @@ public static class WebLigeraBuild
     public static void ApplyPlayerSettings()
     {
         NamedBuildTarget nt = NamedBuildTarget.WebGL;
-        PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Disabled;   // sin Brotli ni gzip: cualquier servidor estático
-        PlayerSettings.WebGL.decompressionFallback = false;
+        // Gzip con descompresión de reserva (vale en cualquier servidor estático) o sin comprimir: WebLigeraBuild.Modo (menú o -webCompresion).
+        PlayerSettings.WebGL.compressionFormat = Modo == Compresion.Gzip ? WebGLCompressionFormat.Gzip : WebGLCompressionFormat.Disabled;
+        PlayerSettings.WebGL.decompressionFallback = Modo == Compresion.Gzip;
         PlayerSettings.WebGL.initialMemorySize = 512;
         PlayerSettings.WebGL.maximumMemorySize = 1024;
         PlayerSettings.WebGL.memoryGrowthMode = WebGLMemoryGrowthMode.Geometric;
@@ -301,7 +378,7 @@ public static class WebLigeraBuild
         PlayerSettings.stripEngineCode = true;
         PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.WebGL, false);
         PlayerSettings.SetGraphicsAPIs(BuildTarget.WebGL, new[] { GraphicsDeviceType.OpenGLES3 });   // WebGL 2
-        Debug.Log("[Web] Ajustes WebGL: sin compresión, sin fallback, 512→1024 MB, stripping alto, IL2CPP para tamaño (Master), WebGL 2.");
+        Debug.Log($"[Web] Ajustes WebGL: {CompresionLabel}, 512→1024 MB, stripping alto, IL2CPP para tamaño (Master), WebGL 2.");
     }
 
     /// <summary>Con stripping alto, el código del juego se guarda entero (usa reflexión: arranques, AddComponent por tipo…); se recortan el
