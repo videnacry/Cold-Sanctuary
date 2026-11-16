@@ -209,7 +209,9 @@ public class MarineLife : MonoBehaviour
                 // (2026-11-02) PEGADA A SU MADRE mientras ella está en su hábitat (patrullando los témpanos, respirando): la cría está
                 // quieta a su lado a propósito, también en su hábitat. La orca cría «atascada > 20 s» en (45, −3, 12) y (83, −3, 30)
                 // estaba a 1,4 m de su madre, que patrullaba los témpanos (en vivo).
-                _withMom = ml != null && ml.InHabitat && Vector3.Distance(mom.transform.position, transform.position) <= reach + 1f;
+                // (2026-11-16, ronda 122) Pegada a su madre, esté donde esté: si la madre está parada (no solo en su hábitat), la cría a su lado está con
+                // ella, no atascada (orca cría #98 «atascada» en (75,−2,30), día 1). Si la que no se mueve es la madre, el aviso será el suyo.
+                _withMom = ml != null && Vector3.Distance(mom.transform.position, transform.position) <= reach + 1f;
                 Vector3 t = mom.transform.position + side; t.y = Mathf.Min(t.y, SwimY);
                 Move(t, speed * 1.2f, false);
                 return;

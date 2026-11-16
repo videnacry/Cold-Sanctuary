@@ -544,6 +544,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit, IFastGameTime
             return b;
         }
 
+        static string _lastInside = "";
         static string InsideOf(Vector3 c, float r, Transform self)
         {
             foreach (Collider col in Physics.OverlapSphere(c, r, ~0, QueryTriggerInteraction.Ignore))
@@ -555,6 +556,9 @@ public class JornadaTest : MonoBehaviour, ITestUnit, IFastGameTime
                 if (col.bounds.size.y <= 0.3f && col.bounds.max.y <= 0.35f) continue;
                 if (col.GetComponentInParent<Anima>() != null) continue;
                 if (col.attachedRigidbody != null && !col.attachedRigidbody.isKinematic) continue;   // cosas sueltas (comida, herramientas)
+                // (2026-11-16, ronda 122) Con su caja y su tipo de collider: el lobo #2 «dentro de Tierra» en sitios donde el código no pone ninguna loma
+                // ((−229,−147), (−220,−158), (−202,−154)…), y no se sabía qué pieza era.
+                _lastInside = $"{col.GetType().Name} centro ({col.bounds.center.x:0.0},{col.bounds.center.y:0.00},{col.bounds.center.z:0.0}) tamaño ({col.bounds.size.x:0.0}×{col.bounds.size.y:0.00}×{col.bounds.size.z:0.0}) «{(col.transform.parent != null ? col.transform.parent.name : "—")}»";
                 return col.name;
             }
             return null;
@@ -675,7 +679,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit, IFastGameTime
             // flote, el cuerpo pegado al costado de la placa). Dentro de un mueble sí cuenta; el agua sin ser acuático lo mira aparte.
             if (inside != null && SwimBody.Swimming(tr.g) && (inside.StartsWith("Tierra") || inside.StartsWith("Casquete"))) inside = null;
             if (inside != null && !lyingOk) { tr.inside++; tr.insideOf = inside; } else tr.inside = 0;
-            if (tr.inside == 3) Add(tr.name, "dentro de un objeto", $"«{tr.insideOf}» en {Where(p)} ({tr.activity}) [cuerpo: centro y {b.center.y:0.00}, pies {b.min.y:0.00}, raíz y {tr.g.transform.position.y:0.00}, nadando {SwimBody.Swimming(tr.g)}{(tr.animal != null ? " · " + DesireCatalog.NavInfo(tr.animal) + " · " + NavTrace.Last(tr.animal) : "")}]", human);   // (ronda 99: zorro #27 «dentro de Tierra», sin datos para saber cómo)
+            if (tr.inside == 3) Add(tr.name, "dentro de un objeto", $"«{tr.insideOf}» en {Where(p)} ({tr.activity}) [cuerpo: centro y {b.center.y:0.00}, pies {b.min.y:0.00}, raíz y {tr.g.transform.position.y:0.00}, nadando {SwimBody.Swimming(tr.g)}, pieza: {_lastInside}{(tr.animal != null ? " · " + DesireCatalog.NavInfo(tr.animal) + " · " + NavTrace.Last(tr.animal) : "")}]", human);   // (ronda 99: zorro #27 «dentro de Tierra», sin datos para saber cómo)
 
             bool aquatic = !human && (tr.animal != null && (tr.animal.WaterAffinity >= 0.5f || tr.animal.GetComponent<MarineLife>() != null));
             // (2026-11-01) Una PERSONA que cruza a nado entre casquetes (los enlaces de nado del NavMesh, IslandsTest: «cruzando a
