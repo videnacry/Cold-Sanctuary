@@ -289,7 +289,7 @@ public class SiteLine : MonoBehaviour
 
     void LoadMarine()
     {
-        if (SceneManager.GetSceneByName(MarineScene).isLoaded) return;
+        if (WebLigera.Active || SceneManager.GetSceneByName(MarineScene).isLoaded) return;   // (web ligera: sin el santuario marino)
         if (!Application.CanStreamedLevelBeLoaded(MarineScene)) { Debug.LogWarning($"[Línea] Falta {MarineScene} en Build Settings: Tools/Cold Sanctuary/Build Santuario Marino."); return; }
         _ownLoad = true;
         SceneManager.LoadSceneAsync(MarineScene, LoadSceneMode.Additive);

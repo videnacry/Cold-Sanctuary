@@ -13,7 +13,9 @@ public static class CheapMaterials
     const string LitName = "Universal Render Pipeline/Lit", SimpleName = "Universal Render Pipeline/Simple Lit";
 
     static Shader _simple;
-    public static Shader Simple => _simple != null ? _simple : (_simple = Shader.Find(SimpleName) ?? Shader.Find(LitName) ?? Shader.Find("Standard"));
+    public static Shader Simple => _simple != null ? _simple : (_simple = Shader.Find(SimpleName) ?? WebShader() ?? Shader.Find(LitName) ?? Shader.Find("Standard"));
+    /// <summary>(2026-11-13, web ligera) Si Shader.Find no lo encuentra en el build, el del material de Resources/WebLigeraShaders (siempre va).</summary>
+    static Shader WebShader() { Material m = Resources.Load<Material>("WebLigeraShaders/URP_SimpleLit_opaco"); return m != null && m.shader != null && m.shader.isSupported ? m.shader : null; }
 
     static readonly Dictionary<Color, Material> _byColor = new Dictionary<Color, Material>();
 
