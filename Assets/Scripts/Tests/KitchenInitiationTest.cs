@@ -69,6 +69,7 @@ public class KitchenInitiationTest : MonoBehaviour, ITestUnit
         GameObject spot = GameObject.Find("CocinaSpot");
         if (spot != null) WorkdayDirector.Teleport(player.transform, spot.transform.position + Vector3.up * 0.5f);
         int before = rk.dishes[low].Have;
+        FoodContainer lowBox = rk.dishes[low].container; int taken0 = lowBox != null ? lowBox.taken : 0;
         AreaInitiator ai = AreaInitiator.Begin(AreaInitiator.Kind.Kitchen, ob, mags.Length > 0 ? mags[0].GetComponent<Anima>() : null);
         TestProbe.Check("un trabajador de la cocina empieza la iniciación", ai != null, ai != null ? ai.Who : "nadie");
         if (ai == null) { Restore(oldScale, mags, bosses); TestProbe.End(); yield break; }
@@ -97,7 +98,10 @@ public class KitchenInitiationTest : MonoBehaviour, ITestUnit
         TestProbe.Check("cocinan el platillo con menos stock", r != null && r.dish == want, r != null ? r.dish : "sin informe");
         TestProbe.Check("el jugador lanza los pasos que le piden y el de turno ayuda si no llega", r != null && r.stepsByStudent > 0 && r.stepsHelped >= 1 && r.cooked, r != null ? $"{r.stepsByStudent} del jugador, {r.stepsHelped} ayudados" : "");
         int after = rk.dishes[low].Have;
-        TestProbe.Check("el stock sube con TODAS las raciones de la tanda por mayor", after >= before + n, $"{before} → {after} (×{n})");
+        // (2026-11-17, ronda 125) Las raciones que algún comensal tomó en la espera (hasta 120 s: con los turnos de guardia apagados, la guardia come en el
+        // restaurante) también salieron de la tanda: «0 → 29 (×30)» con la tanda completa. Se cuentan con FoodContainer.taken.
+        int eaten = lowBox != null ? lowBox.taken - taken0 : 0;
+        TestProbe.Check("el stock sube con TODAS las raciones de la tanda por mayor", after + eaten >= before + n, $"{before} → {after} (×{n}){(eaten > 0 ? $", {eaten} comidas en la espera" : "")}");
         TestProbe.Check("queda formado en cocina", ob.kitchenTrained);
         ExperienciaJugadorTest.CheckOrchestra("cocina", watch);
 

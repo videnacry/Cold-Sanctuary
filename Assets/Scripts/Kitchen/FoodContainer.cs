@@ -12,6 +12,8 @@ public class FoodContainer : MonoBehaviour
     [Min(1)] public int capacity = 20;
 
     public bool HasFood => rations > 0;
+    /// <summary>(2026-11-17, ronda 125) Raciones tomadas por comensales desde que existe (las pruebas cuentan las que se comieron mientras miraban el stock).</summary>
+    [System.NonSerialized] public int taken;
 
     /// <summary>Añade raciones (lo hace el cocinero al emplatar). Devuelve false si ya está lleno.</summary>
     public bool Deposit(int n = 1)
@@ -27,7 +29,7 @@ public class FoodContainer : MonoBehaviour
     public bool Take()
     {
         if (rations <= 0) return false;
-        rations--;
+        rations--; taken++;
         return true;
     }
 }
