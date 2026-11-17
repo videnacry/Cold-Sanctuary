@@ -154,6 +154,8 @@ public static partial class SampleSceneBuilder
                 g.AddComponent<MeshRenderer>().sharedMaterial = kv.Key;
                 if (kv.Key != bare) g.AddComponent<MeshCollider>().sharedMesh = mesh;   // (el hueco del viento se pisa: es solo color)
                 else PolarLandscapeBuilder.IgnoreForNav(g);
+                // (2026-11-17, ronda 125) Las crestas de presión no se andan (el zorro #83 subía por sus losas inclinadas y se metía en ellas).
+                if (kv.Key == ice) { var mod = g.AddComponent<Unity.AI.Navigation.NavMeshModifier>(); mod.overrideArea = true; mod.area = 1; }
                 meshes++;
             }
         }
