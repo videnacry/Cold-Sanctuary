@@ -199,8 +199,10 @@ public static class WebLigera
         foreach (GameObject root in s.GetRootGameObjects())
             foreach (Animal a in root.GetComponentsInChildren<Animal>(true))
             {
-                if (a == null || a.death || a.SpeciesName == null || !PopulationPlan.Groups.ContainsKey(a.SpeciesName)) continue;
-                if (!bySpecies.TryGetValue(a.SpeciesName, out var l)) bySpecies[a.SpeciesName] = l = new List<Animal>();
+                if (a == null || a.death) continue;
+                string sp = !string.IsNullOrEmpty(a.SpeciesName) ? a.SpeciesName : a.name.Replace("(Clone)", "").Trim();   // (2026-11-17: al cargar, SpeciesName aún puede no estar)
+                if (!PopulationPlan.Groups.ContainsKey(sp)) continue;
+                if (!bySpecies.TryGetValue(sp, out var l)) bySpecies[sp] = l = new List<Animal>();
                 l.Add(a); total++;
             }
         if (total <= cap) return 0;
@@ -297,6 +299,7 @@ public class WebLigeraRunner : MonoBehaviour
         string r = SpellConsole.MakeMember(p);
         Debug.Log("[Web] " + (r ?? "Kushal ya es del santuario."));
         StartCoroutine(MagentaWatch());
+        StartCoroutine(TrimLater());
         string micro = WebLigera.MicroScene;
         if (micro == null) { if (WebLigera.Prueba) gameObject.AddComponent<WebPrueba>().Run(null); yield break; }   // el santuario
         // EL MICROCOSMOS: directo dentro, como «Inicio → microcosmos» (SceneLauncher.EnterMicro). Espera acotada al jugador.
@@ -314,6 +317,17 @@ public class WebLigeraRunner : MonoBehaviour
 
     /// <summary>Lo magenta, al arrancar y unas veces más (muchos materiales se hacen en juego, más tarde: marcadores, cultivos, el microcosmos);
     /// luego cada minuto. Cada material se mira una sola vez.</summary>
+    /// <summary>(2026-11-17, la prueba de la web: «97 del plan» en el santuario) El tope de animales, también DESPUÉS de cargar: al cargar,
+    /// los animales aún no tienen su especie y FamilyGenerator genera familias en su Start. Se repasa a los 2, 8 y 20 s.</summary>
+    IEnumerator TrimLater()
+    {
+        foreach (float wait in new[] { 2f, 6f, 12f })
+        {
+            yield return new WaitForSecondsRealtime(wait);
+            for (int i = 0; i < SceneManager.sceneCount; i++) { Scene s = SceneManager.GetSceneAt(i); if (InsectPurge.IsSanctuary1(s)) WebLigera.TrimFauna(s, WebLigera.AnimalCap); }
+        }
+    }
+
     IEnumerator MagentaWatch()
     {
         foreach (float wait in new[] { 0f, 3f, 10f, 30f })

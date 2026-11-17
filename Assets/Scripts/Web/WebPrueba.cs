@@ -70,7 +70,7 @@ public class WebPrueba : MonoBehaviour
             float d = Vector3.Distance(m.position, p0[i].Item1), a = Quaternion.Angle(m.rotation, p0[i].Item2);
             if (d > 0.25f || a > 15f) moved++;
             // Cae: bajó más de 2 m Y no tiene suelo debajo (un pájaro que se posa o un pez que baja no cuentan).
-            if (p0[i].Item1.y - m.position.y > 2f && !Physics.Raycast(m.position + Vector3.up * 0.5f, Vector3.down, 60f, ~0, QueryTriggerInteraction.Ignore)) fell++;
+            if (p0[i].Item1.y - m.position.y > 2f && !Physics.Raycast(m.position + Vector3.up * 0.5f, Vector3.down, 1000f, ~0, QueryTriggerInteraction.Ignore)) fell++;   // (1000 m: un ave que vuela alto tiene suelo debajo)
         }
         Add($"se mueven o giran en {Watch:0} s (≥ 25 %)", alive == 0 ? false : moved >= Mathf.CeilToInt(alive * 0.25f), $"{moved} de {alive}");
         Add("nadie cae (baja > 2 m mientras se mira)", fell == 0, $"{fell} cayendo");
@@ -120,7 +120,9 @@ public class WebPrueba : MonoBehaviour
         var animals = new List<Animal>(); int humans = 0;
         foreach (GameObject g in roots)
         {
-            foreach (CubeInsect ci in g.GetComponentsInChildren<CubeInsect>(true)) if (ci.folk) people.Add(ci);
+            // LA GENTE: los del pueblo (folk) y los MIRMIDONES del elenco (insectos-humanos sin Animal: los de los microcosmos de área y de las
+            // historias de la tribu, AreaMicrocosmos.DressMyrmidon). Los bichos llevan Animal.
+            foreach (CubeInsect ci in g.GetComponentsInChildren<CubeInsect>(true)) if (IsPerson(ci)) people.Add(ci);
             jornadas.AddRange(g.GetComponentsInChildren<MicroJornada>(true));
             sites.AddRange(g.GetComponentsInChildren<AreaFunctionSite>(true));
             foreach (Animal a in g.GetComponentsInChildren<Animal>(true)) if (a != null && !a.CompareTag("Player")) animals.Add(a);
@@ -140,7 +142,7 @@ public class WebPrueba : MonoBehaviour
                 Add("al menos 2 edificios de la era", sites.Count >= 2, $"{sites.Count}");
                 Add("gente con jornada (≥ 3)", jornadas.Count >= 3, $"{jornadas.Count} con jornada, {people.Count} del pueblo");
                 string tall = "";
-                foreach (CubeInsect ci in people)
+                foreach (CubeInsect ci in people.Where(x => x.folk))   // (la estatura, la de los del pueblo: los mirmidones van en postura de centauro)
                 {
                     if (ci.TryGetComponent(out BodyAging grow) && grow.growth < BodyAging.Adult) continue;
                     CapsuleCollider cc = ci.GetComponent<CapsuleCollider>(); if (cc != null && cc.height < 1.5f) continue;
@@ -176,9 +178,9 @@ public class WebPrueba : MonoBehaviour
         // SITIO: la regla de la flora de MicroGround (enterrada / dentro de un collider), también para bichos y gente; y dentro del piso.
         Bounds? floor = null;
         if (root != null) { Transform f = root.Find("Suelo_piso"); if (f != null && f.TryGetComponent(out Renderer fr)) floor = fr.bounds; }
-        Place("flora", plants, rayRoot, floor, 0.05f);
-        Place("fauna", animals.Select(a => a.transform).ToList(), rayRoot, floor, 0.3f);
-        Place("gente", people.Select(p => p.transform).ToList(), rayRoot, floor, 0.3f);
+        Place("flora", plants, rayRoot, floor, 0.05f, Kind.Flora);
+        Place("fauna", animals.Select(a => a.transform).ToList(), rayRoot, floor, 0.3f, Kind.Fauna);
+        Place("gente", people.Select(p => p.transform).ToList(), rayRoot, floor, 0.3f, Kind.Gente);
     }
 
     static int CountSanctuaryPeople(GameObject[] roots)
@@ -188,10 +190,51 @@ public class WebPrueba : MonoBehaviour
         return n;
     }
 
-    void Place(string what, List<Transform> items, Transform rayRoot, Bounds? floor, float tol)
+    /// <summary>¿Una persona del microcosmos? Los del pueblo (folk) y los MIRMIDONES del elenco (insectos-humanos sin Animal en ellos ni
+    /// encima, fuera de la fauna); no el jugador.</summary>
+    static bool IsPerson(CubeInsect ci)
+    {
+        if (ci == null || ci.CompareTag("Player") || ci.GetComponentInParent<PlayerController>() != null) return false;
+        if (ci.folk) return true;
+        if (ci.GetComponentInParent<Animal>() != null) return false;
+        for (Transform p = ci.transform; p != null; p = p.parent) if (p.name == "Fauna_a_escala") return false;
+        return true;
+    }
+
+    enum Kind { Flora, Fauna, Gente }
+
+    /// <summary>¿Es un mueble o un edificio (un puesto, una pieza del piso de la historia)? La gente se sienta a la mesa y se pone al
+    /// puesto: tocarlos no es estar «dentro» ni «enterrada».</summary>
+    static bool Furniture(Collider k)
+    {
+        for (Transform p = k.transform; p != null; p = p.parent)
+            if (p.GetComponent<AreaFunctionSite>() != null || p.GetComponent<AreaFunctionStation>() != null || p.GetComponent<MicroPiece>() != null) return true;
+        return false;
+    }
+
+    static bool Ground(Collider k) => k != null && (MicroGround.IsSoil(k) || k.name.StartsWith("Suelo") || k.name.Contains("Terreno") || k.name.Contains("Talud") || k.name.Contains("Hielo"));
+
+    /// <summary>¿Qué collider (que no sea él mismo ni lo que la regla de MicroGround ignora) contiene el CENTRO de su cuerpo, 5 cm por
+    /// encima (la tolerancia del apoyo)? Para un bicho: posado ENCIMA de un mueble o de una hoja no cuenta; hundido en él, sí.</summary>
+    static Collider BodyInside(Transform t, Transform root, bool skipFurniture)
+    {
+        bool any = false; Bounds b = default;
+        foreach (Renderer r in t.GetComponentsInChildren<Renderer>()) { if (!r.enabled) continue; if (!any) { b = r.bounds; any = true; } else b.Encapsulate(r.bounds); }
+        Vector3 c = (any ? b.center : t.position) + Vector3.up * 0.05f;
+        foreach (Collider k in Physics.OverlapSphere(c, 0.01f, ~0, QueryTriggerInteraction.Ignore))
+        {
+            if (MicroGround.Ignored(k, t) || MicroGround.IsSoil(k)) continue;
+            if (root != null && !k.transform.IsChildOf(root)) continue;
+            if (skipFurniture && Furniture(k)) continue;
+            return k;
+        }
+        return null;
+    }
+
+    void Place(string what, List<Transform> items, Transform rayRoot, Bounds? floor, float tol, Kind kind)
     {
         if (items.Count == 0) return;
-        int step = Mathf.Max(1, items.Count / Sample), looked = 0, buried = 0, inside = 0, outside = 0, noGround = 0;
+        int step = Mathf.Max(1, items.Count / Sample), looked = 0, buried = 0, inside = 0, insideGround = 0, outside = 0, noGround = 0, onFurniture = 0;
         string first = "";
         Physics.SyncTransforms();
         for (int i = 0; i < items.Count; i += step)
@@ -204,18 +247,29 @@ public class WebPrueba : MonoBehaviour
                 Bounds f = floor.Value;
                 if (p.x < f.min.x - 1f || p.x > f.max.x + 1f || p.z < f.min.z - 1f || p.z > f.max.z + 1f) { outside++; if (first.Length == 0) first = $"{t.name} fuera del piso"; continue; }
             }
+            // Una planta «(sobre mueble)» va en la meseta de un mueble gigante a propósito (regla 5): no se le busca suelo (como en las
+            // pruebas del pueblo, que tampoco la cuentan como flotante).
+            bool onTop = kind == Kind.Flora && t.name.Contains("(sobre mueble)");
+            if (onTop) { onFurniture++; continue; }
             if (MicroGround.TopSurface(rayRoot, p, MicroGround.Probe, out float top, out Collider on, t))
             {
-                if (top > p.y + tol) { buried++; if (first.Length == 0) first = $"{t.name} enterrado ({p.y:0.00} m bajo {(on != null ? on.name : "suelo")} a {top:0.00} m)"; continue; }
+                bool counts = !(kind == Kind.Gente && on != null && Furniture(on));   // (la gente, sentada a la mesa: la mesa no la «entierra»)
+                if (counts && top > p.y + tol) { buried++; if (first.Length == 0) first = $"{t.name} enterrado ({p.y:0.00} m bajo {(on != null ? on.name : "suelo")} a {top:0.00} m)"; continue; }
             }
-            else if (!Physics.Raycast(p + Vector3.up * 0.5f, Vector3.down, 60f, ~0, QueryTriggerInteraction.Ignore)) { noGround++; if (first.Length == 0) first = $"{t.name} sin suelo debajo"; continue; }
-            Collider k = MicroGround.Inside(rayRoot, t);
-            if (k != null) { inside++; if (first.Length == 0) first = $"{t.name} dentro de «{k.name}»"; }
+            else if (!Physics.Raycast(p + Vector3.up * 0.5f, Vector3.down, 1000f, ~0, QueryTriggerInteraction.Ignore)) { noGround++; if (first.Length == 0) first = $"{t.name} sin suelo debajo"; continue; }
+            // DENTRO: la planta, con la regla de MicroGround (su pie); el bicho y la persona, por el centro de su cuerpo (BodyInside).
+            Collider k = kind == Kind.Flora ? MicroGround.Inside(rayRoot, t) : BodyInside(t, rayRoot, kind == Kind.Gente);
+            if (k != null)
+            {
+                inside++; if (Ground(k)) insideGround++;
+                if (first.Length == 0) first = $"{t.name} dentro de «{k.name}»";
+            }
         }
         // Tolerancia: hasta un 5 % (lo mismo que admite la pasada de Settle al asentar en el editor).
         int bad = buried + inside + outside + noGround, allow = Mathf.Max(1, looked / 20);
         Add($"{what}: en su sitio (ni enterrada, ni dentro de objetos, ni fuera del piso, ni sin suelo)", bad <= allow,
-            $"{looked} miradas: {buried} enterradas, {inside} dentro, {outside} fuera, {noGround} sin suelo{(first.Length > 0 ? " · p. ej. " + first : "")}");
+            $"{looked} miradas: {buried} enterradas, {inside} dentro ({insideGround} hundidas en el suelo, {inside - insideGround} en muebles o paredes), {outside} fuera, {noGround} sin suelo" +
+            $"{(onFurniture > 0 ? $"; {onFurniture} sobre mueble (a propósito)" : "")}{(first.Length > 0 ? " · p. ej. " + first : "")}");
     }
 
     static List<Transform> Movers(Scene s, bool micro)
@@ -223,7 +277,7 @@ public class WebPrueba : MonoBehaviour
         var l = new List<Transform>();
         foreach (GameObject g in s.GetRootGameObjects())
         {
-            if (micro) foreach (CubeInsect ci in g.GetComponentsInChildren<CubeInsect>()) { if (ci.folk && l.Count < 80) l.Add(ci.transform); }
+            if (micro) foreach (CubeInsect ci in g.GetComponentsInChildren<CubeInsect>()) { if (IsPerson(ci) && l.Count < 80) l.Add(ci.transform); }
             else foreach (CreatureRig cr in g.GetComponentsInChildren<CreatureRig>()) if (ActivityKit.IsHuman(cr.gameObject) && !cr.CompareTag("Player") && l.Count < 80) l.Add(cr.transform);
             int a = 0;
             foreach (Animal an in g.GetComponentsInChildren<Animal>()) { if (!an.CompareTag("Player") && a++ < 80) l.Add(an.transform); }

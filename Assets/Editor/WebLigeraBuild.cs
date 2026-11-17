@@ -174,6 +174,7 @@ public static class WebLigeraBuild
         {
             string s = Path.GetFileNameWithoutExtension(f);
             if (!s.StartsWith("Microcosmos_") && !s.StartsWith("MobWorld_")) continue;
+            if (System.Array.IndexOf(InicioSceneBuilder.Retired, $"Assets/Scenes/{s}.unity") >= 0) continue;   // (2026-11-17: Enfermería y Veterinaria, retirados: sus .unity viejos siguen en la carpeta)
             l.Add(reg.TryGetValue(s, out var r) ? (s, r.display, r.story) : (s, Slug(s), ""));
         }
         return l;
