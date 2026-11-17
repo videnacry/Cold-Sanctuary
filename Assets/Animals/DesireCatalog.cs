@@ -310,7 +310,7 @@ public static class DesireCatalog
     // ══ MOVIMIENTO DE LOS DESEOS: siempre a sitios ALCANZABLES, con tope y sin re-apuntar en cada decisión ══════════════
     // Un «viaje» por animal: hacia dónde va, por qué deseo, desde cuándo y cuánto ha avanzado. Si en 5 s no se acerca (un muro,
     // otro animal en medio) o tarda más de 40 s, lo deja; ese deseo no vuelve a intentar ese viaje en unos segundos.
-    class Trip { public string key; public Vector3 goal; public bool going, restNoSpot, unfroze; public Vector3 lastDir; public float since, best, bestAt, pauseUntil, failUntil, lastCall, reissueAt, frozenSince = -1f, unfrozeWarpAt; public int calls, started, sinceFrame, bestFrame, frozenFrame; public Vector3 frozenPos; public string endWhy; public float endAt; }
+    class Trip { public string key; public Vector3 goal; public bool going, restNoSpot, unfroze; public Vector3 lastDir; public float since, best, bestAt, pauseUntil, failUntil, lastCall, reissueAt, frozenSince = -1f, unfrozeWarpAt; public int calls, started, sinceFrame, bestFrame, frozenFrame; public Vector3 frozenPos; public string endWhy; public float endAt; public Vector3 turnBase; public int turns; public float turnSide; }
     /// <summary>(2026-11-11) ¿Descansa a propósito? La cría del recinto sin sitio a 1,5–5 m (PenGoal) se queda mirando: no está «atascada».
     /// (2026-11-13, vivo75) Y cualquier paseo sin salto posible (Stroll: PickHop no encuentra nada): se para y mira, como la cría del recinto.</summary>
     // (2026-11-17, ronda 123) Y quien ya está junto a su vínculo (seguir o cuidar, bf9ca08: se queda quieto a su lado): cría de lobo #56 «atascada»
@@ -375,8 +375,21 @@ public static class DesireCatalog
         // (2026-11-13, ronda 90) DE LADO, NO DE VUELTA: con 90–270° el siguiente salto podía volver justo por donde vino, y con el vigilante de
         // viajes (más viajes dados por acabados) los lobos y el emperador iban y venían en un sitio pequeño («da vueltas», 4 en la ronda 90). Ahora
         // gira 60–120° a un lado u otro: prueba otra dirección sin deshacer el camino.
-        float turn = UnityEngine.Random.Range(60f, 120f) * (UnityEngine.Random.value < 0.5f ? -1f : 1f);
-        t.lastDir = (Quaternion.Euler(0f, turn, 0f) * f.normalized).normalized;
+        // (2026-11-17, ronda 125) Y LOS GIROS SEGUIDOS NO SE SUMAN: dos paseos sin salto en el mismo sitio giraban 60–120° y otros 60–120° hacia el
+        // mismo lado (hasta 240°): el siguiente salto volvía por donde vino (emperador #41: saltos de 11 m, 26 m en 20 s para 1,2 m netos). Desde
+        // el último salto empezado, el primer giro va a un lado, el segundo al OTRO (respecto a la misma dirección) y solo el tercero se da la vuelta.
+        if (t.turns == 0 || t.turnBase.sqrMagnitude < 0.5f) { t.turnBase = f.normalized; t.turnSide = UnityEngine.Random.value < 0.5f ? -1f : 1f; }
+        else t.turnSide = -t.turnSide;
+        float turn = t.turns >= 2 ? UnityEngine.Random.Range(150f, 210f) : UnityEngine.Random.Range(60f, 120f) * t.turnSide;
+        t.turns++;
+        t.lastDir = (Quaternion.Euler(0f, turn, 0f) * t.turnBase).normalized;
+    }
+    /// <summary>(Pruebas) La dirección tras <paramref name="times"/> giros seguidos sin empezar salto, desde <paramref name="dir"/>; y el mayor ángulo con ella en los dos primeros.</summary>
+    public static Vector3 TurnAwayForTest(Vector3 dir, int times, out float maxFirstTwo)
+    {
+        var t = new Trip { lastDir = dir.normalized }; maxFirstTwo = 0f;
+        for (int i = 0; i < times; i++) { TurnAway(null, t); if (i < 2) maxFirstTwo = Mathf.Max(maxFirstTwo, Vector3.Angle(dir, t.lastDir)); }
+        return t.lastDir;
     }
     /// <summary>(Pruebas) Un paseo «explore» cuyo salto nunca vale (siempre su propio sitio): ¿descansa a propósito y cambia de dirección?</summary>
     public static bool StrollWithoutHopForTest(Animal a, out float turned)
@@ -684,6 +697,9 @@ public static class DesireCatalog
         // (2026-11-17, ronda 124) UN PASEO QUE SE ALEJA: el reno #81 (cría, «explore») corría a 5 m/s y lo que le quedaba pasó de un salto de ≤ 7 m a
         // 18,8 m (el camino se rehízo dando un rodeo): 5 s así eran 25 m de carrera, giraba y volvía («da vueltas» 38 m en 20 s para 1,4 m netos).
         // Un paseo es a un sitio que se ve: si el camino crece así, se deja ya y el siguiente sale hacia otro lado.
+        // (2026-11-17, ronda 125) CASI EN LA META Y SIN ACERCARSE: el pingüino #91 (colonia, «explore») daba vueltas alrededor de su meta (salto de 12 m,
+        // 44 m en 20 s para 0,7 m netos) sin llegar ni darse por atascado (lo mejor mejoraba a ratos). En un paseo, a < 3 m y 1,5 s sin mejorar, ha llegado.
+        if ((t.key == "explore" || t.key == "recinto") && rem < 3f && Past(t.bestAt, t.bestFrame, 1.5f)) { t.going = false; NearArrivals++; Outcome(self, t, true, "llegó (casi, sin acercarse)"); return false; }
         if ((t.key == "explore" || t.key == "recinto") && PathGrew(t.best, rem))
         {
             t.going = false; t.failUntil = Time.time + 4f; TripsStalled++; PathsGrew++; Outcome(self, t, false, "el camino crece"); TurnAway(self, t);
@@ -718,9 +734,11 @@ public static class DesireCatalog
     public static bool PathGrew(float best, float rem) => best < float.MaxValue && rem > best + Mathf.Max(4f, best);
     /// <summary>Paseos dejados porque su camino creció (diagnóstico).</summary>
     public static int PathsGrew;
+    /// <summary>(Ronda 125) Paseos dados por llegados a < 3 m de la meta sin acercarse más (diagnóstico).</summary>
+    public static int NearArrivals;
     static void Walk(Animal self, Trip t, Vector3 at)
     {
-        TripsStarted++; t.started++; Vector3 dir = at - self.transform.position; dir.y = 0f; if (dir.sqrMagnitude > 1f) t.lastDir = dir.normalized; t.goal = at; t.since = t.bestAt = Time.time; t.sinceFrame = t.bestFrame = Time.frameCount; t.best = float.MaxValue;
+        TripsStarted++; t.started++; Vector3 dir = at - self.transform.position; dir.y = 0f; if (dir.sqrMagnitude > 1f) t.lastDir = dir.normalized; t.goal = at; t.since = t.bestAt = Time.time; t.sinceFrame = t.bestFrame = Time.frameCount; t.best = float.MaxValue; t.turns = 0;
         // (ronda 92) El reloj de «quieto con camino» NO se pone a cero con cada viaje: los animales que empezaban un salto tras otro sin moverse
         // nunca llegaban a 1,5 s en el mismo viaje (FrozenTrips = 0 con decenas de animales a velocidad 0). FrozenStep lo pone a cero al andar.
         t.restNoSpot = false;

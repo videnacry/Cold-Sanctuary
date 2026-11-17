@@ -276,6 +276,13 @@ public class FaunaChecks : MonoBehaviour, ITestUnit
             TestProbe.Check("paseo que se aleja: con lo mejor en 6 m, quedar 5 o 9 m sigue; 18,8 m se deja; sin medida aún, sigue", !baja && !poco && creció && !sinMejor, $"{baja}/{poco}/{creció}/{sinMejor}");
         }
 
+        // ── (2026-11-17, ronda 125) DOS GIROS SEGUIDOS SIN SALTO NO DAN LA VUELTA (emperador #41: iba y volvía con saltos de 11 m) ──
+        {
+            bool ok = true; float worst = 0f;
+            for (int k = 0; k < 20; k++) { DesireCatalog.TurnAwayForTest(Vector3.forward, 2, out float m); worst = Mathf.Max(worst, m); if (m > 120.5f) ok = false; }
+            TestProbe.Check("giros seguidos: los dos primeros quedan a ≤ 120° de donde iba (uno a cada lado), no de vuelta", ok, $"peor {worst:0}°");
+        }
+
         TestProbe.End();
     }
 }
