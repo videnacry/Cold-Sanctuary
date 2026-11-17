@@ -22,7 +22,7 @@ public class FaunaCounters : MonoBehaviour
     /// <summary>La línea de contadores (también para las pruebas).</summary>
     public static string Line() =>
         $"[Fauna] contadores: StaleRepaths={DesireCatalog.StaleRepaths} NavReach.BadPaths={NavReach.BadPaths} HomeLegs={DesireCatalog.HomeLegs} (rectos {DesireCatalog.StraightLegs}) " +
-        $"EdgeNudges={DesireCatalog.EdgeNudges} FrozenRestarts={DesireCatalog.FrozenRestarts} FrozenTrips={DesireCatalog.FrozenTrips} FrozenWarps={DesireCatalog.FrozenWarps} ComidasRepetidas={Forager.FeedSkipped} " +
+        $"EdgeNudges={DesireCatalog.EdgeNudges} FrozenRestarts={DesireCatalog.FrozenRestarts} FrozenTrips={DesireCatalog.FrozenTrips} FrozenWarps={DesireCatalog.FrozenWarps} CaminosQueCrecen={DesireCatalog.PathsGrew} ComidasRepetidas={Forager.FeedSkipped} " +
         $"BadPaths(viajes)={DesireCatalog.BadPaths} NoPathTrips={DesireCatalog.NoPathTrips} IdleRefused={ActionPrep.IdleRefused} Vigilados={DesireCatalog.Supervised} Rescates={DesireCatalog.SelfRecoveries} (repetidos {DesireCatalog.RepeatRescues}) CaminosMantenidos={NavTrace.KeptPaths} AlMasCercano={DesireCatalog.NearestFallbacks} (sin sitio {DesireCatalog.RescueNoSpot}) " +
         $"Montículos={StaleNavCarver.MoundsSeen} Lomas={StaleNavCarver.HillsCarved} ParedesCueva={StaleNavCarver.CaveWalls} MarinosBajoHielo={MarineLife.UnderIceClamps} MarinosVarados={MarineLife.Rescued} MarinosSinAvance={MarineLife.Unstuck} BocasMovidas={StaleNavCarver.DoorsMoved} PenWalker={PenWalker.Started}/{PenWalker.Arrived}/{PenWalker.Gave} (empezados/llegados/sin sitio)";
 

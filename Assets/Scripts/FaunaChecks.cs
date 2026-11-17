@@ -270,6 +270,12 @@ public class FaunaChecks : MonoBehaviour, ITestUnit
             TestProbe.Check("rodeo: el camino recto vale; uno de 13 m para 5 m en recta, o de 8 tramos, no", !recto && rodeo && esquinas, $"{recto}/{rodeo}/{esquinas}");
         }
 
+        // ── (2026-11-17, ronda 124) UN PASEO CUYO CAMINO CRECE YA NO LLEVA AL SALTO: se deja (reno #81, cría: de un salto de ≤ 7 m a 18,8 m por recorrer) ──
+        {
+            bool baja = DesireCatalog.PathGrew(6f, 5f), poco = DesireCatalog.PathGrew(6f, 9f), creció = DesireCatalog.PathGrew(6f, 18.8f), sinMejor = DesireCatalog.PathGrew(float.MaxValue, 30f);
+            TestProbe.Check("paseo que se aleja: con lo mejor en 6 m, quedar 5 o 9 m sigue; 18,8 m se deja; sin medida aún, sigue", !baja && !poco && creció && !sinMejor, $"{baja}/{poco}/{creció}/{sinMejor}");
+        }
+
         TestProbe.End();
     }
 }

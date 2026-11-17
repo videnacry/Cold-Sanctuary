@@ -681,6 +681,15 @@ public static class DesireCatalog
             return false;
         }
         if (rem < t.best - 0.25f) { t.best = rem; t.bestAt = Time.time; t.bestFrame = Time.frameCount; }
+        // (2026-11-17, ronda 124) UN PASEO QUE SE ALEJA: el reno #81 (cría, «explore») corría a 5 m/s y lo que le quedaba pasó de un salto de ≤ 7 m a
+        // 18,8 m (el camino se rehízo dando un rodeo): 5 s así eran 25 m de carrera, giraba y volvía («da vueltas» 38 m en 20 s para 1,4 m netos).
+        // Un paseo es a un sitio que se ve: si el camino crece así, se deja ya y el siguiente sale hacia otro lado.
+        if ((t.key == "explore" || t.key == "recinto") && PathGrew(t.best, rem))
+        {
+            t.going = false; t.failUntil = Time.time + 4f; TripsStalled++; PathsGrew++; Outcome(self, t, false, "el camino crece"); TurnAway(self, t);
+            NavTrace.Reset(self, "deseo: el camino crece");
+            return false;
+        }
         if (Past(t.bestAt, t.bestFrame, 5f) || Past(t.since, t.sinceFrame, 40f))                    // atascado o tope
         {
             if (_stallLogs < 30) { _stallLogs++; Debug.Log($"[Fauna] «{self.name}» se atasca yendo a {t.goal} desde {self.transform.position}: quedan {rem:0.0} m, velocidad pedida {nav.speed:0.0}, real {nav.velocity.magnitude:0.0}, parado {nav.isStopped}, camino {nav.pathStatus}{(nav.speed < 0.05f ? $", sin velocidad: {(self.Walk != null && self.Walk.IsCharging ? "en postura de carga" : self.TryGetComponent(out CharacterLevel cl) ? $"energía {cl.currentEnergy:0.0}/{cl.MaxEnergy:0.0}" : "sin WalkSpell ni energía")}" : "")}."); }
@@ -705,6 +714,10 @@ public static class DesireCatalog
         return sum;
     }
 
+    /// <summary>(Ronda 124) ¿Le queda por recorrer más del doble de lo mejor que tuvo en este viaje, y 4 m más como poco? (rodeo nuevo a mitad de paseo)</summary>
+    public static bool PathGrew(float best, float rem) => best < float.MaxValue && rem > best + Mathf.Max(4f, best);
+    /// <summary>Paseos dejados porque su camino creció (diagnóstico).</summary>
+    public static int PathsGrew;
     static void Walk(Animal self, Trip t, Vector3 at)
     {
         TripsStarted++; t.started++; Vector3 dir = at - self.transform.position; dir.y = 0f; if (dir.sqrMagnitude > 1f) t.lastDir = dir.normalized; t.goal = at; t.since = t.bestAt = Time.time; t.sinceFrame = t.bestFrame = Time.frameCount; t.best = float.MaxValue;
