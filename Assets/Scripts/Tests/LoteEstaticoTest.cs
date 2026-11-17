@@ -75,7 +75,9 @@ public class LoteEstaticoTest : MonoBehaviour, ITestUnit
             bool wasBatched = piece.forceRenderingOff;
             float tw0 = Time.realtimeSinceStartup;
             mask.gameObject.SetActive(false);
-            yield return Until(() => LoteEstatico.Ejected > before || (!wasBatched && !piece.forceRenderingOff && Time.realtimeSinceStartup - tw0 > 1f), 40f);
+            // (ronda 124) A que SU pieza («Marco») se vea Y haya habido devolución: la máscara tiene varias piezas y la primera devuelta no tiene por qué
+            // ser esta («devueltas 1 en 0,8 s» con el Marco aún oculto: FAIL, y la comprobación siguiente también).
+            yield return Until(() => !piece.forceRenderingOff && (LoteEstatico.Ejected > before || (!wasBatched && Time.realtimeSinceStartup - tw0 > 1f)), 40f);
             float tw = Time.realtimeSinceStartup - tw0;
             bool ok = !piece.forceRenderingOff && (LoteEstatico.Ejected > before || !wasBatched);
             TestProbe.Check("una máscara cogida sale del lote", ok, $"devueltas {LoteEstatico.Ejected - before} en {tw:0.0} s{(wasBatched ? "" : " (ya estaba fuera del lote antes de cogerla)")}");
