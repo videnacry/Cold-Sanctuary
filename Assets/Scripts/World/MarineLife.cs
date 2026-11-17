@@ -134,6 +134,7 @@ public class MarineLife : MonoBehaviour
         }
         else _strandedSince = -1f;
         if (TryGetComponent(out NavMeshAgent nav) && nav.enabled) nav.enabled = false;
+        if (Unstick()) return;
         // Siempre se endereza (el balanceo de frotarse lo vuelve a fijar Habitat en el mismo fotograma): ninguna física ni
         // giro acumulado la deja de lado o panza arriba.
 
@@ -233,7 +234,7 @@ public class MarineLife : MonoBehaviour
         if (_a.hungry >= 0f)
         {
             // (la morsa baja a los bivalvos del fondo; los demás, al banco en agua abierta)
-            Swarm fish = _a.Forage != null && _a.Forage.eatsClams ? Swarm.Nearest(transform.position, SwarmKind.Clam) : OpenWaterSwarm(transform.position);
+            Swarm fish = _a.Forage != null && _a.Forage.eatsClams ? Swarm.Nearest(transform.position, SwarmKind.Clam) : OpenWaterSwarm(transform.position, Home, SwarmRange);
             if (fish != null) { Vector3 f = fish.transform.position; f.y = Mathf.Min(f.y, SwimY); Move(f, speed * 1.2f, false); return; }
         }
         if (_estrus != null && _estrus.InEstrus && _a.sex == Sex.female && _a.lifeStage == LifeStage.adult)
@@ -257,12 +258,16 @@ public class MarineLife : MonoBehaviour
     // EL BANCO EN AGUA ABIERTA más cercano (los de peces primero; si no hay, cualquiera). Uno que huyendo se metió bajo una
     // placa queda a −1 m, DENTRO del hielo (la placa va de 0 a −1,5 m): bajo ella el depredador bucea a UnderIceY y nunca lo
     // toca, y con hambre se quedaba debajo para siempre (la orca, JornadaTest 2026-11-01). null si todos están bajo el hielo.
-    static Swarm OpenWaterSwarm(Vector3 from)
+    // (2026-11-17, ronda 124) Solo los bancos de SU mar (a menos de SwarmRange de su hogar): con los de la laguna comidos, el más cercano era el de un
+    // iceberg a 400 m y la orca #43 cruzaba el mapa hacia él hasta quedarse contra el borde, «atascada > 20 s» en (231,−2,−21) ×7 (inferido: el
+    // registro no dice adónde iba). Sin banco en su mar, merodea por su laguna y lo reintenta.
+    const float SwarmRange = 90f;
+    static Swarm OpenWaterSwarm(Vector3 from, Vector3 home, float range)
     {
         Swarm best = null, bestAny = null; float bd = float.MaxValue, bdAny = float.MaxValue;
         foreach (Swarm s in Swarm.All)
         {
-            if (s == null || s.Consumed || (s.kind != SwarmKind.Fish && s.kind != SwarmKind.Krill) || IceAbove(s.transform.position) || UnderTree(s.transform.position, 6f)) continue;   // (ni los de debajo de un edificio-árbol: se meten en su tronco)
+            if (s == null || s.Consumed || (s.kind != SwarmKind.Fish && s.kind != SwarmKind.Krill) || Flat(s.transform.position - home) > range || IceAbove(s.transform.position) || UnderTree(s.transform.position, 6f)) continue;   // (ni los de debajo de un edificio-árbol: se meten en su tronco)
             float d = (s.transform.position - from).sqrMagnitude;
             if (s.kind == SwarmKind.Fish && d < bd) { bd = d; best = s; }
             if (d < bdAny) { bdAny = d; bestAny = s; }
@@ -432,6 +437,38 @@ public class MarineLife : MonoBehaviour
         if (Time.time < _spotUntil) return true;
         _spot.Release(_a); _spot = null;
         return false;
+    }
+
+    // (2026-11-17, ronda 124) SIN AVANCE: un marino que no está en su hábitat, ni tumbado en el hielo, ni pegado a su madre y que no avanza 1 m en
+    // 8 s está contra algo (una pared de hielo que no sabe bordear, el borde del mapa, un destino que no alcanza): la orca #43, «atascada > 20 s»
+    // ×7 en (231,−2,−21). La primera vez vuelve nadando hacia su hogar 12 s (sin perseguir comida ni pareja); si en 60 s vuelve a quedarse,
+    // reaparece en el agua de su hogar, como la varada. Lo dice y lo cuenta.
+    public static int Unstuck;
+    void OnEnable() { _stillSince = -1f; _escapeUntil = 0f; }   // (al volver de la camilla del Leviatán no cuenta el rato que estuvo apagada)
+    Vector3 _stillAt, _escape; float _stillSince = -1f, _escapeUntil, _lastStrike = -999f;
+    bool Unstick()
+    {
+        Vector3 p = transform.position;
+        bool still = _onIce || InHabitat;
+        if (_stillSince < 0f || still || Flat(p - _stillAt) > 1f) { _stillAt = p; _stillSince = Time.time; }
+        else if (Time.time - _stillSince > 8f)
+        {
+            _stillAt = p; _stillSince = Time.time; Unstuck++;
+            Vector3 home = new Vector3(Home.x, SwimY, Home.z);
+            if (Time.time - _lastStrike < 60f || Flat(p - home) > 200f)
+            {
+                Debug.Log($"[Marinos] «{name}» sin avanzar en ({p.x:0.0},{p.y:0.0},{p.z:0.0}) otra vez: vuelve a ({home.x:0},{home.z:0}).");
+                transform.position = BelowIce(home); _escapeUntil = 0f; _lastStrike = -999f; _nextPick = 0f;
+                return true;
+            }
+            _lastStrike = Time.time;
+            Vector2 r = Random.insideUnitCircle * LagoonRadius * 0.5f;
+            _escape = BelowIce(new Vector3(Home.x + r.x, SwimY, Home.z + r.y)); _escapeUntil = Time.time + 12f;
+            Debug.Log($"[Marinos] «{name}» sin avanzar en ({p.x:0.0},{p.y:0.0},{p.z:0.0}): vuelve nadando hacia su hogar.");
+        }
+        if (Time.time >= _escapeUntil) return false;
+        if (Move(_escape, speed, false) < 1.5f) _escapeUntil = 0f;
+        return true;
     }
 
     static float Flat(Vector3 v) => new Vector2(v.x, v.z).magnitude;
