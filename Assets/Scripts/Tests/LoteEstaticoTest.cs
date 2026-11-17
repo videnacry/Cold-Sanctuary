@@ -68,10 +68,17 @@ public class LoteEstaticoTest : MonoBehaviour, ITestUnit
             bool covered = lotes.Any(r => r.enabled || FarFromCam(r));
             TestProbe.Check("hay un lote donde está la pieza", covered, $"{lotes.Count} lotes en su sitio, {lotes.Count(r => r.enabled)} encendidos · cámara a {(lcam != null ? Vector3.Distance(lcam.transform.position, pb.center) : -1f):0} m");
 
+            // (2026-11-17, suite 123) Se espera A LA DEVOLUCIÓN (Ejected sube), con tope de 40 s, y se dice cuánto tardó: antes se esperaba solo a que la
+            // pieza se viera, y si ya se veía (fuera del lote antes de cogerla) la espera acababa al momento con «devueltas 0» (suite 123; pasaba en la
+            // rápida). Si la pieza ya estaba fuera del lote antes de cogerla, no había nada que devolver: se dice y vale.
             int before = LoteEstatico.Ejected;
+            bool wasBatched = piece.forceRenderingOff;
+            float tw0 = Time.realtimeSinceStartup;
             mask.gameObject.SetActive(false);
-            yield return Until(() => !piece.forceRenderingOff);
-            TestProbe.Check("una máscara cogida sale del lote", !piece.forceRenderingOff && LoteEstatico.Ejected > before, $"devueltas {LoteEstatico.Ejected - before}");
+            yield return Until(() => LoteEstatico.Ejected > before || (!wasBatched && !piece.forceRenderingOff && Time.realtimeSinceStartup - tw0 > 1f), 40f);
+            float tw = Time.realtimeSinceStartup - tw0;
+            bool ok = !piece.forceRenderingOff && (LoteEstatico.Ejected > before || !wasBatched);
+            TestProbe.Check("una máscara cogida sale del lote", ok, $"devueltas {LoteEstatico.Ejected - before} en {tw:0.0} s{(wasBatched ? "" : " (ya estaba fuera del lote antes de cogerla)")}");
             mask.gameObject.SetActive(true);
             yield return null;
             TestProbe.Check("devuelta al perchero, se dibuja por sí misma", piece.enabled && !piece.forceRenderingOff && piece.gameObject.activeInHierarchy);
