@@ -313,7 +313,9 @@ public static class DesireCatalog
     class Trip { public string key; public Vector3 goal; public bool going, restNoSpot, unfroze; public Vector3 lastDir; public float since, best, bestAt, pauseUntil, failUntil, lastCall, reissueAt, frozenSince = -1f, unfrozeWarpAt; public int calls, started, sinceFrame, bestFrame, frozenFrame; public Vector3 frozenPos; public string endWhy; public float endAt; }
     /// <summary>(2026-11-11) ¿Descansa a propósito? La cría del recinto sin sitio a 1,5–5 m (PenGoal) se queda mirando: no está «atascada».
     /// (2026-11-13, vivo75) Y cualquier paseo sin salto posible (Stroll: PickHop no encuentra nada): se para y mira, como la cría del recinto.</summary>
-    public static bool RestingByChoice(Animal a) => a != null && _trips.TryGetValue(a, out Trip t) && t.restNoSpot && !t.going;
+    // (2026-11-17, ronda 123) Y quien ya está junto a su vínculo (seguir o cuidar, bf9ca08: se queda quieto a su lado): cría de lobo #56 «atascada»
+    // queriendo «follow» con su madre a 5 m.
+    public static bool RestingByChoice(Animal a) => a != null && ((_trips.TryGetValue(a, out Trip t) && t.restNoSpot && !t.going) || _withBond.Contains(a));
 
     /// <summary>(2026-11-13, vivo75) Segundos con camino, velocidad pedida y sin moverse antes de reiniciar el agente (y, a la segunda, dejar el viaje).</summary>
     const float FrozenSeconds = 1.5f;
@@ -409,6 +411,7 @@ public static class DesireCatalog
         if (newKey != "habit" && a.TryGetComponent(out Habit h) && h.Active) h.Release();
         // (2026-11-14, ronda 99) La cría que deja de esperar la toma vuelve a la prioridad de evitación normal: el lobo #75, ya explorando, seguía
         // con la 20 de esperar (los demás lo rodeaban como si estuviera quieto).
+        if (newKey != "follow" && newKey != "tend") _withBond.Remove(a);   // (ronda 123) junto a su vínculo solo mientras lo sigue o lo cuida
         if (newKey != "nurse") { _homeWait.Remove(a); if (a.nav != null && a.nav.isActiveAndEnabled && a.nav.avoidancePriority == WaitingPriority) a.nav.avoidancePriority = DefaultPriority; }
     }
     // (el deseo «habit» y el viaje del deseo se llaman igual; «explore» usa el viaje «explore»; «buscar pareja», «cortejo» y «rastro» son de «mate»; «recinto», de «explore»)
@@ -502,7 +505,7 @@ public static class DesireCatalog
         // (ronda 104) Más amplio: cualquiera que quiera algo que se hace andando (no descansar, incubar, la guarida, beber, un hábito ni la cría que
         // espera la toma en su sitio), salvo dormido, comiendo o peleando. Antes solo explore/homebound/mate/heel y sin «descanso a propósito»:
         // los lobos de la guarida y el zorro #86 quedaban fuera. Y 12 s y 5 fotogramas (con 8 fotogramas, a 2,5 s cada uno, la prueba los marcaba antes).
-        bool idleDesire = desire == "" || desire == "nurse" || desire == "rest" || desire == "brood" || desire == "den" || desire == "incubate" || desire == "drink" || desire == "habit" || _homeWait.Contains(a);
+        bool idleDesire = _withBond.Contains(a) || desire == "" || desire == "nurse" || desire == "rest" || desire == "brood" || desire == "den" || desire == "incubate" || desire == "drink" || desire == "habit" || _homeWait.Contains(a);
         // (ronda 106) Por qué no se le rescata (TripInfo lo dice: el lobo #54 de la guarida no se rescató y no había forma de saber por qué).
         string no = idleDesire ? (_homeWait.Contains(a) ? "espera la toma en su sitio" : $"deseo «{desire}» sin andar") : a.death ? "muerto" : a.asleep ? "dormido" : a.busy ? "ocupado" : a.fighting ? "peleando" : (a.Forage != null && a.Forage.EatingNow) ? "comiendo" : null;
         // (ronda 107) Un estado de «no» NO pone a cero el reloj de quieto (solo moverse lo hace): un instante «ocupado» o sin deseo entre dos
