@@ -110,3 +110,14 @@ Todas las esperas están acotadas: 6 s para asentarse, 12 de observación y 2 de
   - **Gente:** ahora se cuenta con `ActivityKit.IsHuman`.
   - **Tope de animales:** ahora cuenta solo los animales del plan (como `TrimFauna`).
   - **«Cae»:** ahora exige además que no haya suelo debajo (los pájaros que se posan no cuentan).
+
+## Probador a prueba de caídas (2026-11-17)
+En la pasada en vivo, `Scene1_Ambrosio` dio «SIN RESULTADO» a los 424 s. Después, el `SendAsync` del WebSocket cayó con una
+AggregateException, porque la pestaña o Edge habían muerto, y la ejecución se paró. Ahora `probar-web.ps1` (modo cdp):
+- **Una pestaña nueva por escena** (`/json/new`) que se cierra al acabar: la memoria de WebGL no se acumula de escena en escena. Además,
+  Edge se relanza limpio cada 15 escenas.
+- **Errores por escena:** si la conexión o la pestaña mueren, la escena queda **«ERROR runner»**. Se relanza Edge, se reintenta una vez si
+  queda tiempo, y sigue con la siguiente.
+- **La consola de cada página:** se guarda en `window.__csLog` desde antes de cargar (`Page.addScriptToEvaluateOnNewDocument`). Cuando
+  no hay resultado o hay error, sus últimas 40 líneas y la última URL van a `%TEMP%\cs-web-consola-<escena>.txt`; las últimas 3, a la
+  columna «detalle».
