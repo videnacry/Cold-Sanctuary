@@ -28,7 +28,10 @@ public class HistoryCard : MonoBehaviour
 
     void Update()
     {
-        if (_intro) { if (GameKeys.GetKeyDown(KeyCode.Return) || GameKeys.GetKeyDown(KeyCode.E)) { _intro = false; _closedFrame = Time.frameCount; } return; }
+        // (2026-11-13, web ligera) En el móvil, además, un toque en cualquier sitio (Unity simula el clic con el toque) cierra la tarjeta.
+        bool tap = WebLigera.Active && Input.GetMouseButtonDown(0);
+        if (_final && tap) { _final = false; _closedFrame = Time.frameCount; return; }
+        if (_intro) { if (tap || GameKeys.GetKeyDown(KeyCode.Return) || GameKeys.GetKeyDown(KeyCode.E)) { _intro = false; _closedFrame = Time.frameCount; } return; }
         if (_final && (GameKeys.GetKeyDown(KeyCode.Return) || GameKeys.GetKeyDown(KeyCode.Escape))) { _final = false; _closedFrame = Time.frameCount; }
         if (_final && lineTruth.Length > 0 && GameKeys.GetKeyDown(KeyCode.V)) _showLines = !_showLines;
     }
@@ -36,7 +39,7 @@ public class HistoryCard : MonoBehaviour
     void OnGUI()
     {
         if (!_intro && !_final) return;
-        GUIStyle wrap = new GUIStyle(GUI.skin.label) { wordWrap = true, fontSize = 15 };
+        GUIStyle wrap = new GUIStyle(GUI.skin.label) { wordWrap = true, fontSize = WebLigera.Active ? GUI.skin.label.fontSize : 15 };
         Rect r = new Rect(Screen.width * 0.15f, Screen.height * 0.1f, Screen.width * 0.7f, Screen.height * 0.8f);
         GUI.Box(r, "");
         GUILayout.BeginArea(new Rect(r.x + 20f, r.y + 16f, r.width - 40f, r.height - 32f));
@@ -59,7 +62,7 @@ public class HistoryCard : MonoBehaviour
             foreach (string s in sources) GUILayout.Label("· " + s, new GUIStyle(wrap) { fontSize = 12 });
         }
         GUILayout.FlexibleSpace();
-        GUILayout.Label(_intro ? "Intro / E: empezar" : lineTruth.Length > 0 ? (_showLines ? "V: volver · Intro: cerrar" : "V: ver la veracidad de las frases · Intro: cerrar") : "Intro: cerrar", wrap);
+        GUILayout.Label(WebLigera.Active ? (_intro ? "Toca la pantalla (o E) para empezar" : "Toca la pantalla para cerrar") : _intro ? "Intro / E: empezar" : lineTruth.Length > 0 ? (_showLines ? "V: volver · Intro: cerrar" : "V: ver la veracidad de las frases · Intro: cerrar") : "Intro: cerrar", wrap);
         GUILayout.EndArea();
     }
 }

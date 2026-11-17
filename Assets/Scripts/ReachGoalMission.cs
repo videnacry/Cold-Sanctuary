@@ -22,6 +22,9 @@ public class ReachGoalMission : MonoBehaviour
     Transform _player;
     Vector3 _start;
     bool _hasPlayer, _done;
+    GameObject _marker;
+    /// <summary>(2026-11-13) El «Microcosmos ligero» de la web, con Kushal dentro: la misión del santuario no se enseña.</summary>
+    static bool InMicro => WebLigera.Micro && MobWorldLoader.HasInstance && MobWorldLoader.Instance.IsInMobWorld;
 
     void Start()
     {
@@ -39,10 +42,15 @@ public class ReachGoalMission : MonoBehaviour
         marker.transform.localScale = new Vector3(1.5f, 3f, 1.5f);
         Collider col = marker.GetComponent<Collider>();
         if (col != null) Destroy(col);
+        // (2026-11-13, web ligera) En el build web la primitiva salía con el sombreador de error (el material por defecto no va en el build):
+        // su material, el mate ámbar de las misiones, de un sombreador que sí va (Resources/WebLigeraShaders).
+        if (WebLigera.Active) marker.GetComponent<Renderer>().sharedMaterial = WebLigera.Mat(new Color(0.95f, 0.75f, 0.35f));
+        _marker = marker;
     }
 
     void Update()
     {
+        if (_marker != null && _marker.activeSelf == InMicro) _marker.SetActive(!InMicro);   // (web ligera: dentro del microcosmos, ni el marcador ni la línea)
         if (_done || !_hasPlayer || _player == null) return;
         if (Vector3.Distance(_player.position, transform.position) > goalRadius) return;
 
@@ -58,11 +66,12 @@ public class ReachGoalMission : MonoBehaviour
     {
         // _player puede quedar colgante si el GameObject "Player" se destruye/reemplaza en runtime
         // (posesión/body-swap) — Update() ya lo chequea; OnGUI() corre cada repaint y necesita el mismo guard.
-        if (!_hasPlayer || _player == null) return;
+        if (!_hasPlayer || _player == null || InMicro) return;
         string msg = _done
             ? "✓ Misión completada: llegaste al refugio."
             : $"Misión (WASD): ve al marcador del refugio  ·  {HudGate.Arrow(_player.position, transform.position)} {Vector3.Distance(_player.position, transform.position):0} m";
         // Abajo al centro: arriba a la izquierda pisaba el HUD de recursos.
+        if (WebLigera.Active) { float w = Screen.width * 0.6f, h = GUI.skin.label.fontSize * 1.6f; GUI.Label(new Rect((Screen.width - w) * 0.5f, Screen.height - h - 8f, w, h), msg); return; }   // (web: entre los dos joysticks, a su tamaño)
         GUI.Label(new Rect(Screen.width * 0.5f - 240f, Screen.height - 52f, 480f, 22f), msg);
     }
 }

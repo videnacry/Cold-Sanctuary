@@ -1325,3 +1325,7 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
   Micro/Meso/Macro; diseño del mundo grande (`world-topology`); backbone de recursos + HUD.
 - **09/10-jul:** auditoría + sync de 18 docs; retirada del disparo (no-violencia); **12 aptitudes** + perfiles;
   medios tierra/agua/aire; evolución de aptitudes; dietas/territorialidad; `FishSchool`; Malamute.
+- [x] **Web ligera** (2026-11-13, rama `claude/web-ligera`, [`web-ligera.md`](web-ligera.md); solo código): menús `Tools/Cold Sanctuary/Web/Build WebGL: Santuario ligero` y `… Microcosmos ligero` (Buda); `WEB_LIGERA` solo en el build; Kushal miembro, ≤ 30 animales, sin sombras, media resolución, controles táctiles (`TouchControls` por `GameKeys`), sin escenas marina ni aérea.
+- [ ] Hacer los dos builds WebGL, medir su tamaño y abrirlos en un móvil (joystick, mirar, E/F, ½ res; entrar en Kapilavastu) — tester único.
+- [x] **Web continua** (2026-11-16, rama `claude/web-continua` desde `claude/edificios` + `web-ligera`, [`web-continua.md`](web-continua.md); solo código): una página por microcosmos (lista sola de `Assets/Scenes`), builds por grupos (≤ 90 MB de `.data`), portal y `escenas.json`; prueba en la página `?prueba=1` (`WebPrueba`); `tools/web/construir-web.ps1`, `subir-web.ps1` y `probar-web.ps1` (Edge sin ventana).
+- [ ] Construir la web continua (6–7 builds), subirla y pasar `probar-web.ps1` en vivo; decidir con Berón `-Squash` o compresión gzip (el historial de `cs-web-pages` crece ~700 MB por subida) — tester único.

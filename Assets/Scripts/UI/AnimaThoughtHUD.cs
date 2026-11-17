@@ -38,6 +38,7 @@ public class AnimaThoughtHUD : MonoBehaviour
 
     void OnGUI()
     {
+        if (WebLigera.Active) return;   // (2026-11-13, web ligera: en el móvil, sin paneles de depuración ni rótulos flotantes)
         Mind mind = ControlledMind();
         if (mind == null || string.IsNullOrEmpty(mind.lastThought)) return;
         if (Time.time - mind.lastThoughtTime > linger) return;   // caducó

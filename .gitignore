@@ -394,5 +394,7 @@ claude-answer.txt
 !.github/workflows/*.yml
 !tools/*.py
 !tools/*.sh
+!tools/*.ps1
+!tools/*/*.ps1
 # Servidor MCP de Unity para las sesiones de Claude Code (ver docs/testing-checklist.md)
 !.mcp.json

@@ -16,7 +16,7 @@ public static class InicioSceneBuilder
 {
     const string ScenePath = "Assets/Scenes/Inicio.unity";
     // Escenas que ya no genera nadie y que la Sala de Eras saca de la lista a propósito (los archivos se quedan).
-    static readonly string[] Retired = { "Assets/Scenes/Microcosmos_Enfermeria.unity", "Assets/Scenes/Microcosmos_Veterinaria.unity" };
+    internal static readonly string[] Retired = { "Assets/Scenes/Microcosmos_Enfermeria.unity", "Assets/Scenes/Microcosmos_Veterinaria.unity" };
 
     static InicioSceneBuilder()
     {
