@@ -1959,6 +1959,7 @@ public static class AreaMicrocosmos
             list.Add(("Ant", 2, 1.8f, SpeciesColor("Ant"), "Hormiga de las mesetas", null, false, false, default, 0f));
         }
         int placed = 0, faunaNext = 0, faunaTop = 0, onStreets = 0;
+        _faunaInsideMoved = _faunaInsideSkipped = 0;
         foreach (var (sp, n, len, tint, label, dormant, street, handAt, hat, hspread) in list)
         {
             GameObject prefab = AnimalPrefabGenerator.LoadOrCreate(sp);   // lo genera si falta (especies nuevas)
@@ -1989,6 +1990,24 @@ public static class AreaMicrocosmos
                     p = new Vector3(w.x - center.x, fy - center.y, w.z - center.z);
                 }
                 Vector3 pw = ClampXZ(center + p, inner); p = pw - center;   // dentro de los muros, siempre
+                // (2026-11-17) NUNCA DENTRO DE UN OBJETO: la prueba en la web de Microcosmos_Buda encontró 9 de 50 bichos dentro de algo (una termita
+                // dentro de «Paritorio 4»): las plazas de fauna, las mesetas y el suelo libre no miraban los colliders de los edificios y muebles
+                // del pueblo. Si su sitio cae dentro de uno (como MicroGround.Inside: una esfera a 0,25 m sobre el suelo), busca suelo libre que no lo
+                // esté (hasta 40 intentos); si no hay, no nace.
+                if (SolidAt(root, pw))
+                {
+                    bool moved = false;
+                    for (int k = 0; k < 40 && !moved; k++)
+                    {
+                        Vector3 w = new Vector3(R(inner.min.x, inner.max.x), groundY, R(inner.min.z, inner.max.z));
+                        if (!FreeFloor(w, out float fy2)) continue;
+                        Vector3 cand = new Vector3(w.x, fy2, w.z);
+                        if (SolidAt(root, cand)) continue;
+                        pw = cand; p = pw - center; moved = true;
+                    }
+                    if (!moved) { _faunaInsideSkipped++; continue; }
+                    _faunaInsideMoved++;
+                }
                 if (prefab == null) continue;
                 var holder = new GameObject($"{label}_a_escala").transform; holder.SetParent(fauna, false); holder.localPosition = p;
                 holder.gameObject.AddComponent<MicroSize>().length = len;
@@ -2014,6 +2033,7 @@ public static class AreaMicrocosmos
             }
         }
         _faunaOnSlots = faunaNext; _faunaOnTops = faunaTop;
+        if (_faunaInsideMoved + _faunaInsideSkipped > 0) Debug.Log($"[Microcosmos] Fauna: {_faunaInsideMoved} bichos movidos a suelo libre porque su sitio caía dentro de un objeto; {_faunaInsideSkipped} sin sitio, no nacen.");
         Debug.Log($"[Microcosmos] Flora interactuable: {placed0} plantas, piedras, arenas y boñigas dentro del piso ({inner.size.x:0} × {inner.size.z:0} m útiles{(floraSlots != null ? $"; {onSlots} en las plazas de flora del área" : "")}; {onTops} plantas y {faunaTop} bichos encima de {(tops != null ? tops.Count : 0)} muebles)" + (biome != null ? $" · bioma: {biome.title}, {biome.plants.Length} plantas y {biome.bugs.Length} bichos nativos." : ".")
                   + (town ? $" · PUEBLO: flora a escala de pueblo, {townTrees} árboles y {townSmall} matas, céspedes y parterres fuera de calles y solares; {onStreets} animales del pueblo por {_streets.Count} calles." : ""));
         return placed;
@@ -2112,6 +2132,21 @@ public static class AreaMicrocosmos
         return null;
     }
     static int _floraOnTops, _faunaOnTops;   // plantas y bichos encima de los muebles gigantes (el último Nature)
+
+    static int _faunaInsideMoved, _faunaInsideSkipped;
+    /// <summary>(2026-11-17) ¿Cae <paramref name="floor"/> (un punto del suelo) dentro de un collider del microcosmos <paramref name="root"/>? Como
+    /// MicroGround.Inside: una esfera de 0,12 m a 0,25 m sobre el suelo, sin contar plantas, bichos, gente, la tierra ni la tapa de los muros.</summary>
+    static bool SolidAt(Transform root, Vector3 floor)
+    {
+        Physics.SyncTransforms();
+        foreach (Collider k in Physics.OverlapSphere(floor + Vector3.up * 0.25f, 0.12f, ~0, QueryTriggerInteraction.Ignore))
+        {
+            if (MicroGround.Ignored(k) || MicroGround.IsSoil(k)) continue;
+            if (root != null && !k.transform.IsChildOf(root)) continue;
+            return true;
+        }
+        return false;
+    }
 
     static bool InsideXZ(Bounds b, Vector3 p, float margin) => p.x > b.min.x - margin && p.x < b.max.x + margin && p.z > b.min.z - margin && p.z < b.max.z + margin;
 
