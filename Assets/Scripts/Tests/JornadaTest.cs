@@ -540,10 +540,20 @@ public class JornadaTest : MonoBehaviour, ITestUnit, IFastGameTime
         static Bounds BodyBounds(Track tr)
         {
             Bounds b = new Bounds(tr.g.transform.position, Vector3.zero); bool any = false;
-            foreach (Renderer r in tr.rends) { if (r == null || !r.enabled) continue; if (!any) { b = r.bounds; any = true; } else b.Encapsulate(r.bounds); }
+            // (2026-11-17, ronda 125) Solo lo que SIGUE siendo su cuerpo: la lista de renderers se toma una vez al empezar, y una pieza que luego deja
+            // de ser hija suya (algo que llevaba y soltó) o que queda lejos de su raíz estiraba la caja hasta la mitad del camino. El lobo #69 en
+            // (−162,0,−146) salía «dentro de Tierra» de una losa de Territorio_AUTO a ~45 m: el centro de su «cuerpo» caía allí.
+            foreach (Renderer r in tr.rends) { if (r == null || !r.enabled || Stray(r, tr.g.transform)) continue; if (!any) { b = r.bounds; any = true; } else b.Encapsulate(r.bounds); }
             return b;
         }
 
+        /// <summary>¿Este renderer ya no es parte del cuerpo de <paramref name="root"/>: no es hijo suyo, o su caja queda a más de 2 m (en planta) de su raíz?</summary>
+        public static bool Stray(Renderer r, Transform root)
+        {
+            if (!r.transform.IsChildOf(root)) return true;
+            Vector3 q = r.bounds.ClosestPoint(root.position); q.y = root.position.y;
+            return (q - root.position).sqrMagnitude > 4f;
+        }
         static string _lastInside = "";
         static string InsideOf(Vector3 c, float r, Transform self)
         {
@@ -555,6 +565,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit, IFastGameTime
                 // centro a 0,19 y los pies a 0,10.
                 if (col.bounds.size.y <= 0.3f && col.bounds.max.y <= 0.35f) continue;
                 if (col.GetComponentInParent<Anima>() != null) continue;
+                if (!(col is MeshCollider mc0 && !mc0.convex) && (col.ClosestPoint(c) - c).sqrMagnitude > (r + 0.05f) * (r + 0.05f)) continue;   // (ronda 125) que de verdad lo toque: no un resultado de un estado de física viejo
                 if (col.attachedRigidbody != null && !col.attachedRigidbody.isKinematic) continue;   // cosas sueltas (comida, herramientas)
                 // (2026-11-16, ronda 122) Con su caja y su tipo de collider: el lobo #2 «dentro de Tierra» en sitios donde el código no pone ninguna loma
                 // ((−229,−147), (−220,−158), (−202,−154)…), y no se sabía qué pieza era.
@@ -679,7 +690,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit, IFastGameTime
             // flote, el cuerpo pegado al costado de la placa). Dentro de un mueble sí cuenta; el agua sin ser acuático lo mira aparte.
             if (inside != null && SwimBody.Swimming(tr.g) && (inside.StartsWith("Tierra") || inside.StartsWith("Casquete"))) inside = null;
             if (inside != null && !lyingOk) { tr.inside++; tr.insideOf = inside; } else tr.inside = 0;
-            if (tr.inside == 3) Add(tr.name, "dentro de un objeto", $"«{tr.insideOf}» en {Where(p)} ({tr.activity}) [cuerpo: centro y {b.center.y:0.00}, pies {b.min.y:0.00}, raíz y {tr.g.transform.position.y:0.00}, nadando {SwimBody.Swimming(tr.g)}, pieza: {_lastInside}{(tr.animal != null ? " · " + DesireCatalog.NavInfo(tr.animal) + " · " + NavTrace.Last(tr.animal) : "")}]", human);   // (ronda 99: zorro #27 «dentro de Tierra», sin datos para saber cómo)
+            if (tr.inside == 3) Add(tr.name, "dentro de un objeto", $"«{tr.insideOf}» en {Where(p)} ({tr.activity}) [cuerpo: centro y {b.center.y:0.00}, pies {b.min.y:0.00}, raíz y {tr.g.transform.position.y:0.00}, centro en planta ({b.center.x:0.0},{b.center.z:0.0}), nadando {SwimBody.Swimming(tr.g)}, pieza: {_lastInside}{(tr.animal != null ? " · " + DesireCatalog.NavInfo(tr.animal) + " · " + NavTrace.Last(tr.animal) : "")}]", human);   // (ronda 99: zorro #27 «dentro de Tierra», sin datos para saber cómo)
 
             bool aquatic = !human && (tr.animal != null && (tr.animal.WaterAffinity >= 0.5f || tr.animal.GetComponent<MarineLife>() != null));
             // (2026-11-01) Una PERSONA que cruza a nado entre casquetes (los enlaces de nado del NavMesh, IslandsTest: «cruzando a
