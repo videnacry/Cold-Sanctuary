@@ -69,7 +69,8 @@ public class WebPrueba : MonoBehaviour
             Transform m = movers[i]; if (m == null) continue; alive++;
             float d = Vector3.Distance(m.position, p0[i].Item1), a = Quaternion.Angle(m.rotation, p0[i].Item2);
             if (d > 0.25f || a > 15f) moved++;
-            if (p0[i].Item1.y - m.position.y > 2f) fell++;
+            // Cae: bajó más de 2 m Y no tiene suelo debajo (un pájaro que se posa o un pez que baja no cuentan).
+            if (p0[i].Item1.y - m.position.y > 2f && !Physics.Raycast(m.position + Vector3.up * 0.5f, Vector3.down, 60f, ~0, QueryTriggerInteraction.Ignore)) fell++;
         }
         Add($"se mueven o giran en {Watch:0} s (≥ 25 %)", alive == 0 ? false : moved >= Mathf.CeilToInt(alive * 0.25f), $"{moved} de {alive}");
         Add("nadie cae (baja > 2 m mientras se mira)", fell == 0, $"{fell} cayendo");
@@ -168,7 +169,8 @@ public class WebPrueba : MonoBehaviour
         else
         {
             Add("hay gente en el santuario", _r.gente > 0, $"{_r.gente}");
-            Add($"hay animales, y no más del tope de la web ({WebLigera.AnimalCap})", animals.Count > 0 && animals.Count <= WebLigera.AnimalCap + 4, $"{animals.Count}");
+            int plan = animals.Count(a => a.SpeciesName != null && PopulationPlan.Groups.ContainsKey(a.SpeciesName));   // (el tope de la web cuenta los del plan, como WebLigera.TrimFauna)
+            Add($"hay animales, y los del plan no pasan del tope de la web ({WebLigera.AnimalCap})", animals.Count > 0 && plan <= WebLigera.AnimalCap, $"{plan} del plan de {animals.Count}");
         }
 
         // SITIO: la regla de la flora de MicroGround (enterrada / dentro de un collider), también para bichos y gente; y dentro del piso.
@@ -182,7 +184,7 @@ public class WebPrueba : MonoBehaviour
     static int CountSanctuaryPeople(GameObject[] roots)
     {
         int n = 0;
-        foreach (GameObject g in roots) foreach (UnityEngine.AI.NavMeshAgent ag in g.GetComponentsInChildren<UnityEngine.AI.NavMeshAgent>(true)) if (ag.GetComponent<Animal>() == null && !ag.CompareTag("Player")) n++;
+        foreach (GameObject g in roots) foreach (CreatureRig cr in g.GetComponentsInChildren<CreatureRig>(true)) if (ActivityKit.IsHuman(cr.gameObject) && cr.GetComponent<Animal>() == null && !cr.CompareTag("Player")) n++;   // (las personas: ActivityKit.IsHuman)
         return n;
     }
 
@@ -222,7 +224,7 @@ public class WebPrueba : MonoBehaviour
         foreach (GameObject g in s.GetRootGameObjects())
         {
             if (micro) foreach (CubeInsect ci in g.GetComponentsInChildren<CubeInsect>()) { if (ci.folk && l.Count < 80) l.Add(ci.transform); }
-            else foreach (UnityEngine.AI.NavMeshAgent ag in g.GetComponentsInChildren<UnityEngine.AI.NavMeshAgent>()) if (!ag.CompareTag("Player") && l.Count < 80) l.Add(ag.transform);
+            else foreach (CreatureRig cr in g.GetComponentsInChildren<CreatureRig>()) if (ActivityKit.IsHuman(cr.gameObject) && !cr.CompareTag("Player") && l.Count < 80) l.Add(cr.transform);
             int a = 0;
             foreach (Animal an in g.GetComponentsInChildren<Animal>()) { if (!an.CompareTag("Player") && a++ < 80) l.Add(an.transform); }
         }

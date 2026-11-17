@@ -68,6 +68,9 @@ public static class WebLigeraBuild
         Debug.Log($"[Web] Build «{name}»: {scenes.Length} escenas ({string.Join(", ", scenes.Select(Path.GetFileNameWithoutExtension))}) con {string.Join(";", defines)} → {outDir}");
         BuildReport r = BuildPipeline.BuildPlayer(opts);
         EditorUtility.UnloadUnusedAssetsImmediate(); System.GC.Collect();   // (el PC de 16 GB: suelta lo de este build antes del siguiente)
+        // Lo de depuración de Burst que Unity deja junto al build (no se sube: «_DoNotShip»).
+        foreach (string dir in new[] { outDir, Path.GetDirectoryName(outDir) })
+            if (!string.IsNullOrEmpty(dir) && Directory.Exists(dir)) foreach (string d in Directory.GetDirectories(dir, "*_BurstDebugInformation_DoNotShip")) { try { Directory.Delete(d, true); } catch (System.Exception) { } }
         long bytes = DirSize(outDir);
         // El .data: «X.data» sin comprimir; «X.data.unityweb» (gzip con descompresión de reserva) o «X.data.gz» comprimido.
         foreach (string f in Directory.Exists(outDir + "/Build") ? Directory.GetFiles(outDir + "/Build", "*.data*") : new string[0])

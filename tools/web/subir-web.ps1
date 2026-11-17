@@ -1,4 +1,4 @@
-# subir-web.ps1 - SUBIR LA WEB CONTINUA (2026-11-16).
+﻿# subir-web.ps1 - SUBIR LA WEB CONTINUA (2026-11-16).
 #
 # 1) Copia el sitio construido (Builds\Web\sitio del proyecto Unity: santuario, grupos, una pagina por microcosmos, portal, escenas.json)
 #    al repositorio de GitHub Pages (cs-web-pages), espejo exacto (robocopy /MIR, sin tocar .git).
@@ -32,14 +32,14 @@ if (-not $Url.EndsWith("/")) { $Url += "/" }
 if (-not $SoloProbar) {
     if (-not (Test-Path (Join-Path $Origen "index.html")) -or -not (Test-Path (Join-Path $Origen "version.txt"))) { Write-Error "No hay sitio en $Origen (construyelo antes: Tools > Cold Sanctuary > Web > Web continua: construir todo)."; exit 2 }
     if (-not (Test-Path (Join-Path $Repo ".git"))) { Write-Error "$Repo no es un repositorio git."; exit 2 }
-    $grandes = @(Get-ChildItem -Path $Origen -Recurse -File | Where-Object { $_.Length -gt 100MB })
+    $grandes = @(Get-ChildItem -Path $Origen -Recurse -File | Where-Object { $_.Length -gt 100MB -and $_.FullName -notlike "*_BurstDebugInformation_DoNotShip*" })
     if ($grandes.Count -gt 0) { $grandes | ForEach-Object { Write-Host ("  {0}: {1:0.0} MB" -f $_.FullName, ($_.Length / 1MB)) }; Write-Error "Hay archivos de mas de 100 MB: GitHub Pages no los sirve. Vuelve a construir (el plan parte los grupos grandes)."; exit 2 }
     $version = (Get-Content (Join-Path $Origen "version.txt") -Raw).Trim()
-    $total = (Get-ChildItem -Path $Origen -Recurse -File | Measure-Object Length -Sum).Sum
+    $total = (Get-ChildItem -Path $Origen -Recurse -File | Where-Object { $_.FullName -notlike "*_BurstDebugInformation_DoNotShip*" } | Measure-Object Length -Sum).Sum
     Write-Host ("Sitio {0}: {1:0} MB. Copiando a {2}..." -f $version, ($total / 1MB), $Repo)
 
     # 1) Espejo (robocopy: 0-7 = bien; 8+ = error). /XD .git: el repositorio se queda.
-    & robocopy $Origen $Repo /MIR /XD (Join-Path $Repo ".git") /XF ".git" /R:2 /W:2 /NFL /NDL /NJH /NJS /NP | Out-Null
+    & robocopy $Origen $Repo /MIR /XD (Join-Path $Repo ".git") "*_BurstDebugInformation_DoNotShip" /XF ".git" /R:2 /W:2 /NFL /NDL /NJH /NJS /NP | Out-Null
     if ($LASTEXITCODE -ge 8) { Write-Error "robocopy fallo ($LASTEXITCODE)."; exit 2 }
 
     # 2) Commit y push.

@@ -92,3 +92,21 @@ Todas las esperas están acotadas: 6 s para asentarse, 12 de observación y 2 de
   - El sitio, unos **~120 MB**: el santuario ~10 MB de `.data` + 2 grupos de ~45–60 MB + 3 `.wasm` de ~8 MB.
   - Unos **1–1,5 h** de build.
   - Cada subida añade ~120 MB al historial de `cs-web-pages`, en vez de ~700. `-Squash` sigue apagado hasta que Berón decida.
+
+## Probar en local (2026-11-17)
+- **Servidor:** `tools/web/servir-web.ps1` es un servidor estático mínimo sobre **TcpListener**. No usa HttpListener, así que no necesita
+  permisos de URL ni de administrador.
+  - Escucha en `http://127.0.0.1:<puerto>/`.
+  - Manda los tipos MIME de Unity WebGL (`.wasm`, `.js`, `.data`, `.unityweb`), **sin Content-Encoding**: con gzip de reserva, el
+    cargador descomprime él solo.
+  - Todo acotado: `-MaxSec` y 15 s por petición. Se para con el fichero `-Stop`.
+- **Probar en local:** `probar-web.ps1 -Local [-Root <sitio>] [-PuertoWeb 18080]` lo arranca él solo en el primer puerto libre desde
+  18080, prueba allí y lo para al salir, también si algo falla.
+- **Codificación:** los cuatro scripts son ASCII con BOM UTF-8 y CRLF, comprobados con el `powershell.exe` 5.1 del PC
+  (`Parser.ParseFile`: 0 errores).
+- **La carpeta `*_BurstDebugInformation_DoNotShip`** que Unity deja junto al build se borra al construir y no se sube.
+- **Primera prueba local real** (2026-11-17, `-Local -Solo santuario`): servidor, Edge, carga, `WebPrueba` y lectura funcionan
+  (57 s). Dio `FALLOS 3`, y el ajuste se hizo en la prueba, no en el juego:
+  - **Gente:** ahora se cuenta con `ActivityKit.IsHuman`.
+  - **Tope de animales:** ahora cuenta solo los animales del plan (como `TrimFauna`).
+  - **«Cae»:** ahora exige además que no haya suelo debajo (los pájaros que se posan no cuentan).

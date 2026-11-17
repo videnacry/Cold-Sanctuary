@@ -1,4 +1,4 @@
-# probar-web.ps1 - PRUEBA DE LA WEB EN EDGE SIN VENTANA (2026-11-16). Sin instalar nada: usa el Edge del PC.
+﻿# probar-web.ps1 - PRUEBA DE LA WEB EN EDGE SIN VENTANA (2026-11-16). Sin instalar nada: usa el Edge del PC.
 #
 # Abre cada pagina de la web (escenas.json del sitio) con ?prueba=1 en Edge headless, con tamano de movil, espera (acotado) a que la
 # pagina ponga su titulo en "OK" o "FALLOS n" (lo hace WebPrueba dentro del juego) y lee <pre id="resultado"> (JSON). Imprime una tabla
@@ -27,7 +27,10 @@ param(
     [int]$Puerto = 9333,
     [string]$Edge = "",
     [string]$Salida = "",
-    [string[]]$Urls = @()   # direcciones sueltas (en vez de escenas.json): se les anade prueba=1
+    [string[]]$Urls = @(),   # direcciones sueltas (en vez de escenas.json): se les anade prueba=1
+    [switch]$Local,            # sirve -Root con tools\web\servir-web.ps1 (lo arranca y lo para solo) y prueba alli
+    [string]$Root = "C:\Users\Blein\COLD-SANCTUARY\Builds\Web\sitio",
+    [int]$PuertoWeb = 18080
 )
 
 $ErrorActionPreference = "Stop"
@@ -38,12 +41,30 @@ if (-not $Edge) {
 if (-not $Edge -or -not (Test-Path $Edge)) { Write-Error "No encuentro msedge.exe (pasa -Edge <ruta>)."; exit 2 }
 $t0 = Get-Date
 
+# -- -Local: el servidor estatico (tools\web\servir-web.ps1), en otro proceso, acotado; se para al salir --------------------------------
+$script:servidor = $null; $script:stopFile = $null
+function Parar-Servidor { if ($script:stopFile) { New-Item -ItemType File -Force $script:stopFile | Out-Null }; if ($script:servidor) { if (-not $script:servidor.WaitForExit(5000)) { try { $script:servidor.Kill() } catch {} } }; if ($script:stopFile) { Remove-Item $script:stopFile -ErrorAction SilentlyContinue } }
+function Salir([int]$code) { Parar-Servidor; exit $code }
+if ($Local) {
+    if (-not (Test-Path (Join-Path $Root "index.html"))) { Write-Error "No hay sitio en $Root."; exit 2 }
+    $pw = $PuertoWeb
+    for ($i = 0; $i -lt 20; $i++) { $libre = $true; try { $t = New-Object System.Net.Sockets.TcpListener ([Net.IPAddress]::Loopback, ($PuertoWeb + $i)); $t.Start(); $t.Stop() } catch { $libre = $false }; if ($libre) { $pw = $PuertoWeb + $i; break } }
+    $script:stopFile = Join-Path $env:TEMP ("cs-servir-" + [guid]::NewGuid().ToString("N") + ".stop")
+    $aqui = Split-Path -Parent $MyInvocation.MyCommand.Path
+    $script:servidor = Start-Process -FilePath "powershell.exe" -ArgumentList @("-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "`"$(Join-Path $aqui "servir-web.ps1")`"", "-Root", "`"$Root`"", "-Port", $pw, "-MaxSec", ($TimeoutTotal + 600), "-Stop", "`"$script:stopFile`"") -PassThru -WindowStyle Hidden
+    $Base = "http://127.0.0.1:$pw/"
+    $listo = $false; $hasta = (Get-Date).AddSeconds(30)
+    while (-not $listo -and (Get-Date) -lt $hasta) { try { $null = Invoke-WebRequest -Uri ($Base + "version.txt") -UseBasicParsing -TimeoutSec 5; $listo = $true } catch { Start-Sleep -Milliseconds 500 } }
+    if (-not $listo) { Write-Error "El servidor local no responde en 30 s ($Base)."; Salir 2 }
+    Write-Host "Servidor local: $Base (sirve $Root)"
+}
+
 # -- La lista de paginas ------------------------------------------------------------------------------------------------------------
 function UrlOf($e) { $u = if ($e.full) { $e.full } else { $Base + $e.url }; if ($u.Contains("?")) { $u + "&prueba=1" } else { $u + "?prueba=1" } }
 $lista = $null
 if ($Urls.Count -gt 0) { $lista = @($Urls | ForEach-Object { [pscustomobject]@{ nombre = ($_ -replace "^https?://[^/]+/", ""); full = $_ } }) }
 else { try { $lista = (Invoke-RestMethod -Uri ($Base + "escenas.json?t=" + [DateTime]::UtcNow.Ticks) -TimeoutSec 30).escenas }
-catch { Write-Error "No pude leer $($Base)escenas.json: $($_.Exception.Message)"; exit 2 } }
+catch { Write-Error "No pude leer $($Base)escenas.json: $($_.Exception.Message)"; Salir 2 } }
 if ($Solo.Count -gt 0) { $want = $Solo | ForEach-Object { $_ -split "," } | ForEach-Object { $_.Trim() }; $lista = @($lista | Where-Object { $want -contains $_.nombre }) }
 Write-Host ("Probando {0} paginas de {1} (modo {2}, {3}x{4}, {5} s por escena)" -f @($lista).Count, $Base, $Modo, $Ancho, $Alto, $TimeoutEscena)
 
@@ -150,6 +171,7 @@ else {
         Get-CimInstance Win32_Process -Filter "Name = 'msedge.exe'" -ErrorAction SilentlyContinue | Where-Object { $_.CommandLine -like "*$perfil*" } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
         Start-Sleep -Seconds 1
         Remove-Item $perfil -Recurse -Force -ErrorAction SilentlyContinue
+        Parar-Servidor   # (tambien si algo fallo a medias: el servidor local no se queda encendido)
     }
 }
 
@@ -158,4 +180,4 @@ $filas | Format-Table escena, estado, fallos, gente, flora, fauna, segundos, det
 $ok = @($filas | Where-Object { $_.estado -eq "OK" }).Count
 Write-Host ("{0} de {1} OK en {2:0} min." -f $ok, $filas.Count, ((Get-Date) - $t0).TotalMinutes)
 if ($Salida) { $filas | ConvertTo-Json -Depth 6 | Set-Content -Path $Salida -Encoding UTF8; Write-Host "Resultados: $Salida" }
-if ($ok -eq $filas.Count -and $filas.Count -gt 0) { exit 0 } else { exit 1 }
+if ($ok -eq $filas.Count -and $filas.Count -gt 0) { Salir 0 } else { Salir 1 }

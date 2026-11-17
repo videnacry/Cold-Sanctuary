@@ -1,4 +1,4 @@
-# construir-web.ps1 - CONSTRUIR LA WEB CONTINUA SIN ABRIR EL EDITOR (2026-11-16).
+﻿# construir-web.ps1 - CONSTRUIR LA WEB CONTINUA SIN ABRIR EL EDITOR (2026-11-16).
 #
 # Corre Unity en modo batch: WebLigeraBuild.BuildContinuaCI (el santuario, los grupos de microcosmos y las paginas, en Builds\Web\sitio), y al
 # terminar deja el proyecto en StandaloneWindows64. Con el EDITOR CERRADO (un proyecto no se abre dos veces); con el editor abierto, usa el
