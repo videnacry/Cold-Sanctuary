@@ -161,9 +161,9 @@ Los sitios son objetos de la escena: las misiones se enganchan por su **nombre e
 
 | Trabajador | Oficio | Puesto | Turno |
 |---|---|---|---|
-| Ingenieros de aviónica (×2) | aviónica | `Banco de aviónica` | mañana (8 h) |
+| Ingeniero de aviónica y Técnico de aviónica | aviónica | `Banco de aviónica` | mañana (8 h) |
 | Ingeniera de software de vuelo | software | `Puesto de ingeniería (software de vuelo)` | mañana (8 h) |
-| Técnico de composite | composite | `Banco de composite (la cofia)` | mañana (8 h) |
+| Laminadora de composite | composite | `Banco de composite (la cofia)` | mañana (8 h) |
 | Maquinista del torno CNC | maquinista | `Torno de control numérico` | mañana (8 h) |
 | Ingeniera de propulsión (pruebas) | propulsión | `Puesto de ingeniería (propulsión)` | mañana (8 h) |
 | Ingeniero de estructuras | estructuras | `Pizarra: la secuencia del vuelo 4` | mañana (8 h) |
