@@ -38,6 +38,8 @@ public class AreaFunctionSite : MonoBehaviour
     public string activity = "";
     [Tooltip("¿Tiene además PUESTOS DE TRABAJO (quien lo atiende trabaja aquí)?")]
     public bool hasWork;
+    [Tooltip("(2026-11-18) No es una vivienda aunque tenga cama, retrete, lavabo y mesa (la nave de SpaceX con sus catres): el reparto de hogares (CivicBuilder.Homes) no mete familias aquí ni rehace sus muebles.")]
+    public bool notHome;
     [Tooltip("Cuántas personas lo usan a la vez (camas, asientos, puestos, sitio en lo que se pisa).")]
     public int capacity;
     [Tooltip("La interacción que ofrece, en una frase (lo que hacen aquí humanos e insectos-humanos).")]

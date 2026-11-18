@@ -14,7 +14,7 @@ public static partial class StorySceneBuilder
 {
     internal static readonly string[] FamousScenes =
     {
-        "Microcosmos_Sadhguru", "Microcosmos_ElonMusk", "Microcosmos_Goku", "Microcosmos_BillGates", "Microcosmos_WarrenBuffett", "Microcosmos_MacKenzieScott", "Microcosmos_IbrahimTraore",
+        "Microcosmos_Sadhguru", "Microcosmos_ElonMusk", "Microcosmos_ElonMuskOmelek", "Microcosmos_Goku", "Microcosmos_BillGates", "Microcosmos_WarrenBuffett", "Microcosmos_MacKenzieScott", "Microcosmos_IbrahimTraore",
     };
 
     /// <summary>Genera SOLO los microcosmos de los famosos, uno tras otro (con la escena principal abierta). Con poca memoria, mejor
@@ -26,6 +26,8 @@ public static partial class StorySceneBuilder
     public static void BuildSadhguru() => BuildOne("Microcosmos_Sadhguru");
     [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de famosos/Elon Musk (Hawthorne, 2008)")]
     public static void BuildElonMusk() => BuildOne("Microcosmos_ElonMusk");
+    [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de famosos/Elon Musk: Omelek, el lanzamiento (Kwajalein, 2008)")]
+    public static void BuildElonMuskOmelek() => BuildOne("Microcosmos_ElonMuskOmelek");
     [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de famosos/Goku (aldea de la montaña, homenaje)")]
     public static void BuildGoku() => BuildOne("Microcosmos_Goku");
     [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de famosos/Bill Gates (Albuquerque, 1975)")]

@@ -170,6 +170,8 @@ public class HomeNeedSpell : QueuedSpell
     public Household home;
     public float eatMinutes = 20f, toiletMinutes = 5f, washMinutes = 10f, maxSleepHours = 14f;
     const float WalkTimeout = 45f;
+    // (2026-11-18) El tope de andar, a la estatura: un insecto-humano encogido (× s) anda a la mitad de velocidad y tiene el doble de tiempo.
+    static float Timeout(float h) => WalkTimeout * Mathf.Max(1f, MicroBuildRules.HumanStature / Mathf.Max(0.2f, h));
 
     /// <summary>Cuántas veces alguien no llegó andando a su mueble de casa y se le puso allí (registro, pruebas).</summary>
     public static int Fallbacks;
@@ -219,7 +221,7 @@ public class HomeNeedSpell : QueuedSpell
                     if (_fetchSince < 0f) _fetchSince = Time.time;
                     Vector3 pto = UsePoint(home.pantry.transform, t.position, h);
                     bool atPantry = MicroMove.Step(t, pto, 1.4f * h / 1.75f, 0.45f * h);
-                    if (!atPantry && Time.time - _fetchSince > WalkTimeout) { HomeMove.Place(t, pto); HomeMove.Release(t); atPantry = true; Fallbacks++; }
+                    if (!atPantry && Time.time - _fetchSince > Timeout(h)) { HomeMove.Place(t, pto); HomeMove.Release(t); atPantry = true; Fallbacks++; }
                     if (!atPantry) return false;
                     HomeMove.Face(t, home.pantry.transform.position);
                     if (!home.pantry.Take()) { RetryEat[self] = Time.time + 20f; Debug.Log($"[Hogar] «{self.name}»: no quedaba nada en la despensa."); return true; }
@@ -231,10 +233,10 @@ public class HomeNeedSpell : QueuedSpell
                 _meal?.Carry(self.gameObject);
                 Vector3 to = UsePoint(_spot, t.position, h);
                 bool there = MicroMove.Step(t, to, 1.4f * h / 1.75f, 0.45f * h);
-                if (!there && Time.time - _since > WalkTimeout)
+                if (!there && Time.time - _since > Timeout(h))
                 {
                     HomeMove.Place(t, to); HomeMove.Release(t); there = true; Fallbacks++;
-                    if (Fallbacks <= 20) Debug.LogWarning($"[Hogar] «{self.name}» no llega andando en {WalkTimeout:0} s a «{_spot.name}» de su casa: se le pone allí.");
+                    if (Fallbacks <= 20) Debug.LogWarning($"[Hogar] «{self.name}» no llega andando en {Timeout(h):0} s a «{_spot.name}» de su casa: se le pone allí.");
                 }
                 if (!there) return false;
                 Begin(self, body, h);

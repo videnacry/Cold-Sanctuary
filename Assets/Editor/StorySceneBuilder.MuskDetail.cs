@@ -98,7 +98,10 @@ public static partial class StorySceneBuilder
 
         // ── EL COMEDOR: una MESA ALTA de insectos-humanos con sus apoyos de abdomen (C1), la máquina de bebidas y la fuente de agua ──
         MicroBody.Fit ant = MicroBody.OfSpecies("Ant");
-        Piece(fac, "mesa", new Vector3(-4f, 0f, -11f), 0f, "Comedor: mesa alta con apoyos de abdomen (C1)", null, null, new List<MicroBody.Fit> { ant, ant, ant, ant });
+        Transform standTable = Piece(fac, "mesa", new Vector3(-4f, 0f, -11f), 0f, "Comedor: mesa alta con apoyos de abdomen (C1)", null, null, new List<MicroBody.Fit> { ant, ant, ant, ant, ant, ant });
+        // (piloto 3) Que se vean: los cojines de los apoyos, en naranja SpaceX… de seguridad.
+        foreach (Renderer r in standTable.GetComponentsInChildren<Renderer>()) if (r.name == "Cojin_del_abdomen") r.sharedMaterial = orange;
+        Sign(fac, "COMEDOR", new Vector3(-6.5f, 4.2f, -10.8f), 0f, yellow, black);
         Prop(fac, "Maquina_de_bebidas", new Vector3(-13f, 0.9f, -hz + 0.6f), new Vector3(1f, 1.8f, 0.8f), red, false);
         Prop(fac, "Frontal_de_la_maquina", new Vector3(-13f, 1.1f, -hz + 1.01f), new Vector3(0.6f, 1.0f, 0.01f), glassDark, false);
         Prop(fac, "Fuente_de_agua", new Vector3(-11.2f, 0.55f, -hz + 0.45f), new Vector3(0.35f, 1.1f, 0.35f), white, false);
@@ -146,6 +149,8 @@ public static partial class StorySceneBuilder
         Prop(street, "Acera", new Vector3(-6f, 0.08f, 0f), new Vector3(3f, 0.16f, 44f), M("Acera", 0.72f, 0.71f, 0.68f), false);
         for (int k = 0; k < 6; k++) Palm(street, new Vector3(-6.5f, 0.16f, -19f + k * 7.6f));
 
+        MuskDetail3(fac);
+
         // ── LA GENTE TRABAJANDO en los bancos nuevos ──
         Vector3 F(float x, float z) => MuskFactoryAt + new Vector3(x, 0f, z);
         Transform dataSpot = fac.Find("Consola de datos del vuelo 3"), floorSpot = fac.Find("Nave de montaje");
@@ -160,9 +165,13 @@ public static partial class StorySceneBuilder
     // pisar los MUEBLES GIGANTES del piso ×100 (las mesas y las pantallas del control de misión del santuario miden 76 m de alto): se
     // busca el desplazamiento libre más cercano (sin ir hacia el portal, z −14…−20) dentro del piso, y se registra qué tapaba. El piso no
     // se toca (regla M6: el piso no se rompe).
-    static Vector3 MuskSpot(Transform t)
+    static Vector3 MuskSpot(Transform t) => FreeSpot(t, Rect.MinMaxRect(-49f, -10f, 34f, 31f), "Piloto Musk");
+
+    /// <summary>El desplazamiento libre más cercano (sin ir hacia el portal: dz ≥ 0) para una huella <paramref name="foot"/> (locales de la
+    /// historia) que no pise los muebles gigantes del piso ×100 entre 0,3 y 14 m de alto, dentro del piso. Lo usan el piloto de Hawthorne
+    /// y la isla de Omelek.</summary>
+    static Vector3 FreeSpot(Transform t, Rect foot, string label)
     {
-        Rect foot = Rect.MinMaxRect(-49f, -10f, 34f, 31f);
         var giants = new List<(Rect r, string name)>();
         Transform root = t.root;
         foreach (Transform c in root)
@@ -191,8 +200,8 @@ public static partial class StorySceneBuilder
         for (int dx = -400; dx <= 400; dx += 10) for (int dz = 0; dz <= 400; dz += 10) tries.Add(new Vector2(dx, dz));
         tries.Sort((a, b) => a.sqrMagnitude.CompareTo(b.sqrMagnitude));
         foreach (Vector2 d in tries)
-            if (Free(d, out _)) { Debug.Log($"[Piloto Musk] La nave pisaba «{first}» (mueble gigante del piso): se corre ({d.x:0}, {d.y:0}) m."); return new Vector3(d.x, 0f, d.y); }
-        Debug.LogWarning($"[Piloto Musk] La nave pisa «{first}» y no hay sitio libre a 400 m: se queda en el claro.");
+            if (Free(d, out _)) { Debug.Log($"[{label}] Pisaba «{first}» (mueble gigante del piso): se corre ({d.x:0}, {d.y:0}) m."); return new Vector3(d.x, 0f, d.y); }
+        Debug.LogWarning($"[{label}] Pisa «{first}» y no hay sitio libre a 400 m: se queda en el claro.");
         return Vector3.zero;
     }
 
@@ -219,9 +228,9 @@ public static partial class StorySceneBuilder
     }
 
     // Una PALMERA DE ABANICO (Washingtonia robusta, la de las avenidas de Los Ángeles; 12 m: supuesto): tronco, falda de hojas secas y copa.
-    static void Palm(Transform parent, Vector3 at)
+    static void Palm(Transform parent, Vector3 at, string name = "Palmera de abanico")
     {
-        Transform p = new GameObject("Palmera de abanico").transform; p.SetParent(parent, false); p.localPosition = at;
+        Transform p = new GameObject(name).transform; p.SetParent(parent, false); p.localPosition = at;
         Prop(p, "Tronco", new Vector3(0f, 6f, 0f), new Vector3(0.45f, 12f, 0.45f), M("Tronco_palmera", 0.5f, 0.4f, 0.3f), true);
         Prop(p, "Falda_de_hojas_secas", new Vector3(0f, 11f, 0f), new Vector3(0.9f, 1.6f, 0.9f), M("Hoja_seca", 0.55f, 0.45f, 0.3f), false);
         Material leaf = M("Hoja_de_palmera", 0.25f, 0.45f, 0.22f);

@@ -37,6 +37,18 @@ public static partial class MicroBiome
               townFauna = new[] {
                 new Pet("Aphid", 2, 2.4f, C(0.92f, 0.9f, 0.85f), "Vaca de la aldea (en el microcosmos, un pulgón)"),
                 new Pet("Woodlouse", 2, 0.7f, C(0.75f, 0.6f, 0.45f), "Perro de la aldea (en el microcosmos, una cochinilla hormiguera)") } };
+            // ── Omelek (atolón de Kwajalein, Islas Marshall), finales de septiembre de 2008: isla de coral baja. Cocoteros (Cocos nucifera),
+            //    naupaka de playa (Scaevola taccada), Pemphis acidula y la hierba de la arena; cangrejos fantasma (Ocypode) y ermitaños (Coenobita)
+            //    en la playa (USFWS y RMI, flora y fauna de los atolones de las Marshall; Kwajalein Atoll Environmental Standards). Sin perros ni gatos.
+            case "Omelek": return new Biome { title = "Omelek (2008): isla de coral del atolón de Kwajalein", ground = C(0.9f, 0.86f, 0.74f), plants = new[] {
+                new Plant(Kind.Shrub, 6, "Cocotero (Cocos nucifera)", 1500, C(0.3f, 0.5f, 0.25f), C(0.55f, 0.4f, 0.2f)),
+                new Plant(Kind.Shrub, 8, "Naupaka de playa (Scaevola taccada)", 150, C(0.3f, 0.5f, 0.28f), C(0.95f, 0.95f, 0.9f)),
+                new Plant(Kind.Shrub, 4, "Pemphis (Pemphis acidula)", 120, C(0.35f, 0.45f, 0.3f), C(0.9f, 0.85f, 0.95f)),
+                new Plant(Kind.Grass, 8, "Hierba de la arena (Lepturus repens)", 20, C(0.55f, 0.6f, 0.35f), C(0.65f, 0.65f, 0.4f)),
+                new Plant(Kind.Sand, 10, "Arena de coral", 0, C(0.92f, 0.88f, 0.76f), Sand) },
+              bugs = new[] {
+                new Bug("GhostCrab", 6, 40, C(0.85f, 0.8f, 0.65f), "Cangrejo fantasma (Ocypode)"),
+                new Bug("GhostCrab", 3, 30, C(0.7f, 0.45f, 0.3f), "Cangrejo ermitaño (Coenobita), con su concha") } };
             // ── Hawthorne (Los Ángeles), finales de septiembre de 2008: ciudad, sin naturaleza salvaje. Las palmeras de abanico de las
             //    avenidas, jacarandas y ficus de calle, céspedes y buganvillas (City of Hawthorne; LA County street trees). Perros y gatos.
             case "Hawthorne": return new Biome { title = "Hawthorne (2008): ciudad, sin naturaleza salvaje", ground = C(0.62f, 0.6f, 0.56f), plants = new[] {

@@ -84,7 +84,7 @@ internal static partial class CivicBuilder
     // Un EDIFICIO DONDE SE VIVE: con cama (no camilla), retrete, lavabo y mesa (con sus sillas o bancos).
     static bool IsDwelling(AreaFunctionSite s)
     {
-        if (s == null) return false;
+        if (s == null || s.notHome) return false;
         bool bed = false, wc = false, wash = false, table = false;
         foreach (MicroPiece p in s.GetComponentsInChildren<MicroPiece>(true))
         {

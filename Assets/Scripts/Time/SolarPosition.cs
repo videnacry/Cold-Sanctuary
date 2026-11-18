@@ -136,6 +136,7 @@ public static class SolarPosition
             ("Gettysburg", 39.83f, -77.23f, 323f),   // 19 de noviembre de 1863
             ("Velliangiri", 10.97f, 76.74f, 175f),   // Isha Yoga Center, 24 de junio de 1999
             ("Hawthorne", 33.92f, -118.33f, 272f),   // la sede de SpaceX, 28 de septiembre de 2008
+            ("Omelek", 9.05f, 167.74f, 273f),   // la isla de lanzamiento, 29 de septiembre de 2008 (hora de las Islas Marshall, UTC+12)
             ("Albuquerque", 35.08f, -106.6f, 95f),   // primavera de 1975 (Micro-Soft, 4 de abril)
             ("Omaha", 41.25f, -96.03f, 242f),   // 30 de agosto de 1983
             ("Prairie View", 30.09f, -95.99f, 350f),   // 15 de diciembre de 2020
