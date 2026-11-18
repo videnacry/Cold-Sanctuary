@@ -75,6 +75,8 @@ public class AutoTravel : MonoBehaviour
     public static bool ActOnArrive { get => PlayerPrefs.GetInt("cs.viaje.actuar", 1) == 1; set => PlayerPrefs.SetInt("cs.viaje.actuar", value ? 1 : 0); }
 
     public bool Traveling { get; private set; }
+    /// <summary>¿Se ve la barra del viaje o su aviso de atasco? (los avisos se ponen debajo)</summary>
+    public bool BarShowing => Traveling || Time.unscaledTime <= _toastUntil;
     public string Label { get; private set; } = "";
     public Result Last { get; private set; }
     public string LastMessage { get; private set; } = "";
@@ -207,7 +209,9 @@ public class AutoTravel : MonoBehaviour
         Traveling = false; Last = r; LastMessage = msg;
         if (r != Result.Stuck && r != Result.Timeout) _failedTarget = null;
         _target = null; _onArrive = null;
-        _toastUntil = Time.unscaledTime + (r == Result.Stuck || r == Result.Timeout ? 12f : 3f);
+        bool arrived = r == Result.Arrived || r == Result.Teleported;
+        _toastUntil = arrived ? 0f : Time.unscaledTime + (r == Result.Stuck || r == Result.Timeout ? 12f : 3f);
+        if (arrived) HudNotices.Push("✓ " + msg, HudNotices.Kind.Good);   // (2026-11-18) la llegada, en los avisos de arriba
         Debug.Log($"[Viaje] {msg}");
     }
 
