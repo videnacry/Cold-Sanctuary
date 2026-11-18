@@ -358,6 +358,39 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | FAU-31 | Probado (suite g99) | 2026-11-17 | 4127332 | [runs/2026-11-17-1900-r125-rapida-grupos-vivo-suite.md](runs/2026-11-17-1900-r125-rapida-grupos-vivo-suite.md) | — | r125: g99 TerritorioTest 80/0 |
 | FAU-32 | Probado (suite g85) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g85 CadenaAlimenticiaTest 58/0 |
 | REN-08 | Probado (suite g118) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g118 QaCheckTest 44/0 |
+| MIC-84 | Solo código | 2026-11-18 | — | — | — | claude/escala-mitad: programado y compilado; lo prueba el probador |
+| MIC-85 | Solo código | 2026-11-18 | — | — | — | claude/escala-mitad: programado y compilado; lo prueba el probador |
+| MIC-86 | Solo código | 2026-11-18 | — | — | — | claude/escala-mitad: programado y compilado; lo prueba el probador |
+| MIC-87 | Solo código | 2026-11-18 | — | — | — | claude/escala-mitad: programado y compilado; lo prueba el probador |
+| MIC-88 | Solo código | 2026-11-18 | — | — | — | claude/escala-mitad: programado y compilado; lo prueba el probador |
+| CS-01 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
+| CS-02 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
+| CS-03 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
+| CS-04 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
+| CS-05 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
+| CS-06 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
+| CS-07 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
+| CS-08 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
+| CS-09 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
+| CS-10 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
+| CS-11 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
+| CS-12 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
+| CS-13 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
+| CS-14 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
+| CS-15 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
+| CS-20 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
+| CS-21 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
+| CS-22 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
+| CS-23 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
+| CS-30 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
+| CS-31 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
+| CS-32 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
+| CS-33 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
+| CS-34 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
+| CS-35 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
+| CS-40 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
+| CS-41 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
+| CS-42 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
 
 **Recuento:** No aplica 8 · Parcial 9 · Probado (retro) 285 · Sin probar 31 · Solo código 16 · total 349.
 

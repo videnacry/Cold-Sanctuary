@@ -41,34 +41,36 @@ public class MicroVehicleTest : MonoBehaviour, ITestUnit
 
             // 1 · Subir.
             bool up = v.Board(driver);
-            TestProbe.Check("sube: queda en su asiento, con el controlador apagado", up && v.Driver == driver && driver.transform.parent == seat && !cc.enabled && (driver.transform.position - seat.position).sqrMagnitude < 1e-4f);
-            TestProbe.Check("nadie más sube a la vez", !v.Board(other));
+            TestProbe.Check("[MIC-86] sube: queda en su asiento, con el controlador apagado", up && v.Driver == driver && driver.transform.parent == seat && !cc.enabled && (driver.transform.position - seat.position).sqrMagnitude < 1e-4f);
+            TestProbe.Check("[MIC-86] nadie más sube a la vez", !v.Board(other));
 
             // 2 · Conducir.
             Vector3 p0 = car.transform.position; float y0 = car.transform.eulerAngles.y;
             for (int i = 0; i < 40; i++) v.Drive(1f, 0f, 0.1f);   // 4 s a fondo
             Vector3 d = car.transform.position - p0;
-            TestProbe.Check("avanza hacia delante, sin pasar de su máxima", d.z > 8f && Mathf.Abs(d.x) < 0.01f && v.Speed <= v.maxSpeed + 1e-3f, $"{d.z:0.0} m, {v.Speed:0.0} m/s");
+            TestProbe.Check("[MIC-86] avanza hacia delante, sin pasar de su máxima", d.z > 8f && Mathf.Abs(d.x) < 0.01f && v.Speed <= v.maxSpeed + 1e-3f, $"{d.z:0.0} m, {v.Speed:0.0} m/s");
             for (int i = 0; i < 10; i++) v.Drive(1f, 1f, 0.1f);
-            TestProbe.Check("gira con la dirección", Mathf.Abs(Mathf.DeltaAngle(y0, car.transform.eulerAngles.y)) > 20f, $"{Mathf.DeltaAngle(y0, car.transform.eulerAngles.y):0}°");
+            TestProbe.Check("[MIC-86] gira con la dirección", Mathf.Abs(Mathf.DeltaAngle(y0, car.transform.eulerAngles.y)) > 20f, $"{Mathf.DeltaAngle(y0, car.transform.eulerAngles.y):0}°");
             for (int i = 0; i < 60; i++) v.Drive(-1f, 0f, 0.1f);
-            TestProbe.Check("marcha atrás, más despacio", v.Speed < 0f && -v.Speed <= v.maxSpeed * 0.4f + 1e-3f, $"{v.Speed:0.0} m/s");
-            TestProbe.Check("el conductor viaja con él", (driver.transform.position - seat.position).sqrMagnitude < 1e-4f);
+            TestProbe.Check("[MIC-86] marcha atrás, más despacio", v.Speed < 0f && -v.Speed <= v.maxSpeed * 0.4f + 1e-3f, $"{v.Speed:0.0} m/s");
+            TestProbe.Check("[MIC-86] el conductor viaja con él", (driver.transform.position - seat.position).sqrMagnitude < 1e-4f);
 
             // 3 · Bajar.
             v.Leave();
-            TestProbe.Check("baja a un lado, con el controlador encendido", v.Driver == null && driver.transform.parent == null && cc.enabled && (driver.transform.position - car.transform.position).magnitude > 0.5f);
-            float sp = Mathf.Abs(v.Speed);
-            for (int i = 0; i < 30; i++) v.Drive(1f, 0f, 0.1f);   // sin conductor, el acelerador no hace nada: frena
-            TestProbe.Check("sin conductor, frena solo", Mathf.Abs(v.Speed) < 1e-3f && sp > 0f, $"de {sp:0.0} a {v.Speed:0.0} m/s");
+            TestProbe.Check("[MIC-86] baja a un lado, con el controlador encendido", v.Driver == null && driver.transform.parent == null && cc.enabled && (driver.transform.position - car.transform.position).magnitude > 0.5f);
+            // (Al bajar se para: Leave deja la velocidad en 0. Antes se miraba «frena solo» desde 0 m/s, que no prueba nada.)
+            TestProbe.Check("[MIC-86] al bajar, se para", Mathf.Abs(v.Speed) < 1e-3f, $"{v.Speed:0.0} m/s");
+            Vector3 parked = car.transform.position;
+            for (int i = 0; i < 30; i++) v.Drive(1f, 0f, 0.1f);   // sin conductor, el acelerador no hace nada
+            TestProbe.Check("[MIC-86] sin conductor, el acelerador no lo mueve", Mathf.Abs(v.Speed) < 1e-3f && (car.transform.position - parked).sqrMagnitude < 1e-6f, $"{v.Speed:0.0} m/s");
 
             // 4 · La carga.
             bool loaded = v.Load(pallet.transform);
             Vector3 c0 = car.transform.position;
             v.Board(driver); for (int i = 0; i < 10; i++) v.Drive(1f, 0f, 0.1f); v.Leave();
-            TestProbe.Check("carga el palé en las horquillas y viaja con él", loaded && v.Cargo == pallet.transform && (pallet.transform.position - forks.position).sqrMagnitude < 1e-4f && (car.transform.position - c0).magnitude > 1f);
+            TestProbe.Check("[MIC-86] carga el palé en las horquillas y viaja con él", loaded && v.Cargo == pallet.transform && (pallet.transform.position - forks.position).sqrMagnitude < 1e-4f && (car.transform.position - c0).magnitude > 1f);
             Transform dropped = v.Unload();
-            TestProbe.Check("lo deja en el suelo, delante", dropped == pallet.transform && v.Cargo == null && pallet.transform.parent != forks);
+            TestProbe.Check("[MIC-86] lo deja en el suelo, delante", dropped == pallet.transform && v.Cargo == null && pallet.transform.parent != forks);
         }
         finally { Destroy(car); Destroy(driver); Destroy(other); Destroy(pallet); }
         TestProbe.End();

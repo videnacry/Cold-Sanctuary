@@ -93,7 +93,7 @@ public static class QaCheck
 
     // ── IDs ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
-    public static readonly string[] Areas = { "FAU", "JOR", "YOG", "GYM", "ARB", "MIC", "HOS", "NUC", "ENE", "PER", "UI", "REN", "CV", "PX", "OP" };
+    public static readonly string[] Areas = { "FAU", "JOR", "YOG", "GYM", "ARB", "MIC", "HOS", "NUC", "ENE", "PER", "UI", "REN", "CV", "PX", "OP", "CS" };   // (CS, 2026-11-18: CodeShip en los microcosmos)
     static readonly Regex CaseIdRx = new Regex(@"^(?:" + string.Join("|", Areas) + @")-\d{2,3}$", RegexOptions.Compiled);
     static readonly Regex PbRx = new Regex(@"^PB-\d{3}$", RegexOptions.Compiled);
     static readonly Regex BugRx = new Regex(@"^(?:B|HC)-\d{2,3}$", RegexOptions.Compiled);

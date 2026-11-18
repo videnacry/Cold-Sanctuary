@@ -36,7 +36,7 @@ de **0,175 m** de radio y NavMeshAgent de **0,5 m** de radio (medio ancho recogi
 | Ancho andando, patas recogidas (`TuckedWalkWidth`) | 1,0 m | 2 × s; lo mide `FolkScaleTest` (grupo 121) sobre el cuerpo de cubos |
 | Radio del agente (`AgentRadius`) | 0,5 m | medio ancho recogido |
 | **Paso libre entre dos muebles** (`MicroBuildRules.Passage`) | **2,4 m** | dos cuerpos recogidos andando (4 × 0,5 = 2,0 m) + 0,2 m de holgura a cada lado. El santuario sigue con sus 2 m (`FurnitureSpacing.Standard`: allí andan personas). |
-| Paso de los microcosmos aún sin reconstruir (`LegacyPassage`) | 2,0 m | los que tienen `MicroFloor.folkScale = 1` (montados antes del encogimiento) se miden con el paso de entonces hasta que se reconstruyan, uno a uno |
+| Paso de lo aún sin reconstruir (`LegacyPassage`) | 2,0 m | los microcosmos con `MicroFloor.folkScale = 1` (montados antes del encogimiento) y las escenas sin `MicroFloor` (MobWorld_Mesopotamia, las casas de ciclo de vida) se miden con el paso de entonces hasta que se reconstruyan, uno a uno |
 | Calle de pueblo (`Street`) | 4,0 m | se queda: caben dos parejas o un carro real de 2–2,5 m |
 | Sitio de trabajo delante de un puesto (`WorkSpot`) | 0,6 m | 1,2 × s: donde se pone quien usa el fogón, la mesa o el banco (dentro del paso) |
 | Puerta mínima (`DoorWidth` × `DoorHeight`) | 1,2 × 1,25 m | el ancho recogido andando + 0,2; el alto con las antenas (~2,1 × s) + 0,2 |

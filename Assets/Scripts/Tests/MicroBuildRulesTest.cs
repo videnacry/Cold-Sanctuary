@@ -47,6 +47,7 @@ public class MicroBuildRulesTest : MonoBehaviour, ITestUnit
         TestProbe.Check("era avanzada desde −3500 (Uruk sí, la aldea de −9500 no, 1964 sí)", MicroBuildRules.IsTownEra(-3500) && !MicroBuildRules.IsTownEra(-9500) && MicroBuildRules.IsTownEra(1964));
 
         var root = new GameObject("PruebaReglas").transform; root.position = new Vector3(0f, -500f, 9000f);
+        root.gameObject.AddComponent<MicroFloor>().folkScale = MicroBuildRules.FolkScale;   // montado con el cuerpo encogido: vale el paso nuevo (sin MicroFloor, el de antes)
         try
         {
             // 1 · El paso.
@@ -55,6 +56,9 @@ public class MicroBuildRulesTest : MonoBehaviour, ITestUnit
             TestProbe.Check("dos muebles a 1 m: violación de paso", Has(MicroBuildRules.Validate(root, null, false, false), "paso"));
             b.localPosition = new Vector3(3.6f, 0f, 0f);   // 2,2 m libres: con el cuerpo encogido no basta (2,4 m)
             TestProbe.Check("a 2,2 m: violación (el paso nuevo es de 2,4 m)", Has(MicroBuildRules.Validate(root, null, false, false), "paso"));
+            var bare = new GameObject("Escena_sin_MicroFloor").transform; bare.position = root.position + new Vector3(0f, 0f, -300f);
+            TestProbe.Check("sin MicroFloor (MobWorld, casas de ciclo de vida): el paso de antes, 2 m", Mathf.Approximately(MicroBuildRules.PassageFor(bare), MicroBuildRules.LegacyPassage));
+            Object.DestroyImmediate(bare.gameObject);
             var legacy = new GameObject("Microcosmos_antiguo").transform; legacy.SetParent(root, false);
             MicroFloor old = legacy.gameObject.AddComponent<MicroFloor>();   // folkScale = 1 (por defecto): montado antes del encogimiento
             a.SetParent(legacy, true); b.SetParent(legacy, true);

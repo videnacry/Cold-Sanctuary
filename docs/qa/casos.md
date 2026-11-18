@@ -303,6 +303,11 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | MIC-81 | MIC | Regla M33: Capa de tierra de 10 cm (APAGADA por defecto desde el 2026-11-04: `MicroGround.SoilEnabled = false`, colgaba el NavMesh de la Cocina; Berón: «se puede desactivar si es tan pesado») (`MicroGround.SoilThickness`, metros de… | SleepTest | 8 | M33 | — | manual §«Se comprueba en» |
 | MIC-82 | MIC | Regla M34: Toda estatua humana tiene su versión insecto-humano en los microcosmos (`MicroStatue`): el cuerpo de un insecto-humano de verdad (su especie por el papel que representa), de pie, de piedra o bronce, en la misma pose y co… | YogaTest | 15 | M34 | — | manual §«Se comprueba en» |
 | MIC-83 | MIC | Regla M30: sillas y bancos se pueden usar: cada asiento lleva su MicroSeat (una silla, un sitio; un banco de plaza, tres asientos) | MicroSueloTest | 68 | M30 | — | manual §«Se comprueba en» (también ValidateCivicScale regla 13 y g67); añadido a mano el 2026-11-13 |
+| MIC-84 | MIC | Reglas M40–M42 y M45 (2026-11-18): el insecto-humano a la mitad (s = 0,5, una constante) mide 0,875 m; con las patas recogidas ≤ 0,95 m de ancho de pie y ≤ 1,05 m andando, cabe por una puerta de 1,2 × 1,25 m; la mesa alta a sus manos ± 0,05 m y el apoyo de abdomen bajo su gáster | FolkScaleTest | 121 | M40, M41, M42, M45 | — | plan-microcosmos-realismo.md fase 0b; añadido el 2026-11-18 |
+| MIC-85 | MIC | Regla M24 (2026-11-18): la vista de corte reúne muros (por nombre y forma) y techo; dentro, se desvanecen el techo y los muros entre la cámara y el jugador; fuera, todo vuelve; con vista de corte y puerta la regla P2 no da falta | CutawayTest | 122 | M24 | — | plan fase 0; añadido el 2026-11-18 |
+| MIC-86 | MIC | Regla M44 (P6): un transporte de época se sube (control apagado), se conduce (adelante con tope, gira, marcha atrás más lenta), se baja (se para y el control vuelve) y lleva carga en las horquillas | MicroVehicleTest | 123 | M44 | — | plan fase 1; añadido el 2026-11-18 |
+| MIC-87 | MIC | Piloto Microcosmos_ElonMusk (fase 1): montado con folkScale = s; la nave de SpaceX cerrada con vista de corte y puertas ≥ 1,2 × 1,25 m (la de los aseos, ensanchada); hito y transportes; las seis necesidades dentro; apoyos de abdomen y tarimas; la consola del reto de CodeShip; 0 faltas de reglas | MuskPilotTest | 124 | M24, M43, M44, M45 | — | plan fase 1; añadido el 2026-11-18 |
+| MIC-88 | MIC | Reglas M23, M24, M43, M44 y M46 en el validador: paso de 2,4 m (2 m sin reconstruir o sin MicroFloor), muros con vista de corte y puerta, puerta estrecha = falta, hito / transporte / escaleras < 12 m = consejos | MicroBuildRulesTest | 63 | M23, M24, M43, M44, M46 | — | plan fase 0; añadido el 2026-11-18 |
 
 ## HOS · Hospital
 
@@ -375,6 +380,40 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | ID | Área | Qué tiene que pasar | Unidad | Grupo | Reglas | PB | Origen |
 |---|---|---|---|---|---|---|---|
 | UI-01 | UI | UI: horario sobre F10, recursos en una ventana, ventana de misiones y jornada | HudModalsTest | 93 | F10 | PB-090 | auditoría #90, L50, L53 |
+
+
+## CS · CodeShip (retos de código, tareas e «Ir», menú)
+
+| ID | Área | Qué tiene que pasar | Unidad | Grupo | Reglas | PB | Origen |
+|---|---|---|---|---|---|---|---|
+| CS-01 | CS | todos los retos del catálogo están bien formados | CodeShipLogicTest | 119 | — | — | claude/ui-codeship (plan-microcosmos-realismo.md §4); añadido el 2026-11-18 |
+| CS-02 | CS | Microcosmos_ElonMusk tiene un reto de ordenar y uno de elegir | CodeShipLogicTest | 119 | — | — | claude/ui-codeship (plan-microcosmos-realismo.md §4); añadido el 2026-11-18 |
+| CS-03 | CS | un reto de ordenar de prueba está bien formado (con un bloque de distracción) | CodeShipLogicTest | 119 | — | — | claude/ui-codeship (plan-microcosmos-realismo.md §4); añadido el 2026-11-18 |
+| CS-04 | CS | el orden correcto acierta | CodeShipLogicTest | 119 | — | — | claude/ui-codeship (plan-microcosmos-realismo.md §4); añadido el 2026-11-18 |
+| CS-05 | CS | otro orden, uno incompleto o uno con la distracción fallan | CodeShipLogicTest | 119 | — | — | claude/ui-codeship (plan-microcosmos-realismo.md §4); añadido el 2026-11-18 |
+| CS-06 | CS | cuántos bloques del principio están bien (la pista) | CodeShipLogicTest | 119 | — | — | claude/ui-codeship (plan-microcosmos-realismo.md §4); añadido el 2026-11-18 |
+| CS-07 | CS | el barajado trae todos los bloques y nunca empieza ya resuelto | CodeShipLogicTest | 119 | — | — | claude/ui-codeship (plan-microcosmos-realismo.md §4); añadido el 2026-11-18 |
+| CS-08 | CS | el barajado es el mismo con la misma semilla | CodeShipLogicTest | 119 | — | — | claude/ui-codeship (plan-microcosmos-realismo.md §4); añadido el 2026-11-18 |
+| CS-09 | CS | un reto cuya solución usa un bloque que no existe no valida | CodeShipLogicTest | 119 | — | — | claude/ui-codeship (plan-microcosmos-realismo.md §4); añadido el 2026-11-18 |
+| CS-10 | CS | un reto de elegir acierta solo con su opción | CodeShipLogicTest | 119 | — | — | claude/ui-codeship (plan-microcosmos-realismo.md §4); añadido el 2026-11-18 |
+| CS-11 | CS | un reto de elegir con la respuesta fuera de rango no valida | CodeShipLogicTest | 119 | — | — | claude/ui-codeship (plan-microcosmos-realismo.md §4); añadido el 2026-11-18 |
+| CS-12 | CS | tres toques sobre la misma opción errónea cuentan como un fallo | CodeShipLogicTest | 119 | — | — | claude/ui-codeship (plan-microcosmos-realismo.md §4); añadido el 2026-11-18 |
+| CS-13 | CS | un acierto no se apunta como fallo | CodeShipLogicTest | 119 | — | — | claude/ui-codeship (plan-microcosmos-realismo.md §4); añadido el 2026-11-18 |
+| CS-14 | CS | cambiar de reto olvida los fallos del anterior | CodeShipLogicTest | 119 | — | — | claude/ui-codeship (plan-microcosmos-realismo.md §4); añadido el 2026-11-18 |
+| CS-15 | CS | un orden fallado queda apuntado por sus bloques | CodeShipLogicTest | 119 | — | — | claude/ui-codeship (plan-microcosmos-realismo.md §4); añadido el 2026-11-18 |
+| CS-20 | CS | la lista: historia primero, lo de ahora antes que lo de después, con sitio y lo más cerca antes; luego la jornada y las misiones | CodeShipLogicTest | 119 | — | — | claude/ui-codeship (plan-microcosmos-realismo.md §4); añadido el 2026-11-18 |
+| CS-21 | CS | ordenar dos veces da lo mismo (estable) | CodeShipLogicTest | 119 | — | — | claude/ui-codeship (plan-microcosmos-realismo.md §4); añadido el 2026-11-18 |
+| CS-22 | CS | solo lo de ahora con sitio tiene «Ir» | CodeShipLogicTest | 119 | — | — | claude/ui-codeship (plan-microcosmos-realismo.md §4); añadido el 2026-11-18 |
+| CS-23 | CS | la distancia se escribe para el jugador | CodeShipLogicTest | 119 | — | — | claude/ui-codeship (plan-microcosmos-realismo.md §4); añadido el 2026-11-18 |
+| CS-30 | CS | con NavMesh se va al punto andable junto al objetivo | CodeShipLogicTest | 119 | — | — | claude/ui-codeship (plan-microcosmos-realismo.md §4); añadido el 2026-11-18 |
+| CS-31 | CS | sin NavMesh, al borde de su caja del lado de quien va (más el margen) | CodeShipLogicTest | 119 | — | — | claude/ui-codeship (plan-microcosmos-realismo.md §4); añadido el 2026-11-18 |
+| CS-32 | CS | sin NavMesh ni caja, al propio objetivo | CodeShipLogicTest | 119 | — | — | claude/ui-codeship (plan-microcosmos-realismo.md §4); añadido el 2026-11-18 |
+| CS-33 | CS | un punto del NavMesh a más del radio de búsqueda no se usa | CodeShipLogicTest | 119 | — | — | claude/ui-codeship (plan-microcosmos-realismo.md §4); añadido el 2026-11-18 |
+| CS-34 | CS | llega cerca del punto o del objetivo, en planta y en el mismo piso | CodeShipLogicTest | 119 | — | — | claude/ui-codeship (plan-microcosmos-realismo.md §4); añadido el 2026-11-18 |
+| CS-35 | CS | el viaje tiene tope de tiempo: crece con la distancia, con mínimo y máximo | CodeShipLogicTest | 119 | — | — | claude/ui-codeship (plan-microcosmos-realismo.md §4); añadido el 2026-11-18 |
+| CS-40 | CS | los retos de la escena están en su historia, cada uno con su sitio | CodeShipLogicTest | 119 | — | — | claude/ui-codeship (plan-microcosmos-realismo.md §4); añadido el 2026-11-18 |
+| CS-41 | CS | se llega al paso del reto | CodeShipLogicTest | 119 | — | — | claude/ui-codeship (plan-microcosmos-realismo.md §4); añadido el 2026-11-18 |
+| CS-42 | CS | acertar el reto cumple el paso de la historia | CodeShipLogicTest | 119 | — | — | claude/ui-codeship (plan-microcosmos-realismo.md §4); añadido el 2026-11-18 |
 
 ## REN · Rendimiento y pruebas
 
