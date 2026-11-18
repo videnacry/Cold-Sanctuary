@@ -182,7 +182,8 @@ public class StationMissions : MonoBehaviour
         ChoreRun run = m.template.duel
             ? new IdeaDuel(MissionLibrary.IdeaBank, DifficultyProfile.For(DifficultyProfile.Level(m.template.duelLevel, m.timesDone)), (int)ChoreKit.Hash(m.template.id) + m.timesDone * 7919 + m.timesFailed, m.template)
             : new ChoreRun(m.template);
-        if (openSheet) CodeChallengeSheet.OpenRun(run, m.template.title + (m.fallback ? " (supuesto)" : ""), m.template.scenario, r => End(m, r), () => Begin(m, false));
+        if (openSheet) CodeChallengeSheet.OpenRun(run, m.template.title + (m.fallback ? " (supuesto)" : ""), m.template.scenario, r => End(m, r), () => Begin(m, false),
+            (r, i, text) => StepAnimator.Play(m, i, r.Steps, text));   // cada paso acertado, animado en el puesto (CodeShip §4.2)
         Debug.Log($"[Misiones] Empieza «{m.template.title}» en «{m.Where}» ({run.Steps} retos).");
         return run;
     }
