@@ -20,6 +20,13 @@ internal static partial class CivicBuilder
     internal sealed class Style
     {
         public Color wall, floor, roof; public Roof roofKind = Roof.Flat; public float wallH = 3.4f; public bool open; public bool columns;
+        /// <summary>(2026-11-18, P1–P4) ¿Edificio CERRADO, con sus muros, su techo, su puerta y su vista de corte (<see cref="Enclose"/>)?
+        /// Por ahora solo el piloto (Hawthorne); el resto de pueblos sigue abierto hasta su turno (fase 4 del plan).</summary>
+        public bool enclosed;
+        /// <summary>La puerta REAL del edificio (m): ancho y alto; si es más estrecha que MicroBuildRules.DoorWidth se ensancha (P4).</summary>
+        public float doorW = 0.9f, doorH = 2.1f;
+        /// <summary>De dónde sale la medida de la puerta (o «supuesto»).</summary>
+        public string doorSource = "supuesto: puerta de paso estándar";
         public Style(Color wall, Color floor, Color roof, Roof kind, float h = 3.4f) { this.wall = wall; this.floor = floor; this.roof = roof; roofKind = kind; wallH = h; }
     }
 
@@ -437,6 +444,7 @@ internal static partial class CivicBuilder
         Vector2 used = Layout(b, pieces, size, 0f);
         Floor(b, used, st);
         if (st.columns) for (int k = 0; k < 6; k++) AreaMicrocosmos.Box(b, "Columna", new Vector3(-used.x * 0.5f + 0.4f + k * (used.x - 0.8f) / 5f, st.wallH * 0.5f, -used.y * 0.5f - 0.6f), new Vector3(0.4f, st.wallH, 0.4f), AreaMicrocosmos.Mat("Civ_Muro_" + Hex(st.wall), st.wall), true);
+        if (st.enclosed) Enclose(b, used, st);   // (P1–P4) muros, techo, puerta y vista de corte
         b.localRotation = Quaternion.Euler(0f, yaw, 0f);
         var site = b.gameObject.AddComponent<AreaFunctionSite>(); site.building = template; site.title = title; site.region = Region;
         Tag(site);

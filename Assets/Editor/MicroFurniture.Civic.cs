@@ -164,7 +164,19 @@ internal static partial class MicroFurniture
     static void Console(Transform t, St.Entry e, int year)
     {
         C(t, new Vector3(0f, 0.38f, 0f), new Vector3(1.6f, 0.76f, 0.7f), year >= 1950 ? H("8A9096") : e.wood, 0f, "Pupitre");
-        if (year >= 1950)
+        if (year >= 1995)
+        {   // (2026-11-18) un puesto de control de los 2000: tres monitores planos LCD, teclado, ratón y el auricular del bucle de voz
+            for (int k = -1; k <= 1; k++)
+            {
+                C(t, new Vector3(k * 0.5f, 0.98f, 0.18f), new Vector3(0.48f, 0.32f, 0.04f), H("1A1C20"), -k * 12f, "Monitor_LCD");
+                C(t, new Vector3(k * 0.5f, 0.98f, 0.155f), new Vector3(0.43f, 0.27f, 0.01f), H("2F6FA8"), -k * 12f, "Pantalla_de_telemetria");
+                C(t, new Vector3(k * 0.5f, 0.8f, 0.2f), new Vector3(0.05f, 0.1f, 0.05f), H("2A2C30"), 0f, "Pie_del_monitor");
+            }
+            C(t, new Vector3(0f, 0.775f, -0.12f), new Vector3(0.45f, 0.02f, 0.15f), H("2A2C30"), 0f, "Teclado");
+            C(t, new Vector3(0.35f, 0.775f, -0.12f), new Vector3(0.06f, 0.02f, 0.1f), H("2A2C30"), 0f, "Raton");
+            C(t, new Vector3(-0.55f, 0.79f, -0.1f), new Vector3(0.16f, 0.05f, 0.16f), H("3A3C40"), 0f, "Auriculares_del_bucle_de_voz");
+        }
+        else if (year >= 1950)
         {   // armarios de la calculadora con sus cintas y su consola de luces
             for (int k = -1; k <= 1; k++) C(t, new Vector3(k * 0.55f, 1.2f, 0.2f), new Vector3(0.5f, 1.6f, 0.3f), H("5E666E"), 0f, "Armario_de_calculo");
             for (int k = -1; k <= 1; k++) C(t, new Vector3(k * 0.55f, 1.45f, 0.04f), new Vector3(0.3f, 0.3f, 0.02f), H("2F3A40"), 0f, "Cinta");
