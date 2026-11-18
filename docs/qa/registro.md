@@ -9,12 +9,12 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 
 | ID | Estado | Fecha | Commit | Run log | B/HC | Nota |
 |---|---|---|---|---|---|---|
-| ARB-01 | Probado (suite g117) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g117 PeticionesSondaTest 7/0 |
-| ARB-02 | Probado (suite g117) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g117 PeticionesSondaTest 7/0 |
+| ARB-01 | Probado (suite g117) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g117 PeticionesSondaTest 7/0 |
+| ARB-02 | Probado (suite g117) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g117 PeticionesSondaTest 7/0 |
 | ARB-03 | Solo código | — | — | — | — | sin anotar en el checklist (auditoría); hay código |
-| ARB-04 | Probado (suite g117) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g117 PeticionesSondaTest 7/0 |
+| ARB-04 | Probado (suite g117) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g117 PeticionesSondaTest 7/0 |
 | MIC-01 | Solo código | — | — | — | — | sin anotar en el checklist (auditoría); hay código |
-| PX-01 | Probado (suite g40) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g40 ExperienciaJugadorTest 29/0 |
+| PX-01 | Probado (suite g40) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g40 ExperienciaJugadorTest 29/0 |
 | ARB-05 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | ARB-06 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | ARB-07 | Solo código | — | — | — | — | sin anotar en el checklist (auditoría); hay código |
@@ -23,291 +23,291 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | MIC-02 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | JOR-02 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | ARB-09 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
-| ARB-10 | Probado (suite g57) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g57 TreeBuildingsTest 37/0 |
+| ARB-10 | Probado (suite g57) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g57 TreeBuildingsTest 37/0 |
 | ARB-11 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | ARB-12 | Sin probar | — | — | — | — | sin anotar en el checklist (auditoría); sin código localizado |
-| ARB-13 | Probado (suite g55) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g55 FruitOrchardTest 41/0 |
+| ARB-13 | Probado (suite g55) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g55 FruitOrchardTest 41/0 |
 | ARB-14 | Solo código | — | — | — | — | auditoría: Sin verificar en vivo |
 | MIC-03 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo |
 | MIC-04 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo |
 | MIC-05 | Solo código | — | — | — | — | auditoría: Sin verificar en vivo |
 | MIC-06 | Sin probar | — | — | — | — | sin anotar en el checklist (auditoría); sin código localizado |
 | MIC-07 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
-| MIC-08 | Probado (suite g43) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g43 MicrocosmosFloorTest 792/0 |
+| MIC-08 | Probado (suite g43) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g43 MicrocosmosFloorTest 792/0 |
 | MIC-09 | Sin probar | — | — | — | — | sin anotar en el checklist (auditoría); sin código localizado |
 | MIC-10 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo |
 | MIC-11 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | MIC-12 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | FAU-01 | Probado (suite g99) | 2026-11-17 | 4127332 | [runs/2026-11-17-1900-r125-rapida-grupos-vivo-suite.md](runs/2026-11-17-1900-r125-rapida-grupos-vivo-suite.md) | — | r125: g99 TerritorioTest 80/0 |
-| ARB-15 | Probado (suite g55) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g55 FruitOrchardTest 41/0 |
+| ARB-15 | Probado (suite g55) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g55 FruitOrchardTest 41/0 |
 | MIC-13 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo |
 | JOR-03 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
-| JOR-04 | Probado (suite g65) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g65 HorarioLibreTest 49/0 |
-| MIC-14 | Probado (suite g69) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g69 FamososStoryTest 100/0 |
-| MIC-15 | Probado (suite g66) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g66 PakalStoryTest 23/0 |
+| JOR-04 | Probado (suite g65) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g65 HorarioLibreTest 49/0 |
+| MIC-14 | Probado (suite g69) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g69 FamososStoryTest 100/0 |
+| MIC-15 | Probado (suite g66) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g66 PakalStoryTest 23/0 |
 | MIC-16 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo |
 | ARB-16 | Sin probar | — | — | — | — | abierta en la auditoría: falta código |
-| ARB-17 | Probado (suite g70) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g70 TreeMaskTest 17/0 |
-| ARB-18 | Probado (suite g55) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g55 FruitOrchardTest 41/0 |
+| ARB-17 | Probado (suite g70) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g70 TreeMaskTest 17/0 |
+| ARB-18 | Probado (suite g55) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g55 FruitOrchardTest 41/0 |
 | FAU-02 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | ARB-19 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
-| FAU-03 | Probado (suite g71) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g71 GroupAnimalsTest 8/0 |
+| FAU-03 | Probado (suite g71) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g71 GroupAnimalsTest 8/0 |
 | MIC-17 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo |
 | OP-09 | Sin probar | — | — | — | — | sin anotar en el checklist (auditoría); sin código localizado |
 | ARB-20 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
-| ARB-21 | Probado (suite g73) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g73 SubmarineTest 9/0 |
-| HOS-01 | Probado (suite g81) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g81 HospitalSubmarineTest 15/0 |
-| HOS-02 | Probado (suite g82) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g82 WhaleHospitalTest 11/0 |
-| HOS-03 | Probado (suite g83) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g83 BloodBankTest 10/0 |
-| HOS-04 | Probado (suite g84) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g84 GlassWallTest 8/0 |
-| YOG-01 | Probado (suite g64) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g64 YogaFloorsTest 27/0 |
+| ARB-21 | Probado (suite g73) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g73 SubmarineTest 9/0 |
+| HOS-01 | Probado (suite g81) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g81 HospitalSubmarineTest 15/0 |
+| HOS-02 | Probado (suite g82) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g82 WhaleHospitalTest 11/0 |
+| HOS-03 | Probado (suite g83) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g83 BloodBankTest 10/0 |
+| HOS-04 | Probado (suite g84) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g84 GlassWallTest 8/0 |
+| YOG-01 | Probado (suite g64) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g64 YogaFloorsTest 27/0 |
 | MIC-18 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12; también runs/2026-11-10-0949-r34-retro.md |
-| MIC-19 | Probado (suite g68) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g68 MicroSueloTest 31/0 |
+| MIC-19 | Probado (suite g68) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g68 MicroSueloTest 31/0 |
 | MIC-20 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | MIC-21 | Probado (retro) | 2026-11-12 | 2ac2bbc | [runs/2026-11-12-2056-r66-retro.md](runs/2026-11-12-2056-r66-retro.md) | — | auditoría: verificado en vivo 2026-11-12; también runs/2026-11-12-2144-r67-retro.md, runs/2026-11-12-2314-r68-retro.md |
-| MIC-22 | Probado (suite g68) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g68 MicroSueloTest 31/0 |
-| ARB-22 | Probado (suite g117) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g117 PeticionesSondaTest 7/0 |
+| MIC-22 | Probado (suite g68) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g68 MicroSueloTest 31/0 |
+| ARB-22 | Probado (suite g117) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g117 PeticionesSondaTest 7/0 |
 | REN-01 | Solo código | — | — | — | — | auditoría: Sin verificar en vivo |
 | MIC-23 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | MIC-24 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | PER-01 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | MIC-25 | Solo código | — | — | — | — | sin anotar en el checklist (auditoría); hay código |
 | JOR-05 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
-| JOR-06 | Probado (suite g89) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g89 PillowFightTest 28/0 |
-| ARB-23 | Probado (suite g74) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g74 InformaticaAulaTest 28/0 |
-| ARB-24 | Probado (suite g74) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g74 InformaticaAulaTest 28/0 |
-| NUC-01 | Probado (suite g90) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g90 LaunchSiteTest 9/0 |
-| MIC-26 | Probado (suite g76) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g76 AlertaPisoNuevoTest 13/0 |
-| ARB-25 | Probado (suite g75) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g75 CapacidadPisosTest 35/0 |
-| ARB-26 | Probado (suite g75) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g75 CapacidadPisosTest 35/0 |
-| JOR-07 | Probado (suite g92) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g92 SleepoverTest 23/0 |
-| MIC-27 | Probado (suite g68) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g68 MicroSueloTest 31/0 |
-| MIC-28 | Probado (suite g115) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g115 MapasAManoTest 183/0 |
-| JOR-08 | Probado (suite g97) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g97 ActividadesTest 31/0 |
-| JOR-09 | Probado (suite g97) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g97 ActividadesTest 31/0 |
-| PX-02 | Probado (suite g96) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g96 PlayerTasksTest 25/0 |
-| GYM-01 | Probado (suite g87) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g87 GymTrainingTest 34/0 |
-| JOR-10 | Probado (suite g97) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g97 ActividadesTest 31/0 |
-| MIC-29 | Probado (suite g62) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g62 CivilizedErasTest 540/0 |
+| JOR-06 | Probado (suite g89) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g89 PillowFightTest 28/0 |
+| ARB-23 | Probado (suite g74) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g74 InformaticaAulaTest 28/0 |
+| ARB-24 | Probado (suite g74) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g74 InformaticaAulaTest 28/0 |
+| NUC-01 | Probado (suite g90) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g90 LaunchSiteTest 9/0 |
+| MIC-26 | Probado (suite g76) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g76 AlertaPisoNuevoTest 13/0 |
+| ARB-25 | Probado (suite g75) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g75 CapacidadPisosTest 35/0 |
+| ARB-26 | Probado (suite g75) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g75 CapacidadPisosTest 35/0 |
+| JOR-07 | Probado (suite g92) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g92 SleepoverTest 23/0 |
+| MIC-27 | Probado (suite g68) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g68 MicroSueloTest 31/0 |
+| MIC-28 | Probado (suite g115) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g115 MapasAManoTest 183/0 |
+| JOR-08 | Probado (suite g97) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g97 ActividadesTest 31/0 |
+| JOR-09 | Probado (suite g97) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g97 ActividadesTest 31/0 |
+| PX-02 | Probado (suite g96) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g96 PlayerTasksTest 25/0 |
+| GYM-01 | Probado (suite g87) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g87 GymTrainingTest 34/0 |
+| JOR-10 | Probado (suite g97) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g97 ActividadesTest 31/0 |
+| MIC-29 | Probado (suite g62) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g62 CivilizedErasTest 540/0 |
 | MIC-30 | Solo código | — | — | — | HC-02 | auditoría: Sin verificar; una parte abierta |
-| PER-02 | Probado (suite g95) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g95 PersonajesReglasTest 12/0 |
+| PER-02 | Probado (suite g95) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g95 PersonajesReglasTest 12/0 |
 | JOR-11 | Sin probar | — | — | — | — | abierta en la auditoría: falta código |
-| ARB-27 | Probado (suite g98) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g98 ConstructionProgressTest 20/0 |
-| NUC-02 | Probado (suite g114) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g114 NuclearSubmarinaTest 24/0 |
-| MIC-31 | Probado (suite g79) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g79 HistoriasStoryTest 250/0 |
-| MIC-32 | Probado (suite g86) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g86 MusicaStoryTest 202/0 |
-| MIC-33 | Probado (suite g79) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g79 HistoriasStoryTest 250/0 |
-| UI-01 | Probado (suite g93) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g93 HudModalsTest 14/0 |
+| ARB-27 | Probado (suite g98) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g98 ConstructionProgressTest 20/0 |
+| NUC-02 | Probado (suite g114) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g114 NuclearSubmarinaTest 24/0 |
+| MIC-31 | Probado (suite g79) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g79 HistoriasStoryTest 250/0 |
+| MIC-32 | Probado (suite g86) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g86 MusicaStoryTest 202/0 |
+| MIC-33 | Probado (suite g79) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g79 HistoriasStoryTest 250/0 |
+| UI-01 | Probado (suite g93) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g93 HudModalsTest 14/0 |
 | YOG-02 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | ENE-01 | Solo código | — | — | — | — | auditoría: Sin verificar en vivo |
-| ENE-02 | Probado (suite g101) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g101 EnergyTest 81/0 |
-| ENE-03 | Probado (suite g101) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g101 EnergyTest 81/0 |
+| ENE-02 | Probado (suite g101) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g101 EnergyTest 81/0 |
+| ENE-03 | Probado (suite g101) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g101 EnergyTest 81/0 |
 | FAU-04 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | FAU-05 | Probado (suite g99) | 2026-11-17 | 4127332 | [runs/2026-11-17-1900-r125-rapida-grupos-vivo-suite.md](runs/2026-11-17-1900-r125-rapida-grupos-vivo-suite.md) | — | r125: g99 TerritorioTest 80/0 |
-| MIC-34 | Probado (suite g86) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g86 MusicaStoryTest 202/0 |
-| MIC-35 | Probado (suite g79) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g79 HistoriasStoryTest 250/0 |
+| MIC-34 | Probado (suite g86) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g86 MusicaStoryTest 202/0 |
+| MIC-35 | Probado (suite g79) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g79 HistoriasStoryTest 250/0 |
 | ARB-28 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
-| FAU-06 | Probado (suite g85) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g85 CadenaAlimenticiaTest 58/0 |
+| FAU-06 | Probado (suite g85) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g85 CadenaAlimenticiaTest 58/0 |
 | ARB-29 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
-| MIC-36 | Probado (suite g79) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g79 HistoriasStoryTest 250/0 |
+| MIC-36 | Probado (suite g79) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g79 HistoriasStoryTest 250/0 |
 | MIC-37 | Sin probar | — | — | — | — | abierta en la auditoría: falta código |
-| NUC-03 | Probado (suite g100) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g100 NuclearAccessTest 65/0 |
-| FAU-07 | Probado (suite g102) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g102 DeshierbeTest 24/0 |
+| NUC-03 | Probado (suite g100) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g100 NuclearAccessTest 65/0 |
+| FAU-07 | Probado (suite g102) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g102 DeshierbeTest 24/0 |
 | MIC-38 | Solo código | — | — | — | — | auditoría: Sin verificar en vivo |
-| NUC-04 | Probado (suite g100) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g100 NuclearAccessTest 65/0 |
+| NUC-04 | Probado (suite g100) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g100 NuclearAccessTest 65/0 |
 | ARB-30 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
-| FAU-08 | Probado (suite g105) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g105 AlimentadorTest 44/0 |
-| JOR-12 | Probado (suite g104) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g104 JornadaSaberTest 40/0 |
-| JOR-13 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
-| MIC-39 | Probado (suite g77) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g77 AsambleaTest 46/0 |
+| FAU-08 | Probado (suite g105) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g105 AlimentadorTest 44/0 |
+| JOR-12 | Probado (suite g104) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g104 JornadaSaberTest 40/0 |
+| JOR-13 | Probado (suite g50) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g50 JornadaTest 49/0 |
+| MIC-39 | Probado (suite g77) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g77 AsambleaTest 46/0 |
 | ARB-31 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | PER-03 | Solo código | — | — | — | — | auditoría: Hecho (doc); sin verificar |
 | ARB-32 | Solo código | — | — | — | — | auditoría: Sin verificar en vivo |
 | NUC-05 | Solo código | — | — | — | — | auditoría: Sin verificar en vivo |
-| FAU-09 | Probado (suite g85) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g85 CadenaAlimenticiaTest 58/0 |
-| ARB-33 | Probado (suite g103) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g103 ProduccionTest 16/0 |
-| FAU-10 | Probado (suite g107) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g107 HieloMarinoTest 19/0 |
+| FAU-09 | Probado (suite g85) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g85 CadenaAlimenticiaTest 58/0 |
+| ARB-33 | Probado (suite g103) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g103 ProduccionTest 16/0 |
+| FAU-10 | Probado (suite g107) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g107 HieloMarinoTest 19/0 |
 | NUC-06 | Solo código | — | — | — | — | auditoría: Sin verificar en vivo |
-| JOR-14 | Probado (suite g113) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g113 RepartoSantuariosTest 108/0 |
+| JOR-14 | Probado (suite g113) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g113 RepartoSantuariosTest 108/0 |
 | NUC-07 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | NUC-08 | Sin probar | — | — | — | — | sin anotar en el checklist (auditoría); sin código localizado |
-| FAU-11 | Probado (suite g108) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g108 IcebergVidaTest 14/0 |
-| NUC-09 | Probado (suite g110) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g110 AereoTest 27/0 |
-| FAU-12 | Probado (suite g111) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g111 FaunaFriaTest 22/0 |
-| ARB-34 | Probado (suite g91) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g91 GuardRoomTest 45/0 |
+| FAU-11 | Probado (suite g108) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g108 IcebergVidaTest 14/0 |
+| NUC-09 | Probado (suite g110) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g110 AereoTest 27/0 |
+| FAU-12 | Probado (suite g111) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g111 FaunaFriaTest 22/0 |
+| ARB-34 | Probado (suite g91) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g91 GuardRoomTest 45/0 |
 | ARB-35 | Solo código | — | — | — | — | auditoría: Sin verificar en vivo |
-| ARB-36 | Probado (suite g91) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g91 GuardRoomTest 45/0 |
+| ARB-36 | Probado (suite g91) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g91 GuardRoomTest 45/0 |
 | ARB-37 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | ARB-38 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | REN-02 | Sin probar | — | — | — | — | sin anotar en el checklist (auditoría); sin código localizado |
-| JOR-15 | Probado (suite g113) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g113 RepartoSantuariosTest 108/0 |
+| JOR-15 | Probado (suite g113) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g113 RepartoSantuariosTest 108/0 |
 | FAU-13 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | NUC-10 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
-| JOR-16 | Probado (suite g113) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g113 RepartoSantuariosTest 108/0 |
-| ARB-39 | Probado (suite g75) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g75 CapacidadPisosTest 35/0 |
+| JOR-16 | Probado (suite g113) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g113 RepartoSantuariosTest 108/0 |
+| ARB-39 | Probado (suite g75) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g75 CapacidadPisosTest 35/0 |
 | PER-04 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12; también runs/2026-11-08-1136-r23-retro.md |
-| PER-05 | Probado (suite g95) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g95 PersonajesReglasTest 12/0 |
-| ARB-40 | Probado (suite g56) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g56 FotobioFacadeTest 48/0 |
-| JOR-17 | Probado (suite g113) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g113 RepartoSantuariosTest 108/0 |
+| PER-05 | Probado (suite g95) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g95 PersonajesReglasTest 12/0 |
+| ARB-40 | Probado (suite g56) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g56 FotobioFacadeTest 48/0 |
+| JOR-17 | Probado (suite g113) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g113 RepartoSantuariosTest 108/0 |
 | ARB-41 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12; también runs/2026-11-09-1823-r31-retro.md |
 | ARB-42 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
-| JOR-18 | Probado (suite g113) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g113 RepartoSantuariosTest 108/0 |
-| REN-03 | Probado (suite g117) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g117 PeticionesSondaTest 7/0 |
+| JOR-18 | Probado (suite g113) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g113 RepartoSantuariosTest 108/0 |
+| REN-03 | Probado (suite g117) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g117 PeticionesSondaTest 7/0 |
 | FAU-14 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | ARB-43 | Solo código | — | — | — | — | sin anotar en el checklist (auditoría); hay código |
 | REN-04 | Sin probar | — | — | — | — | abierta en la auditoría: falta código |
-| ARB-44 | Probado (suite g28) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g28 SanctuaryLifeTest 167/0 |
-| ARB-45 | Probado (suite g28) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g28 SanctuaryLifeTest 167/0 |
-| ARB-46 | Probado (suite g57) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g57 TreeBuildingsTest 37/0 |
-| ARB-47 | Probado (suite g57) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g57 TreeBuildingsTest 37/0 |
-| ARB-48 | Probado (suite g28) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g28 SanctuaryLifeTest 167/0 |
-| ARB-49 | Probado (suite g84) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g84 GlassWallTest 8/0 |
-| ARB-50 | Probado (suite g28) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g28 SanctuaryLifeTest 167/0 |
-| ARB-51 | Probado (suite g28) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g28 SanctuaryLifeTest 167/0 |
-| ARB-52 | Probado (suite g28) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g28 SanctuaryLifeTest 167/0 |
-| ARB-53 | Probado (suite g28) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g28 SanctuaryLifeTest 167/0 |
-| ARB-54 | Probado (suite g28) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g28 SanctuaryLifeTest 167/0 |
-| ARB-55 | Probado (suite g75) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g75 CapacidadPisosTest 35/0 |
-| ARB-56 | Probado (suite g77) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g77 AsambleaTest 46/0 |
-| ARB-57 | Probado (suite g101) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g101 EnergyTest 81/0 |
-| ARB-58 | Probado (suite g91) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g91 GuardRoomTest 45/0 |
-| MIC-40 | Probado (suite g60) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g60 BruceLeeStoryTest 49/0 |
-| MIC-41 | Probado (suite g68) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g68 MicroSueloTest 31/0 |
-| MIC-42 | Probado (suite g68) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g68 MicroSueloTest 31/0 |
-| MIC-43 | Probado (suite g57) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g57 TreeBuildingsTest 37/0 |
-| MIC-44 | Probado (suite g57) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g57 TreeBuildingsTest 37/0 |
-| MIC-45 | Probado (suite g28) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g28 SanctuaryLifeTest 167/0 |
-| MIC-46 | Probado (suite g64) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g64 YogaFloorsTest 27/0 |
-| MIC-47 | Probado (suite g64) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g64 YogaFloorsTest 27/0 |
-| MIC-48 | Probado (suite g64) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g64 YogaFloorsTest 27/0 |
-| MIC-49 | Probado (suite g64) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g64 YogaFloorsTest 27/0 |
-| MIC-50 | Probado (suite g64) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g64 YogaFloorsTest 27/0 |
-| MIC-51 | Probado (suite g64) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g64 YogaFloorsTest 27/0 |
-| MIC-52 | Probado (suite g77) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g77 AsambleaTest 46/0 |
-| MIC-53 | Probado (suite g98) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g98 ConstructionProgressTest 20/0 |
-| ARB-59 | Probado (suite g53) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g53 TreeOfFieldsTest 46/0 |
-| ARB-60 | Probado (suite g53) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g53 TreeOfFieldsTest 46/0 |
-| ARB-61 | Probado (suite g53) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g53 TreeOfFieldsTest 46/0 |
-| ARB-62 | Probado (suite g57) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g57 TreeBuildingsTest 37/0 |
-| ARB-63 | Probado (suite g73) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g73 SubmarineTest 9/0 |
-| ARB-64 | Probado (suite g57) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g57 TreeBuildingsTest 37/0 |
-| ARB-65 | Probado (suite g71) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g71 GroupAnimalsTest 8/0 |
-| ARB-66 | Probado (suite g70) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g70 TreeMaskTest 17/0 |
-| ARB-67 | Probado (suite g73) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g73 SubmarineTest 9/0 |
-| ARB-68 | Probado (suite g53) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g53 TreeOfFieldsTest 46/0 |
-| ARB-69 | Probado (suite g53) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g53 TreeOfFieldsTest 46/0 |
-| ARB-70 | Probado (suite g90) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g90 LaunchSiteTest 9/0 |
-| ARB-71 | Probado (suite g94) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g94 NuclearSiteTest 23/0 |
-| ARB-72 | Probado (suite g90) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g90 LaunchSiteTest 9/0 |
-| ARB-73 | Probado (suite g100) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g100 NuclearAccessTest 65/0 |
-| ARB-74 | Probado (suite g100) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g100 NuclearAccessTest 65/0 |
-| ARB-75 | Probado (suite g101) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g101 EnergyTest 81/0 |
-| ARB-76 | Probado (suite g100) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g100 NuclearAccessTest 65/0 |
-| ARB-77 | Probado (suite g100) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g100 NuclearAccessTest 65/0 |
-| ARB-78 | Probado (suite g100) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g100 NuclearAccessTest 65/0 |
-| ARB-79 | Probado (suite g100) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g100 NuclearAccessTest 65/0 |
-| ARB-80 | Probado (suite g100) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g100 NuclearAccessTest 65/0 |
-| ARB-81 | Probado (suite g110) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g110 AereoTest 27/0 |
-| ARB-82 | Probado (suite g114) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g114 NuclearSubmarinaTest 24/0 |
-| ARB-83 | Probado (suite g28) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g28 SanctuaryLifeTest 167/0 |
-| ARB-84 | Probado (suite g28) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g28 SanctuaryLifeTest 167/0 |
-| ARB-85 | Probado (suite g28) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g28 SanctuaryLifeTest 167/0 |
-| ARB-86 | Parcial | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | B-01 | g50 con 4 FAIL en la suite 63 (fauna atascada, B-01, y las misiones de Kushal) |
-| ARB-87 | Probado (suite g28) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g28 SanctuaryLifeTest 167/0 |
-| ARB-88 | Probado (suite g68) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g68 MicroSueloTest 31/0 |
-| ARB-89 | Probado (suite g55) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g55 FruitOrchardTest 41/0 |
-| ARB-90 | Probado (suite g55) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g55 FruitOrchardTest 41/0 |
-| ARB-91 | Probado (suite g55) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g55 FruitOrchardTest 41/0 |
-| ARB-92 | Probado (suite g80) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g80 RoofGardenTest 60/0 |
-| ARB-93 | Probado (suite g70) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g70 TreeMaskTest 17/0 |
-| ARB-94 | Probado (suite g55) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g55 FruitOrchardTest 41/0 |
-| ARB-95 | Probado (suite g53) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g53 TreeOfFieldsTest 46/0 |
-| ARB-96 | Probado (suite g55) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g55 FruitOrchardTest 41/0 |
-| HOS-05 | Probado (suite g83) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g83 BloodBankTest 10/0 |
-| HOS-06 | Probado (suite g83) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g83 BloodBankTest 10/0 |
-| HOS-07 | Probado (suite g84) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g84 GlassWallTest 8/0 |
-| HOS-08 | Probado (suite g81) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g81 HospitalSubmarineTest 15/0 |
-| HOS-09 | Probado (suite g68) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g68 MicroSueloTest 31/0 |
-| MIC-54 | Probado (suite g43) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g43 MicrocosmosFloorTest 792/0 |
-| MIC-55 | Probado (suite g60) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g60 BruceLeeStoryTest 49/0 |
-| MIC-56 | Probado (suite g43) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g43 MicrocosmosFloorTest 792/0 |
-| MIC-57 | Probado (suite g60) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g60 BruceLeeStoryTest 49/0 |
-| MIC-58 | Probado (suite g43) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g43 MicrocosmosFloorTest 792/0 |
-| MIC-59 | Probado (suite g68) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g68 MicroSueloTest 31/0 |
-| MIC-60 | Probado (suite g43) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g43 MicrocosmosFloorTest 792/0 |
-| MIC-61 | Probado (suite g13) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g13 IdealStateTest 9/0 |
-| MIC-62 | Probado (suite g62) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g62 CivilizedErasTest 540/0 |
-| MIC-63 | Probado (suite g43) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g43 MicrocosmosFloorTest 792/0 |
-| MIC-64 | Probado (suite g63) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g63 MicroBuildRulesTest 16/0 |
-| MIC-65 | Probado (suite g65) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g65 HorarioLibreTest 49/0 |
-| MIC-66 | Probado (suite g62) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g62 CivilizedErasTest 540/0 |
+| ARB-44 | Probado (suite g28) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g28 SanctuaryLifeTest 167/0 |
+| ARB-45 | Probado (suite g28) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g28 SanctuaryLifeTest 167/0 |
+| ARB-46 | Probado (suite g57) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g57 TreeBuildingsTest 37/0 |
+| ARB-47 | Probado (suite g57) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g57 TreeBuildingsTest 37/0 |
+| ARB-48 | Probado (suite g28) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g28 SanctuaryLifeTest 167/0 |
+| ARB-49 | Probado (suite g84) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g84 GlassWallTest 8/0 |
+| ARB-50 | Probado (suite g28) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g28 SanctuaryLifeTest 167/0 |
+| ARB-51 | Probado (suite g28) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g28 SanctuaryLifeTest 167/0 |
+| ARB-52 | Probado (suite g28) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g28 SanctuaryLifeTest 167/0 |
+| ARB-53 | Probado (suite g28) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g28 SanctuaryLifeTest 167/0 |
+| ARB-54 | Probado (suite g28) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g28 SanctuaryLifeTest 167/0 |
+| ARB-55 | Probado (suite g75) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g75 CapacidadPisosTest 35/0 |
+| ARB-56 | Probado (suite g77) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g77 AsambleaTest 46/0 |
+| ARB-57 | Probado (suite g101) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g101 EnergyTest 81/0 |
+| ARB-58 | Probado (suite g91) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g91 GuardRoomTest 45/0 |
+| MIC-40 | Probado (suite g60) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g60 BruceLeeStoryTest 49/0 |
+| MIC-41 | Probado (suite g68) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g68 MicroSueloTest 31/0 |
+| MIC-42 | Probado (suite g68) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g68 MicroSueloTest 31/0 |
+| MIC-43 | Probado (suite g57) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g57 TreeBuildingsTest 37/0 |
+| MIC-44 | Probado (suite g57) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g57 TreeBuildingsTest 37/0 |
+| MIC-45 | Probado (suite g28) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g28 SanctuaryLifeTest 167/0 |
+| MIC-46 | Probado (suite g64) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g64 YogaFloorsTest 27/0 |
+| MIC-47 | Probado (suite g64) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g64 YogaFloorsTest 27/0 |
+| MIC-48 | Probado (suite g64) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g64 YogaFloorsTest 27/0 |
+| MIC-49 | Probado (suite g64) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g64 YogaFloorsTest 27/0 |
+| MIC-50 | Probado (suite g64) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g64 YogaFloorsTest 27/0 |
+| MIC-51 | Probado (suite g64) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g64 YogaFloorsTest 27/0 |
+| MIC-52 | Probado (suite g77) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g77 AsambleaTest 46/0 |
+| MIC-53 | Probado (suite g98) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g98 ConstructionProgressTest 20/0 |
+| ARB-59 | Probado (suite g53) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g53 TreeOfFieldsTest 46/0 |
+| ARB-60 | Probado (suite g53) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g53 TreeOfFieldsTest 46/0 |
+| ARB-61 | Probado (suite g53) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g53 TreeOfFieldsTest 46/0 |
+| ARB-62 | Probado (suite g57) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g57 TreeBuildingsTest 37/0 |
+| ARB-63 | Probado (suite g73) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g73 SubmarineTest 9/0 |
+| ARB-64 | Probado (suite g57) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g57 TreeBuildingsTest 37/0 |
+| ARB-65 | Probado (suite g71) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g71 GroupAnimalsTest 8/0 |
+| ARB-66 | Probado (suite g70) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g70 TreeMaskTest 17/0 |
+| ARB-67 | Probado (suite g73) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g73 SubmarineTest 9/0 |
+| ARB-68 | Probado (suite g53) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g53 TreeOfFieldsTest 46/0 |
+| ARB-69 | Probado (suite g53) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g53 TreeOfFieldsTest 46/0 |
+| ARB-70 | Probado (suite g90) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g90 LaunchSiteTest 9/0 |
+| ARB-71 | Probado (suite g94) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g94 NuclearSiteTest 23/0 |
+| ARB-72 | Probado (suite g90) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g90 LaunchSiteTest 9/0 |
+| ARB-73 | Probado (suite g100) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g100 NuclearAccessTest 65/0 |
+| ARB-74 | Probado (suite g100) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g100 NuclearAccessTest 65/0 |
+| ARB-75 | Probado (suite g101) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g101 EnergyTest 81/0 |
+| ARB-76 | Probado (suite g100) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g100 NuclearAccessTest 65/0 |
+| ARB-77 | Probado (suite g100) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g100 NuclearAccessTest 65/0 |
+| ARB-78 | Probado (suite g100) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g100 NuclearAccessTest 65/0 |
+| ARB-79 | Probado (suite g100) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g100 NuclearAccessTest 65/0 |
+| ARB-80 | Probado (suite g100) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g100 NuclearAccessTest 65/0 |
+| ARB-81 | Probado (suite g110) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g110 AereoTest 27/0 |
+| ARB-82 | Probado (suite g114) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g114 NuclearSubmarinaTest 24/0 |
+| ARB-83 | Probado (suite g28) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g28 SanctuaryLifeTest 167/0 |
+| ARB-84 | Probado (suite g28) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g28 SanctuaryLifeTest 167/0 |
+| ARB-85 | Probado (suite g28) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g28 SanctuaryLifeTest 167/0 |
+| ARB-86 | Probado (suite g50) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | B-01 | r127: g50 JornadaTest 49/0 |
+| ARB-87 | Probado (suite g28) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g28 SanctuaryLifeTest 167/0 |
+| ARB-88 | Probado (suite g68) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g68 MicroSueloTest 31/0 |
+| ARB-89 | Probado (suite g55) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g55 FruitOrchardTest 41/0 |
+| ARB-90 | Probado (suite g55) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g55 FruitOrchardTest 41/0 |
+| ARB-91 | Probado (suite g55) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g55 FruitOrchardTest 41/0 |
+| ARB-92 | Probado (suite g80) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g80 RoofGardenTest 60/0 |
+| ARB-93 | Probado (suite g70) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g70 TreeMaskTest 17/0 |
+| ARB-94 | Probado (suite g55) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g55 FruitOrchardTest 41/0 |
+| ARB-95 | Probado (suite g53) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g53 TreeOfFieldsTest 46/0 |
+| ARB-96 | Probado (suite g55) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g55 FruitOrchardTest 41/0 |
+| HOS-05 | Probado (suite g83) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g83 BloodBankTest 10/0 |
+| HOS-06 | Probado (suite g83) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g83 BloodBankTest 10/0 |
+| HOS-07 | Probado (suite g84) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g84 GlassWallTest 8/0 |
+| HOS-08 | Probado (suite g81) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g81 HospitalSubmarineTest 15/0 |
+| HOS-09 | Probado (suite g68) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g68 MicroSueloTest 31/0 |
+| MIC-54 | Probado (suite g43) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g43 MicrocosmosFloorTest 792/0 |
+| MIC-55 | Probado (suite g60) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g60 BruceLeeStoryTest 49/0 |
+| MIC-56 | Probado (suite g43) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g43 MicrocosmosFloorTest 792/0 |
+| MIC-57 | Probado (suite g60) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g60 BruceLeeStoryTest 49/0 |
+| MIC-58 | Probado (suite g43) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g43 MicrocosmosFloorTest 792/0 |
+| MIC-59 | Probado (suite g68) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g68 MicroSueloTest 31/0 |
+| MIC-60 | Probado (suite g43) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g43 MicrocosmosFloorTest 792/0 |
+| MIC-61 | Probado (suite g13) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g13 IdealStateTest 9/0 |
+| MIC-62 | Probado (suite g62) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g62 CivilizedErasTest 540/0 |
+| MIC-63 | Probado (suite g43) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g43 MicrocosmosFloorTest 792/0 |
+| MIC-64 | Probado (suite g63) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g63 MicroBuildRulesTest 16/0 |
+| MIC-65 | Probado (suite g65) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g65 HorarioLibreTest 49/0 |
+| MIC-66 | Probado (suite g62) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g62 CivilizedErasTest 540/0 |
 | MIC-67 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
-| MIC-68 | Probado (suite g11) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g11 ObservationTest 4/0 |
-| MIC-69 | Probado (suite g12) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g12 StateSpellsTest 6/0 |
-| MIC-70 | Probado (suite g43) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g43 MicrocosmosFloorTest 792/0 |
-| MIC-71 | Probado (suite g79) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g79 HistoriasStoryTest 250/0 |
-| MIC-72 | Probado (suite g62) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g62 CivilizedErasTest 540/0 |
-| MIC-73 | Probado (suite g63) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g63 MicroBuildRulesTest 16/0 |
-| MIC-74 | Probado (suite g63) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g63 MicroBuildRulesTest 16/0 |
-| MIC-75 | Probado (suite g63) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g63 MicroBuildRulesTest 16/0 |
-| MIC-76 | Probado (suite g62) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g62 CivilizedErasTest 540/0 |
-| MIC-77 | Probado (suite g9) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g9 RiverCurrentTest 5/0 |
-| MIC-78 | Probado (suite g9) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g9 RiverCurrentTest 5/0 |
-| MIC-79 | Probado (suite g10) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g10 DietPreferenceTest 5/0 |
-| MIC-80 | Probado (suite g7) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g7 StarvationTest 2/0 |
-| MIC-81 | Probado (suite g8) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g8 SleepTest 4/0 |
-| MIC-82 | Probado (suite g15) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g15 YogaTest 4/0 |
-| FAU-15 | Probado (suite g71) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g71 GroupAnimalsTest 8/0 |
-| FAU-16 | Probado (suite g71) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g71 GroupAnimalsTest 8/0 |
-| FAU-17 | Probado (suite g71) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g71 GroupAnimalsTest 8/0 |
-| FAU-18 | Probado (suite g71) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g71 GroupAnimalsTest 8/0 |
-| FAU-19 | Probado (suite g11) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g11 ObservationTest 4/0 |
-| JOR-19 | Parcial | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | B-01 | g50 con 4 FAIL en la suite 63 (fauna atascada, B-01, y las misiones de Kushal) |
-| JOR-20 | Probado (suite g28) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g28 SanctuaryLifeTest 167/0 |
-| JOR-21 | Probado (suite g65) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g65 HorarioLibreTest 49/0 |
-| JOR-22 | Probado (suite g28) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | B-01 | r126: g28 SanctuaryLifeTest 167/0 |
-| JOR-23 | Probado (suite g41) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g41 KitchenInitiationTest 15/0 |
-| JOR-24 | Probado (suite g69) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g69 FamososStoryTest 100/0 |
+| MIC-68 | Probado (suite g11) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g11 ObservationTest 4/0 |
+| MIC-69 | Probado (suite g12) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g12 StateSpellsTest 6/0 |
+| MIC-70 | Probado (suite g43) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g43 MicrocosmosFloorTest 792/0 |
+| MIC-71 | Probado (suite g79) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g79 HistoriasStoryTest 250/0 |
+| MIC-72 | Probado (suite g62) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g62 CivilizedErasTest 540/0 |
+| MIC-73 | Probado (suite g63) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g63 MicroBuildRulesTest 16/0 |
+| MIC-74 | Probado (suite g63) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g63 MicroBuildRulesTest 16/0 |
+| MIC-75 | Probado (suite g63) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g63 MicroBuildRulesTest 16/0 |
+| MIC-76 | Probado (suite g62) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g62 CivilizedErasTest 540/0 |
+| MIC-77 | Probado (suite g9) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g9 RiverCurrentTest 5/0 |
+| MIC-78 | Probado (suite g9) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g9 RiverCurrentTest 5/0 |
+| MIC-79 | Probado (suite g10) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g10 DietPreferenceTest 5/0 |
+| MIC-80 | Probado (suite g7) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g7 StarvationTest 2/0 |
+| MIC-81 | Probado (suite g8) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g8 SleepTest 4/0 |
+| MIC-82 | Probado (suite g15) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g15 YogaTest 4/0 |
+| FAU-15 | Probado (suite g71) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g71 GroupAnimalsTest 8/0 |
+| FAU-16 | Probado (suite g71) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g71 GroupAnimalsTest 8/0 |
+| FAU-17 | Probado (suite g71) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g71 GroupAnimalsTest 8/0 |
+| FAU-18 | Probado (suite g71) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g71 GroupAnimalsTest 8/0 |
+| FAU-19 | Probado (suite g11) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g11 ObservationTest 4/0 |
+| JOR-19 | Probado (suite g50) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | B-01 | r127: g50 JornadaTest 49/0 |
+| JOR-20 | Probado (suite g28) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g28 SanctuaryLifeTest 167/0 |
+| JOR-21 | Probado (suite g65) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g65 HorarioLibreTest 49/0 |
+| JOR-22 | Probado (suite g28) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | B-01 | r127: g28 SanctuaryLifeTest 167/0 |
+| JOR-23 | Probado (suite g41) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g41 KitchenInitiationTest 15/0 |
+| JOR-24 | Probado (suite g69) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g69 FamososStoryTest 100/0 |
 | JOR-25 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | JOR-26 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | JOR-27 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | JOR-28 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | JOR-29 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
-| JOR-30 | Probado (suite g65) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g65 HorarioLibreTest 49/0 |
-| JOR-31 | Probado (suite g65) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g65 HorarioLibreTest 49/0 |
-| JOR-32 | Probado (suite g89) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g89 PillowFightTest 28/0 |
-| JOR-33 | Probado (suite g75) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g75 CapacidadPisosTest 35/0 |
-| JOR-34 | Probado (suite g92) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g92 SleepoverTest 23/0 |
-| JOR-35 | Probado (suite g97) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g97 ActividadesTest 31/0 |
-| JOR-36 | Probado (suite g97) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g97 ActividadesTest 31/0 |
-| JOR-37 | Probado (suite g97) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g97 ActividadesTest 31/0 |
-| JOR-38 | Probado (suite g97) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g97 ActividadesTest 31/0 |
-| JOR-39 | Probado (suite g96) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | B-01 | r126: g96 PlayerTasksTest 25/0 |
-| JOR-40 | Probado (suite g87) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g87 GymTrainingTest 34/0 |
-| JOR-41 | Probado (suite g87) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g87 GymTrainingTest 34/0 |
-| JOR-42 | Probado (suite g87) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g87 GymTrainingTest 34/0 |
-| JOR-43 | Probado (suite g87) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g87 GymTrainingTest 34/0 |
-| JOR-44 | Probado (suite g87) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g87 GymTrainingTest 34/0 |
-| JOR-45 | Parcial | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | B-01 | g50 con 4 FAIL en la suite 63 (fauna atascada, B-01, y las misiones de Kushal) |
-| JOR-46 | Probado (suite g65) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g65 HorarioLibreTest 49/0 |
-| JOR-47 | Probado (suite g87) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g87 GymTrainingTest 34/0 |
-| JOR-48 | Parcial | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | B-01 | g50 con 4 FAIL en la suite 63 (fauna atascada, B-01, y las misiones de Kushal) |
-| JOR-49 | Probado (suite g104) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | B-01 | r126: g104 JornadaSaberTest 40/0 |
-| JOR-50 | Probado (suite g113) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g113 RepartoSantuariosTest 108/0 |
-| JOR-51 | Probado (suite g28) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g28 SanctuaryLifeTest 167/0 |
-| JOR-52 | Probado (suite g28) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g28 SanctuaryLifeTest 167/0 |
-| JOR-53 | Probado (suite g113) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g113 RepartoSantuariosTest 108/0 |
-| JOR-54 | Probado (suite g113) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g113 RepartoSantuariosTest 108/0 |
-| PER-06 | Probado (suite g95) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g95 PersonajesReglasTest 12/0 |
-| PER-07 | Probado (suite g28) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g28 SanctuaryLifeTest 167/0 |
-| PER-08 | Probado (suite g89) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g89 PillowFightTest 28/0 |
-| PER-09 | Probado (suite g65) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g65 HorarioLibreTest 49/0 |
-| PER-10 | Probado (suite g89) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g89 PillowFightTest 28/0 |
-| PER-11 | Probado (suite g87) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g87 GymTrainingTest 34/0 |
-| PER-12 | Probado (suite g95) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g95 PersonajesReglasTest 12/0 |
-| REN-05 | Probado (suite g112) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g112 LoteEstaticoTest 16/0 |
-| REN-06 | Parcial | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | B-01 | g50 con 4 FAIL en la suite 63 (fauna atascada, B-01, y las misiones de Kushal) |
-| REN-07 | Parcial | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | B-01 | g50 con 4 FAIL en la suite 63 (fauna atascada, B-01, y las misiones de Kushal) |
+| JOR-30 | Probado (suite g65) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g65 HorarioLibreTest 49/0 |
+| JOR-31 | Probado (suite g65) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g65 HorarioLibreTest 49/0 |
+| JOR-32 | Probado (suite g89) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g89 PillowFightTest 28/0 |
+| JOR-33 | Probado (suite g75) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g75 CapacidadPisosTest 35/0 |
+| JOR-34 | Probado (suite g92) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g92 SleepoverTest 23/0 |
+| JOR-35 | Probado (suite g97) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g97 ActividadesTest 31/0 |
+| JOR-36 | Probado (suite g97) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g97 ActividadesTest 31/0 |
+| JOR-37 | Probado (suite g97) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g97 ActividadesTest 31/0 |
+| JOR-38 | Probado (suite g97) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g97 ActividadesTest 31/0 |
+| JOR-39 | Probado (suite g96) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | B-01 | r127: g96 PlayerTasksTest 25/0 |
+| JOR-40 | Probado (suite g87) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g87 GymTrainingTest 34/0 |
+| JOR-41 | Probado (suite g87) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g87 GymTrainingTest 34/0 |
+| JOR-42 | Probado (suite g87) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g87 GymTrainingTest 34/0 |
+| JOR-43 | Probado (suite g87) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g87 GymTrainingTest 34/0 |
+| JOR-44 | Probado (suite g87) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g87 GymTrainingTest 34/0 |
+| JOR-45 | Probado (suite g50) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | B-01 | r127: g50 JornadaTest 49/0 |
+| JOR-46 | Probado (suite g65) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g65 HorarioLibreTest 49/0 |
+| JOR-47 | Probado (suite g87) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g87 GymTrainingTest 34/0 |
+| JOR-48 | Probado (suite g50) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | B-01 | r127: g50 JornadaTest 49/0 |
+| JOR-49 | Probado (suite g104) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | B-01 | r127: g104 JornadaSaberTest 40/0 |
+| JOR-50 | Probado (suite g113) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g113 RepartoSantuariosTest 108/0 |
+| JOR-51 | Probado (suite g28) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g28 SanctuaryLifeTest 167/0 |
+| JOR-52 | Probado (suite g28) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g28 SanctuaryLifeTest 167/0 |
+| JOR-53 | Probado (suite g113) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g113 RepartoSantuariosTest 108/0 |
+| JOR-54 | Probado (suite g113) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g113 RepartoSantuariosTest 108/0 |
+| PER-06 | Probado (suite g95) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g95 PersonajesReglasTest 12/0 |
+| PER-07 | Probado (suite g28) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g28 SanctuaryLifeTest 167/0 |
+| PER-08 | Probado (suite g89) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g89 PillowFightTest 28/0 |
+| PER-09 | Probado (suite g65) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g65 HorarioLibreTest 49/0 |
+| PER-10 | Probado (suite g89) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g89 PillowFightTest 28/0 |
+| PER-11 | Probado (suite g87) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g87 GymTrainingTest 34/0 |
+| PER-12 | Probado (suite g95) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g95 PersonajesReglasTest 12/0 |
+| REN-05 | Probado (suite g112) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g112 LoteEstaticoTest 16/0 |
+| REN-06 | Probado (suite g50) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | B-01 | r127: g50 JornadaTest 49/0 |
+| REN-07 | Probado (suite g50) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | B-01 | r127: g50 JornadaTest 49/0 |
 | FAU-20 | Probado (suite g99) | 2026-11-17 | 4127332 | [runs/2026-11-17-1900-r125-rapida-grupos-vivo-suite.md](runs/2026-11-17-1900-r125-rapida-grupos-vivo-suite.md) | — | r125: g99 TerritorioTest 80/0 |
 | FAU-21 | Probado (suite g99) | 2026-11-17 | 4127332 | [runs/2026-11-17-1900-r125-rapida-grupos-vivo-suite.md](runs/2026-11-17-1900-r125-rapida-grupos-vivo-suite.md) | — | r125: g99 TerritorioTest 80/0 |
 | FAU-22 | Probado (suite g99) | 2026-11-17 | 4127332 | [runs/2026-11-17-1900-r125-rapida-grupos-vivo-suite.md](runs/2026-11-17-1900-r125-rapida-grupos-vivo-suite.md) | — | r125: g99 TerritorioTest 80/0 |
@@ -317,33 +317,33 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | FAU-26 | Probado (suite g99) | 2026-11-17 | 4127332 | [runs/2026-11-17-1900-r125-rapida-grupos-vivo-suite.md](runs/2026-11-17-1900-r125-rapida-grupos-vivo-suite.md) | — | r125: g99 TerritorioTest 80/0 |
 | FAU-27 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | su grupo en verde en la suite 63 |
 | FAU-28 | Probado (suite g99) | 2026-11-17 | 4127332 | [runs/2026-11-17-1900-r125-rapida-grupos-vivo-suite.md](runs/2026-11-17-1900-r125-rapida-grupos-vivo-suite.md) | — | r125: g99 TerritorioTest 80/0 |
-| FAU-29 | Probado (suite g105) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g105 AlimentadorTest 44/0 |
-| FAU-30 | Probado (suite g102) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g102 DeshierbeTest 24/0 |
+| FAU-29 | Probado (suite g105) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g105 AlimentadorTest 44/0 |
+| FAU-30 | Probado (suite g102) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g102 DeshierbeTest 24/0 |
 | PER-13 | Probado (suite g99) | 2026-11-17 | 4127332 | [runs/2026-11-17-1900-r125-rapida-grupos-vivo-suite.md](runs/2026-11-17-1900-r125-rapida-grupos-vivo-suite.md) | — | r125: g99 TerritorioTest 80/0 |
 | PER-14 | Probado (suite g99) | 2026-11-17 | 4127332 | [runs/2026-11-17-1900-r125-rapida-grupos-vivo-suite.md](runs/2026-11-17-1900-r125-rapida-grupos-vivo-suite.md) | — | r125: g99 TerritorioTest 80/0 |
-| PER-15 | Probado (suite g94) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g94 NuclearSiteTest 23/0 |
+| PER-15 | Probado (suite g94) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g94 NuclearSiteTest 23/0 |
 | PER-16 | Probado (suite g99) | 2026-11-17 | 4127332 | [runs/2026-11-17-1900-r125-rapida-grupos-vivo-suite.md](runs/2026-11-17-1900-r125-rapida-grupos-vivo-suite.md) | — | r125: g99 TerritorioTest 80/0 |
 | PER-17 | Probado (suite g99) | 2026-11-17 | 4127332 | [runs/2026-11-17-1900-r125-rapida-grupos-vivo-suite.md](runs/2026-11-17-1900-r125-rapida-grupos-vivo-suite.md) | — | r125: g99 TerritorioTest 80/0 |
-| PER-18 | Probado (suite g57) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g57 TreeBuildingsTest 37/0 |
-| PER-19 | Probado (suite g107) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g107 HieloMarinoTest 19/0 |
-| PER-20 | Probado (suite g108) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g108 IcebergVidaTest 14/0 |
-| PER-21 | Probado (suite g103) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g103 ProduccionTest 16/0 |
-| PER-22 | Probado (suite g61) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g61 AreaFunctionRegistryTest 22/0 |
-| CV-01 | Probado (suite g50) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: check [CV-01] PASS ×5 |
-| CV-02 | Probado (suite g49) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g49 GymUsabilityTest 151/0 |
-| CV-03 | Probado (suite g50) | 2026-11-14 | d6c0d5f | [runs/2026-11-14-2051-r115-rapida-grupos-vivo-suite.md](runs/2026-11-14-2051-r115-rapida-grupos-vivo-suite.md) | — | r115: check [CV-03] PASS ×2 |
-| CV-04 | Probado (suite g1) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: check [CV-04] PASS ×2 |
-| CV-05 | Probado (suite g1) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: check [CV-05] PASS ×2 |
-| CV-06 | Probado (suite g53) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: check [CV-06] PASS ×1 |
-| CV-07 | Probado (suite g50) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: check [CV-07] PASS ×4 |
-| CV-08 | Probado (suite g51) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g51 YogaClassTest 16/0 |
-| CV-09 | Probado (suite g65) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g65 HorarioLibreTest 49/0 |
-| CV-10 | Probado (suite g113) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: check [CV-10] PASS ×1 |
-| CV-11 | Probado (suite g105) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: check [CV-11] PASS ×3 |
-| CV-12 | Probado (suite g113) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: check [CV-12] PASS ×1 |
-| CV-13 | Probado (suite g117) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g117 PeticionesSondaTest 7/0 |
-| CV-14 | Probado (suite g50) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: check [CV-14] PASS ×3 |
-| CV-15 | Probado (suite g50) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: check [CV-15] PASS ×2 |
+| PER-18 | Probado (suite g57) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g57 TreeBuildingsTest 37/0 |
+| PER-19 | Probado (suite g107) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g107 HieloMarinoTest 19/0 |
+| PER-20 | Probado (suite g108) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g108 IcebergVidaTest 14/0 |
+| PER-21 | Probado (suite g103) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g103 ProduccionTest 16/0 |
+| PER-22 | Probado (suite g61) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g61 AreaFunctionRegistryTest 22/0 |
+| CV-01 | Probado (suite g50) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: check [CV-01] PASS ×5 |
+| CV-02 | Probado (suite g49) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g49 GymUsabilityTest 151/0 |
+| CV-03 | Probado (suite g50) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: check [CV-03] PASS ×2 |
+| CV-04 | Probado (suite g1) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: check [CV-04] PASS ×2 |
+| CV-05 | Probado (suite g1) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: check [CV-05] PASS ×2 |
+| CV-06 | Probado (suite g53) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: check [CV-06] PASS ×1 |
+| CV-07 | Probado (suite g50) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: check [CV-07] PASS ×4 |
+| CV-08 | Probado (suite g51) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g51 YogaClassTest 16/0 |
+| CV-09 | Probado (suite g65) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g65 HorarioLibreTest 49/0 |
+| CV-10 | Probado (suite g113) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: check [CV-10] PASS ×1 |
+| CV-11 | Probado (suite g105) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: check [CV-11] PASS ×3 |
+| CV-12 | Probado (suite g113) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: check [CV-12] PASS ×1 |
+| CV-13 | Probado (suite g117) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g117 PeticionesSondaTest 7/0 |
+| CV-14 | Probado (suite g50) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: check [CV-14] PASS ×3 |
+| CV-15 | Probado (suite g50) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: check [CV-15] PASS ×2 |
 | OP-01 | No aplica | — | — | — | — | regla de proceso: la mira el probador en cada run log |
 | OP-02 | No aplica | — | — | — | — | regla de proceso: la mira el probador en cada run log |
 | OP-03 | No aplica | — | — | — | — | regla de proceso: la mira el probador en cada run log |
@@ -352,12 +352,12 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | OP-06 | No aplica | — | — | — | — | regla de proceso: la mira el probador en cada run log |
 | OP-07 | No aplica | — | — | — | — | regla de proceso: la mira el probador en cada run log |
 | OP-08 | No aplica | — | — | — | — | regla de proceso: la mira el probador en cada run log |
-| MIC-83 | Probado (suite g68) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g68 MicroSueloTest 31/0 |
-| PER-23 | Probado (suite g95) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g95 PersonajesReglasTest 12/0 |
-| PER-24 | Probado (suite g103) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g103 ProduccionTest 16/0 |
+| MIC-83 | Probado (suite g68) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g68 MicroSueloTest 31/0 |
+| PER-23 | Probado (suite g95) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g95 PersonajesReglasTest 12/0 |
+| PER-24 | Probado (suite g103) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g103 ProduccionTest 16/0 |
 | FAU-31 | Probado (suite g99) | 2026-11-17 | 4127332 | [runs/2026-11-17-1900-r125-rapida-grupos-vivo-suite.md](runs/2026-11-17-1900-r125-rapida-grupos-vivo-suite.md) | — | r125: g99 TerritorioTest 80/0 |
-| FAU-32 | Probado (suite g85) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g85 CadenaAlimenticiaTest 58/0 |
-| REN-08 | Probado (suite g118) | 2026-11-18 | 801b23c | [runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) | — | r126: g118 QaCheckTest 44/0 |
+| FAU-32 | Probado (suite g85) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g85 CadenaAlimenticiaTest 58/0 |
+| REN-08 | Probado (suite g118) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g118 QaCheckTest 44/0 |
 | MIC-84 | Solo código | 2026-11-18 | — | — | — | claude/escala-mitad: programado y compilado; lo prueba el probador |
 | MIC-85 | Solo código | 2026-11-18 | — | — | — | claude/escala-mitad: programado y compilado; lo prueba el probador |
 | MIC-86 | Solo código | 2026-11-18 | — | — | — | claude/escala-mitad: programado y compilado; lo prueba el probador |

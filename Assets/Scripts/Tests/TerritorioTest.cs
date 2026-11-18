@@ -48,6 +48,20 @@ public class TerritorioTest : MonoBehaviour, ITestUnit
         return any ? Mathf.Max(b.size.x, b.size.y, b.size.z) * a.transform.lossyScale.x : 0f;
     }
 
+    /// <summary>(Ronda 126, diagnóstico) La pieza con malla que más mide (en el sistema del animal), con su largo.</summary>
+    static string LongestPart(Animal a)
+    {
+        string best = "—"; float bl = 0f; Matrix4x4 m0 = a.transform.worldToLocalMatrix;
+        foreach (Renderer r in a.GetComponentsInChildren<Renderer>())
+        {
+            if (!r.enabled || !r.TryGetComponent(out MeshFilter mf) || mf.sharedMesh == null) continue;
+            Vector3 s = (m0 * r.localToWorldMatrix).MultiplyVector(mf.sharedMesh.bounds.size);
+            float l = Mathf.Max(Mathf.Abs(s.x), Mathf.Abs(s.y), Mathf.Abs(s.z)) * a.transform.lossyScale.x;
+            if (l > bl) { bl = l; best = $"«{r.name}» {l:0.00} m"; }
+        }
+        return best;
+    }
+
     static bool WalkPath(Vector3 from, Vector3 to, out string why)
     {
         why = "";
@@ -82,9 +96,15 @@ public class TerritorioTest : MonoBehaviour, ITestUnit
         {
             Animal[] all = animals.Where(a => a != null && a.SpeciesName == sp).ToArray();
             if (!TestProbe.Check($"{sp}: vive en el santuario", all.Length >= 2, $"{all.Length} individuos")) continue;
-            Animal adult = all.FirstOrDefault(a => a.lifeStage == LifeStage.adult) ?? all[0];
+            // (2026-11-18, ronda 126) El tamaño se mide en uno SALVAJE y suelto: no uno de la Cría (va aparte, «fuera del total») ni uno que lleva alguien
+            // (Carried lo cuelga de otro objeto, con su escala). Un Adelia dio 1,074 para 0,6 en rápida una vez y 0,582 la siguiente: sin decir cuál era.
+            // Si falla, dice quién, de quién cuelga y su escala.
+            bool Loose(Animal a) => a.GetComponent<CriaCareTarget>() == null && a.GetComponentInParent<CriaFeeder>() == null && a.GetComponent<Carried>() == null && a.GetComponent<IcebergVisitor>() == null;
+            Animal adult = all.FirstOrDefault(a => a.lifeStage == LifeStage.adult && Loose(a)) ?? all.FirstOrDefault(a => a.lifeStage == LifeStage.adult) ?? all[0];
             float want = size * (adult.lifeStage == LifeStage.child ? 0.4f : adult.lifeStage == LifeStage.teen ? 0.7f : 1f);
-            TestProbe.Near($"{sp}: tamaño real ({adult.lifeStage})", BodyLength(adult), want, want * 0.2f);
+            float got = BodyLength(adult);
+            bool sizeOk = TestProbe.Near($"{sp}: tamaño real ({adult.lifeStage})", got, want, want * 0.2f);
+            if (!sizeOk) Debug.Log($"[TEST] tamaño de {sp}: «{adult.name}» en ({adult.transform.position.x:0},{adult.transform.position.y:0.0},{adult.transform.position.z:0}), cuelga de «{(adult.transform.parent != null ? adult.transform.parent.name : "—")}», escala local {adult.transform.localScale.x:0.000}, en el mundo {adult.transform.lossyScale.x:0.000}, suelto {Loose(adult)}, pieza más larga: {LongestPart(adult)}");
             // (basta uno: hay lobos de prueba en el bosque oeste y un pingüino puede estar nadando)
             bool Home(Animal a)
             {
