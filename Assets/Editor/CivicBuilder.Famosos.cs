@@ -348,6 +348,10 @@ relleno | 70 | 0 -650",
         n += W(t, "Técnica de integración", fab, "", fab, null, s[0]);
         n += W(t, "Técnico de motores", fab, "", fab, null, s[0]);
         n += W(t, "Cocinera de la nave", fab, "cocinero", fab, null, s[0]);
+        n += W(t, "Técnico de aviónica", fab, "", fab, null, s[0]);
+        n += W(t, "Laminadora de composite", fab, "", fab, null, s[0]);
+        n += W(t, "Ingeniera de software de vuelo", fab, "sabio", fab, null, s[0]);
+        n += W(t, "Inspectora de calidad", fab, "", fab, null, s[0]);
         n += W(t, "Cocinero de la taquería", s[1], "cocinero", s[1], null, null);
         n += Townsfolk(t, s, 2, "Vecina de Hawthorne", "Vecino de Hawthorne", s[1], null);
         return n;
