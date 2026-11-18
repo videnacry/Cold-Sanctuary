@@ -108,9 +108,11 @@ public class ChecklistSoulTest : MonoBehaviour, ITestUnit
 
         bool allPlus = true; string worst = "";
         Aptitudes ob = oso.ReadStats(), opk = osoPack.ReadStats();
+        // (2026-11-18, Berón) El pack ya no es +2,5 fijo: son las aptitudes de la criatura más poderosa del santuario 3 (SanctuaryPower.PackFromFauna).
+        Archetypes.TryPack("bonusPack3", out Aptitudes pk3);
         foreach (AptitudeKind k in SoulMath.All)
-            if (Mathf.Abs(opk.Get(k) - ob.Get(k) - 2.5f) > 0.001f) { allPlus = false; worst = $"{k}: {ob.Get(k):0.##}→{opk.Get(k):0.##}"; }
-        TestProbe.Check("[1189] Oso_bonusPack3: mismas aptitudes de oso +2.5 a TODO", allPlus, worst);
+            if (Mathf.Abs(opk.Get(k) - ob.Get(k) - pk3.Get(k)) > 0.001f) { allPlus = false; worst = $"{k}: {ob.Get(k):0.##}→{opk.Get(k):0.##} (pack {pk3.Get(k):0.##})"; }
+        TestProbe.Check("[1189] Oso_bonusPack3: mismas aptitudes de oso + las del pack (la criatura más poderosa del santuario 3) a TODO", allPlus, worst);
         TestProbe.Check("[1189] …sin cambiar personalidad (mismo tono que el oso puro: Tierra)",
                         ToneOf("Oso_bonusPack3_TEST") == "Tierra" && ToneOf("Oso_Puro_TEST") == "Tierra",
                         $"pack={ToneOf("Oso_bonusPack3_TEST")} puro={ToneOf("Oso_Puro_TEST")}");
