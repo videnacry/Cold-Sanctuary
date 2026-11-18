@@ -101,10 +101,10 @@ public class MicroJornada : MonoBehaviour
         AreaFunctionStation target = _block == "comida" && _counter != null && (_mealStage == 1 || _mealStage == 4) ? _counter : _st;
         Vector3 to = WorkSpotOf(target, transform.position);
         bool there = MicroMove.Step(transform, to, speed, Mathf.Max(0.5f, 1.6f * k));
-        if (!there && Time.time - _since > 60f)   // sin quedarse dando vueltas para siempre (y avisa: es un fallo de la planta)
+        if (!there && Time.time - _since > 60f / Mathf.Clamp(k, 0.2f, 1f))   // sin quedarse dando vueltas para siempre (y avisa: es un fallo de la planta)
         {
             transform.position = to; there = true; Fallbacks++;
-            if (Fallbacks <= 20) Debug.LogWarning($"[Jornada micro] «{name}» no llega andando en 60 s a «{target.name}» de {(_site != null ? _site.title : "?")}: se le pone allí.");
+            if (Fallbacks <= 20) Debug.LogWarning($"[Jornada micro] «{name}» no llega andando en {60f / Mathf.Clamp(k, 0.2f, 1f):0} s a «{target.name}» de {(_site != null ? _site.title : "?")}: se le pone allí.");
         }
         if (!there) { _meal?.Carry(gameObject); Say(_block == "casa" ? "A casa" : _block == "comida" && _mealStage == 4 ? "Devuelve la bandeja" : "Va a " + (_site != null ? _site.title : "su puesto")); return; }
         if (_arrivedAt < 0f) _arrivedAt = Time.time;

@@ -103,7 +103,7 @@ public static partial class StorySceneBuilder
         Piece(fac, "cama", new Vector3(-18f, 0f, -5.5f), 0f, "Catre de los turnos de noche (supuesto)", null, station: false);
         Piece(fac, "cama", new Vector3(-14f, 0f, -5.5f), 0f, "Catre de los turnos de noche (supuesto)", null, station: false);
         Piece(fac, "cocina", new Vector3(-18f, 0f, -12f), 0f, "Cocina de la nave (supuesto)");
-        Piece(fac, "mesa", new Vector3(-10f, 0f, -10.5f), 0f, "Comedor de la nave: mesa alta con apoyos de abdomen y sillas (supuesto)", null, null, both);
+        Piece(fac, "mesa", new Vector3(-10f, 0f, -10.5f), 0f, "Comedor de la nave: mesa alta con apoyos de abdomen y sillas (supuesto)", null, null, both, station: false);   // (mixta, regla 9: no es puesto; la jornada come en la mesa alta)
 
         // ── 3 · EL CONTROL DE MISIÓN (noreste): tras grandes cristales, a la vista desde la nave (Wired) ──
         GlassWall.Box(fac, "sala_de_control_SpaceX", new Vector3(12f, 0f, 8f), new Vector2(16f, 12f), 0f, 2);
@@ -142,6 +142,7 @@ public static partial class StorySceneBuilder
 
         // La nave es UN edificio (taller), con su puerta, su vista de corte y sus etiquetas (Civilize las rehace con lo demás).
         var site = fac.gameObject.AddComponent<AreaFunctionSite>(); site.building = "Taller"; site.title = "Fábrica de SpaceX (1 Rocket Road)"; site.region = CivicBuilder.Region;
+        site.notHome = true;   // no es una vivienda: el reparto de hogares no le rehace los muebles (su hogar del turno de noche lo pone HawthorneTown)
         int extraFolk = MuskDetail(t, fac);   // (piloto 2) el detalle: grúa, estanterías, bancos, cubículos, marcas, fachada, muelle, aparcamiento y palmeras
         CivicBuilder.Tag(site);
         CutawayView.Ensure(fac);   // (otra vez, ya con los tabiques de los aseos: la vista de corte los recoge también)

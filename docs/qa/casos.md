@@ -308,6 +308,11 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | MIC-86 | MIC | Regla M44 (P6): un transporte de época se sube (control apagado), se conduce (adelante con tope, gira, marcha atrás más lenta), se baja (se para y el control vuelve) y lleva carga en las horquillas | MicroVehicleTest | 123 | M44 | — | plan fase 1; añadido el 2026-11-18 |
 | MIC-87 | MIC | Piloto Microcosmos_ElonMusk (fase 1): montado con folkScale = s; la nave de SpaceX cerrada con vista de corte y puertas ≥ 1,2 × 1,25 m (la de los aseos, ensanchada); hito y transportes; las seis necesidades dentro; apoyos de abdomen y tarimas; la consola del reto de CodeShip; 0 faltas de reglas | MuskPilotTest | 124 | M24, M43, M44, M45 | — | plan fase 1; añadido el 2026-11-18 |
 | MIC-88 | MIC | Reglas M23, M24, M43, M44 y M46 en el validador: paso de 2,4 m (2 m sin reconstruir o sin MicroFloor), muros con vista de corte y puerta, puerta estrecha = falta, hito / transporte / escaleras < 12 m = consejos | MicroBuildRulesTest | 63 | M23, M24, M43, M44, M46 | — | plan fase 0; añadido el 2026-11-18 |
+| MIC-89 | MIC | Fase 2 (piloto Musk): los trabajadores de la nave que viven en ella (turno de noche) llegan andando a su puesto a las 9 | MuskNeedsTest | 125 | M18, M26 | — | plan-microcosmos-realismo.md fase 2; añadido el 2026-11-18 |
+| MIC-90 | MIC | Fase 2: comen en la mesa alta con apoyos de abdomen (C1) a la hora de la comida o con hambre en casa | MuskNeedsTest | 125 | M26, M45 | — | plan fase 2; añadido el 2026-11-18 |
+| MIC-91 | MIC | Fase 2: con ganas van al retrete de su hogar, dentro de la nave | MuskNeedsTest | 125 | M18, M26 | — | plan fase 2; añadido el 2026-11-18 |
+| MIC-92 | MIC | Fase 2: de noche, con sueño, duermen en su catre de la nave | MuskNeedsTest | 125 | M18, M26 | — | plan fase 2; añadido el 2026-11-18 |
+| MIC-93 | MIC | Fase 2: sin teletransportes (MicroJornada.Fallbacks y HomeNeedSpell.Fallbacks no suben): todo andando | MuskNeedsTest | 125 | M26 | — | plan fase 2 («debe fallar si Fallbacks > 0»); añadido el 2026-11-18 |
 
 ## HOS · Hospital
 

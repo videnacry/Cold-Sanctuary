@@ -352,6 +352,7 @@ relleno | 70 | 0 -650",
         n += W(t, "Laminadora de composite", fab, "", fab, null, s[0]);
         n += W(t, "Ingeniera de software de vuelo", fab, "sabio", fab, null, s[0]);
         n += W(t, "Inspectora de calidad", fab, "", fab, null, s[0]);
+        if (fab != null) NightShiftHome(t, fab, "Técnico de motores", "Técnica de integración", "Inspectora de calidad");
         n += W(t, "Cocinero de la taquería", s[1], "cocinero", s[1], null, null);
         n += Townsfolk(t, s, 2, "Vecina de Hawthorne", "Vecino de Hawthorne", s[1], null);
         return n;
@@ -542,5 +543,50 @@ relleno | 70 | 0 -650",
         n += C2(t, "Hortelana de Tanghin", "Tejedor de Tanghin", s[5], s[4], s[1]);
         n += Townsfolk(t, s, 7, "Vecina de Uagadugú", "Vecino de Uagadugú", s[4], null);
         return n;
+    }
+}
+
+internal static partial class CivicBuilder
+{
+    /// <summary>
+    /// (2026-11-18, fase 2 del plan) EL HOGAR DEL TURNO DE NOCHE de la nave de SpaceX (supuesto de juego: en 2008 la fábrica trabajaba 24 h,
+    /// Satellite Today, 24-11-2008): tres trabajadores de la nave viven en ella —sus catres, su retrete, su lavamanos y la MESA ALTA del
+    /// comedor con sus apoyos de abdomen como mesa de casa, con su despensa—, así sus necesidades (comer, dormir, el baño) se ven dentro, a
+    /// pocos pasos, sin rehacer los muebles de la nave (por eso la nave es «notHome» para el reparto de hogares).
+    /// </summary>
+    static void NightShiftHome(Transform t, AreaFunctionSite fab, params string[] names)
+    {
+        var people = new List<GameObject>();
+        foreach (MicroJornada j in t.GetComponentsInChildren<MicroJornada>(true)) if (System.Array.IndexOf(names, j.name) >= 0 && j.work == fab) people.Add(j.gameObject);
+        if (people.Count == 0) return;
+        var go = new GameObject("Hogar (turno de noche de la nave)"); go.transform.SetParent(fab.transform, false);
+        Household h = go.AddComponent<Household>(); h.family = "Turno de noche de la nave de SpaceX";
+        Transform standing = null;
+        foreach (MicroPiece p in fab.GetComponentsInChildren<MicroPiece>(true))
+        {
+            if (p.transform.parent != fab.transform) continue;
+            if (p.kind == "cama" && h.beds.Count < people.Count) h.beds.Add(p.transform);
+            else if (p.kind == "inodoro" && h.toilet == null) h.toilet = p.transform;
+            else if (p.kind == "lavabo" && h.washbasin == null) h.washbasin = p.transform;
+            else if (p.kind == "mesa" && p.transform.Find("Mesa") != null)
+            {
+                bool rests = false, chairs = false;
+                foreach (Transform c in p.transform) { if (c.name == "Apoyo de abdomen") rests = true; if (c.name == "Silla") chairs = true; }
+                if (rests && !chairs) standing = p.transform;
+            }
+        }
+        h.table = standing;
+        if (standing != null) foreach (Transform c in standing) if (c.name == "Apoyo de abdomen") h.seats.Add(c);
+        var pantry = new GameObject("Despensa").transform; pantry.SetParent(go.transform, false);
+        pantry.position = standing != null ? standing.position : fab.transform.position;
+        var fc = pantry.gameObject.AddComponent<FoodContainer>(); fc.dishName = "comida de la nave"; fc.rations = 3 * people.Count; fc.capacity = 20;
+        h.pantry = fc;
+        foreach (GameObject m in people)
+        {
+            h.members.Add(m);
+            if (m.TryGetComponent(out PersonLife pl)) pl.home = h;
+            if (m.TryGetComponent(out MicroJornada j)) j.home = fab;
+        }
+        Debug.Log($"[Hogares] Hawthorne: {people.Count} del turno de noche viven en la nave ({h.beds.Count} catres, mesa alta {(standing != null ? "sí" : "NO")}).");
     }
 }

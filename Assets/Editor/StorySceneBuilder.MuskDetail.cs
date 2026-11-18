@@ -98,7 +98,10 @@ public static partial class StorySceneBuilder
 
         // ── EL COMEDOR: una MESA ALTA de insectos-humanos con sus apoyos de abdomen (C1), la máquina de bebidas y la fuente de agua ──
         MicroBody.Fit ant = MicroBody.OfSpecies("Ant");
-        Piece(fac, "mesa", new Vector3(-4f, 0f, -11f), 0f, "Comedor: mesa alta con apoyos de abdomen (C1)", null, null, new List<MicroBody.Fit> { ant, ant, ant, ant });
+        Transform standTable = Piece(fac, "mesa", new Vector3(-4f, 0f, -11f), 0f, "Comedor: mesa alta con apoyos de abdomen (C1)", null, null, new List<MicroBody.Fit> { ant, ant, ant, ant, ant, ant });
+        // (piloto 3) Que se vean: los cojines de los apoyos, en naranja SpaceX… de seguridad.
+        foreach (Renderer r in standTable.GetComponentsInChildren<Renderer>()) if (r.name == "Cojin_del_abdomen") r.sharedMaterial = orange;
+        Sign(fac, "COMEDOR", new Vector3(-6.5f, 4.2f, -10.8f), 0f, yellow, black);
         Prop(fac, "Maquina_de_bebidas", new Vector3(-13f, 0.9f, -hz + 0.6f), new Vector3(1f, 1.8f, 0.8f), red, false);
         Prop(fac, "Frontal_de_la_maquina", new Vector3(-13f, 1.1f, -hz + 1.01f), new Vector3(0.6f, 1.0f, 0.01f), glassDark, false);
         Prop(fac, "Fuente_de_agua", new Vector3(-11.2f, 0.55f, -hz + 0.45f), new Vector3(0.35f, 1.1f, 0.35f), white, false);
@@ -145,6 +148,8 @@ public static partial class StorySceneBuilder
         Prop(street, "Linea_central", new Vector3(0f, 0.045f, 0f), new Vector3(0.12f, 0.01f, 44f), yellow, false);
         Prop(street, "Acera", new Vector3(-6f, 0.08f, 0f), new Vector3(3f, 0.16f, 44f), M("Acera", 0.72f, 0.71f, 0.68f), false);
         for (int k = 0; k < 6; k++) Palm(street, new Vector3(-6.5f, 0.16f, -19f + k * 7.6f));
+
+        MuskDetail3(fac);
 
         // ── LA GENTE TRABAJANDO en los bancos nuevos ──
         Vector3 F(float x, float z) => MuskFactoryAt + new Vector3(x, 0f, z);
