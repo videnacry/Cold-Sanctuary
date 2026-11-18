@@ -309,6 +309,7 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | MIC-86 | MIC | Regla M44 (P6): un transporte de época se sube (control apagado), se conduce (adelante con tope, gira, marcha atrás más lenta), se baja (se para y el control vuelve) y lleva carga en las horquillas | MicroVehicleTest | 123 | M44 | — | plan fase 1; añadido el 2026-11-18 |
 | MIC-87 | MIC | Piloto Microcosmos_ElonMusk (fase 1): montado con folkScale = s; la nave de SpaceX cerrada con vista de corte y puertas ≥ 1,2 × 1,25 m (la de los aseos, ensanchada); hito y transportes; las seis necesidades dentro; apoyos de abdomen y tarimas; la consola del reto de CodeShip; 0 faltas de reglas | MuskPilotTest | 124 | M24, M43, M44, M45 | — | plan fase 1; añadido el 2026-11-18 |
 | MIC-88 | MIC | Reglas M23, M24, M43, M44 y M46 en el validador: paso de 2,4 m (2 m sin reconstruir o sin MicroFloor), muros con vista de corte y puerta, puerta estrecha = falta, hito / transporte / escaleras < 12 m = consejos | MicroBuildRulesTest | 63 | M23, M24, M43, M44, M46 | — | plan fase 0; añadido el 2026-11-18 |
+| MIC-89 | MIC | Musk recrea su historia (Berón 2026-11-18): cada fragmento en su lugar real y fechado, un barrio con todo el detalle (edificios, interiores, muebles, maquinaria, utensilios, calles, vegetación, animales) y la ciudad de fondo | — | — | — | PB-162 | añadido el 2026-11-18 |
 
 ## HOS · Hospital
 
@@ -375,6 +376,7 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | PER-22 | PER | Regla P23: Cada carga de cultivo con luz paga su energía y cada cultivo tiene su cuidado diario de ≤ 1 h: las fachadas de fotobiorreactores declaran sus LED (potencia media del año; en la noche polar, la entera, que el reactor debe… | AreaFunctionRegistryTest | 61 | P23 | — | manual §«Se comprueba en» |
 | PER-23 | PER | Regla P7: ningún puesto sin base documentada (Professions.Basis); lo deducido, en Professions.Unconfirmed, hasta que Berón confirme | PersonajesReglasTest | 95 | P7 | — | manual §«Se comprueba en» (también tools/check-personajes.sh); añadido a mano el 2026-11-13 |
 | PER-24 | PER | Regla P19: las áreas de producción escalan su maquinaria a lo que se les pide (ProductionAudit) | ProduccionTest | 103 | P19 | — | manual §«Se comprueba en» (también el registro [Producción]); añadido a mano el 2026-11-13 |
+| PER-25 | PER | El bonusPack N suma las stats de la criatura más poderosa del santuario N (Berón 2026-11-18) | — | — | — | PB-164 | añadido el 2026-11-18 |
 
 ## UI · Interfaz
 
@@ -415,6 +417,7 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | CS-40 | CS | los retos de la escena están en su historia, cada uno con su sitio | CodeShipLogicTest | 119 | — | — | claude/ui-codeship (plan-microcosmos-realismo.md §4); añadido el 2026-11-18 |
 | CS-41 | CS | se llega al paso del reto | CodeShipLogicTest | 119 | — | — | claude/ui-codeship (plan-microcosmos-realismo.md §4); añadido el 2026-11-18 |
 | CS-42 | CS | acertar el reto cumple el paso de la historia | CodeShipLogicTest | 119 | — | — | claude/ui-codeship (plan-microcosmos-realismo.md §4); añadido el 2026-11-18 |
+| CS-43 | CS | Cada actividad (cocinar, curar, plantar, campo, entrenar, yoga, cuidar animales…) tiene su misión como reto de código, con UI/UX como CodeShip | — | — | — | PB-163 | añadido el 2026-11-18 |
 
 ## REN · Rendimiento y pruebas
 
@@ -480,7 +483,7 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | B-01 | Fallo | g50: fauna atascada > 20 s, dando vueltas o volcada. Falla en todas las rondas que corrieron g50 desde r71 (crónico) | CV-03, CV-05, ARB-86, JOR-19, JOR-22, JOR-39, JOR-45, JOR-48, JOR-49, REN-06, REN-07 | probador → trabajador de fauna | Resuelto en r127 (2026-11-18): g50 49/0 y suite 4770/0, la primera limpia | H1 |
 | B-02 | Fallo | El script de marcas vació docs/checklist.md y docs/auditoria-peticiones.md (82878fc): leía un temporal que no existía | OP-04 | probador | Arreglado en 1bdfe1c; falta el aviso automático (QaCheck §6.9) | H2 |
 | B-03 | Fallo | Ficheros sueltos en Unity tras cambiar de rama: TmpCheck y .cs que ya no están en git | OP-05 | probador | Arreglado con sync --prune (r83, r84); falta el aviso automático (QaCheck §6.10) | H3 |
-| HC-01 | Hueco | Valores de los bonusPacks de Irosene, Lizmibet y Linduarda: los decide Berón | PB-140 | Berón | Abierto | — |
+| HC-01 | Hueco | Valores de los bonusPacks de Irosene, Lizmibet y Linduarda: los decide Berón | PB-140 | Berón | Cerrado: lo decide PB-164 (Berón 2026-11-18 21:34) | — |
 | HC-02 | Hueco | Afinar con OpenStreetMap los huecos históricos (la parte abierta de PB-082, L282) | PB-082 | sin dueño | Abierto | — |
-| HC-03 | Hueco | ¿«Alicia» es el nombre real de Alicita? Se quitó del rótulo por defecto (P24); docs/personajes/alicita.md | — | Berón | Abierto | — |
+| HC-03 | Hueco | ¿«Alicia» es el nombre real de Alicita? Se quitó del rótulo por defecto (P24); docs/personajes/alicita.md | — | Berón | Cerrado: «Alicia» es el nombre real y el del juego (Berón 2026-11-18 21:34) | — |
 | HC-04 | Hueco | Hora de la suite diaria (nivel N4) acordada con Berón (Unity es compartido) | — | Berón | Abierto | — |

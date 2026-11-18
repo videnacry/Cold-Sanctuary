@@ -6,7 +6,7 @@ Cada petición de Berón, con su número fijo. **Una petición nueva entra el mi
 El **estado no se escribe a mano**: sale de sus casos en [registro.md](registro.md) (lo comprueba el comprobador):
 `Hecha` si todos sus casos están `Probado (…)`; `Doc` si solo pedía un doc o una regla; `Sin verificar` si alguno está en `Solo código` o `Sin probar`; `Abierta` si tiene un `HC` o le falta código.
 
-Las PB-001…PB-155 vienen de [auditoria-peticiones.md](../auditoria-peticiones.md) (el número es el mismo). Desde la PB-156 se anotan aquí directamente. La siguiente libre es **PB-162**.
+Las PB-001…PB-155 vienen de [auditoria-peticiones.md](../auditoria-peticiones.md) (el número es el mismo). Desde la PB-156 se anotan aquí directamente. La siguiente libre es **PB-165**.
 
 | PB | Fecha | Petición | Reglas | Casos | Estado | Origen |
 |---|---|---|---|---|---|---|
@@ -149,7 +149,7 @@ Las PB-001…PB-155 vienen de [auditoria-peticiones.md](../auditoria-peticiones.
 | PB-137 | 2026-11-05 | Residencia a la isla y en edificio-árbol; casas de árbol guardadas | — | ARB-38 | Hecha | auditoría #137: Verificado en vivo (2026-11-12) |
 | PB-138 | 2026-11-05 | Focos brillantes en vivo: revisar medusas y todo, verificado en vivo | — | REN-02 | Sin verificar | auditoría #138: Sin anotar |
 | PB-139 | 2026-11-08 | Casa en santuarioN nivelM; solo hacia atrás; reparto diario por sitios | — | JOR-15 | Hecha | auditoría #139: Verificado en vivo (2026-11-12) |
-| PB-140 | 2026-11-08 | bonusPacks (Irosene, Lizmibet, Linduarda) | — | HC-01 | Abierta | auditoría #140: Abierto |
+| PB-140 | 2026-11-08 | bonusPacks (Irosene, Lizmibet, Linduarda) | — | HC-01 | Abierta | auditoría #140: Abierto; Berón decidió la regla el 2026-11-18 (PB-164) |
 | PB-141 | 2026-11-08 | Para subir hay que superar al animal más poderoso; la magia como camino | — | FAU-13 | Hecha | auditoría #141: Verificado en vivo (2026-11-12) |
 | PB-142 | 2026-11-08 | Planta nuclear = santuario 2, entera bajo el agua; solo la estación arriba | — | NUC-10 | Hecha | auditoría #142: Verificado en vivo (2026-11-12) |
 | PB-143 | 2026-11-08 | Horas a partes iguales, clones, nada a mañana, áreas de varios pisos cuentan como una | — | JOR-16 | Hecha | auditoría #143: Verificado en vivo (2026-11-12) |
@@ -171,5 +171,8 @@ Las PB-001…PB-155 vienen de [auditoria-peticiones.md](../auditoria-peticiones.
 | PB-159 | 2026-11-16 | La Magnate fuera de las guardias → turnos de guardia desactivados para todos hasta una lógica mejor | — | JOR-55, CV-11 | Hecha | `WorkRoster.guardShifts` apagado por defecto; los clones de la Magnate ya no salen en el restaurante (0 medidos) ni cuentan como comensales. Queda el alimentador de depredadores hasta que Berón confirme |
 | PB-160 | 2026-11-18 | Realismo de los microcosmos: insectos-humanos a la mitad con patas recogidas, vuelven muros y techos con vista en corte, mesas de pie con apoyo, puertas ≥ 1,2 m, sin escaleras bajo 12 m, piloto Musk | M24, M43, M44, M45 | MIC-84, MIC-85, MIC-86, MIC-87, MIC-88 | Sin verificar | [plan-microcosmos-realismo.md](../plan-microcosmos-realismo.md), aprobado. Fases 0/0b y piloto Musk hechos y en verde (claude/escala-mitad, en edificios con 860224a); falta su run log. Faltan fase 2 (necesidades en vivo), fase 3 (Descartes, Atahualpa), fase 4 (despliegue uno a uno) y más detalle (aún se ve vacío) |
 | PB-161 | 2026-11-18 | Traer la UI de CodeShip: menú árbol, tareas con «Ir» y viaje automático, ventana de Áreas, retos de código, iniciación | — | CS-01, CS-20, CS-30, CS-40 | Sin verificar | claude/ui-codeship, fusionada; CodeShipLogicTest g119 en verde, falta su run log. Dos retos en Musk; faltan los retos del resto de microcosmos |
+| PB-162 | 2026-11-18 | Musk recrea su historia: cada fragmento en su lugar real y fechado, reconstruido con todo el detalle (edificios, interiores, muebles, maquinaria, utensilios, calles, vegetación, animales); un barrio detallado por escenario con la ciudad de fondo. Luego los demás microcosmos, cuando Berón lo apruebe | — | MIC-89 | Abierta | En curso (Berón 2026-11-18 21:34) |
+| PB-163 | 2026-11-18 | Misiones como retos de código para cada actividad (cocinar, curar, plantar, campo, entrenar, yoga, cuidar animales…) y UI/UX como CodeShip | — | CS-43 | Abierta | En curso (Berón 2026-11-18 21:34) |
+| PB-164 | 2026-11-18 | El bonusPack N suma las stats de la criatura más poderosa del santuario N (cierra HC-01) | — | PER-25 | Abierta | En curso (Berón 2026-11-18 21:34) |
 
-**Recuento:** Abierta 6 · Doc 8 · Hecha 123 · Sin verificar 24 · total 161.
+**Recuento:** Abierta 9 · Doc 8 · Hecha 123 · Sin verificar 24 · total 164.

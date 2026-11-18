@@ -356,6 +356,7 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | MIC-83 | Probado (suite g68) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g68 MicroSueloTest 31/0 |
 | PER-23 | Probado (suite g95) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g95 PersonajesReglasTest 12/0 |
 | PER-24 | Probado (suite g103) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g103 ProduccionTest 16/0 |
+| PER-25 | Sin probar | 2026-11-18 | — | — | — | en curso: falta código |
 | FAU-31 | Probado (suite g99) | 2026-11-17 | 4127332 | [runs/2026-11-17-1900-r125-rapida-grupos-vivo-suite.md](runs/2026-11-17-1900-r125-rapida-grupos-vivo-suite.md) | — | r125: g99 TerritorioTest 80/0 |
 | FAU-32 | Probado (suite g85) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g85 CadenaAlimenticiaTest 58/0 |
 | REN-08 | Probado (suite g118) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g118 QaCheckTest 44/0 |
@@ -365,6 +366,7 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | MIC-86 | Solo código | 2026-11-18 | — | — | — | claude/escala-mitad: programado y compilado; lo prueba el probador |
 | MIC-87 | Solo código | 2026-11-18 | — | — | — | claude/escala-mitad: programado y compilado; lo prueba el probador |
 | MIC-88 | Solo código | 2026-11-18 | — | — | — | claude/escala-mitad: programado y compilado; lo prueba el probador |
+| MIC-89 | Sin probar | 2026-11-18 | — | — | — | en curso: falta código |
 | CS-01 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
 | CS-02 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
 | CS-03 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
@@ -393,6 +395,7 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | CS-40 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
 | CS-41 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
 | CS-42 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
+| CS-43 | Sin probar | 2026-11-18 | — | — | — | en curso: falta código |
 
 **Recuento:** No aplica 8 · Parcial 9 · Probado (retro) 285 · Sin probar 31 · Solo código 16 · total 349.
 

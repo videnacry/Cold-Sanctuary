@@ -23,18 +23,21 @@ Ramas (2026-11-18): la integración es `claude/edificios` (por delante de `maste
 | 3 | **Retos de código en el resto de microcosmos** (PB-161): unos 5 por microcosmos con datos reales | Pendiente. La UI de CodeShip (menú árbol, Tareas con «Ir» y viaje automático, ventana de Áreas, retos, iniciación) está hecha y fusionada; CodeShipLogicTest g119 en verde; Musk tiene dos retos | `claude/ui-codeship` → `edificios` | plan §4 |
 | 4 | **Web: lo que queda** (PB-156): rehacer los 7 microcosmos sin la fauna recolocada (Bolivar, Egina, IrenaSendler, LeChambon, PlantaAtomica, SalaYoga, Scene0_SakshiRio); fallos reales de la prueba en la página: Goku a 3,0 m (escala), soldados de Tregua 1914 bajo el talud, cocinero de 2,5 m de Cleopatra (revisar), umbral de movimiento bajo en BillGates; que la prueba juzgue también escala y realismo | Pendiente. La web está hecha: [santuario + 61 microcosmos](https://videnacry.github.io/Cold-sanctuary-web/) en 3 builds gzip, una página por microcosmos con `?prueba=1` en Edge sin ventana; cada subida rehace el historial del repo de Pages (Berón, 11-16) | `claude/web-continua` | [web-prueba-hallazgos.md](web-prueba-hallazgos.md), [web-continua.md](web-continua.md), [web-ligera.md](web-ligera.md) |
 | 5 | **Rondas automáticas** (PB-158): la cadena «ronda continua» corre con commits nuevos en `peticiones-sonda`, `reparto-santuarios`, `escala-mitad` y `ui-codeship`; el aviso del escritorio, cada 30 min, resuelve choques solo de docs/qa, relanza y avisa al móvil de errores que bloquean | Hecho (11-16, ampliado el 11-18); vigilar que no se pare (se paró el 11-15, 11-16 y 11-18) | — | [qa/operacion.md](qa/operacion.md) OP-07 |
-| 6 | **Guardias desactivadas** para todos (PB-159, `WorkRoster.guardShifts` apagado) hasta una lógica mejor; los clones de la Magnate ya no salen en el restaurante (0 medidos) ni cuentan como comensales | Hecho y probado (g113, r127). Falta que Berón confirme el alimentador de depredadores (D4) | `edificios` | [alimentador.md](alimentador.md) |
+| 6 | **Guardias desactivadas** para todos (PB-159, `WorkRoster.guardShifts` apagado) hasta una lógica mejor; los clones de la Magnate ya no salen en el restaurante (0 medidos) ni cuentan como comensales | Hecho y probado (g113, r127). El alimentador de depredadores se queda (D4, 11-18) | `edificios` | [alimentador.md](alimentador.md) |
 | 7 | ~~**Fallo crónico de fauna (B-01)**~~: resuelto con la primera batería limpia, 4770/0 (r127, 2026-11-18). Siguen inestables H6 (animales dentro de muebles) y H5 (paseo sin salto) | Vigilar que B-01 no vuelva (volvió varias veces) | — | [qa/casos.md](qa/casos.md) «Bugs y huecos», [qa/hallazgos.md](qa/hallazgos.md) |
+| 8 | **Musk recrea su historia** (PB-162): cada fragmento en su lugar real y fechado, un barrio con todo el detalle (edificios, interiores, muebles, maquinaria, utensilios, calles, vegetación, animales) y la ciudad de fondo; luego el resto, cuando Berón lo apruebe | En curso (Berón 11-18 21:34) | — | [plan-microcosmos-realismo.md](plan-microcosmos-realismo.md) |
+| 9 | **Retos de código para cada actividad** (PB-163): cocinar, curar, plantar, campo, entrenar, yoga, cuidar animales…, con UI/UX como CodeShip | En curso | — | plan §4 |
+| 10 | **bonusPacks** (PB-164, PB-140): el bonusPack N suma las stats de la criatura más poderosa del santuario N | En curso | — | [progresion-santuarios.md](progresion-santuarios.md) |
 
 ## 2. Decisiones que esperan a Berón
 
 | # | Decisión | Dónde |
 |---|---|---|
-| D1 | Valores de los bonusPacks de Irosene, Lizmibet y Linduarda (PB-140, HC-01) | [qa/casos.md](qa/casos.md) |
-| D2 | ¿«Alicia» es el nombre real de Alicita? (HC-03) | [personajes/alicita.md](personajes/alicita.md) |
+| ~~D1~~ | Decidido el 11-18: el bonusPack N suma las stats de la criatura más poderosa del santuario N (PB-164, cierra HC-01) | [qa/peticiones.md](qa/peticiones.md) |
+| ~~D2~~ | Decidido el 11-18: «Alicia» es el nombre real y el del juego (cierra HC-03) | [personajes/alicita.md](personajes/alicita.md) |
 | D3 | Hora de la suite diaria de pruebas, porque Unity es compartido (HC-04) | [qa/operacion.md](qa/operacion.md) |
-| D4 | ¿Se quita también la copia de la Magnate que alimenta a los depredadores? Por ahora se queda (PB-159) | §1 fila 6 |
-| D5 | ¿Un repositorio de web por microcosmos cuando crezca? Se mencionó como opción futura; ahora cabe en uno (~190 MB) y su historial se rehace en cada subida | [web-continua.md](web-continua.md) |
+| ~~D4~~ | Decidido el 11-18: la Magnate que alimenta a los depredadores se queda (PB-159) | §1 fila 6 |
+| ~~D5~~ | Decidido el 11-18: un repo de web por microcosmos solo si dejan de caber juntos o si ayuda al rendimiento (hoy 181 MB de 1 GB) | [web-continua.md](web-continua.md) |
 
 ## 3. Peticiones abiertas (falta código)
 
