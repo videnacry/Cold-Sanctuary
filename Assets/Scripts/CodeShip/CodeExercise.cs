@@ -37,6 +37,9 @@ public class CodeExercise
     public string[] options = new string[0];
     public int correct;
     public CodeSkill skill = CodeSkill.Completar;
+    /// <summary>Bloque de conceptos del índice de estudio de CodeShip (1 secuencia, 2 variables, 3 tipos, 4 condiciones, 5 si/si no, … 9 eventos,
+    /// 10 especificar): la curva de dificultad (<see cref="DifficultyProfile"/>) elige retos hasta su concepto.</summary>
+    public int concept = 1;
     /// <summary>De dónde salen los datos (la regla de CodeShip y la M39 de Cold Sanctuary: todo con fuente).</summary>
     public string source = "";
     /// <summary>Lo que se cuenta al acertar (qué pasó de verdad).</summary>
