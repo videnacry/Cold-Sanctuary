@@ -332,6 +332,7 @@ public static class AreaMicrocosmos
         mfl.districtCenter = new Vector3(district.center.x, groundY, district.center.z); mfl.districtSize = new Vector2(district.size.x, district.size.z);
         mfl.furnitureTops = tops != null ? tops.Count : 0; mfl.floraOnTops = _floraOnTops; mfl.faunaOnTops = _faunaOnTops; mfl.town = townMode;
         mfl.buildingsOnTops = outposts;
+        mfl.folkScale = MicroBuildRules.FolkScale;   // (2026-11-18) montado con los insectos-humanos encogidos: el validador le mide el paso nuevo
         mfl.soil = soilLayer != null; mfl.plantsSettled = settledPl; mfl.plantsRemoved = removedPl;
         mfl.elementsMapped = elMapped; mfl.elementsUnmapped = elUnmapped;
         if (_inventory != null)

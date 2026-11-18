@@ -55,6 +55,10 @@ public class MicroFloor : MonoBehaviour
     [Tooltip("La firma de ese inventario (MicroFloorElements.Signature): si el piso del mesocosmos cambia, cambia y el microcosmos se marca para revisar.")]
     public string mesoSignature = "";
 
+    // ── LA ESCALA DEL CUERPO CON QUE SE MONTÓ (2026-11-18, docs/plan-microcosmos-realismo.md §3.1) ──
+    [Tooltip("El factor s de los insectos-humanos con que se construyó (MicroBuildRules.FolkScale). 1 = antes del encogimiento: el validador le mide el paso de entonces (2 m) hasta que se reconstruya.")]
+    public float folkScale = 1f;
+
     /// <summary>Nombres de los cuatro muros (bajo «Muros_del_piso»).</summary>
     public static readonly string[] WallNames = { "Muro_N", "Muro_S", "Muro_E", "Muro_O" };
 

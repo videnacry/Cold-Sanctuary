@@ -143,7 +143,7 @@ public class CivilizedErasTest : MonoBehaviour, ITestUnit
         foreach (MicroJornada j in jornadas) if (j.follow == null && j.work != null && j.work.Stations.Length == 0) jobless += j.name + "; ";
         TestProbe.Check($"{sceneName}: hay lugares de trabajo (edificios que no son casas) y cada jornada tiene el suyo", workplaces >= 1 && jobless.Length == 0, jobless.Length > 0 ? jobless : $"{workplaces} lugares de trabajo");
 
-        // Las REGLAS DE EDIFICACIÓN (docs/microcosmos-reglas-edificacion.md): paso de 2 m, sin muros ni techos, muebles
+        // Las REGLAS DE EDIFICACIÓN (docs/microcosmos-reglas-edificacion.md): paso (2,4 m; 2 m si aún sin encoger), muros con vista de corte, muebles
         // detallados y las necesidades básicas, en cada escena.
         var rules = new List<string>();
         foreach (GameObject root in s.GetRootGameObjects()) if (root.GetComponentInChildren<AreaFunctionSite>(true) != null) rules.AddRange(MicroBuildRules.Validate(root.transform, sceneName, true, false));
