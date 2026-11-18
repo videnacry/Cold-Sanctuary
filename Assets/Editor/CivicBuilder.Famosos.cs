@@ -94,7 +94,7 @@ Mercado | 380 -460
 Parque | 900 300
 Piscina | 1050 -500
 Entrenamiento | 700 160
-Bomberos | 300 -780
+Bomberos | -45 430
 Policia | -500 -750
 Estudio | -700 -560
 Guarderia | 800 -780
@@ -353,6 +353,8 @@ relleno | 70 | 0 -650",
         n += W(t, "Ingeniera de software de vuelo", fab, "sabio", fab, null, s[0]);
         n += W(t, "Inspectora de calidad", fab, "", fab, null, s[0]);
         if (fab != null) NightShiftHome(t, fab, "Técnico de motores", "Técnica de integración", "Inspectora de calidad");
+        TownDog(s);
+        HawthorneStreets(t);   // (2026-11-18) semáforos y pasos de cebra, la patrulla, y el aeropuerto municipal de fondo
         n += W(t, "Cocinero de la taquería", s[1], "cocinero", s[1], null, null);
         n += Townsfolk(t, s, 2, "Vecina de Hawthorne", "Vecino de Hawthorne", s[1], null);
         return n;
@@ -588,5 +590,94 @@ internal static partial class CivicBuilder
             if (m.TryGetComponent(out MicroJornada j)) j.home = fab;
         }
         Debug.Log($"[Hogares] Hawthorne: {people.Count} del turno de noche viven en la nave ({h.beds.Count} catres, mesa alta {(standing != null ? "sí" : "NO")}).");
+    }
+}
+
+internal static partial class CivicBuilder
+{
+    /// <summary>
+    /// (2026-11-18) EL PERRO DEL BARRIO de Hawthorne para las misiones de CodeShip (MissionSites: «Cochinilla hormiguera»): en el mundo de
+    /// insectos, el perro es una cochinilla hormiguera del tamaño de un perro mediano (0,7 m, como la fauna del pueblo de MicroBiome), delante de
+    /// la primera «Casa de Hawthorne», con su cuenco de agua y su correa colgada de la valla.
+    /// </summary>
+    static void TownDog(List<AreaFunctionSite> sites)
+    {
+        AreaFunctionSite house = null;
+        foreach (AreaFunctionSite a in sites) if (a != null && a.name.StartsWith("Casa de Hawthorne")) { house = a; break; }
+        if (house == null) foreach (AreaFunctionSite a in sites) if (a != null && a.building == "Casa") { house = a; break; }
+        if (house == null) { Debug.LogWarning("[Pueblos] Hawthorne: sin casa para el perro del barrio."); return; }
+        Transform floor = house.transform.Find("Suelo");
+        float front = floor != null ? floor.localScale.z * 0.5f : 5f;
+        var root = new GameObject("Perro del barrio (con su cuenco y su correa)").transform; root.SetParent(house.transform, false);   // (con la casa: si se corre, el perro va con ella)
+        root.position = house.transform.TransformPoint(new Vector3(-2.5f, 0f, -front - 2.5f));
+        var dog = new GameObject("Cochinilla hormiguera"); dog.transform.SetParent(root, false);
+        CubeInsect.Dress(dog, "Woodlouse", C(0.8f, 0.72f, 0.6f), 0.7f);
+        var wl = dog.AddComponent<WorldLabel>(); wl.text = "Cochinilla hormiguera (el perro del barrio)"; wl.height = 0.8f;
+        AreaMicrocosmos.Box(root, "Cuenco_del_perro", new Vector3(0.8f, 0.05f, 0.4f), new Vector3(0.25f, 0.1f, 0.25f), AreaMicrocosmos.Mat("Civ_Cuenco_azul", C(0.2f, 0.4f, 0.75f)), false);
+        AreaMicrocosmos.Box(root, "Agua_del_cuenco", new Vector3(0.8f, 0.1f, 0.4f), new Vector3(0.2f, 0.01f, 0.2f), AreaMicrocosmos.Mat("Civ_Agua", C(0.45f, 0.65f, 0.85f)), false);
+        AreaMicrocosmos.Box(root, "Poste_de_la_valla", new Vector3(-0.8f, 0.5f, 0.6f), new Vector3(0.08f, 1f, 0.08f), AreaMicrocosmos.Mat("Civ_Madera_valla", C(0.55f, 0.45f, 0.35f)), true);
+        AreaMicrocosmos.Box(root, "Correa", new Vector3(-0.74f, 0.65f, 0.6f), new Vector3(0.02f, 0.5f, 0.02f), AreaMicrocosmos.Mat("Civ_Correa_roja", C(0.75f, 0.15f, 0.15f)), false);
+    }
+}
+
+internal static partial class CivicBuilder
+{
+    /// <summary>
+    /// (2026-11-18, Berón: la seguridad urbana y el entorno real) HAWTHORNE, LA CALLE:
+    /// - el cruce de Crenshaw Boulevard con Rocket Road: los cuatro SEMÁFOROS de báculo y los PASOS DE CEBRA (supuesto de diseño: el estándar
+    ///   de Caltrans);
+    /// - una PATRULLA de la policía de Hawthorne (Hawthorne Police Department, 12501 S. Hawthorne Blvd.; Crown Victoria blanca y negra de la
+    ///   época, supuesto de modelo) en Rocket Road. Los bomberos son la estación 162 del Condado (12151 S. Crenshaw Blvd., el «Bomberos» del
+    ///   plano, al sur de la calle 120);
+    /// - el AEROPUERTO MUNICIPAL DE HAWTHORNE (Jack Northrop Field), al oeste de Crenshaw, DE FONDO (sin interiores): la pista 07/25 (1489 ×
+    ///   30 m reales; aquí cabe en el campo del plano), su eje, la torre, tres hangares y avionetas Cessna 172 (8,3 × 11 m).
+    /// Coordenadas del plano (CivicBuilder.FamousPlans «Hawthorne»: Crenshaw en x = −80, Rocket Road en z = 120, el campo en (−620, 150)).
+    /// </summary>
+    static void HawthorneStreets(Transform t)
+    {
+        Material pole = AreaMicrocosmos.Mat("Civ_Baculo", C(0.5f, 0.52f, 0.5f)), signal = AreaMicrocosmos.Mat("Civ_Semaforo", C(0.85f, 0.7f, 0.1f));
+        Material redL = AreaMicrocosmos.Mat("Civ_Luz_roja", C(0.9f, 0.1f, 0.1f)), greenL = AreaMicrocosmos.Mat("Civ_Luz_verde", C(0.1f, 0.85f, 0.3f)), paint = AreaMicrocosmos.Mat("Civ_Pintura_blanca", C(0.95f, 0.95f, 0.93f));
+        Transform cross = new GameObject("Cruce de Crenshaw Boulevard y Rocket Road (semáforos)").transform; cross.SetParent(t, false); cross.localPosition = new Vector3(-80f, 0f, 120f);
+        foreach (var (x, z, yaw) in new[] { (-17f, -8f, 0f), (17f, -8f, 90f), (17f, 8f, 180f), (-17f, 8f, 270f) })
+        {
+            Transform p = new GameObject("Semáforo").transform; p.SetParent(cross, false); p.localPosition = new Vector3(x, 0f, z); p.localRotation = Quaternion.Euler(0f, yaw, 0f);
+            AreaMicrocosmos.Box(p, "Baculo", new Vector3(0f, 3.2f, 0f), new Vector3(0.25f, 6.4f, 0.25f), pole, true);
+            AreaMicrocosmos.Box(p, "Brazo", new Vector3(3f, 6.2f, 0f), new Vector3(6f, 0.2f, 0.2f), pole, false);
+            AreaMicrocosmos.Box(p, "Caja_del_semaforo", new Vector3(5.5f, 5.6f, 0f), new Vector3(0.4f, 1.1f, 0.35f), signal, false);
+            AreaMicrocosmos.Box(p, "Luz_roja", new Vector3(5.5f, 5.95f, -0.18f), new Vector3(0.25f, 0.25f, 0.02f), redL, false);
+            AreaMicrocosmos.Box(p, "Luz_verde", new Vector3(5.5f, 5.25f, -0.18f), new Vector3(0.25f, 0.25f, 0.02f), greenL, false);
+            AreaMicrocosmos.Box(p, "Pulsador_peatonal", new Vector3(0f, 1.1f, -0.15f), new Vector3(0.15f, 0.2f, 0.08f), signal, false);
+        }
+        for (int k = 0; k < 8; k++)
+        {
+            AreaMicrocosmos.Box(cross, "Paso_de_cebra", new Vector3(-13f + k * 3.6f, 0.06f, -10.5f), new Vector3(1.6f, 0.01f, 3f), paint, false);
+            AreaMicrocosmos.Box(cross, "Paso_de_cebra", new Vector3(19.5f, 0.06f, -5f + k * 1.4f), new Vector3(3f, 0.01f, 0.6f), paint, false);
+        }
+        // La patrulla.
+        Transform car = new GameObject("Patrulla de la policía de Hawthorne").transform; car.SetParent(t, false); car.localPosition = new Vector3(-40f, 0f, 116.5f); car.localRotation = Quaternion.Euler(0f, 90f, 0f);
+        AreaMicrocosmos.Box(car, "Carroceria", new Vector3(0f, 0.65f, 0f), new Vector3(1.95f, 0.7f, 5.4f), AreaMicrocosmos.Mat("Civ_Negro_patrulla", C(0.06f, 0.06f, 0.08f)), true);
+        AreaMicrocosmos.Box(car, "Puertas_blancas", new Vector3(0f, 0.7f, 0.2f), new Vector3(1.97f, 0.5f, 2.2f), paint, false);
+        AreaMicrocosmos.Box(car, "Cabina", new Vector3(0f, 1.25f, -0.2f), new Vector3(1.8f, 0.5f, 2.6f), AreaMicrocosmos.Mat("Civ_Vidrio_oscuro", C(0.18f, 0.24f, 0.3f)), false);
+        AreaMicrocosmos.Box(car, "Puente_de_luces", new Vector3(0f, 1.55f, 0f), new Vector3(1.4f, 0.12f, 0.3f), redL, false);
+        AreaMicrocosmos.Box(car, "Puente_de_luces_azul", new Vector3(0.4f, 1.56f, 0f), new Vector3(0.5f, 0.13f, 0.31f), AreaMicrocosmos.Mat("Civ_Luz_azul", C(0.1f, 0.3f, 0.95f)), false);
+        // El aeropuerto municipal, de fondo.
+        Material asphalt = AreaMicrocosmos.Mat("Civ_Asfalto_pista", C(0.22f, 0.22f, 0.23f)), hangarM = AreaMicrocosmos.Mat("Civ_Hangar", C(0.75f, 0.76f, 0.78f));
+        Transform ap = new GameObject("Aeropuerto municipal de Hawthorne (Jack Northrop Field)").transform; ap.SetParent(t, false); ap.localPosition = new Vector3(-620f, 0f, 150f);
+        AreaMicrocosmos.Box(ap, "Pista_07_25", new Vector3(0f, 0.05f, 0f), new Vector3(880f, 0.04f, 30f), asphalt, false);
+        for (int k = 0; k < 28; k++) AreaMicrocosmos.Box(ap, "Eje_de_la_pista", new Vector3(-405f + k * 30f, 0.075f, 0f), new Vector3(15f, 0.01f, 0.9f), paint, false);
+        foreach (float x in new[] { -430f, 430f }) for (int k = 0; k < 6; k++) AreaMicrocosmos.Box(ap, "Umbral", new Vector3(x, 0.075f, -11f + k * 4.4f), new Vector3(20f, 0.01f, 1.8f), paint, false);
+        AreaMicrocosmos.Box(ap, "Torre_de_control", new Vector3(60f, 9f, 28f), new Vector3(4f, 18f, 4f), hangarM, true);
+        AreaMicrocosmos.Box(ap, "Cabina_de_la_torre", new Vector3(60f, 19.5f, 28f), new Vector3(6f, 3f, 6f), AreaMicrocosmos.Mat("Civ_Vidrio_torre", C(0.35f, 0.5f, 0.55f)), false);
+        for (int k = 0; k < 3; k++) AreaMicrocosmos.Box(ap, "Hangar", new Vector3(-180f + k * 40f, 4f, 34f), new Vector3(30f, 8f, 12f), hangarM, true);
+        for (int k = 0; k < 3; k++)
+        {
+            Transform c = new GameObject("Avioneta Cessna 172").transform; c.SetParent(ap, false); c.localPosition = new Vector3(-100f + k * 18f, 0f, 21f);
+            Material w = AreaMicrocosmos.Mat("Civ_Avioneta_blanca", C(0.95f, 0.95f, 0.96f));
+            AreaMicrocosmos.Box(c, "Fuselaje", new Vector3(0f, 1.2f, 0f), new Vector3(1.1f, 1.3f, 8.3f), w, true);
+            AreaMicrocosmos.Box(c, "Ala_alta", new Vector3(0f, 2.3f, 0.6f), new Vector3(11f, 0.12f, 1.5f), w, false);
+            AreaMicrocosmos.Box(c, "Estabilizador", new Vector3(0f, 1.6f, -3.8f), new Vector3(3.4f, 0.08f, 0.9f), w, false);
+            AreaMicrocosmos.Box(c, "Deriva", new Vector3(0f, 2.3f, -3.9f), new Vector3(0.08f, 1.4f, 1.0f), AreaMicrocosmos.Mat("Civ_Franja_azul", C(0.15f, 0.25f, 0.6f)), false);
+        }
+        var wl = ap.gameObject.AddComponent<WorldLabel>(); wl.text = "Aeropuerto municipal de Hawthorne (Jack Northrop Field), pista 07/25"; wl.height = 25f;
     }
 }

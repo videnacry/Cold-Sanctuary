@@ -249,7 +249,7 @@ public static class AreaMicrocosmos
         // Berna el musgo son cubos verdes enormes»): los insectos-humanos viven en un pueblo humano, así que su flora es la de un
         // pueblo — árboles de calle, setos, céspedes, parterres — a escala humana, escasa y fuera de calles y solares (Nature, modo
         // pueblo). La misma condición que quita los muebles gigantes (ClearForTown).
-        bool townMode = storyOverride != null && MicroBuildRules.IsTownEra(year0);
+        bool townMode = storyOverride != null && MicroBuildRules.IsTownEra(year0) && !MicroBuildRules.IsOutpost(display);   // (2026-11-18) un puesto aislado (Omelek) no es pueblo
         // Las caras de arriba de los muebles gigantes: a ×10 son mesetas, y también se pueblan (en un pueblo ya no hay muebles gigantes).
         // (2026-11-03, reglas de los microcosmos: «todas las estructuras de dicho piso se vuelven superficie utilizable para poblar
         // con insectos-humanos, flora, edificaciones y fauna») también en un pueblo: las de FUERA de su barrio (dentro, el pueblo

@@ -165,6 +165,7 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
         // LOS FAMOSOS (docs/microcosmos-famosos.md): una historia de su vida pública, en su pueblo real.
         ("Sala de Yoga", "Simulación: Sadhguru en Velliangiri: el Dhyanalinga (1999)", "Microcosmos_Sadhguru"),
         (LaunchSite.ControlArea, "Simulación: Elon Musk en Hawthorne: el Falcon 1 llega a órbita (2008)", "Microcosmos_ElonMusk"),
+        (LaunchSite.ControlArea, "Simulación: Omelek, el día del lanzamiento del Falcon 1 (Kwajalein, 2008)", "Microcosmos_ElonMuskOmelek"),
         ("Dojo (artes marciales)", "Simulación: Goku en la aldea de la montaña (homenaje original)", "Microcosmos_Goku"),
         ("Gimnasio", "Simulación del Dojo: Goku en la aldea de la montaña (homenaje original)", "Microcosmos_Goku"),
         ("Informática", "Simulación: Bill Gates y Paul Allen en Albuquerque: el BASIC del Altair (1975)", "Microcosmos_BillGates"),
