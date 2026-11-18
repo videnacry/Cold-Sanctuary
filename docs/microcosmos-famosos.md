@@ -49,7 +49,7 @@ Todas: 8 pasos (`Talk` / `Reach` / `Visit` / `Collect` / `Hold`), 60 XP; al term
 | Pueblo | Edificios de la historia (con su plantilla de actividad) | Relleno | Plano |
 |---|---|---|---|
 | Velliangiri | Dhyanalinga (Templo), sala de práctica (Sala de Yoga), comedor (Restaurante), casa de Sadhguru, cabañas de voluntarios (Casa), huerto (Huerto), escuela de la aldea (Escuela) | casas encaladas con teja, tienda, herrero, cocotal | aproximado: el monte al oeste, el arroyo de la Noyyal, la aldea y la carretera de Coimbatore al este |
-| Hawthorne | nave de montaje (Taller), control de misión (Centro de tecnología), banco del Merlin (Taller), cafetería (Restaurante), apartamentos de ingenieros (Casa) | casas de estuco, taller de coches, tienda, taquería | aproximado: Crenshaw, calle 120, autopista 105, El Segundo, el aeropuerto municipal |
+| Hawthorne | la NAVE DE SPACEX la levanta la historia en el claro (piloto, abajo); el pueblo: apartamentos de ingenieros (Casa) y taquería de Crenshaw (Restaurante), cerrados | casas de estuco, taller de coches y tienda, cerrados (muros, azotea, puerta ensanchada y vista de corte) | aproximado: Crenshaw, calle 120, autopista 105, El Segundo, el aeropuerto municipal |
 | Aldea de la montaña | patio de entrenamiento (Centro de entrenamiento), casa de la maestra, cabaña de Goku (Casa), cocina (Cocina), templo (Templo), bancales de arroz (Huerto), leñera (Taller) | casas de piedra y pino, huertos de té, molino, tienda | inventado: torrente y cascada al norte, monte, bancales |
 | Albuquerque | MITS (Taller), oficina de Micro-Soft (Centro de tecnología), motel (Hotel), diner de la Ruta 66 (Restaurante), piso de Gates y Allen (Casa), tienda de electrónica (Mercado) | casas de estuco color adobe, talleres, tiendas, huertos de chile y albaricoque | aproximado: Central Avenue (Ruta 66), Lomas, San Mateo, Carlisle, la sierra de Sandía; **la dirección de MITS y el motel no están verificados** |
 | Omaha | Nebraska Furniture Mart (Mercado), despacho de Berkshire (Taller de papeles), casa de Farnam Street (Casa), Gorat's (Restaurante), almacén y tapicería (Taller), casa de los Blumkin (Casa) | casas de ladrillo, tiendas de Dodge Street, talleres, iglesias | **acortado** al este (×1/3): la calle 72, Dodge, Farnam, Pacific, Memorial Park |
@@ -117,3 +117,26 @@ Albuquerque «Street Tree Guide», Dick-Peddie (1993) *New Mexico Vegetation*; C
 3. Grupo **69** (`FamososStoryTest`); y, si hay tiempo, 43 (`MicrocosmosFloorTest`) y 63 (`MicroBuildRulesTest`).
 4. Fotos (ver el informe del hilo): el protagonista con sus colores; el sitio clave de cada historia; el pueblo llenando el piso;
    frutales en los patios; ningún muro ni techo; nada flotando ni bajo el suelo.
+
+## Piloto del realismo: Microcosmos_ElonMusk (2026-11-18)
+
+Primer microcosmos con las reglas de [plan-microcosmos-realismo.md](plan-microcosmos-realismo.md) (fase 1): insectos-humanos a la mitad (s = 0,5), muros y techos con vista de corte, puertas de ≥ 1,2 m, un hito y transportes de época que se usan. Código: `Assets/Editor/StorySceneBuilder.Musk.cs` (la nave y la historia), `CivicBuilder.Enclose.cs` (muros, techo, puerta, vista de corte, tabiques), `CivicBuilder.Famosos.cs` (`HawthorneTown`), `Assets/Scripts/Microcosmos/MicroVehicle.cs`.
+
+| Parte | Qué es | Real o supuesto |
+|---|---|---|
+| La nave (44 × 30 m, 9 m de alto) | Un tramo de la antigua planta de Northrop en 1 Rocket Road (SpaceX se mudó en 2007; ~47 000 m²) | La planta, real; el tramo y la altura, **supuestos** (rendimiento) |
+| Puerta de la fachada (1,8 m) y rótulo SPACEX (hito P5) | La entrada de Rocket Road, de cara a la llegada del microcosmos | **Supuesto** (medida y rótulo) |
+| Falcon 1 del vuelo 5 en su cuna (hito P5) | Primera etapa de ~16 m × 1,7 m, tobera del Merlin 1C, banda de la interetapa; motor Kestrel aparte | Cohete de 22,25 m × 1,7 m, real; el reparto entre etapas, **supuesto** |
+| Banco del Merlin 1C y torno CNC | El motor (2,92 m) en su banco | Real (medida); el banco, **supuesto** |
+| Control de misión tras cristales | Dos consolas de 2008 (tres LCD) con **tarima de puesto** (E7) y tres pantallas grandes con la imagen de Omelek | Real (Wired); las consolas, **supuestas** |
+| Planta de cubículos | El cubículo de Musk con los pósteres de Marte, mesa mixta (sillas y apoyos de abdomen sobre tarima) | Real (Satellite Today 2008; Vance 2015) |
+| Consola de datos del vuelo 3 | Con su tarima; **mismo nombre** que busca el reto de código de CodeShip | Recreada |
+| Cocina y comedor, zona de descanso, aseos | Cocina, mesa mixta, dos catres, retrete y lavamanos tras un tabique cuya puerta de 0,9 m se ensancha a 1,2 m (P4) | **Supuestos** de juego (necesidades básicas) |
+| Tesla Roadster (P6) | En el aparcamiento al oeste; F para subir, W/A/S/D para conducir | 3,946 × 1,85 × 1,127 m, real; el color, **supuesto** |
+| Carretilla elevadora (P6) | Con un palé y la cúpula de un tanque de LOX en las horquillas | **Supuesta** (2,3 × 1,07 × 2,1 m) |
+
+La gente de SpaceX del pueblo (aviónica, integración, motores, cocina) trabaja y come en la nave y duerme en los apartamentos.
+
+**Para probarlo (el probador):** `Tools/Cold Sanctuary/Build Microcosmos de famosos/Elon Musk (Hawthorne, 2008)` (reconstruye la escena y su NavMesh: el agente es ahora de 0,5 m, y la puerta de los aseos deja 1,2 m) y luego los grupos 121 (escala), 122 (vista de corte), 123 (transporte), 124 (este piloto), 69 (famosos) y 119 (retos de CodeShip).
+
+Fuentes del piloto: TechCrunch, «SpaceX headquarters in Hawthorne, California»; Los Angeles Business Journal (1 Rocket Road); Satellite Today (24-11-2008 y 29-9-2008); Wired, «The Rocket Factory: SpaceX Builds Them From Top to Bottom»; Vance, A. (2015), *Elon Musk*; Wikipedia, «Falcon 1» y «SpaceX Merlin»; Edmunds y dimensions.com, «Tesla Roadster 2008».

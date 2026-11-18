@@ -11,7 +11,6 @@ using UnityEngine;
 internal static partial class CivicBuilder
 {
     static readonly Style IshaBrick = new Style(C(0.7f, 0.46f, 0.34f), C(0.82f, 0.78f, 0.7f), C(0.6f, 0.35f, 0.25f), Roof.None, 3.4f);     // Isha: ladrillo de barro y suelo de piedra clara
-    static readonly Style FactorySteel = new Style(C(0.85f, 0.86f, 0.88f), C(0.82f, 0.83f, 0.85f), C(0.6f, 0.62f, 0.65f), Roof.None, 6f);  // la nave de SpaceX: chapa blanca y suelo de epoxi
     static readonly Style MountainTimber = new Style(C(0.72f, 0.66f, 0.56f), C(0.55f, 0.5f, 0.44f), C(0.35f, 0.36f, 0.38f), Roof.Gable, 3.2f);  // aldea de montaña: piedra, pino y teja gris
     static readonly Style TamilTile = new Style(C(0.92f, 0.88f, 0.78f), C(0.6f, 0.45f, 0.32f), C(0.7f, 0.32f, 0.22f), Roof.Gable, 3.2f);  // aldea tamil: encalado y teja de Mangalore
     static readonly Style PuebloStucco = new Style(C(0.82f, 0.68f, 0.52f), C(0.62f, 0.55f, 0.48f), C(0.55f, 0.4f, 0.3f), Roof.Flat, 3.2f);   // Albuquerque: estuco color adobe (Pueblo Revival), tejado plano
@@ -318,35 +317,39 @@ relleno | 70 | 0 -650",
         return n;
     }
 
-    // ══ HAWTHORNE (2008): la sede de SpaceX (la nave de montaje, el control de misión, el banco del Merlin, la cafetería), un piso de
-    //    ingenieros y la ciudad de casas de estuco con su taller, su tienda y su taquería.
+    // ══ HAWTHORNE (2008), PILOTO DEL REALISMO (docs/plan-microcosmos-realismo.md, fase 1): la nave de SpaceX la levanta la historia en el
+    //    claro (StorySceneBuilder.Musk: 1 Rocket Road, con muros, techo, puerta y vista de corte, su control de misión, su cocina, sus aseos
+    //    y su zona de descanso); aquí, la ciudad: los apartamentos de los ingenieros y las casas de estuco CERRADAS (P1–P4: muros, azotea,
+    //    su puerta real de 0,9 m ensanchada a 1,2 m y la vista de corte), con su taller, su tienda y su taquería de Crenshaw.
+    //    La gente de SpaceX trabaja y come en la nave; duerme en los apartamentos.
+    static readonly Style HawthorneStucco = new Style(C(0.95f, 0.9f, 0.8f), C(0.72f, 0.7f, 0.66f), C(0.7f, 0.4f, 0.3f), Roof.Flat, 3f)
+    { enclosed = true, doorW = 0.9f, doorH = 2.03f, doorSource = "supuesto: puerta exterior de casa de EE. UU. (36 × 80 in)" };
+    static readonly Style HawthorneShop = new Style(C(0.86f, 0.84f, 0.8f), C(0.6f, 0.6f, 0.6f), C(0.5f, 0.5f, 0.52f), Roof.Flat, 4f)
+    { enclosed = true, doorW = 1.8f, doorH = 2.13f, doorSource = "supuesto: doble puerta de escaparate de Crenshaw Boulevard" };
+
     static int HawthorneTown(Transform t)
     {
         var s = Town(t, "Hawthorne", new[]
         {
-            new Lot("Nave de montaje de SpaceX", "Taller", "Nave de montaje de SpaceX (Falcon 1)", 20f, 14f, FactorySteel,
-                S("banco_taller", -5f, 3f, 2.4f, 1f, "Etapa del Falcon 1 en su cuna"), S("torno", 0f, 3f, 1.6f, 1f, "Torno de control numérico"), S("banco_taller", 5f, 3f, 2.4f, 1f, "Banco de soldar tanques"), S("armario", 0f, -4f, 1.6f, 0.6f, "Herramientas y llaves dinamométricas")),
-            new Lot("Control de misión", "Centro de tecnología", "Control de misión de Hawthorne", 16f, 12f, FactorySteel,
-                S("consola", -3f, 2f, 2f, 0.8f, "Consola de lanzamiento"), S("consola", 3f, 2f, 2f, 0.8f, "Consola de telemetría"), S("pizarra", 0f, -3f, 2.4f, 0.4f, "Pizarra de la secuencia de vuelo")),
-            new Lot("Banco de pruebas del Merlin", "Taller", "Taller de motores Merlin", 14f, 10f, FactorySteel,
-                S("banco_taller", 0f, 2f, 2.4f, 1f, "Motor Merlin 1C en su soporte"), S("armario", 3f, -3f, 1.2f, 0.6f, "Inyectores y válvulas")),
-            new Lot("Cafetería de la fábrica", "Restaurante", "Cafetería de la fábrica", 14f, 10f, FactorySteel,
-                S("cocina", -3f, 2f, 2f, 0.8f, "Cocina de la cafetería"), S("mesa", 2f, -1f, 2f, 1f, "Mesas largas"), S("barra", 3f, 3f, 2f, 0.8f, "Barra de café")),
-            new Lot("Apartamentos de ingenieros", "Casa", "Apartamento de ingenieros jóvenes", 14f, 10f, Stucco,
+            new Lot("Apartamentos de ingenieros", "Casa", "Apartamento de ingenieros jóvenes", 14f, 10f, HawthorneStucco,
                 S("cama", -4f, 2f, 1.2f, 2f, "Cama"), S("cama", 0f, 2f, 1.2f, 2f, "Cama"), S("cama", 4f, 2f, 1.2f, 2f, "Cama")),
+            new Lot("Taquería de Crenshaw", "Restaurante", "Taquería de Hawthorne", 12f, 10f, HawthorneShop, S("fogon", 0f, 0f, 1.6f, 0.8f, "Plancha de los tacos"), S("mesa", 0f, 0f, 1.6f, 1f, "Mesa con bancos")),
         }, new[]
         {
-            new Lot("Casa de Hawthorne", "Casa", "Casa de estuco de Hawthorne", 10f, 9f, Stucco),
-            new Lot("Taller de coches", "Taller", "Taller de coches de Crenshaw", 12f, 10f, Stucco, S("banco_taller", 0f, 0f, 2f, 0.9f, "Banco del mecánico"), S("armario", 0f, 0f, 1.2f, 0.6f, "Recambios")),
-            new Lot("Tienda de la esquina", "Mercado", "Tienda de la esquina", 10f, 8f, Stucco, S("puesto", 0f, 0f, 2f, 1f, "Mostrador"), S("estante", 0f, 0f, 0.8f, 1.6f, "Estantes")),
-            new Lot("Taquería", "Restaurante", "Taquería de Hawthorne", 10f, 8f, Stucco, S("fogon", 0f, 0f, 1.6f, 0.8f, "Plancha de los tacos"), S("mesa", 0f, 0f, 1.6f, 1f, "Mesa con bancos")),
+            new Lot("Casa de Hawthorne", "Casa", "Casa de estuco de Hawthorne", 10f, 9f, HawthorneStucco),
+            new Lot("Taller de coches", "Taller", "Taller de coches de Crenshaw", 12f, 10f, HawthorneShop, S("banco_taller", 0f, 0f, 2f, 0.9f, "Banco del mecánico"), S("armario", 0f, 0f, 1.2f, 0.6f, "Recambios")),
+            new Lot("Tienda de la esquina", "Mercado", "Tienda de la esquina", 10f, 8f, HawthorneShop, S("puesto", 0f, 0f, 2f, 1f, "Mostrador"), S("estante", 0f, 0f, 0.8f, 1.6f, "Estantes")),
         }, C(0.45f, 0.45f, 0.46f));
+        // La nave de SpaceX (la historia la levantó antes, en el claro): ahí trabaja y come su gente.
+        AreaFunctionSite fab = null;
+        foreach (AreaFunctionSite a in t.GetComponentsInChildren<AreaFunctionSite>(true)) if (a.title != null && a.title.StartsWith("Fábrica de SpaceX")) fab = a;
         int n = 0;
-        n += W(t, "Ingeniero de aviónica", s[1], "sabio", s[3], null, s[4]);
-        n += W(t, "Técnica de integración", s[0], "", s[3], null, s[4]);
-        n += W(t, "Técnico de motores", s[2], "", s[3], null, s[4]);
-        n += W(t, "Cocinera de la cafetería", s[3], "cocinero", s[3], null, null);
-        n += Townsfolk(t, s, 5, "Vecina de Hawthorne", "Vecino de Hawthorne", s[3], null);
+        n += W(t, "Ingeniero de aviónica", fab, "sabio", fab, null, s[0]);
+        n += W(t, "Técnica de integración", fab, "", fab, null, s[0]);
+        n += W(t, "Técnico de motores", fab, "", fab, null, s[0]);
+        n += W(t, "Cocinera de la nave", fab, "cocinero", fab, null, s[0]);
+        n += W(t, "Cocinero de la taquería", s[1], "cocinero", s[1], null, null);
+        n += Townsfolk(t, s, 2, "Vecina de Hawthorne", "Vecino de Hawthorne", s[1], null);
         return n;
     }
 
