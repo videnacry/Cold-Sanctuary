@@ -43,6 +43,7 @@ Se quedan donde estaban: las reglas, en el [manual de diseño](../manual-de-dise
 | HOS / NUC / ENE | hospital / nuclear, refugio, santuarios 2 y 3 / energía | 81–84 / 90, 94, 100, 110, 114 / 101 | H |
 | PER / UI | personajes y charlas / interfaz | 21, 22, 24, 26, 52, 88, 95 / 93 | P |
 | CS | CodeShip en los microcosmos: retos de código, tareas con «Ir» y viaje automático, menú árbol | 119 | M (plan-microcosmos-realismo.md §4) |
+| CH | Las misiones-tarea de CodeShip (plantillas, cadenas de retos, duelo de ideas, sitios en la escena) | 120 | M (plan-microcosmos-realismo.md §4) |
 | REN | rendimiento, materiales, arnés de pruebas, la sonda de peticiones | 0, 17, 20, 112, 117 | W12–W15 |
 | PX | recorridos en vivo (días en vivo, Kushal, fotos) | 40, 96 | — |
 | CV | convivencia de procesos ([entrelazamiento.md](entrelazamiento.md)) | los de cada fila | — |

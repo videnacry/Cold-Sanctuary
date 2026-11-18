@@ -401,6 +401,32 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | CS-40 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
 | CS-41 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
 | CS-42 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
+| CH-01 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
+| CH-02 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
+| CH-03 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
+| CH-04 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
+| CH-10 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
+| CH-11 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
+| CH-12 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
+| CH-13 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
+| CH-14 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
+| CH-20 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
+| CH-21 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
+| CH-22 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
+| CH-23 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
+| CH-24 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
+| CH-25 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
+| CH-30 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
+| CH-31 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
+| CH-32 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
+| CH-33 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
+| CH-34 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
+| CH-35 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
+| CH-40 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
+| CH-41 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
+| CH-50 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
+| CH-51 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
+| CH-52 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
 
 **Recuento:** No aplica 8 · Parcial 9 · Probado (retro) 285 · Sin probar 31 · Solo código 16 · total 349.
 

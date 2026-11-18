@@ -425,6 +425,38 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | CS-41 | CS | se llega al paso del reto | CodeShipLogicTest | 119 | — | — | claude/ui-codeship (plan-microcosmos-realismo.md §4); añadido el 2026-11-18 |
 | CS-42 | CS | acertar el reto cumple el paso de la historia | CodeShipLogicTest | 119 | — | — | claude/ui-codeship (plan-microcosmos-realismo.md §4); añadido el 2026-11-18 |
 
+
+## CH · Misiones-tarea de CodeShip (claude/ui-codeship)
+
+| ID | Área | Qué tiene que pasar | Unidad | Grupo | Reglas | PB | Origen |
+|---|---|---|---|---|---|---|---|
+| CH-01 | CH | todas las plantillas están bien formadas (retos válidos, fuente, título) | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
+| CH-02 | CH | los ids no se repiten | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
+| CH-03 | CH | están todas las clases que pidió Berón y las de los puestos de la nave | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
+| CH-04 | CH | cada grupo de la lista de tareas tiene alguna misión | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
+| CH-10 | CH | una tarea empieza en su primer reto, con 2 fallos de margen (CodeShip) | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
+| CH-11 | CH | repetir la misma respuesta mala cuenta un fallo, no dos | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
+| CH-12 | CH | un acierto pasa al siguiente reto | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
+| CH-13 | CH | el último acierto la termina | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
+| CH-14 | CH | dos fallos distintos la hacen fallar (hay que reintentar) | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
+| CH-20 | CH | un reto por paso | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
+| CH-21 | CH | «{bien/mal/mal}» pide el valor, con su unidad | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
+| CH-22 | CH | los demás preguntan qué viene ahora, con los dos pasos de antes como código | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
+| CH-23 | CH | todos los retos de la cadena validan | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
+| CH-24 | CH | la opción buena va en un sitio que solo depende del id (estable) | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
+| CH-25 | CH | «lava las hojas» → lavaLasHojas(); | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
+| CH-30 | CH | la curva: fácil 3 ideas, paciencia 5, 4 bloques, sin distracciones, concepto 1 | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
+| CH-31 | CH | la curva: difícil 8 ideas, paciencia 2, 10 bloques, con distracciones, concepto 10 | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
+| CH-32 | CH | las distracciones llegan a partir de 0,35 | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
+| CH-33 | CH | el duelo de ideas usa solo retos de su nivel | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
+| CH-34 | CH | acertar las ideas de la meta planta la idea | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
+| CH-35 | CH | agotar la paciencia pierde el duelo | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
+| CH-40 | CH | en Hawthorne cada puesto y cada necesidad tiene su misión | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
+| CH-41 | CH | cada misión de Hawthorne es una plantilla de la biblioteca | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
+| CH-50 | CH | en la escena, cada misión encuentra su sitio (los que faltan, con un marcador «supuesto») | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
+| CH-51 | CH | los puestos de la nave están en su mueble real (cocina, aviónica, composite, mecanizado) | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
+| CH-52 | CH | resolver sus retos cumple la misión del puesto y la quita de pendientes | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
+
 ## REN · Rendimiento y pruebas
 
 | ID | Área | Qué tiene que pasar | Unidad | Grupo | Reglas | PB | Origen |
