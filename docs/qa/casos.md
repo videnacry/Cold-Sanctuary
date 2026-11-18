@@ -101,6 +101,7 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | JOR-52 | JOR | Regla J35: Partes iguales y nada a mañana (Berón 2026-11-08, corregido). Las horas de tareas de cada sitio se reparten por igual entre sus humanos, tan parejas como dejan las tareas, que no se parten (diferencia ≤ la tarea más larg… | SanctuaryLifeTest | 28 | J35 | — | manual §«Se comprueba en» |
 | JOR-53 | JOR | Regla J36: Quien pasa el día en otro santuario no se simula aquí (Berón 2026-11-08): su cuerpo se apaga y sus tareas corren por el reloj; vuelve el día que le toca la tierra y en las fiestas (actividades de todos a la vez). Las sal… | RepartoSantuariosTest | 113 | J36 | — | manual §«Se comprueba en», también g75 |
 | JOR-54 | JOR | Regla J37: Solo lo básico queda terminado (Berón 2026-11-09): los servicios básicos de humanos y animales (hospital, cocina, guardia, huerto, cría, carne cultivada, energía, mecánica), la construcción, el gimnasio y el yoga. Lo dem… | RepartoSantuariosTest | 113 | J37 | — | manual §«Se comprueba en» |
+| JOR-55 | JOR | Turnos de guardia desactivados para todos (Berón 2026-11-16): `WorkRoster.guardShifts` apagado por defecto; la patrulla y la sala de guardia no se reparten, ni a personas ni a clones; el alimentador no cuenta como guardia | RepartoSantuariosTest | 113 | — | PB-159 | añadido el 2026-11-18 |
 
 ## YOG · Yoga
 
@@ -313,6 +314,7 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | MIC-91 | MIC | Fase 2: con ganas van al retrete de su hogar, dentro de la nave | MuskNeedsTest | 125 | M18, M26 | — | plan fase 2; añadido el 2026-11-18 |
 | MIC-92 | MIC | Fase 2: de noche, con sueño, duermen en su catre de la nave | MuskNeedsTest | 125 | M18, M26 | — | plan fase 2; añadido el 2026-11-18 |
 | MIC-93 | MIC | Fase 2: sin teletransportes (MicroJornada.Fallbacks y HomeNeedSpell.Fallbacks no suben): todo andando | MuskNeedsTest | 125 | M26 | — | plan fase 2 («debe fallar si Fallbacks > 0»); añadido el 2026-11-18 |
+| MIC-99 | MIC | Musk recrea su historia (Berón 2026-11-18): cada fragmento en su lugar real y fechado, un barrio con todo el detalle (edificios, interiores, muebles, maquinaria, utensilios, calles, vegetación, animales) y la ciudad de fondo | — | — | — | PB-162 | añadido el 2026-11-18 |
 
 ## HOS · Hospital
 
@@ -379,6 +381,7 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | PER-22 | PER | Regla P23: Cada carga de cultivo con luz paga su energía y cada cultivo tiene su cuidado diario de ≤ 1 h: las fachadas de fotobiorreactores declaran sus LED (potencia media del año; en la noche polar, la entera, que el reactor debe… | AreaFunctionRegistryTest | 61 | P23 | — | manual §«Se comprueba en» |
 | PER-23 | PER | Regla P7: ningún puesto sin base documentada (Professions.Basis); lo deducido, en Professions.Unconfirmed, hasta que Berón confirme | PersonajesReglasTest | 95 | P7 | — | manual §«Se comprueba en» (también tools/check-personajes.sh); añadido a mano el 2026-11-13 |
 | PER-24 | PER | Regla P19: las áreas de producción escalan su maquinaria a lo que se les pide (ProductionAudit) | ProduccionTest | 103 | P19 | — | manual §«Se comprueba en» (también el registro [Producción]); añadido a mano el 2026-11-13 |
+| PER-25 | PER | El bonusPack N suma las stats de la criatura más poderosa del santuario N (Berón 2026-11-18) | — | — | — | PB-164 | añadido el 2026-11-18 |
 
 ## UI · Interfaz
 
@@ -451,6 +454,7 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | CS-85 | CS | en la escena, cada misión encuentra su sitio (los que faltan, con un marcador «supuesto») | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
 | CS-86 | CS | los puestos de la nave están en su mueble real (cocina, aviónica, composite, mecanizado) | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
 | CS-87 | CS | resolver sus retos cumple la misión del puesto y la quita de pendientes | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-43 | CS | Cada actividad (cocinar, curar, plantar, campo, entrenar, yoga, cuidar animales…) tiene su misión como reto de código, con UI/UX como CodeShip | — | — | — | PB-163 | añadido el 2026-11-18 |
 
 ## REN · Rendimiento y pruebas
 
@@ -464,6 +468,7 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | REN-06 | REN | Regla W14: Repartir trabajo entre frames, solo si no integra tiempo: lo que usa el `Time.deltaTime` de un frame (andar, entrenar, actuar) corre en cada frame; se reparte la búsqueda cara o se acumula el tiempo con `GameTick`. | JornadaTest | 50 | W14 | — | manual §«Se comprueba en», también g112 |
 | REN-07 | REN | Regla W15: Un MonoBehaviour que se guarda en la escena va en su propio archivo, con el nombre de la clase. | JornadaTest | 50 | W15 | — | manual §«Se comprueba en» |
 | REN-08 | REN | Regla W16: sistema de QA: catálogo, registro, peticiones, manual y pruebas cuadran (QaCheck) | QaCheckTest | 118 | W16 | — | manual §10; añadido a mano el 2026-11-13 |
+| REN-09 | REN | Web ligera (PB-156): santuario + 61 microcosmos en 3 builds WebGL gzip, joystick de cámara, una página por microcosmos y su prueba `?prueba=1` en Edge sin ventana (web-continua.md) | — | — | — | PB-156 | añadido el 2026-11-18 |
 
 ## PX · Recorridos en vivo
 
@@ -512,10 +517,10 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 
 | ID | Tipo | Qué | Casos | Dueño | Estado | Hallazgo |
 |---|---|---|---|---|---|---|
-| B-01 | Fallo | g50: fauna atascada > 20 s, dando vueltas o volcada. Falla en todas las rondas que corrieron g50 desde r71 (crónico) | CV-03, CV-05, ARB-86, JOR-19, JOR-22, JOR-39, JOR-45, JOR-48, JOR-49, REN-06, REN-07 | probador → trabajador de fauna | Abierto | H1 |
+| B-01 | Fallo | g50: fauna atascada > 20 s, dando vueltas o volcada. Falla en todas las rondas que corrieron g50 desde r71 (crónico) | CV-03, CV-05, ARB-86, JOR-19, JOR-22, JOR-39, JOR-45, JOR-48, JOR-49, REN-06, REN-07 | probador → trabajador de fauna | Resuelto en r127 (2026-11-18): g50 49/0 y suite 4770/0, la primera limpia | H1 |
 | B-02 | Fallo | El script de marcas vació docs/checklist.md y docs/auditoria-peticiones.md (82878fc): leía un temporal que no existía | OP-04 | probador | Arreglado en 1bdfe1c; falta el aviso automático (QaCheck §6.9) | H2 |
 | B-03 | Fallo | Ficheros sueltos en Unity tras cambiar de rama: TmpCheck y .cs que ya no están en git | OP-05 | probador | Arreglado con sync --prune (r83, r84); falta el aviso automático (QaCheck §6.10) | H3 |
-| HC-01 | Hueco | Valores de los bonusPacks de Irosene, Lizmibet y Linduarda: los decide Berón | PB-140 | Berón | Abierto | — |
+| HC-01 | Hueco | Valores de los bonusPacks de Irosene, Lizmibet y Linduarda: los decide Berón | PB-140 | Berón | Cerrado: lo decide PB-164 (Berón 2026-11-18 21:34) | — |
 | HC-02 | Hueco | Afinar con OpenStreetMap los huecos históricos (la parte abierta de PB-082, L282) | PB-082 | sin dueño | Abierto | — |
-| HC-03 | Hueco | ¿«Alicia» es el nombre real de Alicita? Se quitó del rótulo por defecto (P24); docs/personajes/alicita.md | — | Berón | Abierto | — |
+| HC-03 | Hueco | ¿«Alicia» es el nombre real de Alicita? Se quitó del rótulo por defecto (P24); docs/personajes/alicita.md | — | Berón | Cerrado: «Alicia» es el nombre real y el del juego (Berón 2026-11-18 21:34) | — |
 | HC-04 | Hueco | Hora de la suite diaria (nivel N4) acordada con Berón (Unity es compartido) | — | Berón | Abierto | — |
