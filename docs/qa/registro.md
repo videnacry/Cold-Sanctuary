@@ -438,6 +438,10 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | CS-86 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
 | CS-87 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
 | CS-43 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship: MissionLibrary + StationMissions + StepAnimator (ChoreLibraryTest g120, CS-50…CS-95); lo prueba el probador |
+| CS-82 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-83 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-96 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-88 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
 
 **Recuento:** No aplica 8 · Parcial 9 · Probado (retro) 285 · Sin probar 31 · Solo código 16 · total 349.
 

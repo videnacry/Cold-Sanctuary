@@ -515,6 +515,10 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | OP-06 | OP | Regla operativa OP-06 (operacion.md) | — | — | W5, W6 | — | qa-propuesta.md §7 |
 | OP-07 | OP | Regla operativa OP-07 (operacion.md) | — | — | — | — | qa-propuesta.md §7 |
 | OP-08 | OP | Regla operativa OP-08 (operacion.md) | — | — | W3 | — | qa-propuesta.md §7 |
+| CS-82 | CS | cada sitio nuevo de Hawthorne (lote 2) tiene su misión, por su nombre exacto | ChoreLibraryTest | 120 | — | PB-163 | claude/ui-codeship (sitios del lote 2 de Hawthorne, docs/microcosmos-musk-historia.md §4); añadido el 2026-11-18 |
+| CS-83 | CS | las clases nuevas: soldar, ensayos, datos, sala limpia, comida segura, recibir, garita, incendios, cruzar y la pista | ChoreLibraryTest | 120 | — | PB-163 | claude/ui-codeship (sitios del lote 2 de Hawthorne, docs/microcosmos-musk-historia.md §4); añadido el 2026-11-18 |
+| CS-96 | CS | la FSW, el gesto del banco; la garita y el cruce, mirar a un lado y a otro; el extintor, barrer de lado a lado | ChoreLibraryTest | 120 | — | PB-163 | claude/ui-codeship (sitios del lote 2 de Hawthorne, docs/microcosmos-musk-historia.md §4); añadido el 2026-11-18 |
+| CS-88 | CS | con los sitios del lote 2, gimnasio, yoga, botiquín, perro y los puestos nuevos ya no son marcadores «supuesto» | ChoreLibraryTest | 120 | — | PB-163 | claude/ui-codeship (sitios del lote 2 de Hawthorne, docs/microcosmos-musk-historia.md §4); añadido el 2026-11-18 |
 
 ## Bugs y huecos
 

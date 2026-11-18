@@ -29,7 +29,7 @@ public class StepAnimator : MonoBehaviour
         public override string ToString() => type == Type.Gesture ? $"gesto {gesture}" : type == Type.Yoga ? $"yoga {sequence} {posture + 1}" : type.ToString();
     }
 
-    static readonly string[] Known = { "cocinar", "mecanizar", "composite", "reparar-maquina", "avionica", "atender-paciente", "medico", "regar", "curar-planta", "cosechar", "alimentar-perro", "programar-animal", "jugar-perro", "ejercicio", "asearse", "plantar-idea", "dormir", "yoga" };
+    static readonly string[] Known = { "cocinar", "mecanizar", "composite", "reparar-maquina", "avionica", "atender-paciente", "medico", "regar", "curar-planta", "cosechar", "alimentar-perro", "programar-animal", "jugar-perro", "ejercicio", "asearse", "plantar-idea", "dormir", "yoga", "soldar-fsw", "ensayo-materiales", "analizar-datos", "sala-limpia", "seguridad-alimentaria", "recepcion", "control-acceso", "incendios", "seguridad-vial", "aeronautica" };
     /// <summary>¿Tiene esta clase de misión su animación propia? (las que no, el gesto de banco por defecto)</summary>
     public static bool Handles(string kind) => System.Array.IndexOf(Known, kind) >= 0;
 
@@ -49,7 +49,12 @@ public class StepAnimator : MonoBehaviour
             case "jugar-perro": return new Motion { type = Motion.Type.Walk };
             case "ejercicio": return G(AreaFunctions.Kind.Practice);
             case "asearse": return G(AreaFunctions.Kind.Clean);
-            case "plantar-idea": return G(AreaFunctions.Kind.Teach);
+            case "plantar-idea": case "aeronautica": return G(AreaFunctions.Kind.Teach);
+            case "soldar-fsw": return G(AreaFunctions.Kind.Make);
+            case "ensayo-materiales": case "analizar-datos": return G(AreaFunctions.Kind.Operate);
+            case "sala-limpia": case "seguridad-alimentaria": case "incendios": return G(AreaFunctions.Kind.Clean);   // el extintor: barrer de lado a lado
+            case "recepcion": return G(AreaFunctions.Kind.Serve);
+            case "control-acceso": case "seguridad-vial": return G(AreaFunctions.Kind.Guard);   // mirar a un lado y a otro
             case "dormir": return step >= steps - 1 ? new Motion { type = Motion.Type.Lie } : G(AreaFunctions.Kind.Clean);
             case "yoga": return new Motion { type = Motion.Type.Yoga, sequence = templateId != null && templateId.Contains("saludo") ? "saludo-al-sol" : "upa-cuello", posture = step };
             default: return G(AreaFunctions.Kind.Make);

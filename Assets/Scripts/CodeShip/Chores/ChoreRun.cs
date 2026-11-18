@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 /// <summary>Los grupos de la lista de tareas de CodeShip (chore.ts CHORE_CATEGORY), más el taller de los puestos de trabajo y las ideas.</summary>
-public enum ChoreCategory { Comida, Plantas, Animales, Taller, Salud, Ideas }
+public enum ChoreCategory { Comida, Plantas, Animales, Taller, Salud, Ideas, Ciencia, Seguridad }
 
 /// <summary>
 /// UNA PLANTILLA DE MISIÓN POR RETOS DE CÓDIGO (portada de CodeShip, src/modules/chores/domain/chore.ts y application/catalog.ts): una tarea que

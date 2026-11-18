@@ -224,5 +224,5 @@ public class StationMissions : MonoBehaviour
     }
 
     public static string CategoryLabel(ChoreCategory c) => c == ChoreCategory.Comida ? "Comida" : c == ChoreCategory.Plantas ? "Campo" : c == ChoreCategory.Animales ? "Animales"
-        : c == ChoreCategory.Taller ? "Taller" : c == ChoreCategory.Salud ? "Salud" : "Ideas";
+        : c == ChoreCategory.Taller ? "Taller" : c == ChoreCategory.Salud ? "Salud" : c == ChoreCategory.Ciencia ? "Ciencia" : c == ChoreCategory.Seguridad ? "Seguridad" : "Ideas";
 }

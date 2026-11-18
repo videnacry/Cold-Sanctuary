@@ -127,6 +127,19 @@ public class ChoreLibraryTest : MonoBehaviour, ITestUnit
         string unknown = "";
         foreach (MissionSites.Binding x in b) if (MissionLibrary.Find(x.template) == null) unknown += x.template + " ";
         TestProbe.Check("[CS-81] cada misión de Hawthorne es una plantilla de la biblioteca", unknown.Length == 0, unknown);
+
+        // Los sitios del lote 2 de Hawthorne (docs/microcosmos-musk-historia.md §4, por su nombre exacto) tienen su misión.
+        string[] sites = { "Rincón de gimnasio", "Soldadura por fricción (FSW): tanque del Falcon 9", "Laboratorio de materiales", "Sala de datos de pruebas (propulsión)",
+                           "Vestuario de la sala limpia", "Dispensador de gel hidroalcohólico", "Cámara frigorífica de la cocina", "Tarjeta de inspección sanitaria (A)",
+                           "Furgoneta del proveedor de comida (supuesto)", "Lonchera (camión de comida)", "Garita de seguridad (1 Rocket Road)", "Hidrante", "Bomberos",
+                           "Cruce de Crenshaw Boulevard y Rocket Road (semáforos)", "Aparcamiento de SpaceX" };
+        string unbound = "";
+        foreach (string s in sites) if (!b.Exists(x => System.Array.IndexOf(x.names, s) >= 0)) unbound += $"«{s}» ";
+        TestProbe.Check("[CS-82] cada sitio nuevo de Hawthorne (lote 2) tiene su misión, por su nombre exacto", unbound.Length == 0, unbound.Length > 0 ? "sin misión: " + unbound : $"{sites.Length} sitios");
+        string[] lot2 = { "soldar-fsw", "ensayo-materiales", "analizar-datos", "sala-limpia", "seguridad-alimentaria", "recepcion", "control-acceso", "incendios", "seguridad-vial", "aeronautica" };
+        string lacking = "";
+        foreach (string k in lot2) if (!MissionLibrary.All.Exists(t => t.kind == k)) lacking += k + " ";
+        TestProbe.Check("[CS-83] las clases nuevas: soldar, ensayos, datos, sala limpia, comida segura, recibir, garita, incendios, cruzar y la pista", lacking.Length == 0, lacking);
     }
 
     // CodeShip reglas.md §4.2: cada paso de un reto se anima en su sitio, con las animaciones que ya tiene el juego.
@@ -140,6 +153,8 @@ public class ChoreLibraryTest : MonoBehaviour, ITestUnit
         TestProbe.Check("[CS-92] el yoga, postura a postura: el reto n pone la postura n de su secuencia", y.type == StepAnimator.Motion.Type.Yoga && y.sequence == "saludo-al-sol" && y.posture == 6 && u.sequence == "upa-cuello" && u.posture == 2, $"{y} / {u}");
         TestProbe.Check("[CS-93] jugar con el perro: un paseo con él", M("jugar-perro").type == StepAnimator.Motion.Type.Walk);
         TestProbe.Check("[CS-94] dormir: tumbarse en el último paso, no antes", M("dormir", "", 5, 6).type == StepAnimator.Motion.Type.Lie && M("dormir", "", 2, 6).type != StepAnimator.Motion.Type.Lie);
+        TestProbe.Check("[CS-96] la FSW, el gesto del banco; la garita y el cruce, mirar a un lado y a otro; el extintor, barrer de lado a lado",
+            G(M("soldar-fsw"), AreaFunctions.Kind.Make) && G(M("control-acceso"), AreaFunctions.Kind.Guard) && G(M("seguridad-vial"), AreaFunctions.Kind.Guard) && G(M("incendios"), AreaFunctions.Kind.Clean));
         string none = "";
         foreach (ChoreTemplate t in MissionLibrary.All) if (!StepAnimator.Handles(t.kind)) none += t.kind + " ";
         TestProbe.Check("[CS-95] cada clase de misión de la biblioteca tiene su animación", none.Length == 0, none);
@@ -156,6 +171,10 @@ public class ChoreLibraryTest : MonoBehaviour, ITestUnit
         TestProbe.Check("[CS-85] en la escena, cada misión encuentra su sitio (los que faltan, con un marcador «supuesto»)", ms.Count == MissionSites.ForScene(s.name).Count && ms.TrueForAll(m => m.target != null), $"{found} en su mueble, {fb} con marcador: {string.Join(", ", ms.FindAll(m => m.fallback).ConvertAll(m => m.template.title))}");
         TestProbe.Check("[CS-86] los puestos de la nave están en su mueble real (cocina, aviónica, composite, mecanizado)",
             new[] { "mecanizar", "avionica", "composite", "cocinar" }.Length == 4 && System.Array.TrueForAll(new[] { "mecanizar", "avionica", "composite", "cocinar" }, k => ms.Exists(m => m.template.kind == k && !m.fallback)));
+        string[] real = { "ejercicio", "yoga", "atender-paciente", "alimentar-perro", "soldar-fsw", "ensayo-materiales", "sala-limpia", "seguridad-alimentaria", "control-acceso", "seguridad-vial" };
+        string marker = "";
+        foreach (string k in real) if (!ms.Exists(m => m.template.kind == k && !m.fallback)) marker += k + " ";
+        TestProbe.Check("[CS-88] con los sitios del lote 2, gimnasio, yoga, botiquín, perro y los puestos nuevos ya no son marcadores «supuesto»", marker.Length == 0, marker);
         StationMission any = ms.Find(m => m.Available);
         if (any != null)
         {
