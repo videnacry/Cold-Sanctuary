@@ -116,10 +116,20 @@ public class PolarHabitats : MonoBehaviour
     static bool Ice(Vector3 p, out Vector3 at)
     {
         at = p;
-        if (!Physics.Raycast(new Vector3(p.x, 8f, p.z), Vector3.down, out RaycastHit h, 14f, ~0, QueryTriggerInteraction.Ignore)) return false;
-        if (h.point.y < -0.3f || h.collider.name != "Casquete") return false;   // hielo de verdad (no un árbol, un edificio o un animal)
+        // (2026-11-18, ronda 127) Lo primero que NO es un animal ni una persona: el rayo daba en un emperador o una morsa que estaba justo encima al
+        // arrancar (nacen en su colonia) y no había «Colonia_emperador» ni «Playa_morsas» (TerritorioTest, rápida 127; 15 descansaderos en vez de 16
+        // esa misma vez). Un árbol o un edificio encima sigue sin valer.
+        int n = Physics.RaycastNonAlloc(new Vector3(p.x, 8f, p.z), Vector3.down, _hits, 14f, ~0, QueryTriggerInteraction.Ignore);
+        float best = float.MaxValue; RaycastHit h = default; bool any = false;
+        for (int i = 0; i < n; i++)
+        {
+            if (_hits[i].collider.GetComponentInParent<Anima>() != null || _hits[i].distance >= best) continue;
+            best = _hits[i].distance; h = _hits[i]; any = true;
+        }
+        if (!any || h.point.y < -0.3f || h.collider.name != "Casquete") return false;   // hielo de verdad (no un árbol ni un edificio)
         at = h.point; return true;
     }
+    static readonly RaycastHit[] _hits = new RaycastHit[16];
 
     Transform Box(string name, Vector3 pos, Vector3 size, Material m)
     {
