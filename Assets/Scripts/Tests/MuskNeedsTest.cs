@@ -73,6 +73,7 @@ public class MuskNeedsTest : MonoBehaviour, ITestUnit
 
         float oldScale = Time.timeScale; Time.timeScale = 4f;
         int jf0 = MicroJornada.Fallbacks, hf0 = HomeNeedSpell.Fallbacks;
+        WalkWatch.Log.Clear();   // (2026-11-18) los 20 primeros teletransportes, con su porqué, van al detalle de MIC-93
         PersonLife.OnEvent += OnEvent;
         // 1 · Trabajan.
         // (2026-11-18) Su turno: el del turno de noche empieza a las 20:00 (CivicBuilder.Trades); todo el día simulado se corre con él.
@@ -123,7 +124,8 @@ public class MuskNeedsTest : MonoBehaviour, ITestUnit
 
         // 5 · Sin teletransportes.
         int jf = MicroJornada.Fallbacks - jf0, hf = HomeNeedSpell.Fallbacks - hf0;
-        TestProbe.Check("[MIC-93] sin teletransportes: todo andando (jornada y hogar)", jf == 0 && hf == 0, $"jornada {jf}, hogar {hf}");
+        TestProbe.Check("[MIC-93] sin teletransportes: todo andando (jornada y hogar)", jf == 0 && hf == 0,
+            $"jornada {jf}, hogar {hf}" + (WalkWatch.Log.Count > 0 ? " — " + string.Join(" | ", WalkWatch.Log) : ""));
 
         PersonLife.OnEvent -= OnEvent;
         Time.timeScale = oldScale;

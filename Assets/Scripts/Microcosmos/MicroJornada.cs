@@ -34,6 +34,7 @@ public class MicroJornada : MonoBehaviour
 
     AreaFunctionSite _site; AreaFunctions.AreaFunction _fn; AreaFunctionStation _st;
     string _block; float _since; int _salt;
+    readonly WalkWatch _walk = new WalkWatch();   // (2026-11-18) el tope de andar, a la medida del camino (MIC-93)
     WorldLabel _label; string _name;
     Anima _a; ActionQueue _q; BodyMetabolism _body;
     bool _resume; float _arrivedAt = -1f; int _ateDay = int.MinValue;
@@ -108,13 +109,15 @@ public class MicroJornada : MonoBehaviour
         if (_st == null) return;
         // (2026-11-04) A LA HORA DE COMER, primero al MOSTRADOR por la bandeja y, al acabar, de vuelta a él a devolverla (MealRitual).
         AreaFunctionStation target = _block == "comida" && _counter != null && (_mealStage == 1 || _mealStage == 4) ? _counter : _st;
-        Vector3 to = WorkSpotOf(target, transform.position);
+        Vector3 to = _walk.Target(WorkSpotOf(target, transform.position));
         bool there = MicroMove.Step(transform, to, speed, Mathf.Max(0.5f, 1.6f * k));
-        if (!there && Time.time - _since > 60f / Mathf.Clamp(k, 0.2f, 1f))   // sin quedarse dando vueltas para siempre (y avisa: es un fallo de la planta)
+        // Sin quedarse dando vueltas para siempre, pero a la medida del camino (WalkWatch): mientras se acerca, sigue; si se rinde, dice por qué.
+        if (!there && _walk.GiveUp(transform, to, speed, 60f / Mathf.Clamp(k, 0.2f, 1f), out string why))
         {
+            WalkWatch.Record("Jornada micro", name, transform.position, to, target.name + " de " + (_site != null ? _site.title : "?") + ", bloque " + _block, why);
             transform.position = to; there = true; Fallbacks++;
-            if (Fallbacks <= 20) Debug.LogWarning($"[Jornada micro] «{name}» no llega andando en {60f / Mathf.Clamp(k, 0.2f, 1f):0} s a «{target.name}» de {(_site != null ? _site.title : "?")}: se le pone allí.");
         }
+        if (there) _walk.Reset();
         if (!there) { _meal?.Carry(gameObject); Say(_block == "casa" ? "A casa" : _block == "comida" && _mealStage == 4 ? "Devuelve la bandeja" : "Va a " + (_site != null ? _site.title : "su puesto")); return; }
         if (_arrivedAt < 0f) _arrivedAt = Time.time;
         Vector3 look = target.transform.position - transform.position; look.y = 0f;
@@ -133,7 +136,7 @@ public class MicroJornada : MonoBehaviour
     void Choose(string block)
     {
         if (_st != null && _st.occupant == this) _st.occupant = null;
-        _block = block; _since = Time.time; _fn = null; _st = null; _arrivedAt = -1f;
+        _block = block; _since = Time.time; _fn = null; _st = null; _arrivedAt = -1f; _walk.Reset();
         _site = block == "trabajo" ? work : block == "comida" ? (dine ?? work) : block == "practica" ? (practice ?? work) : (home ?? work);
         if (_site == null) return;
         string r = block == "trabajo" ? role : "todos";
