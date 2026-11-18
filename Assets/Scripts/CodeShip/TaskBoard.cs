@@ -9,8 +9,8 @@ using UnityEngine;
 public class TaskEntry
 {
     /// <summary>Los grupos, en el orden de la lista (CodeShip TASK_GROUPS: lo de la historia primero).</summary>
-    public enum Group { Historia, Jornada, Mision }
-    public static string GroupLabel(Group g) => g == Group.Historia ? "Historia" : g == Group.Jornada ? "Tarea de la jornada" : "Misiones aceptadas";
+    public enum Group { Historia, Jornada, Puesto, Mision }
+    public static string GroupLabel(Group g) => g == Group.Historia ? "Historia" : g == Group.Jornada ? "Tarea de la jornada" : g == Group.Puesto ? "Trabajo y necesidades" : "Misiones aceptadas";
 
     public string id = "", title = "", detail = "", progress = "";
     public Group group;
@@ -110,6 +110,21 @@ public static class TaskSources
                 onArrive = () => AutoTravel.Tap(KeyCode.E),
             });
         }
+
+        // (2026-11-18) Las misiones de los puestos (CodeShip: cocinar, curar, campo, animales, taller, yoga, entrenar, ideas…), con «Ir».
+        if (StationMissions.Instance != null)
+            foreach (StationMission m in StationMissions.Instance.All)
+            {
+                if (!m.Available) continue;
+                StationMission sm2 = m;
+                l.Add(new TaskEntry
+                {
+                    id = "puesto-" + m.template.id, group = TaskEntry.Group.Puesto, title = m.template.title,
+                    detail = $"{StationMissions.CategoryLabel(m.template.category)} · {m.Where}{(m.fallback ? " (supuesto)" : "")} · {(m.template.duel ? "duelo de ideas" : $"{m.template.exercises.Length} retos")}",
+                    target = m.target, hasPlace = true, distance = Flat(m.target.position - player), arrive = 2f,
+                    onArrive = () => StationMissions.Instance.Begin(sm2),
+                });
+            }
 
         if (MissionTracker.Instance != null)
             foreach (var (name, progress, target) in MissionTracker.Instance.Accepted())

@@ -29,6 +29,15 @@ public class CodeChallengeSheet : MonoBehaviour
     string _feedback = ""; bool _feedbackBad;
     Vector2 _scroll;
     int _openedFrame;
+    // (2026-11-18) MODO TAREA (CodeShip ChoreRun): varios retos en orden, con fallos contados; al acabar (hecha o fallada) avisa a quien la abrió.
+    ChoreRun _run;
+    string _runTitle = "", _runScenario = "";
+    Action<ChoreRun> _onEnd;
+    Func<ChoreRun> _retry;
+    bool _ended;
+    CodeAttempts Att => _run != null ? _run.Attempts : _attempts;
+    /// <summary>La tarea abierta en la hoja (null si es un reto suelto o no hay hoja): pruebas y menú.</summary>
+    public static ChoreRun Run => IsOpen ? _i._run : null;
 
     static CodeChallengeSheet Get()
     {
@@ -43,18 +52,49 @@ public class CodeChallengeSheet : MonoBehaviour
     {
         if (ex == null) return;
         CodeChallengeSheet s = Get();
-        s._ex = ex; s._answer = answer;
-        s._attempts.On(ex);
-        s._picked.Clear();
-        s._deck = ex.kind == CodeExercise.Kind.Order ? ex.Shuffled(Time.frameCount) : new string[0];
-        s._solved = false; s._feedback = ""; s._scroll = Vector2.zero; s._openedFrame = Time.frameCount;
+        s.EndRun();
+        s._run = null; s._onEnd = null; s._retry = null;
+        s.Load(ex);
+        s._answer = answer;
         Debug.Log($"[Retos] Abierto «{ex.id}» ({(ex.kind == CodeExercise.Kind.Order ? "ordenar" : "elegir")}).");
+    }
+
+    /// <summary>Abre una TAREA: sus retos en orden en la misma hoja. <paramref name="onEnd"/> se llama al cerrarla hecha o fallada (no si se
+    /// cierra a medias); <paramref name="retry"/>, si se da, ofrece «Reintentar» tras fallar.</summary>
+    public static void OpenRun(ChoreRun run, string title, string scenario, Action<ChoreRun> onEnd, Func<ChoreRun> retry = null)
+    {
+        if (run == null || run.Current == null) return;
+        CodeChallengeSheet s = Get();
+        s.EndRun();
+        s._run = run; s._runTitle = title ?? ""; s._runScenario = scenario ?? ""; s._onEnd = onEnd; s._retry = retry; s._ended = false;
+        s._answer = null;
+        s.Load(run.Current);
+        Debug.Log($"[Retos] Tarea «{title}»: {run.Steps} retos.");
+    }
+
+    void Load(CodeExercise ex)
+    {
+        _ex = ex;
+        _attempts.On(ex);
+        _picked.Clear();
+        _deck = ex.kind == CodeExercise.Kind.Order ? ex.Shuffled(Time.frameCount) : new string[0];
+        _solved = false; _feedback = ""; _scroll = Vector2.zero; _openedFrame = Time.frameCount;
+    }
+
+    /// <summary>Si había una tarea hecha o fallada sin avisar, avisa ahora (una sola vez).</summary>
+    void EndRun()
+    {
+        if (_run == null || _ended || _run.Status == ChoreRun.State.Doing) return;
+        _ended = true;
+        Action<ChoreRun> cb = _onEnd;
+        cb?.Invoke(_run);
     }
 
     public static void Close()
     {
         if (_i == null || _i._ex == null) return;
-        _i._ex = null; _i._answer = null;
+        _i.EndRun();
+        _i._ex = null; _i._answer = null; _i._run = null;
     }
 
     /// <summary>Da una respuesta (la hoja y las pruebas). true = acertó.</summary>
@@ -62,6 +102,7 @@ public class CodeChallengeSheet : MonoBehaviour
     {
         if (!IsOpen) return false;
         CodeChallengeSheet s = _i;
+        if (s._run != null) return s.SubmitRun(a);
         if (s._solved) return true;
         if (s._attempts.Repeated(a)) { s._feedback = "✗ Esa respuesta ya la probaste: prueba otra."; s._feedbackBad = true; return false; }
         bool ok = s._ex.IsCorrect(a) && (s._answer == null || s._answer(a));
@@ -85,12 +126,40 @@ public class CodeChallengeSheet : MonoBehaviour
         return false;
     }
 
+    bool SubmitRun(CodeAnswer a)
+    {
+        if (_run.Status != ChoreRun.State.Doing) return _run.Status == ChoreRun.State.Done;
+        if (_run.Tried(a)) { _feedback = "✗ Esa respuesta ya la probaste: no cuenta. Prueba otra."; _feedbackBad = true; return false; }
+        int good = a.kind == CodeExercise.Kind.Order ? _ex.CorrectPrefix(a.order) : 0;
+        bool ok = _run.Submit(a);
+        if (ok)
+        {
+            string why = string.IsNullOrEmpty(_ex.explain) ? "" : " " + _ex.explain;
+            if (_run.Status == ChoreRun.State.Done) { _solved = true; _feedback = $"✓ ¡Hecho! {_run.Steps} de {_run.Steps}.{why}"; _feedbackBad = false; return true; }
+            Load(_run.Current);   // el siguiente reto, en la misma hoja
+            _feedback = $"✓ Bien. Reto {_run.Step + 1} de {_run.Steps}.{why}"; _feedbackBad = false;
+            return true;
+        }
+        _feedbackBad = true;
+        if (_run.Status == ChoreRun.State.Failed) { _feedback = $"✗ Demasiados fallos ({_run.Mistakes} de {_run.MaxMistakes}): la tarea no salió."; return false; }
+        string left = _run.MistakesLeft == 1 ? "Te queda 1 fallo." : $"Te quedan {_run.MistakesLeft} fallos.";
+        if (a.kind == CodeExercise.Kind.Order)
+        {
+            _feedback = (good == 0 ? "✗ No: el primer bloque ya no va ahí. " : $"✗ No del todo: {(good == 1 ? "el primer bloque está bien" : $"los {good} primeros están bien")}. ") + left;
+            _picked.RemoveRange(Mathf.Min(good, _picked.Count), _picked.Count - Mathf.Min(good, _picked.Count));
+        }
+        else _feedback = "✗ No es esa. " + left;
+        return false;
+    }
+
+    bool RunOver => _run != null && _run.Status != ChoreRun.State.Doing;
+
     void Update()
     {
         if (!IsOpen || Time.frameCount == _openedFrame) return;
         if (Input.GetKeyDown(KeyCode.Escape)) { Close(); return; }
-        if (_solved && (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))) { Close(); return; }
-        if (_ex.kind == CodeExercise.Kind.Choice && !_solved)
+        if ((_solved || RunOver) && (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))) { Close(); return; }
+        if (_ex.kind == CodeExercise.Kind.Choice && !_solved && !RunOver)
             for (int k = 0; k < Mathf.Min(9, _ex.options.Length); k++)
                 if (Input.GetKeyDown(KeyCode.Alpha1 + k)) Submit(CodeAnswer.Choice(k));
     }
@@ -125,13 +194,17 @@ public class CodeChallengeSheet : MonoBehaviour
         GUI.Box(r, ""); GUI.Box(r, ""); GUI.Box(r, "");   // tres capas: opaca de verdad (CodeShip: las barras casi transparentes no se leían)
 
         // Cabecera: título, JS, ✕ (a la medida del dedo).
-        GUI.Label(new Rect(r.x + pad, r.y + 6f, w - 3f * row - 3f * pad, row), $"<b>Reto de código</b> · {(_ex.kind == CodeExercise.Kind.Order ? "ordenar" : SkillName(_ex.skill))}", _head);
+        string kind = _ex.kind == CodeExercise.Kind.Order ? "ordenar" : SkillName(_ex.skill);
+        string head = _run == null ? $"<b>Reto de código</b> · {kind}" : $"<b>{_runTitle}</b> · reto {Mathf.Min(_run.Step + 1, _run.Steps)} de {_run.Steps} · {kind}";
+        GUI.Label(new Rect(r.x + pad, r.y + 6f, w - 3f * row - 3f * pad, row), head, _head);
+        if (_run != null) DrawProgress(new Rect(r.x + pad, r.y + row + 4f, w - 2f * pad, 6f));
         if (GUI.Button(new Rect(r.xMax - 2f * row - 2f * pad - row * 0.6f, r.y + 6f, row * 1.6f, row), _js ? "Pseudo" : "JS")) _js = !_js;
         if (GUI.Button(new Rect(r.xMax - row - pad, r.y + 6f, row, row), "✕")) { Close(); return; }
 
         var inner = new Rect(r.x + pad, r.y + row + 12f, w - 2f * pad, h - row * 2.4f - 20f);
         GUILayout.BeginArea(inner);
         _scroll = GUILayout.BeginScrollView(_scroll);
+        if (_run != null && _run.Step == 0 && _run.Mistakes == 0 && _runScenario.Length > 0) GUILayout.Label($"<color=#B8C0C8>{_runScenario}</color>", _small);
         if (!string.IsNullOrEmpty(_ex.idea)) GUILayout.Label($"<i>{_ex.idea}</i>", _small);
         GUILayout.Label(_ex.question, _txt);
         GUILayout.Space(6f);
@@ -150,7 +223,21 @@ public class CodeChallengeSheet : MonoBehaviour
         // Pie: la acción principal, siempre en el mismo sitio (abajo a la derecha, cerca del pulgar).
         var foot = new Rect(r.x + pad, r.yMax - row - pad, w - 2f * pad, row);
         if (_solved) { if (GUI.Button(new Rect(foot.xMax - row * 3.5f, foot.y, row * 3.5f, row), "✓ Seguir")) Close(); return; }
-        GUI.Label(new Rect(foot.x, foot.y, foot.width - row * 7.5f, row), $"<size={_small.fontSize}>Fallos: {_attempts.Count}{(WebLigera.Active ? "" : " · Esc: cerrar")}</size>", _small);
+        if (RunOver)   // fallada: cerrar o reintentar
+        {
+            if (_retry != null && GUI.Button(new Rect(foot.xMax - row * 7.4f, foot.y, row * 3.6f, row), "Reintentar"))
+            {
+                Func<ChoreRun> retry = _retry; string t = _runTitle, sc = _runScenario; Action<ChoreRun> cb = _onEnd;
+                Close();
+                ChoreRun again = retry();
+                if (again != null) OpenRun(again, t, sc, cb, retry);
+                return;
+            }
+            if (GUI.Button(new Rect(foot.xMax - row * 3.5f, foot.y, row * 3.5f, row), "Cerrar")) Close();
+            return;
+        }
+        string fails = _run != null ? $"Fallos: {_run.Mistakes} de {_run.MaxMistakes}" : $"Fallos: {_attempts.Count}";
+        GUI.Label(new Rect(foot.x, foot.y, foot.width - row * 7.5f, row), $"<size={_small.fontSize}>{fails}{(WebLigera.Active ? "" : " · Esc: cerrar")}</size>", _small);
         if (_ex.kind == CodeExercise.Kind.Order)
         {
             if (GUI.Button(new Rect(foot.xMax - row * 7.4f, foot.y, row * 3.2f, row), "Borrar")) { _picked.Clear(); _feedback = ""; }
@@ -181,13 +268,27 @@ public class CodeChallengeSheet : MonoBehaviour
         GUILayout.Space(8f);
         for (int i = 0; i < _ex.options.Length; i++)
         {
-            bool wrong = _attempts.WrongChoices.Contains(i);
+            bool wrong = Att.WrongChoices.Contains(i);
             bool right = _solved && i == _ex.correct;
             string mark = wrong ? "✗ " : right ? "✓ " : $"{i + 1}. ";
-            GUI.enabled = !wrong && !_solved;   // una opción fallada queda marcada y no se puede volver a tocar
+            GUI.enabled = !wrong && !_solved && !RunOver;   // una opción fallada queda marcada y no se puede volver a tocar
             if (GUILayout.Button(mark + _ex.options[i], wrong ? _bad : right ? _good : _btn, GUILayout.MinHeight(row))) Submit(CodeAnswer.Choice(i));
             GUI.enabled = true;
         }
+    }
+
+    /// <summary>La barra de la tarea: un segmento por reto (verde hecho, ámbar el de ahora, gris lo que falta), opaca y legible (CodeShip).</summary>
+    void DrawProgress(Rect r)
+    {
+        int n = Mathf.Max(1, _run.Steps);
+        float gap = 3f, cw = (r.width - gap * (n - 1)) / n;
+        Color c = GUI.color;
+        for (int i = 0; i < n; i++)
+        {
+            GUI.color = i < _run.Step ? new Color(0.35f, 0.85f, 0.45f) : i == _run.Step && !RunOver ? new Color(1f, 0.78f, 0.3f) : new Color(0.35f, 0.37f, 0.4f);
+            GUI.DrawTexture(new Rect(r.x + i * (cw + gap), r.y, cw, r.height), Texture2D.whiteTexture);
+        }
+        GUI.color = c;
     }
 
     static string SkillName(CodeSkill s) => s == CodeSkill.Completar ? "completar" : s == CodeSkill.Predecir ? "predecir" : s == CodeSkill.Reparar ? "reparar" : "especificar";
