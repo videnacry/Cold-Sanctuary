@@ -18,13 +18,13 @@ Ramas (2026-11-18): la integración es `claude/edificios` (por delante de `maste
 
 | # | Tarea | Estado | Rama | Leer |
 |---|---|---|---|---|
-| 1 | **Piloto Elon Musk (Hawthorne 2008)**: pasada de detalle a la nave de SpaceX (más máquinas y piezas, colores y materiales reales, gente trabajando, comedor); revisar la captura del interior que sale toda cian; rehacer, capturas y subir la web | En curso. Pruebas del piloto en verde (1115 + 885); web subida en [ElonMusk](https://videnacry.github.io/Cold-sanctuary-web/microcosmos/ElonMusk/). Berón aún no ha dicho «me siento dentro» | `claude/escala-mitad` → `edificios` | [plan-microcosmos-realismo.md](plan-microcosmos-realismo.md) §4.1 fase 1 |
-| 2 | **Plan de realismo de los microcosmos, fases 2–4**: necesidades verificadas en el piloto (dormir, retrete, comer, trabajar un día con `Fallbacks = 0`; `NeedsDriver` para los personajes de historia); pilotos 2 y 3 (Descartes en Leiden 1637, Atahualpa en Cajamarca 1532); despliegue uno a uno al resto (NavMesh, muebles, puertas, muros con vista en corte, retos de código) | Pendiente. Aprobado: cuerpo a la mitad (s = 0,5) con patas recogidas, de pie con apoyo, vuelven muros y techos | — | [plan-microcosmos-realismo.md](plan-microcosmos-realismo.md) §3–§5 |
-| 3 | **Sistemas de CodeShip en los microcosmos**: menú árbol, Tareas con «Ir» y viaje automático, ventana de Áreas, retos de código (unos 5 por microcosmos con datos reales), HUD con carta y objetivo | Programado en el piloto (grupo 119); falta contenido de retos en el resto | `claude/ui-codeship` → `edificios` | plan §4 |
-| 4 | **Web por microcosmos con pruebas** (`?prueba=1`): 34 de 62 páginas pasan; rehacer los 7 microcosmos sin fauna recolocada (entre ellos Bolívar y Le Chambon); que la prueba juzgue también escala y realismo, no solo posiciones | En curso | `claude/web-continua` | [web-continua.md](web-continua.md), [web-ligera.md](web-ligera.md) |
-| 5 | **Rondas automáticas**: el aviso cada 30 min resuelve choques de documentos de QA, avisa al móvil de choques de código, relanza si hay > 1 h 30 sin moverse | Hecho el 2026-11-18; vigilar que no se pare (se paró el 11-15, 11-16 y 11-18) | — | [qa/operacion.md](qa/operacion.md) |
-| 6 | **Guardias desactivadas** para todos (interruptor apagado) hasta que haya una lógica mejor; las copias de la Magnate ya no comen en el restaurante. Queda el alimentador de depredadores: Berón no ha dicho si se quita | Programado; probado en las rondas 122+; confirmar el alimentador | `edificios` | [alimentador.md](alimentador.md) |
-| 7 | **Fallo crónico de fauna (B-01)**: animales atascados > 20 s, dando vueltas o volcados (g50); y H6 (animales dentro de muebles), H5 (paseo sin salto) | Abierto; última batería 4770/0 el 2026-11-18, pero B-01 ha vuelto varias veces | — | [qa/casos.md](qa/casos.md) «Bugs y huecos», [qa/hallazgos.md](qa/hallazgos.md) |
+| 1 | **Piloto Elon Musk (Hawthorne 2008)** (PB-160): más detalle en la nave de SpaceX (máquinas y piezas, colores y materiales reales, gente trabajando, comedor); revisar la captura del interior que sale toda cian; rehacer, capturas y subir la web | En curso. Fases 0/0b y piloto hechos y en verde (1115 + 885), fusionados en `edificios` (860224a). Dos pasadas de detalle hechas; hacen falta más porque aún se ve vacío. Web en [ElonMusk](https://videnacry.github.io/Cold-sanctuary-web/microcosmos/ElonMusk/). Berón aún no ha dicho «me siento dentro» | `claude/escala-mitad` → `edificios` | [plan-microcosmos-realismo.md](plan-microcosmos-realismo.md) §4.1 fase 1 |
+| 2 | **Plan de realismo, fases 2–4** (PB-160): fase 2, prueba en vivo de las necesidades básicas en el piloto (dormir, retrete, comer, trabajar un día con `Fallbacks = 0`; `NeedsDriver` para los personajes de historia); fase 3, pilotos Descartes (Leiden 1637) y Atahualpa (Cajamarca 1532); fase 4, despliegue uno a uno al resto (NavMesh, muebles, puertas ≥ 1,2 m, muros con vista en corte, sin escaleras bajo 12 m) | Pendiente. Aprobado: insecto-humano a la mitad (s = 0,5) con patas recogidas, de pie con apoyo de abdomen, vuelven muros y techos | — | [plan-microcosmos-realismo.md](plan-microcosmos-realismo.md) §3–§5 |
+| 3 | **Retos de código en el resto de microcosmos** (PB-161): unos 5 por microcosmos con datos reales | Pendiente. La UI de CodeShip (menú árbol, Tareas con «Ir» y viaje automático, ventana de Áreas, retos, iniciación) está hecha y fusionada; CodeShipLogicTest g119 en verde; Musk tiene dos retos | `claude/ui-codeship` → `edificios` | plan §4 |
+| 4 | **Web: lo que queda** (PB-156): rehacer los 7 microcosmos sin la fauna recolocada (Bolivar, Egina, IrenaSendler, LeChambon, PlantaAtomica, SalaYoga, Scene0_SakshiRio); fallos reales de la prueba en la página: Goku a 3,0 m (escala), soldados de Tregua 1914 bajo el talud, cocinero de 2,5 m de Cleopatra (revisar), umbral de movimiento bajo en BillGates; que la prueba juzgue también escala y realismo | Pendiente. La web está hecha: [santuario + 61 microcosmos](https://videnacry.github.io/Cold-sanctuary-web/) en 3 builds gzip, una página por microcosmos con `?prueba=1` en Edge sin ventana; cada subida rehace el historial del repo de Pages (Berón, 11-16) | `claude/web-continua` | [web-prueba-hallazgos.md](web-prueba-hallazgos.md), [web-continua.md](web-continua.md), [web-ligera.md](web-ligera.md) |
+| 5 | **Rondas automáticas** (PB-158): la cadena «ronda continua» corre con commits nuevos en `peticiones-sonda`, `reparto-santuarios`, `escala-mitad` y `ui-codeship`; el aviso del escritorio, cada 30 min, resuelve choques solo de docs/qa, relanza y avisa al móvil de errores que bloquean | Hecho (11-16, ampliado el 11-18); vigilar que no se pare (se paró el 11-15, 11-16 y 11-18) | — | [qa/operacion.md](qa/operacion.md) OP-07 |
+| 6 | **Guardias desactivadas** para todos (PB-159, `WorkRoster.guardShifts` apagado) hasta una lógica mejor; los clones de la Magnate ya no salen en el restaurante (0 medidos) ni cuentan como comensales | Hecho y probado (g113, r127). Falta que Berón confirme el alimentador de depredadores (D4) | `edificios` | [alimentador.md](alimentador.md) |
+| 7 | ~~**Fallo crónico de fauna (B-01)**~~: resuelto con la primera batería limpia, 4770/0 (r127, 2026-11-18). Siguen inestables H6 (animales dentro de muebles) y H5 (paseo sin salto) | Vigilar que B-01 no vuelva (volvió varias veces) | — | [qa/casos.md](qa/casos.md) «Bugs y huecos», [qa/hallazgos.md](qa/hallazgos.md) |
 
 ## 2. Decisiones que esperan a Berón
 
@@ -33,8 +33,8 @@ Ramas (2026-11-18): la integración es `claude/edificios` (por delante de `maste
 | D1 | Valores de los bonusPacks de Irosene, Lizmibet y Linduarda (PB-140, HC-01) | [qa/casos.md](qa/casos.md) |
 | D2 | ¿«Alicia» es el nombre real de Alicita? (HC-03) | [personajes/alicita.md](personajes/alicita.md) |
 | D3 | Hora de la suite diaria de pruebas, porque Unity es compartido (HC-04) | [qa/operacion.md](qa/operacion.md) |
-| D4 | ¿Se quita también la copia de la Magnate que alimenta a los depredadores? | §1 fila 6 |
-| D5 | ¿Un repositorio de web por microcosmos cuando crezca? (ahora cabe en uno, ~190 MB) | [web-continua.md](web-continua.md) |
+| D4 | ¿Se quita también la copia de la Magnate que alimenta a los depredadores? Por ahora se queda (PB-159) | §1 fila 6 |
+| D5 | ¿Un repositorio de web por microcosmos cuando crezca? Se mencionó como opción futura; ahora cabe en uno (~190 MB) y su historial se rehace en cada subida | [web-continua.md](web-continua.md) |
 
 ## 3. Peticiones abiertas (falta código)
 
@@ -45,6 +45,8 @@ Ramas (2026-11-18): la integración es `claude/edificios` (por delante de `maste
 | PB-084 | 11-04 | Guardería o juego para Neo, con Ivelyna | [personajes-mesocosmos.md](personajes-mesocosmos.md) |
 | PB-107 | 11-05 | Que las turbinas no maten aves (cría de aves, figuras, dragón de drones, aves que avisan) | [energia.md](energia.md) |
 | PB-155 | 11-09 | ¿Por qué pesa más que GTA 5? 395 ms por fotograma en scripts: medir y bajar | [web-ligera.md](web-ligera.md), [known-issues.md](known-issues.md) |
+| PB-160 | 11-18 | Realismo de los microcosmos: fases 2–4 (§1 filas 1–2) | [plan-microcosmos-realismo.md](plan-microcosmos-realismo.md) |
+| PB-161 | 11-18 | Retos de código en el resto de microcosmos (§1 fila 3) | plan §4 |
 
 ## 4. Programado pero sin verificar en vivo
 
@@ -73,6 +75,8 @@ Están en código; falta una prueba con run log. Lista completa y al día en [qa
 | PB-134 | Quitar los árboles artificiales |
 | PB-138 | Focos brillantes en vivo: revisar medusas y todo |
 | PB-154 | Quitar las sombras o las columnas de los árboles |
+| PB-156 | Web ligera: hecha y probada con `?prueba=1` en Edge, fuera del TestRunner (falta run log) |
+| PB-160 / PB-161 | Piloto Musk (MIC-84…88) y CodeShip (CS, g119): en verde, falta apuntarlo en el registro con su run log |
 
 ## 5. Pendientes de diseño de largo plazo (sin fecha)
 

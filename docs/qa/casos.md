@@ -101,6 +101,7 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | JOR-52 | JOR | Regla J35: Partes iguales y nada a mañana (Berón 2026-11-08, corregido). Las horas de tareas de cada sitio se reparten por igual entre sus humanos, tan parejas como dejan las tareas, que no se parten (diferencia ≤ la tarea más larg… | SanctuaryLifeTest | 28 | J35 | — | manual §«Se comprueba en» |
 | JOR-53 | JOR | Regla J36: Quien pasa el día en otro santuario no se simula aquí (Berón 2026-11-08): su cuerpo se apaga y sus tareas corren por el reloj; vuelve el día que le toca la tierra y en las fiestas (actividades de todos a la vez). Las sal… | RepartoSantuariosTest | 113 | J36 | — | manual §«Se comprueba en», también g75 |
 | JOR-54 | JOR | Regla J37: Solo lo básico queda terminado (Berón 2026-11-09): los servicios básicos de humanos y animales (hospital, cocina, guardia, huerto, cría, carne cultivada, energía, mecánica), la construcción, el gimnasio y el yoga. Lo dem… | RepartoSantuariosTest | 113 | J37 | — | manual §«Se comprueba en» |
+| JOR-55 | JOR | Turnos de guardia desactivados para todos (Berón 2026-11-16): `WorkRoster.guardShifts` apagado por defecto; la patrulla y la sala de guardia no se reparten, ni a personas ni a clones; el alimentador no cuenta como guardia | RepartoSantuariosTest | 113 | — | PB-159 | añadido el 2026-11-18 |
 
 ## YOG · Yoga
 
@@ -427,6 +428,7 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | REN-06 | REN | Regla W14: Repartir trabajo entre frames, solo si no integra tiempo: lo que usa el `Time.deltaTime` de un frame (andar, entrenar, actuar) corre en cada frame; se reparte la búsqueda cara o se acumula el tiempo con `GameTick`. | JornadaTest | 50 | W14 | — | manual §«Se comprueba en», también g112 |
 | REN-07 | REN | Regla W15: Un MonoBehaviour que se guarda en la escena va en su propio archivo, con el nombre de la clase. | JornadaTest | 50 | W15 | — | manual §«Se comprueba en» |
 | REN-08 | REN | Regla W16: sistema de QA: catálogo, registro, peticiones, manual y pruebas cuadran (QaCheck) | QaCheckTest | 118 | W16 | — | manual §10; añadido a mano el 2026-11-13 |
+| REN-09 | REN | Web ligera (PB-156): santuario + 61 microcosmos en 3 builds WebGL gzip, joystick de cámara, una página por microcosmos y su prueba `?prueba=1` en Edge sin ventana (web-continua.md) | — | — | — | PB-156 | añadido el 2026-11-18 |
 
 ## PX · Recorridos en vivo
 
@@ -475,7 +477,7 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 
 | ID | Tipo | Qué | Casos | Dueño | Estado | Hallazgo |
 |---|---|---|---|---|---|---|
-| B-01 | Fallo | g50: fauna atascada > 20 s, dando vueltas o volcada. Falla en todas las rondas que corrieron g50 desde r71 (crónico) | CV-03, CV-05, ARB-86, JOR-19, JOR-22, JOR-39, JOR-45, JOR-48, JOR-49, REN-06, REN-07 | probador → trabajador de fauna | Abierto | H1 |
+| B-01 | Fallo | g50: fauna atascada > 20 s, dando vueltas o volcada. Falla en todas las rondas que corrieron g50 desde r71 (crónico) | CV-03, CV-05, ARB-86, JOR-19, JOR-22, JOR-39, JOR-45, JOR-48, JOR-49, REN-06, REN-07 | probador → trabajador de fauna | Resuelto en r127 (2026-11-18): g50 49/0 y suite 4770/0, la primera limpia | H1 |
 | B-02 | Fallo | El script de marcas vació docs/checklist.md y docs/auditoria-peticiones.md (82878fc): leía un temporal que no existía | OP-04 | probador | Arreglado en 1bdfe1c; falta el aviso automático (QaCheck §6.9) | H2 |
 | B-03 | Fallo | Ficheros sueltos en Unity tras cambiar de rama: TmpCheck y .cs que ya no están en git | OP-05 | probador | Arreglado con sync --prune (r83, r84); falta el aviso automático (QaCheck §6.10) | H3 |
 | HC-01 | Hueco | Valores de los bonusPacks de Irosene, Lizmibet y Linduarda: los decide Berón | PB-140 | Berón | Abierto | — |

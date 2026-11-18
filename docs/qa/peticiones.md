@@ -6,7 +6,7 @@ Cada petición de Berón, con su número fijo. **Una petición nueva entra el mi
 El **estado no se escribe a mano**: sale de sus casos en [registro.md](registro.md) (lo comprueba el comprobador):
 `Hecha` si todos sus casos están `Probado (…)`; `Doc` si solo pedía un doc o una regla; `Sin verificar` si alguno está en `Solo código` o `Sin probar`; `Abierta` si tiene un `HC` o le falta código.
 
-Las PB-001…PB-155 vienen de [auditoria-peticiones.md](../auditoria-peticiones.md) (el número es el mismo). La siguiente libre es **PB-156**.
+Las PB-001…PB-155 vienen de [auditoria-peticiones.md](../auditoria-peticiones.md) (el número es el mismo). Desde la PB-156 se anotan aquí directamente. La siguiente libre es **PB-162**.
 
 | PB | Fecha | Petición | Reglas | Casos | Estado | Origen |
 |---|---|---|---|---|---|---|
@@ -165,5 +165,11 @@ Las PB-001…PB-155 vienen de [auditoria-peticiones.md](../auditoria-peticiones.
 | PB-153 | 2026-11-09 | Sin insectos en el santuario 1 por ahora | — | FAU-14 | Hecha | auditoría #153: Verificado en vivo (2026-11-12) |
 | PB-154 | 2026-11-09 | Se pueden quitar las sombras o las columnas de los árboles | — | ARB-43 | Sin verificar | auditoría #154: Sin anotar |
 | PB-155 | 2026-11-09 | ¿Por qué pesa más que GTA5? (medido: 395 ms/frame de scripts) | — | REN-04 | Abierta | auditoría #155: Abierto |
+| PB-156 | 2026-11-13 | Web ligera para el móvil: santuario y microcosmos en WebGL, joystick de cámara, una página por microcosmos y subida continua | — | REN-09 | Sin verificar | Hecho: [Cold-sanctuary-web](https://videnacry.github.io/Cold-sanctuary-web/), santuario + 61 microcosmos en 3 builds gzip, cada página con `?prueba=1` (Edge sin ventana); el historial del repo de Pages se rehace en cada subida (Berón, 11-16). Falta run log ([web-continua.md](../web-continua.md)) |
+| PB-157 | 2026-11-13 | Sistema de QA como el de CodeShip (docs/qa, comprobador) | W16 | REN-08 | Hecha | QaCheck g118; se mantiene en cada ronda |
+| PB-158 | 2026-11-16 | Un vigilante que no deje pararse las pruebas | — | OP-07 | Doc | Hecho: cadena «ronda continua» con commits nuevos en peticiones-sonda, reparto-santuarios, escala-mitad y ui-codeship; desde el 11-18 el aviso del escritorio corre cada 30 min, resuelve choques solo de docs/qa, relanza y avisa al móvil de errores que bloquean |
+| PB-159 | 2026-11-16 | La Magnate fuera de las guardias → turnos de guardia desactivados para todos hasta una lógica mejor | — | JOR-55, CV-11 | Hecha | `WorkRoster.guardShifts` apagado por defecto; los clones de la Magnate ya no salen en el restaurante (0 medidos) ni cuentan como comensales. Queda el alimentador de depredadores hasta que Berón confirme |
+| PB-160 | 2026-11-18 | Realismo de los microcosmos: insectos-humanos a la mitad con patas recogidas, vuelven muros y techos con vista en corte, mesas de pie con apoyo, puertas ≥ 1,2 m, sin escaleras bajo 12 m, piloto Musk | M24, M43, M44, M45 | MIC-84, MIC-85, MIC-86, MIC-87, MIC-88 | Sin verificar | [plan-microcosmos-realismo.md](../plan-microcosmos-realismo.md), aprobado. Fases 0/0b y piloto Musk hechos y en verde (claude/escala-mitad, en edificios con 860224a); falta su run log. Faltan fase 2 (necesidades en vivo), fase 3 (Descartes, Atahualpa), fase 4 (despliegue uno a uno) y más detalle (aún se ve vacío) |
+| PB-161 | 2026-11-18 | Traer la UI de CodeShip: menú árbol, tareas con «Ir» y viaje automático, ventana de Áreas, retos de código, iniciación | — | CS-01, CS-20, CS-30, CS-40 | Sin verificar | claude/ui-codeship, fusionada; CodeShipLogicTest g119 en verde, falta su run log. Dos retos en Musk; faltan los retos del resto de microcosmos |
 
-**Recuento:** Abierta 6 · Doc 7 · Hecha 121 · Sin verificar 21 · total 155.
+**Recuento:** Abierta 6 · Doc 8 · Hecha 123 · Sin verificar 24 · total 161.

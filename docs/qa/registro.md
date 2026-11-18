@@ -298,6 +298,7 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | JOR-52 | Probado (suite g28) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g28 SanctuaryLifeTest 167/0 |
 | JOR-53 | Probado (suite g113) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g113 RepartoSantuariosTest 108/0 |
 | JOR-54 | Probado (suite g113) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g113 RepartoSantuariosTest 108/0 |
+| JOR-55 | Probado (suite g113) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g113 RepartoSantuariosTest 108/0 |
 | PER-06 | Probado (suite g95) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g95 PersonajesReglasTest 12/0 |
 | PER-07 | Probado (suite g28) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g28 SanctuaryLifeTest 167/0 |
 | PER-08 | Probado (suite g89) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g89 PillowFightTest 28/0 |
@@ -358,6 +359,7 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | FAU-31 | Probado (suite g99) | 2026-11-17 | 4127332 | [runs/2026-11-17-1900-r125-rapida-grupos-vivo-suite.md](runs/2026-11-17-1900-r125-rapida-grupos-vivo-suite.md) | — | r125: g99 TerritorioTest 80/0 |
 | FAU-32 | Probado (suite g85) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g85 CadenaAlimenticiaTest 58/0 |
 | REN-08 | Probado (suite g118) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g118 QaCheckTest 44/0 |
+| REN-09 | Solo código | 2026-11-18 | — | — | — | subido y probado con `?prueba=1` en Edge, fuera del TestRunner; falta su run log |
 | MIC-84 | Solo código | 2026-11-18 | — | — | — | claude/escala-mitad: programado y compilado; lo prueba el probador |
 | MIC-85 | Solo código | 2026-11-18 | — | — | — | claude/escala-mitad: programado y compilado; lo prueba el probador |
 | MIC-86 | Solo código | 2026-11-18 | — | — | — | claude/escala-mitad: programado y compilado; lo prueba el probador |
@@ -400,7 +402,7 @@ Checks concretos (el texto del `TestProbe.Check`), no casos enteros. Se mira en 
 
 | Check | Grupo | Estado | Rondas | B/HC | Dueño | Nota |
 |---|---|---|---|---|---|---|
-| fauna: ningún animal atascado > 20 s, dando vueltas o volcado | 50 | Crónico | r71–r80, r82, r83 (12 rondas con g50; r81 no corrió g50) | B-01 | probador → trabajador de fauna | contadores.md: 4, 12, 11, 9, 17, 27, 34, 5, 6, 10, 7, 14 |
+| fauna: ningún animal atascado > 20 s, dando vueltas o volcado | 50 | Resuelto (r127) | r71–r80, r82, r83 (12 rondas con g50; r81 no corrió g50); limpio en r127 (49/0) | B-01 | probador → trabajador de fauna | contadores.md: 4, 12, 11, 9, 17, 27, 34, 5, 6, 10, 7, 14 |
 | fauna: ningún animal dentro de muebles, en el agua sin ser acuático ni cayendo | 50 | Inestable | FAIL en r73, r78, r80, r82; pasa en r74–r77, r79, r83 | — | sin dueño | H6: falló y pasó en commits distintos; falta repetirlo en un mismo commit para confirmarlo |
 | un paseo sin salto posible descansa a propósito / …y prueba otra dirección (gira ≥ 90°) | 1 | Inestable | FAIL en r77 (6 líneas); pasa en r73–r75, r78, r79, r82, r83 | — | sin dueño | H5: falló y pasó en commits distintos; falta repetirlo en un mismo commit |
 | día 1/2: Kushal completa TODAS sus misiones | 50 | Inestable | FAIL en la suite 63 (d0542db); pasa en la suite r71 y en r72–r83 | — | sin dueño | runs/2026-11-12-1208-r63-retro.md |
