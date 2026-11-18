@@ -283,6 +283,12 @@ public class FaunaChecks : MonoBehaviour, ITestUnit
             TestProbe.Check("giros seguidos: los dos primeros quedan a ≤ 120° de donde iba (uno a cada lado), no de vuelta", ok, $"peor {worst:0}°");
         }
 
+        // ── (2026-11-18, ronda 126) UN PASEO TIENE TOPE: 3 veces lo que tardaría, al menos 10 s (reno #94, cría: 32 s en un salto de 5 m) ──
+        {
+            float corto = DesireCatalog.StrollCap(5f, 5f), lento = DesireCatalog.StrollCap(15f, 1f), parado = DesireCatalog.StrollCap(5f, 0f);
+            TestProbe.Check("tope del paseo: 5 m a 5 m/s → 10 s; 15 m a 1 m/s → 45 s; sin velocidad no es infinito", Mathf.Approximately(corto, 10f) && Mathf.Approximately(lento, 45f) && parado <= 30f, $"{corto:0.0}/{lento:0.0}/{parado:0.0}");
+        }
+
         TestProbe.End();
     }
 }
