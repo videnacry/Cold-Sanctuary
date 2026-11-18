@@ -57,5 +57,6 @@ public static class TestPresetsData
         ("TestPipelineTest", 17, 0f),
         ("QaCheckTest", 118, 0f),   // (2026-11-13) el comprobador de QA, docs/qa-propuesta.md §5 N1
         ("CodeShipLogicTest", 119, 0f),   // (2026-11-18) retos de código, lista de tareas y viaje (lógica pura)
+        ("ChoreLibraryTest", 120, 0f),   // (2026-11-18) biblioteca de misiones por retos de código (CodeShip chores) y las de Hawthorne
     };
 }

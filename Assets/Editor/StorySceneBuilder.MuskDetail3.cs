@@ -60,7 +60,7 @@ public static partial class StorySceneBuilder
         Prop(fac, "Salida_de_emergencia", new Vector3(0f, 2.75f, -hz + 0.2f), new Vector3(1.2f, 0.3f, 0.04f), green, false);
 
         // ── PIEZAS DEL FALCON 1 en el suelo (donde no cortan el paso) ──
-        foreach (var (x, z, w, d) in new[] { (-20.6f, -13.6f, 1.2f, 2.4f), (-5f, 12.6f, 1.2f, 1.0f), (21f, 14f, 1.0f, 1.4f) })
+        foreach (var (x, z, w, d) in new[] { (-5f, 12.6f, 1.2f, 1.0f), (21f, 14f, 1.0f, 1.4f) })
         {
             Prop(fac, "Caja_de_transporte", new Vector3(x, 0.55f, z), new Vector3(w, 1.1f, d), wood, true);
             Prop(fac, "Rotulo_de_la_caja", new Vector3(x, 0.8f, z - d * 0.5f - 0.01f), new Vector3(w * 0.6f, 0.25f, 0.01f), black, false);
@@ -89,6 +89,40 @@ public static partial class StorySceneBuilder
         Piece(fac, "cama", new Vector3(-10f, 0f, -5.5f), 0f, "Catre de los turnos de noche (supuesto)", null, station: false);
         Transform fruit = CivicBuilder.FruitTree(fac, fac.name.GetHashCode());
         fruit.localPosition = new Vector3(-17f, 0f, -hz - 6.5f);   // fuera, junto a la fachada (dentro su copa no guardaba los 2,4 m)
+
+        // ── (2026-11-18) LOS SITIOS QUE PIDEN LAS MISIONES DE CODESHIP (MissionSites, claude/ui-codeship 76a2c98), con su nombre exacto ──
+        // El BOTIQUÍN: armario de pared con su cruz, el desfibrilador (DEA), el lavaojos y un taburete, en la cara de fuera del tabique de los
+        // aseos (se llega desde la planta; supuesto de sitio: los botiquines de pared y el lavaojos son obligatorios en un taller, Cal/OSHA).
+        Transform kit = new GameObject("Botiquín de primeros auxilios").transform; kit.SetParent(fac, false); kit.localPosition = new Vector3(16.8f, 0f, -12f);
+        kit.localRotation = Quaternion.Euler(0f, 90f, 0f);   // de espaldas al tabique (+x): su frente mira al oeste, a la planta
+        Prop(kit, "Armario_del_botiquin", new Vector3(0f, 1.45f, 0.08f), new Vector3(0.6f, 0.7f, 0.15f), white, false);
+        Prop(kit, "Cruz_roja", new Vector3(0f, 1.5f, -0.005f), new Vector3(0.24f, 0.07f, 0.01f), red, false);
+        Prop(kit, "Cruz_roja", new Vector3(0f, 1.5f, -0.006f), new Vector3(0.07f, 0.24f, 0.01f), red, false);
+        Prop(kit, "Desfibrilador (DEA)", new Vector3(0.75f, 1.3f, 0.06f), new Vector3(0.35f, 0.4f, 0.12f), M("Verde_DEA", 0.1f, 0.55f, 0.35f), false);
+        Prop(kit, "Lavaojos", new Vector3(-0.8f, 1.1f, 0.08f), new Vector3(0.3f, 0.45f, 0.15f), yellow, false);
+        Prop(kit, "Taburete_de_curas", new Vector3(0f, 0.25f, -0.6f), new Vector3(0.35f, 0.5f, 0.35f), steel, false);
+        Text3D(kit, "PRIMEROS AUXILIOS", new Vector3(0f, 1.95f, -0.005f), 0.02f, Color.black);
+
+        // La ESTERILLA DE YOGA, junto a los catres (se pisa: no cuenta para el paso), con su puesto «esterilla».
+        Transform yoga = Piece(fac, "esterilla", new Vector3(-14f, 0f, -8f), 0f, "Esterilla de yoga", new Vector2(0.9f, 1.9f));
+        yoga.name = "Esterilla de yoga";
+        if (yoga.GetComponent<AreaFunctionStation>() == null) yoga.gameObject.AddComponent<AreaFunctionStation>().station = "esterilla";
+
+        // El RINCÓN DE GIMNASIO del turno de noche (supuesto), FUERA junto al muro norte (dentro no queda sitio con 2,4 m de paso): cinta,
+        // bicicleta estática y rack con barra y discos, y el «kit de la NASA» (banda elástica, colchoneta). Su puesto «muneco» (la clave de
+        // entrenamiento que busca MissionSites) va en la raíz.
+        Transform gym = new GameObject("Rincón de gimnasio").transform; gym.SetParent(fac, false); gym.localPosition = new Vector3(-8f, 0f, hz + 4f);
+        Prop(gym, "Losa_del_rincon", new Vector3(0f, 0.04f, 0f), new Vector3(7f, 0.08f, 4f), M("Caucho_gimnasio", 0.15f, 0.15f, 0.16f), false);
+        Prop(gym, "Cinta_de_correr", new Vector3(-2.3f, 0.35f, 0f), new Vector3(0.8f, 0.3f, 1.9f), dark, true);
+        Prop(gym, "Consola_de_la_cinta", new Vector3(-2.3f, 1.25f, 0.85f), new Vector3(0.7f, 0.3f, 0.1f), dark, false);
+        Prop(gym, "Bicicleta_estatica", new Vector3(0f, 0.5f, 0f), new Vector3(0.5f, 1.0f, 1.2f), M("Gris_bici", 0.4f, 0.42f, 0.45f), true);
+        for (int s = -1; s <= 1; s += 2) Prop(gym, "Poste_del_rack", new Vector3(2.4f + s * 0.6f, 1.1f, 0f), new Vector3(0.08f, 2.2f, 0.08f), steel, true);
+        Prop(gym, "Barra_con_discos", new Vector3(2.4f, 1.4f, 0f), new Vector3(1.8f, 0.04f, 0.04f), steel, false);
+        for (int s = -1; s <= 1; s += 2) Prop(gym, "Disco", new Vector3(2.4f + s * 0.75f, 1.4f, 0f), new Vector3(0.05f, 0.45f, 0.45f), black, false);
+        Prop(gym, "Colchoneta (kit NASA)", new Vector3(0f, 0.1f, 1.5f), new Vector3(1.8f, 0.04f, 0.6f), blue, false);
+        Prop(gym, "Banda_elastica (kit NASA)", new Vector3(0.6f, 0.13f, 1.5f), new Vector3(0.6f, 0.02f, 0.05f), M("Rojo_banda", 0.8f, 0.2f, 0.2f), false);
+        gym.gameObject.AddComponent<AreaFunctionStation>().station = "muneco";
+        Label(gym, "Rincón de gimnasio (turno de noche, supuesto)", 2.4f);
     }
 
     /// <summary>Un RÓTULO colgado (panel, letras y dos cables al techo), legible desde la puerta (mira al sur).</summary>

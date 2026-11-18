@@ -115,3 +115,70 @@ Los ocho pasos, en orden:
 - Satellite Today (29-9-2008): la hora, 16:15 PDT desde Omelek.
 - USFWS y Gobierno de las Islas Marshall, flora y fauna de los atolones (cocotero, *Scaevola*, *Pemphis*, *Ocypode*, *Coenobita*).
 - Supuestos marcados en el código y en la ficha de la historia.
+
+## 4. Cambio de foco (Berón, 2026-11-18 21:54): solo Hawthorne 2008, con todo su realismo
+
+> «De momento la idea era solo reconstruir un fragmento, para que el esfuerzo se concentre allí… Elon puede ser la portada, pero en realidad quienes crean las naves son los trabajadores, los científicos, y quizás hay otras variantes como la producción de alimentos o la seguridad urbana… existen muchos sistemas, animales, personas, bacterias, plantas, etc. que han aportado a los viajes espaciales».
+
+**Omelek queda aparcado.** El código se queda como está, sin más trabajo; el esfuerzo va a Hawthorne 2008.
+
+### Lo que ya hay en Hawthorne (lotes 1 y 2), con su nombre fijo para las misiones de CodeShip
+
+Los sitios son objetos de la escena: las misiones se enganchan por su **nombre exacto**. La columna «Puesto» es la clave de `AreaFunctionStation` cuando la tiene.
+
+| Tema | Nombre exacto del objeto | Puesto | Quién lo usa | Fuente o supuesto |
+|---|---|---|---|---|
+| Salud | `Botiquín de primeros auxilios` (armario, DEA, lavaojos, taburete) | — | Todos | Supuesto (Cal/OSHA exige botiquín y lavaojos en un taller) |
+| Gimnasio | `Rincón de gimnasio` (cinta, bicicleta, rack, kit NASA), fuera, junto al muro norte | `muneco` | Turno de noche | Supuesto |
+| Yoga | `Esterilla de yoga` | `esterilla` | Turno de noche | Supuesto |
+| Barrio | `Cochinilla hormiguera` (el perro, con cuenco y correa), delante de la primera `Casa de Hawthorne` | — | Vecinos | Fauna del pueblo |
+| Fabricar | `Soldadura por fricción (FSW): tanque del Falcon 9`, en la `Nave anexa (tanques del Falcon 9, materiales y datos de pruebas)` | — | `Soldador de FSW (Prometeo)` | The Fabricator, sept. y nov. de 2008 (FSW de aluminio-litio, cabezal de pasador retráctil Nova-Tech); Satellite Today, 24-11-2008 (Falcon 9 y Dragon en la misma planta). La nave anexa: supuesto de sitio |
+| Fabricar | `Torno de control numérico`, `Banco de mecanizado: válvulas e inyectores del Merlin`, `Banco del Merlin 1C`, `Banco de aviónica`, `Banco de composite (la cofia)` | `torno`, `banco_taller` | Trabajadores de la nave | The Fabricator 2008 (taller de máquinas propio) |
+| Ciencia | `Laboratorio de materiales` (máquina de tracción, probetas, microscopio, durómetro) | — | `Científica de materiales (Temis)` | Supuesto de sitio |
+| Ciencia | `Sala de datos de pruebas (propulsión)` (gráficas de McGregor) | — | `Ingeniero de datos de pruebas (Ceo)` | Los Merlin se probaban en McGregor (Texas); la sala, supuesto |
+| Ciencia | `Consola de datos del vuelo 3`, `Pizarra: la secuencia del vuelo 4` | `consola`, `pizarra` | Ingeniería | Ya existían |
+| Bacterias | `Sala limpia de aviónica`, `Vestuario de la sala limpia` (buzos, calzas, alfombra adhesiva) | — | Aviónica | Supuesto (ISO 8) |
+| Bacterias | `Dispensador de gel hidroalcohólico` (en la entrada, el comedor y el vestuario), `Lavamanos de la cocina (higiene)` | — | Todos | — |
+| Bacterias | `Pozo de registro (alcantarillado del condado)` | — | — | Hawthorne pertenece a los Sanitation Districts del Condado; su red (Joint Outfall System) depura en Carson, en el A. K. Warren Water Resource Facility (lacsd.org) |
+| Comida | `Cocina de la nave (supuesto)`, `Cámara frigorífica de la cocina`, `Tarjeta de inspección sanitaria (A)` | `cocina` | `Cocinera de la nave` | Las letras de inspección del Condado de Los Ángeles existen desde 1998 |
+| Comida | `Comedor: mesa alta con apoyos de abdomen (C1)` | `mesa` | Todos | — |
+| Comida | `Entrega de comida en el muelle`, `Furgoneta del proveedor de comida (supuesto)` | — | `Encargado de envíos (Hermes)` | Supuesto |
+| Comida | `Lonchera (camión de comida)`, en la calle | — | `Cocinera de la lonchera (Deméter)` | Supuesto (las loncheras de los polígonos de Los Ángeles) |
+| Seguridad | `Garita de seguridad (1 Rocket Road)` (barrera y lector de tarjetas) | — | `Guardia de seguridad (Eolo)` | Supuesto |
+| Seguridad | `Cruce de Crenshaw Boulevard y Rocket Road (semáforos)`, `Patrulla de la policía de Hawthorne` | — | — | Hawthorne PD, 12501 S. Hawthorne Blvd. (hawthornepolice.com) |
+| Seguridad | `Bomberos` del plano, en Crenshaw al sur de la calle 120 | — | — | Estación 162 del Condado, 12151 S. Crenshaw Blvd. (locator.lacounty.gov) |
+| Limpieza | Recorrido por el lavamanos de la cocina, el vestuario y la cámara frigorífica | — | `Limpiadora de la nave (Hestia)` | — |
+| Entorno | `Aeropuerto municipal de Hawthorne (Jack Northrop Field)`, de fondo | — | — | Pista 07/25 de 4884 × 100 ft (1489 × 30 m) |
+
+**Lo vivo** (MicroBiome «Hawthorne»):
+- **Árboles:** palmeras de abanico, jacarandas y laurel de Indias (*Ficus microcarpa*) en las calles; césped.
+- **Malas hierbas:** garranchuelo y malva en las aceras y los solares.
+- **Animales:** cuervo americano, paloma bravía y gaviota occidental, cada uno como una mariquita de su color; la ardilla zorro, como una cochinilla rojiza; la cucaracha americana del alcantarillado y la hormiga argentina en las aceras.
+
+### Lote 3 (2026-11-18): la jornada de cada oficio y el supermercado
+
+**Turnos de 2008.** En la nave se trabajaba las 24 horas para el vuelo 4 (Satellite Today). Ahora cada trabajador tiene su oficio (`MicroJornada.trade`), su puesto fijo (`MicroJornada.post`, el nombre exacto de la estación) y la hora a la que empieza su turno (`MicroJornada.shiftStart`). El horario (trabajo, comida, trabajo, práctica y casa) se desplaza con el turno. En los bloques de trabajo, cada uno va a su puesto y no al primero libre.
+
+| Trabajador | Oficio | Puesto | Turno |
+|---|---|---|---|
+| Ingeniero de aviónica y Técnico de aviónica | aviónica | `Banco de aviónica` | mañana (8 h) |
+| Ingeniera de software de vuelo | software | `Puesto de ingeniería (software de vuelo)` | mañana (8 h) |
+| Laminadora de composite | composite | `Banco de composite (la cofia)` | mañana (8 h) |
+| Maquinista del torno CNC | maquinista | `Torno de control numérico` | mañana (8 h) |
+| Ingeniera de propulsión (pruebas) | propulsión | `Puesto de ingeniería (propulsión)` | mañana (8 h) |
+| Ingeniero de estructuras | estructuras | `Pizarra: la secuencia del vuelo 4` | mañana (8 h) |
+| Cocinera de la nave | cocina | `Cocina de la nave (supuesto)` | mañana (8 h) |
+| Controladora de misión (turno de tarde) | control | `Consola de telemetría` | tarde (14 h) |
+| Técnico de motores | motores | `Banco del Merlin 1C` | noche (20 h) |
+| Técnica de integración | integración | `Herramientas y llaves dinamométricas` | noche (20 h) |
+| Inspectora de calidad | calidad | `Banco de mecanizado: válvulas e inyectores del Merlin` | noche (20 h) |
+
+Los del turno de noche duermen de día en `NightShiftHome`. Al construir, se escribe en la consola una línea `[Jornada micro] Hawthorne: …` por cada trabajador. MIC-89 comprueba que cada trabajador está en su puesto.
+
+**El supermercado del barrio (supuesto).** No se ha encontrado qué supermercado había en 2008 junto a Crenshaw y la calle 120, así que se ha puesto uno de cadena de la época: `Supermercado del barrio`. Tiene `Caja registradora 1`, `Caja registradora 2`, `Frutas y verduras`, `Pasillo de conservas`, `Pasillo de cereales y pan`, `Productos de limpieza` y `Cámara de lácteos y congelados`. Lo atiende la `Cajera del supermercado`. Detrás está el `Camión del distribuidor (reparto al supermercado)`, con su plataforma elevadora y tres palés de cajas.
+
+### Lo siguiente (propuesto)
+
+- **Limpieza, envíos y seguridad:** darles también un puesto y un turno fijos.
+- **Más fauna:** en las palmeras y en los solares.
+- **El nombre real del supermercado**, si aparece una fuente.

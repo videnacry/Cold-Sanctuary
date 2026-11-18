@@ -401,6 +401,43 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | CS-40 | Probado (suite g119) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: g119 CodeShipLogicTest 25/0 |
 | CS-41 | Probado (suite g119) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: g119 CodeShipLogicTest 25/0 |
 | CS-42 | Probado (suite g119) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: g119 CodeShipLogicTest 25/0 |
+| JOR-55 | Probado (suite g113) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g113 RepartoSantuariosTest 108/0 |
+| PER-25 | Sin probar | 2026-11-18 | — | — | — | en curso: falta código |
+| REN-09 | Solo código | 2026-11-18 | — | — | — | subido y probado con `?prueba=1` en Edge, fuera del TestRunner; falta su run log |
+| MIC-99 | Sin probar | 2026-11-18 | — | — | — | en curso: falta código |
+| CS-50 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-51 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-52 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-53 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-54 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-55 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-56 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-57 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-58 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-60 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-61 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-62 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-63 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-64 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-65 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-70 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-71 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-72 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-73 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-74 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-75 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-80 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-81 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-90 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-91 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-92 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-93 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-94 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-95 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-85 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-86 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-87 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-43 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship: MissionLibrary + StationMissions + StepAnimator (ChoreLibraryTest g120, CS-50…CS-95); lo prueba el probador |
 
 **Recuento:** No aplica 8 · Parcial 9 · Probado (retro) 285 · Sin probar 31 · Solo código 16 · total 349.
 

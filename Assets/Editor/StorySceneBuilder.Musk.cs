@@ -144,6 +144,7 @@ public static partial class StorySceneBuilder
         var site = fac.gameObject.AddComponent<AreaFunctionSite>(); site.building = "Taller"; site.title = "Fábrica de SpaceX (1 Rocket Road)"; site.region = CivicBuilder.Region;
         site.notHome = true;   // no es una vivienda: el reparto de hogares no le rehace los muebles (su hogar del turno de noche lo pone HawthorneTown)
         int extraFolk = MuskDetail(t, fac);   // (piloto 2) el detalle: grúa, estanterías, bancos, cubículos, marcas, fachada, muelle, aparcamiento y palmeras
+        extraFolk += MuskCity(t, fac);   // (2026-11-18, Berón: los trabajadores, la ciencia, la comida, la seguridad y lo vivo)
         CivicBuilder.Tag(site);
         CutawayView.Ensure(fac);   // (otra vez, ya con los tabiques de los aseos: la vista de corte los recoge también)
         Label(fac, "Fábrica de SpaceX (1 Rocket Road, Hawthorne)", 10f);
