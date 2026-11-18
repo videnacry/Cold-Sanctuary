@@ -76,7 +76,9 @@ public static partial class StorySceneBuilder
         //    (22,25 m el cohete entero con el Merlin 1C y 1,7 m de diámetro; la primera etapa, ~16 m: supuesto de proporción)
         Transform stage = new GameObject("Falcon 1 (vuelo 5) en su cuna").transform; stage.SetParent(fac, false); stage.localPosition = new Vector3(-11f, 0f, 9f);
         Prop(stage, "Primera etapa del Falcon 1 (16 m × 1,7 m)", new Vector3(0f, 1.25f, 0f), new Vector3(16f, 1.7f, 1.7f), white);
-        Prop(stage, "Banda azul de la interetapa", new Vector3(7.6f, 1.25f, 0f), new Vector3(0.8f, 1.72f, 1.72f), navy, false);
+        Prop(stage, "Interetapa negra (fibra de carbono)", new Vector3(7.6f, 1.25f, 0f), new Vector3(0.9f, 1.72f, 1.72f), M("Negro_interetapa", 0.06f, 0.06f, 0.07f), false);
+        Prop(stage, "Letras SpaceX de la etapa", new Vector3(1.5f, 1.25f, -0.86f), new Vector3(3.2f, 0.4f, 0.01f), navy, false);
+        Prop(stage, "Bandera de EE. UU. de la etapa", new Vector3(-2.5f, 1.4f, -0.86f), new Vector3(0.9f, 0.5f, 0.01f), M("Bandera_azul", 0.15f, 0.2f, 0.45f), false);
         Prop(stage, "Tobera del Merlin 1C", new Vector3(-8.6f, 1.25f, 0f), new Vector3(1.2f, 1.1f, 1.1f), copper, false);
         for (int k = 0; k < 3; k++) Prop(stage, "Cuna", new Vector3(-6f + k * 6f, 0.2f, 0f), new Vector3(0.6f, 0.4f, 2.2f), steel);
         Prop(stage, "Motor Kestrel (segunda etapa) en su soporte", new Vector3(-3f, 0.6f, 3.2f), new Vector3(0.6f, 1.2f, 0.6f), copper);
@@ -111,7 +113,9 @@ public static partial class StorySceneBuilder
         }
 
         // ── 4 · LA PLANTA DE CUBÍCULOS (sureste): el cubículo de Musk entre los ingenieros, con sus pósteres de Marte ──
-        Transform cube = Piece(fac, "mesa", new Vector3(6f, 0f, -8f), 0f, "Cubículo de Elon Musk (con los pósteres de Marte)", null, null, both);
+        // (2026-11-18, piloto 2) Los escritorios son PUESTOS de 2008 (tres LCD) con su tarima, no mesas de comer.
+        Transform cube = Piece(fac, "consola", new Vector3(6f, 0f, -8f), 0f, "Cubículo de Elon Musk (con los pósteres de Marte)", new Vector2(1.6f, 0.7f));
+        WorkPlatform(fac, cube, 0.76f, 1.6f, steel);
         Prop(fac, "Mampara del cubículo", new Vector3(6f, 0.7f, -11.2f), new Vector3(2.2f, 1.4f, 0.06f), M("Mampara_gris", 0.55f, 0.57f, 0.6f), false);
         for (int k = -1; k <= 1; k += 2) Prop(fac, "Póster de Marte", new Vector3(6f + k * 0.55f, 1.0f, -11.16f), new Vector3(0.6f, 0.8f, 0.01f), mars, false);
 
@@ -124,9 +128,9 @@ public static partial class StorySceneBuilder
 
         // 3 · LAS TRES COSAS QUE MIRAR antes del vuelo 4 (entre los cubículos y el cristal del control).
         var fixes = Items(fac, steel, new Vector3(0.7f, 0.9f, 0.7f),
-            ("Motor Merlin 1C (empuje residual tras el apagado)", new Vector3(8f, 0.45f, -3f)),
-            ("Interetapa (la separación)", new Vector3(11.5f, 0.45f, -3f)),
-            ("Secuencia de vuelo (la espera antes de separar)", new Vector3(15f, 0.45f, -3f)));
+            ("Motor Merlin 1C (empuje residual tras el apagado)", new Vector3(-16f, 0.45f, -3f)),
+            ("Interetapa (la separación)", new Vector3(-4f, 0.45f, 6f)),
+            ("Secuencia de vuelo (la espera antes de separar)", new Vector3(15.5f, 0.45f, -10.5f)));
 
         // ── 5 · LOS ASEOS (sureste, tras su tabique): retrete y lavamanos a la medida del insecto-humano ──
         Piece(fac, "inodoro", new Vector3(19.8f, 0f, -12.5f), 0f, "Aseo", null, station: false);
@@ -134,15 +138,17 @@ public static partial class StorySceneBuilder
 
         // La nave es UN edificio (taller), con su puerta, su vista de corte y sus etiquetas (Civilize las rehace con lo demás).
         var site = fac.gameObject.AddComponent<AreaFunctionSite>(); site.building = "Taller"; site.title = "Fábrica de SpaceX (1 Rocket Road)"; site.region = CivicBuilder.Region;
+        int extraFolk = MuskDetail(t, fac);   // (piloto 2) el detalle: grúa, estanterías, bancos, cubículos, marcas, fachada, muelle, aparcamiento y palmeras
         CivicBuilder.Tag(site);
         CutawayView.Ensure(fac);   // (otra vez, ya con los tabiques de los aseos: la vista de corte los recoge también)
         Label(fac, "Fábrica de SpaceX (1 Rocket Road, Hawthorne)", 10f);
 
         // ── 6 · EL APARCAMIENTO (al oeste, fuera): el Tesla Roadster de 2008 (se sube con F y se conduce) ──
         Transform lot = Spot(t, "Aparcamiento de SpaceX", new Vector3(-30f, 0f, 6f), "Aparcamiento de Rocket Road", 2.5f);
-        Prop(lot, "Asfalto", new Vector3(0f, 0.02f, 0f), new Vector3(10f, 0.04f, 16f), asphalt, false);
-        for (int k = -1; k <= 2; k++) Prop(lot, "Raya de aparcamiento", new Vector3(0f, 0.045f, k * 4f - 2f), new Vector3(5.5f, 0.01f, 0.12f), paint, false);
-        Roadster(t, new Vector3(-30f, 0f, 4f), 90f, M("Rojo_Roadster", 0.7f, 0.08f, 0.08f), dark);
+        Prop(lot, "Asfalto", new Vector3(0f, 0.02f, 0f), new Vector3(12f, 0.04f, 26f), asphalt, false);
+        for (int k = 0; k <= 9; k++) for (int s = -1; s <= 1; s += 2) Prop(lot, "Raya de aparcamiento", new Vector3(s * 3.2f, 0.045f, -12f + k * 2.7f), new Vector3(5.2f, 0.01f, 0.12f), paint, false);
+        ParkedCars(lot);
+        Roadster(t, new Vector3(-33.2f, 0f, 6.15f), 90f, M("Rojo_Roadster", 0.7f, 0.08f, 0.08f), dark);
 
         // ── La gente: insectos-humanos. Musk, un SALTAMONTES (el salto es un lanzamiento: guarda energía en las patas y la suelta de
         //    golpe), con la camiseta negra de su versión humana. (Who recibe la estatura de la persona: el cuerpo, a la mitad.)
@@ -153,7 +159,7 @@ public static partial class StorySceneBuilder
         GameObject launch = Who(t, "Director de lanzamiento (Héspero)", F(12f, 3.8f), false); CubeInsect.WearShirt(launch, polo);
         GameObject tech = Who(t, "Técnico de la nave (Atlas)", F(-12f, 5f), false); CubeInsect.WearShirt(tech, new Color(0.3f, 0.32f, 0.36f)); Routine(tech, floorSpot, data);
         GameObject welder = Who(t, "Soldadora de tanques (Ruth)", F(-4f, 12.5f), true); CubeInsect.WearShirt(welder, new Color(0.45f, 0.4f, 0.32f)); Routine(welder, floorSpot);
-        int n = 5;
+        int n = 5 + extraFolk;
 
         Mission(t, "Elon Musk y el Falcon 1: a la cuarta, órbita (2008)", StoryMission.Marga.Stats, 60f,
             new[]
