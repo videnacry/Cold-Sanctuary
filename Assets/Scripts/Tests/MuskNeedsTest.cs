@@ -75,7 +75,10 @@ public class MuskNeedsTest : MonoBehaviour, ITestUnit
         int jf0 = MicroJornada.Fallbacks, hf0 = HomeNeedSpell.Fallbacks;
         PersonLife.OnEvent += OnEvent;
         // 1 · Trabajan.
-        tc.SetClock(tc.Day + 1, WorkRoster.StartHour + 1.2f);
+        // (2026-11-18) Su turno: el del turno de noche empieza a las 20:00 (CivicBuilder.Trades); todo el día simulado se corre con él.
+        float s0 = crew[0].shiftStart;
+        float H(float rel) => Mathf.Repeat(s0 + rel, 24f);
+        tc.SetClock(tc.Day + 1, H(1.2f));
         foreach (MicroJornada j in crew) j.ChooseNow("trabajo");
         MicroJornada worker = null;
         float stop = Time.realtimeSinceStartup + 90f;
@@ -85,11 +88,11 @@ public class MuskNeedsTest : MonoBehaviour, ITestUnit
                 if (j.Station != null && Flat(j.transform.position - MicroJornada.WorkSpotOf(j.Station, j.transform.position)) < 1.0f) { worker = j; break; }
             yield return null;
         }
-        TestProbe.Check("[MIC-89] trabajan: a las 9 llegan andando a su puesto de la nave", worker != null,
+        TestProbe.Check("[MIC-89] trabajan: a la hora de su turno llegan andando a su puesto de la nave (el de su oficio)", worker != null && (string.IsNullOrEmpty(worker.post) || worker.Station.name == worker.post),
             worker != null ? $"«{worker.name}» en «{worker.Station.station}» ({worker.Doing})" : string.Join("; ", crew.Select(j => $"{j.name}: {(j.Station != null ? j.Station.station : "sin puesto")} a {(j.Station != null ? Flat(j.transform.position - MicroJornada.WorkSpotOf(j.Station, j.transform.position)) : -1f):0.0} m")));
 
         // 2 · Comen, en la mesa alta con apoyos de abdomen.
-        tc.SetHour(WorkRoster.StartHour + WorkRoster.FirstBlock + 0.05f);
+        tc.SetHour(H(WorkRoster.FirstBlock + 0.05f));
         foreach (MicroJornada j in crew) { Body(j, hunger: 0.7f); j.ChooseNow("comida"); }
         yield return WaitFor("comer", 150f);
         var eat = _events.FirstOrDefault(e => e.key == "comer");
@@ -99,7 +102,7 @@ public class MuskNeedsTest : MonoBehaviour, ITestUnit
             eat.who == null ? "nadie comió" : $"«{eat.who.name}» junto a «{(table != null ? table.name : "ninguna mesa a 3 m")}»");
 
         // 3 · Van al retrete de la nave.
-        tc.SetHour(WorkRoster.StartHour + WorkRoster.FirstBlock + WorkRoster.LunchHours + 0.3f);
+        tc.SetHour(H(WorkRoster.FirstBlock + WorkRoster.LunchHours + 0.3f));
         foreach (MicroJornada j in crew) Body(j, toilet: 0.95f);
         yield return WaitFor("bano", 120f);
         var wc = _events.FirstOrDefault(e => e.key == "bano");
@@ -108,7 +111,7 @@ public class MuskNeedsTest : MonoBehaviour, ITestUnit
             wc.who == null ? "nadie fue al baño" : $"«{wc.who.name}» a {(home != null && home.toilet != null ? Flat(wc.at - home.toilet.position) : -1f):0.0} m del retrete");
 
         // 4 · Duermen en su catre de la nave.
-        tc.SetHour(22.5f);
+        tc.SetHour(H(10.5f));   // su «noche»: el bloque de casa de su turno
         foreach (MicroJornada j in crew) if (j.TryGetComponent(out Anima a)) a.sleepiness = 0.9f;
         yield return WaitFor("dormir", 150f);
         var sl = _events.FirstOrDefault(e => e.key == "dormir");
