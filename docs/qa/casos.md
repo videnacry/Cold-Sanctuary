@@ -419,6 +419,38 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | CS-40 | CS | los retos de la escena están en su historia, cada uno con su sitio | CodeShipLogicTest | 119 | — | — | claude/ui-codeship (plan-microcosmos-realismo.md §4); añadido el 2026-11-18 |
 | CS-41 | CS | se llega al paso del reto | CodeShipLogicTest | 119 | — | — | claude/ui-codeship (plan-microcosmos-realismo.md §4); añadido el 2026-11-18 |
 | CS-42 | CS | acertar el reto cumple el paso de la historia | CodeShipLogicTest | 119 | — | — | claude/ui-codeship (plan-microcosmos-realismo.md §4); añadido el 2026-11-18 |
+| CS-50 | CS | todas las plantillas están bien formadas (retos válidos, fuente, título) | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-51 | CS | los ids no se repiten | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-52 | CS | están todas las clases que pidió Berón y las de los puestos de la nave | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-53 | CS | cada grupo de la lista de tareas tiene alguna misión | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-54 | CS | una tarea empieza en su primer reto, con 2 fallos de margen (CodeShip) | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-55 | CS | repetir la misma respuesta mala cuenta un fallo, no dos | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-56 | CS | un acierto pasa al siguiente reto | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-57 | CS | el último acierto la termina | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-58 | CS | dos fallos distintos la hacen fallar (hay que reintentar) | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-60 | CS | un reto por paso | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-61 | CS | «{bien/mal/mal}» pide el valor, con su unidad | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-62 | CS | los demás preguntan qué viene ahora, con los dos pasos de antes como código | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-63 | CS | todos los retos de la cadena validan | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-64 | CS | la opción buena va en un sitio que solo depende del id (estable) | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-65 | CS | «lava las hojas» → lavaLasHojas(); | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-70 | CS | la curva: fácil 3 ideas, paciencia 5, 4 bloques, sin distracciones, concepto 1 | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-71 | CS | la curva: difícil 8 ideas, paciencia 2, 10 bloques, con distracciones, concepto 10 | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-72 | CS | las distracciones llegan a partir de 0,35 | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-73 | CS | el duelo de ideas usa solo retos de su nivel | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-74 | CS | acertar las ideas de la meta planta la idea | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-75 | CS | agotar la paciencia pierde el duelo | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-80 | CS | en Hawthorne cada puesto y cada necesidad tiene su misión | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-81 | CS | cada misión de Hawthorne es una plantilla de la biblioteca | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-90 | CS | cocinar: el gesto de cocinar en el fogón | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-91 | CS | el torno y el composite, el gesto del banco; la aviónica, teclear en la consola | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-92 | CS | el yoga, postura a postura: el reto n pone la postura n de su secuencia | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-93 | CS | jugar con el perro: un paseo con él | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-94 | CS | dormir: tumbarse en el último paso, no antes | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-95 | CS | cada clase de misión de la biblioteca tiene su animación | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-85 | CS | en la escena, cada misión encuentra su sitio (los que faltan, con un marcador «supuesto») | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-86 | CS | los puestos de la nave están en su mueble real (cocina, aviónica, composite, mecanizado) | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-87 | CS | resolver sus retos cumple la misión del puesto y la quita de pendientes | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
 
 ## REN · Rendimiento y pruebas
 

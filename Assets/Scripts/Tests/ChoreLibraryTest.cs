@@ -33,6 +33,7 @@ public class ChoreLibraryTest : MonoBehaviour, ITestUnit
         Chains();
         Duel();
         Musk();
+        Motions();
         yield return null;
         Scene();
         TestProbe.End();
@@ -46,17 +47,17 @@ public class ChoreLibraryTest : MonoBehaviour, ITestUnit
             string e = t.Validate();
             if (e.Length > 0) bad += $"{t.id}: {e}; ";
         }
-        TestProbe.Check("[CH-01] todas las plantillas están bien formadas (retos válidos, fuente, título)", bad.Length == 0 && MissionLibrary.All.Count >= 20, bad.Length > 0 ? bad : $"{MissionLibrary.All.Count} plantillas");
+        TestProbe.Check("[CS-50] todas las plantillas están bien formadas (retos válidos, fuente, título)", bad.Length == 0 && MissionLibrary.All.Count >= 20, bad.Length > 0 ? bad : $"{MissionLibrary.All.Count} plantillas");
         var ids = new HashSet<string>(); string dup = "";
         foreach (ChoreTemplate t in MissionLibrary.All) if (!ids.Add(t.id)) dup += t.id + " ";
-        TestProbe.Check("[CH-02] los ids no se repiten", dup.Length == 0, dup);
+        TestProbe.Check("[CS-51] los ids no se repiten", dup.Length == 0, dup);
         string[] kinds = { "cocinar", "atender-paciente", "plantar-idea", "regar", "cosechar", "curar-planta", "ejercicio", "yoga", "alimentar-perro", "jugar-perro", "programar-animal", "mecanizar", "avionica", "composite", "reparar-maquina", "dormir", "asearse" };
         string missing = "";
         foreach (string k in kinds) if (!MissionLibrary.All.Exists(t => t.kind == k)) missing += k + " ";
-        TestProbe.Check("[CH-03] están todas las clases que pidió Berón y las de los puestos de la nave", missing.Length == 0, missing.Length > 0 ? "faltan: " + missing : string.Join(", ", kinds));
+        TestProbe.Check("[CS-52] están todas las clases que pidió Berón y las de los puestos de la nave", missing.Length == 0, missing.Length > 0 ? "faltan: " + missing : string.Join(", ", kinds));
         bool everyCat = true;
         foreach (ChoreCategory c in System.Enum.GetValues(typeof(ChoreCategory))) if (!MissionLibrary.All.Exists(t => t.category == c)) everyCat = false;
-        TestProbe.Check("[CH-04] cada grupo de la lista de tareas tiene alguna misión", everyCat);
+        TestProbe.Check("[CS-53] cada grupo de la lista de tareas tiene alguna misión", everyCat);
     }
 
     static CodeBlock B(string id) => new CodeBlock { id = id, pseudo = id, js = id + "();" };
@@ -67,44 +68,44 @@ public class ChoreLibraryTest : MonoBehaviour, ITestUnit
         var b = new CodeExercise { id = "r2", kind = CodeExercise.Kind.Order, blocks = new[] { B("p"), B("q") }, solution = new[] { "p", "q" } };
         var t = new ChoreTemplate { id = "prueba", kind = "cocinar", category = ChoreCategory.Comida, title = "Prueba", source = "s", exercises = new[] { a, b } };
         var run = new ChoreRun(t);
-        TestProbe.Check("[CH-10] una tarea empieza en su primer reto, con 2 fallos de margen (CodeShip)", run.Current == a && run.Steps == 2 && run.MistakesLeft == 2 && run.Status == ChoreRun.State.Doing);
+        TestProbe.Check("[CS-54] una tarea empieza en su primer reto, con 2 fallos de margen (CodeShip)", run.Current == a && run.Steps == 2 && run.MistakesLeft == 2 && run.Status == ChoreRun.State.Doing);
         run.Submit(CodeAnswer.Choice(0)); run.Submit(CodeAnswer.Choice(0));
-        TestProbe.Check("[CH-11] repetir la misma respuesta mala cuenta un fallo, no dos", run.Mistakes == 1 && run.Status == ChoreRun.State.Doing && run.Tried(CodeAnswer.Choice(0)));
-        TestProbe.Check("[CH-12] un acierto pasa al siguiente reto", run.Submit(CodeAnswer.Choice(1)) && run.Current == b && run.Step == 1);
-        TestProbe.Check("[CH-13] el último acierto la termina", run.Submit(CodeAnswer.Order("p", "q")) && run.Status == ChoreRun.State.Done && run.Current == null);
+        TestProbe.Check("[CS-55] repetir la misma respuesta mala cuenta un fallo, no dos", run.Mistakes == 1 && run.Status == ChoreRun.State.Doing && run.Tried(CodeAnswer.Choice(0)));
+        TestProbe.Check("[CS-56] un acierto pasa al siguiente reto", run.Submit(CodeAnswer.Choice(1)) && run.Current == b && run.Step == 1);
+        TestProbe.Check("[CS-57] el último acierto la termina", run.Submit(CodeAnswer.Order("p", "q")) && run.Status == ChoreRun.State.Done && run.Current == null);
         var run2 = new ChoreRun(t);
         run2.Submit(CodeAnswer.Choice(0)); run2.Submit(CodeAnswer.Choice(2));
-        TestProbe.Check("[CH-14] dos fallos distintos la hacen fallar (hay que reintentar)", run2.Status == ChoreRun.State.Failed && run2.Current == null);
+        TestProbe.Check("[CS-58] dos fallos distintos la hacen fallar (hay que reintentar)", run2.Status == ChoreRun.State.Failed && run2.Current == null);
     }
 
     static void Chains()
     {
         CodeExercise[] ex = ChoreKit.StepChain("cadena", 1, i => $"paso {i + 1}", new[] { "lava las manos", "cocina hasta {71|50|100} °C", "emplata" }, new[] { "tira todo a la basura", "riega la base" });
-        TestProbe.Check("[CH-20] un reto por paso", ex.Length == 3);
+        TestProbe.Check("[CS-60] un reto por paso", ex.Length == 3);
         CodeExercise v = ex[1];
-        TestProbe.Check("[CH-21] «{bien|mal|mal}» pide el valor, con su unidad", v.kind == CodeExercise.Kind.Choice && v.options[v.correct] == "71 °C" && System.Array.IndexOf(v.options, "50 °C") >= 0 && v.question.Contains("valor"), v.options.Length > 0 ? string.Join(" / ", v.options) : "");
+        TestProbe.Check("[CS-61] «{bien|mal|mal}» pide el valor, con su unidad", v.kind == CodeExercise.Kind.Choice && v.options[v.correct] == "71 °C" && System.Array.IndexOf(v.options, "50 °C") >= 0 && v.question.Contains("valor"), v.options.Length > 0 ? string.Join(" / ", v.options) : "");
         CodeExercise n = ex[2];
-        TestProbe.Check("[CH-22] los demás preguntan qué viene ahora, con los dos pasos de antes como código", n.options[n.correct] == "emplata" && n.blocks.Length == 2 && n.blocks[1].pseudo.Contains("cocina hasta 71"), n.blocks.Length > 0 ? n.blocks[n.blocks.Length - 1].pseudo : "");
+        TestProbe.Check("[CS-62] los demás preguntan qué viene ahora, con los dos pasos de antes como código", n.options[n.correct] == "emplata" && n.blocks.Length == 2 && n.blocks[1].pseudo.Contains("cocina hasta 71"), n.blocks.Length > 0 ? n.blocks[n.blocks.Length - 1].pseudo : "");
         bool ok = true;
         foreach (CodeExercise e in ex) if (e.Validate().Length > 0) ok = false;
-        TestProbe.Check("[CH-23] todos los retos de la cadena validan", ok);
+        TestProbe.Check("[CS-63] todos los retos de la cadena validan", ok);
         CodeExercise c1 = ChoreKit.Choice("estable", 1, CodeSkill.Predecir, "i", "¿?", new CodeBlock[0], "bien", new[] { "mal1", "mal2" });
         CodeExercise c2 = ChoreKit.Choice("estable", 1, CodeSkill.Predecir, "i", "¿?", new CodeBlock[0], "bien", new[] { "mal1", "mal2" });
-        TestProbe.Check("[CH-24] la opción buena va en un sitio que solo depende del id (estable)", c1.correct == c2.correct && c1.options[c1.correct] == "bien");
-        TestProbe.Check("[CH-25] «lava las hojas» → lavaLasHojas();", ChoreKit.ToCall("lava las hojas") == "lavaLasHojas();" && ChoreKit.ToCall("¡Cocina ya el arroz!") == "cocinaYaElArroz();", ChoreKit.ToCall("¡Cocina ya el arroz!"));
+        TestProbe.Check("[CS-64] la opción buena va en un sitio que solo depende del id (estable)", c1.correct == c2.correct && c1.options[c1.correct] == "bien");
+        TestProbe.Check("[CS-65] «lava las hojas» → lavaLasHojas();", ChoreKit.ToCall("lava las hojas") == "lavaLasHojas();" && ChoreKit.ToCall("¡Cocina ya el arroz!") == "cocinaYaElArroz();", ChoreKit.ToCall("¡Cocina ya el arroz!"));
     }
 
     static void Duel()
     {
         DifficultyProfile e = DifficultyProfile.For(0f), h = DifficultyProfile.For(1f);
-        TestProbe.Check("[CH-30] la curva: fácil 3 ideas, paciencia 5, 4 bloques, sin distracciones, concepto 1", e.persuasionGoal == 3 && e.patience == 5 && e.maxBlocks == 4 && !e.distractors && e.maxConcept == 1);
-        TestProbe.Check("[CH-31] la curva: difícil 8 ideas, paciencia 2, 10 bloques, con distracciones, concepto 10", h.persuasionGoal == 8 && h.patience == 2 && h.maxBlocks == 10 && h.distractors && h.maxConcept == 10);
-        TestProbe.Check("[CH-32] las distracciones llegan a partir de 0,35", !DifficultyProfile.For(0.34f).distractors && DifficultyProfile.For(0.35f).distractors);
+        TestProbe.Check("[CS-70] la curva: fácil 3 ideas, paciencia 5, 4 bloques, sin distracciones, concepto 1", e.persuasionGoal == 3 && e.patience == 5 && e.maxBlocks == 4 && !e.distractors && e.maxConcept == 1);
+        TestProbe.Check("[CS-71] la curva: difícil 8 ideas, paciencia 2, 10 bloques, con distracciones, concepto 10", h.persuasionGoal == 8 && h.patience == 2 && h.maxBlocks == 10 && h.distractors && h.maxConcept == 10);
+        TestProbe.Check("[CS-72] las distracciones llegan a partir de 0,35", !DifficultyProfile.For(0.34f).distractors && DifficultyProfile.For(0.35f).distractors);
         var duel = new IdeaDuel(MissionLibrary.IdeaBank, DifficultyProfile.For(0f), 7);
-        TestProbe.Check("[CH-33] el duelo de ideas usa solo retos de su nivel", duel.Current != null && duel.Pool.TrueForAll(x => x.concept <= 1 && ChoreKit.BlockCount(x) <= 4 && !x.HasDistractors), $"{duel.Pool.Count} retos");
+        TestProbe.Check("[CS-73] el duelo de ideas usa solo retos de su nivel", duel.Current != null && duel.Pool.TrueForAll(x => x.concept <= 1 && ChoreKit.BlockCount(x) <= 4 && !x.HasDistractors), $"{duel.Pool.Count} retos");
         int guard = 0;
         while (duel.Status == ChoreRun.State.Doing && guard++ < 20) duel.Submit(duel.Current.kind == CodeExercise.Kind.Order ? CodeAnswer.Order(duel.Current.solution) : CodeAnswer.Choice(duel.Current.correct));
-        TestProbe.Check("[CH-34] acertar las ideas de la meta planta la idea", duel.Status == ChoreRun.State.Done && duel.Step >= System.Math.Min(3, duel.Pool.Count));
+        TestProbe.Check("[CS-74] acertar las ideas de la meta planta la idea", duel.Status == ChoreRun.State.Done && duel.Step >= System.Math.Min(3, duel.Pool.Count));
         var lose = new IdeaDuel(MissionLibrary.IdeaBank, DifficultyProfile.For(1f), 3);
         guard = 0;
         while (lose.Status == ChoreRun.State.Doing && guard++ < 40)
@@ -113,7 +114,7 @@ public class ChoreLibraryTest : MonoBehaviour, ITestUnit
             if (c.kind == CodeExercise.Kind.Choice) lose.Submit(CodeAnswer.Choice((c.correct + 1 + guard % (c.options.Length - 1)) % c.options.Length));
             else lose.Submit(CodeAnswer.Order(c.Shuffled(guard)));
         }
-        TestProbe.Check("[CH-35] agotar la paciencia pierde el duelo", lose.Status == ChoreRun.State.Failed && lose.Mistakes >= 2, $"{lose.Mistakes} fallos");
+        TestProbe.Check("[CS-75] agotar la paciencia pierde el duelo", lose.Status == ChoreRun.State.Failed && lose.Mistakes >= 2, $"{lose.Mistakes} fallos");
     }
 
     static void Musk()
@@ -122,10 +123,26 @@ public class ChoreLibraryTest : MonoBehaviour, ITestUnit
         string[] need = { "cocinar", "atender-paciente", "regar", "ejercicio", "yoga", "alimentar-perro", "mecanizar", "avionica", "composite", "plantar-idea", "dormir", "asearse" };
         string missing = "";
         foreach (string k in need) if (!b.Exists(x => MissionLibrary.Find(x.template) != null && MissionLibrary.Find(x.template).kind == k)) missing += k + " ";
-        TestProbe.Check("[CH-40] en Hawthorne cada puesto y cada necesidad tiene su misión", missing.Length == 0, missing.Length > 0 ? "faltan: " + missing : $"{b.Count} misiones");
+        TestProbe.Check("[CS-80] en Hawthorne cada puesto y cada necesidad tiene su misión", missing.Length == 0, missing.Length > 0 ? "faltan: " + missing : $"{b.Count} misiones");
         string unknown = "";
         foreach (MissionSites.Binding x in b) if (MissionLibrary.Find(x.template) == null) unknown += x.template + " ";
-        TestProbe.Check("[CH-41] cada misión de Hawthorne es una plantilla de la biblioteca", unknown.Length == 0, unknown);
+        TestProbe.Check("[CS-81] cada misión de Hawthorne es una plantilla de la biblioteca", unknown.Length == 0, unknown);
+    }
+
+    // CodeShip reglas.md §4.2: cada paso de un reto se anima en su sitio, con las animaciones que ya tiene el juego.
+    static void Motions()
+    {
+        StepAnimator.Motion M(string kind, string id = "", int step = 0, int steps = 5) => StepAnimator.MotionFor(kind, id, step, steps);
+        bool G(StepAnimator.Motion m, AreaFunctions.Kind k) => m.type == StepAnimator.Motion.Type.Gesture && m.gesture == k;
+        TestProbe.Check("[CS-90] cocinar: el gesto de cocinar en el fogón", G(M("cocinar"), AreaFunctions.Kind.Cook));
+        TestProbe.Check("[CS-91] el torno y el composite, el gesto del banco; la aviónica, teclear en la consola", G(M("mecanizar"), AreaFunctions.Kind.Make) && G(M("composite"), AreaFunctions.Kind.Make) && G(M("avionica"), AreaFunctions.Kind.Operate));
+        StepAnimator.Motion y = M("yoga", "yoga-saludo-al-sol", 6, 12), u = M("yoga", "yoga-upa-cuello", 2, 6);
+        TestProbe.Check("[CS-92] el yoga, postura a postura: el reto n pone la postura n de su secuencia", y.type == StepAnimator.Motion.Type.Yoga && y.sequence == "saludo-al-sol" && y.posture == 6 && u.sequence == "upa-cuello" && u.posture == 2, $"{y} / {u}");
+        TestProbe.Check("[CS-93] jugar con el perro: un paseo con él", M("jugar-perro").type == StepAnimator.Motion.Type.Walk);
+        TestProbe.Check("[CS-94] dormir: tumbarse en el último paso, no antes", M("dormir", "", 5, 6).type == StepAnimator.Motion.Type.Lie && M("dormir", "", 2, 6).type != StepAnimator.Motion.Type.Lie);
+        string none = "";
+        foreach (ChoreTemplate t in MissionLibrary.All) if (!StepAnimator.Handles(t.kind)) none += t.kind + " ";
+        TestProbe.Check("[CS-95] cada clase de misión de la biblioteca tiene su animación", none.Length == 0, none);
     }
 
     static void Scene()
@@ -136,8 +153,8 @@ public class ChoreLibraryTest : MonoBehaviour, ITestUnit
         sm.BindScene(s);
         List<StationMission> ms = sm.In(s);
         int found = ms.FindAll(m => m.target != null && !m.fallback).Count, fb = ms.FindAll(m => m.fallback).Count;
-        TestProbe.Check("[CH-50] en la escena, cada misión encuentra su sitio (los que faltan, con un marcador «supuesto»)", ms.Count == MissionSites.ForScene(s.name).Count && ms.TrueForAll(m => m.target != null), $"{found} en su mueble, {fb} con marcador: {string.Join(", ", ms.FindAll(m => m.fallback).ConvertAll(m => m.template.title))}");
-        TestProbe.Check("[CH-51] los puestos de la nave están en su mueble real (cocina, aviónica, composite, mecanizado)",
+        TestProbe.Check("[CS-85] en la escena, cada misión encuentra su sitio (los que faltan, con un marcador «supuesto»)", ms.Count == MissionSites.ForScene(s.name).Count && ms.TrueForAll(m => m.target != null), $"{found} en su mueble, {fb} con marcador: {string.Join(", ", ms.FindAll(m => m.fallback).ConvertAll(m => m.template.title))}");
+        TestProbe.Check("[CS-86] los puestos de la nave están en su mueble real (cocina, aviónica, composite, mecanizado)",
             new[] { "mecanizar", "avionica", "composite", "cocinar" }.Length == 4 && System.Array.TrueForAll(new[] { "mecanizar", "avionica", "composite", "cocinar" }, k => ms.Exists(m => m.template.kind == k && !m.fallback)));
         StationMission any = ms.Find(m => m.Available);
         if (any != null)
@@ -146,7 +163,7 @@ public class ChoreLibraryTest : MonoBehaviour, ITestUnit
             int guard = 0;
             while (run.Status == ChoreRun.State.Doing && guard++ < 40) run.Submit(run.Current.kind == CodeExercise.Kind.Order ? CodeAnswer.Order(run.Current.solution) : CodeAnswer.Choice(run.Current.correct));
             sm.End(any, run);
-            TestProbe.Check("[CH-52] resolver sus retos cumple la misión del puesto y la quita de pendientes", any.timesDone == 1 && !any.Available, any.template.title);
+            TestProbe.Check("[CS-87] resolver sus retos cumple la misión del puesto y la quita de pendientes", any.timesDone == 1 && !any.Available, any.template.title);
         }
     }
 }

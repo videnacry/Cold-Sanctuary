@@ -6,7 +6,7 @@ Cada petición de Berón, con su número fijo. **Una petición nueva entra el mi
 El **estado no se escribe a mano**: sale de sus casos en [registro.md](registro.md) (lo comprueba el comprobador):
 `Hecha` si todos sus casos están `Probado (…)`; `Doc` si solo pedía un doc o una regla; `Sin verificar` si alguno está en `Solo código` o `Sin probar`; `Abierta` si tiene un `HC` o le falta código.
 
-Las PB-001…PB-155 vienen de [auditoria-peticiones.md](../auditoria-peticiones.md) (el número es el mismo). La siguiente libre es **PB-156**.
+Las PB-001…PB-155 vienen de [auditoria-peticiones.md](../auditoria-peticiones.md) (el número es el mismo). La siguiente libre es **PB-158**.
 
 | PB | Fecha | Petición | Reglas | Casos | Estado | Origen |
 |---|---|---|---|---|---|---|
@@ -165,5 +165,7 @@ Las PB-001…PB-155 vienen de [auditoria-peticiones.md](../auditoria-peticiones.
 | PB-153 | 2026-11-09 | Sin insectos en el santuario 1 por ahora | — | FAU-14 | Hecha | auditoría #153: Verificado en vivo (2026-11-12) |
 | PB-154 | 2026-11-09 | Se pueden quitar las sombras o las columnas de los árboles | — | ARB-43 | Sin verificar | auditoría #154: Sin anotar |
 | PB-155 | 2026-11-09 | ¿Por qué pesa más que GTA5? (medido: 395 ms/frame de scripts) | — | REN-04 | Abierta | auditoría #155: Abierto |
+| PB-156 | 2026-11-18 | «No sé qué hacer ni cómo jugar»: traer a los microcosmos la UI de CodeShip (tareas con «Ir» y viaje automático, áreas, menú árbol, retos de código, guía de inicio) | M | CS-01, CS-02, CS-03, CS-04, CS-05, CS-06, CS-07, CS-08, CS-09, CS-10, CS-11, CS-12, CS-13, CS-14, CS-15, CS-20, CS-21, CS-22, CS-23, CS-30, CS-31, CS-32, CS-33, CS-34, CS-35, CS-40, CS-41, CS-42 | Sin verificar | Berón 2026-11-18; claude/ui-codeship |
+| PB-157 | 2026-11-18 | Las misiones como las de CodeShip (cocinar, curar, plantar ideas, campo, entrenar, yoga, animales…) por retos de código, en todos los puestos y necesidades del microcosmos de Musk; UI/UX según CodeShip; cada paso animado en su puesto | M | CS-50, CS-51, CS-52, CS-53, CS-54, CS-55, CS-56, CS-57, CS-58, CS-60, CS-61, CS-62, CS-63, CS-64, CS-65, CS-70, CS-71, CS-72, CS-73, CS-74, CS-75, CS-80, CS-81, CS-90, CS-91, CS-92, CS-93, CS-94, CS-95, CS-85, CS-86, CS-87 | Sin verificar | Berón 2026-11-18; claude/ui-codeship |
 
-**Recuento:** Abierta 6 · Doc 7 · Hecha 121 · Sin verificar 21 · total 155.
+**Recuento:** Abierta 6 · Doc 7 · Hecha 121 · Sin verificar 23 · total 157.
