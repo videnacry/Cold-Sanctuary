@@ -434,6 +434,10 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | CS-93 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
 | CS-94 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
 | CS-95 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-82 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-83 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-96 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-88 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
 | CS-85 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
 | CS-86 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
 | CS-87 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |

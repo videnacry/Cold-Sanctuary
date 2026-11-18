@@ -45,8 +45,8 @@ public static class MissionSites
         string[] catre = { "Catre de los turnos de noche (supuesto)" };
         var aidKit = new Binding { names = new[] { "Botiquín de primeros auxilios", "Botiquín" }, stationKeys = new[] { "camilla" }, buildings = new[] { "Hospital", "Clínica", "Enfermería" }, fallback = "Botiquín de primeros auxilios de la nave (supuesto)", anchor = new[] { "Lavamanos", "Aseo" }, offset = new Vector3(-1.6f, 0f, 0f) };
         var garden = new Binding { pieceKinds = new[] { "frutal" }, stationKeys = new[] { "bancal" }, buildings = new[] { "Huerto", "Parque" }, fallback = "Limonero del patio (supuesto)", anchor = new[] { "Casa de Hawthorne", "Aparcamiento de SpaceX" }, offset = new Vector3(3f, 0f, 3f) };
-        var gym = new Binding { buildings = new[] { "Centro de entrenamiento", "Gimnasio" }, stationKeys = new[] { "muneco" }, fallback = "Barra con discos y cinta del turno de noche (supuesto)", anchor = catre, offset = new Vector3(0f, 0f, 3.2f) };
-        var mat = new Binding { stationKeys = new[] { "esterilla", "tatami" }, buildings = new[] { "Sala de Yoga" }, fallback = "Esterilla de yoga junto a los catres (supuesto)", anchor = catre, offset = new Vector3(3f, 0f, 1.6f) };
+        var gym = new Binding { names = new[] { "Rincón de gimnasio" }, buildings = new[] { "Centro de entrenamiento", "Gimnasio" }, stationKeys = new[] { "muneco" }, fallback = "Barra con discos y cinta del turno de noche (supuesto)", anchor = catre, offset = new Vector3(0f, 0f, 3.2f) };
+        var mat = new Binding { names = new[] { "Esterilla de yoga" }, stationKeys = new[] { "esterilla", "tatami" }, buildings = new[] { "Sala de Yoga" }, fallback = "Esterilla de yoga junto a los catres (supuesto)", anchor = catre, offset = new Vector3(3f, 0f, 1.6f) };
         var dog = new Binding { names = new[] { "Cochinilla hormiguera", "cochinilla hormiguera", "Perro" }, fallback = "Cochinilla hormiguera del barrio (el perro del pueblo, supuesto)", anchor = new[] { "Casa de Hawthorne", "Aparcamiento de SpaceX" }, offset = new Vector3(-2.5f, 0f, 2f) };
         Binding Like(Binding b, string template) => new Binding { template = template, names = b.names, stationKeys = b.stationKeys, buildings = b.buildings, pieceKinds = b.pieceKinds, fallback = b.fallback, anchor = b.anchor, offset = b.offset };
 
@@ -74,6 +74,23 @@ public static class MissionSites
             new Binding { template = "reparar-coche-aceite", names = new[] { "Banco del mecánico" }, buildings = new[] { "Taller" }, stationKeys = new[] { "banco_taller" } },
             Like(garden, "campo-regar"), Like(garden, "campo-curar"), Like(garden, "campo-cosechar"),
             Like(dog, "perro-alimentar"), Like(dog, "perro-jugar"), Like(dog, "perro-programar-bordillo"),
+            // (2026-11-18) Lote 2 de Hawthorne (docs/microcosmos-musk-historia.md §4, nombres exactos): trabajadores, científicos, bacterias, comida y
+            // seguridad urbana.
+            N("fsw-tanque-falcon9", "Soldadura por fricción (FSW): tanque del Falcon 9"),
+            N("ensayo-traccion", "Laboratorio de materiales"),
+            N("microscopio-soldadura", "Laboratorio de materiales"),
+            N("datos-prueba-merlin", "Sala de datos de pruebas (propulsión)"),
+            N("sala-limpia-vestirse", "Vestuario de la sala limpia", "Sala limpia de aviónica"),
+            N("gel-manos", "Dispensador de gel hidroalcohólico"),
+            N("camara-frigorifica", "Cámara frigorífica de la cocina"),
+            N("inspeccion-sanitaria", "Tarjeta de inspección sanitaria (A)", "Lavamanos de la cocina (higiene)"),
+            N("recibir-proveedor", "Furgoneta del proveedor de comida (supuesto)", "Entrega de comida en el muelle"),
+            N("cocinar-tacos-carne-asada", "Lonchera (camión de comida)"),
+            N("garita-tarjeta", "Garita de seguridad (1 Rocket Road)"),
+            N("incendios-extintor", "Bomberos", "Hidrante"),
+            N("incendios-hidrante", "Hidrante"),
+            N("cruzar-crenshaw", "Cruce de Crenshaw Boulevard y Rocket Road (semáforos)"),
+            N("pista-hawthorne", "Aparcamiento de SpaceX"),   // el aeropuerto es fondo (no se pisa): su pista se lee desde el aparcamiento
         };
     }
 }

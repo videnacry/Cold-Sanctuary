@@ -11,7 +11,7 @@ using static ChoreKit;
 /// puestos de una fábrica (mecanizar, aviónica, composite) y «plantar-idea» (el duelo de ideas de CodeShip, con su curva de dificultad).
 /// Todos los pasos y valores llevan su fuente; lo adaptado al microcosmos se marca «licencia».
 /// </summary>
-public static class MissionLibrary
+public static partial class MissionLibrary
 {
     static List<ChoreTemplate> _all;
     static List<CodeExercise> _ideas;
@@ -58,6 +58,7 @@ public static class MissionLibrary
         Field();
         Workshop();
         Ideas();
+        Hawthorne();   // (2026-11-18) los sitios del lote 2 de Hawthorne: MissionLibrary.Hawthorne.cs
     }
 
     static ChoreTemplate Add(string id, string kind, ChoreCategory cat, string title, string scenario, string source, CodeExercise[] ex, string label = "real")
