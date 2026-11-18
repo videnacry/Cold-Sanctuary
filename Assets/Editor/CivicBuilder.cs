@@ -49,7 +49,7 @@ internal static partial class CivicBuilder
         // La REGIÓN (MicroStyles): con el año, el estilo de época y lugar de cada mueble; el cuerpo por defecto, el de un
         // insecto-humano (en un microcosmos solo hay insectos: InsectOnly). Los hogares ajustan luego cada mueble a su dueño.
         Region = me != null && !string.IsNullOrEmpty(me.region) ? me.region : MicroStyles.RegionOf(display).ToString();
-        MicroFurniture.DefaultBody = MicroBody.OfSpecies("Ant", 1.75f);
+        MicroFurniture.DefaultBody = MicroBody.OfSpecies("Ant");
         // EL PLANO DEL PUEBLO (2026-11-03, CivicBuilder.Plans): en una era avanzada, su paisaje y sus calles reales primero (los
         // solares los esquivan); luego los edificios de la historia en su sitio, los del pueblo y las casas a lo largo de las calles.
         _plan = null; _civicDone = _fillDone = false; _quarterAt = null;
@@ -498,11 +498,11 @@ internal static partial class CivicBuilder
         {
             // Con mesa, uno de sus asientos se hace para una persona (la mesa no crece); sin ella, un banco para personas.
             Transform table = pieces.Find(p => p.TryGetComponent(out MicroPiece mp) && mp.kind == "mesa");
-            MicroBody.Fit insectBody = MicroFurniture.DefaultBody ?? MicroBody.OfSpecies("Ant", 1.75f);
+            MicroBody.Fit insectBody = MicroFurniture.DefaultBody ?? MicroBody.OfSpecies("Ant");
             if (table != null && insectBody.Insect) MicroFurniture.Refit(table, "mesa", Year, Region, insectBody, new List<MicroBody.Fit> { insectBody, MicroBody.Human() });
             else pieces.Add(MicroFurniture.Build(b, "banco", Vector3.zero, 0f, "Banco (para personas)", Year, null, Region, MicroBody.Human()));
         }
-        if (!insect) pieces.Add(MicroFurniture.Build(b, "banco", Vector3.zero, 0f, "Asiento de abdomen (para insectos-humanos)", Year, null, Region, MicroBody.OfSpecies("Ant", 1.75f)));
+        if (!insect) pieces.Add(MicroFurniture.Build(b, "banco", Vector3.zero, 0f, "Asiento de abdomen (para insectos-humanos)", Year, null, Region, MicroBody.OfSpecies("Ant")));
     }
 
     /// <summary>
@@ -696,7 +696,7 @@ internal static partial class CivicBuilder
     // Un insecto-humano de la era con su jornada (trabajo, comida, práctica, casa).
     static int Worker(Transform t, string name, AreaFunctionSite work, string role, AreaFunctionSite dine, AreaFunctionSite practice, AreaFunctionSite home, string species = null, Color? body = null, bool? female = null)
     {
-        // Delante de su primer puesto, en el sitio de trabajo (MicroBuildRules.WorkSpot, dentro del paso de 2 m: no pisa otro mueble).
+        // Delante de su primer puesto, en el sitio de trabajo (MicroBuildRules.WorkSpot, dentro del paso: no pisa otro mueble).
         AreaFunctionStation[] sts = work.Stations;
         Vector3 at;
         if (sts.Length > 0)
@@ -708,9 +708,9 @@ internal static partial class CivicBuilder
         else at = t.InverseTransformPoint(work.transform.TransformPoint(new Vector3(0f, 0f, -2f)));
         at.y = 0f;
         GameObject g = AreaMicrocosmos.Folk(t, name, at, Random.Range(1.6f, 1.85f), 1f, species, body, female);
-        // Con lo que lleva encima (antenas, gorro) una especie alta pasaba de 2,3 m: todos de estatura parecida.
+        // Con lo que lleva encima (antenas, gorro) una especie alta pasaba de 2,3 m: todos de estatura parecida (tope 2,2 m × s).
         Transform ins = g.transform.Find("Insecto");
-        if (ins != null) { bool any = false; Bounds bb = default; foreach (Renderer r in ins.GetComponentsInChildren<Renderer>()) { if (!r.enabled) continue; if (!any) { bb = r.bounds; any = true; } else bb.Encapsulate(r.bounds); } if (any && bb.size.y > 2.2f) ins.localScale *= 2.2f / bb.size.y; }
+        if (ins != null) { bool any = false; Bounds bb = default; foreach (Renderer r in ins.GetComponentsInChildren<Renderer>()) { if (!r.enabled) continue; if (!any) { bb = r.bounds; any = true; } else bb.Encapsulate(r.bounds); } if (any && bb.size.y > 2.2f * MicroBuildRules.FolkScale) ins.localScale *= 2.2f * MicroBuildRules.FolkScale / bb.size.y; }
         CubeInsect.WearShirt(g, Color.HSVToRGB(Mathf.Abs(name.GetHashCode() % 100) / 100f, 0.35f, 0.75f));
         var j = g.AddComponent<MicroJornada>(); j.work = work; j.role = role; j.dine = dine; j.practice = practice; j.home = home;
         return 1;

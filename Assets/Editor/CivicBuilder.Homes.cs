@@ -249,7 +249,7 @@ internal static partial class CivicBuilder
     {
         Year = insects ? -500 : 1950;
         Region = (insects ? MicroStyles.Region.SurAsia : MicroStyles.Region.Norteamerica).ToString();   // charpai y chulha / la casa de 1950
-        MicroFurniture.DefaultBody = insects ? MicroBody.OfSpecies("Ant", 1.75f) : MicroBody.Human(1.75f);
+        MicroFurniture.DefaultBody = insects ? MicroBody.OfSpecies("Ant") : MicroBody.Human(1.75f);
         Style st = insects ? BurntBrick : Clapboard;
         string title = insects ? "Casa de ladrillo de Kapilavastu" : "Casita";
         AreaFunctionSite h = NewHouse(t, null, fam, st, title, fam.Count + ChildBeds);

@@ -6,7 +6,8 @@ using UnityEngine.SceneManagement;
 /// <summary>
 /// TEST DEL BLOQUEO DE HUMANOS (docs/microcosmos-civilizaciones.md §3, §5–7). Cada espera, acotada:
 /// (1) un humano de cubos que pasa por <see cref="InsectOnly.Admit"/> queda con cuerpo de insecto (nada humano visible), a su
-///     estatura (±25 cm), con cara humana y pelo; <see cref="InsectOnly.Release"/> le devuelve su cuerpo;
+///     estatura × s (2026-11-18: a la mitad, MicroBuildRules.FolkScale; ±25 cm × s), con su cápsula encogida, cara humana y pelo;
+///     <see cref="InsectOnly.Release"/> le devuelve su cuerpo y su cápsula;
 /// (2) en una escena de microcosmos (con <see cref="MicroEra"/>), un humano que aparece después se convierte solo en ≤ 4 s;
 /// (3) el insecto de cada personaje (Bruce Lee → mantis, Nightingale → luciérnaga, Kushal → hormiga…);
 /// (4) la genealogía entre especies: el hijo sale casi siempre como uno de los padres, pero un antepasado lejano puede volver
@@ -61,6 +62,7 @@ public class InsectOnlyTest : MonoBehaviour, ITestUnit
     IEnumerator Convert()
     {
         GameObject g = Human("Florence Nightingale (prueba)", new Vector3(9400f, 500f, 9400f));
+        var cap = g.AddComponent<CapsuleCollider>(); cap.height = 1.75f; cap.radius = 0.3f; cap.center = Vector3.up * 0.875f;
         yield return null;
         TestProbe.Check("de partida es humano", InsectOnly.IsHuman(g));
         InsectOnly.Result r = InsectOnly.Admit(g);
@@ -68,7 +70,11 @@ public class InsectOnlyTest : MonoBehaviour, ITestUnit
         TestProbe.Check("ya no se ve nada humano", !InsectOnly.IsHuman(g) && !HumanVisible(g));
         CubeInsect ci = g.GetComponent<CubeInsect>();
         TestProbe.Check("es una luciérnaga erguida (insecto-humano de era civilizada)", ci != null && ci.species == "Firefly" && ci.folk);
-        TestProbe.Near("a su estatura (1,75 m ± 25 cm)", InsectHeight(g), 1.75f, 0.25f);
+        // (2026-11-18) A LA MITAD (MicroBuildRules.FolkScale, docs/plan-microcosmos-realismo.md §3.1): su estatura × s, y su cuerpo físico
+        // también (la cápsula, con los pies donde estaban).
+        float s = MicroBuildRules.FolkScale;
+        TestProbe.Near($"a su estatura × s ({1.75f * s:0.00} m ± {0.25f * s:0.00})", InsectHeight(g), 1.75f * s, 0.25f * s);
+        TestProbe.Check("la cápsula también se encoge, con los pies en el mismo sitio", Mathf.Abs(cap.height - 1.75f * s) < 0.01f && Mathf.Abs(cap.center.y - cap.height * 0.5f) < 0.01f, $"{cap.height:0.00} m, centro {cap.center.y:0.00}");
         Transform root = g.transform.Find("Insecto");
         bool face = false, hair = false;
         if (root != null) foreach (Transform t in root.GetComponentsInChildren<Transform>()) { if (t.name == "Nariz") face = true; if (t.name == "Marco_cabello" && t.childCount > 0) hair = true; }
@@ -77,6 +83,7 @@ public class InsectOnlyTest : MonoBehaviour, ITestUnit
         InsectOnly.Release(g);
         yield return null;
         TestProbe.Check("al salir recupera su cuerpo humano", HumanVisible(g) && g.transform.Find("Insecto") == null);
+        TestProbe.Check("… y su cápsula de persona", Mathf.Abs(cap.height - 1.75f) < 0.01f && Mathf.Abs(cap.center.y - 0.875f) < 0.01f, $"{cap.height:0.00} m");
         Destroy(g);
     }
 

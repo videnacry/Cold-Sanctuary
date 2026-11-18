@@ -18,6 +18,76 @@ public partial class CubeInsect
     // Mientras DressFolk viste: Dress usa la ficha de insecto-humano (InsectMorphology.ForFolk).
     static bool _dressingFolk;
 
+    // ── LA POSTURA RECOGIDA (2026-11-18, docs/plan-microcosmos-realismo.md §1.1 b y §3.1; Berón: «el ancho es importante») ──────
+    // De pie, la hormiga real abre las patas 2,5 m a escala humana (P3 a −30°, tibia 60° bajo la horizontal). El vecino las lleva
+    // RECOGIDAS: la rodilla más cerrada deja la tibia casi vertical, bajo el cuerpo, y el par trasero va algo más atrás. Calculado con
+    // la geometría de BuildLeg: ancho de pie ~0,90 L y andando (coxa ±25°, trocánter alzado) ~1,0 L, frente a 1,24 L y 1,41 L con las
+    // patas abiertas; el cuerpo queda ~0,08 L más alto (FitHeight lo devuelve a su estatura). Lo mide FolkScaleTest (grupo 119).
+    /// <summary>¿Llevan los vecinos (DressFolk) la postura recogida? (Las estatuas y la galería, igual.)</summary>
+    public static bool TuckFolkLegs = true;
+    /// <summary>Ángulo de la rodilla (fémur → tibia) en la postura recogida (100° con las patas abiertas).</summary>
+    public const float FolkTuckKnee = 130f;
+    /// <summary>Reposo de la coxa del par trasero en la postura recogida (−30° con las patas abiertas).</summary>
+    public const float FolkTuckRearYaw = -35f;
+    /// <summary>Cuánto sube el vientre (en L) con la postura recogida, para estimar el cuerpo sin tenerlo delante (MicroBody.OfSpecies).</summary>
+    public const float FolkTuckBellyLift = 0.08f;
+
+    /// <summary>
+    /// LA HUELLA del cuerpo en el suelo (m, en el marco del anfitrión): x = ancho de lado a lado, y = largo de delante a atrás, con
+    /// todo lo visible (patas, brazos, antenas, pelo). Con <paramref name="walking"/>, el BARRIDO de la marcha: cada pata de andar
+    /// recorre su paso (coxa ±25°, trocánter alzado en la fase de vuelo, como en Update) y se toma lo más ancho y lo más largo; la
+    /// pose se deja como estaba. Mide las esquinas de cada cubo (no sus cajas alineadas, que engordan las piezas giradas).
+    /// </summary>
+    public Vector2 Footprint(bool walking)
+    {
+        if (_legs.Count == 0) Awake();
+        Transform root = transform.Find("Insecto");
+        if (root == null) return Vector2.zero;
+        var saved = new System.Collections.Generic.List<(Transform t, Quaternion q)>();
+        foreach (Leg l in _legs) { if (l.coxa != null) saved.Add((l.coxa, l.coxa.localRotation)); if (l.troch != null) saved.Add((l.troch, l.troch.localRotation)); }
+        Vector2 best = Vector2.zero;
+        int steps = walking ? 9 : 1;
+        const float amp = 25f;
+        try
+        {
+            for (int k = 0; k < steps; k++)
+            {
+                float ph = walking ? Mathf.Lerp(-1f, 1f, k / (float)(steps - 1)) : 0f;
+                if (walking)
+                    foreach (Leg l in _legs)
+                    {
+                        if (l.coxa == null || l.arm) continue;   // los brazos (erguido) no andan
+                        l.coxa.localRotation = l.coxaRest * Quaternion.Euler(0f, ph * amp * l.side, 0f);
+                        if (l.troch != null) l.troch.localRotation = l.trochRest * Quaternion.Euler(-Mathf.Max(0f, ph) * amp * 0.6f, 0f, 0f);
+                    }
+                Vector2 f = Span(root);
+                best = new Vector2(Mathf.Max(best.x, f.x), Mathf.Max(best.y, f.y));
+            }
+        }
+        finally { foreach (var (t, q) in saved) if (t != null) t.localRotation = q; }
+        return best;
+    }
+
+    // Ancho (x) y largo (z) de todo lo visible bajo «Insecto», en el marco del anfitrión (m).
+    Vector2 Span(Transform root)
+    {
+        float x0 = float.MaxValue, x1 = float.MinValue, z0 = float.MaxValue, z1 = float.MinValue;
+        foreach (MeshRenderer r in root.GetComponentsInChildren<MeshRenderer>())
+        {
+            if (!r.enabled) continue;
+            MeshFilter mf = r.GetComponent<MeshFilter>();
+            Bounds mb = mf != null && mf.sharedMesh != null ? mf.sharedMesh.bounds : new Bounds(Vector3.zero, Vector3.one);
+            Matrix4x4 m = transform.worldToLocalMatrix * r.transform.localToWorldMatrix;
+            for (int i = 0; i < 8; i++)
+            {
+                Vector3 c = new Vector3((i & 1) == 0 ? mb.min.x : mb.max.x, (i & 2) == 0 ? mb.min.y : mb.max.y, (i & 4) == 0 ? mb.min.z : mb.max.z);
+                Vector3 p = m.MultiplyPoint3x4(c);
+                x0 = Mathf.Min(x0, p.x); x1 = Mathf.Max(x1, p.x); z0 = Mathf.Min(z0, p.z); z1 = Mathf.Max(z1, p.z);
+            }
+        }
+        return x1 < x0 ? Vector2.zero : new Vector2((x1 - x0) * Mathf.Abs(transform.lossyScale.x), (z1 - z0) * Mathf.Abs(transform.lossyScale.z));
+    }
+
     /// <summary>Viste a <paramref name="host"/> como <paramref name="species"/> erguida de <paramref name="height"/> m, con la
     /// cara y el pelo de <paramref name="name"/> (<see cref="CubeHair.For"/>).</summary>
     public static CubeInsect DressFolk(GameObject host, string species, float height, string name, bool female = true)

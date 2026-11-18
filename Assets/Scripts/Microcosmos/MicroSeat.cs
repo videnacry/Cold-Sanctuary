@@ -17,7 +17,8 @@ using UnityEngine;
 /// </summary>
 public static class MicroCivicScale
 {
-    /// <summary>La estatura de un ciudadano insecto-humano tipo (m).</summary>
+    /// <summary>La estatura de la PERSONA de referencia (m). (2026-11-18) Los insectos-humanos miden esto × MicroBuildRules.FolkScale, pero
+    /// estatuas y fuentes se siguen midiendo desde la persona, para que sigan siendo monumentos (plan-microcosmos-realismo.md §3.4).</summary>
     public const float Citizen = 1.75f;
     /// <summary>Una estatua mide, con su pedestal, al menos esto × la estatura del ciudadano (las estatuas de plaza: 1,5–2,5×).</summary>
     public const float StatueTimes = 2.1f;
@@ -136,7 +137,7 @@ public class PublicSeatSpell : QueuedSpell
             case 1:
                 HomeMove.KeepSitting(self);
                 if (Time.time < _until) return false;
-                HomeMove.StandUp(self, _seat.World(_slot) + _seat.transform.forward * 0.6f);
+                HomeMove.StandUp(self, _seat.World(_slot) + _seat.transform.forward * 0.6f * h / MicroBuildRules.HumanStature);   // (× su estatura: encogidos, la mitad)
                 _seat.Leave(_slot, self.gameObject);
                 return true;
             default: return true;

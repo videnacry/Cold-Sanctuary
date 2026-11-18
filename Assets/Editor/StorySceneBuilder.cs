@@ -732,10 +732,11 @@ public static partial class StorySceneBuilder
         //    renacido, cada uno su insecto. Erguida, a su estatura (1,72 m), con su pelo negro corto y cara humana; ropa negra.
         GameObject bruce = new GameObject(BruceLeeName);
         bruce.transform.SetParent(t, false); bruce.transform.localPosition = new Vector3(-12f, 0f, -6f);
-        var col = bruce.AddComponent<CapsuleCollider>(); col.height = 1.72f; col.radius = 0.3f; col.center = Vector3.up * 0.86f;
-        CubeInsect.DressFolk(bruce, "Mantis", 1.72f, BruceLeeName, female: false);
+        float bh = MicroBuildRules.Stature(1.72f);   // (2026-11-18) encogido como todos los insectos-humanos (MicroBuildRules.FolkScale)
+        var col = bruce.AddComponent<CapsuleCollider>(); col.height = bh; col.radius = 0.3f * MicroBuildRules.FolkScale; col.center = Vector3.up * bh * 0.5f;
+        CubeInsect.DressFolk(bruce, "Mantis", bh, BruceLeeName, female: false);
         CubeInsect.WearShirt(bruce, dark);
-        WorldLabel bl = bruce.AddComponent<WorldLabel>(); bl.text = BruceLeeName; bl.height = 2.1f;
+        WorldLabel bl = bruce.AddComponent<WorldLabel>(); bl.text = BruceLeeName; bl.height = bh + 0.4f * MicroBuildRules.FolkScale;
         MartialForms forms = bruce.AddComponent<MartialForms>();
 
         int n = 1;

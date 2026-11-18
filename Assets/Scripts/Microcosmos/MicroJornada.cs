@@ -17,7 +17,8 @@ public class MicroJornada : MonoBehaviour
     public AreaFunctionSite work, dine, practice, home;
     [Tooltip("Su papel (cocinero, camarero, medico, enfermera, maestro, alumno, mecanico, sabio, comerciante, soldado…).")]
     public string role = "";
-    public float speed = 2.4f;
+    [Tooltip("Velocidad al andar (m/s): 2,4 a escala humana × MicroBuildRules.FolkScale (los microcosmos montados antes guardan 2,4 con sus cuerpos de entonces).")]
+    public float speed = 2.4f * MicroBuildRules.FolkScale;
     public bool hold;
     [Tooltip("Un niño sigue a su madre (FolkCouple).")]
     public Transform follow;
@@ -63,13 +64,17 @@ public class MicroJornada : MonoBehaviour
     /// <summary>Cuántas veces alguien no llegó andando a su puesto en 60 s y se le puso allí (pruebas, registro).</summary>
     public static int Fallbacks;
 
+    /// <summary>Su estatura respecto a la de una persona (1 a escala humana; MicroBuildRules.FolkScale en los insectos-humanos encogidos):
+    /// las distancias fijas de la jornada (seguir a la madre, llegar al puesto) van × esto.</summary>
+    float Body => PersonLife.HeightOf(transform) / MicroBuildRules.HumanStature;
+
     /// <summary>EL SITIO DE TRABAJO de un puesto: delante de su cara frontal (−z del collider), a <see cref="MicroBuildRules.WorkSpot"/>
     /// m, como lo coloca CivicBuilder.Worker. (2026-11-01) Antes era 1,2 m del CENTRO hacia donde estaba: en una encimera de cocina
     /// de 2,4 m ese punto caía dentro del mueble o pegado a su costado y no se llegaba (a los 60 s, teletransporte).</summary>
     public static Vector3 WorkSpotOf(AreaFunctionStation st, Vector3 from)
     {
         BoxCollider bc = st.GetComponent<BoxCollider>();
-        if (bc == null) return st.transform.position + (from - st.transform.position).normalized * 1.2f;
+        if (bc == null) return st.transform.position + (from - st.transform.position).normalized * (2f * MicroBuildRules.WorkSpot);
         float front = bc.center.z - bc.size.z * 0.5f;
         Vector3 p = st.transform.TransformPoint(new Vector3(bc.center.x, 0f, front - MicroBuildRules.WorkSpot / Mathf.Max(1e-3f, Mathf.Abs(st.transform.lossyScale.z))));
         p.y = st.transform.position.y;
@@ -83,7 +88,8 @@ public class MicroJornada : MonoBehaviour
         if (_a != null && (_a.death || _a.asleep)) return;
         if (NeedsDriver.Attending(_q)) { _resume = true; HistoricClass.Pause(this); return; }   // el cuerpo atiende una necesidad (en casa): la jornada espera
         if (LeisureDirector.Drives(gameObject)) { _resume = true; return; }   // sus horas libres: lo lleva el HORARIO LIBRE (docs/horario-libre.md)
-        if (follow != null) { MicroMove.Step(transform, follow.position - follow.forward * 1.2f, speed * 1.2f, 1.5f); return; }
+        float k = Body;   // (2026-11-18) las distancias, a la estatura del cuerpo (× s en los encogidos)
+        if (follow != null) { MicroMove.Step(transform, follow.position - follow.forward * 1.2f * k, speed * 1.2f, 1.5f * k); return; }
         string block = BlockAt(Hour);
         // ENTRENAR COMO EN SU ÉPOCA (2026-11-04, docs/gimnasio-maquinas.md §16): en la práctica, si su sitio es un edificio de entrenamiento
         // (plantilla «Centro de entrenamiento» o «Dojo»), sigue su rutina de época con series y descanso, o da la clase si es el maestro.
@@ -94,7 +100,7 @@ public class MicroJornada : MonoBehaviour
         // (2026-11-04) A LA HORA DE COMER, primero al MOSTRADOR por la bandeja y, al acabar, de vuelta a él a devolverla (MealRitual).
         AreaFunctionStation target = _block == "comida" && _counter != null && (_mealStage == 1 || _mealStage == 4) ? _counter : _st;
         Vector3 to = WorkSpotOf(target, transform.position);
-        bool there = MicroMove.Step(transform, to, speed, 1.6f);
+        bool there = MicroMove.Step(transform, to, speed, Mathf.Max(0.5f, 1.6f * k));
         if (!there && Time.time - _since > 60f)   // sin quedarse dando vueltas para siempre (y avisa: es un fallo de la planta)
         {
             transform.position = to; there = true; Fallbacks++;
