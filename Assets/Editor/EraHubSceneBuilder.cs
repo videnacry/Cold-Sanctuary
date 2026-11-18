@@ -51,6 +51,7 @@ public static class EraHubSceneBuilder
         ("Microcosmos_Hazanas", "Feria de las Hazañas", "Grandes hazañas de presidentes"),
         ("Microcosmos_Sadhguru", "Velliangiri", "Sadhguru y el Dhyanalinga (1999)"),
         ("Microcosmos_ElonMusk", "Hawthorne", "Elon Musk y el cuarto Falcon 1 (2008)"),
+        ("Microcosmos_ElonMuskOmelek", "Omelek", "Elon Musk y el Falcon 1: el lanzamiento desde Omelek (2008)"),
         ("Microcosmos_Goku", "Aldea de la montaña", "Goku en la aldea de la montaña (homenaje)"),
         ("Microcosmos_BillGates", "Albuquerque", "Bill Gates, Paul Allen y el BASIC del Altair (1975)"),
         ("Microcosmos_WarrenBuffett", "Omaha", "Warren Buffett y la señora B (1983)"),

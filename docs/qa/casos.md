@@ -313,6 +313,11 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | MIC-91 | MIC | Fase 2: con ganas van al retrete de su hogar, dentro de la nave | MuskNeedsTest | 125 | M18, M26 | — | plan fase 2; añadido el 2026-11-18 |
 | MIC-92 | MIC | Fase 2: de noche, con sueño, duermen en su catre de la nave | MuskNeedsTest | 125 | M18, M26 | — | plan fase 2; añadido el 2026-11-18 |
 | MIC-93 | MIC | Fase 2: sin teletransportes (MicroJornada.Fallbacks y HomeNeedSpell.Fallbacks no suben): todo andando | MuskNeedsTest | 125 | M26 | — | plan fase 2 («debe fallar si Fallbacks > 0»); añadido el 2026-11-18 |
+| MIC-94 | MIC | Omelek (escena 3 de la historia de Musk): fecha 2008, puesto aislado sin pueblo (MicroBuildRules.Outposts), montado con el cuerpo encogido | OmelekTest | 126 | M40 | — | docs/microcosmos-musk-historia.md; añadido el 2026-11-18 |
+| MIC-95 | MIC | Omelek: el hito (Falcon 1 vertical en su plataforma) y la lancha del equipo que se usa | OmelekTest | 126 | M44 | — | docs/microcosmos-musk-historia.md; añadido el 2026-11-18 |
+| MIC-96 | MIC | Omelek: contenedores y hangar cerrados con vista de corte y puertas ≥ 1,2 × 1,25 m (la del contenedor, ensanchada) | OmelekTest | 126 | M24, M43 | — | docs/microcosmos-musk-historia.md; añadido el 2026-11-18 |
+| MIC-97 | MIC | Omelek: los sitios con su nombre fijo (para los retos de CodeShip) y la historia de 8 pasos con objetivo | OmelekTest | 126 | M9 | — | docs/microcosmos-musk-historia.md; añadido el 2026-11-18 |
+| MIC-98 | MIC | Omelek: las seis necesidades en los contenedores y 0 faltas de las reglas de edificación | OmelekTest | 126 | M23, M26 | — | docs/microcosmos-musk-historia.md; añadido el 2026-11-18 |
 
 ## HOS · Hospital
 

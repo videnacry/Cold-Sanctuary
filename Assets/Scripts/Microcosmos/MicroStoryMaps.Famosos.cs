@@ -46,6 +46,37 @@ public static partial class MicroStoryMaps
         todo = new[] { "en vivo: que los cocotales queden en el llano de la aldea y la hierba del monte en la falda, no en el ashram" },
     };
 
+    // ══ OMELEK, 29 de septiembre de 2008 (el cuarto Falcon 1 en su plataforma; la isla se evacúa): sobre el Control de Misión ══════════════════
+    // La isla de lanzamiento de SpaceX en el atolón de Kwajalein (StorySceneBuilder.Omelek): un huso de coral de ~320 × 90 m con su playa, la
+    // laguna al oeste y el océano al este. Cocoteros en la orilla y naupaka en el borde de la playa; cangrejos fantasma y ermitaños.
+    static Map MapOmelek() => new Map
+    {
+        display = "Omelek", place = "Omelek, atolón de Kwajalein (Islas Marshall): la isla de lanzamiento del Falcon 1, 29 de septiembre de 2008", status = Status.Hecho,
+        source = "Wikipedia, «Omelek Island» (siete acres; helipuerto, muelles, vieja plataforma y bloques del este anteriores a SpaceX); Spaceflight Now, " +
+                 "«Falcon 1 flight 4» y crónica de 2009; Federal Register E8-1068 (2008); USFWS y RMI, flora y fauna de los atolones de las Marshall",
+        floor = Natural(
+            new Piece("mesa", Como, "las mesas del control de misión: las islas del atolón, a lo lejos (Kwajalein, Meck, Gagan)", "mesa"),
+            new Piece("pared", Como, "las pantallas: el arrecife y el horizonte del océano", "pared")),
+        flora = new[]
+        {
+            new Plant("Cocotero", -38f, 60f, 6, 40f), new Plant("Cocotero", 38f, 150f, 6, 40f), new Plant("Cocotero", -38f, 270f, 3, 20f),
+            new Plant("Naupaka de playa", 40f, 40f, 8, 60f), new Plant("Naupaka de playa", -40f, 180f, 8, 60f),
+            new Plant("Pemphis", 42f, 280f, 4, 20f), new Plant("Hierba de la arena", 0f, 90f, 10, 40f), new Plant("Hierba de la arena", 0f, 190f, 8, 30f),
+        },
+        fauna = new[]
+        {
+            new Animal("GhostCrab", "Cangrejo fantasma (Ocypode), en la playa del océano", 46f, 120f, 4, 0.06f, 60f),
+            new Animal("GhostCrab", "Cangrejo ermitaño (Coenobita), bajo la naupaka", -42f, 60f, 3, 0.04f, 40f),
+        },
+        buildings = new[]
+        {
+            new Building("Contenedores de trabajo de SpaceX", -15f, 25f), new Building("Hangar de procesado del Falcon 1", -5f, 140f),
+            new Building("Granja de propelentes", 25f, 165f), new Building("Plataforma de lanzamiento (Falcon 1 vertical)", 0f, 235f),
+            new Building("Muelle de la laguna", -62f, 40f), new Building("Helipuerto", 18f, 20f), new Building("Vieja plataforma de la punta norte", 0f, 282f),
+        },
+        todo = new[] { "en vivo: que los cocoteros queden en la orilla y no sobre la plataforma ni el camino" },
+    };
+
     // ══ HAWTHORNE, 28 de septiembre de 2008 (Elon Musk y el cuarto Falcon 1): sobre el Control de Misión ═══════════════════════════════════════
     // La sede de SpaceX en la antigua nave de fuselajes de Northrop (Rocket Road, junto a Crenshaw Boulevard): desde su control de misión se siguió el
     // cuarto lanzamiento del Falcon 1, el primero en llegar a órbita (desde Kwajalein). Al oeste de Crenshaw, el aeropuerto municipal; al norte, la

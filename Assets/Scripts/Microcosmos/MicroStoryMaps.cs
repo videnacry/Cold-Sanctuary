@@ -158,6 +158,7 @@ public static partial class MicroStoryMaps
         // (2026-11-05) Los siete famosos que salieron del mesocosmos (docs/personajes-mesocosmos.md).
         MapVelliangiri(),   // (2026-11-12) hecho: MicroStoryMaps.Famosos.cs
         MapHawthorne(),   // (2026-11-12) hecho: MicroStoryMaps.Famosos.cs
+        MapOmelek(),   // (2026-11-18) hecho: MicroStoryMaps.Famosos.cs (la isla de lanzamiento)
         MapAldeaMontana(),   // (2026-11-12) hecho: MicroStoryMaps.Famosos.cs
         MapAlbuquerque(),   // (2026-11-12) hecho: MicroStoryMaps.Famosos.cs
         MapOmaha(),   // (2026-11-12) hecho: MicroStoryMaps.Famosos.cs

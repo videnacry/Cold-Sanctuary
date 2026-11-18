@@ -296,6 +296,7 @@ public static partial class MicroStyles
             // Los famosos (docs/microcosmos-famosos.md)
             case "Velliangiri": return Region.SurAsia;   // 1999: la entrada india_moderna
             case "Hawthorne": return Region.Norteamerica;
+            case "Omelek": return Region.Norteamerica;   // el Reagan Test Site del Ejército de EE. UU. en Kwajalein (instalaciones de EE. UU.)
             case "Aldea de la montaña": return Region.China;
             case "Albuquerque": case "Omaha": case "Prairie View": return Region.NorteamericaInterior;
             case "Uagadugú": return Region.Sahel;

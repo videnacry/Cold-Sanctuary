@@ -87,6 +87,10 @@ public static class MicroBuildRules
     /// real ocupa el piso entero. Antes, las aldeas (Huerto, ~9500 a. C.) conviven con los muebles gigantes del área.</summary>
     public const int TownFrom = -3500;
     public static bool IsTownEra(int year) => year >= TownFrom;
+    /// <summary>(2026-11-18) Microcosmos de era avanzada SIN PUEBLO: un puesto aislado (la isla de lanzamiento de Omelek). No se le pide el
+    /// pueblo entero (MicroFloors.Validate, ≥ 12 edificios) ni se le quitan los muebles gigantes: es naturaleza con sus pocos edificios reales.</summary>
+    public static readonly HashSet<string> Outposts = new HashSet<string> { "Omelek" };
+    public static bool IsOutpost(string display) => display != null && Outposts.Contains(display);
 
     /// <summary>Las necesidades básicas que todo pueblo cubre (MicroPiece.need).</summary>
     public static readonly string[] Needs = { "dormir", "aseo", "lavarse", "comer", "sentarse", "cocinar" };
