@@ -140,7 +140,7 @@ public static partial class StorySceneBuilder
 
         // ── LAS PALMERAS de la fachada (lejos del portal, |x| ≥ 12) y la CALLE con su acera y su fila de palmeras, al oeste ──
         foreach (float x in new[] { -20f, -13f, 13f, 20f }) Palm(fac, new Vector3(x, 0f, -hz - 3.5f));
-        Transform street = new GameObject("Calle junto a la nave (acera y palmeras)").transform; street.SetParent(t, false); street.localPosition = new Vector3(-42f, 0f, 8f);
+        Transform street = new GameObject("Calle junto a la nave (acera y palmeras)").transform; street.SetParent(t, false); street.localPosition = new Vector3(-42f, 0f, 8f) + MuskShift;
         Prop(street, "Asfalto_de_la_calle", new Vector3(0f, 0.02f, 0f), new Vector3(9f, 0.04f, 44f), M("Asfalto", 0.2f, 0.2f, 0.21f), false);
         Prop(street, "Linea_central", new Vector3(0f, 0.045f, 0f), new Vector3(0.12f, 0.01f, 44f), yellow, false);
         Prop(street, "Acera", new Vector3(-6f, 0.08f, 0f), new Vector3(3f, 0.16f, 44f), M("Acera", 0.72f, 0.71f, 0.68f), false);
@@ -153,6 +153,47 @@ public static partial class StorySceneBuilder
         GameObject co1 = Who(t, "Laminadora de composite (Calisto)", F(-3.5f, -5.4f), true); CubeInsect.WearShirt(co1, new Color(0.5f, 0.5f, 0.52f)); Routine(co1, coSpot);
         GameObject crane = Who(t, "Operario de la grúa (Deucalión)", F(-8f, 5f), false); CubeInsect.WearShirt(crane, new Color(0.85f, 0.6f, 0.15f)); Routine(crane, floorSpot != null ? floorSpot : avSpot, coSpot);
         return 3;
+    }
+
+    // (Piloto 3, 2026-11-18: la foto «fabrica» salía tapada por algo enorme junto a la puerta.) EL SITIO DE LA NAVE: el piloto entero (la nave,
+    // el muelle, el camión, el aparcamiento, la calle y las palmeras: en locales de la historia, x −49…34, z −10…31 sin desplazar) no puede
+    // pisar los MUEBLES GIGANTES del piso ×100 (las mesas y las pantallas del control de misión del santuario miden 76 m de alto): se
+    // busca el desplazamiento libre más cercano (sin ir hacia el portal, z −14…−20) dentro del piso, y se registra qué tapaba. El piso no
+    // se toca (regla M6: el piso no se rompe).
+    static Vector3 MuskSpot(Transform t)
+    {
+        Rect foot = Rect.MinMaxRect(-49f, -10f, 34f, 31f);
+        var giants = new List<(Rect r, string name)>();
+        Transform root = t.root;
+        foreach (Transform c in root)
+        {
+            if (!c.name.EndsWith("_gigante")) continue;
+            foreach (Renderer r in c.GetComponentsInChildren<Renderer>())
+            {
+                Bounds b = r.bounds;
+                Vector3 lo = t.InverseTransformPoint(b.min), hi = t.InverseTransformPoint(b.max);
+                if (Mathf.Max(lo.y, hi.y) < 0.3f || Mathf.Min(lo.y, hi.y) > 14f) continue;   // lo que se pisa, o lo que queda por encima del tejado
+                giants.Add((Rect.MinMaxRect(Mathf.Min(lo.x, hi.x), Mathf.Min(lo.z, hi.z), Mathf.Max(lo.x, hi.x), Mathf.Max(lo.z, hi.z)), r.name));
+            }
+        }
+        if (giants.Count == 0) return Vector3.zero;
+        Rect floor = AreaMicrocosmos.FloorRectLocal(t);
+        bool Free(Vector2 d, out string hit)
+        {
+            hit = null;
+            Rect f = new Rect(foot.position + d, foot.size);
+            if (f.xMin < floor.xMin + 5f || f.xMax > floor.xMax - 5f || f.yMin < floor.yMin + 5f || f.yMax > floor.yMax - 5f) { hit = "el borde del piso"; return false; }
+            foreach (var g in giants) if (g.r.Overlaps(f)) { hit = g.name; return false; }
+            return true;
+        }
+        if (Free(Vector2.zero, out string first)) return Vector3.zero;
+        var tries = new List<Vector2>();
+        for (int dx = -400; dx <= 400; dx += 10) for (int dz = 0; dz <= 400; dz += 10) tries.Add(new Vector2(dx, dz));
+        tries.Sort((a, b) => a.sqrMagnitude.CompareTo(b.sqrMagnitude));
+        foreach (Vector2 d in tries)
+            if (Free(d, out _)) { Debug.Log($"[Piloto Musk] La nave pisaba «{first}» (mueble gigante del piso): se corre ({d.x:0}, {d.y:0}) m."); return new Vector3(d.x, 0f, d.y); }
+        Debug.LogWarning($"[Piloto Musk] La nave pisa «{first}» y no hay sitio libre a 400 m: se queda en el claro.");
+        return Vector3.zero;
     }
 
     // Una ESTANTERÍA de palés (bastidores, largueros naranjas, baldas y cajas), de ancho w, alto h y fondo d, de espaldas al muro.

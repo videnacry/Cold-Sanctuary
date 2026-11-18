@@ -36,7 +36,10 @@ using UnityEngine;
 public static partial class StorySceneBuilder
 {
     // El tramo de la nave: su centro en el claro (la entrada y el portal, en z −14…−20, quedan libres delante de su puerta).
-    static readonly Vector3 MuskFactoryAt = new Vector3(0f, 0f, 10f);
+    // (piloto 3) Más el desplazamiento a un sitio libre de los muebles gigantes del piso (MuskSpot): todo lo de la nave, el aparcamiento
+    // y la calle se corre con él.
+    static Vector3 MuskShift;
+    static Vector3 MuskFactoryAt => new Vector3(0f, 0f, 10f) + MuskShift;
     static readonly Vector2 MuskFactorySize = new Vector2(44f, 30f);
 
     // ══ ELON MUSK · la fábrica de SpaceX en Hawthorne (California), 28 de septiembre de 2008 · Control de misión ═══════════════════════
@@ -49,6 +52,7 @@ public static partial class StorySceneBuilder
         Material navy = M("Azul_SpaceX", 0.07f, 0.11f, 0.2f), asphalt = M("Asfalto", 0.2f, 0.2f, 0.21f), paint = M("Pintura_blanca", 0.92f, 0.92f, 0.9f);
         Material mars = M("Poster_Marte", 0.75f, 0.35f, 0.2f), wood = M("Palé", 0.7f, 0.56f, 0.38f), yellow = M("Amarillo_carretilla", 0.92f, 0.72f, 0.1f);
 
+        MuskShift = MuskSpot(t);   // (piloto 3) lejos de los muebles gigantes del piso ×100 (la foto «fabrica» salía tapada)
         // El estilo y el cuerpo de los muebles (Civilize los vuelve a poner después, para el pueblo).
         CivicBuilder.Year = 2008;
         CivicBuilder.Region = MicroStyles.RegionOf("Hawthorne").ToString();
@@ -144,11 +148,11 @@ public static partial class StorySceneBuilder
         Label(fac, "Fábrica de SpaceX (1 Rocket Road, Hawthorne)", 10f);
 
         // ── 6 · EL APARCAMIENTO (al oeste, fuera): el Tesla Roadster de 2008 (se sube con F y se conduce) ──
-        Transform lot = Spot(t, "Aparcamiento de SpaceX", new Vector3(-30f, 0f, 6f), "Aparcamiento de Rocket Road", 2.5f);
+        Transform lot = Spot(t, "Aparcamiento de SpaceX", new Vector3(-30f, 0f, 6f) + MuskShift, "Aparcamiento de Rocket Road", 2.5f);
         Prop(lot, "Asfalto", new Vector3(0f, 0.02f, 0f), new Vector3(12f, 0.04f, 26f), asphalt, false);
         for (int k = 0; k <= 9; k++) for (int s = -1; s <= 1; s += 2) Prop(lot, "Raya de aparcamiento", new Vector3(s * 3.2f, 0.045f, -12f + k * 2.7f), new Vector3(5.2f, 0.01f, 0.12f), paint, false);
         ParkedCars(lot);
-        Roadster(t, new Vector3(-33.2f, 0f, 6.15f), 90f, M("Rojo_Roadster", 0.7f, 0.08f, 0.08f), dark);
+        Roadster(t, new Vector3(-33.2f, 0f, 6.15f) + MuskShift, 90f, M("Rojo_Roadster", 0.7f, 0.08f, 0.08f), dark);
 
         // ── La gente: insectos-humanos. Musk, un SALTAMONTES (el salto es un lanzamiento: guarda energía en las patas y la suelta de
         //    golpe), con la camiseta negra de su versión humana. (Who recibe la estatura de la persona: el cuerpo, a la mitad.)
