@@ -21,6 +21,8 @@ public class StaleNavCarver : MonoBehaviour
     public static int HillsCarved { get; private set; }
     public static int OtherLandCarved { get; private set; }
     public static int CaveWalls { get; private set; }
+    /// <summary>(Ronda 125) Losas de las crestas de presión de los casquetes silvestres talladas (una caja por losa).</summary>
+    public static int RidgeSlabs { get; private set; }
 
     /// <summary>(2026-11-14) Decorados que no se pisan y se tallan aunque el NavMesh ya los rodee (los montículos de tierra).</summary>
     // (2026-11-15, suite 119) Y las CUEVAS (SampleSceneBuilder.Territorio.Cave): paredes de 1,4 × 3,2 × 11 m y el fondo, girados. Con 11 m de fondo, a
@@ -104,6 +106,30 @@ public class StaleNavCarver : MonoBehaviour
             NavMeshObstacle obx = go.AddComponent<NavMeshObstacle>(); obx.shape = NavMeshObstacleShape.Box; obx.size = new Vector3(ob.size.x / Mathf.Max(0.01f, go.transform.lossyScale.x), (ob.size.y + 0.6f) / Mathf.Max(0.01f, go.transform.lossyScale.y), ob.size.z / Mathf.Max(0.01f, go.transform.lossyScale.z)); obx.carving = true; obx.carveOnlyStationary = true;
             HillsCarved++; OtherLandCarved++;
             Debug.Log($"[Fauna] «Tierra» elevada sin caja ({oc.GetType().Name}) tallada: centro ({ob.center.x:0.0},{ob.center.y:0.00},{ob.center.z:0.0}), tamaño ({ob.size.x:0.0}×{ob.size.y:0.00}×{ob.size.z:0.0}).");
+        }
+        // (2026-11-17, ronda 125) LAS CRESTAS DE PRESIÓN de los casquetes silvestres (SampleSceneBuilder.WildCaps): 12 losas de hielo de 1,2–2,6 m,
+        // inclinadas 25–55°, unidas en UNA malla cóncava «Estructuras_Barrera_hielo_MAT». El NavMesh subía por sus caras inclinadas y el zorro ártico
+        // #83 andaba con el cuerpo metido en una (pies a 0,67 en (−142,1,5)). La malla son cubos de 24 vértices: una caja de obstáculo por losa
+        // (su caja en el mundo, 0,6 m más alta). El constructor ya les pone «no se anda» (NavMeshModifier, área 1) para la próxima construcción.
+        foreach (MeshCollider rc in FindObjectsByType<MeshCollider>(FindObjectsSortMode.None))
+        {
+            if (rc == null || rc.name != "Estructuras_Barrera_hielo_MAT" || rc.sharedMesh == null || rc.transform.parent == null || !rc.transform.parent.name.StartsWith("Casquete_silvestre")) continue;
+            if (rc.GetComponentInChildren<NavMeshObstacle>() != null) continue;
+            Mesh rm = rc.sharedMesh;
+            if (!rm.isReadable || rm.vertexCount % 24 != 0) { Debug.LogWarning($"[Fauna] cresta «{rc.transform.parent.name}»: malla no legible o no de cubos ({rm.vertexCount} vértices), sin tallar."); continue; }
+            Vector3[] v = rm.vertices;
+            for (int k = 0; k < v.Length; k += 24)
+            {
+                Bounds sb = new Bounds(rc.transform.TransformPoint(v[k]), Vector3.zero);
+                for (int j = 1; j < 24; j++) sb.Encapsulate(rc.transform.TransformPoint(v[k + j]));
+                if (sb.max.y < 0.35f) continue;   // (lo que no asoma sobre el hielo no estorba)
+                var sg = new GameObject("Talla_cresta"); sg.transform.SetParent(rc.transform, true); sg.transform.SetPositionAndRotation(sb.center + Vector3.up * 0.3f, Quaternion.identity);
+                Vector3 ls = sg.transform.lossyScale;
+                NavMeshObstacle so = sg.AddComponent<NavMeshObstacle>(); so.shape = NavMeshObstacleShape.Box;
+                so.size = new Vector3(sb.size.x / Mathf.Max(0.01f, ls.x), (sb.size.y + 0.6f) / Mathf.Max(0.01f, ls.y), sb.size.z / Mathf.Max(0.01f, ls.z)); so.carving = true; so.carveOnlyStationary = true;
+                RidgeSlabs++;
+            }
+            Debug.Log($"[Fauna] cresta de presión de «{rc.transform.parent.name}» tallada: {rm.vertexCount / 24} losas.");
         }
         // (2026-11-11) LA PARED DE LA RAÍZ de cada torre-árbol (cristal fino, MeshCollider): el NavMesh del hielo de alrededor no la veía y los
         // animales se metían en ella (rondas 26, 58 y 61: reno y zorro ártico «dentro de Pared_raiz» en (-59,0,-92), (-61,0,…)). Su caja talla el
