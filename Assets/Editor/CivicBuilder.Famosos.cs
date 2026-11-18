@@ -353,6 +353,7 @@ relleno | 70 | 0 -650",
         n += W(t, "Ingeniera de software de vuelo", fab, "sabio", fab, null, s[0]);
         n += W(t, "Inspectora de calidad", fab, "", fab, null, s[0]);
         if (fab != null) NightShiftHome(t, fab, "Técnico de motores", "Técnica de integración", "Inspectora de calidad");
+        TownDog(s);
         n += W(t, "Cocinero de la taquería", s[1], "cocinero", s[1], null, null);
         n += Townsfolk(t, s, 2, "Vecina de Hawthorne", "Vecino de Hawthorne", s[1], null);
         return n;
@@ -588,5 +589,32 @@ internal static partial class CivicBuilder
             if (m.TryGetComponent(out MicroJornada j)) j.home = fab;
         }
         Debug.Log($"[Hogares] Hawthorne: {people.Count} del turno de noche viven en la nave ({h.beds.Count} catres, mesa alta {(standing != null ? "sí" : "NO")}).");
+    }
+}
+
+internal static partial class CivicBuilder
+{
+    /// <summary>
+    /// (2026-11-18) EL PERRO DEL BARRIO de Hawthorne para las misiones de CodeShip (MissionSites: «Cochinilla hormiguera»): en el mundo de
+    /// insectos, el perro es una cochinilla hormiguera del tamaño de un perro mediano (0,7 m, como la fauna del pueblo de MicroBiome), delante de
+    /// la primera «Casa de Hawthorne», con su cuenco de agua y su correa colgada de la valla.
+    /// </summary>
+    static void TownDog(List<AreaFunctionSite> sites)
+    {
+        AreaFunctionSite house = null;
+        foreach (AreaFunctionSite a in sites) if (a != null && a.name.StartsWith("Casa de Hawthorne")) { house = a; break; }
+        if (house == null) foreach (AreaFunctionSite a in sites) if (a != null && a.building == "Casa") { house = a; break; }
+        if (house == null) { Debug.LogWarning("[Pueblos] Hawthorne: sin casa para el perro del barrio."); return; }
+        Transform floor = house.transform.Find("Suelo");
+        float front = floor != null ? floor.localScale.z * 0.5f : 5f;
+        var root = new GameObject("Perro del barrio (con su cuenco y su correa)").transform; root.SetParent(house.transform, false);   // (con la casa: si se corre, el perro va con ella)
+        root.position = house.transform.TransformPoint(new Vector3(-2.5f, 0f, -front - 2.5f));
+        var dog = new GameObject("Cochinilla hormiguera"); dog.transform.SetParent(root, false);
+        CubeInsect.Dress(dog, "Woodlouse", C(0.8f, 0.72f, 0.6f), 0.7f);
+        var wl = dog.AddComponent<WorldLabel>(); wl.text = "Cochinilla hormiguera (el perro del barrio)"; wl.height = 0.8f;
+        AreaMicrocosmos.Box(root, "Cuenco_del_perro", new Vector3(0.8f, 0.05f, 0.4f), new Vector3(0.25f, 0.1f, 0.25f), AreaMicrocosmos.Mat("Civ_Cuenco_azul", C(0.2f, 0.4f, 0.75f)), false);
+        AreaMicrocosmos.Box(root, "Agua_del_cuenco", new Vector3(0.8f, 0.1f, 0.4f), new Vector3(0.2f, 0.01f, 0.2f), AreaMicrocosmos.Mat("Civ_Agua", C(0.45f, 0.65f, 0.85f)), false);
+        AreaMicrocosmos.Box(root, "Poste_de_la_valla", new Vector3(-0.8f, 0.5f, 0.6f), new Vector3(0.08f, 1f, 0.08f), AreaMicrocosmos.Mat("Civ_Madera_valla", C(0.55f, 0.45f, 0.35f)), true);
+        AreaMicrocosmos.Box(root, "Correa", new Vector3(-0.74f, 0.65f, 0.6f), new Vector3(0.02f, 0.5f, 0.02f), AreaMicrocosmos.Mat("Civ_Correa_roja", C(0.75f, 0.15f, 0.15f)), false);
     }
 }
