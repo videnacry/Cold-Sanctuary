@@ -165,7 +165,7 @@ public static partial class StorySceneBuilder
     // pisar los MUEBLES GIGANTES del piso ×100 (las mesas y las pantallas del control de misión del santuario miden 76 m de alto): se
     // busca el desplazamiento libre más cercano (sin ir hacia el portal, z −14…−20) dentro del piso, y se registra qué tapaba. El piso no
     // se toca (regla M6: el piso no se rompe).
-    static Vector3 MuskSpot(Transform t) => FreeSpot(t, Rect.MinMaxRect(-49f, -10f, 34f, 31f), "Piloto Musk");
+    static Vector3 MuskSpot(Transform t) => FreeSpot(t, Rect.MinMaxRect(-52f, -12f, 50f, 33f), "Piloto Musk");
 
     /// <summary>El desplazamiento libre más cercano (sin ir hacia el portal: dz ≥ 0) para una huella <paramref name="foot"/> (locales de la
     /// historia) que no pise los muebles gigantes del piso ×100 entre 0,3 y 14 m de alto, dentro del piso. Lo usan el piloto de Hawthorne

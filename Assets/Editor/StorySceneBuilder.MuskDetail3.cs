@@ -60,7 +60,7 @@ public static partial class StorySceneBuilder
         Prop(fac, "Salida_de_emergencia", new Vector3(0f, 2.75f, -hz + 0.2f), new Vector3(1.2f, 0.3f, 0.04f), green, false);
 
         // ── PIEZAS DEL FALCON 1 en el suelo (donde no cortan el paso) ──
-        foreach (var (x, z, w, d) in new[] { (-20.6f, -13.6f, 1.2f, 2.4f), (-5f, 12.6f, 1.2f, 1.0f), (21f, 14f, 1.0f, 1.4f) })
+        foreach (var (x, z, w, d) in new[] { (-5f, 12.6f, 1.2f, 1.0f), (21f, 14f, 1.0f, 1.4f) })
         {
             Prop(fac, "Caja_de_transporte", new Vector3(x, 0.55f, z), new Vector3(w, 1.1f, d), wood, true);
             Prop(fac, "Rotulo_de_la_caja", new Vector3(x, 0.8f, z - d * 0.5f - 0.01f), new Vector3(w * 0.6f, 0.25f, 0.01f), black, false);

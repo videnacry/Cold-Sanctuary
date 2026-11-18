@@ -115,3 +115,48 @@ Los ocho pasos, en orden:
 - Satellite Today (29-9-2008): la hora, 16:15 PDT desde Omelek.
 - USFWS y Gobierno de las Islas Marshall, flora y fauna de los atolones (cocotero, *Scaevola*, *Pemphis*, *Ocypode*, *Coenobita*).
 - Supuestos marcados en el código y en la ficha de la historia.
+
+## 4. Cambio de foco (Berón, 2026-11-18 21:54): solo Hawthorne 2008, con todo su realismo
+
+> «De momento la idea era solo reconstruir un fragmento, para que el esfuerzo se concentre allí… Elon puede ser la portada, pero en realidad quienes crean las naves son los trabajadores, los científicos, y quizás hay otras variantes como la producción de alimentos o la seguridad urbana… existen muchos sistemas, animales, personas, bacterias, plantas, etc. que han aportado a los viajes espaciales».
+
+**Omelek queda aparcado.** El código se queda como está, sin más trabajo; el esfuerzo va a Hawthorne 2008.
+
+### Lo que ya hay en Hawthorne (lotes 1 y 2), con su nombre fijo para las misiones de CodeShip
+
+Los sitios son objetos de la escena: las misiones se enganchan por su **nombre exacto**. La columna «Puesto» es la clave de `AreaFunctionStation` cuando la tiene.
+
+| Tema | Nombre exacto del objeto | Puesto | Quién lo usa | Fuente o supuesto |
+|---|---|---|---|---|
+| Salud | `Botiquín de primeros auxilios` (armario, DEA, lavaojos, taburete) | — | Todos | Supuesto (Cal/OSHA exige botiquín y lavaojos en un taller) |
+| Gimnasio | `Rincón de gimnasio` (cinta, bicicleta, rack, kit NASA), fuera, junto al muro norte | `muneco` | Turno de noche | Supuesto |
+| Yoga | `Esterilla de yoga` | `esterilla` | Turno de noche | Supuesto |
+| Barrio | `Cochinilla hormiguera` (el perro, con cuenco y correa), delante de la primera `Casa de Hawthorne` | — | Vecinos | Fauna del pueblo |
+| Fabricar | `Soldadura por fricción (FSW): tanque del Falcon 9`, en la `Nave anexa (tanques del Falcon 9, materiales y datos de pruebas)` | — | `Soldador de FSW (Prometeo)` | The Fabricator, sept. y nov. de 2008 (FSW de aluminio-litio, cabezal de pasador retráctil Nova-Tech); Satellite Today, 24-11-2008 (Falcon 9 y Dragon en la misma planta). La nave anexa: supuesto de sitio |
+| Fabricar | `Torno de control numérico`, `Banco de mecanizado: válvulas e inyectores del Merlin`, `Banco del Merlin 1C`, `Banco de aviónica`, `Banco de composite (la cofia)` | `torno`, `banco_taller` | Trabajadores de la nave | The Fabricator 2008 (taller de máquinas propio) |
+| Ciencia | `Laboratorio de materiales` (máquina de tracción, probetas, microscopio, durómetro) | — | `Científica de materiales (Temis)` | Supuesto de sitio |
+| Ciencia | `Sala de datos de pruebas (propulsión)` (gráficas de McGregor) | — | `Ingeniero de datos de pruebas (Ceo)` | Los Merlin se probaban en McGregor (Texas); la sala, supuesto |
+| Ciencia | `Consola de datos del vuelo 3`, `Pizarra: la secuencia del vuelo 4` | `consola`, `pizarra` | Ingeniería | Ya existían |
+| Bacterias | `Sala limpia de aviónica`, `Vestuario de la sala limpia` (buzos, calzas, alfombra adhesiva) | — | Aviónica | Supuesto (ISO 8) |
+| Bacterias | `Dispensador de gel hidroalcohólico` (en la entrada, el comedor y el vestuario), `Lavamanos de la cocina (higiene)` | — | Todos | — |
+| Bacterias | `Pozo de registro (alcantarillado del condado)` | — | — | Hawthorne pertenece a los Sanitation Districts del Condado; su red (Joint Outfall System) depura en Carson, en el A. K. Warren Water Resource Facility (lacsd.org) |
+| Comida | `Cocina de la nave (supuesto)`, `Cámara frigorífica de la cocina`, `Tarjeta de inspección sanitaria (A)` | `cocina` | `Cocinera de la nave` | Las letras de inspección del Condado de Los Ángeles existen desde 1998 |
+| Comida | `Comedor: mesa alta con apoyos de abdomen (C1)` | `mesa` | Todos | — |
+| Comida | `Entrega de comida en el muelle`, `Furgoneta del proveedor de comida (supuesto)` | — | `Encargado de envíos (Hermes)` | Supuesto |
+| Comida | `Lonchera (camión de comida)`, en la calle | — | `Cocinera de la lonchera (Deméter)` | Supuesto (las loncheras de los polígonos de Los Ángeles) |
+| Seguridad | `Garita de seguridad (1 Rocket Road)` (barrera y lector de tarjetas) | — | `Guardia de seguridad (Eolo)` | Supuesto |
+| Seguridad | `Cruce de Crenshaw Boulevard y Rocket Road (semáforos)`, `Patrulla de la policía de Hawthorne` | — | — | Hawthorne PD, 12501 S. Hawthorne Blvd. (hawthornepolice.com) |
+| Seguridad | `Bomberos` del plano, en Crenshaw al sur de la calle 120 | — | — | Estación 162 del Condado, 12151 S. Crenshaw Blvd. (locator.lacounty.gov) |
+| Limpieza | Recorrido por el lavamanos de la cocina, el vestuario y la cámara frigorífica | — | `Limpiadora de la nave (Hestia)` | — |
+| Entorno | `Aeropuerto municipal de Hawthorne (Jack Northrop Field)`, de fondo | — | — | Pista 07/25 de 4884 × 100 ft (1489 × 30 m) |
+
+**Lo vivo** (MicroBiome «Hawthorne»):
+- **Árboles:** palmeras de abanico, jacarandas y laurel de Indias (*Ficus microcarpa*) en las calles; césped.
+- **Malas hierbas:** garranchuelo y malva en las aceras y los solares.
+- **Animales:** cuervo americano, paloma bravía y gaviota occidental, cada uno como una mariquita de su color; la ardilla zorro, como una cochinilla rojiza; la cucaracha americana del alcantarillado y la hormiga argentina en las aceras.
+
+### Lo siguiente (lote 3, propuesto)
+
+- **La jornada real de cada oficio:** soldador, maquinista, aviónica, propulsión, estructuras, calidad, limpieza, envíos, cocina y seguridad. Horario, puesto y herramientas en `MicroJornada`, con los turnos de 24 h de 2008 (Satellite Today).
+- **El supermercado del barrio:** el «Mercado» del plano, con su nombre real si se encuentra la fuente.
+- **Más fauna:** en las palmeras y en los solares.
