@@ -2,6 +2,8 @@
 
 Encargo de Berón (2026-11-18): las sillas, mesas y platos parecen juguetes. Hay dudas sobre la escala de los árboles. Los microcosmos de Musk, Atahualpa y Descartes no recrean lugares reales: no hay edificios, transporte ni estructuras de época. Además, no se entiende qué hacer. Pide traer a los microcosmos la UI/UX de CodeShip: menú árbol, retos de código, listas de tareas y áreas con viaje automático, y estructuras fieles con objetos escalados.
 
+**Revisión del 2026-11-18:** Berón aprobó las decisiones 2–4 y pidió encoger a los insectos-humanos. Se añaden la huella completa con las patas (§1.1 b) y la escala encogida (§3.1, §3.4), y se rehacen las fases (§4.1) y las decisiones (§5).
+
 Este documento es solo investigación y plan; no se ha cambiado código. Las referencias de Cold Sanctuary son de `claude/edificios`. Las de CodeShip son de `origin/integracion` @ `1198d23`; la copia local en `develop` es de 2023 y no sirve de referencia.
 
 ---
@@ -27,6 +29,44 @@ Calculado para la estatura de referencia, 1,75 m (L = 1,75 / 0,86 = 2,03 m):
 | Largo del abdomen (gáster) | 0,73 m | |
 | Manos (mesa, lavabo) | 0,96 m | En una persona sentada, 0,70 m |
 | Radio del agente NavMesh | 0,40 m (`MicroBuildRules.AgentRadius`) | **Es un círculo de persona; el cuerpo mide 2,16 m de largo** |
+
+### 1.1 b Huella completa con las extremidades (revisión del 2026-11-18)
+
+Berón respondió: «el tamaño depende también de las extremidades… y el ancho es importante». Tiene razón. `MicroBody.span` (1,02 m) supone las patas **recogidas**, pero de pie el cuerpo las lleva **abiertas**. Lo he medido con la geometría con que `CubeInsect.Build` y `BuildLeg` (`CubeInsect.cs:248-376`) construyen las patas:
+
+- **Cadera:** a ±0,45 × ancho del tórax (0,12 L) del eje.
+- **Inclinación de cada pata hacia delante o atrás (`restYaw`):**
+  - par delantero, +30°;
+  - par medio, 0°;
+  - par trasero, −30°.
+- **Ángulos de la pata:**
+  - trocánter y fémur suben 40° (`Joint … -40f`);
+  - la rodilla baja 100°, así que la tibia acaba 60° por debajo de la horizontal;
+  - el tarso queda a −15°.
+- **Alcance en planta de cada pata** = coxa 0,05 + trocánter 0,03·cos40 + fémur·cos40 + tibia·cos60 + tarso·cos15:
+  - P1: 0,515 L = 1,05 m;
+  - P2: 0,541 L = 1,10 m;
+  - P3: 0,655 L = 1,33 m.
+- **Brazos:** en el insecto-humano el **par delantero es de brazos** (`armPairs = 1`, `CubeInsect.cs:324-334`). Anda con **4 patas** (P2 y P3).
+  - Cada brazo mide 0,68 L = **1,38 m** (un brazo humano, ~0,75 m).
+  - Está plegado hacia delante (coxa a 168°, tibia a −70°).
+- **Antenas acodadas:** 0,44 L = **0,89 m** cada una, hacia arriba y delante desde la cabeza (`CubeInsect.cs:151-166`).
+- **Al andar:** la coxa oscila hasta ±25° (`amp = speed/1.5 · 25°`, `CubeInsect.cs:581`).
+
+Medidas resultantes con L = 2,03 m (estatura de 1,75 m):
+
+| Medida | De pie | Andando (barrido) | Persona |
+|---|---|---|---|
+| **Ancho de lado a lado** (puntas de los tarsos de P3) | **2,52 m** (P2 da 2,42 m) | **2,87 m** (P3 a −5°) | 0,50 m |
+| Largo de delante a atrás (brazos plegados → punta del gáster o tarsos traseros) | ~1,8 m (+0,85 … −0,95 m) | ~2,0 m (los tarsos de P3 llegan a −1,13 m) | 0,30 m |
+| **Área de la huella** (rectángulo envolvente) | **≈ 4,5 m²** | **≈ 5,7 m²** | 0,15 m² |
+| Veces la de una persona | **×30** | **×38** | ×1 |
+| Alto total con las antenas | ~2,05 m | | 1,75 m |
+
+**Conclusión.** El problema de escala es sobre todo de **ancho**. Un mirmidón de pie ocupa como un coche pequeño de frente (2,5 m), 2,5 veces lo que suponen `MicroBody.span` y los muebles. Por eso:
+- el paso de 2 m (`Passage`) no deja pasar ni a uno andando;
+- una puerta real de 0,9 m no le sirve;
+- un mueble de persona, a su lado, es de juguete.
 
 ### 1.2 Muebles y objetos
 
@@ -87,31 +127,107 @@ Hay tres clases de figuras en un microcosmos, y no todas viven igual.
 
 Esta propuesta cambia reglas. Según la regla de cambios de reglas, cada cambio aprobado obliga a auditar lo que ya existe y a reescribir las reglas y pruebas afectadas: manual §7.4 (S6), `MicroBuildRules`, `GlassWallTest` y `MicroBuildRulesTest`.
 
-### 3.1 Escala (reglas E1–E6)
+### 3.1 Escala: encoger a los insectos-humanos (revisión del 2026-11-18)
 
-- **E1. Referencia de cuerpo = largo.** Todo lo que en el mundo humano se mide «para una persona de 1,75 m» (puertas, pasos, camas, mesas, vehículos) se mide para el **largo del cuerpo** del mirmidón, `MicroBody.Fit.length`, unos 2,16 m. Esto da un factor de cuerpo **k_c = largo / 1,75 ≈ 1,25**. El torso sigue a estatura humana, así que lo que se toca con las manos (alturas de mesa y de mostrador) se queda en `Fit.hands`.
-- **E2. Escala de presentación 1,5×, como CodeShip.** Es una sola constante, `MicroBuildRules.Presentation = 1.5f`. Multiplica la **planta y lo que se ve**: largo y fondo de muebles, platos, tazas, herramientas, pantallas, rótulos, fachadas y salas. **No multiplica** las alturas de contacto (manos, apoyo del abdomen, cama). Es la regla de CodeShip `escala.md` («no se escalan los personajes ni donde su cuerpo toca la máquina»).
-- **E3. Factor total de objetos de mano.** Platos, tazas, cubiertos y herramientas = real × k_c × 1,5 ≈ **real × 1,9**. Un plato pasa de 0,26 a **0,49 m**, una taza de 0,10 a 0,19 m y una cuchara mide al menos 3 cm de grueso. Lo mismo para todo `KitchenProps` usado en microcosmos.
-- **E4. Pasos para el cuerpo largo.** `AgentRadius` pasa a medio largo del cuerpo (≈ 1,1 m), o se usa un agente de NavMesh propio para centauros. Paso libre = largo + 0,6 m = **2,8 m** en datos. Calle = 2 pasos + un carro = **8 m**. Dibujados a 1,5×.
-- **E5. El pueblo no comparte encuadre con el santuario ×100.** Alrededor del barrio del pueblo, el mundo gigante se tapa con niebla de distancia, o con un horizonte (colinas, muralla) que lo oculta desde el suelo del pueblo. Así no hay una cama de 200 m junto a un plato de 0,5 m.
-- **E6. Árboles.** Se mantiene la escala real (15 m), pero con copa de varias piezas (ramas y 3–5 masas de follaje) en lugar de dos cubos. La presentación 1,5× no se aplica a árboles ni a edificios en altura (su altura ya es la real), solo a su planta si hace falta para el paso.
+La primera versión de este plan proponía agrandar el mundo (cuerpo de 2,16 m como referencia y presentación 1,5×). Berón reabrió la decisión: «quizás deberían pasar a ser la mitad de grandes de lo que son ahora para encajar mejor o incluso más peques». Encoger el cuerpo es **mucho más barato** que agrandar el mundo:
+- **Encoger:** una constante, los mínimos de `MicroBody` y de los muebles, volver a calcular el NavMesh y unas pruebas.
+- **Agrandar:** reconstruir cada objeto y cada edificio de todos los microcosmos.
 
-### 3.2 Asientos, camas y verticalidad (reglas C1–C4)
+**Factor s.** Escala uniforme del insecto-humano (estatura, L, patas, brazos y antenas). El mundo (arquitectura, calles, árboles, vehículos, animales de la época y objetos de mano) se queda a **tamaño real humano 1:1**. Visto desde el cuerpo, ese mundo es 1/s veces mayor: es la versión de la regla de CodeShip «objetos más grandes de lo normal», pero sin tocar el mundo.
 
-- **C1. Comer y trabajar de pie.** Una hormiga descansa de pie sobre seis patas. El mueble por defecto es el **mostrador o la mesa alta** a la altura de sus manos (~0,95 m), con un **apoyo de abdomen**: una barra o cojín inclinado bajo el gáster, como una misericordia de coro. Mide 1,5 × el ancho del cuerpo y queda a la vista detrás de cada comensal.
-- **C2. La silla de montar solo donde la época lo pide** (trono, tribuna, carruaje). Su medida será el largo del abdomen + 0,3 m y la altura del vientre + 0,15 m, con presentación 1,5×, para que se lea como mueble.
-- **C3. La cama sigue siendo un lecho de vientre** al largo del cuerpo + 0,3 m, sin cambios de forma, con presentación 1,5× en planta.
-- **C4. Sin escaleras ni ascensores para moverse.** Trepan las paredes (`SurfaceWalker`, enlaces `NavMeshLink` de la regla M8). **Excepción:** con más de **12 m** de altura (más de 3–4 plantas, como un rascacielos o una torre) hay ascensor o montacargas, si el lugar real lo tenía. Las escaleras históricas famosas (escalinatas, pirámides) se construyen como **monumento**, no como camino obligado.
+**Postura recogida (propuesta, todos los factores).** Las patas del insecto-humano se abren hoy 2,5 m. Se propone un `FolkStance` en `CubeInsect.BuildLeg` solo para los vecinos: trocánter a −15° en lugar de −40°, y par trasero a −15° en lugar de −30°. Así las patas van más bajo el cuerpo y el alcance lateral baja a **≈ 0,7×**. Es una estimación; hay que medirlo tras el cambio.
 
-### 3.3 Muros y edificios: vuelven, con vista de corte (reglas P1–P7)
+Base, s = 1:
+- estatura 1,75 m;
+- de pie, 2,52 m de ancho × 1,8 m de largo;
+- andando, 2,87 m × 2,0 m;
+- manos a 0,96 m y vientre a 0,24 m;
+- 2,16 m tumbado;
+- alto con antenas, 2,05 m.
 
-- **P1. Cada microcosmos recrea su lugar real** con planta, alzados y materiales documentados, cada dato con su fuente y su etiqueta (real / supuesto / ficción), igual que CodeShip `reglas.md` §1.1. Se termina la regla 2 («sin muros ni techo») en los microcosmos.
-- **P2. Muros y techos visibles desde fuera. Por dentro, vista de corte.** Al entrar el jugador o acercarse la cámara, el techo y los muros entre la cámara y el jugador se desvanecen, como en una casa de muñecas. Se cumple a la vez «los muros tapan la vista» y «se reconoce el edificio».
-- **P3. Todo recinto que existe en la realidad se puede recorrer.** Es CodeShip §2.1. Una puerta solo da paso, nunca abre menús (CodeShip §2.2).
-- **P4. Puertas a medida del cuerpo:** ancho = ancho con patas + 0,8 m ≈ **1,8 m**; alto = estatura + 0,6 m ≈ **2,4 m**; presentación 1,5× en el ancho. Para entrar no hace falta puerta: también se puede trepar por la fachada.
-- **P5. Un hito reconocible por microcosmos,** visible desde la llegada. Por ejemplo, el Falcon 1 en Omelek o la nave de SpaceX en Hawthorne; la kallanka y la plaza triangular de Cajamarca; el Rapenburg y la universidad de Leiden.
-- **P6. Al menos un transporte de época que se use** (se sube, se mueve y lleva carga): carro, barca de canal, litera inca, camión o coche. Se integra con el viaje automático (sección 4.2) como trayecto.
-- **P7. Densidad de época:** rótulos, carteles, objetos del oficio y gente trabajando en su puesto (la regla de dos personas por puesto sigue). Lo que hoy es un «solar abierto con muebles» pasa a ser un **interior** con muebles.
+| | **s = 0,5** | **s = 0,4** | **s = 0,33** |
+|---|---|---|---|
+| Estatura del torso | 0,88 m (0,80–0,93) | 0,70 m | 0,58 m |
+| Largo tumbado (cama) | 1,08 m | 0,86 m | 0,71 m |
+| Ancho de pie / andando, patas abiertas | 1,26 / 1,44 m | 1,01 / 1,15 m | 0,83 / 0,95 m |
+| Ancho de pie / andando, **postura recogida** | **0,88 / 1,00 m** | 0,71 / 0,80 m | 0,58 / 0,66 m |
+| Huella de pie (abierta / recogida) | 1,13 / 0,79 m² (×7,5 / ×5,3 de una persona) | 0,73 / 0,51 m² (×4,8 / ×3,4) | 0,49 / 0,34 m² (×3,3 / ×2,3) |
+| Manos (altura de su mesa) | 0,48 m (mesa de 0,42 m) | 0,38 m (0,34 m) | 0,32 m (0,28 m) |
+| Apoyo de abdomen (C1) | 0,16 m | 0,13 m | 0,11 m |
+| Puerta mínima (ancho andando recogido + 0,2 × alto con antenas + 0,2) | **1,2 × 1,25 m** | 1,0 × 1,0 m | 0,86 × 0,9 m |
+| Pasillo de uno / de dos sentidos (recogido) | 1,4 / **2,4 m** | 1,2 / 2,0 m | 1,06 / 1,7 m |
+| Radio del agente NavMesh (medio ancho recogido) | 0,50 m | 0,40 m (el de hoy) | 0,33 m |
+| Velocidad del agente (hoy 3 m/s; la amplitud del paso va con `speed/1.5`) | 1,5 m/s | 1,2 m/s | 1,0 m/s |
+| Plato real de 0,26 m visto desde su cuerpo | **×2** (lo que pedía la v1: ×1,9) | ×2,5 | ×3 |
+| Una sala real de 3 m de techo, para su cuerpo | Como 6 m | Como 7,5 m | Como 9 m |
+| ¿Caben por puertas reales (0,8–1,2 m) sin tocar el plano? | Solo las principales y dobles (≥ 1,2 m); las interiores se ensanchan a 1,2 m o se entra trepando | Las de ≥ 1,0 m | Todas las de ≥ 0,9 m |
+| Legible en el móvil y en el PC del HD 620 | Bien | Justo (manos de cubos de < 1 cm) | Pequeño: retrato y etiquetas se pierden |
+
+**Recomendación: s = 0,5 con la postura recogida.**
+- Es lo que Berón pidió primero («la mitad»).
+- El mundo real a 1:1 se ve exactamente 2× mayor: platos, tazas, mesas reales, edificios y árboles reales. Era el objetivo visual de la primera versión (×1,9), ahora **sin agrandar ni un objeto**.
+- CodeShip midió que a 2× la sala ya es grande y que más allá «el avatar en tercera persona se ve pequeño» (`escala.md`). Por eso 0,4 y 0,33 harían cavernosas las salas reales y el personaje ilegible en el móvil.
+- Con postura recogida mide 1 m de ancho andando. Caben dos de frente en 2,4 m.
+
+Si en el piloto las puertas interiores reales molestan, el siguiente paso es 0,4, que cabe por puertas de 1 m y deja el radio de agente de hoy (0,4 m).
+
+**Reglas de escala con s = 0,5 (sustituyen a E1–E4 de la versión 1):**
+- **E1. `MicroBuildRules.FolkScale = 0.5f`, una sola constante.**
+  - Estatura de los vecinos: 1,6–1,85 m × s, en `CivicBuilder.cs:710` y las ~10 llamadas a `Folk(…)` de los builders.
+  - El avatar del jugador insecto, igual.
+  - Las demás especies de insecto-humano: lo mismo, por su `MicroBody`.
+- **E2. El mundo, a escala real 1:1:** arquitectura, calles, árboles, vehículos, animales de la época y objetos de mano (plato de 0,26 m, taza, herramientas). Se descarta la constante de presentación 1,5× de la v1. Los mirmidones salvajes y las recolectoras de las eras sin pueblo, que se miden respecto al insecto-humano, también × s.
+- **E3. Lo que toca el cuerpo, a la medida del cuerpo, por `MicroBody`:** mesa de 0,42 m, apoyo de abdomen, lecho de 1,4 × 0,8 m, retrete y lavamanos. Ya se calcula midiendo el cuerpo, así que se adapta solo, salvo los **mínimos fijos**, que hay que pasar a × s.
+- **E4. Pasos.**
+  - `AgentRadius` 0,4 → 0,5 m.
+  - `Passage` 2,0 → **2,4 m** (dos cuerpos recogidos andando + 0,4).
+  - `Street` se queda en 4 m: caben dos parejas o un carro real.
+  - `WorkSpot` 0,9 → 0,6 m.
+- **E5. El santuario ×100, oculto desde el pueblo:** niebla u horizonte. Sigue igual que en la v1.
+- **E6. Árboles reales (15 m) con copa de varias piezas.** Sigue igual que en la v1. Para el cuerpo encogido un tilo «mide» 30 m, que es justo lo que se espera de un insecto.
+- **E7. Puestos reales de altura humana** (consolas de Control de Misión, mostradores, altares): se quedan a su medida real por fidelidad. El insecto-humano trabaja en ellos sobre una **tarima de puesto** (alto = superficie real − manos + 0,1 ≈ 0,37 m) o **subido encima**, porque trepa.
+
+### 3.2 Asientos, camas y verticalidad (reglas C1–C4, aprobadas por Berón)
+
+- **C1. Comer y trabajar de pie.** Una hormiga descansa de pie sobre sus patas. El mueble por defecto es el **mostrador o la mesa alta** a la altura de sus manos (0,42 m con s = 0,5), con un **apoyo de abdomen**: una barra o cojín inclinado bajo el gáster, como una misericordia de coro, de 1,5 × el ancho del cuerpo y visible detrás de cada comensal.
+- **C2. La silla de montar solo donde la época lo pide** (trono, tribuna, carruaje): al largo del abdomen + 0,15 m y al vientre + 0,08 m (× s).
+- **C3. La cama sigue siendo un lecho de vientre** al largo del cuerpo + 0,3 m × s.
+- **C4. Sin escaleras ni ascensores para moverse.** Trepan las paredes (`SurfaceWalker`, enlaces `NavMeshLink` de M8).
+  - **Excepción:** con más de **12 m** de altura (rascacielos, torres) hay ascensor o montacargas, si el lugar real lo tenía.
+  - Las escaleras reales de un lugar (escalinatas, pirámides) se construyen tal cual, por fidelidad, como **monumento**, no como camino obligado.
+
+### 3.3 Muros y edificios: vuelven, con vista de corte (reglas P1–P7, aprobadas por Berón)
+
+- **P1. Cada microcosmos recrea su lugar real a 1:1** (E2): planta, alzados y materiales documentados, con fuente y etiqueta (real / supuesto / ficción), como CodeShip `reglas.md` §1.1. Se termina la regla 2 («sin muros ni techo») en los microcosmos.
+- **P2. Muros y techos visibles desde fuera. Por dentro, vista de corte:** al entrar o al acercar la cámara, el techo y los muros entre la cámara y el jugador se desvanecen.
+- **P3. Todo recinto que existe en la realidad se puede recorrer.** Una puerta solo da paso, nunca abre menús (CodeShip §2.1 y §2.2).
+- **P4. Puertas.**
+  - Las reales, a su medida.
+  - Las de menos de **1,2 m** de ancho (el cuerpo recogido andando + 0,2, con s = 0,5) se ensanchan a 1,2 m. Si no, el NavMesh las cruza con un enlace de trepar por la fachada o la ventana.
+  - El alto real siempre basta: el cuerpo mide 1,25 m con antenas.
+- **P5. Un hito reconocible por microcosmos,** visible desde la llegada: el Falcon 1 y la nave de SpaceX en Hawthorne; la kallanka y la plaza triangular de Cajamarca; el Rapenburg y la universidad de Leiden.
+- **P6. Al menos un transporte de época que se use** (se sube, se mueve, lleva carga), a tamaño real: para el cuerpo encogido, un carro real es un vehículo grande y creíble. Se integra con el viaje automático (sección 4) como trayecto.
+- **P7. Densidad de época:** rótulos, objetos del oficio y gente en su puesto. Lo que hoy es un «solar abierto con muebles» pasa a ser un interior.
+
+### 3.4 Qué se rompe al encoger (s = 0,5) y hay que ajustar
+
+| Pieza | Dónde | Qué pasa |
+|---|---|---|
+| Estatura de los vecinos | `CivicBuilder.cs:710` y ~10 llamadas a `AreaMicrocosmos.Folk(…)` | Pasan a × `FolkScale`. |
+| Cuerpo del NavMesh | `AreaMicrocosmos.Folk`, `AreaMicrocosmos.cs:1306-1309` y :1320-1321 | Cápsula de radio 0,35, agente de radio 0,4, `speed = 3` y altura de etiqueta: pasan a × s. **Si la velocidad no baja, la amplitud del paso (`speed/1.5`) se satura y las patas patinan.** Hay que volver a calcular el NavMesh de cada microcosmos. |
+| Mínimos de `MicroBody` | `MicroBody.ForSpec`, :106-115 | `length` ≥ 1,2 m (con s = 0,5 el cuerpo mide 1,08 m y **se recortaría a 1,2**); `width` ≥ 0,3; `abdomen` ≥ 0,25. `Human()` usa 1,75 por defecto. Los mínimos pasan a × s. |
+| Mínimos de los muebles | `MicroFurniture.SeatOn` (:449, y ≥ 0,15, len ≥ 0,4, wid ≥ 0,3), `InsectBenchStep` (+0,35), `TableWithSeats` (:587: **mesa recortada a 0,6–1,0 m**, se quedaría en 0,6 con manos a 0,48), `TD` 0,9, sitio a 0,25 m | Pasan a × s. |
+| Objetos de mano | `MicroCivicScale.PlateFor` (`MicroSeat.cs:34`) | Ya tiene mínimo de 0,26 m: el plato se queda real. Revisar que nada multiplique por la estatura. |
+| Estatuas y fuentes | `MicroCivicScale.StatueTimes` y `FountainTimes` × estatura | Se calculan desde `Citizen` (1,75 m humano), no desde el cuerpo encogido, para que sigan siendo monumentos. |
+| Necesidades y jornada | `HomeNeedSpell` y `MicroSeat` (puntos fijos), `MicroJornada.WorkSpotOf`, umbrales de llegada | Las distancias absolutas pasan a × s. |
+| Cámara y etiquetas | Distancias de seguimiento de la cámara del avatar insecto, `WorldLabel.height` | × s. |
+| Auditoría de escala | `ScaleAudit.cs` («en los microcosmos, la referencia es la hormiga = un humano») | La referencia pasa a «humano × s». |
+| **Pruebas que fallarán** | `InsectOnlyTest.cs:71` (el avatar insecto mide 1,75 ± 0,25 m) | Esperar 1,75 × s. |
+| | `ActividadesTest.cs:53` (`standLocal` a 1,6 m) y sus distancias de bandeja y asiento | Revisar las medidas. |
+| | `MicroBuildRulesTest` (muros sintéticos de 3,2 m, que con P1 dejan de ser falta) | Reescribir con las reglas nuevas. |
+| | `GlassWallTest` y `MicrocosmosFloorTest` si miden pasos | Ídem. |
+| | `CicloHumanoTest` | Usa su propia escena; solo si usa `Folk`. |
+| Animaciones | Andar (`CubeInsect`): en unidades de L, no cambian; solo la velocidad. Brazos, empujar, bandeja y sentarse: posiciones relativas al cuerpo, salvo las fijas de las acciones (`HomeNeedSpell`, `MicroSeat`). Postura recogida: nuevo ángulo de trocánter y `restYaw` solo para los vecinos (`_dressingFolk`). | Animaciones de pasos: **S**. Postura recogida: **S**, y medirla. |
 
 ---
 
@@ -128,35 +244,33 @@ Tamaños de esfuerzo: S (1–2 días), M (3–6 días), L (más de una semana).
 | **3** | **Menú árbol.** Un engranaje arriba a la derecha que se vuelve X; de él brotan Vista, Tareas, Áreas y lo que aplique ahora; cada icono que abre ventana se vuelve X; se recoge a los 5 s. | `src/ui/root-menu.ts` (198: `RootItem`, `RETRACT_MS = 5000`, `LONG_PRESS_MS = 450`), `src/ui/root-menu.css`, `src/ui/hud-windows.ts`; reglas `reglas.md` §5.1 y §5.8 | Nuevo `Assets/Scripts/UI/MicroRootMenu.cs` (IMGUI) que registra sus ventanas en `HudModals` y `HudGate`. Las acciones del personaje (cocinar, trabajar, dormir, hablar) salen de la máquina o el mueble 3D en contexto (CodeShip §5.1), no de teclas sueltas. | **S** |
 | **4** | **Retos de código.** Ordenar bloques (problema de Parsons) o elegir opción (completar, predecir, reparar, especificar); bloques en pseudocódigo español con vista JS; intentos y dificultad; cada paso del reto animado en su sitio. | `src/modules/mind-duel/domain/exercise.ts` (`OrderExercise`, `ChoiceExercise`, `isCorrect`), `attempts.ts`, `difficulty.ts`, `src/modules/chores/domain/chore.ts` (catálogo de tareas → reto), `src/modules/station/application/challenges.ts` (retos con datos reales: masa, rendimiento), `src/modules/chores/application/step-visuals.ts`; reglas `reglas.md` §4 | Nuevo `StoryMission.Kind.Code` con un `Exercise` en C# (datos puros, fácil de probar en EditMode) y una hoja de reto IMGUI basada en `ChoiceDialog`. Al acertar se dispara la animación del paso en el puesto (`AreaFunctionStation`). Motor: **M**. Contenido: unos 5 retos por microcosmos con datos reales, **M por microcosmos**. | **M + M/microcosmos** |
 | **5** | **HUD y orientación.** Una sola acción principal, siempre en el mismo sitio (columna de contexto); estado arriba a la izquierda; objetivo visible; toques ≥ 44 px; nada se solapa; fallos con forma y color; carta o encargo que abre cada misión. | `docs/design/ux-acciones.md` (§1 reglas, §3 composición), `src/ui/hud.ts`, `src/ui/mission-log.ts`, `docs/design/misiones.md` (cartas de Nevaeh → objetivo marcado) | `HistoryCard.cs` (intro) pasa a ser la «carta» con el primer objetivo; objetivo actual fijo en la columna de contexto; marcador en el mundo sobre el destino de la tarea; `WorldLabel.cs` para los rótulos. | **S–M** |
-| **6** | **Reglas de escala y detalle.** `WORLD_SCALE = 1.5` (datos reales, presentación ampliada), 2 m entre interactuables medidos en datos, todo con fuente, cada equipo con su forma real y su animación propia. | `src/core/scale.ts` (`WORLD_SCALE`, `toWorld`, `drawnSpacing`), `docs/design/escala.md` (tabla de medidas 1×–2× en iPhone 13), `docs/design/reglas.md` §1, §2, §4.5 y la lista de revisión final | `MicroBuildRules` (`Presentation`, nuevos `Passage` y `Street`, quitar `WallHeight` y `RoofHeight` como prohibición), `MicroFurniture`, `KitchenProps` (factor E3), `CivicBuilder.Building` (muros y vista de corte), `MicroBuildRules.Validate` y sus pruebas. Reglas: **S**. Reconstrucción: **L** (todos los microcosmos). | **S + L** |
+| **6** | **Reglas de escala y detalle.** `WORLD_SCALE = 1.5` (datos reales, presentación ampliada), 2 m entre interactuables medidos en datos, todo con fuente, cada equipo con su forma real y su animación propia. | `src/core/scale.ts` (`WORLD_SCALE`, `toWorld`, `drawnSpacing`), `docs/design/escala.md` (tabla 1×–2×: a 2× «el avatar en tercera persona se ve pequeño»), `docs/design/reglas.md` §1, §2, §4.5 y la lista de revisión final | Con s = 0,5 **no hace falta constante de presentación**: el mundo real a 1:1 ya se ve 2× más grande que el cuerpo. Se porta la idea (una sola constante, datos reales) como `MicroBuildRules.FolkScale = 0.5f`. Se quitan `WallHeight` y `RoofHeight` como prohibición y se añaden la vista de corte en `CivicBuilder.Building` y la lista de revisión. Reglas: **S**. Muros e interiores: **L** (por microcosmos). | **S + L** |
 
-### 4.1 Plan por fases
+### 4.1 Plan por fases (revisado tras encoger)
 
 | Fase | Qué | Esfuerzo | Criterio de hecho |
 |---|---|---|---|
-| **0. Reglas** | Aprobar las decisiones de la sección 5. Reescribir el manual (§7.2–7.4) y `microcosmos-reglas-edificacion.md`. Añadir las constantes `Presentation` y `BodyRef` en `MicroBuildRules`. Cambiar `Validate`, `GlassWallTest` y `MicroBuildRulesTest`, con la prueba que falla escrita primero. | S | Pruebas de reglas en verde con las reglas nuevas. |
-| **1. Piloto: Microcosmos_ElonMusk** (Hawthorne, 28-09-2008) | Nave de SpaceX con muros y vista de corte, sala de Control de Misión con consolas y pantallas reales, Falcon 1 o su etapa en la nave como hito, coche o camión de la época. Muebles a E1–E3 y C1. Menú árbol, Tareas y Áreas con «Ir». 3–5 retos de código: secuencia de cuenta atrás (ordenar), comprobar valores de telemetría (predecir), reparar un fallo del vuelo 3 (reparar). Carta inicial. | L | Berón lo juega y dice «me siento dentro». Las pruebas de escala, necesidades y retos pasan en esa escena. |
-| **2. Necesidades verificadas** | Prueba en vivo en el microcosmos: un vecino duerme, va al retrete, come y trabaja un día entero, con `Fallbacks = 0`. Los personajes de la historia, con `NeedsDriver`. | M | Prueba nueva en verde en el piloto. |
-| **3. Segundo y tercer piloto** | `Microcosmos_Descartes` (Leiden 1637: canales, barcas, casas de ladrillo con frontón escalonado) y `Microcosmos_Atahualpa` (Cajamarca 1532: plaza, kallankas, literas). Prueban época antigua y transporte. | L | Igual que la fase 1. |
-| **4. Despliegue** | El resto de microcosmos, **uno a uno** por el límite de memoria del PC. Retos con datos de cada lugar. | L (repetido) | Lista de revisión, como la de CodeShip, en cada uno. |
+| **0. Reglas** | Reescribir el manual (§7.2–7.4) y `microcosmos-reglas-edificacion.md` con E1–E7, C1–C4 y P1–P7. Cambiar `Validate`, `GlassWallTest` y `MicroBuildRulesTest`, con la prueba que falla escrita primero. | S | Pruebas de reglas en verde con las reglas nuevas. |
+| **0b. Encoger el cuerpo** (nueva) | `FolkScale = 0.5` y postura recogida. Mínimos de `MicroBody` y `MicroFurniture` × s. Agente, velocidad, cámara y etiquetas × s. `AgentRadius`, `Passage` y `WorkSpot` nuevos. Ajustar las pruebas de la tabla 3.4. Recalcular el NavMesh **solo del piloto**. Prueba nueva: ancho del vecino recogido andando ≤ 1,05 m, cabe por una puerta de 1,2 m y la mesa queda a las manos ± 0,05 m. | **M** | Las pruebas de cuerpo y de muebles pasan. Una captura del piloto junto a un plato y una mesa reales. |
+| **1. Piloto: Microcosmos_ElonMusk** (Hawthorne, 28-09-2008) | Muros y vista de corte. Lo que cambia con el cuerpo encogido: la nave, el Control de Misión, las consolas, el Falcon 1 y el coche o camión se construyen **a su medida real**, sin factor de presentación, y las consolas llevan tarima de puesto (E7). Menú árbol, Tareas y Áreas con «Ir», 3–5 retos de código y carta inicial, como en la v1. | L (algo menos que en la v1: no se agranda ningún objeto) | Berón lo juega y dice «me siento dentro». Las pruebas de escala, necesidades y retos pasan en esa escena. |
+| **2. Necesidades verificadas** | Prueba en vivo en el piloto: un vecino duerme, va al retrete, come y trabaja un día entero, con `Fallbacks = 0`. Los personajes de la historia, con `NeedsDriver`. | M | Prueba nueva en verde. |
+| **3. Segundo y tercer piloto** | Descartes (Leiden 1637) y Atahualpa (Cajamarca 1532), a 1:1 real. | L | Igual que la fase 1. |
+| **4. Despliegue** | El resto, **uno a uno** por el límite de memoria: recalcular el NavMesh con el agente nuevo y repasar muebles, puertas, muros e interiores. Encoger cuesta poco por microcosmos (el builder ya mide el cuerpo); lo caro son los muros y los retos. | M por microcosmos (antes L) | Lista de revisión en cada uno. |
 
-**Por qué Elon Musk de piloto:** es el lugar más documentado (planos, fotos y vídeos de 2008). Su contenido es el de CodeShip (cohetes, consolas, telemetría), así que los retos y la escala 1,5× de las consolas se portan casi directamente. Un interior con muros (fábrica y control) es el caso que más cambia respecto a «sin muros».
+**Por qué Elon Musk de piloto** (aprobado): es el lugar más documentado de 2008, su contenido es el de CodeShip (cohetes, consolas, telemetría) y un interior con muros es el caso que más cambia.
 
 ---
 
-## 5. Decisiones abiertas para Berón
+## 5. Decisiones
 
-1. **¿Qué referencia de escala usamos?**
-   - **(Recomendada) A:** el mirmidón se queda como está (torso de 1,75 m, cuerpo de 2,16 m) y el mundo se dimensiona por su largo (k_c ≈ 1,25) y se dibuja a 1,5×. Los objetos de mano quedan ≈ 1,9× más grandes.
-   - **B:** encoger al mirmidón para que su *largo* mida 1,75 m (torso ≈ 1,42 m) y dibujar el mundo a 1,5×.
+Aprobadas por Berón (2026-11-18): **2** (de pie con apoyo de abdomen), **3** (vuelven muros y techos, con vista de corte) y **4** (piloto Elon Musk). Quedan abiertas:
 
-   A no toca cuerpos, animaciones ni pruebas de cuerpo.
-2. **¿Cómo se sientan?**
-   - **(Recomendada) De pie, con mesa alta y apoyo de abdomen** (C1). La silla de montar queda solo para tronos y vehículos.
-   - Alternativa: sillas de montar más largas y altas en todas partes.
-3. **¿Vuelven los muros y techos?**
-   - **(Recomendada) Sí, en todos los microcosmos,** con vista de corte al entrar (P2), puertas de 1,8 × 2,4 m y escaleras solo por encima de 12 m.
-   - Alternativa: solo fachadas hasta 1,2 m más el hito, sin interiores cerrados.
-4. **¿Qué microcosmos es el piloto?**
-   - **(Recomendado) Elon Musk / Hawthorne 2008.**
-   - Alternativas: Descartes / Leiden (más «pueblo histórico» con canales y barcas) o Atahualpa / Cajamarca.
+1. **Factor de encogimiento.**
+   - **(Recomendado) s = 0,5 con postura recogida:** 0,88 m de torso, 1 m de ancho andando y el mundo real 2× mayor.
+   - Alternativas: s = 0,4 (cabe por puertas de 1 m, salas que se ven 2,5×) o s = 0,33 (cabe por cualquier puerta, pero las salas se ven 3× y el cuerpo apenas se lee en el móvil).
+2. **Postura recogida de las patas.**
+   - **(Recomendada) Sí:** el ancho baja ~30 %. Sin ella, s = 0,5 abre las patas 1,44 m al andar y no cabe por casi ninguna puerta real.
+   - Alternativa: patas abiertas como las hormigas reales y puertas ensanchadas a 1,65 m.
+3. **Puertas interiores reales de menos de 1,2 m.**
+   - **(Recomendado) Ensancharlas a 1,2 m** y anotarlo como «supuesto» en la ficha del lugar.
+   - Alternativa: se dejan reales y se entra trepando por la fachada o la ventana.
