@@ -101,6 +101,7 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | JOR-52 | JOR | Regla J35: Partes iguales y nada a mañana (Berón 2026-11-08, corregido). Las horas de tareas de cada sitio se reparten por igual entre sus humanos, tan parejas como dejan las tareas, que no se parten (diferencia ≤ la tarea más larg… | SanctuaryLifeTest | 28 | J35 | — | manual §«Se comprueba en» |
 | JOR-53 | JOR | Regla J36: Quien pasa el día en otro santuario no se simula aquí (Berón 2026-11-08): su cuerpo se apaga y sus tareas corren por el reloj; vuelve el día que le toca la tierra y en las fiestas (actividades de todos a la vez). Las sal… | RepartoSantuariosTest | 113 | J36 | — | manual §«Se comprueba en», también g75 |
 | JOR-54 | JOR | Regla J37: Solo lo básico queda terminado (Berón 2026-11-09): los servicios básicos de humanos y animales (hospital, cocina, guardia, huerto, cría, carne cultivada, energía, mecánica), la construcción, el gimnasio y el yoga. Lo dem… | RepartoSantuariosTest | 113 | J37 | — | manual §«Se comprueba en» |
+| JOR-55 | JOR | Turnos de guardia desactivados para todos (Berón 2026-11-16): `WorkRoster.guardShifts` apagado por defecto; la patrulla y la sala de guardia no se reparten, ni a personas ni a clones; el alimentador no cuenta como guardia | RepartoSantuariosTest | 113 | — | PB-159 | añadido el 2026-11-18 |
 
 ## YOG · Yoga
 
@@ -318,6 +319,7 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | MIC-96 | MIC | Omelek: contenedores y hangar cerrados con vista de corte y puertas ≥ 1,2 × 1,25 m (la del contenedor, ensanchada) | OmelekTest | 126 | M24, M43 | — | docs/microcosmos-musk-historia.md; añadido el 2026-11-18 |
 | MIC-97 | MIC | Omelek: los sitios con su nombre fijo (para los retos de CodeShip) y la historia de 8 pasos con objetivo | OmelekTest | 126 | M9 | — | docs/microcosmos-musk-historia.md; añadido el 2026-11-18 |
 | MIC-98 | MIC | Omelek: las seis necesidades en los contenedores y 0 faltas de las reglas de edificación | OmelekTest | 126 | M23, M26 | — | docs/microcosmos-musk-historia.md; añadido el 2026-11-18 |
+| MIC-99 | MIC | Musk recrea su historia (Berón 2026-11-18): cada fragmento en su lugar real y fechado, un barrio con todo el detalle (edificios, interiores, muebles, maquinaria, utensilios, calles, vegetación, animales) y la ciudad de fondo | — | — | — | PB-162 | añadido el 2026-11-18 |
 
 ## HOS · Hospital
 
@@ -384,6 +386,7 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | PER-22 | PER | Regla P23: Cada carga de cultivo con luz paga su energía y cada cultivo tiene su cuidado diario de ≤ 1 h: las fachadas de fotobiorreactores declaran sus LED (potencia media del año; en la noche polar, la entera, que el reactor debe… | AreaFunctionRegistryTest | 61 | P23 | — | manual §«Se comprueba en» |
 | PER-23 | PER | Regla P7: ningún puesto sin base documentada (Professions.Basis); lo deducido, en Professions.Unconfirmed, hasta que Berón confirme | PersonajesReglasTest | 95 | P7 | — | manual §«Se comprueba en» (también tools/check-personajes.sh); añadido a mano el 2026-11-13 |
 | PER-24 | PER | Regla P19: las áreas de producción escalan su maquinaria a lo que se les pide (ProductionAudit) | ProduccionTest | 103 | P19 | — | manual §«Se comprueba en» (también el registro [Producción]); añadido a mano el 2026-11-13 |
+| PER-25 | PER | El bonusPack N suma las stats de la criatura más poderosa del santuario N (Berón 2026-11-18) | — | — | — | PB-164 | añadido el 2026-11-18 |
 
 ## UI · Interfaz
 
@@ -424,38 +427,39 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | CS-40 | CS | los retos de la escena están en su historia, cada uno con su sitio | CodeShipLogicTest | 119 | — | — | claude/ui-codeship (plan-microcosmos-realismo.md §4); añadido el 2026-11-18 |
 | CS-41 | CS | se llega al paso del reto | CodeShipLogicTest | 119 | — | — | claude/ui-codeship (plan-microcosmos-realismo.md §4); añadido el 2026-11-18 |
 | CS-42 | CS | acertar el reto cumple el paso de la historia | CodeShipLogicTest | 119 | — | — | claude/ui-codeship (plan-microcosmos-realismo.md §4); añadido el 2026-11-18 |
-
-
-## CH · Misiones-tarea de CodeShip (claude/ui-codeship)
-
-| ID | Área | Qué tiene que pasar | Unidad | Grupo | Reglas | PB | Origen |
-|---|---|---|---|---|---|---|---|
-| CH-01 | CH | todas las plantillas están bien formadas (retos válidos, fuente, título) | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
-| CH-02 | CH | los ids no se repiten | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
-| CH-03 | CH | están todas las clases que pidió Berón y las de los puestos de la nave | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
-| CH-04 | CH | cada grupo de la lista de tareas tiene alguna misión | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
-| CH-10 | CH | una tarea empieza en su primer reto, con 2 fallos de margen (CodeShip) | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
-| CH-11 | CH | repetir la misma respuesta mala cuenta un fallo, no dos | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
-| CH-12 | CH | un acierto pasa al siguiente reto | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
-| CH-13 | CH | el último acierto la termina | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
-| CH-14 | CH | dos fallos distintos la hacen fallar (hay que reintentar) | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
-| CH-20 | CH | un reto por paso | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
-| CH-21 | CH | «{bien/mal/mal}» pide el valor, con su unidad | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
-| CH-22 | CH | los demás preguntan qué viene ahora, con los dos pasos de antes como código | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
-| CH-23 | CH | todos los retos de la cadena validan | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
-| CH-24 | CH | la opción buena va en un sitio que solo depende del id (estable) | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
-| CH-25 | CH | «lava las hojas» → lavaLasHojas(); | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
-| CH-30 | CH | la curva: fácil 3 ideas, paciencia 5, 4 bloques, sin distracciones, concepto 1 | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
-| CH-31 | CH | la curva: difícil 8 ideas, paciencia 2, 10 bloques, con distracciones, concepto 10 | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
-| CH-32 | CH | las distracciones llegan a partir de 0,35 | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
-| CH-33 | CH | el duelo de ideas usa solo retos de su nivel | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
-| CH-34 | CH | acertar las ideas de la meta planta la idea | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
-| CH-35 | CH | agotar la paciencia pierde el duelo | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
-| CH-40 | CH | en Hawthorne cada puesto y cada necesidad tiene su misión | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
-| CH-41 | CH | cada misión de Hawthorne es una plantilla de la biblioteca | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
-| CH-50 | CH | en la escena, cada misión encuentra su sitio (los que faltan, con un marcador «supuesto») | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
-| CH-51 | CH | los puestos de la nave están en su mueble real (cocina, aviónica, composite, mecanizado) | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
-| CH-52 | CH | resolver sus retos cumple la misión del puesto y la quita de pendientes | ChoreLibraryTest | 120 | — | — | claude/ui-codeship; registrado al juntarlo con claude/escala-mitad el 2026-11-18 |
+| CS-50 | CS | todas las plantillas están bien formadas (retos válidos, fuente, título) | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-51 | CS | los ids no se repiten | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-52 | CS | están todas las clases que pidió Berón y las de los puestos de la nave | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-53 | CS | cada grupo de la lista de tareas tiene alguna misión | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-54 | CS | una tarea empieza en su primer reto, con 2 fallos de margen (CodeShip) | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-55 | CS | repetir la misma respuesta mala cuenta un fallo, no dos | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-56 | CS | un acierto pasa al siguiente reto | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-57 | CS | el último acierto la termina | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-58 | CS | dos fallos distintos la hacen fallar (hay que reintentar) | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-60 | CS | un reto por paso | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-61 | CS | «{bien/mal/mal}» pide el valor, con su unidad | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-62 | CS | los demás preguntan qué viene ahora, con los dos pasos de antes como código | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-63 | CS | todos los retos de la cadena validan | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-64 | CS | la opción buena va en un sitio que solo depende del id (estable) | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-65 | CS | «lava las hojas» → lavaLasHojas(); | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-70 | CS | la curva: fácil 3 ideas, paciencia 5, 4 bloques, sin distracciones, concepto 1 | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-71 | CS | la curva: difícil 8 ideas, paciencia 2, 10 bloques, con distracciones, concepto 10 | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-72 | CS | las distracciones llegan a partir de 0,35 | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-73 | CS | el duelo de ideas usa solo retos de su nivel | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-74 | CS | acertar las ideas de la meta planta la idea | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-75 | CS | agotar la paciencia pierde el duelo | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-80 | CS | en Hawthorne cada puesto y cada necesidad tiene su misión | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-81 | CS | cada misión de Hawthorne es una plantilla de la biblioteca | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-90 | CS | cocinar: el gesto de cocinar en el fogón | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-91 | CS | el torno y el composite, el gesto del banco; la aviónica, teclear en la consola | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-92 | CS | el yoga, postura a postura: el reto n pone la postura n de su secuencia | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-93 | CS | jugar con el perro: un paseo con él | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-94 | CS | dormir: tumbarse en el último paso, no antes | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-95 | CS | cada clase de misión de la biblioteca tiene su animación | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-85 | CS | en la escena, cada misión encuentra su sitio (los que faltan, con un marcador «supuesto») | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-86 | CS | los puestos de la nave están en su mueble real (cocina, aviónica, composite, mecanizado) | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-87 | CS | resolver sus retos cumple la misión del puesto y la quita de pendientes | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
+| CS-43 | CS | Cada actividad (cocinar, curar, plantar, campo, entrenar, yoga, cuidar animales…) tiene su misión como reto de código, con UI/UX como CodeShip | — | — | — | PB-163 | añadido el 2026-11-18 |
 
 ## REN · Rendimiento y pruebas
 
@@ -469,6 +473,7 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | REN-06 | REN | Regla W14: Repartir trabajo entre frames, solo si no integra tiempo: lo que usa el `Time.deltaTime` de un frame (andar, entrenar, actuar) corre en cada frame; se reparte la búsqueda cara o se acumula el tiempo con `GameTick`. | JornadaTest | 50 | W14 | — | manual §«Se comprueba en», también g112 |
 | REN-07 | REN | Regla W15: Un MonoBehaviour que se guarda en la escena va en su propio archivo, con el nombre de la clase. | JornadaTest | 50 | W15 | — | manual §«Se comprueba en» |
 | REN-08 | REN | Regla W16: sistema de QA: catálogo, registro, peticiones, manual y pruebas cuadran (QaCheck) | QaCheckTest | 118 | W16 | — | manual §10; añadido a mano el 2026-11-13 |
+| REN-09 | REN | Web ligera (PB-156): santuario + 61 microcosmos en 3 builds WebGL gzip, joystick de cámara, una página por microcosmos y su prueba `?prueba=1` en Edge sin ventana (web-continua.md) | — | — | — | PB-156 | añadido el 2026-11-18 |
 
 ## PX · Recorridos en vivo
 
@@ -517,10 +522,10 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 
 | ID | Tipo | Qué | Casos | Dueño | Estado | Hallazgo |
 |---|---|---|---|---|---|---|
-| B-01 | Fallo | g50: fauna atascada > 20 s, dando vueltas o volcada. Falla en todas las rondas que corrieron g50 desde r71 (crónico) | CV-03, CV-05, ARB-86, JOR-19, JOR-22, JOR-39, JOR-45, JOR-48, JOR-49, REN-06, REN-07 | probador → trabajador de fauna | Abierto | H1 |
+| B-01 | Fallo | g50: fauna atascada > 20 s, dando vueltas o volcada. Falla en todas las rondas que corrieron g50 desde r71 (crónico) | CV-03, CV-05, ARB-86, JOR-19, JOR-22, JOR-39, JOR-45, JOR-48, JOR-49, REN-06, REN-07 | probador → trabajador de fauna | Resuelto en r127 (2026-11-18): g50 49/0 y suite 4770/0, la primera limpia | H1 |
 | B-02 | Fallo | El script de marcas vació docs/checklist.md y docs/auditoria-peticiones.md (82878fc): leía un temporal que no existía | OP-04 | probador | Arreglado en 1bdfe1c; falta el aviso automático (QaCheck §6.9) | H2 |
 | B-03 | Fallo | Ficheros sueltos en Unity tras cambiar de rama: TmpCheck y .cs que ya no están en git | OP-05 | probador | Arreglado con sync --prune (r83, r84); falta el aviso automático (QaCheck §6.10) | H3 |
-| HC-01 | Hueco | Valores de los bonusPacks de Irosene, Lizmibet y Linduarda: los decide Berón | PB-140 | Berón | Abierto | — |
+| HC-01 | Hueco | Valores de los bonusPacks de Irosene, Lizmibet y Linduarda: los decide Berón | PB-140 | Berón | Cerrado: lo decide PB-164 (Berón 2026-11-18 21:34) | — |
 | HC-02 | Hueco | Afinar con OpenStreetMap los huecos históricos (la parte abierta de PB-082, L282) | PB-082 | sin dueño | Abierto | — |
-| HC-03 | Hueco | ¿«Alicia» es el nombre real de Alicita? Se quitó del rótulo por defecto (P24); docs/personajes/alicita.md | — | Berón | Abierto | — |
+| HC-03 | Hueco | ¿«Alicia» es el nombre real de Alicita? Se quitó del rótulo por defecto (P24); docs/personajes/alicita.md | — | Berón | Cerrado: «Alicia» es el nombre real y el del juego (Berón 2026-11-18 21:34) | — |
 | HC-04 | Hueco | Hora de la suite diaria (nivel N4) acordada con Berón (Unity es compartido) | — | Berón | Abierto | — |

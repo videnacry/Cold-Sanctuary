@@ -34,6 +34,8 @@ public class CodeChallengeSheet : MonoBehaviour
     string _runTitle = "", _runScenario = "";
     Action<ChoreRun> _onEnd;
     Func<ChoreRun> _retry;
+    /// <summary>(2026-11-18, CodeShip §4.2) Se llama al acertar cada reto de la tarea: (tarea, índice del reto, texto del paso) → su animación.</summary>
+    Action<ChoreRun, int, string> _onStep;
     bool _ended;
     CodeAttempts Att => _run != null ? _run.Attempts : _attempts;
     /// <summary>La tarea abierta en la hoja (null si es un reto suelto o no hay hoja): pruebas y menú.</summary>
@@ -61,12 +63,12 @@ public class CodeChallengeSheet : MonoBehaviour
 
     /// <summary>Abre una TAREA: sus retos en orden en la misma hoja. <paramref name="onEnd"/> se llama al cerrarla hecha o fallada (no si se
     /// cierra a medias); <paramref name="retry"/>, si se da, ofrece «Reintentar» tras fallar.</summary>
-    public static void OpenRun(ChoreRun run, string title, string scenario, Action<ChoreRun> onEnd, Func<ChoreRun> retry = null)
+    public static void OpenRun(ChoreRun run, string title, string scenario, Action<ChoreRun> onEnd, Func<ChoreRun> retry = null, Action<ChoreRun, int, string> onStep = null)
     {
         if (run == null || run.Current == null) return;
         CodeChallengeSheet s = Get();
         s.EndRun();
-        s._run = run; s._runTitle = title ?? ""; s._runScenario = scenario ?? ""; s._onEnd = onEnd; s._retry = retry; s._ended = false;
+        s._run = run; s._runTitle = title ?? ""; s._runScenario = scenario ?? ""; s._onEnd = onEnd; s._retry = retry; s._onStep = onStep; s._ended = false;
         s._answer = null;
         s.Load(run.Current);
         Debug.Log($"[Retos] Tarea «{title}»: {run.Steps} retos.");
@@ -131,7 +133,9 @@ public class CodeChallengeSheet : MonoBehaviour
         if (_run.Status != ChoreRun.State.Doing) return _run.Status == ChoreRun.State.Done;
         if (_run.Tried(a)) { _feedback = "✗ Esa respuesta ya la probaste: no cuenta. Prueba otra."; _feedbackBad = true; return false; }
         int good = a.kind == CodeExercise.Kind.Order ? _ex.CorrectPrefix(a.order) : 0;
+        int solved = _run.Step; CodeExercise was = _ex;
         bool ok = _run.Submit(a);
+        if (ok) _onStep?.Invoke(_run, solved, was.kind == CodeExercise.Kind.Choice && was.correct < was.options.Length ? was.options[was.correct] : "la secuencia, en orden");
         if (ok)
         {
             string why = string.IsNullOrEmpty(_ex.explain) ? "" : " " + _ex.explain;
@@ -156,7 +160,7 @@ public class CodeChallengeSheet : MonoBehaviour
 
     void Update()
     {
-        if (!IsOpen || Time.frameCount == _openedFrame) return;
+        if (!IsOpen || Time.frameCount == _openedFrame || (_run != null && StepAnimator.Playing)) return;
         if (Input.GetKeyDown(KeyCode.Escape)) { Close(); return; }
         if ((_solved || RunOver) && (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))) { Close(); return; }
         if (_ex.kind == CodeExercise.Kind.Choice && !_solved && !RunOver)
@@ -189,6 +193,16 @@ public class CodeChallengeSheet : MonoBehaviour
         Styles();
         GUI.depth = -900;   // encima de los HUD del juego
         float row = Row, pad = 10f;
+        if (_run != null && StepAnimator.Playing)   // (CodeShip §4.2) la hoja se recoge: se ve el paso hecho en su sitio
+        {
+            float bw = Mathf.Min(620f, Screen.width - 16f);
+            var bar = new Rect((Screen.width - bw) * 0.5f, Screen.height - row - 20f, bw, row + 12f);
+            GUI.Box(bar, ""); GUI.Box(bar, "");
+            Color c0 = GUI.contentColor; GUI.contentColor = Green;
+            GUI.Label(new Rect(bar.x + 10f, bar.y + 6f, bw - 20f, row), "✓ " + StepAnimator.Caption, _txt);
+            GUI.contentColor = c0;
+            return;
+        }
         float w = Mathf.Min(780f, Screen.width - 16f), h = Mathf.Min(Screen.height * (WebLigera.Active ? 0.86f : 0.8f), 700f);
         var r = new Rect((Screen.width - w) * 0.5f, Screen.height - h - 8f, w, h);   // hoja inferior
         GUI.Box(r, ""); GUI.Box(r, ""); GUI.Box(r, "");   // tres capas: opaca de verdad (CodeShip: las barras casi transparentes no se leían)
@@ -227,10 +241,10 @@ public class CodeChallengeSheet : MonoBehaviour
         {
             if (_retry != null && GUI.Button(new Rect(foot.xMax - row * 7.4f, foot.y, row * 3.6f, row), "Reintentar"))
             {
-                Func<ChoreRun> retry = _retry; string t = _runTitle, sc = _runScenario; Action<ChoreRun> cb = _onEnd;
+                Func<ChoreRun> retry = _retry; string t = _runTitle, sc = _runScenario; Action<ChoreRun> cb = _onEnd; Action<ChoreRun, int, string> st = _onStep;
                 Close();
                 ChoreRun again = retry();
-                if (again != null) OpenRun(again, t, sc, cb, retry);
+                if (again != null) OpenRun(again, t, sc, cb, retry, st);
                 return;
             }
             if (GUI.Button(new Rect(foot.xMax - row * 3.5f, foot.y, row * 3.5f, row), "Cerrar")) Close();

@@ -298,6 +298,7 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | JOR-52 | Probado (suite g28) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g28 SanctuaryLifeTest 167/0 |
 | JOR-53 | Probado (suite g113) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g113 RepartoSantuariosTest 108/0 |
 | JOR-54 | Probado (suite g113) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g113 RepartoSantuariosTest 108/0 |
+| JOR-55 | Probado (suite g113) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g113 RepartoSantuariosTest 108/0 |
 | PER-06 | Probado (suite g95) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g95 PersonajesReglasTest 12/0 |
 | PER-07 | Probado (suite g28) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g28 SanctuaryLifeTest 167/0 |
 | PER-08 | Probado (suite g89) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g89 PillowFightTest 28/0 |
@@ -355,9 +356,11 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | MIC-83 | Probado (suite g68) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g68 MicroSueloTest 31/0 |
 | PER-23 | Probado (suite g95) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g95 PersonajesReglasTest 12/0 |
 | PER-24 | Probado (suite g103) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g103 ProduccionTest 16/0 |
+| PER-25 | Sin probar | 2026-11-18 | — | — | — | en curso: falta código |
 | FAU-31 | Probado (suite g99) | 2026-11-17 | 4127332 | [runs/2026-11-17-1900-r125-rapida-grupos-vivo-suite.md](runs/2026-11-17-1900-r125-rapida-grupos-vivo-suite.md) | — | r125: g99 TerritorioTest 80/0 |
 | FAU-32 | Probado (suite g85) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g85 CadenaAlimenticiaTest 58/0 |
 | REN-08 | Probado (suite g118) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g118 QaCheckTest 44/0 |
+| REN-09 | Solo código | 2026-11-18 | — | — | — | subido y probado con `?prueba=1` en Edge, fuera del TestRunner; falta su run log |
 | MIC-84 | Solo código | 2026-11-18 | — | — | — | claude/escala-mitad: programado y compilado; lo prueba el probador |
 | MIC-85 | Solo código | 2026-11-18 | — | — | — | claude/escala-mitad: programado y compilado; lo prueba el probador |
 | MIC-86 | Solo código | 2026-11-18 | — | — | — | claude/escala-mitad: programado y compilado; lo prueba el probador |
@@ -373,6 +376,7 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | MIC-96 | Solo código | 2026-11-18 | — | — | — | claude/escala-mitad: programado y compilado; lo prueba el probador |
 | MIC-97 | Solo código | 2026-11-18 | — | — | — | claude/escala-mitad: programado y compilado; lo prueba el probador |
 | MIC-98 | Solo código | 2026-11-18 | — | — | — | claude/escala-mitad: programado y compilado; lo prueba el probador |
+| MIC-99 | Sin probar | 2026-11-18 | — | — | — | en curso: falta código |
 | CS-01 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
 | CS-02 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
 | CS-03 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
@@ -401,32 +405,39 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | CS-40 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
 | CS-41 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
 | CS-42 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
-| CH-01 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
-| CH-02 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
-| CH-03 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
-| CH-04 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
-| CH-10 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
-| CH-11 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
-| CH-12 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
-| CH-13 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
-| CH-14 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
-| CH-20 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
-| CH-21 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
-| CH-22 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
-| CH-23 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
-| CH-24 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
-| CH-25 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
-| CH-30 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
-| CH-31 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
-| CH-32 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
-| CH-33 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
-| CH-34 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
-| CH-35 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
-| CH-40 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
-| CH-41 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
-| CH-50 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
-| CH-51 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
-| CH-52 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest): registrado al juntarlo con claude/escala-mitad |
+| CS-50 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-51 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-52 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-53 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-54 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-55 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-56 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-57 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-58 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-60 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-61 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-62 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-63 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-64 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-65 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-70 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-71 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-72 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-73 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-74 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-75 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-80 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-81 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-90 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-91 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-92 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-93 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-94 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-95 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-85 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-86 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-87 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-43 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship: MissionLibrary + StationMissions + StepAnimator (ChoreLibraryTest g120, CS-50…CS-95); lo prueba el probador |
 
 **Recuento:** No aplica 8 · Parcial 9 · Probado (retro) 285 · Sin probar 31 · Solo código 16 · total 349.
 
@@ -436,7 +447,7 @@ Checks concretos (el texto del `TestProbe.Check`), no casos enteros. Se mira en 
 
 | Check | Grupo | Estado | Rondas | B/HC | Dueño | Nota |
 |---|---|---|---|---|---|---|
-| fauna: ningún animal atascado > 20 s, dando vueltas o volcado | 50 | Crónico | r71–r80, r82, r83 (12 rondas con g50; r81 no corrió g50) | B-01 | probador → trabajador de fauna | contadores.md: 4, 12, 11, 9, 17, 27, 34, 5, 6, 10, 7, 14 |
+| fauna: ningún animal atascado > 20 s, dando vueltas o volcado | 50 | Resuelto (r127) | r71–r80, r82, r83 (12 rondas con g50; r81 no corrió g50); limpio en r127 (49/0) | B-01 | probador → trabajador de fauna | contadores.md: 4, 12, 11, 9, 17, 27, 34, 5, 6, 10, 7, 14 |
 | fauna: ningún animal dentro de muebles, en el agua sin ser acuático ni cayendo | 50 | Inestable | FAIL en r73, r78, r80, r82; pasa en r74–r77, r79, r83 | — | sin dueño | H6: falló y pasó en commits distintos; falta repetirlo en un mismo commit para confirmarlo |
 | un paseo sin salto posible descansa a propósito / …y prueba otra dirección (gira ≥ 90°) | 1 | Inestable | FAIL en r77 (6 líneas); pasa en r73–r75, r78, r79, r82, r83 | — | sin dueño | H5: falló y pasó en commits distintos; falta repetirlo en un mismo commit |
 | día 1/2: Kushal completa TODAS sus misiones | 50 | Inestable | FAIL en la suite 63 (d0542db); pasa en la suite r71 y en r72–r83 | — | sin dueño | runs/2026-11-12-1208-r63-retro.md |
