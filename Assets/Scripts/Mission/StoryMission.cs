@@ -12,7 +12,9 @@ using UnityEngine;
 [RequireComponent(typeof(HistoryCard))]
 public class StoryMission : MonoBehaviour
 {
-    public enum Kind { Talk, Reach, Collect, VisitAll, Hold }
+    /// <summary>(2026-11-18, CodeShip) <see cref="Code"/>: un reto de código (<see cref="CodeChallenges"/>) que se resuelve en su sitio; acertarlo
+    /// cumple el paso. Va al final del enum: las escenas guardan el número.</summary>
+    public enum Kind { Talk, Reach, Collect, VisitAll, Hold, Code }
     public enum Marga { Stats, Yoga, Bonds }
 
     [System.Serializable]
@@ -35,6 +37,8 @@ public class StoryMission : MonoBehaviour
         public Veracity truth; public string truthSource = "";
         [Tooltip("Al cumplirlo aparecen / desaparecen (la bici arreglada, el avión, la ventana abierta…).")]
         public GameObject[] reveal = new GameObject[0], hide = new GameObject[0];
+        [Tooltip("Code: el id del reto (CodeChallenges).")]
+        public string challenge = "";
     }
 
     public string title = "";
@@ -59,6 +63,10 @@ public class StoryMission : MonoBehaviour
     public int Step => _step;
     public bool Finished => _step >= steps.Length;
     StoryStep Current => Finished ? null : steps[_step];
+    /// <summary>El paso de ahora (null al terminar): la lista de tareas y el menú.</summary>
+    public StoryStep CurrentStep => Current;
+    /// <summary>¿Está abierta la tarjeta de la historia (intro o final)?</summary>
+    public bool CardShowing => CardOpen;
     bool CardOpen => _card != null && _card.IsOpen;
 
     void OnEnable() => Instance = this;
@@ -68,6 +76,7 @@ public class StoryMission : MonoBehaviour
     {
         _card = GetComponent<HistoryCard>();
         if (string.IsNullOrEmpty(_card.title)) _card.title = title;
+        CodeChallenges.Inject(this);   // (2026-11-18, CodeShip) los retos de código de esta escena, como pasos, antes de la regla M39
         LineTruth.Fill(this, _card);   // regla M39 (también en las escenas construidas antes de la regla)
         foreach (StoryStep s in steps) foreach (GameObject g in s.reveal) if (g != null) g.SetActive(false);
     }
@@ -120,8 +129,9 @@ public class StoryMission : MonoBehaviour
                 if (_held >= s.seconds) Complete(s);
                 return;
         }
-        if (GameKeys.DialogOpen || !GameKeys.GetKeyDown(KeyCode.E)) return;
+        if (GameKeys.DialogOpen || CodeChallengeSheet.IsOpen || !GameKeys.GetKeyDown(KeyCode.E)) return;
         if (s.kind == Kind.Talk) { if (Dist(first) <= reach) Complete(s); return; }
+        if (s.kind == Kind.Code) { if (Dist(first) <= reach * 1.6f) OpenChallenge(); return; }
         if (s.kind == Kind.Collect && s.deliverTo != null && _carried.Count >= Needed(s) && Dist(s.deliverTo) <= reach * 1.4f) { Drop(s.deliverTo); Complete(s); return; }
         Transform t = NearestPending(s);
         if (t == null) return;
@@ -167,6 +177,84 @@ public class StoryMission : MonoBehaviour
         if (Finished) Finish();
     }
 
+    // ── RETOS DE CÓDIGO Y LISTA DE TAREAS (2026-11-18, CodeShip) ─────────────────────────────────────────────────────────────────
+
+    /// <summary>¿Está el jugador donde la E hace el paso de ahora? (el menú: ir primero o actuar ya).</summary>
+    public bool InReach
+    {
+        get
+        {
+            StoryStep s = Current; if (s == null || Player() == null) return false;
+            Transform first = s.targets.Length > 0 ? s.targets[0] : null;
+            if (s.kind == Kind.Code || s.kind == Kind.Reach || s.kind == Kind.Hold) return Dist(first) <= reach * 1.6f;
+            if (s.kind == Kind.Talk) return Dist(first) <= reach;
+            return NearestPending(s) != null || (s.kind == Kind.Collect && s.deliverTo != null && Dist(s.deliverTo) <= reach * 1.4f);
+        }
+    }
+
+    /// <summary>Abre la hoja del reto del paso de ahora (si el paso es un reto). true = abierta.</summary>
+    public bool OpenChallenge()
+    {
+        StoryStep s = Current;
+        if (s == null || s.kind != Kind.Code) return false;
+        CodeExercise ex = CodeChallenges.Find(s.challenge);
+        if (ex == null) { Debug.LogWarning($"[Historia] {title}: el reto «{s.challenge}» no está en el catálogo; el paso se da por hecho."); Complete(s); return false; }
+        int at = _step;
+        CodeChallengeSheet.Open(ex, a => _step == at && AnswerChallenge(a));
+        return true;
+    }
+
+    /// <summary>Responde al reto del paso de ahora: si acierta, se cumple el paso. true = acertó. (La hoja y las pruebas.)</summary>
+    public bool AnswerChallenge(CodeAnswer a)
+    {
+        StoryStep s = Current;
+        if (s == null || s.kind != Kind.Code) return false;
+        CodeExercise ex = CodeChallenges.Find(s.challenge);
+        if (ex == null || !ex.IsCorrect(a)) return false;
+        Debug.Log($"[Historia] {title} · reto «{ex.id}» resuelto.");
+        Complete(s);
+        return true;
+    }
+
+    /// <summary>Los objetivos que quedan del paso de ahora (adónde ir): el primero (hablar, llegar, quedarse, reto), los que faltan por
+    /// atender o recoger, o adónde llevar lo recogido.</summary>
+    public List<Transform> PendingTargets()
+    {
+        var l = new List<Transform>();
+        StoryStep s = Current; if (s == null) return l;
+        if (s.kind == Kind.Collect && s.deliverTo != null && _carried.Count >= Needed(s)) { l.Add(s.deliverTo); return l; }
+        if (s.kind == Kind.Collect || s.kind == Kind.VisitAll)
+        {
+            foreach (Transform t in s.targets) if (t != null && !_done.Contains(t) && t.gameObject.activeInHierarchy) l.Add(t);
+            return l;
+        }
+        if (s.targets.Length > 0 && s.targets[0] != null) l.Add(s.targets[0]);
+        return l;
+    }
+
+    /// <summary>Cuánto lleva del paso de ahora («(1/3)», «(4/10 s, quieto)»…); vacío si no se cuenta.</summary>
+    public string ProgressText()
+    {
+        StoryStep s = Current; if (s == null) return "";
+        return s.kind == Kind.Collect ? (s.deliverTo != null && _carried.Count >= Needed(s) ? $" (llévalo a {s.deliverTo.name})" : $" ({_carried.Count}/{Needed(s)})")
+             : s.kind == Kind.VisitAll ? $" ({s.targets.Length - Pending(s)}/{s.targets.Length})"
+             : s.kind == Kind.Hold ? $" ({_held:0}/{s.seconds:0} s, quieto)" : "";
+    }
+
+    /// <summary>Lo que hace la E en el paso de ahora («hablar», «resolver el reto»…); vacío si no se pulsa nada (llegar, quedarse).</summary>
+    public string ActionVerb()
+    {
+        StoryStep s = Current; if (s == null) return "";
+        switch (s.kind)
+        {
+            case Kind.Talk: return "hablar";
+            case Kind.Collect: return s.deliverTo != null && _carried.Count >= Needed(s) ? "dejarlo" : "recoger";
+            case Kind.VisitAll: return "atender";
+            case Kind.Code: return "resolver el reto";
+            default: return "";
+        }
+    }
+
     /// <summary>Para las pruebas: da por cumplido el paso actual (con lo que aparece, desaparece y se dice), como si el jugador
     /// lo hubiera hecho. Devuelve false si la historia ya había terminado.</summary>
     public bool CompleteCurrentForTest()
@@ -194,7 +282,7 @@ public class StoryMission : MonoBehaviour
 
     void OnGUI()
     {
-        if (CardOpen) return;
+        if (CardOpen || CodeChallengeSheet.IsOpen) return;   // con un reto abierto, solo la hoja y la escena (CodeShip reglas.md §4.3)
         GUIStyle wrap = new GUIStyle(GUI.skin.label) { wordWrap = true, fontSize = 15 };
         GUI.Box(new Rect(10f, 10f, 460f, 78f), "");
         GUI.Label(new Rect(20f, 14f, 440f, 22f), title, wrap);
@@ -202,12 +290,10 @@ public class StoryMission : MonoBehaviour
         if (s == null) GUI.Label(new Rect(20f, 36f, 440f, 44f), "Historia completada.", wrap);
         else
         {
-            string prog = s.kind == Kind.Collect ? (s.deliverTo != null && _carried.Count >= Needed(s) ? $" (llévalo a {s.deliverTo.name})" : $" ({_carried.Count}/{Needed(s)})")
-                        : s.kind == Kind.VisitAll ? $" ({s.targets.Length - Pending(s)}/{s.targets.Length})"
-                        : s.kind == Kind.Hold ? $" ({_held:0}/{s.seconds:0} s, quieto)" : "";
-            GUI.Label(new Rect(20f, 36f, 440f, 22f), $"{_step + 1}/{steps.Length} · {s.goal}{prog}", wrap);
-            bool canE = s.kind == Kind.Talk ? Dist(s.targets.Length > 0 ? s.targets[0] : null) <= reach : (s.kind == Kind.Collect || s.kind == Kind.VisitAll) && NearestPending(s) != null;
-            if (canE) GUI.Label(new Rect(20f, 58f, 440f, 22f), "E · " + (s.kind == Kind.Talk ? "hablar" : s.kind == Kind.Collect ? "recoger" : "atender"), wrap);
+            GUI.Label(new Rect(20f, 36f, 440f, 22f), $"{_step + 1}/{steps.Length} · {s.goal}{ProgressText()}", wrap);
+            bool near = InReach;
+            if (near && ActionVerb().Length > 0) GUI.Label(new Rect(20f, 58f, 440f, 22f), "E · " + ActionVerb(), wrap);
+            else if (!near) GUI.Label(new Rect(20f, 58f, 440f, 22f), $"<size=12>¿Dónde? {MicroRootMenu.KeyHint} ▸ Tareas ▸ «Ir» te lleva</size>", new GUIStyle(wrap) { richText = true });
         }
         if (Time.time < _noteUntil) GUI.Label(new Rect(Screen.width * 0.5f - 300f, Screen.height - 96f, 600f, 70f), _note, new GUIStyle(wrap) { alignment = TextAnchor.MiddleCenter });
     }

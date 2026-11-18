@@ -432,7 +432,7 @@ public static class HomeMove
             else if (rest == MicroBody.Percha)
             {   // AGARRADO A LA PERCHA (abeja, luciérnaga, cigarra) o COLGADO DE SU BARRA (mantis): de pie bajo la barra, quieto.
                 if (ins != null) ins.localRotation = Quaternion.identity;
-                t.position = new Vector3(bed.position.x, bed.position.y + 0.08f, bed.position.z);
+                t.position = new Vector3(bed.position.x, bed.position.y + 0.08f * h / MicroBuildRules.HumanStature, bed.position.z);
             }
             else
             {   // De espaldas (una cama humana): el cuerpo (que va de los pies, en el pivote, hacia arriba) se tumba hacia +z.

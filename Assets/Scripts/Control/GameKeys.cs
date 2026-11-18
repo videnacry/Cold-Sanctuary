@@ -13,11 +13,11 @@ public static class GameKeys
     public static bool MenuOpen;
     /// <summary>Hay un diálogo abierto (opciones, confirmación, menú de misiones): secuestra Intro y oculta el lanzador.</summary>
     /// <summary>Qué diálogo está abierto (para los registros); vacío si ninguno.</summary>
-    public static string OpenDialogs => string.Join(", ", new[] { MenuOpen ? "menú" : null, ChoiceDialog.IsOpen ? "diálogo de opciones" : null, ConfirmationPanel.IsVisible ? "panel de confirmación" : null, MissionSelectMenu.Instance != null && MissionSelectMenu.Instance.IsOpen ? "menú de misiones" : null }.Where(x => x != null));
+    public static string OpenDialogs => string.Join(", ", new[] { MenuOpen ? "menú" : null, ChoiceDialog.IsOpen ? "diálogo de opciones" : null, ConfirmationPanel.IsVisible ? "panel de confirmación" : null, MissionSelectMenu.Instance != null && MissionSelectMenu.Instance.IsOpen ? "menú de misiones" : null, CodeChallengeSheet.IsOpen ? "reto de código" : null }.Where(x => x != null));
     /// <summary>Cierra todos los diálogos (las pruebas, si uno se quedó abierto).</summary>
-    public static void CloseDialogs() { MenuOpen = false; if (ChoiceDialog.IsOpen) ChoiceDialog.Close(); if (ConfirmationPanel.IsVisible) ConfirmationPanel.Instance.Hide(); if (MissionSelectMenu.Instance != null) MissionSelectMenu.Instance.CloseSilently(); }
-    public static bool DialogOpen => MenuOpen || ChoiceDialog.IsOpen || ConfirmationPanel.IsVisible || (MissionSelectMenu.Instance != null && MissionSelectMenu.Instance.IsOpen);
-    static bool Muted => SpellConsole.Capturing || MenuOpen;   // los diálogos de opciones NO bloquean el teclado (solo ocultan el lanzador): uno se puede alejar y se cierran
+    public static void CloseDialogs() { MenuOpen = false; if (ChoiceDialog.IsOpen) ChoiceDialog.Close(); if (ConfirmationPanel.IsVisible) ConfirmationPanel.Instance.Hide(); if (MissionSelectMenu.Instance != null) MissionSelectMenu.Instance.CloseSilently(); CodeChallengeSheet.Close(); }
+    public static bool DialogOpen => MenuOpen || ChoiceDialog.IsOpen || ConfirmationPanel.IsVisible || (MissionSelectMenu.Instance != null && MissionSelectMenu.Instance.IsOpen) || CodeChallengeSheet.IsOpen;
+    static bool Muted => SpellConsole.Capturing || MenuOpen || CodeChallengeSheet.IsOpen;   // los diálogos de opciones NO bloquean el teclado (solo ocultan el lanzador): uno se puede alejar y se cierran
     public static bool GetKey(KeyCode k) => !Muted && (Input.GetKey(k) || VirtualHeld(k));
     public static bool GetKey(string k) => !Muted && Input.GetKey(k);
     public static bool GetKeyDown(KeyCode k) => !Muted && (Input.GetKeyDown(k) || VirtualDown(k));

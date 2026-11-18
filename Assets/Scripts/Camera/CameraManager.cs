@@ -134,7 +134,9 @@ public class CameraManager : MonoBehaviour
     Vector3 Unblocked(Transform anchor)
     {
         Transform root = anchor.root;
-        Vector3 pivot = root.position + Vector3.up * 1.5f;
+        // (2026-11-18) A la altura de la cabeza de quien mira: un insecto-humano encogido (InsectForm.Shrunk) la lleva × s.
+        float k = root.TryGetComponent(out InsectForm form) ? form.Shrunk : 1f;
+        Vector3 pivot = root.position + Vector3.up * 1.5f * k;
         Vector3 to = anchor.position - pivot;
         float dist = to.magnitude;
         if (dist < 0.01f) return anchor.position;
@@ -147,6 +149,7 @@ public class CameraManager : MonoBehaviour
             if (h.distance <= 0f || h.collider.transform.root == root) continue;
             if (h.collider.GetComponentInParent<Anima>() != null) continue;   // otra persona o animal: no tapa del todo
             if (!h.collider.TryGetComponent(out Renderer rr) || !rr.enabled) continue;   // barreras y rampas invisibles no tapan
+            if (rr.shadowCastingMode == UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly) continue;   // (2026-11-18) desvanecido por la vista de corte (CutawayView): no tapa
             if (h.distance < best) { best = h.distance; LastOccluder = h.collider.name; }
         }
         return best < dist ? pivot + dir * Mathf.Max(0.4f, best - 0.1f) : anchor.position;

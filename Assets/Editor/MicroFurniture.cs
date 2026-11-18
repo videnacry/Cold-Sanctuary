@@ -184,7 +184,11 @@ internal static partial class MicroFurniture
         return b;
     }
 
-    static float Hands(Fit f) => f.Insect ? Mathf.Clamp(f.hands, 0.75f, 1.1f) : 0.8f;
+    // (2026-11-18) LOS MÍNIMOS FIJOS DE LOS MUEBLES DE INSECTO-HUMANO, × s (docs/plan-microcosmos-realismo.md §3.4): con el cuerpo
+    // encogido a la mitad, los de antes (asiento ≥ 0,15 m, mesa ≥ 0,6 m, cama ≥ 1,4 m…) dejaban los muebles a la medida de antes.
+    static float S => MicroBuildRules.FolkScale;
+
+    static float Hands(Fit f) => f.Insect ? Mathf.Clamp(f.hands, 0.75f * S, 1.1f) : 0.8f;
 
     /// <summary>Cuántos comen de una cocina (la olla se mide por ellos: MicroCivicScale.PotFor).</summary>
     internal const int KitchenDiners = 8;
@@ -201,13 +205,13 @@ internal static partial class MicroFurniture
             case Plan.Alado: case Plan.Mantis: Perch(t, e, f); return;
         }
         bool insect = f.Insect;
-        float L = insect ? Mathf.Max(1.4f, f.length + 0.15f) : 2.0f, W = insect ? Mathf.Max(0.9f, f.span + 0.15f) : 1.0f;
-        if (f.plan == Plan.Cupula) W = Mathf.Max(W, f.width + 0.5f);
+        float L = insect ? Mathf.Max(1.4f * S, f.length + 0.3f * S) : 2.0f, W = insect ? Mathf.Max(0.9f * S, f.span + 0.15f * S) : 1.0f;   // (C3: lecho de vientre al largo del cuerpo + 0,3 × s)
+        if (f.plan == Plan.Cupula) W = Mathf.Max(W, f.width + 0.5f * S);
         float top = BedFrame(t, e, L, W);
         if (insect)
         {
             // El apoyo del pecho (el torso descansa sobre él) y la manta sobre el abdomen; en la cúpula, el borde del nido.
-            C(t, new Vector3(0f, top + 0.07f, L * 0.5f - 0.25f), new Vector3(W * 0.55f, 0.14f, 0.32f), e.textile, 0f, "Apoyo_del_pecho");
+            C(t, new Vector3(0f, top + 0.07f * S, L * 0.5f - 0.25f * S), new Vector3(W * 0.55f, 0.14f * S, 0.32f * S), e.textile, 0f, "Apoyo_del_pecho");
             C(t, new Vector3(0f, top + 0.02f, -L * 0.15f), new Vector3(W * 0.92f, 0.03f, L * 0.55f), Color.Lerp(e.textile, Wool, 0.4f), 0f, "Manta");
             if (f.plan == Plan.Cupula)
                 for (int s = -1; s <= 1; s += 2)
@@ -366,7 +370,7 @@ internal static partial class MicroFurniture
     static void Perch(Transform t, St.Entry e, Fit f)
     {
         bool mantis = f.plan == Plan.Mantis;
-        float W = Mathf.Max(1.2f, f.span + 0.4f), D = Mathf.Max(0.9f, f.length * 0.6f), bar = mantis ? f.height + 0.15f : Mathf.Clamp(f.hands + 0.35f, 1.1f, 1.7f);
+        float W = Mathf.Max(1.2f * S, f.span + 0.4f * S), D = Mathf.Max(0.9f * S, f.length * 0.6f), bar = mantis ? f.height + 0.15f * S : Mathf.Clamp(f.hands + 0.35f * S, 1.1f * S, 1.7f);
         C(t, new Vector3(0f, 0.04f, 0f), new Vector3(W, 0.08f, D), e.bed == St.Bed.Futon || e.bed == St.Bed.Estera ? Straw : Color.Lerp(e.textile, Linen, 0.4f), 0f, "Estera_blanda");
         for (int s = -1; s <= 1; s += 2)
         {
@@ -420,8 +424,42 @@ internal static partial class MicroFurniture
         return s;
     }
 
+    /// <summary>¿Come y trabaja DE PIE, con un apoyo de abdomen (C1, 2026-11-18)? Los de abdomen largo o en cúpula, que descansan
+    /// de pie sobre sus patas (hormiga, termita, grillo, saltamontes, mariquita, pelotero, ciempiés). Los alados y la mantis ya se
+    /// agarran a su barra de pie; la araña, a su anillo.</summary>
+    internal static bool StandsAtTable(Fit f) => f.plan == Plan.Centauro || f.plan == Plan.Cupula || f.plan == Plan.Ciempies;
+
+    /// <summary>
+    /// (C1, 2026-11-18) EL APOYO DE ABDOMEN de la mesa alta: el insecto-humano come y trabaja DE PIE (una hormiga descansa sobre sus
+    /// patas) y el gáster descansa detrás, en una barra con su cojín inclinado (como la misericordia de un coro), a la altura de su
+    /// vientre (<see cref="MicroBody.AbdomenRest"/>) y de 1,5 × el ancho del cuerpo (<see cref="MicroBody.AbdomenRestWidth"/>), que se ve
+    /// detrás de cada comensal. Su raíz «Apoyo de abdomen» (MicroPiece «silla», con su MicroSeat: el sitio es donde se pone de pie,
+    /// a +z la mesa) cuenta como asiento para el hogar (Household.seats) y para la regla 13.
+    /// </summary>
+    internal static Transform AbdomenRest(Transform parent, Vector3 at, float yaw, St.Entry e, Fit f, Transform faceTo = null)
+    {
+        Transform s = KitchenProps.Root(parent, "Apoyo de abdomen", at, yaw);
+        float top = MicroBody.AbdomenRest(f), wid = MicroBody.AbdomenRestWidth(f), len = MicroBody.AbdomenRestLength(f);
+        float bodyLen = Mathf.Max(f.abdomen, f.length - 0.25f * S);
+        float zc = -(bodyLen - f.abdomen) * 0.5f;   // bajo el centro del abdomen, que va detrás del torso (−z)
+        Color w = e.wood, tx = e.textile;
+        float post = Mathf.Max(0.02f, top - 0.06f * S);
+        for (int k = -1; k <= 1; k += 2) C(s, new Vector3(k * wid * 0.42f, post * 0.5f, zc), new Vector3(0.05f * S + 0.02f, post, 0.05f * S + 0.02f), w, 0f, "Pata");
+        C(s, new Vector3(0f, post, zc), new Vector3(wid, 0.05f * S + 0.02f, 0.06f * S + 0.02f), WoodDark, 0f, "Barra");
+        // El cojín, inclinado hacia atrás (más alto delante, bajo el pecíolo; más bajo bajo la punta del gáster).
+        C(s, new Vector3(0f, top - 0.03f * S, zc), new Vector3(wid * 0.9f, 0.05f * S, len), tx, new Vector3(-8f, 0f, 0f), "Cojin_del_abdomen");
+        // Un reposapiés bajo para las patas de detrás (no se ve casi: da la escala del mueble).
+        C(s, new Vector3(0f, 0.03f * S, zc - len * 0.35f), new Vector3(wid * 0.8f, 0.03f * S, 0.04f * S + 0.02f), w, 0f, "Reposapies");
+        var mp = s.gameObject.AddComponent<MicroPiece>();
+        mp.kind = "silla"; mp.need = "sentarse"; mp.style = e.id; mp.fitFor = $"{f.plan} ({f.species})"; mp.fitted = true;
+        if (!s.TryGetComponent(out MicroSeat ms)) ms = s.gameObject.AddComponent<MicroSeat>();
+        ms.points = new[] { Vector3.zero };
+        ms.faceTo = faceTo != null ? faceTo : parent.Find("Mesa");
+        return s;
+    }
+
     /// <summary>El ancho de un sitio del banco de un insecto-humano (su asiento de abdomen y el hueco hasta el siguiente).</summary>
-    static float InsectBenchStep(Fit f) => Mathf.Clamp(f.width * 0.75f, 0.3f, 1.2f) + 0.35f;
+    static float InsectBenchStep(Fit f) => Mathf.Clamp(f.width * 0.75f, 0.3f * S, 1.2f) + 0.35f * S;
 
     /// <summary>(2026-11-04) TODO ASIENTO ES UTILIZABLE (MicroSeat; Berón: «debe ser posible sentarse en las sillas de restaurantes y
     /// bancos de las plazas»): sus sitios (uno en una silla; tres en un banco) y hacia dónde mira quien se sienta.</summary>
@@ -447,13 +485,13 @@ internal static partial class MicroFurniture
         }
         if (f.Insect)
         {
-            float y = Mathf.Clamp(f.belly + 0.08f, 0.15f, 0.8f), len = Mathf.Clamp(f.abdomen + 0.1f, 0.4f, 1.6f), wid = Mathf.Clamp(f.width * 0.75f, 0.3f, 1.2f);
-            float zc = -len * 0.5f + 0.15f;   // el abdomen va detrás del torso: el asiento se alarga hacia −z
+            float y = Mathf.Clamp(f.belly + 0.08f * S, 0.15f * S, 0.8f), len = Mathf.Clamp(f.abdomen + 0.1f * S, 0.4f * S, 1.6f), wid = Mathf.Clamp(f.width * 0.75f, 0.3f * S, 1.2f);
+            float zc = -len * 0.5f + 0.15f * S;   // el abdomen va detrás del torso: el asiento se alarga hacia −z
             switch (f.plan)
             {
                 case Plan.Alado: case Plan.Mantis:
                 {
-                    float bar = Mathf.Clamp(f.belly + 0.3f, 0.45f, 0.9f), half = Mathf.Max(0.3f, wid * 0.6f);
+                    float bar = Mathf.Clamp(f.belly + 0.3f * S, 0.45f * S, 0.9f), half = Mathf.Max(0.3f * S, wid * 0.6f);
                     for (int k = -1; k <= 1; k += 2) C(s, new Vector3(k * half, bar * 0.5f, -0.1f), new Vector3(0.06f, bar, 0.06f), w, 0f, "Pata");
                     C(s, new Vector3(0f, bar, -0.1f), new Vector3(half * 2f + 0.1f, 0.07f, 0.07f), w, 0f, "Asiento");   // la barra de agarre
                     C(s, new Vector3(0f, bar, -0.1f), new Vector3(half * 1.2f, 0.1f, 0.1f), tx, 0f, "Funda");
@@ -464,7 +502,7 @@ internal static partial class MicroFurniture
                     for (int k = 0; k < 4; k++) C(s, Quaternion.Euler(0f, k * 90f, 0f) * new Vector3(0f, y * 0.5f, len * 0.35f) + new Vector3(0f, 0f, zc), new Vector3(len * 0.7f, y, 0.16f), k % 2 == 0 ? tx : w, k * 90f, k == 0 ? "Asiento" : "Anillo");
                     break;
                 case Plan.Cupula:
-                    y = Mathf.Clamp(f.belly + 0.04f, 0.12f, 0.5f); wid = Mathf.Max(wid, f.width * 0.9f);
+                    y = Mathf.Clamp(f.belly + 0.04f * S, 0.12f * S, 0.5f); wid = Mathf.Max(wid, f.width * 0.9f);
                     foreach (var (x, z) in Corners) C(s, new Vector3(x * wid * 0.45f, y * 0.5f, zc + z * len * 0.4f), new Vector3(0.06f, y, 0.06f), w, 0f, "Pata");
                     C(s, new Vector3(0f, y, zc), new Vector3(wid, 0.08f, len), tx, 0f, "Asiento");
                     for (int k = -1; k <= 1; k += 2) C(s, new Vector3(k * wid * 0.5f, y + 0.12f, zc), new Vector3(0.06f, 0.2f, len), w, 0f, "Barandilla_de_cuna");
@@ -584,18 +622,33 @@ internal static partial class MicroFurniture
         for (int i = 0; i < seats; i++) bodies.Add(users != null && users.Count > 0 ? (i < users.Count ? users[i] : users[i % users.Count]) : f);
         Fit all = MicroBody.Union(bodies);
         bool insect = all.Insect, floor = e.FloorSeating;
-        float h = insect ? Mathf.Clamp(Hands(all) - 0.12f, 0.6f, 1.0f) * (floor ? 0.8f : 1f) : floor ? 0.35f : 0.75f;
+        // (2026-11-18) LA MESA ALTA del insecto-humano (C1): a sus manos (MicroBody.StandingTable, ya × s: antes se recortaba a 0,6–1,0 m
+        // y con las manos a 0,48 se quedaba en 0,6); el fondo, lo justo para dos platos REALES de 0,26 m enfrentados (el mundo es 1:1).
+        float h = insect ? MicroBody.StandingTable(all) * (floor ? 0.8f : 1f) : floor ? 0.35f : 0.75f;
         if (e.table == St.Table.EsteraDeComer && !insect) h = 0.06f;
-        float seatW = 0.55f; foreach (Fit b in bodies) seatW = Mathf.Max(seatW, b.Insect ? Mathf.Clamp(b.width * 0.75f, 0.3f, 1.2f) + 0.2f : 0.55f);
+        float seatW = 0.55f; foreach (Fit b in bodies) seatW = Mathf.Max(seatW, b.Insect ? Mathf.Clamp(b.width * 0.75f, 0.3f * S, 1.2f) + 0.2f * S : 0.55f);
         int perSide = (seats + 1) / 2;
-        float TL = Mathf.Max(1.2f, perSide * (seatW + 0.12f)), TD = insect ? 0.9f : 0.8f;
+        float TL = Mathf.Max(1.2f, perSide * (seatW + 0.12f)), TD = insect ? Mathf.Max(0.65f, 0.9f * S) : 0.8f;
         Transform tb = new GameObject("Mesa").transform; tb.SetParent(t, false);
         TableTop(tb, e, new Vector2(TL, TD), h);
         for (int i = 0; i < seats; i++)
         {
             bool front = i % 2 == 0; int k = i / 2;
             float x = perSide <= 1 ? 0f : -TL * 0.5f + (k + 0.5f) * TL / perSide;
-            Seat(t, new Vector3(x, 0f, front ? -(TD * 0.5f + 0.25f) : TD * 0.5f + 0.25f), front ? 0f : 180f, e, bodies[i], false);
+            // Quien come de pie (C1) se pone pegado al tablero y su apoyo de abdomen queda detrás; los demás, en su asiento.
+            bool stand = bodies[i].Insect && StandsAtTable(bodies[i]);
+            float gap = stand ? 0.3f * S : bodies[i].Insect ? 0.25f * S + 0.12f : 0.25f;
+            Vector3 at = new Vector3(x, 0f, front ? -(TD * 0.5f + gap) : TD * 0.5f + gap);
+            // E7: en una mesa de altura humana (compartida con personas, regla 9), una TARIMA de puesto lo sube a la altura de sus manos.
+            float lift = stand ? h - MicroBody.StandingTable(bodies[i]) : 0f;
+            if (lift > 0.05f)
+            {
+                float depth = bodies[i].length + 0.1f;
+                C(t, new Vector3(x, lift * 0.5f, at.z + (front ? -1f : 1f) * (depth * 0.5f - 0.1f)), new Vector3(seatW, lift, depth), WoodDark, 0f, "Tarima_de_puesto");
+                at.y = lift;
+            }
+            if (stand) AbdomenRest(t, at, front ? 0f : 180f, e, bodies[i], tb);
+            else Seat(t, at, front ? 0f : 180f, e, bodies[i], false);
             float zp = front ? -TD * 0.25f : TD * 0.25f;
             // (2026-11-04) EL PLATO DE UNA COMIDA para quien se sienta ahí (MicroCivicScale.PlateFor: ≥ 0,26 m, a su estatura) y su cuenco.
             float ps = MicroCivicScale.PlateFor(bodies[i].height) / 0.24f;
@@ -771,7 +824,7 @@ internal static partial class MicroFurniture
 
     static void AbdomenToilet(Transform t, St.Entry e, Fit f)
     {
-        float W = Mathf.Clamp(f.span * 0.8f, 0.8f, 2.2f), L = Mathf.Clamp(f.abdomen + 0.7f, 1.0f, 2.6f), y = Mathf.Clamp(f.belly * 0.6f, 0.06f, 0.4f);
+        float W = Mathf.Clamp(f.span * 0.8f, 0.8f * S, 2.2f), L = Mathf.Clamp(f.abdomen + 0.7f * S, 1.0f * S, 2.6f), y = Mathf.Clamp(f.belly * 0.6f, 0.06f * S, 0.4f);
         bool porcelain = e.toilet == St.Toilet.CisternaAlta || e.toilet == St.Toilet.CisternaBaja || (e.toilet == St.Toilet.Turca && e.from >= 1900);
         Color plate = porcelain ? KitchenProps.White : e.toilet == St.Toilet.Pozo || e.toilet == St.Toilet.Comunal || e.toilet == St.Toilet.Turca || e.toilet == St.Toilet.Vasija ? Stone : e.wood;
         // Los estribos (para las patas de detrás) a los lados y, entre ellos, el canal con el agujero bajo la punta del abdomen.
@@ -780,8 +833,8 @@ internal static partial class MicroFurniture
         C(t, new Vector3(0f, 0.045f, -L * 0.5f + 0.25f), new Vector3(Mathf.Min(0.4f, W - 0.6f), 0.01f, 0.35f), H("1E1A16"), 0f, "Agujero");
         if (e.toilet == St.Toilet.Vasija || e.toilet == St.Toilet.Pozo) C(t, new Vector3(0f, -0.0f, -L * 0.5f - 0.15f), new Vector3(0.36f, 0.3f, 0.3f), Clay, 0f, "Vasija_de_arena");
         // Delante: el asidero para los brazos y lo de la época (cisterna, jarra, cal).
-        for (int s = -1; s <= 1; s += 2) C(t, new Vector3(s * 0.3f, 0.45f, L * 0.5f + 0.05f), new Vector3(0.05f, 0.9f, 0.05f), porcelain ? Chrome : e.wood, 0f, "Poste_del_asidero");
-        C(t, new Vector3(0f, 0.88f, L * 0.5f + 0.05f), new Vector3(0.66f, 0.05f, 0.05f), porcelain ? Chrome : e.wood, 0f, "Asidero");
+        for (int s = -1; s <= 1; s += 2) C(t, new Vector3(s * 0.3f, 0.45f * S, L * 0.5f + 0.05f), new Vector3(0.05f, 0.9f * S, 0.05f), porcelain ? Chrome : e.wood, 0f, "Poste_del_asidero");   // (a la altura de sus brazos, × s)
+        C(t, new Vector3(0f, 0.88f * S, L * 0.5f + 0.05f), new Vector3(0.66f, 0.05f, 0.05f), porcelain ? Chrome : e.wood, 0f, "Asidero");
         switch (e.toilet)
         {
             case St.Toilet.CisternaAlta: C(t, new Vector3(0f, 1.6f, L * 0.5f + 0.15f), new Vector3(0.45f, 0.25f, 0.2f), e.from >= 1919 ? KitchenProps.White : Iron, 0f, "Cisterna"); C(t, new Vector3(0f, 1.0f, L * 0.5f + 0.15f), new Vector3(0.04f, 1.2f, 0.04f), KitchenProps.Steel, 0f, "Tubo"); break;
@@ -798,7 +851,7 @@ internal static partial class MicroFurniture
     // mantis) y el PEINE DE ANTENAS (los insectos se limpian las antenas pasándolas por el peine de la pata delantera).
     static void Washbasin(Transform t, St.Entry e, Fit f)
     {
-        float h = f.Insect ? Mathf.Clamp(Hands(f) - 0.05f, 0.7f, 1.05f) : 0.8f, bw = f.plan == Plan.Mantis ? 0.75f : f.Insect ? 0.55f : 0.42f;
+        float h = f.Insect ? Mathf.Clamp(Hands(f) - 0.05f * S, 0.7f * S, 1.05f) : 0.8f, bw = f.plan == Plan.Mantis ? 0.75f : f.Insect ? 0.55f : 0.42f;
         Color w = e.wood;
         switch (e.basin)
         {
@@ -868,7 +921,7 @@ internal static partial class MicroFurniture
         }
         if (f.Insect)
         {   // el peine de antenas: un listón con sus púas, a la altura de la cabeza, junto a la jofaina
-            float hy = Mathf.Clamp(f.height - 0.25f, 1.2f, 1.8f);
+            float hy = Mathf.Clamp(f.height - 0.25f * S, 1.2f * S, 1.8f);
             C(t, new Vector3(-bw * 0.5f - 0.35f, hy * 0.5f, 0.15f), new Vector3(0.05f, hy, 0.05f), w, 0f, "Poste_del_peine");
             C(t, new Vector3(-bw * 0.5f - 0.35f, hy, 0.15f), new Vector3(0.3f, 0.04f, 0.05f), w, 0f, "Peine_de_antenas");
             for (int k = 0; k < 6; k++) C(t, new Vector3(-bw * 0.5f - 0.47f + k * 0.05f, hy - 0.05f, 0.15f), new Vector3(0.012f, 0.08f, 0.012f), Brass, 0f, "Pua");

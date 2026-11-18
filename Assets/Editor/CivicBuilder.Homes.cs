@@ -237,6 +237,7 @@ internal static partial class CivicBuilder
             if (s.x >= s.z) { c.localScale = new Vector3(used.x, s.y, s.z); c.localPosition = new Vector3(p.x, p.y, Mathf.Sign(p.z) * (used.y * 0.5f - 0.15f)); }
             else { c.localScale = new Vector3(s.x, s.y, used.y); c.localPosition = new Vector3(Mathf.Sign(p.x) * (used.x * 0.5f - 0.15f), p.y, p.z); }
         }
+        if (b.Find("Muro_norte") != null) Reenclose(b, used);   // (2026-11-18) un edificio cerrado (P1–P4): sus muros, su techo y su puerta, al tamaño nuevo
     }
 
     /// <summary>
@@ -249,7 +250,7 @@ internal static partial class CivicBuilder
     {
         Year = insects ? -500 : 1950;
         Region = (insects ? MicroStyles.Region.SurAsia : MicroStyles.Region.Norteamerica).ToString();   // charpai y chulha / la casa de 1950
-        MicroFurniture.DefaultBody = insects ? MicroBody.OfSpecies("Ant", 1.75f) : MicroBody.Human(1.75f);
+        MicroFurniture.DefaultBody = insects ? MicroBody.OfSpecies("Ant") : MicroBody.Human(1.75f);
         Style st = insects ? BurntBrick : Clapboard;
         string title = insects ? "Casa de ladrillo de Kapilavastu" : "Casita";
         AreaFunctionSite h = NewHouse(t, null, fam, st, title, fam.Count + ChildBeds);

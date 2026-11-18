@@ -51,9 +51,12 @@ public static class InsectOnly
             float h = form.HideHuman();
             Transform body = go.transform.Find(CubeHumanoid.BodyName);
             string sp = InsectCast.SpeciesFor(go.CompareTag("Player") ? "player" : go.name);
-            CubeInsect ci = CubeInsect.DressFolk(go, sp, h, go.CompareTag("Player") ? "Kushal" : go.name);
+            // (2026-11-18) A LA MITAD, como todos los insectos-humanos (MicroBuildRules.FolkScale, docs/plan-microcosmos-realismo.md §3.1):
+            // el cuerpo de cubos y el físico (cápsula, controlador, agente, velocidad y cámara; InsectForm.Shrink, que Release devuelve).
+            CubeInsect ci = CubeInsect.DressFolk(go, sp, MicroBuildRules.Stature(h), go.CompareTag("Player") ? "Kushal" : go.name);
             Transform root = go.transform.Find("Insecto");
             if (root != null && body != null) root.localPosition += new Vector3(0f, body.localPosition.y, 0f);   // los pies donde los tenía el cuerpo humano
+            form.Shrink(MicroBuildRules.FolkScale);
             form.species = sp;
             if (ci == null || root == null) throw new System.Exception("sin cuerpo de insecto");
             Debug.Log($"[Microcosmos] «{go.name}» entra como {sp} ({InsectCast.Why(go.CompareTag("Player") ? "player" : go.name)}).");

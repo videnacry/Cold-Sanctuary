@@ -332,6 +332,7 @@ public static class AreaMicrocosmos
         mfl.districtCenter = new Vector3(district.center.x, groundY, district.center.z); mfl.districtSize = new Vector2(district.size.x, district.size.z);
         mfl.furnitureTops = tops != null ? tops.Count : 0; mfl.floraOnTops = _floraOnTops; mfl.faunaOnTops = _faunaOnTops; mfl.town = townMode;
         mfl.buildingsOnTops = outposts;
+        mfl.folkScale = MicroBuildRules.FolkScale;   // (2026-11-18) montado con los insectos-humanos encogidos: el validador le mide el paso nuevo
         mfl.soil = soilLayer != null; mfl.plantsSettled = settledPl; mfl.plantsRemoved = removedPl;
         mfl.elementsMapped = elMapped; mfl.elementsUnmapped = elUnmapped;
         if (_inventory != null)
@@ -1297,28 +1298,41 @@ public static class AreaMicrocosmos
 
     // ── Piezas ────────────────────────────────────────────────────────────────────────────────────────────────────
 
-    // Una HORMIGA HUMANIZADA: bípeda, con cara; NavMeshAgent para rodear los muebles gigantes.
+    // (2026-11-18) EL CUERPO ENCOGIDO (docs/plan-microcosmos-realismo.md §3.1, E1): Ant y Folk reciben la estatura de la PERSONA
+    // (1,6–1,85 m, como hasta ahora en todos los builders) y la encogen aquí, en un solo sitio, × MicroBuildRules.FolkScale; con ella,
+    // la cápsula, el agente (radio = medio ancho recogido, velocidad × s: si no, el paso de CubeInsect se satura y las patas patinan)
+    // y la altura del rótulo.
+    static void Body(GameObject g, float height, float bulk)
+    {
+        var col = g.AddComponent<CapsuleCollider>(); col.height = height; col.radius = MicroBuildRules.CapsuleRadius * bulk; col.center = Vector3.up * height * 0.5f;
+        var ag = g.AddComponent<UnityEngine.AI.NavMeshAgent>(); ag.radius = MicroBuildRules.AgentRadius * bulk; ag.height = height; ag.speed = MicroBuildRules.FolkSpeed; ag.angularSpeed = 360f;
+    }
+    static float LabelHeight(float height) => height + 0.4f * MicroBuildRules.FolkScale;
+
+    // Una HORMIGA HUMANIZADA: bípeda, con cara; NavMeshAgent para rodear los muebles gigantes. (Los mirmidones salvajes y las
+    // recolectoras de las eras sin pueblo se miden respecto al insecto-humano: también × s.)
     internal static GameObject Ant(Transform root, string name, Vector3 pos, Color c, float height, float bulk)
     {
+        height = MicroBuildRules.Stature(height);
         var g = new GameObject(name);
         g.transform.SetParent(root, false); g.transform.localPosition = pos;
         g.transform.localRotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
-        var col = g.AddComponent<CapsuleCollider>(); col.height = height; col.radius = 0.35f * bulk; col.center = Vector3.up * height * 0.5f;
-        var ag = g.AddComponent<UnityEngine.AI.NavMeshAgent>(); ag.radius = 0.4f * bulk; ag.height = height; ag.speed = 3f; ag.angularSpeed = 360f;
+        Body(g, height, bulk);
         CubeInsect.DressMyrmidon(g, c, height, bulk);
-        WorldLabel wl = g.AddComponent<WorldLabel>(); wl.text = name; wl.height = height + 0.4f;
+        WorldLabel wl = g.AddComponent<WorldLabel>(); wl.text = name; wl.height = LabelHeight(height);
         return g;
     }
 
     // Un INSECTO-HUMANO de era civilizada (docs/microcosmos-civilizaciones.md §5–6): su insecto (InsectCast, o <paramref name="species"/>),
     // erguido a su estatura, con cara humana y pelo; todas las especies de tamaño parecido. Lleva su linaje (FolkLineage).
+    // <paramref name="height"/> es la estatura de la PERSONA: el cuerpo mide eso × MicroBuildRules.FolkScale.
     internal static GameObject Folk(Transform root, string name, Vector3 pos, float height, float bulk = 1f, string species = null, Color? body = null, bool? female = null)
     {
+        height = MicroBuildRules.Stature(height);
         var g = new GameObject(name);
         g.transform.SetParent(root, false); g.transform.localPosition = pos;
         g.transform.localRotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
-        var col = g.AddComponent<CapsuleCollider>(); col.height = height; col.radius = 0.35f * bulk; col.center = Vector3.up * height * 0.5f;
-        var ag = g.AddComponent<UnityEngine.AI.NavMeshAgent>(); ag.radius = 0.4f * bulk; ag.height = height; ag.speed = 3f; ag.angularSpeed = 360f;
+        Body(g, height, bulk);
         string sp = species ?? InsectCast.SpeciesFor(name);
         // El sexo: el pedido; si no, el del nombre (FemaleByName: Hannah, Teano, «Vecina»…); si el nombre no lo dice, al azar estable.
         bool isFemale = female ?? FemaleByName(name) ?? (Mathf.Abs(name.GetHashCode()) % 2) == 0;
@@ -1328,7 +1342,7 @@ public static class AreaMicrocosmos
         if (ins != null && bulk != 1f) ins.localScale = new Vector3(ins.localScale.x * bulk, ins.localScale.y, ins.localScale.z * Mathf.Sqrt(bulk));
         var lin = g.AddComponent<FolkLineage>(); lin.species = sp; lin.female = isFemale;
         PersonLife.Equip(g, isFemale);   // el MISMO ciclo de vida que un humano: necesidades, edad, pareja, hijos y vejez (docs/ciclo-de-vida.md §Humanos)
-        WorldLabel wl = g.AddComponent<WorldLabel>(); wl.text = name; wl.height = height + 0.4f;
+        WorldLabel wl = g.AddComponent<WorldLabel>(); wl.text = name; wl.height = LabelHeight(height);
         return g;
     }
 
