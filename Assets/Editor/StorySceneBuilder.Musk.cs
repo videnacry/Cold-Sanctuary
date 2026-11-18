@@ -100,7 +100,7 @@ public static partial class StorySceneBuilder
         Piece(fac, "mesa", new Vector3(-10f, 0f, -10.5f), 0f, "Comedor de la nave: mesa alta con apoyos de abdomen y sillas (supuesto)", null, null, both);
 
         // ── 3 · EL CONTROL DE MISIÓN (noreste): tras grandes cristales, a la vista desde la nave (Wired) ──
-        GlassWall.Box(fac, "control_de_mision", new Vector3(12f, 0f, 8f), new Vector2(16f, 12f), 0f, 2);
+        GlassWall.Box(fac, "sala_de_control_SpaceX", new Vector3(12f, 0f, 8f), new Vector2(16f, 12f), 0f, 2);
         Transform control = Spot(fac, "Control de misión", new Vector3(12f, 0f, 8f), "Control de misión: la señal de Omelek", 3.5f);
         for (int k = 0; k < 3; k++) Prop(control, "Pantalla grande", new Vector3(-4.5f + k * 4.5f, 1.9f, 5.4f), new Vector3(2.4f, 1.2f, 0.1f), dark, false);
         Prop(control, "Imagen de Omelek (Kwajalein)", new Vector3(0f, 1.9f, 5.33f), new Vector3(2.1f, 0.9f, 0.02f), blue, false);

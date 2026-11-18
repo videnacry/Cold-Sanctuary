@@ -71,14 +71,16 @@ public static class MicroBuildRules
     /// <summary>MicroPiece.kind de una escalera que es MONUMENTO (C4: escalinatas, pirámides; no camino obligado).</summary>
     public const string Monument = "monumento";
 
-    /// <summary>El paso que vale en <paramref name="scope"/>: el nuevo (<see cref="Passage"/>), o el de antes del encogimiento si su
-    /// microcosmos se montó con los cuerpos a escala humana (<see cref="MicroFloor.folkScale"/> ≥ 0,99).</summary>
+    /// <summary>El paso que vale en <paramref name="scope"/>: el nuevo (<see cref="Passage"/>) SOLO si su microcosmos se montó con el cuerpo
+    /// encogido (<see cref="MicroFloor.folkScale"/> &lt; 0,99, lo pone AreaMicrocosmos al construir). Todo lo demás guarda el de antes
+    /// (<see cref="LegacyPassage"/>, 2 m) hasta que se reconstruya: los microcosmos aún sin rehacer (folkScale = 1) y las escenas que no
+    /// llevan MicroFloor (MobWorld_Mesopotamia, las casas de ciclo de vida: ronda del piloto, 2026-11-18, «paso de 2,10 m (&lt; 2,4)»).</summary>
     public static float PassageFor(Transform scope)
     {
-        if (scope == null) return Passage;
+        if (scope == null) return LegacyPassage;
         MicroFloor mf = scope.GetComponentInParent<MicroFloor>(true);
         if (mf == null) mf = scope.GetComponentInChildren<MicroFloor>(true);
-        return mf != null && mf.folkScale >= 0.99f ? LegacyPassage : Passage;
+        return mf != null && mf.folkScale < 0.99f ? Passage : LegacyPassage;
     }
 
     /// <summary>Desde qué año un microcosmos es de ERA AVANZADA (las primeras ciudades: Uruk, ~3500 a. C.): el pueblo o la ciudad

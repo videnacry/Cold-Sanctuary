@@ -79,6 +79,7 @@ public class GlassWallTest : MonoBehaviour, ITestUnit
         //       corte, pero el cristal no es muro: no la pide) ──
         var scope = new GameObject("Prueba_reglas_cristal").transform;
         scope.position = new Vector3(0f, -500f, 0f);
+        scope.gameObject.AddComponent<MicroFloor>().folkScale = MicroBuildRules.FolkScale;   // un microcosmos montado con el cuerpo encogido (sin MicroFloor valdría el paso de antes)
         GlassWall.Box(scope, "prueba", Vector3.zero, new Vector2(7f, 7f), 0f, 0);
         Transform piece = new GameObject("Cama_prueba").transform; piece.SetParent(scope, false); piece.localPosition = new Vector3(0f, 0f, 1.6f);
         piece.gameObject.AddComponent<MicroPiece>();
