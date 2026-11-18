@@ -366,7 +366,7 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | MIC-86 | Solo código | 2026-11-18 | — | — | — | claude/escala-mitad: programado y compilado; lo prueba el probador |
 | MIC-87 | Solo código | 2026-11-18 | — | — | — | claude/escala-mitad: programado y compilado; lo prueba el probador |
 | MIC-88 | Solo código | 2026-11-18 | — | — | — | claude/escala-mitad: programado y compilado; lo prueba el probador |
-| MIC-94 | Sin probar | 2026-11-18 | — | — | — | en curso: falta código |
+| MIC-99 | Sin probar | 2026-11-18 | — | — | — | en curso: falta código |
 | CS-01 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
 | CS-02 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |
 | CS-03 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (CodeShipLogicTest g119): registrado al juntarlo con claude/escala-mitad |

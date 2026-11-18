@@ -309,7 +309,7 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | MIC-86 | MIC | Regla M44 (P6): un transporte de época se sube (control apagado), se conduce (adelante con tope, gira, marcha atrás más lenta), se baja (se para y el control vuelve) y lleva carga en las horquillas | MicroVehicleTest | 123 | M44 | — | plan fase 1; añadido el 2026-11-18 |
 | MIC-87 | MIC | Piloto Microcosmos_ElonMusk (fase 1): montado con folkScale = s; la nave de SpaceX cerrada con vista de corte y puertas ≥ 1,2 × 1,25 m (la de los aseos, ensanchada); hito y transportes; las seis necesidades dentro; apoyos de abdomen y tarimas; la consola del reto de CodeShip; 0 faltas de reglas | MuskPilotTest | 124 | M24, M43, M44, M45 | — | plan fase 1; añadido el 2026-11-18 |
 | MIC-88 | MIC | Reglas M23, M24, M43, M44 y M46 en el validador: paso de 2,4 m (2 m sin reconstruir o sin MicroFloor), muros con vista de corte y puerta, puerta estrecha = falta, hito / transporte / escaleras < 12 m = consejos | MicroBuildRulesTest | 63 | M23, M24, M43, M44, M46 | — | plan fase 0; añadido el 2026-11-18 |
-| MIC-94 | MIC | Musk recrea su historia (Berón 2026-11-18): cada fragmento en su lugar real y fechado, un barrio con todo el detalle (edificios, interiores, muebles, maquinaria, utensilios, calles, vegetación, animales) y la ciudad de fondo | — | — | — | PB-162 | añadido el 2026-11-18 |
+| MIC-99 | MIC | Musk recrea su historia (Berón 2026-11-18): cada fragmento en su lugar real y fechado, un barrio con todo el detalle (edificios, interiores, muebles, maquinaria, utensilios, calles, vegetación, animales) y la ciudad de fondo | — | — | — | PB-162 | añadido el 2026-11-18 |
 
 ## HOS · Hospital
 
