@@ -111,6 +111,7 @@ public class MicroRootMenu : MonoBehaviour
         var work = new Branch { label = "Trabajar" };
         TaskEntry job = MicroTaskWindows.Tasks.Find(t => t.group == TaskEntry.Group.Jornada && t.CanGo);
         if (job != null) work.leaves.Add(new Leaf { label = $"▶ {job.title} · {TaskEntry.DistanceText(job.distance)}", act = () => MicroTaskWindows.Go(job) });
+        Stations(work, at, c => c != ChoreCategory.Salud, 6);
         if (player != null)
         {
             var stations = new List<(AreaFunctionStation st, float d)>();
@@ -132,6 +133,7 @@ public class MicroRootMenu : MonoBehaviour
 
         // NECESIDADES: en la casa más cercana.
         var needs = new Branch { label = "Necesidades" };
+        Stations(needs, at, c => c == ChoreCategory.Salud, 6);
         Household home = null; float hd = float.MaxValue;
         foreach (Household h in Household.All)
         {
@@ -178,6 +180,26 @@ public class MicroRootMenu : MonoBehaviour
         Add(win);
 
         if (OpenBranch >= Tree.Count) OpenBranch = -1;
+    }
+
+    /// <summary>(2026-11-18) Las misiones de los puestos de esa clase, de la más cercana a la más lejana: ir y hacerla (o hacerla ya, si está aquí).</summary>
+    static void Stations(Branch b, Vector3 at, System.Predicate<ChoreCategory> which, int max)
+    {
+        StationMissions st = StationMissions.Instance;
+        if (st == null) return;
+        int n = 0;
+        foreach (StationMission m in st.Pending(at))
+        {
+            if (!which(m.template.category) || n >= max) continue;
+            StationMission mm = m; n++;
+            float d = TaskSources.Flat(m.target.position - at);
+            bool here = d <= StationMissions.Reach;
+            b.leaves.Add(new Leaf
+            {
+                label = $"{(here ? "▶ " : "")}{StationMissions.CategoryLabel(m.template.category)}: {m.template.title} · {TaskEntry.DistanceText(d)}",
+                act = () => { if (here) st.Begin(mm); else AutoTravel.Ensure().Go(mm.target, mm.template.title, 2f, () => st.Begin(mm)); },
+            });
+        }
     }
 
     static void Need(Branch b, Household home, GameObject player, HomeNeedSpell.Need need, string label, Transform spot)

@@ -101,7 +101,9 @@ public class MicroOnboarding : MonoBehaviour
             case 0: return $"<b>Qué hacer ahora</b>: {goal}.\nEl objetivo se queda arriba a la izquierda y cambia con cada paso de la historia.";
             case 1: return $"<b>Dónde</b>: abre {MicroRootMenu.KeyHint} y toca <b>Misiones › Tareas</b>. Ahí está todo lo que hay que hacer, con su distancia.";
             case 2: return "<b>Ir</b>: toca «Ir» en una tarea y te lleva andando. «■ Parar», o moverte tú, para el viaje.";
-            case 3: return "<b>Al llegar</b> la acción se hace sola (o pulsa <b>E</b>). Los <b>retos de código</b> se resuelven en su hoja: ordena los bloques o elige la opción.";
+            case 3: return WebLigera.Active
+                ? "<b>Lo de ahora</b> está siempre abajo en el centro: el botón de la acción principal. Cada puesto (cocina, botiquín, campo, taller, yoga, el perro) tiene su misión de <b>retos de código</b>, uno tras otro."
+                : "<b>Lo de ahora</b> está siempre abajo en el centro: el botón de la acción principal, o <b>R</b> (la historia, con <b>E</b>). Cada puesto (cocina, botiquín, campo, taller, yoga, el perro) tiene su misión de <b>retos de código</b>, uno tras otro.";
             default: return "";
         }
     }

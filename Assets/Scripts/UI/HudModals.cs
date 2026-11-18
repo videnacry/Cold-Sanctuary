@@ -135,6 +135,20 @@ public class HudModals : MonoBehaviour
                 l.Add($"   <b>{name}</b>  ({progress}/{target})");
                 accepted++;
             }
+        // (2026-11-18) Las misiones de los puestos (CodeShip): hechas y pendientes, por grupo; y los últimos avisos.
+        if (StationMissions.Instance != null && StationMissions.Instance.All.Count > 0)
+        {
+            var ms = StationMissions.Instance.All;
+            l.Add($"   <b>Trabajo y necesidades</b>: {ms.FindAll(m => m.timesDone > 0).Count} hechas de {ms.Count}");
+            foreach (ChoreCategory c in System.Enum.GetValues(typeof(ChoreCategory)))
+            {
+                var g = ms.FindAll(m => m.template.category == c);
+                if (g.Count == 0) continue;
+                l.Add($"      {StationMissions.CategoryLabel(c)}: " + string.Join(" · ", g.ConvertAll(m => (m.timesDone > 0 ? "✓ " : "") + m.template.title)));
+            }
+            accepted++;
+        }
+        if (HudNotices.Recent.Count > 0) { l.Add("   <b>Últimos avisos</b>"); for (int i = HudNotices.Recent.Count - 1; i >= 0; i--) l.Add("      " + HudNotices.Recent[i]); }
         if (accepted == 0) l.Add("   <color=#9AA0A6>(ninguna: las historias y las tareas salen aquí al aceptarlas)</color>");
         l.Add("");
         l.Add("<b>Jornada de hoy</b>");
