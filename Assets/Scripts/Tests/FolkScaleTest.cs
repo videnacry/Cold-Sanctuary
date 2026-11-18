@@ -17,7 +17,7 @@ using UnityEngine;
 /// </summary>
 public class FolkScaleTest : MonoBehaviour, ITestUnit
 {
-    public int Group => 119;   // tras las pruebas de figuras (118); no carga escenas
+    public int Group => 121;   // (119 y 120 son de otras ramas: CodeShipLogicTest); no carga escenas
     public bool ParallelSafe => true;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]

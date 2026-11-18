@@ -22,7 +22,7 @@ public partial class CubeInsect
     // De pie, la hormiga real abre las patas 2,5 m a escala humana (P3 a −30°, tibia 60° bajo la horizontal). El vecino las lleva
     // RECOGIDAS: la rodilla más cerrada deja la tibia casi vertical, bajo el cuerpo, y el par trasero va algo más atrás. Calculado con
     // la geometría de BuildLeg: ancho de pie ~0,90 L y andando (coxa ±25°, trocánter alzado) ~1,0 L, frente a 1,24 L y 1,41 L con las
-    // patas abiertas; el cuerpo queda ~0,08 L más alto (FitHeight lo devuelve a su estatura). Lo mide FolkScaleTest (grupo 119).
+    // patas abiertas; el cuerpo queda ~0,08 L más alto (FitHeight lo devuelve a su estatura). Lo mide FolkScaleTest (grupo 121).
     /// <summary>¿Llevan los vecinos (DressFolk) la postura recogida? (Las estatuas y la galería, igual.)</summary>
     public static bool TuckFolkLegs = true;
     /// <summary>Ángulo de la rodilla (fémur → tibia) en la postura recogida (100° con las patas abiertas).</summary>

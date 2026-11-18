@@ -14,7 +14,7 @@ using UnityEngine.Rendering;
 /// </summary>
 public class CutawayTest : MonoBehaviour, ITestUnit
 {
-    public int Group => 120;   // tras la escala del cuerpo (119); no carga escenas
+    public int Group => 122;   // tras la escala del cuerpo (121); no carga escenas
     public bool ParallelSafe => true;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
