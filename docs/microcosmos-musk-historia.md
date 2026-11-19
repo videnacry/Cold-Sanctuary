@@ -182,3 +182,41 @@ Los del turno de noche duermen de día en `NightShiftHome`. Al construir, se esc
 - **Limpieza, envíos y seguridad:** darles también un puesto y un turno fijos.
 - **Más fauna:** en las palmeras y en los solares.
 - **El nombre real del supermercado**, si aparece una fuente.
+
+## 5. Estado final de este piloto (2026-11-19): se rehace desde cero
+
+**Berón (2026-11-19):** el microcosmos de Musk (Hawthorne 2008) se rehace desde cero en otro hilo, sin reutilizar los componentes de los pisos del árbol. Este piloto se para aquí. Lo de esta sección es lo que queda en la rama `claude/escala-mitad` y sirve de referencia: los nombres, los supuestos y las fuentes.
+
+**Lo que existe** (menú *Tools/Cold Sanctuary/Build Microcosmos de famosos/Elon Musk (Hawthorne, 2008)*):
+- **Edificios y piezas:**
+  - la nave de 1 Rocket Road con muros, cubierta, puerta, vista de corte y aseos (`StorySceneBuilder.Musk*.cs`);
+  - la ciudad: semáforos, pasos de cebra, la patrulla, los bomberos y el aeropuerto de fondo (`CivicBuilder.Famosos.cs`, `HawthorneTown`, `HawthorneStreets`).
+- **Lugares y gente:**
+  - los lugares, sitios y nombres de puesto de las tablas del §4 y del lote 3;
+  - los trabajadores, con su oficio, su puesto y su turno;
+  - el supermercado del barrio.
+- **Pruebas** (grupos 124 y 125: MIC-89…93 en `MuskNeedsTest`, MIC-94…98) y el grupo 122 (vista de corte, MIC-85).
+- **Piloto 6:** grupos 282/0 y MIC-93 sin teletransportes, tras `WalkWatch`.
+
+**Arreglos generales** (valen fuera de este piloto):
+- `WalkWatch`: el tope de andar se mide por el camino del NavMesh; se apuntan los 20 primeros teletransportes, con su porqué.
+- Los edificios con `CutawayView` quedan fuera de `LoteEstatico`.
+- `CutawayView.force` / `ForceAll`: el corte forzado, para las fotos.
+- `ShotRender.Render(cam)`: las fotos se hacen sin la compilación de sombreadores en segundo plano. Es la causa probable del cian de la foto «fabrica»; queda sin confirmar en vivo.
+
+**Pendiente al parar:**
+- confirmar en vivo las fotos «fabrica» (cian) y «supermercado» (techo forzado);
+- limpieza, envíos y seguridad, sin puesto ni turno fijos;
+- el nombre real del supermercado.
+
+**Supuestos** (marcados en el código como «supuesto»):
+- la cocina de la nave y los aseos, con su puerta ensanchada a 1,2 m;
+- la doble puerta acristalada de la fachada;
+- la primera etapa del Falcon 1 de unos 16 m;
+- el supermercado de cadena y su camión de reparto;
+- las puertas de las casas y las tiendas de Crenshaw.
+
+**Fuentes de Hawthorne:**
+- Satellite Today (24-11-2008): los turnos de 24 h en la fábrica para el vuelo 4.
+- Las de Omelek (§3, *Fuentes*), para el vehículo y las fechas.
+- La pista 07/25 del aeropuerto municipal de Hawthorne: 4884 × 100 ft.
