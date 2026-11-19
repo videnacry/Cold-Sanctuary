@@ -98,8 +98,11 @@ Pendiente de confirmar con Google Earth (imágenes de 2008): los comercios exact
   con su interior), la escala y la entrada delante de la fábrica.
 - `MicrocosmSpec.ownGround` + `StorySceneBuilder.OwnGround`: el suelo propio (sin el piso del santuario ni `CivicBuilder.Civilize`).
 - `CivicBuilder.HawthornePeople`: los 12 oficios de la nave y 14 trabajadores del barrio, con sus casas, más las parejas de vecinos.
-- La fábrica sigue siendo la de `StorySceneBuilder.Musk*` (44 × 30 m), ahora en su sitio fijo del distrito. **Pendiente:** rehacerla
-  al detalle y a la nueva escala (es la siguiente pieza).
+- La fábrica es la de `StorySceneBuilder.Musk*`, montada en su plano de 44 × 30 m y agrandada después por `ScaleFactory`: todo ×2 en
+  planta (88 × 60 m: muebles, máquinas y paso) y muros, puertas, ventanas y cubierta ×3 en alto (27 m). Lo que tiene medida real (la
+  etapa del Falcon 1, la carretilla, los camiones) solo cambia de sitio. El distrito se abre a su alrededor con `Spread` (el este de
+  x 20 +50 m, el oeste de x −30 −46 m, el norte de z 20 y el sur de z −20 ±16 m); el suelo pasa a 496 × 322 m. **Pendiente:** más
+  detalle de la nave (sala limpia, taller de mecanizado, laboratorio) según §3.
 - Las misiones de CodeShip siguen enganchadas: se han conservado los nombres exactos (`Plancha de los tacos`, `Caja registradora 1`,
   `Frutas y verduras`, `Cámara de lácteos y congelados`, `Banco del mecánico`, `Bomberos`, `Hidrante`,
   `Cruce de Crenshaw Boulevard y Rocket Road (semáforos)`, `Lonchera (camión de comida)`…).

@@ -145,22 +145,24 @@ public static partial class StorySceneBuilder
         site.notHome = true;   // no es una vivienda: el reparto de hogares no le rehace los muebles (su hogar del turno de noche lo pone HawthorneTown)
         int extraFolk = MuskDetail(t, fac);   // (piloto 2) el detalle: grúa, estanterías, bancos, cubículos, marcas, fachada, muelle, aparcamiento y palmeras
         extraFolk += MuskCity(t, fac);   // (2026-11-18, Berón: los trabajadores, la ciencia, la comida, la seguridad y lo vivo)
+        ScaleFactory(t, fac);   // (PB-165, Berón 2026-11-19: muebles ×2 en planta, muros y puertas ×3) de 44 × 30 m a 88 × 60 m
         CivicBuilder.Tag(site);
         extraFolk += HawthorneDistrict(t, fac);   // (PB-165) el distrito entero: calles, edificios con interior y su gente
         CutawayView.Ensure(fac);   // (otra vez, ya con los tabiques de los aseos: la vista de corte los recoge también)
-        Label(fac, "Fábrica de SpaceX (1 Rocket Road, Hawthorne)", 10f);
+        Label(fac, "Fábrica de SpaceX (1 Rocket Road, Hawthorne)", 9f * ShellK + 2f);
 
         // ── 6 · EL APARCAMIENTO (al oeste, fuera): el Tesla Roadster de 2008 (se sube con F y se conduce) ──
-        Transform lot = Spot(t, "Aparcamiento de SpaceX", new Vector3(-30f, 0f, 6f) + MuskShift, "Aparcamiento de Rocket Road", 2.5f);
+        // (PB-165) al oeste de la nave ×2, entre ella y la calle de servicio
+        Transform lot = Spot(t, "Aparcamiento de SpaceX", MuskFactoryAt + new Vector3(-MuskFactorySize.x * 0.5f * MuskK - 22f, 0f, -4f), "Aparcamiento de Rocket Road", 2.5f);
         Prop(lot, "Asfalto", new Vector3(0f, 0.02f, 0f), new Vector3(12f, 0.04f, 26f), asphalt, false);
         for (int k = 0; k <= 9; k++) for (int s = -1; s <= 1; s += 2) Prop(lot, "Raya de aparcamiento", new Vector3(s * 3.2f, 0.045f, -12f + k * 2.7f), new Vector3(5.2f, 0.01f, 0.12f), paint, false);
         ParkedCars(lot);
-        Roadster(t, new Vector3(-33.2f, 0f, 6.15f) + MuskShift, 90f, M("Rojo_Roadster", 0.7f, 0.08f, 0.08f), dark);
+        Roadster(t, MuskFactoryAt + new Vector3(-MuskFactorySize.x * 0.5f * MuskK - 25.2f, 0f, -3.85f), 90f, M("Rojo_Roadster", 0.7f, 0.08f, 0.08f), dark);
 
         // ── La gente: insectos-humanos. Musk, un SALTAMONTES (el salto es un lanzamiento: guarda energía en las patas y la suelta de
         //    golpe), con la camiseta negra de su versión humana. (Who recibe la estatura de la persona: el cuerpo, a la mitad.)
         Color black = new Color(0.08f, 0.08f, 0.09f), polo = new Color(0.2f, 0.25f, 0.35f);
-        Vector3 F(float x, float z) => MuskFactoryAt + new Vector3(x, 0f, z);
+        Vector3 F(float x, float z) => MuskFactoryAt + new Vector3(x, 0f, z) * MuskK;   // (el plano del piloto, ya ×2)
         GameObject musk = Who(t, "Elon Musk", F(-4f, 5f), false, 1.88f, "Grasshopper"); CubeInsect.WearShirt(musk, black);
         GameObject prop = Who(t, "Ingeniera de propulsión (Medea)", F(13f, -5.5f), true); CubeInsect.WearShirt(prop, polo);
         GameObject launch = Who(t, "Director de lanzamiento (Héspero)", F(12f, 3.8f), false); CubeInsect.WearShirt(launch, polo);
@@ -187,7 +189,7 @@ public static partial class StorySceneBuilder
                 "En 2007 SpaceX se mudó a la antigua planta de Northrop en Hawthorne, junto al aeropuerto municipal: una nave enorme (unos 47 000 m²) con oficinas de planta abierta, donde también Musk trabajaba en un cubículo, y un control de misión tras grandes cristales, a la vista de la fábrica. Aquí se recrea un tramo de la nave.",
                 "Los tres primeros vuelos fallaron: en 2006 un incendio por una fuga apagó el motor poco después del despegue; en 2007 la segunda etapa se apagó antes de tiempo; y el 2 de agosto de 2008 el empuje residual del motor tras el apagado hizo que la primera etapa chocara con la segunda después de separarse. La solución fue alargar la espera entre el apagado y la separación.",
                 "El 28 de septiembre de 2008 (23:15 UTC; las 16:15 en California), siete semanas después, el cuarto Falcon 1 llegó a órbita con una carga de prueba de 165 kg (RatSat): fue el primer cohete de combustible líquido desarrollado con dinero privado en alcanzar la órbita terrestre. En la sede de Hawthorne, unos 500 empleados lo siguieron por las pantallas; Musk les dio las gracias y dijo que era «uno de los mejores días de mi vida».",
-                "Supuestos de juego: la altura de la nave (9 m), la cocina con mesas, la zona de descanso de los turnos de noche, la carretilla elevadora y el color del Roadster; la puerta de los aseos se ha ensanchado a 1,2 m para que pasen los insectos-humanos. En diciembre de 2008 la NASA contrató a SpaceX para llevar carga a la Estación Espacial. Musk es también una figura pública muy discutida por otros asuntos; esta historia se limita a 2008 y al trabajo de su equipo.",
+                "Supuestos de juego: la altura de la nave (9 m, aquí ×3 como todos los muros del barrio a escala de hormiga), la cocina con mesas, la zona de descanso de los turnos de noche, la carretilla elevadora y el color del Roadster; la puerta de los aseos se ha ensanchado para que pasen los insectos-humanos. En diciembre de 2008 la NASA contrató a SpaceX para llevar carga a la Estación Espacial. Musk es también una figura pública muy discutida por otros asuntos; esta historia se limita a 2008 y al trabajo de su equipo.",
             },
             new[]
             {

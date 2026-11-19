@@ -26,9 +26,14 @@ using UnityEngine;
 public static partial class StorySceneBuilder
 {
     /// <summary>El rectángulo urbano (m): de la nave de Northrop al oeste a las naves de Wilkie Ave al este, y de Rocket Road a la I-105.</summary>
-    internal static Vector2 HawthorneGround => new Vector2(400f, 290f);   // (propiedad: la lee el inicializador de OwnGround, en otro archivo)
+    internal static Vector2 HawthorneGround => new Vector2(496f, 322f);   // (propiedad: la lee el inicializador de OwnGround, en otro archivo)
+    /// <summary>El centro del rectángulo urbano en el plano F (ya corrido por <see cref="Spread"/>).</summary>
+    static Vector2 HawthorneCenterF => new Vector2(46.5f, 7f);
     /// <summary>Dónde va la fábrica respecto al centro del rectángulo (la historia está en su centro): el distrito, centrado.</summary>
-    static Vector3 HawthorneShift => new Vector3(-45f, 0f, -17f);
+    static Vector3 HawthorneShift => new Vector3(-HawthorneCenterF.x, 0f, -10f - HawthorneCenterF.y);
+    /// <summary>(Berón 2026-11-19 06:21) La fábrica, ×2 en planta (sus muebles y máquinas ×2, su paso ×2) y sus muros, puertas y ventanas ×3:
+    /// de 44 × 30 m a 88 × 60 m y de 9 a 27 m de alto (<see cref="ScaleFactory"/>).</summary>
+    internal const float MuskK = 2f;
 
     // ── materiales del distrito (mates, sin brillo: regla de materiales eficientes) ──
     static Material _asph, _conc, _curb, _paint, _yellowPaint, _glass, _glassDark, _metal, _dark, _wood, _grass, _redCurb;
@@ -42,7 +47,13 @@ public static partial class StorySceneBuilder
     }
 
     /// <summary>Un punto del plano (marco de la fábrica) en locales de la historia.</summary>
-    static Vector3 D(float x, float z, float y = 0f) => MuskFactoryAt + new Vector3(x, y, z);
+    static Vector3 D(float x, float z, float y = 0f) { Vector2 q = Spread(x, z); return MuskFactoryAt + new Vector3(q.x, y, q.y); }
+    /// <summary>Un punto del plano F tal cual (sin <see cref="Spread"/>): lo que va pegado a la fábrica ya agrandada.</summary>
+    static Vector3 DRaw(float x, float z, float y = 0f) => MuskFactoryAt + new Vector3(x, y, z);
+    /// <summary>EL DISTRITO SE ABRE PARA LA FÁBRICA ×2: el plano se dibujó con la nave de 44 × 30 m; lo que queda al este de x 20 se corre
+    /// 50 m al este, lo del oeste de x −30, 46 m al oeste, y lo del norte de z 20 y del sur de z −20, 16 m (la nave pasa a 88 × 60 m, y la
+    /// nave anexa y los bomberos quedan a su lado). Las calles se corren por sus extremos, así que siguen enteras.</summary>
+    static Vector2 Spread(float x, float z) => new Vector2(x > 20f ? x + 50f : x < -30f ? x - 46f : x, z > 20f ? z + 16f : z < -20f ? z - 16f : z);
 
     static Transform Node(Transform parent, string name, Vector3 local, float yaw = 0f)
     {
@@ -106,10 +117,11 @@ public static partial class StorySceneBuilder
     /// carriles, su mediana (si <paramref name="median"/> &gt; 0), sus bordillos y sus aceras de <paramref name="walk"/> m.</summary>
     static Transform Road(Transform parent, string name, Vector2 a, Vector2 b, float width, int lanesPerSide, float median, float walk, bool centerYellow = true)
     {
+        a = Spread(a.x, a.y); b = Spread(b.x, b.y);
         bool alongZ = Mathf.Abs(b.y - a.y) > Mathf.Abs(b.x - a.x);
         float len = alongZ ? Mathf.Abs(b.y - a.y) : Mathf.Abs(b.x - a.x);
         Vector2 c = (a + b) * 0.5f;
-        Transform r = Node(parent, name, D(c.x, c.y), alongZ ? 0f : 90f);   // en locales: la calle va a lo largo de z
+        Transform r = Node(parent, name, DRaw(c.x, c.y), alongZ ? 0f : 90f);   // en locales: la calle va a lo largo de z
         Prop(r, "Asfalto", new Vector3(0f, 0.03f, 0f), new Vector3(width, 0.06f, len), _asph, false);
         float half = width * 0.5f;
         // Mediana con bordillo y palmeras, o doble línea amarilla.
@@ -173,7 +185,7 @@ public static partial class StorySceneBuilder
         Prop(x, "Asfalto_cruce_servicio_Rocket_Road", D(-42f, -34f, 0.035f), new Vector3(9f, 0.07f, 12f), _asph, false);
         // El suelo de las manzanas (asfalto viejo de polígono y tierra con césped en las casas) bajo todo, sin huecos.
         // Va con el suelo del piso (fuera de la historia): ni es una calle donde no pueda crecer nada ni agranda el claro de la historia.
-        Transform slab = Prop(city, "Suelo_del_distrito", D(45f, 7f, -0.01f), new Vector3(HawthorneGround.x, 0.02f, HawthorneGround.y), M("Asfalto_viejo", 0.36f, 0.35f, 0.34f), false);
+        Transform slab = Prop(city, "Suelo_del_distrito", DRaw(HawthorneCenterF.x, HawthorneCenterF.y, -0.01f), new Vector3(HawthorneGround.x, 0.02f, HawthorneGround.y), M("Asfalto_viejo", 0.36f, 0.35f, 0.34f), false);
         for (Transform p = city; p != null; p = p.parent) if (p.name == "Historia") { if (p.parent != null) slab.SetParent(p.parent, true); break; }
     }
 
@@ -415,6 +427,62 @@ public static partial class StorySceneBuilder
         CutawayView.Ensure(b);
         _shellParts[b] = b.childCount;   // lo de aquí en adelante es su interior (ClearDoors, Declutter)
         return site;
+    }
+
+    // ═══ LA FÁBRICA A LA NUEVA ESCALA (Berón 2026-11-19 06:21) ══════════════════════════════════════════════════════════════════════
+    static readonly string[] RealSize = { "Falcon", "Carretilla", "Camión", "Furgoneta", "Bandera", "Rótulo", "Rotulo", "Garita", "Pozo", "Entrega", "Tarjeta", "Motor" };
+    static readonly string[] TallWall = { "Muro", "Dintel", "Nervio", "Ventana", "Puerta_enrollable", "Lama", "Sala_cristal" };
+    static readonly string[] Overhead = { "Cubierta", "Tragaluz" };
+    static bool Starts(string n, string[] l) { foreach (string p in l) if (n.StartsWith(p)) return true; return false; }
+
+    /// <summary>
+    /// LA FÁBRICA DE SPACEX A LA ESCALA DEL DISTRITO: el piloto se hizo a la medida del cuerpo encogido (44 × 30 m, muros de 9 m). Aquí se
+    /// agranda tal cual está montada: todo ×<see cref="MuskK"/> en planta (las distancias, los muebles, las máquinas, el paso entre ellos,
+    /// los muros y el suelo) y los muros, puertas, ventanas y la cubierta ×<see cref="ShellK"/> en alto. Lo que tiene su medida real (la
+    /// etapa del Falcon 1, la carretilla, los camiones, la bandera, los rótulos) solo cambia de sitio. Las puertas (MicroDoor) se ensanchan
+    /// con su hueco y su paso de NavMesh. La gente y lo que la historia puso junto a la nave (en <paramref name="t"/>) se corre con ella:
+    /// lo de dentro, ×2 desde el centro; lo de fuera (la nave anexa, la lonchera), con el distrito (<see cref="Spread"/>).
+    /// </summary>
+    static void ScaleFactory(Transform t, Transform fac)
+    {
+        float k = MuskK, ky = ShellK;
+        var kids = new List<Transform>(); foreach (Transform c in fac) kids.Add(c);
+        foreach (Transform c in kids)
+        {
+            Vector3 lp = c.localPosition;
+            MicroDoor door = c.GetComponent<MicroDoor>();
+            if (door != null)
+            {
+                c.localPosition = new Vector3(lp.x * k, lp.y, lp.z * k);
+                door.width *= k; door.height *= ky;
+                foreach (Unity.AI.Navigation.NavMeshLink link in c.GetComponentsInChildren<Unity.AI.Navigation.NavMeshLink>(true)) link.width = Mathf.Max(0.5f, door.width - 0.2f);
+                continue;
+            }
+            bool tall = Starts(c.name, TallWall), over = Starts(c.name, Overhead);
+            c.localPosition = new Vector3(lp.x * k, tall || over ? lp.y * ky : lp.y, lp.z * k);
+            if (Starts(c.name, RealSize)) { if (c.name.StartsWith("Rótulo de SpaceX")) c.localPosition += Vector3.up * 14f; continue; }
+            Vector3 ls = c.localScale;
+            // Las vigas de la grúa crecen a lo largo, no a lo ancho: en tramos de < 4 m² la vista de corte no las toma por techo.
+            bool beam = c.name.StartsWith("Viga") || c.name.StartsWith("Puente_de");
+            c.localScale = new Vector3(ls.x * (beam && ls.x < ls.z ? 1f : k), tall ? ls.y * ky : ls.y, ls.z * (beam && ls.z < ls.x ? 1f : k));
+        }
+        // Las etiquetas y letras (TextMesh) no se estiran: vuelven a su proporción.
+        foreach (TextMesh tm in fac.GetComponentsInChildren<TextMesh>(true))
+        {
+            Vector3 l = tm.transform.lossyScale;
+            if (Mathf.Abs(l.x) < 1e-4f || Mathf.Abs(l.z) < 1e-4f) continue;
+            float u = Mathf.Abs(l.y);
+            tm.transform.localScale = Vector3.Scale(tm.transform.localScale, new Vector3(u / Mathf.Abs(l.x), 1f, u / Mathf.Abs(l.z)));
+        }
+        // Lo de la historia junto a la nave: la gente de dentro, ×2 desde el centro; lo de fuera, con el distrito.
+        Vector3 o = fac.localPosition; float hx = MuskFactorySize.x * 0.5f + 4f, hz = MuskFactorySize.y * 0.5f + 9f;
+        foreach (Transform c in t)
+        {
+            if (c == fac) continue;
+            Vector3 d = c.localPosition - o;
+            if (Mathf.Abs(d.x) <= hx && Mathf.Abs(d.z) <= hz) c.localPosition = o + new Vector3(d.x * k, d.y, d.z * k);
+            else { Vector2 q = Spread(d.x, d.z); c.localPosition = o + new Vector3(q.x, d.y, q.y); }
+        }
     }
 
     // ═══ ESCALA (Berón 2026-11-19 06:21) ═══════════════════════════════════════════════════════════════════════════════════════════
@@ -737,15 +805,15 @@ public static partial class StorySceneBuilder
     // ── 4 · LA I-105 ELEVADA Y LA ESTACIÓN CRENSHAW DE LA GREEN LINE ([C]: andén central en la mediana de la autopista, abierta en 1995) ──
     static void FreewayAndStation(Transform city)
     {
-        Transform fw = Node(city, "Autopista I-105 (Glenn Anderson Freeway), elevada", D(45f, 128f));
+        Transform fw = Node(city, "Autopista I-105 (Glenn Anderson Freeway), elevada", DRaw(HawthorneCenterF.x, Spread(0f, 128f).y));
         Material concrete = M("Hormigon_viaducto", 0.72f, 0.71f, 0.68f), block = M("Bloque_muro_de_sonido", 0.66f, 0.64f, 0.6f);
         Prop(fw, "Tablero", new Vector3(0f, 9f, 0f), new Vector3(HawthorneGround.x, 1.2f, 26f), concrete, true);
         Prop(fw, "Calzada", new Vector3(0f, 9.62f, 0f), new Vector3(HawthorneGround.x, 0.04f, 26f), _asph, false);
         foreach (int sd in new[] { -1, 1 }) Prop(fw, "Muro_de_sonido", new Vector3(0f, 11.2f, sd * 13f), new Vector3(HawthorneGround.x, 3.2f, 0.3f), block, false);
-        for (float x = -190f; x <= 190f; x += 24f) foreach (int sd in new[] { -1, 1 }) Prop(fw, "Pila", new Vector3(x, 4.2f, sd * 8f), new Vector3(1.6f, 8.4f, 1.6f), concrete, true);
+        for (float x = -HawthorneGround.x * 0.5f + 10f; x <= HawthorneGround.x * 0.5f - 10f; x += 24f) foreach (int sd in new[] { -1, 1 }) Prop(fw, "Pila", new Vector3(x, 4.2f, sd * 8f), new Vector3(1.6f, 8.4f, 1.6f), concrete, true);
         // Las vías de la Green Line en la mediana y el andén central sobre Crenshaw (x local ≈ 25).
         foreach (int sd in new[] { -1, 1 }) Prop(fw, "Via_de_la_Green_Line", new Vector3(0f, 9.7f, sd * 2.6f), new Vector3(HawthorneGround.x, 0.15f, 1.5f), _dark, false);
-        Transform st = Node(fw, "Estación Crenshaw (Metro Green Line)", new Vector3(25f, 0f, 0f));
+        Transform st = Node(fw, "Estación Crenshaw (Metro Green Line)", new Vector3(Spread(70f, 0f).x - HawthorneCenterF.x, 0f, 0f));   // sobre la mediana de Crenshaw
         Prop(st, "Anden_central", new Vector3(0f, 10.4f, 0f), new Vector3(80f, 1.1f, 3.6f), _conc, true);
         Prop(st, "Marquesina_de_lamas", new Vector3(0f, 14f, 0f), new Vector3(70f, 0.3f, 5f), _metal, false);
         for (float x = -30f; x <= 30f; x += 10f) Prop(st, "Pilar_de_la_marquesina", new Vector3(x, 12.2f, 0f), new Vector3(0.3f, 3.4f, 0.3f), _metal, false);
@@ -1131,8 +1199,8 @@ public static partial class StorySceneBuilder
         Transform v = Node(city, "Valla de malla de la planta de Northrop", Vector3.zero);
         Material mesh = M("Malla_metalica", 0.6f, 0.62f, 0.62f);
         Prop(v, "Valla_sur", D(0f, -90.5f, 1.2f), new Vector3(96f, 2.4f, 0.05f), mesh, true);
-        Prop(v, "Valla_oeste", D(-48.5f, -68f, 1.2f), new Vector3(0.05f, 2.4f, 45f), mesh, true);
-        for (float x = -12f; x <= 12f; x += 6f) Prop(v, "Arriate_de_la_fachada", D(x, -19f, 0.15f), new Vector3(3f, 0.3f, 1.2f), M("Arriate_ladrillo", 0.6f, 0.35f, 0.28f), true);
+        Prop(v, "Valla_oeste", DRaw(-48.5f, Spread(0f, -68f).y, 1.2f), new Vector3(0.05f, 2.4f, 45f), mesh, true);
+        foreach (float x in new[] { -24f, -16f, -8f, 8f, 16f, 24f }) Prop(v, "Arriate_de_la_fachada", DRaw(x, -MuskFactorySize.y * 0.5f * MuskK - 3f, 0.15f), new Vector3(3f, 0.3f, 1.2f), M("Arriate_ladrillo", 0.6f, 0.35f, 0.28f), true);
     }
     // ── 14 · EL GIMNASIO DEL BARRIO (entrenamiento) y la CLÍNICA DE URGENCIAS (recuperación), en Wilkie Ave [S]: la regla 16 pide en cada
     //    pueblo trabajo, ocio, entrenamiento y recuperación (docs/manual-de-diseno.md). Gimnasios de cadena y «urgent care» de 2008 en LA.
