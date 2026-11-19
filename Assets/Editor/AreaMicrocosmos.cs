@@ -356,7 +356,7 @@ public static class AreaMicrocosmos
         }
         // EL PISO AL QUE PERTENECE (reglas de los microcosmos, docs/microcosmos-areas.md §Reglas): montado ENCIMA de ese piso del
         // santuario, en su forma finalizada; y si el piso no representa la historia, «pendiente de piso representativo».
-        mfl.platform = areaGo; mfl.finishedForm = giant != null; mfl.obraRemoved = _obraRemoved;
+        mfl.platform = areaGo; mfl.finishedForm = giant != null || ownGround; mfl.ownGround = ownGround; mfl.obraRemoved = _obraRemoved;
         mfl.floorPieces = floorPieces0;
         MicroFloors.Match match = MicroFloors.Of(display);
         if (match != null) { mfl.representative = match.representative; mfl.pendingFloor = match.pending; }
@@ -574,6 +574,7 @@ public static class AreaMicrocosmos
         foreach (Renderer r in story.GetComponentsInChildren<Renderer>(false))
         {
             if (!r.enabled || r.GetComponentInParent<CubeInsect>(true) != null || !InTown(r.transform, story)) continue;   // la gente anda: no es huella
+            if (r.name.StartsWith("Suelo_")) continue;   // (PB-165) una losa de suelo del pueblo (el asfalto del distrito) no es huella: se pisa
             AreaFunctionSite site = r.GetComponentInParent<AreaFunctionSite>(true);
             if (site != null)
             {

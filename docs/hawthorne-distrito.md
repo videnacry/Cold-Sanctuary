@@ -103,3 +103,14 @@ Pendiente de confirmar con Google Earth (imágenes de 2008): los comercios exact
 - Las misiones de CodeShip siguen enganchadas: se han conservado los nombres exactos (`Plancha de los tacos`, `Caja registradora 1`,
   `Frutas y verduras`, `Cámara de lácteos y congelados`, `Banco del mecánico`, `Bomberos`, `Hidrante`,
   `Cruce de Crenshaw Boulevard y Rocket Road (semáforos)`, `Lonchera (camión de comida)`…).
+
+## 8. Ronda de pruebas del 2026-11-19 (PR #309, 96ae284) y arreglos
+
+| Fallo | Causa | Arreglo |
+|---|---|---|
+| MIC-87: paso de 2,30 m entre la cocina y la mesa de los bomberos | muebles ×2 más grandes de lo calculado | se separan, y cada edificio pasa por `Declutter` (corre el mueble que cabe hasta dejar 2,4 m, con las cajas reales) |
+| MIC-93: el maquinista del proveedor no llega a su casa (camino parcial) | la oficina de la nave tapaba la puerta | la oficina se aparta y `ClearDoors` despeja 2,6 m alrededor de cada puerta (la de la calle y las de los tabiques) |
+| MIC-93: un vecino no llega a su cocina | casas de 13 × 11 m, demasiado justas con los muebles ×2 | casas de 16 × 13 m cada 18 m, con la puerta en el centro, entrada de coche y frutal en todas |
+| Apartamentos cerrados | la puerta estaba en x −12 con una fachada de ±10 | puerta en x −6 |
+| g43 y g69: «0 plantas» y «sin piso gigante» | todo el distrito contaba como claro de la historia; las reglas pedían piso gigante | el distrito se llama «Calles de…» (lo reconoce como pueblo), la losa de asfalto va con el suelo del piso, y `MicroFloor.ownGround` exime de las reglas del piso gigante |
+| Fachadas: montantes de 9 m sueltos, ventanas laterales flotando, rótulos encimados y en espejo | la vista de corte ocultaba el muro pero no lo que llevaba; las letras no cabían en su panel | todo lo de la fachada se llama «Muro_…» (se desvanece con su muro), montantes ×3 con travesaño, sin ventanas en los muros medianeros del strip mall, letras ajustadas al panel, el número de las casas junto a la puerta |

@@ -55,7 +55,10 @@ public static partial class StorySceneBuilder
     static int HawthorneDistrict(Transform t, Transform fac)
     {
         DistrictMaterials();
-        Transform city = Node(t, "Distrito de Hawthorne (2008)", Vector3.zero);
+        _shellParts.Clear();
+        // «Calles de…»: el constructor del microcosmos lo reconoce como PUEBLO (AreaMicrocosmos.InTown): sus calles y edificios no son el
+        // claro de la historia, y la flora crece entre ellos (ronda del 2026-11-19: «flora dentro del piso: 0 plantas»).
+        Transform city = Node(t, "Calles de Hawthorne (2008)", Vector3.zero);
         Streets(city);
         UrbanFurniture(city);
         var sites = new Dictionary<string, AreaFunctionSite>();
@@ -76,10 +79,12 @@ public static partial class StorySceneBuilder
         Add(Clinic(city));
         SpaceXLots(city);
         int lowered = ClampUsable(city);
+        int cleared = 0, spread = 0;
+        foreach (AreaFunctionSite x in sites.Values) { Physics.SyncTransforms(); cleared += ClearDoors(x.transform); spread += Declutter(x.transform); }
         MoveEntry(t);
         int n = CivicBuilder.HawthornePeople(t, fac.GetComponent<AreaFunctionSite>(), sites);
         MicroBuildRules.Validate(t, "Hawthorne (2008)");
-        Debug.Log($"[Hawthorne] distrito: {sites.Count} edificios con interior, {lowered} superficies de uso bajadas al pecho ({ChestHeight:0.00} m), {n} vecinos y trabajadores del barrio.");
+        Debug.Log($"[Hawthorne] distrito: {sites.Count} edificios con interior, {lowered} superficies de uso bajadas al pecho ({ChestHeight:0.00} m), {cleared} piezas apartadas de las puertas, {spread} corridas para dejar el paso, {n} vecinos y trabajadores del barrio.");
         return n;
     }
 
@@ -167,7 +172,9 @@ public static partial class StorySceneBuilder
         Prop(x, "Asfalto_cruce_servicio_120", D(-42f, 56f, 0.035f), new Vector3(9f, 0.07f, 4.5f), _asph, false);
         Prop(x, "Asfalto_cruce_servicio_Rocket_Road", D(-42f, -34f, 0.035f), new Vector3(9f, 0.07f, 12f), _asph, false);
         // El suelo de las manzanas (asfalto viejo de polígono y tierra con césped en las casas) bajo todo, sin huecos.
-        Prop(city, "Suelo_del_distrito", D(45f, 7f, -0.01f), new Vector3(HawthorneGround.x, 0.02f, HawthorneGround.y), M("Asfalto_viejo", 0.36f, 0.35f, 0.34f), false);
+        // Va con el suelo del piso (fuera de la historia): ni es una calle donde no pueda crecer nada ni agranda el claro de la historia.
+        Transform slab = Prop(city, "Suelo_del_distrito", D(45f, 7f, -0.01f), new Vector3(HawthorneGround.x, 0.02f, HawthorneGround.y), M("Asfalto_viejo", 0.36f, 0.35f, 0.34f), false);
+        for (Transform p = city; p != null; p = p.parent) if (p.name == "Historia") { if (p.parent != null) slab.SetParent(p.parent, true); break; }
     }
 
     // ═══ MOBILIARIO URBANO ═══════════════════════════════════════════════════════════════════════════════════════════════════════════
@@ -324,7 +331,7 @@ public static partial class StorySceneBuilder
     /// </summary>
     static AreaFunctionSite Shell(Transform parent, string title, string template, Vector2 center, Vector2 size, float faceYaw, float h,
                                   Color wall, Color trim, bool storefront, string sign, Color signColor, float doorW = 1.8f, float doorX = 0f,
-                                  bool awning = false, Color? awningColor = null, bool backDoor = true)
+                                  bool awning = false, Color? awningColor = null, bool backDoor = true, bool sideWindows = true)
     {
         Transform b = Node(parent, title, D(center.x, center.y), 0f);
         h *= ShellK; doorW *= ShellK;   // (Berón 2026-11-19) puertas, muros y ventanas ×3
@@ -342,8 +349,11 @@ public static partial class StorySceneBuilder
         foreach (int sd in new[] { -1, 1 })
         {
             Prop(b, sd < 0 ? "Muro_oeste" : "Muro_este", new Vector3(sd * (hx - th * 0.5f), h * 0.5f, 0f), new Vector3(th, h, s.y), mw, true);
-            for (float z = -hz + 3f; z < hz - 2f; z += 6f)
-                Prop(b, "Ventana_lateral", new Vector3(sd * (hx + 0.02f), h * 0.55f, z), new Vector3(0.04f, Mathf.Min(1.2f * ShellK, h * 0.5f), Mathf.Min(1.6f * ShellK, 3.5f)), _glassDark, false);
+            // Ventanas en los costados (no en los locales pegados a otro: ahí el muro es medianero). «Muro_…»: la vista de corte las
+            // desvanece con su muro (ronda del 2026-11-19: dentro se veían paneles oscuros flotando donde se había ocultado el muro).
+            if (sideWindows)
+                for (float z = -hz + 4f; z < hz - 3f; z += 7f)
+                    Prop(b, "Muro_ventana_lateral", new Vector3(sd * (hx + 0.01f), h * 0.55f, z), new Vector3(0.02f, Mathf.Min(1.2f * ShellK, h * 0.45f), Mathf.Min(1.6f * ShellK, 3.5f)), _glassDark, false);
         }
         if (backDoor) Prop(b, "Puerta_trasera_de_servicio", new Vector3(hx * 0.6f, 1.05f * ShellK, hz + 0.02f), new Vector3(1.0f * ShellK, 2.1f * ShellK, 0.05f), M("Puerta_metal_gris", 0.45f, 0.46f, 0.48f), false);
         // Fachada (−z): zócalo, escaparate o ventanas, montantes, dintel y la puerta.
@@ -361,17 +371,29 @@ public static partial class StorySceneBuilder
             Prop(b, "Muro_sur_dintel", new Vector3(cx, (head + h) * 0.5f, -hz + th * 0.5f), new Vector3(w, h - head, th), mw, true);
             float sill = storefront ? 0.5f : 1.0f * ShellK;
             // Vidrio entre zócalo y dintel (sólido: no se cruza), con montantes cada ~1,8 m.
-            Prop(b, storefront ? "Escaparate" : "Ventana", new Vector3(cx, (sill + head) * 0.5f, -hz + th * 0.5f), new Vector3(w, head - sill, 0.06f), storefront ? _glass : _glassDark, true);
-            for (float x = x0; x <= x1 + 0.01f; x += Mathf.Max(1.2f, w / Mathf.Max(1, Mathf.Round(w / 1.8f))))
-                Prop(b, "Montante", new Vector3(x, (sill + head) * 0.5f, -hz + th * 0.5f - 0.04f), new Vector3(0.1f, head - sill, 0.1f), mt, false);
+            Prop(b, storefront ? "Muro_escaparate" : "Muro_ventana", new Vector3(cx, (sill + head) * 0.5f, -hz + th * 0.5f), new Vector3(w, head - sill, 0.06f), storefront ? _glass : _glassDark, true);
+            // Montantes ×3 (cada ~5,4 m, uno cada 1,8 m reales), más gruesos, y un travesaño a la altura de la puerta: la carpintería
+            // del escaparate (antes, a 1,8 m y finos, eran barrotes de 9 m).
+            for (float x = x0; x <= x1 + 0.01f; x += Mathf.Max(3.6f, w / Mathf.Max(1, Mathf.Round(w / (1.8f * ShellK)))))
+                Prop(b, "Muro_montante", new Vector3(x, (sill + head) * 0.5f, -hz + th * 0.5f - 0.05f), new Vector3(0.25f, head - sill, 0.12f), mt, false);
+            if (head - sill > 4f) Prop(b, "Muro_travesano", new Vector3(cx, Mathf.Min(head - 0.5f, 2.2f * ShellK), -hz + th * 0.5f - 0.05f), new Vector3(w, 0.2f, 0.12f), mt, false);
         }
         Facade(-hx, a1); Facade(b0, hx);
         Prop(b, "Muro_sur_dintel_puerta", new Vector3(doorX, (doorH + h) * 0.5f, -hz + th * 0.5f), new Vector3(dw, h - doorH, th), mw, true);
-        Prop(b, "Hoja_de_vidrio_abierta", new Vector3(doorX - dw * 0.5f - 0.05f, doorH * 0.5f, -hz - dw * 0.25f), new Vector3(0.05f, doorH - 0.1f, dw * 0.5f), _glass, false);
+        // La hoja de la puerta, corrida por dentro junto al hueco (antes salía en ángulo hacia la acera).
+        Prop(b, "Muro_hoja_corredera", new Vector3(doorX - dw * 0.5f - Mathf.Min(dw * 0.5f, 2f) * 0.5f, doorH * 0.5f, -hz + th + 0.05f), new Vector3(Mathf.Min(dw * 0.5f, 2f), doorH - 0.1f, 0.05f), _glass, false);
         // Rótulo sobre la fachada y toldo.
-        Transform signT = Node(b, "Rotulo", new Vector3(0f, h - 1.6f, -hz - 0.12f));
-        Prop(signT, "Panel_del_rotulo", Vector3.zero, new Vector3(Mathf.Min(s.x - 1f, Mathf.Max(4f, sign.Length * 1.1f)), 2.2f, 0.12f), M("Rotulo_" + signColor.GetHashCode().ToString("X"), signColor.r, signColor.g, signColor.b), false);
-        Text3D(signT, sign, new Vector3(0f, 0f, -0.08f), 0.28f, Color.white).localRotation = Quaternion.identity;
+        // El rótulo, del ancho de SU fachada y con las letras ajustadas al panel (antes las letras medían 0,9 m cada una y se salían:
+        // se montaban con las del local de al lado y, vistas por detrás, salían en espejo). En las casas, el número junto a la puerta.
+        bool plaque = sign.Length <= 6;
+        float pw = plaque ? 1.4f : Mathf.Min(s.x - 1.5f, Mathf.Max(4f, sign.Length * 0.9f)), ph = plaque ? 0.6f : Mathf.Min(2.2f, h * 0.18f);
+        Vector3 signAt = plaque ? new Vector3(doorX + dw * 0.5f + 1.2f, Mathf.Min(doorH, 2.6f), -hz - 0.1f) : new Vector3(0f, Mathf.Max(doorH + ph * 0.5f + 0.3f, h - 1.6f), -hz - 0.12f);
+        Transform signT = Node(b, "Rotulo", signAt);
+        Prop(signT, "Muro_rotulo", Vector3.zero, new Vector3(pw, ph, 0.12f), M("Rotulo_" + signColor.GetHashCode().ToString("X"), signColor.r, signColor.g, signColor.b), false);
+        // Letras de TextMesh (fontSize 60): ~0,1 × characterSize m de alto por punto; ancho medio de una letra ≈ 0,55 × su alto.
+        float cs = Mathf.Min(ph * 0.7f / 6f, pw * 0.9f / Mathf.Max(1, sign.Length) / (0.55f * 6f));
+        Transform letters = Text3D(signT, sign, new Vector3(0f, 0f, -0.08f), cs, Color.white);
+        letters.localRotation = Quaternion.identity; letters.name = "Muro_letras_" + sign;
         if (awning)
         {
             Color ac = awningColor ?? new Color(0.7f, 0.15f, 0.12f);
@@ -391,6 +413,7 @@ public static partial class StorySceneBuilder
         CivicBuilder.Tag(site);
         Label(b, title, h + 1.6f);
         CutawayView.Ensure(b);
+        _shellParts[b] = b.childCount;   // lo de aquí en adelante es su interior (ClearDoors, Declutter)
         return site;
     }
 
@@ -440,6 +463,163 @@ public static partial class StorySceneBuilder
         return n;
     }
 
+    // ═══ EL PASO Y LAS PUERTAS, COMPROBADOS CON LAS CAJAS DE VERDAD (ronda del 2026-11-19) ════════════════════════════════════════
+    // Los muebles del registro miden lo que su cuerpo pide (y aquí ×2 en planta): sus medidas no se saben al escribir el plano. Tras
+    // amueblar, cada edificio se repasa con las cajas reales: nada tapa una puerta (la oficina de la nave del proveedor tapaba la suya y
+    // su maquinista no salía: camino PARCIAL, MIC-93) y entre muebles queda el paso de 2,4 m (MIC-87: 2,30 m en los bomberos).
+
+    /// <summary>Hijos de cada edificio de <see cref="Shell"/> que son su cáscara (los de después son su interior).</summary>
+    static readonly Dictionary<Transform, int> _shellParts = new Dictionary<Transform, int>();
+
+    static readonly string[] Fixed = { "Muro", "Losa", "Suelo", "Cubierta", "Tejado", "Forjado", "Peldaño", "Galeria", "Cesped", "Valla", "Buzon", "Rotulo", "Pretil", "Climatizador", "Puerta", "Mancha", "Viga", "Tabique", "Campana", "Menu", "Television", "Fotos", "Espejo", "Tensiometro", "Tarjeta", "Numero" };
+
+    /// <summary>La planta útil del edificio, en sus locales (dentro de los muros, con 0,3 m de margen).</summary>
+    static bool Interior(Transform b, out Bounds inner)
+    {
+        inner = default;
+        Transform slab = b.Find("Losa");
+        if (slab == null) return false;
+        float mx = slab.localScale.x * 0.5f - CivicBuilder.WallThick - 0.3f, mz = slab.localScale.z * 0.5f - CivicBuilder.WallThick - 0.3f;
+        inner = new Bounds(Vector3.zero, new Vector3(2f * mx, 200f, 2f * mz));
+        return true;
+    }
+
+    /// <summary>La caja de <paramref name="w"/> (mundo) en los locales de <paramref name="frame"/>.</summary>
+    static Bounds ToLocal(Transform frame, Bounds w)
+    {
+        Bounds l = new Bounds(frame.InverseTransformPoint(w.center), Vector3.zero);
+        for (int i = 0; i < 8; i++)
+            l.Encapsulate(frame.InverseTransformPoint(new Vector3((i & 1) == 0 ? w.min.x : w.max.x, (i & 2) == 0 ? w.min.y : w.max.y, (i & 4) == 0 ? w.min.z : w.max.z)));
+        return l;
+    }
+
+    /// <summary>La caja (mundo) de lo que se ve de <paramref name="t"/>, sin las etiquetas de texto ni la gente.</summary>
+    static bool SolidBox(Transform t, out Bounds b)
+    {
+        b = default; bool any = false;
+        foreach (Renderer r in t.GetComponentsInChildren<Renderer>(true))
+        {
+            if (r.GetComponent<TextMesh>() != null || r.GetComponentInParent<CubeInsect>(true) != null) continue;
+            if (!any) { b = r.bounds; any = true; } else b.Encapsulate(r.bounds);
+        }
+        return any;
+    }
+
+    /// <summary>¿Es <paramref name="c"/> (hijo del edificio, de su interior) un mueble o una máquina que se puede correr?</summary>
+    static bool Movable(Transform c)
+    {
+        foreach (string f in Fixed) if (c.name.StartsWith(f)) return false;
+        if (c.GetComponentInChildren<MicroDoor>(true) != null || c.GetComponentInChildren<Collider>(true) == null) return false;
+        return SolidBox(c, out Bounds b) && b.size.y > 0.3f;
+    }
+
+    /// <summary>Lo que estorba (mundo) en el edificio <paramref name="b"/>, salvo <paramref name="self"/>: sus muebles, máquinas y
+    /// tabiques a ras de suelo (no el suelo, los forjados ni lo colgado).</summary>
+    static List<Bounds> Obstacles(Transform b, Transform self)
+    {
+        var l = new List<Bounds>();
+        for (int i = 0; i < b.childCount; i++)
+        {
+            Transform c = b.GetChild(i);
+            if (c == self || self.IsChildOf(c) || c.name.StartsWith("Losa") || c.name.StartsWith("Forjado") || c.name.StartsWith("Galeria") || c.name.StartsWith("Cubierta")) continue;
+            if (c.GetComponentInChildren<Collider>(true) == null || !SolidBox(c, out Bounds w)) continue;
+            if (w.min.y > b.position.y + 1.5f || w.size.y < 0.2f) continue;
+            l.Add(w);
+        }
+        return l;
+    }
+
+    static bool Overlaps(Bounds a, Bounds b, float pad) => a.min.x < b.max.x + pad && a.max.x > b.min.x - pad && a.min.z < b.max.z + pad && a.max.z > b.min.z - pad;
+
+    /// <summary>Corre <paramref name="t"/> (de caja <paramref name="w"/>) el desplazamiento más corto de <paramref name="moves"/> (mundo) que lo
+    /// deja dentro del edificio sin pisar otra cosa (ni a menos de <paramref name="gap"/> de otro mueble). Devuelve si lo corrió.</summary>
+    static bool Shove(Transform b, Transform t, Bounds w, List<Vector3> moves, Bounds inner, float gap, List<(Transform t, Bounds b)> pieces)
+    {
+        moves.Sort((x, y) => x.sqrMagnitude.CompareTo(y.sqrMagnitude));
+        List<Bounds> obs = Obstacles(b, t);
+        foreach (Vector3 m in moves)
+        {
+            Bounds n = w; n.center += m;
+            Bounds l = ToLocal(b, n);
+            if (l.min.x < inner.min.x || l.max.x > inner.max.x || l.min.z < inner.min.z || l.max.z > inner.max.z) continue;
+            bool clash = false;
+            foreach (Bounds o in obs) if (!o.Intersects(w) && Overlaps(n, o, 0.05f)) { clash = true; break; }
+            if (!clash && pieces != null)
+                foreach (var p in pieces)
+                    if (p.t != t && !p.t.IsChildOf(t) && !t.IsChildOf(p.t) && p.b.max.y > n.min.y + 0.3f && n.max.y > p.b.min.y + 0.3f && MicroBuildRules.GapXZ(n, p.b) < gap) { clash = true; break; }
+            if (clash) continue;
+            t.position += m;
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>Despeja cada puerta del edificio (la de la calle y las de sus tabiques): ningún mueble ni máquina a menos de 2,6 m de
+    /// su hueco por ningún lado. Devuelve cuántas piezas corrió.</summary>
+    static int ClearDoors(Transform b)
+    {
+        if (!_shellParts.TryGetValue(b, out int first) || !Interior(b, out Bounds inner)) return 0;
+        int moved = 0;
+        foreach (MicroDoor d in b.GetComponentsInChildren<MicroDoor>(true))
+        {
+            float half = d.width * 0.5f + 0.4f, reach = 2.6f;
+            for (int i = first; i < b.childCount; i++)
+            {
+                Transform c = b.GetChild(i);
+                if (!Movable(c) || !SolidBox(c, out Bounds w) || w.min.y > b.position.y + 1.5f) continue;
+                Bounds l = ToLocal(d.transform, w);
+                if (l.max.x < -half || l.min.x > half || l.max.z < -reach || l.min.z > reach) continue;
+                var moves = new List<Vector3>
+                {
+                    d.transform.TransformVector(new Vector3(0f, 0f, reach + 0.05f - l.min.z)),
+                    d.transform.TransformVector(new Vector3(0f, 0f, -reach - 0.05f - l.max.z)),
+                    d.transform.TransformVector(new Vector3(half + 0.05f - l.min.x, 0f, 0f)),
+                    d.transform.TransformVector(new Vector3(-half - 0.05f - l.max.x, 0f, 0f)),
+                };
+                for (int k = 0; k < moves.Count; k++) moves[k] = new Vector3(moves[k].x, 0f, moves[k].z);
+                if (Shove(b, c, w, moves, inner, 0f, null)) moved++;
+                else Debug.LogWarning($"[Hawthorne] «{c.name}» tapa la puerta «{d.name}» de «{b.name}» y no cabe en otro sitio.");
+            }
+        }
+        return moved;
+    }
+
+    /// <summary>El paso de <see cref="MicroBuildRules.Passage"/> entre los muebles de <paramref name="b"/> (los que mide el validador, a la
+    /// misma altura): corre el que cabe con el desplazamiento más corto. Devuelve cuántas veces corrió uno.</summary>
+    static int Declutter(Transform b)
+    {
+        if (!Interior(b, out Bounds inner)) return 0;
+        float gap = MicroBuildRules.Passage + 0.05f;
+        int moved = 0;
+        for (int round = 0; round < 60; round++)
+        {
+            var ps = MicroBuildRules.Pieces(b);
+            bool fixedOne = false;
+            for (int i = 0; i < ps.Count && !fixedOne; i++)
+                for (int j = i + 1; j < ps.Count && !fixedOne; j++)
+                {
+                    Bounds A = ps[i].b, B = ps[j].b;
+                    if (ps[i].t.IsChildOf(ps[j].t) || ps[j].t.IsChildOf(ps[i].t)) continue;
+                    if (A.max.y < B.min.y + 0.3f || B.max.y < A.min.y + 0.3f) continue;   // en plantas distintas
+                    if (MicroBuildRules.GapXZ(A, B) >= gap - 0.04f) continue;
+                    bool Try(Transform mt, Bounds w, Bounds o)
+                    {
+                        if (mt == b || mt.GetComponentInParent<MicroDoor>(true) != null) return false;
+                        var moves = new List<Vector3>
+                        {
+                            new Vector3(o.max.x + gap - w.min.x, 0f, 0f), new Vector3(o.min.x - gap - w.max.x, 0f, 0f),
+                            new Vector3(0f, 0f, o.max.z + gap - w.min.z), new Vector3(0f, 0f, o.min.z - gap - w.max.z),
+                        };
+                        return Shove(b, mt, w, moves, inner, gap - 0.04f, ps);
+                    }
+                    if (Try(ps[j].t, B, A) || Try(ps[i].t, A, B)) { fixedOne = true; moved++; }
+                    if (!fixedOne) Debug.LogWarning($"[Hawthorne] «{b.name}»: no hay sitio para dejar {MicroBuildRules.Passage:0.0} m entre «{ps[i].t.name}» y «{ps[j].t.name}».");
+                }
+            if (!fixedOne) break;
+        }
+        return moved;
+    }
+
     // En locales de un edificio de Shell: x a lo largo de la fachada, z hacia el fondo (la fachada en −z).
     static readonly List<MicroBody.Fit> InsectOnly1 = new List<MicroBody.Fit>();
     static List<MicroBody.Fit> Insects => InsectOnly1.Count > 0 ? InsectOnly1 : FillInsects();
@@ -482,8 +662,8 @@ public static partial class StorySceneBuilder
         Prop(engine, "Puente_de_luces", new Vector3(0f, 3.5f, -4.2f), new Vector3(2f, 0.15f, 0.3f), M("Luz_roja", 0.9f, 0.1f, 0.1f), false);
         Prop(b, "Taquillas_de_los_trajes_de_intervención", new Vector3(-10f, 1f, 9f), new Vector3(5f, 2f, 0.6f), M("Taquilla_amarilla", 0.85f, 0.7f, 0.2f), true);
         Prop(b, "Compresor_de_botellas_de_aire", new Vector3(-10f, 0.8f, 4f), new Vector3(1.2f, 1.6f, 0.8f), _metal, true);
-        DPiece(b, "cocina", new Vector3(-8f, 0f, -6f), 0f, "Cocina del parque de bomberos");
-        InsectTable(b, new Vector3(-8f, 0f, -11f), "Mesa alta del parque (comen juntos)");
+        DPiece(b, "cocina", new Vector3(-9f, 0f, -1.5f), 0f, "Cocina del parque de bomberos");
+        InsectTable(b, new Vector3(-8f, 0f, -8.5f), "Mesa alta del parque (comen juntos)");
         DPiece(b, "cama", new Vector3(-3f, 0f, 11.5f), 0f, "Catre de guardia (24 h)", null, station: false);
         DPiece(b, "inodoro", new Vector3(-12f, 0f, 12.5f), 0f, "Aseo del parque", null, station: false);
         DPiece(b, "lavabo", new Vector3(-12f, 0f, 9.5f), 0f, "Lavabo del parque", null, station: false);
@@ -674,10 +854,10 @@ public static partial class StorySceneBuilder
         Prop(lot, "Rotulo_Crenshaw_Plaza", new Vector3(-19f, 7.2f, 18f), new Vector3(0.6f, 3f, 4f), M("Rotulo_plaza", 0.85f, 0.75f, 0.4f), false);
         Color stucco = new Color(0.94f, 0.88f, 0.76f), brown = new Color(0.45f, 0.3f, 0.2f);
         // Las fachadas miran al oeste (a Crenshaw y al aparcamiento): en el plano, x 136…168; de norte a sur.
-        l.Add(Donuts(Shell(city, "Donuts de Crenshaw", "Restaurante", new Vector2(152f, 18.5f), new Vector2(32f, 11f), 90f, 4.6f, stucco, brown, true, "DONUTS · COFFEE", new Color(0.85f, 0.35f, 0.55f), 1.8f, 0f, true, new Color(0.85f, 0.35f, 0.55f))));
-        l.Add(Taqueria(Shell(city, "Taquería de Crenshaw", "Restaurante", new Vector2(152f, 5.5f), new Vector2(32f, 15f), 90f, 4.6f, stucco, brown, true, "TACOS · BURRITOS · TORTAS", new Color(0.1f, 0.5f, 0.25f), 1.8f, 0f, true, new Color(0.1f, 0.5f, 0.25f))));
-        l.Add(Laundry(Shell(city, "Lavandería de Crenshaw (coin laundry)", "Taller", new Vector2(152f, -7.5f), new Vector2(32f, 11f), 90f, 4.6f, stucco, brown, true, "COIN LAUNDRY", new Color(0.15f, 0.35f, 0.65f), 1.8f, 0f)));
-        l.Add(Liquor(Shell(city, "Licorería y tienda de la esquina", "Mercado", new Vector2(152f, -17f), new Vector2(32f, 8f), 90f, 4.6f, stucco, brown, true, "LIQUOR · MARKET", new Color(0.7f, 0.1f, 0.1f), 1.8f, 0f)));
+        l.Add(Donuts(Shell(city, "Donuts de Crenshaw", "Restaurante", new Vector2(152f, 18.5f), new Vector2(32f, 11f), 90f, 4.6f, stucco, brown, true, "DONUTS · COFFEE", new Color(0.85f, 0.35f, 0.55f), 1.8f, 0f, true, new Color(0.85f, 0.35f, 0.55f), sideWindows: false)));
+        l.Add(Taqueria(Shell(city, "Taquería de Crenshaw", "Restaurante", new Vector2(152f, 5.5f), new Vector2(32f, 15f), 90f, 4.6f, stucco, brown, true, "TACOS · BURRITOS · TORTAS", new Color(0.1f, 0.5f, 0.25f), 1.8f, 0f, true, new Color(0.1f, 0.5f, 0.25f), sideWindows: false)));
+        l.Add(Laundry(Shell(city, "Lavandería de Crenshaw (coin laundry)", "Taller", new Vector2(152f, -7.5f), new Vector2(32f, 11f), 90f, 4.6f, stucco, brown, true, "COIN LAUNDRY", new Color(0.15f, 0.35f, 0.65f), 1.8f, 0f, sideWindows: false)));
+        l.Add(Liquor(Shell(city, "Licorería y tienda de la esquina", "Mercado", new Vector2(152f, -17f), new Vector2(32f, 8f), 90f, 4.6f, stucco, brown, true, "LIQUOR · MARKET", new Color(0.7f, 0.1f, 0.1f), 1.8f, 0f, sideWindows: false)));
         return l;
     }
 
@@ -689,7 +869,7 @@ public static partial class StorySceneBuilder
         Transform b = site.transform; // 15 m de fachada × 32 m de fondo (locales: x ±7,5, z ±16)
         Material steel = _metal, tile = M("Azulejo_talavera", 0.85f, 0.8f, 0.6f);
         // Rejas de seguridad del escaparate (las tenían casi todos los locales de Crenshaw [S]).
-        for (float x = -7f; x <= 7f; x += 0.5f) { if (Mathf.Abs(x) < 1.2f) continue; Prop(b, "Reja", new Vector3(x, 1.8f, -16.2f), new Vector3(0.03f, 2.6f, 0.03f), _dark, false); }
+        for (float x = -7f; x <= 7f; x += 0.5f) { if (Mathf.Abs(x) < 1.2f) continue; Prop(b, "Muro_reja", new Vector3(x, 1.8f, -16.2f), new Vector3(0.03f, 2.6f, 0.03f), _dark, false); }
         // Cocina abierta al fondo, tras el mostrador.
         Prop(b, "Mostrador_de_pedidos", new Vector3(0f, 0.55f, 4f), new Vector3(13f, 1.1f, 0.8f), tile, true);
         Prop(b, "Menu_iluminado", new Vector3(0f, 3.2f, 15.6f), new Vector3(10f, 1.4f, 0.1f), M("Menu_luminoso", 0.95f, 0.9f, 0.7f), false);
@@ -830,7 +1010,7 @@ public static partial class StorySceneBuilder
     static AreaFunctionSite AutoShop(Transform city)
     {
         var site = Shell(city, "Taller de coches de Crenshaw", "Taller", new Vector2(115f, -93f), new Vector2(30f, 22f), 90f, 6f,
-            new Color(0.82f, 0.82f, 0.8f), new Color(0.15f, 0.3f, 0.6f), false, "AUTO REPAIR · SMOG CHECK · BRAKES", new Color(0.15f, 0.3f, 0.6f), 3.6f, 6f);
+            new Color(0.82f, 0.82f, 0.8f), new Color(0.15f, 0.3f, 0.6f), false, "AUTO REPAIR · SMOG CHECK · BRAKES", new Color(0.15f, 0.3f, 0.6f), 3.6f, 5f);
         site.notHome = true;
         Transform b = site.transform; // fachada 22 (x ±11), fondo 30 (z ±15)
         for (int k = 0; k < 2; k++)
@@ -856,7 +1036,7 @@ public static partial class StorySceneBuilder
     static AreaFunctionSite Apartments(Transform city)
     {
         var site = Shell(city, "Apartamentos de ingenieros", "Casa", new Vector2(151f, -110f), new Vector2(38f, 20f), 270f, 6.4f,
-            new Color(0.93f, 0.86f, 0.72f), new Color(0.55f, 0.4f, 0.3f), false, "CRENSHAW GARDEN APARTMENTS", new Color(0.4f, 0.3f, 0.25f), 1.2f, -12f, backDoor: false);
+            new Color(0.93f, 0.86f, 0.72f), new Color(0.55f, 0.4f, 0.3f), false, "CRENSHAW GARDEN APARTMENTS", new Color(0.4f, 0.3f, 0.25f), 1.2f, -6f, backDoor: false);   // (la puerta estaba en x −12, fuera de una fachada de ±10: el edificio quedaba cerrado)
         Transform b = site.transform; // fachada 20 (x ±10), fondo 38 (z ±19), al este (Wilkie)
         // Tres apartamentos en planta baja, separados por tabiques con su puerta, cada uno con cama, cocina, mesa alta, retrete y lavabo.
         for (int u = 0; u < 3; u++)
@@ -887,31 +1067,34 @@ public static partial class StorySceneBuilder
         var l = new List<AreaFunctionSite>();
         Color[] walls = { new Color(0.95f, 0.9f, 0.8f), new Color(0.92f, 0.82f, 0.7f), new Color(0.88f, 0.9f, 0.86f), new Color(0.96f, 0.86f, 0.78f) };
         int i = 0;
-        // Fila norte (frente a la 120, mirando al sur), de x 96 a 236.
-        for (float x = 102f; x <= 230f; x += 16f) l.Add(House(city, new Vector2(x, 96f), 0f, walls[i % walls.Length], i++));
-        // Fila de Wilkie (al este, mirando al oeste), de z −126 a −66.
-        for (float z = -122f; z <= -66f; z += 18f) l.Add(House(city, new Vector2(214f, z), 90f, walls[i % walls.Length], i++));
+        // (ronda del 2026-11-19) Casas de 16 × 13 m (antes 13 × 11: con los muebles ×2 no quedaba paso a la cocina) cada 18 m.
+        // Fila norte (frente a la 120, mirando al sur), de x 100 a 226.
+        for (float x = 100f; x <= 226f; x += 18f) l.Add(House(city, new Vector2(x, 97f), 0f, walls[i % walls.Length], i++));
+        // Fila de Wilkie (al este, mirando al oeste), de z −122 a −68.
+        for (float z = -122f; z <= -68f; z += 18f) l.Add(House(city, new Vector2(214f, z), 90f, walls[i % walls.Length], i++));
         return l;
     }
 
     static AreaFunctionSite House(Transform city, Vector2 at, float face, Color wall, int i)
     {
-        var site = Shell(city, $"Casa de Hawthorne {i + 1}", "Casa", at, face == 0f ? new Vector2(13f, 11f) : new Vector2(11f, 13f), face, 3.2f,
-            wall, new Color(0.45f, 0.35f, 0.28f), false, $"{11900 + i * 12}", new Color(0.3f, 0.25f, 0.2f), 0.9f, -3f);
-        Transform b = site.transform; // fachada 13 (x ±6,5), fondo 11 (z ±5,5)
-        CivicBuilder.Partition(b, "dormitorio", new Vector2(0.5f, -5.35f), new Vector2(0.5f, 5.35f), 2.9f * ShellK, new Color(0.94f, 0.92f, 0.88f), 6f, 0.8f * ShellK, "supuesto ×3: puerta interior de 32 in");
-        DPiece(b, "cama", new Vector3(3.5f, 0f, 2.5f), 0f, "Cama", null, station: false);
-        DPiece(b, "cocina", new Vector3(-4.5f, 0f, 3.8f), 0f, "Cocina de la casa");
-        InsectTable(b, new Vector3(-3f, 0f, -0.5f), "Mesa alta de la casa", new Vector2(1.2f, 0.8f));
-        DPiece(b, "inodoro", new Vector3(5.6f, 0f, -3.8f), 0f, "Retrete de la casa", null, station: false);
-        DPiece(b, "lavabo", new Vector3(3.2f, 0f, -4.4f), 0f, "Lavabo de la casa", null, station: false);
+        var site = Shell(city, $"Casa de Hawthorne {i + 1}", "Casa", at, face == 0f ? new Vector2(16f, 13f) : new Vector2(13f, 16f), face, 3.2f,
+            wall, new Color(0.45f, 0.35f, 0.28f), false, $"{11900 + i * 12}", new Color(0.3f, 0.25f, 0.2f), 0.9f, 0f);
+        Transform b = site.transform; // fachada 16 (x ±8), fondo 13 (z ±6,5); la puerta en el centro
+        // Al oeste, el salón con la cocina al fondo y la mesa; al este, tras el tabique (puerta junto a la fachada), el dormitorio y el baño.
+        CivicBuilder.Partition(b, "dormitorio", new Vector2(2.5f, -6.35f), new Vector2(2.5f, 6.35f), 2.9f * ShellK, new Color(0.94f, 0.92f, 0.88f), 3.2f, 0.8f * ShellK, "supuesto ×3: puerta interior de 32 in");
+        DPiece(b, "cocina", new Vector3(-4.5f, 0f, 4.6f), 0f, "Cocina de la casa");
+        InsectTable(b, new Vector3(-4.8f, 0f, -1.2f), "Mesa alta de la casa", new Vector2(1.2f, 0.8f));
+        DPiece(b, "cama", new Vector3(5.4f, 0f, 4.2f), 0f, "Cama", null, station: false);
+        DPiece(b, "lavabo", new Vector3(6.6f, 0f, -0.6f), 0f, "Lavabo de la casa", null, station: false);
+        DPiece(b, "inodoro", new Vector3(6.6f, 0f, -5.2f), 0f, "Retrete de la casa", null, station: false);
         // Tejado a cuatro aguas de teja de asfalto (encima de la azotea de Shell) y el jardín delantero con su valla.
-        Prop(b, "Tejado_de_teja_asfaltica", new Vector3(0f, 3.2f * ShellK + 0.7f, 0f), new Vector3(14f, 0.9f, 12f), M("Teja_asfaltica", 0.35f, 0.3f, 0.28f), false);
-        Prop(b, "Cesped_delantero", new Vector3(0f, 0.02f, -8.5f), new Vector3(13f, 0.04f, 5.5f), _grass, false);
-        foreach (int sd in new[] { -1, 1 }) Prop(b, "Valla_de_hierro", new Vector3(sd * 4.5f, 0.5f, -11.1f), new Vector3(4f, 1f, 0.05f), _dark, true);
-        Prop(b, "Buzon", new Vector3(5.5f, 0.6f, -11f), new Vector3(0.25f, 1.2f, 0.25f), _metal, true);
-        Car(b, new Vector3(-8.5f, 0f, -7f), 0f, i);   // en la entrada del garaje
-        if (i % 2 == 0) CivicBuilder.FruitTree(Node(b, "Frutal del jardín", new Vector3(5f, 0f, -8.5f)), i);
+        Prop(b, "Tejado_de_teja_asfaltica", new Vector3(0f, 3.2f * ShellK + 0.7f, 0f), new Vector3(17f, 0.9f, 14f), M("Teja_asfaltica", 0.35f, 0.3f, 0.28f), false);
+        Prop(b, "Cesped_delantero", new Vector3(0f, 0.02f, -9.25f), new Vector3(16f, 0.04f, 5.5f), _grass, false);
+        Prop(b, "Valla_de_hierro", new Vector3(5f, 0.5f, -11.95f), new Vector3(6f, 1f, 0.05f), _dark, true);   // a la izquierda, la entrada del coche
+        Prop(b, "Buzon", new Vector3(2.4f, 0.6f, -11.8f), new Vector3(0.25f, 1.2f, 0.25f), _metal, true);
+        Prop(b, "Entrada_del_coche", new Vector3(-5.5f, 0.03f, -9.25f), new Vector3(3.6f, 0.04f, 5.5f), _conc, false);
+        Car(b, new Vector3(-5.5f, 0f, -9.2f), 0f, i);
+        CivicBuilder.FruitTree(Node(b, "Frutal del jardín", new Vector3(5.5f, 0f, -9f)), i);   // regla 11: cada residencia con su frutal
         return site;
     }
 
@@ -928,7 +1111,7 @@ public static partial class StorySceneBuilder
         Prop(b, "Almacen_de_barras_de_aluminio", new Vector3(16f, 0.6f, 4f), new Vector3(6f, 1.2f, 2f), _metal, true);
         Prop(b, "Maquina_de_medir_por_coordenadas_(CMM)", new Vector3(16f, 1f, -8f), new Vector3(2f, 2f, 2f), M("Granito_CMM", 0.25f, 0.25f, 0.27f), true);
         Prop(b, "Viga_del_puente_grua", new Vector3(0f, 7.6f, 6f), new Vector3(50f, 0.6f, 0.6f), M("Grua_amarilla", 0.9f, 0.75f, 0.1f), false);
-        Prop(b, "Oficina_de_la_nave", new Vector3(-20f, 1.5f, -18f), new Vector3(10f, 3f, 6f), M("Oficina_tabique", 0.9f, 0.9f, 0.88f), true);
+        Prop(b, "Oficina_de_la_nave", new Vector3(5f, 1.5f, -16f), new Vector3(10f, 3f, 6f), M("Oficina_tabique", 0.9f, 0.9f, 0.88f), true);
         foreach (float x in new[] { 10f, 18f }) Prop(b, "Puerta_de_muelle", new Vector3(x, 2.2f, 22.1f), new Vector3(3.6f, 4.4f, 0.06f), M("Puerta_muelle", 0.7f, 0.72f, 0.74f), false);
         l.Add(a);
         var c = Shell(city, "Century Business Center (naves nuevas, 2007)", "Taller", new Vector2(-100f, -90f), new Vector2(90f, 60f), 0f, 8.5f,
