@@ -269,7 +269,10 @@ public class HomeNeedSpell : QueuedSpell
                     }
                     Finish(self, body);
                 }
-                HomeMove.StandUp(self, UsePoint(_spot, t.position, h));
+                // (ronda 5 de Hawthorne) De pie AL SUELO del mueble: el punto de uso del apoyo de abdomen quedaba a su altura
+                // (y = 1,0) y el turno de noche se levantaba encima, en una isla sin NavMesh; StandUp lo posa además en el NavMesh.
+                Vector3 up = UsePoint(_spot, t.position, h); up.y = PieceOf(_spot).position.y;
+                HomeMove.StandUp(self, up);
                 _phase = 2;
                 if (_meal == null) return true;
                 _meal.PickUp(self.gameObject);   // el plato vacío y el vaso, al fregadero
@@ -481,6 +484,11 @@ public static class HomeMove
         Transform ins = Insect(a); if (ins != null) ins.localRotation = Quaternion.identity;
         CubeInsect ci = a.GetComponent<CubeInsect>(); if (ci != null && ci.folk) ci.PoseNow(true);   // erguido otra vez (tras dormir de vientre)
         if (a.GetComponent<CreatureRig>() != null) DailyPoses.Stand().ApplyFinal(a);
+        // Al NavMesh más cercano (≤ 3 m en planta, ≤ 0,6 m de altura): junto a un mueble ×2 el punto de uso puede caer dentro de su
+        // borde y, si no, el agente se queda fuera de la malla y no anda (MIC-93, turno de noche de Hawthorne).
+        if (!UnityEngine.AI.NavMesh.SamplePosition(at, out UnityEngine.AI.NavMeshHit near, 0.15f, UnityEngine.AI.NavMesh.AllAreas)
+            && UnityEngine.AI.NavMesh.SamplePosition(at, out UnityEngine.AI.NavMeshHit hit, 3f, UnityEngine.AI.NavMesh.AllAreas)
+            && Mathf.Abs(hit.position.y - at.y) <= 0.6f) at = hit.position;
         t.position = at;
         Vector3 e = t.eulerAngles; t.rotation = Quaternion.Euler(0f, e.y, 0f);
         Release(t);
