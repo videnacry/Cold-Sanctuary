@@ -48,6 +48,9 @@ public sealed class WalkWatch
             if (!c.enabled || c.isTrigger) continue;
             if (!any) { b = c.bounds; any = true; } else b.Encapsulate(c.bounds);
         }
+        if (!any)   // sin colisores (el apoyo de abdomen, una pieza fina): su caja visible
+            foreach (Renderer r in piece.GetComponentsInChildren<Renderer>())
+            { if (r is ParticleSystemRenderer) continue; if (!any) { b = r.bounds; any = true; } else b.Encapsulate(r.bounds); }
         if (!any) return false;
         Vector3 p = agent.position;
         if (p.y < b.min.y - 1.2f || p.y > b.max.y + 0.6f) return false;   // otra planta

@@ -91,6 +91,9 @@ public static partial class StorySceneBuilder
         SpaceXLots(city);
         int lowered = ClampUsable(city);
         int cleared = 0, spread = 0;
+        int fitted = 0;
+        foreach (AreaFunctionSite x in sites.Values) { Physics.SyncTransforms(); if (EnsureInsectFit(x.transform)) fitted++; }
+        if (fitted > 0) Debug.Log($"[Hawthorne] {fitted} edificios sin mueble a la medida del insecto-humano recibieron su mesa alta del personal.");
         foreach (AreaFunctionSite x in sites.Values) { Physics.SyncTransforms(); cleared += ClearDoors(x.transform); spread += Declutter(x.transform); }
         MoveEntry(t);
         int n = CivicBuilder.HawthornePeople(t, fac.GetComponent<AreaFunctionSite>(), sites);
@@ -688,6 +691,46 @@ public static partial class StorySceneBuilder
         return moved;
     }
 
+    /// <summary>(2026-11-19, ronda 4, MIC-87/g69) Cada edificio, al menos un mueble a la medida del insecto-humano (C1): la tienda de
+    /// la gasolinera, la licorería, el supermercado o el taller solo tenían máquinas y estanterías. Si no lo tiene, se le pone una
+    /// MESA ALTA DEL PERSONAL (con sus apoyos de abdomen) donde quepa: dentro, sin pisar nada, a 2,4 m de los muebles y lejos de
+    /// las puertas; si no cabe, un taburete de su medida.</summary>
+    static bool EnsureInsectFit(Transform b)
+    {
+        foreach (MicroPiece mp in b.GetComponentsInChildren<MicroPiece>(true)) if (mp.fitted && !string.IsNullOrEmpty(mp.fitFor)) return false;
+        if (!Interior(b, out Bounds inner)) return false;
+        var doors = new List<Vector3>(); foreach (MicroDoor d in b.GetComponentsInChildren<MicroDoor>(true)) doors.Add(d.transform.position);
+        float gap = MicroBuildRules.Passage + 0.05f;
+        foreach (bool table in new[] { true, false })
+        {
+            Transform t = table ? InsectTable(b, Vector3.zero, "Mesa alta del personal (descanso)", new Vector2(1.2f, 0.8f))
+                                : DPiece(b, "silla", Vector3.zero, 0f, "Taburete del personal", null, MicroBody.OfSpecies("Ant"), null, station: false);
+            Physics.SyncTransforms();
+            if (!SolidBox(t, out Bounds w0)) { Object.DestroyImmediate(t.gameObject); continue; }
+            var pieces = MicroBuildRules.Pieces(b);
+            List<Bounds> obs = Obstacles(b, t);
+            // Del fondo hacia la fachada (la fachada está en −z): la mesa del personal va atrás.
+            for (float z = inner.max.z; z >= inner.min.z; z -= 0.75f)
+                for (float x = inner.min.x; x <= inner.max.x; x += 0.75f)
+                {
+                    Vector3 m = b.TransformPoint(new Vector3(x, 0f, z)) - t.position; m.y = 0f;
+                    Bounds n = w0; n.center += m;
+                    Bounds l = ToLocal(b, n);
+                    if (l.min.x < inner.min.x || l.max.x > inner.max.x || l.min.z < inner.min.z || l.max.z > inner.max.z) continue;
+                    bool clash = false;
+                    foreach (Bounds o in obs) if (Overlaps(n, o, 0.6f)) { clash = true; break; }
+                    if (!clash) foreach (var p in pieces) if (p.t != t && !p.t.IsChildOf(t) && p.b.max.y > n.min.y + 0.3f && n.max.y > p.b.min.y + 0.3f && MicroBuildRules.GapXZ(n, p.b) < gap) { clash = true; break; }
+                    if (!clash) foreach (Vector3 d in doors) { Vector3 c = n.ClosestPoint(d) - d; c.y = 0f; if (c.magnitude < 3f) { clash = true; break; } }
+                    if (clash) continue;
+                    t.position += m;
+                    return true;
+                }
+            Object.DestroyImmediate(t.gameObject);
+        }
+        Debug.LogWarning($"[Hawthorne] «{b.name}»: no cabe ni una mesa alta ni un taburete de insecto-humano.");
+        return false;
+    }
+
     // En locales de un edificio de Shell: x a lo largo de la fachada, z hacia el fondo (la fachada en −z).
     static readonly List<MicroBody.Fit> InsectOnly1 = new List<MicroBody.Fit>();
     static List<MicroBody.Fit> Insects => InsectOnly1.Count > 0 ? InsectOnly1 : FillInsects();
@@ -1109,11 +1152,12 @@ public static partial class StorySceneBuilder
         var site = Shell(city, "Apartamentos de ingenieros", "Casa", new Vector2(151f, -110f), new Vector2(38f, 20f), 270f, 6.4f,
             new Color(0.93f, 0.86f, 0.72f), new Color(0.55f, 0.4f, 0.3f), false, "CRENSHAW GARDEN APARTMENTS", new Color(0.4f, 0.3f, 0.25f), 1.2f, -6f, backDoor: false);   // (la puerta estaba en x −12, fuera de una fachada de ±10: el edificio quedaba cerrado)
         Transform b = site.transform; // fachada 20 (x ±10), fondo 38 (z ±19), al este (Wilkie)
-        // Tres apartamentos en planta baja, separados por tabiques con su puerta, cada uno con cama, cocina, mesa alta, retrete y lavabo.
+        // Tres apartamentos en planta baja, separados por tabiques con su puerta EN EL CENTRO (ronda 4: junto al muro la tapaban la
+        // cocina y el escritorio y el técnico de motores no llegaba a su aseo), cada uno con cama, cocina, mesa alta, retrete y lavabo.
         for (int u = 0; u < 3; u++)
         {
             float z0 = -19f + u * 12.6f;
-            if (u > 0) CivicBuilder.Partition(b, "apartamento_" + u, new Vector2(-9.85f, z0), new Vector2(9.85f, z0), 3.1f * ShellK, new Color(0.9f, 0.86f, 0.78f), 3f, 0.9f * ShellK, "supuesto ×3: puerta de apartamento de EE. UU. (36 in)");
+            if (u > 0) CivicBuilder.Partition(b, "apartamento_" + u, new Vector2(-9.85f, z0), new Vector2(9.85f, z0), 3.1f * ShellK, new Color(0.9f, 0.86f, 0.78f), 9.85f, 0.9f * ShellK, "supuesto ×3: puerta de apartamento de EE. UU. (36 in)");
             DPiece(b, "cama", new Vector3(6f, 0f, z0 + 4f), 0f, $"Cama del apartamento {u + 1}", null, station: false);
             DPiece(b, "cocina", new Vector3(-7.5f, 0f, z0 + 9f), 0f, $"Cocina del apartamento {u + 1}");
             InsectTable(b, new Vector3(-2f, 0f, z0 + 6f), $"Mesa alta del apartamento {u + 1}", new Vector2(1.2f, 0.8f));

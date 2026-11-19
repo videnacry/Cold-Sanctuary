@@ -181,6 +181,8 @@ public class HomeNeedSpell : QueuedSpell
     int _phase;          // 0 ir · 1 usarlo · 2 levantarse (comer: llevar el plato al fregadero)
     float _since, _until, _sleepStart;
     Transform _spot;
+    /// <summary>El mueble entero del sitio (la mesa del apoyo de abdomen): junto a él ya se puede usar (ronda 4 de Hawthorne).</summary>
+    static Transform PieceOf(Transform spot) { MicroPiece mp = spot != null ? spot.GetComponentInParent<MicroPiece>() : null; return mp != null ? mp.transform : spot; }
     // (2026-11-04) COMER CON SU ORQUESTA (MealRitual, docs/actividades-y-uniformes.md §2): coge el plato de la despensa, se sienta, come a
     // bocados con los cubiertos y bebe, y al acabar lleva el plato al fregadero (el lavabo de casa).
     MealRitual _meal; bool _fetched; float _fetchSince = -1f;
@@ -236,7 +238,7 @@ public class HomeNeedSpell : QueuedSpell
                 _meal?.Carry(self.gameObject);
                 Vector3 to = _walk.Target(UsePoint(_spot, t.position, h));
                 bool there = MicroMove.Step(t, to, 1.4f * h / 1.75f, 0.45f * h);
-                if (!there && WalkWatch.AtPiece(t, _spot, 0.8f + h)) there = true;   // ya junto al mueble (×2 en Hawthorne): lo usa
+                if (!there && WalkWatch.AtPiece(t, PieceOf(_spot), 0.8f + h)) there = true;   // ya junto al mueble (×2 en Hawthorne): lo usa
                 if (!there && _walk.GiveUp(t, to, 1.4f * h / 1.75f, Timeout(h), out string why))
                 {
                     WalkWatch.Record("Hogar", self.name, t.position, to, _spot.name + " de su casa (" + need + ")", why);
