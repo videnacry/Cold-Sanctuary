@@ -293,7 +293,9 @@ public static class MicroBuildRules
                 if (mp.kind == "frutal") fruit = true;
                 if (!string.IsNullOrEmpty(mp.style) && !ids.Contains(mp.style)) bad.Add($"«{mp.name}» en «{site.title}»: estilo «{mp.style}» fuera del catálogo");
             }
-            if (!human) bad.Add($"«{site.title}» no adaptado a personas (ningún mueble a la medida de un humano)");
+            // (2026-11-19, PB-165, Berón: «sillas humanas junto a sillas humano-insecto») en un microcosmos solo hay insectos-humanos
+            // (InsectOnly): ya no se exige un mueble a la medida de una persona.
+            _ = human;
             if (!insect) bad.Add($"«{site.title}» no adaptado a insectos-humanos (ningún mueble a la medida de su cuerpo)");
             if (string.IsNullOrEmpty(site.region) || !System.Enum.TryParse(site.region, out MicroStyles.Region _)) bad.Add($"«{site.title}» sin región del catálogo de estilos («{site.region}»)");
             if (site.GetComponentInChildren<Household>(true) != null && !fruit) bad.Add($"residencia «{site.title}» sin frutal");

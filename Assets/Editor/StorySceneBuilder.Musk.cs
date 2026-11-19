@@ -52,12 +52,12 @@ public static partial class StorySceneBuilder
         Material navy = M("Azul_SpaceX", 0.07f, 0.11f, 0.2f), asphalt = M("Asfalto", 0.2f, 0.2f, 0.21f), paint = M("Pintura_blanca", 0.92f, 0.92f, 0.9f);
         Material mars = M("Poster_Marte", 0.75f, 0.35f, 0.2f), wood = M("Palé", 0.7f, 0.56f, 0.38f), yellow = M("Amarillo_carretilla", 0.92f, 0.72f, 0.1f);
 
-        MuskShift = MuskSpot(t);   // (piloto 3) lejos de los muebles gigantes del piso ×100 (la foto «fabrica» salía tapada)
+        MuskShift = HawthorneShift;   // (PB-165) suelo propio: la fábrica en su sitio del distrito (docs/hawthorne-distrito.md)
         // El estilo y el cuerpo de los muebles (Civilize los vuelve a poner después, para el pueblo).
         CivicBuilder.Year = 2008;
         CivicBuilder.Region = MicroStyles.RegionOf("Hawthorne").ToString();
         MicroFurniture.DefaultBody = MicroBody.OfSpecies("Ant");
-        var both = new List<MicroBody.Fit> { MicroBody.OfSpecies("Ant"), MicroBody.Human() };   // mesas mixtas (regla 9)
+        var both = new List<MicroBody.Fit> { MicroBody.OfSpecies("Ant") };   // (PB-165, Berón: solo mobiliario de insecto-humano; antes, mesas mixtas, regla 9)
 
         // ── 0 · LA NAVE: suelo de epoxi, muros de chapa blanca, cubierta, puerta de la fachada y vista de corte ──
         Transform fac = new GameObject("Fábrica de SpaceX (1 Rocket Road)").transform; fac.SetParent(t, false); fac.localPosition = MuskFactoryAt;
@@ -146,6 +146,7 @@ public static partial class StorySceneBuilder
         int extraFolk = MuskDetail(t, fac);   // (piloto 2) el detalle: grúa, estanterías, bancos, cubículos, marcas, fachada, muelle, aparcamiento y palmeras
         extraFolk += MuskCity(t, fac);   // (2026-11-18, Berón: los trabajadores, la ciencia, la comida, la seguridad y lo vivo)
         CivicBuilder.Tag(site);
+        extraFolk += HawthorneDistrict(t, fac);   // (PB-165) el distrito entero: calles, edificios con interior y su gente
         CutawayView.Ensure(fac);   // (otra vez, ya con los tabiques de los aseos: la vista de corte los recoge también)
         Label(fac, "Fábrica de SpaceX (1 Rocket Road, Hawthorne)", 10f);
 
@@ -179,7 +180,7 @@ public static partial class StorySceneBuilder
                 Talk("Habla con la soldadora de tanques", welder.transform, "Soldadora", "Hay gente llorando por toda la nave. Yo soldé ese tanque."),
                 Talk("Musk habla a todo el equipo", musk.transform, "Elon Musk", "Mucha gente pensaba que no podíamos hacerlo. Lo habéis hecho vosotros, todos. A la cuarta va la vencida."),
             },
-            "La fábrica de SpaceX en 1 Rocket Road, Hawthorne (California), entre agosto y el 28 de septiembre de 2008, sobre el control de misión del santuario a escala de hormiga. Tras tres fallos, la empresa tiene un último Falcon 1. Ayuda al equipo a entender el fallo del vuelo 3 y vive con ellos el cuarto lanzamiento. E para hablar y revisar; para mirar, quédate quieto. En el aparcamiento está el Tesla Roadster y en la nave una carretilla: F para subir y bajar, W/A/S/D para conducir.",
+            "La fábrica de SpaceX en 1 Rocket Road, Hawthorne (California), entre agosto y el 28 de septiembre de 2008, en su barrio de Crenshaw Boulevard a escala de hormiga. Tras tres fallos, la empresa tiene un último Falcon 1. Ayuda al equipo a entender el fallo del vuelo 3 y vive con ellos el cuarto lanzamiento. E para hablar y revisar; para mirar, quédate quieto. En el aparcamiento está el Tesla Roadster y en la nave una carretilla: F para subir y bajar, W/A/S/D para conducir.",
             new[]
             {
                 "Elon Musk (Pretoria, 1971) fundó SpaceX en 2002 para abaratar el acceso al espacio. Su primer cohete, el Falcon 1, era pequeño (22 m con el motor Merlin 1C y 1,7 m de diámetro) y usaba un motor propio, el Merlin. Se lanzaba desde la isla de Omelek, en el atolón de Kwajalein (Islas Marshall).",

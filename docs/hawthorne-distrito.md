@@ -13,8 +13,8 @@ Fuentes del barrio: el informe de investigación de este hilo (§6) más lo que 
 |---|---|
 | Montado sobre el piso del árbol-edificio ×100 (muebles gigantes alrededor, huecos) | **Suelo urbano propio**: el microcosmos no carga el piso del santuario. Es un rectángulo de calles y manzanas cerrado por su borde |
 | Lotes sueltos de `CivicBuilder.Town` (cajas de 10–24 m con 2 estaciones) | **Cada edificio tiene su constructor**, con fachada (ventanas, escaparates, rótulos, toldos), interior por estancias y maquinaria real |
-| Mesas mixtas (sillas de persona + apoyos de insecto) | En Hawthorne todos son insectos-humanos: **solo mobiliario de insecto-humano** (mesa alta con apoyo de abdomen, catre de vientre…) |
-| Muebles, objetos y puertas a escala s = 0,5 (se ven diminutos) | **×2,5** respecto a lo de ahora, con la misma separación entre piezas (ver §5) |
+| Mesas mixtas (sillas de persona + apoyos de insecto) | En Hawthorne todos son insectos-humanos: **solo mobiliario de insecto-humano** (mesa alta con apoyo de abdomen, catre de vientre…). El validador ya no exige muebles de persona (`MicroBuildRules.ValidateSites`) |
+| Muebles, objetos y puertas a escala s = 0,5 (se ven diminutos) | Puertas, muros y ventanas ×3; muebles y objetos ×2 en planta y como mucho a la altura del pecho; la misma separación (ver §5) |
 
 ## 2. El plano (zona detallada de unos 420 × 340 m)
 
@@ -70,14 +70,19 @@ aparcamientos con plazas pintadas, vallas de malla en la zona industrial y coche
 5. **Retos de código**: los enganches de `MissionSites` y `CodeChallenges` pasan a los nombres nuevos.
 6. Compilar con `tools/verify-compile.sh`, push y PR a `edificios`. La prueba en vivo la hace el hilo de pruebas.
 
-## 5. Escala
+## 5. Escala (decidida por Berón, 2026-11-19 06:21)
 
-El cuerpo de insecto-humano se dejó a la mitad (s = 0,5) y los muebles se hicieron a su medida, por eso todo se ve
-diminuto. Hay dos lecturas de «×2 o ×3»:
+> «Para que mesas y mostradores y otros elementos no queden encima de la cabeza crecerían menos en vertical pero seguirían
+> creciendo en ejes equis y zeta, en vertical pueden llegar hasta el pecho… puertas y paredes y ventanas *3, en objetos *2».
 
-- **A (recomendada)**: los muebles, objetos y puertas ×2,5, y el cuerpo vuelve a tamaño de persona, para que alcance
-  las mesas y quepa por las puertas. La separación entre piezas no cambia.
-- **B**: solo los muebles ×2,5 y el cuerpo sigue a la mitad. Las mesas le quedarían por encima de la cabeza.
+- El cuerpo del insecto-humano **no cambia** (s = 0,5).
+- **Puertas, muros y ventanas ×3** (`ShellK`): la altura de cada edificio, sus puertas, sus escaparates y sus ventanas.
+- **Muebles y objetos ×2 en planta** (`FurnitureK`, `DPiece`): los muebles del registro, hechos a la medida del cuerpo,
+  crecen ×2 en X y Z y conservan su altura. Las máquinas y los objetos propios del distrito van a su medida real, que ya es
+  el doble de la del cuerpo encogido.
+- **Las superficies de uso, como mucho a la altura del pecho** (`ChestHeight`, `ClampUsable`): mostradores, barras, mesas,
+  cintas de caja, vitrinas, fregaderos y lavadoras se bajan al pecho del insecto-humano. Lo que va encima baja con ellas.
+- La separación entre piezas no cambia.
 
 ## 6. Fuentes del barrio
 
@@ -86,3 +91,15 @@ Satellite Today 24‑11‑2008; CLUI, «SpaceX headquarters» y «Northrop aircr
 (Century Business Center); GlobeSt 2010 (Kearny); LA Business Journal; nota de prensa de Metro del 29‑1‑2004 (Rapid 710);
 Wikipedia, «Crenshaw Boulevard»; City-Data (Hollypark); activediner (Nat's Airport Cafe).
 Pendiente de confirmar con Google Earth (imágenes de 2008): los comercios exactos de Crenshaw y la planta real de la fábrica.
+
+## 7. Código
+
+- `Assets/Editor/HawthorneDistrict.cs`: el distrito (calles, mobiliario urbano, `Shell` = edificio con fachada, y cada edificio
+  con su interior), la escala y la entrada delante de la fábrica.
+- `MicrocosmSpec.ownGround` + `StorySceneBuilder.OwnGround`: el suelo propio (sin el piso del santuario ni `CivicBuilder.Civilize`).
+- `CivicBuilder.HawthornePeople`: los 12 oficios de la nave y 14 trabajadores del barrio, con sus casas, más las parejas de vecinos.
+- La fábrica sigue siendo la de `StorySceneBuilder.Musk*` (44 × 30 m), ahora en su sitio fijo del distrito. **Pendiente:** rehacerla
+  al detalle y a la nueva escala (es la siguiente pieza).
+- Las misiones de CodeShip siguen enganchadas: se han conservado los nombres exactos (`Plancha de los tacos`, `Caja registradora 1`,
+  `Frutas y verduras`, `Cámara de lácteos y congelados`, `Banco del mecánico`, `Bomberos`, `Hidrante`,
+  `Cruce de Crenshaw Boulevard y Rocket Road (semáforos)`, `Lonchera (camión de comida)`…).
