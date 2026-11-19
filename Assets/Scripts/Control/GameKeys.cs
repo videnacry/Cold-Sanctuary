@@ -53,6 +53,9 @@ public static class GameKeys
     }
     /// <summary>Un toque: la tecla cuenta como pulsada (GetKeyDown) solo este fotograma.</summary>
     public static void TapVirtual(KeyCode k) => _vDown[k] = Time.frameCount;
+    /// <summary>(2026-11-19, mandos Switch) Para los DIÁLOGOS y menús que leen el teclado sin pasar por el juego (opciones, reto de código,
+    /// pausa, lanzador): la tecla de verdad o la del mando táctil, SIN enmudecer (el menú abierto es quien la quiere).</summary>
+    public static bool UiKeyDown(KeyCode k) => Input.GetKeyDown(k) || VirtualDown(k);
     static bool VirtualHeld(KeyCode k) => _vHeld.Count > 0 && _vHeld.Contains(k);
     static bool VirtualDown(KeyCode k) => _vDown.Count > 0 && _vDown.TryGetValue(k, out int f) && f == Time.frameCount;
     static bool VirtualUp(KeyCode k) => _vUp.Count > 0 && _vUp.TryGetValue(k, out int f) && f == Time.frameCount;

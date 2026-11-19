@@ -28,6 +28,7 @@ Ramas (2026-11-18): la integración es `claude/edificios` (por delante de `maste
 | 8 | **Musk recrea su historia** (PB-162): cada fragmento en su lugar real y fechado, un barrio con todo el detalle (edificios, interiores, muebles, maquinaria, utensilios, calles, vegetación, animales) y la ciudad de fondo; luego el resto, cuando Berón lo apruebe | En curso. Alcance (Berón 11-18 21:54): por ahora solo Hawthorne 2008, todo el esfuerzo en su realismo; Musk es la portada, pero se ven los trabajadores y científicos de los cohetes, la producción de comida, la seguridad urbana y los demás sistemas (animales, personas, bacterias, plantas). Omelek: programado pero aparcado | — | [plan-microcosmos-realismo.md](plan-microcosmos-realismo.md) |
 | 9 | **Retos de código para cada actividad** (PB-163): cocinar, curar, plantar, campo, entrenar, yoga, cuidar animales…, con UI/UX como CodeShip | En curso | — | plan §4 |
 | 10 | **bonusPacks** (PB-164, PB-140): el bonusPack N suma las stats de la criatura más poderosa del santuario N | En curso | — | [progresion-santuarios.md](progresion-santuarios.md) |
+| 11 | **Móvil: mandos Switch y menús como CodeShip** (PB-165): los 16 botones de los Joy-Con sobre la pantalla (sobre `GameKeys`, el teclado sigue igual) y el tema de menús `CsTheme` con la paleta de CodeShip | En código, sin compilar: falta `verify-compile` y probarlo en el móvil (horizontal y vertical). Luego: lanzador de hechizos en el móvil, `CsTheme` en el resto de paneles, botones apagados cuando no hacen nada | `claude/project-thread-n17elb` | [mandos-tactiles.md](mandos-tactiles.md) |
 
 ## 2. Decisiones que esperan a Berón
 
@@ -303,6 +304,7 @@ obras-dojo-ballet, plano-edificios, plan-microcosmos-realismo, notes/historias-p
 | [vida-en-icebergs.md](vida-en-icebergs.md) | Vida en los icebergs |
 | [volition-selection-engine.md](volition-selection-engine.md) | Motor de volición: la selección conduce la acción (D3b) — 2026-08-24 |
 | [web-continua.md](web-continua.md) | Web continua: una página por microcosmos, prueba en la página y subidas (2026-11-16) |
+| [mandos-tactiles.md](mandos-tactiles.md) | Móvil: mandos tipo Switch (Joy-Con en pantalla) y menús con el tema de CodeShip (2026-11-19) |
 | [web-ligera.md](web-ligera.md) | Web ligera: dos builds WebGL para el móvil (2026-11-13) |
 | [web-prueba-hallazgos.md](web-prueba-hallazgos.md) | Hallazgos de la prueba en la página (rweb2, 2026-11-17) |
 | [world-simulation.md](world-simulation.md) | Sistema de Simulación del Mundo — Cold Sanctuary |

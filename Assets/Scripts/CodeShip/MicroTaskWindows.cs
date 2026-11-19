@@ -94,6 +94,7 @@ public class MicroTaskWindows : MonoBehaviour
 
     void OnGUI()
     {
+        CsTheme.Use();   // (2026-11-19) el tema de CodeShip para los menús (UI/CsTheme.cs)
         if (ColdSanctuary.TestRunner.Running || CodeChallengeSheet.IsOpen) return;
         if (HudModals.Current != HudModals.Modal.Tareas && HudModals.Current != HudModals.Modal.Areas) return;
         Styles();

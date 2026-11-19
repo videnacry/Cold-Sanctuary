@@ -59,6 +59,7 @@ public class HudNotices : MonoBehaviour
 
     void OnGUI()
     {
+        CsTheme.Use();   // (2026-11-19) el tema de CodeShip para los menús (UI/CsTheme.cs)
         if (_now == null || ColdSanctuary.TestRunner.Running || CodeChallengeSheet.IsOpen) return;
         if (_st == null) _st = new GUIStyle(GUI.skin.button) { richText = true, wordWrap = true, fontSize = WebLigera.Active ? 15 : 13, alignment = TextAnchor.MiddleCenter };
         float u = WebLigera.Active ? Mathf.Max(44f, Mathf.Min(Screen.width, Screen.height) * 0.07f) : 30f;

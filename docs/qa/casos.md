@@ -461,6 +461,19 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | CS-87 | CS | resolver sus retos cumple la misión del puesto y la quita de pendientes | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
 | CS-43 | CS | Cada actividad (cocinar, curar, plantar, campo, entrenar, yoga, cuidar animales…) tiene su misión como reto de código, con UI/UX como CodeShip | — | — | — | PB-163 | añadido el 2026-11-18 |
 
+## JC · Mandos táctiles tipo Switch y tema de los menús
+
+| ID | Área | Qué tiene que pasar | Unidad | Grupo | Reglas | PB | Origen |
+|---|---|---|---|---|---|---|---|
+| JC-01 | JC | los 16 botones de la Switch, 8 por lado, con tecla y nombre | JoyConTest | 141 | — | PB-165 | docs/mandos-tactiles.md; añadido el 2026-11-19 |
+| JC-02 | JC | la asignación de CodeShip (A Saltar, B Correr, + Misiones, − Áreas, captura Vista, inicio Menú) | JoyConTest | 141 | — | PB-165 | docs/mandos-tactiles.md; añadido el 2026-11-19 |
+| JC-03 | JC | el mando cabe y nada se pisa en móvil horizontal y vertical, tableta 4:3, monitor y móvil pequeño | JoyConTest | 141 | — | PB-165 | docs/mandos-tactiles.md; añadido el 2026-11-19 |
+| JC-04 | JC | el tema de los menús (CsTheme) genera sus texturas | JoyConTest | 141 | — | PB-165 | docs/mandos-tactiles.md; añadido el 2026-11-19 |
+| JC-05 | JC | tocar X pulsa Usar (F) un fotograma | JoyConTest | 141 | — | PB-165 | docs/mandos-tactiles.md; añadido el 2026-11-19 |
+| JC-06 | JC | mantener A mantiene Saltar y soltarlo lo suelta | JoyConTest | 141 | — | PB-165 | docs/mandos-tactiles.md; añadido el 2026-11-19 |
+| JC-07 | JC | B (Correr) se queda puesto y el segundo toque lo quita | JoyConTest | 141 | — | PB-165 | docs/mandos-tactiles.md; añadido el 2026-11-19 |
+| JC-08 | JC | con un menú abierto, el juego no ve ZL pero los diálogos sí (Esc y la cruceta) | JoyConTest | 141 | — | PB-165 | docs/mandos-tactiles.md; añadido el 2026-11-19 |
+
 ## REN · Rendimiento y pruebas
 
 | ID | Área | Qué tiene que pasar | Unidad | Grupo | Reglas | PB | Origen |

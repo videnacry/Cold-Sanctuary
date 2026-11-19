@@ -6,7 +6,7 @@ Cada petición de Berón, con su número fijo. **Una petición nueva entra el mi
 El **estado no se escribe a mano**: sale de sus casos en [registro.md](registro.md) (lo comprueba el comprobador):
 `Hecha` si todos sus casos están `Probado (…)`; `Doc` si solo pedía un doc o una regla; `Sin verificar` si alguno está en `Solo código` o `Sin probar`; `Abierta` si tiene un `HC` o le falta código.
 
-Las PB-001…PB-155 vienen de [auditoria-peticiones.md](../auditoria-peticiones.md) (el número es el mismo). Desde la PB-156 se anotan aquí directamente. La siguiente libre es **PB-165**.
+Las PB-001…PB-155 vienen de [auditoria-peticiones.md](../auditoria-peticiones.md) (el número es el mismo). Desde la PB-156 se anotan aquí directamente. La siguiente libre es **PB-166**.
 
 | PB | Fecha | Petición | Reglas | Casos | Estado | Origen |
 |---|---|---|---|---|---|---|
@@ -174,5 +174,6 @@ Las PB-001…PB-155 vienen de [auditoria-peticiones.md](../auditoria-peticiones.
 | PB-162 | 2026-11-18 | Musk recrea su historia: cada fragmento en su lugar real y fechado, reconstruido con todo el detalle (edificios, interiores, muebles, maquinaria, utensilios, calles, vegetación, animales); un barrio detallado por escenario con la ciudad de fondo. Luego los demás microcosmos, cuando Berón lo apruebe | — | MIC-99 | Abierta | En curso (Berón 2026-11-18 21:34). Alcance (21:54): por ahora un solo fragmento, Hawthorne 2008, con todo el esfuerzo en su realismo; Musk es la portada, pero el escenario refleja a los trabajadores y científicos que hicieron los cohetes, la producción de comida, la seguridad urbana y los demás sistemas (animales, personas, bacterias, plantas). Omelek: programado pero aparcado |
 | PB-163 | 2026-11-18 | Misiones como retos de código para cada actividad (cocinar, curar, plantar, campo, entrenar, yoga, cuidar animales…) y UI/UX como CodeShip | — | CS-43, CS-50, CS-51, CS-52, CS-53, CS-54, CS-55, CS-56, CS-57, CS-58, CS-60, CS-61, CS-62, CS-63, CS-64, CS-65, CS-70, CS-71, CS-72, CS-73, CS-74, CS-75, CS-80, CS-81, CS-82, CS-83, CS-85, CS-86, CS-87, CS-88, CS-90, CS-91, CS-92, CS-93, CS-94, CS-95, CS-96 | Sin verificar | En curso (Berón 2026-11-18 21:34) |
 | PB-164 | 2026-11-18 | El bonusPack N suma las stats de la criatura más poderosa del santuario N (cierra HC-01) | — | PER-25 | Abierta | En curso (Berón 2026-11-18 21:34); en código en 75cf93f (claude/peticiones-sonda), falta verlo en vivo (RepartoSantuariosTest, ChecklistSoulTest [1189]) |
+| PB-165 | 2026-11-19 | Móvil: mandos de la Nintendo Switch dibujados sobre la pantalla (como CodeShip) y menús estéticos como los de CodeShip | — | JC-01, JC-02, JC-03, JC-04, JC-05, JC-06, JC-07, JC-08 | Abierta | En código en `claude/project-thread-n17elb` (docs/mandos-tactiles.md); falta compilar y probar en vivo |
 
 **Recuento:** Abierta 8 · Doc 8 · Hecha 124 · Sin verificar 24 · total 164.

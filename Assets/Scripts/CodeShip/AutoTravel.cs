@@ -222,6 +222,7 @@ public class AutoTravel : MonoBehaviour
 
     void OnGUI()
     {
+        CsTheme.Use();   // (2026-11-19) el tema de CodeShip para los menús (UI/CsTheme.cs)
         if (ColdSanctuary.TestRunner.Running || CodeChallengeSheet.IsOpen) return;
         if (!Traveling && Time.unscaledTime > _toastUntil) return;
         if (_st == null) _st = new GUIStyle(GUI.skin.label) { richText = true, wordWrap = true, fontSize = WebLigera.Active ? 15 : 13, alignment = TextAnchor.MiddleLeft };
