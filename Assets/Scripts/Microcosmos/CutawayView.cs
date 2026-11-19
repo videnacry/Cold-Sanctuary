@@ -26,6 +26,10 @@ public class CutawayView : MonoBehaviour
     public Transform viewer;
     [Tooltip("Cada cuánto (s) se recalcula en juego (el PC de pruebas es lento: no hace falta cada fotograma).")]
     public float interval = 0.1f;
+    [Tooltip("(2026-11-19) Corte FORZADO: el techo y los muros del lado de la cámara se desvanecen aunque nadie esté dentro (una foto desde arriba, una prueba).")]
+    public bool force;
+    /// <summary>Corte forzado en TODOS los edificios (fotos de las pruebas).</summary>
+    public static bool ForceAll;
 
     readonly Dictionary<Renderer, ShadowCastingMode> _saved = new Dictionary<Renderer, ShadowCastingMode>();
     float _next;
@@ -53,7 +57,7 @@ public class CutawayView : MonoBehaviour
     /// </summary>
     public void Refresh(Vector3 viewerPos, Vector3 camPos)
     {
-        InsideNow = Inside(viewerPos) || Inside(camPos);
+        InsideNow = force || ForceAll || Inside(viewerPos) || Inside(camPos);
         foreach (Renderer r in roofs) Set(r, InsideNow);
         Vector3 toCam = camPos - viewerPos; toCam.y = 0f;
         float dist = (camPos - viewerPos).magnitude;

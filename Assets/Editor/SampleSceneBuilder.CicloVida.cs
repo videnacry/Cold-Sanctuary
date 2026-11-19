@@ -352,7 +352,7 @@ public static partial class SampleSceneBuilder
         var camGo = new GameObject("Camara_foto");
         Camera cam = camGo.AddComponent<Camera>(); cam.fieldOfView = 50f; cam.farClipPlane = 1500f;
         camGo.transform.position = from; camGo.transform.LookAt(to);
-        var rt = new RenderTexture(1600, 900, 24); cam.targetTexture = rt; cam.Render(); RenderTexture.active = rt;
+        var rt = new RenderTexture(1600, 900, 24); cam.targetTexture = rt; ShotRender.Render(cam); RenderTexture.active = rt;
         var tex = new Texture2D(1600, 900, TextureFormat.RGB24, false); tex.ReadPixels(new Rect(0, 0, 1600, 900), 0, 0); tex.Apply();
         string dir = Path.Combine(Application.dataPath, "..", "Temp", "CicloVida"); Directory.CreateDirectory(dir);
         File.WriteAllBytes(Path.Combine(dir, file + ".png"), tex.EncodeToPNG());

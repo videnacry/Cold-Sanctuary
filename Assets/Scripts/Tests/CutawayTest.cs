@@ -63,6 +63,14 @@ public class CutawayTest : MonoBehaviour, ITestUnit
 
             cv.Refresh(inside, camSouth); cv.ShowAll();
             TestProbe.Check("[MIC-85] ShowAll deja todo visible", cv.HiddenCount == 0 && Visible(roof) && Visible(south));
+
+            // (2026-11-19, piloto6: la foto «supermercado» desde arriba con el corte forzado seguía con el techo) FORZADO: el techo se
+            // desvanece aunque ni el jugador ni la cámara estén dentro (una foto desde arriba), y al quitarlo vuelve.
+            Vector3 camAbove = house.position + new Vector3(0f, 20f, -2f);
+            cv.force = true; cv.Refresh(outside, camAbove);
+            TestProbe.Check("[MIC-85] corte forzado, cámara desde arriba: se desvanece el tejado", cv.InsideNow && cv.IsHidden(roof) && !Visible(roof), $"dentro {cv.InsideNow}; tejado {roof.shadowCastingMode}");
+            cv.force = false; cv.Refresh(outside, camAbove);
+            TestProbe.Check("[MIC-85] sin forzar, vuelve el tejado", cv.HiddenCount == 0 && Visible(roof));
         }
         finally { Destroy(house.gameObject); }
         TestProbe.End();

@@ -162,7 +162,7 @@ public static class InsectGallerySceneBuilder
 
     static void Snapshot(Camera cam, int part)
     {
-        var rt = new RenderTexture(1800, 1000, 24); cam.targetTexture = rt; cam.Render(); RenderTexture.active = rt;
+        var rt = new RenderTexture(1800, 1000, 24); cam.targetTexture = rt; ShotRender.Render(cam); RenderTexture.active = rt;
         var tex = new Texture2D(1800, 1000, TextureFormat.RGB24, false); tex.ReadPixels(new Rect(0, 0, 1800, 1000), 0, 0); tex.Apply();
         string dir = Path.Combine(Application.dataPath, "..", "Temp", "PoseGallery"); Directory.CreateDirectory(dir);
         File.WriteAllBytes(Path.Combine(dir, $"Galeria_InsectosHumanos_{part}.png"), tex.EncodeToPNG());
