@@ -1,0 +1,17 @@
+{
+  "scene":"Assets/Scenes/SampleScene.unity",
+  "objects":61470,
+  "jsonlBytes":27633061,
+  "gzBytes":1280442,
+  "exportedAt":"2026-11-19T07:35:42",
+  "roots":[
+    {"name":"Main Camera","children":0,"descendants":0,"active":true},
+    {"name":"Directional Light","children":0,"descendants":0,"active":true},
+    {"name":"Global Volume","children":0,"descendants":0,"active":true},
+    {"name":"Player","children":4,"descendants":276,"active":true},
+    {"name":"CameraManager","children":0,"descendants":0,"active":true},
+    {"name":"CubAreaTrigger","children":0,"descendants":0,"active":true},
+    {"name":"EventSystem_AUTO","children":0,"descendants":0,"active":true},
+    {"name":"LevelDressing_AUTO","children":44,"descendants":61186,"active":true}
+  ]
+}
