@@ -68,6 +68,7 @@ aparcamientos con plazas pintadas, vallas de malla en la zona industrial y coche
 3. **Interiores**, de uno en uno: fábrica → taquería → supermercado → gasolinera → Nat's → taller → casas → resto.
 4. **Gente**: las jornadas por oficio que ya existen, con cada puesto en su edificio nuevo.
 5. **Retos de código**: los enganches de `MissionSites` y `CodeChallenges` pasan a los nombres nuevos.
+   - **Todo es un reto, también los diálogos** (Berón, 2026-11-19 19:10). Las misiones de Hawthorne son de trabajar, de entablar amistad con un personaje, de ser su estudiante, de combatir a su lado o de protegerle. Muchas pasan por un diálogo, y ese diálogo es un reto más que hay que resolver. Los retos de diálogo enseñan la historia real del escenario: Hawthorne en 2008, SpaceX antes del vuelo 4, sus trabajadores y el barrio, con fuentes.
 6. Compilar con `tools/verify-compile.sh`, push y PR a `edificios`. La prueba en vivo la hace el hilo de pruebas.
 
 ## 5. Escala (decidida por Berón, 2026-11-19 06:21)

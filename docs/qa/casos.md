@@ -534,3 +534,4 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | HC-03 | Hueco | ¿«Alicia» es el nombre real de Alicita? Se quitó del rótulo por defecto (P24); docs/personajes/alicita.md | — | Berón | Cerrado: «Alicia» es el nombre real y el del juego (Berón 2026-11-18 21:34) | — |
 | HC-04 | Hueco | Hora de la suite diaria (nivel N4) acordada con Berón (Unity es compartido) | — | Berón | Abierto | — |
 | HC-05 | Hueco | PB-165: el distrito de Hawthorne rehecho pasa las rondas (MIC-87, MIC-93); faltan el detalle interior de la fábrica, los retos de código y el visto bueno de Berón | PB-165 | hilo «Rehacer distrito Hawthorne desde cero» → Berón | Abierto | — |
+| HC-06 | Hueco | PB-166: retos de diálogo y misiones de vínculo (amistad, estudiante, combatir a su lado, proteger) en los microcosmos; primero en Hawthorne, con la historia real del escenario | PB-166 | hilo «Rehacer distrito Hawthorne desde cero» | Abierto | — |
