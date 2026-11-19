@@ -218,6 +218,8 @@ public class HomeNeedSpell : QueuedSpell
                     if (need == Need.Comer && (home.pantry == null || !home.pantry.HasFood))
                     { Debug.Log($"[Hogar] «{self.name}» tiene hambre y la despensa está vacía."); RetryEat[self] = Time.time + 20f; return true; }
                     _since = Time.time;
+                    // Si acabó el turno subido a una tarima de puesto (isla sin rampa), primero baja de ella (ronda 6 de Hawthorne).
+                    WalkWatch.StepDown(t, _walk.Target(UsePoint(need == Need.Comer && home.pantry != null ? home.pantry.transform : _spot, t.position, h)));
                 }
                 if (need == Need.Comer && !_fetched && home.pantry != null)   // PRIMERO, EL PLATO: de la despensa
                 {
