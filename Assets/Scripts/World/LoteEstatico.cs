@@ -76,6 +76,11 @@ public class LoteEstatico : MonoBehaviour
         typeof(Phytoplankton), typeof(Rigidbody), typeof(NavMeshAgent), typeof(CharacterController), typeof(ConstructionProject),
         typeof(SlideDoor), typeof(PullDoor), typeof(SoundDoor), typeof(StationPart), typeof(MarineLift), typeof(CampoMagnetico),
         typeof(HospitalSubmarine), typeof(WhaleHospitalSubmarine), typeof(ConstructionSubmarine), typeof(TMP_Text), typeof(TextMesh),
+        // (2026-11-18, piloto4: la foto «fabrica» de Hawthorne salía cian de la cintura abajo y el primer renderer era un Lote_AUTO) LA VISTA
+        // DE CORTE desvanece muros y techos cambiando su shadowCastingMode: en una pieza juntada en un lote eso no hace nada (no se dibuja la
+        // pieza sino el lote, con el modo de cuando se juntó) y el lote mezcla lo que se oculta con lo que no. El edificio con vista de corte
+        // se queda fuera de los lotes, entero: sus muros, techos, vigas, lámparas y muebles se dibujan cada uno con lo suyo.
+        typeof(CutawayView),
     };
     /// <summary>Tipos que se mueven enteros y rígidos: sus lotes cuelgan de ellos y se mueven con ellos.</summary>
     static readonly System.Type[] Anchors = { typeof(TreeRotator), typeof(FlyingCarpet) };

@@ -155,8 +155,30 @@ Los sitios son objetos de la escena: las misiones se enganchan por su **nombre e
 - **Malas hierbas:** garranchuelo y malva en las aceras y los solares.
 - **Animales:** cuervo americano, paloma bravía y gaviota occidental, cada uno como una mariquita de su color; la ardilla zorro, como una cochinilla rojiza; la cucaracha americana del alcantarillado y la hormiga argentina en las aceras.
 
-### Lo siguiente (lote 3, propuesto)
+### Lote 3 (2026-11-18): la jornada de cada oficio y el supermercado
 
-- **La jornada real de cada oficio:** soldador, maquinista, aviónica, propulsión, estructuras, calidad, limpieza, envíos, cocina y seguridad. Horario, puesto y herramientas en `MicroJornada`, con los turnos de 24 h de 2008 (Satellite Today).
-- **El supermercado del barrio:** el «Mercado» del plano, con su nombre real si se encuentra la fuente.
+**Turnos de 2008.** En la nave se trabajaba las 24 horas para el vuelo 4 (Satellite Today). Ahora cada trabajador tiene su oficio (`MicroJornada.trade`), su puesto fijo (`MicroJornada.post`, el nombre exacto de la estación) y la hora a la que empieza su turno (`MicroJornada.shiftStart`). El horario (trabajo, comida, trabajo, práctica y casa) se desplaza con el turno. En los bloques de trabajo, cada uno va a su puesto y no al primero libre.
+
+| Trabajador | Oficio | Puesto | Turno |
+|---|---|---|---|
+| Ingeniero de aviónica y Técnico de aviónica | aviónica | `Banco de aviónica` | mañana (8 h) |
+| Ingeniera de software de vuelo | software | `Puesto de ingeniería (software de vuelo)` | mañana (8 h) |
+| Laminadora de composite | composite | `Banco de composite (la cofia)` | mañana (8 h) |
+| Maquinista del torno CNC | maquinista | `Torno de control numérico` | mañana (8 h) |
+| Ingeniera de propulsión (pruebas) | propulsión | `Puesto de ingeniería (propulsión)` | mañana (8 h) |
+| Ingeniero de estructuras | estructuras | `Pizarra: la secuencia del vuelo 4` | mañana (8 h) |
+| Cocinera de la nave | cocina | `Cocina de la nave (supuesto)` | mañana (8 h) |
+| Controladora de misión (turno de tarde) | control | `Consola de telemetría` | tarde (14 h) |
+| Técnico de motores | motores | `Banco del Merlin 1C` | noche (20 h) |
+| Técnica de integración | integración | `Herramientas y llaves dinamométricas` | noche (20 h) |
+| Inspectora de calidad | calidad | `Banco de mecanizado: válvulas e inyectores del Merlin` | noche (20 h) |
+
+Los del turno de noche duermen de día en `NightShiftHome`. Al construir, se escribe en la consola una línea `[Jornada micro] Hawthorne: …` por cada trabajador. MIC-89 comprueba que cada trabajador está en su puesto.
+
+**El supermercado del barrio (supuesto).** No se ha encontrado qué supermercado había en 2008 junto a Crenshaw y la calle 120, así que se ha puesto uno de cadena de la época: `Supermercado del barrio`. Tiene `Caja registradora 1`, `Caja registradora 2`, `Frutas y verduras`, `Pasillo de conservas`, `Pasillo de cereales y pan`, `Productos de limpieza` y `Cámara de lácteos y congelados`. Lo atiende la `Cajera del supermercado`. Detrás está el `Camión del distribuidor (reparto al supermercado)`, con su plataforma elevadora y tres palés de cajas.
+
+### Lo siguiente (propuesto)
+
+- **Limpieza, envíos y seguridad:** darles también un puesto y un turno fijos.
 - **Más fauna:** en las palmeras y en los solares.
+- **El nombre real del supermercado**, si aparece una fuente.

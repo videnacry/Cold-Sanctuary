@@ -184,6 +184,7 @@ public class HomeNeedSpell : QueuedSpell
     // (2026-11-04) COMER CON SU ORQUESTA (MealRitual, docs/actividades-y-uniformes.md §2): coge el plato de la despensa, se sienta, come a
     // bocados con los cubiertos y bebe, y al acabar lleva el plato al fregadero (el lavabo de casa).
     MealRitual _meal; bool _fetched; float _fetchSince = -1f;
+    readonly WalkWatch _walk = new WalkWatch();   // (2026-11-18) el tope de andar, a la medida del camino (MIC-93)
     const float ClearTimeout = 20f;
     /// <summary>La comida en curso (null si no es comer o aún no cogió el plato): pruebas.</summary>
     public MealRitual Meal => _meal;
@@ -219,9 +220,10 @@ public class HomeNeedSpell : QueuedSpell
                 if (need == Need.Comer && !_fetched && home.pantry != null)   // PRIMERO, EL PLATO: de la despensa
                 {
                     if (_fetchSince < 0f) _fetchSince = Time.time;
-                    Vector3 pto = UsePoint(home.pantry.transform, t.position, h);
+                    Vector3 pto = _walk.Target(UsePoint(home.pantry.transform, t.position, h));
                     bool atPantry = MicroMove.Step(t, pto, 1.4f * h / 1.75f, 0.45f * h);
-                    if (!atPantry && Time.time - _fetchSince > Timeout(h)) { HomeMove.Place(t, pto); HomeMove.Release(t); atPantry = true; Fallbacks++; }
+                    if (!atPantry && _walk.GiveUp(t, pto, 1.4f * h / 1.75f, Timeout(h), out string whyP))
+                    { WalkWatch.Record("Hogar", self.name, t.position, pto, home.pantry.name + " (despensa)", whyP); HomeMove.Place(t, pto); HomeMove.Release(t); atPantry = true; Fallbacks++; }
                     if (!atPantry) return false;
                     HomeMove.Face(t, home.pantry.transform.position);
                     if (!home.pantry.Take()) { RetryEat[self] = Time.time + 20f; Debug.Log($"[Hogar] «{self.name}»: no quedaba nada en la despensa."); return true; }
@@ -231,12 +233,12 @@ public class HomeNeedSpell : QueuedSpell
                     return false;
                 }
                 _meal?.Carry(self.gameObject);
-                Vector3 to = UsePoint(_spot, t.position, h);
+                Vector3 to = _walk.Target(UsePoint(_spot, t.position, h));
                 bool there = MicroMove.Step(t, to, 1.4f * h / 1.75f, 0.45f * h);
-                if (!there && Time.time - _since > Timeout(h))
+                if (!there && _walk.GiveUp(t, to, 1.4f * h / 1.75f, Timeout(h), out string why))
                 {
+                    WalkWatch.Record("Hogar", self.name, t.position, to, _spot.name + " de su casa (" + need + ")", why);
                     HomeMove.Place(t, to); HomeMove.Release(t); there = true; Fallbacks++;
-                    if (Fallbacks <= 20) Debug.LogWarning($"[Hogar] «{self.name}» no llega andando en {Timeout(h):0} s a «{_spot.name}» de su casa: se le pone allí.");
                 }
                 if (!there) return false;
                 Begin(self, body, h);

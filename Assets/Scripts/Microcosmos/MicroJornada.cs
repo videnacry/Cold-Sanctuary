@@ -22,9 +22,19 @@ public class MicroJornada : MonoBehaviour
     public bool hold;
     [Tooltip("Un niño sigue a su madre (FolkCouple).")]
     public Transform follow;
+    [Tooltip("(2026-11-18) Su OFICIO de verdad (soldador, maquinista, técnico de aviónica…), para el rótulo y las misiones.")]
+    public string trade = "";
+    [Tooltip("(2026-11-18) El NOMBRE EXACTO de su puesto en el edificio de trabajo (el mueble: «Banco del Merlin 1C»…). Vacío: el que le toque por su papel.")]
+    public string post = "";
+    [Tooltip("(2026-11-18) La hora a la que EMPIEZA SU TURNO (8 de día; 14 de tarde; 20 de noche: en 2008 la fábrica de SpaceX trabajaba 24 h, Satellite Today 24-11-2008). Todo su horario —trabajo, comida, práctica, casa— se corre con ella.")]
+    public float shiftStart = WorkRoster.StartHour;
+
+    /// <summary>El bloque de SU horario a la hora <paramref name="h"/>: el de <see cref="BlockAt"/>, corrido a su turno.</summary>
+    public string Block(float h) => BlockAt(Mathf.Repeat(h - (shiftStart - WorkRoster.StartHour), 24f));
 
     AreaFunctionSite _site; AreaFunctions.AreaFunction _fn; AreaFunctionStation _st;
     string _block; float _since; int _salt;
+    readonly WalkWatch _walk = new WalkWatch();   // (2026-11-18) el tope de andar, a la medida del camino (MIC-93)
     WorldLabel _label; string _name;
     Anima _a; ActionQueue _q; BodyMetabolism _body;
     bool _resume; float _arrivedAt = -1f; int _ateDay = int.MinValue;
@@ -43,9 +53,9 @@ public class MicroJornada : MonoBehaviour
     }
 
     /// <summary>¿En su turno (trabajo o práctica, no siguiendo a su madre)? Entonces el hambre que no aprieta espera a la comida.</summary>
-    public bool OnShift { get { string b = BlockAt(Hour); return follow == null && work != null && (b == "trabajo" || b == "practica"); } }
+    public bool OnShift { get { string b = Block(Hour); return follow == null && work != null && (b == "trabajo" || b == "practica"); } }
     /// <summary>¿Es la hora de estar en casa (después de la práctica, la noche)?</summary>
-    public bool AtHomeBlock => BlockAt(Hour) == "casa";
+    public bool AtHomeBlock => Block(Hour) == "casa";
 
     /// <summary>La hora del día (el reloj del juego; sin él, un día cada 6 min reales).</summary>
     public static float Hour => TimeController.timeController != null ? TimeController.timeController.Hour : (Time.time / 15f) % 24f;
@@ -90,7 +100,7 @@ public class MicroJornada : MonoBehaviour
         if (LeisureDirector.Drives(gameObject)) { _resume = true; return; }   // sus horas libres: lo lleva el HORARIO LIBRE (docs/horario-libre.md)
         float k = Body;   // (2026-11-18) las distancias, a la estatura del cuerpo (× s en los encogidos)
         if (follow != null) { MicroMove.Step(transform, follow.position - follow.forward * 1.2f * k, speed * 1.2f, 1.5f * k); return; }
-        string block = BlockAt(Hour);
+        string block = Block(Hour);
         // ENTRENAR COMO EN SU ÉPOCA (2026-11-04, docs/gimnasio-maquinas.md §16): en la práctica, si su sitio es un edificio de entrenamiento
         // (plantilla «Centro de entrenamiento» o «Dojo»), sigue su rutina de época con series y descanso, o da la clase si es el maestro.
         if (block == "practica") { if (HistoricClass.Drive(this)) { _resume = true; Say(HistoricClass.StatusOf(this) ?? "Entrenando"); return; } }
@@ -99,13 +109,15 @@ public class MicroJornada : MonoBehaviour
         if (_st == null) return;
         // (2026-11-04) A LA HORA DE COMER, primero al MOSTRADOR por la bandeja y, al acabar, de vuelta a él a devolverla (MealRitual).
         AreaFunctionStation target = _block == "comida" && _counter != null && (_mealStage == 1 || _mealStage == 4) ? _counter : _st;
-        Vector3 to = WorkSpotOf(target, transform.position);
+        Vector3 to = _walk.Target(WorkSpotOf(target, transform.position));
         bool there = MicroMove.Step(transform, to, speed, Mathf.Max(0.5f, 1.6f * k));
-        if (!there && Time.time - _since > 60f / Mathf.Clamp(k, 0.2f, 1f))   // sin quedarse dando vueltas para siempre (y avisa: es un fallo de la planta)
+        // Sin quedarse dando vueltas para siempre, pero a la medida del camino (WalkWatch): mientras se acerca, sigue; si se rinde, dice por qué.
+        if (!there && _walk.GiveUp(transform, to, speed, 60f / Mathf.Clamp(k, 0.2f, 1f), out string why))
         {
+            WalkWatch.Record("Jornada micro", name, transform.position, to, target.name + " de " + (_site != null ? _site.title : "?") + ", bloque " + _block, why);
             transform.position = to; there = true; Fallbacks++;
-            if (Fallbacks <= 20) Debug.LogWarning($"[Jornada micro] «{name}» no llega andando en {60f / Mathf.Clamp(k, 0.2f, 1f):0} s a «{target.name}» de {(_site != null ? _site.title : "?")}: se le pone allí.");
         }
+        if (there) _walk.Reset();
         if (!there) { _meal?.Carry(gameObject); Say(_block == "casa" ? "A casa" : _block == "comida" && _mealStage == 4 ? "Devuelve la bandeja" : "Va a " + (_site != null ? _site.title : "su puesto")); return; }
         if (_arrivedAt < 0f) _arrivedAt = Time.time;
         Vector3 look = target.transform.position - transform.position; look.y = 0f;
@@ -124,12 +136,21 @@ public class MicroJornada : MonoBehaviour
     void Choose(string block)
     {
         if (_st != null && _st.occupant == this) _st.occupant = null;
-        _block = block; _since = Time.time; _fn = null; _st = null; _arrivedAt = -1f;
+        _block = block; _since = Time.time; _fn = null; _st = null; _arrivedAt = -1f; _walk.Reset();
         _site = block == "trabajo" ? work : block == "comida" ? (dine ?? work) : block == "practica" ? (practice ?? work) : (home ?? work);
         if (_site == null) return;
         string r = block == "trabajo" ? role : "todos";
         _fn = _site.Pick(r, _salt + (block == "trabajo" ? 0 : 1));
         _st = _fn != null ? _site.StationFor(_fn, this) : null;
+        // (2026-11-18) SU PUESTO DE VERDAD: en el trabajo, el mueble que dice su oficio (post), y la función del edificio que se hace en él.
+        if (block == "trabajo" && !string.IsNullOrEmpty(post))
+            foreach (AreaFunctionStation s in _site.Stations)
+            {
+                if (s == null || s.name != post) continue;
+                _st = s; _fn = null;
+                foreach (var f in _site.Functions()) if (f.stations.Length == 0 || System.Array.IndexOf(f.stations, s.station) >= 0) { _fn = f; break; }
+                break;
+            }
         if (_st == null) { AreaFunctionStation[] all = _site.Stations; if (all.Length > 0) _st = all[_salt % all.Length]; }
         if (_st != null) { if (_st.occupant == null) _st.occupant = this; if (_fn != null) _st.uses++; }
         Doing = _fn != null ? $"{AreaFunctions.Verb(_fn.kind)}: {_fn.title}" : "";
