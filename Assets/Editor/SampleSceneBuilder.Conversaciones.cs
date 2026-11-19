@@ -154,7 +154,7 @@ public static partial class SampleSceneBuilder
         SceneManager.MoveGameObjectToScene(camGo, only); cam.scene = only;
         cam.clearFlags = CameraClearFlags.SolidColor; cam.backgroundColor = new Color(0.62f, 0.75f, 0.88f);
         camGo.transform.position = from; camGo.transform.LookAt(to);
-        var rt = new RenderTexture(1600, 900, 24); cam.targetTexture = rt; cam.Render(); RenderTexture.active = rt;
+        var rt = new RenderTexture(1600, 900, 24); cam.targetTexture = rt; ShotRender.Render(cam); RenderTexture.active = rt;
         var tex = new Texture2D(1600, 900, TextureFormat.RGB24, false); tex.ReadPixels(new Rect(0, 0, 1600, 900), 0, 0); tex.Apply();
         string dir = Path.Combine(Application.dataPath, "..", "Temp", "Conversaciones"); Directory.CreateDirectory(dir);
         File.WriteAllBytes(Path.Combine(dir, file + ".png"), tex.EncodeToPNG());

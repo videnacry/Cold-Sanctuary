@@ -150,7 +150,7 @@ public static class PoseGallery
                 {
                     cam.transform.position = v == 0 ? new Vector3(0f, 1.05f, 4.6f) : new Vector3(4.6f, 1.05f, 0f);
                     cam.transform.LookAt(new Vector3(0f, 0.95f, 0f));
-                    cam.Render(); RenderTexture.active = rt;
+                    ShotRender.Render(cam); RenderTexture.active = rt;
                     tex.ReadPixels(new Rect(0, 0, w, h), i * w, (1 - v) * h);
                 }
                 // PRIMER PLANO de la cara (a la altura de los ojos de cada uno).
@@ -161,7 +161,7 @@ public static class PoseGallery
                     Vector3 hc = headBone.TransformPoint(new Vector3(0f, 0.12f, 0f));
                     cam.targetTexture = frt; cam.fieldOfView = 30f;
                     cam.transform.position = hc + new Vector3(0.25f, 0.05f, 0.95f); cam.transform.LookAt(hc);
-                    cam.Render(); RenderTexture.active = frt;
+                    ShotRender.Render(cam); RenderTexture.active = frt;
                     faces.ReadPixels(new Rect(0, 0, fw, fw), i * fw, 0);
                     cam.targetTexture = rt; cam.fieldOfView = 30f;
                 }
@@ -187,7 +187,7 @@ public static class PoseGallery
             cam.orthographic = true; cam.orthographicSize = 255f;
             cam.transform.position = new Vector3(0f, 400f, 0f); cam.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
             cam.farClipPlane = 1000f; cam.clearFlags = CameraClearFlags.SolidColor; cam.backgroundColor = new Color(0.2f, 0.35f, 0.5f);
-            var rt = new RenderTexture(1024, 1024, 24); cam.targetTexture = rt; cam.Render();
+            var rt = new RenderTexture(1024, 1024, 24); cam.targetTexture = rt; ShotRender.Render(cam);
             RenderTexture.active = rt;
             var tex = new Texture2D(1024, 1024, TextureFormat.RGB24, false); tex.ReadPixels(new Rect(0, 0, 1024, 1024), 0, 0); tex.Apply();
             RenderTexture.active = null;
@@ -232,7 +232,7 @@ public static class PoseGallery
                     && GeometryUtility.TestPlanesAABB(frustum, r.bounds)
                     && Vector3.Distance(eye, r.bounds.ClosestPoint(eye)) < toObject)
                 { r.enabled = false; hidden.Add(r); }
-            var rt = new RenderTexture(1100, 700, 24); cam.targetTexture = rt; cam.Render();
+            var rt = new RenderTexture(1100, 700, 24); cam.targetTexture = rt; ShotRender.Render(cam);
             RenderTexture.active = rt;
             var tex = new Texture2D(1100, 700, TextureFormat.RGB24, false); tex.ReadPixels(new Rect(0, 0, 1100, 700), 0, 0); tex.Apply();
             RenderTexture.active = null;
@@ -292,7 +292,7 @@ public static class PoseGallery
         for (int v = 0; v < 2; v++)
         {
             cam.transform.position = eyes[v]; cam.transform.LookAt(c);
-            cam.Render();
+            ShotRender.Render(cam);
             RenderTexture.active = rt;
             tex.ReadPixels(new Rect(0, 0, W, H), v * W, 0);
         }
