@@ -752,13 +752,15 @@ public static partial class StorySceneBuilder
         Prop(b, "Cafeteras_de_filtro", new Vector3(4f, 1.25f, 8.8f), new Vector3(1.4f, 0.4f, 0.4f), _dark, false);
         Prop(b, "Vitrina_de_tartas", new Vector3(13.5f, 1.2f, 4f), new Vector3(1.2f, 0.6f, 0.7f), _glass, false);
         Prop(b, "Caja_registradora", new Vector3(3.5f, 1.25f, 4f), new Vector3(0.45f, 0.3f, 0.4f), _dark, false);
-        for (int k = 0; k < 4; k++) InsectTable(b, new Vector3(-14f + k * 4.6f, 0f, -6.5f), "Mesa alta junto al ventanal de la pista");
-        for (int k = 0; k < 3; k++) InsectTable(b, new Vector3(-12f + k * 4.6f, 0f, 1f), "Mesa alta del café");
+        // (ronda del 2026-11-19) cada 6 m (a 4,6 m quedaban a 1,88 m), sin la columna de la puerta (x −10), y lejos de lo de arriba.
+        foreach (float x in new[] { -16f, -4f, 2f }) InsectTable(b, new Vector3(x, 0f, -7f), "Mesa alta junto al ventanal de la pista");
+        foreach (float x in new[] { -16f, -4f, 2f }) InsectTable(b, new Vector3(x, 0f, -1.5f), "Mesa alta del café");
         // Primera planta (a 3,8 m): el salón de banquetes con su bar [C], con la escalera.
         Prop(b, "Forjado_primera_planta", new Vector3(0f, 3.85f * ShellK, 6f), new Vector3(35f, 0.2f, 10f), M("Forjado_hormigon", 0.7f, 0.7f, 0.68f), true);
         for (int k = 0; k < 30; k++) Prop(b, "Peldaño", new Vector3(16f, 0.19f + k * 0.385f, -9f + k * 0.32f), new Vector3(2.4f, 0.385f, 0.32f), _conc, true);
-        Prop(b, "Salon_barra_de_banquetes", new Vector3(-12f, 3.95f * ShellK + ChestHeight * 0.5f, 9f), new Vector3(6f, ChestHeight, 1.2f), M("Madera_barra", 0.45f, 0.3f, 0.2f), true);
-        for (int k = 0; k < 4; k++) InsectTable(b, new Vector3(-14f + k * 5f, 3.95f * ShellK, 2f), "Mesa del salón de banquetes (500 personas en la real)");
+        Prop(b, "Salon_barra_de_banquetes", new Vector3(12f, 3.85f * ShellK + 0.1f + ChestHeight * 0.5f, 9.5f), new Vector3(6f, ChestHeight, 1.2f), M("Madera_barra", 0.45f, 0.3f, 0.2f), true);
+        // Arriba, sobre el forjado (z 1…11) y en planta lejos de las mesas y los muebles de abajo: el validador mide el paso en planta.
+        foreach (float x in new[] { -11f, -4.5f, 2f }) InsectTable(b, new Vector3(x, 3.85f * ShellK + 0.1f, 6.5f), "Mesa del salón de banquetes (500 personas en la real)");
         Prop(b, "Fotos_de_aviones_de_Northrop", new Vector3(0f, 2.2f, 10.6f), new Vector3(10f, 1f, 0.04f), M("Fotos_sepia", 0.6f, 0.5f, 0.38f), false);
         DPiece(b, "inodoro", new Vector3(-16f, 0f, 9f), 0f, "Aseo del café", null, station: false);
         DPiece(b, "lavabo", new Vector3(-16f, 0f, 6f), 0f, "Lavabo del café", null, station: false);

@@ -526,6 +526,25 @@ internal static partial class CivicBuilder
     /// comedor con sus apoyos de abdomen como mesa de casa, con su despensa—, así sus necesidades (comer, dormir, el baño) se ven dentro, a
     /// pocos pasos, sin rehacer los muebles de la nave (por eso la nave es «notHome» para el reparto de hogares).
     /// </summary>
+    /// <summary>Un punto de suelo libre a <paramref name="gap"/> m del borde de <paramref name="piece"/> (delante, detrás, izquierda o
+    /// derecha, el primero sin collider que estorbe), a la altura de su pie.</summary>
+    static Vector3 BesidePiece(Transform piece, float gap)
+    {
+        Bounds b = new Bounds(piece.position, Vector3.zero); bool any = false;
+        foreach (Renderer r in piece.GetComponentsInChildren<Renderer>(true)) { if (r.GetComponent<TextMesh>() != null) continue; if (!any) { b = r.bounds; any = true; } else b.Encapsulate(r.bounds); }
+        Physics.SyncTransforms();
+        Vector3[] tries = { new Vector3(b.center.x, 0f, b.min.z - gap), new Vector3(b.center.x, 0f, b.max.z + gap), new Vector3(b.min.x - gap, 0f, b.center.z), new Vector3(b.max.x + gap, 0f, b.center.z) };
+        foreach (Vector3 p in tries)
+        {
+            Vector3 at = new Vector3(p.x, piece.position.y, p.z);
+            bool blocked = false;
+            foreach (Collider c in Physics.OverlapBox(at + Vector3.up * 0.8f, new Vector3(0.4f, 0.6f, 0.4f)))
+                if (!c.isTrigger && !c.transform.IsChildOf(piece)) { blocked = true; break; }
+            if (!blocked) return at;
+        }
+        return new Vector3(tries[0].x, piece.position.y, tries[0].z);
+    }
+
     static void NightShiftHome(Transform t, AreaFunctionSite fab, params string[] names)
     {
         var people = new List<GameObject>();
@@ -550,7 +569,9 @@ internal static partial class CivicBuilder
         h.table = standing;
         if (standing != null) foreach (Transform c in standing) if (c.name == "Apoyo de abdomen") h.seats.Add(c);
         var pantry = new GameObject("Despensa").transform; pantry.SetParent(go.transform, false);
-        pantry.position = standing != null ? standing.position : fab.transform.position;
+        // (ronda del 2026-11-19) junto a la mesa, no en su centro: con la nave ×2 el centro de la mesa quedaba fuera del NavMesh (a 2,2 m
+        // del borde andable) y el turno de noche no llegaba. Al primer lado de la mesa (delante, detrás, a un lado) sin nada sólido.
+        pantry.position = standing != null ? BesidePiece(standing, 1.2f) : fab.transform.position;
         var fc = pantry.gameObject.AddComponent<FoodContainer>(); fc.dishName = "comida de la nave"; fc.rations = 3 * people.Count; fc.capacity = 20;
         h.pantry = fc;
         foreach (GameObject m in people)
