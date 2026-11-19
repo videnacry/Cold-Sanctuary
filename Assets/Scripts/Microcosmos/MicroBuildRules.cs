@@ -208,6 +208,12 @@ public static class MicroBuildRules
             {
                 if (pieces[i].t.IsChildOf(pieces[j].t) || pieces[j].t.IsChildOf(pieces[i].t)) continue;
                 if (pieces[i].t.GetComponent<GlassWall>() != null && pieces[j].t.GetComponent<GlassWall>() != null) continue;   // dos paños de cristal pueden ir pegados
+                // Solo se mide el paso entre muebles de la MISMA planta (cajas que se solapan en altura) y del MISMO edificio: el
+                // banquete del piso de arriba no estorba al que pasa por el café de abajo, y el horno de la tienda de al lado está
+                // tras un muro (ronda 3 de Hawthorne, 2026-11-19).
+                if (pieces[i].b.max.y <= pieces[j].b.min.y + 0.05f || pieces[j].b.max.y <= pieces[i].b.min.y + 0.05f) continue;
+                AreaFunctionSite si = pieces[i].t.GetComponentInParent<AreaFunctionSite>(true), sj = pieces[j].t.GetComponentInParent<AreaFunctionSite>(true);
+                if (si != null && sj != null && si != sj) continue;
                 float g = GapXZ(pieces[i].b, pieces[j].b);
                 if (g < passage - 0.01f) bad.Add($"paso de {g:0.00} m (< {passage:0.0}) entre «{pieces[i].t.name}» y «{pieces[j].t.name}»");
             }

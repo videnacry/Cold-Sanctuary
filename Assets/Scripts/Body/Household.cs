@@ -222,6 +222,7 @@ public class HomeNeedSpell : QueuedSpell
                     if (_fetchSince < 0f) _fetchSince = Time.time;
                     Vector3 pto = _walk.Target(UsePoint(home.pantry.transform, t.position, h));
                     bool atPantry = MicroMove.Step(t, pto, 1.4f * h / 1.75f, 0.45f * h);
+                    if (!atPantry && WalkWatch.AtPiece(t, home.pantry.transform, 0.8f + h)) atPantry = true;
                     if (!atPantry && _walk.GiveUp(t, pto, 1.4f * h / 1.75f, Timeout(h), out string whyP))
                     { WalkWatch.Record("Hogar", self.name, t.position, pto, home.pantry.name + " (despensa)", whyP); HomeMove.Place(t, pto); HomeMove.Release(t); atPantry = true; Fallbacks++; }
                     if (!atPantry) return false;
@@ -235,6 +236,7 @@ public class HomeNeedSpell : QueuedSpell
                 _meal?.Carry(self.gameObject);
                 Vector3 to = _walk.Target(UsePoint(_spot, t.position, h));
                 bool there = MicroMove.Step(t, to, 1.4f * h / 1.75f, 0.45f * h);
+                if (!there && WalkWatch.AtPiece(t, _spot, 0.8f + h)) there = true;   // ya junto al mueble (×2 en Hawthorne): lo usa
                 if (!there && _walk.GiveUp(t, to, 1.4f * h / 1.75f, Timeout(h), out string why))
                 {
                     WalkWatch.Record("Hogar", self.name, t.position, to, _spot.name + " de su casa (" + need + ")", why);

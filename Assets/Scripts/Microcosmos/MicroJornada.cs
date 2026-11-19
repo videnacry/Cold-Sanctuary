@@ -111,6 +111,7 @@ public class MicroJornada : MonoBehaviour
         AreaFunctionStation target = _block == "comida" && _counter != null && (_mealStage == 1 || _mealStage == 4) ? _counter : _st;
         Vector3 to = _walk.Target(WorkSpotOf(target, transform.position));
         bool there = MicroMove.Step(transform, to, speed, Mathf.Max(0.5f, 1.6f * k));
+        if (!there && WalkWatch.AtPiece(transform, target.transform, 0.8f + 1.8f * k)) there = true;   // ya junto al mueble (×2): lo usa
         // Sin quedarse dando vueltas para siempre, pero a la medida del camino (WalkWatch): mientras se acerca, sigue; si se rinde, dice por qué.
         if (!there && _walk.GiveUp(transform, to, speed, 60f / Mathf.Clamp(k, 0.2f, 1f), out string why))
         {

@@ -25,15 +25,34 @@ public sealed class WalkWatch
     /// <summary>Empieza de cero (otro bloque, otro destino, o ya llegó).</summary>
     public void Reset() { _since = -1f; }
 
-    /// <summary>El destino que se anda: <paramref name="raw"/>, o su punto del NavMesh más cercano si raw cae fuera (≤ 1,5 m en planta,
-    /// ≤ 0,6 m de altura: no la tapa de un mueble).</summary>
+    /// <summary>El destino que se anda: <paramref name="raw"/>, o su punto del NavMesh más cercano si raw cae fuera (≤ 3 m en planta —los muebles ×2 de Hawthorne dejan su
+    /// punto de uso más hondo—, ≤ 0,6 m de altura: no la tapa de un mueble).</summary>
     public Vector3 Target(Vector3 raw)
     {
         if (_hasSnap && (raw - _raw).sqrMagnitude < 0.0625f) return _snap;
         _raw = raw; _snap = raw; _hasSnap = true;
         if (NavMesh.SamplePosition(raw, out NavMeshHit near, 0.15f, NavMesh.AllAreas)) return _snap;   // ya está en el NavMesh
-        if (NavMesh.SamplePosition(raw, out NavMeshHit h, 1.5f, NavMesh.AllAreas) && Mathf.Abs(h.position.y - raw.y) <= 0.6f) _snap = h.position;
+        if (NavMesh.SamplePosition(raw, out NavMeshHit h, 3f, NavMesh.AllAreas) && Mathf.Abs(h.position.y - raw.y) <= 0.6f) _snap = h.position;
         return _snap;
+    }
+
+    /// <summary>(2026-11-19, ronda 3 de Hawthorne, MIC-93) ¿Está ya JUNTO al mueble? A ≤ <paramref name="reach"/> m en planta de su caja
+    /// (sus colisores) y en su misma planta. Con los muebles ×2, el radio del agente lo deja a un metro del punto de uso, rozando el
+    /// mueble, y a 0,2 m/s no «llegaba» nunca: se le teletransportaba. Junto al mueble ya puede usarlo.</summary>
+    public static bool AtPiece(Transform agent, Transform piece, float reach)
+    {
+        if (agent == null || piece == null) return false;
+        bool any = false; Bounds b = default;
+        foreach (Collider c in piece.GetComponentsInChildren<Collider>())
+        {
+            if (!c.enabled || c.isTrigger) continue;
+            if (!any) { b = c.bounds; any = true; } else b.Encapsulate(c.bounds);
+        }
+        if (!any) return false;
+        Vector3 p = agent.position;
+        if (p.y < b.min.y - 1.2f || p.y > b.max.y + 0.6f) return false;   // otra planta
+        float dx = Mathf.Max(0f, Mathf.Max(b.min.x - p.x, p.x - b.max.x)), dz = Mathf.Max(0f, Mathf.Max(b.min.z - p.z, p.z - b.max.z));
+        return dx * dx + dz * dz <= reach * reach;
     }
 
     /// <summary>¿Se rinde ya (y hay que ponerle allí)? <paramref name="minSecs"/>: el tope de antes, el mínimo.

@@ -964,8 +964,9 @@ public static partial class StorySceneBuilder
         Color[] sal = { new Color(0.75f, 0.12f, 0.08f), new Color(0.3f, 0.55f, 0.2f), new Color(0.85f, 0.45f, 0.3f), new Color(0.95f, 0.85f, 0.85f), new Color(0.55f, 0.75f, 0.2f) };
         for (int k = 0; k < sal.Length; k++) Prop(salsas, "Cubeta", new Vector3(0f, 1.05f, -0.9f + k * 0.45f), new Vector3(0.35f, 0.1f, 0.35f), M("Salsa_" + k, sal[k].r, sal[k].g, sal[k].b), false);
         Prop(b, "Nevera_vertical_de_refrescos_(Jarritos,_Coca-Cola)", new Vector3(-6.8f, 1.05f, 1f), new Vector3(0.8f, 2.1f, 1.6f), _glass, true);
-        for (int r = 0; r < 2; r++) for (int k = 0; k < 5; k++)
-            InsectTable(b, new Vector3(-4.2f + r * 6.4f, 0f, -14f + k * 3.4f), "Mesa alta de la taquería", new Vector2(1.4f, 0.8f));
+        // 6 mesas (3 × 2): con sus apoyos de abdomen cada una ocupa ~2,8 × 4,3 m; 2,4 m de paso entre ellas y la puerta despejada.
+        for (int r = 0; r < 2; r++) for (int k = 0; k < 3; k++)
+            InsectTable(b, new Vector3(-5.25f + k * 5.25f, 0f, -11f + r * 6.8f), "Mesa alta de la taquería", new Vector2(1.4f, 0.8f));
         Prop(b, "Television_de_tubo_(futbol)", new Vector3(-7.1f, 2.6f, -8f), new Vector3(0.6f, 0.6f, 0.8f), _dark, false);
         DPiece(b, "inodoro", new Vector3(5.5f, 0f, 14f), 0f, "Aseo de la taquería", null, station: false);
         DPiece(b, "lavabo", new Vector3(3.5f, 0f, 14.6f), 0f, "Lavamanos de la taquería", null, station: false);
@@ -982,7 +983,7 @@ public static partial class StorySceneBuilder
         Prop(b, "Carro_de_bandejas", new Vector3(4f, 0.9f, 12f), new Vector3(0.7f, 1.8f, 0.9f), _metal, true);
         Prop(b, "Cafeteras_de_filtro", new Vector3(-4f, 1.25f, 6f), new Vector3(1.6f, 0.4f, 0.4f), _dark, false);
         DPiece(b, "horno", new Vector3(3.5f, 0f, 6.5f), 0f, "Horno de la panadería de donuts");
-        for (int k = 0; k < 4; k++) InsectTable(b, new Vector3(-3f + (k % 2) * 5f, 0f, -12f + (k / 2) * 4.5f), "Mesa alta de fórmica (donuts)", new Vector2(1.2f, 0.8f));
+        for (int k = 0; k < 4; k++) InsectTable(b, new Vector3(-2.5f + (k % 2) * 5f, 0f, -11f + (k / 2) * 6.8f), "Mesa alta de fórmica (donuts)", new Vector2(1.2f, 0.8f));
         return site;
     }
 
