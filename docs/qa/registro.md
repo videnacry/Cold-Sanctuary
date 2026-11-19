@@ -185,17 +185,17 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | MIC-51 | Probado (suite g64) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g64 YogaFloorsTest 27/0 |
 | MIC-52 | Probado (suite g77) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g77 AsambleaTest 46/0 |
 | MIC-53 | Probado (suite g98) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g98 ConstructionProgressTest 20/0 |
-| ARB-59 | Probado (suite g53) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: g53 TreeOfFieldsTest 46/0 |
-| ARB-60 | Probado (suite g53) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: g53 TreeOfFieldsTest 46/0 |
-| ARB-61 | Probado (suite g53) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: g53 TreeOfFieldsTest 46/0 |
+| ARB-59 | Probado (suite g53) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: g53 TreeOfFieldsTest 46/0 |
+| ARB-60 | Probado (suite g53) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: g53 TreeOfFieldsTest 46/0 |
+| ARB-61 | Probado (suite g53) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: g53 TreeOfFieldsTest 46/0 |
 | ARB-62 | Probado (suite g57) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g57 TreeBuildingsTest 37/0 |
 | ARB-63 | Probado (suite g73) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g73 SubmarineTest 9/0 |
 | ARB-64 | Probado (suite g57) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g57 TreeBuildingsTest 37/0 |
 | ARB-65 | Probado (suite g71) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g71 GroupAnimalsTest 8/0 |
 | ARB-66 | Probado (suite g70) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g70 TreeMaskTest 17/0 |
 | ARB-67 | Probado (suite g73) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g73 SubmarineTest 9/0 |
-| ARB-68 | Probado (suite g53) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: g53 TreeOfFieldsTest 46/0 |
-| ARB-69 | Probado (suite g53) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: g53 TreeOfFieldsTest 46/0 |
+| ARB-68 | Probado (suite g53) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: g53 TreeOfFieldsTest 46/0 |
+| ARB-69 | Probado (suite g53) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: g53 TreeOfFieldsTest 46/0 |
 | ARB-70 | Probado (suite g90) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g90 LaunchSiteTest 9/0 |
 | ARB-71 | Probado (suite g94) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g94 NuclearSiteTest 23/0 |
 | ARB-72 | Probado (suite g90) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g90 LaunchSiteTest 9/0 |
@@ -221,7 +221,7 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | ARB-92 | Probado (suite g80) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g80 RoofGardenTest 60/0 |
 | ARB-93 | Probado (suite g70) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g70 TreeMaskTest 17/0 |
 | ARB-94 | Probado (suite g55) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g55 FruitOrchardTest 41/0 |
-| ARB-95 | Probado (suite g53) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: g53 TreeOfFieldsTest 46/0 |
+| ARB-95 | Probado (suite g53) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: g53 TreeOfFieldsTest 46/0 |
 | ARB-96 | Probado (suite g55) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g55 FruitOrchardTest 41/0 |
 | HOS-05 | Probado (suite g83) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g83 BloodBankTest 10/0 |
 | HOS-06 | Probado (suite g83) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g83 BloodBankTest 10/0 |
@@ -332,9 +332,9 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | CV-01 | Probado (suite g50) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: check [CV-01] PASS ×5 |
 | CV-02 | Probado (suite g49) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g49 GymUsabilityTest 151/0 |
 | CV-03 | Probado (suite g50) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: check [CV-03] PASS ×2 |
-| CV-04 | Probado (suite g1) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: check [CV-04] PASS ×1 |
-| CV-05 | Probado (suite g1) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: check [CV-05] PASS ×1 |
-| CV-06 | Probado (suite g53) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: check [CV-06] PASS ×1 |
+| CV-04 | Probado (suite g1) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CV-04] PASS ×1 |
+| CV-05 | Probado (suite g1) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CV-05] PASS ×1 |
+| CV-06 | Probado (suite g53) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CV-06] PASS ×1 |
 | CV-07 | Probado (suite g50) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: check [CV-07] PASS ×4 |
 | CV-08 | Probado (suite g51) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g51 YogaClassTest 16/0 |
 | CV-09 | Probado (suite g65) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g65 HorarioLibreTest 49/0 |
@@ -359,89 +359,89 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | FAU-32 | Probado (suite g85) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g85 CadenaAlimenticiaTest 58/0 |
 | REN-08 | Probado (suite g118) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g118 QaCheckTest 44/0 |
 | MIC-84 | Probado (suite g121) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: check [MIC-84] PASS ×11 |
-| MIC-85 | Probado (suite g122) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: check [MIC-85] PASS ×9 |
+| MIC-85 | Probado (suite g122) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [MIC-85] PASS ×11 |
 | MIC-86 | Solo código | 2026-11-18 | — | — | — | claude/escala-mitad: programado y compilado; lo prueba el probador |
-| MIC-87 | Probado (suite g124) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: check [MIC-87] PASS ×13 |
+| MIC-87 | Probado (suite g124) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [MIC-87] PASS ×13 |
 | MIC-88 | Probado (suite g63) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: g63 MicroBuildRulesTest 29/0 |
-| MIC-89 | Probado (suite g125) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: check [MIC-89] PASS ×4 |
-| MIC-90 | Probado (suite g125) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: check [MIC-90] PASS ×1 |
-| MIC-91 | Probado (suite g125) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: check [MIC-91] PASS ×1 |
-| MIC-92 | Probado (suite g125) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: check [MIC-92] PASS ×1 |
-| MIC-93 | Solo código | 2026-11-18 | — | — | — | claude/escala-mitad: programado y compilado; lo prueba el probador |
+| MIC-89 | Probado (suite g125) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [MIC-89] PASS ×4 |
+| MIC-90 | Probado (suite g125) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [MIC-90] PASS ×1 |
+| MIC-91 | Probado (suite g125) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [MIC-91] PASS ×1 |
+| MIC-92 | Probado (suite g125) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [MIC-92] PASS ×1 |
+| MIC-93 | Probado (suite g125) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [MIC-93] PASS ×1 |
 | MIC-94 | Solo código | 2026-11-18 | — | — | — | claude/escala-mitad: programado y compilado; lo prueba el probador |
 | MIC-95 | Solo código | 2026-11-18 | — | — | — | claude/escala-mitad: programado y compilado; lo prueba el probador |
 | MIC-96 | Solo código | 2026-11-18 | — | — | — | claude/escala-mitad: programado y compilado; lo prueba el probador |
 | MIC-97 | Solo código | 2026-11-18 | — | — | — | claude/escala-mitad: programado y compilado; lo prueba el probador |
 | MIC-98 | Solo código | 2026-11-18 | — | — | — | claude/escala-mitad: programado y compilado; lo prueba el probador |
-| CS-01 | Probado (suite g119) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: check [CS-01] PASS ×1 |
-| CS-02 | Probado (suite g119) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: check [CS-02] PASS ×1 |
-| CS-03 | Probado (suite g119) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: check [CS-03] PASS ×1 |
-| CS-04 | Probado (suite g119) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: check [CS-04] PASS ×1 |
-| CS-05 | Probado (suite g119) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: check [CS-05] PASS ×1 |
-| CS-06 | Probado (suite g119) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: check [CS-06] PASS ×1 |
-| CS-07 | Probado (suite g119) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: check [CS-07] PASS ×1 |
-| CS-08 | Probado (suite g119) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: check [CS-08] PASS ×1 |
-| CS-09 | Probado (suite g119) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: check [CS-09] PASS ×1 |
-| CS-10 | Probado (suite g119) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: check [CS-10] PASS ×1 |
-| CS-11 | Probado (suite g119) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: check [CS-11] PASS ×1 |
-| CS-12 | Probado (suite g119) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: check [CS-12] PASS ×1 |
-| CS-13 | Probado (suite g119) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: check [CS-13] PASS ×1 |
-| CS-14 | Probado (suite g119) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: check [CS-14] PASS ×1 |
-| CS-15 | Probado (suite g119) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: check [CS-15] PASS ×1 |
-| CS-20 | Probado (suite g119) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: check [CS-20] PASS ×1 |
-| CS-21 | Probado (suite g119) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: check [CS-21] PASS ×1 |
-| CS-22 | Probado (suite g119) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: check [CS-22] PASS ×1 |
-| CS-23 | Probado (suite g119) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: check [CS-23] PASS ×1 |
-| CS-30 | Probado (suite g119) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: check [CS-30] PASS ×1 |
-| CS-31 | Probado (suite g119) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: check [CS-31] PASS ×1 |
-| CS-32 | Probado (suite g119) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: check [CS-32] PASS ×1 |
-| CS-33 | Probado (suite g119) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: check [CS-33] PASS ×1 |
-| CS-34 | Probado (suite g119) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: check [CS-34] PASS ×1 |
-| CS-35 | Probado (suite g119) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: check [CS-35] PASS ×1 |
-| CS-40 | Probado (suite g119) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: g119 CodeShipLogicTest 25/0 |
-| CS-41 | Probado (suite g119) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: g119 CodeShipLogicTest 25/0 |
-| CS-42 | Probado (suite g119) | 2026-11-18 | 585235b | [runs/2026-11-18-2150-rp4-rapida-grupos.md](runs/2026-11-18-2150-rp4-rapida-grupos.md) | — | rp4: g119 CodeShipLogicTest 25/0 |
+| CS-01 | Probado (suite g119) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-01] PASS ×1 |
+| CS-02 | Probado (suite g119) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-02] PASS ×1 |
+| CS-03 | Probado (suite g119) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-03] PASS ×1 |
+| CS-04 | Probado (suite g119) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-04] PASS ×1 |
+| CS-05 | Probado (suite g119) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-05] PASS ×1 |
+| CS-06 | Probado (suite g119) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-06] PASS ×1 |
+| CS-07 | Probado (suite g119) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-07] PASS ×1 |
+| CS-08 | Probado (suite g119) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-08] PASS ×1 |
+| CS-09 | Probado (suite g119) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-09] PASS ×1 |
+| CS-10 | Probado (suite g119) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-10] PASS ×1 |
+| CS-11 | Probado (suite g119) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-11] PASS ×1 |
+| CS-12 | Probado (suite g119) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-12] PASS ×1 |
+| CS-13 | Probado (suite g119) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-13] PASS ×1 |
+| CS-14 | Probado (suite g119) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-14] PASS ×1 |
+| CS-15 | Probado (suite g119) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-15] PASS ×1 |
+| CS-20 | Probado (suite g119) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-20] PASS ×1 |
+| CS-21 | Probado (suite g119) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-21] PASS ×1 |
+| CS-22 | Probado (suite g119) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-22] PASS ×1 |
+| CS-23 | Probado (suite g119) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-23] PASS ×1 |
+| CS-30 | Probado (suite g119) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-30] PASS ×1 |
+| CS-31 | Probado (suite g119) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-31] PASS ×1 |
+| CS-32 | Probado (suite g119) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-32] PASS ×1 |
+| CS-33 | Probado (suite g119) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-33] PASS ×1 |
+| CS-34 | Probado (suite g119) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-34] PASS ×1 |
+| CS-35 | Probado (suite g119) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-35] PASS ×1 |
+| CS-40 | Probado (suite g119) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: g119 CodeShipLogicTest 25/0 |
+| CS-41 | Probado (suite g119) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: g119 CodeShipLogicTest 25/0 |
+| CS-42 | Probado (suite g119) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: g119 CodeShipLogicTest 25/0 |
 | JOR-55 | Probado (suite g113) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g113 RepartoSantuariosTest 108/0 |
 | PER-25 | Sin probar | 2026-11-18 | — | — | — | en curso: falta código |
 | REN-09 | Solo código | 2026-11-18 | — | — | — | subido y probado con `?prueba=1` en Edge, fuera del TestRunner; falta su run log |
 | MIC-99 | Sin probar | 2026-11-18 | — | — | — | en curso: falta código |
-| CS-50 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
-| CS-51 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
-| CS-52 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
-| CS-53 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
-| CS-54 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
-| CS-55 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
-| CS-56 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
-| CS-57 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
-| CS-58 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
-| CS-60 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
-| CS-61 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
-| CS-62 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
-| CS-63 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
-| CS-64 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
-| CS-65 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
-| CS-70 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
-| CS-71 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
-| CS-72 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
-| CS-73 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
-| CS-74 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
-| CS-75 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
-| CS-80 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
-| CS-81 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
-| CS-90 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
-| CS-91 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
-| CS-92 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
-| CS-93 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
-| CS-94 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
-| CS-95 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
-| CS-85 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
-| CS-86 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
-| CS-87 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-50 | Probado (suite g120) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-50] PASS ×1 |
+| CS-51 | Probado (suite g120) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-51] PASS ×1 |
+| CS-52 | Probado (suite g120) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-52] PASS ×1 |
+| CS-53 | Probado (suite g120) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-53] PASS ×1 |
+| CS-54 | Probado (suite g120) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-54] PASS ×1 |
+| CS-55 | Probado (suite g120) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-55] PASS ×1 |
+| CS-56 | Probado (suite g120) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-56] PASS ×1 |
+| CS-57 | Probado (suite g120) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-57] PASS ×1 |
+| CS-58 | Probado (suite g120) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-58] PASS ×1 |
+| CS-60 | Probado (suite g120) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-60] PASS ×1 |
+| CS-61 | Probado (suite g120) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-61] PASS ×1 |
+| CS-62 | Probado (suite g120) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-62] PASS ×1 |
+| CS-63 | Probado (suite g120) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-63] PASS ×1 |
+| CS-64 | Probado (suite g120) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-64] PASS ×1 |
+| CS-65 | Probado (suite g120) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-65] PASS ×1 |
+| CS-70 | Probado (suite g120) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-70] PASS ×1 |
+| CS-71 | Probado (suite g120) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-71] PASS ×1 |
+| CS-72 | Probado (suite g120) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-72] PASS ×1 |
+| CS-73 | Probado (suite g120) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-73] PASS ×1 |
+| CS-74 | Probado (suite g120) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-74] PASS ×1 |
+| CS-75 | Probado (suite g120) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-75] PASS ×1 |
+| CS-80 | Probado (suite g120) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-80] PASS ×1 |
+| CS-81 | Probado (suite g120) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-81] PASS ×1 |
+| CS-90 | Probado (suite g120) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-90] PASS ×1 |
+| CS-91 | Probado (suite g120) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-91] PASS ×1 |
+| CS-92 | Probado (suite g120) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-92] PASS ×1 |
+| CS-93 | Probado (suite g120) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-93] PASS ×1 |
+| CS-94 | Probado (suite g120) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-94] PASS ×1 |
+| CS-95 | Probado (suite g120) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-95] PASS ×1 |
+| CS-85 | Probado (suite g120) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: g120 ChoreLibraryTest 32/0 |
+| CS-86 | Probado (suite g120) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: g120 ChoreLibraryTest 32/0 |
+| CS-87 | Probado (suite g120) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: g120 ChoreLibraryTest 32/0 |
 | CS-43 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship: MissionLibrary + StationMissions + StepAnimator (ChoreLibraryTest g120, CS-50…CS-95); lo prueba el probador |
-| CS-82 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
-| CS-83 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
-| CS-96 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
-| CS-88 | Solo código | 2026-11-18 | — | — | — | claude/ui-codeship (ChoreLibraryTest g120): programado y compilado; lo prueba el probador |
+| CS-82 | Probado (suite g120) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-82] PASS ×1 |
+| CS-83 | Probado (suite g120) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-83] PASS ×1 |
+| CS-96 | Probado (suite g120) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: check [CS-96] PASS ×1 |
+| CS-88 | Probado (suite g120) | 2026-11-19 | 9516ed1 | [runs/2026-11-19-0154-rp7-rapida-grupos.md](runs/2026-11-19-0154-rp7-rapida-grupos.md) | — | rp7: g120 ChoreLibraryTest 32/0 |
 
 **Recuento:** No aplica 8 · Parcial 9 · Probado (retro) 285 · Sin probar 31 · Solo código 16 · total 349.
 
