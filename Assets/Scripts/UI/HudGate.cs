@@ -72,6 +72,7 @@ public static class HudGate
 
         void OnGUI()
         {
+            if (WebLigera.Active) return;   // (2026-11-13, web ligera: en el móvil, sin paneles de depuración ni rótulos flotantes)
             GUI.depth = -1000;   // encima de los tintes de ScreenEffects (los párpados tapaban la posición)
             GUI.Label(new Rect(Screen.width - 190f, Screen.height - 24f, 185f, 22f),
                       ShowAll ? "F1: ocultar paneles de prueba" : "F1: ver paneles de prueba");

@@ -88,18 +88,25 @@ public class NuclearSiteTest : MonoBehaviour, ITestUnit
         // escena) y entonces se declara la emergencia. Tiene que contar como en la zona, subir y salir de ella. Se elige de la lista del personal (con o sin
         // rotación: una prueba sola, sin la jornada antes, no tiene a nadie en ella).
         WorkdayDirector wd = WorkdayDirector.Instance;
-        GameObject evac = WorkdayDirector.Staff.Select(WorkdayDirector.Body).FirstOrDefault(g => g != null && g.activeInHierarchy && !g.CompareTag("Player") && !RestaurantService.Drives(g) && g.GetComponent<Anima>() != null);
+        // (ronda 125) No uno que vaya en alfombra o ya esté abajo: BoardWork lo rechaza (Linduarda, «abajo False»). Y a la pista de la estación: el puesto de su nombre
+        // en la Central puede caer a más de BoardRadius de la Línea.
+        GameObject evac = WorkdayDirector.Staff.Select(WorkdayDirector.Body).FirstOrDefault(g => g != null && g.activeInHierarchy && !g.CompareTag("Player") && !RestaurantService.Drives(g) && g.GetComponent<Anima>() != null
+            && !FlyingCarpet.Riding(g) && !SiteLine.IsAway(g) && !AereoLink.IsAway(g));
         Vector3 back = evac != null ? evac.transform.position : Vector3.zero;
-        bool below = false;
+        bool below = false; string why = "";
         if (evac != null)
         {
-            WorkdayDirector.Teleport(evac.transform, WorkdayDirector.AreaPoint(NuclearSite.PowerArea, evac.name));
+            SiteLine line = SiteLine.Instance;
+            Vector3 at = WorkdayDirector.AreaPoint(NuclearSite.PowerArea, evac.name);
+            if (line != null && (at == Vector3.zero || (at - line.transform.position).sqrMagnitude > 8f * 8f)) at = line.ExitPoint;
+            WorkdayDirector.Teleport(evac.transform, at);
             SiteLine.Note(evac, NuclearSite.PowerArea);
             below = SiteLine.BoardWork(evac);
+            why = line == null ? "sin Línea" : $"Línea cerrada {line.LineClosed} · evacuando {NuclearSite.Evacuating} · en alfombra {FlyingCarpet.Riding(evac)} · a {Vector3.Distance(evac.transform.position, line.transform.position):0.0} m de la Línea";
             yield return null;
             below &= SiteLine.IsAway(evac);
         }
-        TestProbe.Check("hay alguien del personal trabajando abajo, en la Central (en la estación, bajado por la Línea)", wd != null && evac != null && below, evac != null ? $"«{evac.name}»: abajo {below}" : "nadie del personal en la escena");
+        TestProbe.Check("hay alguien del personal trabajando abajo, en la Central (en la estación, bajado por la Línea)", wd != null && evac != null && below, evac != null ? $"«{evac.name}»: abajo {below} ({why})" : "nadie del personal en la escena");
         ns.DeclareEmergency("prueba");
         TestProbe.Check("EMERGENCIA: reactor parado, válvulas abiertas y balizas encendidas, sin nadie", ns.State == NuclearSite.Alert.Emergencia && ns.ValvesOpen && (rr == null || rr.scrammed) && ns.beacons.All(b => b.activeSelf));
         if (evac != null && below)

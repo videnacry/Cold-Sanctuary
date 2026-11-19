@@ -39,7 +39,7 @@ public class AlimentadorTest : MonoBehaviour, ITestUnit
         // Un clon de la Magnate con la misión la hace de verdad (ronda 24: con el reparto las dos plazas eran de clones, que iban a su sitio
         // sin la misión, y nadie daba de comer: los dos osos adultos morían de hambre, 43, en la jornada).
         foreach (string id in new[] { "gua_alimentador", "gua_alimentador_2", "gua_carnivoros" })
-            TestProbe.Check($"un clon con «{id}» la lleva a cabo", WorkdayDirector.CloneDuty(id) == id);
+            TestProbe.Check($"[CV-11] un clon con «{id}» la lleva a cabo", WorkdayDirector.CloneDuty(id) == id);
         TestProbe.Check("un clon con otra misión solo va a su sitio", WorkdayDirector.CloneDuty("coc_servicio") == null);
         // …y su cuerpo puede llevarla: un clon es una copia del cuerpo SIN Anima, y el alimentador solo se le ponía a quien la tenía (ronda 25:
         // ni una ración de un clon en toda la jornada; los osos, muertos de hambre).

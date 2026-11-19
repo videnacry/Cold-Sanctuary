@@ -14,10 +14,13 @@ public class LessonPrompt : MonoBehaviour
     public static void Show(string instruction, string spell, float secs = 12f)
     {
         Ensure();
-        _text = instruction; _spell = spell; _until = Time.time + secs;
+        _text = instruction; _spell = spell; _until = Now + secs;
     }
 
     public static void Hide() { _text = null; }
+
+    /// <summary>(2026-11-13, web ligera) En la web, el reloj REAL: con la pestaña en segundo plano o el juego frenado, el aviso no se queda.</summary>
+    static float Now => WebLigera.Active ? Time.realtimeSinceStartup : Time.time;
 
     /// <summary>La caja de la última vez que se dibujó, y en qué frame: <see cref="KushalVoice"/> se queda encima.</summary>
     public static Rect LastRect { get; private set; }
@@ -33,15 +36,16 @@ public class LessonPrompt : MonoBehaviour
 
     void OnGUI()
     {
-        if (string.IsNullOrEmpty(_text) || Time.time > _until) return;
+        if (string.IsNullOrEmpty(_text) || Now > _until) { if (WebLigera.Active) _text = null; return; }
         // La caja crece con el texto (los diálogos largos del examen se cortaban en una caja de alto fijo) y, si hace falta,
         // también a lo ancho, hasta casi toda la pantalla.
-        var style = new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter, fontSize = 16, wordWrap = true };
+        var style = new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter, fontSize = WebLigera.Active ? GUI.skin.label.fontSize : 16, wordWrap = true };
         float w = Mathf.Min(Mathf.Max(560f, Screen.width * 0.5f), Screen.width - 40f);
         float th = Mathf.Max(28f, style.CalcHeight(new GUIContent(_text), w - 20f));
         float sh = string.IsNullOrEmpty(_spell) ? 0f : 28f;
         float h = th + sh + 16f;
-        var box = new Rect((Screen.width - w) * 0.5f, Screen.height - h - 84f, w, h);   // encima de la barra de hechizos
+        // (web ligera) Arriba, bajo los botones de arriba: abajo están el jugador y los joysticks.
+        var box = new Rect((Screen.width - w) * 0.5f, WebLigera.Active ? Mathf.Max(56f, Screen.height * 0.14f) : Screen.height - h - 84f, w, h);   // encima de la barra de hechizos
         GUI.Box(box, GUIContent.none);
         LastRect = box; LastDrawFrame = Time.frameCount;
         GUI.Label(new Rect(box.x + 10, box.y + 8, box.width - 20, th), _text, style);

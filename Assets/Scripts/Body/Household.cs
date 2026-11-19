@@ -170,6 +170,8 @@ public class HomeNeedSpell : QueuedSpell
     public Household home;
     public float eatMinutes = 20f, toiletMinutes = 5f, washMinutes = 10f, maxSleepHours = 14f;
     const float WalkTimeout = 45f;
+    // (2026-11-18) El tope de andar, a la estatura: un insecto-humano encogido (× s) anda a la mitad de velocidad y tiene el doble de tiempo.
+    static float Timeout(float h) => WalkTimeout * Mathf.Max(1f, MicroBuildRules.HumanStature / Mathf.Max(0.2f, h));
 
     /// <summary>Cuántas veces alguien no llegó andando a su mueble de casa y se le puso allí (registro, pruebas).</summary>
     public static int Fallbacks;
@@ -182,6 +184,7 @@ public class HomeNeedSpell : QueuedSpell
     // (2026-11-04) COMER CON SU ORQUESTA (MealRitual, docs/actividades-y-uniformes.md §2): coge el plato de la despensa, se sienta, come a
     // bocados con los cubiertos y bebe, y al acabar lleva el plato al fregadero (el lavabo de casa).
     MealRitual _meal; bool _fetched; float _fetchSince = -1f;
+    readonly WalkWatch _walk = new WalkWatch();   // (2026-11-18) el tope de andar, a la medida del camino (MIC-93)
     const float ClearTimeout = 20f;
     /// <summary>La comida en curso (null si no es comer o aún no cogió el plato): pruebas.</summary>
     public MealRitual Meal => _meal;
@@ -217,9 +220,10 @@ public class HomeNeedSpell : QueuedSpell
                 if (need == Need.Comer && !_fetched && home.pantry != null)   // PRIMERO, EL PLATO: de la despensa
                 {
                     if (_fetchSince < 0f) _fetchSince = Time.time;
-                    Vector3 pto = UsePoint(home.pantry.transform, t.position, h);
+                    Vector3 pto = _walk.Target(UsePoint(home.pantry.transform, t.position, h));
                     bool atPantry = MicroMove.Step(t, pto, 1.4f * h / 1.75f, 0.45f * h);
-                    if (!atPantry && Time.time - _fetchSince > WalkTimeout) { HomeMove.Place(t, pto); HomeMove.Release(t); atPantry = true; Fallbacks++; }
+                    if (!atPantry && _walk.GiveUp(t, pto, 1.4f * h / 1.75f, Timeout(h), out string whyP))
+                    { WalkWatch.Record("Hogar", self.name, t.position, pto, home.pantry.name + " (despensa)", whyP); HomeMove.Place(t, pto); HomeMove.Release(t); atPantry = true; Fallbacks++; }
                     if (!atPantry) return false;
                     HomeMove.Face(t, home.pantry.transform.position);
                     if (!home.pantry.Take()) { RetryEat[self] = Time.time + 20f; Debug.Log($"[Hogar] «{self.name}»: no quedaba nada en la despensa."); return true; }
@@ -229,12 +233,12 @@ public class HomeNeedSpell : QueuedSpell
                     return false;
                 }
                 _meal?.Carry(self.gameObject);
-                Vector3 to = UsePoint(_spot, t.position, h);
+                Vector3 to = _walk.Target(UsePoint(_spot, t.position, h));
                 bool there = MicroMove.Step(t, to, 1.4f * h / 1.75f, 0.45f * h);
-                if (!there && Time.time - _since > WalkTimeout)
+                if (!there && _walk.GiveUp(t, to, 1.4f * h / 1.75f, Timeout(h), out string why))
                 {
+                    WalkWatch.Record("Hogar", self.name, t.position, to, _spot.name + " de su casa (" + need + ")", why);
                     HomeMove.Place(t, to); HomeMove.Release(t); there = true; Fallbacks++;
-                    if (Fallbacks <= 20) Debug.LogWarning($"[Hogar] «{self.name}» no llega andando en {WalkTimeout:0} s a «{_spot.name}» de su casa: se le pone allí.");
                 }
                 if (!there) return false;
                 Begin(self, body, h);
@@ -432,7 +436,7 @@ public static class HomeMove
             else if (rest == MicroBody.Percha)
             {   // AGARRADO A LA PERCHA (abeja, luciérnaga, cigarra) o COLGADO DE SU BARRA (mantis): de pie bajo la barra, quieto.
                 if (ins != null) ins.localRotation = Quaternion.identity;
-                t.position = new Vector3(bed.position.x, bed.position.y + 0.08f, bed.position.z);
+                t.position = new Vector3(bed.position.x, bed.position.y + 0.08f * h / MicroBuildRules.HumanStature, bed.position.z);
             }
             else
             {   // De espaldas (una cama humana): el cuerpo (que va de los pies, en el pivote, hacia arriba) se tumba hacia +z.

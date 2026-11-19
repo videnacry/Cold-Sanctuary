@@ -8,10 +8,11 @@ estructuras) cumple estas **siete reglas** (la sexta, el hogar de cada personaje
 
 | Pieza | Dónde | Qué hace |
 |---|---|---|
-| `MicroBuildRules` | `Assets/Scripts/Microcosmos/MicroBuildRules.cs` | Las constantes (paso, calles, alturas, era avanzada) y `Validate`. |
+| `MicroBuildRules` | `Assets/Scripts/Microcosmos/MicroBuildRules.cs` | La escala del cuerpo (`FolkScale`, una sola constante) y lo que sale de ella (agente, paso, calles, sitio de trabajo, puertas), las alturas de muro y techo, la era avanzada, `Validate` y `Advise`. |
 | `MicroPiece` | `Assets/Scripts/Microcosmos/MicroPiece.cs` | Marca la raíz de un mueble de varias piezas: `kind`, `need`, `walkable`. |
-| `MicroFurniture` | `Assets/Editor/MicroFurniture.cs` | Los muebles detallados (cocina con sus utensilios, mesa con sillas, cama, retrete, lavabo…), reutilizando `KitchenProps`. |
-| `CivicBuilder.Building` | `Assets/Editor/CivicBuilder.cs` | Edificio ABIERTO (suelo, sin muros ni techo) que coloca sus muebles con el paso de 2 m y añade las necesidades básicas. |
+| `MicroFurniture` | `Assets/Editor/MicroFurniture.cs` | Los muebles detallados (cocina con sus utensilios, mesa alta con apoyos de abdomen o mesa con sillas, cama, retrete, lavabo…), reutilizando `KitchenProps`. |
+| `CivicBuilder.Building` | `Assets/Editor/CivicBuilder.cs` | Edificio que coloca sus muebles con el paso (`Passage`) y añade las necesidades básicas. Hoy aún abierto (suelo, sin muros ni techo); los muros llegan con el piloto (fase 1 del plan). |
+| `CutawayView` / `MicroDoor` | `Assets/Scripts/Microcosmos/CutawayView.cs`, `MicroDoor.cs` | Regla 2 (P2–P4): la vista de corte de un edificio con muros o techo y sus puertas (≥ 1,2 × 1,25 m). |
 | `AreaMicrocosmos.FloorBounds` / `FloorRectLocal` | `Assets/Editor/AreaMicrocosmos.cs` | El rectángulo útil del piso, para que el pueblo lo llene entero. |
 | `CivicBuilder.Homes` / `Household` | `Assets/Editor/CivicBuilder.Homes.cs`, `Assets/Scripts/Body/Household.cs` | Regla 6: un hogar (camas, retrete, lavabo, mesa con sillas, despensa) para cada personaje; `Household.Check` lo comprueba. |
 | `MicroStyles` | `Assets/Scripts/Microcosmos/MicroStyles.cs` | Regla 7: el catálogo de estilos de época y lugar (año + región → cada mueble). |
@@ -19,61 +20,87 @@ estructuras) cumple estas **siete reglas** (la sexta, el hogar de cada personaje
 
 ---
 
-## Las medidas (a la escala de los insectos-humanos)
+## Las medidas (a la escala de los insectos-humanos, encogidos a la mitad desde el 2026-11-18)
 
-Los insectos-humanos miden como una persona (1,6–1,85 m, `AreaMicrocosmos.Folk`): cápsula de **0,35 m** de radio y
-NavMeshAgent de **0,4 m** de radio. De ahí salen todos los números:
+> **Cambio de regla del 2026-11-18** ([plan-microcosmos-realismo.md](plan-microcosmos-realismo.md) §3, aprobado por Berón): los
+> insectos-humanos miden la **mitad** (s = `MicroBuildRules.FolkScale` = 0,5) y andan con las patas **recogidas**; el mundo
+> (arquitectura, calles, árboles, vehículos, objetos de mano) se queda a **1:1**, así que desde el cuerpo se ve 2× mayor. Vuelven
+> los **muros y los techos**, con **vista de corte** por dentro. Las medidas de abajo salen todas de `FolkScale`: para afinarlo
+> (p. ej. a 0,4) basta con cambiar esa constante.
 
-| Medida | Valor | De dónde sale |
+Los insectos-humanos miden 1,6–1,85 m × s (0,80–0,93 m; `AreaMicrocosmos.Folk` recibe la estatura humana y la encoge): cápsula
+de **0,175 m** de radio y NavMeshAgent de **0,5 m** de radio (medio ancho recogido), a **1,5 m/s**. De ahí salen todos los números:
+
+| Medida | Valor (s = 0,5) | De dónde sale |
 |---|---|---|
-| Ancho de un personaje (agente) | 0,8 m | 2 × 0,4 m |
-| **Paso libre entre dos muebles** (`MicroBuildRules.Passage`) | **2,0 m** | dos agentes hombro con hombro (4 × 0,4 = 1,6 m) + 0,2 m de holgura a cada lado (evitación y giro del cuerpo). Es el mismo estándar del santuario (`FurnitureSpacing.Standard`). |
-| Calle de pueblo (`Street`) | 4,0 m | dos pasos: se cruzan dos parejas (o un carro y una persona) |
-| Sitio de trabajo delante de un puesto (`WorkSpot`) | 0,9 m | donde se pone quien usa el fogón, la mesa o el banco (dentro del paso) |
-| Alto que ya es muro (`WallHeight`) | 1,2 m | los ojos de un insecto-humano van a ~1,6 m: por encima de 1,2 m un panel largo tapa la vista |
-| Alto que ya es techo (`RoofHeight`) | 2,2 m | una losa por encima de las cabezas |
+| Ancho andando, patas recogidas (`TuckedWalkWidth`) | 1,0 m | 2 × s; lo mide `FolkScaleTest` (grupo 121) sobre el cuerpo de cubos |
+| Radio del agente (`AgentRadius`) | 0,5 m | medio ancho recogido |
+| **Paso libre entre dos muebles** (`MicroBuildRules.Passage`) | **2,4 m** | dos cuerpos recogidos andando (4 × 0,5 = 2,0 m) + 0,2 m de holgura a cada lado. El santuario sigue con sus 2 m (`FurnitureSpacing.Standard`: allí andan personas). |
+| Paso de lo aún sin reconstruir (`LegacyPassage`) | 2,0 m | los microcosmos con `MicroFloor.folkScale = 1` (montados antes del encogimiento) y las escenas sin `MicroFloor` (MobWorld_Mesopotamia, las casas de ciclo de vida) se miden con el paso de entonces hasta que se reconstruyan, uno a uno |
+| Calle de pueblo (`Street`) | 4,0 m | se queda: caben dos parejas o un carro real de 2–2,5 m |
+| Sitio de trabajo delante de un puesto (`WorkSpot`) | 0,6 m | 1,2 × s: donde se pone quien usa el fogón, la mesa o el banco (dentro del paso) |
+| Puerta mínima (`DoorWidth` × `DoorHeight`) | 1,2 × 1,25 m | el ancho recogido andando + 0,2; el alto con las antenas (~2,1 × s) + 0,2 |
+| Sin escaleras ni ascensores por debajo de (`LiftFrom`) | 12 m | trepan las paredes (C4) |
+| Alto que ya es muro (`WallHeight`) | 1,2 m | un panel largo más alto es un muro: pide vista de corte y puerta |
+| Alto que ya es techo (`RoofHeight`) | 2,2 m | una losa por encima de las cabezas: pide vista de corte |
 | Era avanzada (`TownFrom`) | desde −3500 | las primeras ciudades (Uruk). Antes, las aldeas conviven con los muebles gigantes del área |
 
 ---
 
 ## Las siete reglas
 
-### 1. Paso de 2 m entre objetos
-Entre dos muebles cualesquiera quedan **≥ 2,0 m libres** (en planta), dentro de un edificio y entre edificios. Lo que va
+### 1. Paso de 2,4 m entre objetos
+Entre dos muebles cualesquiera quedan **≥ 2,4 m libres** (en planta; 2 m en los microcosmos aún sin reconstruir), dentro de un
+edificio y entre edificios. Lo que va
 unido cuenta como UN mueble y no se separa: las sillas con su mesa, la sartén y la olla sobre la cocina, el cuchillo sobre
 la tabla, la encimera corrida con su fregadero (son hijos de la misma raíz `MicroPiece`). Lo que se pisa (tatami,
 esterilla, bancal, alfombra: `MicroPiece.walkable`) no cuenta. Entre edificios, una calle de 4 m.
 
-**Cómo aplicarla**: `CivicBuilder.Building` coloca los muebles en filas con 2 m entre ellos y deja 2 m de margen al borde del
+**Cómo aplicarla**: `CivicBuilder.Building` coloca los muebles en filas con `Passage` entre ellos y deja ese margen al borde del
 suelo del edificio (el tamaño que se le pide es un mínimo: crece si los muebles no caben). En un pueblo, los solares van
 separados por calles de `Street`.
 
-### 2. Sin muros y sin techo
-Los edificios son **suelos abiertos**: la losa del suelo con el color del material real (adobe, ladrillo, terrazo, tatami…),
-su rótulo y sus muebles; ni muros, ni puertas, ni techos, ni edificios macizos (tapan la vista y el paso), como en el
-santuario. Se permiten postes y columnas sueltos (finos: no tapan) y las piezas bajas (bancos, parapetos de menos de
-1,2 m). Los **muros del borde del piso** (`Muros_del_piso`, regla 11 de la plantilla) no son de un edificio y se quedan.
+### 2. Muros y techos, con vista de corte y puerta (P1–P7, 2026-11-18; sustituye a «sin muros y sin techo» del 2026-11-01)
+Cada microcosmos recrea su **lugar real a 1:1** (P1): planta, alzados y materiales documentados, con fuente y etiqueta (real /
+supuesto / ficción). Vuelven las fachadas, las portadas, las naves y las torres, porque sin muros no hay lugar: Hawthorne,
+Cajamarca y Leiden parecían el mismo descampado amueblado.
 
-**Excepción: las paredes de cristal** (Berón 2026-11-03: «para salas que deban estar aisladas se pueden utilizar paredes de
-cristal de modo que no bloquean visibilidad, y se debe mantener las reglas de espaciado»; docs/hospital.md §6). Un paño `GlassWall`
-(`Pared_cristal…`, con su dintel) no cuenta como muro (no tapa la vista), pero **sí guarda el paso de la regla 1**: `MicroBuildRules.Pieces`
-lo mide contra los muebles, de dentro y de fuera de su sala (dos paños, entre sí, no). En el santuario hace lo mismo `FurnitureSpacing`.
-Solo para salas que deben aislarse (quirófanos, aislamientos, UCI, salas frías) y en épocas en las que tiene sentido.
+- **P2 · Vista de corte.** Muros y techos se ven desde fuera. Por dentro (el jugador o la cámara dentro de la planta), el techo y
+  los muros entre la cámara y el jugador se desvanecen: `CutawayView` (`Assets/Scripts/Microcosmos/CutawayView.cs`, reutilizable;
+  `CutawayView.Ensure(edificio)` reúne sus muros y techos por nombre o por forma). Desvanecer = el renderer queda solo para
+  sombras; al salir vuelve como estaba.
+- **P3 · Todo recinto real se recorre.** Una puerta (`MicroDoor`) solo da paso, nunca abre menús.
+- **P4 · Puertas.** Las reales, a su medida; las de menos de **1,2 m** se ensanchan a 1,2 m (`MicroDoor.Place`, que lo anota como
+  «supuesto»). El alto real siempre basta (el cuerpo mide 1,25 m con antenas).
+- **P5 · Un hito reconocible** por microcosmos, visible desde la llegada (`MicroPiece.kind = "hito"`): el Falcon 1 en Hawthorne,
+  la kallanka de Cajamarca, la universidad de Leiden.
+- **P6 · Un transporte de época que se use** (`MicroPiece.kind = "vehiculo"`), a tamaño real.
+- **P7 · Densidad de época:** rótulos, objetos del oficio y gente en su puesto.
 
+`Validate` marca hoy (faltas): todo edificio (`AreaFunctionSite`) con muros (`Muro_*`, `Dintel`, o una pieza de ≥ 1,2 m de alto,
+≥ 2,5 m de largo y ≤ 0,6 m de grueso) o techo (`Cubierta`, `Faldon`, `Techo`, `Tejado`, `Chapitel`, o una losa a ≥ 2,2 m de ≥ 4 m²)
+**sin `CutawayView`**; todo edificio con muros **sin ninguna `MicroDoor`**; toda `MicroDoor` de menos de 1,2 × 1,25 m. P5, P6 y C4
+(escaleras por debajo de 12 m que no son monumento, `MicroPiece.kind = "monumento"`) son por ahora **consejos**
+(`MicroBuildRules.Advise`, que `Validate` registra en la consola sin contarlos como faltas); pasarán a faltas cuando el piloto
+(Microcosmos_ElonMusk) las cumpla.
 
-**Excepción: los muros que la historia necesita** (confirmado por Berón, 2026-11-02: «se pueden quedar los muros que sean
-necesarios para la historia»). Una barrera que ES la historia va bajo un `MicroPiece` con `kind = MicroBuildRules.Historic`
-(«historico»): no cuenta como muro ni para el paso. Hoy son dos:
-- el **muro del gueto de Varsovia** (`CompassionSceneBuilder`, «Muro del gueto»: sus salidas son los pasos de la misión de
-  Irena Sendler);
-- los **muros rotos del bloque 4 de Chernóbil** (`StorySceneBuilder.Scientists`, «El bloque 4»: la ruina del reactor que
-  Ananenko, Bespálov y Baranov rodean para bajar a los sótanos inundados).
-Cualquier otra historia que necesite un muro (una muralla que se defiende, una celda) lo marca igual y lo cita aquí.
+**Las paredes de cristal** (Berón 2026-11-03; docs/hospital.md §6) no son muro: no piden vista de corte ni puerta, pero **sí guardan
+el paso de la regla 1** (`MicroBuildRules.Pieces` las mide contra los muebles de dentro y de fuera de su sala; dos paños, entre sí, no).
+En el santuario hace lo mismo `FurnitureSpacing`.
 
-`Validate` marca: piezas llamadas `Muro_*`, `Cubierta`, `Faldon`, `Dintel`, `Techo`, `Tejado`, `Chapitel`; y, dentro de
-cada `AreaFunctionSite`, toda pieza (que no sea mueble ni persona) de ≥ 1,2 m de alto y ≥ 2,5 m de largo y ≤ 0,6 m de
-grueso (muro), toda losa a ≥ 2,2 m sobre el suelo del edificio de ≥ 4 m² (techo) y todo bloque de ≥ 1,2 m de alto y ≥ 6 m²
-(edificio macizo).
+**Los muros que la historia necesita** (Berón, 2026-11-02) van bajo un `MicroPiece` con `kind = MicroBuildRules.Historic`
+(«historico») y no son edificio (no piden vista de corte ni puerta, ni cuentan para el paso): el **muro del gueto de Varsovia**
+(`CompassionSceneBuilder`) y los **muros rotos del bloque 4 de Chernóbil** (`StorySceneBuilder.Scientists`). Los **muros del borde
+del piso** (`Muros_del_piso`, regla 11 de la plantilla) tampoco.
+
+### Asientos, camas y verticalidad (C1–C4, 2026-11-18)
+- **C1 · Comer y trabajar de pie.** El mueble por defecto del insecto-humano es la **mesa alta** a la altura de sus manos (0,42 m
+  con s = 0,5) con un **apoyo de abdomen** detrás de cada comensal: una barra con cojín inclinado bajo el gáster, de 1,5 × el ancho
+  del cuerpo (`MicroFurniture.AbdomenRest`; sigue siendo un `MicroSeat`, así que la regla 13 y los hogares lo cuentan).
+- **C2 · La silla de montar solo donde la época lo pide** (trono, tribuna, carruaje).
+- **C3 · La cama sigue siendo un lecho de vientre** al largo del cuerpo + 0,3 m × s.
+- **C4 · Sin escaleras ni ascensores para moverse** por debajo de 12 m: trepan (`SurfaceWalker`, `NavMeshLink`). Las escaleras reales
+  (escalinatas, pirámides) se construyen tal cual, como monumento.
 
 ### 3. Muebles detallados, con sus utensilios
 Nada de cubos lisos: cada mueble es una unión de piezas que se reconoce por su forma (`MicroFurniture`, que reutiliza

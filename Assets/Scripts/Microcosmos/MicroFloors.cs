@@ -76,6 +76,7 @@ public static class MicroFloors
         // Los famosos (docs/microcosmos-famosos.md)
         M("Velliangiri", "YogaRoom_Area", "Sadhguru y el Dhyanalinga: meditar en silencio, la Sala de Yoga"),
         M("Hawthorne", "Control_de_mision", "Musk y el Falcon 1: el control de misión de la lanzadera (re-apuntado por la alerta de piso nuevo)"),
+        M("Omelek", "Control_de_mision", "Musk y el Falcon 1: el día del lanzamiento en la isla de Omelek (Kwajalein)", "Plataforma de lanzamiento en una isla (la plataforma de la lanzadera)"),
         M("Aldea de la montaña", "MartialArts_Area", "Goku (homenaje, ficción): entrenar en la aldea de la montaña, el Dojo"),
         // (2026-11-04) Re-apuntados por la ALERTA DE PISO NUEVO (AlertFloors): Gates a Informática y Scott al Aula (docs/piso-informatica.md, docs/piso-aula.md).
         M("Albuquerque", "Informatics_Area", "Gates y Allen: el Altair y su BASIC; el piso de Informática (ordenadores y programación)"),

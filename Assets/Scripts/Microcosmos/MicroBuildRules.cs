@@ -3,48 +3,138 @@ using UnityEngine;
 
 /// <summary>
 /// LAS REGLAS DE EDIFICACIÓN DE LOS MICROCOSMOS Y MESOCOSMOS (docs/microcosmos-reglas-edificacion.md; Berón 2026-11-01: «en el
-/// microcosmos de Bruce Lee la cocina y los muebles parecían cubos»). Cinco reglas, con números a la escala de los
-/// insectos-humanos (el agente de navegación de <c>AreaMicrocosmos.Folk</c>: radio 0,4 m, cápsula de 0,35 m):
-/// 1. PASO: entre dos muebles cualesquiera, <see cref="Passage"/> (2 m) libres: dos personajes se cruzan sin chocar.
-/// 2. SIN MUROS NI TECHOS en los edificios (tapan la vista y el paso), como en el santuario. ÚNICA EXCEPCIÓN (2026-11-03): las
-///    PAREDES DE CRISTAL (<see cref="GlassWall"/>) de las salas que deben aislarse (no tapan la vista), que guardan el paso de la regla 1.
+/// microcosmos de Bruce Lee la cocina y los muebles parecían cubos»), revisadas el 2026-11-18 (docs/plan-microcosmos-realismo.md
+/// §3: insectos-humanos a la MITAD, s = <see cref="FolkScale"/>, con las patas recogidas, y vuelven los muros con vista de corte).
+/// Los números salen del cuerpo encogido (<see cref="FolkScale"/>; para volver a afinarlo a 0,4 basta con cambiar esa constante):
+/// 1. PASO: entre dos muebles cualesquiera, <see cref="Passage"/> (2,4 m con s = 0,5) libres: dos cuerpos recogidos se cruzan andando.
+///    Los microcosmos montados ANTES del encogimiento (<see cref="MicroFloor.folkScale"/> = 1) se miden con el paso de entonces
+///    (<see cref="LegacyPassage"/>, 2 m) hasta que se reconstruyan, uno a uno (fase 4 del plan).
+/// 2. MUROS Y TECHOS PERMITIDOS (P1–P4, sustituye a la regla «sin muros ni techos» del 2026-11-01): cada lugar real se recrea a
+///    1:1 con sus fachadas, pero todo edificio con muros o techo lleva su VISTA DE CORTE (<see cref="CutawayView"/>: por dentro, el
+///    techo y los muros entre la cámara y el jugador se desvanecen) y al menos una PUERTA (<see cref="MicroDoor"/>) de
+///    ≥ <see cref="DoorWidth"/> × <see cref="DoorHeight"/> m (las reales más estrechas se ensanchan).
 /// 3. MUEBLES DETALLADOS (<see cref="MicroPiece"/>, varias piezas) con sus utensilios (sartén, olla, cuchillo…): nada de cubos lisos.
-/// 4. NECESIDADES BÁSICAS: camas, retretes, lavabos, mesas, sillas y cocina (<see cref="Needs"/>).
+/// 4. NECESIDADES BÁSICAS: camas, retretes, lavabos, mesas, sillas (o apoyos de abdomen) y cocina (<see cref="Needs"/>).
 /// 5. ERAS AVANZADAS (<see cref="IsTownEra"/>): el pueblo o la ciudad real ocupa TODO el piso (sin los muebles gigantes del área).
-/// <see cref="Validate"/> comprueba 1–4 en una escena o en un subárbol y devuelve (y registra) las violaciones.
+/// <see cref="Validate"/> comprueba 1–4 en una escena o en un subárbol y devuelve (y registra) las violaciones. Los CONSEJOS (P5 hito,
+/// P6 transporte de época, C4 sin escaleras por debajo de 12 m) aún no son faltas: los da <see cref="Advise"/> y Validate los registra.
 /// </summary>
 public static class MicroBuildRules
 {
-    /// <summary>Radio del NavMeshAgent de un insecto-humano (AreaMicrocosmos.Folk: 0,4 m × bulk 1).</summary>
-    public const float AgentRadius = 0.4f;
+    // ── LA ESCALA DEL CUERPO (E1, plan §3.1): UNA sola constante; todo lo demás sale de ella ─────────────────────────────────
+    /// <summary>E1 · FACTOR s de los insectos-humanos (Berón 2026-11-18: «la mitad de grandes»): su estatura, su largo, sus patas,
+    /// sus brazos y sus antenas × s. El MUNDO (arquitectura, calles, árboles, vehículos, objetos de mano) se queda a 1:1, así que
+    /// desde el cuerpo se ve 1/s veces mayor. Para afinarlo (p. ej. a 0,4), cambiar SOLO esto.</summary>
+    public const float FolkScale = 0.5f;
+    /// <summary>La estatura humana de referencia (m): la que se pasa a <c>AreaMicrocosmos.Folk</c>, antes de encoger.</summary>
+    public const float HumanStature = 1.75f;
+    /// <summary>La estatura de un insecto-humano tipo (1,75 × s = 0,875 m).</summary>
+    public const float FolkStature = HumanStature * FolkScale;
+    /// <summary>La estatura de un insecto-humano cuya persona mediría <paramref name="humanHeight"/> m.</summary>
+    public static float Stature(float humanHeight) => humanHeight * FolkScale;
+    /// <summary>ANCHO ANDANDO con las patas RECOGIDAS (<c>CubeInsect</c>, postura «recogida»): 2 × s (1,0 m con s = 0,5).</summary>
+    public const float TuckedWalkWidth = 2f * FolkScale;
+    /// <summary>Radio del NavMeshAgent de un insecto-humano: medio ancho recogido (0,5 m con s = 0,5).</summary>
+    public const float AgentRadius = 0.5f * TuckedWalkWidth;
+    /// <summary>Radio de la cápsula física del insecto-humano (0,35 m a escala humana, × s).</summary>
+    public const float CapsuleRadius = 0.35f * FolkScale;
+    /// <summary>Velocidad del agente (3 m/s a escala humana, × s): la amplitud del paso de <c>CubeInsect</c> va con speed/1,5;
+    /// si no bajara, el paso se saturaría y las patas patinarían.</summary>
+    public const float FolkSpeed = 3f * FolkScale;
     /// <summary>Holgura a cada lado del par que se cruza (la evitación del agente y el giro del cuerpo).</summary>
     public const float SideMargin = 0.2f;
-    /// <summary>PASO LIBRE entre dos muebles: dos agentes hombro con hombro (4 × 0,4 = 1,6 m) + 0,2 m a cada lado = 2,0 m.
-    /// Es el mismo estándar del santuario (<see cref="FurnitureSpacing.Standard"/>).</summary>
+    /// <summary>PASO LIBRE entre dos muebles (E4): dos cuerpos recogidos andando (4 × 0,5 = 2,0 m) + 0,2 m a cada lado = 2,4 m.
+    /// (El santuario sigue con el suyo, <see cref="FurnitureSpacing.Standard"/> = 2 m: allí andan personas.)</summary>
     public const float Passage = 4f * AgentRadius + 2f * SideMargin;
-    /// <summary>Las calles de un pueblo (dos pasos: se cruzan dos parejas, o un carro y una persona).</summary>
-    public const float Street = 2f * Passage;
-    /// <summary>Delante de cada puesto de trabajo, el sitio donde se pone el trabajador (fondo libre).</summary>
-    public const float WorkSpot = 0.9f;
-    /// <summary>Alto a partir del cual una pieza tapa la vista de un insecto-humano (ojos a ~1,6 m de 1,7 m de alto): un muro.</summary>
+    /// <summary>El paso con que se montaron los microcosmos ANTES del encogimiento (2 agentes de 0,4 m + 0,2 + 0,2 = 2,0 m): vale
+    /// para los que aún tienen <see cref="MicroFloor.folkScale"/> = 1 (<see cref="PassageFor"/>).</summary>
+    public const float LegacyPassage = 2f;
+    /// <summary>Las calles de un pueblo (E4: se quedan en 4 m; caben dos parejas o un carro real de 2–2,5 m).</summary>
+    public const float Street = 4f;
+    /// <summary>Delante de cada puesto de trabajo, el sitio donde se pone el trabajador (fondo libre; 0,9 m → 0,6 m con s = 0,5).</summary>
+    public const float WorkSpot = 1.2f * FolkScale;
+    /// <summary>P4 · ANCHO MÍNIMO DE PUERTA: el cuerpo recogido andando + 0,2 m (1,2 m con s = 0,5). Las reales más estrechas se ensanchan.</summary>
+    public const float DoorWidth = TuckedWalkWidth + 0.2f;
+    /// <summary>P4 · ALTO MÍNIMO DE PUERTA: el alto con las antenas (~2,1 × s) + 0,2 m (1,25 m con s = 0,5). El real siempre basta.</summary>
+    public const float DoorHeight = 2.1f * FolkScale + 0.2f;
+    /// <summary>C4 · Por debajo de esta altura (m) no hay escaleras ni ascensores para moverse: trepan las paredes.</summary>
+    public const float LiftFrom = 12f;
+    /// <summary>Alto a partir del cual una pieza de edificio es un MURO (pide vista de corte y puerta).</summary>
     public const float WallHeight = 1.2f;
-    /// <summary>Alto desde el que una losa por encima de las cabezas es un techo.</summary>
+    /// <summary>Alto desde el que una losa por encima de las cabezas es un TECHO (pide vista de corte).</summary>
     public const float RoofHeight = 2.2f;
+
+    /// <summary>MicroPiece.kind del HITO reconocible de cada microcosmos (P5: el Falcon 1, la kallanka, la universidad de Leiden).</summary>
+    public const string Landmark = "hito";
+    /// <summary>MicroPiece.kind del TRANSPORTE DE ÉPOCA que se usa (P6: se sube, se mueve, lleva carga).</summary>
+    public const string Vehicle = "vehiculo";
+    /// <summary>MicroPiece.kind de una escalera que es MONUMENTO (C4: escalinatas, pirámides; no camino obligado).</summary>
+    public const string Monument = "monumento";
+
+    /// <summary>El paso que vale en <paramref name="scope"/>: el nuevo (<see cref="Passage"/>) SOLO si su microcosmos se montó con el cuerpo
+    /// encogido (<see cref="MicroFloor.folkScale"/> &lt; 0,99, lo pone AreaMicrocosmos al construir). Todo lo demás guarda el de antes
+    /// (<see cref="LegacyPassage"/>, 2 m) hasta que se reconstruya: los microcosmos aún sin rehacer (folkScale = 1) y las escenas que no
+    /// llevan MicroFloor (MobWorld_Mesopotamia, las casas de ciclo de vida: ronda del piloto, 2026-11-18, «paso de 2,10 m (&lt; 2,4)»).</summary>
+    public static float PassageFor(Transform scope)
+    {
+        if (scope == null) return LegacyPassage;
+        MicroFloor mf = scope.GetComponentInParent<MicroFloor>(true);
+        if (mf == null) mf = scope.GetComponentInChildren<MicroFloor>(true);
+        return mf != null && mf.folkScale < 0.99f ? Passage : LegacyPassage;
+    }
 
     /// <summary>Desde qué año un microcosmos es de ERA AVANZADA (las primeras ciudades: Uruk, ~3500 a. C.): el pueblo o la ciudad
     /// real ocupa el piso entero. Antes, las aldeas (Huerto, ~9500 a. C.) conviven con los muebles gigantes del área.</summary>
     public const int TownFrom = -3500;
     public static bool IsTownEra(int year) => year >= TownFrom;
+    /// <summary>(2026-11-18) Microcosmos de era avanzada SIN PUEBLO: un puesto aislado (la isla de lanzamiento de Omelek). No se le pide el
+    /// pueblo entero (MicroFloors.Validate, ≥ 12 edificios) ni se le quitan los muebles gigantes: es naturaleza con sus pocos edificios reales.</summary>
+    public static readonly HashSet<string> Outposts = new HashSet<string> { "Omelek" };
+    public static bool IsOutpost(string display) => display != null && Outposts.Contains(display);
 
     /// <summary>Las necesidades básicas que todo pueblo cubre (MicroPiece.need).</summary>
     public static readonly string[] Needs = { "dormir", "aseo", "lavarse", "comer", "sentarse", "cocinar" };
 
     /// <summary>Nombres de piezas que son muros o techos de edificio (los del borde del piso, «Muros_del_piso», no cuentan).</summary>
     public static readonly string[] WallRoofNames = { "Muro_", "Muro ", "Cubierta", "Faldon", "Dintel", "Techo", "Tejado", "Chapitel" };
+    /// <summary>Los de <see cref="WallRoofNames"/> que son TECHO (el resto, muro).</summary>
+    public static readonly string[] RoofNames = { "Cubierta", "Faldon", "Techo", "Tejado", "Chapitel" };
 
     /// <summary>MicroPiece.kind de una BARRERA HISTÓRICA que es la propia historia (el muro del gueto de Varsovia, cuyas salidas
-    /// son los pasos de la misión): la única excepción a la regla 2; no cuenta como muro ni para el paso.</summary>
+    /// son los pasos de la misión): no es un edificio (no pide vista de corte ni puerta) ni cuenta para el paso.</summary>
     public const string Historic = "historico";
+
+    /// <summary>¿Es <paramref name="r"/> un MURO de edificio (por nombre o por forma: alto, largo y fino)?</summary>
+    public static bool IsWall(Renderer r, float groundY)
+    {
+        if (r == null) return false;
+        string n = r.name; foreach (string w in WallRoofNames) if (n.StartsWith(w)) return System.Array.IndexOf(RoofNames, w) < 0;
+        Bounds b = r.bounds; float thin = Mathf.Min(b.size.x, b.size.z), len = Mathf.Max(b.size.x, b.size.z);
+        return b.size.y >= WallHeight && len >= 2.5f && thin <= 0.6f && b.min.y - groundY < WallHeight;
+    }
+
+    /// <summary>¿Es <paramref name="r"/> un TECHO de edificio (por nombre o por forma: una losa por encima de las cabezas)?</summary>
+    public static bool IsRoof(Renderer r, float groundY)
+    {
+        if (r == null) return false;
+        string n = r.name; foreach (string w in RoofNames) if (n.StartsWith(w)) return true;
+        Bounds b = r.bounds;
+        return b.min.y - groundY >= RoofHeight && b.size.x * b.size.z >= 4f && b.size.y < 1f;
+    }
+
+    /// <summary>Los renderers de <paramref name="site"/> que son de su edificio (no de un mueble, un puesto, la gente, el cristal,
+    /// el borde del piso ni la barrera histórica).</summary>
+    public static IEnumerable<Renderer> ShellRenderers(Transform site, Transform scope = null)
+    {
+        foreach (Renderer r in site.GetComponentsInChildren<Renderer>(true))
+        {
+            if (r.GetComponentInParent<MicroPiece>(true) != null || r.GetComponentInParent<AreaFunctionStation>(true) != null) continue;
+            if (r.GetComponentInParent<FolkLineage>(true) != null || r.GetComponentInParent<CubeInsect>(true) != null) continue;   // la gente
+            if (r.GetComponentInParent<GlassWall>(true) != null || r.GetComponentInParent<MicroDoor>(true) != null) continue;
+            if (Excluded(r.transform, scope ?? site)) continue;
+            yield return r;
+        }
+    }
 
     /// <summary>Lo que se mide: los muebles (<see cref="MicroPiece"/> de más fuera, no pisables) y los puestos
     /// (<see cref="AreaFunctionStation"/>) que no son parte de un mueble.</summary>
@@ -72,41 +162,46 @@ public static class MicroBuildRules
     /// las violaciones. Con <paramref name="needs"/>, exige además las necesidades básicas. Se registra en la consola:
     /// «[Reglas] etiqueta: OK (n muebles, necesidades: …)» o un aviso con las primeras violaciones.
     /// </summary>
-    public static List<string> Validate(Transform scope, string label = null, bool needs = true, bool log = true)
+    public static List<string> Validate(Transform scope, string label = null, bool needs = true, bool log = true, List<string> advice = null)
     {
         var bad = new List<string>();
         if (scope == null) { bad.Add("sin raíz"); return bad; }
         label = label ?? scope.name;
+        float passage = PassageFor(scope);
 
-        // 2 · Sin muros ni techos: por nombre en todo el subárbol (menos los muros del borde del piso y el área gigante) y por
-        //     forma dentro de cada edificio (AreaFunctionSite): una pieza alta y larga y fina es un muro; una losa por encima de
-        //     las cabezas, un techo; un bloque alto y ancho, un edificio macizo (tapa la vista igual).
-        foreach (Transform t in scope.GetComponentsInChildren<Transform>(true))
-        {
-            if (Excluded(t, scope)) continue;
-            MicroPiece hp = t.GetComponentInParent<MicroPiece>(true);
-            if (hp != null && hp.kind == Historic) continue;   // la barrera que ES la historia (el muro del gueto de Varsovia)
-            if (t.GetComponentInParent<GlassWall>(true) != null) continue;   // PARED DE CRISTAL (2026-11-03): la excepción permitida (no tapa la vista); se mide en la regla 1
-            foreach (string n in WallRoofNames) if (t.name.StartsWith(n)) { bad.Add($"muro/techo «{t.name}» en {Path(t, scope)}"); break; }
-        }
+        // 2 · MUROS Y TECHOS PERMITIDOS, con vista de corte y puerta (P2–P4, 2026-11-18). Cada edificio (AreaFunctionSite) con algún
+        //     muro (por nombre o forma: alto, largo y fino) o techo (losa por encima de las cabezas) lleva su CutawayView y al menos
+        //     una MicroDoor; cada puerta, de al menos DoorWidth × DoorHeight. (El borde del piso, la barrera histórica y el cristal
+        //     no son edificio.)
         foreach (AreaFunctionSite site in scope.GetComponentsInChildren<AreaFunctionSite>(true))
-            foreach (Renderer r in site.GetComponentsInChildren<Renderer>(true))
+        {
+            float gy = site.transform.position.y;
+            string wall = null, roof = null;
+            foreach (Renderer r in ShellRenderers(site.transform, scope))
             {
-                if (r.GetComponentInParent<MicroPiece>(true) != null || r.GetComponentInParent<AreaFunctionStation>(true) != null || Excluded(r.transform, scope)) continue;
-                if (r.GetComponentInParent<FolkLineage>(true) != null || r.GetComponentInParent<CubeInsect>(true) != null) continue;   // la gente
-                if (r.GetComponentInParent<GlassWall>(true) != null) continue;   // el cristal no tapa la vista: permitido (guarda el paso, regla 1)
-                Bounds b = r.bounds; float thin = Mathf.Min(b.size.x, b.size.z), len = Mathf.Max(b.size.x, b.size.z);
-                if (b.size.y >= WallHeight && len >= 2.5f && thin <= 0.6f) bad.Add($"muro «{r.name}» ({b.size.y:0.0} m de alto) en {site.title}");
-                else if (b.min.y - site.transform.position.y >= RoofHeight && b.size.x * b.size.z >= 4f && b.size.y < 1f) bad.Add($"techo «{r.name}» en {site.title}");
-                else if (b.size.y >= WallHeight && thin > 0.6f && b.size.x * b.size.z >= 6f) bad.Add($"bloque macizo «{r.name}» ({b.size.x:0} × {b.size.z:0} × {b.size.y:0} m) en {site.title}");
+                MicroPiece hp = r.GetComponentInParent<MicroPiece>(true);
+                if (hp != null && hp.kind == Historic) continue;
+                if (wall == null && IsWall(r, gy)) wall = r.name;
+                else if (roof == null && IsRoof(r, gy)) roof = r.name;
+                if (wall != null && roof != null) break;
             }
+            if (wall == null && roof == null) continue;
+            string what = wall != null && roof != null ? $"muros («{wall}») y techo («{roof}»)" : wall != null ? $"muros («{wall}»)" : $"techo («{roof}»)";
+            if (site.GetComponentInChildren<CutawayView>(true) == null && site.GetComponentInParent<CutawayView>(true) == null)
+                bad.Add($"«{site.title}» con {what} sin vista de corte (CutawayView, P2)");
+            if (wall != null && site.GetComponentInChildren<MicroDoor>(true) == null)
+                bad.Add($"«{site.title}» con muros y sin puerta (MicroDoor, P3)");
+        }
+        foreach (MicroDoor d in scope.GetComponentsInChildren<MicroDoor>(true))
+            if (d.width < DoorWidth - 0.01f || d.height < DoorHeight - 0.01f)
+                bad.Add($"puerta «{d.name}» de {d.width:0.00} × {d.height:0.00} m (< {DoorWidth:0.00} × {DoorHeight:0.00}: el cuerpo recogido no pasa, P4) en {Path(d.transform, scope)}");
 
         // 3 · Muebles detallados: un puesto que es UN cubo (con su malla en el propio puesto y sin MicroPiece) es un cubo liso.
         foreach (AreaFunctionStation s in scope.GetComponentsInChildren<AreaFunctionStation>(true))
             if (s.GetComponentInParent<MicroPiece>(true) == null && s.GetComponent<Renderer>() != null && s.transform.childCount == 0)
                 bad.Add($"puesto «{s.station}» de un solo cubo en {Path(s.transform, scope)}");
 
-        // 1 · Paso de 2 m entre muebles.
+        // 1 · El paso entre muebles (2,4 m; 2 m en los microcosmos aún sin encoger).
         var pieces = Pieces(scope);
         for (int i = 0; i < pieces.Count; i++)
             for (int j = i + 1; j < pieces.Count; j++)
@@ -114,7 +209,7 @@ public static class MicroBuildRules
                 if (pieces[i].t.IsChildOf(pieces[j].t) || pieces[j].t.IsChildOf(pieces[i].t)) continue;
                 if (pieces[i].t.GetComponent<GlassWall>() != null && pieces[j].t.GetComponent<GlassWall>() != null) continue;   // dos paños de cristal pueden ir pegados
                 float g = GapXZ(pieces[i].b, pieces[j].b);
-                if (g < Passage - 0.01f) bad.Add($"paso de {g:0.00} m (< {Passage:0.0}) entre «{pieces[i].t.name}» y «{pieces[j].t.name}»");
+                if (g < passage - 0.01f) bad.Add($"paso de {g:0.00} m (< {passage:0.0}) entre «{pieces[i].t.name}» y «{pieces[j].t.name}»");
             }
 
         // 8–12 · Los edificios (2026-11-03): su actividad e interacción, adaptados a humanos e insectos-humanos, su estilo del
@@ -126,12 +221,53 @@ public static class MicroBuildRules
         foreach (MicroPiece p in scope.GetComponentsInChildren<MicroPiece>(true)) if (!string.IsNullOrEmpty(p.need)) have.Add(p.need);
         if (needs) foreach (string n in Needs) if (!have.Contains(n)) bad.Add($"falta la necesidad básica «{n}»");
 
+        // P5, P6, C4 · Consejos (aún no son faltas).
+        List<string> tips = Advise(scope);
+        if (advice != null) advice.AddRange(tips);
+
         if (log)
         {
-            if (bad.Count == 0) Debug.Log($"[Reglas] {label}: OK ({pieces.Count} muebles a ≥ {Passage:0.0} m, sin muros ni techos, necesidades: {string.Join(", ", have)}).");
+            if (bad.Count == 0) Debug.Log($"[Reglas] {label}: OK ({pieces.Count} muebles a ≥ {passage:0.0} m, edificios con vista de corte y puerta, necesidades: {string.Join(", ", have)}).");
             else Debug.LogWarning($"[Reglas] {label}: {bad.Count} violaciones de docs/microcosmos-reglas-edificacion.md — " + string.Join(" · ", bad.GetRange(0, Mathf.Min(12, bad.Count))) + (bad.Count > 12 ? " …" : ""));
+            if (tips.Count > 0) Debug.Log($"[Reglas] {label}: consejos (P5, P6, C4) — " + string.Join(" · ", tips.GetRange(0, Mathf.Min(8, tips.Count))));
         }
         return bad;
+    }
+
+    /// <summary>
+    /// LOS CONSEJOS de docs/plan-microcosmos-realismo.md §3 que aún no son faltas (2026-11-18; pasarán a reglas cuando el piloto,
+    /// Microcosmos_ElonMusk, las cumpla):
+    /// - P5 · un HITO reconocible (MicroPiece «<see cref="Landmark"/>») en cada microcosmos (raíz con <see cref="MicroFloor"/>);
+    /// - P6 · un TRANSPORTE DE ÉPOCA que se use (MicroPiece «<see cref="Vehicle"/>»);
+    /// - C4 · ninguna escalera para moverse en un edificio de menos de <see cref="LiftFrom"/> m (trepan); las escaleras reales que
+    ///   son monumento llevan MicroPiece «<see cref="Monument"/>».
+    /// </summary>
+    public static List<string> Advise(Transform scope)
+    {
+        var tips = new List<string>();
+        if (scope == null) return tips;
+        if (scope.GetComponent<MicroFloor>() != null || scope.GetComponentInChildren<MicroFloor>(true) != null)
+        {
+            bool landmark = false, vehicle = false;
+            foreach (MicroPiece p in scope.GetComponentsInChildren<MicroPiece>(true)) { if (p.kind == Landmark) landmark = true; if (p.kind == Vehicle) vehicle = true; }
+            if (!landmark) tips.Add($"sin hito reconocible (MicroPiece «{Landmark}», P5)");
+            if (!vehicle) tips.Add($"sin transporte de época que se use (MicroPiece «{Vehicle}», P6)");
+        }
+        foreach (AreaFunctionSite site in scope.GetComponentsInChildren<AreaFunctionSite>(true))
+        {
+            float top = 0f, gy = site.transform.position.y; bool any = false;
+            foreach (Renderer r in ShellRenderers(site.transform, scope)) { top = Mathf.Max(top, r.bounds.max.y - gy); any = true; }
+            if (!any || top >= LiftFrom) continue;
+            foreach (Transform t in site.GetComponentsInChildren<Transform>(true))
+            {
+                if (!t.name.StartsWith("Escalera") && !t.name.StartsWith("Ascensor")) continue;
+                MicroPiece mp = t.GetComponentInParent<MicroPiece>(true);
+                if (mp != null && mp.kind == Monument) continue;
+                tips.Add($"«{t.name}» en «{site.title}» de {top:0} m (< {LiftFrom:0} m: sin escaleras ni ascensores, trepan las paredes, C4)");
+                break;
+            }
+        }
+        return tips;
     }
 
     /// <summary>

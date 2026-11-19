@@ -10,7 +10,8 @@ using UnityEngine;
 ///    aislamiento veterinario;
 /// 2. el cristal es transparente (no tapa la vista) y cada sala tiene su puerta (hueco de ≥ 2 m);
 /// 3. GUARDAN LOS 2 m: ningún mueble (de dentro ni de fuera) a menos de 2 m de un paño (FurnitureSpacing, en todo el hospital);
-/// 4. las reglas de los microcosmos (MicroBuildRules) dejan pasar el cristal (no es «muro») pero le miden el paso de 2 m.
+/// 4. las reglas de los microcosmos (MicroBuildRules, revisadas el 2026-11-18) no tratan el cristal como muro (no pide vista de
+///    corte ni puerta) pero le miden el paso del cuerpo encogido (2,4 m); el santuario sigue con sus 2 m (punto 3).
 /// </summary>
 public class GlassWallTest : MonoBehaviour, ITestUnit
 {
@@ -74,21 +75,24 @@ public class GlassWallTest : MonoBehaviour, ITestUnit
         }
         TestProbe.Check("dentro de cada sala, los muebles a ≥ 2 m de su cristal", worst >= 1.99f, worst == float.MaxValue ? "salas vacías" : $"el más justo: {worstRoom}");
 
-        // ── 4. LAS REGLAS DE LOS MICROCOSMOS ──
+        // ── 4. LAS REGLAS DE LOS MICROCOSMOS (2026-11-18: insectos-humanos a la mitad, paso de 2,4 m; muros permitidos con vista de
+        //       corte, pero el cristal no es muro: no la pide) ──
         var scope = new GameObject("Prueba_reglas_cristal").transform;
         scope.position = new Vector3(0f, -500f, 0f);
-        GlassWall.Box(scope, "prueba", Vector3.zero, new Vector2(6f, 6f), 0f, 0);
+        scope.gameObject.AddComponent<MicroFloor>().folkScale = MicroBuildRules.FolkScale;   // un microcosmos montado con el cuerpo encogido (sin MicroFloor valdría el paso de antes)
+        GlassWall.Box(scope, "prueba", Vector3.zero, new Vector2(7f, 7f), 0f, 0);
         Transform piece = new GameObject("Cama_prueba").transform; piece.SetParent(scope, false); piece.localPosition = new Vector3(0f, 0f, 1.6f);
         piece.gameObject.AddComponent<MicroPiece>();
         GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube); Destroy(cube.GetComponent<Collider>()); cube.transform.SetParent(piece, false); cube.transform.localScale = new Vector3(1f, 0.6f, 2f); cube.transform.localPosition = Vector3.up * 0.3f;
         yield return null;
         var r1 = MicroBuildRules.Validate(scope, "prueba de cristal", needs: false, log: false);
-        bool noWall = !r1.Any(s => s.Contains("muro") || s.Contains("techo")), passage = r1.Any(s => s.Contains("paso"));
+        bool noWall = !r1.Any(s => s.Contains("muro") || s.Contains("techo") || s.Contains("corte")), passage = r1.Any(s => s.Contains("paso"));
         piece.localPosition = Vector3.zero; cube.transform.localScale = new Vector3(1f, 0.6f, 1.6f);
         Physics.SyncTransforms();
         var r2 = MicroBuildRules.Validate(scope, "prueba de cristal", needs: false, log: false);
-        TestProbe.Check("MicroBuildRules: el cristal no cuenta como muro, pero un mueble a < 2 m de él sí incumple el paso; a 2 m, nada", noWall && passage && r2.Count == 0,
-            $"cama a ~0,6 m: [{string.Join("; ", r1.Take(3))}] · en el centro (2,2 m): [{string.Join("; ", r2.Take(3))}]");
+        // En el centro de la sala de 7 × 7 m: 3,0 m al cristal por los lados y 2,7 m por delante y detrás (≥ 2,4).
+        TestProbe.Check($"MicroBuildRules: el cristal no es muro (no pide vista de corte), pero un mueble a < {MicroBuildRules.Passage:0.0} m de él incumple el paso; a 2,7 m, nada", noWall && passage && r2.Count == 0,
+            $"cama a ~0,9 m: [{string.Join("; ", r1.Take(3))}] · en el centro (2,7 m): [{string.Join("; ", r2.Take(3))}]");
         Destroy(scope.gameObject);
 
         // EL SITIO DE CADA PUESTO MÉDICO (ronda 27: David ×14 dentro de «Quirofano veterinario 4», Yulo ×7 en el 3): el centro del cuerpo, de pie

@@ -46,7 +46,7 @@ public static class MicroSnapshot
             var cam = camGO.AddComponent<Camera>(); cam.fieldOfView = fov; cam.nearClipPlane = 0.1f; cam.farClipPlane = 3000f;
             cam.clearFlags = CameraClearFlags.SolidColor; cam.backgroundColor = new Color(0.55f, 0.7f, 0.85f);
             cam.transform.position = from; cam.transform.LookAt(at);
-            var rt = new RenderTexture(1100, 700, 24); cam.targetTexture = rt; cam.Render();
+            var rt = new RenderTexture(1100, 700, 24); cam.targetTexture = rt; ShotRender.Render(cam);
             RenderTexture.active = rt;
             var tex = new Texture2D(1100, 700, TextureFormat.RGB24, false); tex.ReadPixels(new Rect(0, 0, 1100, 700), 0, 0); tex.Apply();
             RenderTexture.active = null;

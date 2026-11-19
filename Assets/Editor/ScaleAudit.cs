@@ -6,7 +6,10 @@ using UnityEngine;
 /// AUDITORÍA DE ESCALA (menú): mide en la escena abierta el largo de cada especie (adultos, por los bounds de sus
 /// renderers) y lo compara con su tamaño real respecto al HUMANO (≈ 1,75 m). Avisa de lo que se sale (×0,7–×1,3).
 /// Excepción a propósito: las abejas y arañas de hielo (no son reales) miden como una CABEZA (≈ 25–30 cm).
-/// En los microcosmos, la referencia es la hormiga (el mirmidón) = un humano.
+/// En los microcosmos (2026-11-18, docs/plan-microcosmos-realismo.md §3.1) la referencia es «humano × s»: el insecto-humano
+/// (el mirmidón) mide la estatura de una persona × MicroBuildRules.FolkScale, y el mundo (muebles, edificios, árboles) va a 1:1.
+/// Se audita también cada insecto-humano de la escena: su estatura frente a 1,6–1,85 m × s y su ancho andando con las patas
+/// recogidas frente a MicroBuildRules.TuckedWalkWidth (CubeInsect.Footprint).
 /// </summary>
 public static class ScaleAudit
 {
@@ -49,6 +52,23 @@ public static class ScaleAudit
             Debug.Log($"[Escala] {kv.Key}: {avg:0.00} m de largo de media ({kv.Value.Count} adultos) → {verdict}");
         }
         Debug.Log($"[Escala] {off} especies fuera de escala.");
+        AuditFolk();
+    }
+
+    // LOS INSECTOS-HUMANOS (humano × s): estatura y ancho andando con las patas recogidas.
+    static void AuditFolk()
+    {
+        float s = MicroBuildRules.FolkScale, lo = 1.6f * s - 0.1f, hi = 1.85f * s + 0.15f;
+        int n = 0, tall = 0, wide = 0; float sumH = 0f, sumW = 0f;
+        foreach (CubeInsect ci in Object.FindObjectsByType<CubeInsect>(FindObjectsSortMode.None))
+        {
+            if (ci == null || !ci.folk || ci.GetComponentInParent<MicroPiece>() != null) continue;   // (las estatuas son monumentos)
+            float h = Height(ci.gameObject), w = ci.Footprint(true).x;
+            n++; sumH += h; sumW += w;
+            if (h < lo || h > hi) { tall++; if (tall <= 10) Debug.LogWarning($"[Escala] «{ci.name}» ({ci.species}) mide {h:0.00} m (humano × s: {1.6f * s:0.00}–{1.85f * s:0.00} m)."); }
+            if (w > MicroBuildRules.TuckedWalkWidth + 0.05f && ci.species == "Ant") { wide++; if (wide <= 10) Debug.LogWarning($"[Escala] «{ci.name}» anda con {w:0.00} m de ancho (> {MicroBuildRules.TuckedWalkWidth:0.00} recogido)."); }
+        }
+        if (n > 0) Debug.Log($"[Escala] Insectos-humanos (s = {s}): {n}, de {sumH / n:0.00} m de alto y {sumW / n:0.00} m de ancho andando de media; {tall} fuera de estatura, {wide} hormigas más anchas de lo recogido.");
     }
 
     static float Length(GameObject g)

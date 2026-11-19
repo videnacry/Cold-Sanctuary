@@ -79,41 +79,74 @@ public static class MicroBody
         if (ci == null || ins == null || string.IsNullOrEmpty(sp)) return Human(h);
         InsectMorphology.Spec s = InsectMorphology.ForFolk(InsectMorphology.ForSex(InsectMorphology.For(sp), ci.female));
         float L = Mathf.Abs(ins.localScale.z) * Mathf.Abs(g.transform.lossyScale.z);
-        var f = ForSpec(sp, s, L, h);
-        // Las manos, medidas (las piezas «Mano» de los brazos, con el torso erguido).
+        var f = ForSpec(sp, s, L, h, ci.folk);
+        // Las manos, medidas (las piezas «Mano» de los brazos, con el torso erguido); un poco por encima, porque cuelgan junto al
+        // cuerpo y en la mesa se levantan (0,15 m a escala humana: proporcional a la estatura).
         float hy = 0f; int n = 0;
         foreach (Renderer r in ins.GetComponentsInChildren<Renderer>(true)) if (r.name == "Mano") { hy += g.transform.InverseTransformPoint(r.bounds.center).y; n++; }
-        if (n > 0) f.hands = Mathf.Clamp(hy / n + 0.15f, 0.45f * h, 0.8f * h);
+        if (n > 0) f.hands = Mathf.Clamp(hy / n + HandsLift * h / MicroBuildRules.HumanStature, 0.45f * h, 0.8f * h);
+        // El vientre, medido (la cara de abajo del último segmento: el gáster, el abdomen, los élitros), que con la postura recogida
+        // queda más alto que el de la ficha.
+        string tail = s.body[s.body.Length - 1].name;
+        foreach (Renderer r in ins.GetComponentsInChildren<Renderer>(true))
+            if (r.name == tail && r.transform.parent != null && r.transform.parent.name == "Pivote") { f.belly = Mathf.Max(0.02f, g.transform.InverseTransformPoint(r.bounds.min).y); break; }
         return f;
     }
 
-    /// <summary>El cuerpo de la especie <paramref name="species"/> de <paramref name="height"/> m sin tenerlo delante (pruebas,
-    /// muebles por defecto): L se estima de la proporción erguida de la ficha.</summary>
-    public static Fit OfSpecies(string species, float height = 1.75f)
+    /// <summary>Lo que se levantan las manos sobre donde cuelgan al ponerlas en la mesa (m, a escala humana; × estatura / 1,75).</summary>
+    public const float HandsLift = 0.15f;
+
+    /// <summary>
+    /// El cuerpo de la especie <paramref name="species"/> de <paramref name="height"/> m sin tenerlo delante (pruebas, muebles por
+    /// defecto): L se estima de la proporción erguida de la ficha. Sin estatura (−1): una persona de 1,75 m o, si es un insecto-humano,
+    /// el tipo ENCOGIDO (<see cref="MicroBuildRules.FolkStature"/>), con su postura recogida.
+    /// </summary>
+    public static Fit OfSpecies(string species, float height = -1f)
     {
-        if (PlanOf(species) == Plan.Humano) return Human(height);
+        if (PlanOf(species) == Plan.Humano) return Human(height > 0f ? height : MicroBuildRules.HumanStature);
+        if (height <= 0f) height = MicroBuildRules.FolkStature;
         InsectMorphology.Spec s = InsectMorphology.ForFolk(InsectMorphology.For(species));
-        float total = 0f; foreach (var seg in s.body) total += seg.len;
-        // Erguido mide ~ el vientre + el tórax y la cabeza levantados + la columna (0,22 L): ver CubeInsect.Build.
-        float up = s.bodyHeight + 0.22f; for (int i = 0; i < Mathf.Min(2, s.body.Length); i++) up += s.body[i].len;
-        return ForSpec(species, s, height / Mathf.Max(0.3f, up), height);
+        // Erguido mide ~ el vientre (más alto con las patas recogidas) + el tórax y la cabeza levantados + la columna (0,22 L):
+        // ver CubeInsect.Build.
+        bool tuck = CubeInsect.TuckFolkLegs && !s.spider;
+        float up = s.bodyHeight + (tuck ? CubeInsect.FolkTuckBellyLift : 0f) + 0.22f; for (int i = 0; i < Mathf.Min(2, s.body.Length); i++) up += s.body[i].len;
+        return ForSpec(species, s, height / Mathf.Max(0.3f, up), height, true);
     }
 
-    static Fit ForSpec(string sp, InsectMorphology.Spec s, float L, float h)
+    // Los mínimos van × s (MicroBuildRules.FolkScale): con el cuerpo encogido, el largo de 1,2 m de antes recortaba a todos.
+    static Fit ForSpec(string sp, InsectMorphology.Spec s, float L, float h, bool folk)
     {
+        float k = MicroBuildRules.FolkScale;
         float total = 0f, wid = 0f; foreach (var seg in s.body) { total += seg.len; wid = Mathf.Max(wid, seg.wid); }
         var last = s.body[s.body.Length - 1];
         float legs = 0f; foreach (float[] leg in s.legs) { float a = 0f; foreach (float x in leg) a += x; legs = Mathf.Max(legs, a); }
         var f = new Fit { plan = PlanOf(sp), species = sp, height = h };
-        f.length = Mathf.Clamp(total * L + 0.25f, 1.2f, 6f);
-        f.width = Mathf.Clamp(wid * L, 0.3f, 2.2f);
+        f.length = Mathf.Clamp(total * L + 0.25f * k, 1.2f * k, 6f);
+        f.width = Mathf.Clamp(wid * L, 0.3f * k, 2.2f);
         // Tumbado, las patas se recogen junto al cuerpo (las de la araña quedan abiertas: la hamaca es más ancha).
-        f.span = Mathf.Clamp(f.width + (s.spider ? legs * L * 0.7f : legs * L * 0.35f), f.width + 0.2f, 3.2f);
-        f.belly = Mathf.Clamp(s.bodyHeight * L, 0.05f, 0.7f);
-        f.abdomen = Mathf.Clamp(last.len * L, 0.25f, 3f);
+        f.span = Mathf.Clamp(f.width + (s.spider ? legs * L * 0.7f : legs * L * 0.35f), f.width + 0.2f * k, 3.2f);
+        bool tuck = folk && CubeInsect.TuckFolkLegs && !s.spider;
+        f.belly = Mathf.Clamp((s.bodyHeight + (tuck ? CubeInsect.FolkTuckBellyLift : 0f)) * L, 0.05f * k, 0.7f);
+        f.abdomen = Mathf.Clamp(last.len * L, 0.25f * k, 3f);
         f.hands = 0.55f * h;
         return f;
     }
+
+    // ── LA MESA ALTA Y EL APOYO DE ABDOMEN (C1, 2026-11-18: comer y trabajar de pie, como descansa una hormiga) ──────────────
+    /// <summary>La altura del tablero de una MESA ALTA para <paramref name="f"/>: a sus manos (sus <see cref="Fit.hands"/> menos lo que
+    /// las levanta, <see cref="HandsLift"/>, menos un poco más para apoyar los antebrazos), × su estatura. Una persona: 0,75 m (sentada).</summary>
+    public static float StandingTable(Fit f)
+    {
+        if (!f.Insect) return 0.75f;
+        float k = f.height / MicroBuildRules.HumanStature;
+        return Mathf.Clamp(f.hands - 0.12f * k, 0.6f * MicroBuildRules.FolkScale, 1.0f);
+    }
+    /// <summary>La altura de la cara de arriba del APOYO DE ABDOMEN: justo bajo su vientre (2 cm), para que el gáster descanse en él.</summary>
+    public static float AbdomenRest(Fit f) => Mathf.Max(0.04f, f.belly - 0.02f);
+    /// <summary>El ancho del apoyo de abdomen: 1,5 × el ancho del cuerpo (que se vea detrás de cada comensal).</summary>
+    public static float AbdomenRestWidth(Fit f) => 1.5f * f.width;
+    /// <summary>El largo del apoyo de abdomen: el del abdomen.</summary>
+    public static float AbdomenRestLength(Fit f) => Mathf.Max(0.2f * MicroBuildRules.FolkScale, f.abdomen);
 
     /// <summary>Un cuerpo que valga para todos (un retrete o una mesa compartidos): lo más largo, lo más ancho, las manos a su
     /// media; el plan, el del primero (o humano si hay alguno).</summary>

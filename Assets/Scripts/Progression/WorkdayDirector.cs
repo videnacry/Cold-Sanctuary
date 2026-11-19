@@ -148,6 +148,7 @@ public class WorkdayDirector : MonoBehaviour
         today = roster.Plan(day, todays);
         Debug.Log($"[Reparto] Día {day} · opcionales omitidas: {(today.skipped.Count == 0 ? "ninguna" : string.Join(", ", today.skipped.Select(m => $"{m.id} ({m.area}, {m.hours:0.#} h)")))} · clones: {today.clones.Count}");
         foreach (string why in today.cloneReasons) Debug.Log($"[Reparto] Día {day} · {why}");   // (2026-11-09) cada clon, con su motivo
+        if (!roster.guardShifts) Debug.Log($"[Reparto] Día {day} · turnos de guardia desactivados (WorkRoster.guardShifts apagado; Berón 2026-11-16): {today.guardsOff.Count} sin repartir, {today.guardsOff.Sum(m => m.hours):0.#} h para lo demás");
         _orders.Clear(); _cloneOrders.Clear();   // (las órdenes guardadas eran del plan de ayer)
         int gymDays = GymProgramming.ApplyGymDays(today, roster.trainingAreas, roster.workers);   // los días de gimnasio de cada plan
         if (gymDays > 0) Debug.Log($"[Gimnasio] Día {day}: {gymDays} cambios en el entrenamiento de las 14 h por los días de cada plan; al gimnasio: {string.Join(", ", today.training.Where(kv => kv.Value == GymArea).Select(kv => kv.Key.name))}.");
@@ -292,7 +293,20 @@ public class WorkdayDirector : MonoBehaviour
         }
         foreach (var kv in _clones)
         {
-            if (kv.Value == null || OnOwnDuty(kv.Value)) continue;
+            if (kv.Value == null) continue;
+            // (Berón 2026-11-16, «muchas magnates en el restaurante a la hora de comer») Un clon solo existe en sus turnos: entre uno y otro
+            // (la comida, un hueco) se recoge, y al empezar el siguiente aparece en su puesto. Antes iban todos a la Cocina a las 11.
+            bool shows = CloneShows(today, kv.Key, h);
+            if (!shows && kv.Value.activeSelf && !FlyingCarpet.Riding(kv.Value) && !SiteLine.IsAway(kv.Value) && !AereoLink.IsAway(kv.Value))
+            { kv.Value.SetActive(false); _cloneOrders.Remove(kv.Key); continue; }
+            if (shows && !kv.Value.activeSelf)
+            {
+                string at = Where(kv.Key, h, out _);
+                Vector3 p = at != null ? WorkPoint(at, kv.Key.name) : Vector3.zero;
+                kv.Value.SetActive(true); _cloneOrders.Remove(kv.Key);
+                if (p != Vector3.zero) Teleport(kv.Value.transform, p);
+            }
+            if (!kv.Value.activeSelf || OnOwnDuty(kv.Value)) continue;
             if (!sliced || slot == 1 || !_cloneOrders.TryGetValue(kv.Key, out Order o))
             {
                 string where = Where(kv.Key, h, out string doing);
@@ -506,7 +520,16 @@ public class WorkdayDirector : MonoBehaviour
     }
 
     /// <summary>Dónde debe estar <paramref name="w"/> a la hora <paramref name="h"/> (área) y qué hace; null = libre.</summary>
-    public string Where(WorkRoster.Worker w, float h, out string doing)
+    /// <summary>¿Está el clon <paramref name="c"/> en uno de sus turnos a la hora <paramref name="h"/>? Fuera de ellos no está en la escena.</summary>
+    public static bool CloneShows(WorkRoster.DayPlan today, WorkRoster.Worker c, float h) =>
+        today != null && today.work.Any(a => a.worker == c && h >= a.start && h < a.start + a.mission.hours);
+
+    public string Where(WorkRoster.Worker w, float h, out string doing) => Slot(today, w, h, roster.initiationModel, out doing);
+
+    /// <summary>Dónde está <paramref name="w"/> a la hora <paramref name="h"/> según el plan del día: su misión, la comida, el entrenamiento o
+    /// nada. (Berón 2026-11-16, «muchas magnates en el restaurante a la hora de comer») Un clon de la Magnate solo existe en sus turnos: no
+    /// come ni entrena; antes todos los clones sin turno a las 11 iban a la Cocina.</summary>
+    public static string Slot(WorkRoster.DayPlan today, WorkRoster.Worker w, float h, bool initiationModel, out string doing)
     {
         doing = null;
         if (today == null) return null;
@@ -514,9 +537,10 @@ public class WorkdayDirector : MonoBehaviour
         if (h < s || h >= s + 8f) return null;   // fuera de la jornada: libre
         foreach (WorkRoster.Assignment a in today.work)
             if (a.worker == w && h >= a.start && h < a.start + a.mission.hours) { doing = a.mission.title; return a.mission.area; }
+        if (w.clone) return null;   // fuera de su turno, un clon no está
         if (h >= s + WorkRoster.FirstBlock && h < s + WorkRoster.FirstBlock + WorkRoster.LunchHours) { doing = "Comida"; return "Cocina"; }
         if (h < s + WorkRoster.MorningTraining && today.morning.TryGetValue(w, out string mt)) { doing = $"Entrenamiento de la mañana: {mt}"; return mt; }
-        if (h >= s + 6f && (h < s + 6f + WorkRoster.AfternoonTraining || !roster.initiationModel)) { doing = today.training.TryGetValue(w, out string t) ? $"Entrenamiento: {t}" : "Entrenamiento"; return today.training.TryGetValue(w, out string ta) ? ta : "Sala de Yoga"; }
+        if (h >= s + 6f && (h < s + 6f + WorkRoster.AfternoonTraining || !initiationModel)) { doing = today.training.TryGetValue(w, out string t) ? $"Entrenamiento: {t}" : "Entrenamiento"; return today.training.TryGetValue(w, out string ta) ? ta : "Sala de Yoga"; }
         doing = "Sin tarea asignada (disponible)";
         return null;
     }
@@ -647,7 +671,7 @@ public class WorkdayDirector : MonoBehaviour
             if (!OnOwnDuty(g)) Drive(g, AreaWork.Hospital, EvacuationDoing, null, true);
         }
         foreach (var kv in _clones)
-            if (kv.Value != null && NuclearSiteRule.InZone(kv.Value.transform.position)) { left++; if (!OnOwnDuty(kv.Value)) Drive(kv.Value, AreaWork.Hospital, EvacuationDoing, null, true); }
+            if (kv.Value != null && kv.Value.activeSelf && NuclearSiteRule.InZone(kv.Value.transform.position)) { left++; if (!OnOwnDuty(kv.Value)) Drive(kv.Value, AreaWork.Hospital, EvacuationDoing, null, true); }
         return left;
     }
 
@@ -862,11 +886,14 @@ public class WorkdayDirector : MonoBehaviour
 
     // [Jornada] LA COMIDA DE LAS 11:00: el servicio del restaurante (misión obligatoria de cada día) deja la carta en la barra con
     // raciones para todo el personal. Sin esto la barra estaba vacía a mediodía y nadie comía («no hay comida en ningún sitio»).
-    void StockLunch() => StockMeal("11:00 · la comida", roster.workers.Count + today.clones.Count + 2, 1);
+    void StockLunch() => StockMeal("11:00 · la comida", Diners(roster.workers.Count(w => !w.clone), today.clones.Count), 1);
 
     /// <summary>(ronda 54) Quiénes comen aquí ahora: el personal que está en esta escena (no los que pasan el día en otro santuario), la Magnate, el recién llegado
-    /// y los clones que sigan presentes.</summary>
-    int EatersNow() => roster.workers.Count(w => !w.clone && !RemoteStaff.Hidden(Body(w.name))) + 2 + _clones.Count(kv => kv.Value != null);
+    /// (sin los clones: Berón 2026-11-16, ya no comen ni van al restaurante).</summary>
+    int EatersNow() => Diners(roster.workers.Count(w => !w.clone && !RemoteStaff.Hidden(Body(w.name))), _clones.Count(kv => kv.Value != null));
+
+    /// <summary>Raciones de un servicio: las personas, la Magnate y el recién llegado. Los clones de la Magnate no comen (Berón 2026-11-16).</summary>
+    public static int Diners(int people, int clones) => people + 2;
 
     /// <summary>(ronda 54) Raciones de cada platillo para que <paramref name="people"/> personas hagan <paramref name="meals"/> comidas: lo que hay en la barra
     /// después de servir (tantas de cada uno) suma al menos personas × comidas. La merienda y la cena son 2 (antes 1: 13 raciones para 31 personas).</summary>
@@ -1451,6 +1478,7 @@ public class WorkdayDirector : MonoBehaviour
 
     void OnGUI()
     {
+        if (WebLigera.Active) return;   // (2026-11-13, web ligera: en el móvil, sin paneles de depuración ni rótulos flotantes)
         List<string> lines = Itinerary();
         if (lines == null) return;
         GUI.Box(new Rect(Screen.width - 330, 10, 320, 22 + lines.Count * 18), "");

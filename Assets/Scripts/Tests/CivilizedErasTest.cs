@@ -61,6 +61,8 @@ public class CivilizedErasTest : MonoBehaviour, ITestUnit
 
         var sites = new List<AreaFunctionSite>(); var jornadas = new List<MicroJornada>(); var couples = new List<FolkCouple>();
         int humans = 0, lairs = 0; var species = new HashSet<string>(); string tall = "";
+        // (2026-11-18) La escala del cuerpo con que se montó (MicroFloor.folkScale: 1 antes del encogimiento, MicroBuildRules.FolkScale después).
+        float k = 1f; foreach (GameObject root in s.GetRootGameObjects()) { MicroFloor mf = root.GetComponentInChildren<MicroFloor>(true); if (mf != null) { k = mf.folkScale; break; } }
         foreach (GameObject root in s.GetRootGameObjects())
         {
             sites.AddRange(root.GetComponentsInChildren<AreaFunctionSite>(true));
@@ -74,12 +76,12 @@ public class CivilizedErasTest : MonoBehaviour, ITestUnit
             foreach (CubeInsect ci in root.GetComponentsInChildren<CubeInsect>(true))
             {
                 if (!ci.folk || (ci.TryGetComponent(out BodyAging grow) && grow.growth < BodyAging.Adult)) continue;   // los niños nacidos aquí (crecen con BodyAging)
-                CapsuleCollider cc = ci.GetComponent<CapsuleCollider>(); if (cc != null && cc.height < 1.5f) { species.Add(ci.species); continue; }   // los niños (refugiados del 42) son pequeños a propósito
+                CapsuleCollider cc = ci.GetComponent<CapsuleCollider>(); if (cc != null && cc.height < 1.5f * k) { species.Add(ci.species); continue; }   // los niños (refugiados del 42) son pequeños a propósito
                 species.Add(ci.species);
                 Transform ins = ci.transform.Find("Insecto"); if (ins == null) continue;
                 bool any = false; Bounds b = default;
                 foreach (Renderer r in ins.GetComponentsInChildren<Renderer>()) { if (!r.enabled) continue; if (!any) { b = r.bounds; any = true; } else b.Encapsulate(r.bounds); }
-                if (any && (b.size.y < 1.3f || b.size.y > 2.3f) && !ci.name.StartsWith("Herido")) tall += $"{ci.name} {b.size.y:0.0} m; ";
+                if (any && (b.size.y < 1.3f * k || b.size.y > 2.3f * k) && !ci.name.StartsWith("Herido")) tall += $"{ci.name} {b.size.y:0.0} m; ";
             }
         }
         TestProbe.Check($"{sceneName}: nadie con cuerpo humano", humans == 0, $"{humans}");
@@ -100,7 +102,7 @@ public class CivilizedErasTest : MonoBehaviour, ITestUnit
         TestProbe.Check($"{sceneName}: cada edificio tiene puestos y funciones del registro para {Eras.Format(year)}", bad.Length == 0, bad);
         // (En el frente de 1914 son dos colonias de HORMIGAS: una especie, dos colores.)
         TestProbe.Check($"{sceneName}: insectos-humanos de ≥ 3 especies", species.Count >= (sceneName == "Microcosmos_Tregua1914" ? 1 : 3), string.Join(", ", species));
-        TestProbe.Check($"{sceneName}: todos de estatura parecida (1,3–2,3 m)", tall.Length == 0, tall);
+        TestProbe.Check($"{sceneName}: todos de estatura parecida ({1.3f * k:0.00}–{2.3f * k:0.00} m, × s = {k})", tall.Length == 0, tall);
         string jbad = "";
         foreach (MicroJornada j in jornadas) { j.ChooseNow("trabajo"); if (j.work != null && j.Station == null) jbad += j.name + "; "; }
         TestProbe.Check($"{sceneName}: con jornada (≥ 3) y cada uno encuentra puesto en su edificio", jornadas.Count >= 3 && jbad.Length == 0, jbad.Length > 0 ? jbad : $"{jornadas.Count} con jornada");
@@ -143,7 +145,7 @@ public class CivilizedErasTest : MonoBehaviour, ITestUnit
         foreach (MicroJornada j in jornadas) if (j.follow == null && j.work != null && j.work.Stations.Length == 0) jobless += j.name + "; ";
         TestProbe.Check($"{sceneName}: hay lugares de trabajo (edificios que no son casas) y cada jornada tiene el suyo", workplaces >= 1 && jobless.Length == 0, jobless.Length > 0 ? jobless : $"{workplaces} lugares de trabajo");
 
-        // Las REGLAS DE EDIFICACIÓN (docs/microcosmos-reglas-edificacion.md): paso de 2 m, sin muros ni techos, muebles
+        // Las REGLAS DE EDIFICACIÓN (docs/microcosmos-reglas-edificacion.md): paso (2,4 m; 2 m si aún sin encoger), muros con vista de corte, muebles
         // detallados y las necesidades básicas, en cada escena.
         var rules = new List<string>();
         foreach (GameObject root in s.GetRootGameObjects()) if (root.GetComponentInChildren<AreaFunctionSite>(true) != null) rules.AddRange(MicroBuildRules.Validate(root.transform, sceneName, true, false));

@@ -11,7 +11,6 @@ using UnityEngine;
 internal static partial class CivicBuilder
 {
     static readonly Style IshaBrick = new Style(C(0.7f, 0.46f, 0.34f), C(0.82f, 0.78f, 0.7f), C(0.6f, 0.35f, 0.25f), Roof.None, 3.4f);     // Isha: ladrillo de barro y suelo de piedra clara
-    static readonly Style FactorySteel = new Style(C(0.85f, 0.86f, 0.88f), C(0.82f, 0.83f, 0.85f), C(0.6f, 0.62f, 0.65f), Roof.None, 6f);  // la nave de SpaceX: chapa blanca y suelo de epoxi
     static readonly Style MountainTimber = new Style(C(0.72f, 0.66f, 0.56f), C(0.55f, 0.5f, 0.44f), C(0.35f, 0.36f, 0.38f), Roof.Gable, 3.2f);  // aldea de montaña: piedra, pino y teja gris
     static readonly Style TamilTile = new Style(C(0.92f, 0.88f, 0.78f), C(0.6f, 0.45f, 0.32f), C(0.7f, 0.32f, 0.22f), Roof.Gable, 3.2f);  // aldea tamil: encalado y teja de Mangalore
     static readonly Style PuebloStucco = new Style(C(0.82f, 0.68f, 0.52f), C(0.62f, 0.55f, 0.48f), C(0.55f, 0.4f, 0.3f), Roof.Flat, 3.2f);   // Albuquerque: estuco color adobe (Pueblo Revival), tejado plano
@@ -95,7 +94,7 @@ Mercado | 380 -460
 Parque | 900 300
 Piscina | 1050 -500
 Entrenamiento | 700 160
-Bomberos | 300 -780
+Bomberos | -45 430
 Policia | -500 -750
 Estudio | -700 -560
 Guarderia | 800 -780
@@ -318,35 +317,59 @@ relleno | 70 | 0 -650",
         return n;
     }
 
-    // ══ HAWTHORNE (2008): la sede de SpaceX (la nave de montaje, el control de misión, el banco del Merlin, la cafetería), un piso de
-    //    ingenieros y la ciudad de casas de estuco con su taller, su tienda y su taquería.
+    // ══ HAWTHORNE (2008), PILOTO DEL REALISMO (docs/plan-microcosmos-realismo.md, fase 1): la nave de SpaceX la levanta la historia en el
+    //    claro (StorySceneBuilder.Musk: 1 Rocket Road, con muros, techo, puerta y vista de corte, su control de misión, su cocina, sus aseos
+    //    y su zona de descanso); aquí, la ciudad: los apartamentos de los ingenieros y las casas de estuco CERRADAS (P1–P4: muros, azotea,
+    //    su puerta real de 0,9 m ensanchada a 1,2 m y la vista de corte), con su taller, su tienda y su taquería de Crenshaw.
+    //    La gente de SpaceX trabaja y come en la nave; duerme en los apartamentos.
+    static readonly Style HawthorneStucco = new Style(C(0.95f, 0.9f, 0.8f), C(0.72f, 0.7f, 0.66f), C(0.7f, 0.4f, 0.3f), Roof.Flat, 3f)
+    { enclosed = true, doorW = 0.9f, doorH = 2.03f, doorSource = "supuesto: puerta exterior de casa de EE. UU. (36 × 80 in)" };
+    static readonly Style HawthorneShop = new Style(C(0.86f, 0.84f, 0.8f), C(0.6f, 0.6f, 0.6f), C(0.5f, 0.5f, 0.52f), Roof.Flat, 4f)
+    { enclosed = true, doorW = 1.8f, doorH = 2.13f, doorSource = "supuesto: doble puerta de escaparate de Crenshaw Boulevard" };
+
     static int HawthorneTown(Transform t)
     {
         var s = Town(t, "Hawthorne", new[]
         {
-            new Lot("Nave de montaje de SpaceX", "Taller", "Nave de montaje de SpaceX (Falcon 1)", 20f, 14f, FactorySteel,
-                S("banco_taller", -5f, 3f, 2.4f, 1f, "Etapa del Falcon 1 en su cuna"), S("torno", 0f, 3f, 1.6f, 1f, "Torno de control numérico"), S("banco_taller", 5f, 3f, 2.4f, 1f, "Banco de soldar tanques"), S("armario", 0f, -4f, 1.6f, 0.6f, "Herramientas y llaves dinamométricas")),
-            new Lot("Control de misión", "Centro de tecnología", "Control de misión de Hawthorne", 16f, 12f, FactorySteel,
-                S("consola", -3f, 2f, 2f, 0.8f, "Consola de lanzamiento"), S("consola", 3f, 2f, 2f, 0.8f, "Consola de telemetría"), S("pizarra", 0f, -3f, 2.4f, 0.4f, "Pizarra de la secuencia de vuelo")),
-            new Lot("Banco de pruebas del Merlin", "Taller", "Taller de motores Merlin", 14f, 10f, FactorySteel,
-                S("banco_taller", 0f, 2f, 2.4f, 1f, "Motor Merlin 1C en su soporte"), S("armario", 3f, -3f, 1.2f, 0.6f, "Inyectores y válvulas")),
-            new Lot("Cafetería de la fábrica", "Restaurante", "Cafetería de la fábrica", 14f, 10f, FactorySteel,
-                S("cocina", -3f, 2f, 2f, 0.8f, "Cocina de la cafetería"), S("mesa", 2f, -1f, 2f, 1f, "Mesas largas"), S("barra", 3f, 3f, 2f, 0.8f, "Barra de café")),
-            new Lot("Apartamentos de ingenieros", "Casa", "Apartamento de ingenieros jóvenes", 14f, 10f, Stucco,
+            new Lot("Apartamentos de ingenieros", "Casa", "Apartamento de ingenieros jóvenes", 14f, 10f, HawthorneStucco,
                 S("cama", -4f, 2f, 1.2f, 2f, "Cama"), S("cama", 0f, 2f, 1.2f, 2f, "Cama"), S("cama", 4f, 2f, 1.2f, 2f, "Cama")),
+            new Lot("Taquería de Crenshaw", "Restaurante", "Taquería de Hawthorne", 12f, 10f, HawthorneShop, S("fogon", 0f, 0f, 1.6f, 0.8f, "Plancha de los tacos"), S("mesa", 0f, 0f, 1.6f, 1f, "Mesa con bancos")),
+            // (2026-11-18) EL SUPERMERCADO DEL BARRIO (supuesto: no se ha encontrado cuál había en 2008 junto a Crenshaw y la calle 120; uno de
+            // cadena de la época, con sus cajas, sus pasillos, frutas y verduras y la cámara de lácteos y congelados).
+            new Lot("Supermercado del barrio", "Mercado", "Supermercado del barrio (supuesto: de cadena, 2008)", 24f, 16f, HawthorneShop,
+                S("puesto", 0f, 0f, 1.6f, 0.8f, "Caja registradora 1"), S("puesto", 0f, 0f, 1.6f, 0.8f, "Caja registradora 2"), S("puesto", 0f, 0f, 2.4f, 1f, "Frutas y verduras"),
+                S("estante", 0f, 0f, 0.8f, 1.6f, "Pasillo de conservas"), S("estante", 0f, 0f, 0.8f, 1.6f, "Pasillo de cereales y pan"), S("estante", 0f, 0f, 0.8f, 1.6f, "Productos de limpieza"),
+                S("armario", 0f, 0f, 1.6f, 0.8f, "Cámara de lácteos y congelados")),
         }, new[]
         {
-            new Lot("Casa de Hawthorne", "Casa", "Casa de estuco de Hawthorne", 10f, 9f, Stucco),
-            new Lot("Taller de coches", "Taller", "Taller de coches de Crenshaw", 12f, 10f, Stucco, S("banco_taller", 0f, 0f, 2f, 0.9f, "Banco del mecánico"), S("armario", 0f, 0f, 1.2f, 0.6f, "Recambios")),
-            new Lot("Tienda de la esquina", "Mercado", "Tienda de la esquina", 10f, 8f, Stucco, S("puesto", 0f, 0f, 2f, 1f, "Mostrador"), S("estante", 0f, 0f, 0.8f, 1.6f, "Estantes")),
-            new Lot("Taquería", "Restaurante", "Taquería de Hawthorne", 10f, 8f, Stucco, S("fogon", 0f, 0f, 1.6f, 0.8f, "Plancha de los tacos"), S("mesa", 0f, 0f, 1.6f, 1f, "Mesa con bancos")),
+            new Lot("Casa de Hawthorne", "Casa", "Casa de estuco de Hawthorne", 10f, 9f, HawthorneStucco),
+            new Lot("Taller de coches", "Taller", "Taller de coches de Crenshaw", 12f, 10f, HawthorneShop, S("banco_taller", 0f, 0f, 2f, 0.9f, "Banco del mecánico"), S("armario", 0f, 0f, 1.2f, 0.6f, "Recambios")),
+            new Lot("Tienda de la esquina", "Mercado", "Tienda de la esquina", 10f, 8f, HawthorneShop, S("puesto", 0f, 0f, 2f, 1f, "Mostrador"), S("estante", 0f, 0f, 0.8f, 1.6f, "Estantes")),
         }, C(0.45f, 0.45f, 0.46f));
+        // La nave de SpaceX (la historia la levantó antes, en el claro): ahí trabaja y come su gente.
+        AreaFunctionSite fab = null;
+        foreach (AreaFunctionSite a in t.GetComponentsInChildren<AreaFunctionSite>(true)) if (a.title != null && a.title.StartsWith("Fábrica de SpaceX")) fab = a;
         int n = 0;
-        n += W(t, "Ingeniero de aviónica", s[1], "sabio", s[3], null, s[4]);
-        n += W(t, "Técnica de integración", s[0], "", s[3], null, s[4]);
-        n += W(t, "Técnico de motores", s[2], "", s[3], null, s[4]);
-        n += W(t, "Cocinera de la cafetería", s[3], "cocinero", s[3], null, null);
-        n += Townsfolk(t, s, 5, "Vecina de Hawthorne", "Vecino de Hawthorne", s[3], null);
+        n += W(t, "Ingeniero de aviónica", fab, "sabio", fab, null, s[0]);
+        n += W(t, "Técnica de integración", fab, "", fab, null, s[0]);
+        n += W(t, "Técnico de motores", fab, "", fab, null, s[0]);
+        n += W(t, "Cocinera de la nave", fab, "cocinero", fab, null, s[0]);
+        n += W(t, "Técnico de aviónica", fab, "", fab, null, s[0]);
+        n += W(t, "Laminadora de composite", fab, "", fab, null, s[0]);
+        n += W(t, "Ingeniera de software de vuelo", fab, "sabio", fab, null, s[0]);
+        n += W(t, "Inspectora de calidad", fab, "", fab, null, s[0]);
+        n += W(t, "Maquinista del torno CNC", fab, "", fab, null, s[0]);
+        n += W(t, "Ingeniera de propulsión (pruebas)", fab, "sabio", fab, null, s[0]);
+        n += W(t, "Ingeniero de estructuras", fab, "sabio", fab, null, s[0]);
+        n += W(t, "Controladora de misión (turno de tarde)", fab, "sabio", fab, null, s[0]);
+        if (fab != null) NightShiftHome(t, fab, "Técnico de motores", "Técnica de integración", "Inspectora de calidad");
+        if (fab != null) Trades(t, fab);
+        TownDog(s);
+        HawthorneStreets(t);   // (2026-11-18) semáforos y pasos de cebra, la patrulla, y el aeropuerto municipal de fondo
+        n += W(t, "Cocinero de la taquería", s[1], "cocinero", s[1], null, null);
+        n += W(t, "Cajera del supermercado", s[2], "comerciante", s[1], null, null);
+        SupermarketTruck(s[2]);
+        n += Townsfolk(t, s, 3, "Vecina de Hawthorne", "Vecino de Hawthorne", s[1], null);
         return n;
     }
 
@@ -535,5 +558,200 @@ relleno | 70 | 0 -650",
         n += C2(t, "Hortelana de Tanghin", "Tejedor de Tanghin", s[5], s[4], s[1]);
         n += Townsfolk(t, s, 7, "Vecina de Uagadugú", "Vecino de Uagadugú", s[4], null);
         return n;
+    }
+}
+
+internal static partial class CivicBuilder
+{
+    /// <summary>
+    /// (2026-11-18, fase 2 del plan) EL HOGAR DEL TURNO DE NOCHE de la nave de SpaceX (supuesto de juego: en 2008 la fábrica trabajaba 24 h,
+    /// Satellite Today, 24-11-2008): tres trabajadores de la nave viven en ella —sus catres, su retrete, su lavamanos y la MESA ALTA del
+    /// comedor con sus apoyos de abdomen como mesa de casa, con su despensa—, así sus necesidades (comer, dormir, el baño) se ven dentro, a
+    /// pocos pasos, sin rehacer los muebles de la nave (por eso la nave es «notHome» para el reparto de hogares).
+    /// </summary>
+    static void NightShiftHome(Transform t, AreaFunctionSite fab, params string[] names)
+    {
+        var people = new List<GameObject>();
+        foreach (MicroJornada j in t.GetComponentsInChildren<MicroJornada>(true)) if (System.Array.IndexOf(names, j.name) >= 0 && j.work == fab) people.Add(j.gameObject);
+        if (people.Count == 0) return;
+        var go = new GameObject("Hogar (turno de noche de la nave)"); go.transform.SetParent(fab.transform, false);
+        Household h = go.AddComponent<Household>(); h.family = "Turno de noche de la nave de SpaceX";
+        Transform standing = null;
+        foreach (MicroPiece p in fab.GetComponentsInChildren<MicroPiece>(true))
+        {
+            if (p.transform.parent != fab.transform) continue;
+            if (p.kind == "cama" && h.beds.Count < people.Count) h.beds.Add(p.transform);
+            else if (p.kind == "inodoro" && h.toilet == null) h.toilet = p.transform;
+            else if (p.kind == "lavabo" && h.washbasin == null) h.washbasin = p.transform;
+            else if (p.kind == "mesa" && p.transform.Find("Mesa") != null)
+            {
+                bool rests = false, chairs = false;
+                foreach (Transform c in p.transform) { if (c.name == "Apoyo de abdomen") rests = true; if (c.name == "Silla") chairs = true; }
+                if (rests && !chairs) standing = p.transform;
+            }
+        }
+        h.table = standing;
+        if (standing != null) foreach (Transform c in standing) if (c.name == "Apoyo de abdomen") h.seats.Add(c);
+        var pantry = new GameObject("Despensa").transform; pantry.SetParent(go.transform, false);
+        pantry.position = standing != null ? standing.position : fab.transform.position;
+        var fc = pantry.gameObject.AddComponent<FoodContainer>(); fc.dishName = "comida de la nave"; fc.rations = 3 * people.Count; fc.capacity = 20;
+        h.pantry = fc;
+        foreach (GameObject m in people)
+        {
+            h.members.Add(m);
+            if (m.TryGetComponent(out PersonLife pl)) pl.home = h;
+            if (m.TryGetComponent(out MicroJornada j)) j.home = fab;
+        }
+        Debug.Log($"[Hogares] Hawthorne: {people.Count} del turno de noche viven en la nave ({h.beds.Count} catres, mesa alta {(standing != null ? "sí" : "NO")}).");
+    }
+}
+
+internal static partial class CivicBuilder
+{
+    /// <summary>
+    /// (2026-11-18) EL PERRO DEL BARRIO de Hawthorne para las misiones de CodeShip (MissionSites: «Cochinilla hormiguera»): en el mundo de
+    /// insectos, el perro es una cochinilla hormiguera del tamaño de un perro mediano (0,7 m, como la fauna del pueblo de MicroBiome), delante de
+    /// la primera «Casa de Hawthorne», con su cuenco de agua y su correa colgada de la valla.
+    /// </summary>
+    static void TownDog(List<AreaFunctionSite> sites)
+    {
+        AreaFunctionSite house = null;
+        foreach (AreaFunctionSite a in sites) if (a != null && a.name.StartsWith("Casa de Hawthorne")) { house = a; break; }
+        if (house == null) foreach (AreaFunctionSite a in sites) if (a != null && a.building == "Casa") { house = a; break; }
+        if (house == null) { Debug.LogWarning("[Pueblos] Hawthorne: sin casa para el perro del barrio."); return; }
+        Transform floor = house.transform.Find("Suelo");
+        float front = floor != null ? floor.localScale.z * 0.5f : 5f;
+        var root = new GameObject("Perro del barrio (con su cuenco y su correa)").transform; root.SetParent(house.transform, false);   // (con la casa: si se corre, el perro va con ella)
+        root.position = house.transform.TransformPoint(new Vector3(-2.5f, 0f, -front - 2.5f));
+        var dog = new GameObject("Cochinilla hormiguera"); dog.transform.SetParent(root, false);
+        CubeInsect.Dress(dog, "Woodlouse", C(0.8f, 0.72f, 0.6f), 0.7f);
+        var wl = dog.AddComponent<WorldLabel>(); wl.text = "Cochinilla hormiguera (el perro del barrio)"; wl.height = 0.8f;
+        AreaMicrocosmos.Box(root, "Cuenco_del_perro", new Vector3(0.8f, 0.05f, 0.4f), new Vector3(0.25f, 0.1f, 0.25f), AreaMicrocosmos.Mat("Civ_Cuenco_azul", C(0.2f, 0.4f, 0.75f)), false);
+        AreaMicrocosmos.Box(root, "Agua_del_cuenco", new Vector3(0.8f, 0.1f, 0.4f), new Vector3(0.2f, 0.01f, 0.2f), AreaMicrocosmos.Mat("Civ_Agua", C(0.45f, 0.65f, 0.85f)), false);
+        AreaMicrocosmos.Box(root, "Poste_de_la_valla", new Vector3(-0.8f, 0.5f, 0.6f), new Vector3(0.08f, 1f, 0.08f), AreaMicrocosmos.Mat("Civ_Madera_valla", C(0.55f, 0.45f, 0.35f)), true);
+        AreaMicrocosmos.Box(root, "Correa", new Vector3(-0.74f, 0.65f, 0.6f), new Vector3(0.02f, 0.5f, 0.02f), AreaMicrocosmos.Mat("Civ_Correa_roja", C(0.75f, 0.15f, 0.15f)), false);
+    }
+}
+
+internal static partial class CivicBuilder
+{
+    /// <summary>
+    /// (2026-11-18, Berón: la seguridad urbana y el entorno real) HAWTHORNE, LA CALLE:
+    /// - el cruce de Crenshaw Boulevard con Rocket Road: los cuatro SEMÁFOROS de báculo y los PASOS DE CEBRA (supuesto de diseño: el estándar
+    ///   de Caltrans);
+    /// - una PATRULLA de la policía de Hawthorne (Hawthorne Police Department, 12501 S. Hawthorne Blvd.; Crown Victoria blanca y negra de la
+    ///   época, supuesto de modelo) en Rocket Road. Los bomberos son la estación 162 del Condado (12151 S. Crenshaw Blvd., el «Bomberos» del
+    ///   plano, al sur de la calle 120);
+    /// - el AEROPUERTO MUNICIPAL DE HAWTHORNE (Jack Northrop Field), al oeste de Crenshaw, DE FONDO (sin interiores): la pista 07/25 (1489 ×
+    ///   30 m reales; aquí cabe en el campo del plano), su eje, la torre, tres hangares y avionetas Cessna 172 (8,3 × 11 m).
+    /// Coordenadas del plano (CivicBuilder.FamousPlans «Hawthorne»: Crenshaw en x = −80, Rocket Road en z = 120, el campo en (−620, 150)).
+    /// </summary>
+    static void HawthorneStreets(Transform t)
+    {
+        Material pole = AreaMicrocosmos.Mat("Civ_Baculo", C(0.5f, 0.52f, 0.5f)), signal = AreaMicrocosmos.Mat("Civ_Semaforo", C(0.85f, 0.7f, 0.1f));
+        Material redL = AreaMicrocosmos.Mat("Civ_Luz_roja", C(0.9f, 0.1f, 0.1f)), greenL = AreaMicrocosmos.Mat("Civ_Luz_verde", C(0.1f, 0.85f, 0.3f)), paint = AreaMicrocosmos.Mat("Civ_Pintura_blanca", C(0.95f, 0.95f, 0.93f));
+        Transform cross = new GameObject("Cruce de Crenshaw Boulevard y Rocket Road (semáforos)").transform; cross.SetParent(t, false); cross.localPosition = new Vector3(-80f, 0f, 120f);
+        foreach (var (x, z, yaw) in new[] { (-17f, -8f, 0f), (17f, -8f, 90f), (17f, 8f, 180f), (-17f, 8f, 270f) })
+        {
+            Transform p = new GameObject("Semáforo").transform; p.SetParent(cross, false); p.localPosition = new Vector3(x, 0f, z); p.localRotation = Quaternion.Euler(0f, yaw, 0f);
+            AreaMicrocosmos.Box(p, "Baculo", new Vector3(0f, 3.2f, 0f), new Vector3(0.25f, 6.4f, 0.25f), pole, true);
+            AreaMicrocosmos.Box(p, "Brazo", new Vector3(3f, 6.2f, 0f), new Vector3(6f, 0.2f, 0.2f), pole, false);
+            AreaMicrocosmos.Box(p, "Caja_del_semaforo", new Vector3(5.5f, 5.6f, 0f), new Vector3(0.4f, 1.1f, 0.35f), signal, false);
+            AreaMicrocosmos.Box(p, "Luz_roja", new Vector3(5.5f, 5.95f, -0.18f), new Vector3(0.25f, 0.25f, 0.02f), redL, false);
+            AreaMicrocosmos.Box(p, "Luz_verde", new Vector3(5.5f, 5.25f, -0.18f), new Vector3(0.25f, 0.25f, 0.02f), greenL, false);
+            AreaMicrocosmos.Box(p, "Pulsador_peatonal", new Vector3(0f, 1.1f, -0.15f), new Vector3(0.15f, 0.2f, 0.08f), signal, false);
+        }
+        for (int k = 0; k < 8; k++)
+        {
+            AreaMicrocosmos.Box(cross, "Paso_de_cebra", new Vector3(-13f + k * 3.6f, 0.06f, -10.5f), new Vector3(1.6f, 0.01f, 3f), paint, false);
+            AreaMicrocosmos.Box(cross, "Paso_de_cebra", new Vector3(19.5f, 0.06f, -5f + k * 1.4f), new Vector3(3f, 0.01f, 0.6f), paint, false);
+        }
+        // La patrulla.
+        Transform car = new GameObject("Patrulla de la policía de Hawthorne").transform; car.SetParent(t, false); car.localPosition = new Vector3(-40f, 0f, 116.5f); car.localRotation = Quaternion.Euler(0f, 90f, 0f);
+        AreaMicrocosmos.Box(car, "Carroceria", new Vector3(0f, 0.65f, 0f), new Vector3(1.95f, 0.7f, 5.4f), AreaMicrocosmos.Mat("Civ_Negro_patrulla", C(0.06f, 0.06f, 0.08f)), true);
+        AreaMicrocosmos.Box(car, "Puertas_blancas", new Vector3(0f, 0.7f, 0.2f), new Vector3(1.97f, 0.5f, 2.2f), paint, false);
+        AreaMicrocosmos.Box(car, "Cabina", new Vector3(0f, 1.25f, -0.2f), new Vector3(1.8f, 0.5f, 2.6f), AreaMicrocosmos.Mat("Civ_Vidrio_oscuro", C(0.18f, 0.24f, 0.3f)), false);
+        AreaMicrocosmos.Box(car, "Puente_de_luces", new Vector3(0f, 1.55f, 0f), new Vector3(1.4f, 0.12f, 0.3f), redL, false);
+        AreaMicrocosmos.Box(car, "Puente_de_luces_azul", new Vector3(0.4f, 1.56f, 0f), new Vector3(0.5f, 0.13f, 0.31f), AreaMicrocosmos.Mat("Civ_Luz_azul", C(0.1f, 0.3f, 0.95f)), false);
+        // El aeropuerto municipal, de fondo.
+        Material asphalt = AreaMicrocosmos.Mat("Civ_Asfalto_pista", C(0.22f, 0.22f, 0.23f)), hangarM = AreaMicrocosmos.Mat("Civ_Hangar", C(0.75f, 0.76f, 0.78f));
+        Transform ap = new GameObject("Aeropuerto municipal de Hawthorne (Jack Northrop Field)").transform; ap.SetParent(t, false); ap.localPosition = new Vector3(-620f, 0f, 150f);
+        AreaMicrocosmos.Box(ap, "Pista_07_25", new Vector3(0f, 0.05f, 0f), new Vector3(880f, 0.04f, 30f), asphalt, false);
+        for (int k = 0; k < 28; k++) AreaMicrocosmos.Box(ap, "Eje_de_la_pista", new Vector3(-405f + k * 30f, 0.075f, 0f), new Vector3(15f, 0.01f, 0.9f), paint, false);
+        foreach (float x in new[] { -430f, 430f }) for (int k = 0; k < 6; k++) AreaMicrocosmos.Box(ap, "Umbral", new Vector3(x, 0.075f, -11f + k * 4.4f), new Vector3(20f, 0.01f, 1.8f), paint, false);
+        AreaMicrocosmos.Box(ap, "Torre_de_control", new Vector3(60f, 9f, 28f), new Vector3(4f, 18f, 4f), hangarM, true);
+        AreaMicrocosmos.Box(ap, "Cabina_de_la_torre", new Vector3(60f, 19.5f, 28f), new Vector3(6f, 3f, 6f), AreaMicrocosmos.Mat("Civ_Vidrio_torre", C(0.35f, 0.5f, 0.55f)), false);
+        for (int k = 0; k < 3; k++) AreaMicrocosmos.Box(ap, "Hangar", new Vector3(-180f + k * 40f, 4f, 34f), new Vector3(30f, 8f, 12f), hangarM, true);
+        for (int k = 0; k < 3; k++)
+        {
+            Transform c = new GameObject("Avioneta Cessna 172").transform; c.SetParent(ap, false); c.localPosition = new Vector3(-100f + k * 18f, 0f, 21f);
+            Material w = AreaMicrocosmos.Mat("Civ_Avioneta_blanca", C(0.95f, 0.95f, 0.96f));
+            AreaMicrocosmos.Box(c, "Fuselaje", new Vector3(0f, 1.2f, 0f), new Vector3(1.1f, 1.3f, 8.3f), w, true);
+            AreaMicrocosmos.Box(c, "Ala_alta", new Vector3(0f, 2.3f, 0.6f), new Vector3(11f, 0.12f, 1.5f), w, false);
+            AreaMicrocosmos.Box(c, "Estabilizador", new Vector3(0f, 1.6f, -3.8f), new Vector3(3.4f, 0.08f, 0.9f), w, false);
+            AreaMicrocosmos.Box(c, "Deriva", new Vector3(0f, 2.3f, -3.9f), new Vector3(0.08f, 1.4f, 1.0f), AreaMicrocosmos.Mat("Civ_Franja_azul", C(0.15f, 0.25f, 0.6f)), false);
+        }
+        var wl = ap.gameObject.AddComponent<WorldLabel>(); wl.text = "Aeropuerto municipal de Hawthorne (Jack Northrop Field), pista 07/25"; wl.height = 25f;
+    }
+}
+
+internal static partial class CivicBuilder
+{
+    /// <summary>
+    /// (2026-11-18, Berón: «quienes crean las naves son los trabajadores») LOS OFICIOS DE LA NAVE DE SPACEX EN 2008, cada uno con su PUESTO de
+    /// verdad (el nombre exacto del mueble) y su TURNO: la fábrica trabajaba 24 horas (Satellite Today, 24-11-2008, «SpaceX facilities open 24
+    /// hours to deliver on contracts»), así que hay turno de día (8:00), de tarde (14:00) y de noche (20:00). Los oficios salen de la planta de
+    /// 2008 (The Fabricator, sept. y nov. de 2008: taller de máquinas propio, soldadura, aviónica, composite; Satellite Today: ingenieros y
+    /// maquinistas codo con codo). Las herramientas, las de la función del puesto (ActivityPerformer).
+    /// </summary>
+    static void Trades(Transform t, AreaFunctionSite fab)
+    {
+        var table = new (string name, string trade, string post, float shift)[]
+        {
+            ("Ingeniero de aviónica", "ingeniero de aviónica", "Banco de aviónica", 8f),
+            ("Técnico de aviónica", "técnico de aviónica (cableado y cajas de vuelo)", "Banco de aviónica", 8f),
+            ("Ingeniera de software de vuelo", "ingeniera de software de vuelo", "Puesto de ingeniería (software de vuelo)", 8f),
+            ("Laminadora de composite", "laminadora de composite (la cofia)", "Banco de composite (la cofia)", 8f),
+            ("Maquinista del torno CNC", "maquinista de control numérico", "Torno de control numérico", 8f),
+            ("Ingeniera de propulsión (pruebas)", "ingeniera de propulsión", "Puesto de ingeniería (propulsión)", 8f),
+            ("Ingeniero de estructuras", "ingeniero de estructuras", "Pizarra: la secuencia del vuelo 4", 8f),
+            ("Cocinera de la nave", "cocinera", "Cocina de la nave (supuesto)", 8f),
+            ("Controladora de misión (turno de tarde)", "controladora de misión", "Consola de telemetría", 14f),
+            ("Técnico de motores", "técnico de motores (Merlin 1C)", "Banco del Merlin 1C", 20f),
+            ("Técnica de integración", "técnica de integración (pares de apriete)", "Herramientas y llaves dinamométricas", 20f),
+            ("Inspectora de calidad", "inspectora de calidad (válvulas e inyectores)", "Banco de mecanizado: válvulas e inyectores del Merlin", 20f),
+        };
+        var stations = new HashSet<string>(); foreach (AreaFunctionStation s in fab.Stations) if (s != null) stations.Add(s.name);
+        int set = 0; var missing = new List<string>();
+        foreach (MicroJornada j in t.GetComponentsInChildren<MicroJornada>(true))
+            foreach (var row in table)
+            {
+                if (j.name != row.name || j.work != fab) continue;
+                j.trade = row.trade; j.shiftStart = row.shift; set++;
+                if (stations.Contains(row.post)) j.post = row.post; else missing.Add(row.post);
+                if (j.TryGetComponent(out WorldLabel wl)) wl.text = $"{j.name} · {row.trade} · turno de las {row.shift:0}:00";
+            }
+        Debug.Log($"[Jornada micro] Hawthorne: {set} oficios de la nave con su puesto y su turno (día 8:00, tarde 14:00, noche 20:00)" + (missing.Count > 0 ? $"; sin el puesto: {string.Join(", ", missing)}." : "."));
+    }
+}
+
+internal static partial class CivicBuilder
+{
+    /// <summary>(2026-11-18) LA CADENA DE LA COMIDA del barrio: el camión del distribuidor descargando en la trasera del supermercado (palés
+    /// de cajas y la plataforma elevadora), supuesto.</summary>
+    static void SupermarketTruck(AreaFunctionSite market)
+    {
+        if (market == null) return;
+        Transform floor = market.transform.Find("Suelo");
+        float back = floor != null ? floor.localScale.z * 0.5f : 8f;
+        var root = new GameObject("Camión del distribuidor (reparto al supermercado)").transform; root.SetParent(market.transform, false);
+        root.localPosition = new Vector3(0f, 0f, back + 4.5f); root.localRotation = Quaternion.Euler(0f, 90f, 0f);
+        Material white = AreaMicrocosmos.Mat("Civ_Blanco_camion", C(0.93f, 0.93f, 0.94f)), dark = AreaMicrocosmos.Mat("Civ_Negro_ruedas", C(0.08f, 0.08f, 0.08f));
+        AreaMicrocosmos.Box(root, "Caja_refrigerada", new Vector3(0f, 2f, -1.5f), new Vector3(2.5f, 2.6f, 8f), white, true);
+        AreaMicrocosmos.Box(root, "Equipo_de_frio", new Vector3(0f, 3.1f, 2.6f), new Vector3(1.6f, 0.6f, 0.3f), dark, false);
+        AreaMicrocosmos.Box(root, "Cabina", new Vector3(0f, 1.5f, 3.6f), new Vector3(2.3f, 2.2f, 2f), AreaMicrocosmos.Mat("Civ_Azul_cabina", C(0.2f, 0.3f, 0.55f)), true);
+        AreaMicrocosmos.Box(root, "Plataforma_elevadora", new Vector3(0f, 0.6f, -6f), new Vector3(2.3f, 0.08f, 1.2f), dark, false);
+        for (int k = 0; k < 3; k++) AreaMicrocosmos.Box(root, "Palé_de_cajas", new Vector3(-0.6f + k * 0.6f, 0.45f, -7.5f), new Vector3(0.55f, 0.9f, 0.8f), AreaMicrocosmos.Mat("Civ_Carton", C(0.68f, 0.52f, 0.34f)), false);
+        foreach (var (x, z) in new[] { (-1.1f, 3.6f), (1.1f, 3.6f), (-1.1f, -3.5f), (1.1f, -3.5f) }) AreaMicrocosmos.Box(root, "Rueda", new Vector3(x, 0.5f, z), new Vector3(0.35f, 1f, 1f), dark, false);
     }
 }

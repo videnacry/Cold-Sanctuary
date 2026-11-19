@@ -421,7 +421,7 @@ public class TreeOfFieldsTest : MonoBehaviour, ITestUnit
         Vector3 navL = new Vector3(8f, 0f, -12f);
         bool nav = fl1 != null && UnityEngine.AI.NavMesh.SamplePosition(fl1.transform.TransformPoint(navL), out UnityEngine.AI.NavMeshHit nh, 1f, UnityEngine.AI.NavMesh.AllAreas)
                    && Vector3.Distance(nh.position, fl1.transform.TransformPoint(navL)) < 0.7f;
-        TestProbe.Check("el NavMesh del árbol gira con él", nav && rot.NavRefreshes > nav0, $"{rot.NavRefreshes - nav0} recolocaciones");
+        TestProbe.Check("[CV-06] el NavMesh del árbol gira con él", nav && rot.NavRefreshes > nav0, $"{rot.NavRefreshes - nav0} recolocaciones");
         Destroy(stand);
         if (sc != null) sc.Enter("arbol({vueltaHoras:0})"); else TreeRotator.Set(0f);
         float deg1 = rot.TotalDegrees; float t1 = Time.time;

@@ -145,7 +145,7 @@ public class YogaClassTest : MonoBehaviour, ITestUnit
         TestProbe.Check("la clase llega al final de la secuencia", c == null || c.Now == YogaClass.Phase.Done, $"{steps} pasos");
         TestProbe.Check($"en cada paso todos los practicantes copian la postura del maestro (al llegar la postura + {copyLimit:0} s) (±{tolerance:0}°)", copied == steps,
             $"{copied}/{steps} pasos (el más lento {worstCopy:0.0} s){(slow.Length > 0 ? " · sin copiar a tiempo: " + slow : "")}");
-        TestProbe.Check("cada practicante se queda en su esterilla durante toda la clase (≤ 1 m del centro)", worstMat <= 1f, $"peor {worstMat:0.00} m ({matWho})");
+        TestProbe.Check("[CV-08] cada practicante se queda en su esterilla durante toda la clase (≤ 1 m del centro)", worstMat <= 1f, $"peor {worstMat:0.00} m ({matWho})");
         TestProbe.Check("todos miran al maestro (≤ 30°)", worstFace <= 30f, $"peor {worstFace:0}° ({faceWho})");
         TestProbe.Check("el maestro se queda en la tarima", offTarima == 0, $"{offTarima}/{frames} fotogramas fuera");
         foreach (var kv in who) TestProbe.Check($"«{kv.Key.name}» no se teletransporta", kv.Value.maxJump <= 0f, kv.Value.maxJump > 0f ? $"salto de {kv.Value.maxJump:0.00} m" : "");

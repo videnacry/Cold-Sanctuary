@@ -56,6 +56,7 @@ public static partial class StorySceneBuilder
         // LOS FAMOSOS (StorySceneBuilder.Famosos.cs, docs/microcosmos-famosos.md): una historia de su vida pública en su pueblo real.
         ("YogaRoom_Area", "Velliangiri", "Microcosmos_Sadhguru", new Color(0.8f, 0.7f, 0.55f), new System.Func<Transform, int>(Sadhguru)),
         ("Control_de_mision", "Hawthorne", "Microcosmos_ElonMusk", new Color(0.7f, 0.72f, 0.78f), new System.Func<Transform, int>(ElonMusk)),
+        ("Control_de_mision", "Omelek", "Microcosmos_ElonMuskOmelek", new Color(0.55f, 0.75f, 0.8f), new System.Func<Transform, int>(Omelek)),   // (2026-11-18) el día del lanzamiento: StorySceneBuilder.Omelek.cs
         ("MartialArts_Area", "Aldea de la montaña", "Microcosmos_Goku", new Color(0.85f, 0.6f, 0.35f), new System.Func<Transform, int>(Goku)),
         ("Informatics_Area", "Albuquerque", "Microcosmos_BillGates", new Color(0.55f, 0.62f, 0.75f), new System.Func<Transform, int>(BillGates)),
         ("TextileStudio_Area", "Omaha", "Microcosmos_WarrenBuffett", new Color(0.7f, 0.6f, 0.5f), new System.Func<Transform, int>(WarrenBuffett)),
@@ -110,6 +111,7 @@ public static partial class StorySceneBuilder
         ["Feria de las Hazañas"] = ("un día de hoy (feria inventada)", 10.0f),   // no es un día real
         ["Velliangiri"] = ("24 de junio de 1999", 6.0f),   // el amanecer del día en que termina la consagración del Dhyanalinga
         ["Hawthorne"] = ("28 de septiembre de 2008", 16.25f),   // 23:15 UTC: las 16:15 en California, la hora del cuarto lanzamiento
+        ["Omelek"] = ("29 de septiembre de 2008 en las Islas Marshall (28 de septiembre en California)", 7.5f),   // la mañana de la evacuación de la isla; el lanzamiento, a las 11:15 locales (23:15 UTC)
         ["Aldea de la montaña"] = ("un amanecer de primavera (homenaje a Dragon Ball; sin fecha real)", 6.0f),   // ficción: el entrenamiento empieza al amanecer
         ["Albuquerque"] = ("primavera de 1975 (Micro-Soft nace el 4 de abril)", 10.0f),   // la mañana en MITS
         ["Omaha"] = ("30 de agosto de 1983 (el 53 cumpleaños de Buffett)", 10.0f),   // la mañana en la tienda (hora representativa)
@@ -732,10 +734,11 @@ public static partial class StorySceneBuilder
         //    renacido, cada uno su insecto. Erguida, a su estatura (1,72 m), con su pelo negro corto y cara humana; ropa negra.
         GameObject bruce = new GameObject(BruceLeeName);
         bruce.transform.SetParent(t, false); bruce.transform.localPosition = new Vector3(-12f, 0f, -6f);
-        var col = bruce.AddComponent<CapsuleCollider>(); col.height = 1.72f; col.radius = 0.3f; col.center = Vector3.up * 0.86f;
-        CubeInsect.DressFolk(bruce, "Mantis", 1.72f, BruceLeeName, female: false);
+        float bh = MicroBuildRules.Stature(1.72f);   // (2026-11-18) encogido como todos los insectos-humanos (MicroBuildRules.FolkScale)
+        var col = bruce.AddComponent<CapsuleCollider>(); col.height = bh; col.radius = 0.3f * MicroBuildRules.FolkScale; col.center = Vector3.up * bh * 0.5f;
+        CubeInsect.DressFolk(bruce, "Mantis", bh, BruceLeeName, female: false);
         CubeInsect.WearShirt(bruce, dark);
-        WorldLabel bl = bruce.AddComponent<WorldLabel>(); bl.text = BruceLeeName; bl.height = 2.1f;
+        WorldLabel bl = bruce.AddComponent<WorldLabel>(); bl.text = BruceLeeName; bl.height = bh + 0.4f * MicroBuildRules.FolkScale;
         MartialForms forms = bruce.AddComponent<MartialForms>();
 
         int n = 1;

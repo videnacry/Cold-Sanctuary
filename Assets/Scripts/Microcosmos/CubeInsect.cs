@@ -348,6 +348,9 @@ public partial class CubeInsect : MonoBehaviour
         int np = sp.legs.Length; float edge = sp.spider ? 45f : 30f;
         float restYaw = np <= 1 ? 0f : Mathf.Lerp(edge, -edge, p / (float)(np - 1));
         if (raptor) restYaw = 75f; if (jump) restYaw = -70f;
+        // POSTURA RECOGIDA del insecto-humano (2026-11-18, docs/plan-microcosmos-realismo.md §3.1): el par trasero, algo más atrás.
+        bool tuck = _dressingFolk && TuckFolkLegs && !sp.spider && !raptor && !jump;
+        if (tuck && np > 1 && p == np - 1) restYaw = FolkTuckRearYaw;
         var coxa = new GameObject($"Pata_{p}_{(s < 0 ? "I" : "D")}").transform; coxa.SetParent(pivot, false);
         coxa.localPosition = hip; coxa.localRotation = Quaternion.Euler(0f, s * (90f - restYaw), 0f);
         Part(coxa, "Coxa", new Vector3(0f, 0f, sp.coxa * 0.5f), new Vector3(w * 1.3f, w * 1.3f, sp.coxa), c);
@@ -367,8 +370,8 @@ public partial class CubeInsect : MonoBehaviour
         {
             float fw = jump ? w * 3f : raptor ? w * 1.6f : w;   // fémur saltador muy grueso; raptor con espinas (más ancho)
             Transform fe = Joint(troch, "Femur", sp.troch, raptor ? -70f : 0f); Part(fe, "Femur", new Vector3(0f, 0f, L[0] * 0.5f), new Vector3(fw, fw, L[0]), c);
-            // tibia: rodilla a 100° (saltadora y raptora, plegadas contra el fémur)
-            Transform ti = Joint(fe, "Tibia", L[0], jump ? 172f : raptor ? 168f : 100f); Part(ti, "Tibia", new Vector3(0f, 0f, L[1] * 0.5f), new Vector3(w * 0.85f, w * 0.85f, L[1]), c);
+            // tibia: rodilla a 100° (saltadora y raptora, plegadas contra el fémur); recogida, más cerrada (la tibia bajo el cuerpo)
+            Transform ti = Joint(fe, "Tibia", L[0], jump ? 172f : raptor ? 168f : tuck ? FolkTuckKnee : 100f); Part(ti, "Tibia", new Vector3(0f, 0f, L[1] * 0.5f), new Vector3(w * 0.85f, w * 0.85f, L[1]), c);
             if (raptor) for (int k = 0; k < 3; k++) Part(fe, "Espina", new Vector3(0f, -fw * 0.6f, L[0] * (0.3f + k * 0.25f)), new Vector3(w * 0.3f, w * 0.8f, w * 0.3f), c);
             Transform ta = Joint(ti, "Tarso", L[1], jump ? -150f : raptor ? 0f : -45f); Part(ta, "Tarso", new Vector3(0f, 0f, L[2] * 0.5f), new Vector3(w * 0.7f, w * 0.6f, L[2]), c);
             tips.Add(Tip(ta, L[2]));

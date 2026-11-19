@@ -35,6 +35,19 @@ public class TestPipelineTest : MonoBehaviour, ITestUnit
         TestProbe.Check("la fila de resultados va y vuelve igual (TSV)", back != null && back.group == 50 && back.unit == "JornadaTest" && back.pass == 44 && back.fail == 2
             && Mathf.Abs(back.seconds - 515.3f) < 0.06f && back.status == "FALLOS" && back.fails.Count == 2 && back.fails[1] == "dos con tabulador", row.ToTsv());
 
+        // (2026-11-13, sistema de QA) El ID de caso al principio del texto de un check va a su propia columna, «casos», al final de la fila.
+        var withCases = new TestResults.Row { group = 113, unit = "RepartoSantuariosTest", pass = 3, fail = 1, seconds = 0f, status = "FALLOS", cases = "CV-10 OK, CV-15 FAIL" };
+        withCases.fails.Add("CV-15 nadie apagado");
+        TestResults.Row backCases = TestResults.Parse(withCases.ToTsv()), old = TestResults.Parse("50\tJornadaTest\t1\t0\t2.0\tOK\t");
+        TestProbe.Check("la fila de resultados lleva la columna «casos» al final (cabecera …fallos, casos) y va y vuelve igual; una fila vieja sin ella se lee",
+            TestResults.Header.EndsWith("\tfallos\tcasos") && backCases != null && backCases.cases == "CV-10 OK, CV-15 FAIL" && backCases.fails.Count == 1
+            && old != null && old.cases == "", withCases.ToTsv());
+        int c0 = TestProbe.Cases.Count;
+        bool probe = TestProbe.Check("[" + "QA-99] (de prueba: este ID no es un caso; se quita en seguida)", true);
+        bool noted = TestProbe.Cases.Count == c0 + 1 && TestProbe.Cases[c0].id == "QA-99" && TestProbe.Cases[c0].ok;
+        if (TestProbe.Cases.Count > c0) TestProbe.Cases.RemoveRange(c0, TestProbe.Cases.Count - c0);
+        TestProbe.Check("el TestProbe apunta el ID de caso con que empieza el texto de un check, y si pasó", probe && noted, $"{TestProbe.Cases.Count} casos apuntados");
+
         HashSet<string> parsed = TestPresets.Parse("# comentario\nAereoTest\t110\t28\n\n  TraceFieldTest\t1\t0  \n");
         TestProbe.Check("una lista se lee: una clase por línea, sin comentarios", parsed.SetEquals(new[] { "AereoTest", "TraceFieldTest" }), string.Join(",", parsed));
         HashSet<string> rapida = TestPresets.Units(TestPresets.Rapida);

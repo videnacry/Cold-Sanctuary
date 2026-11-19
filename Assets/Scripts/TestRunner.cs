@@ -86,12 +86,12 @@ public class TestRunner : MonoBehaviour
             if (allParallel)
             {
                 TestProbe.Context(g, "paralelo");
-                int p0 = TestProbe.GrandPass, f0 = TestProbe.GrandFail, n0 = TestProbe.Fails.Count; float t0 = Time.realtimeSinceStartup;
+                int p0 = TestProbe.GrandPass, f0 = TestProbe.GrandFail, n0 = TestProbe.Fails.Count, k0 = TestProbe.Cases.Count; float t0 = Time.realtimeSinceStartup;
                 List<Coroutine> running = new List<Coroutine>();
                 foreach (ITestUnit u in group) running.Add(StartCoroutine(Guard(u, null)));
                 foreach (Coroutine c in running) yield return c;   // barrera: esperar a todo el grupo
                 var row = new TestResults.Row { group = g, unit = "paralelo: " + string.Join(",", group.Select(x => x.GetType().Name)), pass = TestProbe.GrandPass - p0, fail = TestProbe.GrandFail - f0, seconds = Time.realtimeSinceStartup - t0 };
-                row.fails.AddRange(TestProbe.Fails.Skip(n0)); row.status = row.fail > 0 ? "FALLOS" : "OK"; TestResults.Add(row);
+                row.fails.AddRange(TestProbe.Fails.Skip(n0)); row.cases = QaCheck.CaseSummary(TestProbe.Cases.Skip(k0)); row.status = row.fail > 0 ? "FALLOS" : "OK"; TestResults.Add(row);
             }
             else
             {
@@ -114,7 +114,7 @@ public class TestRunner : MonoBehaviour
     {
         string name = u.GetType().Name;
         TestProbe.Context(u.Group, name);
-        int p0 = TestProbe.GrandPass, f0 = TestProbe.GrandFail, n0 = TestProbe.Fails.Count; float t0 = Time.realtimeSinceStartup;
+        int p0 = TestProbe.GrandPass, f0 = TestProbe.GrandFail, n0 = TestProbe.Fails.Count, k0 = TestProbe.Cases.Count; float t0 = Time.realtimeSinceStartup;
         float maxDeltaWas = Time.maximumDeltaTime;
         if (u is IFastGameTime fast && fast.MaxDeltaTime > Time.maximumDeltaTime)
         {
@@ -138,6 +138,7 @@ public class TestRunner : MonoBehaviour
         Time.maximumDeltaTime = maxDeltaWas;
         var row = new TestResults.Row { group = u.Group, unit = name, pass = TestProbe.GrandPass - p0, fail = TestProbe.GrandFail - f0, seconds = Time.realtimeSinceStartup - t0 };
         row.fails.AddRange(TestProbe.Fails.Skip(n0));
+        row.cases = QaCheck.CaseSummary(TestProbe.Cases.Skip(k0));
         row.status = status ?? (row.fail > 0 ? "FALLOS" : "OK");
         TestResults.Add(row);
         TestProbe.Context(0, "");

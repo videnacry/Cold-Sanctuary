@@ -37,6 +37,18 @@ public static partial class MicroBiome
               townFauna = new[] {
                 new Pet("Aphid", 2, 2.4f, C(0.92f, 0.9f, 0.85f), "Vaca de la aldea (en el microcosmos, un pulgón)"),
                 new Pet("Woodlouse", 2, 0.7f, C(0.75f, 0.6f, 0.45f), "Perro de la aldea (en el microcosmos, una cochinilla hormiguera)") } };
+            // ── Omelek (atolón de Kwajalein, Islas Marshall), finales de septiembre de 2008: isla de coral baja. Cocoteros (Cocos nucifera),
+            //    naupaka de playa (Scaevola taccada), Pemphis acidula y la hierba de la arena; cangrejos fantasma (Ocypode) y ermitaños (Coenobita)
+            //    en la playa (USFWS y RMI, flora y fauna de los atolones de las Marshall; Kwajalein Atoll Environmental Standards). Sin perros ni gatos.
+            case "Omelek": return new Biome { title = "Omelek (2008): isla de coral del atolón de Kwajalein", ground = C(0.9f, 0.86f, 0.74f), plants = new[] {
+                new Plant(Kind.Shrub, 6, "Cocotero (Cocos nucifera)", 1500, C(0.3f, 0.5f, 0.25f), C(0.55f, 0.4f, 0.2f)),
+                new Plant(Kind.Shrub, 8, "Naupaka de playa (Scaevola taccada)", 150, C(0.3f, 0.5f, 0.28f), C(0.95f, 0.95f, 0.9f)),
+                new Plant(Kind.Shrub, 4, "Pemphis (Pemphis acidula)", 120, C(0.35f, 0.45f, 0.3f), C(0.9f, 0.85f, 0.95f)),
+                new Plant(Kind.Grass, 8, "Hierba de la arena (Lepturus repens)", 20, C(0.55f, 0.6f, 0.35f), C(0.65f, 0.65f, 0.4f)),
+                new Plant(Kind.Sand, 10, "Arena de coral", 0, C(0.92f, 0.88f, 0.76f), Sand) },
+              bugs = new[] {
+                new Bug("GhostCrab", 6, 40, C(0.85f, 0.8f, 0.65f), "Cangrejo fantasma (Ocypode)"),
+                new Bug("GhostCrab", 3, 30, C(0.7f, 0.45f, 0.3f), "Cangrejo ermitaño (Coenobita), con su concha") } };
             // ── Hawthorne (Los Ángeles), finales de septiembre de 2008: ciudad, sin naturaleza salvaje. Las palmeras de abanico de las
             //    avenidas, jacarandas y ficus de calle, céspedes y buganvillas (City of Hawthorne; LA County street trees). Perros y gatos.
             case "Hawthorne": return new Biome { title = "Hawthorne (2008): ciudad, sin naturaleza salvaje", ground = C(0.62f, 0.6f, 0.56f), plants = new[] {
@@ -47,11 +59,23 @@ public static partial class MicroBiome
                 new Plant(Kind.Shrub, 6, "Palmera de abanico (Washingtonia robusta), plantada", 2000, C(0.35f, 0.5f, 0.28f), C(0.55f, 0.45f, 0.35f)),
                 new Plant(Kind.Shrub, 3, "Jacaranda (Jacaranda mimosifolia), plantada", 1200, C(0.3f, 0.5f, 0.3f), C(0.6f, 0.45f, 0.85f)),
                 new Plant(Kind.Grass, 14, "Césped de la casa (Cynodon dactylon), segado", 5, C(0.4f, 0.62f, 0.28f), C(0.5f, 0.6f, 0.3f)),
-                new Plant(Kind.Flower, 4, "Buganvilla (Bougainvillea)", 200, C(0.28f, 0.45f, 0.25f), C(0.85f, 0.2f, 0.55f)) },
+                new Plant(Kind.Flower, 4, "Buganvilla (Bougainvillea)", 200, C(0.28f, 0.45f, 0.25f), C(0.85f, 0.2f, 0.55f)),
+                // (2026-11-18, Berón: «plantas, animales, bacterias…») El arbolado de calle más común del sur de Los Ángeles y las malas hierbas de
+                // las aceras y los solares (LA County street trees; UC IPM, malas hierbas de California).
+                new Plant(Kind.Shrub, 3, "Laurel de Indias (Ficus microcarpa), árbol de calle", 1000, C(0.2f, 0.4f, 0.22f), C(0.45f, 0.4f, 0.35f)),
+                new Plant(Kind.Grass, 5, "Garranchuelo (Digitaria sanguinalis), mala hierba de la acera", 15, C(0.5f, 0.6f, 0.3f), C(0.55f, 0.45f, 0.35f)),
+                new Plant(Kind.Flower, 3, "Malva (Malva parviflora), mala hierba del solar", 40, C(0.35f, 0.55f, 0.3f), C(0.85f, 0.8f, 0.9f)) },
               townFauna = new[] {
                 new Pet("Woodlouse", 3, 0.7f, C(0.8f, 0.72f, 0.6f), "Perro de la casa (en el microcosmos, una cochinilla hormiguera)"),
-                new Pet("Woodlouse", 2, 0.5f, C(0.85f, 0.83f, 0.78f), "Gato de la casa (en el microcosmos, una cochinilla hormiguera)") },
-              bugs = new Bug[0] };
+                new Pet("Woodlouse", 2, 0.5f, C(0.85f, 0.83f, 0.78f), "Gato de la casa (en el microcosmos, una cochinilla hormiguera)"),
+                // La fauna urbana del South Bay (Audubon, conteos navideños de la costa de Los Ángeles; LA County Natural History Museum): cuervos,
+                // palomas, gaviotas que entran desde la costa (a ~6 km), la ardilla zorro (introducida) y las cucarachas del alcantarillado.
+                new Pet("Ladybug", 3, 0.45f, C(0.08f, 0.08f, 0.1f), "Cuervo americano (en el microcosmos, una mariquita negra)"),
+                new Pet("Ladybug", 4, 0.32f, C(0.55f, 0.57f, 0.62f), "Paloma bravía (en el microcosmos, una mariquita gris)"),
+                new Pet("Ladybug", 2, 0.6f, C(0.92f, 0.92f, 0.9f), "Gaviota occidental (en el microcosmos, una mariquita blanca)"),
+                new Pet("Woodlouse", 2, 0.5f, C(0.6f, 0.4f, 0.25f), "Ardilla zorro (en el microcosmos, una cochinilla rojiza)"),
+                new Pet("Cockroach", 3, 0.04f, C(0.45f, 0.25f, 0.12f), "Cucaracha americana (Periplaneta americana), del alcantarillado") },
+              bugs = new[] { new Bug("Ant", 6, 3, C(0.35f, 0.25f, 0.18f), "Hormiga argentina (Linepithema humile), en las aceras") } };
             // ── Aldea de la montaña (homenaje a Goku; ficción): monte subtropical del sur de China en primavera. Bambú, pino de
             //    Masson, camelia del té, azalea, helecho y musgo en la piedra húmeda; cigarra, luciérnaga, mantis, hormiga y saltamontes.
             //    En la aldea: los frutales de la China tradicional, el bambú y el té plantados; gallinas y el perro de la casa.

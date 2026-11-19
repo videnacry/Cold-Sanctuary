@@ -264,11 +264,21 @@ public class ActividadesTest : MonoBehaviour, ITestUnit
         _temp.Add(h);
         Vector3 at = Camera.main != null ? Camera.main.transform.position + Camera.main.transform.forward * 6f : Vector3.up * 200f;
         h.transform.position = at;
-        CubeInsect ci = CubeInsect.DressFolk(h, "Ant", 1.2f, "Prueba");
+        // (2026-11-18) Un vecino de verdad: a la estatura tipo × s (MicroBuildRules.FolkStature) con su cápsula, que es la que mide
+        // ActivityKit.Scale (antes 1,2 m sin cápsula: la escala salía de 1,75 m), y come DE PIE en su mesa alta (C1), a sus manos.
+        float fh = MicroBuildRules.FolkStature;
+        var hcap = h.AddComponent<CapsuleCollider>(); hcap.height = fh; hcap.radius = MicroBuildRules.CapsuleRadius; hcap.center = Vector3.up * fh * 0.5f; hcap.isTrigger = true;
+        CubeInsect ci = CubeInsect.DressFolk(h, "Ant", fh, "Prueba");
         yield return null;
         TestProbe.Check("insecto: tiene mano (la punta del brazo delantero)", ActivityKit.Hand(h, true) != null);
         float s = ActivityKit.Scale(h);
-        GameObject table = Table(h.transform.position + h.transform.forward * 0.9f * s, s);
+        TestProbe.Check("insecto: a la escala del cuerpo encogido (ActivityKit.Scale = s)", Mathf.Abs(s - MicroBuildRules.FolkScale) < 0.02f, $"{s:0.00}");
+        float th = MicroBody.StandingTable(MicroBody.Of(h)), td = 0.65f;
+        GameObject table = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        table.name = "Mesa_alta_prueba_actividades"; _temp.Add(table);
+        table.transform.position = h.transform.position + h.transform.forward * (td * 0.5f + 0.3f * s) + Vector3.up * th * 0.5f;
+        table.transform.rotation = h.transform.rotation;
+        table.transform.localScale = new Vector3(1.2f, th, td);
         var meal = new MealRitual(MicroJornada.EraDish(-2600));
         meal.TakeTray(h, true, 0.75f);
         yield return null;

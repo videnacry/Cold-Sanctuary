@@ -12,9 +12,11 @@ using UnityEngine;
 /// </summary>
 public class HudModals : MonoBehaviour
 {
-    public enum Modal { None, Horario, Recursos, Misiones }
+    /// <summary>(2026-11-18, CodeShip) Tareas y Áreas no van en la pila: se abren desde el menú árbol (<see cref="MicroRootMenu"/>) o con F6 y F7;
+    /// las dibuja <see cref="MicroTaskWindows"/>.</summary>
+    public enum Modal { None, Horario, Recursos, Misiones, Tareas, Areas }
 
-    public const KeyCode HorarioKey = KeyCode.F2, RecursosKey = KeyCode.F3, MisionesKey = KeyCode.F4;
+    public const KeyCode HorarioKey = KeyCode.F2, RecursosKey = KeyCode.F3, MisionesKey = KeyCode.F4, TareasKey = KeyCode.F6, AreasKey = KeyCode.F7;
     /// <summary>Lo que mide la pila: como el botón de F10 (SceneLauncher), que está a 72 px del borde de abajo.</summary>
     public const float Width = 185f, Height = 24f, Gap = 4f, MarginRight = 190f, PauseButtonTop = 72f;
 
@@ -34,7 +36,11 @@ public class HudModals : MonoBehaviour
     }
 
     /// <summary>El sitio de la pila número <paramref name="slot"/>: el 0, justo encima del botón de F10.</summary>
-    public static Rect Slot(int slot) => new Rect(Screen.width - MarginRight, Screen.height - PauseButtonTop - (slot + 1) * (Height + Gap), Width, Height);
+    public static Rect Slot(int slot) => WebLigera.Active ? WebSlot(slot) : new Rect(Screen.width - MarginRight, Screen.height - PauseButtonTop - (slot + 1) * (Height + Gap), Width, Height);
+    /// <summary>(2026-11-13, web ligera) En el móvil, la pila va arriba a la izquierda (abajo están los joysticks) y a la medida del dedo.</summary>
+    static Rect WebSlot(int slot) { float s = Mathf.Min(Screen.width, Screen.height), h = Mathf.Max(32f, s * 0.07f), w = Mathf.Min(h * 4.2f, s * 0.48f); return new Rect(8f, 8f + h * 1.1f + slot * (h + 6f), w, h); }
+    /// <summary>(2026-11-18) Cuántos botones de la pila salen en esta escena: el menú árbol va en el hueco siguiente.</summary>
+    public static int StackCount { get { int n = 0; foreach (Modal m in Order) if (Available(m)) n++; return n; } }
 
     /// <summary>¿Tiene esta escena lo que enseña la ventana?</summary>
     public static bool Available(Modal m)
@@ -44,6 +50,8 @@ public class HudModals : MonoBehaviour
             case Modal.Horario: return LeisureDirector.Instance != null && LeisureDirector.Instance.groups.Count > 0;
             case Modal.Recursos: return SanctuaryResourceHUD.Instance != null && SanctuaryResources.HasInstance;
             case Modal.Misiones: return WorkdayDirector.Instance != null || StoryMission.Instance != null || MissionTracker.Instance != null;
+            case Modal.Tareas: return MicroTaskWindows.HasTasks;
+            case Modal.Areas: return MicroTaskWindows.HasAreas;
             default: return false;
         }
     }
@@ -68,7 +76,7 @@ public class HudModals : MonoBehaviour
     }
 
     static readonly Modal[] Order = { Modal.Horario, Modal.Recursos, Modal.Misiones };
-    static string Label(Modal m) => m == Modal.Horario ? "F2: Horario libre" : m == Modal.Recursos ? "F3: Recursos" : "F4: Misiones y jornada";
+    static string Label(Modal m) => WebLigera.Active ? (m == Modal.Horario ? "Horario libre" : m == Modal.Recursos ? "Recursos" : "Misiones y jornada") : m == Modal.Horario ? "F2: Horario libre" : m == Modal.Recursos ? "F3: Recursos" : "F4: Misiones y jornada";
 
     float _nextRefresh;
     Vector2 _scroll;
@@ -82,6 +90,8 @@ public class HudModals : MonoBehaviour
         if (GameKeys.GetKeyDown(HorarioKey) && Available(Modal.Horario)) Toggle(Modal.Horario);
         if (GameKeys.GetKeyDown(RecursosKey) && Available(Modal.Recursos)) Toggle(Modal.Recursos);
         if (GameKeys.GetKeyDown(MisionesKey) && Available(Modal.Misiones)) Toggle(Modal.Misiones);
+        if (GameKeys.GetKeyDown(TareasKey) && Available(Modal.Tareas)) Toggle(Modal.Tareas);
+        if (GameKeys.GetKeyDown(AreasKey) && Available(Modal.Areas)) Toggle(Modal.Areas);
     }
 
     void OnGUI()
@@ -125,6 +135,20 @@ public class HudModals : MonoBehaviour
                 l.Add($"   <b>{name}</b>  ({progress}/{target})");
                 accepted++;
             }
+        // (2026-11-18) Las misiones de los puestos (CodeShip): hechas y pendientes, por grupo; y los últimos avisos.
+        if (StationMissions.Instance != null && StationMissions.Instance.All.Count > 0)
+        {
+            var ms = StationMissions.Instance.All;
+            l.Add($"   <b>Trabajo y necesidades</b>: {ms.FindAll(m => m.timesDone > 0).Count} hechas de {ms.Count}");
+            foreach (ChoreCategory c in System.Enum.GetValues(typeof(ChoreCategory)))
+            {
+                var g = ms.FindAll(m => m.template.category == c);
+                if (g.Count == 0) continue;
+                l.Add($"      {StationMissions.CategoryLabel(c)}: " + string.Join(" · ", g.ConvertAll(m => (m.timesDone > 0 ? "✓ " : "") + m.template.title)));
+            }
+            accepted++;
+        }
+        if (HudNotices.Recent.Count > 0) { l.Add("   <b>Últimos avisos</b>"); for (int i = HudNotices.Recent.Count - 1; i >= 0; i--) l.Add("      " + HudNotices.Recent[i]); }
         if (accepted == 0) l.Add("   <color=#9AA0A6>(ninguna: las historias y las tareas salen aquí al aceptarlas)</color>");
         l.Add("");
         l.Add("<b>Jornada de hoy</b>");

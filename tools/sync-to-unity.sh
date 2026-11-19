@@ -67,3 +67,7 @@ if [ "$extra" -gt 0 ] && [ "$PRUNE" -eq 0 ]; then
   echo "Hay $extra .cs que sobran. Si el repo los borro/renombro, re-ejecuta con --prune"
   echo "(un .cs obsoleto que define una clase retirada ROMPE la compilacion)."
 fi
+
+# (2026-11-13, sistema de QA) El proyecto Unity no tiene git ni docs/qa: QaCheckTest y «Tools/Cold Sanctuary/QA/Comprobar» leen los docs
+# del repositorio que se sincronizó el último (QaCheck.FindRoot).
+mkdir -p "$PROJECT/Temp" && echo "$(cygpath -m "$REPO" 2>/dev/null || echo "$REPO")" > "$PROJECT/Temp/qa-root.txt"

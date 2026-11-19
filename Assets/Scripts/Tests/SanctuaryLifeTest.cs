@@ -247,7 +247,15 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         string famous = string.Join(" ", new[] { "Sadhguru", "ElonMusk", "Goku", "BillGates", "WarrenBuffett", "MacKenzieScott", "IbrahimTraore" }.Where(n => WorkdayDirector.Body(n) != null && WorkdayDirector.Body(n).scene == UnityEngine.SceneManagement.SceneManager.GetActiveScene()));
         TestProbe.Check("ningún famoso (Sadhguru ni los seis del mesocosmos) sigue en el santuario", famous.Length == 0, famous);
         CarnivoreKeeper keeper = FindAnyObjectByType<CarnivoreKeeper>();
-        TestProbe.Check("un guardia patrulla los puestos", keeper != null, keeper != null ? keeper.name : "ninguno");
+        // (Berón 2026-11-16) Los turnos de guardia están desactivados por defecto (WorkRoster.guardShifts): entonces nadie va a patrullar; encendidos, hay guardia.
+        WorkdayDirector wdG = WorkdayDirector.Instance;
+        var guardWork = wdG != null && wdG.today != null ? wdG.today.work.Where(a => WorkRoster.IsGuardShift(a.mission)).Select(a => $"{a.worker.name} {a.mission.id}").ToList() : new System.Collections.Generic.List<string>();
+        if (wdG != null && !wdG.roster.guardShifts)
+            TestProbe.Check("con los turnos de guardia apagados nadie va a patrullar ni a la sala de guardia (ni personas ni clones)", guardWork.Count == 0,
+                wdG.today == null ? "aún sin reparto del día" : guardWork.Count == 0 ? $"{wdG.today.guardsOff.Count} turnos desactivados" : string.Join(", ", guardWork));
+        else
+            TestProbe.Check("con los turnos de guardia encendidos, un guardia patrulla los puestos", keeper != null && (wdG == null || wdG.today == null || guardWork.Count > 0),
+                (keeper != null ? keeper.name : "ningún guardia") + $" · {guardWork.Count} turnos de guardia hoy");
 
         // Cocina profesional: recetario coherente, equipo instalado, cultivos plantados y obrador que encadena elaboraciones.
         var missingEq = new System.Collections.Generic.List<string>();
