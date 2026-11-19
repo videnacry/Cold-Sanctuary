@@ -65,6 +65,7 @@ vueltas en círculo: N» del primer FAIL de fauna de g50, y las líneas TOTAL. �
 | r125 | 2026-11-17 | 4127332 | rápida + grupos + vivo + suite | 1 50 53 113 28 | rápida 1075/0 · 415/2 · suite 4766/2 | — | 1 | 0 | 0 | — | — | — | 144 min | [r125](runs/2026-11-17-1900-r125-rapida-grupos-vivo-suite.md) |
 | r126 | 2026-11-18 | 801b23c | rápida + grupos + vivo + suite | 1 50 53 113 28 | rápida 1075/1 · 417/1 · suite 4769/1 | 1 | — | 0 | 0 | — | — | — | 127 min | [r126](runs/2026-11-18-0310-r126-rapida-grupos-vivo-suite.md) |
 | r127 | 2026-11-18 | 40f86d1 | rápida + grupos + vivo + suite | 1 50 53 113 28 | rápida 1076/1 · 419/0 · suite 4770/0 | — | — | 0 | 0 | — | — | — | 142 min | [r127](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) |
+| r131 | 2026-11-19 | f92acc1 | rápida + grupos + vivo + suite | 1 50 53 113 28 63 84 106 | rápida 1147/0 · 482/0 | — | — | 0 | 0 | — | — | — | 50 min | [r131](runs/2026-11-19-0640-r131-rapida-grupos-vivo-suite.md) |
 | rp7 | 2026-11-19 | 9516ed1 | rápida + grupos | 122 125 124 120 119 1 53 | rápida 1147/0 · 184/0 | — | — | 0 | 0 | — | — | — | — | [rp7](runs/2026-11-19-0154-rp7-rapida-grupos.md) |
 | rp4 | 2026-11-18 | 585235b | rápida + grupos | 125 124 69 119 121 122 63 1 53 | rápida 1115/0 · 289/1 | — | — | 0 | 0 | — | — | — | — | [rp4](runs/2026-11-18-2150-rp4-rapida-grupos.md) |
 
