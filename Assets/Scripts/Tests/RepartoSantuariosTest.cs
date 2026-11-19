@@ -474,6 +474,31 @@ public class RepartoSantuariosTest : MonoBehaviour, ITestUnit
                 if (hs.Count > 0) Debug.Log($"[Reparto] {kv.Key}: {hs.Count} personas, parte {t.share[kv.Key]:0.#} h, de {hs.Min():0.#} a {hs.Max():0.#} h (con iniciaciones, puestos y grupos).");
             }
         }
+        // ── (2026-11-18) LOS BONUSPACKS SON LA CRIATURA MÁS PODEROSA DE SU SANTUARIO (Berón, HC-01): bonusPackN = las aptitudes del animal más
+        // poderoso del santuario N, que se suman a quien lo consume. Variables: si cambia la fauna, cambia el pack. ──
+        {
+            var g1 = new GameObject("BonusPack_TEST_debil"); Anima weak = g1.AddComponent<Anima>(); weak.strength = 1.1f; weak.bodyMass = 1.0f; weak.agility = 1.2f;
+            var g2 = new GameObject("BonusPack_TEST_fuerte"); Anima strong = g2.AddComponent<Anima>(); strong.strength = 4.0f; strong.bodyMass = 6.0f; strong.agility = 0.9f; strong.reasoning = 0.7f;
+            bool bp1 = SanctuaryPower.PackFromFauna(SanctuaryPlacement.Land, out Aptitudes a1, out string w1, new[] { weak });
+            bool bp2 = SanctuaryPower.PackFromFauna(SanctuaryPlacement.Land, out Aptitudes a2, out string w2, new[] { weak, strong });
+            Destroy(g1); Destroy(g2);
+            TestProbe.Check("bonusPack1 = la criatura más poderosa del santuario 1, y cambia con la fauna", bp1 && bp2 && w1 == "BonusPack_TEST_debil" && w2 == "BonusPack_TEST_fuerte"
+                && Mathf.Approximately(a1.strength, 1.1f) && Mathf.Approximately(a2.strength, 4.0f) && Mathf.Approximately(a2.bodyMass, 6.0f) && Mathf.Approximately(a2.reasoning, 0.7f), $"{w1} str {a1.strength:0.##} → {w2} str {a2.strength:0.##}");
+            string airBoss = SanctuaryPower.Strongest(SanctuaryPlacement.Aerial).who;
+            bool p3 = SanctuaryPower.PackFromFauna(SanctuaryPlacement.Aerial, out Aptitudes a3, out string w3);
+            Aptitudes airApt = Archetypes.BodyOf(airBoss).aptitudes;
+            TestProbe.Check("bonusPack3 = las aptitudes del animal más poderoso del Aéreo (sin escena: su arquetipo)", p3 && w3 == airBoss && SoulMath.All.All(k => Mathf.Approximately(a3.Get(k), airApt.Get(k))), $"{w3}");
+            Archetypes.TryPack("bonusPack3", out Aptitudes tp3);
+            TestProbe.Check("y es lo que da el pack (TryPack)", SoulMath.All.All(k => Mathf.Approximately(tp3.Get(k), airApt.Get(k))));
+            var cg = new GameObject("BonusPack_TEST_consume"); Anima ca = cg.AddComponent<Anima>(); SoulComposition sc = cg.AddComponent<SoulComposition>(); sc.resolveOnStart = false; sc.applyScale = false;
+            sc.bodies.Add(new BlendSlot { archetype = "Human", domain = 100f }); sc.minds.Add(new BlendSlot { archetype = "Human", domain = 100f });
+            sc.Resolve(); Aptitudes before = sc.ReadStats();
+            sc.bonusPacks.Add("bonusPack3"); sc.Resolve(); Aptitudes after = sc.ReadStats();
+            Destroy(cg);
+            TestProbe.Check("se SUMA a los stats de quien lo consume", SoulMath.All.All(k => Mathf.Abs(after.Get(k) - before.Get(k) - airApt.Get(k)) < 0.001f), $"fuerza {before.strength:0.##} → {after.strength:0.##} (+{airApt.strength:0.##})");
+            bool p2m = SanctuaryPower.PackFromFauna(SanctuaryPlacement.Marine, out _, out _);
+            TestProbe.Check("un santuario sin fauna (el Marino, de momento) no da criatura: su pack sigue con el valor provisional", !p2m && Archetypes.TryPack("bonusPack2", out _));
+        }
 
         // ── 6. (Berón 2026-11-16) Los turnos de guardia, desactivados para todos por defecto; los clones no comen ni van al restaurante ──
         List<WorkRoster.Mission> GuardDay()

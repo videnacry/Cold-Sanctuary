@@ -36,7 +36,19 @@ public static class Archetypes
         return name != null && _minds.TryGetValue(name, out ArchetypeProfile p) ? p : _minds["Human"];
     }
 
+    /// <summary>EL BONUSPACK (Berón 2026-11-18, HC-01): «bonusPackN» son las aptitudes de la criatura más poderosa del santuario N
+    /// (<see cref="SanctuaryPower.PackFromFauna"/>), y se suman a las de quien lo consume. Variable: se calcula cada vez, con la fauna que haya.
+    /// Si el santuario N no tiene fauna (el Marino, de momento) o no existe (bonusPack4), queda el valor provisional de antes (inferido: Berón no
+    /// dijo qué hacer sin criatura).</summary>
     public static bool TryPack(string name, out Aptitudes a)
+    {
+        Init();
+        if (name != null && name.StartsWith("bonusPack") && int.TryParse(name.Substring("bonusPack".Length), out int n) && SanctuaryPower.PackFromFauna(n, out a, out _)) return true;
+        return TryPackPlaceholder(name, out a);
+    }
+
+    /// <summary>El valor PROVISIONAL de un pack (+0,5 / +1,2 / +2,5 / +4,5 a todo): el de los santuarios sin criatura, y con el que se calibran los jefes.</summary>
+    public static bool TryPackPlaceholder(string name, out Aptitudes a)
     {
         Init();
         if (name != null && _packs.TryGetValue(name, out a)) return true;
