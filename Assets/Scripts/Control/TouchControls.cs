@@ -2,45 +2,52 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// CONTROLES TÁCTILES: LOS JOY-CON DE LA SWITCH SOBRE LA PANTALLA (2026-11-19, Berón: «en CodeShip se ha pasado a recrear los mandos de la
-/// Nintendo Switch sobre la pantalla para los controles, ¿se podría implementar así para mobile aquí?»). Sustituye a la primera versión
-/// (2026-11-13, web ligera: dos joysticks y cuatro botones en arco). Todo el juego lee el teclado por <see cref="GameKeys"/>, así que el mando
-/// solo le da valores virtuales; el teclado sigue igual:
-///  · JOYSTICK DE ANDAR abajo a la izquierda (el dedo que empieza en el 40 % izquierdo, fuera de un botón; el aro aparece donde se apoya) →
-///    <see cref="GameKeys.VirtualMove"/> (WASD);
-///  · JOYSTICK DE LA CÁMARA abajo a la derecha (fijo) → <see cref="GameKeys.VirtualLook"/>; ARRASTRAR en el resto de la mitad derecha también mira;
-///  · los 16 BOTONES de un par de Joy-Con, como en CodeShip (src/ui/action-pad.ts): la cruceta, L/ZL, «−» y captura a la izquierda; el rombo
-///    A/B/X/Y, R/ZR, «+» e inicio a la derecha. Qué pulsa cada uno: <see cref="JoyConMap"/>. Redondos, oscuros y translúcidos, con su
-///    marca en blanco y lo que hacen debajo; el que está puesto (Correr) o pulsado se enciende en naranja (<see cref="CsTheme"/>).
-/// En horizontal, cada grupo de botones va al lado de su joystick; en vertical, encima (se recoloca cada fotograma). Los toques sobre los
-/// menús IMGUI siguen llegando como clics (Unity simula el ratón con los toques). Solo se crea en la web ligera con pantalla táctil
-/// (<see cref="WebLigera"/>). Diseño y lista de cambios: docs/mandos-tactiles.md.
+/// CONTROLES TÁCTILES: LOS JOY-CON DE LA SWITCH SOBRE LA PANTALLA, COMO EN EL SANTUARIO 1 DE CODESHIP. Rehechos desde cero el 2026-11-20
+/// (Berón: «los mandos de switch están muy pequeños y se deben ocultar cuando se muestran modales… mirarlo en vivo y de allí sacar
+/// información para su recreación»): medidos en vivo en CodeShip (Playwright, iPhone 13) y copiados de src/ui/action-pad.css y style.css.
+/// Todo el juego lee el teclado por <see cref="GameKeys"/>, así que el mando solo le da valores virtuales; el teclado sigue igual.
+///  · DOS JOYSTICKS de 120 px fijos abajo, a 22 px de cada lado (MOVERSE / MIRAR): se cogen tocándolos; el pomo de 50 px va hasta el borde.
+///    Andar → <see cref="GameKeys.VirtualMove"/>; mirar → <see cref="GameKeys.VirtualLook"/> con la curva de CodeShip (v·|v|). No se mira
+///    arrastrando la pantalla (reglas.md §5.7).
+///  · LOS 16 BOTONES en dos grupos de 148 px: la cruceta, L/ZL, «−» y captura a la izquierda; el rombo A/B/X/Y, R/ZR, «+» e inicio a la
+///    derecha. En horizontal cada grupo va al lado de su joystick; en vertical, encima. Redondos de 50 px, gatillos de 64×44 en píldora y
+///    los pequeños de 44; oscuros y translúcidos (0,62), su marca en blanco (17 px) y lo que hacen debajo (9 px); el puesto o pulsado, en
+///    naranja. Qué pulsa cada uno: <see cref="JoyConMap"/>.
+///  · Todo en píxeles CSS de CodeShip pasados a esta pantalla por <see cref="CsUi.Dp"/>: ocupa la misma parte de la pantalla que allí.
+///  · CON UN MODAL ABIERTO (<see cref="CsUi.ModalOpen"/>: el Grimorio, Misiones, Tareas, Áreas, la pausa, un reto, un diálogo…) EL MANDO SE
+///    OCULTA y suelta lo que tuviera pulsado; vuelve al cerrarlo. El toque que pulsó un botón del mando no llega como clic a la ventana que
+///    abre (en CodeShip, swallowGhostClick).
+/// Solo se crea en la web ligera con pantalla táctil (<see cref="WebLigera"/>). Diseño y lista de cambios: docs/mandos-tactiles.md §6.
 /// </summary>
 [DefaultExecutionOrder(-1000)]   // antes que el jugador y las misiones: lo que pulsa este fotograma lo leen este mismo fotograma
 public class TouchControls : MonoBehaviour
 {
-    [Tooltip("Arrastrar para mirar: píxeles → unidades de «Mouse X/Y» (el ratón da ~0,1 por píxel).")]
-    public float dragSensitivity = 0.12f;
-    [Tooltip("Joystick de la cámara a tope: unidades de «Mouse X/Y» por segundo (×2 de sensibilidad del jugador ≈ 100 °/s de giro).")]
-    public float stickYawSpeed = 50f, stickPitchSpeed = 30f;
-    public bool dragToLook = true;
-    [Tooltip("Transparencia de los botones en reposo (CodeShip: 0,62).")]
-    [Range(0.2f, 1f)] public float idleAlpha = 0.62f;
+    [Tooltip("Joystick de la cámara a tope: unidades de «Mouse X/Y» por segundo (CodeShip: 2 rad/s de giro y 1,4 de cabeceo).")]
+    public float stickYawSpeed = 57f, stickPitchSpeed = 40f;
     const KeyCode LookButton = KeyCode.Mouse1;   // PlayerController.cameraLookButton por defecto
-    const float DeadZone = 0.12f;
 
-    int _moveFinger = -1, _lookFinger = -1, _dragFinger = -1;
-    Vector2 _moveOrigin, _moveNow;   // pantalla (origen abajo-izquierda)
-    Vector2 _lookNow;                // IMGUI (origen arriba-izquierda)
+    // ── LA MEDIDA DE CODESHIP (px CSS, action-pad.css y style.css) ────────────────────────────────────────────────────────────────────
+    const float Side = 148f, Btn = 50f, Step = 49f, ShoulderW = 64f, ShoulderH = 44f, Small = 44f;
+    const float StickSize = 120f, StickInset = 22f, StickBottom = 26f, KnobSize = 50f;
+    public const float IdleAlpha = 0.62f;
+
+    int _moveFinger = -1, _lookFinger = -1;
+    Vector2 _moveNow, _lookNow;   // IMGUI (origen arriba-izquierda)
     readonly Dictionary<int, JoyConMap.Pad> _fingerOnButton = new Dictionary<int, JoyConMap.Pad>();   // dedo → botón mantenido
+    readonly HashSet<int> _padFingers = new HashSet<int>();     // dedos que empezaron en el mando: su clic no es para las ventanas
     readonly HashSet<JoyConMap.Pad> _toggled = new HashSet<JoyConMap.Pad>();
-    readonly Dictionary<JoyConMap.Pad, float> _flash = new Dictionary<JoyConMap.Pad, float>();         // el destello de un toque
+    readonly Dictionary<JoyConMap.Pad, float> _flash = new Dictionary<JoyConMap.Pad, float>();         // el hundido de un toque
     readonly Dictionary<JoyConMap.Pad, KeyCode> _heldKey = new Dictionary<JoyConMap.Pad, KeyCode>();   // la tecla que se mantiene (por si cambia el contexto)
     Layout _lay;
-    int _layW, _layH;
+    int _layW, _layH, _endedOnPadFrame = -1;
+    bool _hidden;
 
     /// <summary>(2026-11-16, prueba de la web: WebPrueba) Un empuje del joystick de andar sin dedo; null = el del dedo.</summary>
     public static Vector2? TestMove;
+    /// <summary>¿Se ve ahora el mando? (false con un modal abierto).</summary>
+    public static bool Showing { get; private set; }
+    /// <summary>¿Hay un dedo que empezó en el mando? Su clic simulado no es para ninguna ventana (<see cref="CsUi"/> lo descarta).</summary>
+    public static bool PadTouch { get; private set; }
 
     public static TouchControls Ensure()
     {
@@ -51,71 +58,63 @@ public class TouchControls : MonoBehaviour
         return go.AddComponent<TouchControls>();
     }
 
-    // ── LA MEDIDA (en píxeles; IMGUI: origen arriba-izquierda). Lógica pura: la prueba la comprueba en varias pantallas. ─────────────
+    // ── LA COLOCACIÓN (en píxeles de pantalla; IMGUI: origen arriba-izquierda). Lógica pura: la prueba la comprueba en varias pantallas. ──
     public struct Layout
     {
+        /// <summary>Píxeles de pantalla por píxel CSS de CodeShip.</summary>
+        public float dp;
+        /// <summary>El lado de un botón del rombo (50 px CSS) y el radio de un joystick (60 px CSS).</summary>
         public float unit, stickRadius;
-        /// <summary>El centro del joystick de andar en reposo y el del de la cámara (fijo).</summary>
-        public Vector2 moveRest, lookCenter;
-        /// <summary>El sitio de cada botón (cuadrado para los redondos y la cruceta; 2:1 para los gatillos).</summary>
+        public Vector2 moveCenter, lookCenter;
+        /// <summary>El sitio de cada botón (cuadrado para los redondos y la cruceta; 64×44 los gatillos).</summary>
         public Dictionary<JoyConMap.Pad, Rect> rects;
-        /// <summary>La zona del joystick de andar: un dedo que empieza aquí (y no en un botón) lo mueve.</summary>
-        public Rect moveZone;
     }
 
     public static Layout Compute(float w, float h)
     {
-        float shortSide = Mathf.Min(w, h);
+        float dp = CsUi.DpFor(w, h);
+        float W = w / dp, H = h / dp;        // la pantalla en px CSS (≥ 390×664 o 750×342: lo que cabe en CodeShip cabe aquí)
         bool portrait = h > w;
-        // Un botón: ~10 % del lado corto (el pulgar). En horizontal los dos mandos ocupan ~13,3 botones de ancho: en una pantalla 4:3
-        // (tableta) se encogen para no pisarse; en vertical ocupan ~8,4.
-        float u = Mathf.Max(36f, Mathf.Min(shortSide * 0.105f, w / (portrait ? 9f : 14f)));
-        float m = u * 0.3f, R = u * 1.05f, gap = u * 0.35f;
-        var L = new Layout { unit = u, stickRadius = R, rects = new Dictionary<JoyConMap.Pad, Rect>() };
-        L.moveRest = new Vector2(m + R, h - m - R);
-        L.lookCenter = new Vector2(w - m - R, h - m - R);
-        L.moveZone = new Rect(0f, 0f, w * 0.4f, h);
+        var L = new Layout { dp = dp, unit = Btn * dp, stickRadius = StickSize * 0.5f * dp, rects = new Dictionary<JoyConMap.Pad, Rect>() };
+        float sy = H - StickBottom - StickSize * 0.5f;
+        L.moveCenter = new Vector2(StickInset + StickSize * 0.5f, sy) * dp;
+        L.lookCenter = new Vector2(W - StickInset - StickSize * 0.5f, sy) * dp;
 
-        // El centro de cada grupo de 4 (la cruceta, el rombo): al lado del joystick en horizontal, encima en vertical.
-        float cluster = u * 1.02f;                                // distancia del centro del grupo a cada botón
-        Vector2 leftC, rightC;
-        if (!portrait)
+        // .sp-side: 148×148; horizontal: bottom 20, left/right 154; vertical: bottom 160, left/right 14.
+        float boxY = H - (portrait ? 160f : 20f) - Side;
+        float lx = portrait ? 14f : 154f, rx = W - (portrait ? 14f : 154f) - Side;
+        Rect C(float x, float y, float cw, float ch) => new Rect(x * dp, y * dp, cw * dp, ch * dp);
+        // El rombo y la cruceta: arriba, derecha, abajo, izquierda.
+        L.rects[JoyConMap.Pad.Up] = C(lx + Step, boxY, Btn, Btn);
+        L.rects[JoyConMap.Pad.Right] = C(lx + Side - Btn, boxY + Step, Btn, Btn);
+        L.rects[JoyConMap.Pad.Down] = C(lx + Step, boxY + Side - Btn, Btn, Btn);
+        L.rects[JoyConMap.Pad.Left] = C(lx, boxY + Step, Btn, Btn);
+        L.rects[JoyConMap.Pad.X] = C(rx + Step, boxY, Btn, Btn);
+        L.rects[JoyConMap.Pad.A] = C(rx + Side - Btn, boxY + Step, Btn, Btn);
+        L.rects[JoyConMap.Pad.B] = C(rx + Step, boxY + Side - Btn, Btn, Btn);
+        L.rects[JoyConMap.Pad.Y] = C(rx, boxY + Step, Btn, Btn);
+        // Los gatillos: L/R a −50, ZL/ZR a −100 del grupo; en horizontal, 140 px hacia fuera (encima del joystick); en vertical, en su borde.
+        float slx = portrait ? lx : lx - 140f, srx = portrait ? rx + Side - ShoulderW : rx + Side + 140f - ShoulderW;
+        L.rects[JoyConMap.Pad.L] = C(slx, boxY - 50f, ShoulderW, ShoulderH);
+        L.rects[JoyConMap.Pad.ZL] = C(slx, boxY - 100f, ShoulderW, ShoulderH);
+        L.rects[JoyConMap.Pad.R] = C(srx, boxY - 50f, ShoulderW, ShoulderH);
+        L.rects[JoyConMap.Pad.ZR] = C(srx, boxY - 100f, ShoulderW, ShoulderH);
+        // «−» y captura, «+» e inicio (44 px): en horizontal, en las esquinas de dentro (arriba −4, abajo −4, 50 px hacia el centro);
+        // en vertical, encima del grupo, por dentro (−50 y −100).
+        if (portrait)
         {
-            leftC = new Vector2(L.moveRest.x + R + gap + cluster + u * 0.5f, h - m - cluster - u * 0.5f);
-            rightC = new Vector2(L.lookCenter.x - R - gap - cluster - u * 0.5f, leftC.y);
+            L.rects[JoyConMap.Pad.Minus] = C(lx + Side - Small, boxY - 50f, Small, Small);
+            L.rects[JoyConMap.Pad.Capture] = C(lx + Side - Small, boxY - 100f, Small, Small);
+            L.rects[JoyConMap.Pad.Plus] = C(rx, boxY - 50f, Small, Small);
+            L.rects[JoyConMap.Pad.Home] = C(rx, boxY - 100f, Small, Small);
         }
         else
         {
-            leftC = new Vector2(m + cluster + u * 0.5f, L.moveRest.y - R - gap - cluster - u * 0.5f);
-            rightC = new Vector2(w - m - cluster - u * 0.5f, leftC.y);
+            L.rects[JoyConMap.Pad.Minus] = C(lx + Side + 50f - Small, boxY - 4f, Small, Small);
+            L.rects[JoyConMap.Pad.Capture] = C(lx + Side + 50f - Small, boxY + Side + 4f - Small, Small, Small);
+            L.rects[JoyConMap.Pad.Plus] = C(rx - 50f, boxY - 4f, Small, Small);
+            L.rects[JoyConMap.Pad.Home] = C(rx - 50f, boxY + Side + 4f - Small, Small, Small);
         }
-        Rect Sq(Vector2 at, float size) => new Rect(at.x - size * 0.5f, at.y - size * 0.5f, size, size);
-        float b = u * 0.95f;
-        L.rects[JoyConMap.Pad.Up] = Sq(leftC + new Vector2(0f, -cluster), b);
-        L.rects[JoyConMap.Pad.Down] = Sq(leftC + new Vector2(0f, cluster), b);
-        L.rects[JoyConMap.Pad.Left] = Sq(leftC + new Vector2(-cluster, 0f), b);
-        L.rects[JoyConMap.Pad.Right] = Sq(leftC + new Vector2(cluster, 0f), b);
-        L.rects[JoyConMap.Pad.X] = Sq(rightC + new Vector2(0f, -cluster), b);
-        L.rects[JoyConMap.Pad.B] = Sq(rightC + new Vector2(0f, cluster), b);
-        L.rects[JoyConMap.Pad.Y] = Sq(rightC + new Vector2(-cluster, 0f), b);
-        L.rects[JoyConMap.Pad.A] = Sq(rightC + new Vector2(cluster, 0f), b);
-
-        // Los gatillos (píldoras 2:1): L/R abajo, ZL/ZR encima, sobre el joystick (horizontal) o sobre el grupo (vertical), hacia fuera.
-        float ph = u * 0.62f, pw = ph * 2f;
-        float topOfLeft = portrait ? leftC.y - cluster - b * 0.5f : L.moveRest.y - R;
-        float lx = portrait ? m : L.moveRest.x - pw * 0.5f, rx = portrait ? w - m - pw : L.lookCenter.x - pw * 0.5f;
-        float ly = topOfLeft - gap - ph, zy = ly - ph - gap * 0.6f;
-        L.rects[JoyConMap.Pad.L] = new Rect(lx, ly, pw, ph);
-        L.rects[JoyConMap.Pad.ZL] = new Rect(lx, zy, pw, ph);
-        L.rects[JoyConMap.Pad.R] = new Rect(rx, ly, pw, ph);
-        L.rects[JoyConMap.Pad.ZR] = new Rect(rx, zy, pw, ph);
-
-        // «−» y captura, «+» e inicio: pequeños, en la esquina de dentro de cada grupo (arriba el «−»/«+», abajo captura/inicio).
-        float s = u * 0.68f, inner = cluster + b * 0.5f + gap * 0.5f + s * 0.5f;
-        L.rects[JoyConMap.Pad.Minus] = Sq(leftC + new Vector2(inner, -cluster), s);
-        L.rects[JoyConMap.Pad.Capture] = Sq(leftC + new Vector2(inner, cluster), s);
-        L.rects[JoyConMap.Pad.Plus] = Sq(rightC + new Vector2(-inner, -cluster), s);
-        L.rects[JoyConMap.Pad.Home] = Sq(rightC + new Vector2(-inner, cluster), s);
         return L;
     }
 
@@ -124,69 +123,59 @@ public class TouchControls : MonoBehaviour
     void Update()
     {
         if (_lay.rects == null || _layW != Screen.width || _layH != Screen.height) { _lay = Compute(Screen.width, Screen.height); _layW = Screen.width; _layH = Screen.height; }   // solo al girar la pantalla
-        Vector2? look = null;
-        bool lookHeld = false;
+        bool hide = CsUi.ModalOpen;
+        if (hide && !_hidden) ReleaseAll();   // al abrirse un modal: nada se queda pulsado ni andando
+        _hidden = hide;
+        Showing = !hide;
+
         float R = _lay.stickRadius;
         for (int i = 0; i < Input.touchCount; i++)
         {
             Touch t = Input.GetTouch(i);
             Vector2 g = Gui(t.position);
             bool ended = t.phase == TouchPhase.Ended || t.phase == TouchPhase.Canceled;
-            if (t.phase == TouchPhase.Began)
+            if (ended && _padFingers.Remove(t.fingerId)) _endedOnPadFrame = Time.frameCount;   // su MouseUp llega este fotograma
+            if (t.phase == TouchPhase.Began && !hide)
             {
-                if (HitButton(g, out JoyConMap.Pad p)) { Press(p, true); _fingerOnButton[t.fingerId] = p; continue; }
-                if (_lookFinger < 0 && (g - _lay.lookCenter).magnitude <= R * 1.25f) { _lookFinger = t.fingerId; _lookNow = g; continue; }
-                if (_moveFinger < 0 && _lay.moveZone.Contains(g)) { _moveFinger = t.fingerId; _moveOrigin = _moveNow = t.position; continue; }
-                if (_dragFinger < 0 && dragToLook && !_lay.moveZone.Contains(g)) { _dragFinger = t.fingerId; continue; }
+                if (HitButton(g, out JoyConMap.Pad p)) { Press(p, true); _fingerOnButton[t.fingerId] = p; _padFingers.Add(t.fingerId); continue; }
+                if (_lookFinger < 0 && (g - _lay.lookCenter).magnitude <= R) { _lookFinger = t.fingerId; _lookNow = g; _padFingers.Add(t.fingerId); continue; }
+                if (_moveFinger < 0 && (g - _lay.moveCenter).magnitude <= R) { _moveFinger = t.fingerId; _moveNow = g; _padFingers.Add(t.fingerId); continue; }
             }
             if (_fingerOnButton.TryGetValue(t.fingerId, out JoyConMap.Pad held)) { if (ended) { Press(held, false); _fingerOnButton.Remove(t.fingerId); } }
-            else if (t.fingerId == _moveFinger) { if (ended) _moveFinger = -1; else _moveNow = t.position; }
+            else if (t.fingerId == _moveFinger) { if (ended) _moveFinger = -1; else _moveNow = g; }
             else if (t.fingerId == _lookFinger) { if (ended) _lookFinger = -1; else _lookNow = g; }
-            else if (t.fingerId == _dragFinger)
-            {
-                if (ended) _dragFinger = -1;
-                else if (_lookFinger < 0) { look = t.deltaPosition * dragSensitivity; lookHeld = true; }   // el joystick de la cámara manda
-            }
         }
-        if (Input.touchCount == 0)
-        {
-            _moveFinger = _lookFinger = _dragFinger = -1;
-            foreach (JoyConMap.Pad p in new List<JoyConMap.Pad>(_fingerOnButton.Values)) Press(p, false);   // un dedo perdido no deja nada pulsado
-            _fingerOnButton.Clear();
-        }
+        if (Input.touchCount == 0) { ReleaseAll(); _padFingers.Clear(); }   // un dedo perdido no deja nada pulsado
+        PadTouch = _padFingers.Count > 0 || _endedOnPadFrame == Time.frameCount;
 
-        // EL JOYSTICK DE LA CÁMARA: cuánto se empuja (0..1, con zona muerta) → giro a velocidad constante.
+        // EL JOYSTICK DE LA CÁMARA: la curva de CodeShip (v·|v|: lo pequeño, fino; a tope, rápido) a velocidad constante.
         Vector2 ls = LookStick;
-        if (_lookFinger >= 0) { lookHeld = true; look = ls == Vector2.zero ? Vector2.zero : new Vector2(ls.x * stickYawSpeed, ls.y * stickPitchSpeed) * Time.unscaledDeltaTime; }
-        GameKeys.VirtualLook = look;
-        GameKeys.SetVirtual(LookButton, lookHeld);
+        bool looking = _lookFinger >= 0;
+        GameKeys.VirtualLook = looking ? new Vector2(Curve(ls.x) * stickYawSpeed, Curve(ls.y) * stickPitchSpeed) * Time.unscaledDeltaTime : (Vector2?)null;
+        GameKeys.SetVirtual(LookButton, looking);
         GameKeys.VirtualMove = TestMove ?? MoveStick;   // (la prueba de la web empuja el joystick sin dedo)
     }
 
-    /// <summary>El joystick de andar (−1..1, con zona muerta); arriba en la pantalla = adelante.</summary>
-    Vector2 MoveStick => Deflect(_moveFinger >= 0 ? (_moveNow - _moveOrigin) / _lay.stickRadius : Vector2.zero);
+    static float Curve(float v) => Mathf.Sign(v) * v * v;
+
+    /// <summary>El joystick de andar (−1..1); arriba en la pantalla = adelante.</summary>
+    Vector2 MoveStick => Stick(_moveFinger, _moveNow, _lay.moveCenter);
     /// <summary>El joystick de la cámara (−1..1): derecha = girar a la derecha, arriba = mirar arriba.</summary>
-    Vector2 LookStick
+    Vector2 LookStick => Stick(_lookFinger, _lookNow, _lay.lookCenter);
+    Vector2 Stick(int finger, Vector2 at, Vector2 center)
     {
-        get
-        {
-            if (_lookFinger < 0) return Vector2.zero;
-            Vector2 d = (_lookNow - _lay.lookCenter) / _lay.stickRadius;
-            return Deflect(new Vector2(d.x, -d.y));   // IMGUI: y hacia abajo
-        }
+        if (finger < 0) return Vector2.zero;
+        Vector2 d = (at - center) / _lay.stickRadius;
+        if (d.sqrMagnitude > 1f) d.Normalize();
+        return new Vector2(d.x, -d.y);   // IMGUI: y hacia abajo
     }
-    static Vector2 Deflect(Vector2 d) => d.magnitude < DeadZone ? Vector2.zero : d.sqrMagnitude > 1f ? d.normalized : d;
 
     bool HitButton(Vector2 g, out JoyConMap.Pad pad)
     {
         pad = default;
         if (_lay.rects == null) return false;
         foreach (KeyValuePair<JoyConMap.Pad, Rect> kv in _lay.rects)
-        {
-            // Un poco más de margen que el dibujo: el pulgar no es preciso.
-            Rect r = kv.Value; float k = _lay.unit * 0.08f;
-            if (new Rect(r.x - k, r.y - k, r.width + 2f * k, r.height + 2f * k).Contains(g)) { pad = kv.Key; return true; }
-        }
+            if (kv.Value.Contains(g)) { pad = kv.Key; return true; }
         return false;
     }
 
@@ -215,108 +204,130 @@ public class TouchControls : MonoBehaviour
 
     public bool IsOn(JoyConMap.Pad p) => _toggled.Contains(p) || _heldKey.ContainsKey(p);
 
-    void OnDisable()
+    /// <summary>Suelta lo mantenido y los joysticks (al abrirse un modal o al perder los dedos). Correr, si estaba puesto, sigue puesto.</summary>
+    void ReleaseAll()
     {
+        foreach (KeyValuePair<JoyConMap.Pad, KeyCode> kv in _heldKey) GameKeys.SetVirtual(kv.Value, false);
+        _heldKey.Clear();
+        _fingerOnButton.Clear();
+        _moveFinger = _lookFinger = -1;
         GameKeys.VirtualMove = Vector2.zero; GameKeys.VirtualLook = null;
         GameKeys.SetVirtual(LookButton, false);
-        foreach (KeyValuePair<JoyConMap.Pad, KeyCode> kv in _heldKey) GameKeys.SetVirtual(kv.Value, false);
-        foreach (JoyConMap.Pad p in _toggled) GameKeys.SetVirtual(JoyConMap.Get(p).Key, false);
-        _heldKey.Clear(); _toggled.Clear(); _fingerOnButton.Clear();
     }
 
-    // ── EL DIBUJO ────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-    static Texture2D _disc, _discOn, _square, _squareOn, _pill, _pillOn, _ring, _knob;
-    GUIStyle _face, _faceOn, _label, _labelOn;
-    int _styleFor;
-
-    static void Textures()
+    void OnDisable()
     {
-        if (_disc != null) return;
-        _disc = CsTheme.Disc(CsTheme.PadFill, CsTheme.PadRim);
-        _discOn = CsTheme.Disc(CsTheme.Orange, CsTheme.OrangeLight);
-        _square = CsTheme.Rounded(CsTheme.PadFill, CsTheme.PadRim, 14, 3);
-        _squareOn = CsTheme.Rounded(CsTheme.Orange, CsTheme.OrangeLight, 14, 3);
-        _pill = CsTheme.Pill(CsTheme.PadFill, CsTheme.PadRim);
-        _pillOn = CsTheme.Pill(CsTheme.Orange, CsTheme.OrangeLight);
-        _ring = CsTheme.Disc(new Color(0.04f, 0.16f, 0.21f, 0.35f), CsTheme.CyanSoft, 128, 3);
-        _knob = CsTheme.Disc(new Color(0.5f, 0.86f, 1f, 0.55f), CsTheme.Cyan, 96, 3);
+        ReleaseAll();
+        foreach (JoyConMap.Pad p in _toggled) GameKeys.SetVirtual(JoyConMap.Get(p).Key, false);
+        _toggled.Clear(); _padFingers.Clear();
+        Showing = PadTouch = false;
+    }
+
+    // ── EL DIBUJO (action-pad.css y style.css: .ap-btn, .vstick) ──────────────────────────────────────────────────────────────────────
+    static int _texFor = -1;
+    static Texture2D _disc, _discOn, _square, _squareOn, _pill, _pillOn, _small, _smallOn, _capture, _captureOn, _ring, _knob;
+    GUIStyle _face, _faceOn, _label, _labelOn, _stickLabel;
+    int _styleFor = -1;
+
+    static readonly Color Rim = new Color32(0xff, 0xff, 0xff, 0x40), RimOn = new Color32(0xff, 0xd2, 0xa0, 0xff);
+    static Texture2D Btn2(int w, int h, float radius, bool on, float rimPx)
+    {
+        // radial-gradient(circle at 40% 35%, #4a4f57cc, #1c1f24cc 70%), borde 2 px #ffffff40; puesto: #ffd2a0 → #ff9a2e, borde #ffd2a0.
+        Color a = on ? (Color)new Color32(0xff, 0xd2, 0xa0, 0xff) : (Color)new Color32(0x4a, 0x4f, 0x57, 0xcc), b = on ? CsTheme.Orange : (Color)new Color32(0x1c, 0x1f, 0x24, 0xcc);
+        return CsTheme.Shape(w, h, radius, CsTheme.Radial(0.4f, 0.35f, a, b, 0.7f, (float)w / h), on ? RimOn : Rim, rimPx);
+    }
+
+    static void Textures(float dp)
+    {
+        int key = Mathf.RoundToInt(dp * 100f);
+        if (_disc != null && key == _texFor) return;
+        _texFor = key;
+        int P(float css) => Mathf.Max(8, Mathf.RoundToInt(css * dp));
+        int b = P(Btn), s = P(Small), sw = P(ShoulderW), sh = P(ShoulderH);
+        _disc = Btn2(b, b, b * 0.5f, false, 2f * dp); _discOn = Btn2(b, b, b * 0.5f, true, 2f * dp);
+        _square = Btn2(b, b, 12f * dp, false, 2f * dp); _squareOn = Btn2(b, b, 12f * dp, true, 2f * dp);                 // la cruceta: border-radius 12px
+        _pill = Btn2(sw, sh, sh * 0.5f, false, 2f * dp); _pillOn = Btn2(sw, sh, sh * 0.5f, true, 2f * dp);               // los gatillos: border-radius 22px
+        _small = Btn2(s, s, s * 0.5f, false, 2f * dp); _smallOn = Btn2(s, s, s * 0.5f, true, 2f * dp);
+        _capture = Btn2(s, s, 8f * dp, false, 2f * dp); _captureOn = Btn2(s, s, 8f * dp, true, 2f * dp);                  // captura: border-radius 8px
+        // .vstick: radial-gradient(circle, #ffffff10 0 44%, transparent 45%), #1c1f2433; borde 2 px #ffffff38 (y opacidad 0,72 al dibujar).
+        int st = P(StickSize);
+        _ring = CsTheme.Shape(st, st, st * 0.5f, (u, v) =>
+        {
+            float d = Mathf.Sqrt((u - 0.5f) * (u - 0.5f) + (v - 0.5f) * (v - 0.5f)) / 0.7071f;
+            return d <= 0.445f ? new Color32(0x2b, 0x2e, 0x33, 0x43) : new Color32(0x1c, 0x1f, 0x24, 0x33);
+        }, new Color32(0xff, 0xff, 0xff, 0x38), 2f * dp);
+        // .knob: radial-gradient(circle at 42% 38%, #5a5f67, #262a30 72%), borde 3 px #121519 y un aro interior de 4 px #3b4048aa.
+        int k = P(KnobSize);
+        System.Func<float, float, Color> grad = CsTheme.Radial(0.42f, 0.38f, new Color32(0x5a, 0x5f, 0x67, 0xff), new Color32(0x26, 0x2a, 0x30, 0xff), 0.72f);
+        float ringIn = 1f - 2f * (3f + 4f) / KnobSize, ringOut = 1f - 2f * 3f / KnobSize;
+        _knob = CsTheme.Shape(k, k, k * 0.5f, (u, v) =>
+        {
+            float d = 2f * Mathf.Sqrt((u - 0.5f) * (u - 0.5f) + (v - 0.5f) * (v - 0.5f));
+            Color c = grad(u, v);
+            return d >= ringIn && d < ringOut ? Color.Lerp(c, new Color32(0x3b, 0x40, 0x48, 0xff), 0.67f) : c;
+        }, new Color32(0x12, 0x15, 0x19, 0xff), 3f * dp);
     }
 
     void OnGUI()
     {
-        if (_lay.rects == null) return;
         GUI.depth = -1500;
-        Textures();
-        float u = _lay.unit;
-        int fs = Mathf.RoundToInt(u * 0.34f);
+        // El toque que empezó en el mando no es un clic para las ventanas de debajo (ni para la que acaba de abrir): CodeShip swallowGhostClick.
+        Event e = Event.current;
+        if ((e.type == EventType.MouseDown || e.type == EventType.MouseUp || e.type == EventType.MouseDrag) && PadTouch) { e.Use(); return; }
+        if (_hidden || _lay.rects == null || e.type != EventType.Repaint) return;
+        float dp = _lay.dp;
+        Textures(dp);
+        int fs = Mathf.RoundToInt(17f * dp);
         if (_face == null || _styleFor != fs)
         {
-            _face = new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter, fontSize = fs, fontStyle = FontStyle.Bold, clipping = TextClipping.Overflow, wordWrap = false };
+            _face = new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter, fontSize = fs, fontStyle = FontStyle.Bold, clipping = TextClipping.Overflow, wordWrap = false, padding = new RectOffset(0, 0, 0, 0), richText = false };
             _face.normal.textColor = Color.white;
             _faceOn = new GUIStyle(_face); _faceOn.normal.textColor = CsTheme.Ink;
-            _label = new GUIStyle(_face) { fontSize = Mathf.Max(9, Mathf.RoundToInt(u * 0.17f)), fontStyle = FontStyle.Normal, alignment = TextAnchor.UpperCenter };
+            _label = new GUIStyle(_face) { fontSize = Mathf.Max(8, Mathf.RoundToInt(9f * dp)), fontStyle = FontStyle.Normal };
+            _label.normal.textColor = new Color(1f, 1f, 1f, 0.9f);
             _labelOn = new GUIStyle(_label); _labelOn.normal.textColor = CsTheme.Ink;
+            _stickLabel = new GUIStyle(_label) { fontSize = Mathf.Max(8, Mathf.RoundToInt(11f * dp)) };
+            _stickLabel.normal.textColor = new Color(1f, 1f, 1f, 0.67f);
             _styleFor = fs;
         }
         Color was = GUI.color;
 
-        // Los joysticks: el de andar, su aro donde empezó el dedo (o en reposo) y el pomo donde está; el de la cámara, fijo.
-        float R = _lay.stickRadius, knob = u * 0.42f;
-        Vector2 mo = _moveFinger >= 0 ? Gui(_moveOrigin) : _lay.moveRest, mv = MoveStick;
-        Stick(mo, mo + new Vector2(mv.x, -mv.y) * R, R, knob, _moveFinger >= 0);
-        Vector2 lc = _lay.lookCenter, lk = LookStick;
-        Stick(lc, lc + new Vector2(lk.x, -lk.y) * R, R, knob, _lookFinger >= 0);
+        // Los joysticks (.vstick 0,72; tocado 0,95), su nombre debajo, y el pomo donde está el dedo.
+        DrawStick(_lay.moveCenter, MoveStick, _moveFinger >= 0, "MOVERSE", dp);
+        DrawStick(_lay.lookCenter, LookStick, _lookFinger >= 0, "MIRAR", dp);
 
         foreach (KeyValuePair<JoyConMap.Pad, Rect> kv in _lay.rects)
         {
             JoyConMap.Pad p = kv.Key;
             JoyConMap.Button b = JoyConMap.Get(p);
-            bool flash = _flash.TryGetValue(p, out float at) && Time.unscaledTime - at < 0.16f;
-            bool on = IsOn(p) || flash;
+            bool hit = _flash.TryGetValue(p, out float at) && Time.unscaledTime - at < 0.16f;
+            bool on = _toggled.Contains(p);   // naranja: lo que se queda puesto (Correr); pulsar o mantener solo lo hunde
             Rect r = kv.Value;
-            if (flash) { float k = r.width * 0.04f; r = new Rect(r.x + k, r.y + k, r.width - 2f * k, r.height - 2f * k); }   // se hunde al tocarlo
+            if (hit || _heldKey.ContainsKey(p)) { float k = r.width * 0.04f; r = new Rect(r.x + k, r.y + r.height * 0.04f, r.width - 2f * k, r.height * 0.92f); }   // se hunde (scale 0.92)
             bool pill = p == JoyConMap.Pad.L || p == JoyConMap.Pad.ZL || p == JoyConMap.Pad.R || p == JoyConMap.Pad.ZR;
-            bool square = p == JoyConMap.Pad.Up || p == JoyConMap.Pad.Down || p == JoyConMap.Pad.Left || p == JoyConMap.Pad.Right || p == JoyConMap.Pad.Capture;
-            GUI.color = new Color(1f, 1f, 1f, on ? 0.95f : idleAlpha);
-            GUI.DrawTexture(r, pill ? (on ? _pillOn : _pill) : square ? (on ? _squareOn : _square) : (on ? _discOn : _disc), ScaleMode.StretchToFill);
-            GUI.color = new Color(1f, 1f, 1f, on ? 1f : Mathf.Min(1f, idleAlpha + 0.3f));
+            bool dpad = p == JoyConMap.Pad.Up || p == JoyConMap.Pad.Down || p == JoyConMap.Pad.Left || p == JoyConMap.Pad.Right;
             bool small = p == JoyConMap.Pad.Plus || p == JoyConMap.Pad.Minus || p == JoyConMap.Pad.Home || p == JoyConMap.Pad.Capture;
-            string face = JoyConMap.Face(p);
-            if (pill || string.IsNullOrEmpty(b.label) || small)
-            {
-                // Los gatillos llevan la marca y lo que hacen en la misma línea; los pequeños, el nombre fuera, debajo.
-                GUI.Label(r, pill && !string.IsNullOrEmpty(b.label) ? $"{face} <size={_label.fontSize}>{b.label}</size>" : face, RichFace(on));
-                if (small && !string.IsNullOrEmpty(b.label))
-                {
-                    bool above = p == JoyConMap.Pad.Minus || p == JoyConMap.Pad.Plus;   // «−»/«+» arriba, captura/inicio abajo: no tapan la cruceta ni el rombo
-                    GUI.Label(new Rect(r.x - u * 0.4f, above ? r.y - u * 0.3f - 1f : r.yMax + 1f, r.width + u * 0.8f, u * 0.3f), b.label, _label);
-                }
-            }
-            else
-            {
-                GUI.Label(new Rect(r.x, r.y - r.height * 0.1f, r.width, r.height), face, on ? _faceOn : _face);
-                GUI.Label(new Rect(r.x - u * 0.3f, r.y + r.height * 0.62f, r.width + u * 0.6f, r.height * 0.4f), b.label, on ? _labelOn : _label);
-            }
+            Texture2D tex = pill ? (on ? _pillOn : _pill) : dpad ? (on ? _squareOn : _square) : p == JoyConMap.Pad.Capture ? (on ? _captureOn : _capture) : small ? (on ? _smallOn : _small) : (on ? _discOn : _disc);
+            GUI.color = new Color(1f, 1f, 1f, on || hit ? 0.95f : IdleAlpha);
+            GUI.DrawTexture(r, tex, ScaleMode.StretchToFill);
+            // La marca (17 px; la cruceta 14, los gatillos 13, los pequeños 15) y debajo lo que hace (9 px), centradas en la columna.
+            float faceCss = dpad ? 14f : pill ? 13f : small ? 15f : 17f;
+            _face.fontSize = _faceOn.fontSize = Mathf.RoundToInt(faceCss * dp);
+            string label = b.label ?? "";
+            float faceH = faceCss * dp, labelH = string.IsNullOrEmpty(label) ? 0f : 11f * dp, top = r.y + (r.height - faceH - labelH) * 0.5f;
+            GUI.Label(new Rect(r.x, top, r.width, faceH), JoyConMap.Face(p), on ? _faceOn : _face);
+            if (labelH > 0f) GUI.Label(new Rect(r.x - r.width, top + faceH, r.width * 3f, labelH), label, on ? _labelOn : _label);
         }
         GUI.color = was;
     }
 
-    GUIStyle _rich, _richOn;
-    GUIStyle RichFace(bool on)
+    void DrawStick(Vector2 c, Vector2 v, bool active, string name, float dp)
     {
-        if (_rich == null || _rich.fontSize != _face.fontSize - 2)
-        {
-            _rich = new GUIStyle(_face) { richText = true, fontSize = _face.fontSize - 2 };
-            _richOn = new GUIStyle(_rich); _richOn.normal.textColor = CsTheme.Ink;
-        }
-        return on ? _richOn : _rich;
-    }
-
-    void Stick(Vector2 center, Vector2 knobAt, float r, float k, bool active)
-    {
-        GUI.color = new Color(1f, 1f, 1f, active ? 0.9f : 0.6f);
-        GUI.DrawTexture(new Rect(center.x - r, center.y - r, r * 2f, r * 2f), _ring, ScaleMode.StretchToFill);
-        GUI.color = new Color(1f, 1f, 1f, active ? 0.95f : 0.7f);
-        GUI.DrawTexture(new Rect(knobAt.x - k, knobAt.y - k, k * 2f, k * 2f), _knob, ScaleMode.StretchToFill);
+        float r = _lay.stickRadius, k = KnobSize * 0.5f * dp, travel = r;
+        GUI.color = new Color(1f, 1f, 1f, active ? 0.95f : 0.72f);
+        GUI.DrawTexture(new Rect(c.x - r, c.y - r, 2f * r, 2f * r), _ring, ScaleMode.StretchToFill);
+        Vector2 at = c + new Vector2(v.x, -v.y) * travel;
+        GUI.DrawTexture(new Rect(at.x - k, at.y - k, 2f * k, 2f * k), _knob, ScaleMode.StretchToFill);
+        GUI.Label(new Rect(c.x - r, c.y + r + 2f * dp, 2f * r, 16f * dp), name, _stickLabel);   // span: bottom −18 px
     }
 }

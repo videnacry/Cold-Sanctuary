@@ -404,6 +404,9 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | UI-10 | UI | cada hechizo del lanzador tiene su reto de código bien formado (Grimorio) | JoyConTest | 141 | — | PB-167 | docs/mandos-tactiles.md §5; añadido el 2026-11-20 |
 | UI-11 | UI | el botón R del mando abre el Grimorio (F8) | JoyConTest | 141 | — | PB-167 | docs/mandos-tactiles.md §5; añadido el 2026-11-20 |
 | UI-12 | UI | en el Grimorio, elegir un hechizo abre su reto; fallar no lo lanza y acertar sí | JoyConTest | 141 | — | PB-167 | docs/mandos-tactiles.md §5; añadido el 2026-11-20 |
+| UI-13 | UI | el mando mide y se coloca como en el santuario 1 de CodeShip (iPhone 13) y ocupa la misma parte de cualquier pantalla | JoyConTest | 141 | — | PB-169 | docs/mandos-tactiles.md §6; añadido el 2026-11-20 |
+| UI-14 | UI | el mando se oculta con un modal abierto (Misiones, Grimorio, diálogo) y vuelve al cerrarlo | JoyConTest | 141 | — | PB-169 | docs/mandos-tactiles.md §6.3; añadido el 2026-11-20 |
+| UI-15 | UI | las hojas (Grimorio, ajustes, reto) van donde en CodeShip: vertical abajo, horizontal a la derecha | JoyConTest | 141 | — | PB-169 | docs/mandos-tactiles.md §6.4; añadido el 2026-11-20 |
 
 
 ## CS · CodeShip (retos de código, tareas e «Ir», menú)

@@ -109,6 +109,9 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | UI-10 | Solo test | 2026-11-20 | — | — | — | Grimorio: en código el 2026-11-20, falta compilar y correr g141 |
 | UI-11 | Solo test | 2026-11-20 | — | — | — | Grimorio: en código el 2026-11-20, falta compilar y correr g141 |
 | UI-12 | Solo test | 2026-11-20 | — | — | — | Grimorio: en código el 2026-11-20, falta compilar y correr g141 |
+| UI-13 | Solo test | 2026-11-20 | — | — | — | PB-169: en código el 2026-11-20 (compila contra Unity 2021.3 sin errores en lo tocado), falta verify-compile y g141 en el PC |
+| UI-14 | Solo test | 2026-11-20 | — | — | — | PB-169: en código el 2026-11-20 (compila contra Unity 2021.3 sin errores en lo tocado), falta verify-compile y g141 en el PC |
+| UI-15 | Solo test | 2026-11-20 | — | — | — | PB-169: en código el 2026-11-20 (compila contra Unity 2021.3 sin errores en lo tocado), falta verify-compile y g141 en el PC |
 | YOG-02 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | ENE-01 | Solo código | — | — | — | — | auditoría: Sin verificar en vivo |
 | ENE-02 | Probado (suite g101) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g101 EnergyTest 81/0 |

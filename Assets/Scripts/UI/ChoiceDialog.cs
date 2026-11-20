@@ -20,7 +20,6 @@ public class ChoiceDialog : MonoBehaviour
     Action _onCancel;
     int _sel, _openedFrame;
     Transform _anchor, _player; float _radius;
-    const int Visible = 10;
 
     static ChoiceDialog Get()
     {
@@ -72,30 +71,27 @@ public class ChoiceDialog : MonoBehaviour
         if (GameKeys.UiKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)) Pick(_sel);
     }
 
-    GUIStyle _btn, _btnOn, _head;
+    bool _laid;
+    Vector2 _scroll;
+
+    /// <summary>(2026-11-20, PB-169) La hoja de CodeShip (CsUi.SheetFrame) con cada opción en una fila; la marcada por las flechas, con ▸.</summary>
     void OnGUI()
     {
         CsTheme.Use();   // (2026-11-19) el tema de CodeShip para los menús (UI/CsTheme.cs)
-        if (!_open) return;
-        if (_btn == null)
-        {
-            _btn = new GUIStyle(GUI.skin.button) { alignment = TextAnchor.MiddleLeft, fontSize = 14, richText = true };
-            _btnOn = new GUIStyle(_btn) { fontStyle = FontStyle.Bold };
-            _btnOn.normal.textColor = _btnOn.hover.textColor = new Color(1f, 0.85f, 0.45f);
-            _head = new GUIStyle(GUI.skin.label) { fontSize = 16, fontStyle = FontStyle.Bold, alignment = TextAnchor.MiddleCenter, richText = true };
-        }
-        int first = Mathf.Clamp(_sel - Visible / 2, 0, Mathf.Max(0, _options.Length - Visible));
-        int shown = Mathf.Min(Visible, _options.Length);
-        float w = Mathf.Min(680f, Screen.width - 40f), rowH = 30f, h = 70f + shown * (rowH + 4f);
-        float x = (Screen.width - w) * 0.5f, y = (Screen.height - h) * 0.5f;
-        GUI.Box(new Rect(x, y, w, h), "");
-        GUI.Label(new Rect(x, y + 8f, w, 24f), _title, _head);
-        for (int k = 0; k < shown; k++)
-        {
-            int i = first + k;
-            Rect r = new Rect(x + 16f, y + 40f + k * (rowH + 4f), w - 32f, rowH);
-            if (GUI.Button(r, (i == _sel ? "➤ " : "   ") + _options[i], i == _sel ? _btnOn : _btn)) { Pick(i); return; }
-        }
-        GUI.Label(new Rect(x, y + h - 26f, w, 20f), "<size=11>↑/↓ elige · Intro o clic confirma · Esc cierra</size>", _head);
+        if (!CsUi.Draw(ref _laid, _open)) return;
+        GUI.depth = -1300;
+        Rect inner = CsUi.SheetFrame();
+        float y = inner.y;
+        if (CsUi.SheetHead(inner, ref y, "Elige", _title) == 0) { Action c = _onCancel; Close(); c?.Invoke(); return; }
+        GUILayout.BeginArea(new Rect(inner.x, y, inner.width, inner.yMax - y));
+        _scroll = GUILayout.BeginScrollView(_scroll);
+        int picked = -1;
+        string[] options = _options;
+        for (int i = 0; i < options.Length; i++)
+            if (CsUi.SetRow(options[i], null, i == _sel ? "▸" : "", true)) picked = i;
+        if (!CsUi.Mobile) GUILayout.Label("↑/↓ elige · Intro o clic confirma · Esc cierra", CsUi.NoteStyle);
+        GUILayout.EndScrollView();
+        GUILayout.EndArea();
+        if (picked >= 0) Pick(picked);   // después de cerrar los grupos del dibujo
     }
 }

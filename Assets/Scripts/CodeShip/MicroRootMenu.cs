@@ -259,7 +259,7 @@ public class MicroRootMenu : MonoBehaviour
         }
         Rect root = RootRect();
         bool big = HudModals.Current == HudModals.Modal.Tareas || HudModals.Current == HudModals.Modal.Areas || HudModals.Current == HudModals.Modal.Misiones;
-        if (big && WebLigera.Active) return;   // la ventana grande ocupa la pantalla y tiene su ✕
+        if (big) return;   // la ventana grande ocupa la pantalla y tiene su ✕ (2026-11-20: también en el escritorio, como CodeShip)
         if (GUI.Button(root, Open ? "✕ Menú" : (WebLigera.Active ? "☰ Menú" : "F5: ☰ Menú"))) Toggle();
         MicroOnboarding.MenuButton = root;
         if (!Open || big) return;   // se oculta un momento con una ventana grande y vuelve tal como estaba

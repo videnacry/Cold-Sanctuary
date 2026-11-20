@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 1039 tipos._
+_Total: 1040 tipos._
 
 
 ## Animals
@@ -403,6 +403,7 @@ _Total: 1039 tipos._
 - **CriaCareTarget** (class) — `Assets/Scripts/Prologue/CriaCareTarget.cs` — Engancha la rutina de cuidado a los DRIVES REALES de una cría (`Animal`) — docs/cria-simulation.md §2/§3, fauna-gameplay.md.
 - **CriaFeeder** (class) — `Assets/Scripts/Prologue/CriaFeeder.cs` — TOMAS PROGRAMADAS de un recinto de la Cría (docs/cria-simulation.md):
 - **CsTheme** (class) — `Assets/Scripts/UI/CsTheme.cs` — EL TEMA DE LOS MENÚS (2026-11-19, Berón:
+- **CsUi** (class) — `Assets/Scripts/UI/CsUi.cs` — LAS PIEZAS DE LA INTERFAZ DE CODESHIP, A SU MEDIDA (2026-11-20, Berón:
 - **CubeBody** (class) — `Assets/Scripts/Avatar/CubeBody.cs` — MODELO CORPORAL DE CUBOS (estilo Minecraft) — construye el cuerpo de un anyma como un GRUPO DE CUBOS, uno por PARTE del cuerpo (`BodyPart`), y **cablea el `CreatureRig`** para que las **asanas/yoga** 
 - **CubeCreature** (class) — `Assets/Scripts/Avatar/CubeCreature.cs` — FAUNA DE CUBOS CON HUESOS (docs/anyma-factory-and-control §1):
 - **CubeFace** (class) — `Assets/Scripts/Avatar/CubeFace.cs` — CARA DE CUBOS con EXPRESIONES:
@@ -621,7 +622,7 @@ _Total: 1039 tipos._
 - **JornadaSaberTest** (class) — `Assets/Scripts/Tests/JornadaSaberTest.cs` — PRUEBA DEL MODELO JORNADA/TAREA (Berón 2026-11-05; docs/jornada-y-rotacion.md):
 - **JornadaTest** (class) — `Assets/Scripts/Tests/JornadaTest.cs` — PRUEBA EN VIVO DE LA JORNADA DE KUSHAL (Berón 2026-10-29:
 - **JoyConMap** (class) — `Assets/Scripts/Control/JoyConMap.cs` — LOS MANDOS DE LA SWITCH, COMO DATOS (2026-11-19, Berón:
-- **JoyConTest** (class) — `Assets/Scripts/Tests/JoyConTest.cs` — PRUEBA DE LOS MANDOS TÁCTILES TIPO SWITCH Y EL GRIMORIO (grupo 141; docs/mandos-tactiles.md, Berón 2026-11-19:
+- **JoyConTest** (class) — `Assets/Scripts/Tests/JoyConTest.cs` — PRUEBA DE LOS MANDOS TÁCTILES TIPO SWITCH Y EL GRIMORIO (grupo 141; (PB-169) medidas del santuario 1 de CodeShip y ocultarse con los modales; docs/mandos-tactiles.md, Berón 2026-11-19:
 - **KitchenBoss** (class) — `Assets/Scripts/World/KitchenBoss.cs` — GOLUIS, el ENCARGADO de la cocina (Berón 2026-11-08; los rangos más altos son Maite y Amykhuz; docs/kitchen-simulation.md).
 - **KitchenCook** (class) — `Assets/Scripts/Kitchen/KitchenCook.cs` — COCINERO VISIBLE (docs/kitchen-simulation.md §3:
 - **KitchenFireMission** (class) — `Assets/Scripts/Microcosmos/KitchenFireMission.cs` — Misión "llevar la comida a la cueva" — Microcosmos de la Cocina (era pre-fuego).

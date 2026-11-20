@@ -6,7 +6,7 @@ using UnityEngine;
 /// cian, verde para lo activo y naranja para lo que pide atención, esquinas redondeadas. Todos los menús del juego son IMGUI y crean sus
 /// estilos a partir de <c>GUI.skin</c>, así que basta con llamar a <see cref="Use"/> al principio de su <c>OnGUI</c> para que hereden el
 /// tema sin tocar su dibujo. Las texturas se generan en código (el repo solo versiona .cs): no hay assets que montar en Unity.
-/// Lo usan también los mandos táctiles (<see cref="TouchControls"/>): <see cref="Disc"/>, <see cref="Rounded"/> y <see cref="Pill"/>.
+/// Las piezas a medida de CodeShip (ventanas, hojas, filas, mandos) están en <see cref="CsUi"/>, que dibuja con <see cref="Shape"/>.
 /// </summary>
 public static class CsTheme
 {
@@ -25,17 +25,25 @@ public static class CsTheme
     public static readonly Color Orange = new Color32(0xff, 0x9a, 0x2e, 0xff);       // #ff9a2e: la acción que pide atención
     public static readonly Color OrangeLight = new Color32(0xff, 0xd2, 0xa0, 0xff);  // #ffd2a0
     public static readonly Color Ink = new Color32(0x1d, 0x0d, 0x00, 0xff);          // #1d0d00: el texto sobre naranja
-    // Los botones del Joy-Con (action-pad.css): gris oscuro translúcido con borde blanco tenue.
-    public static readonly Color PadFill = new Color32(0x33, 0x37, 0x3e, 0xcc);
-    public static readonly Color PadRim = new Color32(0xff, 0xff, 0xff, 0x40);
 
     static GUISkin _skin;
+    static int _skinFor = -1;
 
-    /// <summary>Pone el tema en este <c>OnGUI</c> (Unity devuelve la piel por defecto en cada llamada a <c>OnGUI</c>).</summary>
+    /// <summary>Pone el tema en este <c>OnGUI</c> (Unity devuelve la piel por defecto en cada llamada a <c>OnGUI</c>). En el móvil, la letra y
+    /// los márgenes van a la medida de CodeShip (<see cref="CsUi.Dp"/>: 13 px CSS), también en los menús que aún no usan <see cref="CsUi"/>.</summary>
     public static void Use()
     {
         if (!Enabled) return;
-        if (_skin == null) _skin = Build(GUI.skin);
+        int key = Mathf.RoundToInt(CsUi.Dp * 100f);
+        if (_skin == null || key != _skinFor)
+        {
+            if (_skin != null) Object.Destroy(_skin);
+            _skin = Build(GUI.skin);
+            _skinFor = key;
+            if (CsUi.Mobile)
+                foreach (GUIStyle st in new[] { _skin.label, _skin.button, _skin.box, _skin.toggle, _skin.textField, _skin.textArea, _skin.window })
+                    st.fontSize = CsUi.Fs(13f);
+        }
         GUI.skin = _skin;
     }
 
@@ -94,35 +102,27 @@ public static class CsTheme
     public static Texture2D Rounded(Color fill, Color rim, int radius, int rimWidth = 2)
     {
         int n = radius * 2 + 2;
-        return Make(n, n, (x, y) => RoundedDist(x, y, n, n, radius), fill, rim, rimWidth);
+        return Shape(n, n, radius, (u, v) => fill, rim, rimWidth);
     }
 
-    /// <summary>Una píldora (ancho = 2 × alto) para los gatillos L/ZL/R/ZR: se dibuja con <c>GUI.DrawTexture</c> en un rectángulo 2:1.</summary>
-    public static Texture2D Pill(Color fill, Color rim, int height = 64, int rimWidth = 3)
+    /// <summary>
+    /// Una forma redondeada de <paramref name="w"/>×<paramref name="h"/> px con radio <paramref name="radius"/> (h/2 = píldora; w = h y radio
+    /// w/2 = círculo), su relleno por punto (<paramref name="fill"/> recibe u, v en 0..1, v = 0 ARRIBA, como el CSS) y su aro.
+    /// </summary>
+    public static Texture2D Shape(int w, int h, float radius, System.Func<float, float, Color> fill, Color rim, float rimWidth)
     {
-        int w = height * 2;
-        return Make(w, height, (x, y) => RoundedDist(x, y, w, height, height * 0.5f), fill, rim, rimWidth);
+        return Make(w, h, (x, y) => RoundedDist(x, y, w, h, radius), (x, y) => fill((x + 0.5f) / w, 1f - (y + 0.5f) / h), rim, rimWidth);
     }
 
-    /// <summary>Un círculo con un brillo arriba a la izquierda (los botones A/B/X/Y y los joysticks).</summary>
-    public static Texture2D Disc(Color fill, Color rim, int size = 96, int rimWidth = 3)
+    /// <summary>
+    /// El <c>radial-gradient(circle at cx cy, a, b stop)</c> del CSS: el color en (u, v) de una caja cuadrada. CodeShip lo usa en los botones
+    /// del mando (at 40% 35%, hasta el 70 %) y en los joysticks. El radio de referencia es el de CSS: hasta la esquina más lejana.
+    /// </summary>
+    public static System.Func<float, float, Color> Radial(float cx, float cy, Color a, Color b, float stop, float aspect = 1f)
     {
-        float c = size * 0.5f;
-        Texture2D t = Make(size, size, (x, y) => c - Mathf.Sqrt((x - c) * (x - c) + (y - c) * (y - c)), fill, rim, rimWidth);
-        // El brillo de action-pad.css (radial-gradient at 40% 35%): más claro arriba a la izquierda, más oscuro abajo a la derecha.
-        Color[] px = t.GetPixels();
-        Vector2 hi = new Vector2(size * 0.4f, size * 0.65f);   // (las texturas van de abajo arriba)
-        for (int y = 0; y < size; y++)
-            for (int x = 0; x < size; x++)
-            {
-                int i = y * size + x;
-                float k = Mathf.Clamp01(Vector2.Distance(new Vector2(x, y), hi) / (size * 0.7f));
-                Color p = px[i];
-                px[i] = new Color(p.r * Mathf.Lerp(1.35f, 0.65f, k), p.g * Mathf.Lerp(1.35f, 0.65f, k), p.b * Mathf.Lerp(1.35f, 0.65f, k), p.a);
-            }
-        t.SetPixels(px);
-        t.Apply();
-        return t;
+        float fx = Mathf.Max(cx, 1f - cx) * aspect, fy = Mathf.Max(cy, 1f - cy);
+        float far = Mathf.Sqrt(fx * fx + fy * fy) * stop;
+        return (u, v) => Color.Lerp(a, b, Mathf.Clamp01(Mathf.Sqrt((u - cx) * (u - cx) * aspect * aspect + (v - cy) * (v - cy)) / far));
     }
 
     /// <summary>Distancia (px) desde un punto al borde de un rectángulo redondeado, positiva dentro.</summary>
@@ -134,7 +134,7 @@ public static class CsTheme
         return Mathf.Min(Mathf.Min(px, w - px), Mathf.Min(py, h - py));
     }
 
-    static Texture2D Make(int w, int h, System.Func<int, int, float> inside, Color fill, Color rim, int rimWidth)
+    static Texture2D Make(int w, int h, System.Func<int, int, float> inside, System.Func<int, int, Color> fill, Color rim, float rimWidth)
     {
         var t = new Texture2D(w, h, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp, filterMode = FilterMode.Bilinear, hideFlags = HideFlags.HideAndDontSave };
         var px = new Color[w * h];
@@ -143,8 +143,12 @@ public static class CsTheme
             {
                 float d = inside(x, y);                                   // > 0 dentro, en píxeles
                 float a = Mathf.Clamp01(d + 0.5f);                         // borde exterior suavizado
-                float rimK = Mathf.Clamp01(rimWidth - d + 0.5f);           // 1 en el aro, 0 dentro
-                Color c = Color.Lerp(fill, rim, rimK * (rim.a > 0f ? 1f : 0f));
+                float rimK = rim.a > 0f && rimWidth > 0f ? Mathf.Clamp01(rimWidth - d + 0.5f) : 0f;   // 1 en el aro, 0 dentro
+                Color f = fill(x, y);
+                // El aro va ENCIMA del relleno, como el border del CSS sobre su fondo (composición «source-over»).
+                float ra = rim.a * rimK, oa = ra + f.a * (1f - ra);
+                Color c = oa <= 0f ? new Color(0f, 0f, 0f, 0f)
+                    : new Color((rim.r * ra + f.r * f.a * (1f - ra)) / oa, (rim.g * ra + f.g * f.a * (1f - ra)) / oa, (rim.b * ra + f.b * f.a * (1f - ra)) / oa, oa);
                 c.a *= a;
                 px[y * w + x] = c;
             }

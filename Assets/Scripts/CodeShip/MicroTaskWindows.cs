@@ -22,7 +22,6 @@ public class MicroTaskWindows : MonoBehaviour
     bool _settings;
     float _next;
     Vector2 _scroll;
-    GUIStyle _txt, _small, _head, _btn, _go;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void Install()
@@ -70,110 +69,100 @@ public class MicroTaskWindows : MonoBehaviour
         return AutoTravel.Ensure().Go(a.target, a.title, a.kind == AreaEntry.Kind.Historia ? 3f : 5f);
     }
 
-    // ── El dibujo ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-    static float Row => WebLigera.Active ? Mathf.Max(44f, Mathf.Min(Screen.width, Screen.height) * 0.075f) : 28f;
+    // ── El dibujo (2026-11-20, PB-169): la ventana a pantalla completa de CodeShip (.nav-map + .map-window, areas-window.css): cabecera
+    // con sus botones de 44 px y la ✕, los chips de grupo con su cuenta, y cada entrada una fila con su botón cian «Ir». ───────────────
 
-    void Styles()
-    {
-        if (_txt != null) return;
-        int f = WebLigera.Active ? Mathf.Max(15, Mathf.RoundToInt(Row * 0.34f)) : 13;
-        _txt = new GUIStyle(GUI.skin.label) { richText = true, wordWrap = true, fontSize = f };
-        _small = new GUIStyle(_txt) { fontSize = f - 2 };
-        _head = new GUIStyle(_txt) { fontSize = f + 3 };
-        _btn = new GUIStyle(GUI.skin.button) { richText = true, fontSize = f };
-        _go = new GUIStyle(_btn) { fontStyle = FontStyle.Bold };
-    }
-
-    /// <summary>La caja de la ventana: centrada como la de misiones; en el móvil, casi toda la pantalla (CodeShip: Tareas toma el ancho).</summary>
-    public static Rect WindowRect()
-    {
-        if (WebLigera.Active) return new Rect(6f, 6f, Screen.width - 12f, Screen.height - 12f);
-        float w = Mathf.Min(680f, Screen.width - 40f);
-        return new Rect((Screen.width - w) * 0.5f, 60f, w, Mathf.Min(Screen.height - 120f, 620f));
-    }
+    bool _laid;
+    int _taskChip = -1, _areaChip = -1;   // −1 = «Todas»
 
     void OnGUI()
     {
         CsTheme.Use();   // (2026-11-19) el tema de CodeShip para los menús (UI/CsTheme.cs)
-        if (ColdSanctuary.TestRunner.Running || CodeChallengeSheet.IsOpen) return;
-        if (HudModals.Current != HudModals.Modal.Tareas && HudModals.Current != HudModals.Modal.Areas) return;
-        Styles();
+        bool open = !ColdSanctuary.TestRunner.Running && !CodeChallengeSheet.IsOpen && (HudModals.Current == HudModals.Modal.Tareas || HudModals.Current == HudModals.Modal.Areas);
+        if (!CsUi.Draw(ref _laid, open)) return;
         GUI.depth = -800;
-        Rect r = WindowRect();
-        float row = Row;
-        GUI.Box(r, ""); GUI.Box(r, ""); GUI.Box(r, "");
         bool tareas = HudModals.Current == HudModals.Modal.Tareas;
-        string title = tareas ? (_settings ? "Ajustes de tareas" : "Tareas") : "Áreas";
-        string keys = WebLigera.Active ? "" : $"  <size=11>({(tareas ? "F6" : "F7")} o Esc para cerrar)</size>";
-        GUI.Label(new Rect(r.x + 12f, r.y + 6f, r.width - row * 4.5f, row), $"<b>{title}</b>{keys}", _head);
-        if (GUI.Button(new Rect(r.xMax - row - 8f, r.y + 6f, row, row), "✕")) { HudModals.Close(); _settings = false; return; }
-        if (tareas && GUI.Button(new Rect(r.xMax - row * 3.6f - 12f, r.y + 6f, row * 2.6f, row), _settings ? "☰ Lista" : "⚙ Ajustes")) { _settings = !_settings; _scroll = Vector2.zero; }
+        // Lo que se toca en este evento cambia el dibujo en el siguiente Layout, no a mitad (GUILayout pide el mismo número de piezas).
+        bool settings = _settings;
+        int taskChip = _taskChip, areaChip = _areaChip;
+        Rect r = CsUi.WindowFrame();
+        Rect body;
+        int hit = tareas
+            ? CsUi.WindowHead(r, _settings ? "Ajustes de tareas" : "Tareas", out body, _settings ? "☰ Lista" : "⚙ Ajustes")
+            : CsUi.WindowHead(r, "Áreas", out body);
+        if (hit == (tareas ? 1 : 0)) { HudModals.Close(); _settings = false; return; }
+        if (tareas && hit == 0) { _settings = !_settings; _scroll = Vector2.zero; }
 
-        var area = new Rect(r.x + 10f, r.y + row + 14f, r.width - 20f, r.height - row - 22f);
-        GUILayout.BeginArea(area);
+        GUILayout.BeginArea(body);
+        if (tareas && !settings) Chips(Tasks.ConvertAll(t => (int)t.group), System.Enum.GetNames(typeof(TaskEntry.Group)).Length, g => TaskEntry.GroupLabel((TaskEntry.Group)g), ref _taskChip);
+        if (!tareas) Chips(Areas.ConvertAll(a => (int)a.kind), System.Enum.GetNames(typeof(AreaEntry.Kind)).Length, k => AreaGroup((AreaEntry.Kind)k), ref _areaChip);
         _scroll = GUILayout.BeginScrollView(_scroll);
-        if (tareas) { if (_settings) DrawSettings(row); else DrawTasks(row); }
-        else DrawAreas(row);
+        if (tareas) { if (settings) DrawSettings(); else DrawTasks(taskChip); }
+        else DrawAreas(areaChip);
         GUILayout.EndScrollView();
         GUILayout.EndArea();
     }
 
-    void DrawTasks(float row)
+    /// <summary>Los chips de grupo (.ar-chips): «Todas» y cada grupo que tenga algo, con su cuenta; el puesto, en cian.</summary>
+    static void Chips(List<int> groups, int n, System.Func<int, string> label, ref int chosen)
     {
-        if (Tasks.Count == 0) { GUILayout.Label("<color=#9AA0A6>Nada pendiente aquí.</color>", _txt); return; }
+        var count = new int[n];
+        foreach (int g in groups) count[g]++;
+        if (chosen >= 0 && count[chosen] == 0 && Event.current.type == EventType.Layout) chosen = -1;
+        GUILayout.BeginHorizontal();
+        if (CsUi.Chip($"Todas  <size={CsUi.Fs(11f)}>{groups.Count}</size>", chosen < 0)) chosen = -1;
+        for (int g = 0; g < n; g++)
+        {
+            if (count[g] == 0) continue;
+            GUILayout.Space(CsUi.Px(6f));
+            if (CsUi.Chip($"{label(g)}  <size={CsUi.Fs(11f)}>{count[g]}</size>", chosen == g)) chosen = g;
+        }
+        GUILayout.FlexibleSpace();
+        GUILayout.EndHorizontal();
+        GUILayout.Space(CsUi.Px(8f));
+    }
+
+    static string AreaGroup(AreaEntry.Kind k) => k == AreaEntry.Kind.Historia ? "Sitios de la historia" : k == AreaEntry.Kind.Edificio ? "Edificios" : "Áreas del santuario";
+
+    void DrawTasks(int chip)
+    {
+        if (Tasks.Count == 0) { GUILayout.Label("Nada pendiente aquí.", CsUi.RowDesc); return; }
         TaskEntry.Group? last = null; TaskEntry clicked = null;
         foreach (TaskEntry t in Tasks)
         {
-            if (last != t.group) { GUILayout.Space(4f); GUILayout.Label($"<b>{TaskEntry.GroupLabel(t.group)}</b>", _txt); last = t.group; }
-            GUILayout.BeginHorizontal(GUI.skin.box);
-            GUILayout.BeginVertical();
-            string col = t.later ? "<color=#9AA0A6>" : "<color=#FFFFFF>";
-            GUILayout.Label($"{col}{(t.later ? "· " : "▶ ")}<b>{t.title}</b>{(t.progress.Length > 0 ? $"  ({t.progress})" : "")}</color>", _txt);
-            GUILayout.Label($"<color=#B8C0C8>{t.detail}{(t.hasPlace ? $" · {TaskEntry.DistanceText(t.distance)}" : "")}</color>", _small);
-            GUILayout.EndVertical();
-            GUI.enabled = t.CanGo;
-            if (GUILayout.Button(t.CanGo ? "Ir" : t.later ? "luego" : "—", _go, GUILayout.Width(row * 2f), GUILayout.MinHeight(row))) clicked = t;
-            GUI.enabled = true;
-            GUILayout.EndHorizontal();
+            if (chip >= 0 && (int)t.group != chip) continue;
+            if (last != t.group) { CsUi.SectionLabel(TaskEntry.GroupLabel(t.group)); last = t.group; }
+            string title = (t.later ? "<color=#9fb3bd>" : "") + t.title + (t.progress.Length > 0 ? $"  <size={CsUi.Fs(12f)}>({t.progress})</size>" : "") + (t.later ? "</color>" : "");
+            string where = t.hasPlace ? TaskEntry.DistanceText(t.distance) : null;
+            if (CsUi.Row(title, t.detail, t.later ? "⊘ Luego" + (where != null ? " · " + where : "") : where, t.CanGo ? "Ir" : t.later ? "Luego" : "—", t.CanGo)) clicked = t;
         }
-        GUILayout.Space(6f);
-        GUILayout.Label($"<color=#9AA0A6>«Ir» te lleva andando ({(AutoTravel.Teleport ? "ahora: teletransporte" : "o teletransporte en ⚙ Ajustes")}). Tocar el joystick o WASD para el viaje.</color>", _small);
+        GUILayout.Space(CsUi.Px(6f));
+        GUILayout.Label($"«Ir» te lleva andando ({(AutoTravel.Teleport ? "ahora: teletransporte" : "o teletransporte en ⚙ Ajustes")}). Tocar el joystick o WASD para el viaje.", CsUi.NoteStyle);
         if (clicked != null) Go(clicked);   // después de cerrar los grupos del dibujo
     }
 
-    void DrawSettings(float row)
+    void DrawSettings()
     {
-        GUILayout.Label("<b>Viaje</b>: cómo te lleva «Ir».", _txt);
-        GUILayout.BeginHorizontal();
-        if (GUILayout.Toggle(!AutoTravel.Teleport, " Andando (por el camino real)", _btn, GUILayout.MinHeight(row))) AutoTravel.Teleport = false;
-        if (GUILayout.Toggle(AutoTravel.Teleport, " Teletransporte", _btn, GUILayout.MinHeight(row))) AutoTravel.Teleport = true;
-        GUILayout.EndHorizontal();
-        GUILayout.Space(8f);
-        GUILayout.Label("<b>Al llegar</b>", _txt);
-        bool act = GUILayout.Toggle(AutoTravel.ActOnArrive, AutoTravel.ActOnArrive ? " ✓ Hacer la acción de la tarea (hablar, abrir el reto…)" : " ✗ Solo llevarme allí", _btn, GUILayout.MinHeight(row));
-        if (act != AutoTravel.ActOnArrive) AutoTravel.ActOnArrive = act;
-        GUILayout.Space(8f);
-        if (GUILayout.Button("Ver otra vez la guía de inicio", _btn, GUILayout.MinHeight(row))) { MicroOnboarding.Restart(); HudModals.Close(); _settings = false; }
+        CsUi.SectionLabel("Viaje: cómo te lleva «Ir»");
+        if (CsUi.SetRow("Andando", "Por el camino real", !AutoTravel.Teleport ? "Sí" : "No", !AutoTravel.Teleport)) AutoTravel.Teleport = false;
+        if (CsUi.SetRow("Teletransporte", "Aparece allí al momento", AutoTravel.Teleport ? "Sí" : "No", AutoTravel.Teleport)) AutoTravel.Teleport = true;
+        CsUi.SectionLabel("Al llegar");
+        if (CsUi.SetRow("Hacer la acción de la tarea", "Hablar, abrir el reto…; si no, solo te lleva", AutoTravel.ActOnArrive ? "Sí" : "No", AutoTravel.ActOnArrive)) AutoTravel.ActOnArrive = !AutoTravel.ActOnArrive;
+        CsUi.SectionLabel("Guía");
+        if (CsUi.SetRow("Ver otra vez la guía de inicio", null, "", true)) { MicroOnboarding.Restart(); HudModals.Close(); _settings = false; }
     }
 
-    void DrawAreas(float row)
+    void DrawAreas(int chip)
     {
-        if (Areas.Count == 0) { GUILayout.Label("<color=#9AA0A6>Esta escena no tiene áreas.</color>", _txt); return; }
+        if (Areas.Count == 0) { GUILayout.Label("Esta escena no tiene áreas.", CsUi.RowDesc); return; }
         AreaEntry.Kind? last = null; AreaEntry clickedArea = null;
         foreach (AreaEntry a in Areas)
         {
-            string group = a.kind == AreaEntry.Kind.Historia ? "Sitios de la historia" : a.kind == AreaEntry.Kind.Edificio ? "Edificios" : "Áreas del santuario";
-            if (last != a.kind) { GUILayout.Space(4f); GUILayout.Label($"<b>{group}</b>", _txt); last = a.kind; }
-            GUILayout.BeginHorizontal(GUI.skin.box);
-            GUILayout.BeginVertical();
-            GUILayout.Label($"<b>{a.title}</b>{(a.here ? "  <color=#8EF29A>● Aquí</color>" : $"  <color=#B8C0C8>· {TaskEntry.DistanceText(a.distance)}</color>")}", _txt);
-            GUILayout.Label($"<color=#B8C0C8>{a.subtitle}</color>", _small);
-            for (int i = 0; i < Mathf.Min(4, a.canDo.Count); i++) GUILayout.Label(a.canDo[i], _small);
-            GUILayout.EndVertical();
-            GUI.enabled = !a.here;
-            if (GUILayout.Button(a.here ? "Aquí" : "Ir", _go, GUILayout.Width(row * 2f), GUILayout.MinHeight(row))) clickedArea = a;
-            GUI.enabled = true;
-            GUILayout.EndHorizontal();
+            if (chip >= 0 && (int)a.kind != chip) continue;
+            if (last != a.kind) { CsUi.SectionLabel(AreaGroup(a.kind)); last = a.kind; }
+            string title = a.title + (a.here ? $"  <size={CsUi.Fs(11f)}><color=#7dffb0>● Aquí</color></size>" : $"  <size={CsUi.Fs(11f)}><color=#9fc6d6>· {TaskEntry.DistanceText(a.distance)}</color></size>");
+            string can = a.canDo.Count == 0 ? null : string.Join("\n", a.canDo.GetRange(0, Mathf.Min(4, a.canDo.Count)));
+            if (CsUi.Row(title, a.subtitle, can, a.here ? "Aquí" : "Ir", !a.here)) clickedArea = a;
         }
         if (clickedArea != null) Go(clickedArea);   // después de cerrar los grupos del dibujo
     }

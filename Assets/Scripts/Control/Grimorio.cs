@@ -24,7 +24,6 @@ public class Grimorio : MonoBehaviour
     bool _open, _menuWasOpen;
     int _openedFrame;
     Vector2 _scroll;
-    GUIStyle _title, _row, _rowOff, _small, _head;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void Boot() => Ensure();
@@ -85,66 +84,44 @@ public class Grimorio : MonoBehaviour
         return true;
     }
 
+    bool _laid;
+
     void OnGUI()
     {
-        if (!_open) return;
+        if (!CsUi.Draw(ref _laid, _open)) return;
         CsTheme.Use();
         GUI.depth = -1400;
-        float s = Mathf.Min(Screen.width, Screen.height);
-        int f = Mathf.Clamp(Mathf.RoundToInt(s * 0.028f), 13, 24);
-        if (_row == null || _row.fontSize != f)
-        {
-            _title = new GUIStyle(GUI.skin.label) { fontSize = f + 6, fontStyle = FontStyle.Bold, alignment = TextAnchor.MiddleLeft };
-            _title.normal.textColor = CsTheme.Cyan;
-            _small = new GUIStyle(GUI.skin.label) { fontSize = f - 2, wordWrap = true, richText = true };
-            _head = new GUIStyle(_small) { fontStyle = FontStyle.Bold };
-            _head.normal.textColor = CsTheme.OrangeLight;
-            _row = new GUIStyle(GUI.skin.button) { fontSize = f, richText = true, alignment = TextAnchor.MiddleLeft, wordWrap = false, padding = new RectOffset(14, 10, 6, 6) };
-            _rowOff = new GUIStyle(_row);
-            _rowOff.normal.textColor = _rowOff.hover.textColor = new Color(CsTheme.Text.r, CsTheme.Text.g, CsTheme.Text.b, 0.4f);
-        }
-        // La ventana: centrada, 90 % en el móvil en vertical, más estrecha en horizontal; deja libre la franja de abajo (los Joy-Con).
-        float w = Mathf.Min(Screen.width * 0.9f, Mathf.Max(420f, Screen.width * 0.5f));
-        float h = Mathf.Min(Screen.height * 0.72f, Screen.height - 24f);
-        var win = new Rect((Screen.width - w) * 0.5f, Mathf.Max(12f, (Screen.height - h) * 0.3f), w, h);
-        GUI.Box(win, "");
-        float pad = 14f, y = win.y + pad, rowH = f * 2.4f;
-        GUI.Label(new Rect(win.x + pad, y, w - 2f * pad - 110f, f * 2f), "✦ Grimorio", _title);
-        if (GUI.Button(new Rect(win.xMax - pad - 100f, y, 100f, f * 2f), "Cerrar")) { Close(); return; }
-        y += f * 2.2f;
-        GUI.Label(new Rect(win.x + pad, y, w - 2f * pad, f * 2.6f), SpellConsole.HasPossessed
-            ? "Toca un hechizo y resuelve su <b>reto de código</b> para lanzarlo. Los apagados aún no los has aprendido."
-            : "<color=#ffb357>No manejas a nadie ahora mismo: los hechizos no se pueden lanzar.</color>", _small);
-        y += f * 2.8f;
+        // (2026-11-20, PB-169) La hoja de CodeShip (CsUi.SheetFrame: abajo en vertical, a la derecha en horizontal; la escena se ve):
+        // cabecera en versalitas con su ✕, y cada hechizo una fila con «Lanzar» (o apagada con por qué).
+        Rect inner = CsUi.SheetFrame();
+        float y = inner.y;
+        if (CsUi.SheetHead(inner, ref y, "Grimorio", SpellConsole.HasPossessed
+            ? "Toca «Lanzar» y resuelve su reto de código. Los apagados aún no los has aprendido."
+            : "<color=#ffb347>No manejas a nadie ahora mismo: los hechizos no se pueden lanzar.</color>") == 0) { Close(); return; }
 
         var game = new List<(string name, string template)>();
         var admin = new List<(string name, string template)>();
         foreach (var e in SpellConsole.Catalog) (SpellConsole.AdminSpells.Contains(e.name) ? admin : game).Add(e);
-        float listH = (game.Count + admin.Count) * (rowH + 6f) + 2f * f * 2f;
-        var view = new Rect(win.x + pad, y, w - 2f * pad, win.yMax - pad - y);
-        _scroll = GUI.BeginScrollView(view, _scroll, new Rect(0f, 0f, view.width - 20f, listH));
-        float ly = 0f;
-        Section("Hechizos", game, ref ly, view.width - 20f, rowH, f);
-        Section("De prueba (administrador)", admin, ref ly, view.width - 20f, rowH, f);
-        GUI.EndScrollView();
+        GUILayout.BeginArea(new Rect(inner.x, y, inner.width, inner.yMax - y));
+        _scroll = GUILayout.BeginScrollView(_scroll);
+        string chosen = Section("Hechizos", game), chosenAdmin = Section("De prueba (administrador)", admin);   // las dos siempre (GUILayout)
+        GUILayout.EndScrollView();
+        GUILayout.EndArea();
+        if ((chosen ?? chosenAdmin) != null) Choose(chosen ?? chosenAdmin);   // después de cerrar los grupos del dibujo
     }
 
-    void Section(string title, List<(string name, string template)> list, ref float y, float w, float rowH, int f)
+    static string Section(string title, List<(string name, string template)> list)
     {
-        if (list.Count == 0) return;
-        GUI.Label(new Rect(0f, y, w, f * 1.8f), title.ToUpperInvariant(), _head);
-        y += f * 2f;
+        if (list.Count == 0) return null;
+        CsUi.SectionLabel(title);
         bool can = SpellConsole.HasPossessed;
+        string hit = null;
         foreach (var e in list)
         {
             bool known = SpellConsole.PlayerKnows(e.name);
-            string text = $"<b>{e.name}</b>   <size={f - 3}>{e.template}</size>" + (known ? "" : $"   <size={f - 3}>(no aprendido)</size>");
-            bool was = GUI.enabled;
-            GUI.enabled = was && known && can;
-            if (GUI.Button(new Rect(0f, y, w, rowH), text, known ? _row : _rowOff)) Choose(e.name);
-            GUI.enabled = was;
-            y += rowH + 6f;
+            if (CsUi.Row(e.name, e.template, known ? null : "⊘ Aún no aprendido", "Lanzar", known && can)) hit = e.name;
         }
+        return hit;
     }
 }
 
