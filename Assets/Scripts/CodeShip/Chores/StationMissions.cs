@@ -116,7 +116,7 @@ public class StationMissions : MonoBehaviour
 
     /// <summary>El mueble de una misión: por nombre (exacto, luego contenido), por edificio y su puesto, por clave de puesto, por clase de pieza;
     /// a igualdad, el más cercano al centro de la historia. Un marcador «supuesto» ya puesto cuenta como hallado por nombre (fallback = true).</summary>
-    static Transform Resolve(List<Transform> all, MissionSites.Binding b, Vector3 center, out bool fallback)
+    public static Transform Resolve(List<Transform> all, MissionSites.Binding b, Vector3 center, out bool fallback)
     {
         fallback = false;
         Transform Best(System.Predicate<Transform> ok)

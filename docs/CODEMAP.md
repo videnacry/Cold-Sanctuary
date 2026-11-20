@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 1038 tipos._
+_Total: 1039 tipos._
 
 
 ## Animals
@@ -220,6 +220,7 @@ _Total: 1038 tipos._
 - **StorySceneBuilder** (class) — `Assets/Editor/Historias/Historias.Core.cs` — LA TANDA 3 DE MICROCOSMOS DE HISTORIAS (docs/microcosmos-historias-3.md; Berón 2026-11-05).
 - **TestImpactTool** (class) — `Assets/Editor/TestImpactTool.cs` — HERRAMIENTAS DE LAS PRUEBAS RÁPIDAS (2026-11-11, scratchpad analisis-pruebas.md):
 - **VirtualMissionSceneBuilder** (class) — `Assets/Editor/VirtualMissionSceneBuilder.cs` — ESCENAS DE VIRTUALIZACIÓN, UNA POR MISIÓN (VirtualMissions).
+- **VisorExport** (class) — `Assets/Editor/VisorExport.cs` — VISOR WEB SIN BUILD (PB-168, docs/visor-web.md).
 - **WebLigeraBuild** (class) — `Assets/Editor/WebLigeraBuild.cs` — LOS BUILDS WEBGL LIGEROS (2026-11-13; Berón:
 
 ## Scripts
