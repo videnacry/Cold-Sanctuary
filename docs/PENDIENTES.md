@@ -30,6 +30,8 @@ Ramas (2026-11-18): la integración es `claude/edificios` (por delante de `maste
 | 9 | **Retos de código para cada actividad** (PB-163): cocinar, curar, plantar, campo, entrenar, yoga, cuidar animales…, con UI/UX como CodeShip | En curso | — | plan §4 |
 | 10 | **bonusPacks** (PB-164, PB-140): el bonusPack N suma las stats de la criatura más poderosa del santuario N | En curso | — | [progresion-santuarios.md](progresion-santuarios.md) |
 | 11 | **Móvil: mandos Switch, menús como CodeShip y Grimorio** (PB-167): los 16 botones de los Joy-Con sobre la pantalla (sobre `GameKeys`, el teclado sigue igual), el tema de menús `CsTheme` y (11-20) el **Grimorio** (R / F8): todos los hechizos en una ventana, cada uno se lanza resolviendo su reto de código | Mandos y tema: compilan, g141 8/0 (11-20). Grimorio: en código, falta compilar y g141 + prueba en el móvil. Luego: `CsTheme` en el resto de paneles, botones apagados cuando no hacen nada, botón para Atacar | `claude/project-thread-n17elb` (PR #310) | [mandos-tactiles.md](mandos-tactiles.md) |
+| 12 | **Ver el microcosmos sin Unity** (PB-168, Berón 11-20): Unity se cuelga y tarda en reiniciar; ver el escenario de Musk y sus retos sin él. En la web, la máquina de simulación no puede abrir microcosmos porque cada build lleva solo sus escenas (límite de 100 MB de Pages), y una entrada en Inicio choca con lo mismo | En curso: visor three.js estilo CodeShip que lee un volcado de la escena (cubos con su color) y los retos; en el PC solo hace falta el menú de exportar (sin Play ni build) | `claude/project-thread-s9krva` → `edificios` | [visor-web.md](visor-web.md) |
+| 13 | **Microcosmos de Musk recreado en CodeShip** (PB-168, Berón 11-20 09:45): reconstruirlo en CodeShip (three.js) con sus retos, entrar desde su página de inicio y desde la máquina de virtualización del santuario 1 de CodeShip. Choca con `REAL_ONLY` de CodeShip (la virtualización y Hawthorne están marcados «no se trae»): necesita la excepción de Berón | Plan y prompt para el chat de CodeShip en la carpeta del proyecto (`codeship-microcosmos/`); los retos ya en JSON (`musk-retos.json`) | `Catravcul/CodeShip` | [visor-web.md](visor-web.md) |
 
 ## 2. Decisiones que esperan a Berón
 
@@ -306,6 +308,7 @@ obras-dojo-ballet, plano-edificios, plan-microcosmos-realismo, notes/historias-p
 | [vida-en-icebergs.md](vida-en-icebergs.md) | Vida en los icebergs |
 | [volition-selection-engine.md](volition-selection-engine.md) | Motor de volición: la selección conduce la acción (D3b) — 2026-08-24 |
 | [web-continua.md](web-continua.md) | Web continua: una página por microcosmos, prueba en la página y subidas (2026-11-16) |
+| [visor-web.md](visor-web.md) | Visor web sin build: escenario y retos de un microcosmos sin Unity (2026-11-20) |
 | [mandos-tactiles.md](mandos-tactiles.md) | Móvil: mandos tipo Switch (Joy-Con en pantalla) y menús con el tema de CodeShip (2026-11-19) |
 | [web-ligera.md](web-ligera.md) | Web ligera: dos builds WebGL para el móvil (2026-11-13) |
 | [web-prueba-hallazgos.md](web-prueba-hallazgos.md) | Hallazgos de la prueba en la página (rweb2, 2026-11-17) |
