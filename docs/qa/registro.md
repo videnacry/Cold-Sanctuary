@@ -415,6 +415,7 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | JOR-55 | Probado (suite g113) | 2026-11-19 | f92acc1 | [runs/2026-11-19-0640-r131-rapida-grupos-vivo-suite.md](runs/2026-11-19-0640-r131-rapida-grupos-vivo-suite.md) | — | r131: g113 RepartoSantuariosTest 113/0 |
 | PER-25 | Sin probar | 2026-11-18 | — | — | — | en curso: falta código |
 | REN-09 | Solo código | 2026-11-18 | — | — | — | subido y probado con `?prueba=1` en Edge, fuera del TestRunner; falta su run log |
+| REN-10 | Solo código | 2026-11-20 | — | — | — | compila en Unity (PR #312) y el volcado de Hawthorne (22 059 objetos) se dibuja con Playwright; falta su run log |
 | MIC-99 | Sin probar | 2026-11-18 | — | — | — | en curso: falta código |
 | CS-50 | Probado (suite g120) | 2026-11-19 | f92acc1 | [runs/2026-11-19-0640-r131-rapida-grupos-vivo-suite.md](runs/2026-11-19-0640-r131-rapida-grupos-vivo-suite.md) | — | r131: check [CS-50] PASS ×1 |
 | CS-51 | Probado (suite g120) | 2026-11-19 | f92acc1 | [runs/2026-11-19-0640-r131-rapida-grupos-vivo-suite.md](runs/2026-11-19-0640-r131-rapida-grupos-vivo-suite.md) | — | r131: check [CS-51] PASS ×1 |
