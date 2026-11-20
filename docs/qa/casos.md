@@ -393,6 +393,17 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | ID | Área | Qué tiene que pasar | Unidad | Grupo | Reglas | PB | Origen |
 |---|---|---|---|---|---|---|---|
 | UI-01 | UI | UI: horario sobre F10, recursos en una ventana, ventana de misiones y jornada | HudModalsTest | 93 | F10 | PB-090 | auditoría #90, L50, L53 |
+| UI-02 | UI | los 16 botones de la Switch, 8 por lado, con tecla y nombre | JoyConTest | 141 | — | PB-165 | docs/mandos-tactiles.md; añadido el 2026-11-19 |
+| UI-03 | UI | la asignación de CodeShip (A Saltar, B Correr, + Misiones, − Áreas, captura Vista, inicio Menú) | JoyConTest | 141 | — | PB-165 | docs/mandos-tactiles.md; añadido el 2026-11-19 |
+| UI-04 | UI | el mando cabe y nada se pisa en móvil horizontal y vertical, tableta 4:3, monitor y móvil pequeño | JoyConTest | 141 | — | PB-165 | docs/mandos-tactiles.md; añadido el 2026-11-19 |
+| UI-05 | UI | el tema de los menús (CsTheme) genera sus texturas | JoyConTest | 141 | — | PB-165 | docs/mandos-tactiles.md; añadido el 2026-11-19 |
+| UI-06 | UI | tocar X pulsa Usar (F) un fotograma | JoyConTest | 141 | — | PB-165 | docs/mandos-tactiles.md; añadido el 2026-11-19 |
+| UI-07 | UI | mantener A mantiene Saltar y soltarlo lo suelta | JoyConTest | 141 | — | PB-165 | docs/mandos-tactiles.md; añadido el 2026-11-19 |
+| UI-08 | UI | B (Correr) se queda puesto y el segundo toque lo quita | JoyConTest | 141 | — | PB-165 | docs/mandos-tactiles.md; añadido el 2026-11-19 |
+| UI-09 | UI | con un menú abierto, el juego no ve ZL pero los diálogos sí (Esc y la cruceta) | JoyConTest | 141 | — | PB-165 | docs/mandos-tactiles.md; añadido el 2026-11-19 |
+| UI-10 | UI | cada hechizo del lanzador tiene su reto de código bien formado (Grimorio) | JoyConTest | 141 | — | PB-165 | docs/mandos-tactiles.md §5; añadido el 2026-11-20 |
+| UI-11 | UI | el botón R del mando abre el Grimorio (F8) | JoyConTest | 141 | — | PB-165 | docs/mandos-tactiles.md §5; añadido el 2026-11-20 |
+| UI-12 | UI | en el Grimorio, elegir un hechizo abre su reto; fallar no lo lanza y acertar sí | JoyConTest | 141 | — | PB-165 | docs/mandos-tactiles.md §5; añadido el 2026-11-20 |
 
 
 ## CS · CodeShip (retos de código, tareas e «Ir», menú)
@@ -460,19 +471,6 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | CS-86 | CS | los puestos de la nave están en su mueble real (cocina, aviónica, composite, mecanizado) | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
 | CS-87 | CS | resolver sus retos cumple la misión del puesto y la quita de pendientes | ChoreLibraryTest | 120 | — | — | claude/ui-codeship (biblioteca de misiones de CodeShip y misiones de Hawthorne); añadido el 2026-11-18 |
 | CS-43 | CS | Cada actividad (cocinar, curar, plantar, campo, entrenar, yoga, cuidar animales…) tiene su misión como reto de código, con UI/UX como CodeShip | — | — | — | PB-163 | añadido el 2026-11-18 |
-
-## JC · Mandos táctiles tipo Switch y tema de los menús
-
-| ID | Área | Qué tiene que pasar | Unidad | Grupo | Reglas | PB | Origen |
-|---|---|---|---|---|---|---|---|
-| JC-01 | JC | los 16 botones de la Switch, 8 por lado, con tecla y nombre | JoyConTest | 141 | — | PB-165 | docs/mandos-tactiles.md; añadido el 2026-11-19 |
-| JC-02 | JC | la asignación de CodeShip (A Saltar, B Correr, + Misiones, − Áreas, captura Vista, inicio Menú) | JoyConTest | 141 | — | PB-165 | docs/mandos-tactiles.md; añadido el 2026-11-19 |
-| JC-03 | JC | el mando cabe y nada se pisa en móvil horizontal y vertical, tableta 4:3, monitor y móvil pequeño | JoyConTest | 141 | — | PB-165 | docs/mandos-tactiles.md; añadido el 2026-11-19 |
-| JC-04 | JC | el tema de los menús (CsTheme) genera sus texturas | JoyConTest | 141 | — | PB-165 | docs/mandos-tactiles.md; añadido el 2026-11-19 |
-| JC-05 | JC | tocar X pulsa Usar (F) un fotograma | JoyConTest | 141 | — | PB-165 | docs/mandos-tactiles.md; añadido el 2026-11-19 |
-| JC-06 | JC | mantener A mantiene Saltar y soltarlo lo suelta | JoyConTest | 141 | — | PB-165 | docs/mandos-tactiles.md; añadido el 2026-11-19 |
-| JC-07 | JC | B (Correr) se queda puesto y el segundo toque lo quita | JoyConTest | 141 | — | PB-165 | docs/mandos-tactiles.md; añadido el 2026-11-19 |
-| JC-08 | JC | con un menú abierto, el juego no ve ZL pero los diálogos sí (Esc y la cruceta) | JoyConTest | 141 | — | PB-165 | docs/mandos-tactiles.md; añadido el 2026-11-19 |
 
 ## REN · Rendimiento y pruebas
 

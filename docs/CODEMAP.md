@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 1035 tipos._
+_Total: 1036 tipos._
 
 
 ## Animals
@@ -521,6 +521,7 @@ _Total: 1035 tipos._
 - **GriefSpell** (class) — `Assets/Scripts/Microcosmos/GriefSpell.cs` — DUELO (docs/apremios-guardian-observacion.md §3, microcosmos-level1 §Beats) — el hechizo-estado de la pérdida:
 - **Grimoire** (class) — `Assets/Scripts/Transformation/Grimoire.cs` — GRIMORIO — registro de hechizos APRENDIDOS por un `Anima` (docs/magic-metabolism-progression.md).
 - **GrimoireTest** (class) — `Assets/Scripts/GrimoireTest.cs` — Unidad de test del REPERTORIO de doble vía (docs/capabilities-and-embodiment.md §2), por `TestProbe`.
+- **Grimorio** (class) — `Assets/Scripts/Control/Grimorio.cs` — EL GRIMORIO (2026-11-20, Berón:
 - **GroundGuard** (class) — `Assets/Scripts/Player/GroundGuard.cs` — SALVAGUARDA DE SUELO:
 - **GroupAnimalsTest** (class) — `Assets/Scripts/Tests/GroupAnimalsTest.cs` — PRUEBA DE LOS GRUPOS DE ANIMALES (Berón 2026-11-03; docs/grupos-de-animales.md):
 - **GuardBoard** (class) — `Assets/Scripts/World/GuardBoard.cs` — TABLERO DE GUARDIA (en la sala de guardia, docs/sala-de-guardia.md):
@@ -618,7 +619,7 @@ _Total: 1035 tipos._
 - **JornadaSaberTest** (class) — `Assets/Scripts/Tests/JornadaSaberTest.cs` — PRUEBA DEL MODELO JORNADA/TAREA (Berón 2026-11-05; docs/jornada-y-rotacion.md):
 - **JornadaTest** (class) — `Assets/Scripts/Tests/JornadaTest.cs` — PRUEBA EN VIVO DE LA JORNADA DE KUSHAL (Berón 2026-10-29:
 - **JoyConMap** (class) — `Assets/Scripts/Control/JoyConMap.cs` — LOS MANDOS DE LA SWITCH, COMO DATOS (2026-11-19, Berón:
-- **JoyConTest** (class) — `Assets/Scripts/Tests/JoyConTest.cs` — PRUEBA DE LOS MANDOS TÁCTILES TIPO SWITCH (grupo 141; docs/mandos-tactiles.md, Berón 2026-11-19:
+- **JoyConTest** (class) — `Assets/Scripts/Tests/JoyConTest.cs` — PRUEBA DE LOS MANDOS TÁCTILES TIPO SWITCH Y EL GRIMORIO (grupo 141; docs/mandos-tactiles.md, Berón 2026-11-19:
 - **KitchenBoss** (class) — `Assets/Scripts/World/KitchenBoss.cs` — GOLUIS, el ENCARGADO de la cocina (Berón 2026-11-08; los rangos más altos son Maite y Amykhuz; docs/kitchen-simulation.md).
 - **KitchenCook** (class) — `Assets/Scripts/Kitchen/KitchenCook.cs` — COCINERO VISIBLE (docs/kitchen-simulation.md §3:
 - **KitchenFireMission** (class) — `Assets/Scripts/Microcosmos/KitchenFireMission.cs` — Misión "llevar la comida a la cueva" — Microcosmos de la Cocina (era pre-fuego).

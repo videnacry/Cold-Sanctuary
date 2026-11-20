@@ -56,7 +56,7 @@ public static class JoyConMap
         B(Pad.X, "Usar", KeyCode.F, Mode.Tap),                 // InteractionController.interactKey, VirtualPointer.confirmKey
         B(Pad.Y, "Hablar", KeyCode.E, Mode.Tap),               // hablar, atender, el paso de cocina (CookingStation.stepKey)
         // Los gatillos.
-        B(Pad.R, "Atacar", KeyCode.Mouse0, Mode.Tap),          // PlayerCombat.attackKey
+        B(Pad.R, "Grimorio", Grimorio.ToggleKey, Mode.Tap),   // (2026-11-20) los hechizos sin teclado: la ventana del Grimorio (F8)
         B(Pad.ZR, "Intro", KeyCode.Return, Mode.Tap),          // seguir una tarjeta, elegir en un diálogo
         B(Pad.L, "Bajar", KeyCode.LeftControl, Mode.Hold),     // PlayerController.swimDownKey, SurfaceWalker.descendKey
         B(Pad.ZL, "Cerrar", KeyCode.Escape, Mode.Tap),         // cerrar diálogos, ventanas y el reto de código
