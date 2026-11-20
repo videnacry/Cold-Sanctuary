@@ -132,13 +132,28 @@ public static partial class StorySceneBuilder
     // (CivicBuilder: interactuables, con las funciones del registro) y su gente con jornada y familias. Sin cuadrilla de recolectoras.
     static System.Func<Transform, int> Civilized(System.Func<Transform, int> story, string display) => t => story(t) + CivicBuilder.Civilize(t, display);
 
+    /// <summary>(2026-11-19, PB-165) Los microcosmos con SUELO PROPIO (sin el piso del santuario): su tamaño (m). Su historia levanta el
+    /// distrito entero, calles y gente incluidas, así que no pasan por <see cref="CivicBuilder.Civilize"/> (que corre los edificios a
+    /// solares libres y rellena con casas sueltas: justo lo que dejaba la taquería y el súper en medio de la nada).</summary>
+    internal static readonly Dictionary<string, Vector2> OwnGround = new Dictionary<string, Vector2>
+    {
+        ["Hawthorne"] = HawthorneGround,
+    };
+
+    static MicrocosmSpec Spec(string scene, string display, string areaGo, Color tint, System.Func<Transform, int> story)
+    {
+        bool own = OwnGround.TryGetValue(display, out Vector2 g);
+        return new MicrocosmSpec(scene, display, Dates[display].date, Dates[display].hour, areaGo)
+        { tint = tint, story = own ? story : Civilized(story, display), ownGround = own ? g : Vector2.zero, foragers = !own };
+    }
+
     [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias")]
     public static void BuildAll()
     {
         int i = 0;
         foreach (var s in Stories)
         {
-            try { MicrocosmTemplate.Build(new MicrocosmSpec(s.scene, s.display, Dates[s.display].date, Dates[s.display].hour, s.areaGo) { tint = s.tint, story = Civilized(s.story, s.display) }, new Vector3(6000f + i * 900f, 0f, 12500f)); }
+            try { MicrocosmTemplate.Build(Spec(s.scene, s.display, s.areaGo, s.tint, s.story), new Vector3(6000f + i * 900f, 0f, 12500f)); }
             catch (System.Exception e) { Debug.LogWarning($"[Historias] No se pudo generar {s.scene}: {e.Message}"); }
             i++;
         }
@@ -198,7 +213,7 @@ public static partial class StorySceneBuilder
         {
             var s = Stories[i];
             if (s.scene != scene) continue;
-            MicrocosmTemplate.Build(new MicrocosmSpec(s.scene, s.display, Dates[s.display].date, Dates[s.display].hour, s.areaGo) { tint = s.tint, story = Civilized(s.story, s.display) }, new Vector3(6000f + i * 900f, 0f, 12500f));
+            MicrocosmTemplate.Build(Spec(s.scene, s.display, s.areaGo, s.tint, s.story), new Vector3(6000f + i * 900f, 0f, 12500f));
             Debug.Log($"[Historias] {scene} generado.");
             return;
         }

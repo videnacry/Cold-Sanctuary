@@ -181,6 +181,8 @@ public class HomeNeedSpell : QueuedSpell
     int _phase;          // 0 ir · 1 usarlo · 2 levantarse (comer: llevar el plato al fregadero)
     float _since, _until, _sleepStart;
     Transform _spot;
+    /// <summary>El mueble entero del sitio (la mesa del apoyo de abdomen): junto a él ya se puede usar (ronda 4 de Hawthorne).</summary>
+    static Transform PieceOf(Transform spot) { MicroPiece mp = spot != null ? spot.GetComponentInParent<MicroPiece>() : null; return mp != null ? mp.transform : spot; }
     // (2026-11-04) COMER CON SU ORQUESTA (MealRitual, docs/actividades-y-uniformes.md §2): coge el plato de la despensa, se sienta, come a
     // bocados con los cubiertos y bebe, y al acabar lleva el plato al fregadero (el lavabo de casa).
     MealRitual _meal; bool _fetched; float _fetchSince = -1f;
@@ -216,12 +218,15 @@ public class HomeNeedSpell : QueuedSpell
                     if (need == Need.Comer && (home.pantry == null || !home.pantry.HasFood))
                     { Debug.Log($"[Hogar] «{self.name}» tiene hambre y la despensa está vacía."); RetryEat[self] = Time.time + 20f; return true; }
                     _since = Time.time;
+                    // Si acabó el turno subido a una tarima de puesto (isla sin rampa), primero baja de ella (ronda 6 de Hawthorne).
+                    WalkWatch.StepDown(t, _walk.Target(UsePoint(need == Need.Comer && home.pantry != null ? home.pantry.transform : _spot, t.position, h)));
                 }
                 if (need == Need.Comer && !_fetched && home.pantry != null)   // PRIMERO, EL PLATO: de la despensa
                 {
                     if (_fetchSince < 0f) _fetchSince = Time.time;
                     Vector3 pto = _walk.Target(UsePoint(home.pantry.transform, t.position, h));
                     bool atPantry = MicroMove.Step(t, pto, 1.4f * h / 1.75f, 0.45f * h);
+                    if (!atPantry && WalkWatch.AtPiece(t, home.pantry.transform, 0.8f + h)) atPantry = true;
                     if (!atPantry && _walk.GiveUp(t, pto, 1.4f * h / 1.75f, Timeout(h), out string whyP))
                     { WalkWatch.Record("Hogar", self.name, t.position, pto, home.pantry.name + " (despensa)", whyP); HomeMove.Place(t, pto); HomeMove.Release(t); atPantry = true; Fallbacks++; }
                     if (!atPantry) return false;
@@ -235,6 +240,7 @@ public class HomeNeedSpell : QueuedSpell
                 _meal?.Carry(self.gameObject);
                 Vector3 to = _walk.Target(UsePoint(_spot, t.position, h));
                 bool there = MicroMove.Step(t, to, 1.4f * h / 1.75f, 0.45f * h);
+                if (!there && WalkWatch.AtPiece(t, PieceOf(_spot), 0.8f + h)) there = true;   // ya junto al mueble (×2 en Hawthorne): lo usa
                 if (!there && _walk.GiveUp(t, to, 1.4f * h / 1.75f, Timeout(h), out string why))
                 {
                     WalkWatch.Record("Hogar", self.name, t.position, to, _spot.name + " de su casa (" + need + ")", why);
@@ -265,7 +271,10 @@ public class HomeNeedSpell : QueuedSpell
                     }
                     Finish(self, body);
                 }
-                HomeMove.StandUp(self, UsePoint(_spot, t.position, h));
+                // (ronda 5 de Hawthorne) De pie AL SUELO del mueble: el punto de uso del apoyo de abdomen quedaba a su altura
+                // (y = 1,0) y el turno de noche se levantaba encima, en una isla sin NavMesh; StandUp lo posa además en el NavMesh.
+                Vector3 up = UsePoint(_spot, t.position, h); up.y = PieceOf(_spot).position.y;
+                HomeMove.StandUp(self, up);
                 _phase = 2;
                 if (_meal == null) return true;
                 _meal.PickUp(self.gameObject);   // el plato vacío y el vaso, al fregadero
@@ -477,6 +486,11 @@ public static class HomeMove
         Transform ins = Insect(a); if (ins != null) ins.localRotation = Quaternion.identity;
         CubeInsect ci = a.GetComponent<CubeInsect>(); if (ci != null && ci.folk) ci.PoseNow(true);   // erguido otra vez (tras dormir de vientre)
         if (a.GetComponent<CreatureRig>() != null) DailyPoses.Stand().ApplyFinal(a);
+        // Al NavMesh más cercano (≤ 3 m en planta, ≤ 0,6 m de altura): junto a un mueble ×2 el punto de uso puede caer dentro de su
+        // borde y, si no, el agente se queda fuera de la malla y no anda (MIC-93, turno de noche de Hawthorne).
+        if (!UnityEngine.AI.NavMesh.SamplePosition(at, out UnityEngine.AI.NavMeshHit near, 0.15f, UnityEngine.AI.NavMesh.AllAreas)
+            && UnityEngine.AI.NavMesh.SamplePosition(at, out UnityEngine.AI.NavMeshHit hit, 3f, UnityEngine.AI.NavMesh.AllAreas)
+            && Mathf.Abs(hit.position.y - at.y) <= 0.6f) at = hit.position;
         t.position = at;
         Vector3 e = t.eulerAngles; t.rotation = Quaternion.Euler(0f, e.y, 0f);
         Release(t);

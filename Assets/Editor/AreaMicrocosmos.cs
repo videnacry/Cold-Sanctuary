@@ -54,15 +54,19 @@ public static class AreaMicrocosmos
         // 1) El PISO del área, ×10 (sin conducta): el microcosmos ES ese piso visto desde el suelo, con sus muebles convertidos
         //    en montañas, y NADA MÁS (regla 11, Berón 2026-10-29): ni sus anillos, ni lo que asoma fuera de su borde, ni bosque
         //    alrededor. Los otros pisos del edificio son hermanos del área y no se copian.
-        GameObject src = GameObject.Find(areaGo), giant = null;
+        // (2026-11-19, PB-165) SUELO PROPIO (MicrocosmSpec.ownGround; Berón: «debemos volver a empezar de cero»): el microcosmos NO carga
+        // ni agranda el piso del santuario; es un rectángulo liso de ese tamaño, cerrado por sus muros, y la historia lo llena entero
+        // (Hawthorne 2008: un distrito urbano denso, docs/hawthorne-distrito.md).
+        bool ownGround = spec != null && spec.ownGround.x > 1f && spec.ownGround.y > 1f;
+        GameObject src = ownGround ? null : GameObject.Find(areaGo), giant = null;
         // (El control de misión está en el Santuario Aéreo: su microcosmos, Hawthorne, necesita esa escena abierta. Se cierra en Finish.)
-        if (src == null && System.IO.File.Exists(SampleSceneBuilder.AereoScenePath))
+        if (src == null && !ownGround && System.IO.File.Exists(SampleSceneBuilder.AereoScenePath))
         {
             UnityEditor.SceneManagement.EditorSceneManager.OpenScene(SampleSceneBuilder.AereoScenePath, UnityEditor.SceneManagement.OpenSceneMode.Additive);
             src = GameObject.Find(areaGo);
         }
         // (2026-11-08) La Central Nuclear y la Planta Atómica están en el Santuario Marino: sus microcosmos (Chernóbil; Newton, Curie, Einstein) abren esa escena. Se cierra en Finish.
-        if (src == null && System.IO.File.Exists(SampleSceneBuilder.MarineScenePath))
+        if (src == null && !ownGround && System.IO.File.Exists(SampleSceneBuilder.MarineScenePath))
         {
             UnityEditor.SceneManagement.EditorSceneManager.OpenScene(SampleSceneBuilder.MarineScenePath, UnityEditor.SceneManagement.OpenSceneMode.Additive);
             src = GameObject.Find(areaGo);
@@ -114,10 +118,11 @@ public static class AreaMicrocosmos
                 copy.floorSize = slots.floorSize; copy.storyClearance = slots.storyClearance; copy.freeCells = slots.freeCells;
             }
         }
+        else if (ownGround) Debug.Log($"[Microcosmos] {sceneLabel}: suelo propio de {spec.ownGround.x:0} × {spec.ownGround.y:0} m (sin el piso del santuario).");
         else Debug.LogWarning($"[Microcosmos] No encuentro {areaGo} (abre la escena principal): sin área gigante, piso liso de 120 × 120 m.");
 
         // EL RECTÁNGULO DEL PISO (×10): el mapa entero. Lo que del área quede ENTERO fuera de él se quita.
-        Bounds rect = giant != null ? FloorRect(giant, slots) : new Bounds(Vector3.zero, new Vector3(120f, 0f, 120f));
+        Bounds rect = giant != null ? FloorRect(giant, slots) : new Bounds(Vector3.zero, ownGround ? new Vector3(spec.ownGround.x, 0f, spec.ownGround.y) : new Vector3(120f, 0f, 120f));
         int pruned = giant != null ? Prune(giant.transform, rect) : 0;
         // (2026-11-03) EL PISO NO SE ROMPE (Berón: «en los requisitos de microcosmos debe estar que el piso no debe romperse, las ciudades
         // insecto deben adecuarse al piso y no al revés»): desde aquí ninguna pieza del piso (su forma finalizada, dentro de sus muros)
@@ -168,7 +173,7 @@ public static class AreaMicrocosmos
         // EL BARRIO DE LA HISTORIA (×100): el piso real × Legacy (lo que medía el piso entero a ×10), centrado en la plaza de la
         // historia y dentro de los muros. Ahí van la historia, su pueblo (FloorBounds) y la flora densa; el resto del piso ×100
         // es el santuario gigante (sus muebles, montañas de 75 m), con flora y fauna más espaciadas.
-        Bounds district = District(rect, anchor, slots, townEra);
+        Bounds district = ownGround ? rect : District(rect, anchor, slots, townEra);   // (suelo propio: el barrio es todo el rectángulo)
         _floorRect = district;
         if (townEra) Debug.Log($"[Microcosmos] {sceneLabel}: era avanzada ({Eras.Format(year0)}): el pueblo se adapta a su barrio ({district.size.x:0} × {district.size.z:0} m) sin tocar los muebles del piso: los rodea o se sube encima.");
         anchor.y = FloorAt(anchor, floors, 0f);
@@ -351,7 +356,7 @@ public static class AreaMicrocosmos
         }
         // EL PISO AL QUE PERTENECE (reglas de los microcosmos, docs/microcosmos-areas.md §Reglas): montado ENCIMA de ese piso del
         // santuario, en su forma finalizada; y si el piso no representa la historia, «pendiente de piso representativo».
-        mfl.platform = areaGo; mfl.finishedForm = giant != null; mfl.obraRemoved = _obraRemoved;
+        mfl.platform = areaGo; mfl.finishedForm = giant != null || ownGround; mfl.ownGround = ownGround; mfl.obraRemoved = _obraRemoved;
         mfl.floorPieces = floorPieces0;
         MicroFloors.Match match = MicroFloors.Of(display);
         if (match != null) { mfl.representative = match.representative; mfl.pendingFloor = match.pending; }
@@ -569,6 +574,7 @@ public static class AreaMicrocosmos
         foreach (Renderer r in story.GetComponentsInChildren<Renderer>(false))
         {
             if (!r.enabled || r.GetComponentInParent<CubeInsect>(true) != null || !InTown(r.transform, story)) continue;   // la gente anda: no es huella
+            if (r.name.StartsWith("Suelo_")) continue;   // (PB-165) una losa de suelo del pueblo (el asfalto del distrito) no es huella: se pisa
             AreaFunctionSite site = r.GetComponentInParent<AreaFunctionSite>(true);
             if (site != null)
             {

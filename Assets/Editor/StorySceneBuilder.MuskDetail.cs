@@ -141,13 +141,9 @@ public static partial class StorySceneBuilder
         Prop(truck, "Parabrisas", new Vector3(0f, 1.75f, 3.36f), new Vector3(1.7f, 0.7f, 0.02f), glassDark, false);
         foreach (var (x, z) in new[] { (-1f, 2.5f), (1f, 2.5f), (-1f, -2f), (1f, -2f) }) Prop(truck, "Rueda", new Vector3(x, 0.4f, z), new Vector3(0.3f, 0.8f, 0.8f), rubber, false);
 
-        // ── LAS PALMERAS de la fachada (lejos del portal, |x| ≥ 12) y la CALLE con su acera y su fila de palmeras, al oeste ──
+        // ── LAS PALMERAS de la fachada (lejos del portal, |x| ≥ 12) ──
         foreach (float x in new[] { -20f, -13f, 13f, 20f }) Palm(fac, new Vector3(x, 0f, -hz - 3.5f));
-        Transform street = new GameObject("Calle junto a la nave (acera y palmeras)").transform; street.SetParent(t, false); street.localPosition = new Vector3(-42f, 0f, 8f) + MuskShift;
-        Prop(street, "Asfalto_de_la_calle", new Vector3(0f, 0.02f, 0f), new Vector3(9f, 0.04f, 44f), M("Asfalto", 0.2f, 0.2f, 0.21f), false);
-        Prop(street, "Linea_central", new Vector3(0f, 0.045f, 0f), new Vector3(0.12f, 0.01f, 44f), yellow, false);
-        Prop(street, "Acera", new Vector3(-6f, 0.08f, 0f), new Vector3(3f, 0.16f, 44f), M("Acera", 0.72f, 0.71f, 0.68f), false);
-        for (int k = 0; k < 6; k++) Palm(street, new Vector3(-6.5f, 0.16f, -19f + k * 7.6f));
+        // (PB-165) La calle del oeste es ahora la «Calle de servicio de la planta de Northrop» del distrito (HawthorneDistrict.Streets).
 
         MuskDetail3(fac);
 
@@ -165,7 +161,6 @@ public static partial class StorySceneBuilder
     // pisar los MUEBLES GIGANTES del piso ×100 (las mesas y las pantallas del control de misión del santuario miden 76 m de alto): se
     // busca el desplazamiento libre más cercano (sin ir hacia el portal, z −14…−20) dentro del piso, y se registra qué tapaba. El piso no
     // se toca (regla M6: el piso no se rompe).
-    static Vector3 MuskSpot(Transform t) => FreeSpot(t, Rect.MinMaxRect(-52f, -12f, 50f, 33f), "Piloto Musk");
 
     /// <summary>El desplazamiento libre más cercano (sin ir hacia el portal: dz ≥ 0) para una huella <paramref name="foot"/> (locales de la
     /// historia) que no pise los muebles gigantes del piso ×100 entre 0,3 y 14 m de alto, dentro del piso. Lo usan el piloto de Hawthorne

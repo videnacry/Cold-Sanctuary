@@ -42,6 +42,8 @@ public class MicroFloor : MonoBehaviour
     public int floorPieces;
     [Tooltip("Enlaces para TREPAR (NavMeshLink) del suelo a las caras de arriba de los muebles: los insectos-humanos suben por patas y paredes.")]
     public int climbLinks;
+    [Tooltip("(2026-11-19, PB-165) SUELO URBANO PROPIO (MicrocosmSpec.ownGround): se montó sin el piso del santuario (Hawthorne 2008, «volver a empezar de cero»). No lleva piso gigante: las reglas del piso gigante no se le piden.")]
+    public bool ownGround;
 
     // ── EL SUELO, LOS ELEMENTOS DEL PISO Y SUS DEPENDENCIAS (2026-11-04, docs/microcosmos-suelo-y-elementos.md) ──
     [Tooltip("¿Lleva la capa de tierra (MicroGround.SoilThickness sobre cada suelo, MicroSoil)?")]

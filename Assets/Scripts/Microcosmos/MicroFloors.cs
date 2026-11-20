@@ -204,7 +204,7 @@ public static class MicroFloors
         // 2 · Montado ENCIMA del piso.
         Transform giant = null;
         foreach (Transform c in root) if (c.name.EndsWith("_gigante")) { giant = c; break; }
-        if (giant == null) bad.Add($"no lleva su piso gigante («…_gigante» de {f.platform}): no está montado encima de un piso");
+        if (giant == null && !f.ownGround) bad.Add($"no lleva su piso gigante («…_gigante» de {f.platform}): no está montado encima de un piso");
         Transform story = root.Find("Historia");
         // Encima: sobre su suelo o sobre una de sus estructuras (una entreplanta, la meseta de un mueble), nunca debajo ni sobre los muros.
         if (story != null && (story.localPosition.y < f.center.y - 2.5f || story.localPosition.y > f.center.y + Mathf.Max(5f, f.wallHeight))) bad.Add($"la historia no está encima del piso ({story.localPosition.y - f.center.y:0.0} m sobre su suelo)");

@@ -6,7 +6,7 @@ Cada petición de Berón, con su número fijo. **Una petición nueva entra el mi
 El **estado no se escribe a mano**: sale de sus casos en [registro.md](registro.md) (lo comprueba el comprobador):
 `Hecha` si todos sus casos están `Probado (…)`; `Doc` si solo pedía un doc o una regla; `Sin verificar` si alguno está en `Solo código` o `Sin probar`; `Abierta` si tiene un `HC` o le falta código.
 
-Las PB-001…PB-155 vienen de [auditoria-peticiones.md](../auditoria-peticiones.md) (el número es el mismo). Desde la PB-156 se anotan aquí directamente. La siguiente libre es **PB-165**.
+Las PB-001…PB-155 vienen de [auditoria-peticiones.md](../auditoria-peticiones.md) (el número es el mismo). Desde la PB-156 se anotan aquí directamente. La siguiente libre es **PB-167**.
 
 | PB | Fecha | Petición | Reglas | Casos | Estado | Origen |
 |---|---|---|---|---|---|---|
@@ -174,5 +174,7 @@ Las PB-001…PB-155 vienen de [auditoria-peticiones.md](../auditoria-peticiones.
 | PB-162 | 2026-11-18 | Musk recrea su historia: cada fragmento en su lugar real y fechado, reconstruido con todo el detalle (edificios, interiores, muebles, maquinaria, utensilios, calles, vegetación, animales); un barrio detallado por escenario con la ciudad de fondo. Luego los demás microcosmos, cuando Berón lo apruebe | — | MIC-99 | Abierta | En curso (Berón 2026-11-18 21:34). Alcance (21:54): por ahora un solo fragmento, Hawthorne 2008, con todo el esfuerzo en su realismo; Musk es la portada, pero el escenario refleja a los trabajadores y científicos que hicieron los cohetes, la producción de comida, la seguridad urbana y los demás sistemas (animales, personas, bacterias, plantas). Omelek: programado pero aparcado |
 | PB-163 | 2026-11-18 | Misiones como retos de código para cada actividad (cocinar, curar, plantar, campo, entrenar, yoga, cuidar animales…) y UI/UX como CodeShip | — | CS-43, CS-50, CS-51, CS-52, CS-53, CS-54, CS-55, CS-56, CS-57, CS-58, CS-60, CS-61, CS-62, CS-63, CS-64, CS-65, CS-70, CS-71, CS-72, CS-73, CS-74, CS-75, CS-80, CS-81, CS-82, CS-83, CS-85, CS-86, CS-87, CS-88, CS-90, CS-91, CS-92, CS-93, CS-94, CS-95, CS-96 | Sin verificar | En curso (Berón 2026-11-18 21:34) |
 | PB-164 | 2026-11-18 | El bonusPack N suma las stats de la criatura más poderosa del santuario N (cierra HC-01) | — | PER-25 | Abierta | En curso (Berón 2026-11-18 21:34); en código en 75cf93f (claude/peticiones-sonda), falta verlo en vivo (RepartoSantuariosTest, ChecklistSoulTest [1189]) |
+| PB-165 | 2026-11-19 | Rehacer desde cero el distrito de Hawthorne 2008 (Musk): distrito denso tipo GTA sin el piso del árbol-edificio, cada edificio investigado y detallado como el restaurante/gym/hospital del santuario 1, muebles/objetos/puertas ×2–×3 con la misma separación, solo mobiliario de insecto-humano donde lo usan insectos-humanos; luego retos de código y jornadas | — | MIC-87, MIC-93, HC-05 | Abierta | En curso (hilo «Rehacer distrito Hawthorne desde cero») |
+| PB-166 | 2026-11-19 | En el microcosmos todo se hace por retos, también los diálogos: misiones de entablar amistad con personajes, ser sus estudiantes, combatir a su lado o protegerles; muchas requieren un diálogo, que es un reto más; los retos de diálogo enseñan la historia real del escenario | — | HC-06 | Abierta | Berón 2026-11-19 19:10 (hilo «Rehacer distrito Hawthorne desde cero») |
 
-**Recuento:** Abierta 8 · Doc 8 · Hecha 124 · Sin verificar 24 · total 164.
+**Recuento:** Abierta 9 · Doc 8 · Hecha 124 · Sin verificar 24 · total 165.
