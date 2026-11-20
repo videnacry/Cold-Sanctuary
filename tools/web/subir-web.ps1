@@ -17,6 +17,7 @@
 param(
     [string]$Origen = "C:\Users\Blein\COLD-SANCTUARY\Builds\Web\sitio",
     [string]$Repo = "C:\Users\Blein\Documents\GitHub\cs-web-pages",
+    [string]$Visor = "C:\Users\Blein\Documents\Cold Sanctuary\visor",
     [string]$Url = "https://videnacry.github.io/Cold-sanctuary-web/",
     [string]$Mensaje = "",
     [switch]$SinProbar,
@@ -37,6 +38,13 @@ if (-not $SoloProbar) {
     $version = (Get-Content (Join-Path $Origen "version.txt") -Raw).Trim()
     $total = (Get-ChildItem -Path $Origen -Recurse -File | Where-Object { $_.FullName -notlike "*_BurstDebugInformation_DoNotShip*" } | Measure-Object Length -Sum).Sum
     Write-Host ("Sitio {0}: {1:0} MB. Copiando a {2}..." -f $version, ($total / 1MB), $Repo)
+
+    # 0) Visor sin build (docs/visor-web.md): index.html + datos/ van en visor/ del sitio, porque cada subida rehace el repo de Pages.
+    if (Test-Path (Join-Path $Visor "index.html")) {
+        & robocopy $Visor (Join-Path $Origen "visor") /MIR /R:2 /W:2 /NFL /NDL /NJH /NJS /NP | Out-Null
+        if ($LASTEXITCODE -ge 8) { Write-Error "robocopy del visor fallo ($LASTEXITCODE)."; exit 2 }
+        Write-Host "Visor copiado desde $Visor a visor/ del sitio."
+    } else { Write-Host "Sin visor en $Visor (no se copia)." }
 
     # 1) Espejo (robocopy: 0-7 = bien; 8+ = error). /XD .git: el repositorio se queda.
     & robocopy $Origen $Repo /MIR /XD (Join-Path $Repo ".git") "*_BurstDebugInformation_DoNotShip" /XF ".git" /R:2 /W:2 /NFL /NDL /NJH /NJS /NP | Out-Null
