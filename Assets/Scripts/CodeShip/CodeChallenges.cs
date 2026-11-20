@@ -76,6 +76,31 @@ public static class CodeChallenges
         // SpaceX, nota del 2-8-2008 y Musk en su blog (el empuje residual del Merlin 1C regenerativo tras el apagado hizo que la primera
         // etapa alcanzara a la segunda; el arreglo, alargar la espera entre el apagado y la separación); Koenigsmann et al., SmallSat 2009.
         const string muskSrc = "Spaceflight Now, «Falcon 1 flight 4» (2008); SpaceX, actualización del vuelo 3 (agosto de 2008); Koenigsmann et al., SmallSat 2009.";
+        // (2026-11-19, PB-166) RETOS DE DIÁLOGO en la historia: hablar también es un reto, y enseña lo que pasó de verdad.
+        Add(new Spec
+        {
+            scene = "Microcosmos_ElonMusk", afterGoal = "Agosto de 2008: habla con Elon Musk", target = "Elon Musk",
+            goal = "Reto de diálogo: responde a Elon Musk", speaker = "Elon Musk",
+            line = "Exacto. Primero entender el fallo; después, el cuarto cohete.",
+            exercise = ChoreKit.Say("musk-dialogo-cuarto", "Elon Musk",
+                "Tres lanzamientos, tres fallos. Nos queda un cohete y el dinero justo. ¿Qué harías tú?",
+                "Entender con los datos qué falló en el vuelo 3, arreglarlo y lanzar el cuarto",
+                new[] { "Lanzar el cuarto mañana mismo, tal cual, por si hay suerte", "Cerrar la empresa: tres fallos son una señal" },
+                "SpaceX tenía piezas para un cuarto Falcon 1. El equipo analizó la telemetría, alargó la espera antes de separar las etapas y lanzó siete semanas después, el 28-9-2008."),
+        });
+        Add(new Spec
+        {
+            scene = "Microcosmos_ElonMusk", afterGoal = "Habla con el técnico de la nave", target = "Técnico de la nave (Atlas)",
+            goal = "Reto de diálogo: responde al técnico de la nave", speaker = "Técnico",
+            line = "Eso. Y lo hicimos en siete semanas.",
+            exercise = ChoreKit.Say("musk-dialogo-isla", "Técnico de la nave",
+                "El cohete ya está en la isla. ¿Sabes cómo llegó hasta Omelek el del vuelo 4?",
+                "En un avión de carga: un C-17 de la Fuerza Aérea lo llevó desde California",
+                new[] { "Volando él solo desde Hawthorne", "En tren, por un puente hasta las Islas Marshall" },
+                "Para no esperar un barco, el cuarto Falcon 1 viajó en un C-17 militar hasta Kwajalein. En el viaje, el descenso despresurizó y abolló un poco el tanque, y hubo que repararlo en la isla."),
+        });
+        Find("musk-dialogo-cuarto").source = muskSrc;
+        Find("musk-dialogo-isla").source = "Eric Berger (2021), «Liftoff: Elon Musk and the Desperate Early Days That Launched SpaceX» (el vuelo del C-17 a Kwajalein y la abolladura del tanque); " + muskSrc;
         Add(new Spec
         {
             scene = "Microcosmos_ElonMusk", afterGoal = "Mira con el equipo los datos del vuelo 3", target = "Consola de datos del vuelo 3",

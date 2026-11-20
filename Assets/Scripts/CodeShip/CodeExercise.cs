@@ -44,6 +44,11 @@ public class CodeExercise
     public string source = "";
     /// <summary>Lo que se cuenta al acertar (qué pasó de verdad).</summary>
     public string explain = "";
+    /// <summary>(2026-11-19, PB-166, Berón: «en el microcosmos todo se hará por retos, incluso los diálogos») RETO DE DIÁLOGO: un turno de
+    /// una conversación. <see cref="speaker"/> dice <see cref="question"/>; las <see cref="options"/> son las respuestas posibles y la buena es
+    /// la que encaja con la historia real del escenario (la que se enseña). Es un reto de elegir (<see cref="Kind.Choice"/>) sin código.</summary>
+    public bool dialogue;
+    public string speaker = "";
 
     public bool HasDistractors => kind == Kind.Order && blocks.Length > solution.Length;
 
@@ -112,6 +117,7 @@ public class CodeExercise
         else
         {
             if (string.IsNullOrEmpty(question)) bad.Add("elegir sin pregunta");
+            if (dialogue && string.IsNullOrEmpty(speaker)) bad.Add("diálogo sin quien habla");
             if (options.Length < 2) bad.Add("elegir necesita al menos 2 opciones");
             if (correct < 0 || correct >= options.Length) bad.Add($"la respuesta {correct} está fuera de las {options.Length} opciones");
         }
