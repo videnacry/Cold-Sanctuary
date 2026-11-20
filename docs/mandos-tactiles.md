@@ -1,6 +1,6 @@
 # Mandos táctiles tipo Switch y menús como CodeShip (móvil)
 
-Petición de Berón (2026-11-19, **PB-165**): «en CodeShip se ha pasado a recrear los mandos de la Nintendo Switch sobre la pantalla
+Petición de Berón (2026-11-19, **PB-167**): «en CodeShip se ha pasado a recrear los mandos de la Nintendo Switch sobre la pantalla
 para los controles, ¿se podría implementar así para mobile aquí? Allí los menús son muy estéticos, ¿sería posible hacer algo similar
 aquí para mobile?». Referencia: CodeShip `origin/integracion`, `src/ui/action-pad.ts` + `action-pad.css` (los Joy-Con) y
 `src/ui/root-menu.css` (la paleta de los menús).

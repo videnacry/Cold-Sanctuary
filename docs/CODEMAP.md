@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 1036 tipos._
+_Total: 1037 tipos._
 
 
 ## Animals
@@ -194,6 +194,7 @@ _Total: 1036 tipos._
 - **SceneDiagnostics** (class) — `Assets/Editor/SceneDiagnostics.cs` — Utilidades rápidas de medición para diagnosticar problemas de escala en la escena.
 - **ScriptProfiler** (class) — `Assets/Editor/ScriptProfiler.cs` — PERFIL DE SCRIPTS (menú Tools/Cold Sanctuary/Perfil de scripts, en Play):
 - **ShotRender** (class) — `Assets/Editor/ShotRender.cs` — (2026-11-19, piloto6) UNA FOTO SIN CIAN.
+- **StorySceneBuilder** (class) — `Assets/Editor/HawthorneDistrict.cs` — HAWTHORNE 2008, EL DISTRITO DESDE CERO (PB-165, Berón 2026-11-19:
 - **StorySceneBuilder** (class) — `Assets/Editor/StorySceneBuilder.Famosos.cs` — MICROCOSMOS DE LOS FAMOSOS (docs/microcosmos-famosos.md; Berón 2026-11-04:
 - **StorySceneBuilder** (class) — `Assets/Editor/StorySceneBuilder.Maya.cs` — LA HISTORIA MAYA:
 - **StorySceneBuilder** (class) — `Assets/Editor/StorySceneBuilder.Musica.cs` — MICROCOSMOS DE LA MÚSICA (docs/microcosmos-musica.md; Berón 2026-11-05).

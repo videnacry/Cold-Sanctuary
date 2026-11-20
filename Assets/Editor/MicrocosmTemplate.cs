@@ -26,6 +26,8 @@ internal sealed class MicrocosmSpec
     public System.Func<Transform, int> story;
     [Tooltip("Una cuadrilla de recolectoras con su guarida, si la historia no trae las suyas (no en las historias cerradas de la novela, como Ambrosio).")]
     public bool foragers = true;
+    [Tooltip("(PB-165) Suelo propio de este tamaño (m, x × z) en vez del piso del santuario agrandado: un distrito que la historia llena entero.")]
+    public Vector2 ownGround;
 
     /// <param name="scene">Nombre de la escena (Microcosmos_…).</param>
     /// <param name="display">Su nombre: elige el bioma (MicroBiome) y la época (Eras) si no se dan.</param>

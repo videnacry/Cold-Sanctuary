@@ -100,6 +100,9 @@ public partial class CubeInsect
         ci.folk = true;
         FitHeight(host, height);
         Humanize(host, CubeHair.For(name));
+        // (2026-11-19, g62) El pelo va encima de la coronilla: un peinado alto pasaba de la estatura (la «Dependienta de Sears», 2,3 m
+        // con 2,2 de cuerpo). Se vuelve a ajustar con el pelo puesto (cuelga del cuello: escala con el cuerpo).
+        FitHeight(host, height);
         return ci;
     }
 

@@ -208,6 +208,12 @@ public static class MicroBuildRules
             {
                 if (pieces[i].t.IsChildOf(pieces[j].t) || pieces[j].t.IsChildOf(pieces[i].t)) continue;
                 if (pieces[i].t.GetComponent<GlassWall>() != null && pieces[j].t.GetComponent<GlassWall>() != null) continue;   // dos paños de cristal pueden ir pegados
+                // Solo se mide el paso entre muebles de la MISMA planta (cajas que se solapan en altura) y del MISMO edificio: el
+                // banquete del piso de arriba no estorba al que pasa por el café de abajo, y el horno de la tienda de al lado está
+                // tras un muro (ronda 3 de Hawthorne, 2026-11-19).
+                if (pieces[i].b.max.y <= pieces[j].b.min.y + 0.05f || pieces[j].b.max.y <= pieces[i].b.min.y + 0.05f) continue;
+                AreaFunctionSite si = pieces[i].t.GetComponentInParent<AreaFunctionSite>(true), sj = pieces[j].t.GetComponentInParent<AreaFunctionSite>(true);
+                if (si != null && sj != null && si != sj) continue;
                 float g = GapXZ(pieces[i].b, pieces[j].b);
                 if (g < passage - 0.01f) bad.Add($"paso de {g:0.00} m (< {passage:0.0}) entre «{pieces[i].t.name}» y «{pieces[j].t.name}»");
             }
@@ -293,7 +299,9 @@ public static class MicroBuildRules
                 if (mp.kind == "frutal") fruit = true;
                 if (!string.IsNullOrEmpty(mp.style) && !ids.Contains(mp.style)) bad.Add($"«{mp.name}» en «{site.title}»: estilo «{mp.style}» fuera del catálogo");
             }
-            if (!human) bad.Add($"«{site.title}» no adaptado a personas (ningún mueble a la medida de un humano)");
+            // (2026-11-19, PB-165, Berón: «sillas humanas junto a sillas humano-insecto») en un microcosmos solo hay insectos-humanos
+            // (InsectOnly): ya no se exige un mueble a la medida de una persona.
+            _ = human;
             if (!insect) bad.Add($"«{site.title}» no adaptado a insectos-humanos (ningún mueble a la medida de su cuerpo)");
             if (string.IsNullOrEmpty(site.region) || !System.Enum.TryParse(site.region, out MicroStyles.Region _)) bad.Add($"«{site.title}» sin región del catálogo de estilos («{site.region}»)");
             if (site.GetComponentInChildren<Household>(true) != null && !fruit) bad.Add($"residencia «{site.title}» sin frutal");

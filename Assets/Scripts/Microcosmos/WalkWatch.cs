@@ -25,15 +25,61 @@ public sealed class WalkWatch
     /// <summary>Empieza de cero (otro bloque, otro destino, o ya llegó).</summary>
     public void Reset() { _since = -1f; }
 
-    /// <summary>El destino que se anda: <paramref name="raw"/>, o su punto del NavMesh más cercano si raw cae fuera (≤ 1,5 m en planta,
-    /// ≤ 0,6 m de altura: no la tapa de un mueble).</summary>
+    /// <summary>El destino que se anda: <paramref name="raw"/>, o su punto del NavMesh más cercano si raw cae fuera (≤ 3 m en planta —los muebles ×2 de Hawthorne dejan su
+    /// punto de uso más hondo—, ≤ 0,6 m de altura: no la tapa de un mueble).</summary>
     public Vector3 Target(Vector3 raw)
     {
         if (_hasSnap && (raw - _raw).sqrMagnitude < 0.0625f) return _snap;
         _raw = raw; _snap = raw; _hasSnap = true;
         if (NavMesh.SamplePosition(raw, out NavMeshHit near, 0.15f, NavMesh.AllAreas)) return _snap;   // ya está en el NavMesh
-        if (NavMesh.SamplePosition(raw, out NavMeshHit h, 1.5f, NavMesh.AllAreas) && Mathf.Abs(h.position.y - raw.y) <= 0.6f) _snap = h.position;
+        if (NavMesh.SamplePosition(raw, out NavMeshHit h, 3f, NavMesh.AllAreas) && Mathf.Abs(h.position.y - raw.y) <= 0.6f) _snap = h.position;
         return _snap;
+    }
+
+    /// <summary>(2026-11-19, ronda 3 de Hawthorne, MIC-93) ¿Está ya JUNTO al mueble? A ≤ <paramref name="reach"/> m en planta de su caja
+    /// (sus colisores) y en su misma planta. Con los muebles ×2, el radio del agente lo deja a un metro del punto de uso, rozando el
+    /// mueble, y a 0,2 m/s no «llegaba» nunca: se le teletransportaba. Junto al mueble ya puede usarlo.</summary>
+    public static bool AtPiece(Transform agent, Transform piece, float reach)
+    {
+        if (agent == null || piece == null) return false;
+        bool any = false; Bounds b = default;
+        foreach (Collider c in piece.GetComponentsInChildren<Collider>())
+        {
+            if (!c.enabled || c.isTrigger) continue;
+            if (!any) { b = c.bounds; any = true; } else b.Encapsulate(c.bounds);
+        }
+        if (!any)   // sin colisores (el apoyo de abdomen, una pieza fina): su caja visible
+            foreach (Renderer r in piece.GetComponentsInChildren<Renderer>())
+            { if (r is ParticleSystemRenderer) continue; if (!any) { b = r.bounds; any = true; } else b.Encapsulate(r.bounds); }
+        if (!any) return false;
+        Vector3 p = agent.position;
+        if (p.y < b.min.y - 1.2f || p.y > b.max.y + 0.6f) return false;   // otra planta
+        float dx = Mathf.Max(0f, Mathf.Max(b.min.x - p.x, p.x - b.max.x)), dz = Mathf.Max(0f, Mathf.Max(b.min.z - p.z, p.z - b.max.z));
+        return dx * dx + dz * dz <= reach * reach;
+    }
+
+    /// <summary>(2026-11-19, ronda 6 de Hawthorne, MIC-93) BAJAR DE LA TARIMA. Las tarimas de puesto (E7) suben al insecto-humano ~1 m
+    /// hasta el tablero de un escritorio humano; su NavMesh es una isla sin rampa, y quien acababa el turno encima (el turno de noche)
+    /// no tenía camino a casa. Si desde aquí el camino a <paramref name="to"/> no es completo y desde el suelo de al lado (≤ 2,5 m, más
+    /// bajo) sí, se baja a ese suelo. Devuelve si bajó.</summary>
+    public static bool StepDown(Transform t, Vector3 to)
+    {
+        if (t == null) return false;
+        int mask = Mask(t);
+        var p = new NavMeshPath();
+        if (NavMesh.CalculatePath(From(t), to, mask, p) && p.status == NavMeshPathStatus.PathComplete) return false;
+        Vector3 here = t.position;
+        for (int k = 0; k < 8; k++)
+        {
+            float a = k * 45f * Mathf.Deg2Rad;
+            Vector3 probe = here + new Vector3(Mathf.Sin(a), 0f, Mathf.Cos(a)) * 1.6f + Vector3.down * 1.1f;
+            if (!NavMesh.SamplePosition(probe, out NavMeshHit h, 1.2f, mask) || h.position.y > here.y - 0.3f) continue;
+            if (!NavMesh.CalculatePath(h.position, to, mask, p) || p.status != NavMeshPathStatus.PathComplete) continue;
+            t.position = h.position;
+            if (t.TryGetComponent(out NavMeshAgent ag) && ag.enabled) ag.Warp(h.position);
+            return true;
+        }
+        return false;
     }
 
     /// <summary>¿Se rinde ya (y hay que ponerle allí)? <paramref name="minSecs"/>: el tope de antes, el mínimo.
@@ -48,9 +94,15 @@ public sealed class WalkWatch
             _budget = Mathf.Max(minSecs, 3f * PathLength(t, to) / Mathf.Max(0.1f, speed) + 30f);
         }
         if (dist < _best - 0.3f) { _best = dist; _bestAt = Time.time; }
+        // (ronda 6, MIC-93) Un camino largo da rodeos (100 m para 94 en recta) y en ellos la recta no baja: si el agente ANDA por su
+        // camino completo, no está atascado (antes, «atasco» a los 60 s con el mecánico a 1,2 m/s).
+        else if (t.TryGetComponent(out NavMeshAgent mv) && mv.enabled && mv.isOnNavMesh && mv.hasPath && mv.pathStatus == NavMeshPathStatus.PathComplete
+                 && mv.velocity.magnitude > 0.3f * Mathf.Max(0.1f, speed)) _bestAt = Time.time;
         float now = Time.time, stall = Mathf.Max(20f, _min * 0.5f);
         bool stuck = now - _bestAt > stall, late = now - _since > _budget && now - _bestAt > 5f, cap = now - _since > 3f * _budget;
         if (!stuck && !late && !cap) return false;
+        // (ronda 6) Subido a una tarima de puesto (isla de NavMesh a ~1 m, sin rampa): antes de rendirse, baja de ella.
+        if (StepDown(t, to)) { _since = -1f; return false; }
         why = (stuck ? $"atasco ({now - _bestAt:0} s sin acercarse)" : cap ? $"tope ({3f * _budget:0} s)" : $"tiempo ({_budget:0} s)") + "; " + Diagnose(t, to);
         return true;
     }
@@ -88,7 +140,7 @@ public sealed class WalkWatch
         if (!t.TryGetComponent(out NavMeshAgent ag)) a = "sin agente (en recta)";
         else if (!ag.enabled) a = "agente apagado (¿a mano?)";
         else if (!ag.isOnNavMesh) a = "agente FUERA del NavMesh";
-        else a = $"agente a {ag.velocity.magnitude:0.0} m/s, {(ag.pathPending ? "camino pendiente" : ag.hasPath ? $"camino {ag.pathStatus}, faltan {ag.remainingDistance:0} m" : "sin camino en curso")}";
+        else a = $"agente a {ag.velocity.magnitude:0.0} m/s, {(ag.pathPending ? "camino pendiente" : ag.hasPath ? $"camino {ag.pathStatus}, faltan {(float.IsInfinity(ag.remainingDistance) ? PathLength(t, to) : ag.remainingDistance):0} m" : "sin camino en curso")}";
         string g = NavMesh.SamplePosition(to, out NavMeshHit h, 1f, NavMesh.AllAreas) ? $"destino en el NavMesh (a {Vector3.Distance(h.position, to):0.0} m)" : "destino FUERA del NavMesh (a más de 1 m)";
         var p = new NavMeshPath();
         Vector3 from = From(t);
