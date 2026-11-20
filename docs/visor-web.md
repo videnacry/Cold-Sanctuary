@@ -26,7 +26,7 @@ página nueva exige un build de 30–60 min en el PC.
   de prueba resueltos. Falta: compilar `VisorExport.cs` en el PC y el primer volcado real de `Microcosmos_ElonMusk`.
 
 ## Publicarlo
-Copiar `index.html` y la carpeta `datos/` a cualquier sitio estático. En la web va en `visor/` del repo de Pages (`cold-sanctuary-web`, rama `claude/project-thread-s9krva`, falta el visto bueno para pasarlo a `main`); como cada subida de la web rehace ese repo, el PC debe copiar `tools/visor/` + `datos/` a `Builds/Web/sitio/visor/` antes de subir. Rehacer
+`tools/web/subir-web.ps1` copia el visor en cada subida (parámetro `-Visor`, por defecto `C:\Users\Blein\Documents\Cold Sanctuary\visor`: `index.html` + `datos/`) a `visor/` del sitio; la exportación de Hawthorne escribe en esa misma carpeta `datos/`. Rehacer
 el visor = volver a exportar (segundos), no un build.
 
 ## Siguiente paso posible
