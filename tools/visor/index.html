@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Visor del microcosmos</title>
+<!-- Visor sin build (PB-168, docs/visor-web.md): lee el volcado de VisorExport.cs (escena.jsonl.gz + retos.json) y lo dibuja con
+     three.js; los retos de código se resuelven aquí con las mismas reglas que CodeExercise/ChoreRun (Parsons o elegir, 2 fallos). -->
+<style>
+/* VOICE: herramienta de revisión, la del HUD de CodeShip (CsTheme). IDEA: la consola de la nave mirando el microcosmos.
+   PICTURE: la escena 3D a pantalla completa. COLOUR/TYPE: vidrio #0b2a36, cian #7fdcff, naranja #ff9a2e; sistema sans.
+   LAYOUT: barra arriba, ventanas que salen del lado derecho (abajo en el móvil), mandos táctiles abajo. */
+:root{--glass:#0b2a36dc;--deep:#05141ce6;--cyan:#7fdcff;--soft:#7fdcff66;--text:#d8f6ff;--green:#7dffb0;--orange:#ff9a2e;--ink:#1d0d00}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0;height:100%;overflow:hidden;background:#9fc6dd;color:var(--text);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;touch-action:none}
+canvas#c{position:fixed;inset:0;width:100%;height:100%;display:block}
+.bar{position:fixed;top:0;left:0;right:0;display:flex;gap:6px;align-items:center;padding:max(8px,env(safe-area-inset-top)) 10px 8px;flex-wrap:wrap;pointer-events:none}
+.bar>*{pointer-events:auto}
+.title{background:var(--deep);border:1px solid var(--soft);border-radius:10px;padding:6px 10px;font-weight:600;max-width:46vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+button{font:inherit;color:var(--text);background:var(--glass);border:1px solid var(--soft);border-radius:10px;min-height:40px;padding:6px 12px;cursor:pointer}
+button:hover{background:#134052e6}button:focus-visible{outline:2px solid var(--cyan);outline-offset:1px}
+button.on{background:var(--cyan);color:#001018}
+button.act{background:var(--orange);color:var(--ink);border-color:var(--orange);font-weight:600}
+.win{position:fixed;top:64px;right:10px;bottom:10px;width:min(440px,calc(100vw - 20px));background:var(--deep);border:1px solid var(--soft);border-radius:14px;display:none;flex-direction:column;overflow:hidden}
+.win.open{display:flex}
+.win h2{margin:0;font-size:17px;padding:12px 14px;border-bottom:1px solid var(--soft);display:flex;justify-content:space-between;align-items:center;gap:8px}
+.win .body{overflow:auto;padding:10px 14px 16px;flex:1}
+.item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #7fdcff22}
+.item small{display:block;opacity:.75}
+.tag{font-size:12px;border:1px solid var(--soft);border-radius:6px;padding:1px 6px;margin-left:4px;opacity:.85}
+.code{background:#000c;border:1px solid var(--soft);border-radius:8px;padding:8px;font:13px/1.5 ui-monospace,Consolas,monospace;white-space:pre-wrap;margin:8px 0}
+.blk{display:block;width:100%;text-align:left;font:13px/1.4 ui-monospace,Consolas,monospace;margin:4px 0;min-height:36px}
+.slot{border:1px dashed var(--soft);border-radius:8px;padding:6px;min-height:44px;margin:6px 0}
+.ok{color:var(--green)}.bad{color:var(--orange)}
+.src{font-size:13px;opacity:.75;margin-top:6px}
+#info{position:fixed;left:10px;bottom:150px;max-width:min(520px,70vw);background:var(--deep);border:1px solid var(--soft);border-radius:10px;padding:6px 10px;font-size:13px;display:none;overflow-wrap:anywhere}
+#load{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;background:#05141c;z-index:5;padding:20px;text-align:center}
+#load .code{max-width:640px;text-align:left}
+.pad{position:fixed;bottom:max(16px,env(safe-area-inset-bottom));width:120px;height:120px;border-radius:50%;background:#333740cc;border:1px solid #ffffff40;touch-action:none}
+.pad i{position:absolute;left:50%;top:50%;width:48px;height:48px;margin:-24px;border-radius:50%;background:#ffffff55}
+#padL{left:16px}#padR{right:16px}
+.ud{position:fixed;right:150px;bottom:max(20px,env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:8px}
+.ud button{width:52px;height:52px;border-radius:50%;padding:0}
+#hint{position:fixed;left:50%;bottom:10px;transform:translateX(-50%);font-size:12px;opacity:.8;background:var(--deep);padding:3px 8px;border-radius:8px;white-space:nowrap}
+@media (hover:hover) and (pointer:fine){.pad,.ud{display:none}#info{bottom:40px}}
+@media (hover:none){#hint{display:none}}
+@media(max-width:600px){.win{top:auto;height:62vh;left:10px;width:auto}.title{max-width:100%;flex-basis:100%}}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div class="bar">
+  <div class="title" id="ttl">Visor</div>
+  <button data-w="wLug">Lugares</button>
+  <button data-w="wRet" class="act">Retos</button>
+  <button data-w="wHis">Historia</button>
+  <button id="bSpd" title="Velocidad">×1</button>
+</div>
+<section class="win" id="wLug"><h2>Lugares <button data-x>✕</button></h2><div class="body" id="lugares"></div></section>
+<section class="win" id="wRet"><h2><span id="retTitle">Retos</span> <button data-x>✕</button></h2><div class="body" id="retos"></div></section>
+<section class="win" id="wHis"><h2>Historia <button data-x>✕</button></h2><div class="body" id="historia"></div></section>
+<div id="info"></div>
+<div class="pad" id="padL"><i></i></div><div class="pad" id="padR"><i></i></div>
+<div class="ud"><button id="bUp">▲</button><button id="bDn">▼</button></div>
+<div id="hint">WASD mover · arrastrar mirar · Q/E bajar/subir · Mayús rápido · clic: qué es</div>
+<div id="load"><div id="loadMsg">Cargando el microcosmos…</div></div>
+
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js"}}</script>
+<script type="module">
+import * as THREE from 'three';
+{
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const base = new URLSearchParams(location.search).get('d') || 'datos/';
+
+// ── Carga: escena.jsonl.gz (o .jsonl) y retos.json (opcional) ──
+async function text(url, gz) {
+  const r = await fetch(url); if (!r.ok) throw new Error(url + ' → ' + r.status);
+  if (!gz) return r.text();
+  const buf = await r.arrayBuffer(); const u = new Uint8Array(buf);
+  if (u[0] !== 0x1f || u[1] !== 0x8b) return new TextDecoder().decode(u);   // el servidor ya lo descomprimió
+  return new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream('gzip'))).text();
+}
+let objs = [], retos = null;
+try {
+  let raw;
+  try { raw = await text(base + 'escena.jsonl.gz', true); } catch { raw = await text(base + 'escena.jsonl', false); }
+  objs = raw.split('\n').filter(Boolean).map(l => JSON.parse(l));
+  try { retos = JSON.parse(await text(base + 'retos.json', false)); } catch { retos = null; }
+} catch (e) {
+  $('#loadMsg').innerHTML = 'No encuentro el volcado (<code>' + esc(base) + 'escena.jsonl.gz</code>).<div class="code">En Unity: Tools › Cold Sanctuary › Web › «Visor sin build: exportar …».\nSale en Builds/Visor/&lt;escena&gt;/: copia escena.jsonl.gz y retos.json a la carpeta datos/ de este visor.</div>';
+  throw e;
+}
+
+// ── Escena 3D ──
+const canvas = $('#c');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x9fc6dd);
+const camera = new THREE.PerspectiveCamera(60, 1, 0.05, 4000);
+camera.rotation.order = 'YXZ';
+scene.add(new THREE.HemisphereLight(0xeaf6ff, 0x5a5040, 1.6));
+const sun = new THREE.DirectionalLight(0xffffff, 1.6); sun.position.set(0.5, 1, 0.3); scene.add(sun);
+
+// Unity (mano izquierda, z adelante) → three (mano derecha): M' = S·M·S con S = diag(1,1,-1).
+const DEG = Math.PI / 180;
+function unityMatrix(o) {
+  const m = new THREE.Matrix4();
+  if (o.m) { const a = o.m; m.set(a[0],a[1],a[2],a[3], a[4],a[5],a[6],a[7], a[8],a[9],a[10],a[11], 0,0,0,1); }
+  else {
+    const q = new THREE.Quaternion().setFromEuler(new THREE.Euler(o.rot[0]*DEG, o.rot[1]*DEG, o.rot[2]*DEG, 'YXZ'));  // Unity aplica Z, X, Y
+    m.compose(new THREE.Vector3(...o.pos), q, new THREE.Vector3(...o.scale));
+  }
+  const e = m.elements;  // column-major: e[col*4+row]
+  for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) if ((r === 2) !== (c === 2)) e[c*4+r] = -e[c*4+r];
+  return m;
+}
+const flip = p => new THREE.Vector3(p[0], p[1], -p[2]);
+const geoms = {
+  cube: new THREE.BoxGeometry(1, 1, 1),
+  sphere: new THREE.SphereGeometry(0.5, 16, 10),
+  cylinder: new THREE.CylinderGeometry(0.5, 0.5, 2, 16),
+  capsule: new THREE.CapsuleGeometry(0.5, 1, 4, 12),
+  plane: new THREE.PlaneGeometry(10, 10).rotateX(-Math.PI / 2),
+  quad: new THREE.PlaneGeometry(1, 1).rotateY(Math.PI),
+};
+const groups = {};      // clave geom|t → [{m, color, i}]
+const drawn = [];       // índice de instancia → objeto
+const box = new THREE.Box3();
+for (const o of objs) {
+  if (!o.color) continue;
+  let g = o.primitive, m;
+  if (g && geoms[g]) m = unityMatrix(o);
+  else if (o.bounds) { g = 'cube'; m = new THREE.Matrix4().compose(flip(o.bounds.center), new THREE.Quaternion(), new THREE.Vector3(...o.bounds.size)); }
+  else continue;
+  const hex = o.color.slice(1), a = hex.length >= 8 ? parseInt(hex.slice(6, 8), 16) / 255 : 1;
+  if (a < 0.03) continue;
+  const key = g + '|' + (a < 0.95 ? 't' : 'o');
+  (groups[key] ||= []).push({ m, c: new THREE.Color('#' + hex.slice(0, 6)), o });
+  if (o.bounds && o.bounds.size[0] < 2000) box.expandByPoint(flip(o.bounds.center));
+}
+const meshes = [];
+for (const [key, list] of Object.entries(groups)) {
+  const [g, t] = key.split('|');
+  const mat = new THREE.MeshLambertMaterial({ transparent: t === 't', opacity: t === 't' ? 0.45 : 1, depthWrite: t !== 't',
+    side: (g === 'plane' || g === 'quad') ? THREE.DoubleSide : THREE.FrontSide });
+  const im = new THREE.InstancedMesh(geoms[g], mat, list.length);
+  list.forEach((x, i) => { im.setMatrixAt(i, x.m); im.setColorAt(i, x.c); });
+  im.instanceMatrix.needsUpdate = true; im.instanceColor.needsUpdate = true;
+  im.computeBoundingSphere(); im.userData.list = list; if (t === 't') im.renderOrder = 1;
+  scene.add(im); meshes.push(im);
+}
+const nDrawn = meshes.reduce((s, m) => s + m.count, 0);
+
+// Faros: dónde están los retos (naranja = historia, cian = puesto).
+const beacons = new THREE.Group(); scene.add(beacons);
+function beacon(pos, color) {
+  const m = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.25, 30, 8), new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.5, depthWrite: false }));
+  m.position.copy(flip(pos)).add(new THREE.Vector3(0, 15, 0)); beacons.add(m);
+}
+
+// ── Cámara libre ──
+const st = { yaw: 0, pitch: -0.35, speed: 1, keys: new Set(), mv: [0, 0], lk: [0, 0], ud: 0 };
+function goTo(p, dist = 9) {
+  const t = flip(p);
+  camera.position.set(t.x, t.y + dist * 0.55, t.z + dist);
+  st.yaw = 0; st.pitch = -0.5;
+  $('#info').style.display = 'none';
+}
+const start = retos?.story?.pos || (box.isEmpty() ? [0, 0, 0] : (() => { const c = box.getCenter(new THREE.Vector3()); return [c.x, c.y, -c.z]; })());
+goTo(start, 14);
+
+addEventListener('keydown', e => { if (e.target.tagName === 'INPUT') return; st.keys.add(e.code); });
+addEventListener('keyup', e => st.keys.delete(e.code));
+let drag = null;
+canvas.addEventListener('pointerdown', e => { drag = { x: e.clientX, y: e.clientY, x0: e.clientX, y0: e.clientY, id: e.pointerId }; canvas.setPointerCapture(e.pointerId); });
+canvas.addEventListener('pointermove', e => {
+  if (!drag || drag.id !== e.pointerId) return;
+  st.yaw -= (e.clientX - drag.x) * 0.004; st.pitch = Math.max(-1.5, Math.min(1.5, st.pitch - (e.clientY - drag.y) * 0.004));
+  drag.x = e.clientX; drag.y = e.clientY;
+});
+canvas.addEventListener('pointerup', e => { if (drag && Math.hypot(e.clientX - drag.x0, e.clientY - drag.y0) < 6) pick(e); drag = null; });
+addEventListener('wheel', e => setSpeed(e.deltaY < 0 ? 1 : -1), { passive: true });
+const speeds = [0.25, 0.5, 1, 2, 4, 8];
+function setSpeed(d) { const i = Math.max(0, Math.min(speeds.length - 1, speeds.indexOf(st.speed) + d)); st.speed = speeds[i]; $('#bSpd').textContent = '×' + st.speed; }
+$('#bSpd').onclick = () => setSpeed(st.speed >= 8 ? -5 : 1);
+function pad(el, out) {
+  const knob = el.querySelector('i'); let id = null;
+  const set = e => { const r = el.getBoundingClientRect(); let x = (e.clientX - r.left - r.width / 2) / (r.width / 2), y = (e.clientY - r.top - r.height / 2) / (r.height / 2);
+    const l = Math.hypot(x, y); if (l > 1) { x /= l; y /= l; } out[0] = x; out[1] = y; knob.style.transform = `translate(${x * 36}px,${y * 36}px)`; };
+  el.addEventListener('pointerdown', e => { id = e.pointerId; el.setPointerCapture(id); set(e); });
+  el.addEventListener('pointermove', e => { if (e.pointerId === id) set(e); });
+  const end = () => { id = null; out[0] = out[1] = 0; knob.style.transform = ''; };
+  el.addEventListener('pointerup', end); el.addEventListener('pointercancel', end);
+}
+pad($('#padL'), st.mv); pad($('#padR'), st.lk);
+for (const [b, v] of [['#bUp', 1], ['#bDn', -1]]) {
+  $(b).addEventListener('pointerdown', () => st.ud = v); $(b).addEventListener('pointerup', () => st.ud = 0); $(b).addEventListener('pointerleave', () => st.ud = 0);
+}
+
+// Clic: qué objeto es (nombre y ruta en la escena, para dar parte de un fallo).
+const ray = new THREE.Raycaster();
+function pick(e) {
+  ray.setFromCamera(new THREE.Vector2(e.clientX / innerWidth * 2 - 1, -e.clientY / innerHeight * 2 + 1), camera);
+  const hit = ray.intersectObjects(meshes, false)[0];
+  const info = $('#info');
+  if (!hit) { info.style.display = 'none'; return; }
+  const o = hit.object.userData.list[hit.instanceId].o;
+  info.innerHTML = '<b>' + esc(o.name) + '</b><br><small>' + esc(o.path) + '</small><br><small>' + esc(o.color) + (o.bounds ? ' · ' + o.bounds.size.map(v => v.toFixed(2)).join(' × ') + ' m' : '') + '</small>';
+  info.style.display = 'block';
+}
+
+const clock = new THREE.Clock();
+function frame() {
+  const dt = Math.min(clock.getDelta(), 0.1);
+  const k = st.keys, run = k.has('ShiftLeft') || k.has('ShiftRight') ? 4 : 1;
+  let f = (k.has('KeyW') || k.has('ArrowUp') ? 1 : 0) - (k.has('KeyS') || k.has('ArrowDown') ? 1 : 0) - st.mv[1];
+  let r = (k.has('KeyD') ? 1 : 0) - (k.has('KeyA') ? 1 : 0) + st.mv[0];
+  let u = (k.has('KeyE') || k.has('Space') ? 1 : 0) - (k.has('KeyQ') || k.has('KeyC') ? 1 : 0) + st.ud;
+  if (k.has('ArrowLeft')) st.yaw += 1.8 * dt; if (k.has('ArrowRight')) st.yaw -= 1.8 * dt;
+  st.yaw -= st.lk[0] * 2.2 * dt; st.pitch = Math.max(-1.5, Math.min(1.5, st.pitch - st.lk[1] * 1.6 * dt));
+  const v = 6 * st.speed * run * dt;
+  const fw = new THREE.Vector3(-Math.sin(st.yaw), 0, -Math.cos(st.yaw)), rt = new THREE.Vector3(Math.cos(st.yaw), 0, -Math.sin(st.yaw));
+  camera.position.addScaledVector(fw, f * v).addScaledVector(rt, r * v).y += u * v;
+  camera.rotation.set(st.pitch, st.yaw, 0);
+  renderer.render(scene, camera);
+  requestAnimationFrame(frame);
+}
+function resize() { renderer.setSize(innerWidth, innerHeight, false); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); }
+addEventListener('resize', resize); resize();
+
+// ── Ventanas ──
+document.querySelectorAll('[data-w]').forEach(b => b.onclick = () => {
+  const w = $('#' + b.dataset.w), open = !w.classList.contains('open');
+  document.querySelectorAll('.win').forEach(x => x.classList.remove('open'));
+  if (open) w.classList.add('open');
+});
+document.querySelectorAll('[data-x]').forEach(b => b.onclick = () => b.closest('.win').classList.remove('open'));
+const close = () => document.querySelectorAll('.win').forEach(x => x.classList.remove('open'));
+const go = (p) => { goTo(p); if (innerWidth < 600) close(); };
+
+$('#ttl').textContent = (retos?.story?.title || retos?.scene || 'Escena') + ' · ' + nDrawn.toLocaleString('es') + ' piezas';
+
+// Lugares: edificios (AreaFunctionSite), sitios de la historia y puestos.
+const places = [];
+for (const b of retos?.buildings || []) places.push({ name: b.building, sub: b.name, pos: b.pos });
+for (const s of retos?.story?.steps || []) for (const t of s.targets) places.push({ name: t.name, sub: 'historia: ' + s.goal, pos: t.pos });
+for (const s of retos?.stations || []) if (s.pos) places.push({ name: s.site, sub: 'puesto: ' + s.template.title, pos: s.pos });
+if (!places.length) for (const o of objs) if (o.anima) places.push({ name: o.name, sub: 'ser', pos: o.pos });
+$('#lugares').innerHTML = places.length ? places.map((p, i) => `<div class="item"><div>${esc(p.name)}<small>${esc(p.sub)}</small></div><button data-p="${i}">Ir</button></div>`).join('')
+  : '<p>Este volcado no trae lugares.</p>';
+$('#lugares').onclick = e => { const i = e.target.dataset.p; if (i != null) go(places[i].pos); };
+
+// Historia: pasos y diálogos.
+const story = retos?.story;
+$('#historia').innerHTML = story ? `<p><b>${esc(story.title)}</b></p>` + story.steps.map((s, i) => `<div class="item"><div>${i + 1}. ${esc(s.goal)} <span class="tag">${esc(s.kind)}</span>
+  ${s.line ? `<small>${esc(s.speaker)}: «${esc(s.line)}»</small>` : ''}${s.source ? `<small class="src">Fuente: ${esc(s.source)}</small>` : ''}</div>
+  ${s.targets.length ? `<button data-s="${i}">Ir</button>` : ''}</div>`).join('') + (story.finalLine ? `<p>${esc(story.finalSpeaker)}: «${esc(story.finalLine)}»</p>` : '')
+  : '<p>Este volcado no trae historia.</p>';
+$('#historia').onclick = e => { const i = e.target.dataset.s; if (i != null) go(story.steps[i].targets[0].pos); };
+
+// ── Retos (CodeExercise: kind 0 = ordenar (Parsons), 1 = elegir) ──
+const runs = [];
+for (const c of retos?.storyChallenges || []) { runs.push({ title: c.goal || c.exercise.idea, sub: 'historia · tras «' + c.afterGoal + '»', pos: c.pos, ex: [c.exercise], line: c.speaker ? c.speaker + ': «' + c.line + '»' : '', src: c.exercise.source }); if (c.pos) beacon(c.pos, 0xff9a2e); }
+for (const s of retos?.stations || []) {
+  const t = s.template, ex = t.duel ? pickIdeas(3) : t.exercises;
+  runs.push({ title: t.title, sub: s.site + (s.supuesto ? ' (supuesto)' : '') + ' · ' + (t.duel ? 'duelo de ideas' : ex.length + ' retos') + ' · ' + t.label, pos: s.pos, ex, scenario: t.scenario, src: t.source, max: t.maxMistakes || 2 });
+  if (s.pos) beacon(s.pos, 0x7fdcff);
+}
+function pickIdeas(n) { const b = [...(retos?.ideas || [])]; const out = []; while (b.length && out.length < n) out.push(b.splice(Math.floor(Math.random() * b.length), 1)[0]); return out; }
+let cur = null, js = false;
+function listRuns() {
+  $('#retTitle').textContent = 'Retos (' + runs.length + ')';
+  $('#retos').innerHTML = runs.length ? runs.map((r, i) => `<div class="item"><div>${esc(r.title)}<small>${esc(r.sub)}</small></div>
+    <span>${r.pos ? `<button data-g="${i}">Ir</button> ` : ''}<button class="act" data-r="${i}">Hacer</button></span></div>`).join('')
+    : '<p>Este volcado no trae retos (expórtalo con el menú del visor para incluirlos).</p>';
+}
+function open(i) { cur = { r: runs[i], k: 0, fails: 0, order: [], left: null, done: false, msg: '' }; draw(); }
+const face = b => js ? (b.js || b.pseudo) : b.pseudo;
+function shuffled(ex) { const a = ex.blocks.map(b => b.id); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  if (a.join() === ex.solution.join() && a.length > 1) [a[0], a[1]] = [a[1], a[0]]; return a; }
+function draw() {
+  const c = cur, r = c.r, ex = r.ex[c.k], blk = id => ex.blocks.find(b => b.id === id);
+  $('#retTitle').textContent = r.title;
+  let h = `<button data-back>← Retos</button> <button data-js class="${js ? 'on' : ''}">${js ? 'JS' : 'Pseudo'}</button>`;
+  if (r.scenario && c.k === 0) h += `<p>${esc(r.scenario)}</p>`;
+  if (r.line && c.k === 0) h += `<p><i>${esc(r.line)}</i></p>`;
+  h += `<p><b>Reto ${c.k + 1} de ${r.ex.length}</b>${r.ex.length > 1 ? ` · fallos ${c.fails} de ${r.max || 2}` : ''}<br>${esc(ex.idea)}</p><p>${esc(ex.question)}</p>`;
+  if (ex.kind === 0) {
+    c.left ||= shuffled(ex);
+    h += '<div class="slot">' + (c.order.length ? c.order.map((id, i) => `<button class="blk on" data-o="${i}" style="padding-left:${12 + (blk(id).indent || 0) * 16}px">${esc(face(blk(id)))}</button>`).join('') : '<small>Toca las piezas en orden</small>') + '</div>';
+    h += c.left.filter(id => !c.order.includes(id)).map(id => `<button class="blk" data-l="${id}">${esc(face(blk(id)))}</button>`).join('');
+  } else {
+    h += '<div class="code">' + ex.blocks.map(b => '  '.repeat(b.indent || 0) + esc(face(b))).join('\n') + '</div>';
+    h += ex.options.map((o, i) => `<button class="blk" data-c="${i}">${esc(o)}</button>`).join('');
+  }
+  if (c.msg) h += `<p class="${c.ok ? 'ok' : 'bad'}">${c.msg}</p>`;
+  if (c.ok && ex.explain) h += `<p>${esc(ex.explain)}</p>`;
+  if (c.ok && ex.source) h += `<p class="src">Fuente: ${esc(ex.source)}</p>`;
+  if (ex.kind === 0 && !c.ok && !c.done) h += `<button class="act" data-check ${c.order.length === ex.solution.length ? '' : 'disabled'}>Comprobar</button>`;
+  if (c.ok && !c.done) h += `<button class="act" data-next>${c.k + 1 < r.ex.length ? 'Siguiente reto' : 'Terminar'}</button>`;
+  if (c.done) h += `<button class="act" data-again>Reintentar</button>`;
+  if (r.src && (c.done || (c.ok && c.k + 1 >= r.ex.length))) h += `<p class="src">Misión: ${esc(r.src)}</p>`;
+  $('#retos').innerHTML = h;
+}
+function answer(ok, hint) {
+  const c = cur;
+  c.ok = ok;
+  if (ok) c.msg = c.k + 1 >= c.r.ex.length ? '¡Hecho! Misión terminada.' : '¡Bien!';
+  else { c.fails++; c.msg = 'No es así' + (hint || '') + '.'; if (c.r.ex.length > 1 && c.fails >= (c.r.max || 2)) { c.done = true; c.msg = 'Dos fallos: la misión se repite.'; } }
+  draw();
+}
+$('#retos').onclick = e => {
+  const d = e.target.closest('button')?.dataset; if (!d) return;
+  if (d.g != null) return go(runs[d.g].pos);
+  if (d.r != null) return open(+d.r);
+  if (d.back != null) { cur = null; return listRuns(); }
+  if (d.js != null) { js = !js; return draw(); }
+  const c = cur, ex = c?.r.ex[c.k]; if (!c) return;
+  if (d.again != null) return open(runs.indexOf(c.r));
+  if (d.next != null) { if (c.k + 1 >= c.r.ex.length) { cur = null; return listRuns(); } Object.assign(c, { k: c.k + 1, order: [], left: null, ok: false, msg: '' }); return draw(); }
+  if (c.ok || c.done) return;
+  if (d.l != null) { c.order.push(d.l); c.msg = ''; return draw(); }
+  if (d.o != null) { c.order.splice(+d.o, 1); c.msg = ''; return draw(); }
+  if (d.c != null) return answer(+d.c === ex.correct);
+  if (d.check != null) { let n = 0; while (n < c.order.length && c.order[n] === ex.solution[n]) n++;
+    return answer(n === ex.solution.length && c.order.length === n, n ? ` (los ${n} primeros están bien)` : ''); }
+};
+listRuns();
+
+$('#load').remove();
+requestAnimationFrame(frame);
+window.__visor = { objetos: objs.length, piezas: nDrawn, retos: runs.length, lugares: places.length };
+}
+</script>
+</body>
+</html>
