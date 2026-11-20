@@ -132,9 +132,9 @@ public class MicroRootMenu : MonoBehaviour
         Add(work);
 
         // PERSONAS (2026-11-19, PB-166): hacerse amigo, ser estudiante, luchar a su lado o protegerle; cada conversación, retos de diálogo.
-        var people = new Branch { label = "Personas" };
-        Stations(people, at, c => c == ChoreCategory.Vinculos, 6);
-        if (people.leaves.Count > 0) Add(people);
+        var personas = new Branch { label = "Personas" };
+        Stations(personas, at, c => c == ChoreCategory.Vinculos, 6);
+        Add(personas);
 
         // NECESIDADES: en la casa más cercana.
         var needs = new Branch { label = "Necesidades" };
