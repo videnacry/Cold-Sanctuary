@@ -29,7 +29,7 @@ public class StepAnimator : MonoBehaviour
         public override string ToString() => type == Type.Gesture ? $"gesto {gesture}" : type == Type.Yoga ? $"yoga {sequence} {posture + 1}" : type.ToString();
     }
 
-    static readonly string[] Known = { "cocinar", "mecanizar", "composite", "reparar-maquina", "avionica", "atender-paciente", "medico", "regar", "curar-planta", "cosechar", "alimentar-perro", "programar-animal", "jugar-perro", "ejercicio", "asearse", "plantar-idea", "dormir", "yoga", "soldar-fsw", "ensayo-materiales", "analizar-datos", "sala-limpia", "seguridad-alimentaria", "recepcion", "control-acceso", "incendios", "seguridad-vial", "aeronautica" };
+    static readonly string[] Known = { "cocinar", "mecanizar", "composite", "reparar-maquina", "avionica", "atender-paciente", "medico", "regar", "curar-planta", "cosechar", "alimentar-perro", "programar-animal", "jugar-perro", "ejercicio", "asearse", "plantar-idea", "dormir", "yoga", "soldar-fsw", "ensayo-materiales", "analizar-datos", "sala-limpia", "seguridad-alimentaria", "recepcion", "control-acceso", "incendios", "seguridad-vial", "aeronautica", "entablar-amistad", "ser-estudiante", "combatir-al-lado", "proteger" };
     /// <summary>¿Tiene esta clase de misión su animación propia? (las que no, el gesto de banco por defecto)</summary>
     public static bool Handles(string kind) => System.Array.IndexOf(Known, kind) >= 0;
 
@@ -55,6 +55,12 @@ public class StepAnimator : MonoBehaviour
             case "sala-limpia": case "seguridad-alimentaria": case "incendios": return G(AreaFunctions.Kind.Clean);   // el extintor: barrer de lado a lado
             case "recepcion": return G(AreaFunctions.Kind.Serve);
             case "control-acceso": case "seguridad-vial": return G(AreaFunctions.Kind.Guard);   // mirar a un lado y a otro
+            // (2026-11-20, PB-166) Vínculos: la amistad, un gesto de cuidado; ser estudiante, estudiar; combatir el fuego a su lado, barrer
+            // con el extintor; proteger, vigilar a un lado y a otro.
+            case "entablar-amistad": return G(AreaFunctions.Kind.Care);
+            case "ser-estudiante": return G(AreaFunctions.Kind.Study);
+            case "combatir-al-lado": return G(AreaFunctions.Kind.Clean);
+            case "proteger": return G(AreaFunctions.Kind.Guard);
             case "dormir": return step >= steps - 1 ? new Motion { type = Motion.Type.Lie } : G(AreaFunctions.Kind.Clean);
             case "yoga": return new Motion { type = Motion.Type.Yoga, sequence = templateId != null && templateId.Contains("saludo") ? "saludo-al-sol" : "upa-cuello", posture = step };
             default: return G(AreaFunctions.Kind.Make);
