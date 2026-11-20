@@ -98,6 +98,17 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | MIC-32 | Probado (suite g86) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g86 MusicaStoryTest 202/0 |
 | MIC-33 | Probado (suite g79) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g79 HistoriasStoryTest 250/0 |
 | UI-01 | Probado (suite g93) | 2026-11-19 | f92acc1 | [runs/2026-11-19-0640-r131-rapida-grupos-vivo-suite.md](runs/2026-11-19-0640-r131-rapida-grupos-vivo-suite.md) | — | r131: g93 HudModalsTest 13/0 |
+| UI-02 | Solo test | 2026-11-20 | — | — | — | compila y JoyConTest g141 8/0 en la ronda del probador del 2026-11-20 (571485a), falta su run log |
+| UI-03 | Solo test | 2026-11-20 | — | — | — | compila y JoyConTest g141 8/0 en la ronda del probador del 2026-11-20 (571485a), falta su run log |
+| UI-04 | Solo test | 2026-11-20 | — | — | — | compila y JoyConTest g141 8/0 en la ronda del probador del 2026-11-20 (571485a), falta su run log |
+| UI-05 | Solo test | 2026-11-20 | — | — | — | compila y JoyConTest g141 8/0 en la ronda del probador del 2026-11-20 (571485a), falta su run log |
+| UI-06 | Solo test | 2026-11-20 | — | — | — | compila y JoyConTest g141 8/0 en la ronda del probador del 2026-11-20 (571485a), falta su run log |
+| UI-07 | Solo test | 2026-11-20 | — | — | — | compila y JoyConTest g141 8/0 en la ronda del probador del 2026-11-20 (571485a), falta su run log |
+| UI-08 | Solo test | 2026-11-20 | — | — | — | compila y JoyConTest g141 8/0 en la ronda del probador del 2026-11-20 (571485a), falta su run log |
+| UI-09 | Solo test | 2026-11-20 | — | — | — | compila y JoyConTest g141 8/0 en la ronda del probador del 2026-11-20 (571485a), falta su run log |
+| UI-10 | Solo test | 2026-11-20 | — | — | — | Grimorio: en código el 2026-11-20, falta compilar y correr g141 |
+| UI-11 | Solo test | 2026-11-20 | — | — | — | Grimorio: en código el 2026-11-20, falta compilar y correr g141 |
+| UI-12 | Solo test | 2026-11-20 | — | — | — | Grimorio: en código el 2026-11-20, falta compilar y correr g141 |
 | YOG-02 | Probado (retro) | 2026-11-12 | d0542db | [runs/2026-11-12-1208-r63-retro.md](runs/2026-11-12-1208-r63-retro.md) | — | auditoría: verificado en vivo 2026-11-12 |
 | ENE-01 | Solo código | — | — | — | — | auditoría: Sin verificar en vivo |
 | ENE-02 | Probado (suite g101) | 2026-11-18 | 40f86d1 | [runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md](runs/2026-11-18-0612-r127-rapida-grupos-vivo-suite.md) | — | r127: g101 EnergyTest 81/0 |

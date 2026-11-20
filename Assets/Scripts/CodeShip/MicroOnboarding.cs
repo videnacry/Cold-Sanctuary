@@ -110,6 +110,7 @@ public class MicroOnboarding : MonoBehaviour
 
     void OnGUI()
     {
+        CsTheme.Use();   // (2026-11-19) el tema de CodeShip para los menús (UI/CsTheme.cs)
         if (Step < 0 || ColdSanctuary.TestRunner.Running || CodeChallengeSheet.IsOpen) return;
         bool big = HudModals.Current == HudModals.Modal.Tareas || HudModals.Current == HudModals.Modal.Areas || HudModals.Current == HudModals.Modal.Misiones;
         if (big) return;

@@ -65,16 +65,17 @@ public class ChoiceDialog : MonoBehaviour
             if (_player == null) { GameObject p = GameObject.FindGameObjectWithTag("Player"); _player = p != null ? p.transform : null; }
             if (_player != null) { Vector3 d = _player.position - _anchor.position; d.y = 0f; if (d.magnitude > _radius) { Close(); return; } }
         }
-        if (!_open || Time.frameCount == _openedFrame || _options.Length == 0 && !Input.GetKeyDown(KeyCode.Escape)) return;
-        if (Input.GetKeyDown(KeyCode.Escape)) { Action c = _onCancel; Close(); c?.Invoke(); return; }
-        if (Input.GetKeyDown(KeyCode.DownArrow)) _sel = (_sel + 1) % _options.Length;
-        if (Input.GetKeyDown(KeyCode.UpArrow)) _sel = (_sel - 1 + _options.Length) % _options.Length;
-        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)) Pick(_sel);
+        if (!_open || Time.frameCount == _openedFrame || _options.Length == 0 && !GameKeys.UiKeyDown(KeyCode.Escape)) return;
+        if (GameKeys.UiKeyDown(KeyCode.Escape)) { Action c = _onCancel; Close(); c?.Invoke(); return; }
+        if (GameKeys.UiKeyDown(KeyCode.DownArrow)) _sel = (_sel + 1) % _options.Length;
+        if (GameKeys.UiKeyDown(KeyCode.UpArrow)) _sel = (_sel - 1 + _options.Length) % _options.Length;
+        if (GameKeys.UiKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)) Pick(_sel);
     }
 
     GUIStyle _btn, _btnOn, _head;
     void OnGUI()
     {
+        CsTheme.Use();   // (2026-11-19) el tema de CodeShip para los menús (UI/CsTheme.cs)
         if (!_open) return;
         if (_btn == null)
         {

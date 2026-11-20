@@ -6,7 +6,7 @@ Cada petición de Berón, con su número fijo. **Una petición nueva entra el mi
 El **estado no se escribe a mano**: sale de sus casos en [registro.md](registro.md) (lo comprueba el comprobador):
 `Hecha` si todos sus casos están `Probado (…)`; `Doc` si solo pedía un doc o una regla; `Sin verificar` si alguno está en `Solo código` o `Sin probar`; `Abierta` si tiene un `HC` o le falta código.
 
-Las PB-001…PB-155 vienen de [auditoria-peticiones.md](../auditoria-peticiones.md) (el número es el mismo). Desde la PB-156 se anotan aquí directamente. La siguiente libre es **PB-167**.
+Las PB-001…PB-155 vienen de [auditoria-peticiones.md](../auditoria-peticiones.md) (el número es el mismo). Desde la PB-156 se anotan aquí directamente. La siguiente libre es **PB-168**.
 
 | PB | Fecha | Petición | Reglas | Casos | Estado | Origen |
 |---|---|---|---|---|---|---|
@@ -176,5 +176,6 @@ Las PB-001…PB-155 vienen de [auditoria-peticiones.md](../auditoria-peticiones.
 | PB-164 | 2026-11-18 | El bonusPack N suma las stats de la criatura más poderosa del santuario N (cierra HC-01) | — | PER-25 | Abierta | En curso (Berón 2026-11-18 21:34); en código en 75cf93f (claude/peticiones-sonda), falta verlo en vivo (RepartoSantuariosTest, ChecklistSoulTest [1189]) |
 | PB-165 | 2026-11-19 | Rehacer desde cero el distrito de Hawthorne 2008 (Musk): distrito denso tipo GTA sin el piso del árbol-edificio, cada edificio investigado y detallado como el restaurante/gym/hospital del santuario 1, muebles/objetos/puertas ×2–×3 con la misma separación, solo mobiliario de insecto-humano donde lo usan insectos-humanos; luego retos de código y jornadas | — | MIC-87, MIC-93, HC-05 | Abierta | En curso (hilo «Rehacer distrito Hawthorne desde cero») |
 | PB-166 | 2026-11-19 | En el microcosmos todo se hace por retos, también los diálogos: misiones de entablar amistad con personajes, ser sus estudiantes, combatir a su lado o protegerles; muchas requieren un diálogo, que es un reto más; los retos de diálogo enseñan la historia real del escenario | — | CS-97, CS-98, HC-06 | Abierta | Berón 2026-11-19 19:10 (hilo «Rehacer distrito Hawthorne desde cero») |
+| PB-167 | 2026-11-19 | Móvil: mandos de la Nintendo Switch dibujados sobre la pantalla (como CodeShip) y menús estéticos como los de CodeShip; (2026-11-20) botón de Grimorio: una ventana con todos los hechizos, que se lanzan resolviendo su reto de código | — | UI-02, UI-03, UI-04, UI-05, UI-06, UI-07, UI-08, UI-09, UI-10, UI-11, UI-12 | Abierta | En `claude/project-thread-n17elb` (PR #310, docs/mandos-tactiles.md): mandos y tema compilan y g141 8/0 (2026-11-20); el Grimorio, en código |
 
-**Recuento:** Abierta 9 · Doc 8 · Hecha 124 · Sin verificar 24 · total 165.
+**Recuento:** Abierta 11 · Doc 8 · Hecha 124 · Sin verificar 24 · total 167.

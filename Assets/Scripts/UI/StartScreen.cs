@@ -166,6 +166,7 @@ public class StartScreen : MonoBehaviour
 
     void OnGUI()
     {
+        CsTheme.Use();   // (2026-11-19) el tema de CodeShip para los menús (UI/CsTheme.cs)
         Styles();
         float sc = Mathf.Clamp(Screen.height / 640f, 0.7f, 3f);   // todo cabe también en ventanas bajas (el botón de repetir se cortaba)
         GUI.matrix = Matrix4x4.Scale(new Vector3(sc, sc, 1f));

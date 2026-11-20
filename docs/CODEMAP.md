@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 1034 tipos._
+_Total: 1038 tipos._
 
 
 ## Animals
@@ -401,6 +401,7 @@ _Total: 1034 tipos._
 - **CreatureRig** (class) — `Assets/Scripts/Avatar/CreatureRig.cs` — Mapa CENTRAL de un ser (docs/stats-as-truth.md §Composición):
 - **CriaCareTarget** (class) — `Assets/Scripts/Prologue/CriaCareTarget.cs` — Engancha la rutina de cuidado a los DRIVES REALES de una cría (`Animal`) — docs/cria-simulation.md §2/§3, fauna-gameplay.md.
 - **CriaFeeder** (class) — `Assets/Scripts/Prologue/CriaFeeder.cs` — TOMAS PROGRAMADAS de un recinto de la Cría (docs/cria-simulation.md):
+- **CsTheme** (class) — `Assets/Scripts/UI/CsTheme.cs` — EL TEMA DE LOS MENÚS (2026-11-19, Berón:
 - **CubeBody** (class) — `Assets/Scripts/Avatar/CubeBody.cs` — MODELO CORPORAL DE CUBOS (estilo Minecraft) — construye el cuerpo de un anyma como un GRUPO DE CUBOS, uno por PARTE del cuerpo (`BodyPart`), y **cablea el `CreatureRig`** para que las **asanas/yoga** 
 - **CubeCreature** (class) — `Assets/Scripts/Avatar/CubeCreature.cs` — FAUNA DE CUBOS CON HUESOS (docs/anyma-factory-and-control §1):
 - **CubeFace** (class) — `Assets/Scripts/Avatar/CubeFace.cs` — CARA DE CUBOS con EXPRESIONES:
@@ -521,6 +522,7 @@ _Total: 1034 tipos._
 - **GriefSpell** (class) — `Assets/Scripts/Microcosmos/GriefSpell.cs` — DUELO (docs/apremios-guardian-observacion.md §3, microcosmos-level1 §Beats) — el hechizo-estado de la pérdida:
 - **Grimoire** (class) — `Assets/Scripts/Transformation/Grimoire.cs` — GRIMORIO — registro de hechizos APRENDIDOS por un `Anima` (docs/magic-metabolism-progression.md).
 - **GrimoireTest** (class) — `Assets/Scripts/GrimoireTest.cs` — Unidad de test del REPERTORIO de doble vía (docs/capabilities-and-embodiment.md §2), por `TestProbe`.
+- **Grimorio** (class) — `Assets/Scripts/Control/Grimorio.cs` — EL GRIMORIO (2026-11-20, Berón:
 - **GroundGuard** (class) — `Assets/Scripts/Player/GroundGuard.cs` — SALVAGUARDA DE SUELO:
 - **GroupAnimalsTest** (class) — `Assets/Scripts/Tests/GroupAnimalsTest.cs` — PRUEBA DE LOS GRUPOS DE ANIMALES (Berón 2026-11-03; docs/grupos-de-animales.md):
 - **GuardBoard** (class) — `Assets/Scripts/World/GuardBoard.cs` — TABLERO DE GUARDIA (en la sala de guardia, docs/sala-de-guardia.md):
@@ -617,6 +619,8 @@ _Total: 1034 tipos._
 - **JeetKuneDo** (class) — `Assets/Scripts/Asana/JeetKuneDo.cs` — LAS TÉCNICAS DE BRUCE LEE en el cuerpo de cubos (docs/microcosmos-bruce-lee.md §3):
 - **JornadaSaberTest** (class) — `Assets/Scripts/Tests/JornadaSaberTest.cs` — PRUEBA DEL MODELO JORNADA/TAREA (Berón 2026-11-05; docs/jornada-y-rotacion.md):
 - **JornadaTest** (class) — `Assets/Scripts/Tests/JornadaTest.cs` — PRUEBA EN VIVO DE LA JORNADA DE KUSHAL (Berón 2026-10-29:
+- **JoyConMap** (class) — `Assets/Scripts/Control/JoyConMap.cs` — LOS MANDOS DE LA SWITCH, COMO DATOS (2026-11-19, Berón:
+- **JoyConTest** (class) — `Assets/Scripts/Tests/JoyConTest.cs` — PRUEBA DE LOS MANDOS TÁCTILES TIPO SWITCH Y EL GRIMORIO (grupo 141; docs/mandos-tactiles.md, Berón 2026-11-19:
 - **KitchenBoss** (class) — `Assets/Scripts/World/KitchenBoss.cs` — GOLUIS, el ENCARGADO de la cocina (Berón 2026-11-08; los rangos más altos son Maite y Amykhuz; docs/kitchen-simulation.md).
 - **KitchenCook** (class) — `Assets/Scripts/Kitchen/KitchenCook.cs` — COCINERO VISIBLE (docs/kitchen-simulation.md §3:
 - **KitchenFireMission** (class) — `Assets/Scripts/Microcosmos/KitchenFireMission.cs` — Misión "llevar la comida a la cueva" — Microcosmos de la Cocina (era pre-fuego).
@@ -975,7 +979,7 @@ _Total: 1034 tipos._
 - **TimeController** (class) — `Assets/Scripts/Time/Time.cs`
 - **TimeTest** (class) — `Assets/Scripts/Time/TimeTest.cs`
 - **Toolbox** (class) — `Assets/Scripts/Virtualization/Toolbox.cs` — Las HERRAMIENTAS del jugador para reparar (docs/forge-simulation.md §5).
-- **TouchControls** (class) — `Assets/Scripts/Control/TouchControls.cs` — CONTROLES TÁCTILES (2026-11-13, web ligera:
+- **TouchControls** (class) — `Assets/Scripts/Control/TouchControls.cs` — CONTROLES TÁCTILES:
 - **TourStation** (class) — `Assets/Scripts/Kitchen/TourStation.cs` — Una parada del paseo guiado (docs/kitchen-simulation.md §1):
 - **TraceChannel** (enum) — `Assets/Scripts/World/TraceField.cs` — Canales de rastro/subproducto (docs/environmental-navigation.md §4.2).
 - **TraceFieldTest** (class) — `Assets/Scripts/TraceFieldTest.cs` — Sandbox AUTOEJECUTABLE de la rejilla de feromonas (`TraceField`), reportando por `TestProbe` (PASS/FAIL en `Editor.log`, grep `[TEST]`).

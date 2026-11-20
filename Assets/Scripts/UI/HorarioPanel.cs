@@ -40,6 +40,7 @@ public class HorarioPanel : MonoBehaviour
 
     void OnGUI()
     {
+        CsTheme.Use();   // (2026-11-19) el tema de CodeShip para los menús (UI/CsTheme.cs)
         LeisureDirector ld = LeisureDirector.Instance;
         if (ld == null) return;
         if (_st == null)

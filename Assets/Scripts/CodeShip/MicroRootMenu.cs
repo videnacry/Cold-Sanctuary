@@ -247,6 +247,7 @@ public class MicroRootMenu : MonoBehaviour
     // ── El dibujo ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────
     void OnGUI()
     {
+        CsTheme.Use();   // (2026-11-19) el tema de CodeShip para los menús (UI/CsTheme.cs)
         if (ColdSanctuary.TestRunner.Running || GameKeys.MenuOpen || !Available) return;
         if (CodeChallengeSheet.IsOpen) return;   // con un reto, solo la hoja y la escena
         if (_btn == null)

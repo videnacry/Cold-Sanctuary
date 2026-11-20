@@ -28,6 +28,9 @@ build** (`BuildPlayerOptions.extraScriptingDefines`: el editor y el Play no camb
   - botones **E** (hablar, atender), **F** (usar), **Intro** (seguir una tarjeta), **Saltar** y **Correr** (se queda puesto).
 
   Los menús IMGUI se tocan como clics.
+
+  **(2026-11-19)** Los botones pasan a ser los **Joy-Con de la Switch** (16 botones, como CodeShip) y los menús llevan el tema de
+  CodeShip (`CsTheme`): ver [mandos-tactiles.md](mandos-tactiles.md).
 - **Microcosmos ligero**: al arrancar, Kushal entra directo en **Siddhārtha en Kapilavastu** (`Microcosmos_Buda`, por `MobWorldLoader`,
   como Inicio). Mientras está dentro, la fauna del santuario (de fondo) se pone en pausa; vuelve al salir por el portal.
   - **Por qué Buda:** es el microcosmos con más sistemas probados en vivo. Tiene su historia y misión, la gente que anda a sus puestos por

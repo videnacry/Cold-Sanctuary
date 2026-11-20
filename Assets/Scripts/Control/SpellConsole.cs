@@ -1028,6 +1028,56 @@ public class SpellConsole : MonoBehaviour
     }
 
     // El anima que el jugador MANEJA ahora (su AnimaController.Active es un PlayerBrain).
+    // ── (2026-11-20) EL GRIMORIO (móvil, docs/mandos-tactiles.md §5): todos los hechizos en una ventana, lanzados resolviendo su reto ──
+    /// <summary>Los hechizos de prueba o de administrador: el Grimorio los pone aparte.</summary>
+    public static readonly HashSet<string> AdminSpells = new HashSet<string> { "reemplazar", "admin", "tercera", "miembro", "arbol", "piso" };
+    /// <summary>Todos los hechizos que el lanzador conoce (nombre y plantilla con sus parámetros por defecto).</summary>
+    public static IReadOnlyList<(string name, string template)> Catalog => Spells;
+    /// <summary>¿El que manda el jugador conoce este hechizo? (los aprendidos del Grimoire, o todos con el lanzador admin)</summary>
+    public static bool PlayerKnows(string spell) => KnowsSpell(PossessedAnima(), spell);
+    public static bool HasPossessed => PossessedAnima() != null;
+
+    static SpellConsole Instance()
+    {
+        SpellConsole c = FindAnyObjectByType<SpellConsole>();
+        if (c != null) return c;
+        var go = new GameObject("SpellConsole_AUTO");
+        DontDestroyOnLoad(go);
+        return go.AddComponent<SpellConsole>();
+    }
+
+    /// <summary>La línea lista para lanzar un hechizo sin escribir: sus parámetros por defecto, y el destino vacío relleno con lo que
+    /// sugiere su interés (la misión de ahora, la persona más cercana…); si no hay sugerencia, el destino se deja al hechizo.</summary>
+    public static string LineFor(string spell)
+    {
+        string template = spell;
+        foreach (var e in Spells) if (e.name == spell) { template = e.template; break; }
+        var defs = ParseParams(template);
+        if (defs.Count == 0) return spell + "()";
+        SpellConsole c = Instance();
+        var parts = new List<string>();
+        foreach (var d in defs)
+        {
+            string v = d.def;
+            if (v.Length == 0 && (d.key == "destiny" || d.key == "item")) { List<string> vs = c.ValueSuggestions(d.key, "", ""); v = vs.Count > 0 ? vs[0] : ""; }
+            if (v.Length == 0) continue;
+            bool raw = v == "true" || v == "false" || float.TryParse(v, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out _);
+            parts.Add($"{d.key}:{(raw ? v : "\"" + v + "\"")}");
+        }
+        return parts.Count == 0 ? spell + "()" : $"{spell}({{{string.Join(", ", parts)}}})";
+    }
+
+    /// <summary>Lanza una línea desde la UI (el Grimorio), sin abrir el lanzador. Devuelve lo que contestó el hechizo.</summary>
+    public static string CastFromUi(string line)
+    {
+        SpellConsole c = Instance();
+        int before = c._logSeq;
+        c.Dispatch(line);
+        string answer = c._logSeq != before ? c._log[c._log.Count - 1] : $"Lanzado: {line}";
+        c.Feedback(answer);
+        return answer;
+    }
+
     static Anima PossessedAnima()
     {
         foreach (AnimaController ac in FindObjectsOfType<AnimaController>())
