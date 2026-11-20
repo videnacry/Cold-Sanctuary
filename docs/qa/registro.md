@@ -452,6 +452,8 @@ Una evidencia **caduca** si `TestImpact` dice que un commit posterior toca su gr
 | CS-82 | Probado (suite g120) | 2026-11-19 | f92acc1 | [runs/2026-11-19-0640-r131-rapida-grupos-vivo-suite.md](runs/2026-11-19-0640-r131-rapida-grupos-vivo-suite.md) | — | r131: check [CS-82] PASS ×1 |
 | CS-83 | Probado (suite g120) | 2026-11-19 | f92acc1 | [runs/2026-11-19-0640-r131-rapida-grupos-vivo-suite.md](runs/2026-11-19-0640-r131-rapida-grupos-vivo-suite.md) | — | r131: check [CS-83] PASS ×1 |
 | CS-96 | Probado (suite g120) | 2026-11-19 | f92acc1 | [runs/2026-11-19-0640-r131-rapida-grupos-vivo-suite.md](runs/2026-11-19-0640-r131-rapida-grupos-vivo-suite.md) | — | r131: check [CS-96] PASS ×1 |
+| CS-97 | Solo código | — | — | — | — | PB-166: MissionLibrary.Vinculos.cs |
+| CS-98 | Solo código | — | — | — | — | PB-166: CodeChallenges (Musk y el técnico) |
 | CS-88 | Probado (suite g120) | 2026-11-19 | f92acc1 | [runs/2026-11-19-0640-r131-rapida-grupos-vivo-suite.md](runs/2026-11-19-0640-r131-rapida-grupos-vivo-suite.md) | — | r131: g120 ChoreLibraryTest 32/0 |
 
 **Recuento:** No aplica 8 · Parcial 9 · Probado (retro) 285 · Sin probar 31 · Solo código 16 · total 349.

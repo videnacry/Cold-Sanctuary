@@ -200,7 +200,7 @@ public class StationMissions : MonoBehaviour
             GameObject p = GameObject.FindGameObjectWithTag("Player");
             CharacterLevel lv = p != null ? p.GetComponent<CharacterLevel>() : null;
             if (lv == null) lv = FindFirstObjectByType<CharacterLevel>();
-            if (lv != null) { float xp = 10f + 4f * run.Steps; if (m.template.kind == "yoga") lv.GainYogaXp(xp); else lv.GainStatsXp(xp); }
+            if (lv != null) { float xp = 10f + 4f * run.Steps; if (m.template.kind == "yoga") lv.GainYogaXp(xp); else if (m.template.category == ChoreCategory.Vinculos) lv.GainBondXp(xp); else lv.GainStatsXp(xp); }   // (PB-166) amistad, estudiante, combatir al lado, proteger: marga de Vínculos
             HudNotices.Push($"✓ Misión hecha: {m.template.title}", HudNotices.Kind.Good);
         }
         else if (run.Status == ChoreRun.State.Failed)
@@ -224,5 +224,6 @@ public class StationMissions : MonoBehaviour
     }
 
     public static string CategoryLabel(ChoreCategory c) => c == ChoreCategory.Comida ? "Comida" : c == ChoreCategory.Plantas ? "Campo" : c == ChoreCategory.Animales ? "Animales"
-        : c == ChoreCategory.Taller ? "Taller" : c == ChoreCategory.Salud ? "Salud" : c == ChoreCategory.Ciencia ? "Ciencia" : c == ChoreCategory.Seguridad ? "Seguridad" : "Ideas";
+        : c == ChoreCategory.Taller ? "Taller" : c == ChoreCategory.Salud ? "Salud" : c == ChoreCategory.Ciencia ? "Ciencia" : c == ChoreCategory.Seguridad ? "Seguridad"
+        : c == ChoreCategory.Vinculos ? "Personas" : "Ideas";
 }

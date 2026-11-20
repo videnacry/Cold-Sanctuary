@@ -529,6 +529,8 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | CS-82 | CS | cada sitio nuevo de Hawthorne (lote 2) tiene su misión, por su nombre exacto | ChoreLibraryTest | 120 | — | PB-163 | claude/ui-codeship (sitios del lote 2 de Hawthorne, docs/microcosmos-musk-historia.md §4); añadido el 2026-11-18 |
 | CS-83 | CS | las clases nuevas: soldar, ensayos, datos, sala limpia, comida segura, recibir, garita, incendios, cruzar y la pista | ChoreLibraryTest | 120 | — | PB-163 | claude/ui-codeship (sitios del lote 2 de Hawthorne, docs/microcosmos-musk-historia.md §4); añadido el 2026-11-18 |
 | CS-96 | CS | la FSW, el gesto del banco; la garita y el cruce, mirar a un lado y a otro; el extintor, barrer de lado a lado | ChoreLibraryTest | 120 | — | PB-163 | claude/ui-codeship (sitios del lote 2 de Hawthorne, docs/microcosmos-musk-historia.md §4); añadido el 2026-11-18 |
+| CS-97 | CS | misiones de vínculo (amistad, estudiante, combatir al lado, proteger) con ≥ 3 retos de diálogo cada una, con quien habla y lo que pasó de verdad | ChoreLibraryTest | 120 | — | PB-166 | hilo «Rehacer distrito Hawthorne desde cero»; añadido el 2026-11-20 |
+| CS-98 | CS | la historia de Musk lleva retos de diálogo con su fuente | ChoreLibraryTest | 120 | — | PB-166 | hilo «Rehacer distrito Hawthorne desde cero»; añadido el 2026-11-20 |
 | CS-88 | CS | con los sitios del lote 2, gimnasio, yoga, botiquín, perro y los puestos nuevos ya no son marcadores «supuesto» | ChoreLibraryTest | 120 | — | PB-163 | claude/ui-codeship (sitios del lote 2 de Hawthorne, docs/microcosmos-musk-historia.md §4); añadido el 2026-11-18 |
 
 ## Bugs y huecos

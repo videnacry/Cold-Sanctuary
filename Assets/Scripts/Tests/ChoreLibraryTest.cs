@@ -58,6 +58,21 @@ public class ChoreLibraryTest : MonoBehaviour, ITestUnit
         bool everyCat = true;
         foreach (ChoreCategory c in System.Enum.GetValues(typeof(ChoreCategory))) if (!MissionLibrary.All.Exists(t => t.category == c)) everyCat = false;
         TestProbe.Check("[CS-53] cada grupo de la lista de tareas tiene alguna misión", everyCat);
+        // (2026-11-19, PB-166) Todo por retos, también los diálogos: misiones de vínculo con su conversación como retos que enseñan la historia.
+        string[] bonds = { "entablar-amistad", "ser-estudiante", "combatir-al-lado", "proteger" };
+        string bondBad = "";
+        foreach (string k in bonds)
+        {
+            ChoreTemplate t = MissionLibrary.All.Find(x => x.kind == k);
+            if (t == null) { bondBad += $"falta «{k}»; "; continue; }
+            int talks = 0;
+            foreach (CodeExercise e in t.exercises) if (e.dialogue) { talks++; if (string.IsNullOrEmpty(e.speaker) || string.IsNullOrEmpty(e.explain) || e.options.Length < 2) bondBad += $"{e.id} incompleto; "; }
+            if (talks < 3) bondBad += $"{t.id}: {talks} retos de diálogo (< 3); ";
+            if (t.category != ChoreCategory.Vinculos) bondBad += $"{t.id} fuera de Vínculos; ";
+        }
+        TestProbe.Check("[CS-97] misiones de vínculo (amistad, estudiante, combatir al lado, proteger) con ≥ 3 retos de diálogo cada una, con quien habla y lo que pasó de verdad", bondBad.Length == 0, bondBad);
+        int storyTalks = CodeChallenges.ForScene("Microcosmos_ElonMusk").FindAll(x => x.exercise.dialogue && !string.IsNullOrEmpty(x.exercise.source)).Count;
+        TestProbe.Check("[CS-98] la historia de Musk lleva retos de diálogo con su fuente (hablar también es un reto)", storyTalks >= 2, $"{storyTalks}");
     }
 
     static CodeBlock B(string id) => new CodeBlock { id = id, pseudo = id, js = id + "();" };

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 /// <summary>Los grupos de la lista de tareas de CodeShip (chore.ts CHORE_CATEGORY), más el taller de los puestos de trabajo y las ideas.</summary>
-public enum ChoreCategory { Comida, Plantas, Animales, Taller, Salud, Ideas, Ciencia, Seguridad }
+public enum ChoreCategory { Comida, Plantas, Animales, Taller, Salud, Ideas, Ciencia, Seguridad, Vinculos }
 
 /// <summary>
 /// UNA PLANTILLA DE MISIÓN POR RETOS DE CÓDIGO (portada de CodeShip, src/modules/chores/domain/chore.ts y application/catalog.ts): una tarea que
@@ -225,6 +225,15 @@ public static class ChoreKit
         int at = (int)(Hash(id) % (uint)(opts.Count + 1));
         opts.Insert(at, right);
         return new CodeExercise { id = id, kind = CodeExercise.Kind.Choice, concept = concept, skill = skill, idea = idea, question = question, blocks = code ?? new CodeBlock[0], options = opts.ToArray(), correct = at };
+    }
+
+    /// <summary>(PB-166) Un turno de DIÁLOGO como reto: <paramref name="speaker"/> dice <paramref name="line"/> y hay que elegir la respuesta que
+    /// encaja con lo que pasó de verdad (la buena, en un sitio estable). <paramref name="explain"/> cuenta la historia al acertar.</summary>
+    public static CodeExercise Say(string id, string speaker, string line, string right, IList<string> wrong, string explain, int concept = 1)
+    {
+        CodeExercise e = Choice(id, concept, CodeSkill.Completar, "", line, new CodeBlock[0], right, wrong);
+        e.dialogue = true; e.speaker = speaker; e.explain = explain;
+        return e;
     }
 
     static readonly System.Text.RegularExpressions.Regex Param = new System.Text.RegularExpressions.Regex(@"\{([^}]+)\}");

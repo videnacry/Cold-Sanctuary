@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 1038 tipos._
+_Total: 1039 tipos._
 
 
 ## Animals
@@ -729,6 +729,7 @@ _Total: 1038 tipos._
 - **MissionCategory** (enum) — `Assets/Scripts/Meditation/MobMission.cs` — Category of mental practice a mission belongs to.
 - **MissionEndMode** (enum) — `Assets/Scripts/Meditation/MeditationMissionBase.cs` — How a mission finishes.
 - **MissionLibrary** (class) — `Assets/Scripts/CodeShip/Chores/MissionLibrary.Hawthorne.cs` — LAS MISIONES DE LOS SITIOS NUEVOS DE HAWTHORNE (lote 2; docs/microcosmos-musk-historia.md §4; Berón 2026-11-18:
+- **MissionLibrary** (class) — `Assets/Scripts/CodeShip/Chores/MissionLibrary.Vinculos.cs` — LAS MISIONES DE VÍNCULO DE HAWTHORNE (2026-11-19, PB-166; Berón:
 - **MissionLibrary** (class) — `Assets/Scripts/CodeShip/Chores/MissionLibrary.cs` — LA BIBLIOTECA DE MISIONES POR RETOS DE CÓDIGO (portada de CodeShip origin/integracion:
 - **MissionRequirements** (class) — `Assets/Scripts/Progression/MissionRequirements.cs` — LOS REQUISITOS DE CADA MISIÓN (Berón 2026-11-05; docs/jornada-y-rotacion.md §Requisitos):
 - **MissionSelectMenu** (class) — `Assets/Scripts/Meditation/MissionSelectMenu.cs` — The list of available mob-missions, shown OVER the black screen (docs §3).

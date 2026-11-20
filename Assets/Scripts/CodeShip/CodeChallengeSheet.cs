@@ -124,7 +124,7 @@ public class CodeChallengeSheet : MonoBehaviour
             // Lo que estaba bien se queda; lo demás vuelve abajo (como en CodeShip, paso a paso).
             s._picked.RemoveRange(good, s._picked.Count - good);
         }
-        else s._feedback = "✗ No es esa. Lee otra vez el código.";
+        else s._feedback = s._ex.dialogue ? "✗ Eso no encaja con lo que pasó. Escucha otra vez." : "✗ No es esa. Lee otra vez el código.";
         return false;
     }
 
@@ -152,7 +152,7 @@ public class CodeChallengeSheet : MonoBehaviour
             _feedback = (good == 0 ? "✗ No: el primer bloque ya no va ahí. " : $"✗ No del todo: {(good == 1 ? "el primer bloque está bien" : $"los {good} primeros están bien")}. ") + left;
             _picked.RemoveRange(Mathf.Min(good, _picked.Count), _picked.Count - Mathf.Min(good, _picked.Count));
         }
-        else _feedback = "✗ No es esa. " + left;
+        else _feedback = (_ex.dialogue ? "✗ Eso no encaja con lo que pasó. " : "✗ No es esa. ") + left;
         return false;
     }
 
@@ -209,11 +209,11 @@ public class CodeChallengeSheet : MonoBehaviour
         GUI.Box(r, ""); GUI.Box(r, ""); GUI.Box(r, "");   // tres capas: opaca de verdad (CodeShip: las barras casi transparentes no se leían)
 
         // Cabecera: título, JS, ✕ (a la medida del dedo).
-        string kind = _ex.kind == CodeExercise.Kind.Order ? "ordenar" : SkillName(_ex.skill);
-        string head = _run == null ? $"<b>Reto de código</b> · {kind}" : $"<b>{_runTitle}</b> · reto {Mathf.Min(_run.Step + 1, _run.Steps)} de {_run.Steps} · {kind}";
+        string kind = _ex.dialogue ? "diálogo con " + _ex.speaker : _ex.kind == CodeExercise.Kind.Order ? "ordenar" : SkillName(_ex.skill);
+        string head = _run == null ? $"<b>{(_ex.dialogue ? "Reto de diálogo" : "Reto de código")}</b> · {kind}" : $"<b>{_runTitle}</b> · reto {Mathf.Min(_run.Step + 1, _run.Steps)} de {_run.Steps} · {kind}";
         GUI.Label(new Rect(r.x + pad, r.y + 6f, w - 3f * row - 3f * pad, row), head, _head);
         if (_run != null) DrawProgress(new Rect(r.x + pad, r.y + row + 4f, w - 2f * pad, 6f));
-        if (GUI.Button(new Rect(r.xMax - 2f * row - 2f * pad - row * 0.6f, r.y + 6f, row * 1.6f, row), _js ? "Pseudo" : "JS")) _js = !_js;
+        if (!_ex.dialogue && GUI.Button(new Rect(r.xMax - 2f * row - 2f * pad - row * 0.6f, r.y + 6f, row * 1.6f, row), _js ? "Pseudo" : "JS")) _js = !_js;
         if (GUI.Button(new Rect(r.xMax - row - pad, r.y + 6f, row, row), "✕")) { Close(); return; }
 
         var inner = new Rect(r.x + pad, r.y + row + 12f, w - 2f * pad, h - row * 2.4f - 20f);
@@ -221,7 +221,12 @@ public class CodeChallengeSheet : MonoBehaviour
         _scroll = GUILayout.BeginScrollView(_scroll);
         if (_run != null && _run.Step == 0 && _run.Mistakes == 0 && _runScenario.Length > 0) GUILayout.Label($"<color=#B8C0C8>{_runScenario}</color>", _small);
         if (!string.IsNullOrEmpty(_ex.idea)) GUILayout.Label($"<i>{_ex.idea}</i>", _small);
-        GUILayout.Label(_ex.question, _txt);
+        if (_ex.dialogue)   // (PB-166) un turno de la conversación: quien habla, lo que dice, y elegir qué responderle
+        {
+            GUILayout.Label($"<b>{_ex.speaker}</b>: «{_ex.question}»", _txt);
+            GUILayout.Label("<i>¿Qué le respondes?</i>", _small);
+        }
+        else GUILayout.Label(_ex.question, _txt);
         GUILayout.Space(6f);
         if (_ex.kind == CodeExercise.Kind.Order) DrawOrder(row); else DrawChoice(row);
         if (_feedback.Length > 0)

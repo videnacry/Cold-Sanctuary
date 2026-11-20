@@ -54,7 +54,7 @@ Ramas (2026-11-18): la integración es `claude/edificios` (por delante de `maste
 | PB-155 | 11-09 | ¿Por qué pesa más que GTA 5? 395 ms por fotograma en scripts: medir y bajar | [web-ligera.md](web-ligera.md), [known-issues.md](known-issues.md) |
 | PB-160 | 11-18 | Realismo de los microcosmos: fases 2–4 (§1 filas 1–2) | [plan-microcosmos-realismo.md](plan-microcosmos-realismo.md) |
 | PB-161 | 11-18 | Retos de código en el resto de microcosmos (§1 fila 3) | plan §4 |
-| PB-166 | 11-19 | Todo en el microcosmos por retos, también los diálogos: misiones de amistad, ser estudiante, combatir a su lado o proteger; los retos de diálogo enseñan la historia real del escenario (primero en Hawthorne) | [hawthorne-distrito.md](hawthorne-distrito.md) §4.5 |
+| PB-166 | 11-19 | Todo en el microcosmos por retos, también los diálogos: misiones de amistad, ser estudiante, combatir a su lado o proteger; los retos de diálogo enseñan la historia real del escenario (primero en Hawthorne). Hecho en Hawthorne: 4 misiones de vínculo + 2 diálogos en la historia (falta probar en vivo y extender al resto de microcosmos) | [hawthorne-distrito.md](hawthorne-distrito.md) §4.5 |
 
 ## 4. Programado pero sin verificar en vivo
 

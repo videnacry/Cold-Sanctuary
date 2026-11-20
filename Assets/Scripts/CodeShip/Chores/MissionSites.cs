@@ -91,6 +91,11 @@ public static class MissionSites
             N("incendios-hidrante", "Hidrante"),
             N("cruzar-crenshaw", "Cruce de Crenshaw Boulevard y Rocket Road (semáforos)"),
             N("pista-hawthorne", "Aparcamiento de SpaceX"),   // el aeropuerto es fondo (no se pisa): su pista se lee desde el aparcamiento
+            // (2026-11-19, PB-166) Misiones de VÍNCULO con retos de diálogo: el personaje, por su nombre (el marcador, junto a su puesto, si falta).
+            new Binding { template = "amistad-ingeniera-propulsion", names = new[] { "Ingeniera de propulsión (Medea)", "Ingeniera de propulsión" }, fallback = "Ingeniera de propulsión (supuesto)", anchor = new[] { "Consola de datos del vuelo 3" }, offset = new Vector3(1.5f, 0f, -1.5f) },
+            new Binding { template = "estudiante-director-lanzamiento", names = new[] { "Director de lanzamiento (Héspero)", "Director de lanzamiento" }, fallback = "Director de lanzamiento (supuesto)", anchor = new[] { "Control de misión" }, offset = new Vector3(1.5f, 0f, 0f) },
+            new Binding { template = "combatir-incendio-bombera", names = new[] { "Bombera de la estación 162", "Bombero de la estación 162" }, buildings = new[] { "Comisaría" }, fallback = "Bombera de la estación 162 (supuesto)", anchor = new[] { "Hidrante" }, offset = new Vector3(2f, 0f, 0f) },
+            new Binding { template = "proteger-tecnico-cansancio", names = new[] { "Técnico de la nave (Atlas)", "Técnico de la nave" }, fallback = "Técnico de la nave (supuesto)", anchor = new[] { "Nave de montaje" }, offset = new Vector3(0f, 0f, 2f) },
         };
     }
 }

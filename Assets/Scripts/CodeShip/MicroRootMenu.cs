@@ -111,7 +111,7 @@ public class MicroRootMenu : MonoBehaviour
         var work = new Branch { label = "Trabajar" };
         TaskEntry job = MicroTaskWindows.Tasks.Find(t => t.group == TaskEntry.Group.Jornada && t.CanGo);
         if (job != null) work.leaves.Add(new Leaf { label = $"▶ {job.title} · {TaskEntry.DistanceText(job.distance)}", act = () => MicroTaskWindows.Go(job) });
-        Stations(work, at, c => c != ChoreCategory.Salud, 6);
+        Stations(work, at, c => c != ChoreCategory.Salud && c != ChoreCategory.Vinculos, 6);
         if (player != null)
         {
             var stations = new List<(AreaFunctionStation st, float d)>();
@@ -130,6 +130,11 @@ public class MicroRootMenu : MonoBehaviour
             }
         }
         Add(work);
+
+        // PERSONAS (2026-11-19, PB-166): hacerse amigo, ser estudiante, luchar a su lado o protegerle; cada conversación, retos de diálogo.
+        var personas = new Branch { label = "Personas" };
+        Stations(personas, at, c => c == ChoreCategory.Vinculos, 6);
+        Add(personas);
 
         // NECESIDADES: en la casa más cercana.
         var needs = new Branch { label = "Necesidades" };

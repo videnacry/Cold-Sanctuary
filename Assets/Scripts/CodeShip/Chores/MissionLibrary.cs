@@ -59,6 +59,7 @@ public static partial class MissionLibrary
         Workshop();
         Ideas();
         Hawthorne();   // (2026-11-18) los sitios del lote 2 de Hawthorne: MissionLibrary.Hawthorne.cs
+        Vinculos();    // (2026-11-19, PB-166) amistad, estudiante, combatir al lado y proteger, con retos de diálogo: MissionLibrary.Vinculos.cs
     }
 
     static ChoreTemplate Add(string id, string kind, ChoreCategory cat, string title, string scenario, string source, CodeExercise[] ex, string label = "real")
