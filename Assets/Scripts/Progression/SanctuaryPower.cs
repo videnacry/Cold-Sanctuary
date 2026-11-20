@@ -83,6 +83,36 @@ public static class SanctuaryPower
         return best;
     }
 
+    /// <summary>(Berón 2026-11-18, HC-01) LA CRIATURA DEL BONUSPACK N: las aptitudes del animal más poderoso (por <see cref="Predation.PredatorPower"/>)
+    /// del santuario <paramref name="n"/>. El 1, de la fauna viva de la escena (o <paramref name="live"/>, para las pruebas); sin escena, y los demás,
+    /// del arquetipo de su especie más fuerte (<see cref="FaunaOf"/>). false si el santuario no tiene fauna. Se recalcula en cada llamada (la fauna cambia).</summary>
+    public static bool PackFromFauna(int n, out Aptitudes a, out string who, IEnumerable<Anima> live = null)
+    {
+        a = new Aptitudes(); who = null;
+        if (n < 1 || n > SanctuaryPlacement.Count) return false;
+        if (n == SanctuaryPlacement.Land)
+        {
+            Anima best = null; float bp = 0f;
+            IEnumerable<Anima> roster = live ?? LiveAnimals();
+            foreach (Anima x in roster) { if (x == null || x.death) continue; float p = Predation.PredatorPower(x); if (best == null || p > bp) { best = x; bp = p; } }
+            if (best != null) { a = Aptitudes.From(best); who = best.name; return true; }
+        }
+        if (!FaunaOf.TryGetValue(n, out string[] list) || list.Length == 0) return false;
+        var s = Strongest(n);
+        if (s.power <= 0f) return false;
+        a = Archetypes.BodyOf(s.who).aptitudes; who = s.who; return true;
+    }
+
+    static IEnumerable<Anima> LiveAnimals()
+    {
+        var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+        foreach (GameObject go in Animal.wholePopulation)
+            if (go != null && go.scene == scene && go.TryGetComponent(out Animal an) && !an.death) yield return an;
+    }
+
+    /// <summary>Lo que el valor provisional de un pack suma al poder (con él se calibran los jefes de los santuarios sin criatura).</summary>
+    public static float OfPackPlaceholder(string pack) => Archetypes.TryPackPlaceholder(pack, out Aptitudes p) ? Predation.Power(p.strength, p.bodyMass, 0f, p.agility, 0f) : 0f;
+
     /// <summary>El pack que pide superar la posición <paramref name="position"/>: bonusPack(posición + 1).</summary>
     public static string PackFor(int position) => $"bonusPack{position + 1}";
 
@@ -90,12 +120,13 @@ public static class SanctuaryPower
     public static List<(string who, float power)> Bosses((string who, float power)? live = null)
     {
         var l = new List<(string, float)>();
-        for (int p = 0; Archetypes.TryPack(PackFor(p), out _); p++)
+        for (int p = 0; Archetypes.TryPackPlaceholder(PackFor(p), out _); p++)
         {
             var home = SanctuaryPlacement.Home.At(p);
             (string who, float power) fauna = ("—", 0f);
             if (home.level == 1) for (int s = 1; s <= home.sanctuary; s++) { var f = Strongest(s, live); if (f.power > fauna.power) fauna = f; }   // (los de nivel 2 aún no tienen fauna propia)
-            float calibrated = PlainHuman + OfPack(PackFor(p));
+            // (2026-11-18) Con el valor PROVISIONAL del pack: el de verdad ya es la criatura misma (humano + criatura siempre la superaría).
+            float calibrated = PlainHuman + OfPackPlaceholder(PackFor(p));
             l.Add(fauna.power >= calibrated ? fauna : ($"humano + {PackFor(p)}", calibrated));
         }
         return l;
