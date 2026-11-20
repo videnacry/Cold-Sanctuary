@@ -158,6 +158,12 @@ si estaba puesto, se queda puesto). **El toque que pulsó un botón del mando no
 `swallowGhostClick`): `TouchControls.PadTouch` y el kit descartan su clic simulado. Excepción: el viaje automático no lo oculta, porque
 aquí se corta tocando el joystick.
 
+Tras la revisión del PR #314: también cuenta el menú ☰ del microcosmos (`MicroRootMenu.Open`), que crece hacia abajo. Si un modal se
+abre solo mientras se sujeta un joystick (un diálogo al llegar andando), ese dedo deja de ser del mando y la ventana recibe toques; solo
+los dedos de los botones siguen descartando su clic. En el móvil, el botón «F10: pausa · Inicio» ya no va abajo a la derecha (pisaba el
+joystick MIRAR y se llevaba su toque): si el ⌂ del mando es la pausa, no sale; si el ⌂ abre el menú ☰, va encima del botón más alto de
+la derecha (`SceneLauncher.MobilePauseRect`, comprobado en UI-13).
+
 ### 6.4 Las ventanas (`CsUi`, rehechas)
 
 | Ventana | Pieza de CodeShip | Archivo |

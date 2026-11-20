@@ -39,6 +39,8 @@ public class MicroTaskWindows : MonoBehaviour
         Vector3 at = p != null ? p.transform.position : Vector3.zero;
         Tasks = TaskSources.Collect(at);
         Areas = AreaCatalog.Collect(at);
+        _taskCounts = Counts(Tasks.ConvertAll(t => (int)t.group), System.Enum.GetNames(typeof(TaskEntry.Group)).Length);
+        _areaCounts = Counts(Areas.ConvertAll(a => (int)a.kind), System.Enum.GetNames(typeof(AreaEntry.Kind)).Length);
         HasTasks = Tasks.Count > 0;
         HasAreas = Areas.Count > 0;
     }
@@ -94,8 +96,8 @@ public class MicroTaskWindows : MonoBehaviour
         if (tareas && hit == 0) { _settings = !_settings; _scroll = Vector2.zero; }
 
         GUILayout.BeginArea(body);
-        if (tareas && !settings) Chips(Tasks.ConvertAll(t => (int)t.group), System.Enum.GetNames(typeof(TaskEntry.Group)).Length, g => TaskEntry.GroupLabel((TaskEntry.Group)g), ref _taskChip);
-        if (!tareas) Chips(Areas.ConvertAll(a => (int)a.kind), System.Enum.GetNames(typeof(AreaEntry.Kind)).Length, k => AreaGroup((AreaEntry.Kind)k), ref _areaChip);
+        if (tareas && !settings) Chips(_taskCounts, Tasks.Count, g => TaskEntry.GroupLabel((TaskEntry.Group)g), ref _taskChip);
+        if (!tareas) Chips(_areaCounts, Areas.Count, k => AreaGroup((AreaEntry.Kind)k), ref _areaChip);
         _scroll = GUILayout.BeginScrollView(_scroll);
         if (tareas) { if (settings) DrawSettings(); else DrawTasks(taskChip); }
         else DrawAreas(areaChip);
@@ -104,13 +106,12 @@ public class MicroTaskWindows : MonoBehaviour
     }
 
     /// <summary>Los chips de grupo (.ar-chips): «Todas» y cada grupo que tenga algo, con su cuenta; el puesto, en cian.</summary>
-    static void Chips(List<int> groups, int n, System.Func<int, string> label, ref int chosen)
+    static void Chips(int[] count, int total, System.Func<int, string> label, ref int chosen)
     {
-        var count = new int[n];
-        foreach (int g in groups) count[g]++;
+        int n = count.Length;
         if (chosen >= 0 && count[chosen] == 0 && Event.current.type == EventType.Layout) chosen = -1;
         GUILayout.BeginHorizontal();
-        if (CsUi.Chip($"Todas  <size={CsUi.Fs(11f)}>{groups.Count}</size>", chosen < 0)) chosen = -1;
+        if (CsUi.Chip($"Todas  <size={CsUi.Fs(11f)}>{total}</size>", chosen < 0)) chosen = -1;
         for (int g = 0; g < n; g++)
         {
             if (count[g] == 0) continue;
@@ -121,6 +122,10 @@ public class MicroTaskWindows : MonoBehaviour
         GUILayout.EndHorizontal();
         GUILayout.Space(CsUi.Px(8f));
     }
+
+    /// <summary>Cuántas entradas hay de cada grupo (se cuentan al recoger la lista, no en cada evento de dibujo).</summary>
+    static int[] Counts(List<int> groups, int n) { var c = new int[n]; foreach (int g in groups) c[g]++; return c; }
+    static int[] _taskCounts = new int[0], _areaCounts = new int[0];
 
     static string AreaGroup(AreaEntry.Kind k) => k == AreaEntry.Kind.Historia ? "Sitios de la historia" : k == AreaEntry.Kind.Edificio ? "Edificios" : "Áreas del santuario";
 

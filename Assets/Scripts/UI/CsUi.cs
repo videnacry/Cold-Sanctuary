@@ -57,6 +57,7 @@ public static class CsUi
             if (Grimorio.IsOpen) _open.Add("Grimorio");
             if (SpellConsole.Capturing) _open.Add("lanzador");
             if (ProgressPanel.Open) _open.Add("progreso");
+            if (MicroRootMenu.Open) _open.Add("menú");   // el desplegable ☰ crece hacia abajo y caería sobre los botones
             if (DialogueManager.Instance != null && DialogueManager.Instance.IsPlaying) _open.Add("diálogo");
             return _open;
         }
@@ -96,7 +97,8 @@ public static class CsUi
     static int _builtFor = -1;
     static Texture2D _sheet, _window, _row, _go, _goOff, _tool, _pill, _setRow, _chip, _chipOn, _primary;
     public static GUIStyle SheetTitle, SheetWhere, Body, Section, NoteStyle, RowTitle, RowDesc, RowSmall, RowBox, GoStyle, GoOffStyle,
-        ToolStyle, PillStyle, XStyle, SetRowStyle, SetValueOn, SetValueOff, ChipStyle, ChipOnStyle, PrimaryStyle, WindowTitle;
+        ToolStyle, PillStyle, XStyle, SetRowStyle, SetValueOn, SetValueOff, ChipStyle, ChipOnStyle, PrimaryStyle, WindowTitle,
+        WindowTitleLeft, WindowX, SetRowText;
 
     /// <summary>Prepara las piezas para esta pantalla. Dentro de <c>OnGUI</c> (los estilos parten de <c>GUI.skin</c>).</summary>
     public static void Prepare()
@@ -104,6 +106,10 @@ public static class CsUi
         int key = Mathf.RoundToInt(Dp * 100f);
         if (key == _builtFor && SheetTitle != null) return;
         _builtFor = key;
+        // Al girar la pantalla: las piezas de la medida anterior no se quedan en memoria.
+        foreach (Texture2D old in new[] { _sheet, _window, _row, _go, _goOff, _tool, _pill, _setRow, _chip, _chipOn, _primary })
+            if (old != null) Object.Destroy(old);
+        _bgs.Clear();
         int R(float css) => Mathf.Max(2, Mathf.RoundToInt(css * Dp));
         float line = Mathf.Max(1f, Mathf.Round(Dp));
         Texture2D Box(Color fill, Color rim, float radiusCss)
@@ -162,6 +168,9 @@ public static class CsUi
         ChipStyle = Button(_chip, _chipOn, 12f, Hex(0xcfe8f5ff), false, 22f, 10f);
         ChipOnStyle = Button(_chipOn, _chipOn, 12f, Hex(0x06202bff), false, 22f, 10f);
         PrimaryStyle = Button(_primary, _go, 15f, Hex(0x001018ff), true, 10f, 10f);
+        WindowTitleLeft = new GUIStyle(WindowTitle) { alignment = TextAnchor.MiddleLeft };
+        WindowX = new GUIStyle(ToolStyle) { fontSize = Fs(20f) };
+        SetRowText = new GUIStyle(SetRowStyle); SetRowText.normal.background = null;
     }
 
     /// <summary>El alto mínimo de lo que se toca: 44 px CSS (reglas.md §5.5, Apple HIG).</summary>
@@ -244,7 +253,7 @@ public static class CsUi
     {
         float t = Touch, gap = Px(6f), pad = Px(12f), y = r.y + Px(10f), x = r.xMax - pad;
         int hit = -1;
-        if (GUI.Button(new Rect(x - t, y, t, t), "×", new GUIStyle(ToolStyle) { fontSize = Fs(20f) })) hit = tools.Length;
+        if (GUI.Button(new Rect(x - t, y, t, t), "×", WindowX)) hit = tools.Length;
         x -= t + gap;
         for (int i = tools.Length - 1; i >= 0; i--)
         {
@@ -252,7 +261,7 @@ public static class CsUi
             if (GUI.Button(new Rect(x - w, y, w, t), tools[i], ToolStyle)) hit = i;
             x -= w + gap;
         }
-        GUI.Label(new Rect(r.x + Px(14f), y, x - r.x - Px(14f), t), title, new GUIStyle(WindowTitle) { alignment = TextAnchor.MiddleLeft });
+        GUI.Label(new Rect(r.x + Px(14f), y, x - r.x - Px(14f), t), title, WindowTitleLeft);
         // La lista: 14 px de margen; en una pantalla ancha, centrada a 640 px como mucho para que se lea.
         float top = y + t + Px(10f), side = Mathf.Max(Px(14f), (r.width - Px(640f)) * 0.5f);
         body = new Rect(r.x + side, top, r.width - 2f * side, r.yMax - top - Px(14f));
@@ -292,9 +301,8 @@ public static class CsUi
         Rect r = GUILayoutUtility.GetRect(new GUIContent(text), SetRowStyle, GUILayout.MinHeight(Px(52f)), GUILayout.ExpandWidth(true));
         float vw = string.IsNullOrEmpty(value) ? 0f : SetValueOn.CalcSize(new GUIContent(value)).x + Px(12f);
         bool hit = GUI.Button(r, GUIContent.none, SetRowStyle);
-        var st = new GUIStyle(SetRowStyle) { padding = new RectOffset(SetRowStyle.padding.left, Mathf.RoundToInt(vw + Px(12f)), SetRowStyle.padding.top, SetRowStyle.padding.bottom) };
-        st.normal.background = null;
-        GUI.Label(r, text, st);
+        SetRowText.padding.right = Mathf.RoundToInt(vw + Px(12f));   // el texto no se mete bajo el valor
+        GUI.Label(r, text, SetRowText);
         if (vw > 0f) GUI.Label(new Rect(r.xMax - vw - Px(12f), r.y, vw, r.height), value, on ? SetValueOn : SetValueOff);
         GUILayout.Space(Px(8f));
         return hit;

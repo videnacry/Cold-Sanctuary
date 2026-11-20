@@ -124,7 +124,14 @@ public class TouchControls : MonoBehaviour
     {
         if (_lay.rects == null || _layW != Screen.width || _layH != Screen.height) { _lay = Compute(Screen.width, Screen.height); _layW = Screen.width; _layH = Screen.height; }   // solo al girar la pantalla
         bool hide = CsUi.ModalOpen;
-        if (hide && !_hidden) ReleaseAll();   // al abrirse un modal: nada se queda pulsado ni andando
+        if (hide && !_hidden)   // al abrirse un modal: nada se queda pulsado ni andando
+        {
+            // (revisión PB-169) Los dedos de los joysticks dejan de ser del mando: si no, el modal que se abre solo (un diálogo al llegar
+            // andando) no recibiría toques hasta levantarlos. Solo los de los botones siguen: son los del toque fantasma.
+            if (_moveFinger >= 0) _padFingers.Remove(_moveFinger);
+            if (_lookFinger >= 0) _padFingers.Remove(_lookFinger);
+            ReleaseAll();
+        }
         _hidden = hide;
         Showing = !hide;
 
@@ -242,6 +249,8 @@ public class TouchControls : MonoBehaviour
         int key = Mathf.RoundToInt(dp * 100f);
         if (_disc != null && key == _texFor) return;
         _texFor = key;
+        foreach (Texture2D old in new[] { _disc, _discOn, _square, _squareOn, _pill, _pillOn, _small, _smallOn, _capture, _captureOn, _ring, _knob })
+            if (old != null) Object.Destroy(old);   // al girar la pantalla: las de la medida anterior no se quedan en memoria
         int P(float css) => Mathf.Max(8, Mathf.RoundToInt(css * dp));
         int b = P(Btn), s = P(Small), sw = P(ShoulderW), sh = P(ShoulderH);
         _disc = Btn2(b, b, b * 0.5f, false, 2f * dp); _discOn = Btn2(b, b, b * 0.5f, true, 2f * dp);

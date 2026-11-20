@@ -204,6 +204,17 @@ public class SceneLauncher : MonoBehaviour
 
     bool InInicio => SceneManager.GetActiveScene().path == LaunchOptions.InicioPath;
 
+    Rect _pauseRect; Vector2 _pauseFor;
+    /// <summary>(revisión PB-169) El botón de pausa en el móvil: a la derecha, justo encima del botón más alto del mando (nunca encima de él).</summary>
+    public static Rect MobilePauseRect(float w, float h)
+    {
+        TouchControls.Layout lay = TouchControls.Compute(w, h);
+        float top = h;
+        foreach (Rect r in lay.rects.Values) top = Mathf.Min(top, r.y);
+        float bh = 44f * lay.dp, bw = 150f * lay.dp, margin = 14f * lay.dp;
+        return new Rect(w - margin - bw, Mathf.Max(8f * lay.dp, top - 8f * lay.dp - bh), bw, bh);
+    }
+
     void SetPaused(bool on)
     {
         if (on == _paused) return;
@@ -244,7 +255,13 @@ public class SceneLauncher : MonoBehaviour
         {
             if (CsUi.ModalOpen) return;   // (PB-169) con una ventana abierta, solo ella y su ✕
             string tag = Time.timeScale > 1.01f ? $"  ({GameSpeed.Label(Time.timeScale)})" : "";
-            if (GUI.Button(new Rect(Screen.width - 190f, Screen.height - 72f, 185f, 24f), "F10: pausa · Inicio" + tag)) SetPaused(true);
+            if (!CsUi.Mobile) { if (GUI.Button(new Rect(Screen.width - 190f, Screen.height - 72f, 185f, 24f), "F10: pausa · Inicio" + tag)) SetPaused(true); return; }
+            // (revisión PB-169) En el móvil, abajo a la derecha caería sobre el joystick MIRAR (y, al dibujarse antes, se llevaría su toque).
+            // Si el ⌂ del mando ya es la pausa, sobra; si el ⌂ abre el menú ☰ del microcosmos, va encima de los botones de la derecha.
+            if (!MicroRootMenu.Available) return;
+            if (_pauseFor.x != Screen.width || _pauseFor.y != Screen.height) { _pauseRect = MobilePauseRect(Screen.width, Screen.height); _pauseFor = new Vector2(Screen.width, Screen.height); }
+            CsUi.Prepare();
+            if (GUI.Button(_pauseRect, "Pausa · Inicio" + tag, CsUi.PillStyle)) SetPaused(true);
             return;
         }
         if (!drawSheet) return;

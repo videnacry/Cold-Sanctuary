@@ -101,6 +101,16 @@ public class JoyConTest : MonoBehaviour, ITestUnit
         TouchControls.Layout D = TouchControls.Compute(780f, 1328f);
         if (Mathf.Abs(D.rects[JoyConMap.Pad.A].width / 780f - 50f / 390f) > 0.002f) off += $"a 780×1328 el botón A mide {D.rects[JoyConMap.Pad.A].width:0} px; ";
         if (Mathf.Abs(C.stickRadius - 60f) > 0.01f || Mathf.Abs(C.moveCenter.x - 82f) > 0.5f || Mathf.Abs(C.moveCenter.y - 578f) > 0.5f) off += $"joystick de andar en {C.moveCenter} (r {C.stickRadius}); ";
+        // (revisión PB-169) El botón de pausa del móvil no cae sobre ningún botón ni joystick del mando, en vertical ni en horizontal.
+        foreach (Vector2 scr in new[] { new Vector2(390f, 664f), new Vector2(750f, 342f), new Vector2(1266f, 585f) })
+        {
+            TouchControls.Layout P = TouchControls.Compute(scr.x, scr.y);
+            Rect pr = SceneLauncher.MobilePauseRect(scr.x, scr.y);
+            foreach (var kv in P.rects) if (pr.Overlaps(kv.Value)) off += $"a {scr.x}×{scr.y} la pausa pisa {kv.Key}; ";
+            foreach (Vector2 c in new[] { P.moveCenter, P.lookCenter })
+                if (new Rect(c.x - P.stickRadius, c.y - P.stickRadius, 2f * P.stickRadius, 2f * P.stickRadius).Overlaps(pr)) off += $"a {scr.x}×{scr.y} la pausa pisa un joystick; ";
+            if (pr.y < 0f || pr.xMax > scr.x) off += $"a {scr.x}×{scr.y} la pausa se sale ({pr}); ";
+        }
         TestProbe.Check("[UI-13] el mando mide y se coloca como en el santuario 1 de CodeShip (iPhone 13), y ocupa la misma parte de cualquier pantalla", off.Length == 0, off);
 
         // La hoja (retos, Grimorio, ajustes): abajo desde el 38 % en vertical (el reto, desde el 30 % en un móvil bajo); a la derecha y 46 % en horizontal.
@@ -191,11 +201,15 @@ public class JoyConTest : MonoBehaviour, ITestUnit
         yield return null;
         if (TouchControls.Showing) missed += "diálogo de opciones; ";
         ChoiceDialog.Close();
+        MicroRootMenu.Toggle(true);   // (revisión PB-169) el desplegable ☰ crece hacia abajo, sobre los botones
+        yield return null;
+        if (TouchControls.Showing) missed += "menú ☰; ";
+        MicroRootMenu.Toggle(false);
         yield return null; yield return null; yield return null;
         bool back = TouchControls.Showing;
         Object.Destroy(go);
         yield return null;
-        TestProbe.Check("[UI-14] el mando se oculta con un modal abierto (Misiones, Grimorio, diálogo) y vuelve al cerrarlo", shownFirst && missed.Length == 0 && back,
+        TestProbe.Check("[UI-14] el mando se oculta con un modal abierto (Misiones, Grimorio, diálogo, menú ☰) y vuelve al cerrarlo", shownFirst && missed.Length == 0 && back,
             $"antes {shownFirst} · no se ocultó con: {missed} · después {back} · abiertos: {string.Join(", ", CsUi.OpenModals)}");
     }
 

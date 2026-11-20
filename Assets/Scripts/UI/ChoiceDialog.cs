@@ -35,7 +35,7 @@ public class ChoiceDialog : MonoBehaviour
         ChoiceDialog d = Get();
         d._title = title; d._options = options ?? new string[0]; d._onPick = onPick; d._onCancel = onCancel;
         d._anchor = anchor; d._radius = radius;
-        d._sel = 0; d._open = true; d._openedFrame = Time.frameCount;
+        d._sel = 0; d._scroll = Vector2.zero; d._open = true; d._openedFrame = Time.frameCount;
     }
 
     public static void Close()
@@ -66,12 +66,12 @@ public class ChoiceDialog : MonoBehaviour
         }
         if (!_open || Time.frameCount == _openedFrame || _options.Length == 0 && !GameKeys.UiKeyDown(KeyCode.Escape)) return;
         if (GameKeys.UiKeyDown(KeyCode.Escape)) { Action c = _onCancel; Close(); c?.Invoke(); return; }
-        if (GameKeys.UiKeyDown(KeyCode.DownArrow)) _sel = (_sel + 1) % _options.Length;
-        if (GameKeys.UiKeyDown(KeyCode.UpArrow)) _sel = (_sel - 1 + _options.Length) % _options.Length;
+        if (GameKeys.UiKeyDown(KeyCode.DownArrow)) { _sel = (_sel + 1) % _options.Length; _follow = true; }
+        if (GameKeys.UiKeyDown(KeyCode.UpArrow)) { _sel = (_sel - 1 + _options.Length) % _options.Length; _follow = true; }
         if (GameKeys.UiKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)) Pick(_sel);
     }
 
-    bool _laid;
+    bool _laid, _follow;   // _follow: las flechas movieron la marca y la lista tiene que llevarla a la vista
     Vector2 _scroll;
 
     /// <summary>(2026-11-20, PB-169) La hoja de CodeShip (CsUi.SheetFrame) con cada opción en una fila; la marcada por las flechas, con ▸.</summary>
@@ -87,11 +87,26 @@ public class ChoiceDialog : MonoBehaviour
         _scroll = GUILayout.BeginScrollView(_scroll);
         int picked = -1;
         string[] options = _options;
+        bool repaint = Event.current.type == EventType.Repaint;
+        float rowTop = 0f, selTop = -1f, selBottom = -1f;
         for (int i = 0; i < options.Length; i++)
+        {
             if (CsUi.SetRow(options[i], null, i == _sel ? "▸" : "", true)) picked = i;
+            if (!repaint) continue;
+            Rect gap = GUILayoutUtility.GetLastRect();   // el hueco tras la fila: su y es el pie de la fila
+            if (i == _sel) { selTop = rowTop; selBottom = gap.y; }
+            rowTop = gap.yMax;
+        }
         if (!CsUi.Mobile) GUILayout.Label("↑/↓ elige · Intro o clic confirma · Esc cierra", CsUi.NoteStyle);
         GUILayout.EndScrollView();
         GUILayout.EndArea();
+        if (_follow && selBottom >= 0f)   // (revisión PB-169) la fila marcada con ↑/↓ entra en la vista (se aplica en el fotograma siguiente)
+        {
+            float view = inner.yMax - y;
+            if (selTop < _scroll.y) _scroll.y = selTop;
+            else if (selBottom > _scroll.y + view) _scroll.y = selBottom - view;
+            _follow = false;
+        }
         if (picked >= 0) Pick(picked);   // después de cerrar los grupos del dibujo
     }
 }
