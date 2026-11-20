@@ -161,8 +161,8 @@ public class CodeChallengeSheet : MonoBehaviour
     void Update()
     {
         if (!IsOpen || Time.frameCount == _openedFrame || (_run != null && StepAnimator.Playing)) return;
-        if (Input.GetKeyDown(KeyCode.Escape)) { Close(); return; }
-        if ((_solved || RunOver) && (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))) { Close(); return; }
+        if (GameKeys.UiKeyDown(KeyCode.Escape)) { Close(); return; }
+        if ((_solved || RunOver) && (GameKeys.UiKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))) { Close(); return; }
         if (_ex.kind == CodeExercise.Kind.Choice && !_solved && !RunOver)
             for (int k = 0; k < Mathf.Min(9, _ex.options.Length); k++)
                 if (Input.GetKeyDown(KeyCode.Alpha1 + k)) Submit(CodeAnswer.Choice(k));
@@ -189,6 +189,7 @@ public class CodeChallengeSheet : MonoBehaviour
 
     void OnGUI()
     {
+        CsTheme.Use();   // (2026-11-19) el tema de CodeShip para los menús (UI/CsTheme.cs)
         if (!IsOpen) return;
         Styles();
         GUI.depth = -900;   // encima de los HUD del juego

@@ -106,6 +106,7 @@ public class ContextColumn : MonoBehaviour
 
     void OnGUI()
     {
+        CsTheme.Use();   // (2026-11-19) el tema de CodeShip para los menús (UI/CsTheme.cs)
         if (Hidden() || (Line.Length == 0 && Action.Length == 0)) return;
         if (_line == null)
         {
