@@ -6,7 +6,7 @@ Cada petición de Berón, con su número fijo. **Una petición nueva entra el mi
 El **estado no se escribe a mano**: sale de sus casos en [registro.md](registro.md) (lo comprueba el comprobador):
 `Hecha` si todos sus casos están `Probado (…)`; `Doc` si solo pedía un doc o una regla; `Sin verificar` si alguno está en `Solo código` o `Sin probar`; `Abierta` si tiene un `HC` o le falta código.
 
-Las PB-001…PB-155 vienen de [auditoria-peticiones.md](../auditoria-peticiones.md) (el número es el mismo). Desde la PB-156 se anotan aquí directamente. La siguiente libre es **PB-169**.
+Las PB-001…PB-155 vienen de [auditoria-peticiones.md](../auditoria-peticiones.md) (el número es el mismo). Desde la PB-156 se anotan aquí directamente. La siguiente libre es **PB-170**.
 
 | PB | Fecha | Petición | Reglas | Casos | Estado | Origen |
 |---|---|---|---|---|---|---|
@@ -178,5 +178,6 @@ Las PB-001…PB-155 vienen de [auditoria-peticiones.md](../auditoria-peticiones.
 | PB-166 | 2026-11-19 | En el microcosmos todo se hace por retos, también los diálogos: misiones de entablar amistad con personajes, ser sus estudiantes, combatir a su lado o protegerles; muchas requieren un diálogo, que es un reto más; los retos de diálogo enseñan la historia real del escenario | — | CS-97, CS-98, HC-06 | Abierta | Berón 2026-11-19 19:10 (hilo «Rehacer distrito Hawthorne desde cero») |
 | PB-167 | 2026-11-19 | Móvil: mandos de la Nintendo Switch dibujados sobre la pantalla (como CodeShip) y menús estéticos como los de CodeShip; (2026-11-20) botón de Grimorio: una ventana con todos los hechizos, que se lanzan resolviendo su reto de código | — | UI-02, UI-03, UI-04, UI-05, UI-06, UI-07, UI-08, UI-09, UI-10, UI-11, UI-12 | Abierta | En `claude/project-thread-n17elb` (PR #310, docs/mandos-tactiles.md): mandos y tema compilan y g141 8/0 (2026-11-20); el Grimorio, en código |
 | PB-168 | 2026-11-20 | Ver el microcosmos de Musk (escenario y retos) sin depender de Unity en el PC, que se cuelga y tarda en reiniciar: ¿versión en CodeShip?, ¿entrada en Inicio? (en la web la máquina de simulación no puede: cada build lleva solo sus escenas) | — | REN-10, HC-07 | Abierta | Visor web sin build (`tools/visor/`, `docs/visor-web.md`): volcado de la escena + retos desde el Editor, sin Play; hilo «Ver microcosmos de Musk sin Unity» |
+| PB-169 | 2026-11-20 | Los mandos de la Switch están muy pequeños y deben ocultarse cuando se muestran modales; rehacer mandos, modales y menús desde cero mirando en vivo el santuario 1 de CodeShip (reutilizar solo si no baja la fidelidad) | — | UI-04, UI-13, UI-14, UI-15 | Abierta | Berón 2026-11-20 14:10 (hilo «Rehacer mandos y menús móviles según CodeShip»), rama `claude/project-thread-1xo1dy` |
 
 **Recuento:** Abierta 12 · Doc 8 · Hecha 124 · Sin verificar 24 · total 168.

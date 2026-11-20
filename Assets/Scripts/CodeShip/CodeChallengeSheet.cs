@@ -170,13 +170,15 @@ public class CodeChallengeSheet : MonoBehaviour
 
     // ── El dibujo ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────
     GUIStyle _txt, _small, _btn, _head, _bad, _good;
+    bool _laid;
     static readonly Color Red = new Color(1f, 0.45f, 0.4f), Green = new Color(0.5f, 0.95f, 0.55f);
-    float Row => WebLigera.Active ? Mathf.Max(44f, Mathf.Min(Screen.width, Screen.height) * 0.075f) : 32f;
+    // (2026-11-20, PB-169) A la medida de CodeShip: 44 px CSS por fila y letra de 15 px en el móvil (CsUi.Dp).
+    float Row => WebLigera.Active ? CsUi.Touch : 32f;
 
     void Styles()
     {
-        if (_txt != null) return;
-        int f = WebLigera.Active ? Mathf.Max(15, Mathf.RoundToInt(Row * 0.36f)) : 14;
+        int f = WebLigera.Active ? CsUi.Fs(15f) : 14;
+        if (_txt != null && _txt.fontSize == f) return;
         _txt = new GUIStyle(GUI.skin.label) { richText = true, wordWrap = true, fontSize = f };
         _small = new GUIStyle(_txt) { fontSize = f - 2 };
         _head = new GUIStyle(_txt) { fontSize = f + 3, fontStyle = FontStyle.Bold };
@@ -190,10 +192,10 @@ public class CodeChallengeSheet : MonoBehaviour
     void OnGUI()
     {
         CsTheme.Use();   // (2026-11-19) el tema de CodeShip para los menús (UI/CsTheme.cs)
-        if (!IsOpen) return;
+        if (!CsUi.Draw(ref _laid, IsOpen)) return;   // (abierta a mitad de fotograma, p. ej. desde el Grimorio: espera a su Layout)
         Styles();
         GUI.depth = -900;   // encima de los HUD del juego
-        float row = Row, pad = 10f;
+        float row = Row;
         if (_run != null && StepAnimator.Playing)   // (CodeShip §4.2) la hoja se recoge: se ve el paso hecho en su sitio
         {
             float bw = Mathf.Min(620f, Screen.width - 16f);
@@ -204,19 +206,20 @@ public class CodeChallengeSheet : MonoBehaviour
             GUI.contentColor = c0;
             return;
         }
-        float w = Mathf.Min(780f, Screen.width - 16f), h = Mathf.Min(Screen.height * (WebLigera.Active ? 0.86f : 0.8f), 700f);
-        var r = new Rect((Screen.width - w) * 0.5f, Screen.height - h - 8f, w, h);   // hoja inferior
-        GUI.Box(r, ""); GUI.Box(r, ""); GUI.Box(r, "");   // tres capas: opaca de verdad (CodeShip: las barras casi transparentes no se leían)
+        // La hoja de CodeShip (.duel.sheet, CsUi.SheetFrame): abajo desde el 38 % (30 % en un móvil bajo) en vertical, a la derecha en
+        // horizontal; la escena se ve encima o al lado. Fondo #05060cf2: opaca de verdad (las barras casi transparentes no se leían).
+        Rect r = CsUi.SheetFrame(true);
+        float w = r.width, h = r.height;
 
         // Cabecera: título, JS, ✕ (a la medida del dedo).
         string kind = _ex.dialogue ? "diálogo con " + _ex.speaker : _ex.kind == CodeExercise.Kind.Order ? "ordenar" : SkillName(_ex.skill);
         string head = _run == null ? $"<b>{(_ex.dialogue ? "Reto de diálogo" : "Reto de código")}</b> · {kind}" : $"<b>{_runTitle}</b> · reto {Mathf.Min(_run.Step + 1, _run.Steps)} de {_run.Steps} · {kind}";
-        GUI.Label(new Rect(r.x + pad, r.y + 6f, w - 3f * row - 3f * pad, row), head, _head);
-        if (_run != null) DrawProgress(new Rect(r.x + pad, r.y + row + 4f, w - 2f * pad, 6f));
-        if (!_ex.dialogue && GUI.Button(new Rect(r.xMax - 2f * row - 2f * pad - row * 0.6f, r.y + 6f, row * 1.6f, row), _js ? "Pseudo" : "JS")) _js = !_js;
-        if (GUI.Button(new Rect(r.xMax - row - pad, r.y + 6f, row, row), "✕")) { Close(); return; }
+        GUI.Label(new Rect(r.x, r.y + 6f, w - 3f * row - 20f, row), head, _head);
+        if (_run != null) DrawProgress(new Rect(r.x, r.y + row + 4f, w, 6f));
+        if (!_ex.dialogue && GUI.Button(new Rect(r.xMax - 2f * row - row * 0.6f - 8f, r.y + 6f, row * 1.6f, row), _js ? "Pseudo" : "JS")) _js = !_js;
+        if (GUI.Button(new Rect(r.xMax - row, r.y + 6f, row, row), "✕")) { Close(); return; }
 
-        var inner = new Rect(r.x + pad, r.y + row + 12f, w - 2f * pad, h - row * 2.4f - 20f);
+        var inner = new Rect(r.x, r.y + row + 12f, w, h - row * 2.4f - 20f);
         GUILayout.BeginArea(inner);
         _scroll = GUILayout.BeginScrollView(_scroll);
         if (_run != null && _run.Step == 0 && _run.Mistakes == 0 && _runScenario.Length > 0) GUILayout.Label($"<color=#B8C0C8>{_runScenario}</color>", _small);
@@ -241,7 +244,7 @@ public class CodeChallengeSheet : MonoBehaviour
         GUILayout.EndArea();
 
         // Pie: la acción principal, siempre en el mismo sitio (abajo a la derecha, cerca del pulgar).
-        var foot = new Rect(r.x + pad, r.yMax - row - pad, w - 2f * pad, row);
+        var foot = new Rect(r.x, r.yMax - row, w, row);
         if (_solved) { if (GUI.Button(new Rect(foot.xMax - row * 3.5f, foot.y, row * 3.5f, row), "✓ Seguir")) Close(); return; }
         if (RunOver)   // fallada: cerrar o reintentar
         {

@@ -204,6 +204,17 @@ public class SceneLauncher : MonoBehaviour
 
     bool InInicio => SceneManager.GetActiveScene().path == LaunchOptions.InicioPath;
 
+    Rect _pauseRect; Vector2 _pauseFor;
+    /// <summary>(revisión PB-169) El botón de pausa en el móvil: a la derecha, justo encima del botón más alto del mando (nunca encima de él).</summary>
+    public static Rect MobilePauseRect(float w, float h)
+    {
+        TouchControls.Layout lay = TouchControls.Compute(w, h);
+        float top = h;
+        foreach (Rect r in lay.rects.Values) top = Mathf.Min(top, r.y);
+        float bh = 44f * lay.dp, bw = 150f * lay.dp, margin = 14f * lay.dp;
+        return new Rect(w - margin - bw, Mathf.Max(8f * lay.dp, top - 8f * lay.dp - bh), bw, bh);
+    }
+
     void SetPaused(bool on)
     {
         if (on == _paused) return;
@@ -224,6 +235,8 @@ public class SceneLauncher : MonoBehaviour
     }
 
     GUIStyle _big;
+    bool _laid;
+    Vector2 _pauseScroll;
 
     void OnGUI()
     {
@@ -237,23 +250,39 @@ public class SceneLauncher : MonoBehaviour
             return;
         }
         if (InInicio || ColdSanctuary.TestRunner.Running) return;
+        bool drawSheet = CsUi.Draw(ref _laid, _paused);
         if (!_paused)
         {
+            if (CsUi.ModalOpen) return;   // (PB-169) con una ventana abierta, solo ella y su ✕
             string tag = Time.timeScale > 1.01f ? $"  ({GameSpeed.Label(Time.timeScale)})" : "";
-            if (GUI.Button(new Rect(Screen.width - 190f, Screen.height - 72f, 185f, 24f), "F10: pausa · Inicio" + tag)) SetPaused(true);
+            if (!CsUi.Mobile) { if (GUI.Button(new Rect(Screen.width - 190f, Screen.height - 72f, 185f, 24f), "F10: pausa · Inicio" + tag)) SetPaused(true); return; }
+            // (revisión PB-169) En el móvil, abajo a la derecha caería sobre el joystick MIRAR (y, al dibujarse antes, se llevaría su toque).
+            // Si el ⌂ del mando ya es la pausa, sobra; si el ⌂ abre el menú ☰ del microcosmos, va encima de los botones de la derecha.
+            if (!MicroRootMenu.Available) return;
+            if (_pauseFor.x != Screen.width || _pauseFor.y != Screen.height) { _pauseRect = MobilePauseRect(Screen.width, Screen.height); _pauseFor = new Vector2(Screen.width, Screen.height); }
+            CsUi.Prepare();
+            if (GUI.Button(_pauseRect, "Pausa · Inicio" + tag, CsUi.PillStyle)) SetPaused(true);
             return;
         }
-        GUI.color = new Color(0f, 0f, 0f, 0.55f); GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), Texture2D.whiteTexture); GUI.color = Color.white;
-        var r = new Rect(Screen.width * 0.5f - 160f, Screen.height * 0.5f - 160f, 320f, 322f);
+        if (!drawSheet) return;
+        // (2026-11-20, PB-169) Los «Ajustes generales» de CodeShip (settings.css): la hoja con su cabecera en versalitas y la ✕, cada
+        // opción una fila con su valor a la derecha; se abre con el botón de inicio del mando o F10.
+        Rect inner = CsUi.SheetFrame();
+        float y = inner.y;
+        if (CsUi.SheetHead(inner, ref y, "Ajustes generales", $"{StartScreen.Pretty(SceneManager.GetActiveScene().name)} · pausa (el tiempo está parado)", "Seguir") >= 0) { SetPaused(false); return; }
+        GUILayout.BeginArea(new Rect(inner.x, y, inner.width, inner.yMax - y));
+        _pauseScroll = GUILayout.BeginScrollView(_pauseScroll);
+        int act = 0;
+        if (CsUi.SetRow("Reiniciar esta escena", "Vuelve a cargarla desde el principio", "", true)) act = 1;
+        if (CsUi.SetRow("Volver a Inicio", "La pantalla de inicio, sin salir del juego", "", true)) act = 2;
+        bool gd = MagnateWarden.GuardPosts;
+        if (CsUi.SetRow("La Magnate guarda los puestos", "Cubre los puestos que quedan sin nadie", gd ? "Sí" : "No", gd)) { gd = !gd; MagnateWarden.GuardPosts = LaunchOptions.MagnateGuards = gd; PlayerPrefs.SetInt("Inicio.MagnateGuarda", gd ? 1 : 0); }
+        CsUi.SectionLabel("Velocidad del tiempo al seguir");
         // VELOCIDAD del tiempo al seguir (GameSpeed): se guarda como la de Inicio.
-        GUI.Label(new Rect(r.x + 20f, r.y + 262f, 280f, 20f), "Velocidad del tiempo al seguir:");
-        if (GameSpeed.Buttons(new Rect(r.x + 18f, r.y + 284f, 284f, 26f), _oldScale, out float sp)) { _oldScale = sp; GameSpeed.Chosen = sp; }
-        GUI.Box(r, "Pausa — " + StartScreen.Pretty(SceneManager.GetActiveScene().name));
-        if (GUI.Button(new Rect(r.x + 20f, r.y + 40f, 280f, 40f), "Seguir (F10)")) SetPaused(false);
-        if (GUI.Button(new Rect(r.x + 20f, r.y + 90f, 280f, 40f), "Reiniciar esta escena")) Restart();
-        if (GUI.Button(new Rect(r.x + 20f, r.y + 140f, 280f, 40f), "Volver a Inicio")) BackToInicio();
-        bool gd = GUI.Toggle(new Rect(r.x + 20f, r.y + 186f, 280f, 22f), MagnateWarden.GuardPosts, " La Magnate guarda los puestos");
-        if (gd != MagnateWarden.GuardPosts) { MagnateWarden.GuardPosts = LaunchOptions.MagnateGuards = gd; PlayerPrefs.SetInt("Inicio.MagnateGuarda", gd ? 1 : 0); }
-        GUI.Label(new Rect(r.x + 20f, r.y + 214f, 280f, 40f), "El tiempo está parado mientras tanto.");
+        Rect sr = GUILayoutUtility.GetRect(inner.width, CsUi.Touch, GUILayout.ExpandWidth(true));
+        if (GameSpeed.Buttons(sr, _oldScale, out float sp, CsUi.ChipStyle)) { _oldScale = sp; GameSpeed.Chosen = sp; }
+        GUILayout.EndScrollView();
+        GUILayout.EndArea();
+        if (act == 1) Restart(); else if (act == 2) BackToInicio();
     }
 }

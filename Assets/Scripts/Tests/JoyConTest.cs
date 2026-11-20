@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DE LOS MANDOS TÁCTILES TIPO SWITCH Y EL GRIMORIO (grupo 141; docs/mandos-tactiles.md, Berón 2026-11-19: «recrear los mandos de la Nintendo
+/// PRUEBA DE LOS MANDOS TÁCTILES TIPO SWITCH Y EL GRIMORIO (grupo 141; (PB-169) medidas del santuario 1 de CodeShip y ocultarse con los modales; docs/mandos-tactiles.md, Berón 2026-11-19: «recrear los mandos de la Nintendo
 /// Switch sobre la pantalla… para mobile»). Lógica pura (no carga escenas ni mueve a nadie), va en la lista rápida:
 ///  · el mando tiene los 16 botones de un par de Joy-Con, 8 por lado, cada uno con su tecla y su nombre;
 ///  · la asignación es la de CodeShip (A Saltar, B Correr, + Misiones, − Áreas, captura Vista, inicio Menú);
@@ -31,6 +31,7 @@ public class JoyConTest : MonoBehaviour, ITestUnit
         Fit();
         Theme();
         yield return Keys();
+        yield return HideWithModals();
         yield return GrimorioChecks();
         TestProbe.End();
     }
@@ -58,7 +59,7 @@ public class JoyConTest : MonoBehaviour, ITestUnit
 
     static void Fit()
     {
-        var screens = new[] { new Vector2(2340, 1080), new Vector2(1080, 2340), new Vector2(1024, 768), new Vector2(1920, 1080), new Vector2(360, 740) };
+        var screens = new[] { new Vector2(2340, 1080), new Vector2(1080, 2340), new Vector2(1024, 768), new Vector2(1920, 1080), new Vector2(360, 740), new Vector2(585, 996), new Vector2(1266, 585) };
         string bad = "";
         foreach (Vector2 s in screens)
         {
@@ -66,25 +67,66 @@ public class JoyConTest : MonoBehaviour, ITestUnit
             var screen = new Rect(0f, 0f, s.x, s.y);
             var all = new List<KeyValuePair<JoyConMap.Pad, Rect>>(L.rects);
             float R = L.stickRadius;
-            Rect move = new Rect(L.moveRest.x - R, L.moveRest.y - R, 2f * R, 2f * R), look = new Rect(L.lookCenter.x - R, L.lookCenter.y - R, 2f * R, 2f * R);
+            Rect move = new Rect(L.moveCenter.x - R, L.moveCenter.y - R, 2f * R, 2f * R), look = new Rect(L.lookCenter.x - R, L.lookCenter.y - R, 2f * R, 2f * R);
+            if (move.xMin < 0f || move.yMax > s.y || look.xMax > s.x || move.Overlaps(look)) bad += $"{s.x}×{s.y}: joysticks fuera o pisándose; ";
             for (int i = 0; i < all.Count; i++)
             {
                 Rect a = all[i].Value;
                 if (a.xMin < 0f || a.yMin < 0f || a.xMax > screen.width || a.yMax > screen.height) bad += $"{s.x}×{s.y}: {all[i].Key} fuera; ";
                 if (a.Overlaps(move) || a.Overlaps(look)) bad += $"{s.x}×{s.y}: {all[i].Key} pisa un joystick; ";
-                for (int j = i + 1; j < all.Count; j++) if (a.Overlaps(all[j].Value)) bad += $"{s.x}×{s.y}: {all[i].Key} pisa {all[j].Key}; ";
+                // (Como en CodeShip, la cruceta y el rombo van a 49 px con botones de 50: las cajas se tocan 1 px en la esquina, los dibujos no.)
+                for (int j = i + 1; j < all.Count; j++) if (Shrunk(a).Overlaps(Shrunk(all[j].Value))) bad += $"{s.x}×{s.y}: {all[i].Key} pisa {all[j].Key}; ";
             }
             if (L.rects.Count != 16) bad += $"{s.x}×{s.y}: {L.rects.Count} botones; ";
-            if (L.unit < 36f) bad += $"{s.x}×{s.y}: botón de {L.unit:0} px; ";
+            if (L.rects[JoyConMap.Pad.Plus].height < 44f * L.dp - 0.01f) bad += $"{s.x}×{s.y}: «+» de menos de 44 px CSS; ";
         }
         TestProbe.Check("[UI-04] el mando cabe y nada se pisa (móvil horizontal y vertical, tableta 4:3, monitor, móvil pequeño)", bad.Length == 0, bad);
+
+        // (PB-169) Como en el santuario 1 de CodeShip, medido en vivo (Playwright, iPhone 13 en vertical, 390×664 px CSS).
+        var codeship = new Dictionary<JoyConMap.Pad, Rect>
+        {
+            { JoyConMap.Pad.Up, new Rect(63, 356, 50, 50) }, { JoyConMap.Pad.Down, new Rect(63, 454, 50, 50) }, { JoyConMap.Pad.Left, new Rect(14, 405, 50, 50) }, { JoyConMap.Pad.Right, new Rect(112, 405, 50, 50) },
+            { JoyConMap.Pad.L, new Rect(14, 306, 64, 44) }, { JoyConMap.Pad.ZL, new Rect(14, 256, 64, 44) }, { JoyConMap.Pad.Minus, new Rect(118, 306, 44, 44) }, { JoyConMap.Pad.Capture, new Rect(118, 256, 44, 44) },
+            { JoyConMap.Pad.X, new Rect(277, 356, 50, 50) }, { JoyConMap.Pad.A, new Rect(326, 405, 50, 50) }, { JoyConMap.Pad.B, new Rect(277, 454, 50, 50) }, { JoyConMap.Pad.Y, new Rect(228, 405, 50, 50) },
+            { JoyConMap.Pad.R, new Rect(312, 306, 64, 44) }, { JoyConMap.Pad.ZR, new Rect(312, 256, 64, 44) }, { JoyConMap.Pad.Plus, new Rect(228, 306, 44, 44) }, { JoyConMap.Pad.Home, new Rect(228, 256, 44, 44) },
+        };
+        string off = "";
+        TouchControls.Layout C = TouchControls.Compute(390f, 664f);
+        foreach (var kv in codeship)
+        {
+            Rect m = C.rects[kv.Key], c = kv.Value;
+            if (Mathf.Abs(m.x - c.x) > 1f || Mathf.Abs(m.y - c.y) > 1f || Mathf.Abs(m.width - c.width) > 0.5f || Mathf.Abs(m.height - c.height) > 0.5f) off += $"{kv.Key} en {m} y no en {c}; ";
+        }
+        // Y al doble de densidad, el mismo dibujo al doble (la misma parte de la pantalla): un botón del rombo, 50/390 del ancho.
+        TouchControls.Layout D = TouchControls.Compute(780f, 1328f);
+        if (Mathf.Abs(D.rects[JoyConMap.Pad.A].width / 780f - 50f / 390f) > 0.002f) off += $"a 780×1328 el botón A mide {D.rects[JoyConMap.Pad.A].width:0} px; ";
+        if (Mathf.Abs(C.stickRadius - 60f) > 0.01f || Mathf.Abs(C.moveCenter.x - 82f) > 0.5f || Mathf.Abs(C.moveCenter.y - 578f) > 0.5f) off += $"joystick de andar en {C.moveCenter} (r {C.stickRadius}); ";
+        // (revisión PB-169) El botón de pausa del móvil no cae sobre ningún botón ni joystick del mando, en vertical ni en horizontal.
+        foreach (Vector2 scr in new[] { new Vector2(390f, 664f), new Vector2(750f, 342f), new Vector2(1266f, 585f) })
+        {
+            TouchControls.Layout P = TouchControls.Compute(scr.x, scr.y);
+            Rect pr = SceneLauncher.MobilePauseRect(scr.x, scr.y);
+            foreach (var kv in P.rects) if (pr.Overlaps(kv.Value)) off += $"a {scr.x}×{scr.y} la pausa pisa {kv.Key}; ";
+            foreach (Vector2 c in new[] { P.moveCenter, P.lookCenter })
+                if (new Rect(c.x - P.stickRadius, c.y - P.stickRadius, 2f * P.stickRadius, 2f * P.stickRadius).Overlaps(pr)) off += $"a {scr.x}×{scr.y} la pausa pisa un joystick; ";
+            if (pr.y < 0f || pr.xMax > scr.x) off += $"a {scr.x}×{scr.y} la pausa se sale ({pr}); ";
+        }
+        TestProbe.Check("[UI-13] el mando mide y se coloca como en el santuario 1 de CodeShip (iPhone 13), y ocupa la misma parte de cualquier pantalla", off.Length == 0, off);
+
+        // La hoja (retos, Grimorio, ajustes): abajo desde el 38 % en vertical (el reto, desde el 30 % en un móvil bajo); a la derecha y 46 % en horizontal.
+        Rect sv = CsUi.SheetRectFor(390f, 664f, 1f), sr = CsUi.SheetRectFor(390f, 664f, 1f, true), sh = CsUi.SheetRectFor(750f, 342f, 1f), sw = CsUi.SheetRectFor(1920f, 1080f, 1f);
+        bool sheet = Mathf.Abs(sv.y - 252.32f) < 0.5f && sv.width == 390f && Mathf.Abs(sr.y - 199.2f) < 0.5f
+            && Mathf.Abs(sh.width - 345f) < 0.5f && Mathf.Abs(sh.x - 405f) < 0.5f && sh.height == 342f && Mathf.Abs(sw.width - 480f) < 0.5f;
+        TestProbe.Check("[UI-15] las hojas van donde en CodeShip (vertical abajo, horizontal a la derecha)", sheet, $"{sv} · {sr} · {sh} · {sw}");
     }
+
+    static Rect Shrunk(Rect r) { float k = r.height * 0.05f; return new Rect(r.x + k, r.y + k, r.width - 2f * k, r.height - 2f * k); }
 
     static void Theme()
     {
-        Texture2D d = CsTheme.Disc(CsTheme.PadFill, CsTheme.PadRim, 64);
+        Texture2D d = CsTheme.Shape(64, 64, 32f, CsTheme.Radial(0.4f, 0.35f, CsTheme.Cyan, CsTheme.Glass, 0.7f), CsTheme.OrangeLight, 2f);
         Texture2D r = CsTheme.Rounded(CsTheme.Glass, CsTheme.CyanSoft, 10);
-        Texture2D p = CsTheme.Pill(CsTheme.Orange, CsTheme.OrangeLight, 32);
+        Texture2D p = CsTheme.Shape(64, 32, 16f, (u, v) => CsTheme.Orange, CsTheme.OrangeLight, 2f);
         bool ok = d.GetPixel(0, 0).a < 0.05f && d.GetPixel(32, 32).a > 0.5f
             && r.GetPixel(0, 0).a < 0.05f && r.GetPixel(r.width / 2, r.height / 2).a > 0.5f
             && p.width == 2 * p.height && p.GetPixel(0, 0).a < 0.05f && p.GetPixel(p.width / 2, p.height / 2).a > 0.5f;
@@ -135,6 +177,40 @@ public class JoyConTest : MonoBehaviour, ITestUnit
 
         Object.DestroyImmediate(go);
         yield return null;
+    }
+
+    // ── (PB-169) El mando se oculta con cualquier modal y vuelve al cerrarlo ──
+    static IEnumerator HideWithModals()
+    {
+        GameKeys.CloseDialogs();
+        HudModals.Close();
+        var go = new GameObject("JoyConTest_hide");
+        go.AddComponent<TouchControls>();
+        yield return null; yield return null; yield return null;
+        bool shownFirst = TouchControls.Showing;
+        string missed = "";
+        HudModals.Current = HudModals.Modal.Misiones;
+        yield return null;
+        if (TouchControls.Showing) missed += "Misiones; ";
+        HudModals.Close();
+        Grimorio.Open();
+        yield return null;
+        if (TouchControls.Showing) missed += "Grimorio; ";
+        Grimorio.Close();
+        ChoiceDialog.Show("prueba", new[] { "a", "b" }, _ => { });
+        yield return null;
+        if (TouchControls.Showing) missed += "diálogo de opciones; ";
+        ChoiceDialog.Close();
+        MicroRootMenu.Toggle(true);   // (revisión PB-169) el desplegable ☰ crece hacia abajo, sobre los botones
+        yield return null;
+        if (TouchControls.Showing) missed += "menú ☰; ";
+        MicroRootMenu.Toggle(false);
+        yield return null; yield return null; yield return null;
+        bool back = TouchControls.Showing;
+        Object.Destroy(go);
+        yield return null;
+        TestProbe.Check("[UI-14] el mando se oculta con un modal abierto (Misiones, Grimorio, diálogo, menú ☰) y vuelve al cerrarlo", shownFirst && missed.Length == 0 && back,
+            $"antes {shownFirst} · no se ocultó con: {missed} · después {back} · abiertos: {string.Join(", ", CsUi.OpenModals)}");
     }
 
     // ── EL GRIMORIO (2026-11-20): todos los hechizos, cada uno con su reto, y acertarlo lo lanza ──

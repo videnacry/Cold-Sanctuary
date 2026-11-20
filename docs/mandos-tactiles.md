@@ -110,3 +110,81 @@ hechizos existentes y se lanzan con los retos de código». `Assets/Scripts/Cont
 - **La línea** (`SpellConsole.LineFor`): los parámetros por defecto de la plantilla; un destino vacío se rellena con lo que sugiere el
   interés del poseído (la misión de ahora, la persona más cercana…), y si no hay sugerencia se deja al hechizo.
 - Siguiente paso posible: elegir el destino en el reto (una pregunta de elegir con las sugerencias) en vez de tomar la primera.
+
+## 6. Rehechos según el santuario 1 de CodeShip (2026-11-20, PB-169)
+
+Berón: «los mandos de switch están muy pequeños y se deben ocultar cuando se muestran modales; quizás lo mejor para recrear la ui/ux
+de coldsanctuary1 es mirarlo en vivo y de allí sacar información… montar de cero los mandos, modales y menús; también puedes reutilizar
+si eso no disminuye la fidelidad».
+
+**Cómo se midió.** CodeShip (`Catravcul/CodeShip`, rama `integracion`, f4ddd17) clonado y levantado con `vite` en local (la web de
+Pages no se alcanza desde el contenedor), santuario 1 abierto desde su pantalla de inicio y medido con Playwright en un iPhone 13
+(390×664 px CSS en vertical, 750×342 en horizontal): la caja de cada botón del mando, las ventanas de Misiones (+), Áreas (−) y los
+Ajustes generales (inicio). Los números salen de su CSS: `src/ui/action-pad.css`, `style.css` (`.vstick`, `.duel.sheet`),
+`map-window.css`, `nav-map.css`, `settings.css`, `task-board.css`, `areas-window.css`.
+
+**Por qué se veían pequeños.** El mando medía ~10 % del lado corto de la pantalla en píxeles de Unity, y la web del móvil va a densidad
+≤ 1,5: un botón de 41 px CSS, joysticks de 86 y nombres de 7 px. En CodeShip el botón mide 50, el joystick 120 y el nombre 9.
+
+### 6.1 La medida (`CsUi.Dp`)
+
+Todo se dibuja en **píxeles CSS de CodeShip** pasados a la pantalla por `CsUi.Dp = min(ancho / 390, alto / 664)` en vertical
+(`750` y `342` en horizontal): la pantalla virtual mide al menos lo que el iPhone 13 de CodeShip, así que el mando y las ventanas ocupan
+**la misma parte de la pantalla** que allí y lo que cabe allí cabe aquí (en una tableta, algo más grande). En el escritorio, 1 px por px.
+La piel `CsTheme` también pone la letra a 13 px CSS en el móvil, para los menús que aún no usan el kit.
+
+### 6.2 Los mandos (`TouchControls`, rehecho)
+
+| Pieza | CodeShip | Aquí |
+|---|---|---|
+| Rombo y cruceta | 50 px, a 49 px del centro en una caja de 148; cruceta con radio 12 | igual |
+| Gatillos L/ZL/R/ZR | píldoras 64×44 a −50 y −100 sobre la caja | igual |
+| «−», captura, «+», inicio | 44 px; captura con radio 8 | igual |
+| Colocación vertical | cajas a 14 px de los lados y 160 de abajo | igual (UI-13 compara las 16 cajas con las medidas en vivo) |
+| Colocación horizontal | cajas a 154 px de los lados y 20 de abajo; gatillos 140 px hacia fuera | igual |
+| Aspecto | `radial-gradient(at 40% 35%, #4a4f57cc, #1c1f24cc 70%)`, borde 2 px `#ffffff40`, opacidad 0,62; puesto en naranja; pulsado se hunde (0,92) | igual (texturas generadas) |
+| Letras | marca 17 px negrita (cruceta 14, gatillos 13, pequeños 15), nombre 9 px debajo | igual (fuente de Unity, no la monoespaciada) |
+| Joysticks | 120 px fijos a 22 px de los lados y 26 de abajo; pomo de 50 hasta el borde; «MOVERSE»/«MIRAR» debajo | igual; la cámara con la curva v·\|v\| de CodeShip |
+| Mirar arrastrando la pantalla | no (reglas.md §5.7) | quitado |
+| Joystick de andar flotante | no | quitado (fijo como en CodeShip) |
+
+### 6.3 Ocultarlos con cualquier modal
+
+`CsUi.ModalOpen`: toda ventana dibujada con el kit se apunta sola al dibujarse (`CsUi.MarkModal`), y además cuentan los que ya
+llevaban indicador: `GameKeys.DialogOpen` (pausa, Grimorio, lecciones, consola del reactor, diálogo de opciones, panel de confirmación,
+menú de misiones, reto de código), las ventanas de `HudModals` (Horario, Recursos, Misiones, Tareas, Áreas), el lanzador, el panel de
+progreso y los diálogos con personajes. Con uno abierto el mando no se dibuja ni recibe toques, y suelta lo que tuviera pulsado (Correr,
+si estaba puesto, se queda puesto). **El toque que pulsó un botón del mando no llega como clic a la ventana que abre** (CodeShip
+`swallowGhostClick`): `TouchControls.PadTouch` y el kit descartan su clic simulado. Excepción: el viaje automático no lo oculta, porque
+aquí se corta tocando el joystick.
+
+Tras la revisión del PR #314: también cuenta el menú ☰ del microcosmos (`MicroRootMenu.Open`), que crece hacia abajo. Si un modal se
+abre solo mientras se sujeta un joystick (un diálogo al llegar andando), ese dedo deja de ser del mando y la ventana recibe toques; solo
+los dedos de los botones siguen descartando su clic. En el móvil, el botón «F10: pausa · Inicio» ya no va abajo a la derecha (pisaba el
+joystick MIRAR y se llevaba su toque): si el ⌂ del mando es la pausa, no sale; si el ⌂ abre el menú ☰, va encima del botón más alto de
+la derecha (`SceneLauncher.MobilePauseRect`, comprobado en UI-13).
+
+### 6.4 Las ventanas (`CsUi`, rehechas)
+
+| Ventana | Pieza de CodeShip | Archivo |
+|---|---|---|
+| Grimorio (R / F8) | hoja (`.settings-sheet`): abajo desde el 38 % en vertical, a la derecha en horizontal (min(480 px, 46 %)); cabecera en versalitas lila con su ✕; cada hechizo una fila con «Lanzar» | `Control/Grimorio.cs` |
+| Ajustes generales (inicio / F10) | la misma hoja; filas `.set-row` con su valor en verde o ámbar; «Seguir» en píldora | `UI/SceneLauncher.cs` |
+| Diálogo de opciones | la misma hoja; cada opción una fila | `UI/ChoiceDialog.cs` |
+| Reto de código | `.duel.sheet` (desde el 30 % en un móvil bajo) | `CodeShip/CodeChallengeSheet.cs` |
+| Misiones y jornada (+ / F4) | ventana a pantalla completa (`.nav-map`): fondo radial, botones cuadrados de 44 px, ✕ | `UI/HudModals.cs` |
+| Tareas (+ / F6) y Áreas (− / F7) | la misma ventana, chips de grupo con su cuenta (`.ar-chips`), filas `.mw-row` con «Ir» cian | `CodeShip/MicroTaskWindows.cs` |
+
+Lo que no se trajo: el mapa tridimensional de arriba en Misiones/Áreas (aquí no hay mapa de áreas), la fuente monoespaciada (en la web
+de Unity no hay fuentes del sistema) y el botón Y en naranja cuando hay algo con qué interactuar (falta una señal única de «hay algo al
+alcance»).
+
+### 6.5 Pruebas (g141)
+
+- UI-04 (ampliada): cabe y no se pisa también en el iPhone a densidad 1,5 (585×996 y 1266×585); «+» nunca baja de 44 px CSS.
+- UI-13: a 390×664 las 16 cajas y el joystick están donde las midió Playwright en CodeShip; al doble de densidad, el mismo dibujo al doble.
+- UI-14: el mando se oculta con Misiones, el Grimorio y un diálogo de opciones, y vuelve al cerrarlos.
+- UI-15: las hojas van donde en CodeShip (vertical abajo desde el 38 % o el 30 %, horizontal a la derecha).
+
+Compilado aquí contra las referencias de Unity 2021.3 (NuGet `UnityEngine.Modules`) con stubs de UI/TMP/URP: sin errores en los
+archivos tocados. Falta: `tools/verify-compile.sh` en el PC, correr g141 y probar en el móvil (vertical y horizontal).

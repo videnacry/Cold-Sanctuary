@@ -79,8 +79,8 @@ public class HudModals : MonoBehaviour
     static string Label(Modal m) => WebLigera.Active ? (m == Modal.Horario ? "Horario libre" : m == Modal.Recursos ? "Recursos" : "Misiones y jornada") : m == Modal.Horario ? "F2: Horario libre" : m == Modal.Recursos ? "F3: Recursos" : "F4: Misiones y jornada";
 
     float _nextRefresh;
+    bool _laid;
     Vector2 _scroll;
-    GUIStyle _st;
     static readonly List<string> Lines = new List<string>();
 
     void Update()
@@ -97,7 +97,8 @@ public class HudModals : MonoBehaviour
     void OnGUI()
     {
         CsTheme.Use();   // (2026-11-19) el tema de CodeShip para los menús (UI/CsTheme.cs)
-        if (!ColdSanctuary.TestRunner.Running && !GameKeys.MenuOpen)
+        bool big = Current == Modal.Misiones || Current == Modal.Tareas || Current == Modal.Areas;   // a pantalla completa, con su ✕
+        if (!ColdSanctuary.TestRunner.Running && !GameKeys.MenuOpen && !big)
         {
             int slot = 0;
             foreach (Modal m in Order)
@@ -107,7 +108,7 @@ public class HudModals : MonoBehaviour
                 slot++;
             }
         }
-        if (Current == Modal.Misiones) DrawMisiones();
+        if (CsUi.Draw(ref _laid, Current == Modal.Misiones)) DrawMisiones();
     }
 
     // ── La ventana de misiones y jornada ─────────────────────────────────────────────────────────
@@ -159,18 +160,23 @@ public class HudModals : MonoBehaviour
         return l;
     }
 
+    /// <summary>(2026-11-20, PB-169) La ventana a pantalla completa de CodeShip (Misiones del santuario 1: .nav-map + .map-window), con su ✕.</summary>
     void DrawMisiones()
     {
-        if (_st == null) _st = new GUIStyle(GUI.skin.label) { richText = true, fontSize = 13, wordWrap = false };
-        if (Lines.Count == 0 || Time.unscaledTime >= _nextRefresh) { Lines.Clear(); Lines.AddRange(MisionesLines()); _nextRefresh = Time.unscaledTime + 1f; }
-        float w = Mathf.Min(640f, Screen.width - 40f), h = Mathf.Min(Screen.height - 120f, 50f + Lines.Count * 19f);
-        var r = new Rect((Screen.width - w) * 0.5f, 60f, w, h);
-        GUI.Box(r, ""); GUI.Box(r, "");
-        GUI.Label(new Rect(r.x + 12f, r.y + 6f, w - 110f, 22f), "<b>✦ Misiones y jornada</b>  <size=11>(Esc o F4 para cerrar)</size>", _st);
-        if (GUI.Button(new Rect(r.xMax - 80f, r.y + 6f, 68f, 22f), "cerrar")) Close();
-        var view = new Rect(0f, 0f, w - 40f, Lines.Count * 19f);
-        _scroll = GUI.BeginScrollView(new Rect(r.x + 8f, r.y + 32f, w - 16f, h - 40f), _scroll, view);
-        for (int i = 0; i < Lines.Count; i++) GUI.Label(new Rect(4f, i * 19f, view.width, 19f), Lines[i], _st);
-        GUI.EndScrollView();
+        if (Event.current.type == EventType.Layout && (Lines.Count == 0 || Time.unscaledTime >= _nextRefresh)) { Lines.Clear(); Lines.AddRange(MisionesLines()); _nextRefresh = Time.unscaledTime + 1f; }
+        GUI.depth = -800;
+        Rect r = CsUi.WindowFrame();
+        if (CsUi.WindowHead(r, "Misiones y jornada", out Rect body) == 0) { Close(); return; }
+        GUILayout.BeginArea(body);
+        _scroll = GUILayout.BeginScrollView(_scroll);
+        foreach (string line in Lines)
+        {
+            if (line.Length == 0) { GUILayout.Space(CsUi.Px(6f)); continue; }
+            bool head = line.StartsWith("<b>") && line.EndsWith("</b>");   // «Misiones aceptadas», «Jornada de hoy»
+            if (head) CsUi.SectionLabel(line.Substring(3, line.Length - 7));
+            else GUILayout.Label(line.TrimStart(), line.StartsWith("      ") ? CsUi.RowSmall : CsUi.Body);
+        }
+        GUILayout.EndScrollView();
+        GUILayout.EndArea();
     }
 }
