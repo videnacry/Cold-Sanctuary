@@ -485,6 +485,7 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | REN-07 | REN | Regla W15: Un MonoBehaviour que se guarda en la escena va en su propio archivo, con el nombre de la clase. | JornadaTest | 50 | W15 | — | manual §«Se comprueba en» |
 | REN-08 | REN | Regla W16: sistema de QA: catálogo, registro, peticiones, manual y pruebas cuadran (QaCheck) | QaCheckTest | 118 | W16 | — | manual §10; añadido a mano el 2026-11-13 |
 | REN-09 | REN | Web ligera (PB-156): santuario + 61 microcosmos en 3 builds WebGL gzip, joystick de cámara, una página por microcosmos y su prueba `?prueba=1` en Edge sin ventana (web-continua.md) | — | — | — | PB-156 | añadido el 2026-11-18 |
+| REN-10 | REN | Visor sin build (PB-168): `VisorExport` vuelca una escena (cubos con color + historia y retos) sin Play; `tools/visor/index.html` (three.js) la dibuja y deja resolver sus retos en el móvil; se sube con la web (`visor/`) | — | — | — | PB-168 | añadido el 2026-11-20 |
 
 ## PX · Recorridos en vivo
 
@@ -548,3 +549,4 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | HC-04 | Hueco | Hora de la suite diaria (nivel N4) acordada con Berón (Unity es compartido) | — | Berón | Abierto | — |
 | HC-05 | Hueco | PB-165: el distrito de Hawthorne rehecho pasa las rondas (MIC-87, MIC-93); faltan el detalle interior de la fábrica, los retos de código y el visto bueno de Berón | PB-165 | hilo «Rehacer distrito Hawthorne desde cero» → Berón | Abierto | — |
 | HC-06 | Hueco | PB-166: retos de diálogo y misiones de vínculo (amistad, estudiante, combatir a su lado, proteger) en los microcosmos; primero en Hawthorne, con la historia real del escenario | PB-166 | hilo «Rehacer distrito Hawthorne desde cero» | Abierto | — |
+| HC-07 | Hueco | PB-168: recrear el microcosmos de Hawthorne en CodeShip (nivel en su inicio + máquina del santuario 1), con excepción a `REAL_ONLY` y nombres cambiados con tabla de referencias; prompt en la carpeta del proyecto (`codeship-microcosmos/`) | PB-168 | chat de CodeShip de Berón | Abierto | — |
