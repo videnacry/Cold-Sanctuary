@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Comprueba las reglas de personajes sin abrir Unity (docs/reglas-personajes.md, P2 y P7):
+# Comprueba las reglas de personajes sin abrir Unity (docs/reglas/reglas-personajes.md, P2 y P7):
 #   · cada persona del mesocosmos tiene su ficha docs/personajes/<nombre>.md;
 #   · cada entrada de Professions.All tiene su base en Professions.Basis.
 # USO: tools/check-personajes.sh   (desde cualquier carpeta). Devuelve 1 si falta algo.

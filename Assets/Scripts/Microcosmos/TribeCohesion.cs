@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// COHESIÓN DE MANADA + ABANDONO (docs/microcosmos-level1.md §Impulsos/beats, rebanada 2): mide, de forma LEGIBLE,
+/// COHESIÓN DE MANADA + ABANDONO (docs/microcosmos/microcosmos-level1.md §Impulsos/beats, rebanada 2): mide, de forma LEGIBLE,
 /// cómo de unida o dispersa está la tribu. Los miembros = las Ánimas con <see cref="SoulRecord"/> (el elenco). Cada
 /// tick calcula el centroide y la dispersión media respecto a él → <see cref="Cohesion"/> ∈ [0,1] (1 = apiñados,
 /// 0 = desperdigados). Cuando la cohesión cae por debajo de <see cref="abandonThreshold"/> durante

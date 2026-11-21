@@ -4,7 +4,7 @@ using System.Text;
 using UnityEngine;
 
 /// <summary>
-/// Misión-OBSERVACIÓN (WASD) del mundo vivo (docs/testing-checklist.md §39). No es un check mecánico de "llega al punto":
+/// Misión-OBSERVACIÓN (WASD) del mundo vivo (docs/qa/testing-checklist.md §39). No es un check mecánico de "llega al punto":
 /// el jugador **recorre el santuario** y un **HUD de status global** le muestra la salud del ecosistema (por especie:
 /// etapas child/teen/adult, hambrientos, en celo, enfermos; totales herbívoros vs depredadores; tendencia nacimientos/
 /// muertes). Además **loguea** el status cada `logInterval` y **alerta** de desbalances (extinción de una especie,

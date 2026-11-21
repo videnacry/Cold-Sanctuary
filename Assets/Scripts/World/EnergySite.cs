@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// EL PARQUE ENERGÉTICO en juego (Berón 2026-11-05; docs/energia.md): el campo solar, los aerogeneradores, la turbina mareal piloto y el almacén, y el balance con la
+/// EL PARQUE ENERGÉTICO en juego (Berón 2026-11-05; docs/areas/energia.md): el campo solar, los aerogeneradores, la turbina mareal piloto y el almacén, y el balance con la
 /// demanda de todos los pisos. El reactor cubre lo que falte hasta su tope; lo que sobra carga las baterías y luego el silo de arena. Si para el reactor,
 /// las baterías sostienen lo esencial. La jornada lo cuida: limpiar, instalar, reparar, revisar. Vive una vez por segundo: nada espera a nada.
 /// </summary>
@@ -211,7 +211,7 @@ public class EnergySite : MonoBehaviour
         }
     }
 
-    // LA DISUASIÓN: solo cuando salta un detector (no enseñarla siempre es lo que apunta la habituación). Las figuras y el dragón son del juego: docs/energia.md §7.
+    // LA DISUASIÓN: solo cuando salta un detector (no enseñarla siempre es lo que apunta la habituación). Las figuras y el dragón son del juego: docs/areas/energia.md §7.
     void Scare(Vector3 at)
     {
         if (Time.time - _scareAt < 60f) return;
@@ -295,7 +295,7 @@ public class EnergySite : MonoBehaviour
         if (d == 2) l.Add(new WorkRoster.Mission(EnergyRule.Area, "ene_almacen", "Revisar el almacén: calefacción de las baterías y silo de arena", 0.5f));
         l.Add(new WorkRoster.Mission(EnergyRule.Area, "ene_ronda_aves", "Ronda de aves: buscar heridas y retirar restos al pie de torres, mástiles y mesas", 0.5f));
         if (s.DeterrentStrength < 0.7f) l.Add(new WorkRoster.Mission(EnergyRule.Area, "ene_disuasion", "Cambiar de sitio las figuras y revisar los drones, para que las aves no se acostumbren", 1f));
-        // ICEBERGS (docs/sitio-nuclear.md §14): remolcarlo; y si aun así llega, parar lo que gira.
+        // ICEBERGS (docs/areas/sitio-nuclear.md §14): remolcarlo; y si aun así llega, parar lo que gira.
         if (Iceberg.Threatening(IcebergRule.Site.Energy) != null) l.Add(new WorkRoster.Mission(EnergyRule.Area, Iceberg.EnergyTow, "Iceberg a la vista: seguirlo por radar y sonar y remolcarlo lejos del parque", SiteLineRule.MissionHours, true));
         if (Iceberg.Danger(IcebergRule.Site.Energy)) l.Add(new WorkRoster.Mission(EnergyRule.Area, "ene_parada", "Iceberg encima: parar y bloquear aerogeneradores y turbina mareal", 1f, true));
         BirdRehabPoint rp = BirdRehabPoint.Instance;

@@ -4,7 +4,7 @@ using UnityEngine;
 
 /// <summary>
 /// TEST DE LAS TAREAS DEL JUGADOR CON «E» (Berón 2026-11-04: «para todas las tareas e iniciaciones vamos a utilizar el modelo de
-/// Ambrosio, de modo que se pueden resolver pulsando "E" en los lugares indicados»; docs/tareas-del-jugador.md). Simula la E
+/// Ambrosio, de modo que se pueden resolver pulsando "E" en los lugares indicados»; docs/sistemas/tareas-del-jugador.md). Simula la E
 /// (<see cref="PlayerTaskRunner.Press"/>, lo mismo que llama la tecla) con el jugador en cada sitio:
 ///  1. CATÁLOGO Y MARCADORES: toda misión que puede tocarle (el catálogo de la jornada, las del día, las obras, las
 ///     elaboraciones, las reparaciones) tiene pasos (≥ 2, con acción) y un marcador «E — acción» por paso; todas,

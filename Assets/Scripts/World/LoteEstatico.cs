@@ -9,7 +9,7 @@ using UnityEngine.SceneManagement;
 using Debug = UnityEngine.Debug;
 
 /// <summary>
-/// LOTE ESTÁTICO (docs/rendimiento.md; 2026-11-05: SampleScene en Play, 65 545 renderers y 3 FPS, y 51 596 de los 53 128 de la
+/// LOTE ESTÁTICO (docs/plataforma/rendimiento.md; 2026-11-05: SampleScene en Play, 65 545 renderers y 3 FPS, y 51 596 de los 53 128 de la
 /// escena guardada son el cubo primitivo). Al cargar una escena, EN PLAY, junta los cubos quietos en mallas por zona y las dibuja
 /// en su lugar. La escena no cambia y NO hay que reconstruir nada:
 /// - cada pieza sigue siendo su GameObject, con su nombre, su collider y su MeshRenderer ENCENDIDO (enabled = true): solo lleva

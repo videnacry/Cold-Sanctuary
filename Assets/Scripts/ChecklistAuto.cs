@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Cubre por CÓDIGO bloques de `docs/testing-checklist.md` que la guía pedía comprobar **a mano en el
+/// Cubre por CÓDIGO bloques de `docs/qa/testing-checklist.md` que la guía pedía comprobar **a mano en el
 /// inspector**, para que queden con evidencia `[TEST]` en el log como el resto. No simula pulsaciones:
 /// pone directamente el estado que la tecla o el inspector provocarían y asevera el efecto.
 ///

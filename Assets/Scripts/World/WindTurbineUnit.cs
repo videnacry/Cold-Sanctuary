@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// UN AEROGENERADOR del Parque Energético (docs/energia.md): gira con el viento y se PARA si un ave se acerca o hay alguien al pie de la torre.
+/// UN AEROGENERADOR del Parque Energético (docs/areas/energia.md): gira con el viento y se PARA si un ave se acerca o hay alguien al pie de la torre.
 /// El sitio (<see cref="EnergySite"/>) le dice qué ha detectado una vez por segundo; rearma sola <see cref="EnergyRule.ResumeSeconds"/> s después.
 /// </summary>
 public class WindTurbineUnit : MonoBehaviour

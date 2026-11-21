@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// El "alma"/input PERSISTENTE del jugador (docs/anima-architecture.md §11.5). No es un cuerpo: es donde
+/// El "alma"/input PERSISTENTE del jugador (docs/sistemas/anima-architecture.md §11.5). No es un cuerpo: es donde
 /// viven los mandos y el CAMBIO DE CUERPO (body-swap). Al cambiar de cuerpo:
 ///   1. LIBERA el cuerpo anterior (su IA retoma el mando),
 ///   2. SECUESTRA (posee) el nuevo con el <see cref="PossessionSpell"/>,

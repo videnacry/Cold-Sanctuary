@@ -3,7 +3,7 @@ using UnityEngine;
 
 // (En su propio archivo: Unity solo serializa en la escena un MonoBehaviour cuyo archivo se llama como la clase; si no, en Play queda «Missing Script».)
 /// <summary>
-/// EL ALIMENTADOR (misión de la jornada, por rotación: cualquiera; docs/alimentador.md): recoge raciones en el almacén del laboratorio, se reserva un
+/// EL ALIMENTADOR (misión de la jornada, por rotación: cualquiera; docs/areas/alimentador.md): recoge raciones en el almacén del laboratorio, se reserva un
 /// depredador de la lista compartida (<see cref="PredatorRound"/>), lo sigue hasta su distancia, evalúa, lanza o marca y sigue. Cada espera, acotada.
 /// </summary>
 public class PredatorFeeder : MonoBehaviour

@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Farming NO-violento (docs/world-topology-and-planes.md §4.1).
+/// Farming NO-violento (docs/sistemas/world-topology-and-planes.md §4.1).
 ///
 /// El "combate" es jugar con la criatura para **descargar su tensión** (no dañarla). Cuando la tensión
 /// llega a 0 queda **serena** (deja de ser jugable), suelta recompensa, y entonces el jugador le **da

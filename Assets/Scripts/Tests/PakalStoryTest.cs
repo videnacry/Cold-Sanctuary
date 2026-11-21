@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// TEST DEL MICROCOSMOS MAYA: PAKAL DE PALENQUE (docs/microcosmos-maya-pakal.md). Carga «Microcosmos_Pakal» (espera acotada) y mira:
+/// TEST DEL MICROCOSMOS MAYA: PAKAL DE PALENQUE (docs/microcosmos/microcosmos-maya-pakal.md). Carga «Microcosmos_Pakal» (espera acotada) y mira:
 /// - su fecha (683) y su región (Maya: el estilo «maya_clasico» del catálogo en sus muebles);
 /// - la historia (StoryMission) con sus pasos y objetivos, y que avanza paso a paso (todos menos el último);
 /// - la CIUDAD sobre su plano real: el Palacio y el Templo de las Inscripciones en terrazas (plantas que se pisan, con rampa), el

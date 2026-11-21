@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// EDIFICIOS CERRADOS (docs/plan-microcosmos-realismo.md §3.3, P1–P4; Berón 2026-11-18: vuelven los muros y los techos, con vista
+/// EDIFICIOS CERRADOS (docs/microcosmos/plan-microcosmos-realismo.md §3.3, P1–P4; Berón 2026-11-18: vuelven los muros y los techos, con vista
 /// de corte por dentro). <see cref="Enclose"/> levanta los cuatro muros de un edificio en el borde de su suelo (por dentro: el suelo
 /// no crece y <see cref="CivicBuilder.Settle"/> lo sigue midiendo igual), el hueco de su PUERTA (<see cref="MicroDoor"/>, ensanchada a
 /// MicroBuildRules.DoorWidth si la real es más estrecha) con su dintel, el TECHO de su estilo (plano o a dos aguas) y la VISTA DE CORTE

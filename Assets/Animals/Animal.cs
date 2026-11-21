@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
-// enum Reaction → movido a ThreatResponder.cs (etapa 1, docs/anima-dissolving-animal.md)
+// enum Reaction → movido a ThreatResponder.cs (etapa 1, docs/sistemas/anima-dissolving-animal.md)
 
 public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA (etapa 5): toda la conducta/data está en componentes+catálogos
 {
@@ -139,13 +139,13 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
     protected virtual void ConfigureThreat(ThreatResponder t) { }
     public virtual float PackFactor => Prof.packFactor;
     // Umbral de percepción/reacción ante amenazas (usado en Escape). Baseline por calibrar;
-    // debe escalar con agilidad/inteligencia cuando existan esos stats. Ver docs/living-entity.md.
+    // debe escalar con agilidad/inteligencia cuando existan esos stats. Ver docs/sistemas/living-entity.md.
     // Bases evolutivas: DATA del componente SpeciesBody (etapa 5). Fallback a los defaults si aún no está.
     public virtual float BaseSensibility => _speciesBody != null ? _speciesBody.baseSensibility : 5f;
     public virtual float BaseAgility    => _speciesBody != null ? _speciesBody.baseAgility : 1f;
     public virtual float BasePerception => _speciesBody != null ? _speciesBody.basePerception : 1f;
 
-    /// <summary>Nombre del ARQUETIPO de especie (docs/soul-composition-blend.md). Si se define, `Init()` llena las
+    /// <summary>Nombre del ARQUETIPO de especie (docs/sistemas/soul-composition-blend.md). Si se define, `Init()` llena las
     /// aptitudes NO gestionadas por `Base*` (fuerza/masa/aguante/adaptabilidad + mentales) desde el arquetipo →
     /// migración fase 3 (mitad segura): los animales dejan de tener aptitudes planas (todas 1). null = sin cambio.</summary>
     protected virtual string SpeciesArchetype => null;
@@ -263,7 +263,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         if (GetComponent<SicknessState>() == null) gameObject.AddComponent<SicknessState>();  // enfermedad (hechizo-estado): presa fácil + rastro Sickness; cura = enfermería.
         if (GetComponent<DefecationNeed>() == null) gameObject.AddComponent<DefecationNeed>();   // ir al baño: antes ningún animal lo tenía
         if (GetComponent<AnimalVitals>() == null) gameObject.AddComponent<AnimalVitals>();       // registro de su día (comió, durmió, baño, recorrido) para el censo
-        // AGUA y GUARIDA (LifeHistory; docs/ciclo-de-vida.md): beber / comer nieve / el agua de la comida, y la guarida de
+        // AGUA y GUARIDA (LifeHistory; docs/sistemas/ciclo-de-vida.md): beber / comer nieve / el agua de la comida, y la guarida de
         // maternidad de la osa y la perra.
         LifeHistory life = LifeHistory.Of(LifeArchetype);
         if (life.water != LifeHistory.Water.None && GetComponent<Hydration>() == null) gameObject.AddComponent<Hydration>();
@@ -276,13 +276,13 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         if (ColdBirds.Is(spm) && GetComponent<SnowPetrelLife>() == null) gameObject.AddComponent<SnowPetrelLife>();   // vuela (sin NavMesh)
         SleepCycle sleep = GetComponent<SleepCycle>();
         if (sleep == null) { sleep = gameObject.AddComponent<SleepCycle>(); sleep.nocturnal = SleepCycle.IsNocturnal(spm); }   // sueño día/noche por el reloj (Clock); los nocturnos duermen de día; despierta ante amenazas.
-        // Conductas propias de especie que son COMPONENTES (docs/era-species-behavior.md): acorazarse (bola/concha),
+        // Conductas propias de especie que son COMPONENTES (docs/sistemas/era-species-behavior.md): acorazarse (bola/concha),
         // llamar a pareja (destellos/canto) y correr de lado. Cada uno decide por los stats del individuo.
         if (PassiveDefence.Has(spm) && GetComponent<PassiveDefence>() == null) gameObject.AddComponent<PassiveDefence>();
         if (MatingSignal.KindOf(spm) != MatingSignal.Kind.None && GetComponent<MatingSignal>() == null) gameObject.AddComponent<MatingSignal>();
         if (SidewaysGait.Has(spm) && GetComponent<SidewaysGait>() == null) gameObject.AddComponent<SidewaysGait>();
-        if (GetComponent<AcuteStressResponse>() == null) gameObject.AddComponent<AcuteStressResponse>();  // CONTROL POR NECESIDAD (todas las animas): apremio→adrenalina/niebla→el cuerpo toma el mando. docs/microcosmos-dungbeetle-level.md §3.
-        if (GetComponent<StatPhysique>() == null) gameObject.AddComponent<StatPhysique>();  // APARIENCIA POR STATS: fuerza/masa/grasa → grosor (sin pisar la altura de LifeStage). docs/anyma-factory-and-control.md §1.
+        if (GetComponent<AcuteStressResponse>() == null) gameObject.AddComponent<AcuteStressResponse>();  // CONTROL POR NECESIDAD (todas las animas): apremio→adrenalina/niebla→el cuerpo toma el mando. docs/microcosmos/microcosmos-dungbeetle-level.md §3.
+        if (GetComponent<StatPhysique>() == null) gameObject.AddComponent<StatPhysique>();  // APARIENCIA POR STATS: fuerza/masa/grasa → grosor (sin pisar la altura de LifeStage). docs/sistemas/anyma-factory-and-control.md §1.
         ActsPrep = ActionsPrep.Of(SpeciesArchetype);   // gaits de la especie (data); ANTES de la config de WalkSpell, que los lee
         Walk = GetComponent<WalkSpell>();     // OPT-IN: locomoción-hechizo (velocidad stat-driven) SOBRE el NavMesh
         if (Walk != null)
@@ -295,7 +295,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         Body = Physiognomy.Of(BodyArchetype);   // físico de la especie desde el catálogo (data); ANTES de Fatten, que lo usa
         _stages = StageProfile.Of(LifeArchetype);   // ciclo de vida de la especie (data); las etapas se crean ANTES de Fatten (usa ChildStage)
         if (_stages.development == StageProfile.Development.Complete && GetComponent<Metamorphosis>() == null)
-            gameObject.AddComponent<Metamorphosis>();   // larva → pupa (quieta, no come) → adulto. docs/insect-biology-audit.md
+            gameObject.AddComponent<Metamorphosis>();   // larva → pupa (quieta, no come) → adulto. docs/fauna/insect-biology-audit.md
         ChildStage = new Childhood(_stages.childDays, _stages.childMin, _stages.childMax);
         TeenStage  = new Adolescence(_stages.teenDays, _stages.teenMin, _stages.teenMax);
         AdultStage = new Adulthood(_stages.adultDays, _stages.adultMin, _stages.adultMax);
@@ -392,7 +392,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
     float _nextBehave;
     /// <summary>Decisiones ACTIVAS de la IA animal (forrajeo + amenaza), conducidas por el brain (`AiBrain`) — la
     /// POSESIÓN las SUPRIME (si el jugador conduce, `AnimaController` llama a `PlayerBrain`, no a este). Throttled
-    /// al mismo ritmo que antes tenía `Restore`. Etapa 4 (docs/anima-dissolving-animal.md).</summary>
+    /// al mismo ritmo que antes tenía `Restore`. Etapa 4 (docs/sistemas/anima-dissolving-animal.md).</summary>
     public void ActiveBehaveTick()
     {
         if (death || Time.time < _nextBehave) return;
@@ -403,7 +403,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
 
 
 
-    // Evolución lenta de aptitudes por actividad (ver docs/creature-stats.md §Evolución de aptitudes).
+    // Evolución lenta de aptitudes por actividad (ver docs/sistemas/creature-stats.md §Evolución de aptitudes).
     // Correr/perseguir/huir sube la agilidad; estar alerta (aware) sube la percepción; el reposo las decae.
     void EvolveAptitudes(float dt)
     {
@@ -432,7 +432,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
 
     // Comportamiento de medio: los acuáticos buscan agua si quedan en tierra; los terrestres salen
     // del agua hacia tierra. Solo cuando no cazan/huyen (busy) — así un oso que persigue focas sí
-    // entra al agua. Ver docs/refuge-and-adult-behavior.md.
+    // entra al agua. Ver docs/sistemas/refuge-and-adult-behavior.md.
     // AHOGO/ASFIXIA (docs/checklist Aptitudes): si el ser permanece en un medio de baja afinidad (MediumFactor por
     // debajo del umbral), sufre daño progresivo — cuanto peor el medio, más rápido. `CorrectMedium` intenta sacarlo
     // antes (busca su medio); si no puede, esto le da consecuencia. Reusa `Hurt` (→ muerte por el mismo camino).
@@ -509,7 +509,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
     // EvaluateThreat + ThreatThreshold). Evita que las presas se queden tranquilas junto a depredadores;
     // también hace que un cánido solo huya de un oso. Solo cuando no caza/huye/duerme.
     // Rendimiento: escanea wholePopulation; a gran escala requeriría partición espacial.
-    // public: el motor de volición (D3b) lo llama como REFLEJO cada tick (docs/volition-selection-engine.md).
+    // public: el motor de volición (D3b) lo llama como REFLEJO cada tick (docs/sistemas/volition-selection-engine.md).
     public void SenseThreats()
     {
         if (busy || aware || asleep || rig == null) return;
@@ -541,7 +541,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
             threat = null;
         // PERCEPCIÓN → ALERTNESS → AWARE: la amenaza percibida sube la alerta (más cerca dentro del alcance = más alerta);
         // el ser solo REACCIONA (aware) cuando su alerta CRUZA el umbral → reacciona a lo que percibe, no a todo. Sin
-        // amenaza a la vista, la alerta decae. docs/consciousness-mechanics.md §3.3.
+        // amenaza a la vista, la alerta decae. docs/sistemas/consciousness-mechanics.md §3.3.
         if (threat != null)
         {
             alertness = Mathf.Max(alertness, Mathf.Clamp01(1f - nearest / range));
@@ -625,7 +625,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
     {
         RecomputeAutoabandono();   // fresco con los bonds actuales
         // Defensa de crías EMERGENTE (no un flag DefendsCubs): si hay crías propias cerca de la amenaza, la decisión
-        // sale sola del vínculo con ellas (cubBond) + autoabandono vs el peligro. docs/anima-dissolving-animal.md.
+        // sale sola del vínculo con ellas (cubBond) + autoabandono vs el peligro. docs/sistemas/anima-dissolving-animal.md.
         bool defendingCubs = Group?.fed != null &&
             System.Array.Exists(Group.fed, cub => cub != null && !cub.death &&
                 Vector3.Distance(cub.transform.position, threat.transform.position) < 20f);
@@ -677,7 +677,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
 
     protected virtual IEnumerator Flee(GameObject threat)
     {
-        // N1 (docs/environmental-navigation.md): huir LEJOS de la amenaza leyendo su posición, no hacia un ave al azar
+        // N1 (docs/sistemas/environmental-navigation.md): huir LEJOS de la amenaza leyendo su posición, no hacia un ave al azar
         // (el placeholder anterior podía llevar la presa HACIA el peligro). Re-orienta cada tick mientras el peligro sigue cerca.
         // CON FIN (JornadaTest: pingüinos que huían del oso hasta el borde del hielo, a 240 m de su colonia, y se quedaban allí
         // plantados o yendo y viniendo): antes huía mientras la amenaza estuviera a < 620 m —más que el mapa entero (500 m)—,
@@ -857,7 +857,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
 
     /// <summary>Al MORIR, lanza el <see cref="GriefSpell"/> sobre cada ser que tenía un VÍNCULO con este (positivo o
     /// negativo): la pérdida pesa (o el enemigo que se va deja su marca). Peso del duelo ∝ magnitud del vínculo.
-    /// docs/apremios-guardian-observacion.md §3. Barato: la muerte es un evento raro; recorre wholePopulation una vez.</summary>
+    /// docs/sistemas/apremios-guardian-observacion.md §3. Barato: la muerte es un evento raro; recorre wholePopulation una vez.</summary>
     void BroadcastGrief()
     {
         ITarget me = this;

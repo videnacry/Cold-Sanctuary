@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// LA TURBINA MAREAL PILOTO (docs/energia.md): lenta a propósito, con la punta por debajo del umbral de daño de una foca, y con un sonar que la PARA si un
+/// LA TURBINA MAREAL PILOTO (docs/areas/energia.md): lenta a propósito, con la punta por debajo del umbral de daño de una foca, y con un sonar que la PARA si un
 /// mamífero se acerca a <see cref="EnergyRule.MarineStopRadius"/> m. El sitio le dice qué ha detectado una vez por segundo.
 /// </summary>
 public class TidalTurbineUnit : MonoBehaviour

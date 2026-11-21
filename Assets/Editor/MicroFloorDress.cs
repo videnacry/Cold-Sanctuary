@@ -3,7 +3,7 @@ using UnityEngine;
 using El = MicroFloorElements;
 
 /// <summary>
-/// LA FORMA DE MICROCOSMOS DE UN PISO, VESTIDA (docs/microcosmos-suelo-y-elementos.md §Elementos): cada pieza de la copia gigante del
+/// LA FORMA DE MICROCOSMOS DE UN PISO, VESTIDA (docs/microcosmos/microcosmos-suelo-y-elementos.md §Elementos): cada pieza de la copia gigante del
 /// piso (×100) se queda EN SU SITIO (el paso meso ↔ micro es uno a uno: un cambio del piso se rastrea) y se REINTERPRETA por el
 /// catálogo (<see cref="MicroFloorElements"/>) en terreno o en edificio, con detalle: la mesa, una montaña (contrafuertes de roca en
 /// las patas, peñascos en el borde del altiplano); la silla, un nevado; el lavabo, un lago (con el grifo abierto, cascada y río); la

@@ -2,7 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// LA ROCA DE LAS CAVERNAS: holgura, umbrales y plazos (Berón 2026-11-05: «¿la tierra podría aplastar las instalaciones? ¿crearlas con mucho margen
-/// para dar tiempo a actuar?»; docs/sitio-nuclear.md §7). El juego no tiene geología: se SUPONE roca cristalina dura y sana, como la de Forsmark, y no
+/// para dar tiempo a actuar?»; docs/areas/sitio-nuclear.md §7). El juego no tiene geología: se SUPONE roca cristalina dura y sana, como la de Forsmark, y no
 /// sal ni arcilla. En esa roca el «aplastamiento» casi no existe (los extensómetros del SFR: ≤ 0,30 mm en 9 años); lo que sí pasa es que caiga una
 /// cuña o suba el agua. Por eso la holgura se declara y se mide, pero lo que da tiempo es LEER: en WIPP, en sal, la convergencia avisó un mes antes.
 /// </summary>
@@ -54,7 +54,7 @@ public static class CavernRule
 }
 
 /// <summary>
-/// LA VIGILANCIA DE LA ROCA (docs/sitio-nuclear.md §7): extensómetros, puntos de convergencia, células de carga en los bulones, geófonos, piezómetros y
+/// LA VIGILANCIA DE LA ROCA (docs/areas/sitio-nuclear.md §7): extensómetros, puntos de convergencia, células de carga en los bulones, geófonos, piezómetros y
 /// aforos, más el asiento y la inclinación del cajón del TRIGA. Se lee a diario en el panel (<c>nuc_roca</c>); en AVISO, alguien baja por la línea, inspecciona
 /// y refuerza (<c>nuc_bajada</c>); en ALARMA nadie baja, se refuerza desde arriba (<c>nuc_refuerzo</c>) y, si sigue, emergencia del sitio.
 /// </summary>

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-// EL UNIFORME DE TRABAJO DEL INSECTO-HUMANO (docs/actividades-y-uniformes.md §4; Berón 2026-11-04: «sería posible que los humanos se
+// EL UNIFORME DE TRABAJO DEL INSECTO-HUMANO (docs/sistemas/actividades-y-uniformes.md §4; Berón 2026-11-04: «sería posible que los humanos se
 // coloquen uniformes para las tareas … estos arreglos también aplican a los insectos-humanos»). Sobre el cuerpo centauro, como la ropa
 // de su era (WearGreek, Wear1940s): un DELANTAL de trabajo en el torso con su cinta, y el tocado del oficio. Las piezas se llaman
 // «Uniforme_…» y se quitan todas a la vez (<see cref="RemoveWorkUniform"/>); la ropa de diario (camisa, quitón, abrigo) se queda debajo.

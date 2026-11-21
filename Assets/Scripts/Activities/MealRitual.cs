@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LA ORQUESTA DE LA COMIDA (docs/actividades-y-uniformes.md §2; Berón 2026-11-04: «en la hora de la comida me ha parecido que los
+/// LA ORQUESTA DE LA COMIDA (docs/sistemas/actividades-y-uniformes.md §2; Berón 2026-11-04: «en la hora de la comida me ha parecido que los
 /// humanos solo se sientan en la mesa? comer debe tener su propia orquesta/animaciones/objetos»). Los pasos, en orden:
 ///  1. BANDEJA: recoge en la barra (o en la despensa de casa, o en el mostrador del comedor de la era) la bandeja con su plato —la
 ///     ración de verdad de un <see cref="FoodContainer"/>, con su comida y su guarnición— y un vaso; la lleva con las dos manos.

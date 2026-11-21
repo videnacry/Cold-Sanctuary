@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// MOBILIARIO, UTENSILIOS E INGREDIENTES DE COCINA hechos con UNIONES DE CUBOS (docs/kitchen-simulation.md): cada pieza
+/// MOBILIARIO, UTENSILIOS E INGREDIENTES DE COCINA hechos con UNIONES DE CUBOS (docs/areas/kitchen-simulation.md): cada pieza
 /// se reconoce por su forma —la sartén tiene mango, la olla asas y tapa, el cuchillo hoja y cacha, la nevera puerta con
 /// tirador y baldas, el fogón quemadores y mandos, la estantería baldas llenas de frascos y sacos— en vez de un cubo
 /// liso con una etiqueta. A tamaño real (encimera a 0,9 m). Cada objeto raíz lleva un BoxCollider ajustado (los

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// EL QUE HACE LAS TAREAS DEL JUGADOR CON «E» (docs/tareas-del-jugador.md; el catálogo de pasos y sitios es
+/// EL QUE HACE LAS TAREAS DEL JUGADOR CON «E» (docs/sistemas/tareas-del-jugador.md; el catálogo de pasos y sitios es
 /// <see cref="PlayerTasks"/>). Generaliza el modelo de Ambrosio (<see cref="AmbrosioStory.Act"/>) a toda la jornada y a las
 /// iniciaciones de área:
 ///   · MARCADORES en el mundo: un poste de luz con su rótulo «E — acción» en el sitio de cada paso (el actual, grande y

@@ -2,7 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// Un IMPULSO DE DIRECCIÓN — vector normalizado + magnitud que contribuye a la decisión
-/// de movimiento de un ser (docs/stats-as-truth.md §impulsos).
+/// de movimiento de un ser (docs/sistemas/stats-as-truth.md §impulsos).
 ///
 /// El <see cref="ImpulseController"/> suma todos los impulsos activos y deriva el destino
 /// del <c>NavMeshAgent</c>. Cualquier hechizo, drive o evento puede añadir, quitar o

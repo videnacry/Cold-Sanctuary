@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// UNA PAREJA de insectos-humanos de una era civilizada (docs/microcosmos-civilizaciones.md §7): pueden ser de especies
+/// UNA PAREJA de insectos-humanos de una era civilizada (docs/microcosmos/microcosmos-civilizaciones.md §7): pueden ser de especies
 /// distintas (una mariquita y una araña). Va en la MADRE (con su <see cref="FolkLineage"/>; la del padre es
 /// <see cref="FolkLineage.partner"/>). Desde 2026-11-02 el ciclo es EL MISMO que el de los humanos (<see cref="PersonLife"/>:
 /// pareja → embarazo de noche en casa → parto a los 9 meses del calendario → el hijo crece con <see cref="BodyAging"/>); lo único

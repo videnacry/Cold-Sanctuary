@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Mira de virtualización (docs/kitchen-simulation.md §3b). Es una **retícula FIJA en el centro de la
+/// Mira de virtualización (docs/areas/kitchen-simulation.md §3b). Es una **retícula FIJA en el centro de la
 /// cámara** — nunca se mueve en pantalla: lo que se mueve es la **cámara/cabeza** (con
 /// <see cref="HeadLook"/>, con restricciones de giro), y apuntas girando la cabeza. Se **confirma con F**
 /// (la tecla de interacción del juego; Espacio es salto). El **ratón** y el **touch** conservan su **propio

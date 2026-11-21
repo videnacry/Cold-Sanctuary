@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// TEST EN VIVO DEL SERVICIO DEL RESTAURANTE (Berón 2026-10-29: «probar en vivo el restaurante con los trabajadores acordados
 /// —cocineros, limpieza y obradores— y los turistas que piden su comida y la reciben en su mesa»). En la escena construida:
-///  1. pone de turno la BRIGADA ACORDADA (docs/restaurant-plan.md §5: 3 cocineros de línea, 1 en el pase que sube los platos,
+///  1. pone de turno la BRIGADA ACORDADA (docs/areas/restaurant-plan.md §5: 3 cocineros de línea, 1 en el pase que sube los platos,
 ///     2 obradores —masas; lácteos y fermentos— y 2 de limpieza —cocina y lavado; comedor—) con un plan de la JORNADA
 ///     (<see cref="WorkdayDirector.today"/>: misiones coc_servicio, coc_atender, coc_obrador, coc_limpieza y coc_comedor), y el
 ///     <see cref="RestaurantService"/> la toma de <see cref="WorkdayDirector.DoingNow"/> como en el juego;

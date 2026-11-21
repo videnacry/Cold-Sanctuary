@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Test de los HECHIZOS-ESTADO (docs/apremios-guardian-observacion.md §3, testing-checklist §45), por `TestProbe`:
+/// Test de los HECHIZOS-ESTADO (docs/sistemas/apremios-guardian-observacion.md §3, testing-checklist §45), por `TestProbe`:
 /// el hub `AllostaticState` (carga externa + sedación), el MIEDO (resistido por el temple), y la ADICCIÓN (dosis →
 /// deseo/tolerancia). Determinista (efecto en el mismo frame, antes del decaimiento; sin física/ITarget).
 /// </summary>

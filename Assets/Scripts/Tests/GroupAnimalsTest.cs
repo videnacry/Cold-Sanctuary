@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DE LOS GRUPOS DE ANIMALES (Berón 2026-11-03; docs/grupos-de-animales.md): peces, kril, medusas y abejas como un PADRE con
+/// PRUEBA DE LOS GRUPOS DE ANIMALES (Berón 2026-11-03; docs/sistemas/grupos-de-animales.md): peces, kril, medusas y abejas como un PADRE con
 /// sus individuos.
 /// 1. FORMA: el padre no es una plataforma (sin malla, escala 1, trigger del tamaño del grupo) y sus hijos son peces, kril, medusas o
 ///    abejas de verdad (cuerpo, aletas o patas, umbrela y tentáculos, alas), de su talla.

@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// El PASEO guiado de onboarding (docs/kitchen-simulation.md §1). Un anfitrión recorre las
+/// El PASEO guiado de onboarding (docs/areas/kitchen-simulation.md §1). Un anfitrión recorre las
 /// <see cref="TourStation"/> en orden, **señalando cada área y lo que se puede hacer** (el pensamiento de
 /// "enseñar a los nuevos"), mientras el **novato lo acompaña** vía petición → alma compartida
 /// (<see cref="HelpRequest"/>) o, si no hay, siguiéndolo directamente. Al terminar, deja lista la primera

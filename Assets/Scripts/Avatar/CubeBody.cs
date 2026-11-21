@@ -33,7 +33,7 @@ public static class CubeBody
 
     public static void Build(GameObject root, string species)
     {
-        // Los INSECTOS y arañas tienen su propio cuerpo articulado según su morfología real (CubeInsect + docs/insect-morphology.md).
+        // Los INSECTOS y arañas tienen su propio cuerpo articulado según su morfología real (CubeInsect + docs/sistemas/insect-morphology.md).
         if (PlanFor(species) == Plan.Insect) { CubeInsect.Dress(root, species, new Color(0.35f, 0.25f, 0.18f), 1f); return; }
         List<Part> parts = PartsOf(PlanFor(species));
         CreatureRig rig = root.GetOrAdd<CreatureRig>();

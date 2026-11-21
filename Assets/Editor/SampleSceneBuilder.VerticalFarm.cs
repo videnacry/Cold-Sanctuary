@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// EL HUERTO VERTICAL (Berón 2026-11-08; docs/produccion-maquinaria.md §2026-11-08; medidas en <see cref="VerticalFarm"/>): un piso de la torre de
+/// EL HUERTO VERTICAL (Berón 2026-11-08; docs/areas/produccion-maquinaria.md §2026-11-08; medidas en <see cref="VerticalFarm"/>): un piso de la torre de
 /// PRODUCCIÓN con ESTANTES NFT de 4 bandejas bajo LED, para la verdura que los bancales del Árbol de los Campos no llegan a dar. Regla P19: cuántos
 /// estantes (y cuántos pisos) salen de la DEMANDA (<see cref="VerticalFarm.RacksFor"/>: las personas de la lista × 0,8 kg, menos lo de los bancales,
 /// con su reserva), no de un número. Con cada estante, todo lo que hace falta para trabajarlo (reglas de edificación de los pisos: muebles detallados,
@@ -28,7 +28,7 @@ public static partial class SampleSceneBuilder
         float fields = VerticalFarm.FieldsKgDay(), demand = VerticalFarm.DemandKgDay;
         var (racks, floors) = VerticalFarmPlan();
         SanctuaryArea a = BuildAreaBox(areasGroup, VerticalFarm.AreaObject, VerticalFarm.AreaName, SanctuaryAreaType.VerticalFarm, 2, ProduccionCenter, ProduccionSize, new Color(0.55f, 0.75f, 0.5f));
-        a.description = "Estantes de cultivo con LED: la verdura que no dan los bancales del Árbol (docs/produccion-maquinaria.md)";
+        a.description = "Estantes de cultivo con LED: la verdura que no dan los bancales del Árbol (docs/areas/produccion-maquinaria.md)";
         VerticalFarm vf = a.gameObject.AddComponent<VerticalFarm>();
         Vector2 s = TowerFloor(a.transform);
         int left = racks;

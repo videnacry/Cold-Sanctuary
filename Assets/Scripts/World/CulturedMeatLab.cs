@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LABORATORIO DE CARNE CULTIVADA (área `CulturedMeatLab`, docs/carne-cultivada.md): produce carne para los depredadores
+/// LABORATORIO DE CARNE CULTIVADA (área `CulturedMeatLab`, docs/areas/carne-cultivada.md): produce carne para los depredadores
 /// del santuario sin matar a ningún animal. Simula el proceso real, por lotes y con el tiempo comprimido:
 ///  1. BIOPSIA: unos gramos de músculo de un animal vivo (en la enfermería, con anestesia local) → se aíslan las células
 ///     satélite (madre del músculo) y precursoras de grasa en la campana de flujo laminar.
@@ -28,7 +28,7 @@ public class CulturedMeatLab : MonoBehaviour
     [Header("Lote")]
     public double seedCells = 1e9;          // un vial del banco
     public double cellsPerGram = 2.5e8;     // músculo: ≈ 2–3·10⁸ células por gramo
-    /// <summary>Lo que da cada máquina (regla P19, docs/produccion-maquinaria.md): 10⁷ células/mL ÷ <see cref="cellsPerGram"/> = 40 g por litro.</summary>
+    /// <summary>Lo que da cada máquina (regla P19, docs/areas/produccion-maquinaria.md): 10⁷ células/mL ÷ <see cref="cellsPerGram"/> = 40 g por litro.</summary>
     // (2026-11-11) LA MAQUINARIA SE DIMENSIONA CON EL PLAN (fauna = K × humanos, PopulationPlan): tres biorreactores de producción del tamaño
     // estándar más pequeño que da la carne del plan (500, 750, 1000 o 1500 L; más grandes no caben a 2 m) y seis unidades de perfusión con las
     // alturas que hagan falta (2 a 4, de 6 kg cada una). Se decide al montar el laboratorio (Build) y queda en el laboratorio construido; sin él,
@@ -71,7 +71,7 @@ public class CulturedMeatLab : MonoBehaviour
     public string Line => Lines[batches % Lines.Length];
 
     [Header("Destino")]
-    public Transform feeder;                // el almacén de raciones (docs/alimentador.md): ya no hay comedero
+    public Transform feeder;                // el almacén de raciones (docs/areas/alimentador.md): ya no hay comedero
     public WorldLabel console;              // pantalla de la consola (estado del lote)
 
     public Stage stage { get; private set; } = Stage.Biopsia;

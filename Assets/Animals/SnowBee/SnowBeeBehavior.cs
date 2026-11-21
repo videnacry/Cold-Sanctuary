@@ -4,7 +4,7 @@ public class SnowBeeBehavior : Animal
 {
     protected override string SpeciesArchetype => "SnowBee";
 
-    // Abeja de las nieves (docs/ice-sanctuary-ecology.md): eusocial, anida cerca del árbol carnívoro de hielo y hace
+    // Abeja de las nieves (docs/fauna/ice-sanctuary-ecology.md): eusocial, anida cerca del árbol carnívoro de hielo y hace
     // miel de los nutrientes de los muertos que el árbol atrae. Pequeña, voladora ágil, adaptada al frío. Pollinizadora/
     // carroñera suave: come néctar (eatsGrass). Colonia = disciplina/sociabilidad altas.
 

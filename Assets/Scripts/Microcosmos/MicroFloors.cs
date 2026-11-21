@@ -4,7 +4,7 @@ using System.Text;
 using UnityEngine;
 
 /// <summary>
-/// LOS PISOS DE LOS MICROCOSMOS (docs/microcosmos-areas.md §Reglas de los microcosmos; Berón 2026-11-03: «todos deben pertenecer
+/// LOS PISOS DE LOS MICROCOSMOS (docs/microcosmos/microcosmos-areas.md §Reglas de los microcosmos; Berón 2026-11-03: «todos deben pertenecer
 /// a un piso del santuario y deben montarse encima de dicho piso, todas las estructuras de dicho piso se vuelven superficie
 /// utilizable … si no existe un piso que encaje con el microcosmos que se quiere crear se puede marcar como pendiente de obtener
 /// piso representativo en el mesocosmos/santuario y se le crea con alguno de los pisos existentes, entonces a futuro podríamos
@@ -60,7 +60,7 @@ public static class MicroFloors
         M("Pasadena", "Chemistry_Area", "Patterson y la edad de la Tierra: el laboratorio de química"),
         M("Chernóbil", "NuclearPower_Area", "Ananenko y su escuadrón en el bloque 4: la central nuclear"),
         M("Palenque", "Garden_Area", "Pakal, el rey que renace como el maíz (la milpa)", "Templo de los antepasados (memoria, rito y duelo)"),
-        // Las historias de la tanda 3 (docs/microcosmos-historias-3.md)
+        // Las historias de la tanda 3 (docs/microcosmos/microcosmos-historias-3.md)
         M("Chimbacalle", "VehicleWorkshop_Area", "Alfaro y el tren Guayaquil–Quito: locomotoras y mecánica", "Estación de ferrocarril y transporte"),
         M("Lagunillas", "Infirmary_Area", "Galvarino: curarse, volver con los suyos y seguir; la machi y el lawen, el hospital"),
         M("Cajamarca", "TextileStudio_Area", "cómo vivían los incas: el cumbi, los quipus y las colcas, el Estudio Textil", "Almacén y contaduría (qollqas y quipus)"),
@@ -73,17 +73,17 @@ public static class MicroFloors
         M("Madrid 2018", "Assembly_Area", "la moción de censura de 2018: cómo funciona un parlamento, la Sala de asambleas"),
         M("Gettysburg", "Assembly_Area", "Lincoln en Gettysburg: el discurso y la emancipación, la Sala de asambleas"),
         M("Feria de las Hazañas", "Assembly_Area", "grandes hazañas de presidentes y primeros ministros: aprender de lo que hicieron, la Sala de asambleas"),
-        // Los famosos (docs/microcosmos-famosos.md)
+        // Los famosos (docs/microcosmos/microcosmos-famosos.md)
         M("Velliangiri", "YogaRoom_Area", "Sadhguru y el Dhyanalinga: meditar en silencio, la Sala de Yoga"),
         M("Hawthorne", "Control_de_mision", "Musk y el Falcon 1: el control de misión de la lanzadera (re-apuntado por la alerta de piso nuevo)"),
         M("Omelek", "Control_de_mision", "Musk y el Falcon 1: el día del lanzamiento en la isla de Omelek (Kwajalein)", "Plataforma de lanzamiento en una isla (la plataforma de la lanzadera)"),
         M("Aldea de la montaña", "MartialArts_Area", "Goku (homenaje, ficción): entrenar en la aldea de la montaña, el Dojo"),
-        // (2026-11-04) Re-apuntados por la ALERTA DE PISO NUEVO (AlertFloors): Gates a Informática y Scott al Aula (docs/piso-informatica.md, docs/piso-aula.md).
+        // (2026-11-04) Re-apuntados por la ALERTA DE PISO NUEVO (AlertFloors): Gates a Informática y Scott al Aula (docs/areas/piso-informatica.md, docs/areas/piso-aula.md).
         M("Albuquerque", "Informatics_Area", "Gates y Allen: el Altair y su BASIC; el piso de Informática (ordenadores y programación)"),
         M("Omaha", "TextileStudio_Area", "Buffett y la señora B: la tienda que empezó vendiendo alfombras y telas, el Estudio Textil", "Mercado y oficina de comercio (economía)"),
         M("Prairie View", "Classroom_Area", "Scott y Prairie View A&M: la universidad, su biblioteca y sus estudiantes; el Aula"),
         M("Uagadugú", "Garden_Area", "los productores y sus huertos: labrar y sembrar antes de las lluvias, el Huerto"),
-        // La música (docs/microcosmos-musica.md): sobre su piso, Música (docs/piso-musica.md, 2026-11-05); BLACKPINK, sobre la Sala de Ballet.
+        // La música (docs/microcosmos/microcosmos-musica.md): sobre su piso, Música (docs/areas/piso-musica.md, 2026-11-05); BLACKPINK, sobre la Sala de Ballet.
         M("Grandes aportes de las canciones", "Music_Area", "seis canciones que cambiaron algo: el escenario del piso de Música"),
         M("Long Island", "Music_Area", "Public Enemy nace en una radio y un estudio: la sala de grabación del piso de Música"),
         M("Belfast", "Music_Area", "U2 en el Waterfront Hall: un concierto por el referéndum de paz; el escenario del piso de Música"),
@@ -114,7 +114,7 @@ public static class MicroFloors
         ["Classroom_Area"] = new[] { "aula", "biblioteca", "universidad", "universitaria", "estudio", "clase", "archivo" },
         ["Assembly_Area"] = new[] { "asamblea", "asambleas", "parlamento", "consejo" },
         ["Music_Area"] = new[] { "música", "grabación", "concierto", "escenario" },
-        ["VerticalFarm_Area"] = new[] { "huerto vertical", "hidroponía", "invernadero", "cultivo bajo luz", "granja vertical" },   // (2026-11-08) docs/produccion-maquinaria.md
+        ["VerticalFarm_Area"] = new[] { "huerto vertical", "hidroponía", "invernadero", "cultivo bajo luz", "granja vertical" },   // (2026-11-08) docs/areas/produccion-maquinaria.md
     };
 
     /// <summary>Minúsculas y sin tildes (para comparar «Informática» con «informatica»).</summary>

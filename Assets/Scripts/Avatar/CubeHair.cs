@@ -39,7 +39,7 @@ public static class CubeHair
         public bool rings;                                   // anillos en los dedos
         public Color stole; public bool hasStole;            // chal/estola cruzada sobre el hombro
         public Color necklace; public bool hasNecklace, necklaceCross;   // collar (cadena con cruz o guirnalda/mala)
-        // (2026-11-04: la familia y los amigos de Berón, de sus fotos; docs/diseno-personajes.md §Familia y amigos)
+        // (2026-11-04: la familia y los amigos de Berón, de sus fotos; docs/sistemas/diseno-personajes.md §Familia y amigos)
         public Color beardTint; public bool hasBeardTint;    // bigote de otro color que el pelo (canas)
         public Color shadesFrame, shadesLens; public bool hasShades, aviator;   // gafas de sol: envolventes o de aviador
         public Color watch, watchFace; public bool hasWatch;  // reloj de pulsera (muñeca izquierda)
@@ -131,7 +131,7 @@ public static class CubeHair
     static Color C(float r, float g, float b) => new Color(r, g, b);
     static readonly Color SkinLight = C(0.93f, 0.8f, 0.7f), SkinMid = C(0.84f, 0.66f, 0.52f), SkinTan = C(0.72f, 0.54f, 0.4f), SkinDark = C(0.5f, 0.36f, 0.26f);
 
-    /// <summary>El aspecto de una persona por su nombre (los del santuario, ver docs/diseno-personajes.md); el resto,
+    /// <summary>El aspecto de una persona por su nombre (los del santuario, ver docs/sistemas/diseno-personajes.md); el resto,
     /// uno variado por su nombre.</summary>
     public static Look For(string name)   // cada persona: su ficha en docs/personajes/ (índice: README.md)
     {
@@ -161,11 +161,11 @@ public static class CubeHair
         // y bigote poblado, piel morena, camiseta sin mangas verde agua, dhoti blanco y chal blanco con ribete turquesa,
         // guirnalda de flores al cuello, descalzo.
         if (n.Contains("sadhguru")) return new Look(Style.Short, C(0.92f, 0.92f, 0.9f), C(0.56f, 0.39f, 0.28f), C(0.15f, 0.1f, 0.08f)).Turban(C(0.95f, 0.93f, 0.87f), C(0.5f, 0.15f, 0.25f)).LongBeard().Face(0.86f, 0.5f).Wear(C(0.5f, 0.72f, 0.62f), 1.72f).Sleeveless().Pants(C(0.96f, 0.96f, 0.94f)).Stole(C(0.97f, 0.97f, 0.96f)).Necklace(C(0.9f, 0.82f, 0.5f)).Shoes(C(0.56f, 0.39f, 0.28f));   // ficha: docs/personajes/sadhguru.md
-        // Andrea: italiano, uno de los DUEÑOS del santuario (docs/character-andrea.md). (de su foto) joven, pelo castaño oscuro
+        // Andrea: italiano, uno de los DUEÑOS del santuario (docs/personajes/fichas-antiguas/character-andrea.md). (de su foto) joven, pelo castaño oscuro
         // ondulado-rizado con volumen arriba, sonrisa amplia. Siempre ELEGANTE: camisa negra de cuello, pantalón de vestir gris
         // marengo y zapatos de piel; le gustan los anillos, las cadenas (plata, con cruz) y los pendientes; pulsera.
         if (n.Contains("andrea")) return new Look(Style.Curly, C(0.2f, 0.14f, 0.1f), C(0.9f, 0.72f, 0.6f), C(0.3f, 0.2f, 0.12f)).Face(0.82f, 0.45f).Earring().Rings().Wear(C(0.07f, 0.07f, 0.08f), 1.78f).Sleeves(C(0.07f, 0.07f, 0.08f)).Pants(C(0.22f, 0.23f, 0.26f)).Necklace(C(0.8f, 0.8f, 0.83f), true).Shoes(C(0.32f, 0.2f, 0.13f)).Extras(band: true);   // ficha: docs/personajes/andrea.md
-        // LOS SEIS DEL MESOCOSMOS (docs/personajes-mesocosmos.md, Berón 2026-11-03). Rasgos públicos y reconocibles, sin caricatura.
+        // LOS SEIS DEL MESOCOSMOS (docs/historia/personajes-mesocosmos.md, Berón 2026-11-03). Rasgos públicos y reconocibles, sin caricatura.
         // Elon Musk (cohetes y coches eléctricos; en la Mecánica): 1,88 m, pelo castaño oscuro corto peinado hacia atrás, piel clara,
         // camiseta negra, vaqueros oscuros y zapatillas negras.
         if (n.Contains("elonmusk") || n.Contains("elon musk")) return new Look(Style.Short, C(0.24f, 0.17f, 0.12f), C(0.93f, 0.79f, 0.69f), C(0.35f, 0.45f, 0.42f)).Face(0.86f, 0.4f).Wear(C(0.08f, 0.08f, 0.09f), 1.88f).Pants(C(0.14f, 0.16f, 0.22f)).Shoes(C(0.07f, 0.07f, 0.07f));   // ficha: docs/personajes/elonmusk.md
@@ -184,7 +184,7 @@ public static class CubeHair
         // Ibrahim Traoré (capitán, presidente de transición de Burkina Faso; coordina la Guardia): piel oscura, pelo negro muy corto
         // y barba corta, boina roja, uniforme de campaña verde oliva y botas.
         if (n.Contains("ibrahimtraore") || n.Contains("ibrahim traoré") || n.Contains("ibrahim traore")) return new Look(Style.Shaved, C(0.05f, 0.04f, 0.04f), C(0.36f, 0.24f, 0.17f), C(0.12f, 0.08f, 0.06f)).Face(0.86f, 0.55f).Stubble().Beret(C(0.72f, 0.1f, 0.12f)).Wear(C(0.33f, 0.36f, 0.24f), 1.8f).Sleeves(C(0.33f, 0.36f, 0.24f)).Pants(C(0.3f, 0.33f, 0.22f)).Boots(C(0.12f, 0.1f, 0.08f));   // ficha: docs/personajes/ibrahimtraore.md
-        // FAMILIA Y AMIGOS DE BERÓN (2026-11-04, de sus fotos; docs/diseno-personajes.md §Familia y amigos). Personas reales:
+        // FAMILIA Y AMIGOS DE BERÓN (2026-11-04, de sus fotos; docs/sistemas/diseno-personajes.md §Familia y amigos). Personas reales:
         // solo rasgos visibles (pelo, piel, ropa, complementos), con respeto y sin caricatura. Estaturas estimadas.
         // Nesvitor (Néstor): piel curtida morena, pelo canoso y negro peinado hacia atrás, BIGOTE espeso canoso; forro polar negro
         // con cremallera ABIERTO sobre camisa blanca de CUADROS finos azules y camiseta amarilla; las gafas colgadas de la camisa.
@@ -241,7 +241,7 @@ public static class CubeHair
         if (n == "consol") return new Look(Style.Medium, C(0.16f, 0.11f, 0.08f), C(0.9f, 0.74f, 0.62f), C(0.22f, 0.15f, 0.1f)).Fem().Face(0.78f, 0.55f).Wear(C(0.42f, 0.3f, 0.5f), 1.63f).Pants(C(0.16f, 0.15f, 0.2f)).Shoes(C(0.8f, 0.68f, 0.56f));   // ficha: docs/personajes/consol.md
         // (2026-11-05) Fernando, paneles solares: chaleco de obra naranja sobre manga larga gris, hasta su foto.
         if (n == "fernando") return new Look(Style.Short, C(0.2f, 0.14f, 0.09f), C(0.82f, 0.64f, 0.5f), C(0.22f, 0.15f, 0.1f)).Face(0.84f, 0.45f).Wear(C(0.85f, 0.55f, 0.15f), 1.74f).Sleeves(C(0.45f, 0.46f, 0.48f)).Pants(C(0.24f, 0.26f, 0.3f)).Shoes(C(0.2f, 0.17f, 0.14f));   // ficha: docs/personajes/fernando.md
-        // BRUCE LEE (docs/microcosmos-bruce-lee.md): figura histórica del microcosmos del Dojo. Sin parecido de cine: un hombre
+        // BRUCE LEE (docs/microcosmos/microcosmos-bruce-lee.md): figura histórica del microcosmos del Dojo. Sin parecido de cine: un hombre
         // delgado y atlético de ~1,72 m, pelo negro corto, ropa sencilla de entrenamiento negra (chaqueta de cuello chino, pantalón
         // y zapatillas de tela). La complexión delgada y fibrosa sale de sus stats (BodyShape), que pone su builder.
         if (n.Contains("bruce lee")) return new Look(Style.Short, C(0.05f, 0.05f, 0.06f), C(0.86f, 0.7f, 0.56f), C(0.15f, 0.1f, 0.07f)).Face(0.8f, 0.6f).Wear(C(0.1f, 0.1f, 0.11f), 1.72f).Sleeves(C(0.1f, 0.1f, 0.11f)).Pants(C(0.08f, 0.08f, 0.09f)).Shoes(C(0.12f, 0.12f, 0.12f));

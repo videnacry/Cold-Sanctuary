@@ -35,7 +35,7 @@ public class ActionsPrep
         // Fauna de hielo — pingüino torpe en tierra (lento); orca nadadora veloz
         { "Penguin", new ActionsPrep(new ActionPrep("IdlePenguin", 0f, 1f, -2f), new ActionPrep("WalkPenguin", 2f, 2f, 0.5f), new ActionPrep("RunPenguin", 6f, 4f, 2f)) },
         { "Orca", new ActionsPrep(new ActionPrep("IdleOrca", 0f, 1f, -2f), new ActionPrep("WalkOrca", 4f, 2f, 0.5f), new ActionPrep("RunOrca", 14f, 3f, 2f)) },
-        // Territorio polar: andar y correr en proporción a sus parientes del catálogo (docs/reglas-animales.md).
+        // Territorio polar: andar y correr en proporción a sus parientes del catálogo (docs/reglas/reglas-animales.md).
         { "Walrus", new ActionsPrep(new ActionPrep("IdleWalrus", 0f, 1f, -2f), new ActionPrep("WalkWalrus", 2f, 2f, 0.5f), new ActionPrep("RunWalrus", 6f, 3f, 2f)) },
         { "EmperorPenguin", new ActionsPrep(new ActionPrep("IdleEmperorPenguin", 0f, 1f, -2f), new ActionPrep("WalkEmperorPenguin", 2f, 2f, 0.5f), new ActionPrep("RunEmperorPenguin", 5f, 4f, 2f)) },
         { "Reindeer", new ActionsPrep(new ActionPrep("IdleReindeer", 0f, 1f, -2f), new ActionPrep("WalkReindeer", 5f, 2f, 0.5f), new ActionPrep("RunReindeer", 18f, 4f, 2f)) },
@@ -48,7 +48,7 @@ public class ActionsPrep
         { "CapePetrel", new ActionsPrep(new ActionPrep("IdleCapePetrel", 0f, 1f, -2f), new ActionPrep("WalkCapePetrel", 2f, 2f, 0.5f), new ActionPrep("RunCapePetrel", 12f, 4f, 2f)) },
         { "PolarSkua", new ActionsPrep(new ActionPrep("IdlePolarSkua", 0f, 1f, -2f), new ActionPrep("WalkPolarSkua", 2f, 2f, 0.5f), new ActionPrep("RunPolarSkua", 12f, 4f, 2f)) },
 
-        // Especies de las eras del microcosmos (docs/era-species-behavior.md): velocidades RELATIVAS a la hormiga (andar 3,
+        // Especies de las eras del microcosmos (docs/sistemas/era-species-behavior.md): velocidades RELATIVAS a la hormiga (andar 3,
         // correr 10). El caracol, la babosa y la lombriz no "corren" (reptan por ondas del pie/peristaltismo); el solífugo,
         // la cucaracha y el cangrejo fantasma están entre los artrópodos más rápidos (Burrows & Hoyle 1973; Full & Tu 1991).
         { "Snail",       Slow(0.6f, 0.8f) }, { "Slug",       Slow(0.7f, 0.9f) }, { "Earthworm", Slow(0.8f, 1.3f) },

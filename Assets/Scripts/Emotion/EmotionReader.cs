@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// LEGIBILIDAD (docs/emotion-model.md §6): lee la **orquesta emocional de OTROS** `Anima` cercanos (su
+/// LEGIBILIDAD (docs/sistemas/emotion-model.md §6): lee la **orquesta emocional de OTROS** `Anima` cercanos (su
 /// <see cref="EmotionExpression"/>: valencia/activación/emoción) y la traduce a **qué siente / qué quiere /
 /// qué va a hacer** + una **aproximabilidad** (¿buen momento para el vínculo?). Es la base del hechizo
 /// **lector-de-mentes** y de crear bonds con crías/adultos. El **alcance y el detalle** los gradúa la

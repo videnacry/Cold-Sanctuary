@@ -7,7 +7,7 @@ using UnityEngine;
 /// <summary>
 /// Verificación por LÍNEA DE COMANDOS: compila, monta el blockout y guarda las escenas sin
 /// tocar el Editor a mano. Existe porque el bridge MCP de Unity no conecta de forma fiable y
-/// la verificación en vivo se quedaba bloqueada ciclo tras ciclo (ver docs/testing-checklist.md).
+/// la verificación en vivo se quedaba bloqueada ciclo tras ciclo (ver docs/qa/testing-checklist.md).
 ///
 /// Uso (la licencia Personal NO tiene el entitlement 'com.unity.editor.headless', así que
 /// -batchmode falla con return code 198; hay que lanzarlo en modo GUI normal):

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// BANCAL DE TIERRA DE UN JARDÍN FRUTAL (Berón 2026-11-03, docs/jardines-frutales.md §Jardines en la cima): en el techo de
+/// BANCAL DE TIERRA DE UN JARDÍN FRUTAL (Berón 2026-11-03, docs/areas/jardines-frutales.md §Jardines en la cima): en el techo de
 /// alfombras de cada edificio-árbol, los frutales van en BANCALES DE TIERRA (cubierta ajardinada intensiva: lámina antirraíces,
 /// capa de drenaje, filtro y 0,8 m de sustrato ligero) y no en macetas sueltas. Cada bancal es un GREMIO: frutales que
 /// comparten pH y riego, con su cortejo de plantas companeras (flores de néctar para los insectos útiles, aromáticas, una
@@ -45,7 +45,7 @@ public class GardenBed : MonoBehaviour
     /// <summary>Peso con el sustrato saturado (t): sustrato de cubierta intensiva ~1,2 t/m³ saturado (FLL 2018: 1,0–1,4).</summary>
     public float SaturatedTonnes => SoilVolume * 1.2f + size.x * size.y * 0.1f;   // + drenaje, filtro y bordes (~0,1 t/m²)
 
-    // ── LOS GREMIOS (docs/jardines-frutales.md §Jardines en la cima, con sus fuentes) ──────────────────────────────
+    // ── LOS GREMIOS (docs/areas/jardines-frutales.md §Jardines en la cima, con sus fuentes) ──────────────────────────────
 
     public class Guild
     {

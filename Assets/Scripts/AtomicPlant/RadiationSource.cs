@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// UNA FUENTE DE RADIACIÓN en la planta atómica (docs/atomic-plant.md §Protección radiológica): la superficie de la
+/// UNA FUENTE DE RADIACIÓN en la planta atómica (docs/areas/atomic-plant.md §Protección radiológica): la superficie de la
 /// piscina (el N-16 del agua que pasa por el núcleo, proporcional a la potencia), la celda caliente con las muestras
 /// irradiadas, la fuente de arranque. La tasa de dosis cae con el CUADRADO DE LA DISTANCIA y la reduce el BLINDAJE:
 /// distancia, tiempo y blindaje, las tres reglas de la protección radiológica.

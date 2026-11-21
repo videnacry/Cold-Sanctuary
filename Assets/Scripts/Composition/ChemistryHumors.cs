@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// PUENTE COMPUESTOS → HUMORES (docs/consciousness-mechanics.md §2.2) — cierra el hueco de la cadena química: la
+/// PUENTE COMPUESTOS → HUMORES (docs/sistemas/consciousness-mechanics.md §2.2) — cierra el hueco de la cadena química: la
 /// **composición** de un ser (elementos→compuestos en `Constitution`) **genera/influye sus HUMORES** (`Mind.humores`),
 /// a CORTO plazo (empuje por tick hacia un objetivo) y a LARGO plazo (el objetivo lo fija la composición, que cambia
 /// despacio al comer/gastar). Así la bioquímica pesa en el ánimo — y de ahí en la ARENA (el estrés/energía que sale de

@@ -1,14 +1,19 @@
+---
+resumen: "Ficha con la plantilla de README.md. Id en el código: Adaguchi. Revisada: 2026-11-08. Veracidad de cada dato (regla M39, veracidad-frases.md): documentada = lo dijo Berón (sus mensajes o la…"
+temas: [personajes]
+estado: vigente
+---
 # Adaguchi
 
 > Ficha con la plantilla de [README.md](README.md). Id en el código: `Adaguchi`. Revisada: 2026-11-08.
-> Veracidad de cada dato (regla M39, [veracidad-frases.md](../veracidad-frases.md)): **documentada** = lo dijo Berón (sus mensajes o la
+> Veracidad de cada dato (regla M39, [veracidad-frases.md](../sistemas/veracidad-frases.md)): **documentada** = lo dijo Berón (sus mensajes o la
 > ficha larga que contó él); **atestiguada** = se ve en su foto o captura; **recreada** = decisión de juego hecha a partir de un dato
 > suyo; **inventada** = la puso el juego o un agente, sin base. ⚠️ = la ficha larga lo marca «confirmar». **Falta** = no se sabe.
 
 ## 1. Identidad y aspecto
 
-- Persona real, de la familia o los amigos de Berón; Berón mandó su foto y confirmó que se queda. *documentada · [diseno-personajes.md §Familia y amigos](../diseno-personajes.md)*
-- Piel clara morena; pelo corto ondulado castaño oscuro con volumen arriba; un pendiente pequeño; sudadera negra sin mangas con capucha; collar de cuentas oscuras. *atestiguada (`adaguchi.png`) · [diseno-personajes.md §Familia y amigos](../diseno-personajes.md) · [CubeHair.cs:216-218](../../Assets/Scripts/Avatar/CubeHair.cs#L216)*
+- Persona real, de la familia o los amigos de Berón; Berón mandó su foto y confirmó que se queda. *documentada · [diseno-personajes.md §Familia y amigos](../sistemas/diseno-personajes.md)*
+- Piel clara morena; pelo corto ondulado castaño oscuro con volumen arriba; un pendiente pequeño; sudadera negra sin mangas con capucha; collar de cuentas oscuras. *atestiguada (`adaguchi.png`) · [diseno-personajes.md §Familia y amigos](../sistemas/diseno-personajes.md) · [CubeHair.cs:216-218](../../Assets/Scripts/Avatar/CubeHair.cs#L216)*
 - 1,65 m. *inventada (estatura estimada) · ídem*
 - Edad, origen y género: **Falta**.
 
@@ -27,14 +32,14 @@
 
 ## 5. Profesión y lo que sabe hacer
 
-- Profesional de **submarinismo** (submarino de obra, ambulancia, tareas bajo el agua) y de **cocina**. *documentada (Berón 2026-11-04) · [personajes-mesocosmos.md §Profesiones y parejas](../personajes-mesocosmos.md) · [Professions.cs:130](../../Assets/Scripts/Progression/Professions.cs#L130)*
-- Que su profesión cubra **toda el área de Construcción** (porque los submarinos salen de allí). *inventada (deducido, sin confirmar) · [Professions.cs:156](../../Assets/Scripts/Progression/Professions.cs#L156) · [reglas-personajes.md §Auditoría de puestos](../reglas-personajes.md)*
+- Profesional de **submarinismo** (submarino de obra, ambulancia, tareas bajo el agua) y de **cocina**. *documentada (Berón 2026-11-04) · [personajes-mesocosmos.md §Profesiones y parejas](../historia/personajes-mesocosmos.md) · [Professions.cs:130](../../Assets/Scripts/Progression/Professions.cs#L130)*
+- Que su profesión cubra **toda el área de Construcción** (porque los submarinos salen de allí). *inventada (deducido, sin confirmar) · [Professions.cs:156](../../Assets/Scripts/Progression/Professions.cs#L156) · [reglas-personajes.md §Auditoría de puestos](../reglas/reglas-personajes.md)*
 
 ## 6. Puesto y áreas
 
 - Construcción y Cocina. *recreada · [Professions.cs:55](../../Assets/Scripts/Progression/Professions.cs#L55)*
 - Sale en Construcción. *recreada · [SanctuaryDirector.cs:171](../../Assets/Scripts/World/SanctuaryDirector.cs#L171) · [SampleSceneBuilder.Construction.cs:175](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L175)*
-- En la prueba del restaurante trabaja en el obrador. *recreada · [personajes-mesocosmos.md §La jornada (regla W9)](../personajes-mesocosmos.md)*
+- En la prueba del restaurante trabaja en el obrador. *recreada · [personajes-mesocosmos.md §La jornada (regla W9)](../historia/personajes-mesocosmos.md)*
 
 ## 7. Relaciones
 
@@ -43,13 +48,13 @@
 
 ## 8. Horario y costumbres
 
-- Gimnasio: Weider, lunes a viernes, hipertrofia, «estilo culturista» por la sudadera sin mangas de su foto. *inventada (de su ropa) · [GymProgramming.cs:218](../../Assets/Scripts/Progression/GymProgramming.cs#L218) · [gimnasio-maquinas.md §15.6](../gimnasio-maquinas.md)*
+- Gimnasio: Weider, lunes a viernes, hipertrofia, «estilo culturista» por la sudadera sin mangas de su foto. *inventada (de su ropa) · [GymProgramming.cs:218](../../Assets/Scripts/Progression/GymProgramming.cs#L218) · [gimnasio-maquinas.md §15.6](../areas/gimnasio-maquinas.md)*
 - Horario libre: el reparto común. *recreada · [LeisureDirector.cs:87](../../Assets/Scripts/Progression/LeisureDirector.cs#L87)*
 - Costumbres propias: **Falta**.
 
 ## 9. Microcosmos y santuario
 
-- Insecto: ninguno propio («cualquier otro»). *recreada · [microcosmos-civilizaciones.md §5](../microcosmos-civilizaciones.md)*
+- Insecto: ninguno propio («cualquier otro»). *recreada · [microcosmos-civilizaciones.md §5](../microcosmos/microcosmos-civilizaciones.md)*
 - Santuario y nivel: **Falta**.
 
 ## 10. En el código

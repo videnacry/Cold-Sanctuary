@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LA ESCALA DEL MOBILIARIO CÍVICO DE LOS MICROCOSMOS (docs/microcosmos-suelo-y-elementos.md §Escala; Berón 2026-11-04: «en el
+/// LA ESCALA DEL MOBILIARIO CÍVICO DE LOS MICROCOSMOS (docs/microcosmos/microcosmos-suelo-y-elementos.md §Escala; Berón 2026-11-04: «en el
 /// microcosmos de Bolívar he ido a la plaza y sus estructuras parecían muy pequeñas para el uso de los insectos-humanos, se supone que
 /// todas las sillas deben ser utilizables … los platos y ollas parecían demasiado pequeños para poder alimentar a un ciudadano … el
 /// jugador era mucho más grande que el comedor … que la estatua y la pileta … quizás se deberían agrandar todas las estructuras y

@@ -2,7 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// El Maestro Goluis — cocina, doble turno, presión y resistencia. Comportamiento propio (sobre `MoodState`);
-/// stats desde el arquetipo "Goluis" (`SoulComposition`). Anchor clave: "yoga_skepticism". Ver docs/creature-stats.md.
+/// stats desde el arquetipo "Goluis" (`SoulComposition`). Anchor clave: "yoga_skepticism". Ver docs/sistemas/creature-stats.md.
 /// Ficha: docs/personajes/goluis.md.</summary>
 public class Goluis : MonoBehaviour
 {

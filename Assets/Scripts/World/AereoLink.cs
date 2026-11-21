@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-/// <summary>El Santuario Aéreo (docs/sitio-nuclear.md §23; docs/world-topology-and-planes.md §3): la lanzadera y el parque energético, en su propia escena y en sus coordenadas de siempre.</summary>
+/// <summary>El Santuario Aéreo (docs/areas/sitio-nuclear.md §23; docs/sistemas/world-topology-and-planes.md §3): la lanzadera y el parque energético, en su propia escena y en sus coordenadas de siempre.</summary>
 public static class AereoRule
 {
     public const string Scene = "Santuario_Aereo", Building = "Santuario Aéreo";

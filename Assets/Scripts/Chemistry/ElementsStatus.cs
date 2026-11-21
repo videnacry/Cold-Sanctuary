@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>Estado de un elemento respecto a su cantidad IDEAL (docs/consciousness-mechanics.md §UI/estado ideal).</summary>
+/// <summary>Estado de un elemento respecto a su cantidad IDEAL (docs/sistemas/consciousness-mechanics.md §UI/estado ideal).</summary>
 public enum ElementLevel { Deficiente, Bajo, Ideal, Alto, Exceso }
 
 /// <summary>
-/// ESTADO DE ELEMENTOS (docs/consciousness-mechanics.md) — la ÚNICA función que, dado cuánto tiene un ser de cada
+/// ESTADO DE ELEMENTOS (docs/sistemas/consciousness-mechanics.md) — la ÚNICA función que, dado cuánto tiene un ser de cada
 /// elemento y su MASA, dice si cada elemento está deficiente/ideal/en exceso, con un COLOR para la UI (verde=estable,
 /// naranja=fuera de rango, rojo=crítico) y el valor con unidad (g/mg/µg…).
 ///

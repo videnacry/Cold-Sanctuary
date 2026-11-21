@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// MISIÓN DE HISTORIA POR PASOS (docs/microcosmos-historias.md): la misión genérica de los microcosmos que recrean la vida
+/// MISIÓN DE HISTORIA POR PASOS (docs/microcosmos/microcosmos-historias.md): la misión genérica de los microcosmos que recrean la vida
 /// de un personaje histórico (Patanjali, Nightingale, los Wright, Eratóstenes, Buda, la tregua de Navidad…). Es una lista
 /// de <see cref="StoryStep"/> que se cumplen en orden con lo que hay en la escena: hablar con alguien, llegar a un sitio,
 /// recoger cosas (y llevarlas), atender uno a uno a varios, o quedarse quieto un rato junto a algo (meditar, escuchar,

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 /// <summary>
 /// Full-screen black overlay used to hide the reality-shift transition.
 ///
-/// Design decision (docs/magic-plane-and-meditation.md §3): the size transition is NEVER
+/// Design decision (docs/sistemas/magic-plane-and-meditation.md §3): the size transition is NEVER
 /// shown to the player. The scale/FOV snap happens behind this black screen while the mission
 /// menu is shown. So this fader is the core piece of the Microcosmos entry flow.
 ///

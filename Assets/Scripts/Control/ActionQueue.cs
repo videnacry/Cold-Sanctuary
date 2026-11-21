@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// COLA DE ACCIONES de un anima (docs/typed-spells-and-queues.md) — ejecuta <see cref="QueuedSpell"/>s en orden, estilo
+/// COLA DE ACCIONES de un anima (docs/sistemas/typed-spells-and-queues.md) — ejecuta <see cref="QueuedSpell"/>s en orden, estilo
 /// Sims. Dos carriles:
 ///   • `own`    = la cola PROPIA del anima: **prioritaria y NO editable por el jugador** (la alimenta su instinto /
 ///                <see cref="AcuteStressResponse"/> cuando el cuerpo toma el mando).

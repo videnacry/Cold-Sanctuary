@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// HÁBITATS DEL SANTUARIO DE HIELO (docs/natural-interactions.md): los elementos del entorno con los que la fauna polar
+/// HÁBITATS DEL SANTUARIO DE HIELO (docs/sistemas/natural-interactions.md): los elementos del entorno con los que la fauna polar
 /// interactúa de verdad, como <see cref="Affordance"/> en vez de decorado:
 ///   · DESCANSADEROS en la orilla de la laguna: donde las focas salen a descansar/mudar (y la orca patrulla).
 ///   · RESPIRADEROS en el hielo junto a la orilla: la foca sube a respirar y los mantiene abiertos; el oso acecha inmóvil
@@ -16,7 +16,7 @@ public class PolarHabitats : MonoBehaviour
 {
     public Vector3 pebbleBeach = new Vector3(60f, 0f, -10f);
     public Vector3[] denSites = new Vector3[0];
-    [Tooltip("La colonia del pingüino emperador: hielo fijo al abrigo de icebergs, sin nidos (docs/territorio-polar.md). Cero = sin colonia.")]
+    [Tooltip("La colonia del pingüino emperador: hielo fijo al abrigo de icebergs, sin nidos (docs/areas/territorio-polar.md). Cero = sin colonia.")]
     public Vector3 emperorColony;
     [Tooltip("Rumbo (grados) desde la laguna de la playa de grava de las morsas (uglit).")]
     public float walrusBeachAngle = 205f;

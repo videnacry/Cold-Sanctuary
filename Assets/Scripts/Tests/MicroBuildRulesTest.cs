@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// TEST DEL VALIDADOR DE LAS REGLAS DE EDIFICACIÓN (docs/microcosmos-reglas-edificacion.md, <see cref="MicroBuildRules"/>), sin
+/// TEST DEL VALIDADOR DE LAS REGLAS DE EDIFICACIÓN (docs/reglas/microcosmos-reglas-edificacion.md, <see cref="MicroBuildRules"/>), sin
 /// cargar escenas: monta casos pequeños y mira que el validador vea lo que debe ver.
-/// (2026-11-18, docs/plan-microcosmos-realismo.md §3: los insectos-humanos a la mitad y vuelven los muros con vista de corte)
+/// (2026-11-18, docs/microcosmos/plan-microcosmos-realismo.md §3: los insectos-humanos a la mitad y vuelven los muros con vista de corte)
 /// - la escala sale de UNA constante, s = 0,5: agente de 0,5 m (medio ancho recogido), paso 4 × 0,5 + 2 × 0,2 = 2,4 m, calle de 4 m,
 ///   sitio de trabajo 0,6 m, puerta mínima 1,2 × 1,25 m; el santuario sigue con sus 2 m (FurnitureSpacing.Standard);
 /// - dos muebles a 1 m: violación; a 2,2 m también (< 2,4), salvo en un microcosmos montado antes del encogimiento (MicroFloor con

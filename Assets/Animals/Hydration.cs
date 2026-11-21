@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// SED Y AGUA (docs/ciclo-de-vida.md; antes «beber: no modelado, no hay sed»). Cada especie del santuario saca el agua de
+/// SED Y AGUA (docs/sistemas/ciclo-de-vida.md; antes «beber: no modelado, no hay sed»). Cada especie del santuario saca el agua de
 /// donde la saca en la naturaleza (<see cref="LifeHistory.water"/>):
 ///   · <b>De la comida</b> (oso polar, foca, ballena, orca, araña de las nieves): no beben; el agua les llega con la presa y,
 ///     sobre todo en los mamíferos marinos y el oso, como agua METABÓLICA al quemar grasa (Ortiz 2001, J Exp Biol 204:1831:

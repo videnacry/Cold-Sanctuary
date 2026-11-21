@@ -9,7 +9,7 @@ public enum BondType
 /// <summary>
 /// Vínculo afectivo de un animal hacia un objetivo (0–100).
 /// 100 = incondicional; nunca causa daño.
-/// Ver docs/behavior-system.md (Componente D).
+/// Ver docs/sistemas/behavior-system.md (Componente D).
 /// </summary>
 [System.Serializable]
 public class Bond

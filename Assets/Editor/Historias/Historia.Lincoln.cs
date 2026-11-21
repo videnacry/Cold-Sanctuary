@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LINCOLN EN GETTYSBURG (docs/microcosmos-historias-3.md, con la decisión: Berón preguntó si fue tan bueno y, si no, el mejor presidente de EE. UU.;
+/// LINCOLN EN GETTYSBURG (docs/microcosmos/microcosmos-historias-3.md, con la decisión: Berón preguntó si fue tan bueno y, si no, el mejor presidente de EE. UU.;
 /// las encuestas de historiadores lo ponen 1.º o 2.º, y es él). Gettysburg, 19 de noviembre de 1863: se dedica el cementerio nacional, cuatro meses
 /// después de la batalla. La escena es civil: un pueblo que entierra a sus muertos, un hombre negro que los recoge, una mujer que guarda la
 /// puerta, y dos minutos de discurso. Ninguna batalla: solo lo que queda después.

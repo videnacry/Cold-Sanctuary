@@ -8,7 +8,7 @@ using UnityEngine;
 /// A/B/X/Y junto al joystick de la cámara, R y ZR encima, «+» e inicio. Cada botón PULSA una tecla del juego por <see cref="GameKeys"/>
 /// (el teclado sigue igual): el mando no tiene lógica propia. Lógica pura (sin escena): la usa <see cref="TouchControls"/> y la prueba
 /// <c>JoyConTest</c>. Asignación: la de CodeShip (A Saltar, B Correr, + Misiones, − Áreas, captura Vista, inicio Menú) y el resto con
-/// las teclas que ya usa el juego (docs/mandos-tactiles.md).
+/// las teclas que ya usa el juego (docs/sistemas/mandos-tactiles.md).
 /// </summary>
 public static class JoyConMap
 {

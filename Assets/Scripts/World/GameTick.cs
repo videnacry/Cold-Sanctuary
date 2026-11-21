@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// RITMO REPARTIDO (docs/rendimiento.md): hace un trabajo uno de cada N frames, repartido entre instancias por <c>seed</c>, sin perder
+/// RITMO REPARTIDO (docs/plataforma/rendimiento.md): hace un trabajo uno de cada N frames, repartido entre instancias por <c>seed</c>, sin perder
 /// tiempo de juego: <see cref="Due"/> devuelve en <c>dt</c> todo el Time.deltaTime acumulado desde la última vez, así que lo que
 /// integra por segundo (humores, pasto) da lo mismo. Va por frames, no por segundos: a pocos FPS un intervalo de 0,2 s se cumpliría
 /// en cada frame y no ahorraría nada. Mientras corre el TestRunner toca en cada frame, como antes: hay pruebas que miran 0,4 s.
@@ -30,7 +30,7 @@ public struct GameTick
 }
 
 /// <summary>
-/// LOG TRANQUILO (docs/rendimiento.md): en Play, las etiquetas charlatanas salen como mucho una vez cada <see cref="Seconds"/> s. Cada
+/// LOG TRANQUILO (docs/plataforma/rendimiento.md): en Play, las etiquetas charlatanas salen como mucho una vez cada <see cref="Seconds"/> s. Cada
 /// Debug.Log cuesta milisegundos en el editor (consola y fichero) y dentro del script que lo llama cuenta como su tiempo propio.
 /// Avisos y errores no se tocan, y con el TestRunner en marcha sale todo. Apagar: PlayerPrefs «ColdSanctuary.LogQuieto» = 0.
 /// </summary>

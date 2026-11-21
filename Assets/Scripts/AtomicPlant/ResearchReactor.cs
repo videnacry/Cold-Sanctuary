@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// EL REACTOR DE LA PLANTA ATÓMICA (docs/atomic-plant.md): un reactor de investigación de PISCINA tipo TRIGA, como los
+/// EL REACTOR DE LA PLANTA ATÓMICA (docs/areas/atomic-plant.md): un reactor de investigación de PISCINA tipo TRIGA, como los
 /// de las universidades (UT-Austin 1,1 MW, Penn State 1 MW). No da electricidad (el santuario es solar): da NEUTRONES,
 /// para fabricar isótopos médicos para el hospital (el más cercano está a miles de km), analizar muestras por
 /// activación y enseñar física. La física es de verdad, simplificada:
@@ -15,7 +15,7 @@ using UnityEngine;
 ///   intercambiador con el agua de mar polar.
 /// - Química del agua: la CONDUCTIVIDAD sube con el tiempo y hay que cambiar las resinas (≤ 2 µS/cm).
 /// - Disparos (SCRAM): sobrepotencia, temperatura del combustible, supercrítico inmediato, piscina caliente, manual.
-/// Todos los números van con su fuente en docs/atomic-plant.md.
+/// Todos los números van con su fuente en docs/areas/atomic-plant.md.
 /// </summary>
 public class ResearchReactor : MonoBehaviour
 {

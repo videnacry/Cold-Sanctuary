@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Unidad de test del CICLO DE VIDA (docs/testing-checklist.md §36), por `TestProbe`. El ciclo completo (nacer→crecer→
+/// Unidad de test del CICLO DE VIDA (docs/qa/testing-checklist.md §36), por `TestProbe`. El ciclo completo (nacer→crecer→
 /// reproducir→morir) no se puede esperar en un test (crecer/vejez dura miles de días), así que asevera el MECANISMO
 /// nuevo de forma determinista: el **parto** produce una **cría** (etapa `child`) de la **misma especie** que el
 /// progenitor — reusando `Reproduction.SpawnOffspring`. La cría de prueba se destruye al terminar.

@@ -36,7 +36,7 @@ public static class EraHubSceneBuilder
         ("Microcosmos_Tregua1914", "Tregua 1914", "la tregua de Navidad"),
         ("Microcosmos_BruceLee", "Bruce Lee", "Bruce Lee: del Wing Chun al Jeet Kune Do (sé agua)"),
         ("Microcosmos_Pakal", "Palenque", "Pakal de Palenque: el rey que renace como el maíz (683)"),
-        // La tanda 3 (docs/microcosmos-historias-3.md)
+        // La tanda 3 (docs/microcosmos/microcosmos-historias-3.md)
         ("Microcosmos_EloyAlfaro", "Chimbacalle", "Eloy Alfaro y el tren de Guayaquil a Quito (1908)"),
         ("Microcosmos_Galvarino", "Lagunillas", "Galvarino vuelve con su gente (1557)"),
         ("Microcosmos_Atahualpa", "Cajamarca", "Atahualpa y los incas: cómo vivían (1532)"),

@@ -2,7 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// Entidad que puede recoger comida del suelo y depositarla en otra posición.
-/// Implementado por Animal y PlayerTarget. Ver docs/behavior-system.md (Fase 5).
+/// Implementado por Animal y PlayerTarget. Ver docs/sistemas/behavior-system.md (Fase 5).
 /// </summary>
 public interface ICarrier
 {

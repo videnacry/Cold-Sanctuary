@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// **Conductor** de la orquesta emocional de un `Anima` (docs/emotion-model.md). Lee los `Humores` (valencia =
+/// **Conductor** de la orquesta emocional de un `Anima` (docs/sistemas/emotion-model.md). Lee los `Humores` (valencia =
 /// `Positividad`, activación = `Energia` del **circumplex**), los sesga por la **disposición** (aptitudes de
 /// `Anima` + `afabilidad`/`sensibilidad`) y **publica una señal** (Valence/Arousal/Tension + **Jolt** = la
 /// variación *violenta*) que leen los <see cref="BodyPartReactor"/> (las partes que reaccionan). Es
@@ -23,7 +23,7 @@ public class EmotionExpression : MonoBehaviour
     public float Arousal   { get; private set; } // 0..1 (activado) — Activación del PAD
     public float Tension   { get; private set; } // 0..1 (cortisol/adrenalina)
     public float Dominance { get; private set; } // 0..1 AGENCIA/control percibido — 3ª dimensión del PAD (Mehrabian-Russell,
-                                                 // docs/apremios-guardian-observacion.md §8): alto = en control (temple + baja
+                                                 // docs/sistemas/apremios-guardian-observacion.md §8): alto = en control (temple + baja
                                                  // tensión + no-abatido); bajo = a merced. La Observación es dominancia sobre
                                                  // los PROPIOS apremios (autorregulación).
     public float Jolt    { get; private set; }   // 0..1 pico transitorio por cambio VIOLENTO
@@ -87,7 +87,7 @@ public class EmotionExpression : MonoBehaviour
         // Dominancia (PAD): agencia = sentirse capaz (temple) y en control (poca tensión), sin abatimiento (valencia).
         Dominance = Mathf.Clamp01(0.35f * valence + 0.40f * (1f - tension) + 0.25f * Mathf.Clamp01(comp - 0.5f));
 
-        // Cualidades Laban desde el circumplex (docs/emotion-model.md §4).
+        // Cualidades Laban desde el circumplex (docs/sistemas/emotion-model.md §4).
         Quickness = arousal;
         Heaviness = Mathf.Clamp01((1f - valence) * 0.6f + (1f - arousal) * 0.4f);
         Boundness = tension;

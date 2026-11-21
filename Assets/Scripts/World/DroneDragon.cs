@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// EL DRAGÓN DE DRONES (Berón 2026-11-05; docs/energia.md §7): una bandada de drones que dibuja una serpiente en el aire alrededor de la turbina que ha parado. Es un ADORNO DEL JUEGO:
+/// EL DRAGÓN DE DRONES (Berón 2026-11-05; docs/areas/energia.md §7): una bandada de drones que dibuja una serpiente en el aire alrededor de la turbina que ha parado. Es un ADORNO DEL JUEGO:
 /// **ninguna prueba dice que un dragón de drones ahuyente aves**, y con fauna antártica real sería una molestia que pediría permiso. No forma parte de la seguridad: la turbina para
 /// igual con él o sin él. Vuelo acotado (<see cref="FlightSeconds"/>) y con espera entre salidas: nada de bucles sin fin, y nunca sale del parque.
 /// </summary>

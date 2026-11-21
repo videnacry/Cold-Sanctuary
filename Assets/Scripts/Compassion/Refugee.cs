@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Una persona a la que hay que PONER A SALVO en las simulaciones de compasión (docs/compassion-simulations.md): un
+/// Una persona a la que hay que PONER A SALVO en las simulaciones de compasión (docs/microcosmos/compassion-simulations.md): un
 /// refugiado en Le Chambon, un niño del gueto con Irena Sendler. Reutiliza la marca de <see cref="WeakOne"/> (el débil
 /// que el grupo cuida). El jugador se acerca y pulsa E: le SIGUE. En un <see cref="HidingPlace"/> o un
 /// <see cref="SafeHaven"/> se queda. Una <see cref="Patrol"/> que lo vea fuera de un escondite y sin papeles lo

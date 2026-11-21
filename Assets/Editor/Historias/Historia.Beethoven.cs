@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// BEETHOVEN Y EL ESTRENO DE LA NOVENA (docs/microcosmos-historias-3.md). Viena, 7 de mayo de 1824: Beethoven, sordo, estrena la Novena Sinfonía
+/// BEETHOVEN Y EL ESTRENO DE LA NOVENA (docs/microcosmos/microcosmos-historias-3.md). Viena, 7 de mayo de 1824: Beethoven, sordo, estrena la Novena Sinfonía
 /// en el Teatro de la Puerta de Carintia. El jugador habla con él ESCRIBIENDO en sus cuadernos de conversación, ayuda con las particellas y
 /// está en la sala cuando Caroline Unger lo gira para que vea el aplauso que no oye. Bonn y Heiligenstadt se cuentan en la ficha.
 /// </summary>

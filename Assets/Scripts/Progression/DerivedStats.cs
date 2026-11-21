@@ -9,7 +9,7 @@ public enum AptitudeKind
 
 /// <summary>
 /// Aptitudes de un personaje (1.0 = media). Es el INPUT de <see cref="DerivedStats"/>. Coincide con el
-/// set de `CompanionBase` (docs/creature-stats.md). Struct serializable para poder tunearla en el
+/// set de `CompanionBase` (docs/sistemas/creature-stats.md). Struct serializable para poder tunearla en el
 /// Inspector; ojo: una struct SIN inicializar es todo 0, por eso usa <see cref="Default"/> como valor
 /// inicial.
 /// </summary>
@@ -86,7 +86,7 @@ public struct Aptitudes
 }
 
 /// <summary>
-/// Deriva los pools de acción/combate desde las aptitudes (docs/creature-stats.md §Pools derivados).
+/// Deriva los pools de acción/combate desde las aptitudes (docs/sistemas/creature-stats.md §Pools derivados).
 ///
 /// Funciones PURAS (sin estado ni escena) → fáciles de probar y reutilizar por <see cref="CharacterLevel"/>
 /// y el futuro `NPCBase`. Coeficientes ajustables. A aptitudes 1.0 (media) y nivel 1 da ~100 vida,

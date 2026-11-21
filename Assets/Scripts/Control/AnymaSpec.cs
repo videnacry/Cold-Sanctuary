@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Rango de multiplicador de stats (docs/anyma-factory-and-control.md §2): sobre la MEDIA de la especie. La mayoría de
+/// Rango de multiplicador de stats (docs/sistemas/anyma-factory-and-control.md §2): sobre la MEDIA de la especie. La mayoría de
 /// animas no superan ~2× la media; casos extraordinarios (strongman ×3–4) son raros → por defecto **0.8..2**.
 /// </summary>
 [System.Serializable]
@@ -13,7 +13,7 @@ public class StatRange
 }
 
 /// <summary>
-/// SPEC de creación de un anima (docs/anyma-factory-and-control.md §2) — objeto con propiedades **opcionales** que la
+/// SPEC de creación de un anima (docs/sistemas/anyma-factory-and-control.md §2) — objeto con propiedades **opcionales** que la
 /// <see cref="AnymaFactory"/> usa para habilitar/deshabilitar caminos. Lo **no fijado = RANDOM dentro de márgenes**
 /// (spec vacío → todo random). Convive con el sistema actual: por dentro instancia un `Animal` de la especie y
 /// aplica encima el spec. Sexualidad/pensamientos/vínculos random quedan como extensión (campos preparados).

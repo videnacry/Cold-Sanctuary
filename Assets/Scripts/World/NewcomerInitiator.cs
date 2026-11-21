@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// INICIACIÓN DE RECIÉN LLEGADOS (docs/jornada-y-rotacion.md, docs/iniciacion-medica-investigacion.md): un HECHIZO
+/// INICIACIÓN DE RECIÉN LLEGADOS (docs/sistemas/jornada-y-rotacion.md, docs/areas/iniciacion-medica-investigacion.md): un HECHIZO
 /// COMPUESTO («iniciar») que puede lanzar CUALQUIERA que lo conozca; lo hace quien tenga la misión «Iniciación de recién
 /// llegados y turistas» en la jornada (al empezar el juego, quien esté de turno; si nadie la tiene a esta hora, quien la
 /// tenga hoy; un clon de la Magnate si faltan manos). Linduarda solo la hace sin jornada (pruebas).

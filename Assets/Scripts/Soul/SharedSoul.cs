@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// ALMA COMPARTIDA entre reencarnaciones (docs/soul-relations-reincarnation.md §4). Varios cuerpos
+/// ALMA COMPARTIDA entre reencarnaciones (docs/sistemas/soul-relations-reincarnation.md §4). Varios cuerpos
 /// (`SoulComposition` en distintas eras) referencian **una sola alma**: comparten **forma** (identidad),
 /// **poder** (magnitud) y **bonds**. Lo que uno gana/pierde (poder o forma) se **propaga** a todos → "conectados
 /// desafiando al tiempo y el espacio". El alma guarda la forma **canónica** (distribución normalizada) + un

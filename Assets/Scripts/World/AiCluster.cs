@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// EL CLÚSTER DE IA LOCAL DEL SANTUARIO (piso de Informática, torre de Ciencias; docs/piso-informatica.md; Berón 2026-11-04:
+/// EL CLÚSTER DE IA LOCAL DEL SANTUARIO (piso de Informática, torre de Ciencias; docs/areas/piso-informatica.md; Berón 2026-11-04:
 /// «servidores de punta y demás equipo para tener una IA local del santuario … requiere mucha agua o energía? se debe crear con
 /// sus mecanismos de abastecimiento»). Un modelo sencillo, con cifras reales a escala, de lo que pide un clúster de GPU:
 /// - CÓMPUTO: <see cref="racks"/> racks de <see cref="serversPerRack"/> servidores de 8 GPU (~10,2 kW cada uno a plena carga,

@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// EL CONTEXTO DE LAS CHARLAS de una escena (docs/conversaciones.md §Temas): de qué hablan quienes viven aquí además de su
+/// EL CONTEXTO DE LAS CHARLAS de una escena (docs/sistemas/conversaciones.md §Temas): de qué hablan quienes viven aquí además de su
 /// trabajo, su familia y sus necesidades. En un microcosmos la era y el lugar salen solos de <see cref="MicroEra"/>; este componente
 /// añade la HISTORIA del microcosmos (frases cortas que alguien cuenta y el otro comenta) o, fuera de un microcosmos, el lugar y la
 /// época. Opcional: sin él las charlas usan el santuario de hoy.

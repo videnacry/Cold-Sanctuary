@@ -1,15 +1,20 @@
+---
+resumen: "Ficha con la plantilla de README.md. Id en el código: Lale. Revisada: 2026-11-08. Veracidad de cada dato (regla M39, veracidad-frases.md): documentada = lo dijo Berón (sus mensajes o la…"
+temas: [personajes]
+estado: vigente
+---
 # Lale
 
 > Ficha con la plantilla de [README.md](README.md). Id en el código: `Lale`. Revisada: 2026-11-08.
-> Veracidad de cada dato (regla M39, [veracidad-frases.md](../veracidad-frases.md)): **documentada** = lo dijo Berón (sus mensajes o la
+> Veracidad de cada dato (regla M39, [veracidad-frases.md](../sistemas/veracidad-frases.md)): **documentada** = lo dijo Berón (sus mensajes o la
 > ficha larga que contó él); **atestiguada** = se ve en su foto o captura; **recreada** = decisión de juego hecha a partir de un dato
 > suyo; **inventada** = la puso el juego o un agente, sin base. ⚠️ = la ficha larga lo marca «confirmar». **Falta** = no se sabe.
 
 ## 1. Identidad y aspecto
 
-- Persona real; llegó el 2026-11-04 como «Ale». El 2026-11-05 Berón cambió el nombre a **Lale**. Las escenas sin reconstruir siguen con el id viejo. *documentada · [personajes-mesocosmos.md §Lale, Yulo, Malena y las fotos](../personajes-mesocosmos.md) · [WorkdayDirector.cs:79](../../Assets/Scripts/Progression/WorkdayDirector.cs#L79)*
-- Hombre: va sin `Fem()`. *documentada (Berón 2026-11-04, confirmado) · [personajes-mesocosmos.md §Los seis nuevos](../personajes-mesocosmos.md)*
-- Pelo oscuro corto, chaqueta de carreras negra y blanca con logo, mochila negra, vaqueros oscuros y bolsa blanca de tela (foto `lale`). *atestiguada (su foto) · [diseno-personajes.md §Familia y amigos](../diseno-personajes.md) · [CubeHair.cs:224](../../Assets/Scripts/Avatar/CubeHair.cs#L224)*
+- Persona real; llegó el 2026-11-04 como «Ale». El 2026-11-05 Berón cambió el nombre a **Lale**. Las escenas sin reconstruir siguen con el id viejo. *documentada · [personajes-mesocosmos.md §Lale, Yulo, Malena y las fotos](../historia/personajes-mesocosmos.md) · [WorkdayDirector.cs:79](../../Assets/Scripts/Progression/WorkdayDirector.cs#L79)*
+- Hombre: va sin `Fem()`. *documentada (Berón 2026-11-04, confirmado) · [personajes-mesocosmos.md §Los seis nuevos](../historia/personajes-mesocosmos.md)*
+- Pelo oscuro corto, chaqueta de carreras negra y blanca con logo, mochila negra, vaqueros oscuros y bolsa blanca de tela (foto `lale`). *atestiguada (su foto) · [diseno-personajes.md §Familia y amigos](../sistemas/diseno-personajes.md) · [CubeHair.cs:224](../../Assets/Scripts/Avatar/CubeHair.cs#L224)*
 - 1,72 m. *inventada (estatura estimada) · ídem*
 - Edad y origen: **Falta**.
 
@@ -29,8 +34,8 @@
 ## 5. Profesión y lo que sabe hacer
 
 - **Biotecnología**. *documentada (Berón 2026-11-04) · [Professions.cs:140](../../Assets/Scripts/Progression/Professions.cs#L140) · memoria de Berón, character-roles (2026-11-04 15:42)*
-- En el juego: el laboratorio de Carne Cultivada. *recreada · [Professions.cs:73](../../Assets/Scripts/Progression/Professions.cs#L73) · [carne-cultivada.md](../carne-cultivada.md)*
-- Biología y el cuidado de los fotobiorreactores del árbol. *inventada (deducido de «biotecnología», sin confirmar) · [Professions.cs:155](../../Assets/Scripts/Progression/Professions.cs#L155) · [reglas-personajes.md §Auditoría de puestos](../reglas-personajes.md)*
+- En el juego: el laboratorio de Carne Cultivada. *recreada · [Professions.cs:73](../../Assets/Scripts/Progression/Professions.cs#L73) · [carne-cultivada.md](../areas/carne-cultivada.md)*
+- Biología y el cuidado de los fotobiorreactores del árbol. *inventada (deducido de «biotecnología», sin confirmar) · [Professions.cs:155](../../Assets/Scripts/Progression/Professions.cs#L155) · [reglas-personajes.md §Auditoría de puestos](../reglas/reglas-personajes.md)*
 
 ## 6. Puesto y áreas
 
@@ -48,7 +53,7 @@
 
 ## 9. Microcosmos y santuario
 
-- Insecto: ninguno propio. *recreada · [microcosmos-civilizaciones.md §5](../microcosmos-civilizaciones.md)*
+- Insecto: ninguno propio. *recreada · [microcosmos-civilizaciones.md §5](../microcosmos/microcosmos-civilizaciones.md)*
 - Santuario y nivel: **Falta**.
 
 ## 10. En el código

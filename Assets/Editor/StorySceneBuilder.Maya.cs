@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LA HISTORIA MAYA: PAKAL DE PALENQUE, EL REY QUE RENACE COMO EL MAÍZ (docs/microcosmos-maya-pakal.md; Berón 2026-11-03:
+/// LA HISTORIA MAYA: PAKAL DE PALENQUE, EL REY QUE RENACE COMO EL MAÍZ (docs/microcosmos/microcosmos-maya-pakal.md; Berón 2026-11-03:
 /// «investiga sobre los mayas para recrear una de sus historias más bonitas en el microcosmos»).
 /// K'inich Janaab Pakal (603–683) recibió la corona de su madre, Ix Sak K'uk', a los 12 años (29-7-615, el Tablero Oval de la Casa
 /// E del Palacio); gobernó 68 años Lakamha', «el lugar de las grandes aguas», levantó el Palacio y su acueducto sobre el Otolum, y

@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// TEST DE LAS ESCENAS DE LA TANDA 3 DE HISTORIAS (docs/microcosmos-historias-3.md; grupo 79). Como FamososStoryTest: carga UNA A UNA (aditiva, espera
+/// TEST DE LAS ESCENAS DE LA TANDA 3 DE HISTORIAS (docs/microcosmos/microcosmos-historias-3.md; grupo 79). Como FamososStoryTest: carga UNA A UNA (aditiva, espera
 /// acotada) y descarga antes de la siguiente, por la memoria. En cada escena mira:
 /// - fecha, región (MicroEra) y piso (MicroFloor: representativo o «pendiente»);
 /// - el protagonista (insecto-humano) y la historia (8 pasos con objetivo, que avanzan), con su ficha con fuentes;

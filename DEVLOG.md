@@ -2,13 +2,13 @@
 
 > **Áreas de trabajo paralelas e independientes:**
 > - **Fauna** — comportamiento animal, ciclos post-natales, vínculo jugador↔cría.
->   Diseño técnico: [`docs/behavior-system.md`](docs/behavior-system.md) · Gameplay: [`docs/fauna-gameplay.md`](docs/fauna-gameplay.md)
+>   Diseño técnico: [`docs/sistemas/behavior-system.md`](docs/sistemas/behavior-system.md) · Gameplay: [`docs/fauna/fauna-gameplay.md`](docs/fauna/fauna-gameplay.md)
 > - **Jugador** — stats, asanas, ejercicios, compañeros, narrativa. Este archivo.
-> - **Mundo / Simulación** — áreas, tareas autónomas, promociones, Director. [`docs/world-simulation.md`](docs/world-simulation.md)
-> - **Jugabilidad y loops** — mecánicas de combate, tabla periódica como Pokédex, FOMO. [`docs/gameplay-loops.md`](docs/gameplay-loops.md)
-> - **Pipeline 3D** — conversión/decimación de modelos, bugs conocidos de Blender. [`docs/pipeline-3d-models.md`](docs/pipeline-3d-models.md)
-> - **Pájaros** — estado actual, por qué son una dependencia crítica de `LifeStage.Wander()`, y por qué son candidatos a reemplazo. [`docs/bird-logic.md`](docs/bird-logic.md)
-> - **UI** — menú holográfico (Sistema/Hechizos/Yoga), arquitectura `FollowingArrays`. [`docs/ui-holographic-menu.md`](docs/ui-holographic-menu.md) · Base técnica: [`docs/ui-following-arrays.md`](docs/ui-following-arrays.md)
+> - **Mundo / Simulación** — áreas, tareas autónomas, promociones, Director. [`docs/sistemas/world-simulation.md`](docs/sistemas/world-simulation.md)
+> - **Jugabilidad y loops** — mecánicas de combate, tabla periódica como Pokédex, FOMO. [`docs/sistemas/gameplay-loops.md`](docs/sistemas/gameplay-loops.md)
+> - **Pipeline 3D** — conversión/decimación de modelos, bugs conocidos de Blender. [`docs/plataforma/pipeline-3d-models.md`](docs/plataforma/pipeline-3d-models.md)
+> - **Pájaros** — estado actual, por qué son una dependencia crítica de `LifeStage.Wander()`, y por qué son candidatos a reemplazo. [`docs/sistemas/bird-logic.md`](docs/sistemas/bird-logic.md)
+> - **UI** — menú holográfico (Sistema/Hechizos/Yoga), arquitectura `FollowingArrays`. [`docs/sistemas/ui-holographic-menu.md`](docs/sistemas/ui-holographic-menu.md) · Base técnica: [`docs/sistemas/ui-following-arrays.md`](docs/sistemas/ui-following-arrays.md)
 
 ## Estado actual
 
@@ -107,7 +107,7 @@
   con esta densidad de malla
 - [x] Encontrados y documentados 2 bugs de Blender 5.1.2 (import FBX crashea con luces;
   export FBX cuelga con muchos material slots) + workarounds. Ver
-  [`docs/pipeline-3d-models.md`](docs/pipeline-3d-models.md#decimar-modelos-pesados-en-blender-512--usar-modo-headless-no-la-gui)
+  [`docs/plataforma/pipeline-3d-models.md`](docs/plataforma/pipeline-3d-models.md#decimar-modelos-pesados-en-blender-512--usar-modo-headless-no-la-gui)
 - [x] Cocina colocada en `SampleScene` (reemplaza el placeholder), exportada como `.obj` en vez
   de `.fbx` (el export FBX no terminaba; OBJ tardó 2.5s)
 - [x] Maestra (`Magnate5.blend` → FBX) convertida y colocada, con `WorldCharacter` conectado a
@@ -120,7 +120,7 @@
 - [x] `SanctuaryArea` — zona física con requisitos de entrada, tareas y residentes
 - [x] `WorldCharacter` — entidad autónoma (jugador o NPC), loop de tareas, eventos de promoción
 - [x] `SanctuaryDirector` — singleton de la Magnate: intercepta llegadas, evalúa, promueve individualmente o en grupo
-- Ver diseño completo: [`docs/world-simulation.md`](docs/world-simulation.md)
+- Ver diseño completo: [`docs/sistemas/world-simulation.md`](docs/sistemas/world-simulation.md)
 
 ### Combate / Jugabilidad ✅ (nuevo)
 - [x] `PeriodicTableManager` — singleton. 118 elementos como Pokédex. `Discover(symbol)`, grupos, `OnElementDiscovered`
@@ -135,7 +135,7 @@
 - [x] `CoinWallet` — balance de monedas, Earn/Spend con eventos
 - [x] `Inventory` — items por cantidad, Equip (→ PlayerCombat), Sell (→ CoinWallet), UseConsumable
 - TODOs pendientes: Animator triggers, VFX de golpe/recogida, UI de inventario/vendor
-- Ver diseño completo: [`docs/gameplay-loops.md`](docs/gameplay-loops.md)
+- Ver diseño completo: [`docs/sistemas/gameplay-loops.md`](docs/sistemas/gameplay-loops.md)
 
 ### Controlador del jugador ✅ (nuevo)
 - [x] `PlayerController.cs` — reemplaza `PlayerCtrl.cs` (obsoleto). `CharacterController` con WASD, sprint (LeftShift), salto (Space), mouse look + flechas de teclado, toggle 3ª/1ª persona (V), preferencia guardada en `PlayerPrefs`, cursor auto-gestionado durante diálogos.
@@ -158,7 +158,7 @@
 ### Fixes — animales cayendo, sin controles, error de consola ✅ (nuevo)
 - [x] `LifeStage.Wander()` tiraba `ArgumentOutOfRangeException` en cada tick: indexaba
   `BirdBehavior.population` (vacía, no había pájaros) sin chequeo, y con un off-by-one en
-  `Random.Range`. Guard clause + fix. Ver [`docs/bird-logic.md`](docs/bird-logic.md) para
+  `Random.Range`. Guard clause + fix. Ver [`docs/sistemas/bird-logic.md`](docs/sistemas/bird-logic.md) para
   por qué el wander de animales terrestres depende de pájaros en primer lugar.
 - [x] Animales atravesaban el piso: `AnimalPrefabGenerator.GenerateOne()` generaba
   Rigidbody con gravedad + BoxCollider `size(1,1,1)` sin ajustar al mesh. Ahora
@@ -220,7 +220,7 @@
   no se llegaron a probar de forma interactiva (mismo camino de código que lo ya probado, sin
   motivo para sospechar que fallen). Diseño completo, incluidas las preguntas abiertas
   (accesos directos de asana/hechizo, iconos vs. texto, geometría exacta de tabla periódica):
-  [`docs/ui-holographic-menu.md`](docs/ui-holographic-menu.md).
+  [`docs/sistemas/ui-holographic-menu.md`](docs/sistemas/ui-holographic-menu.md).
   - **Nota histórica**: la primera versión (misma sesión, unas horas antes) usaba cajas 3D
     flotando en el mundo delante del jugador vía `FollowingArrays`/`UI`. Se descartó por
     completo tras feedback directo — no podía anclarse a una esquina, ocupaba demasiada
@@ -369,7 +369,7 @@
 ### Oso Polar agregado como especie jugable/poblada ✅ (nuevo)
 - [x] **Pedido explícito**: "¿los osos han sido agregados al juego?" → no lo estaban; el GLB del
   oso ya estaba en Descargas (`polar-bear.zip`, Sketchfab por kenchoo, CC-BY-4.0, uso comercial
-  permitido con atribución) — exactamente el asset que `docs/pipeline-3d-models.md` ya marcaba
+  permitido con atribución) — exactamente el asset que `docs/plataforma/pipeline-3d-models.md` ya marcaba
   como pendiente. Pipeline completo:
   1. Conversión GLB → FBX con el mismo script headless de Blender usado para Kitchen (sin
      decimar — 10.352 vértices, 1 armature, <1s).
@@ -400,7 +400,7 @@
   `connection.state_change ... WebSocketException` del Unity AI Assistant intentando conectar a su
   servicio cloud — ajeno al proyecto.
 - **Pendiente** (no pedido esta vez, solo documentado): Foca (Seal) sigue sin FBX — mismo GLB
-  pendiente de convertir, fuente Sketchfab (rkuhlf) — ver `docs/pipeline-3d-models.md`.
+  pendiente de convertir, fuente Sketchfab (rkuhlf) — ver `docs/plataforma/pipeline-3d-models.md`.
 
 ### Bug: todos los animales corrían "de espaldas" (mesh mirando al lado contrario del movimiento) ✅
 - [x] **Reportado por el usuario**: "fíjate las direcciones que están tomando los animales para
@@ -522,7 +522,7 @@
 - [x] **Pedido explícito**: "convierte la foca y revisa la migración completa, scripts, población,
   gameobject con dimensiones realistas relativas a los demás". El GLB (en rigor glTF+bin, mismo
   caso) ya estaba en Descargas (`seal.zip`, Sketchfab por rkuhlf, CC-BY-4.0, uso comercial permitido
-  con atribución) — el asset que `docs/pipeline-3d-models.md` marcaba pendiente. Pipeline idéntico
+  con atribución) — el asset que `docs/plataforma/pipeline-3d-models.md` marcaba pendiente. Pipeline idéntico
   al Oso Polar:
   1. Conversión con el mismo script headless de Blender (`bpy.ops.import_scene.gltf()` +
      `bpy.ops.export_scene.fbx()`, sin decimar — 1.265 vértices, 2 mallas, 1 armature, <1s).
@@ -598,7 +598,7 @@ código.
 
 ### 1. Interfaz de Encantamientos (rediseño)
 - [x] Layout resuelto — panel "Hechizos" del menú holográfico, un botón por elemento
-  descubierto. Ver [`docs/ui-holographic-menu.md`](docs/ui-holographic-menu.md).
+  descubierto. Ver [`docs/sistemas/ui-holographic-menu.md`](docs/sistemas/ui-holographic-menu.md).
 - [ ] El jugador selecciona elementos químicos de la tabla periódica por cada encantamiento
   (mecánica de encantamiento en sí — el panel es de solo lectura por ahora)
 - [x] Un botón por elemento (similar a como ahora hay uno por animal)
@@ -609,7 +609,7 @@ código.
 
 - [x] Layout resuelto — panel "Yoga" del menú holográfico, un botón por posición corporal
   (`BodyPositionButton`, ya existía pero sin ningún panel que lo mostrara). Ver
-  [`docs/ui-holographic-menu.md`](docs/ui-holographic-menu.md).
+  [`docs/sistemas/ui-holographic-menu.md`](docs/sistemas/ui-holographic-menu.md).
 
 **Progresión de desbloqueo:**
 - [ ] El jugador empieza SIN ninguna asana desbloqueada
@@ -714,7 +714,7 @@ La mayoría no llegó al santuario buscando formar parte de él — llegaron con
 8. El jugador hace sus **primeras flexiones, abdominales y piernas** — tutorial del sistema de posiciones corporales
 9. La maestra comenta el **nivel actual del jugador y cuánto le falta para avanzar** (feedback de progresión en pantalla)
 10. La maestra lleva al equipo al **área de crías** — primera zona de tareas
-11. Primeras tareas: alimentar, cuidar y jugar con las crías (ver [`docs/fauna-gameplay.md`](docs/fauna-gameplay.md) para el detalle de actividades)
+11. Primeras tareas: alimentar, cuidar y jugar con las crías (ver [`docs/fauna/fauna-gameplay.md`](docs/fauna/fauna-gameplay.md) para el detalle de actividades)
 12. Objetivo: que las crías se conviertan en **adultos amigables** (con personas y entre sí)
 13. Cuando el jugador alcanza un umbral de estadísticas + vínculo con las crías, la **maestra aparece** y le enseña su **primera postura de yoga** — cierre del Nivel 1 y desbloqueo del sistema de asanas
 
@@ -1166,7 +1166,7 @@ public interface IMindSimple { float mentalFatigue { get; set; } float stress { 
 // IMind extends IMindSimple and adds satisfaction, sleepiness, observationRadius...
 ```
 
-Ver `docs/ibody-imind.md` para la propuesta completa.
+Ver `docs/sistemas/ibody-imind.md` para la propuesta completa.
 
 ### NPCs — IBody e IMind para todos
 
@@ -1177,7 +1177,7 @@ Los NPCs implementan las mismas interfaces. No hay lógica especial "solo para e
 - **Panterilia**: `IMind` con bajo estrés — su bonus de Observación surge de sus propias stats
 - **Animales/crías**: `IBody` (via IAnimal→IBody rename), `IMind` parcial (stress, vocalización)
 
-Ver `docs/asana-system.md` §TeacherNPC y §NPCs — IBody e IMind para todos.
+Ver `docs/sistemas/asana-system.md` §TeacherNPC y §NPCs — IBody e IMind para todos.
 
 ### Pendientes antes de implementar
 
@@ -1188,7 +1188,7 @@ Ver `docs/asana-system.md` §TeacherNPC y §NPCs — IBody e IMind para todos.
 - [ ] Evaluar impacto en `CameraManager` (lee directamente de `PlayerStats` — necesitará `IMind`)
 - [ ] Evaluar impacto en `CompanionBase.ApplyProximityEffect()` (actualmente llama `playerStats.Restore`)
 - [ ] Evaluar si `BondActivity` registra trauma leyendo `IMind.stress` en lugar de `PlayerStats.stress`
-- [ ] Añadir `BodyPartStats` per-extremidad a `IBody` (flexibility/strength/stability) — ver `docs/asana-system.md`
+- [ ] Añadir `BodyPartStats` per-extremidad a `IBody` (flexibility/strength/stability) — ver `docs/sistemas/asana-system.md`
 
 ---
 
@@ -1399,7 +1399,7 @@ Un componente `ZoneActivator` que agregue estas llamadas sería más limpio que
 tener todo en `CameraZoneTrigger`. Propuesta de bajo impacto, alta utilidad.
 
 #### Satisfacción como desbloqueador de la paleta artística de cámara
-`docs/camera-system.md` propone paletas visuales desbloqueables por Satisfacción
+`docs/sistemas/camera-system.md` propone paletas visuales desbloqueables por Satisfacción
 (Sueño, Estrés, Alegría, Normal). Estas paletas son exactamente elementos de una
 `Palette` en modo `Direct` con `PaletteElementData` por cada modo visual.
 `PlayerStats.satisfactionCapacity` puede funcionar como umbral de desbloqueo:

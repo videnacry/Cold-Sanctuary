@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// SERVICIO EN VIVO DEL RESTAURANTE (docs/restaurant-plan.md §5, Berón 2026-10-29: «el restaurante con los trabajadores
+/// SERVICIO EN VIVO DEL RESTAURANTE (docs/areas/restaurant-plan.md §5, Berón 2026-10-29: «el restaurante con los trabajadores
 /// acordados: cocineros, limpieza y obradores, y los turistas que piden su comida y la reciben en su mesa»). La BRIGADA es
 /// quien la jornada (<see cref="WorkdayDirector"/>) tiene ahora en una misión de la Cocina, con su papel según la misión:
 ///  · coc_servicio → COCINERO en su puesto completo: saca UNA ración de la despensa (<see cref="KitchenLarder.Serve"/>), la
@@ -94,7 +94,7 @@ public class RestaurantService : MonoBehaviour
     public IReadOnlyList<CleanLog> Cleans => _cleans;
     public CarpetPad ArrivalPad => _arrivalPad;
     public CarpetPad RingPad => _ringPad;
-    /// <summary>¿Se llega al comedor del anillo? (en alfombra, o por su puerta del tronco en un edificio-árbol: docs/edificio-arbol.md §Migración)</summary>
+    /// <summary>¿Se llega al comedor del anillo? (en alfombra, o por su puerta del tronco en un edificio-árbol: docs/areas/edificio-arbol.md §Migración)</summary>
     public bool RingReachable => _ringPad != null || _ringDoor.HasValue;
     public string RingAccessName => _ringPad != null ? _ringPad.displayName : _ringDoor.HasValue ? "puerta del anillo (tronco)" : null;
     Vector3? _ringDoor;   // en un edificio-árbol: donde se sale al balcón del anillo por su puerta
@@ -855,7 +855,7 @@ public class RestaurantService : MonoBehaviour
     static void Gesture(Actor a)
     {
         CreatureRig rig = a.go.GetComponent<CreatureRig>(); if (rig == null) return;
-        // (2026-11-04) Con su utensilio y su efecto (docs/actividades-y-uniformes.md §3): el cocinero saca el género, remueve con el
+        // (2026-11-04) Con su utensilio y su efecto (docs/sistemas/actividades-y-uniformes.md §3): el cocinero saca el género, remueve con el
         // cucharón (vapor) y emplata; el obrador amasa (harina); la limpieza friega (espuma). Se para sola al acabar el gesto.
         ActivityPerformer.Performance p = Performances.ForService(a.role, a.step);
         if (p != null && a.go.GetComponent<Anima>() != null)

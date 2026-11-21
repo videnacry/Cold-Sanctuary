@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// EL SANTUARIO AÉREO, escena propia (Berón 2026-11-05; docs/sitio-nuclear.md §23): la lanzadera y el parque energético, en sus coordenadas de siempre, que al cargarse se ponen sobre el mismo mar.
+/// EL SANTUARIO AÉREO, escena propia (Berón 2026-11-05; docs/areas/sitio-nuclear.md §23): la lanzadera y el parque energético, en sus coordenadas de siempre, que al cargarse se ponen sobre el mismo mar.
 /// Sin alfombras dentro: se llega y se sale por el muelle. Y en el santuario 1, <see cref="BuildAereoDock"/>: el muelle y la lógica de la energía, que no puede irse porque da luz a todo.
 /// </summary>
 public static partial class SampleSceneBuilder

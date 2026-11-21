@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// EL HUERTO VERTICAL (Berón 2026-11-08; docs/produccion-maquinaria.md §2026-11-08): un piso de ESTANTES CON LED en la torre de Producción
+/// EL HUERTO VERTICAL (Berón 2026-11-08; docs/areas/produccion-maquinaria.md §2026-11-08): un piso de ESTANTES CON LED en la torre de Producción
 /// que completa la verdura que los bancales del Árbol de los Campos no llegan a dar. Regla P19: la maquinaria sale de la demanda, no de un número:
 /// <see cref="RacksFor"/> pide los estantes que faltan para <see cref="DemandKgDay"/> (personas × 0,8 kg) con lo que ya dan los bancales.
 /// - RENDIMIENTO: <see cref="YieldKgM2Year"/> = 48,3 kg de peso fresco por m² de bandeja y año, la MEDIANA de la literatura para lechuga en granjas

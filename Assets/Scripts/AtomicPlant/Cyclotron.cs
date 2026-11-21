@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// EL CICLOTRÓN MÉDICO (docs/atomic-plant.md §7), en la planta de arriba de la planta atómica: el complemento del
+/// EL CICLOTRÓN MÉDICO (docs/areas/atomic-plant.md §7), en la planta de arriba de la planta atómica: el complemento del
 /// reactor. El reactor da isótopos RICOS EN NEUTRONES (Mo-99 → Tc-99m); el ciclotrón, RICOS EN PROTONES: el FLÚOR-18
 /// del PET, por la reacción ¹⁸O(p,n)¹⁸F sobre agua enriquecida en oxígeno-18.
 /// Cifras de un ciclotrón compacto de iones negativos tipo PETtrace (WBIC Cambridge): campo medio ≈ 1,8 T, RF 27,2 MHz,

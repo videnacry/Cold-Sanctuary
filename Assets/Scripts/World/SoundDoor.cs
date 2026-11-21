@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LA PUERTA CORREDERA DE UNA SALA DE SONIDO (Berón 2026-11-05, «hazlo real»; docs/piso-musica.md §Acústica): una hoja de cristal cierra el hueco de cada una de las dos
+/// LA PUERTA CORREDERA DE UNA SALA DE SONIDO (Berón 2026-11-05, «hazlo real»; docs/areas/piso-musica.md §Acústica): una hoja de cristal cierra el hueco de cada una de las dos
 /// pieles de la sala, y se abre sola cuando alguien está a <see cref="OpenRadius"/> m. Cerrada es lo que da los dB de <see cref="MusicAcoustics"/>. La hoja no lleva colisión:
 /// el NavMesh pasa por el hueco y nadie puede quedarse encerrado ni atascado si la puerta llega tarde. La búsqueda es acotada: cada 0,25 s, sobre una lista común que se rehace cada 4 s.
 /// </summary>

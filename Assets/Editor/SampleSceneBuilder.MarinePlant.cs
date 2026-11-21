@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LA PLANTA NUCLEAR BAJO EL MAR (Berón 2026-11-08; docs/sitio-nuclear.md §25): la Central Nuclear y la Planta Atómica, con todos sus pisos y su maquinaria, en el
+/// LA PLANTA NUCLEAR BAJO EL MAR (Berón 2026-11-08; docs/areas/sitio-nuclear.md §25): la Central Nuclear y la Planta Atómica, con todos sus pisos y su maquinaria, en el
 /// SANTUARIO MARINO, junto a las cavernas del microrreactor y de los residuos, al nivel de su galería (se va andando desde el andén de abajo, sin escaleras).
 /// Los mismos constructores de siempre (<see cref="BuildNuclearPlant"/>, <see cref="BuildAtomicPlant"/>, <see cref="BuildPhysicsHall"/>): con
 /// <see cref="_marineFloors"/> encendido, cada piso que pedían a la torre (<see cref="TowerFloor"/>, <see cref="InnerFloor"/>) va a su sala, en dos filas de tres,

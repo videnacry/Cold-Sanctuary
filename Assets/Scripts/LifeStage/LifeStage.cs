@@ -68,7 +68,7 @@ public abstract class LifeStage
     /// un año de vida = <see cref="TimeController.DaysPerYear"/> días de juego (28; un día de juego = 1 h a ×1), así que un día
     /// de vida = 28/365 de día de juego ≈ 4,6 min. Es el MISMO calendario que la gestación (<see cref="Reproduction.Calendar"/>)
     /// y la colmena (<see cref="Hive"/>). Antes LifeStage contaba sus «días» en MINUTOS de juego (~2,5 s): el oso vivía 5 días
-    /// de juego de adulto pero gestaba 19 (docs/ciclo-de-vida.md §Calendario).</summary>
+    /// de juego de adulto pero gestaba 19 (docs/sistemas/ciclo-de-vida.md §Calendario).</summary>
     public static float SecondsPerLifeDay(TimeController tc) => tc != null ? Mathf.Max(1e-4f, tc.SecondsForMonths(12f) / 365f) : 60f;
 
     /// <summary>Días de vida transcurridos desde el último evento (lo usa <see cref="GrowScale"/> para crecer en proporción).</summary>
@@ -186,7 +186,7 @@ public abstract class LifeStage
             if (script.nav == null || !script.nav.isOnNavMesh) return;
             // Deambular a un punto LOCAL (ya no hacia un ave al azar — ese placeholder no tenía sentido). El `Homebound`
             // lo devuelve si se aleja de su hogar. La navegación por LECTURA del entorno (impulsos: olor/hogar/colegueo/
-            // confort/experiencia) llega por rebanadas — ver docs/environmental-navigation.md (N0 aquí; N1+ = impulsos).
+            // confort/experiencia) llega por rebanadas — ver docs/sistemas/environmental-navigation.md (N0 aquí; N1+ = impulsos).
             // CRÍA DE UN RECINTO (Cría, con sus tomas): da pasitos por su recinto (≤ 1,5 m de su sitio). Con el paso normal
             // (5–25 m) apuntaba más allá de los muros y recorría el borde del recinto sin parar (vueltas en círculo).
             if (script.GetComponentInParent<CriaFeeder>() != null)

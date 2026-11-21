@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// MEDIDAS Y NÚMEROS DE LA FACHADA DE FOTOBIORREACTORES del Árbol de los Campos (Berón 2026-10-31; docs/fotobiorreactores.md).
+/// MEDIDAS Y NÚMEROS DE LA FACHADA DE FOTOBIORREACTORES del Árbol de los Campos (Berón 2026-10-31; docs/areas/fotobiorreactores.md).
 /// Las comparten el constructor (SampleSceneBuilder.Fotobio.cs), la fachada en juego (<see cref="FotobioFacade"/>) y la prueba.
 /// - ESPECIE: Arthrospira platensis (espirulina), la del compartimento IVa de MELiSSA (ESA): pH 9,5–10,5 (casi nada más
 ///   crece ahí), filamentos que se cosechan con malla, comestible.
@@ -20,7 +20,7 @@ public static class FotobioSpec
 {
     public const string RootName = "Fachada_fotobiorreactores", Title = "Fotobiorreactores de espirulina";
 
-    // ── LA ESPECIE Y EL CULTIVO (docs/fotobiorreactores.md §1) ──
+    // ── LA ESPECIE Y EL CULTIVO (docs/areas/fotobiorreactores.md §1) ──
     /// <summary>Productividad de diseño por m² de superficie iluminada (g de biomasa seca / m² / día), con luz plena (sol o LED).
     /// Literatura de tubos al aire libre: 25–35 g/m²/d (Tredici y Chini Zittelli 1998; TURP, 35 g/m²/d en verano) y hasta 47,7
     /// por m² de instalación; una fachada vertical rinde menos (BIQ, Hamburgo: ~4 % de conversión, la mitad de lo previsto). Diseño
@@ -108,7 +108,7 @@ public static class FotobioSpec
     /// <summary>Superficie iluminada de la fachada (m²): el tronco (4 caras) y las quillas de las <paramref name="branches"/> ramas.</summary>
     public static float Area(int branches = 4) => 4 * TrunkBays.Length * ModulesPerColumn * ModuleArea + branches * KeelPanels * KeelPanelArea;
 
-    // ── LA SEGUNDA FACHADA (Berón 2026-11-08; docs/fotobiorreactores.md §2026-11-08): las mismas arpas en el tronco de la TORRE DE CIENCIAS ──
+    // ── LA SEGUNDA FACHADA (Berón 2026-11-08; docs/areas/fotobiorreactores.md §2026-11-08): las mismas arpas en el tronco de la TORRE DE CIENCIAS ──
     /// <summary>La torre-árbol de la segunda fachada: Ciencias, la del laboratorio de Biología donde se cuida el cultivo (el cuidador no cambia de
     /// edificio). Su tronco es el mismo de 22 × 22 m; no gira (el sol polar da la vuelta a las cuatro caras cada día: la media diaria es la misma que
     /// la del Árbol, que gira).</summary>
@@ -187,7 +187,7 @@ public static class FotobioSpec
 }
 
 /// <summary>
-/// LA FACHADA DE FOTOBIORREACTORES EN JUEGO (docs/fotobiorreactores.md): sigue el cultivo de espirulina de toda la fachada
+/// LA FACHADA DE FOTOBIORREACTORES EN JUEGO (docs/areas/fotobiorreactores.md): sigue el cultivo de espirulina de toda la fachada
 /// (un solo lote: los módulos están en serie por sus colectores) y lo enseña en su cuadro y en el color de los tubos.
 /// - DENSIDAD (g/L): sube con lo que crece; la COSECHA diaria la baja a 0,7 g/L. Por encima de 1,4 g/L se hace sombra y rinde menos.
 /// - NUTRIENTES (medio de Zarrouk, 0–1): se gastan al crecer; el cuidado diario los repone (bicarbonato, nitrato, fosfato, hierro).

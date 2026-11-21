@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DE LA OBRA VISIBLE (Berón 2026-11-04: «el progreso de las obras podría ser visual?»; docs/construction-simulation.md):
+/// PRUEBA DE LA OBRA VISIBLE (Berón 2026-11-04: «el progreso de las obras podría ser visual?»; docs/areas/construction-simulation.md):
 /// simula N días de obra en una obra de prueba con su «Acabado» (suelo, jaula, lámpara, banco, saco, espejo, maceta):
 /// 1. PLAN: las piezas se reparten por días en orden de etapas (cimientos y suelo → estructura → instalaciones → muebles y
 ///    máquinas → acabados y decoración) y cada día tiene alguna.

@@ -11,11 +11,13 @@ Este archivo se carga en **cada** sesión: mantenlo corto, solo enlaces. El deta
 
 - **Mapa del código y de los sistemas:** [`docs/ARQUITECTURA.md`](docs/ARQUITECTURA.md)
 - **Ubicar una clase:** `grep -n "Clase" docs/CODEMAP.md` (generado; no leerlo entero)
-- **Qué doc trata un tema:** [`docs/README.md`](docs/README.md)
+- **Qué doc trata un tema:** `python3 tools/docs.py find <tema>` (o `de <Clase>`: código→doc); índice generado en [`docs/README.md`](docs/README.md)
+- **Antes de reintentar algo que falló:** [`docs/conocimiento/`](docs/conocimiento/README.md) (lecciones) y [`docs/qa/hallazgos.md`](docs/qa/hallazgos.md)
+- **Docs nuevos:** en su carpeta (`sistemas/`, `areas/`, `fauna/`, `microcosmos/`, `historia/`, `reglas/`, `qa/`, `plataforma/`…), con cabecera `resumen/temas/estado` (+ `codigo/modelos/animaciones/retos`); luego `python3 tools/docs.py index` (CI: `check`)
 - **Tareas pendientes:** [`docs/checklist.md`](docs/checklist.md) (enorme: `grep`, no leer entero)
-- **Reglas de diseño (W1, J18…):** [`docs/manual-de-diseno.md`](docs/manual-de-diseno.md) (enorme: `grep`)
+- **Reglas de diseño (W1, J18…):** [`docs/reglas/manual-de-diseno.md`](docs/reglas/manual-de-diseno.md) (enorme: `grep`)
 - **Qué cambió:** [`CHANGELOG.md`](CHANGELOG.md)
-- Personajes: `docs/personajes/` · Convenciones: [`docs/conventions.md`](docs/conventions.md)
+- Personajes: `docs/personajes/` · Convenciones: [`docs/reglas/conventions.md`](docs/reglas/conventions.md)
 
 ## Repo y proyecto Unity
 

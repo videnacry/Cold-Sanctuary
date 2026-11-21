@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// PILOTO DEL REALISMO (docs/plan-microcosmos-realismo.md, fase 1; Berón 2026-11-18): MICROCOSMOS_ELONMUSK, la fábrica de SpaceX en
+/// PILOTO DEL REALISMO (docs/microcosmos/plan-microcosmos-realismo.md, fase 1; Berón 2026-11-18): MICROCOSMOS_ELONMUSK, la fábrica de SpaceX en
 /// 1 Rocket Road, Hawthorne (California), entre agosto y el 28 de septiembre de 2008. Es el primer microcosmos con las reglas nuevas:
 /// - el lugar real a 1:1 (E2, P1), con MUROS y TECHO, su PUERTA y la VISTA DE CORTE (P2–P4: CivicBuilder.Enclose, CutawayView,
 ///   MicroDoor), un tabique de aseos con la puerta real ensanchada a 1,2 m (P4, «supuesto»);
@@ -52,7 +52,7 @@ public static partial class StorySceneBuilder
         Material navy = M("Azul_SpaceX", 0.07f, 0.11f, 0.2f), asphalt = M("Asfalto", 0.2f, 0.2f, 0.21f), paint = M("Pintura_blanca", 0.92f, 0.92f, 0.9f);
         Material mars = M("Poster_Marte", 0.75f, 0.35f, 0.2f), wood = M("Palé", 0.7f, 0.56f, 0.38f), yellow = M("Amarillo_carretilla", 0.92f, 0.72f, 0.1f);
 
-        MuskShift = HawthorneShift;   // (PB-165) suelo propio: la fábrica en su sitio del distrito (docs/hawthorne-distrito.md)
+        MuskShift = HawthorneShift;   // (PB-165) suelo propio: la fábrica en su sitio del distrito (docs/microcosmos/hawthorne-distrito.md)
         // El estilo y el cuerpo de los muebles (Civilize los vuelve a poner después, para el pueblo).
         CivicBuilder.Year = 2008;
         CivicBuilder.Region = MicroStyles.RegionOf("Hawthorne").ToString();

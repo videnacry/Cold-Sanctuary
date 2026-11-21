@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 /// <summary>
-/// EL COMPROBADOR DE QA (2026-11-13, docs/qa-propuesta.md §6; equivale a «qa:check» de CodeShip). Lógica pura sobre texto, sin Unity (como
+/// EL COMPROBADOR DE QA (2026-11-13, docs/qa/qa-propuesta.md §6; equivale a «qa:check» de CodeShip). Lógica pura sobre texto, sin Unity (como
 /// <see cref="TestImpact"/>): lee docs/qa/casos.md, registro.md y peticiones.md, el manual de diseño y el código de las pruebas, y dice qué no
 /// cuadra. Lo usan tres sitios: QaCheckTest (lista rápida), el menú «Tools/Cold Sanctuary/QA/Comprobar» (QaCheckTool) y el qa-check.sh del
 /// probador (<see cref="Cli"/>, compilado aparte con el dotnet del Editor, sin abrir Unity).
@@ -274,8 +274,8 @@ public static class QaCheck
     // ── Las reglas ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
     static readonly string[] UnitColumns = { "prueba", "unidad", "test", "grupo" };
-    public static readonly string[] WatchedDocs = { "docs/checklist.md", "docs/manual-de-diseno.md", "docs/auditoria-peticiones.md" };
-    public const string RetiredDoc = "docs/auditoria-peticiones.md";   // la sustituye peticiones.md: se puede borrar, no vaciar
+    public static readonly string[] WatchedDocs = { "docs/checklist.md", "docs/reglas/manual-de-diseno.md", "docs/historial/auditoria-peticiones.md" };
+    public const string RetiredDoc = "docs/historial/auditoria-peticiones.md";   // la sustituye peticiones.md: se puede borrar, no vaciar
     public static bool Watched(string path) => path.StartsWith("docs/qa/") && path.EndsWith(".md") || WatchedDocs.Contains(path);
 
     public static Report Run(Input inp)
@@ -316,7 +316,7 @@ public static class QaCheck
                 else if (u.Unit != null && u.Group >= 0 && units[u.Unit] != u.Group) rep.Add("grupo", where, $"{u.Unit} es del grupo {units[u.Unit]}, no del {u.Group}");
                 else if (u.Unit == null && !groups.Contains(u.Group)) rep.Add("grupo", where, $"no hay ninguna unidad del grupo {u.Group}");
             }
-            foreach (string rule in RulesIn(r.Cell("regla"))) if (!rules.Contains(rule)) rep.Add("regla-desconocida", where, $"la regla {rule} no está en docs/manual-de-diseno.md");
+            foreach (string rule in RulesIn(r.Cell("regla"))) if (!rules.Contains(rule)) rep.Add("regla-desconocida", where, $"la regla {rule} no está en docs/reglas/manual-de-diseno.md");
         }
 
         // §6.2 y §6.3: el registro.
@@ -405,7 +405,7 @@ public static class QaCheck
             string stCell = r.Cell("estado") ?? "";
             string written = Norm(StripMd(stCell));
             bool doc = written == "doc" || r.Cells.Any(c => StripMd(c) == "Doc");
-            foreach (string rule in RulesIn(r.Cell("regla"))) if (!rules.Contains(rule)) rep.Add("regla-desconocida", where, $"la regla {rule} no está en docs/manual-de-diseno.md");
+            foreach (string rule in RulesIn(r.Cell("regla"))) if (!rules.Contains(rule)) rep.Add("regla-desconocida", where, $"la regla {rule} no está en docs/reglas/manual-de-diseno.md");
             if (written.StartsWith("retirad") || written.StartsWith("no aplica")) continue;
             var allowed = new List<string>();
             if (pcases.Count == 0)
@@ -508,7 +508,7 @@ public static class QaCheck
         inp.Casos = ReadOr(root, "docs/qa/casos.md", inp, true);
         inp.Registro = ReadOr(root, "docs/qa/registro.md", inp, true);
         inp.Peticiones = ReadOr(root, "docs/qa/peticiones.md", inp, true);
-        inp.Manual = ReadOr(root, "docs/manual-de-diseno.md", inp, true);
+        inp.Manual = ReadOr(root, "docs/reglas/manual-de-diseno.md", inp, true);
         inp.Presets = ReadOr(root, "Assets/Scripts/TestPresetsData.cs", inp, false);
         foreach (string other in new[] { "entrelazamiento.md", "hallazgos.md", "contadores.md" })
         {

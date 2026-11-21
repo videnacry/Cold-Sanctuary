@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Una "parte" de la **orquesta** emocional (docs/emotion-model.md §orquesta / traducción). Reacciona a la
+/// Una "parte" de la **orquesta** emocional (docs/sistemas/emotion-model.md §orquesta / traducción). Reacciona a la
 /// señal del <see cref="EmotionExpression"/> moviendo su hueso: **PASIVA** (activación/valencia → offset
 /// sostenido: erguir/hundir, abrir/cerrar) y **VIOLENTA** (`Jolt` → tic rápido que decae: quijada, uñas,
 /// antena, oreja…). Es la **traducción entre especies**: la misma señal mueve orejas, brazos, antenas o alas

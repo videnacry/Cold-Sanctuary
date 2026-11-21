@@ -1,6 +1,6 @@
 using UnityEngine;
 
-/// <summary>EL MAPA A MANO DE BAGDAD (2026-11-12; petición 75, regla M9; docs/microcosmos-mapas-a-mano.md §Tanda 4).</summary>
+/// <summary>EL MAPA A MANO DE BAGDAD (2026-11-12; petición 75, regla M9; docs/microcosmos/microcosmos-mapas-a-mano.md §Tanda 4).</summary>
 public static partial class MicroStoryMaps
 {
     // ══ BAGDAD, hacia 820 (al-Juarismi en la Casa de la Sabiduría): sobre el Aula ══════════════════════════════════════════════════════════════

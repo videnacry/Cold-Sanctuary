@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// LA PLANTILLA DE MICROCOSMOS (Berón 2026-10-27): todo microcosmos se crea a partir de TRES DATOS que hay que dar sí o sí
 /// —su FECHA, su HORA y la PLATAFORMA del santuario a la que pertenece— y con ellos la plantilla lo monta siempre igual
-/// (docs/microcosmos-areas.md):
+/// (docs/microcosmos/microcosmos-areas.md):
 /// - SOLO el piso elegido del santuario, AGRANDADO ×100 (AreaMicrocosmos.AreaScale: sus muebles son montañas; la historia y su pueblo, en su barrio), cerrado por MUROS en su borde (regla 11);
 /// - la flora y los insectos NATIVOS de esa fecha y ese lugar (MicroBiome), a escala de hormiga, TODOS DENTRO del piso;
 /// - el SOL a la hora pedida (el alba, el mediodía del solsticio…);
@@ -57,7 +57,7 @@ internal static class MicrocosmTemplate
     /// bajo el horizonte, una luz de luna tenue y fría.</summary>
     public static void Sun(Light sun, float hour, string display = null)
     {
-        // El sol REAL de su lugar y fecha (SolarPosition, docs/luz-microcosmos.md); sin lugar conocido, latitud media en
+        // El sol REAL de su lugar y fecha (SolarPosition, docs/microcosmos/luz-microcosmos.md); sin lugar conocido, latitud media en
         // verano. Bajo el horizonte, la luna.
         if (!SolarPosition.GeoOf(display, out float lat, out _, out float doy)) { lat = 45f; doy = 172f; }
         SolarPosition.Apply(sun, SolarPosition.SunFor(lat, doy, hour));

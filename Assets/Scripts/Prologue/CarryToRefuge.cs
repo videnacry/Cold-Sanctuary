@@ -3,7 +3,7 @@ using UnityEngine.Events;
 
 /// <summary>
 /// Misión de CUIDADO: llevar a los <see cref="WeakOne"/> (débiles) a un **refugio** (la cueva) — antesala de
-/// las misiones de cría (docs/area-progression.md "Apertura"). Cuenta los débiles que llegan cerca del
+/// las misiones de cría (docs/areas/area-progression.md "Apertura"). Cuenta los débiles que llegan cerca del
 /// refugio (por distancia, sin depender de rigidbodies); al reunir a <see cref="needed"/>, completa y dispara
 /// <see cref="onComplete"/> (que el prólogo engancha a su siguiente beat y a un aviso del Mesocosmos).
 /// </summary>

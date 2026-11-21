@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// ÓRGANO SENSORIAL (docs/consciousness-mechanics.md §3) — la clase de body-part que faltaba. Un órgano DECLARA qué
+/// ÓRGANO SENSORIAL (docs/sistemas/consciousness-mechanics.md §3) — la clase de body-part que faltaba. Un órgano DECLARA qué
 /// <see cref="PerceptChannel"/> genera/procesa y con qué CALIDAD (0–1), y por qué <see cref="Senses">sentido</see>
 /// (que fija su ALCANCE). Todo es CONFIGURACIÓN, no el tipo:
 ///   • ojo normal   = sense "vista",  {Color 1, Shape .9, Distance .9, Direction 1, Movement 1, Presence 1}

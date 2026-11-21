@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Engancha la rutina de cuidado a los DRIVES REALES de una cría (`Animal`) — docs/cria-simulation.md §2/§3,
+/// Engancha la rutina de cuidado a los DRIVES REALES de una cría (`Animal`) — docs/areas/cria-simulation.md §2/§3,
 /// fauna-gameplay.md. Recibe las acciones del <see cref="VirtualPointer"/> (estación "Cria") y actúa sobre
 /// el `Animal` real: **leer estado**, bajar **estrés** (calmar/arrullar), bajar **hambre** (alimentar) y
 /// **ganar bond** (`Anima.GrowBond`, que ya factoriza el **trauma**). Regla clave (el bond SE GANA): si el

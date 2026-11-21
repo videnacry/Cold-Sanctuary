@@ -1,6 +1,6 @@
 using UnityEngine;
 
-// Petrel damero (Daption capense). Vuela con SnowPetrelLife, sin NavMesh. Ficha: docs/fauna-fria-santuarios.md.
+// Petrel damero (Daption capense). Vuela con SnowPetrelLife, sin NavMesh. Ficha: docs/fauna/fauna-fria-santuarios.md.
 public class CapePetrelBehavior : Animal
 {
     protected override string SpeciesArchetype => "CapePetrel";

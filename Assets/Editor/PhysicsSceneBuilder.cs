@@ -2,7 +2,7 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// EL MICROCOSMOS DE LA PLANTA ATÓMICA (docs/atomic-plant.md §Microcosmos): la planta ×10 (la piscina del reactor es
+/// EL MICROCOSMOS DE LA PLANTA ATÓMICA (docs/areas/atomic-plant.md §Microcosmos): la planta ×10 (la piscina del reactor es
 /// una montaña de hormigón) y, en el hueco de su suelo, tres grandes de la física a escala de hormiga, cada uno con su
 /// experimento JUGABLE: Newton y su cañón (la órbita), Marie Curie y su electrómetro (la radiactividad), Einstein y su
 /// balanza (E = mc² en la fisión). Se entra desde la máquina de virtualización de la planta. (Eratóstenes, el primer

@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// La MISIÓN de producción de un área (docs/kitchen-simulation.md §3b): una **receta = pasos ordenados**
+/// La MISIÓN de producción de un área (docs/areas/kitchen-simulation.md §3b): una **receta = pasos ordenados**
 /// sobre estaciones; seguir la secuencia produce un platillo/producto; repetir hasta la **cuota** cumple
 /// la misión (= **sustento del santuario**). Recibe los pasos vía <see cref="Submit"/> (los emite el
 /// <see cref="VirtualPointer"/> al confirmar sobre una <see cref="StationPart"/>). Motor genérico: sirve a

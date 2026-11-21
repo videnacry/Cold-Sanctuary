@@ -3,7 +3,7 @@ using System.Text;
 using UnityEngine;
 
 /// <summary>
-/// LOS ELEMENTOS DE CADA PISO, CON SU VERSIÓN DE MESOCOSMOS Y SU VERSIÓN DE MICROCOSMOS (docs/microcosmos-suelo-y-elementos.md
+/// LOS ELEMENTOS DE CADA PISO, CON SU VERSIÓN DE MESOCOSMOS Y SU VERSIÓN DE MICROCOSMOS (docs/microcosmos/microcosmos-suelo-y-elementos.md
 /// §Elementos; Berón 2026-11-04: «los elementos que componen cada piso deben estar listados y creados con su versión mesocosmos y su
 /// versión microcosmos, de ese modo se puede tener una versión más plana y superficial para el mesocosmos y el del microcosmos en
 /// cambio sería creado a lujo de detalle aprovechando su estructura para edificación o componente natural del territorio … un
@@ -40,7 +40,7 @@ public static class MicroFloorElements
 
     /// <summary>
     /// EL CATÁLOGO, de lo más concreto a lo más general (manda la primera fila cuyo nombre encaja: «Lampara_de_mesa» es una lámpara, no
-    /// una mesa). Las filas de Berón primero; el resto, decididas aquí (docs/microcosmos-suelo-y-elementos.md §Tabla).
+    /// una mesa). Las filas de Berón primero; el resto, decididas aquí (docs/microcosmos/microcosmos-suelo-y-elementos.md §Tabla).
     /// </summary>
     public static readonly Element[] Catalog =
     {

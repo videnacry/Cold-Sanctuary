@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Componente de FORRAJEO (docs/anima-dissolving-animal.md). Encapsula "qué/dónde comer" Y el forrajeo entero:
+/// Componente de FORRAJEO (docs/sistemas/anima-dissolving-animal.md). Encapsula "qué/dónde comer" Y el forrajeo entero:
 /// **presa** (carnívoro; por PROXIMIDAD + STATS vía `SelectPrey`/`Predation`, ya no una tabla Diet), **pasto** y/o
 /// **banco de peces** (herbívoro/pescador). Los flags (`eatsPrey`/`eatsGrass`/`eatsFish`) son **combinables** — un
 /// **omnívoro** marca varios y `SelectTarget` elige la fuente más cercana. **Portable**: cualquier `Anima` lo lleva
@@ -107,7 +107,7 @@ public class Forager : MonoBehaviour
             case "Mantis":                           eatsPrey = true; break;                    // depredadora de emboscada
             case "Meerkat":                          eatsPrey = true; break;                    // insectívora (skin de la tribu)
             case "SnowBee":                          eatsGrass = true; break;                   // néctar (pollinizadora/carroñera suave)
-            // Especies de las eras (docs/era-species-behavior.md). Lo que comen de plantas/hojarasca/hongos lo pone su Ethogram
+            // Especies de las eras (docs/sistemas/era-species-behavior.md). Lo que comen de plantas/hojarasca/hongos lo pone su Ethogram
             // (Feed sobre Leaf/Fungus/Flower/PlantSap/Dung); aquí solo lo que no es un interactuable (presa, pasto, carroña).
             case "Scorpion": case "CamelSpider":     eatsPrey = true; break;                    // depredadores nocturnos de artrópodos (y el solífugo, de lagartijas)
             case "GhostCrab":                        eatsPrey = true; break;                    // depredador y carroñero de playa (Tewfik et al. 2016, doi 10.1371/journal.pone.0147759)
@@ -139,7 +139,7 @@ public class Forager : MonoBehaviour
             if (cropScore >= grassScore) grass = null; else crop = null;
         }
         if (crop != null) grass = crop;
-        // PLANTAS DEL ENTORNO (Affordance + Ethogram, docs/natural-interactions.md): savia, semillas, hierba, hongos,
+        // PLANTAS DEL ENTORNO (Affordance + Ethogram, docs/sistemas/natural-interactions.md): savia, semillas, hierba, hongos,
         // estiércol… lo que la especie come de verdad. Solo para quien PASTA (el cazador las usa vía su hábito: un oso
         // que come bayas no deja de cazar por tenerlas más cerca).
         if (!hunts || eatsPlants)

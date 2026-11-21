@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Lado EMISOR de una petición entre personajes (docs/anima-architecture.md §11.7). Un ser pide algo a
+/// Lado EMISOR de una petición entre personajes (docs/sistemas/anima-architecture.md §11.7). Un ser pide algo a
 /// otro; si el otro (su <see cref="HelpResponder"/>) contesta SÍ, se ejecuta una **posesión consentida =
 /// alma compartida**: por un momento el receptor comparte el objetivo del emisor y hacen lo mismo (p. ej.
 /// ir juntos a un sitio — el caso de las introducciones a nuevas áreas: el veterano "lleva" al novato).

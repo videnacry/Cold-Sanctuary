@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DE LOS FRUTALES DE LOS TECHOS (Berón 2026-10-30; docs/jardines-frutales.md):
+/// PRUEBA DE LOS FRUTALES DE LOS TECHOS (Berón 2026-10-30; docs/areas/jardines-frutales.md):
 /// 1. LLENOS Y CON SU PASO: cada techo de alfombras con frutales tiene UNA DE CADA especie de <see cref="FruitCare.All"/>
 ///    (o más), ninguna maceta a menos de 2 m de otra o de un equipo (<see cref="FurnitureSpacing.Violations"/>, 0 pares) y
 ///    todas a ≥ 2 m de las áreas de alfombras.
@@ -185,7 +185,7 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
         Destroy(body);
 
         // ── 7. LAS TAREAS DEL ÁRBOL: máscaras de oxígeno y fitoplancton (Berón 2026-11-03; 2026-11-04: revisión BARATA por rotación
-        //    semanal y por el panel de luces, docs/mascaras-de-oxigeno.md §El jardinero) ──
+        //    semanal y por el panel de luces, docs/areas/mascaras-de-oxigeno.md §El jardinero) ──
         {
             ArbolCampos tree = ArbolCampos.All.Where(a => a != null && a.building != LaunchHeightRule.Building && FruitGardener.TreeStations(a).Count > 0).OrderBy(a => FruitGardener.TreeStations(a).Count).FirstOrDefault();
             if (tree == null) TestProbe.Check("el jardinero revisa las máscaras de oxígeno y cuida el fitoplancton de un edificio-árbol", false, "sin árboles con máscaras");

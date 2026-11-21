@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Un insecto-humano de EGINA que aún no se ha unido al reino de Éaco (docs/microcosmos-myrmidons.md). Zeus (un
+/// Un insecto-humano de EGINA que aún no se ha unido al reino de Éaco (docs/microcosmos/microcosmos-myrmidons.md). Zeus (un
 /// <see cref="MythRecruiter"/>) o el jugador (E) le hablan; si se cumple su condición (algunos esperan a ver que la mitad
 /// ya trabaja, o que se alzan las columnas), SE UNE y se pone a su tarea: cargar piedra de la cantera al templo
 /// (<see cref="MicroForager"/>), o ir a su puesto (el hogar común, las terrazas, la mesa de las leyes, la stoa).

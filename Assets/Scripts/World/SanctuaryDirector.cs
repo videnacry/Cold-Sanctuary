@@ -152,7 +152,7 @@ public class SanctuaryDirector : MonoBehaviour
     /// Returns the highest-tier area the character currently qualifies for.
     /// Falls back to allAreas[0] (the lowest tier) if nothing matches.
     /// </summary>
-    // Dónde trabaja cada personaje según sus fichas (docs/world-simulation.md): Goluis es el encargado de la cocina (Berón 2026-11-08; Maite y Amykhuz, los rangos más altos), Irosene destaca en
+    // Dónde trabaja cada personaje según sus fichas (docs/sistemas/world-simulation.md): Goluis es el encargado de la cocina (Berón 2026-11-08; Maite y Amykhuz, los rangos más altos), Irosene destaca en
     // el textil, Panterilia lleva la limpieza (y la farmacia, aún sin área: va al huerto), Gohageneis a la mecánica.
     static readonly System.Collections.Generic.Dictionary<string, SanctuaryAreaType> HomeArea = new System.Collections.Generic.Dictionary<string, SanctuaryAreaType>   // fichas: docs/personajes/
     {
@@ -161,7 +161,7 @@ public class SanctuaryDirector : MonoBehaviour
         { "Lizmibet", SanctuaryAreaType.Infirmary },                                                // la médica (y los registros y la vacunación)
         { "Andrea", SanctuaryAreaType.Gym },   // (2026-11-04) ANDREA, el entrenador del gimnasio («el personaje con más fuerza es Andrea»): empieza en el gimnasio
         { "JefeConstruccion", SanctuaryAreaType.Construction },                                     // Tofelite («Tote»), el esposo de Lizmibet, dirige las obras
-        // (2026-11-04) LAS PROFESIONES (Berón; Professions, docs/personajes-mesocosmos.md §Profesiones): cada uno empieza en el área de
+        // (2026-11-04) LAS PROFESIONES (Berón; Professions, docs/historia/personajes-mesocosmos.md §Profesiones): cada uno empieza en el área de
         // su profesión principal. Josedrilo, maestro de yoga (y bioconstrucción); Maite, cocina; Shalva, huerto (y bioconstrucción);
         // Adaguchi, submarinismo (los submarinos de obra y la ambulancia: Construcción) y cocina; Amykhuz, cocina y química; Karen, asuntos
         // legales y lenguas (su mesa, en el Aula); Alicita, contabilidad y dirección de proyectos (las obras); Ducristin, la mecánica.

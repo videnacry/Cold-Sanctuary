@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LA REGLA DE ALTURA DE LA LANZADERA DE COHETES (Berón 2026-11-04; docs/lanzadera-de-cohetes.md):
+/// LA REGLA DE ALTURA DE LA LANZADERA DE COHETES (Berón 2026-11-04; docs/areas/lanzadera-de-cohetes.md):
 /// «siempre que se agrega un elemento elevado se valide y se ajuste la altura del lanza-cohetes para que no le afecte».
 ///   altura de la plataforma ≥ máx(lo más alto del santuario, techo de vuelo de las aves) + margen.
 /// - Lo más alto del santuario: el techo de cada edificio-árbol con la columna de su puerta (<see cref="ArbolCampos"/>) y todo lo que
@@ -69,7 +69,7 @@ public static class LaunchHeightRule
 
 
 /// <summary>
-/// LA PLATAFORMA DE LANZAMIENTO (docs/lanzadera-de-cohetes.md): la corona sobre el techo del árbol-lanzadera, con su cohete, el
+/// LA PLATAFORMA DE LANZAMIENTO (docs/areas/lanzadera-de-cohetes.md): la corona sobre el techo del árbol-lanzadera, con su cohete, el
 /// deflector, la trinchera de llamas, el diluvio y el escudo. <see cref="Validate"/> aplica la regla de altura: si queda por debajo de
 /// lo que pide, SUBE la corona (y alarga sus pilares).
 /// </summary>
@@ -125,7 +125,7 @@ public class LaunchSite : MonoBehaviour
         if (AereoLink.Instance == null) return l;   // (la lanzadera está en el Santuario Aéreo: sus misiones siguen sin cargarla)
         l.Add(new WorkRoster.Mission(ControlArea, "lanz_control", "Control de misión: telemetría, meteorología (viento en altura, techo de nubes) y cuenta atrás de la próxima ventana", 1f));
         l.Add(new WorkRoster.Mission(ControlArea, "lanz_seguridad", "Seguridad de la plataforma: probar el diluvio de agua, limpiar la trinchera de llamas y revisar el escudo y la cubeta de contención", 1f) { roams = true });
-        // ICEBERGS (docs/sitio-nuclear.md §14): remolcarlo; y si aun así llega, vaciar lo que arde. Aquí no hay nada que desconectar.
+        // ICEBERGS (docs/areas/sitio-nuclear.md §14): remolcarlo; y si aun así llega, vaciar lo que arde. Aquí no hay nada que desconectar.
         if (Iceberg.Threatening(IcebergRule.Site.Launch) != null) l.Add(new WorkRoster.Mission(ControlArea, Iceberg.LaunchTow, "Iceberg a la vista: seguirlo por radar y sonar y remolcarlo lejos de la plataforma", SiteLineRule.MissionHours, true));
         if (Iceberg.Danger(IcebergRule.Site.Launch)) l.Add(new WorkRoster.Mission(ControlArea, "lanz_vaciado", "Iceberg encima: vaciar el oxígeno líquido y el RP-1 y asegurar la plataforma", 1f, true));
         l.Add(new WorkRoster.Mission(ControlArea, "lanz_fabrica", "Fábrica de cohetes: integrar etapas y la carga útil (la trae el submarino de obra)", 2f));

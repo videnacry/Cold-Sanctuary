@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// MICROCOSMOS DE LOS FAMOSOS (docs/microcosmos-famosos.md; Berón 2026-11-04: «los personajes famosos, elon musk, sadhguru, y demás
+/// MICROCOSMOS DE LOS FAMOSOS (docs/microcosmos/microcosmos-famosos.md; Berón 2026-11-04: «los personajes famosos, elon musk, sadhguru, y demás
 /// sácalos del mesocosmos y crea sus microcosmos respectivos»). Cada figura vive UNA historia de su vida pública, bien documentada,
 /// respetuosa e inspiradora, en el PUEBLO REAL donde ocurrió (CivicBuilder.Famosos: su plano, su estilo de época y lugar), sobre el
 /// piso del santuario que mejor la cuenta (MicroFloors). Como los científicos: insectos-humanos (su insecto por etología, su ropa de

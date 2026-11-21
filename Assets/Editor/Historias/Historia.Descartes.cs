@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// DESCARTES Y EL DISCURSO DEL MÉTODO (docs/microcosmos-historias-3.md). Leiden, 8 de junio de 1637: en la imprenta de Jan Maire se acaba de
+/// DESCARTES Y EL DISCURSO DEL MÉTODO (docs/microcosmos/microcosmos-historias-3.md). Leiden, 8 de junio de 1637: en la imprenta de Jan Maire se acaba de
 /// imprimir, sin nombre de autor y en francés, el Discurso del método con sus tres ensayos. La historia enseña el método (dudar, dividir,
 /// ordenar, repasar) y las coordenadas con una rejilla en el suelo. Las frases son de juego; las citas, solo la del «pienso, luego existo».
 /// </summary>

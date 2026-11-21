@@ -2,7 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// EL ÁREA DE MÚSICA (Berón 2026-11-05: «si no existe área de música créala» y «tendría que haber más de un escenario y estudio de grabación … para que varios
-/// grupos puedan practicar simultáneamente … paredes transparentes para bloquear sonido»; docs/piso-musica.md). En la torre del Entrenamiento, encima del Aula:
+/// grupos puedan practicar simultáneamente … paredes transparentes para bloquear sonido»; docs/areas/piso-musica.md). En la torre del Entrenamiento, encima del Aula:
 /// - el PISO DE CONCIERTOS: el escenario grande con 50 butacas y, tras su mampara, el segundo escenario con 16;
 /// - los PISOS DE ESTUDIOS (⌈miembros / <see cref="MusicRehearsalSeats"/>⌉): cada uno, 2 estudios de grabación (control + sala) y 4 salas de ensayo.
 /// Cada sala que debe aislarse es una <see cref="SoundRoom"/>: doble cristal con cámara y tapa de cristal (<see cref="MusicAcoustics"/>). Todos pueden ensayar
@@ -26,7 +26,7 @@ public static partial class SampleSceneBuilder
     static readonly Color StageBlack = new Color(0.16f, 0.15f, 0.16f), StageWood = new Color(0.58f, 0.43f, 0.3f), SeatRed = new Color(0.5f, 0.14f, 0.16f), CableBlack = new Color(0.1f, 0.1f, 0.11f);
 
     /// <summary>UNA SALA QUE AÍSLA EL SONIDO: dos cajas de cristal, una dentro de otra, con su cámara de aire, y una tapa de cristal (por arriba, una sala abierta
-    /// no aísla nada: docs/piso-musica.md §Acústica). <paramref name="outer"/> es la medida de fuera.</summary>
+    /// no aísla nada: docs/areas/piso-musica.md §Acústica). <paramref name="outer"/> es la medida de fuera.</summary>
     static void SoundRoom(Transform g, string name, Vector3 c, Vector2 outer, int doorSide)
     {
         float inset = MusicAcoustics.Cavity + GlassWall.Thick;

@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Un personaje que se acerca a un <see cref="FoodContainer"/> a **comer** (docs/kitchen-simulation.md §6).
+/// Un personaje que se acerca a un <see cref="FoodContainer"/> a **comer** (docs/areas/kitchen-simulation.md §6).
 /// MVP: intenta comer cada <see cref="eatInterval"/> del contenedor con comida más cercano. En el **paso C**
 /// la decisión pasará a estar **dirigida por los humores** (elegir el platillo según el estado — glucosa
 /// baja → energético, cortisol alto → reconfortante) y comer aplicará los **compuestos** del platillo.

@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// EL PISO DEL MICROCOSMOS (docs/reglas-plataformas.md, regla 11; Berón 2026-10-29): el mapa de un microcosmos es SOLO el piso
+/// EL PISO DEL MICROCOSMOS (docs/reglas/reglas-plataformas.md, regla 11; Berón 2026-10-29): el mapa de un microcosmos es SOLO el piso
 /// elegido, ×100 (AreaMicrocosmos.AreaScale), cerrado por MUROS en su borde para que nada salga. Fuera del piso no se puebla nada (ni flora ni fauna); todo
 /// —flora, fauna, personajes y estructuras de la historia— va dentro. Lo pone <c>AreaMicrocosmos</c> en la raíz del
 /// microcosmos y lo leen las pruebas (<c>MicrocosmosFloorTest</c>): el rectángulo de los muros y lo que se contó al poblarlo.
@@ -18,14 +18,14 @@ public class MicroFloor : MonoBehaviour
     public int floraInside, faunaInside, charactersInside, outside;
     [Tooltip("Al construirlo: caras de arriba de muebles gigantes pobladas (camas, encimeras, mesas, máquinas…), y las plantas y bichos que se pusieron encima.")]
     public int furnitureTops, floraOnTops, faunaOnTops;
-    [Tooltip("Era avanzada con su pueblo en el piso (regla 5 de docs/microcosmos-reglas-edificacion.md): la flora es a escala de pueblo y no pisa calles ni solares.")]
+    [Tooltip("Era avanzada con su pueblo en el piso (regla 5 de docs/reglas/microcosmos-reglas-edificacion.md): la flora es a escala de pueblo y no pisa calles ni solares.")]
     public bool town;
 
     [Tooltip("El BARRIO de la historia (×100, 2026-11-02): el piso real × 10 alrededor de la plaza de la historia, en locales de la raíz; ahí van la historia, su pueblo y la flora densa.")]
     public Vector3 districtCenter;
     public Vector2 districtSize;
 
-    // ── LAS REGLAS DE LOS MICROCOSMOS (2026-11-03, docs/microcosmos-areas.md §Reglas; las comprueba MicroFloors.Validate) ──
+    // ── LAS REGLAS DE LOS MICROCOSMOS (2026-11-03, docs/microcosmos/microcosmos-areas.md §Reglas; las comprueba MicroFloors.Validate) ──
     [Tooltip("El piso del santuario al que pertenece (su área: «MartialArts_Area»…); el microcosmos se monta ENCIMA de ese piso.")]
     public string platform = "";
     [Tooltip("¿Se montó sobre la FORMA FINALIZADA del piso (FloorForms: el «Acabado» encendido, sin andamio, material ni conos)?")]
@@ -45,7 +45,7 @@ public class MicroFloor : MonoBehaviour
     [Tooltip("(2026-11-19, PB-165) SUELO URBANO PROPIO (MicrocosmSpec.ownGround): se montó sin el piso del santuario (Hawthorne 2008, «volver a empezar de cero»). No lleva piso gigante: las reglas del piso gigante no se le piden.")]
     public bool ownGround;
 
-    // ── EL SUELO, LOS ELEMENTOS DEL PISO Y SUS DEPENDENCIAS (2026-11-04, docs/microcosmos-suelo-y-elementos.md) ──
+    // ── EL SUELO, LOS ELEMENTOS DEL PISO Y SUS DEPENDENCIAS (2026-11-04, docs/microcosmos/microcosmos-suelo-y-elementos.md) ──
     [Tooltip("¿Lleva la capa de tierra (MicroGround.SoilThickness sobre cada suelo, MicroSoil)?")]
     public bool soil;
     [Tooltip("Al construirlo: plantas y bichos apoyados en la superficie de encima de su pie, y plantas quitadas por quedar dentro de un collider.")]
@@ -57,7 +57,7 @@ public class MicroFloor : MonoBehaviour
     [Tooltip("La firma de ese inventario (MicroFloorElements.Signature): si el piso del mesocosmos cambia, cambia y el microcosmos se marca para revisar.")]
     public string mesoSignature = "";
 
-    // ── LA ESCALA DEL CUERPO CON QUE SE MONTÓ (2026-11-18, docs/plan-microcosmos-realismo.md §3.1) ──
+    // ── LA ESCALA DEL CUERPO CON QUE SE MONTÓ (2026-11-18, docs/microcosmos/plan-microcosmos-realismo.md §3.1) ──
     [Tooltip("El factor s de los insectos-humanos con que se construyó (MicroBuildRules.FolkScale). 1 = antes del encogimiento: el validador le mide el paso de entonces (2 m) hasta que se reconstruya.")]
     public float folkScale = 1f;
 

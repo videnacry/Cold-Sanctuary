@@ -1,8 +1,8 @@
 using UnityEngine;
 
 /// <summary>
-/// ÁREAS DE ENTRENAMIENTO (docs/jornada-y-rotacion.md): las 2 h diarias de entrenamiento son virtualizaciones de estas
-/// áreas. El EDIFICIO DEL GIMNASIO (docs/entrenamiento-areas.md §3) tiene 3 pisos de 36 × 26 m: máquinas de placas y peso
+/// ÁREAS DE ENTRENAMIENTO (docs/sistemas/jornada-y-rotacion.md): las 2 h diarias de entrenamiento son virtualizaciones de estas
+/// áreas. El EDIFICIO DEL GIMNASIO (docs/areas/entrenamiento-areas.md §3) tiene 3 pisos de 36 × 26 m: máquinas de placas y peso
 /// libre (piso 0), cardio y zona libre (piso 1), y calistenia, parkour y crossfit (piso 2). Cada equipo deja 2 m libres
 /// hasta el de al lado y lleva su <see cref="GymStation"/> con las posturas A/B del doc. La sala de BALLET y el DOJO de
 /// artes marciales siguen EN OBRAS: cada uno tiene a pie de obra el material de un día de trabajo, andamio y paredes a
@@ -17,7 +17,7 @@ public static partial class SampleSceneBuilder
         TBumper = new Color(0.15f, 0.3f, 0.6f), TPlatWood = new Color(0.8f, 0.64f, 0.42f);
 
     /// <summary>Centro (local del piso, sobre la losa) y giro de la ZONA DE ALFOMBRAS de 7,6 × 4,4 m de cada piso del gimnasio
-    /// (docs/entrenamiento-areas.md §3.2–3.4). Los Furnish* la dejan libre, con ≥ 2 m hasta el equipo más cercano. En el
+    /// (docs/areas/entrenamiento-areas.md §3.2–3.4). Los Furnish* la dejan libre, con ≥ 2 m hasta el equipo más cercano. En el
     /// piso 2 va girada 90° (4,4 en X × 7,6 en Z).</summary>
     static Vector3 GymCarpetSpot(int floor, out float yaw)
     {
@@ -33,7 +33,7 @@ public static partial class SampleSceneBuilder
         new Vector2(0.2f, 0.075f), new Vector2(-0.18f, 0.095f), new Vector2(0f, -0.15f), new Vector2(0f, -0.21f), new Vector2(0.15f, -0.05f)
     };
 
-    /// <summary>PISO 0 DEL GIMNASIO (docs/entrenamiento-areas.md §3.2), 36 × 26 m: las 30 máquinas de placas (10 tipos × 3) en
+    /// <summary>PISO 0 DEL GIMNASIO (docs/areas/entrenamiento-areas.md §3.2), 36 × 26 m: las 30 máquinas de placas (10 tipos × 3) en
     /// 5 filas mirando hacia −Z, el pasillo central (x de 2 a 4,2) y el bloque de PESO LIBRE: 2 estantes de mancuernas, 4 bancos
     /// regulables, 3 jaulas de sentadillas, 2 press de banca planos y 1 inclinado, Smith, plataforma de peso muerto, árboles de
     /// discos y soporte de barras. 2 m libres entre huellas. Sin entreplanta: se cambia de piso en alfombra (la zona de
@@ -93,7 +93,7 @@ public static partial class SampleSceneBuilder
         area.gameObject.AddComponent<WorldLabel>().text = "Gimnasio (abierto)";
     }
 
-    /// <summary>PISO 1 DEL GIMNASIO (docs/entrenamiento-areas.md §3.3): CARDIO mirando al frente (−Z, el paisaje), con 2 m
+    /// <summary>PISO 1 DEL GIMNASIO (docs/areas/entrenamiento-areas.md §3.3): CARDIO mirando al frente (−Z, el paisaje), con 2 m
     /// entre máquinas y 2 m detrás de cada fila (6 cintas, 4 elípticas, 2 escaladoras, 4 bicis, 2 reclinadas y 4 remos), y la
     /// ZONA LIBRE: 12 esterillas (abdominales y estiramientos), 2 sillas romanas, 2 bancos declinados, 2 de hiperextensiones,
     /// 2 sacos de boxeo, la estantería de material y espalderas. La zona de alfombras (<see cref="GymCarpetSpot"/>) queda
@@ -159,7 +159,7 @@ public static partial class SampleSceneBuilder
         floor.gameObject.AddComponent<WorldLabel>().text = "Gimnasio · cardio y zona libre";
     }
 
-    /// <summary>PISO 2 DEL GIMNASIO (docs/entrenamiento-areas.md §3.4): CALISTENIA (dominadas a 3 alturas, monkey bars,
+    /// <summary>PISO 2 DEL GIMNASIO (docs/areas/entrenamiento-areas.md §3.4): CALISTENIA (dominadas a 3 alturas, monkey bars,
     /// anillas, paralelas bajas y largas, fondos en V, barras bajas, bandera humana, espalderas), PARKOUR (muros alto y medio,
     /// barra de lâché, cajones, barandillas y bloques de precisión) y CROSSFIT (rig de 10 m con cuerdas y dianas de wall
     /// ball, plataformas, remos, assault bikes, SkiErg, kettlebells, GHD, almacén y pista de trineo). Suelo de caucho, césped
@@ -374,7 +374,7 @@ public static partial class SampleSceneBuilder
         area.gameObject.AddComponent<WorldLabel>().text = "Calistenia, parkour y crossfit";
     }
 
-    // ── Constructores del edificio de entrenamiento (docs/entrenamiento-areas.md §3.7) ─────────────────────────────────────
+    // ── Constructores del edificio de entrenamiento (docs/areas/entrenamiento-areas.md §3.7) ─────────────────────────────────────
 
     /// <summary>Puesto + <see cref="GymStation"/> en <paramref name="m"/>, como en <see cref="GymMachine"/>: el Puesto va en
     /// <paramref name="seat"/> girado <paramref name="yaw"/> (180 = mira hacia −Z, 0 = hacia +Z).
@@ -557,7 +557,7 @@ public static partial class SampleSceneBuilder
         KitchenProps.Fit(m); GLabel(m, "Barras olímpicas", 2.4f);
     }
 
-    /// <summary>MÁQUINA DE CARDIO o de acondicionamiento (docs/entrenamiento-areas.md §2.5 y §2.4), con el origen en el centro
+    /// <summary>MÁQUINA DE CARDIO o de acondicionamiento (docs/areas/entrenamiento-areas.md §2.5 y §2.4), con el origen en el centro
     /// de su huella y mirando hacia −Z: cinta, elíptica, escaladora, bici vertical o reclinada, remo, assault bike o SkiErg.</summary>
     static void GymCardio(Transform parent, GymMachineType t, int copy, Vector3 pos)
     {
@@ -799,7 +799,7 @@ public static partial class SampleSceneBuilder
         GLabel(m, name);
     }
 
-    /// <summary>Una máquina de gimnasio COMO LAS DE VERDAD (docs/gimnasio-maquinas.md, «Qué cambiar» de cada una): cada tipo
+    /// <summary>Una máquina de gimnasio COMO LAS DE VERDAD (docs/areas/gimnasio-maquinas.md, «Qué cambiar» de cada una): cada tipo
     /// tiene su bastidor, su asiento o banco, sus palancas, rodillos y almohadillas, y su pila de placas en una torre con
     /// carcasa (el cable va DENTRO) o discos si es de carga libre. Nada cruza el sitio de la cabeza de quien la usa. Lleva un
     /// hijo vacío «Puesto» (dónde va la raíz del usuario y hacia dónde mira: −Z) y su <see cref="GymStation"/>.

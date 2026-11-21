@@ -7,7 +7,7 @@ using UnityEngine;
 /// Esto sí: un chequeo con condición esperada que loguea `[TEST] PASS/FAIL` + un resumen, de modo que el compañero
 /// **lea el veredicto en `Editor.log`** (grep `[TEST]`) en vez de interpretar volcados.
 ///
-/// **Reutilizable en dos frentes** (docs/testing-checklist.md): (1) sandboxes autoejecutables (`NavAuto`/`EmergenceAuto`…
+/// **Reutilizable en dos frentes** (docs/qa/testing-checklist.md): (1) sandboxes autoejecutables (`NavAuto`/`EmergenceAuto`…
 /// conducen y luego `Check`ean); (2) **misiones jugables (WASD)** — una misión llama `Check` en sus criterios de éxito,
 /// así el juego real reporta pruebas igual que los sandboxes. Verdad de laboratorio y verdad de juego, mismo canal.
 ///
@@ -27,7 +27,7 @@ public static class TestProbe
     public static int ContextGroup { get; private set; }
     public static string ContextUnit { get; private set; } = "";
     public static readonly List<string> Fails = new List<string>();
-    /// <summary>(2026-11-13, sistema de QA, docs/qa-propuesta.md §3) Los checks cuyo texto empieza por un ID de caso («[CV-03] …»): el ID y si
+    /// <summary>(2026-11-13, sistema de QA, docs/qa/qa-propuesta.md §3) Los checks cuyo texto empieza por un ID de caso («[CV-03] …»): el ID y si
     /// pasó. El TestRunner los lleva a la columna «casos» de Logs/test-results.tsv, así un FAIL se liga solo a su caso.</summary>
     public static readonly List<(string id, bool ok)> Cases = new List<(string id, bool ok)>();
     public static void Context(int group, string unit) { ContextGroup = group; ContextUnit = unit ?? ""; }

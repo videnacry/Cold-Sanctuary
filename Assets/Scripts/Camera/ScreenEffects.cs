@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Efectos de pantalla por ESTADO (docs/stats-as-truth.md §6 · "cámara artística"). Lee los drives mentales
+/// Efectos de pantalla por ESTADO (docs/sistemas/stats-as-truth.md §6 · "cámara artística"). Lee los drives mentales
 /// del jugador (`mentalFatigue`/`sleepiness`/`stress`/`satisfaction`, heredados de `Anima`) y pinta
 /// superposiciones a pantalla completa: **sueño** → párpados (barras negras arriba/abajo que se cierran) +
 /// tinte oscuro; **fatiga** → tinte gris (desaturación fingida); **estrés** → viñeta roja en los bordes;

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// PIEZAS DE LA FAUNA DE CADA ERA (InsectMorphology.Fauna.cs; fuentes en docs/microcosmos-fauna-eras.md), sobre el
+/// PIEZAS DE LA FAUNA DE CADA ERA (InsectMorphology.Fauna.cs; fuentes en docs/microcosmos/microcosmos-fauna-eras.md), sobre el
 /// mismo cuerpo de cubos articulado y centauro de siempre:
 /// - escorpión: la cola de 5 segmentos con el telson y el aguijón, curvada sobre el dorso; las PINZAS son sus brazos
 ///   al erguirse; los peines bajo el vientre;

@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DE LA FAUNA FRÍA DE LOS OTROS SANTUARIOS (Berón 2026-11-05; docs/fauna-fria-santuarios.md): catálogos completos, cuerpo de cada ave, modelo de cada grupo, presupuesto y
+/// PRUEBA DE LA FAUNA FRÍA DE LOS OTROS SANTUARIOS (Berón 2026-11-05; docs/fauna/fauna-fria-santuarios.md): catálogos completos, cuerpo de cada ave, modelo de cada grupo, presupuesto y
 /// comida. Las escenas se comprueban al montarlas: esto no necesita que estén cargadas.
 /// </summary>
 public class FaunaFriaTest : MonoBehaviour, ITestUnit

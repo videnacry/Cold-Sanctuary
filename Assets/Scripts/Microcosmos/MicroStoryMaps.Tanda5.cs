@@ -1,6 +1,6 @@
 using UnityEngine;
 
-/// <summary>LOS MAPAS A MANO DE LA TANDA 5 (2026-11-12; petición 75, regla M9; docs/microcosmos-mapas-a-mano.md §Tanda 4).</summary>
+/// <summary>LOS MAPAS A MANO DE LA TANDA 5 (2026-11-12; petición 75, regla M9; docs/microcosmos/microcosmos-mapas-a-mano.md §Tanda 4).</summary>
 public static partial class MicroStoryMaps
 {
     // ══ ESCÚTARI, invierno de 1854–55 (Florence Nightingale): sobre la Enfermería ══════════════════════════════════════════════════════════════

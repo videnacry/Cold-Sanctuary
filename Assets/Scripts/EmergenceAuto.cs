@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Sandbox AUTOEJECUTABLE del BUCLE EMERGENTE de temperamento (docs/capabilities-and-embodiment.md §4), reportando por
+/// Sandbox AUTOEJECUTABLE del BUCLE EMERGENTE de temperamento (docs/sistemas/capabilities-and-embodiment.md §4), reportando por
 /// `TestProbe`. A diferencia de `FaunaChecks` (una aserción por frame), esto ejercita el **multi-paso que cambia una
 /// DECISIÓN**: productor (`RecordUse` sube la confianza) → consumidor (con la agresividad innata a 0, `Decide` frente a
 /// una presa claramente más débil pasa de **Huir** a **Pelear** cuando la confianza sube) → decaimiento (`DecayConfidence`).

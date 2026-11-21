@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Hechizo ESTUPEFACIENTE (docs/apremios-guardian-observacion.md §3): SEDA al Guardián — añade `Sedation` al hub
+/// Hechizo ESTUPEFACIENTE (docs/sistemas/apremios-guardian-observacion.md §3): SEDA al Guardián — añade `Sedation` al hub
 /// alostático del objetivo → **amortigua el sufrimiento** (como la observación, pero por química). Alivio inmediato…
 /// con dos costes: (1) **enmascara el daño real** (el estrés dejaba de avisar), y (2) **alimenta la ADICCIÓN**
 /// (`AddictionState`: tolerancia ↑ → cada vez seda menos; y abstinencia cuando falta). `force` = potencia sedante.

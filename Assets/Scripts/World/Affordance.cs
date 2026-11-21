@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>Qué ofrece un elemento del entorno a un ser vivo (docs/natural-interactions.md).</summary>
+/// <summary>Qué ofrece un elemento del entorno a un ser vivo (docs/sistemas/natural-interactions.md).</summary>
 public enum AffordanceKind
 {
     // Comida vegetal (se gasta y rebrota)

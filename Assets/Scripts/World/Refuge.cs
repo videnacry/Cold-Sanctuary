@@ -1,6 +1,6 @@
 using UnityEngine;
 
-/// <summary>El refugio del fondo: cifras de refugios reales y de soporte vital cerrado (docs/sitio-nuclear.md §12 y §16). Un mes con máquinas y luz del reactor; 7 días solo con lo guardado.
+/// <summary>El refugio del fondo: cifras de refugios reales y de soporte vital cerrado (docs/areas/sitio-nuclear.md §12 y §16). Un mes con máquinas y luz del reactor; 7 días solo con lo guardado.
 /// La comida de un mes va guardada: un huerto no da de comer en 30 días si no estaba ya en marcha, y las gallinas gastan más comida que la que dan.</summary>
 public static class RefugeRule
 {
@@ -31,7 +31,7 @@ public static class RefugeRule
 }
 
 /// <summary>
-/// EL REFUGIO DEL FONDO (Berón 2026-11-05: «se debe crear el refugio del fondo», y «¿se puede preparar para 1 mes?»; docs/sitio-nuclear.md §12 y §16): una sala estanca junto al pie
+/// EL REFUGIO DEL FONDO (Berón 2026-11-05: «se debe crear el refugio del fondo», y «¿se puede preparar para 1 mes?»; docs/areas/sitio-nuclear.md §12 y §16): una sala estanca junto al pie
 /// del pozo de escape. Con corriente del reactor por la roca, hace su agua y su oxígeno de la mar; sin ella, lo guardado da una semana. Quien queda abajo con la línea y el pozo cerrados
 /// espera aquí (<see cref="SiteLine"/>). Si no está listo, no se baja a trabajar: la jornada manda antes revisarlo (<c>nuc_refugio</c>).
 /// </summary>

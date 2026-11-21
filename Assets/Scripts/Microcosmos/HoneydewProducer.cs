@@ -2,7 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// El PULGÓN produce **melaza** (honeydew) cada cierto tiempo — el "líquido codiciado" por el que las
-/// hormigas lo cuidan y ordeñan (**mirmecofilia**, docs/microcosmos-insects.md §2). Es el análogo de la
+/// hormigas lo cuidan y ordeñan (**mirmecofilia**, docs/microcosmos/microcosmos-insects.md §2). Es el análogo de la
 /// **cría/ganadería** a escala insecto.
 ///
 /// Si <see cref="dropPickup"/> está asignado, spawna un <see cref="HoneydewPickup"/> en el suelo cerca

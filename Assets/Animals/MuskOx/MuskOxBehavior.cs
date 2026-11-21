@@ -1,6 +1,6 @@
 using UnityEngine;
 
-// Buey almizclero (Ovibos moschatus): manada de la tundra; juncia en verano, sauce y abedul enano en invierno. Ficha: docs/reglas-animales.md (Fichas).
+// Buey almizclero (Ovibos moschatus): manada de la tundra; juncia en verano, sauce y abedul enano en invierno. Ficha: docs/reglas/reglas-animales.md (Fichas).
 public class MuskOxBehavior : Animal
 {
     protected override string SpeciesArchetype => "MuskOx";

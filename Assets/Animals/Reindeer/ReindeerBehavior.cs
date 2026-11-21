@@ -1,6 +1,6 @@
 using UnityEngine;
 
-// Reno (Rangifer tarandus): manada de la tundra; liquen en invierno, sauce y juncia en verano. Ficha: docs/reglas-animales.md (Fichas).
+// Reno (Rangifer tarandus): manada de la tundra; liquen en invierno, sauce y juncia en verano. Ficha: docs/reglas/reglas-animales.md (Fichas).
 public class ReindeerBehavior : Animal
 {
     protected override string SpeciesArchetype => "Reindeer";

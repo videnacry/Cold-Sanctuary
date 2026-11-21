@@ -1,9 +1,9 @@
 using UnityEngine;
 
 /// <summary>
-/// COCINA PROFESIONAL (docs/cocina-profesional.md): el equipo que piden la carta y sus elaboraciones (Gastronomy), como en
+/// COCINA PROFESIONAL (docs/areas/cocina-profesional.md): el equipo que piden la carta y sus elaboraciones (Gastronomy), como en
 /// una cocina de restaurante con obrador propio. Dónde va cada máquina lo decide la planta de la cocina
-/// (SampleSceneBuilder.KitchenPlan, docs/restaurant-plan.md); aquí está cómo es cada una.
+/// (SampleSceneBuilder.KitchenPlan, docs/areas/restaurant-plan.md); aquí está cómo es cada una.
 /// Cada máquina se llama «Equipo_<nombre del recetario>» y lleva su cartel.
 /// </summary>
 public static partial class SampleSceneBuilder

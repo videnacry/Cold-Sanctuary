@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Aura mágica de un `Anima` (docs/stats-as-truth.md §2): un contador **firmado** que **decae** con el tiempo.
+/// Aura mágica de un `Anima` (docs/sistemas/stats-as-truth.md §2): un contador **firmado** que **decae** con el tiempo.
 /// **+** = benevolente/inspirador → **bonds más fáciles** (lo lee `Anima.GrowBond`); **−** = destructivo →
 /// **más temido** (lo lee `Animal.EvaluateThreat`). El **sistema de magia** llama a `RegisterDestructiveUse`/
 /// `RegisterBenevolentUse` al lanzar hechizos; aquí solo se decae hacia 0 (la fama se olvida).

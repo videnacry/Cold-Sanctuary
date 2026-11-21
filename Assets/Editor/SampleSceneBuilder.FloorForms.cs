@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// LAS DOS FORMAS DE CADA PISO (docs/construcciones-elevadas.md §Formas del piso; Berón 2026-11-03): todo piso del santuario
+/// LAS DOS FORMAS DE CADA PISO (docs/areas/construcciones-elevadas.md §Formas del piso; Berón 2026-11-03): todo piso del santuario
 /// tiene preparada su FORMA FINALIZADA y su FORMA EN CONSTRUCCIÓN (<see cref="FloorForms"/>). Los pisos en obras (Dojo, Sala de
 /// Ballet) ya traen las dos (sus piezas de obra y su «Acabado» oculto, <see cref="PrepareSite"/>); a cada piso terminado se le
 /// prepara aquí su forma en construcción, OCULTA («Forma_en_obra»: andamio, palés de material, conos y muretes a medio levantar a
@@ -39,7 +39,7 @@ public static partial class SampleSceneBuilder
     }
 
     /// <summary>
-    /// (2026-11-04) LA TERCERA FORMA, la de MICROCOSMOS (docs/microcosmos-suelo-y-elementos.md): un «Forma_microcosmos» oculto bajo el
+    /// (2026-11-04) LA TERCERA FORMA, la de MICROCOSMOS (docs/microcosmos/microcosmos-suelo-y-elementos.md): un «Forma_microcosmos» oculto bajo el
     /// área con su inventario (cada pieza: su versión de mesocosmos y la de microcosmos, MicroFloorElements) y los microcosmos que
     /// dependen del piso. Si el piso cambió desde que se montó alguno de ellos (el registro de dependencias), AVISA: hay que revisarlo.
     /// </summary>

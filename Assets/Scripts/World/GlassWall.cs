@@ -3,7 +3,7 @@ using UnityEngine;
 
 /// <summary>
 /// PARED DE CRISTAL (Berón 2026-11-03: «para salas que deban estar aisladas se pueden utilizar paredes de cristal de modo que no
-/// bloquean visibilidad y se debe mantener las reglas de espaciado, en este caso a dichas paredes»; docs/hospital.md §Paredes de
+/// bloquean visibilidad y se debe mantener las reglas de espaciado, en este caso a dichas paredes»; docs/areas/hospital.md §Paredes de
 /// cristal). Es la ÚNICA pared permitida en las plataformas (la regla es «sin muros ni techos»: tapan la vista y el paso): el
 /// cristal aísla el aire (aislamiento con presión negativa, quirófano con presión positiva, UCI, sala fría de pingüinos) sin
 /// tapar la vista. Y GUARDA LOS 2 m como un mueble: <see cref="FurnitureSpacing"/> la mide (prefijo «Pared_cristal») contra todos

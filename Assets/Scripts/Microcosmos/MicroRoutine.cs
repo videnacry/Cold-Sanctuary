@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// La RUTINA de un mirmidón de las historias (docs/microcosmos-historias.md): va de un puesto a otro de su escena (el
+/// La RUTINA de un mirmidón de las historias (docs/microcosmos/microcosmos-historias.md): va de un puesto a otro de su escena (el
 /// pozo, el taller, la cama del enfermo, la trinchera…) y se queda un rato en cada uno, como quien hace su jornada. Así
 /// el pueblo de la historia vive aunque el jugador no le hable. Se para mientras la <see cref="StoryMission"/> le necesita
 /// quieto (<see cref="hold"/>).

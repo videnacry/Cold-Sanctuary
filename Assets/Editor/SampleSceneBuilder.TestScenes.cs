@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// ESCENAS DE PRUEBA (Assets/Scenes/Pruebas; tabla completa en docs/escenas-de-prueba.md). Berón 2026-11-01: «las escenas de
+/// ESCENAS DE PRUEBA (Assets/Scenes/Pruebas; tabla completa en docs/qa/escenas-de-prueba.md). Berón 2026-11-01: «las escenas de
 /// prueba de yoga parece que cargan un santuario entero, deberían cargar solo la sala de yoga; enfermería y cocina de igual
 /// manera… y deberían estar vinculadas a los pisos actuales». Antes cada escena era una copia de SampleScene con TODAS las
 /// torres (BuildAreaStructures) más su sandbox, generada a mano con un menú: las de la carpeta eran del 21-10, con el santuario

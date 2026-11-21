@@ -2,7 +2,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// PANEL DE LA RUTINA DEL GIMNASIO (docs/gimnasio-maquinas.md §15.7): para la persona elegida, su plan (reparto, días, objetivo,
+/// PANEL DE LA RUTINA DEL GIMNASIO (docs/areas/gimnasio-maquinas.md §15.7): para la persona elegida, su plan (reparto, días, objetivo,
 /// semana y si es de descarga), la rutina de hoy (cada ejercicio con su máquina, series × repeticiones, carga, descanso y RPE),
 /// dónde va ahora (ejercicio, serie i/n, repetición) y las últimas líneas del registro de series de todo el gimnasio.
 /// Consola: <c>rutina</c> (abre/cierra) o <c>rutina(Nombre)</c>; ◀ ▶ cambian de persona.

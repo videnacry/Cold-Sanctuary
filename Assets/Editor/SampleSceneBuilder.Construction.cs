@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// ÁREA DE CONSTRUCCIÓN (docs/construction-simulation.md): el «hub de estructuras» que repara y levanta tuberías,
+/// ÁREA DE CONSTRUCCIÓN (docs/areas/construction-simulation.md): el «hub de estructuras» que repara y levanta tuberías,
 /// electricidad, puertas, paredes, ventanas y tejados en las áreas humanas. Aquí se GUARDAN la maquinaria y el material:
 /// miniexcavadora y minicargadora eléctricas, hormigonera, grúa pluma pequeña, andamio, carretillas; palés de ladrillo,
 /// sacos de cemento, madera, vigas de acero, tubos, bobinas de cable, tejas, puertas y ventanas de repuesto; panel de
@@ -16,7 +16,7 @@ public static partial class SampleSceneBuilder
     static void FurnishConstruction(Transform area, Vector2 size)
     {
         Transform r = new GameObject("Construccion").transform; r.SetParent(area, false); r.localPosition = new Vector3(0f, 0.1f, 0f);
-        // ALMACÉN DE MATERIAL (todo de plantas: guadua del bambusal, bahareque, micelio, cáñamo; docs/construccion-sostenible.md).
+        // ALMACÉN DE MATERIAL (todo de plantas: guadua del bambusal, bahareque, micelio, cáñamo; docs/areas/construccion-sostenible.md).
         Transform store = KitchenProps.Root(r, "Almacen_material", new Vector3(0f, 0f, 0f));
         store.gameObject.AddComponent<WorldLabel>().height = 3.6f;
         store.gameObject.AddComponent<MaterialStore>();
@@ -164,8 +164,8 @@ public static partial class SampleSceneBuilder
         }
         Put("Andrea", "Gym_Area", new Vector3(3f, 1f, 3f));                      // ENTRENADOR DEL GIMNASIO (2026-11-04: «el personaje con más fuerza es Andrea»): sale en el gimnasio (antes, en el comedor)
         Put("JefeConstruccion", "Construction_Area", new Vector3(-1.5f, 1f, -0.3f)); // junto al banco de trabajo y la pizarra de avisos
-        // La familia y los amigos de Berón (2026-11-04; docs/diseno-personajes.md §Familia y amigos), cada uno en el área de su PROFESIÓN
-        // (Professions; docs/personajes-mesocosmos.md §Profesiones). Los que no tienen (Nesvitor, consejero; Gallarle, pendiente), repartidos.
+        // La familia y los amigos de Berón (2026-11-04; docs/sistemas/diseno-personajes.md §Familia y amigos), cada uno en el área de su PROFESIÓN
+        // (Professions; docs/historia/personajes-mesocosmos.md §Profesiones). Los que no tienen (Nesvitor, consejero; Gallarle, pendiente), repartidos.
         Put("Josedrilo", "YogaRoom_Area", new Vector3(9f, 1.5f, 0f));             // MAESTRO DE HATHA: en la tarima de la sala de Hatha tradicional, junto al linga
         Put("Maite", "Kitchen_Area", new Vector3(0f, 1f, 9f));                     // cocina
         Put("Amykhuz", "Kitchen_Area", new Vector3(-1.5f, 1f, 9f));                 // cocina y química
@@ -191,7 +191,7 @@ public static partial class SampleSceneBuilder
         Put("Neo", "Classroom_Area", new Vector3(-4f, 1f, -2f));                   // su hijo (niño): va con su madre (PersonLife), sin jornada
     }
 
-    /// <summary>LA FAMILIA Y LOS AMIGOS DE BERÓN (2026-11-04, de sus fotos; docs/diseno-personajes.md §Familia y amigos): id, rótulo,
+    /// <summary>LA FAMILIA Y LOS AMIGOS DE BERÓN (2026-11-04, de sus fotos; docs/sistemas/diseno-personajes.md §Familia y amigos): id, rótulo,
     /// x de salida, ropa y stats (fuerza, agilidad, resistencia, masa). Personas reales: stats cercanas a 1, sin suponer edades;
     /// Nesvitor, mayor (lo dice su foto), algo menos ágil. El rótulo lleva su profesión (Professions).</summary>
     public static readonly (string id, string label, float x, Color clothes, float s, float ag, float en, float m)[] FamilyCharacters =
@@ -224,7 +224,7 @@ public static partial class SampleSceneBuilder
     /// <summary>LOS FAMOSOS QUE SE FUERON A SUS MICROCOSMOS (Berón 2026-11-04: «los personajes famosos, elon musk, sadhguru, y demás
     /// sácalos del mesocosmos y crea sus microcosmos respectivos»). YA NO SE CONSTRUYEN EN EL SANTUARIO: quedan aquí sus datos (id,
     /// rótulo, ropa y stats: fuerza, agilidad, resistencia, masa) para sus microcosmos; su aspecto sigue en CubeHair.For (por el id).
-    /// Sus papeles en el santuario los llevan otros: docs/personajes-mesocosmos.md §Reparto de papeles.</summary>
+    /// Sus papeles en el santuario los llevan otros: docs/historia/personajes-mesocosmos.md §Reparto de papeles.</summary>
     public static readonly (string id, string label, float x, Color clothes, float s, float ag, float en, float m)[] MesoCharacters =
     {
         ("Sadhguru", "Sadhguru (maestro de yoga)", 14f, new Color(0.5f, 0.72f, 0.62f), 1.0f, 1.2f, 1.4f, 1.0f),   // ficha: docs/personajes/sadhguru.md

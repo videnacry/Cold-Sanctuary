@@ -1,0 +1,1100 @@
+---
+resumen: "Investigación del 2026-10-27. Objetivo: que las 30 máquinas del gimnasio (10 tipos × 3) se parezcan a las reales y que los personajes las usen durante el entrenamiento diario (14:00–16:00)."
+temas: [personajes, entrenamiento]
+estado: vigente
+codigo: [WorkdayDirector, WorkRoster, AreaFunctionSite, DailyPoses, GymFit, GymTrainingTest, SampleSceneBuilder, AreaFunctionStation]
+---
+# Máquinas del gimnasio: cómo son de verdad y cómo usarlas en el entrenamiento
+
+Investigación del 2026-10-27. Objetivo: que las 30 máquinas del gimnasio (10 tipos × 3) se parezcan a las reales y que
+los personajes las **usen** durante el entrenamiento diario (14:00–16:00).
+
+## 0. Estado actual (resumen)
+
+> **2026-11-04**: este resumen es el del 2026-10-27. Hoy las máquinas llevan `GymStation` y `GymFit`, y cada humano entrena con
+> su plan (series, repeticiones, descanso, progresión y entrenador): ver [§15](#15-entrenamientos-reales-planes-series-progresión-y-entrenador-2026-11-04).
+
+- **Construcción**: `FurnishGym` (`Assets/Editor/SampleSceneBuilder.Training.cs:18`) coloca 30 máquinas en una
+  rejilla de 5 × 3 por piso (paso 2,6 m en X y 3,2 m en Z, `:36-37`). Las primeras 15 (`k < 15`), es decir **los tipos
+  0–4** (pecho, hombros, jalón, remo y prensa), van **abajo**. Los **tipos 5–9** (extensión, curl femoral, hip thrust,
+  gemelos y brazos) van **arriba**, en la entreplanta (`:29-31`, `:38-39`). El área está en (26, 0, 6) y mide 22 × 16 m
+  (`SampleSceneBuilder.cs:3459-3460`).
+- **Todas las máquinas usan el mismo cuerpo** (`GymMachine`, `Training.cs:71-102`):
+  - una base de 1,1 × 0,1 × 1,5 m (`:75`);
+  - una torre de 0,36 × 2,1 × 0,2 m detrás, en z = +0,62 (`:76`), con 10 placas de 0,3 × 0,05 × 0,16 (`:77`);
+  - un brazo de polea a 2,1 m (`:78`);
+  - un **cable vertical en (0, 1,3–2,1, 0)** que **atraviesa la cabeza** de quien se siente (`:79`);
+  - un asiento de 0,45 × 0,1 × 0,45 con su parte superior a 0,55 m y un respaldo vertical de 0,8 m en z = +0,27
+    (`:84-85`), o un banco de 0,45 × 0,12 × 1,3 para los tipos 6 y 7 (`:80-81`);
+  - una única pieza de color que distingue cada tipo (`:87-99`).
+- **Fallos concretos**:
+  - El soporte de los pies de la prensa usa `-20f` como si fuera una inclinación, pero `KitchenProps.C` solo admite el
+    giro sobre la vertical (`Assets/Scripts/Kitchen/KitchenProps.cs:52-60`). Por eso la plataforma queda **torcida en
+    horizontal**, no inclinada (`Training.cs:94`).
+  - El jalón y el remo tienen la torre **detrás** y un respaldo. En los reales la persona **mira a la torre** y no hay
+    respaldo.
+  - Hay dos `<summary>` seguidos (`:14-17`) que mencionan una jaula de sentadillas, cintas, espejos y cuadros de gorilas
+    que no se construyen. `docs/sistemas/jornada-y-rotacion.md:91` también promete «jaulas, bancos, mancuernas, cintas, remo y
+    saco».
+  - El comentario de `:23` dice que la entreplanta está a 3 m, pero `MezzanineHeight` vale 4 m
+    (`SampleSceneBuilder.Levels.cs:14`).
+- **Nadie usa las máquinas.**
+  - El reparto del entrenamiento rota entre las áreas abiertas, de modo que a la persona *i* el día *d* le toca el área
+    *(i + d) mod n* (`WorkRoster.cs:127-129`).
+  - `WorkdayDirector.Where` devuelve «Gimnasio» de 14 a 16 h (`WorkdayDirector.cs:290`).
+  - `Drive` solo tiene un caso especial para la clase de yoga (`YogaClass`, `:339`, `:360-377`). Para el gimnasio
+    manda a cada persona a `AreaPoint` (`:412-426`), un punto de una rejilla calculado a partir del hash del nombre,
+    donde se queda **de pie sin hacer nada**.
+  - No existe ninguna postura de ejercicio. Las posturas cotidianas están en `DailyPoses`
+    (`Assets/Scripts/Body/DailyLife.cs:10-52`) y no incluyen ninguna.
+  - Las únicas misiones del gimnasio son de trabajo: `gym_limpieza` y `gym_mantener` (`AreaWork.cs:58-59`, pasos en
+    `VirtualMissions.cs:67,77`).
+- **Tests**: `SanctuaryLifeTest.cs:377-381` cuenta las máquinas con nombre `Maquina_*` (deben ser 30 o más) y
+  comprueba su pasillo. `FurnitureSpacing.cs:18` exige 0,9 m entre máquinas.
+
+## 1. Convenciones de este documento
+
+**Ejes de cada máquina.** El origen está en el centro de la base, a ras de suelo, con X a la derecha, Y hacia arriba y
+Z hacia delante (−Z es «el frente», donde hoy están los agarres). Las medidas están en metros del mundo.
+
+**Puesto.** Es el punto donde va la **raíz del personaje**: los pies si está de pie, o la vertical de la pelvis si está
+sentado o tumbado. Para cada máquina se indica hacia dónde mira la persona. Se propone que cada máquina tenga un hijo
+vacío llamado `Puesto` con esa posición y ese giro.
+
+**Ángulos.** Siguen el rig de cubos (`docs/sistemas/yoga-asanas-spec.md`, «Convención del rig»; `CubeHumanoid.cs:76-110`). Son
+Euler (X, Y, Z) en grados, locales y relativos al hueso padre.
+
+| Hueso | X | Z |
+|---|---|---|
+| `Hips` | Gira el **cuerpo entero**. X− lo inclina hacia atrás (−90 = tumbado boca arriba, como `DailyPoses.Lie`). X+ lo inclina hacia delante (+90 = boca abajo). | — |
+| `Back` y `Chest` (columna) | X+ flexiona hacia delante; X− extiende. | — |
+| `Neck` y `Head` | X+ baja la barbilla; X− levanta la mirada. | — |
+| `ShoulderL/R` (brazo entero) | X− lo sube **por delante** (−90 = horizontal al frente, −175 = vertical arriba); X+ lo lleva atrás. | `ShoulderLeft` Z+ y `ShoulderRight` Z− lo abren hacia fuera. |
+| `ForearmL/R` | X− flexiona el codo. | — |
+| `ThighL/R` | X− lleva el muslo adelante (−90 = sentado, muslo horizontal); X+ atrás. | Igual que el hombro: abre la pierna. |
+| `ShinL/R` | X+ dobla la rodilla (+90 = espinilla vertical si el muslo está horizontal). | — |
+| `FootL/R` | X+ baja la punta (flexión plantar); X− la sube (dorsiflexión). Solo se usa en Gemelos. | — |
+
+Cuando se escribe `±` en Z, el primer signo es el de la izquierda y el segundo el de la derecha: (−80, 0, ±12) quiere
+decir izquierda (−80, 0, 12) y derecha (−80, 0, −12). Los huesos que no aparecen en una postura valen 0.
+
+**Altura de la pelvis (`rootHeight`).** Se expresa en **unidades del cuerpo nativo**: el cuerpo se construye con 1,9 de
+alto y se escala por `s = estatura / 1,9`. De pie la pelvis está a 0,95.
+
+- Sentado: **`rootHeight ≈ altura del asiento / s + 0,11`**. La articulación de la cadera está 0,05 por debajo de la
+  pelvis y el muslo mide 0,14 de grueso.
+- Tumbado: `rootHeight ≈ (altura del banco + 0,11 × s) / s`.
+- Para una persona de **1,85 m**, s = 0,974. Ese es el usuario de referencia de todas las cifras de abajo.
+
+Medidas del cuerpo nativo (`CubeHumanoid.cs`): muslo 0,42, espinilla 0,40, brazo 0,30, antebrazo 0,27 y mano 0,10; el
+hombro está a pelvis + 0,56. Las máquinas reales **se ajustan** (asiento y almohadillas), así que la altura del asiento
+debe escalar con `s` para personas más bajas. Por ejemplo, para 1,55 m el asiento del press baja unos 9 cm.
+
+Los ángulos son **aproximados**: el rig hace cinemática directa sin IK. Hay que revisarlos a ojo en escena y, si una
+mano no llega al agarre, retocar el hombro antes que el codo.
+
+**Espacio libre** (todas las máquinas):
+
+- Entre máquinas de placas, 0,6 m como mínimo y **0,9 m como lo ideal**. ACSM y la guía de CSCS dan unos 0,9 m (36″);
+  Livestrong da un mínimo de 24″ y un óptimo de 36″. Es lo que ya usa `FurnitureSpacing`.
+- Los fabricantes indican además un «live area», el área de uso, mayor que la huella. Por ejemplo, el Hammer Strength
+  Select Chest Press ocupa 104 × 145 cm y su área de uso es de 210 × 145 cm.
+- La rejilla actual, de **2,6 × 3,2 m por máquina**, admite todas las huellas propuestas abajo, la mayor de las cuales es
+  la prensa (1,5 × 2,2 m), dejando ≥ 1 m de paso.
+
+---
+
+## 2. Press de pecho (tipo 0)
+
+### Cómo es de verdad
+- **Huella**: 1,05–1,3 m (fondo) × 0,95–1,45 m (ancho) × 1,5–1,65 m (alto).
+  - Decathlon Future Elite: 1290 × 953 × 1550 mm.
+  - Life Fitness Insignia: 110 × 140 × 148 cm.
+  - Hammer Strength Select: 104 × 145 × 163 cm.
+- **Pila de placas**: 100–150 kg, en una torre baja (≈1,5 m) detrás o a un lado del asiento.
+- **Piezas**:
+  - bastidor en U;
+  - asiento regulable en altura (≈0,42–0,55 m);
+  - respaldo de unos 0,75 m reclinado unos 10°;
+  - **dos brazos de palanca** que pivotan arriba, detrás de los hombros, y bajan hasta los agarres. Hay agarres dobles:
+    neutros (verticales) y horizontales;
+  - pedal de asistencia o reposapiés delante;
+  - cable y poleas dentro de una carcasa.
+- **Ajuste**: los agarres quedan a la **altura de media pecho**, a la altura de los pezones, y no más atrás del pecho
+  (ACE). Los codos van a unos 45° del cuerpo (NASM). Se empuja sin bloquear los codos.
+
+### Cómo está ahora
+- `Training.cs:89-90`: dos agarres sueltos de 0,06 × 0,06 × 0,35 en (±0,35, 1,05, −0,25), sin brazos de palanca.
+- Torre de 2,1 m (`:76`), el doble de alta que la real.
+- El cable atraviesa la cabeza (`:79`).
+
+### Qué cambiar
+1. Bajar la torre a **1,5 m** con carcasa: 0,40 × 1,5 × 0,25 en z = +0,55. Poner unas 13 placas.
+2. Quitar el cable y el brazo de polea que cuelgan sobre el asiento. El cable va dentro de la carcasa.
+3. Asiento con la parte superior a **0,48 m**, en z = +0,05.
+4. Respaldo de 0,42 × 0,75 × 0,08, **reclinado 10°**, de 0,55 a 1,30 m, en z = +0,28.
+5. Dos brazos de palanca (0,06 × 0,06 × 0,7) desde un pivote en (±0,35, 1,45, +0,30) hasta los agarres neutros
+   (0,04 × 0,18 × 0,04).
+   - Al empezar, los agarres están en (±0,28, 1,00, −0,25).
+   - Al final del empuje, en (±0,22, 1,02, −0,62).
+6. Reposapiés de 0,5 × 0,05 × 0,1 en (0, 0,10, −0,30).
+7. Hace falta una variante de `KitchenProps.C` con **Euler completo** para inclinar las piezas. Hoy solo gira en Y.
+
+### Postura de uso
+**Puesto**: (0, —, +0,05), mirando hacia −Z. `rootHeight` = **0,60**, es decir, una pelvis a 0,58 m con 1,85 de
+estatura.
+
+| Hueso | A · agarres junto al pecho | B · brazos extendidos |
+|---|---|---|
+| Hips | (−10, 0, 0) | (−10, 0, 0) |
+| Back / Chest | 0 / 0 | 0 / (3, 0, 0) |
+| Neck / Head | 0 / 0 | 0 / 0 |
+| ShoulderL/R | (15, 0, ±45) | (−80, 0, ±12) |
+| ForearmL/R | (−95, 0, 0) | (−10, 0, 0) |
+| ThighL/R | (−80, 0, ±8) | igual |
+| ShinL/R | (90, 0, 0): pies en el reposapiés | igual |
+
+Una repetición dura unos 3 s: de A a B en 1 s y de B a A en 2 s.
+
+## 3. Press de hombros (tipo 1)
+
+### Cómo es de verdad
+- **Huella**: 1,45–1,7 × 1,4–1,45 × 1,5–1,65 m.
+  - Precor Vitality: 147 × 145 × 155 cm, pila de 91 kg.
+  - Hammer Strength Select: 152 × 142 × 163 cm, pila de 95 kg.
+  - Spirit: 1707 × 1459 × 1500 mm, pila de 110 kg.
+- **Piezas**: asiento regulable, respaldo casi vertical (5–10°) y alto (hasta ≈1,4 m) para apoyar la cabeza, brazos
+  de palanca que pivotan detrás y arriba, agarres neutros y horizontales, y torre baja detrás.
+- **Movimiento**: los agarres empiezan **justo por encima de los hombros** y terminan con los brazos casi extendidos
+  sobre la cabeza.
+
+### Cómo está ahora
+- `Training.cs:89-90`: los mismos agarres sueltos que el press de pecho, pero a 1,4 m.
+- Tiene el mismo bastidor genérico, la torre de 2,1 m y el cable que atraviesa la cabeza (`:75-79`).
+
+### Qué cambiar
+1. Respaldo de 0,42 × 0,95, de 0,55 a 1,50 m, reclinado 8°.
+2. Asiento a **0,48 m**.
+3. Torre de **1,55 m** detrás.
+4. Brazos de palanca desde (±0,30, 1,55, +0,35):
+   - agarres neutros al empezar en (±0,25, 1,18, −0,10);
+   - al final en (±0,18, 1,75, −0,05).
+5. Sin cable visible.
+
+### Postura de uso
+**Puesto**: (0, —, +0,05), mirando hacia −Z. `rootHeight` = **0,60**.
+
+| Hueso | A · manos a la altura de los hombros | B · brazos arriba |
+|---|---|---|
+| Hips | (−8, 0, 0) | (−8, 0, 0) |
+| Back / Chest | 0 / 0 | 0 / 0 |
+| Neck / Head | 0 / 0 | 0 / (−5, 0, 0) |
+| ShoulderL/R | (−60, 0, ±30) | (−165, 0, ±12) |
+| ForearmL/R | (−120, 0, 0) | (−10, 0, 0) |
+| ThighL/R | (−82, 0, ±8) | igual |
+| ShinL/R | (90, 0, 0) | igual |
+
+Se usa el agarre **neutro**: el codo se mueve en el plano X, que es el que el rig expresa bien. El agarre ancho
+necesitaría girar el brazo en Y.
+
+## 4. Jalón al pecho (tipo 2)
+
+### Cómo es de verdad
+- **Huella**: 1,35–1,6 × 0,8–1,4 × 1,85–2,3 m.
+  - Life Fitness Axiom: 152 × 140 × 185 cm, con un área de uso de 213 × 170 cm.
+  - Circuit Series: 160 × 109 × 180 cm.
+  - York ST: 135 × 77 × 229 cm, con una barra de 1,2 m.
+  - Good Life: asiento de 0,43–0,51 m y almohadillas de muslo regulables.
+- **Piezas**:
+  - **torre delante** de la persona, con la pila de placas;
+  - viga superior con **polea alta** (≈2,1–2,3 m);
+  - cable;
+  - **barra ancha de ≈1,2 m** con las puntas dobladas hacia abajo;
+  - asiento corto **sin respaldo**;
+  - **almohadillas de muslo** (rodillos) que sujetan las piernas.
+- **Técnica**:
+  - inclinarse un poco hacia atrás, unos **10–20°** (NASM recomienda 20–30°; Skelcore, 10–15°);
+  - bajar la barra a la **parte alta del pecho**;
+  - abajo, el codo queda a unos 90° o más cerrado.
+
+### Cómo está ahora
+- `Training.cs:92`: una barra de 1,1 × 0,05 × 0,05 en (0, 1,9, −0,15), flotando y sin cable que la sujete.
+- Lleva respaldo (`:85`) y la torre está **detrás** (`:76`): la persona daría la espalda a la pila.
+- No tiene almohadillas de muslo.
+
+### Qué cambiar
+1. **Dar la vuelta a la máquina**: la torre de 0,45 × 2,2 × 0,30 va **delante** de la persona, en z = −0,55.
+2. Viga superior de la torre hasta z = −0,10, con la polea en (0, 2,15, −0,12).
+3. Quitar el respaldo.
+4. Asiento de 0,40 × 0,35 a **0,48 m**, en z = +0,05.
+5. Almohadillas de muslo: dos rodillos de 0,10 × 0,10 × 0,30 en (±0,17, 0,68, −0,18).
+6. Barra de **1,2 m** con puntas a 20°, colgada de un cable visible:
+   - en reposo y al empezar, a **1,80 m**, en z = −0,08;
+   - abajo, a **1,08 m**, en z = −0,02.
+
+### Postura de uso
+**Puesto**: (0, —, +0,05), mirando hacia −Z, es decir, hacia la torre. `rootHeight` = **0,60**.
+
+| Hueso | A · brazos arriba agarrando la barra | B · barra en la parte alta del pecho |
+|---|---|---|
+| Hips | (−12, 0, 0) | (−18, 0, 0) |
+| Back / Chest | 0 / 0 | 0 / (−10, 0, 0): pecho arriba |
+| Neck / Head | 0 / (−10, 0, 0): mira la barra | 0 / 0 |
+| ShoulderL/R | (−170, 0, ±12) | (−15, 0, ±20) |
+| ForearmL/R | (0, 0, 0) | (−135, 0, 0) |
+| ThighL/R | (−78, 0, ±8): bajo los rodillos | (−72, 0, ±8) |
+| ShinL/R | (95, 0, 0) | (95, 0, 0) |
+
+Con el rig actual se anima mejor la variante de **agarre cerrado o neutro**. El agarre ancho pide abducir el brazo en
+Z y girarlo en Y, o bien IK.
+
+## 5. Remo sentado (tipo 3)
+
+### Cómo es de verdad
+- **Huella**: 1,4–1,65 × 0,85–1,2 × 1,65–1,9 m.
+  - Precor Vitality: 142 × 122 × 178 cm, pila de 109 kg.
+  - Muscle-D: 163 × 84 × 188 cm.
+  - Reeplex: 1,38 × 1,18 × 1,83 m.
+- **Piezas**: **almohadilla de pecho** regulable delante, asiento regulable, reposapiés, torre delante, y brazos o
+  cable con **agarres dobles** (neutros y horizontales) a la altura del pecho.
+- **Movimiento**: empieza con los brazos extendidos y las escápulas adelantadas, y termina con los codos atrás, más
+  allá del tronco, y las escápulas juntas.
+
+### Cómo está ahora
+- `Training.cs:93`: un agarre de 0,45 × 0,06 × 0,06 a **0,85 m** (por debajo del pecho), en z = −0,55.
+- Lleva respaldo y la torre está detrás. Le falta la almohadilla de pecho.
+
+### Qué cambiar
+1. La torre va **delante**, en z = −0,65 (de 0,45 × 1,8 × 0,30).
+2. Almohadilla de pecho de 0,30 × 0,40 × 0,08, de 0,95 a 1,35 m, en z = −0,15.
+3. Quitar el respaldo.
+4. Asiento a **0,48 m**, en z = +0,10.
+5. Reposapiés en (±0,15, 0,22, −0,42).
+6. Brazos de remo desde un pivote en la torre (0, 1,6, −0,6) hasta los agarres:
+   - con los brazos extendidos, en (±0,20, 1,05, −0,55);
+   - al final, en (±0,22, 1,02, −0,05).
+
+### Postura de uso
+**Puesto**: (0, —, +0,10), mirando hacia −Z. `rootHeight` = **0,60**.
+
+| Hueso | A · brazos extendidos | B · codos atrás |
+|---|---|---|
+| Hips | (0, 0, 0) | (0, 0, 0) |
+| Back / Chest | (5, 0, 0) / 0: pecho en la almohadilla | 0 / (−5, 0, 0) |
+| Neck / Head | 0 / 0 | 0 / 0 |
+| ShoulderL/R | (−85, 0, ±8) | (35, 0, ±12) |
+| ForearmL/R | (−5, 0, 0) | (−95, 0, 0) |
+| ThighL/R | (−90, 0, ±10) | igual |
+| ShinL/R | (80, 0, 0): pies adelantados en el reposapiés | igual |
+
+Si se quiere marcar la escápula: `ScapulaL/R` adelantada en A y atrasada en B.
+
+## 6. Prensa de piernas 45° (tipo 4)
+
+### Cómo es de verdad
+- **Huella**: 2,1–2,3 × 1,15–1,65 × 1,45–1,57 m.
+  - Force USA: 212 × 115 × 152 cm, con una plataforma de 63 × 44 cm.
+  - Club 45° de Primal: 231 × 164 × 146 cm, con una plataforma de 90 cm de ancho.
+  - TF 1024D: 2200 × 1850 × 1570 mm.
+- Es de **discos**: **no tiene torre ni pila**.
+- **Piezas**:
+  - bastidor largo en el suelo;
+  - **dos raíles a 45°** que suben hacia delante;
+  - **carro** con la **plataforma de pies perpendicular a los raíles** (60–90 cm de ancho);
+  - **dos pares de cuernos** para los discos;
+  - **topes de seguridad** con asas a los lados del asiento;
+  - asiento bajo con **respaldo muy reclinado** (≈40–50° respecto a la vertical);
+  - asas laterales.
+- **Movimiento**:
+  - arriba, las piernas quedan casi extendidas **sin bloquear las rodillas**;
+  - abajo, la rodilla está a **unos 90°** (80–90°) y la cadera no se despega del respaldo.
+
+### Cómo está ahora
+- `Training.cs:94`: una placa de 0,7 × 0,6 × 0,06 a 0,9 m, en z = −0,6, con un `yaw` de −20°. Queda **girada en
+  horizontal, no inclinada**.
+- Tiene asiento recto, respaldo vertical, torre de pila y cable, como las demás. No se parece a una prensa.
+
+### Qué cambiar
+1. **Quitar la torre, las placas y el cable.**
+2. Bastidor de 2,2 m en Z (de +0,9 a −1,3) y 1,4 m de ancho.
+3. Raíles de 0,08 × 0,08 × 1,4 **inclinados 45°**, desde (±0,40, 0,35, −0,15) hasta (±0,40, 1,35, −1,15).
+4. Carro de 0,8 × 0,08 × 0,5 sobre los raíles, con una plataforma de 0,75 × 0,55 **perpendicular a ellos** e inclinada
+   45°, cuya normal mira hacia el asiento. Recorre unos 0,45 m a lo largo de los raíles:
+   - abajo, su centro está en ≈(0, 0,75, −0,55);
+   - arriba, en ≈(0, 1,07, −0,87).
+5. Cuernos de discos (Ø0,05 × 0,30) a los lados del carro, con dos discos negros de Ø0,45 × 0,05 en cada uno.
+6. Asiento de 0,45 × 0,45 a **0,40 m**, en z = +0,35, inclinado 15°.
+7. Respaldo de 0,45 × 0,85, **reclinado 50°**, hasta z = +0,85.
+8. Asas laterales en (±0,32, 0,45, +0,25).
+9. Necesita la inclinación en X (ver «Qué cambiar» del press de pecho).
+
+### Postura de uso
+**Puesto**: (0, —, +0,35), mirando hacia −Z, es decir, hacia la plataforma. `rootHeight` = **0,52**.
+
+| Hueso | A · abajo (rodilla 90°) | B · arriba (piernas casi rectas) |
+|---|---|---|
+| Hips | (−50, 0, 0): tumbado en el respaldo | (−50, 0, 0) |
+| Back / Chest | 0 / 0 | 0 / 0 |
+| Neck / Head | (15, 0, 0) / (10, 0, 0): mira la plataforma | igual |
+| ShoulderL/R | (−20, 0, ±20) | igual |
+| ForearmL/R | (−30, 0, 0): manos en las asas | igual |
+| ThighL/R | (−115, 0, ±12) | (−80, 0, ±8) |
+| ShinL/R | (95, 0, 0) | (10, 0, 0) |
+
+## 7. Extensión de cuádriceps (tipo 5)
+
+### Cómo es de verdad
+- **Huella**: 1,2–1,45 × 1,0–1,3 × 1,5 m con pila. Body-Solid Pro Select (combinada con curl): 137 × 137 × 180 cm.
+- **Piezas**:
+  - asiento regulable en profundidad;
+  - respaldo reclinado 10–15°;
+  - **palanca con su pivote alineado con la rodilla**, que suele llevar un punto de color de referencia;
+  - **rodillo para la espinilla** justo encima del tobillo (Body-Solid: 41 cm entre la parte superior del asiento y la
+    inferior del rodillo);
+  - asas a los lados del asiento;
+  - pila a un lado.
+- **Movimiento**: la rodilla pasa de **≈90° a casi 0°** (sin bloquearla de golpe) y el muslo no se mueve.
+
+### Cómo está ahora
+- `Training.cs:95`: un rodillo fijo de 0,6 × 0,12 × 0,12 en (0, 0,35, −0,35). Está a media espinilla, sin palanca y
+  sin asas.
+- Cuerpo genérico (`:75-85`).
+
+### Qué cambiar
+1. Asiento a **0,50 m**, de 0,45 × 0,42.
+2. Respaldo reclinado 12°, en z = +0,35.
+3. Pivote en (+0,32, 0,56, −0,25), marcado con un cubito de color.
+4. Palanca de 0,05 × 0,05 × 0,40 desde el pivote hasta el rodillo, que gira en X:
+   - rodillo (Ø0,12 × 0,40) **al empezar** en (0, 0,20, −0,32);
+   - **al final** en (0, 0,53, −0,62).
+5. Asas en (±0,28, 0,50, +0,05).
+6. Pila de 1,4 m **a un lado**, en x = +0,55, en vez de detrás.
+
+### Postura de uso
+**Puesto**: (0, —, +0,15), mirando hacia −Z. `rootHeight` = **0,62**.
+
+| Hueso | A · rodilla doblada | B · pierna extendida |
+|---|---|---|
+| Hips | (−12, 0, 0) | (−12, 0, 0) |
+| Back / Chest | 0 / 0 | 0 / 0 |
+| Neck / Head | 0 / 0 | 0 / 0 |
+| ShoulderL/R | (−10, 0, ±18) | igual |
+| ForearmL/R | (−20, 0, 0): agarra las asas | igual |
+| ThighL/R | (−78, 0, ±6) | igual |
+| ShinL/R | (90, 0, 0) | (5, 0, 0) |
+
+## 8. Curl femoral tumbado (tipo 6)
+
+### Cómo es de verdad
+- **Huella**: 1,5–1,65 × 0,65–1,1 × 0,7–1,0 m sin pila, y hasta 2,0 m de alto con ella. Por ejemplo:
+  - Body-Solid Powerline: 157 × 64 × 69 cm;
+  - Power Lift Prone Leg Curl: 163 × 112 × 206 cm.
+- **Piezas**:
+  - banco de unos 0,65–0,70 m con una **joroba en la cadera**: deja la cadera flexionada 15–20° y la mantiene pegada;
+  - palanca con el **pivote a la altura de la rodilla**, justo después del borde del banco;
+  - **rodillo detrás de los tobillos**;
+  - asideros bajo el extremo de la cabeza.
+- **Movimiento**:
+  - la rodilla pasa de casi 0° a **90–110°**: los talones se acercan a los glúteos (ACE);
+  - la cadera no se despega.
+
+### Cómo está ahora
+- `Training.cs:80-81`: un banco plano de 0,45 × 0,12 × 1,3 a 0,5 m.
+- `Training.cs:95`: un rodillo en (0, 0,35, −0,35), **por debajo del banco y en el extremo de la cabeza**, que no
+  coincide con los tobillos.
+- Torre y cable genéricos.
+
+### Qué cambiar
+1. Banco de 0,32 de ancho en tres tramos:
+   - pecho: de z = −0,85 a −0,10, con la parte superior a 0,62 m;
+   - joroba: a 0,68 m, entre z = −0,10 y +0,25;
+   - muslos: a 0,66 m, entre z = +0,25 y +0,50.
+2. Pivote en (+0,30, 0,70, +0,58).
+3. Rodillo de tobillo (Ø0,12 × 0,40):
+   - al empezar, en (0, 0,74, +0,98);
+   - al final, en (0, 1,10, +0,50).
+4. Asideros en (±0,22, 0,45, −0,80).
+5. Pila de 1,5 m a un lado, en x = −0,55.
+
+### Postura de uso
+**Puesto**: (0, —, +0,10), mirando hacia −Z: la cabeza va hacia los asideros. `rootHeight` = **0,81**.
+
+| Hueso | A · piernas estiradas | B · talones hacia los glúteos |
+|---|---|---|
+| Hips | (105, 0, 0): boca abajo, cadera en la joroba | (105, 0, 0) |
+| Back / Chest | 0 / 0 | 0 / 0 |
+| Neck / Head | (−30, 0, 0) / (−15, 0, 0): mira al frente | igual |
+| ShoulderL/R | (−90, 0, ±15) | igual |
+| ForearmL/R | (−30, 0, 0): agarra los asideros | igual |
+| ThighL/R | (−15, 0, ±5) | (−15, 0, ±5) |
+| ShinL/R | (5, 0, 0) | (105, 0, 0) |
+
+## 9. Hip thrust (glúteos, tipo 7)
+
+### Cómo es de verdad
+- **Huella**: 1,55–1,75 × 1,2–1,5 × 0,9–1,0 m.
+  - Nautilus Glute Drive: 157 × 152 × 89 cm.
+  - Hammer Strength Glute Drive: 173 × 149 × 102 cm.
+- **Piezas**:
+  - **almohadilla de espalda** semicilíndrica a la altura de las escápulas, a unos 0,40–0,45 m del suelo;
+  - asiento o plataforma bajos;
+  - **plataforma de pies** delante;
+  - **brazo de palanca** con una **almohadilla o cinturón sobre la cadera**;
+  - cuernos de discos o pila lateral.
+- **Movimiento**:
+  - se empieza con la cadera abajo, flexionada unos 90°, que es donde el momento extensor es mayor (estudio de 2017);
+  - se termina con la **cadera extendida**: el tronco y los muslos quedan en línea horizontal, con las **espinillas
+    verticales y la rodilla a 90°**.
+
+### Cómo está ahora
+- `Training.cs:80-81`: un banco plano de 0,5 m.
+- `Training.cs:96`: una «barra de cadera» de 0,7 × 0,08 × 0,2 a 0,75 m.
+- La persona tendría que tumbarse encima del banco, que no es como se hace.
+
+### Qué cambiar
+1. Quitar la torre y el banco.
+2. Almohadilla de espalda (Ø0,20 × 1,0) a lo largo de X, con la parte superior a **0,43 m**, en z = +0,40, sobre dos
+   patas.
+3. Asiento bajo de 0,45 × 0,08 × 0,35 a **0,18 m**, en z = 0.
+4. Plataforma de pies de 0,9 × 0,05 × 0,45 a 0,05 m, en z = −0,55, inclinada 10°.
+5. Dos brazos de palanca desde (±0,55, 0,40, +0,40) hasta una almohadilla de cadera (Ø0,15 × 0,6):
+   - al empezar, en (0, 0,40, −0,10);
+   - al final, en (0, 0,62, −0,20).
+6. Cuernos con discos en los extremos de los brazos.
+
+### Postura de uso
+**Puesto**: (0, —, −0,10), mirando hacia −Z, con la espalda hacia la almohadilla. `rootHeight` va de **0,25 (A)** a
+**0,48 (B)**: la pelvis sube unos 0,22 m.
+
+| Hueso | A · cadera abajo | B · cadera arriba (bloqueo) |
+|---|---|---|
+| Hips | (−35, 0, 0) | (−90, 0, 0): tronco horizontal |
+| Back / Chest | (10, 0, 0) / 0 | 0 / 0 |
+| Neck / Head | (20, 0, 0) / 0 | (35, 0, 0) / 0: barbilla metida, mira las rodillas |
+| ShoulderL/R | (10, 0, ±25) | (5, 0, ±25) |
+| ForearmL/R | (−20, 0, 0): manos en la almohadilla de cadera | igual |
+| ThighL/R | (−85, 0, ±12) | (0, 0, ±12) |
+| ShinL/R | (110, 0, 0) | (90, 0, 0) |
+
+En B la pelvis queda a unos 0,22 m delante de la almohadilla, en z ≈ −0,20. Es la única máquina en la que el puesto se
+desplaza durante la repetición: hay que interpolar la raíz entre z = −0,10 y z = −0,20.
+
+## 10. Gemelos sentado (tipo 8)
+
+### Cómo es de verdad
+- **Huella**: 1,2–1,5 × 0,6–0,8 × 0,85–1,0 m. Por ejemplo, Titan: 122 × 60 × 100 cm; Perform Better: 147 × 76 × 85 cm.
+- **Piezas**:
+  - asiento corto **sin respaldo**;
+  - **almohadilla de rodillas** sobre la parte final de los muslos, regulable entre **0,72 y 0,81 m** (Titan) y de
+    unos 42 cm de largo;
+  - **calzo para las puntas de los pies** delante;
+  - palanca con cuerno de discos y una maneta de seguridad.
+- **Movimiento**:
+  - la rodilla se mantiene a unos 90°, que hace trabajar el **sóleo**;
+  - el talón baja hasta estirar del todo (dorsiflexión) y sube hasta contraer del todo (flexión plantar).
+
+### Cómo está ahora
+- `Training.cs:97`: un escalón de 0,6 × 0,08 × 0,3 a 0,2 m.
+- Asiento y **respaldo** genéricos, con la torre de 2,1 m.
+- Le falta la almohadilla de rodillas.
+
+### Qué cambiar
+1. Quitar la torre y el respaldo.
+2. Asiento de 0,35 × 0,08 × 0,35 a **0,55 m**, en z = +0,05.
+3. Calzo de 0,50 × 0,12 × 0,15 en (0, 0,06, −0,47).
+4. Almohadilla de rodillas de 0,42 × 0,08 × 0,15 a 0,72 m, en z = −0,32, sobre una palanca que pivota delante y abajo,
+   en (0, 0,25, −0,65). Sube ≈0,06 m en cada repetición.
+5. Cuerno con discos en el extremo trasero de la palanca.
+
+### Postura de uso
+**Puesto**: (0, —, +0,05), mirando hacia −Z. `rootHeight` = **0,67**.
+
+| Hueso | A · talones abajo | B · talones arriba |
+|---|---|---|
+| Hips | (0, 0, 0) | (0, 0, 0) |
+| Back / Chest | (15, 0, 0) / 0: algo inclinado sobre las rodillas | igual |
+| Neck / Head | 0 / 0 | 0 / 0 |
+| ShoulderL/R | (−35, 0, ±10) | igual |
+| ForearmL/R | (−55, 0, 0): manos en la almohadilla | igual |
+| ThighL/R | (−90, 0, ±6) | (−96, 0, ±6) |
+| ShinL/R | (90, 0, 0) | (96, 0, 0) |
+| FootL/R | (−15, 0, 0) | (25, 0, 0) |
+
+## 11. Curl de bíceps y extensión de tríceps (tipo 9)
+
+### Cómo es de verdad
+- **Huella**: máquina combinada Hoist HD-3100, de 130–137 × 123 × 140 cm, con pila de 86–102 kg. Otro ejemplo: TKO,
+  de 135 × 122 × 150 cm.
+- **Piezas**:
+  - asiento regulable;
+  - **apoyo de brazos inclinado** (tipo predicador, de 35 a 45°) delante del pecho;
+  - **leva o palanca con el pivote alineado con el codo**;
+  - brazo bidireccional: agarre supino para el curl y neutro para la extensión;
+  - pila a un lado o detrás.
+- **Movimiento**:
+  - el brazo queda quieto sobre el apoyo y solo se mueve el codo;
+  - el curl va de casi extendido a unos 125°;
+  - la extensión de tríceps hace el recorrido inverso.
+
+### Cómo está ahora
+- `Training.cs:89-90`: dos agarres sueltos a 1,05 m. No tiene apoyo de brazos ni leva.
+
+### Qué cambiar
+1. Asiento a **0,52 m**, en z = +0,10.
+2. Apoyo de brazos de 0,50 × 0,06 × 0,35, **inclinado 40°**: borde alto (axilas) a **1,05 m** en z = −0,10, y borde
+   bajo (codos) a 0,85 m en z = −0,35.
+3. Pivote y leva en (±0,30, 0,88, −0,38).
+4. Barra de agarre en la palanca, de 0,5 × 0,04 × 0,04:
+   - en reposo, en (0, 0,62, −0,55), con el brazo extendido;
+   - arriba, en (0, 1,05, −0,30).
+5. Pila de 1,4 m detrás y a la derecha, en (+0,45, —, +0,40).
+6. Quitar el respaldo.
+
+### Postura de uso
+**Puesto**: (0, —, +0,10), mirando hacia −Z. `rootHeight` = **0,64**.
+
+| Hueso | A · codo extendido (inicio del curl, final del tríceps) | B · codo flexionado (final del curl, inicio del tríceps) |
+|---|---|---|
+| Hips | (0, 0, 0) | (0, 0, 0) |
+| Back / Chest | (15, 0, 0) / (5, 0, 0): pecho contra el apoyo | igual |
+| Neck / Head | 0 / (5, 0, 0) | igual |
+| ShoulderL/R | (−30, 0, ±10): brazo sobre el apoyo | igual |
+| ForearmL/R | (−15, 0, 0) | (−125, 0, 0) |
+| ThighL/R | (−90, 0, ±8) | igual |
+| ShinL/R | (90, 0, 0) | igual |
+
+Las 3 máquinas de este tipo pueden alternar el ejercicio: serie de curl (A → B → A) y serie de tríceps (B → A → B).
+
+---
+
+## 12. Zona libre y lo que falta
+
+- **Mancuernas** (`Training.cs:47-49`): hoy son un solo estante de 3 × 0,06 × 0,5 a 0,4 m con 10 cubos negros.
+  - Un estante real de 3 pisos mide 1,5–2,3 × 0,5–0,85 × 0,85–1,0 m (Core: 164 × 93 × 102; Hammer Strength:
+    229 × 69 × 99; Gym Gear: 198 × 86 × 93), con las bandejas inclinadas de 0 a 30°.
+  - Propuesta: 2 bandejas, a 0,55 y 0,85 m, inclinadas 15°, y mancuernas de 3 piezas (dos cabezas hexagonales y un
+    mango de 0,13 m).
+- **Barra de dominadas** (`:50-53`): 2,3 m es correcto. Una persona de 1,85 m llega a unos 2,35 m de puntillas.
+- **Kettlebells y sacos** (`:45-46`, `:54-60`): sirven tal como están.
+- **No existen**, aunque los mencionan el `<summary>` de `:14-15` y `docs/sistemas/jornada-y-rotacion.md:91`: la jaula de
+  sentadillas, los bancos, las cintas, el remo de cardio y los espejos. Hay dos opciones: quitar esas menciones o
+  añadirlos a la zona libre.
+  - Cinta de correr: 2,0–2,2 × 0,8–0,9 × 1,4–1,6 m. Pide **2 m libres detrás y 0,5 m a los lados** (ASTM F2115-12).
+  - Zona de jaula o peso libre: 1,8–2,4 m libres alrededor.
+
+## 13. La sesión diaria de entrenamiento en el gimnasio
+
+> **Sustituido el 2026-11-04 por [§15](#15-entrenamientos-reales-planes-series-progresión-y-entrenador-2026-11-04)**: ya no hay
+> un circuito igual para todos; cada persona sigue la rutina de su plan. Se mantiene por la historia y las medidas de tiempo.
+
+**Cuánto dura.** El entrenamiento va de 14:00 a 16:00, 2 h de juego. Un día de juego dura 1 h real, así que 1 min de
+juego son 2,5 s reales y la sesión entera unos **5 min reales**.
+
+**Quién va.** Las personas a las que `WorkRoster` asigna «Gimnasio» ese día, por la rotación *(i + d) mod n*
+(`WorkRoster.cs:127-129`). Con yoga y gimnasio abiertos, va más o menos la mitad del personal. Los clones de la Magnate
+no entrenan: solo trabajan.
+
+**Cómo se reparte el tiempo** (en minutos de juego):
+
+| Bloque | Duración | Qué se hace |
+|---|---|---|
+| Calentamiento | 10 min | Zona libre: esterillas, movilidad, kettlebells ligeras (y la cinta, si se añade). |
+| Circuito | **10 estaciones × 9 min = 90 min** | En cada estación, **3 series** de 10–12 repeticiones, con 60–90 s de descanso, más el cambio de máquina. |
+| Subir a la entreplanta | 5 min | Pasar del piso de abajo al de arriba a mitad del circuito. |
+| Estiramientos | 15 min | Esterillas de la zona libre: se pueden reutilizar las posturas del Saludo al Sol o del upa-yoga. |
+
+**Orden del circuito.** Se adapta a la colocación actual (tipos 0–4 abajo, 5–9 arriba), así que **solo se sube una
+vez**. En cada piso se alternan tren superior e inferior:
+
+- **Abajo**: Prensa → Press de pecho → Jalón → Press de hombros → Remo.
+- **Arriba**: Extensión de cuádriceps → Curl de bíceps y tríceps → Curl femoral → Gemelos → Hip thrust.
+
+**A qué máquina va cada uno.**
+
+- La persona *i* del grupo del gimnasio empieza en la estación *(i + d) mod 5* de su piso y avanza una estación cada
+  9 min. La mitad del grupo empieza abajo y la otra mitad arriba, y a los 45 min se cruzan.
+- Usa la copia *(i / 5) mod 3* de cada tipo. Así caben hasta **30 personas a la vez sin colas**, y lo normal (≤ 10)
+  queda muy holgado.
+
+**Cómo se ve.**
+
+- Cada estación dura 9 min de juego, unos 22 s reales.
+- Se animan **2 series visibles de 3 repeticiones** a ritmo real: unos 3 s por repetición, 1 s de subida y 2 s de
+  bajada.
+- Entre series hay unos 4 s en la postura A con la cara de esfuerzo (`CubeFace`).
+- El resto del tiempo de la estación se da por hecho.
+- La primera vez de cada persona, la Magnate la inicia como en el resto de misiones (`WorkdayDirector.Begin`): hace la
+  repetición a su lado.
+
+**Qué hace falta en el código.**
+
+1. Un componente `GymStation` en cada `Maquina_*`, al estilo de `HospitalStation`, con:
+   - el tipo de máquina;
+   - el `Puesto`, que guarda la posición y el giro;
+   - las **dos posturas** (`AsanaPoseSpell`, con su `rootHeight`) de este documento;
+   - quién la ocupa, con métodos para reservarla y liberarla.
+2. En `WorkdayDirector.Drive`, junto a `YogaClass` (`:339`), un caso `GymSession(g)` cuando el área es «Gimnasio» y la
+   hora está entre 14 y 16:
+   - elegir la estación según el horario de arriba;
+   - caminar hasta el `Puesto`;
+   - alinear el giro y alternar A ↔ B;
+   - liberar la máquina al cambiar de estación.
+   Hoy `AreaPoint` (`:412-426`) los deja de pie en una rejilla.
+3. Las posturas pueden ir en una clase `GymPoses`, junto a `DailyPoses` (`DailyLife.cs:10`), con
+   `Make(nombre, rootHeight, ...)`.
+4. Opcional: que cada estación sume fuerza a los grupos de `BodyPart` que trabaja (`docs/sistemas/asana-system.md`, ejercicios
+   básicos):
+
+   | Máquina | Partes que se fortalecen |
+   |---|---|
+   | Press de pecho | Shoulders, Elbows |
+   | Jalón y remo | Back, Shoulders |
+   | Prensa, extensión y curl femoral | Knees, Hips |
+   | Gemelos | Feet |
+   | Hip thrust | Hips |
+   | Bíceps y tríceps | Elbows |
+
+5. Corregir el comentario de `Training.cs:23` (la entreplanta está a 4 m, no a 3) y el `<summary>` duplicado
+   (`:14-17`).
+
+
+## 14. Colgarse siendo alto (2026-11-04)
+
+El cuerpo se ajusta a cada máquina con `GymFit.Fit`. En las posturas colgadas (dominadas, escalera horizontal, anillas…), el cuerpo sube o baja hasta que las manos llegan al agarre.
+
+Quien mide más de lo que la barra permite, como Elon Musk (1,88 m) bajo la escalera horizontal a 2,4 m, tenía los pies en el suelo antes de que las manos llegaran a la barra. Se quedaba con las manos a 15 cm del agarre (GymUsabilityTest).
+
+Ahora baja hasta el agarre y **dobla las rodillas** (`GymFit.TuckLegs`, IK de dos huesos): los pies suben lo que falta y van algo hacia atrás. Hasta 0,4 m de diferencia; con más, el cuerpo se queda sobre el suelo como antes.
+
+### 14.1 Ronda 6 de GymUsabilityTest (2026-11-04)
+
+- **Saltos de unos 1,1 m andando entre máquinas** (Goluis hacia el remo, Lizmibet hacia el curl, Adaguchi hacia las dominadas).
+  - Causa probable: `PathMover` pegaba los pies a lo más alto que hubiera a un escalón (hasta 0,8 m por encima). Junto a esas
+    máquinas, eso era una pieza de la máquina vecina, y al paso siguiente caía de golpe.
+  - Ahora las piezas de una `GymStation` no cuentan como suelo para andar.
+  - Al levantarse, el pivote se coloca con `PathMover.OnGround`, a la misma altura con la que anda.
+- **Banca plana**: la espinilla izquierda de Adaguchi entraba 2 cm en el «Banco» en A y en B. Los muslos se abren 26° en vez de
+  20°.
+
+## 15. Entrenamientos reales: planes, series, progresión y entrenador (2026-11-04)
+
+Berón: «acabo de ver a Lizmibet usar las máquinas para hacer un ejercicio … hay que actualizar a los demás humanos para que
+realicen entrenamientos reales (series, repeticiones, entiendo que existen rutinas donde se varían músculos por días, se debe
+investigar y esto también serviría para el trabajo de entrenador del gym)».
+
+Sustituye al circuito igual para todos de §13: ahora cada persona sigue **su plan**. Código: `GymProgramming` (datos puros:
+planes, rutinas, progresión), `GymTrainingSession` (la sesión en vivo), `GymCoach` (el entrenador) y `WorkdayDirector.GymSession`.
+Reglas J19–J22 del [manual](../reglas/manual-de-diseno.md). Prueba: `GymTrainingTest` (grupo 87).
+
+### 15.1 Investigación: cómo se programa el entrenamiento de fuerza
+
+**Repartos de la semana («splits»).**
+- **Cuerpo entero** (2–3 días): todos los grupos musculares en cada sesión. Es lo que el ACSM recomienda para empezar
+  (2–3 días por semana para principiantes; 3–4 intermedios; 4–5 avanzados).
+- **Torso / pierna** (4 días): dos sesiones de torso y dos de pierna; cada músculo, 2 veces por semana.
+- **Empuje / tirón / pierna** (3 o 6 días): pecho-hombros-tríceps, espalda-bíceps y piernas; con 6 días, cada músculo 2 veces.
+- **Weider o «bro split»** (5 días): un grupo muscular por día; cada músculo, 1 vez por semana.
+- Con el **volumen semanal igualado**, el reparto casi no cambia la fuerza ni la hipertrofia (Ramos-Campo et al. 2024, 14
+  estudios): se puede elegir por preferencia y agenda. Sin igualar el volumen, entrenar cada músculo **≥ 2 veces por semana**
+  dio más hipertrofia que una sola (Schoenfeld, Ogborn y Krieger 2016); con el volumen igualado, la frecuencia apenas importa y
+  **manda el volumen semanal**.
+- **Volumen**: hay relación dosis-respuesta; ≥ 10 series por músculo y semana dan más hipertrofia que < 5 (Schoenfeld, Ogborn y
+  Krieger 2017).
+
+**Series, repeticiones, descanso y esfuerzo por objetivo** (NSCA, *Essentials of Strength Training and Conditioning*; ACSM 2009):
+
+| Objetivo | Series | Repeticiones | Intensidad | Descanso | RPE |
+|---|---|---|---|---|---|
+| Fuerza | 3–5 (multiarticulares) | ≤ 6 | ≥ 80–85 % 1RM | 2–5 min | 8 (quedan 2) |
+| Hipertrofia | 3–6 | 6–12 | 67–85 % | 30–90 s (NSCA); > 60 s, algo mejor (Singer et al. 2024) | 7–9 |
+| Resistencia muscular | 2–3 | 12–20 | ≤ 67 % | ≤ 30–90 s | 6–7 |
+| Salud y mayores | 1–3 | 10–15 | moderada | 1–2 min | 5–7 |
+
+- **RPE por repeticiones en reserva** (Zourdos et al. 2016; Helms et al. 2016): RPE 10 = no queda ninguna; 9 = queda 1; 8 =
+  quedan 2. Sirve para ajustar la carga del día.
+- **Descanso**: largo (2–3 min) en los multiarticulares pesados; con gente entrenada, los descansos largos dan algo más de
+  hipertrofia (Grgic et al. 2017).
+- **Sobrecarga progresiva** (ACSM 2009): subir la carga un 2–10 % cuando se hacen 1–2 repeticiones más de las previstas en dos
+  sesiones seguidas. En la práctica, **progresión doble**: subir repeticiones dentro del rango y, al llegar arriba, subir la carga
+  y volver abajo.
+- **Descargas** (Bell et al. 2023, consenso Delphi de entrenadores): un periodo de menos estrés de entrenamiento para quitar
+  fatiga y llegar mejor a lo siguiente; se programan cada pocas semanas (aquí, 1 de cada 4), bajando sobre todo el **volumen**
+  (series) y algo la carga.
+- **Mayores**: la OMS (2020) pide fortalecer los grandes grupos musculares **≥ 2 días por semana** también a partir de los 65.
+  Máquinas guiadas y RPE moderado.
+- **Calentamiento**: mejoró el rendimiento en el 79 % de los criterios estudiados (Fradkin et al. 2010). 5–10 min de cardio suave,
+  movilidad y **series de aproximación** (≈ 50 % de la carga) antes del primer multiarticular.
+- **Vuelta a la calma**: apenas cambia la recuperación ni las agujetas (Van Hooren y Peake 2018), pero no estorba: 5 min de
+  cardio suave o estiramientos para acabar.
+
+### 15.2 Lo que hace el juego
+
+**Objetivos** (`GymProgramming.Spec`):
+
+| Objetivo | Series (multi / accesorio) | Reps (rango) | Descanso | RPE |
+|---|---|---|---|---|
+| Fuerza | 4 / 3 (los accesorios, como en hipertrofia: 8–12) | 4–6 | 180 s | 8 |
+| Hipertrofia | 3 / 3 | 8–12 | 90 s | 8 |
+| Resistencia | 3 / 2 | 15–20 | 45 s | 7 |
+| Salud | 2 / 2 | 10–15 | 90 s | 6 |
+
+**Rutinas de cada reparto** (`GymProgramming.Templates`; máquinas de §2–§11 y de los pisos de peso libre, cardio y calistenia):
+- Cuerpo entero A: sentadilla en jaula, press de banca, remo sentado, hip thrust y abdominales. B: peso muerto, press de hombros,
+  jalón, curl femoral y gemelos. Con objetivo **salud**, solo máquinas guiadas (A: prensa, press de pecho, remo, curl femoral y
+  abdominales; B: extensión de cuádriceps, press de hombros, jalón, hip thrust y gemelos).
+- Torso A: banca, remo, press de hombros, jalón y bíceps-tríceps. Pierna A: sentadilla, curl femoral, prensa, gemelos y
+  abdominales. Torso B: banca inclinada, remo con mancuerna, dominadas, press de pecho y bíceps-tríceps. Pierna B: peso muerto,
+  Smith, extensión, hip thrust y elevación de piernas.
+- Empuje: banca, press de hombros, banca inclinada y fondos. Tirón: jalón, remo, remo con mancuerna, bíceps-tríceps e
+  hiperextensiones. Pierna: sentadilla, curl femoral, prensa, gemelos y abdominales.
+- Weider: pecho · espalda · hombros y abdomen · pierna · brazos.
+
+Las sesiones de un reparto **rotan** de un día de gimnasio al siguiente (A, B, A… y de semana en semana).
+
+**La rutina de un día** (`GymProgramming.Prescribe`):
+1. 5 min de cardio suave (bici; cinta en resistencia).
+2. Los ejercicios del día con sus series × reps, carga, descanso y RPE. La primera serie del primer multiarticular con carga es
+   de **aproximación**, al 50 %.
+3. 5 min de estiramientos (en la máquina de isquios o, si está ocupada, de pie).
+
+Si la rotación manda a alguien al gimnasio un día sin gimnasio en su plan (solo pasa si no hay otro entrenamiento abierto):
+**recuperación activa**, 10 min de bici suave y estiramientos.
+
+**Cargas de partida**: la carga base de cada máquina (un adulto medio que ya entrena: banca 40 kg, prensa 90 kg, jalón 40 kg…;
+0 = peso corporal) × el objetivo (fuerza ×1,25, hipertrofia ×1, resistencia ×0,7, salud ×0,6) × la fuerza de cada persona (de
+0,45 a 1,4), redondeada a 1,25 kg.
+
+### 15.3 Progresión y descarga
+
+- **Cada semana** (`AdvanceWeek`, al cambiar de semana: días 7, 14…): +1 repetición (+2 en resistencia) hasta arriba del rango;
+  arriba, **+2,5 kg** tren superior o **+5 kg** inferior (la mitad en salud) y vuelta abajo del rango. Peso corporal: +1 rep
+  (tope 30).
+- Lo que quedó **sin acabar** esa semana (se acabó el bloque, no había máquina) **no sube** (`TrainingPlan.missed`).
+- **Descarga**: la 4.ª semana de cada 4 (semanas 4, 8…): la mitad de series, −10 % de carga y RPE −2. Esa semana no progresa.
+
+### 15.4 La sesión en vivo (14–16 h)
+
+- **Quién va**: quien tiene gimnasio ese día en su plan (y el entrenador, siempre). Si la rotación `(i + d) mod n` le daba
+  gimnasio un día sin gimnasio en su plan, va al siguiente entrenamiento abierto (`GymProgramming.ApplyGymDays`).
+- **Orden** (`GymTrainingSession`): calentamiento (en la clase del entrenador, si la hay) → cada ejercicio → vuelta a la calma.
+- **Máquina**: la copia libre más cercana (la del mismo piso primero).
+- **Si está ocupada**: una alternativa del mismo músculo (banca ↔ press de pecho, sentadilla ↔ Smith ↔ prensa, jalón ↔
+  dominadas, remo ↔ remo con mancuerna…; la carga, en proporción). Si no hay ninguna libre, **espera** hasta 8 s y lo deja para
+  el final; a la segunda, lo salta (y queda sin acabar). Si en 45 s no llega andando, prueba otra copia.
+- **Series**: cada repetición es A → B → A y cuenta al volver a A; en las dos últimas pone cara de esfuerzo.
+- **Descanso**: se queda en la máquina, en la postura A, el descanso real pasado a tiempo de juego (90 s = 1,5 min de juego =
+  3,75 s reales; entre 2 y 10 s).
+- **Ritmo**: el de las repeticiones se ajusta para que la rutina quepa en el bloque (de 0,3 s al ritmo real del equipo por mitad).
+- **Necesidades** (comer, baño, dormir): suelta la máquina y, al volver, repite la serie en curso. A las 15:55 se acaba: lo que
+  falta queda sin acabar.
+- **Registro**: una línea por serie, por ejemplo
+  `[Gimnasio] Amahuz · Torso A · Press de banca plano · serie 2/3 · 9 reps · 42,5 kg · RPE 8` (las de aproximación dicen
+  «aproximación»).
+
+### 15.5 El entrenador: Andrea
+
+**Por qué Andrea** (`GymProgramming.Trainer`). Berón (2026-11-04): «el personaje con más fuerza es Andrea».
+- Su fuerza es la más alta del personal: `Anima.strength` 1,6 (`SampleSceneBuilder.MakeCharacter`). Le sigue Goluis, con 1,5
+  (`Archetypes`). `GymTrainingTest` lo comprueba en escena.
+- Con Leo salía a correr y al gimnasio ([character-andrea.md](../personajes/fichas-antiguas/character-andrea.md)).
+- Por eso deja de ser maestro de yoga: las dos clases son a las 14 h. El yoga pasa a **Josedrilo** (Berón; lo aplica la rama de personajes, con `WorkdayDirector.YogaTeacher` y las pruebas de yoga;
+  ver [personajes-mesocosmos.md](../historia/personajes-mesocosmos.md) §Reparto de papeles).
+- **Goluis** (el primer entrenador, unas horas del 2026-11-04) mantiene su plan de **fuerza**.
+- Andrea sigue en la rotación de la mañana como todos; sale en el gimnasio y su área es el Gimnasio.
+
+- **Su misión de la jornada**: «Entrenador: revisar el registro de series y ajustar los planes» (`gym_planes`, 1 h, en el
+  Gimnasio).
+  - Es una **misión de papel fijo** (`WorkRoster.Mission.owner`): se le asigna a él antes que nada y, si no está, nadie la hace
+    ni queda pendiente.
+  - Al terminarla (`GymProgramming.Review`): escribe el plan de quien no lo tenía, mantiene la carga de lo que quedó sin acabar,
+    avisa de la semana de descarga y deja escrita la rutina de mañana de cada uno.
+- **En el bloque de las 14 h** (`GymCoach`), con los mismos datos de rutina:
+  1. **Clase de calentamiento** (10 min de juego desde que **él llega** a la zona libre, no desde las 14:00; de otra torre se tarda
+     35–95 s reales y la clase dura 25 s). Sentadillas con peso corporal y saltos de tijera. Quien va a calentar anda hasta su sitio,
+     en filas de 4 delante de él, y repite cada movimiento a su compás. La clase espera a los que vienen de camino; tope: 30 min de
+     juego más para reunirse. Si la clase acaba tarde, cada uno reajusta el ritmo de sus repeticiones para acabar la rutina.
+  2. **Rondas**: va a quien está en plena serie y le **corrige** la técnica (`GymProgramming.Cue`: «escápulas atrás y codos a
+     unos 45°», «rodillas alineadas con los pies»…). En banca y sentadilla con RPE ≥ 7,5 hace de **spotter** hasta que acaba la
+     serie. Como mucho: andar 60 s, corregir 5 s y hacer de spotter 20 s. Sin nadie a quien corregir, vuelve andando al gimnasio.
+  3. Los días de su propio plan (torso/pierna de fuerza, lun-mié-jue-sáb), de 15:00 a 15:55 hace **su rutina**.
+
+### 15.6 Los planes asignados
+
+| Persona | Reparto | Días | Objetivo | Por qué |
+|---|---|---|---|---|
+| Kushal (jugador) | Cuerpo entero | lun-mié-vie | Hipertrofia | Principiante: 2–3 d de cuerpo entero (ACSM). |
+| Linduarda | Empuje/tirón/pierna | lun–sáb | Hipertrofia | «Deportista, gimnasio a diario». |
+| Lizmibet | Cuerpo entero (máquinas) | mar-vie | Salud | Más de 70 años: 2 d (OMS, ACSM). |
+| Goluis | Torso/pierna | lun-mar-jue-vie | Fuerza | Corpulento, jefe de cocina. |
+| Panterilia | Cuerpo entero | mar-jue-sáb | Hipertrofia | Delgada: ganar músculo. |
+| Gohageneis | Empuje/tirón/pierna | lun-mié-vie | Fuerza | Artes marciales y Guardia (el resto, su dojo). |
+| Irosene | Cuerpo entero | mié-sáb | Resistencia | Más de 70; corre, escala y bucea. |
+| Tote (`JefeConstruccion`) | Torso/pierna | mar-mié-vie-sáb | Resistencia | Robusto; jornadas de obra. |
+| Andrea (entrenador) | Torso/pierna | lun-mié-jue-sáb | Fuerza | El de más fuerza; corredor de fondo (la fuerza pesada mejora la economía de carrera). |
+| Nesvitor | Cuerpo entero (máquinas) | lun-jue | Salud | El mayor de las cuentas. |
+| Amahuz | Torso/pierna | lun-mar-jue-vie | Hipertrofia | Delgado: ganar masa. |
+| Karen | Cuerpo entero | lun-mié-vie | Resistencia | Entrena con Amahuz los lunes. |
+| Alicita | Empuje/tirón/pierna | mar-jue-sáb | Hipertrofia | Huerto: cargar cajas. |
+| Ducristin | Torso/pierna | lun-mié-jue-sáb | Fuerza | Mecánico: levantar piezas. |
+| Josedrilo | Empuje/tirón/pierna | mar-jue-sáb | Hipertrofia | El profesional del yoga: los demás días, el yoga. |
+| Maite | Cuerpo entero | mar-jue-sáb | Resistencia | Mucho de pie (registros y vacunación). |
+| Shalva | Torso/pierna | mar-mié-vie-sáb | Hipertrofia | Personal general. |
+| Adaguchi | Weider | lun–vie | Hipertrofia | Estilo culturista (sudadera sin mangas); cada músculo 1×/sem. |
+
+Las complexiones salen de [diseno-personajes.md](../sistemas/diseno-personajes.md); no se suponen edades más allá de lo documentado.
+
+**Humanos-insecto**: no usan estos planes del santuario (`GymProgramming.Eligible`), sino los de **su época**, en el lugar de entrenar de su pueblo (§16). (El 2026-11-04 se dijo aquí que «en sus eras no hay gimnasio»: era falso; Berón: «desde la antigua Grecia se entrenaba físicamente».)
+
+### 15.7 Ver la rutina
+
+- **Consola**: `rutina` abre o cierra el panel; `rutina(Amahuz)` lo abre en esa persona; ◀ ▶ cambian de persona
+  (`GymRoutinePanel`). Muestra:
+  - el plan: reparto, días, objetivo, frecuencia por músculo, semana, descarga y quién lo revisó;
+  - la rutina de hoy, con lo que hace ahora (ejercicio, serie i/n, repetición);
+  - las últimas líneas del registro de series;
+  - si es el entrenador, su estado: alumnos de la clase, correcciones y veces de spotter.
+- **Registro**: `[Gimnasio]` (series, cambios de máquina, esperas) y `[Entrenador]` (clase, correcciones, spotter, revisión de
+  planes).
+
+## Microcosmos: lugares de entrenar por época (gancho para los planes de entrenamiento, 2026-11-04)
+
+Los pueblos de las historias del microcosmos tienen ahora su lugar de entrenar de época. Son la regla 16 de [microcosmos-reglas-edificacion.md](../reglas/microcosmos-reglas-edificacion.md); su investigación y sus fuentes están en [microcosmos-entrenamiento-eras.md](../microcosmos/microcosmos-entrenamiento-eras.md).
+
+El hilo «entreno» escribe los planes de entrenamiento de los insectos-humanos y los ejercicios de cada era. Para hacerlo, puede contar con esto, que no cambiará:
+
+- **Categoría.** `AreaFunctionSite.activity == AreaFunctionSite.Entrenamiento` («entrenamiento»). La llevan las plantillas «Centro de entrenamiento» y «Dojo» (la palestra de Milón, el kwoon de Yip Man).
+- **Clase estable.** `AreaFunctionSite.training` es una de estas:
+  - `juegos_heroicos`, `gimnasio_griego`, `palestra_romana`;
+  - `patio_lucha_egipcio`, `patio_lucha`, `akhara`;
+  - `furusiyya`, `tekke_guresh`, `juego_pelota`;
+  - `wuguan`, `dojo`, `sala_armas`, `sala_esgrima`;
+  - `prado_juegos`, `garrote_coleo`, `turnplatz_schwingen`;
+  - `turnhalle`, `hebert`, `futbol_tregua`;
+  - `club_deportivo`, `estadio`, `gimnasio_moderno`.
+
+  Sale de `MicroStyles.TrainingKind(estilo, año)`.
+- **Puestos.** Son `AreaFunctionStation.station`, con la clave del aparato. La tabla dice qué función del registro sirve cada uno. Las funciones son de la plantilla «Centro de entrenamiento» (`AreaFunctions.Buildings`).
+
+| Función | Qué se hace | Puestos que la sirven |
+|---|---|---|
+| `ent_entrenar` | Entrenar (rol «todos») | tatami, pista, foso_lucha, pista_carreras, campo |
+| `ent_ensenar` | Dirigir el entrenamiento (rol «maestro») | los mismos que `ent_entrenar` |
+| `ent_lucha` | Luchar en el foso | foso_lucha, tatami |
+| `ent_correr` | Correr | pista_carreras, campo |
+| `ent_pesos` | Levantar pesos | halteres, piedras, mazas, pesas |
+| `ent_golpear` | Golpear el saco, el poste o el muñeco | saco, makiwara, muneco |
+| `ent_aparatos` | Gimnasia en aparatos | barra_fija, paralelas, potro, anillas |
+| `ent_armas` | Esgrima y armas | pista_esgrima, armero |
+| `ent_tiro` | Tiro con arco | diana |
+| `ent_pelota` | Juegos de pelota | balon, campo, pista |
+
+- **Aparatos de cada clase.** Los da `CivicBuilder.TrainingKit(clase)`. Por ejemplo, un `gimnasio_griego` tiene xisto, skamma, halteres, kórykos, discos y jabalinas, y una `akhara` tiene foso de tierra, gada y mugdar, y nal. Un plan de entrenamiento puede elegir los ejercicios por la clase y buscar el puesto con `site.StationFor(AreaFunctions.Get("ent_pesos"))`.
+- **En el horario libre.** Los sitios de entrenamiento entran como hasta ahora: una actividad por plantilla, del tipo «ocio» del roster (`LeisureDirector`).
+
+
+## 16. Entrenar como en su época: los planes de los insectos-humanos (2026-11-04)
+
+Berón: «¿en ninguna época de microcosmos hay gimnasio? desde la antigua Grecia se entrenaba físicamente…». Tenía razón. Los pueblos
+tienen ya su lugar de entrenar de época (la sección anterior, de la rama de los pueblos). Aquí van los **planes**, el **catálogo de
+ejercicios de cada época** y la **sesión**, con el mismo motor que el gimnasio del santuario (§15).
+
+- **Código**:
+  - `HistoricTraining`: el catálogo y los planes, datos puros.
+  - `HistoricSession`: la sesión en vivo. `HistoricCoach`: el maestro del pueblo.
+  - `HistoricClass`: la clase del día en un edificio, con sus sitios.
+- **El gancho**: `MicroJornada`, en el bloque de la práctica (14–16 h). Si su sitio de práctica es de entrenamiento
+  (`activity == "entrenamiento"`, o la plantilla «Centro de entrenamiento» o «Dojo»), lo lleva `HistoricClass.Drive`. Si no,
+  sigue como siempre.
+- **La clave**: la **clase estable** del edificio, `AreaFunctionSite.training`. Si viene vacía, se usa
+  `MicroStyles.TrainingKind(estilo, año)`. No hace falta nada más del constructor de los pueblos.
+- **Regla J23** del [manual](../reglas/manual-de-diseno.md). Prueba: `GymTrainingTest` (grupo 87).
+
+### 16.1 Los lugares de entrenar de la historia y sus ejercicios
+
+Cada clase tiene su tradición (`HistoricTraining.All`), con su maestro y sus sesiones. Cada ejercicio lleva los años en que existe:
+una sesión de ese año solo usa los que ya existían, y se descarta si le quedan menos de 3.
+
+| Clase (`training`) | Lugar · maestro | Ejercicios de época | Microcosmos |
+|---|---|---|---|
+| `juegos_heroicos` | Juegos de la Ilíada XXIII · el héroe más anciano | carrera, lucha, pugilato con correas, peso (disco), jabalina, arco | Egina (−1250) |
+| `gimnasio_griego` | Gimnasio y palestra · paidotribes | carrera de un estadio, **halteres** (desde −708), disco, jabalina, lucha, **kórykos** (desde −500), **el ternero de Milón** (desde −540) | Crotona (−530), Alejandría (−240) |
+| `palestra_romana` | Palestra de las termas · magister | halteres, pelota (trigón, harpastum), lucha, kórykos, **palus** de los legionarios; después, la natatio | (ninguno aún) |
+| `patio_lucha_egipcio` | Patio de lucha · maestro de lucha | lucha (Beni Hasan), **tahtib** (palos, desde −2000), sacos de arena, carrera | Menfis (−450) |
+| `patio_lucha` | Patio de lucha · maestro de lucha | lucha de cinturón, piedras, carrera, honda | Mesopotamia (−3500) |
+| `akhara` | Akhāṛā · guru | lucha (malla-yuddha; kushti desde 1500), **gada**, **mudgar**, la piedra, **dand** y **baithak** (desde 1500), mallakhamb (desde 1135); el **kalari** (desde 1100: meippayattu, patadas, bastón) | Kapilavastu (−530), Patanjali (−150), Velliangiri (1999) |
+| `furusiyya` | Maydān de furusiyya · ustādh | arco, lanza al blanco, espada al poste, lucha (koshti) | Bagdad (820) |
+| `zurkhaneh` | Zurkhaneh · morshed y miandar | **meel**, **sang**, **shena**, **kabbadeh**, giros (charkh), lucha | (ninguno aún) |
+| `tekke_guresh` | Tekke de luchadores · üstat | **yağlı güreş**, mazas, tiro con arco; el peşrev para calentar | Escútari (1854) |
+| `wuguan` | Escuela de artes marciales · shifu | mabu, taolu, **shisuo** (desde 702), patadas, bastón; **muñeco de madera** y chi sao (desde 1850), saco, pesas | Aldea de la montaña (1930), Bruce Lee (1964) |
+| `dojo` | Dojo · sensei | suburi, shiko, **ishi sashi**, randori, kyūdō | (ninguno aún) |
+| `juego_pelota` | Juego de pelota · maestro | golpes de cadera a la pelota de hule, carrera, átlatl | Palenque (683) |
+| `sala_armas` | Sala de armas · maestro de armas | el poste (pell), la quintana, lucha, piedra | (ninguno aún) |
+| `sala_esgrima` | Sala de esgrima · maestro de esgrima | estocadas, paradas, asaltos, poste | (ninguno aún) |
+| `prado_juegos` | Prado de los juegos (Cotswold Olimpicks) · el organizador | lucha, garrote, carreras, salto, el mazo | Woolsthorpe (1666), Berkeley (1796) |
+| `garrote_coleo` | Garrote y manga de coleo · maestro de garrote | juego de garrote, lanza llanera, machete, carreras | Angostura (1819) |
+| `turnplatz_schwingen` | Turnplatz y ruedo de schwingen · Turnwart | **schwingen**, **steinstossen** (piedra de Unspunnen, desde 1805), barra fija, paralelas | Sils Maria (1881) |
+| `turnhalle` | Turnhalle · Turnwart | barra fija, paralelas, potro, anillas, cuerda (desde 1811, Jahn), **mazas indias** (desde 1850); gimnasia sueca de Ling para calentar | Dayton, Colorado Springs, París 1898, Berna, Planta Atómica, Irena Sendler |
+| `hebert` | Parcours del método natural · moniteur | marcha, cuadrupedia, trepar, saltar, levantar y lanzar (desde 1905) | Le Chambon-sur-Lignon (1942) |
+| `futbol_tregua` | Partido de la tregua · el capitán | pases, regate, tiros a puerta, carreras | Tregua 1914 |
+| `club_deportivo` | Club deportivo · trener | **girya**, dominadas del GTO, flexiones, saco, pista | Chernóbil (1986) |
+| `estadio` | Estadio · entrenador | fútbol, atletismo, lutte traditionnelle | Uagadugú (2024) |
+| `gimnasio_moderno` | Gimnasio · entrenador | barra (banca, sentadilla, peso muerto, remo), dominadas, saco, comba; máquinas de placas desde 1970 | Pasadena, Albuquerque, Omaha, Hawthorne, Prairie View |
+
+La prehistoria (Sakshi, Ambrosio, Cocina, Huerto, Yoga…) no tiene lugar de entrenar.
+
+**Dónde se hace cada ejercicio** (`HistoricTraining.KeysOf`): en el aparato del pueblo (`AreaFunctionStation.station`, de
+`CivicBuilder.TrainingKit`).
+- Halteres en `halteres`; piedras y el ternero en `piedras`; mazas, girya y shisuo en `mazas`; barras en `pesas`.
+- Kórykos y saco en `saco`; poste, pell y muñeco en `muneco` o `makiwara`.
+- Barra fija, paralelas, potro y anillas en el suyo. Arcos en `diana`. Pelotas en `balon`, `campo` o `pista`.
+- Armas y esgrima en `pista_esgrima`, `tatami` o `foso_lucha` (cogen el arma del `armero`).
+- Lucha en `foso_lucha` o `tatami`. Carrera en `pista_carreras`, `campo` o `pista`.
+- Si el edificio no tiene ese aparato, cualquier suelo de entrenar.
+
+**Sitios** (`HistoricClass`):
+- Cada suelo (tatami, foso, pista, campo, sala) se parte en sitios a **2 m**, la distancia de dos personas.
+- Cada aparato da un sitio delante.
+- Nunca hay dos personas en el mismo sitio.
+
+### 16.2 Planes y sesión
+
+- **El plan** (`HistoricTraining.PlanFor`):
+  - El objetivo: los soldados, guardias y guerreros entrenan fuerza; el resto, hipertrofia, resistencia o fuerza (fijo por su
+    nombre).
+  - 3 o 4 días por semana. Las sesiones de su tradición rotan de un día al siguiente.
+  - Series, repeticiones, descanso y RPE salen de `GymProgramming.Spec`, como en §15.
+  - La carga de partida es la del aparato de la época: halteres de 2 kg, mazas de 5–8 kg, la girya de 16 kg, el ternero de
+    30 kg…
+- **Progresión** (la del santuario): +1 repetición hasta arriba del rango; arriba, **un paso de carga** (un halter más pesado,
+  la girya siguiente, un ternero más grande, como Milón) y vuelta abajo. Descarga cada 4.ª semana. Lo que queda sin acabar no
+  sube.
+- **La sesión** (`HistoricSession`):
+  1. Calentamiento: la clase del maestro o la carrera suave; en el tekke, el peşrev; en la Turnhalle, la gimnasia de Ling.
+  2. Cada ejercicio: coge el arma del armero si hace falta y va a su sitio. Si está ocupado, espera hasta 8 s y lo deja para el
+     final; a la segunda, lo salta.
+  3. Las series × repeticiones contadas (A → B → A), con el descanso real pasado a tiempo de juego (2–10 s) entre series.
+  4. Vuelta a la calma: estiramientos y masaje con aceite; en Roma, el baño.
+  - Anima el cuerpo de insecto con `CubeInsect.Martial`/`Push` según el movimiento: levantar, empujar, balancear, luchar,
+    correr, lanzar, golpear, sostener o saltar.
+  - Si llega una necesidad (comer, el baño), suelta su sitio y, al volver, repite la serie.
+- **Registro**: `[Entreno micro] Teano · Palestra · Cargar el ternero (como Milón de Crotona) · serie 2/4 · 5 reps · 37,5 kg`.
+
+### 16.3 El maestro del pueblo
+
+- **Quién es** (`HistoricClass.Drive`): quien **trabaja** en ese edificio (su `MicroJornada.work`). Si nadie, el primero por nombre
+  de los que practican allí. Su título es el de la tradición: paidotribes, guru, ustādh, üstat, shifu, sensei, maestro de armas,
+  Turnwart, moniteur, trener…
+- **Qué hace** (`HistoricCoach`):
+  - Los primeros 10 min de juego, la **clase de calentamiento**: los alumnos en filas de 4 delante de él, a 2 m, repiten su
+    movimiento.
+  - Después, **rondas**: va junto a quien está en plena serie y le corrige con las indicaciones de su tradición, por ejemplo
+    «balancea los halteres antes de saltar» o «rodillas hacia fuera en el mabu».
+- **Lo que no hace aún**: su propia rutina. En el santuario, el entrenador sí la hace (§15.5).
+
+### 16.4 Lo que queda para la rama de los pueblos
+
+- El maestro sale de quien tiene ese edificio como trabajo. Conviene que cada pueblo con lugar de entrenar tenga un insecto-humano
+  con `work` = ese edificio y el papel «maestro».
+- Si un pueblo nuevo usa una clase que no está en la tabla, hay que añadirla a `HistoricTraining`. La prueba 87 falla si a una
+  clase le falta su tradición.
+
+## Fuentes
+
+- Press de pecho:
+  - [Hammer Strength Select Chest Press (Life Fitness)](https://lifefitness.com/en-us/catalog/strength-training/selectorized/hammer-strength-select-chest-press)
+  - [Decathlon Future Elite Seated Chest Press](https://www.decathlon.co.uk/p/mp/future-elite-series-commercial-seated-chest-press/33541219-4d88-4d17-b231-ea3ac002a894/novar)
+  - [Life Fitness Insignia Chest Press](https://lifefitness.com/en-hk/catalog/strength-training/selectorized/insignia-series-chest-press)
+  - [ACE: Seated Chest Press](https://www.acefitness.org/resources/everyone/exercise-library/188/seated-chest-press/)
+  - [NASM: Chest Press Machine](https://www.nasm.org/resource-center/exercise-library/chest-press-machine)
+- Press de hombros:
+  - [Hammer Strength Select Shoulder Press](https://www.lifefitness.com/en-us/catalog/strength-training/selectorized/hammer-strength-select-shoulder-press)
+  - [Precor Vitality Shoulder Press (PDF)](https://beyondthebasicsfitness.com/images/pdfUploads/1717120167_Precor%20Vitality%20Shoulder%20Press.pdf)
+  - [Spirit 43 Pin Select Shoulder Press](https://gymequipment.co.uk/spirit-43-pin-select-shoulder-press)
+- Jalón al pecho:
+  - [Life Fitness Axiom Lat Pulldown](https://www.lifefitness.com.au/commercial/axiom-series-lat-pulldown)
+  - [York ST Lat Pulldown](https://yorkbarbell.com/product/st-lat-pulldown/)
+  - [Good Life Lat Pull-Down (Garage Gym Reviews)](https://www.garagegymreviews.com/?p=206462)
+  - [NASM: Biomechanics of the Lat Pulldown](https://blog.nasm.org/biomechanics-of-the-lat-pulldown)
+  - [Advanced Human Performance: pull-up technique](https://www.advancedhumanperformance.com/blog/pullups-best-technique)
+- Remo sentado:
+  - [Precor Vitality Seated Row (PDF)](https://beyondthebasicsfitness.com/images/pdfUploads/1717121744_Precor%20Vitality%20Seated%20Row.pdf)
+  - [Muscle-D Classic Seated Row](https://gymstore.com/muscle-d-classic-seated-row)
+  - [Reeplex Iron Series Seated Row](https://dynamofitness.com.au/products/reeplex-iron-series-commercial-pin-loaded-seated-row-machine)
+- Prensa de piernas:
+  - [Force USA 45° Leg Press](https://wholesale.forceusa.com/products/force-usa-45-degree-leg-press-with-calf-block-black)
+  - [Primal Club 45° Leg Press](https://fitnesssupply.com/collections/primal-strength/products/club-45-degree-leg-press-psss2208)
+  - [TF 1024D](https://intowellness.in/?p=10930)
+  - [Técnica de la prensa 45° (EFDeportes)](https://efdeportes.com/efd215/o-leg-press-45-graus.htm)
+  - [PureGym: 45 degree leg press](https://one.puregym.com/exercises/legs/quad-exercises/leg-presses/45-degree-leg-press)
+- Extensión de cuádriceps y curl femoral:
+  - [Body-Solid Pro Select Leg Ext/Curl](https://bodysolid.com/home/GCEC-STK/PRO-Select_Leg_Ext____Leg_Curl_Machine/Technology)
+  - [Body-Solid Powerline](https://bodysolid.com/powerline-leg-curl-extension)
+  - [Power Lift Prone Leg Curl](https://performaxx.com.au/?p=16822)
+  - [ACE: Prone Hamstrings Curl](https://acefitness.org/resources/everyone/exercise-library/131/prone-lying-hamstrings-curl)
+  - [Gravitus: Lying Leg Curl](https://gravitus.com/guides/exercises/lying-leg-curl)
+- Hip thrust:
+  - [Nautilus Glute Drive](https://www.beyondthebasicsfitness.com/products/Nautilus+Glute+Drive/80)
+  - [Hammer Strength Plate Loaded Glute Drive](https://lifefitness.com/en-us/catalog/strength-training/plate-loaded/hammer-strength-plate-loaded-glute-drive)
+  - [Estudio de biomecánica del hip thrust (core.ac.uk)](https://core.ac.uk/download/326444065.pdf)
+  - [Hip thrust frente a puente de glúteo (UCAM)](https://ccd.ucam.edu/visores/19_59/2084_E_CCD/index.html)
+- Gemelos:
+  - [Titan Seated Calf Raise](https://titan.fitness/products/seated-calf-raise-machine)
+  - [Perform Better Seated Calf Raise](https://www.performbetter.com/Signature-Series-Plate-Loaded-Seated-Calf-Raise/)
+  - [Calf raises (Wikipedia)](https://en.wikipedia.org/wiki/Calf_raises)
+- Bíceps y tríceps:
+  - [Hoist HD-3100 Preacher Curl/Triceps Extension](https://hoistfitness.com/products/hd-3100-preacher-curl-triceps-extension)
+  - [TKO Bicep Curl/Tricep Extension](https://thefitnessoutlet.com/products/tko-bicep-curl-tricep-extension)
+- Mancuernas:
+  - [Core 3-Tier Dumbbell Rack](https://www.corehandf.com/products/3-tier-dumbbell-rack)
+  - [Hammer Strength 3-Tier Rack](https://gymequipment.co.uk/hammer-strength-dumbbell-rack-3-tier)
+  - [Gym Gear Classic 3-Tier](https://gymgear.com/products/classic-series-3-tier-dumbbell-rack-without-saddles)
+- Programación del entrenamiento (§15):
+  - [ACSM 2009: Progression models in resistance training for healthy adults (PubMed)](https://pubmed.ncbi.nlm.nih.gov/19204579/)
+  - [Schoenfeld, Ogborn y Krieger 2016: frecuencia e hipertrofia (PubMed)](https://pubmed.ncbi.nlm.nih.gov/27102172/)
+  - [Schoenfeld, Ogborn y Krieger 2017: dosis-respuesta del volumen semanal (core.ac.uk, PDF)](https://core.ac.uk/download/200371264.pdf)
+  - [Ramos-Campo et al. 2024: rutina dividida frente a cuerpo entero (PubMed)](https://pubmed.ncbi.nlm.nih.gov/38595233/)
+  - [Grgic et al. 2017: descansos cortos y largos e hipertrofia (PubMed)](https://pubmed.ncbi.nlm.nih.gov/28641044/)
+  - [Singer et al. 2024: descanso entre series, metaanálisis bayesiano (Frontiers)](https://www.frontiersin.org/articles/10.3389/fspor.2024.1429789/full)
+  - [Zourdos et al. 2016 y Helms et al. 2016: escala RPE por repeticiones en reserva (AUT)](https://openrepository.aut.ac.nz/items/efef3b25-6701-4fb5-bb82-55fcd2a26027/full)
+  - [Bell et al. 2023: descargas, consenso Delphi (Sports Medicine – Open)](https://doi.org/10.1186/s40798-023-00633-0)
+  - [Fradkin, Zazryn y Smoliga 2010: calentamiento y rendimiento (PubMed)](https://pubmed.ncbi.nlm.nih.gov/19996770/)
+  - [Van Hooren y Peake 2018: ¿hace falta la vuelta a la calma? (PMC)](https://pmc.ncbi.nlm.nih.gov/articles/PMC5999142/)
+  - [OMS 2020: directrices de actividad física y comportamiento sedentario](https://www.who.int/publications/i/item/9789240015128)
+  - NSCA, *Essentials of Strength Training and Conditioning* (Haff y Triplett, 4.ª ed., 2016): series, repeticiones y descansos
+    por objetivo (libro, sin enlace).
+- Entrenar en la historia (§16):
+  - [Halteres (Wikipedia)](https://en.wikipedia.org/wiki/Halteres_(ancient_Greece)): de piedra o metal, de 2 a 9 kg; Filóstrato
+    (*Gymnasticus* 55) los recomienda para hombros y manos.
+  - [Milón de Crotona (Wikipedia)](https://en.wikipedia.org/wiki/Milo_of_Croton): el ternero que crece cada día, la imagen clásica
+    de la sobrecarga progresiva (leyenda).
+  - [Gimnasio de la antigua Grecia (Wikipedia)](https://en.wikipedia.org/wiki/Gymnasium_(ancient_Greece)) y [Palestra](https://en.wikipedia.org/wiki/Palaestra);
+    [Termas romanas](https://en.wikipedia.org/wiki/Thermae).
+  - [Historia de la lucha (Wikipedia)](https://en.wikipedia.org/wiki/History_of_wrestling): Beni Hasan (unos 400 pares de luchadores,
+    XI–XII dinastías) y los luchadores sumerios.
+  - [Tahtib (Wikipedia)](https://en.wikipedia.org/wiki/Tahtib): la esgrima de palos en tres tumbas de Beni Hasan; con el arco y la
+    lucha, parte de la instrucción de los soldados.
+  - [Pahlevani y rituales del zurkhaneh (Wikipedia)](https://en.wikipedia.org/wiki/Pahlevani_and_zoorkhaneh_rituals): meel, sang,
+    shena y kabbadeh; Patrimonio Inmaterial de la UNESCO (2010).
+  - [Akhara](https://en.wikipedia.org/wiki/Akhara), [Pehlwani](https://en.wikipedia.org/wiki/Pehlwani),
+    [Mallakhamb](https://en.wikipedia.org/wiki/Mallakhamba) y [Kalaripayattu](https://en.wikipedia.org/wiki/Kalaripayattu) (Wikipedia).
+  - [Furusiyya (Wikipedia)](https://en.wikipedia.org/wiki/Furusiyya).
+  - [Okmeydanı (Wikipedia)](https://en.wikipedia.org/wiki/Okmeydan%C4%B1) y [The Archers' Lodge (İstanbul Tarihi)](https://istanbultarihi.ist/505-the-archers-lodge):
+    el tekke de los arqueros; [Yağlı güreş](https://en.wikipedia.org/wiki/Turkish_oil_wrestling).
+  - [Stone locks y armas pesadas en las artes marciales chinas (Chinese Martial Studies)](https://chinesemartialstudies.com/2014/03/10/through-a-lens-darkly-22-heavy-knives-and-stone-locks-strength-training-in-the-traditional-chinese-martial-arts/):
+    los shisuo, parte de los exámenes militares; [Hojo undō (Wikipedia)](https://en.wikipedia.org/wiki/Hojo_und%C5%8D): ishi sashi y chi ishi.
+  - [Juego de pelota mesoamericano (Wikipedia)](https://en.wikipedia.org/wiki/Mesoamerican_ballgame).
+  - [Unspunnenfest (Wikipedia)](https://en.wikipedia.org/wiki/Unspunnenfest) y [Deportes nacionales suizos](https://en.wikipedia.org/wiki/Swiss_national_sports):
+    la piedra (1805) y el schwingen.
+  - [Turnverein](https://en.wikipedia.org/wiki/Turnverein), [Indian club](https://en.wikipedia.org/wiki/Indian_club),
+    [Kettlebell (girya)](https://en.wikipedia.org/wiki/Kettlebell) y [Georges Hébert](https://en.wikipedia.org/wiki/Georges_H%C3%A9bert) (Wikipedia).
+  - Lo que **no** se ha podido confirmar con fuentes y queda como supuesto: el ciclo de cuatro días (tetrada) de Filóstrato, la
+    fecha exacta de las primeras mazas (mudgar) y del dand y el baithak (se pone 1500), y que la lucha de Uruk ya existiera en el
+    −3500 (las primeras imágenes son de hacia el −2900/−2600).
+- Espacios libres:
+  - [Livestrong: Gym Equipment Placement Standards](https://livestrong.com/article/415103-gym-equipment-placement-standards)
+  - [Achievable (CSCS): facility layout](https://app.achievable.me/study/cscs/learn/facility-design-layout-and-organization)
+  - [ACSM CPT study guide: facility safety](https://open-exam-prep.com/study-guides/acsm-cpt/chapter-10-leadership-instruction/equipment-facility-safety)
+  - [Bodycraft T400: espacios libres ASTM F2115 (PDF)](https://www.bodycraft.com/pdfs/Footprints/t400-dims.pdf)
+
+Las fuentes son fichas técnicas de fabricantes y guías de entrenadores. Ninguna es la norma ACSM ni la ASTM originales
+(son de pago). Las medidas varían según el modelo; aquí se ha elegido un valor intermedio de cada rango.

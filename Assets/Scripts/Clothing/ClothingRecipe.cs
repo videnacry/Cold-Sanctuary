@@ -82,7 +82,7 @@ public class ClothingRecipe : ScriptableObject
 // ── Supporting types ──────────────────────────────────────────────────────────
 
 // Vocabulario ÚNICO de slots de COMPOSICIÓN (ropa + adornos). La ropa usa los primeros; los de apariencia
-// (Hair/Eyebrows/Eyes) los añade la composición (docs/stats-as-truth.md §5, CharacterComposition).
+// (Hair/Eyebrows/Eyes) los añade la composición (docs/sistemas/stats-as-truth.md §5, CharacterComposition).
 public enum ClothingSlot
 {
     Head,

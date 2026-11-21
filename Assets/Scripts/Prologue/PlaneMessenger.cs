@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Mensajes que cruzan entre planos (docs/area-progression.md "Apertura"): p. ej. el **Mesocosmos** avisa al
+/// Mensajes que cruzan entre planos (docs/areas/area-progression.md "Apertura"): p. ej. el **Mesocosmos** avisa al
 /// jugador mientras está en el **Microcosmos** ("cuando termines, ve a la sala de meditación para volver").
 /// Refuerza que se puede **entrar/salir del Microcosmos** (por la `VirtualizationMachine`/`WorldExitPortal`)
 /// incluso en mitad de misión, y mantiene al jugador orientado. Muy simple: cola de avisos con caducidad.

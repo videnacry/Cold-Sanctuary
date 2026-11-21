@@ -11,7 +11,7 @@ public enum DecompositionLevel
 }
 
 /// <summary>
-/// TRABAJO de descomposición (docs/magic-metabolism-progression.md §14): en las cocinas de los santuarios
+/// TRABAJO de descomposición (docs/sistemas/magic-metabolism-progression.md §14): en las cocinas de los santuarios
 /// (solo la de S1 es cocina real; S2..S4 = tienda/laboratorio/planta nuclear) el obrero DESCOMPONE un lote de
 /// materia → **elementos** + **energía** (julios; cada nivel suelta muchísima más: química→nuclear→masa-energía).
 /// Como es un TRABAJO, lo obtenido se REPARTE:

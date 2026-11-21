@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Test de los SENTIDOS/ÓRGANOS (docs/consciousness-mechanics.md §3, testing-checklist §47), por `TestProbe`: la
+/// Test de los SENTIDOS/ÓRGANOS (docs/sistemas/consciousness-mechanics.md §3, testing-checklist §47), por `TestProbe`: la
 /// observación extrae canales de información según los ÓRGANOS del ser. Un ojo capta `Color`; un ojo ciego no; una
 /// lengua sinestésica "saborea la luz" (capta `Color` por el gusto). Determinista (`Perceive` usa órganos + distancia).
 /// </summary>

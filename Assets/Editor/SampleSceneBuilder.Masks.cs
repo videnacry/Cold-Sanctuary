@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// MÁSCARAS Y FONDO ABIERTO DE LOS EDIFICIOS-ÁRBOL (Berón 2026-11-03; docs/mascaras-de-oxigeno.md y docs/edificio-arbol.md §Sin suelo):
+/// MÁSCARAS Y FONDO ABIERTO DE LOS EDIFICIOS-ÁRBOL (Berón 2026-11-03; docs/areas/mascaras-de-oxigeno.md y docs/areas/edificio-arbol.md §Sin suelo):
 /// - En cada puerta (<see cref="DoorFrame"/>): un PERCHERO de máscaras fuera (se coge al entrar al agua) y una ESTACIÓN dentro, en
 ///   el agua junto a la puerta (quien está en el agua sin máscara nada a la más cercana).
 /// - Bajo el tronco, el HUECO en el hielo (el tronco no tiene suelo: se sale nadando al mar y entran los animales marinos), las
@@ -145,7 +145,7 @@ public static partial class SampleSceneBuilder
 
 public static partial class SampleSceneBuilder
 {
-    /// <summary>EL GARAJE DEL SUBMARINO DE OBRA (Berón 2026-11-03; docs/submarino-de-obra.md): el primer piso libre de la torre de
+    /// <summary>EL GARAJE DEL SUBMARINO DE OBRA (Berón 2026-11-03; docs/areas/submarino-de-obra.md): el primer piso libre de la torre de
     /// Producción (la de Construcción) pasa a ser «Garaje de submarinos», con su plaza pintada y el submarino aparcado mirando a la
     /// puerta. Si la torre no tiene piso libre, la plaza va en el piso de Construcción.</summary>
     static void SubmarineGarage(Helix hx)

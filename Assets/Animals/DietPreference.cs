@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 
 /// <summary>
-/// PREFERENCIA DE DIETA (docs/microcosmos-sakshi-origin.md §5, apremios §8) — el "sabor": cuánto APETECE una especie
+/// PREFERENCIA DE DIETA (docs/microcosmos/microcosmos-sakshi-origin.md §5, apremios §8) — el "sabor": cuánto APETECE una especie
 /// de presa a un depredador. Hoy `Forager` solo tenía flags gruesos (`eatsPrey`/`eatsGrass`/`eatsFish`), que dicen QUÉ
 /// TIPO come pero no CUÁL prefiere entre varias presas. La depredación por stats elige por *facilidad + distancia*
 /// (`Forager.SelectPrey`); esto añade el eje de **apetencia por especie** (forrajeo óptimo real: especialistas vs
@@ -34,7 +34,7 @@ public static class DietPreference
     {
         _catalog = new Dictionary<string, Dictionary<string, float>>
         {
-            // Depredadores de tierra del santuario (docs/reglas-animales.md). Sin entrada todo valía 1: lobos y osos se cazaban entre sí y a los
+            // Depredadores de tierra del santuario (docs/reglas/reglas-animales.md). Sin entrada todo valía 1: lobos y osos se cazaban entre sí y a los
             // zorros. El lobo ártico caza buey almizclero y liebre (Mech 2007, Arctic) y reno; el oso polar vive de focas. Que lobo y oso
             // no se coman entre sí ni al zorro es una simplificación [A]: se matan a veces como competidores, no como comida, y aquí cazar
             // es solo para comer. 0 = no es su presa (Forager no la caza viva; su carroña sí se come).
@@ -52,7 +52,7 @@ public static class DietPreference
             { "Ant",     new Dictionary<string, float> { { "Aphid", 0.05f } } },
             { "Cricket", new Dictionary<string, float>() },                                            // omnívoro: neutro
 
-            // Especies de las eras (docs/era-species-behavior.md). La luciérnaga (lucibufaginas) y el ácaro de terciopelo
+            // Especies de las eras (docs/sistemas/era-species-behavior.md). La luciérnaga (lucibufaginas) y el ácaro de terciopelo
             // (aposemático) saben mal: casi nadie los quiere; la cochinilla y el caracol acorazados, poco.
             { "Scorpion",    new Dictionary<string, float> { { "Cricket", 2f }, { "Cockroach", 2f }, { "Termite", 2f }, { "Grasshopper", 1.5f },
                                                              { "Earwig", 1.2f }, { "Woodlouse", 0.6f }, { "Scorpion", 0.4f }, { "Firefly", 0.1f }, { "VelvetMite", 0.1f } } },   // insectívoro; canibalismo ocasional (ADW)

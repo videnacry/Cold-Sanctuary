@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// HUD DECLARATIVO de estado — la mitad de CÓDIGO (docs/consciousness-mechanics.md §UI): vincula PANELES-GameObject
+/// HUD DECLARATIVO de estado — la mitad de CÓDIGO (docs/sistemas/consciousness-mechanics.md §UI): vincula PANELES-GameObject
 /// (uno por elemento) a los datos VIVOS de un `Anima`, aplicando el **color directamente al panel** (su `Renderer`) y
 /// el valor con unidad a un `TextMesh` opcional, vía <see cref="ElementsStatus"/>. Los paneles (prefabs) los provee el
 /// sistema declarativo `FollowingArrays`/`Palette` en Unity — este componente NO los crea; los CONECTA a los datos.

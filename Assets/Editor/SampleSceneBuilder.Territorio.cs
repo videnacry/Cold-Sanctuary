@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// EL TERRITORIO POLAR (Berón 2026-11-05; docs/territorio-polar.md): sobre los casquetes y la isla de tierra de
+/// EL TERRITORIO POLAR (Berón 2026-11-05; docs/areas/territorio-polar.md): sobre los casquetes y la isla de tierra de
 /// <see cref="PolarLandscapeBuilder"/> pone lo que hace rico a un lugar polar real: frentes de barrera (Ross), cuevas de hielo y de roca,
 /// acantilados de aves (Alkefjellet), lomas y charcas de tundra, la colonia del emperador al abrigo de icebergs varados, los bivalvos de la
 /// morsa. Va dentro de <see cref="BuildPolarIce"/>, con los árboles y las áreas ya puestos (para esquivarlos) y antes del NavMesh.
@@ -126,7 +126,7 @@ public static partial class SampleSceneBuilder
     [UnityEditor.MenuItem("Tools/Cold Sanctuary/Cadena alimenticia (evaluar)")]
     static void FoodChainMenu() => FoodChain.Log();
 
-    /// <summary>EL HIELO FIJO (docs/hielo-y-respiraderos.md): láminas tan finas como las placas (`SeaRule.PlateThickness`) unidas a su frente, sobre la laguna, con su grieta de marea y un agujero de
+    /// <summary>EL HIELO FIJO (docs/fauna/hielo-y-respiraderos.md): láminas tan finas como las placas (`SeaRule.PlateThickness`) unidas a su frente, sobre la laguna, con su grieta de marea y un agujero de
     /// verdad para las focas. Son los únicos respiraderos: las placas, que llevan los edificios, son pared para la fauna (P20).</summary>
     static int BuildFastIce(Transform parent, Material thin, Material crack)
     {

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-/// <summary>Compuesto bioquímico de un ser (docs/anima-architecture.md §10.1).</summary>
+/// <summary>Compuesto bioquímico de un ser (docs/sistemas/anima-architecture.md §10.1).</summary>
 public enum Humor { Adrenalina, Serotonina, Cortisol, Glucosa, Calcio }
 
 /// <summary>

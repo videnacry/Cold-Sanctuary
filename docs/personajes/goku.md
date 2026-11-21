@@ -1,29 +1,35 @@
+---
+resumen: "Ficha con la plantilla de README.md. Id en el código: Goku. Revisada: 2026-11-08. Veracidad de cada dato (regla M39, veracidad-frases.md): documentada = lo dijo Berón o lo dice una fuente…"
+temas: [personajes]
+estado: vigente
+codigo: [FamososStoryTest]
+---
 # Goku
 
 > Ficha con la plantilla de [README.md](README.md). Id en el código: `Goku`. Revisada: 2026-11-08.
-> Veracidad de cada dato (regla M39, [veracidad-frases.md](../veracidad-frases.md)): **documentada** = lo dijo Berón o lo dice una fuente
+> Veracidad de cada dato (regla M39, [veracidad-frases.md](../sistemas/veracidad-frases.md)): **documentada** = lo dijo Berón o lo dice una fuente
 > pública citada en el doc; **atestiguada** = se ve en su imagen de referencia; **recreada** = decisión de juego hecha a partir de un dato
 > suyo; **inventada** = la puso el juego o un agente, sin base. **Falta** = no se sabe.
 > **Personaje de ficción** (Dragon Ball, de Akira Toriyama): su microcosmos es un **homenaje original** que no copia escenas, diálogos, lugares, nombres ni técnicas de la obra (J6). Ya no vive en el santuario.
 
 ## 1. Identidad y aspecto
 
-- Pelo negro en grandes puntas; gi naranja con camiseta azul debajo, cinturón y muñequeras azules, botas azules con ribete rojo; fornido. *atestiguada (rasgos públicos) · [CubeHair.cs:174](../../Assets/Scripts/Avatar/CubeHair.cs#L174) · [personajes-mesocosmos.md §Historia: los seis del mesocosmos](../personajes-mesocosmos.md)*
+- Pelo negro en grandes puntas; gi naranja con camiseta azul debajo, cinturón y muñequeras azules, botas azules con ribete rojo; fornido. *atestiguada (rasgos públicos) · [CubeHair.cs:174](../../Assets/Scripts/Avatar/CubeHair.cs#L174) · [personajes-mesocosmos.md §Historia: los seis del mesocosmos](../historia/personajes-mesocosmos.md)*
 - Edad y estatura exacta: no se registran (solo su trabajo público).
 
 ## 2. Origen e historia
 
-- Su microcosmos: un día de entrenamiento sirviendo a una aldea de montaña inventada (China tradicional, estilo 1930). Homenaje, no la obra. *documentada (fuentes citadas) · [microcosmos-famosos.md §Las siete, §Fuentes](../microcosmos-famosos.md)*
+- Su microcosmos: un día de entrenamiento sirviendo a una aldea de montaña inventada (China tradicional, estilo 1930). Homenaje, no la obra. *documentada (fuentes citadas) · [microcosmos-famosos.md §Las siete, §Fuentes](../microcosmos/microcosmos-famosos.md)*
 - Es ficción: no tiene biografía real.
 
 ## 3. Personalidad y frases
 
-- Sus frases son **de juego**, en su voz; no son citas. *recreada · [microcosmos-famosos.md §Cómo se eligió](../microcosmos-famosos.md) · `FamososStoryTest` (grupo 69) comprueba que su ficha dice «homenaje»*
+- Sus frases son **de juego**, en su voz; no son citas. *recreada · [microcosmos-famosos.md §Cómo se eligió](../microcosmos/microcosmos-famosos.md) · `FamososStoryTest` (grupo 69) comprueba que su ficha dice «homenaje»*
 - Carácter: solo lo público; nada más en los docs.
 
 ## 4. Stats, margas y aptitudes
 
-- Fuerza 1,6 · agilidad 1,5 · resistencia 1,6 · masa 1,1. *inventada · [SampleSceneBuilder.Construction.cs:232](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L232) · [personajes-mesocosmos.md §Historia](../personajes-mesocosmos.md)*
+- Fuerza 1,6 · agilidad 1,5 · resistencia 1,6 · masa 1,1. *inventada · [SampleSceneBuilder.Construction.cs:232](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L232) · [personajes-mesocosmos.md §Historia](../historia/personajes-mesocosmos.md)*
 - Aptitudes mentales y margas: **Falta**.
 
 ## 5. Profesión y lo que sabe hacer
@@ -32,11 +38,11 @@
 
 ## 6. Puesto y áreas
 
-- **Ya no tiene puesto** (Berón 2026-11-04: «los personajes famosos … sácalos del mesocosmos y crea sus microcosmos respectivos»; J12). En el santuario hacía: entrenador de artes marciales («Artes marciales con Goku» en el horario libre). Ese papel lo heredó otro ([personajes-mesocosmos.md §Reparto de papeles](../personajes-mesocosmos.md)). *documentada · [personajes-mesocosmos.md §2026-11-04](../personajes-mesocosmos.md)*
+- **Ya no tiene puesto** (Berón 2026-11-04: «los personajes famosos … sácalos del mesocosmos y crea sus microcosmos respectivos»; J12). En el santuario hacía: entrenador de artes marciales («Artes marciales con Goku» en el horario libre). Ese papel lo heredó otro ([personajes-mesocosmos.md §Reparto de papeles](../historia/personajes-mesocosmos.md)). *documentada · [personajes-mesocosmos.md §2026-11-04](../historia/personajes-mesocosmos.md)*
 
 ## 7. Relaciones
 
-- Solo las de su historia: la maestra («ser fuerte es poder ayudar») y el compañero de entrenamiento. *recreada · [microcosmos-famosos.md §Las historias](../microcosmos-famosos.md)*
+- Solo las de su historia: la maestra («ser fuerte es poder ayudar») y el compañero de entrenamiento. *recreada · [microcosmos-famosos.md §Las historias](../microcosmos/microcosmos-famosos.md)*
 - Con el personal del santuario: ninguna.
 
 ## 8. Horario y costumbres
@@ -45,8 +51,8 @@
 
 ## 9. Microcosmos y santuario
 
-- Microcosmos `Microcosmos_Goku` (aldea de la montaña), en el piso de Dojo (entrada también por el Gimnasio mientras el Dojo siga en obras). *documentada · [microcosmos-famosos.md](../microcosmos-famosos.md) · [microcosmos-areas.md](../microcosmos-areas.md)*
-- Su insecto: escarabajo pelotero: el más fuerte por su peso. *recreada · [microcosmos-famosos.md §Las siete](../microcosmos-famosos.md)*
+- Microcosmos `Microcosmos_Goku` (aldea de la montaña), en el piso de Dojo (entrada también por el Gimnasio mientras el Dojo siga en obras). *documentada · [microcosmos-famosos.md](../microcosmos/microcosmos-famosos.md) · [microcosmos-areas.md](../microcosmos/microcosmos-areas.md)*
+- Su insecto: escarabajo pelotero: el más fuerte por su peso. *recreada · [microcosmos-famosos.md §Las siete](../microcosmos/microcosmos-famosos.md)*
 
 ## 10. En el código
 

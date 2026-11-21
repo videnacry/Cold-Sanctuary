@@ -15,7 +15,7 @@ public class DecompSample
 }
 
 /// <summary>
-/// MINIJUEGO DE DESCOMPOSICIÓN (docs/magic-metabolism-progression.md §17). La **jornada** presenta un lote de
+/// MINIJUEGO DE DESCOMPOSICIÓN (docs/sistemas/magic-metabolism-progression.md §17). La **jornada** presenta un lote de
 /// muestras en **TRES FASES** sobre **las mismas muestras y el mismo orden**:
 ///   1) **IDENTIFICAR** — se muestra la muestra con varios nombres alrededor (uno correcto); el jugador
 ///      selecciona el correcto **antes de que se acabe el tiempo**.

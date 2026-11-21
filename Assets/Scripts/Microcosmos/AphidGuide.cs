@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// La MASCOTA-GUÍA de la 1ª misión del Microcosmos (docs/microcosmos-insects.md §4). El pulgón **no quiere
+/// La MASCOTA-GUÍA de la 1ª misión del Microcosmos (docs/microcosmos/microcosmos-insects.md §4). El pulgón **no quiere
 /// dejar a su familia** (a la que la colonia abandonó por débil): **guía** hacia ella (fase 0) y, al llegar,
 /// **rescata** a los <see cref="WeakOne"/> caídos cerca (les inserta un `FollowBrain` hacia el refugio) y
 /// luego encabeza el camino al **refugio/hormiguero** (fase 1). Cierra con `CarryToRefuge` (el nido cuenta

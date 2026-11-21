@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// TEST DEL BLOQUEO DE HUMANOS (docs/microcosmos-civilizaciones.md §3, §5–7). Cada espera, acotada:
+/// TEST DEL BLOQUEO DE HUMANOS (docs/microcosmos/microcosmos-civilizaciones.md §3, §5–7). Cada espera, acotada:
 /// (1) un humano de cubos que pasa por <see cref="InsectOnly.Admit"/> queda con cuerpo de insecto (nada humano visible), a su
 ///     estatura × s (2026-11-18: a la mitad, MicroBuildRules.FolkScale; ±25 cm × s), con su cápsula encogida, cara humana y pelo;
 ///     <see cref="InsectOnly.Release"/> le devuelve su cuerpo y su cápsula;
@@ -70,7 +70,7 @@ public class InsectOnlyTest : MonoBehaviour, ITestUnit
         TestProbe.Check("ya no se ve nada humano", !InsectOnly.IsHuman(g) && !HumanVisible(g));
         CubeInsect ci = g.GetComponent<CubeInsect>();
         TestProbe.Check("es una luciérnaga erguida (insecto-humano de era civilizada)", ci != null && ci.species == "Firefly" && ci.folk);
-        // (2026-11-18) A LA MITAD (MicroBuildRules.FolkScale, docs/plan-microcosmos-realismo.md §3.1): su estatura × s, y su cuerpo físico
+        // (2026-11-18) A LA MITAD (MicroBuildRules.FolkScale, docs/microcosmos/plan-microcosmos-realismo.md §3.1): su estatura × s, y su cuerpo físico
         // también (la cápsula, con los pies donde estaban).
         float s = MicroBuildRules.FolkScale;
         TestProbe.Near($"a su estatura × s ({1.75f * s:0.00} m ± {0.25f * s:0.00})", InsectHeight(g), 1.75f * s, 0.25f * s);

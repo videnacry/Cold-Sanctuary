@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// TOMAS PROGRAMADAS de un recinto de la Cría (docs/cria-simulation.md): en un centro de rescate las crías huérfanas
+/// TOMAS PROGRAMADAS de un recinto de la Cría (docs/areas/cria-simulation.md): en un centro de rescate las crías huérfanas
 /// comen a horas fijas (biberón, papilla de pescado), las dé el jugador o el equipo de cuidadores. Cada
 /// <see cref="interval"/> segundos, a cada cría del recinto que tenga hambre (<c>hungry ≥ 0</c>) le da una toma
 /// (la deja saciada una comida). Así las crías no tienen que cazar ni pescar dentro del recinto, y no mueren de hambre

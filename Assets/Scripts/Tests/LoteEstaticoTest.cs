@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DEL LOTE ESTÁTICO (docs/rendimiento.md):
+/// PRUEBA DEL LOTE ESTÁTICO (docs/plataforma/rendimiento.md):
 /// 1. al cargar, las piezas quietas están en lotes, con su GameObject, su collider y su MeshRenderer encendido (solo
 ///    forceRenderingOff): se siguen encontrando por nombre;
 /// 2. el lote cubre de verdad a la pieza (su malla la contiene);

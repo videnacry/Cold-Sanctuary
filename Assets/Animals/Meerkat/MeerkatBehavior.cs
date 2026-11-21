@@ -7,7 +7,7 @@ public class MeerkatBehavior : Animal
     // Suricata (Suricata suricatta): sabana/semiárido africano. Cría COOPERATIVA con base (madriguera),
     // CENTINELAS que solo vigilan (percepción máxima = el rol de OBSERVACIÓN), enseñan a las crías a manejar
     // presas peligrosas/veneno. Insectívora. EN ESTE JUEGO se usa además como SKIN a escala insecto (render de
-    // la máquina de avatares sobre la tribu de hormigas; ver docs/microcosmos-eras-and-observation.md §1b).
+    // la máquina de avatares sobre la tribu de hormigas; ver docs/microcosmos/microcosmos-eras-and-observation.md §1b).
 
     void Start() => base.Init();
 

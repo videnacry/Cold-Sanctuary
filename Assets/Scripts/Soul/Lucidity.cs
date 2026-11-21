@@ -10,7 +10,7 @@ using UnityEngine;
 /// Con histéresis, para no parpadear entre los dos. Larvas, pupas y dormidos nunca están lúcidos (no tienen postura
 /// erguida). El cuerpo de cubos lee <see cref="Lucid"/> y <see cref="LegsOnGround"/> para la postura (eso lo dibuja
 /// `CubeInsect`). Auto-añadido en `Animal.Init` a los artrópodos, junto con la inteligencia humana
-/// (<see cref="GiveHumanIntellect"/>). Ver docs/insect-biology-audit.md.
+/// (<see cref="GiveHumanIntellect"/>). Ver docs/fauna/insect-biology-audit.md.
 /// </summary>
 [RequireComponent(typeof(Animal))]
 public class Lucidity : MonoBehaviour
@@ -90,7 +90,7 @@ public class Lucidity : MonoBehaviour
         {
             case "Ant": case "Aphid": case "Ladybug": case "Spider": case "SnowSpider": case "Cricket": case "Termite":
             case "DungBeetle": case "Grasshopper": case "Antlion": case "Mantis": case "SnowBee":
-            // Especies de las eras (docs/era-species-behavior.md)
+            // Especies de las eras (docs/sistemas/era-species-behavior.md)
             case "Scorpion": case "CamelSpider": case "VelvetMite": case "Woodlouse": case "GhostCrab":
             case "Cicada": case "Firefly": case "Earwig": case "Cockroach": case "Scorpionfly":
                 return true;

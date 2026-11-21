@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// METABOLISMO BASAL (BMR) — el coste de "solo estar vivo" (docs/apremios-guardian-observacion.md §3.1). Escala con la
+/// METABOLISMO BASAL (BMR) — el coste de "solo estar vivo" (docs/sistemas/apremios-guardian-observacion.md §3.1). Escala con la
 /// **masa** por la **ley de Kleiber** (`BMR ∝ masa^0.75`): un cuerpo grande gasta más en absoluto, menos por gramo. Drena
 /// ATP (`CharacterLevel`) con el tiempo (escalado por la velocidad del juego); lo repone comer (`Metabolism`). Es la línea
 /// base del presupuesto energético (TEE = BMR + actividad[`Exertion`] + termorregulación[medio]). Opt-in y graceful

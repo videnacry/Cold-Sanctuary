@@ -3,7 +3,7 @@ using UnityEngine;
 
 /// <summary>
 /// Volumen de un medio (normalmente agua). Al entrar/salir, fija el `currentMedium` de cualquier
-/// Anima que lo atraviese, alimentando el multiplicador de medio (ver docs/creature-stats.md
+/// Anima que lo atraviese, alimentando el multiplicador de medio (ver docs/sistemas/creature-stats.md
 /// §Modificadores de medio). Es el equivalente generalizado del WaterZone del jugador, pero para
 /// todas las criaturas. Requiere un Collider marcado como trigger.
 /// </summary>

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// CLEOPATRA Y LOS AÑOS SIN CRECIDA (docs/microcosmos-historias-3.md). Alejandría, verano del 42 a. C.: el Nilo lleva dos años sin crecer y una
+/// CLEOPATRA Y LOS AÑOS SIN CRECIDA (docs/microcosmos/microcosmos-historias-3.md). Alejandría, verano del 42 a. C.: el Nilo lleva dos años sin crecer y una
 /// reina que habla la lengua de cada uno de sus pueblos tiene que dar de comer a la mayor ciudad del Mediterráneo. La historia va de gobernar,
 /// no de los romanos ni de su muerte (una línea de la ficha). Las frases son de juego; los hechos, de Plutarco, Séneca, Plinio y Roller (2010).
 /// </summary>

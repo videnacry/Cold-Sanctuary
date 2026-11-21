@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// UNA TAREA DE LA LISTA «TAREAS» (portado de CodeShip, src/modules/tasks/application/task-list.ts; docs/plan-microcosmos-realismo.md §4.1):
+/// UNA TAREA DE LA LISTA «TAREAS» (portado de CodeShip, src/modules/tasks/application/task-list.ts; docs/microcosmos/plan-microcosmos-realismo.md §4.1):
 /// qué hay que hacer, dónde, a qué distancia y cuánto lleva, con «Ir» si tiene sitio. Datos puros: <see cref="TaskOrdering"/> los ordena y
 /// <see cref="TaskSources"/> los saca de la escena.
 /// </summary>

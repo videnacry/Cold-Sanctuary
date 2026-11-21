@@ -3,7 +3,7 @@ using UnityEngine;
 
 /// <summary>
 /// DESHIERBE CON CUIDADO (Berón 2026-11-05: «el deshierbe se podría realizar con cuidado? podrían servir para poblar áreas del mundo?»;
-/// docs/deshierbe-cuidadoso.md). Las malas hierbas de los bancales son plantas de verdad (<see cref="GardenWeed"/>). Se levantan con su cepellón, vivas.
+/// docs/areas/deshierbe-cuidadoso.md). Las malas hierbas de los bancales son plantas de verdad (<see cref="GardenWeed"/>). Se levantan con su cepellón, vivas.
 ///   · NATIVAS de la tundra: al vivero húmedo y, en la misión de trasplante, a la isla de tierra. Sobreviven según su ficha, y las supervivientes
 ///     dan comida como cualquier otra planta de la tundra.
 ///   · NO NATIVAS: raíz y tierra en bolsa cerrada y al INCINERADOR del huerto, nunca al suelo ni al compost (Berón: «hazlo real»: es lo que se hace en la Antártida). Es la regla que protege a los sitios polares (Tratado Antártico, Anexo II,

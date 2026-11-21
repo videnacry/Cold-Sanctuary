@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Unidad de test de la INANICIÓN (docs/testing-checklist.md §40), por `TestProbe`, determinista y NO destructiva:
+/// Unidad de test de la INANICIÓN (docs/qa/testing-checklist.md §40), por `TestProbe`, determinista y NO destructiva:
 /// fuerza un tick de inanición sin grasa → la masa baja (el cuerpo se consume → debilita) y el hambre prolongada
 /// **enferma** (dispara `SicknessState`). Restaura hambre/grasa/masa/salud en el mismo bloque → sin efecto en la sim.
 /// </summary>

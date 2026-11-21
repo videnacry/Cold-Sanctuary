@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DE LAS MÁSCARAS, LAS PUERTAS GRANDES Y EL FONDO ABIERTO de los edificios-árbol (Berón 2026-11-03; docs/mascaras-de-oxigeno.md):
+/// PRUEBA DE LAS MÁSCARAS, LAS PUERTAS GRANDES Y EL FONDO ABIERTO de los edificios-árbol (Berón 2026-11-03; docs/areas/mascaras-de-oxigeno.md):
 /// 1. PUESTOS: en cada puerta de cada árbol, un perchero de máscaras fuera y una estación dentro del agua.
 /// 2. PUERTAS Y RAMAS CUADRADAS para 8 personas a la vez: 8 cuerpos (cápsula de 0,35 m) caben en fila por la puerta del suelo.
 /// 3. SIN SUELO: bajo el tronco no hay nada sólido (se baja nadando al mar), el agua sigue y el hueco no se anda (NavMesh).
@@ -295,7 +295,7 @@ public class TreeMaskTest : MonoBehaviour, ITestUnit
 #endif
 }
 
-/// <summary>La escena de prueba Prueba_Mascaras (Assets/Scenes/Pruebas; docs/escenas-de-prueba.md): el Árbol de los Campos solo, con
+/// <summary>La escena de prueba Prueba_Mascaras (Assets/Scenes/Pruebas; docs/qa/escenas-de-prueba.md): el Árbol de los Campos solo, con
 /// KUSHAL EMPEZANDO BAJO EL AGUA DEL TRONCO SIN MÁSCARA. Nada a la estación más cercana, se la pone y tiene oxígeno ilimitado.
 /// Solo corre en esa escena (en SampleScene lo hace la 7.ª parte de <see cref="TreeMaskTest"/>).</summary>
 public class KushalMaskSceneTest : MonoBehaviour, ITestUnit

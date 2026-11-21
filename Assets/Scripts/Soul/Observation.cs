@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// OBSERVACIÓN / ECUANIMIDAD (docs/apremios-guardian-observacion.md §4) — la libertad frente al apremio. NO baja el
+/// OBSERVACIÓN / ECUANIMIDAD (docs/sistemas/apremios-guardian-observacion.md §4) — la libertad frente al apremio. NO baja el
 /// apremio (el hambre sigue empujando a comer); **amortigua el SUFRIMIENTO** que el Guardián (MoodDynamics) convierte en
 /// estrés. Nivel [0,1] que sale de: temple (composure) + razón + disciplina POR ENCIMA de la media, + la habilidad
 /// entrenada (<see cref="ObservationSkill"/>, sube mirando) + un impulso pasivo (ojos, <see cref="ObserveSpell"/>).

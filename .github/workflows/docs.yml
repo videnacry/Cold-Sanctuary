@@ -1,0 +1,21 @@
+name: Docs al día
+
+# Cada doc de docs/ lleva cabecera (resumen/temas/estado), ningún enlace relativo está roto
+# y docs/README.md (el índice) está regenerado. Ver tools/docs.py.
+on:
+  pull_request:
+    paths: ["docs/**", "CLAUDE.md", "CHANGELOG.md", "DEVLOG.md", "tools/docs.py"]
+  push:
+    branches: [master]
+    paths: ["docs/**", "CLAUDE.md", "CHANGELOG.md", "DEVLOG.md", "tools/docs.py"]
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Comprobar docs
+        run: python3 tools/docs.py check

@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// EQUILIBRIO DE ESPECIES (docs/ice-sanctuary-ecology.md; docs/reglas-animales.md §Fauna por humanos): es un SANTUARIO de animales, no una ciudad, así
+/// EQUILIBRIO DE ESPECIES (docs/fauna/ice-sanctuary-ecology.md; docs/reglas/reglas-animales.md §Fauna por humanos): es un SANTUARIO de animales, no una ciudad, así
 /// que la fauna se dimensiona con los HUMANOS que viven en él. (Berón 2026-11-09) El total de animales de un santuario = K × sus humanos
 /// (<see cref="AnimalsPerHuman"/>), repartido por la pirámide trófica (<see cref="LevelShare"/>: muchas más presas y herbívoros que depredadores) y,
 /// dentro de cada nivel, por el peso de cada especie (<see cref="PerHuman"/>). Cada especie tiene su mínimo viable (2; el zorro ártico 4). La
@@ -17,7 +17,7 @@ public static class PopulationPlan
     {
         { "Bear", 0.3f }, { "PolarBear", 0.3f }, { "Penguin", 1.2f }, { "Seal", 0.6f }, { "Whale", 0.2f }, { "Orca", 0.1f },
         { "Fox", 0.2f }, { "Wolf", 0.3f },
-        // Territorio polar (docs/reglas-animales.md): en la isla, más herbívoros que depredadores.
+        // Territorio polar (docs/reglas/reglas-animales.md): en la isla, más herbívoros que depredadores.
         { "SnowPetrel", 0.55f }, { "ArcticTern", 0.2f }, { "WanderingAlbatross", 0.2f }, { "CapePetrel", 0.2f }, { "PolarSkua", 0.2f }, { "Walrus", 0.3f }, { "EmperorPenguin", 0.8f }, { "Reindeer", 0.6f }, { "MuskOx", 0.3f }, { "ArcticHare", 0.5f }, { "ArcticFox", 0.2f },
     };
 
@@ -46,7 +46,7 @@ public static class PopulationPlan
 
     // ── LA FAUNA POR HUMANOS (Berón 2026-11-09) ─────────────────────────────────────────────────────────────────────────────────────
     /// <summary>K: ANIMALES POR HUMANO. El total de animales de un santuario = K × los humanos que viven en él. Por defecto 3; Berón puede subirlo a 4 o 5.
-    /// Memoria: con 3 y 27 humanos, 81 animales en el santuario 1 (hoy viven ~86; docs/hielo-y-respiraderos.md).</summary>
+    /// Memoria: con 3 y 27 humanos, 81 animales en el santuario 1 (hoy viven ~86; docs/fauna/hielo-y-respiraderos.md).</summary>
     public static int AnimalsPerHuman = 3;
 
     /// <summary>Los niveles tróficos: presas y herbívoros, mesodepredadores y depredadores ápice.</summary>
@@ -54,7 +54,7 @@ public static class PopulationPlan
 
     /// <summary>LA PIRÁMIDE, en número de individuos: 70 % presas y herbívoros, 22 % mesodepredadores, 8 % ápice (~9 presas por depredador ápice). Sale de la
     /// eficiencia de ~10 % entre niveles (Lindeman 1942; Pauly y Christensen 1995) y de la densidad de los carnívoros (Carbone y Gittleman 2002: 10 000 kg de
-    /// presa sostienen ~90 kg de una especie carnívora), pasada a individuos con presas más pequeñas que sus cazadores. Cuentas: docs/reglas-animales.md.</summary>
+    /// presa sostienen ~90 kg de una especie carnívora), pasada a individuos con presas más pequeñas que sus cazadores. Cuentas: docs/reglas/reglas-animales.md.</summary>
     public static readonly Dictionary<Trophic, float> LevelShare = new Dictionary<Trophic, float> { { Trophic.Prey, 0.70f }, { Trophic.Meso, 0.22f }, { Trophic.Apex, 0.08f } };
 
     /// <summary>El nivel de cada especie (lo que no está aquí cuenta como mesodepredador).</summary>

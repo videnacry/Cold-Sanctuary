@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// TRANSPORTE EN ALFOMBRAS VOLADORAS (docs/alfombras-plan.md, Berón 2026-10-27): sin escaleras (salvo las plataformas
+/// TRANSPORTE EN ALFOMBRAS VOLADORAS (docs/areas/alfombras-plan.md, Berón 2026-10-27): sin escaleras (salvo las plataformas
 /// hijas), sin bordes ni puentes. Cada EDIFICIO tiene:
 /// - en cada piso (y en el suelo de hielo, a su pie) un ÁREA DE ALFOMBRAS DE EDIFICIO, que lleva a sus otros pisos;
 /// - encima de su piso más alto, un PISO DE ALFOMBRAS (techo) con dos áreas: las de edificio y las del SANTUARIO, que

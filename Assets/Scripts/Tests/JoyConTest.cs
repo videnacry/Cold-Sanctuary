@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DE LOS MANDOS TÁCTILES TIPO SWITCH Y EL GRIMORIO (grupo 141; (PB-169) medidas del santuario 1 de CodeShip y ocultarse con los modales; docs/mandos-tactiles.md, Berón 2026-11-19: «recrear los mandos de la Nintendo
+/// PRUEBA DE LOS MANDOS TÁCTILES TIPO SWITCH Y EL GRIMORIO (grupo 141; (PB-169) medidas del santuario 1 de CodeShip y ocultarse con los modales; docs/sistemas/mandos-tactiles.md, Berón 2026-11-19: «recrear los mandos de la Nintendo
 /// Switch sobre la pantalla… para mobile»). Lógica pura (no carga escenas ni mueve a nadie), va en la lista rápida:
 ///  · el mando tiene los 16 botones de un par de Joy-Con, 8 por lado, cada uno con su tecla y su nombre;
 ///  · la asignación es la de CodeShip (A Saltar, B Correr, + Misiones, − Áreas, captura Vista, inicio Menú);

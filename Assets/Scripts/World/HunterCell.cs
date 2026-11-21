@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LAS NORMAS Y EL CICLO DEL ÁRBOL CAZADOR (Berón 2026-11-05; docs/contencion-arbol-cazador.md, regla S16). Vive en el Santuario Marino, con sus abejas y arañas: «se supone que el árbol
+/// LAS NORMAS Y EL CICLO DEL ÁRBOL CAZADOR (Berón 2026-11-05; docs/areas/contencion-arbol-cazador.md, regla S16). Vive en el Santuario Marino, con sus abejas y arañas: «se supone que el árbol
 /// se está diseñando para ser autosustentable y require de las abejas y arañas». Las normas vienen de la contención de plantas (BL3-P) y del manejo de animales peligrosos (siempre una
 /// barrera, doble puerta, simulacros, código de escape). La barrera final es el agua: de la sala al mar solo se sale por una esclusa inundada, y un enjambre no cruza el agua.
 /// </summary>
@@ -30,7 +30,7 @@ public static class HunterRule
 }
 
 /// <summary>
-/// EL CICLO DE LA CELDA, un día cada vez y sin escena (docs/ice-sanctuary-ecology.md §2; docs/contencion-arbol-cazador.md §El balance). El árbol vive de agua, frío y luz. Sus nutrientes
+/// EL CICLO DE LA CELDA, un día cada vez y sin escena (docs/fauna/ice-sanctuary-ecology.md §2; docs/areas/contencion-arbol-cazador.md §El balance). El árbol vive de agua, frío y luz. Sus nutrientes
 /// salen sobre todo de los **cadáveres de sus propios insectos** (Berón): las abejas hacen los nidos con ellos y el árbol absorbe de los nidos. Más nutrientes → más ramas → más nidos.
 // Se cuenta en kg de nitrógeno. Los insectos no crean nada: lo hacen circular y pierden un poco en cada vuelta. Lo nuevo entra por su SIMBIONTE, el microbio psicrófilo del diseño (Berón: «agrega
 /// dicho microbio»), que fija el N₂ del aire de la sala en sus raíces, como el Frankia de los alisos.

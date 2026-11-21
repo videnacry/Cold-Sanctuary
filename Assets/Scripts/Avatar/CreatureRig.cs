@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Mapa CENTRAL de un ser (docs/stats-as-truth.md §Composición): **parte lógica → hueso (`Transform`)**, para
+/// Mapa CENTRAL de un ser (docs/sistemas/stats-as-truth.md §Composición): **parte lógica → hueso (`Transform`)**, para
 /// que cualquier sistema (yoga/emoción/posesión/combate/emotes) mueva "el cuello" o "la antena L" **sin saber
 /// qué modelo es**. Para **humanoides** se auto-rellena desde el Avatar estándar de Unity
 /// (`Animator.GetBoneTransform(HumanBodyBones…)`); para **insectos/quimeras** (rig Generic) se asigna a mano.

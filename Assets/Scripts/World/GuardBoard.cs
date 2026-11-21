@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// TABLERO DE GUARDIA (en la sala de guardia, docs/sala-de-guardia.md): lista las misiones de vigía y resume las pantallas. «Patrullar» ya se juega: recorrer los
+/// TABLERO DE GUARDIA (en la sala de guardia, docs/areas/sala-de-guardia.md): lista las misiones de vigía y resume las pantallas. «Patrullar» ya se juega: recorrer los
 /// puestos de vigía del santuario (marcados con un poste y farol) con un indicador de dirección. Las demás se listan con
 /// lo que piden; la Magnate ya hace de oficio «enseñar al rezagado».
 /// </summary>

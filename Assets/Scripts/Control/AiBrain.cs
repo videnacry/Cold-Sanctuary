@@ -2,7 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// El cerebro por defecto de un ser: su propia IA. Su relevancia = cuánto se "pertenece" a sí mismo; se
-/// puede subir para seres poderosos, de modo que RESISTAN más la posesión (docs/anima-architecture.md
+/// puede subir para seres poderosos, de modo que RESISTAN más la posesión (docs/sistemas/anima-architecture.md
 /// §11.5: "para dominar a alguien, la relevancia debe superar la del ser"). En este MVP no mueve nada por
 /// sí solo — el pilar `Mind` ya piensa y la locomoción autónoma vive en `WorldCharacter`/rutina; aquí
 /// queda el hueco para engancharla cuando se unifique el movimiento IA.
@@ -19,7 +19,7 @@ public class AiBrain : MonoBehaviour, IBrain
     [Tooltip("Distancia a la que se considera 'llegado' y deja de andar.")]
     [Min(0.05f)] public float arriveRadius = 0.5f;
 
-    [Tooltip("Usa el motor de VOLICIÓN (deseos por necesidad, docs/volition-selection-engine.md) en vez de la prioridad " +
+    [Tooltip("Usa el motor de VOLICIÓN (deseos por necesidad, docs/sistemas/volition-selection-engine.md) en vez de la prioridad " +
              "FIJA de ActiveBehaveTick. **ACTIVADO** (2026-08-28, D3b2): la volición conduce (paridad comer+amenaza + " +
              "deseo 'mate' en celo). ActiveBehaveTick queda de fallback si se pone en false.")]
     public bool useVolition = true;

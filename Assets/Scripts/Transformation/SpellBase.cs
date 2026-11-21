@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Cómo responde un hechizo a MANTENER pulsada su tecla (docs/stats-as-truth.md §hechizos). No es una sola
+/// Cómo responde un hechizo a MANTENER pulsada su tecla (docs/sistemas/stats-as-truth.md §hechizos). No es una sola
 /// conducta pegada a la base: cada hechizo elige su modo.
 ///   • <b>Instant</b> — un disparo por pulsación (mantener no hace nada).
 ///   • <b>Repeat</b>  — RELANZA cada `repeatCooldown` mientras se mantiene (p.ej. fireball: sale una tras otra).
@@ -13,7 +13,7 @@ public enum CastMode { Instant, Repeat, Channel }
 
 /// <summary>
 /// Cómo se desarrolla el EFECTO de un hechizo EN EL TIEMPO una vez disparado (ORTOGONAL a <see cref="CastMode"/>, que es
-/// sobre el INPUT). docs/apremios-guardian-observacion.md / stats-as-truth §hechizos:
+/// sobre el INPUT). docs/sistemas/apremios-guardian-observacion.md / stats-as-truth §hechizos:
 ///   • <b>Instant</b>   — el efecto ocurre UNA VEZ (curar, un empujón puntual).
 ///   • <b>Sustained</b> — el efecto se MANTIENE de forma continua mientras dura (`duration`) o mientras se sostiene (Jalar).
 ///   • <b>Periodic</b>  — el efecto se REPRODUCE a intervalos (`tickInterval`) durante `duration` (debilitamiento, veneno,
@@ -22,7 +22,7 @@ public enum CastMode { Instant, Repeat, Channel }
 public enum EffectTiming { Instant, Sustained, Periodic }
 
 /// <summary>
-/// Base abstracta para todos los hechizos del juego (docs/stats-as-truth.md §hechizos).
+/// Base abstracta para todos los hechizos del juego (docs/sistemas/stats-as-truth.md §hechizos).
 ///
 /// Un hechizo tiene tres parámetros universales:
 ///   • <see cref="range"/>    — alcance máximo (0 = tacto; el caster debe estar junto al target).
@@ -69,7 +69,7 @@ public abstract class SpellBase : MonoBehaviour
 
     float _repeatTimer;
 
-    [Header("Subproducto / rastro (opt-in — docs/environmental-navigation.md §4.2)")]
+    [Header("Subproducto / rastro (opt-in — docs/sistemas/environmental-navigation.md §4.2)")]
     [Tooltip("Si el hechizo deja un RASTRO (feromona) al ACTUAR. Default OFF → los hechizos actuales no cambian. " +
              "Todo hechizo puede tener subproducto: enfermar/defecar/marcar/estar-en-celo son hechizos que sueltan su canal.")]
     public bool leavesByproduct = false;

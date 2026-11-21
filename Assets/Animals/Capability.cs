@@ -1,7 +1,7 @@
 /// <summary>
 /// Claves de CAPACIDAD/hechizo para la confianza-por-uso (<see cref="Anima.spellConfidence"/> / `RecordUse`).
 /// Hoy son claves GRUESAS (combate); a futuro se afinan a hechizos concretos (Morder/Arañar/Ver…) cuando exista el
-/// repertorio como tal. Centralizar aquí evita magic-strings dispersas. Ver docs/capabilities-and-embodiment.md §4.
+/// repertorio como tal. Centralizar aquí evita magic-strings dispersas. Ver docs/sistemas/capabilities-and-embodiment.md §4.
 /// </summary>
 public static class Capability
 {

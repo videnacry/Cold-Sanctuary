@@ -1,3 +1,8 @@
+---
+resumen: "Las reglas del PC, de Unity, de las ramas y de las cadenas del probador. Salen de lo vivido (qa-propuesta.md §7). Cada una es un caso del área OP en casos.md, con estado No aplica en el…"
+temas: [pruebas, unity]
+estado: vigente
+---
 # Reglas operativas (OP)
 
 Las reglas del PC, de Unity, de las ramas y de las cadenas del probador. Salen de lo vivido (qa-propuesta.md §7). Cada una es un caso

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 /// <summary>
-/// LOS DOS MARES (Berón 2026-11-05: separar el santuario en dos; docs/sitio-nuclear.md §20). El santuario 1 es la plataforma somera: 16 m de agua y placas finas. Lo hondo está en el
+/// LOS DOS MARES (Berón 2026-11-05: separar el santuario en dos; docs/areas/sitio-nuclear.md §20). El santuario 1 es la plataforma somera: 16 m de agua y placas finas. Lo hondo está en el
 /// Santuario Marino (otra escena): 500 m, la media real del mar de Ross, y solo se llega por la línea. A nado no se pasa del fondo somero.
 /// </summary>
 public static class SeaRule

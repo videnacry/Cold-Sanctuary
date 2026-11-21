@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// EL CICLO DE VIDA DE UNA PERSONA (docs/ciclo-de-vida.md §Humanos; Berón 2026-11-02: «el ciclo de vida de los humanos y de los
+/// EL CICLO DE VIDA DE UNA PERSONA (docs/sistemas/ciclo-de-vida.md §Humanos; Berón 2026-11-02: «el ciclo de vida de los humanos y de los
 /// insectos-humanos es el mismo»). Una sola pieza para un humano del santuario y para un insecto-humano de una era civilizada,
 /// sobre los componentes del cuerpo que ya existían:
 ///   · NECESIDADES: <see cref="BodyMetabolism"/> (hambre, sueño, baño, suciedad) y <see cref="NeedsDriver"/> (las pide); quien

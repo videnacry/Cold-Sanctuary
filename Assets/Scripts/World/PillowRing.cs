@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 /// <summary>
 /// RING DE ALMOHADAS de la arboleda residencial (Berón 2026-11-04: «se deben crear guerras de almohadas en un ring que se debe crear en
 /// la residencia, el ring debe ser creado con la regla para que tenga las dimensiones necesarias para que se enfrenten todos los
-/// residentes del santuario y debe estar lleno de almohadas y la base es una cama colosal»; docs/guerra-de-almohadas.md).
+/// residentes del santuario y debe estar lleno de almohadas y la base es una cama colosal»; docs/areas/guerra-de-almohadas.md).
 ///
 /// LA REGLA DEL TAMAÑO (manual J15): cada luchador necesita una CELDA de <see cref="CellSize"/> × <see cref="CellSize"/> m. Un brazo
 /// mide ~0,7 m y una almohada ~0,6: cada uno barre ~1,3 m a su alrededor, y dos que se pegan almohadazos de frente quedan a ~2,5 m

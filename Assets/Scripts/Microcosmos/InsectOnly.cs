@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// EL BLOQUEO DE HUMANOS (docs/microcosmos-civilizaciones.md §3; Berón 2026-11-01: «en el microcosmos todos los personajes
+/// EL BLOQUEO DE HUMANOS (docs/microcosmos/microcosmos-civilizaciones.md §3; Berón 2026-11-01: «en el microcosmos todos los personajes
 /// son insectos, debería haber un bloqueo para evitar meter humanos»). ÚNICO guardián: en un microcosmos solo hay cuerpos
 /// de insecto. Quien entra con cuerpo humano (el de cubos, <see cref="CubeHumanoid"/>, o un .fbx humanoide) se CONVIERTE en
 /// su insecto (<see cref="InsectCast"/>, a su estatura, con cara humana y pelo: <see cref="CubeInsect.DressFolk"/>); si no se
@@ -51,7 +51,7 @@ public static class InsectOnly
             float h = form.HideHuman();
             Transform body = go.transform.Find(CubeHumanoid.BodyName);
             string sp = InsectCast.SpeciesFor(go.CompareTag("Player") ? "player" : go.name);
-            // (2026-11-18) A LA MITAD, como todos los insectos-humanos (MicroBuildRules.FolkScale, docs/plan-microcosmos-realismo.md §3.1):
+            // (2026-11-18) A LA MITAD, como todos los insectos-humanos (MicroBuildRules.FolkScale, docs/microcosmos/plan-microcosmos-realismo.md §3.1):
             // el cuerpo de cubos y el físico (cápsula, controlador, agente, velocidad y cámara; InsectForm.Shrink, que Release devuelve).
             CubeInsect ci = CubeInsect.DressFolk(go, sp, MicroBuildRules.Stature(h), go.CompareTag("Player") ? "Kushal" : go.name);
             Transform root = go.transform.Find("Insecto");

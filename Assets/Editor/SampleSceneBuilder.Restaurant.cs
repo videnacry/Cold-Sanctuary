@@ -4,7 +4,7 @@ using UnityEngine;
 /// <summary>
 /// RESTAURANTE GOURMET y ESTUDIO TEXTIL (partes del constructor de la escena).
 ///  · La cocina ocupa TODA la planta (SampleSceneBuilder.KitchenPlan): suelo de pizarra oscura y el pase con su riel de
-///    comandas y hierbas frescas. El COMEDOR va arriba, en un ANILLO de 10 m a caballo del borde (docs/restaurant-plan.md):
+///    comandas y hierbas frescas. El COMEDOR va arriba, en un ANILLO de 10 m a caballo del borde (docs/areas/restaurant-plan.md):
 ///    mesas con mantel blanco, bajoplato, copas, cubiertos, vela y flor; sillas tapizadas; caja, barra de sushi, cafetera,
 ///    aseos, pared de vinos y plantas; se sube en alfombra, sin escaleras (su área de alfombras, en el lado +Z del anillo).
 ///  · ESTUDIO TEXTIL (el área de Irosene): telar de pie con su urdimbre, telar de cintura andino, rueca, ovillos de lana
@@ -35,7 +35,7 @@ public static partial class SampleSceneBuilder
         }
     }
 
-    // ── Comedor en ANILLO sobre la cocina (docs/restaurant-plan.md §3–5) ─────────────────────────
+    // ── Comedor en ANILLO sobre la cocina (docs/areas/restaurant-plan.md §3–5) ─────────────────────────
 
     static void BuildGourmetDining(Transform parent)
     {

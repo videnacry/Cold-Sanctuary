@@ -47,7 +47,7 @@ public class Physiognomy
             // Fauna de hielo (escala placeholder; el compañero la ajusta al mesh real — ver Measure Raw Animal Sizes)
             { "Penguin",  new Physiognomy(new Vector3(0.5f, 0.5f, 0.5f),       4.5f, 0.06f, 0.3f, 0.1f) },   // pingüino de Adelia (el emperador es EmperorPenguin)
             { "Orca",     new Physiognomy(new Vector3(2.5f, 2.5f, 2.5f),     4000f, 0.04f, 0.3f, 0.12f) },
-            // Territorio polar: cuerpo de cubos a tamaño real (escala 1); masa de la ficha (docs/reglas-animales.md).
+            // Territorio polar: cuerpo de cubos a tamaño real (escala 1); masa de la ficha (docs/reglas/reglas-animales.md).
             { "Walrus",   new Physiognomy(Vector3.one, 1000f, 0.03f, 0.08f, 0.01f) },   // ~25 kg/día
             { "EmperorPenguin", new Physiognomy(Vector3.one, 30f, 0.06f, 0.3f, 0.1f) },
             { "Reindeer", new Physiognomy(Vector3.one, 140f, 0.07f, 0.25f, 0.1f) },
@@ -73,10 +73,10 @@ public class Physiognomy
             { "Grasshopper", new Physiognomy(new Vector3(0.006f, 0.004f, 0.007f), 0.003f, 0.10f, 0.20f, 0.05f) },
             { "Meerkat",     new Physiognomy(new Vector3(0.006f, 0.008f, 0.010f), 0.004f, 0.12f, 0.20f, 0.06f) },
             { "SnowBee",     new Physiognomy(new Vector3(0.004f, 0.003f, 0.004f), 0.001f, 0.08f, 0.12f, 0.04f) },
-            // Araña de las nieves (docs/ice-sanctuary-ecology.md): ~30 cm. Su cuerpo de cubos ya mide eso a escala 1
+            // Araña de las nieves (docs/fauna/ice-sanctuary-ecology.md): ~30 cm. Su cuerpo de cubos ya mide eso a escala 1
             // (IceInsectLife la mantiene ahí); masa como la de la mayor araña real, la tarántula Goliat (~175 g). [A]
             { "SnowSpider",  new Physiognomy(new Vector3(1f, 1f, 1f), 0.175f, 0.10f, 0.25f, 0.06f) },
-            // Especies de las eras (docs/era-species-behavior.md). Misma convención que los insectos de arriba (orden de masas
+            // Especies de las eras (docs/sistemas/era-species-behavior.md). Misma convención que los insectos de arriba (orden de masas
             // y proporciones reales; en el microcosmos el tamaño lo fija MicroSize con los mm de MicroBiome). Masas reales:
             // Leiurus 1–2,5 g (ADW); Helix lucorum ~25 g; Arion ater hasta 15 cm; L. terrestris 5–10 g; Ocypode ~30 g. [A]
             { "Scorpion",    new Physiognomy(new Vector3(0.008f, 0.004f, 0.016f), 0.008f, 0.10f, 0.30f, 0.04f) },

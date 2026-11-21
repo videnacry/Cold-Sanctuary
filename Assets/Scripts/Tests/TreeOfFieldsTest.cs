@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DEL ÁRBOL DE LOS CAMPOS v2 (Berón 2026-10-30; docs/edificio-arbol.md):
+/// PRUEBA DEL ÁRBOL DE LOS CAMPOS v2 (Berón 2026-10-30; docs/areas/edificio-arbol.md):
 /// 1. FORMA: tronco CUADRADO; 8 plataformas CUADRADAS (4 pisos pegados al tronco y 4 campos de punta); en cada nivel de la
 ///    hélice, pisos en dos lados opuestos y ramas en los otros dos, ALTERNANDO de un nivel al siguiente; nada tapa a nada en
 ///    planta; el primer piso por encima del árbol más alto del santuario (medido en la escena); el Huerto en el piso 5; cada

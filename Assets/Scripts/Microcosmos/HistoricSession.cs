@@ -4,7 +4,7 @@ using UnityEngine;
 using Prescription = HistoricTraining.Prescription;
 
 /// <summary>
-/// UNA SESIÓN DE ENTRENAMIENTO DE ÉPOCA en el edificio de entrenamiento de un pueblo (docs/gimnasio-maquinas.md §16): la misma lógica
+/// UNA SESIÓN DE ENTRENAMIENTO DE ÉPOCA en el edificio de entrenamiento de un pueblo (docs/areas/gimnasio-maquinas.md §16): la misma lógica
 /// que la del gimnasio del santuario (<see cref="GymTrainingSession"/>), con los ejercicios de su época
 /// (<see cref="HistoricTraining"/>). En orden: calentamiento (la clase del maestro, si la hay), cada ejercicio —coge su equipo del
 /// armario, va a un SITIO libre del suelo de entrenar (un sitio por persona, a 2 m: nunca dos en el mismo; si no hay, espera ≤ 8 s y

@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DE LAS ACTIVIDADES DE VERDAD (grupo 97; docs/actividades-y-uniformes.md; Berón 2026-11-04: «parece que solo van al piso que
+/// PRUEBA DE LAS ACTIVIDADES DE VERDAD (grupo 97; docs/sistemas/actividades-y-uniformes.md; Berón 2026-11-04: «parece que solo van al piso que
 /// les toca y no hacen nada … sería posible que los humanos se coloquen uniformes»). En cualquier escena con personal:
 ///  Con un cuerpo propio de la prueba (no del personal: en «Solo grupos» la jornada sigue en marcha y mandaría a la vez a quien se cogiera).
 ///  1. LA COMIDA (humano): bandeja → sentarse → cubiertos → bocados (el brazo sube y baja, la comida del plato MENGUA, el hambre baja) →

@@ -12,7 +12,7 @@ public class ArchetypeProfile
 }
 
 /// <summary>
-/// Catálogo de ARQUETIPOS en CÓDIGO (docs/soul-composition-blend.md). El repo solo versiona `.cs`, así que los
+/// Catálogo de ARQUETIPOS en CÓDIGO (docs/sistemas/soul-composition-blend.md). El repo solo versiona `.cs`, así que los
 /// perfiles viven aquí (no en ScriptableObjects). **Cuerpos** aportan lo físico (agility/perception/strength/
 /// bodyMass/endurance) + altura; **mentes** lo mental (composure/reasoning/memory/creativity/sociability/
 /// discipline) + tono; **bonusPacks** son vectores aditivos de stats (potencia por nivel; NO tocan tono/thoughts).
@@ -133,7 +133,7 @@ public static class Archetypes
             { "Grasshopper", MakeBody(0.40f, 1.5f, 1.0f, 0.9f, 0.6f, 1.1f) },   // saltamontes: salto/vuelo ágil, herbívoro
             { "Meerkat",     MakeBody(0.30f, 1.4f, 1.7f, 0.8f, 0.5f, 1.3f) },   // suricata (skin insecto): percepción máx = centinela/observación
             { "SnowBee",     MakeBody(0.22f, 1.2f, 0.9f, 0.4f, 0.3f, 1.0f) },   // abeja de las nieves: pequeña, voladora ágil, adaptada al frío
-            // Especies de las eras (docs/era-species-behavior.md)
+            // Especies de las eras (docs/sistemas/era-species-behavior.md)
             { "Scorpion",    MakeBody(0.45f, 0.9f, 1.3f, 1.4f, 0.8f, 1.8f, 1.3f) },   // siente vibraciones (pectinas); meses sin comer
             { "CamelSpider", MakeBody(0.45f, 2.0f, 1.2f, 1.3f, 0.7f, 1.0f) },         // corredor velocísimo, quelíceros enormes
             { "Woodlouse",   MakeBody(0.20f, 0.5f, 0.8f, 0.4f, 0.4f, 1.1f) },         // lenta; se salva haciéndose bola
@@ -157,7 +157,7 @@ public static class Archetypes
             { "Whale",    MakeBody(3.00f, 0.6f, 1.0f, 2.8f, 3.0f, 2.0f) },
             { "Penguin",  MakeBody(0.60f, 1.0f, 1.1f, 0.5f, 0.5f, 1.2f) },   // pequeño, ágil nadando, débil, resistente al frío
             { "Orca",     MakeBody(2.60f, 1.2f, 1.4f, 2.6f, 2.8f, 2.2f) },   // apex: grande, fuerte, rápido, gran percepción
-            // Territorio polar (docs/reglas-animales.md): altura relativa al humano; fuerza y masa, en proporción a los del catálogo.
+            // Territorio polar (docs/reglas/reglas-animales.md): altura relativa al humano; fuerza y masa, en proporción a los del catálogo.
             { "PolarSkua", MakeBody(0.30f, 1.5f, 1.4f, 0.2f, 0.2f, 1.4f) },
             { "CapePetrel", MakeBody(0.30f, 1.5f, 1.4f, 0.2f, 0.2f, 1.4f) },
             { "WanderingAlbatross", MakeBody(0.30f, 1.5f, 1.4f, 0.2f, 0.2f, 1.4f) },
@@ -218,7 +218,7 @@ public static class Archetypes
             { "Grasshopper", MakeMind(ElementalTone.Viento, 0.6f, 0.6f, 0.6f, 0.8f, 1.2f, 0.5f) },   // gregario en fase enjambre (masas)
             { "Meerkat",     MakeMind(ElementalTone.Tierra, 1.0f, 1.1f, 1.0f, 0.7f, 1.8f, 1.3f) },   // cooperativa, muy social, vigilante
             { "SnowBee",     MakeMind(ElementalTone.Agua, 1.0f, 0.5f, 1.0f, 0.5f, 1.6f, 1.5f) },   // eusocial: disciplina/sociabilidad altas, memoria de nido
-            // Especies de las eras (docs/era-species-behavior.md)
+            // Especies de las eras (docs/sistemas/era-species-behavior.md)
             { "Scorpion",    MakeMind(ElementalTone.Tierra, 1.9f, 0.8f, 0.9f, 0.4f, 0.2f, 1.2f) },   // acecho paciente; solitario
             { "CamelSpider", MakeMind(ElementalTone.Fuego,  0.5f, 0.9f, 0.7f, 0.8f, 0.1f, 0.5f) },   // voraz e impulsivo
             { "Woodlouse",   MakeMind(ElementalTone.Agua,   1.0f, 0.5f, 0.8f, 0.4f, 1.3f, 0.8f) },   // busca a las suyas (agregación)

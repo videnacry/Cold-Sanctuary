@@ -74,7 +74,7 @@ public static class MissionSites
             new Binding { template = "reparar-coche-aceite", names = new[] { "Banco del mecánico" }, buildings = new[] { "Taller" }, stationKeys = new[] { "banco_taller" } },
             Like(garden, "campo-regar"), Like(garden, "campo-curar"), Like(garden, "campo-cosechar"),
             Like(dog, "perro-alimentar"), Like(dog, "perro-jugar"), Like(dog, "perro-programar-bordillo"),
-            // (2026-11-18) Lote 2 de Hawthorne (docs/microcosmos-musk-historia.md §4, nombres exactos): trabajadores, científicos, bacterias, comida y
+            // (2026-11-18) Lote 2 de Hawthorne (docs/microcosmos/microcosmos-musk-historia.md §4, nombres exactos): trabajadores, científicos, bacterias, comida y
             // seguridad urbana.
             N("fsw-tanque-falcon9", "Soldadura por fricción (FSW): tanque del Falcon 9"),
             N("ensayo-traccion", "Laboratorio de materiales"),

@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// ETIQUETAS DE NOMBRE sobre las animas (docs/typed-spells-and-queues.md): dibuja el nombre encima de cada
+/// ETIQUETAS DE NOMBRE sobre las animas (docs/sistemas/typed-spells-and-queues.md): dibuja el nombre encima de cada
 /// <see cref="Anima"/> a la vista, para que el jugador sepa a quién/qué dirigirse al **escribir hechizos**
 /// (p. ej. <c>walkTo({destiny:"Marilia"})</c> desde la <see cref="SpellConsole"/>). Un solo componente en escena
 /// (como <see cref="AnimaThoughtHUD"/>). Prototipo OnGUI con proyección mundo→pantalla; la versión world-space

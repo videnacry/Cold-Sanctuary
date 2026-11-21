@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// TEST DE «CÓMO NACIÓ LA COCINA» (<see cref="KitchenOriginStory"/>, docs/novela.md): la historia jugable del microcosmos de la
+/// TEST DE «CÓMO NACIÓ LA COCINA» (<see cref="KitchenOriginStory"/>, docs/historia/novela.md): la historia jugable del microcosmos de la
 /// Cocina. Entra al microcosmos como lo hace el jugador al final de la iniciación de la cocina (MobWorldLoader.EnterMobWorld,
 /// si «Microcosmos_Cocina» está en Build Settings); si no, monta la historia suelta, lejos, sobre un suelo de prueba (la
 /// historia crea las piezas que falten). Juega los beats como el jugador: se acerca a cada resto y pulsa E, lo lleva al hogar y

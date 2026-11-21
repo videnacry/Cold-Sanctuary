@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DE LOS EDIFICIOS-ÁRBOL (Berón 2026-10-31; docs/edificio-arbol.md §Migración): las torres (Servicios, Entrenamiento,
+/// PRUEBA DE LOS EDIFICIOS-ÁRBOL (Berón 2026-10-31; docs/areas/edificio-arbol.md §Migración): las torres (Servicios, Entrenamiento,
 /// Ciencias, Producción) migradas al modelo del Árbol de los Campos.
 /// 1. FORMA: hélice (en cada nivel, pisos en dos lados opuestos y ramas en los otros dos, alternando); primer piso a ≥ 50 m y por
 ///    encima del árbol más alto que crece en el santuario; cada área en su piso pegado al tronco.
@@ -45,7 +45,7 @@ public class TreeBuildingsTest : MonoBehaviour, ITestUnit
             var rings = t.levels.Where(l => l.kind == TreeLevel.Kind.Ring).ToList();
             // ── 1. FORMA ──
             float lowest = floors.Count > 0 ? floors.Min(l => l.deck.position.y - root.position.y) : 0f;
-            float minHere = b == NuclearSiteRule.Building ? NuclearSiteRule.FirstFloorY : b == EnergyRule.Building ? EnergyRule.FirstFloorY : minFirst;   // (en el casquete nuclear no crece ningún árbol, y los reactores van abajo: docs/sitio-nuclear.md)
+            float minHere = b == NuclearSiteRule.Building ? NuclearSiteRule.FirstFloorY : b == EnergyRule.Building ? EnergyRule.FirstFloorY : minFirst;   // (en el casquete nuclear no crece ningún árbol, y los reactores van abajo: docs/areas/sitio-nuclear.md)
             TestProbe.Check($"{b}: el primer piso a ≥ {minHere:0} m (50 m y por encima del árbol más alto que crece)", floors.Count > 0 && lowest >= minHere - 0.1f, $"{lowest:0.0} m, {floors.Count} pisos, {tips.Count} puntas, {rings.Count} anillos");
             bool helix = true; string why = "";
             foreach (var g in floors.GroupBy(l => l.level))

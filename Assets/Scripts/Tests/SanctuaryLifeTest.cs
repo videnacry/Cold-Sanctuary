@@ -284,7 +284,7 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
             TestProbe.Check("la lasaña sale (pasta fresca, ragú de carne cultivada, bechamel, parmesano)", larder.Serve("Lasaña"), string.Join(", ", larder.Missing(Gastronomy.DishOf("Lasaña"))));
         }
 
-        // JORNADA Y ROTACIÓN (docs/jornada-y-rotacion.md): lógica pura del reparto.
+        // JORNADA Y ROTACIÓN (docs/sistemas/jornada-y-rotacion.md): lógica pura del reparto.
         var ro = new WorkRoster();
         ro.areas.AddRange(new[] { "A", "B", "C" });
         WorkRoster.Worker w1 = ro.Add("W1"), w2 = ro.Add("W2");
@@ -354,9 +354,9 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         int FloorsOfPad(CarpetPad c) => towers.TryGetValue(c.building, out int n) ? n : c.floor;
         int maxFloor = CarpetPad.All.Count > 0 ? CarpetPad.All.Max(FloorsOfPad) : 0;
         TestProbe.Check($"ningún edificio pasa de {StructuralLimits.MaxFloors} pisos (lo que aguantan las columnas)", maxFloor > 0 && maxFloor <= StructuralLimits.MaxFloors, $"el más alto: {maxFloor} pisos ({CarpetPad.All.First(c => FloorsOfPad(c) == maxFloor).building})");
-        // TORRES TEMÁTICAS (Berón 2026-10-29; docs/plano-edificios.md): pocos edificios con muchos pisos: Servicios, Entrenamiento,
+        // TORRES TEMÁTICAS (Berón 2026-10-29; docs/areas/plano-edificios.md): pocos edificios con muchos pisos: Servicios, Entrenamiento,
         // Ciencias y Producción (y el Árbol de los Campos); los reactores, en el sitio nuclear. Desde el 2026-10-31 las torres son
-        // ÁRBOLES (docs/edificio-arbol.md §Migración): alfombras de edificio SOLO en el suelo (0) y en el techo; entre pisos se nada.
+        // ÁRBOLES (docs/areas/edificio-arbol.md §Migración): alfombras de edificio SOLO en el suelo (0) y en el techo; entre pisos se nada.
         // Las que aún no se han migrado siguen apiladas (pisos con alfombras = los de la torre + el techo).
         var stackedFloors = new System.Collections.Generic.Dictionary<string, int> { { "Servicios", 7 }, { "Entrenamiento", 7 }, { "Ciencias", 8 }, { "Producción", 4 } };
         var trees = ArbolCampos.All.Where(t => t != null).ToList();
@@ -373,7 +373,7 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
             int top = t.Top != null ? t.Top.index : -1;
             TestProbe.Check($"«{t.building}» (árbol): alfombras de edificio solo en el suelo y en el techo", fl.Count == 2 && fl[0] == 0 && fl[1] == top, string.Join(", ", fl));
         }
-        TestProbe.Check("la Central Nuclear está bajo el mar, en el Santuario Marino (docs/sitio-nuclear.md §25): sin alfombras de edificio y sin árbol del sitio en el santuario 1", !CarpetPad.All.Any(c => c.kind == CarpetPad.Kind.Edificio && (c.building == "Central Nuclear" || c.building == NuclearSiteRule.Building)) && !treeNames.Contains(NuclearSiteRule.Building));
+        TestProbe.Check("la Central Nuclear está bajo el mar, en el Santuario Marino (docs/areas/sitio-nuclear.md §25): sin alfombras de edificio y sin árbol del sitio en el santuario 1", !CarpetPad.All.Any(c => c.kind == CarpetPad.Kind.Edificio && (c.building == "Central Nuclear" || c.building == NuclearSiteRule.Building)) && !treeNames.Contains(NuclearSiteRule.Building));
         // Cada torre: sus áreas, de abajo arriba. Apiladas (mismo x, z, cada una más alta) o, en un árbol, en sus pisos en orden
         // (cada una en un piso de número mayor y nunca más abajo).
         bool Stacked(params string[] names)
@@ -456,10 +456,10 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         TestProbe.Check("la iniciación de turistas del hospital es una misión de virtualización con su escena", Application.CanStreamedLevelBeLoaded(VirtualMissions.SceneName("enf_iniciacion")) && VirtualMissions.Steps("enf_iniciacion").Length >= 4);
         int noScene = 0; foreach (var vm in VirtualMissions.All()) if (!Application.CanStreamedLevelBeLoaded(VirtualMissions.SceneName(vm.key))) noScene++;
         TestProbe.Check("todas las misiones de trabajo tienen su escena de virtualización", noScene == 0, $"{noScene} sin escena");
-        // ALFOMBRAS (docs/alfombras-plan.md): sin puentes; cada piso con su área, y en cada techo las de edificio y santuario.
+        // ALFOMBRAS (docs/areas/alfombras-plan.md): sin puentes; cada piso con su área, y en cada techo las de edificio y santuario.
         TestProbe.Check("ya no hay puentes entre plataformas", !FindObjectsByType<Transform>(FindObjectsSortMode.None).Any(t => (t.name.StartsWith("Puente_") && t.name != "Puente_piscina") || (t.name == "Pasarela" && t.parent != null && t.parent.name != "Puente_piscina")));   // (el puente de la piscina del reactor es equipo)
         var pads = CarpetPad.All;
-        // El hospital está en la torre de SERVICIOS (docs/plano-edificios.md): su red de alfombras es la de la torre.
+        // El hospital está en la torre de SERVICIOS (docs/areas/plano-edificios.md): su red de alfombras es la de la torre.
         int hospFloors = pads.Where(p => p.building == "Servicios" && p.kind == CarpetPad.Kind.Edificio).Select(p => p.floor).Distinct().Count();
         bool servTree = ArbolCampos.All.Exists(t => t != null && t.building == "Servicios");
         if (servTree) TestProbe.Check("la torre-árbol de Servicios (con el hospital) tiene alfombras en el hielo y en el techo (entre pisos se nada)", hospFloors == 2, $"{hospFloors} pisos con alfombras");

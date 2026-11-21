@@ -3,7 +3,7 @@ using Unity.AI.Navigation;
 using UnityEngine;
 
 /// <summary>
-/// EL ÁRBOL GIRA (docs/edificio-arbol.md; Berón 2026-10-29): toda la copa, el tronco y las ramas giran sobre la raíz en
+/// EL ÁRBOL GIRA (docs/areas/edificio-arbol.md; Berón 2026-10-29): toda la copa, el tronco y las ramas giran sobre la raíz en
 /// sentido CONTRARIO al sol (en el santuario el sol da la vuelta al horizonte cada día), por defecto UNA VUELTA CADA 6 HORAS
 /// del juego (un día del juego = 1 hora real → 15 minutos reales por vuelta). Así la sombra de las ramas y los anillos no
 /// cae siempre sobre los mismos cultivos, y el viento y la nieve se reparten. Hechizo <c>arbol({vueltaHoras:N})</c>

@@ -25,7 +25,7 @@ public class MoodDynamics : MonoBehaviour
     public float wLowGlucose = 0.20f;
     public float wLowMinerals = 0.15f;
 
-    // ── El GUARDIÁN (alostasis) legible (docs/apremios-guardian-observacion.md §3) ─────────────────────────────
+    // ── El GUARDIÁN (alostasis) legible (docs/sistemas/apremios-guardian-observacion.md §3) ─────────────────────────────
     /// <summary>Carga alostática ANTES de la observación (suma ponderada de los apremios que rebasan lo seguro).</summary>
     public float AllostaticLoad { get; private set; }
     /// <summary>Apremios actuales (para el Volition/lectura): hambre / fatiga / sueño [0,1].</summary>

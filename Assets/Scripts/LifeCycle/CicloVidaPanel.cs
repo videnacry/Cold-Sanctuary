@@ -8,7 +8,7 @@ using UnityEngine;
 /// Volition, Reproduction, MaternityDen, Egg, LifeStage; en la abeja, la Hive y el vuelo nupcial de IceInsectLife). Las
 /// filas salen de la biología de cada especie (<see cref="LifeHistory"/>): la osa entra en su guarida, el pingüino pone un
 /// huevo que incuba el macho, la abeja reina sale en vuelo nupcial… Lo usa también la prueba (<see cref="CicloVidaTest"/>,
-/// grupo 58). Ver docs/ciclo-de-vida.md.
+/// grupo 58). Ver docs/sistemas/ciclo-de-vida.md.
 ///
 /// CALENDARIO: en estas escenas el año dura <see cref="CompressedYear"/> días de juego (en el santuario, 28), para que una
 /// gestación se vea en minutos y no en horas; el botón lo vuelve al natural. TODO va con ese año: gestación, incubación,

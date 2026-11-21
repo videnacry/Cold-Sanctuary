@@ -1,15 +1,15 @@
 using UnityEngine;
 
 /// <summary>
-/// EL HOSPITAL (antes Enfermería; docs/hospital.md). No hay otro hospital a miles de km, así que tiene lo mínimo de un
+/// EL HOSPITAL (antes Enfermería; docs/areas/hospital.md). No hay otro hospital a miles de km, así que tiene lo mínimo de un
 /// hospital de primer nivel de la OMS para tratar todos los casos sin derivar: urgencias con reanimación, quirófano
 /// (cirujano + anestesista, esterilización, lavado quirúrgico), UCI, paritorio, aislamiento, imagen, laboratorio y banco
-/// de sangre, farmacia, oxígeno propio y telemedicina. Tres plantas sobre la misma base (docs/hospital-plan.md v2), con
+/// de sangre, farmacia, oxígeno propio y telemedicina. Tres plantas sobre la misma base (docs/areas/hospital-plan.md v2), con
 /// 4 PUESTOS por servicio (cuatro médicos a la vez en la misma tarea) y 2 m libres entre objetos:
 /// - PLANTA BAJA: urgencias y ambulatorio (la iniciación sigue aquí: silla de exámenes, analizador clínico, mesa del
 ///   médico y el tanque) + ANILLO de observación y maternidad.
 /// - PLANTA 1: 4 quirófanos, UCI de 6 y 4 aislamientos con esclusa + ANILLO de recuperación y hospitalización.
-/// - PLANTA 2: hospital veterinario (docs/vet-hospital-plan.md) + ANILLO de grandes animales (osos, focas).
+/// - PLANTA 2: hospital veterinario (docs/areas/vet-hospital-plan.md) + ANILLO de grandes animales (osos, focas).
 /// Mismo número de plazas para animales que camas para personas (48).
 /// </summary>
 public static partial class SampleSceneBuilder
@@ -29,7 +29,7 @@ public static partial class SampleSceneBuilder
     {
         GameObject area = GameObject.Find("Infirmary_Area");
         if (area == null) return;
-        // TORRE DE SERVICIOS (docs/plano-edificios.md): cada planta del hospital mide lo que la torre (la del restaurante,
+        // TORRE DE SERVICIOS (docs/areas/plano-edificios.md): cada planta del hospital mide lo que la torre (la del restaurante,
         // F); la distribución sigue siendo la de 32 × 26 (HospitalSize), centrada, y los ANILLOS van al borde de la planta.
         Vector2 F = FloorSize(area.transform, HospitalSize);
         float layZ = HospitalSize.y * 0.5f;   // (las filas de perreras, desde el borde −Z de la distribución)
@@ -43,7 +43,7 @@ public static partial class SampleSceneBuilder
         KitchenProps.C(r, new Vector3(0f, 0.03f, 1.9f), new Vector3(3f, 0.01f, HospitalSize.y - 7.6f), new Color(0.72f, 0.86f, 0.84f), 0f, "Pasillo_central");
 
 
-        // DISTRIBUCIÓN REAL v2 (docs/hospital-plan.md, Berón 2026-10-23): 2 m LIBRES entre objetos; CAPACIDAD ×4 (cuatro
+        // DISTRIBUCIÓN REAL v2 (docs/areas/hospital-plan.md, Berón 2026-10-23): 2 m LIBRES entre objetos; CAPACIDAD ×4 (cuatro
         // médicos pueden hacer la misma tarea a la vez); salas de norma marcadas en el suelo; cada planta con su ANILLO de
         // camas (plataforma hija cuadrada a 4 m, 20 % dentro del borde y 80 % volando), cada uno con las camas de su servicio.
         // PLANTA BAJA = urgencias y ambulatorio (+ anillo de observación y maternidad); PLANTA 1 = bloque quirúrgico,
@@ -82,7 +82,7 @@ public static partial class SampleSceneBuilder
         Aseos(r, new Vector3(-14f, 0f, 12.3f), 180f);
         Transform exam = KitchenProps.Root(r, "Silla_examen", new Vector3(-13.6f, 0f, 5.6f), 90f);
         Color seatC = new Color(0.35f, 0.55f, 0.65f);
-        // Asiento a 0,45 m (docs/medidas-muebles.md). Su frente es +z local (el respaldo está en −z): hacia ahí mira el
+        // Asiento a 0,45 m (docs/areas/medidas-muebles.md). Su frente es +z local (el respaldo está en −z): hacia ahí mira el
         // paciente sentado (ArrivalExam.PatientSpot lee la altura del «Asiento_examen»).
         KitchenProps.C(exam, new Vector3(0f, 0.4f, 0f), new Vector3(0.6f, 0.1f, 0.6f), seatC, 0f, "Asiento_examen");
         KitchenProps.C(exam, new Vector3(0f, 0.8f, -0.27f), new Vector3(0.6f, 0.75f, 0.08f), seatC, 0f, "Respaldo");
@@ -100,7 +100,7 @@ public static partial class SampleSceneBuilder
         Station(InfirmaryProps.Telemedicine(r, "Telemedicina", new Vector3(-5.6f, 0f, -2.6f), 180f), HospitalService.Telemedicina, "Telemedicina (especialistas a distancia)", 2.4f);
         Label(InfirmaryProps.MedicineCabinet(r, "Botiquin", new Vector3(-15.4f, 0f, -6.4f), -90f), "Botiquín", 2.2f);
         KitchenProps.Sink(r, "Lavamanos", new Vector3(-6.4f, 0f, 12.3f), 180f);   // contra la pared norte (junto a la consulta no quedaban 2 m)
-        // BIOCONTROL (docs/iniciacion-medica-investigacion.md): el lavabotas, en la fila de la entrada (entre los triajes 1 y 2,
+        // BIOCONTROL (docs/areas/iniciacion-medica-investigacion.md): el lavabotas, en la fila de la entrada (entre los triajes 1 y 2,
         // con 2 m libres a cada mueble). Bandeja con desinfectante (Virkon S), cepillos y aspirador para las semillas del
         // velcro y los bolsillos: lo que protege a la flora y la fauna nativas.
         Transform boots = KitchenProps.Root(r, "Lavabotas", new Vector3(-10.2f, 0f, 9.0f), 180f);
@@ -116,7 +116,7 @@ public static partial class SampleSceneBuilder
         Transform an = InfirmaryProps.BloodAnalyzer(r, "Analizador clinico", new Vector3(-9.25f, 0f, -10.6f), 180f);
         an.gameObject.AddComponent<ClinicalStation>();
         Label(an, "Analizador clínico (F)", 1.8f);
-        // BANCO DE SANGRE (Berón 2026-11-03; docs/hospital.md §Banco de sangre): un tramo corrido (FurnitureLine) con la nevera de
+        // BANCO DE SANGRE (Berón 2026-11-03; docs/areas/hospital.md §Banco de sangre): un tramo corrido (FurnitureLine) con la nevera de
         // hematíes (2–6 °C), el agitador de plaquetas (20–24 °C), el congelador de plasma (≤ −25 °C), el descongelador, la nevera
         // veterinaria (perro DEA 1, gato A/B) y el sillón de donante (el banco de sangre andante). BloodBank lleva las existencias.
         Transform bbl = KitchenProps.Root(r, "Banco_de_sangre_linea", new Vector3(-3.4f, 0f, -10.6f));
@@ -166,7 +166,7 @@ public static partial class SampleSceneBuilder
         Transform f1 = Solid(p1, new Vector3(0f, 0.05f, 0f), new Vector3(s1.x, 0.1f, s1.y), new Color(0.84f, 0.92f, 0.9f), "Suelo_hospitalizacion");
         Label(f1, "Bloque quirúrgico, UCI y aislamiento (planta 1)", 2.2f);
         Transform w1 = new GameObject("Planta1_equipamiento").transform; w1.SetParent(p1, false); w1.localPosition = new Vector3(0f, 0.1f, 0f);
-        // PAREDES DE CRISTAL (Berón 2026-11-03; docs/hospital.md §Paredes de cristal): las salas que deben aislarse (quirófanos con
+        // PAREDES DE CRISTAL (Berón 2026-11-03; docs/areas/hospital.md §Paredes de cristal): las salas que deben aislarse (quirófanos con
         // presión positiva, UCI, aislamientos con presión negativa y su esclusa) van en SALAS DE CRISTAL: no tapan la vista y GUARDAN
         // LOS 2 m (GlassWall: cada paño se mide como un mueble, dentro y fuera). Por eso esta planta se redistribuyó en el piso de
         // 40 × 40 m del árbol: 4 quirófanos en fila al sur (puerta al pasillo del norte), los lavados y el autoclave en ese pasillo,
@@ -232,7 +232,7 @@ public static partial class SampleSceneBuilder
         int gen = RingBeds(ring1, s1, 20, "hospitalización");
         Label(ring1, "Anillo de camas: recuperación y hospitalización", 2.2f);
         int humanBeds = bed - 1;
-        // ══ PLANTA 2: HOSPITAL VETERINARIO (docs/vet-hospital-plan.md) ═══════════════════════════════════════════════
+        // ══ PLANTA 2: HOSPITAL VETERINARIO (docs/areas/vet-hospital-plan.md) ═══════════════════════════════════════════════
         // 4 alas con 4 puestos iguales por tarea (4 veterinarios a la vez ante una avalancha): clínica (4 mesas de
         // tratamiento, 4 quirófanos, rayos X + eco, laboratorio, farmacia, báscula), perros/lobos/zorros (perreras en
         // batería y jaulas), servicio (cocina de dietas con congelador, sala fría de pingüinos) y, en su ANILLO, los grandes

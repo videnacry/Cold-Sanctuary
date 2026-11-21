@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LA FAUNA FRÍA DE LOS OTROS SANTUARIOS (Berón 2026-11-05; docs/fauna-fria-santuarios.md): ganchos pequeños que cada escena llama para poner sus especies. Presupuesto bajo y fijo: en
+/// LA FAUNA FRÍA DE LOS OTROS SANTUARIOS (Berón 2026-11-05; docs/fauna/fauna-fria-santuarios.md): ganchos pequeños que cada escena llama para poner sus especies. Presupuesto bajo y fijo: en
 /// el fondo, grupos sin ciclo de vida ni NavMesh (unos 45 individuos); en el aire, <see cref="ColdBirds.AirBudget"/> aves. Cada hook crea lo que come quien ponga.
 /// </summary>
 public static partial class SampleSceneBuilder

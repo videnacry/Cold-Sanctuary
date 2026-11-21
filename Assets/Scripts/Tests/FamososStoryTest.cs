@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// TEST DE LOS MICROCOSMOS DE LOS FAMOSOS (docs/microcosmos-famosos.md; grupo 69). Carga UNA A UNA (aditiva, espera acotada, y la
+/// TEST DE LOS MICROCOSMOS DE LOS FAMOSOS (docs/microcosmos/microcosmos-famosos.md; grupo 69). Carga UNA A UNA (aditiva, espera acotada, y la
 /// descarga antes de la siguiente: la memoria) las siete escenas —Sadhguru, Elon Musk, Goku, Bill Gates, Warren Buffett, MacKenzie
 /// Scott e Ibrahim Traoré— y mira en cada una:
 /// - su fecha y su región (MicroEra) y su piso del santuario (MicroFloor: el de la tabla, representativo o «pendiente»);

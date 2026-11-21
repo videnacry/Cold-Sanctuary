@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Test del ESTADO IDEAL (docs/consciousness-mechanics.md, testing-checklist §46), por `TestProbe`: la composición
+/// Test del ESTADO IDEAL (docs/sistemas/consciousness-mechanics.md, testing-checklist §46), por `TestProbe`: la composición
 /// elemental (`ElementsStatus`) y el nivel de actividad (`ActivityLevel`, ACWR). Funciones puras/deterministas.
 /// </summary>
 public class IdealStateTest : MonoBehaviour, ITestUnit

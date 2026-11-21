@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LOS PUEBLOS DE LOS FAMOSOS (docs/microcosmos-famosos.md; Berón 2026-11-04). Cada figura en el pueblo real de su historia, sobre su
+/// LOS PUEBLOS DE LOS FAMOSOS (docs/microcosmos/microcosmos-famosos.md; Berón 2026-11-04). Cada figura en el pueblo real de su historia, sobre su
 /// PLANO (<see cref="FamousPlans"/>, mismo formato que <c>PlanText</c>; fuentes en el doc), con su estilo de época y lugar
 /// (MicroStyles: india_moderna, sahel_moderno, norteamerica_interior…) y las reglas de siempre: edificios abiertos de
 /// <see cref="Building"/> con su etiqueta de actividad, el paso de 2 m, muebles a la medida de insectos-humanos y personas, un hogar

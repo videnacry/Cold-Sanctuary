@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DEL SUBMARINO-AMBULANCIA (Berón 2026-11-03; docs/submarinos-medicos.md), en vivo y a ×4:
+/// PRUEBA DEL SUBMARINO-AMBULANCIA (Berón 2026-11-03; docs/areas/submarinos-medicos.md), en vivo y a ×4:
 /// 1. existe, aparcado junto a la puerta del suelo del árbol del hospital, cabe por las puertas de los edificios-árbol y lleva su
 ///    equipo de urgencias (bodega para oso o elefante, grúa, O₂, monitor, desfibrilador, ventilador, sangre O−, fluidos);
 /// 2. UNA PERSONA herida en el hielo (pérdida de sangre de clase III): sube por el tronco a por el equipo del hospital, va, la carga,

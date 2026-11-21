@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LA DEMANDA DE UN PISO (Berón 2026-11-05; docs/energia.md): cada piso declara la energía que necesita, y de ahí salen sus paneles
+/// LA DEMANDA DE UN PISO (Berón 2026-11-05; docs/areas/energia.md): cada piso declara la energía que necesita, y de ahí salen sus paneles
 /// (<see cref="EnergyRule.TablesFor"/>). Se pone al construir (<c>EnsureFloorEnergy</c>) o, si el piso nace en juego, al validar
 /// (<see cref="EnergyRule.DeclareMissing"/>). Un piso con un consumo propio (el clúster de IA) lo suma en <see cref="fixedKW"/>.
 /// </summary>

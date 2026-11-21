@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Un TICKET de avería (docs/forge-simulation.md §5): una máquina/estructura estropeada en un área, con su
+/// Un TICKET de avería (docs/areas/forge-simulation.md §5): una máquina/estructura estropeada en un área, con su
 /// **receta de arreglo** (<see cref="ProductionOrder"/>, normalmente con `requiresTools`). Está **abierto**
 /// hasta que la receta se completa. El <see cref="ServiceHub"/> los lista para que el jugador sepa qué
 /// reparar y dónde.

@@ -3,7 +3,7 @@ using System.Text;
 using UnityEngine;
 
 /// <summary>
-/// LA CADENA ALIMENTICIA (Berón 2026-11-05; docs/reglas-animales.md, regla E15): «evalúa a los animales existentes y su alimentación para
+/// LA CADENA ALIMENTICIA (Berón 2026-11-05; docs/reglas/reglas-animales.md, regla E15): «evalúa a los animales existentes y su alimentación para
 /// equilibrar el número de poblaciones y también puede incrementar el número de plantas o peces o crustáceos […] para que nadie muera de hambre».
 ///
 /// Lee lo que ya hay, sin una tabla aparte de quién come qué: <see cref="PopulationPlan.Groups"/> (quién vive en el santuario),
@@ -32,7 +32,7 @@ public static class FoodChain
     public const float Fed = 0.9f;
     public const float MaxPlantFactor = 6f;
 
-    /// <summary>Ración diaria real (kg de comida fresca). Fuentes en docs/reglas-animales.md §Cadena alimenticia.</summary>
+    /// <summary>Ración diaria real (kg de comida fresca). Fuentes en docs/reglas/reglas-animales.md §Cadena alimenticia.</summary>
     public static readonly Dictionary<string, float> Intake = new Dictionary<string, float>
     {
         { "Walrus", 60f },      // ~6 % de la masa (Born & Acquarone)
@@ -40,10 +40,10 @@ public static class FoodChain
         { "Bear", 6f },         // 43 focas anilladas al año (Pagano et al. 2018: una adulta cada 10–12 días)
         { "Orca", 120f },       // ~3 % de la masa del catálogo (4–6 % Sergeant 1969; 2 % en cautividad)
         { "Whale", 65f },       // ~5 % de la masa del catálogo (Savoca et al. 2021: 5–30 % los días que come)
-        { "PolarSkua", 0.25f }, // [A] o calculado por energía (docs/fauna-fria-santuarios.md)
-        { "CapePetrel", 0.1f }, // [A] o calculado por energía (docs/fauna-fria-santuarios.md)
-        { "WanderingAlbatross", 0.85f }, // [A] o calculado por energía (docs/fauna-fria-santuarios.md)
-        { "ArcticTern", 0.03f }, // [A] o calculado por energía (docs/fauna-fria-santuarios.md)
+        { "PolarSkua", 0.25f }, // [A] o calculado por energía (docs/fauna/fauna-fria-santuarios.md)
+        { "CapePetrel", 0.1f }, // [A] o calculado por energía (docs/fauna/fauna-fria-santuarios.md)
+        { "WanderingAlbatross", 0.85f }, // [A] o calculado por energía (docs/fauna/fauna-fria-santuarios.md)
+        { "ArcticTern", 0.03f }, // [A] o calculado por energía (docs/fauna/fauna-fria-santuarios.md)
         { "SnowPetrel", 0.06f }, // [A] ~20 % de su masa
         { "Penguin", 0.6f },    // Adelia: 0,55–0,65 kg
         { "EmperorPenguin", 3f }, // 1,8–6,3 kg (Robertson & Newgrain 1996)

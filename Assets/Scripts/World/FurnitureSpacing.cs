@@ -49,7 +49,7 @@ public static class FurnitureSpacing
         "Centrifuga", "Formadora", "Camara_fria", "Consola_lote",
         // Estudio textil (de cubos sueltos).
         "Rueca", "Ovillos", "Tina_", "Maniqui_", "Tendedero",
-        // Dojo y sala de ballet acabados (docs/obras-dojo-ballet.md). El tatami no: es suelo (se pisa descalzo, como el
+        // Dojo y sala de ballet acabados (docs/areas/obras-dojo-ballet.md). El tatami no: es suelo (se pisa descalzo, como el
         // suelo flotante del ballet).
         "Jaula_MMA", "Ring_kickboxing", "Sacos_pesados", "Primeros_auxilios", "Vestuario", "Piano_vertical",
         "Equipo_sonido", "Caja_resina", "Fuente", "Banco_calzado",
@@ -138,7 +138,7 @@ public static class FurnitureSpacing
         return true;
     }
 
-    // PISOS QUE GIRAN (el Árbol de los Campos, docs/edificio-arbol.md): sus muebles se miden en el MARCO DEL PISO, no en el
+    // PISOS QUE GIRAN (el Árbol de los Campos, docs/areas/edificio-arbol.md): sus muebles se miden en el MARCO DEL PISO, no en el
     // mundo (girado 45° o inclinado, la caja alineada con el mundo de una mesa crece y dos muebles a 2 m «se tocarían»).
     // Las cajas de Items y Violations van entonces en coordenadas locales del piso (ver Frame, Local, ToWorld).
 

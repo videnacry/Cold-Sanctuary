@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DEL SITIO NUCLEAR (Berón 2026-11-05; docs/sitio-nuclear.md). Desde el 2026-11-08 (§25) la Central Nuclear y la Planta Atómica están enteras en el
+/// PRUEBA DEL SITIO NUCLEAR (Berón 2026-11-05; docs/areas/sitio-nuclear.md). Desde el 2026-11-08 (§25) la Central Nuclear y la Planta Atómica están enteras en el
 /// Santuario Marino; en el santuario 1 queda su ESTACIÓN (lo detallado de arriba y de abajo lo prueba el grupo 114, NuclearSubmarinaTest):
 /// 1. SITIO: la estación, en su casquete artificial, a ≥ <see cref="NuclearSiteRule.MinDistance"/> m de todo edificio-árbol y de las islas, a sotavento y
 ///    lejos de la lanzadera.

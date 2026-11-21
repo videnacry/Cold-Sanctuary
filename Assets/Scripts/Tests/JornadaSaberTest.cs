@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DEL MODELO JORNADA/TAREA (Berón 2026-11-05; docs/jornada-y-rotacion.md):
+/// PRUEBA DEL MODELO JORNADA/TAREA (Berón 2026-11-05; docs/sistemas/jornada-y-rotacion.md):
 /// 1. Entrenamiento 8–9 y 14–15; 5 h de tareas en 9–11, 12–14 y 15–16.
 /// 2. Las iniciaciones se reparten primero y de quien menos sabe a quien más: un recién llegado, toda su jornada; después, la mitad; luego, lo que falte.
 /// 3. Lo aprendido se puede hacer a partir de esa hora; una tarea con riesgo no va a quien no la sabe; la obligatoria la cubre la Magnate.

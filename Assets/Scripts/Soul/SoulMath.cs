@@ -1,13 +1,13 @@
 using UnityEngine;
 
-/// <summary>Modo de CONVERSIÓN de stats (docs/soul-relations-reincarnation.md §1):
+/// <summary>Modo de CONVERSIÓN de stats (docs/sistemas/soul-relations-reincarnation.md §1):
 /// <b>Literal (B)</b> conserva la FORMA exacta del ser, redimensionada al presupuesto del cuerpo nuevo (identidad
 /// marcada — para reencarnaciones). <b>Relative (A)</b> modula esa forma por la CAPACIDAD del cuerpo nuevo
 /// (producto por-stat, renormalizado).</summary>
 public enum ConversionMode { Relative, Literal }
 
 /// <summary>
-/// Matemática del alma (docs/soul-relations-reincarnation.md §1). El blend y la conversión son la MISMA idea:
+/// Matemática del alma (docs/sistemas/soul-relations-reincarnation.md §1). El blend y la conversión son la MISMA idea:
 /// mezclar **distribuciones** (la *forma* de dónde están los puntos) a un **presupuesto** común. Así un arquetipo
 /// al 1% empuja la forma un 1% (no es despreciable) y una transformación conserva la identidad en el cuerpo nuevo.
 /// </summary>

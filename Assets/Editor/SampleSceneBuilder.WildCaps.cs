@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LOS CASQUETES SILVESTRES SIN BOSQUE (Berón 2026-11-05: «imagino que ahora en su lugar tendrían las estructuras propias para la fauna polar»; docs/territorio-polar.md §Casquetes
+/// LOS CASQUETES SILVESTRES SIN BOSQUE (Berón 2026-11-05: «imagino que ahora en su lugar tendrían las estructuras propias para la fauna polar»; docs/areas/territorio-polar.md §Casquetes
 /// silvestres). En cada lóbulo «Bosque» va lo que la fauna polar usa de verdad, sin repetir lo de <see cref="PolarHabitats"/> ni de <see cref="BuildTerritorio"/>:
 /// - CRESTA DE PRESIÓN: el abrigo del oso y del zorro;
 /// - VENTISQUERO a sotavento: donde la osa cava su guarida (la de Bosque Norte ya la pone PolarHabitats: aquí, solo en Bosque Oeste);

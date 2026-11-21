@@ -1,19 +1,24 @@
+---
+resumen: "Ficha con la plantilla de README.md. Id en el código: Julian. Revisada: 2026-11-08. Veracidad de cada dato (regla M39, veracidad-frases.md): documentada = lo dijo Berón (sus mensajes o la…"
+temas: [personajes]
+estado: vigente
+---
 # Julian
 
 > Ficha con la plantilla de [README.md](README.md). Id en el código: `Julian`. Revisada: 2026-11-08.
-> Veracidad de cada dato (regla M39, [veracidad-frases.md](../veracidad-frases.md)): **documentada** = lo dijo Berón (sus mensajes o la
+> Veracidad de cada dato (regla M39, [veracidad-frases.md](../sistemas/veracidad-frases.md)): **documentada** = lo dijo Berón (sus mensajes o la
 > ficha larga que contó él); **atestiguada** = se ve en su foto o captura; **recreada** = decisión de juego hecha a partir de un dato
 > suyo; **inventada** = la puso el juego o un agente, sin base. ⚠️ = la ficha larga lo marca «confirmar». **Falta** = no se sabe.
 
 ## 1. Identidad y aspecto
 
-- Persona real, búlgaro. *documentada (Berón 2026-11-04) · [personajes-mesocosmos.md §Profesiones y parejas](../personajes-mesocosmos.md)*
-- **Pendiente de foto.** Aspecto provisional del código: 1,76 m, pelo castaño claro peinado hacia atrás, camisa azul de cuello, pantalón oscuro. *inventada · [CubeHair.cs:236](../../Assets/Scripts/Avatar/CubeHair.cs#L236)*. El doc de diseño dice otro provisional (1,75 m, pelo corto castaño, camiseta azul grisácea): [diseno-personajes.md §Familia y amigos](../diseno-personajes.md).
+- Persona real, búlgaro. *documentada (Berón 2026-11-04) · [personajes-mesocosmos.md §Profesiones y parejas](../historia/personajes-mesocosmos.md)*
+- **Pendiente de foto.** Aspecto provisional del código: 1,76 m, pelo castaño claro peinado hacia atrás, camisa azul de cuello, pantalón oscuro. *inventada · [CubeHair.cs:236](../../Assets/Scripts/Avatar/CubeHair.cs#L236)*. El doc de diseño dice otro provisional (1,75 m, pelo corto castaño, camiseta azul grisácea): [diseno-personajes.md §Familia y amigos](../sistemas/diseno-personajes.md).
 - Edad: **Falta**.
 
 ## 2. Origen e historia
 
-- Conoció a Alicita en un máster. *documentada (Berón 2026-11-04) · [personajes-mesocosmos.md §Profesiones y parejas](../personajes-mesocosmos.md)*
+- Conoció a Alicita en un máster. *documentada (Berón 2026-11-04) · [personajes-mesocosmos.md §Profesiones y parejas](../historia/personajes-mesocosmos.md)*
 - El resto: **Falta**.
 
 ## 3. Personalidad y frases
@@ -28,7 +33,7 @@
 ## 5. Profesión y lo que sabe hacer
 
 - **Dirección de proyectos** (project manager), con Alicita. *documentada (Berón 2026-11-04) · [Professions.cs:124](../../Assets/Scripts/Progression/Professions.cs#L124) · memoria de Berón, character-roles (2026-11-04 15:02)*
-- En el juego: misiones `con_proyectos` y `con_proyectos2` de Construcción; cada día cada uno coge la que menos ha hecho. *recreada · [Professions.cs:44](../../Assets/Scripts/Progression/Professions.cs#L44) · [AreaFunctions.cs:167-168](../../Assets/Scripts/Progression/AreaFunctions.cs#L167) · [personajes-mesocosmos.md §Maestros de baile](../personajes-mesocosmos.md)*
+- En el juego: misiones `con_proyectos` y `con_proyectos2` de Construcción; cada día cada uno coge la que menos ha hecho. *recreada · [Professions.cs:44](../../Assets/Scripts/Progression/Professions.cs#L44) · [AreaFunctions.cs:167-168](../../Assets/Scripts/Progression/AreaFunctions.cs#L167) · [personajes-mesocosmos.md §Maestros de baile](../historia/personajes-mesocosmos.md)*
 
 ## 6. Puesto y áreas
 
@@ -36,7 +41,7 @@
 
 ## 7. Relaciones
 
-- Pareja de **Alicita**; comparten casa del árbol. *documentada (Berón 2026-11-04) · [personajes-mesocosmos.md §Parejas](../personajes-mesocosmos.md) · [ResidentialBuilder.cs:41](../../Assets/Editor/ResidentialBuilder.cs#L41)*
+- Pareja de **Alicita**; comparten casa del árbol. *documentada (Berón 2026-11-04) · [personajes-mesocosmos.md §Parejas](../historia/personajes-mesocosmos.md) · [ResidentialBuilder.cs:41](../../Assets/Editor/ResidentialBuilder.cs#L41)*
 - Familia y amigos: **Falta**.
 
 ## 8. Horario y costumbres
@@ -46,7 +51,7 @@
 
 ## 9. Microcosmos y santuario
 
-- Insecto: ninguno propio. *recreada · [microcosmos-civilizaciones.md §5](../microcosmos-civilizaciones.md)*
+- Insecto: ninguno propio. *recreada · [microcosmos-civilizaciones.md §5](../microcosmos/microcosmos-civilizaciones.md)*
 - Santuario y nivel: **Falta**.
 
 ## 10. En el código

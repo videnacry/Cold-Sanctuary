@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// ARBOLEDA RESIDENCIAL (docs/alfombras-plan.md): los dormitorios de los humanos son CASAS DE ÁRBOL, dos por árbol a
+/// ARBOLEDA RESIDENCIAL (docs/areas/alfombras-plan.md): los dormitorios de los humanos son CASAS DE ÁRBOL, dos por árbol a
 /// distinta altura, sin escaleras ni puentes. En el centro, a 12 m, la plataforma central con las alfombras a las
 /// habitaciones, las del santuario y las que bajan al hielo. Cada casa tiene su alfombra (también esterilla de yoga), que
 /// va a la plataforma central. Dentro: cama, mesilla, armario y el nombre de quien vive allí.
@@ -72,7 +72,7 @@ public static class ResidentialBuilder
     static readonly System.Collections.Generic.List<(Vector3 pos, Vector3 door)> _houses = new System.Collections.Generic.List<(Vector3, Vector3)>();
     static readonly System.Collections.Generic.List<Vector3> _terraces = new System.Collections.Generic.List<Vector3>();
 
-    /// <summary>LAS CASAS DE ÁRBOL: **fuera del santuario 1** (Berón 2026-11-05: «las casas arbol quedan para otro santuary»; docs/casas-de-arbol.md). Este constructor ya no se llama:
+    /// <summary>LAS CASAS DE ÁRBOL: **fuera del santuario 1** (Berón 2026-11-05: «las casas arbol quedan para otro santuary»; docs/areas/casas-de-arbol.md). Este constructor ya no se llama:
     /// se conserva entero para ese santuario. Aquí, la residencia son los pisos de <see cref="FurnishRoomFloor"/> y <see cref="FurnishPlaza"/>.</summary>
     public static Transform Build(Transform parent, Vector3 center)
     {
@@ -80,7 +80,7 @@ public static class ResidentialBuilder
         root.SetParent(parent, true);
         root.position = center;
 
-        // CASAS DE ÁRBOL (Berón 2026-10-27, docs/alfombras-plan.md): sin escaleras ni puentes. Seis árboles en anillo y en
+        // CASAS DE ÁRBOL (Berón 2026-10-27, docs/areas/alfombras-plan.md): sin escaleras ni puentes. Seis árboles en anillo y en
         // cada uno DOS casas a distinta altura, a ambos lados del tronco; cada casa tiene SU alfombra (y esterilla de yoga),
         // que solo va a la PLATAFORMA CENTRAL. Allí están las alfombras a las habitaciones y las del santuario.
         _houses.Clear();
@@ -150,13 +150,13 @@ public static class ResidentialBuilder
             Beam(root, pos + Vector3.up * -0.35f, trunk);   // viga al tronco que la sostiene
             Beam(root, pos + Vector3.up * -0.35f + Vector3.Cross(Vector3.up, door).normalized * 2.5f, trunk + Vector3.down * 2.5f);   // y su tornapuntas
         }
-        BuildPillowRing(root, new Vector3(0f, RingY, 0f), CarpetPad.Kind.Edificio, 2, $"{Name}#ring");   // (2026-11-04) el ring de almohadas sobre la plataforma central (docs/guerra-de-almohadas.md)
+        BuildPillowRing(root, new Vector3(0f, RingY, 0f), CarpetPad.Kind.Edificio, 2, $"{Name}#ring");   // (2026-11-04) el ring de almohadas sobre la plataforma central (docs/areas/guerra-de-almohadas.md)
         SoftGround.Plant(root, center + Vector3.down * 0.1f, new Vector2(64f, 64f), 77);   // colchón de musgo bajo toda la arboleda
         WorldLabel wl = root.gameObject.AddComponent<WorldLabel>(); wl.text = "Arboleda residencial (casas de árbol)"; wl.height = DeckY + 5f;
         return root;
     }
 
-    // ── LA RESIDENCIA COMO EDIFICIO-ÁRBOL (Berón 2026-11-05; docs/residencia.md) ─────────────────
+    // ── LA RESIDENCIA COMO EDIFICIO-ÁRBOL (Berón 2026-11-05; docs/areas/residencia.md) ─────────────────
     /// <summary>Habitaciones: las 30 de antes (5 libres para quien llegue).</summary>
     public const int RoomCount = 30;
     /// <summary>Por piso de 40 × 40 m: 2 columnas y 4 filas de habitación con terraza, menos el sitio de los aseos.</summary>
@@ -228,14 +228,14 @@ public static class ResidentialBuilder
         Solid(t, new Vector3(0f, 0.2f, 0f), new Vector3(W - 0.4f, 0.1f, D - 0.4f), marbleDark, "Estilobato");
         // Cama, mesilla y armario (sin baño: se usan los aseos comunes; sin lámpara ni estante: no hay techo ni paredes).
         // LA CAMA-LITERA DE 8 (Berón 2026-11-04: «las camas de las residencias … para 4 personas»; y luego «la cama de 4 se convierte en
-        // litera, de modo que se mantiene solo una cama por residencia»; docs/pijamadas.md). UNA sola pieza por casa, de dos pisos, cada
+        // litera, de modo que se mantiene solo una cama por residencia»; docs/areas/pijamadas.md). UNA sola pieza por casa, de dos pisos, cada
         // uno un colchón de 4 plazas de 3,60 × 2,10 (armazón 3,70 × 2,30, de x −4,45 a −0,75 y de z 1,15 a 3,45): cabecero alto en +z,
         // una almohada y una plaza de 90 cm por persona en cada piso (Bedroom.LieSpot). Los que viven allí duermen abajo. SIN ESCALERA
         // (regla de plataformas 3): al piso de arriba se sube TREPANDO por el poste del pie (Climbable, como a los árboles); barandilla
         // por los lados abiertos de arriba.
         Transform bed = KitchenProps.Root(t, "Cama", new Vector3(-2.6f, 0.25f, 2.3f));
         float upperTop = BedUpperTop;   // cara de arriba del colchón de arriba (sobre la raíz de la cama; el de abajo, a 0,5)
-        KitchenProps.C(bed, new Vector3(0f, 0.2f, 0f), new Vector3(BedWidth + 0.1f, 0.3f, BedLength + 0.2f), WoodDark, 0f, "Armazon");   // colchón de 3,60 × 2,10 (docs/medidas-muebles.md)
+        KitchenProps.C(bed, new Vector3(0f, 0.2f, 0f), new Vector3(BedWidth + 0.1f, 0.3f, BedLength + 0.2f), WoodDark, 0f, "Armazon");   // colchón de 3,60 × 2,10 (docs/areas/medidas-muebles.md)
         KitchenProps.C(bed, new Vector3(0f, 0.42f, 0f), new Vector3(BedWidth, 0.16f, BedLength), new Color(0.95f, 0.95f, 0.93f), 0f, "Colchon");
         KitchenProps.C(bed, new Vector3(0f, 0.52f, -0.15f), new Vector3(BedWidth + 0.04f, 0.06f, BedLength * 0.62f), Blanket(ownerIdx), 0f, "Manta");
         KitchenProps.C(bed, new Vector3(0f, upperTop - 0.22f, 0f), new Vector3(BedWidth + 0.1f, 0.12f, BedLength + 0.2f), WoodDark, 0f, "Armazon_arriba");
@@ -322,7 +322,7 @@ public static class ResidentialBuilder
         return t;
     }
 
-    // ── EL RING DE ALMOHADAS (2026-11-04; docs/guerra-de-almohadas.md) ──────────────────────────────────────────────────────
+    // ── EL RING DE ALMOHADAS (2026-11-04; docs/areas/guerra-de-almohadas.md) ──────────────────────────────────────────────────────
     // Berón: «se deben crear guerras de almohadas en un ring que se debe crear en la residencia, el ring debe ser creado con la regla
     // para que tenga las dimensiones necesarias para que se enfrenten todos los residentes del santuario y debe estar lleno de
     // almohadas y la base es una cama colosal». Una plataforma 8 m por encima de la central (sobre sus propias columnas), con la

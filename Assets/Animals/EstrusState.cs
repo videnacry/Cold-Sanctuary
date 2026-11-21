@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// CELO (estro) como **hechizo-estado** (docs/environmental-navigation.md §4.2; reproducción paso 1). Un ADULTO entra
+/// CELO (estro) como **hechizo-estado** (docs/sistemas/environmental-navigation.md §4.2; reproducción paso 1). Un ADULTO entra
 /// en celo por un ciclo rítmico; mientras dura, **deposita el canal `Estrus`** en la `TraceField` (rastro que atrae
 /// parejas) y expone <see cref="InEstrus"/> para los deseos/cortejo (paso 2). Auto-añadido en `Animal.Init`.
 ///

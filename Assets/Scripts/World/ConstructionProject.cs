@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// OBRA EN CURSO (docs/jornada-y-rotacion.md, docs/construction-simulation.md): un área que aún se está construyendo (ballet,
+/// OBRA EN CURSO (docs/sistemas/jornada-y-rotacion.md, docs/areas/construction-simulation.md): un área que aún se está construyendo (ballet,
 /// artes marciales, calistenia…). Cada día el equipo de Construcción hace dos misiones: LLEVAR el material del día (palés al
 /// pie de la obra) y TRABAJARLO. Cuando se completan los días de obra, el área queda TERMINADA y sus misiones (entrenamientos)
 /// se abren a todos.
@@ -346,7 +346,7 @@ public class ConstructionProject : MonoBehaviour
         }
         if (_material != null) _material.gameObject.SetActive(materialOnSite && !Finished);
         if (_scaffold != null) _scaffold.gameObject.SetActive(!Finished);
-        if (_done != null) _done.gameObject.SetActive(Finished);   // terminada: aparece el área acabada de verdad (docs/obras-dojo-ballet.md)
+        if (_done != null) _done.gameObject.SetActive(Finished);   // terminada: aparece el área acabada de verdad (docs/areas/obras-dojo-ballet.md)
         if (reform && TryGetComponent(out FloorForms ff)) ff.ShowConstruction(!Finished);   // (una reforma: su andamio y sus palés a la vista mientras dure)
         if (Finished) EndAllShifts();
         ShowPieces();

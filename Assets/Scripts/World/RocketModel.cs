@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// EL COHETE, CON FORMA DE COHETE (ronda 7, 2026-11-05; docs/lanzadera-de-cohetes.md): modelo low-poly de 18 m de la clase Electron
+/// EL COHETE, CON FORMA DE COHETE (ronda 7, 2026-11-05; docs/areas/lanzadera-de-cohetes.md): modelo low-poly de 18 m de la clase Electron
 /// con sus etapas: nueve toberas, faldón, aletas, primera etapa, interetapa, segunda etapa y cofia ojival con su punta. Son mallas
 /// de revolución de caras planas (<see cref="Lathe"/>), no cubos. El origen es la base de las toberas.
 /// </summary>

@@ -32,7 +32,7 @@ public static class AnimalPrefabGenerator
         ("Whale",     "WhaleBehavior"),
         ("Penguin",   "PenguinBehavior"),   // fauna de hielo (necesita un .fbx en Assets/Animals/Penguin/Models/)
         ("Orca",      "OrcaBehavior"),       // fauna de hielo (necesita un .fbx en Assets/Animals/Orca/Models/)
-        // Territorio polar (docs/reglas-animales.md): cuerpo de cubos, no necesitan .fbx.
+        // Territorio polar (docs/reglas/reglas-animales.md): cuerpo de cubos, no necesitan .fbx.
         ("Walrus",         "WalrusBehavior"),
         ("EmperorPenguin", "EmperorPenguinBehavior"),
         ("Reindeer",       "ReindeerBehavior"),
@@ -60,7 +60,7 @@ public static class AnimalPrefabGenerator
         ("Meerkat",     "MeerkatBehavior"),
         ("SnowBee",     "SnowBeeBehavior"),
         ("SnowSpider",  "SnowSpiderBehavior"),   // araña de las nieves: caza abejas en los árboles carnívoros
-        // Especies de las eras del microcosmos (docs/era-species-behavior.md): sin prefab, AreaMicrocosmos no las planta.
+        // Especies de las eras del microcosmos (docs/sistemas/era-species-behavior.md): sin prefab, AreaMicrocosmos no las planta.
         ("Scorpion",    "ScorpionBehavior"),
         ("CamelSpider", "CamelSpiderBehavior"),
         ("Woodlouse",   "WoodlouseBehavior"),

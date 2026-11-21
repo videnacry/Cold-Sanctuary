@@ -1,3 +1,8 @@
+---
+resumen: "Una fila por ronda de Unity. El probador la copia del run log. Si un contador sube más de un 50 % sobre la media de las 3 rondas anteriores, se abre un Hn en hallazgos.md aunque todo pase."
+temas: [pruebas, unity]
+estado: vigente
+---
 # Contadores por ronda
 
 Una fila por ronda de Unity. El probador la copia del run log. **Si un contador sube más de un 50 % sobre la media de las 3 rondas

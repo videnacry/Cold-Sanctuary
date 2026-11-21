@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Identidad de ESPECIE como componente (docs/anima-dissolving-animal.md, etapa 5). Guarda el nombre de especie/
+/// Identidad de ESPECIE como componente (docs/sistemas/anima-dissolving-animal.md, etapa 5). Guarda el nombre de especie/
 /// arquetipo (Bear, Wolf, Human…) y **aplica** sus stats base (físicas/mentales del catálogo `Archetypes`) + los
 /// **pensamientos base** de la especie al `Anima`. Con esto la "especie" deja de ser el tipo de clase
 /// (`BearBehaviour`, `WolfBehavior`…) y pasa a ser **data de un componente** — el paso para reconstruir un lobo por

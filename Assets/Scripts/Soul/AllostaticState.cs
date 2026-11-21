@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// HUB ALOSTÁTICO (docs/apremios-guardian-observacion.md §3) — el punto donde los hechizos-estado EXTERNOS modulan al
+/// HUB ALOSTÁTICO (docs/sistemas/apremios-guardian-observacion.md §3) — el punto donde los hechizos-estado EXTERNOS modulan al
 /// Guardián (`MoodDynamics`), sin que este tenga que conocerlos:
 ///   • <see cref="ExtraLoad"/> — carga añadida por MIEDO / DUELO / ABSTINENCIA (se suma a la carga alostática del Guardián).
 ///   • <see cref="Sedation"/>  — sedación química del ESTUPEFACIENTE (amortigua el sufrimiento, como la observación, pero

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// GALVARINO VUELVE CON SU GENTE (docs/microcosmos-historias-3.md). Un lof mapuche de las tierras de Arauco, noviembre de 1557: Galvarino,
+/// GALVARINO VUELVE CON SU GENTE (docs/microcosmos/microcosmos-historias-3.md). Un lof mapuche de las tierras de Arauco, noviembre de 1557: Galvarino,
 /// a quien los españoles castigaron cortándole las manos tras la batalla de Lagunillas, vuelve con los suyos. Se cuenta con dignidad y SIN
 /// IMÁGENES DE DAÑO NI COMBATE: la historia va de la machi que lo cura, de la gente que lo cuida y de la palabra que da en el koyag.
 /// Lo que pasó después (Millarapue) se narra, no se juega. Las frases son de juego; los hechos, de La Araucana y las crónicas.

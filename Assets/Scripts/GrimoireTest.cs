@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Unidad de test del REPERTORIO de doble vía (docs/capabilities-and-embodiment.md §2), por `TestProbe`. Verifica que
+/// Unidad de test del REPERTORIO de doble vía (docs/sistemas/capabilities-and-embodiment.md §2), por `TestProbe`. Verifica que
 /// un hechizo se puede usar por la vía CORPORAL (anatomía) **o** por la MÁGICA (aprendido en el `Grimoire`), y que el
 /// grimorio es universal pero **bloqueado/vacío** hasta `Learn`. Determinista (grimorio standalone + un `Anima` real).
 /// </summary>

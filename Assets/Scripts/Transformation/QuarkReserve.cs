@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// SUSTRATO DE QUARKS del S4 (docs/magic-metabolism-progression.md §16). En el nivel más profundo el mago ya no
+/// SUSTRATO DE QUARKS del S4 (docs/sistemas/magic-metabolism-progression.md §16). En el nivel más profundo el mago ya no
 /// guarda "tantos gramos de cada elemento" sino **quarks crudos** (materia de nucleones) y los **transforma en el
 /// elemento que use** — los quarks sirven para **TODAS** las pools (biológica, de elementos y, desintegrados, de
 /// energía). Así usar cualquier hechizo gasta, en el fondo, quarks. Física real: cada nucleón (protón/neutrón) =

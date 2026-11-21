@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// ERNESTO GUEVARA Y ALBERTO GRANADO EN SAN PABLO (docs/microcosmos-historias-3.md). La colonia de leprosos de San Pablo (Loreto, Perú), junio
+/// ERNESTO GUEVARA Y ALBERTO GRANADO EN SAN PABLO (docs/microcosmos/microcosmos-historias-3.md). La colonia de leprosos de San Pablo (Loreto, Perú), junio
 /// de 1952: dos jóvenes argentinos, un estudiante de medicina y un bioquímico, al final de su viaje por Sudamérica, trabajan con los enfermos.
 /// Solo el lado humanista: ningún arma, nada de su vida posterior salvo una línea de la ficha, que dice lo discutido sin juicio.
 /// Las frases son de juego; los hechos, de los diarios de los dos (Notas de viaje; Con el Che por Sudamérica) y de Anderson (1997).

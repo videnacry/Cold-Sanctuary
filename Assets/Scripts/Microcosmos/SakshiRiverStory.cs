@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// EL RÍO DE SAKSHI (docs/microcosmos-sakshi-origin.md): el microcosmos de la Sala de Yoga, al que la Magnate envía al
+/// EL RÍO DE SAKSHI (docs/microcosmos/microcosmos-sakshi-origin.md): el microcosmos de la Sala de Yoga, al que la Magnate envía al
 /// recién llegado tras su primera clase (Berón 2026-10-27). Antes de Ambrosio: el río arrastró a SAKSHI, una cría, lejos de
 /// los suyos y la dejó en la orilla sin fuerzas; solo puede OBSERVAR.
 ///  1. El jugador (Kushal) llega a la orilla y la ve. Una araña pequeña, con poca hambre, se acerca con sigilo: prefiere

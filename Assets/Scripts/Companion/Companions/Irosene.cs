@@ -2,7 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// Irosene (70+) — pasión, motivación, sociabilidad. Comportamiento propio (sobre `MoodState`); stats desde el
-/// arquetipo "Irosene". Canal primario = Satisfacción (se configura en `MoodState`). Ver docs/character-irosene.md.
+/// arquetipo "Irosene". Canal primario = Satisfacción (se configura en `MoodState`). Ver docs/personajes/fichas-antiguas/character-irosene.md.
 /// Ficha: docs/personajes/irosene.md.</summary>
 public class Irosene : MonoBehaviour
 {

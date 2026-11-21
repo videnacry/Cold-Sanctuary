@@ -1,6 +1,6 @@
 using UnityEngine;
 
-/// <summary>LOS MAPAS A MANO DE LA TANDA 7 (2026-11-12; petición 75, regla M9; docs/microcosmos-mapas-a-mano.md §Tanda 6).</summary>
+/// <summary>LOS MAPAS A MANO DE LA TANDA 7 (2026-11-12; petición 75, regla M9; docs/microcosmos/microcosmos-mapas-a-mano.md §Tanda 6).</summary>
 public static partial class MicroStoryMaps
 {
     // ══ PATANJALI, invierno seco del s. II a. C.: sobre la Sala de Yoga ════════════════════════════════════════════════════════════════════════

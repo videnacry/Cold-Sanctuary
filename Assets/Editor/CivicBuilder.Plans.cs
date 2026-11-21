@@ -3,7 +3,7 @@ using System.Globalization;
 using UnityEngine;
 
 /// <summary>
-/// LOS PUEBLOS DESDE SU MAPA REAL (docs/microcosmos-pueblos-mapas.md; Berón 2026-11-03: «sería ideal acceder a mapas de esos
+/// LOS PUEBLOS DESDE SU MAPA REAL (docs/microcosmos/microcosmos-pueblos-mapas.md; Berón 2026-11-03: «sería ideal acceder a mapas de esos
 /// pueblos, de modo que se amplía su estructura y así entran actividades del santuario … y estructuras naturales como ríos, lagos,
 /// montañas, etc., con su estilo de la época-lugar y adaptación para humanos-insectos y humanos»).
 /// Cada historia de era avanzada tiene su PLANO (<see cref="PlanText"/>): las calles de su trazado real, su río, su lago, sus
@@ -42,7 +42,7 @@ internal static partial class CivicBuilder
     // Un pueblo de dos barrios (Bruce Lee: Kowloon al oeste, Seattle al este): la región y el estilo de cada punto del plano.
     static System.Func<Vector2, (string region, Style st)> _quarterAt;
 
-    // ══ LOS PLANOS (fuentes en docs/microcosmos-pueblos-mapas.md) ═══════════════════════════════════════════════════════
+    // ══ LOS PLANOS (fuentes en docs/microcosmos/microcosmos-pueblos-mapas.md) ═══════════════════════════════════════════════════════
     // Formato, una línea por elemento («|» separa campos; los puntos «x z» separados por comas; metros reales):
     //   calle Nombre | ancho | x z, x z…      rio / canal Nombre | ancho | x z, x z…     muralla Nombre | – | x z, x z…
     //   lago Nombre | rx rz | x z             colina / monte Nombre | radio alto | x z    campo / mar Nombre | ancho fondo | x z
@@ -50,7 +50,7 @@ internal static partial class CivicBuilder
     //   relleno | n | x z  (n casas y talleres a lo largo de las calles, empezando cerca de x z)
     //   (2026-11-04, regla 16) Tipo | x z | actual: fuente   — una posición sacada de un MAPA DE HOY (el plano histórico no traía
     //   ese lugar de entrenamiento, ocio, recuperación o trabajo); el edificio es el NATIVO de la época (MicroStyles.CivicName). Sin
-    //   ese tercer campo, la posición es del plano histórico (fuentes en docs/microcosmos-pueblos-mapas.md).
+    //   ese tercer campo, la posición es del plano histórico (fuentes en docs/microcosmos/microcosmos-pueblos-mapas.md).
     static readonly Dictionary<string, string> PlanText = new Dictionary<string, string>
     {
         // CROTONA (~530 a. C.): retícula de plateiai E-O junto al mar Jonio (este), el río Esaro al norte, la acrópolis sobre el
@@ -1192,7 +1192,7 @@ relleno | 40 | 0 120",
             case MicroStyles.Civic.Estudio: return Building(t, title, "Escuela", title, Vector3.zero, 0f, new Vector2(14f, 10f), st, S("pizarra", 0, 0, 1.6f, 0.4f, "Pizarra"), S("mesa", 0, 0, 2f, 1f, "Pupitres"), S("estante", 0, 0, 0.8f, 2f, maya ? "Códices de papel amate" : "Libros"));
             case MicroStyles.Civic.Entrenamiento:
             {
-                // (2026-11-04) EL LUGAR DE ENTRENAR DE SU ÉPOCA Y LUGAR, con sus aparatos nativos (TrainingKit; docs/microcosmos-entrenamiento-eras.md).
+                // (2026-11-04) EL LUGAR DE ENTRENAR DE SU ÉPOCA Y LUGAR, con sus aparatos nativos (TrainingKit; docs/microcosmos/microcosmos-entrenamiento-eras.md).
                 string kind = MicroStyles.TrainingKind(e, Year);
                 if (kind == null) return null;
                 AreaFunctionSite site = Building(t, title, "Centro de entrenamiento", title, Vector3.zero, 0f, kind == "futbol_tregua" || kind == "estadio" || kind == "palin" || kind == "tewaarathon" || kind == "pelota_nacional" ? new Vector2(16f, 18f) : new Vector2(16f, 14f), st, TrainingKit(kind));
@@ -1230,7 +1230,7 @@ relleno | 40 | 0 120",
 
     /// <summary>
     /// (2026-11-04) LOS APARATOS NATIVOS de cada clase de lugar de entrenar (MicroStyles.TrainingKind; MicroFurniture.Training;
-    /// fuentes en docs/microcosmos-entrenamiento-eras.md). Cada uno es un puesto de las funciones «ent_*» del registro.
+    /// fuentes en docs/microcosmos/microcosmos-entrenamiento-eras.md). Cada uno es un puesto de las funciones «ent_*» del registro.
     /// </summary>
     static (string key, Vector2 at, Vector2 size, string label)[] TrainingKit(string kind)
     {
@@ -1255,7 +1255,7 @@ relleno | 40 | 0 120",
             case "hebert": return new[] { S("pista_carreras", 0, 0, 2.4f, 12f, "Parcours (método natural)"), S("barra_fija", 0, 0, 2.3f, 1.6f, "Barra de suspensión"), S("potro", 0, 0, 0.9f, 2.3f, "Plinto de saltos"), S("balon", 0, 0, 0.8f, 0.8f, "Balón") };
             case "futbol_tregua": return new[] { S("campo", 0, 0, 7f, 11f, "Campo en la tierra de nadie"), S("balon", 0, 0, 0.8f, 0.8f, "Balón de cuero (o una lata de carne)") };
             case "club_deportivo": return new[] { S("pesas", 0, 0, 2f, 1.2f, "Barra y discos"), S("barra_fija", 0, 0, 2.3f, 1.6f, "Barra fija"), S("pista_carreras", 0, 0, 2.4f, 12f, "Pista"), S("saco", 0, 0, 1.3f, 0.6f, "Saco de boxeo") };
-            // (2026-11-05) La tanda 3 (docs/microcosmos-historias-3.md).
+            // (2026-11-05) La tanda 3 (docs/microcosmos/microcosmos-historias-3.md).
             case "palin": return new[] { S("campo", 0, 0, 7f, 11f, "Paliwe (cancha de palín)"), S("armero", 0, 0, 1.6f, 0.4f, "Wiño (palos curvos)"), S("balon", 0, 0, 0.8f, 0.8f, "Pali (bola de cuero)") };
             case "warachikuy": return new[] { S("pista_carreras", 0, 0, 2.4f, 12f, "Carrera al cerro"), S("diana", 0, 0, 1f, 0.4f, "Blanco de la honda (waraka)"), S("armero", 0, 0, 1.6f, 0.4f, "Hondas y pututus de los chasquis") };
             case "tewaarathon": return new[] { S("campo", 0, 0, 7f, 11f, "Campo de tewaarathon"), S("armero", 0, 0, 1.6f, 0.4f, "Palos de nogal con su red"), S("balon", 0, 0, 0.8f, 0.8f, "Pelota de piel de ciervo") };

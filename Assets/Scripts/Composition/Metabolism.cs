@@ -13,7 +13,7 @@ public class NutrientNeed
 }
 
 /// <summary>
-/// METABOLISMO / apetito y límite de absorción (docs/stats-as-truth.md §9). Base científica: los animales
+/// METABOLISMO / apetito y límite de absorción (docs/sistemas/stats-as-truth.md §9). Base científica: los animales
 /// regulan **nutrientes por separado** (apetitos específicos, geometría nutricional) y la **proteína manda**
 /// (*protein leverage*); cada nutriente es un **pool** que se agota (BMR) → **deuda** → **apetito**; el que más
 /// falta = **antojo** (`Craving`), que decide **qué cazar y qué parte** (el oso polar craves grasa → come la

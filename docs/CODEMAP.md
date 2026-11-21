@@ -10,7 +10,7 @@ _Total: 1040 tipos._
 - **ActionPrep** (class) — `Assets/Animals/ActionPrep.cs`
 - **ActionsPrep** (class) — `Assets/Animals/ActionsPrep.cs`
 - **Animal** (class) — `Assets/Animals/Animal.cs`
-- **AnimalPopulations** (class) — `Assets/Animals/AnimalPopulations.cs` — Registro de poblaciones vivas POR ESPECIE (docs/anima-dissolving-animal.md, etapa 5).
+- **AnimalPopulations** (class) — `Assets/Animals/AnimalPopulations.cs` — Registro de poblaciones vivas POR ESPECIE (docs/sistemas/anima-dissolving-animal.md, etapa 5).
 - **AntBehavior** (class) — `Assets/Animals/Ant/AntBehavior.cs`
 - **AntlionBehavior** (class) — `Assets/Animals/Antlion/AntlionBehavior.cs`
 - **AphidBehavior** (class) — `Assets/Animals/Aphid/AphidBehavior.cs`
@@ -18,7 +18,7 @@ _Total: 1040 tipos._
 - **ArcticHareBehavior** (class) — `Assets/Animals/ArcticHare/ArcticHareBehavior.cs`
 - **ArcticTernBehavior** (class) — `Assets/Animals/ArcticTern/ArcticTernBehavior.cs`
 - **BearBehaviour** (class) — `Assets/Animals/Bear/BearBehaviour.cs`
-- **BroodRide** (class) — `Assets/Animals/BroodRide.cs` — CUIDADO DE LA CRÍA de los artrópodos que lo tienen (docs/era-species-behavior.md §4).
+- **BroodRide** (class) — `Assets/Animals/BroodRide.cs` — CUIDADO DE LA CRÍA de los artrópodos que lo tienen (docs/sistemas/era-species-behavior.md §4).
 - **BunnyBehavior** (class) — `Assets/Animals/Bunny/BunnyBehavior.cs`
 - **CamelSpiderBehavior** (class) — `Assets/Animals/CamelSpider/CamelSpiderBehavior.cs`
 - **Capability** (class) — `Assets/Animals/Capability.cs` — Claves de CAPACIDAD/hechizo para la confianza-por-uso ( / `RecordUse`).
@@ -28,63 +28,63 @@ _Total: 1040 tipos._
 - **CricketBehavior** (class) — `Assets/Animals/Cricket/CricketBehavior.cs`
 - **DeerBehavior** (class) — `Assets/Animals/Deer/DeerBehavior.cs`
 - **Den** (class) — `Assets/Animals/Den.cs` — SITIO DE GUARIDA (la guarida de nieve del oso, la caseta del malamute):
-- **Desire** (class) — `Assets/Animals/DesireCatalog.cs` — Un DESEO seleccionable (docs/volition-selection-engine.md §3):
-- **DietPreference** (class) — `Assets/Animals/DietPreference.cs` — PREFERENCIA DE DIETA (docs/microcosmos-sakshi-origin.md §5, apremios §8) — el "sabor":
+- **Desire** (class) — `Assets/Animals/DesireCatalog.cs` — Un DESEO seleccionable (docs/sistemas/volition-selection-engine.md §3):
+- **DietPreference** (class) — `Assets/Animals/DietPreference.cs` — PREFERENCIA DE DIETA (docs/microcosmos/microcosmos-sakshi-origin.md §5, apremios §8) — el "sabor":
 - **DungBeetleBehavior** (class) — `Assets/Animals/DungBeetle/DungBeetleBehavior.cs`
 - **EarthwormBehavior** (class) — `Assets/Animals/Earthworm/EarthwormBehavior.cs`
 - **EarwigBehavior** (class) — `Assets/Animals/Earwig/EarwigBehavior.cs`
-- **Egg** (class) — `Assets/Animals/Egg.cs` — HUEVO de verdad (docs/ciclo-de-vida.md; Berón 2026-11-01):
+- **Egg** (class) — `Assets/Animals/Egg.cs` — HUEVO de verdad (docs/sistemas/ciclo-de-vida.md; Berón 2026-11-01):
 - **EmperorPenguinBehavior** (class) — `Assets/Animals/EmperorPenguin/EmperorPenguinBehavior.cs`
-- **EstrusState** (class) — `Assets/Animals/EstrusState.cs` — CELO (estro) como **hechizo-estado** (docs/environmental-navigation.md §4.2; reproducción paso 1).
+- **EstrusState** (class) — `Assets/Animals/EstrusState.cs` — CELO (estro) como **hechizo-estado** (docs/sistemas/environmental-navigation.md §4.2; reproducción paso 1).
 - **FaunaCounters** (class) — `Assets/Animals/FaunaCounters.cs` — (2026-11-13, ronda 82) LOS CONTADORES DE LA FAUNA, EN UNA LÍNEA CADA MINUTO.
 - **FireflyBehavior** (class) — `Assets/Animals/Firefly/FireflyBehavior.cs`
-- **Forager** (class) — `Assets/Animals/Forager.cs` — Componente de FORRAJEO (docs/anima-dissolving-animal.md).
+- **Forager** (class) — `Assets/Animals/Forager.cs` — Componente de FORRAJEO (docs/sistemas/anima-dissolving-animal.md).
 - **FoxBehavior** (class) — `Assets/Animals/Fox/FoxBehavior.cs`
 - **FrozenProbe** (class) — `Assets/Animals/FrozenProbe.cs` — (2026-11-14, rondas 94–95) SONDA DE UN ANIMAL «QUIETO CON CAMINO».
 - **GhostCrabBehavior** (class) — `Assets/Animals/GhostCrab/GhostCrabBehavior.cs`
 - **GrasshopperBehavior** (class) — `Assets/Animals/Grasshopper/GrasshopperBehavior.cs`
-- **Habit** (class) — `Assets/Animals/Habit.cs` — HÁBITO NATURAL (docs/natural-interactions.md):
+- **Habit** (class) — `Assets/Animals/Habit.cs` — HÁBITO NATURAL (docs/sistemas/natural-interactions.md):
 - **HabitEffect** (enum) — `Assets/Animals/Ethogram.cs` — Qué le hace al ser una actividad de su etograma.
-- **Hydration** (class) — `Assets/Animals/Hydration.cs` — SED Y AGUA (docs/ciclo-de-vida.md; antes «beber:
+- **Hydration** (class) — `Assets/Animals/Hydration.cs` — SED Y AGUA (docs/sistemas/ciclo-de-vida.md; antes «beber:
 - **LadybugBehavior** (class) — `Assets/Animals/Ladybug/LadybugBehavior.cs`
-- **LifeHistory** (class) — `Assets/Animals/LifeHistory.cs` — HISTORIA NATURAL de las especies del santuario (docs/ciclo-de-vida.md; Berón 2026-11-01:
-- **Locomotion** (class) — `Assets/Animals/Locomotion.cs` — Componente de LOCOMOCIÓN (docs/anima-dissolving-animal.md, etapa 2).
+- **LifeHistory** (class) — `Assets/Animals/LifeHistory.cs` — HISTORIA NATURAL de las especies del santuario (docs/sistemas/ciclo-de-vida.md; Berón 2026-11-01:
+- **Locomotion** (class) — `Assets/Animals/Locomotion.cs` — Componente de LOCOMOCIÓN (docs/sistemas/anima-dissolving-animal.md, etapa 2).
 - **MalamuteBehavior** (class) — `Assets/Animals/Malamute/MalamuteBehavior.cs`
 - **MantisBehavior** (class) — `Assets/Animals/Mantis/MantisBehavior.cs`
-- **MaternityDen** (class) — `Assets/Animals/MaternityDen.cs` — GUARIDA DE MATERNIDAD (docs/ciclo-de-vida.md):
-- **MatingSignal** (class) — `Assets/Animals/MatingSignal.cs` — SEÑAL DE CORTEJO a distancia (docs/era-species-behavior.md §3):
+- **MaternityDen** (class) — `Assets/Animals/MaternityDen.cs` — GUARIDA DE MATERNIDAD (docs/sistemas/ciclo-de-vida.md):
+- **MatingSignal** (class) — `Assets/Animals/MatingSignal.cs` — SEÑAL DE CORTEJO a distancia (docs/sistemas/era-species-behavior.md §3):
 - **MeerkatBehavior** (class) — `Assets/Animals/Meerkat/MeerkatBehavior.cs`
-- **Metamorphosis** (class) — `Assets/Animals/Metamorphosis.cs` — METAMORFOSIS de los insectos (docs/insect-biology-audit.md).
+- **Metamorphosis** (class) — `Assets/Animals/Metamorphosis.cs` — METAMORFOSIS de los insectos (docs/fauna/insect-biology-audit.md).
 - **MuskOxBehavior** (class) — `Assets/Animals/MuskOx/MuskOxBehavior.cs`
 - **NavTrace** (class) — `Assets/Animals/NavTrace.cs` — (2026-11-11) ¿QUIÉN LE QUITA EL CAMINO A UN ANIMAL? Ronda 55:
 - **OrcaBehavior** (class) — `Assets/Animals/Orca/OrcaBehavior.cs`
-- **PassiveDefence** (class) — `Assets/Animals/PassiveDefence.cs` — DEFENSA PASIVA (docs/era-species-behavior.md §2):
+- **PassiveDefence** (class) — `Assets/Animals/PassiveDefence.cs` — DEFENSA PASIVA (docs/sistemas/era-species-behavior.md §2):
 - **PenguinBehavior** (class) — `Assets/Animals/Penguin/PenguinBehavior.cs`
 - **PenWalker** (class) — `Assets/Animals/PenWalker.cs` — (2026-11-13, ronda 82) LAS CRÍAS DEL RECINTO DE LA CRÍA ANDAN SIN NAVMESH.
 - **Physiognomy** (class) — `Assets/Animals/Physiognomy.cs`
 - **PolarSkuaBehavior** (class) — `Assets/Animals/PolarSkua/PolarSkuaBehavior.cs`
-- **PostNatalProfile** (class) — `Assets/Animals/PostNatalProfile.cs` — Config POST-NATAL por especie (docs/anima-dissolving-animal.md, etapa 5):
-- **Reaction** (enum) — `Assets/Animals/ThreatResponder.cs` — Reacción ante una amenaza (docs/behavior-system.md):
+- **PostNatalProfile** (class) — `Assets/Animals/PostNatalProfile.cs` — Config POST-NATAL por especie (docs/sistemas/anima-dissolving-animal.md, etapa 5):
+- **Reaction** (enum) — `Assets/Animals/ThreatResponder.cs` — Reacción ante una amenaza (docs/sistemas/behavior-system.md):
 - **ReindeerBehavior** (class) — `Assets/Animals/Reindeer/ReindeerBehavior.cs`
 - **Reproduction** (class) — `Assets/Animals/Reproduction.cs` — REPRODUCCIÓN (ciclo de vida, pasos 2-3:
 - **ScorpionBehavior** (class) — `Assets/Animals/Scorpion/ScorpionBehavior.cs`
 - **ScorpionflyBehavior** (class) — `Assets/Animals/Scorpionfly/ScorpionflyBehavior.cs`
 - **SealBehavior** (class) — `Assets/Animals/Seal/SealBehavior.cs`
-- **SicknessState** (class) — `Assets/Animals/SicknessState.cs` — ENFERMEDAD como **hechizo-estado** (docs/environmental-navigation.md §4.2).
-- **SidewaysGait** (class) — `Assets/Animals/SidewaysGait.cs` — MARCHA DE LADO del cangrejo (docs/era-species-behavior.md §5):
-- **SleepCycle** (class) — `Assets/Animals/SleepCycle.cs` — SUEÑO DÍA/NOCHE (docs/ice-sanctuary-ecology.md §4):
+- **SicknessState** (class) — `Assets/Animals/SicknessState.cs` — ENFERMEDAD como **hechizo-estado** (docs/sistemas/environmental-navigation.md §4.2).
+- **SidewaysGait** (class) — `Assets/Animals/SidewaysGait.cs` — MARCHA DE LADO del cangrejo (docs/sistemas/era-species-behavior.md §5):
+- **SleepCycle** (class) — `Assets/Animals/SleepCycle.cs` — SUEÑO DÍA/NOCHE (docs/fauna/ice-sanctuary-ecology.md §4):
 - **SlugBehavior** (class) — `Assets/Animals/Slug/SlugBehavior.cs`
 - **SnailBehavior** (class) — `Assets/Animals/Snail/SnailBehavior.cs`
 - **SnowBeeBehavior** (class) — `Assets/Animals/SnowBee/SnowBeeBehavior.cs`
 - **SnowPetrelBehavior** (class) — `Assets/Animals/SnowPetrel/SnowPetrelBehavior.cs`
-- **SnowSpiderBehavior** (class) — `Assets/Animals/SnowSpider/SnowSpiderBehavior.cs` — ARAÑA DE LAS NIEVES (docs/ice-sanctuary-ecology.md §2):
-- **SpeciesBody** (class) — `Assets/Animals/SpeciesBody.cs` — Identidad de ESPECIE como componente (docs/anima-dissolving-animal.md, etapa 5).
-- **SpeciesProfile** (class) — `Assets/Animals/SpeciesProfile.cs` — Config ESCALAR por especie (docs/anima-dissolving-animal.md, etapa 5):
+- **SnowSpiderBehavior** (class) — `Assets/Animals/SnowSpider/SnowSpiderBehavior.cs` — ARAÑA DE LAS NIEVES (docs/fauna/ice-sanctuary-ecology.md §2):
+- **SpeciesBody** (class) — `Assets/Animals/SpeciesBody.cs` — Identidad de ESPECIE como componente (docs/sistemas/anima-dissolving-animal.md, etapa 5).
+- **SpeciesProfile** (class) — `Assets/Animals/SpeciesProfile.cs` — Config ESCALAR por especie (docs/sistemas/anima-dissolving-animal.md, etapa 5):
 - **SpiderBehavior** (class) — `Assets/Animals/Spider/SpiderBehavior.cs`
-- **StageProfile** (class) — `Assets/Animals/StageProfile.cs` — Perfil de CICLO DE VIDA por especie (docs/anima-dissolving-animal.md, etapa 5):
+- **StageProfile** (class) — `Assets/Animals/StageProfile.cs` — Perfil de CICLO DE VIDA por especie (docs/sistemas/anima-dissolving-animal.md, etapa 5):
 - **TermiteBehavior** (class) — `Assets/Animals/Termite/TermiteBehavior.cs`
 - **VelvetMiteBehavior** (class) — `Assets/Animals/VelvetMite/VelvetMiteBehavior.cs`
-- **Volition** (class) — `Assets/Animals/Volition.cs` — Motor de VOLICIÓN (docs/volition-selection-engine.md):
+- **Volition** (class) — `Assets/Animals/Volition.cs` — Motor de VOLICIÓN (docs/sistemas/volition-selection-engine.md):
 - **WalrusBehavior** (class) — `Assets/Animals/Walrus/WalrusBehavior.cs`
 - **WanderingAlbatrossBehavior** (class) — `Assets/Animals/WanderingAlbatross/WanderingAlbatrossBehavior.cs`
 - **WaterSource** (class) — `Assets/Animals/WaterSource.cs` — AGUA PARA BEBER (un bebedero, un charco de deshielo):
@@ -96,20 +96,20 @@ _Total: 1040 tipos._
 
 - **AnimalModelImporter** (class) — `Assets/Editor/AnimalModelImporter.cs` — Auto-configures FBX import settings for animal models dropped into Assets/Animals/*/Models/.
 - **AnimalPrefabGenerator** (class) — `Assets/Editor/AnimalPrefabGenerator.cs` — Genera un GameObject/prefab por especie a partir del FBX ya importado en Assets/Animals/[Especie]/Models/ y del script de comportamiento existente (WolfBehavior, FoxBehavior, etc).
-- **AreaMicrocosmos** (class) — `Assets/Editor/AreaMicrocosmos.cs` — EL MICROCOSMOS DE CADA ÁREA (docs/microcosmos-areas.md):
+- **AreaMicrocosmos** (class) — `Assets/Editor/AreaMicrocosmos.cs` — EL MICROCOSMOS DE CADA ÁREA (docs/microcosmos/microcosmos-areas.md):
 - **CheapMaterialsPass** (class) — `Assets/Editor/CheapMaterialsPass.cs` — (2026-11-11) TODO OPACO Y BARATO EN LOS ASSETS (petición #152 de Berón, sonda de la ronda 65:
-- **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.BruceLee.cs` — EL PUEBLO DE BRUCE LEE (docs/microcosmos-bruce-lee.md §5, docs/microcosmos-reglas-edificacion.md):
-- **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.Enclose.cs` — EDIFICIOS CERRADOS (docs/plan-microcosmos-realismo.md §3.3, P1–P4; Berón 2026-11-18:
-- **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.Eras2.cs` — LAS ERAS QUE FALTABAN (docs/microcosmos-civilizaciones.md §8–9):
-- **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.Famosos.cs` — LOS PUEBLOS DE LOS FAMOSOS (docs/microcosmos-famosos.md; Berón 2026-11-04).
+- **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.BruceLee.cs` — EL PUEBLO DE BRUCE LEE (docs/microcosmos/microcosmos-bruce-lee.md §5, docs/reglas/microcosmos-reglas-edificacion.md):
+- **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.Enclose.cs` — EDIFICIOS CERRADOS (docs/microcosmos/plan-microcosmos-realismo.md §3.3, P1–P4; Berón 2026-11-18:
+- **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.Eras2.cs` — LAS ERAS QUE FALTABAN (docs/microcosmos/microcosmos-civilizaciones.md §8–9):
+- **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.Famosos.cs` — LOS PUEBLOS DE LOS FAMOSOS (docs/microcosmos/microcosmos-famosos.md; Berón 2026-11-04).
 - **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.Homes.cs` — REGLA 6 DE EDIFICACIÓN:
-- **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.Maya.cs` — LAKAMHA' (PALENQUE), 683 (docs/microcosmos-maya-pakal.md).
-- **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.Musica.cs` — LOS PUEBLOS DE LA MÚSICA (docs/microcosmos-musica.md; Berón 2026-11-05).
-- **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.Plans.cs` — LOS PUEBLOS DESDE SU MAPA REAL (docs/microcosmos-pueblos-mapas.md; Berón 2026-11-03:
-- **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.Terrain.cs` — EL RELIEVE DE LOS PUEBLOS, CON ASPECTO REAL (docs/microcosmos-pueblos-mapas.md §Relieve; Berón 2026-11-03:
-- **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.Towns.cs` — LOS PUEBLOS DE LOS CIENTÍFICOS E HISTÓRICOS (docs/microcosmos-cientificos.md; Berón 2026-11-01:
-- **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.cs` — LOS EDIFICIOS REALES DE CADA ERA en los microcosmos civilizados (docs/microcosmos-civilizaciones.md §8; Berón 2026-11-01:
-- **CompassionSceneBuilder** (class) — `Assets/Editor/CompassionSceneBuilder.cs` — SIMULACIONES DE COMPASIÓN (docs/compassion-simulations.md):
+- **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.Maya.cs` — LAKAMHA' (PALENQUE), 683 (docs/microcosmos/microcosmos-maya-pakal.md).
+- **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.Musica.cs` — LOS PUEBLOS DE LA MÚSICA (docs/microcosmos/microcosmos-musica.md; Berón 2026-11-05).
+- **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.Plans.cs` — LOS PUEBLOS DESDE SU MAPA REAL (docs/microcosmos/microcosmos-pueblos-mapas.md; Berón 2026-11-03:
+- **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.Terrain.cs` — EL RELIEVE DE LOS PUEBLOS, CON ASPECTO REAL (docs/microcosmos/microcosmos-pueblos-mapas.md §Relieve; Berón 2026-11-03:
+- **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.Towns.cs` — LOS PUEBLOS DE LOS CIENTÍFICOS E HISTÓRICOS (docs/microcosmos/microcosmos-cientificos.md; Berón 2026-11-01:
+- **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.cs` — LOS EDIFICIOS REALES DE CADA ERA en los microcosmos civilizados (docs/microcosmos/microcosmos-civilizaciones.md §8; Berón 2026-11-01:
+- **CompassionSceneBuilder** (class) — `Assets/Editor/CompassionSceneBuilder.cs` — SIMULACIONES DE COMPASIÓN (docs/microcosmos/compassion-simulations.md):
 - **DialogueAssetCreator** (class) — `Assets/Editor/DialogueAssetCreator.cs` — Editor utility that creates pre-populated DialogueSequence assets.
 - **EditorInbox** (class) — `Assets/Editor/EditorInbox.cs` — ENTRADA DIRECTA DEL EDITOR (pruebas en vivo sin ratón ni teclado):
 - **EraHubSceneBuilder** (class) — `Assets/Editor/EraHubSceneBuilder.cs` — SALA DE ERAS (Berón, 2026-10-23:
@@ -117,242 +117,242 @@ _Total: 1040 tipos._
 - **HeadlessVerify** (class) — `Assets/Editor/HeadlessVerify.cs` — Verificación por LÍNEA DE COMANDOS:
 - **InicioSceneBuilder** (class) — `Assets/Editor/InicioSceneBuilder.cs` — ESCENA INICIO (Berón 2026-10-30:
 - **InsectGallerySceneBuilder** (class) — `Assets/Editor/InsectGallerySceneBuilder.cs` — GALERÍA DE INSECTOS-HUMANOS (Berón, 2026-10-23/24:
-- **MicroBiome** (class) — `Assets/Editor/MicroBiome.Famosos.cs` — FLORA Y FAUNA DE LOS PUEBLOS DE LOS FAMOSOS (docs/microcosmos-famosos.md).
-- **MicroBiome** (class) — `Assets/Editor/MicroBiome.Musica.cs` — FLORA Y FAUNA DE LOS PUEBLOS DE LA MÚSICA (docs/microcosmos-musica.md), con su lugar y su estación.
+- **MicroBiome** (class) — `Assets/Editor/MicroBiome.Famosos.cs` — FLORA Y FAUNA DE LOS PUEBLOS DE LOS FAMOSOS (docs/microcosmos/microcosmos-famosos.md).
+- **MicroBiome** (class) — `Assets/Editor/MicroBiome.Musica.cs` — FLORA Y FAUNA DE LOS PUEBLOS DE LA MÚSICA (docs/microcosmos/microcosmos-musica.md), con su lugar y su estación.
 - **MicroBiome** (class) — `Assets/Editor/MicroBiome.cs` — FLORA Y FAUNA NATIVAS de cada microcosmos (Berón, 2026-10-23:
 - **MicrocosmosAreaSceneBuilder** (class) — `Assets/Editor/MicrocosmosAreaSceneBuilder.cs` — ESCENAS DE MICROCOSMOS POR ÁREA (Sala de Yoga, Huerto, Enfermería, Veterinaria, Textil, Mecánica).
-- **MicrocosmosSceneBuilder** (class) — `Assets/Editor/MicrocosmosSceneBuilder.cs` — Genera la ESCENA propia del MICROCOSMOS **Scene1 (Ambrosio / el alba)** — el nivel introductorio de la cueva y el pulgón (docs/microcosmos-level1.md, microcosmos-insects.md §13).
+- **MicrocosmosSceneBuilder** (class) — `Assets/Editor/MicrocosmosSceneBuilder.cs` — Genera la ESCENA propia del MICROCOSMOS **Scene1 (Ambrosio / el alba)** — el nivel introductorio de la cueva y el pulgón (docs/microcosmos/microcosmos-level1.md, microcosmos-insects.md §13).
 - **MicrocosmSpec** (class) — `Assets/Editor/MicrocosmTemplate.cs` — LA PLANTILLA DE MICROCOSMOS (Berón 2026-10-27):
-- **MicroFloorDress** (class) — `Assets/Editor/MicroFloorDress.cs` — LA FORMA DE MICROCOSMOS DE UN PISO, VESTIDA (docs/microcosmos-suelo-y-elementos.md §Elementos):
-- **MicroFurniture** (class) — `Assets/Editor/MicroFurniture.Civic.cs` — LOS MUEBLES DE LOS EDIFICIOS DEL PUEBLO Y LOS FRUTALES (docs/microcosmos-reglas-edificacion.md §8–11; Berón 2026-11-03).
-- **MicroFurniture** (class) — `Assets/Editor/MicroFurniture.Music.cs` — LOS INSTRUMENTOS Y EL EQUIPO DE LA MÚSICA (docs/microcosmos-musica.md, 2026-11-05):
+- **MicroFloorDress** (class) — `Assets/Editor/MicroFloorDress.cs` — LA FORMA DE MICROCOSMOS DE UN PISO, VESTIDA (docs/microcosmos/microcosmos-suelo-y-elementos.md §Elementos):
+- **MicroFurniture** (class) — `Assets/Editor/MicroFurniture.Civic.cs` — LOS MUEBLES DE LOS EDIFICIOS DEL PUEBLO Y LOS FRUTALES (docs/reglas/microcosmos-reglas-edificacion.md §8–11; Berón 2026-11-03).
+- **MicroFurniture** (class) — `Assets/Editor/MicroFurniture.Music.cs` — LOS INSTRUMENTOS Y EL EQUIPO DE LA MÚSICA (docs/microcosmos/microcosmos-musica.md, 2026-11-05):
 - **MicroFurniture** (class) — `Assets/Editor/MicroFurniture.Training.cs` — LOS APARATOS DE ENTRENAR DE CADA ÉPOCA (2026-11-04; Berón:
-- **MicroFurniture** (class) — `Assets/Editor/MicroFurniture.cs` — LOS MUEBLES DETALLADOS DE LOS MICROCOSMOS (docs/microcosmos-reglas-edificacion.md, reglas 3 y 7; Berón 2026-11-01:
+- **MicroFurniture** (class) — `Assets/Editor/MicroFurniture.cs` — LOS MUEBLES DETALLADOS DE LOS MICROCOSMOS (docs/reglas/microcosmos-reglas-edificacion.md, reglas 3 y 7; Berón 2026-11-01:
 - **MicroSnapshot** (class) — `Assets/Editor/MicroSnapshot.cs` — FOTOS DE LOS MICROCOSMOS (para revisarlos sin entrar en Play):
-- **MicroSoilBuilder** (class) — `Assets/Editor/MicroSoilBuilder.cs` — LA CAPA DE TIERRA DE LOS MICROCOSMOS (docs/microcosmos-suelo-y-elementos.md §Capa de tierra; Berón 2026-11-04:
-- **MicroStatue** (class) — `Assets/Editor/MicroStatue.cs` — LAS ESTATUAS DE LOS MICROCOSMOS MODELAN INSECTOS-HUMANOS (docs/microcosmos-suelo-y-elementos.md §Estatuas; Berón 2026-11-04:
+- **MicroSoilBuilder** (class) — `Assets/Editor/MicroSoilBuilder.cs` — LA CAPA DE TIERRA DE LOS MICROCOSMOS (docs/microcosmos/microcosmos-suelo-y-elementos.md §Capa de tierra; Berón 2026-11-04:
+- **MicroStatue** (class) — `Assets/Editor/MicroStatue.cs` — LAS ESTATUAS DE LOS MICROCOSMOS MODELAN INSECTOS-HUMANOS (docs/microcosmos/microcosmos-suelo-y-elementos.md §Estatuas; Berón 2026-11-04:
 - **MicroWater** (class) — `Assets/Editor/MicroWater.cs` — AGUA ALREDEDOR de los mundos virtuales (microcosmos, mundo mob, virtualizaciones):
 - **MobWorldSceneBuilder** (class) — `Assets/Editor/MobWorldSceneBuilder.cs` — Genera la ESCENA propia del mundo mob (docs mob-world-architecture §13).
-- **MythSceneBuilder** (class) — `Assets/Editor/MythSceneBuilder.cs` — EGINA, EL REINO DE LOS MIRMIDONES (docs/microcosmos-myrmidons.md):
-- **PhysicsSceneBuilder** (class) — `Assets/Editor/PhysicsSceneBuilder.cs` — EL MICROCOSMOS DE LA PLANTA ATÓMICA (docs/atomic-plant.md §Microcosmos):
-- **PolarLandscapeBuilder** (class) — `Assets/Editor/PolarLandscapeBuilder.cs` — PAISAJE POLAR del santuario de hielo (docs/ice-sanctuary-ecology.md):
+- **MythSceneBuilder** (class) — `Assets/Editor/MythSceneBuilder.cs` — EGINA, EL REINO DE LOS MIRMIDONES (docs/microcosmos/microcosmos-myrmidons.md):
+- **PhysicsSceneBuilder** (class) — `Assets/Editor/PhysicsSceneBuilder.cs` — EL MICROCOSMOS DE LA PLANTA ATÓMICA (docs/areas/atomic-plant.md §Microcosmos):
+- **PolarLandscapeBuilder** (class) — `Assets/Editor/PolarLandscapeBuilder.cs` — PAISAJE POLAR del santuario de hielo (docs/fauna/ice-sanctuary-ecology.md):
 - **PoseGallery** (class) — `Assets/Editor/PoseGallery.cs` — GALERÍA DE POSTURAS:
-- **QaCheckTool** (class) — `Assets/Editor/QaCheckTool.cs` — EL COMPROBADOR DE QA EN EL EDITOR (2026-11-13, docs/qa-propuesta.md §6):
-- **RendimientoAjustes** (class) — `Assets/Editor/RendimientoAjustes.cs` — AJUSTES DE RENDIMIENTO DEL PROYECTO (docs/rendimiento.md).
+- **QaCheckTool** (class) — `Assets/Editor/QaCheckTool.cs` — EL COMPROBADOR DE QA EN EL EDITOR (2026-11-13, docs/qa/qa-propuesta.md §6):
+- **RendimientoAjustes** (class) — `Assets/Editor/RendimientoAjustes.cs` — AJUSTES DE RENDIMIENTO DEL PROYECTO (docs/plataforma/rendimiento.md).
 - **RendimientoCenso** (class) — `Assets/Editor/RendimientoCenso.cs` — CENSO DE RENDIMIENTO (Berón 2026-11-09):
-- **RendimientoPerfil** (class) — `Assets/Editor/RendimientoPerfil.cs` — QUÉ SCRIPTS CUESTAN, CON NOMBRE (docs/rendimiento.md).
-- **ResidentialBuilder** (class) — `Assets/Editor/ResidentialBuilder.cs` — ARBOLEDA RESIDENCIAL (docs/alfombras-plan.md):
-- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Aereo.cs` — EL SANTUARIO AÉREO, escena propia (Berón 2026-11-05; docs/sitio-nuclear.md §23):
+- **RendimientoPerfil** (class) — `Assets/Editor/RendimientoPerfil.cs` — QUÉ SCRIPTS CUESTAN, CON NOMBRE (docs/plataforma/rendimiento.md).
+- **ResidentialBuilder** (class) — `Assets/Editor/ResidentialBuilder.cs` — ARBOLEDA RESIDENCIAL (docs/areas/alfombras-plan.md):
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Aereo.cs` — EL SANTUARIO AÉREO, escena propia (Berón 2026-11-05; docs/areas/sitio-nuclear.md §23):
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Asamblea.cs` — LA SALA DE ASAMBLEAS (Berón 2026-11-05:
-- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.AtomicPlant.cs` — PLANTA ATÓMICA (docs/atomic-plant.md):
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.AtomicPlant.cs` — PLANTA ATÓMICA (docs/areas/atomic-plant.md):
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.CicloHumano.cs` — ESCENAS DE CICLO DE VIDA DE UNA PERSONA (Berón 2026-11-02:
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.CicloVida.cs` — ESCENAS DE CICLO DE VIDA (Berón 2026-11-01:
-- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.ColdFauna.cs` — LA FAUNA FRÍA DE LOS OTROS SANTUARIOS (Berón 2026-11-05; docs/fauna-fria-santuarios.md):
-- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Construction.cs` — ÁREA DE CONSTRUCCIÓN (docs/construction-simulation.md):
-- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Conversaciones.cs` — ESCENA DE PRUEBA DE LAS CHARLAS (Assets/Scenes/Pruebas/Prueba_Conversaciones; docs/conversaciones.md §Escena de prueba; Berón 2026-11-04:
-- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Cria.cs` — ÁREA DE CRÍA (docs/cria-simulation.md):
-- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Energy.cs` — EL PARQUE ENERGÉTICO (Berón 2026-11-05; docs/energia.md):
-- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.FloorForms.cs` — LAS DOS FORMAS DE CADA PISO (docs/construcciones-elevadas.md §Formas del piso; Berón 2026-11-03):
-- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Fotobio.cs` — LA FACHADA DE FOTOBIORREACTORES DEL ÁRBOL DE LOS CAMPOS (Berón 2026-10-31; docs/fotobiorreactores.md, medidas en ):
-- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.GuardRoom.cs` — LA SALA DE GUARDIA (docs/sala-de-guardia.md):
-- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Helix.cs` — EL MODELO DEL ÁRBOL PARA TODOS LOS EDIFICIOS (Berón 2026-10-30/31; docs/edificio-arbol.md §Migración):
-- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Hospital.cs` — EL HOSPITAL (antes Enfermería; docs/hospital.md).
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.ColdFauna.cs` — LA FAUNA FRÍA DE LOS OTROS SANTUARIOS (Berón 2026-11-05; docs/fauna/fauna-fria-santuarios.md):
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Construction.cs` — ÁREA DE CONSTRUCCIÓN (docs/areas/construction-simulation.md):
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Conversaciones.cs` — ESCENA DE PRUEBA DE LAS CHARLAS (Assets/Scenes/Pruebas/Prueba_Conversaciones; docs/sistemas/conversaciones.md §Escena de prueba; Berón 2026-11-04:
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Cria.cs` — ÁREA DE CRÍA (docs/areas/cria-simulation.md):
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Energy.cs` — EL PARQUE ENERGÉTICO (Berón 2026-11-05; docs/areas/energia.md):
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.FloorForms.cs` — LAS DOS FORMAS DE CADA PISO (docs/areas/construcciones-elevadas.md §Formas del piso; Berón 2026-11-03):
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Fotobio.cs` — LA FACHADA DE FOTOBIORREACTORES DEL ÁRBOL DE LOS CAMPOS (Berón 2026-10-31; docs/areas/fotobiorreactores.md, medidas en ):
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.GuardRoom.cs` — LA SALA DE GUARDIA (docs/areas/sala-de-guardia.md):
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Helix.cs` — EL MODELO DEL ÁRBOL PARA TODOS LOS EDIFICIOS (Berón 2026-10-30/31; docs/areas/edificio-arbol.md §Migración):
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Hospital.cs` — EL HOSPITAL (antes Enfermería; docs/areas/hospital.md).
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.HunterLab.cs` — EL LABORATORIO DE CONTENCIÓN, EN EL SANTUARIO MARINO (Berón 2026-11-05:
-- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Icebergs.cs` — LOS ICEBERGS (docs/sitio-nuclear.md §14 y §20).
-- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Informatica.cs` — LOS DOS PISOS NUEVOS (Berón 2026-11-04; docs/piso-informatica.md y docs/piso-aula.md), en el piso libre de su torre-árbol:
-- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.KitchenPlan.cs` — COCINA DEL RESTAURANTE EN TODA LA PLANTA (docs/restaurant-plan.md §3–6, Berón 2026-10-23):
-- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Launch.cs` — LA LANZADERA DE COHETES (Berón 2026-11-04; docs/lanzadera-de-cohetes.md):
-- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Levels.cs` — ÁREAS POR PISOS (docs/construcciones-elevadas.md §Pisos):
-- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Marine.cs` — EL SANTUARIO MARINO, escena propia (Berón 2026-11-05; docs/sitio-nuclear.md §20 y §25; docs/world-topology-and-planes.md §3.1):
-- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.MarinePlant.cs` — LA PLANTA NUCLEAR BAJO EL MAR (Berón 2026-11-08; docs/sitio-nuclear.md §25):
-- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Masks.cs` — MÁSCARAS Y FONDO ABIERTO DE LOS EDIFICIOS-ÁRBOL (Berón 2026-11-03; docs/mascaras-de-oxigeno.md y docs/edificio-arbol.md §Sin suelo):
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Icebergs.cs` — LOS ICEBERGS (docs/areas/sitio-nuclear.md §14 y §20).
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Informatica.cs` — LOS DOS PISOS NUEVOS (Berón 2026-11-04; docs/areas/piso-informatica.md y docs/areas/piso-aula.md), en el piso libre de su torre-árbol:
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.KitchenPlan.cs` — COCINA DEL RESTAURANTE EN TODA LA PLANTA (docs/areas/restaurant-plan.md §3–6, Berón 2026-10-23):
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Launch.cs` — LA LANZADERA DE COHETES (Berón 2026-11-04; docs/areas/lanzadera-de-cohetes.md):
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Levels.cs` — ÁREAS POR PISOS (docs/areas/construcciones-elevadas.md §Pisos):
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Marine.cs` — EL SANTUARIO MARINO, escena propia (Berón 2026-11-05; docs/areas/sitio-nuclear.md §20 y §25; docs/sistemas/world-topology-and-planes.md §3.1):
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.MarinePlant.cs` — LA PLANTA NUCLEAR BAJO EL MAR (Berón 2026-11-08; docs/areas/sitio-nuclear.md §25):
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Masks.cs` — MÁSCARAS Y FONDO ABIERTO DE LOS EDIFICIOS-ÁRBOL (Berón 2026-11-03; docs/areas/mascaras-de-oxigeno.md y docs/areas/edificio-arbol.md §Sin suelo):
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.MeshMerge.cs` — RENDIMIENTO (Berón 2026-10-24:
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Musica.cs` — EL ÁREA DE MÚSICA (Berón 2026-11-05:
-- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Nuclear.cs` — EL SITIO NUCLEAR (Berón 2026-11-05; docs/sitio-nuclear.md).
-- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.NuclearAccess.cs` — LO DE LA LÍNEA QUE QUEDA EN EL SANTUARIO 1 (docs/sitio-nuclear.md §20):
-- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Obras.cs` — OBRAS CON SU ACABADO YA DISEÑADO (Berón 2026-10-28; docs/obras-dojo-ballet.md):
-- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Orchards.cs` — FRUTALES EN LOS TECHOS DE ALFOMBRAS (Berón 2026-10-30, docs/jardines-frutales.md).
-- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.ProKitchen.cs` — COCINA PROFESIONAL (docs/cocina-profesional.md):
-- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Research.cs` — EDIFICIOS DE INVESTIGACIÓN Y DE PRODUCCIÓN (Berón 2026-10-23/24; docs/laboratorios-investigacion.md y docs/edificios-investigacion.md):
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Nuclear.cs` — EL SITIO NUCLEAR (Berón 2026-11-05; docs/areas/sitio-nuclear.md).
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.NuclearAccess.cs` — LO DE LA LÍNEA QUE QUEDA EN EL SANTUARIO 1 (docs/areas/sitio-nuclear.md §20):
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Obras.cs` — OBRAS CON SU ACABADO YA DISEÑADO (Berón 2026-10-28; docs/areas/obras-dojo-ballet.md):
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Orchards.cs` — FRUTALES EN LOS TECHOS DE ALFOMBRAS (Berón 2026-10-30, docs/areas/jardines-frutales.md).
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.ProKitchen.cs` — COCINA PROFESIONAL (docs/areas/cocina-profesional.md):
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Research.cs` — EDIFICIOS DE INVESTIGACIÓN Y DE PRODUCCIÓN (Berón 2026-10-23/24; docs/areas/laboratorios-investigacion.md y docs/areas/edificios-investigacion.md):
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.ResidenceTower.cs` — LA RESIDENCIA, UN EDIFICIO-ÁRBOL NUEVO EN LA ISLA (Berón 2026-11-05:
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Restaurant.cs` — RESTAURANTE GOURMET y ESTUDIO TEXTIL (partes del constructor de la escena).
-- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.RoofGardens.cs` — JARDINES FRUTALES EN LA CIMA DE LOS EDIFICIOS-ÁRBOL (Berón 2026-11-03, docs/jardines-frutales.md §Jardines en la cima):
-- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Slots.cs` — POSICIONES RESERVADAS DE CADA PISO (docs/reglas-plataformas.md, regla 8; Berón 2026-10-28):
-- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Submarines.cs` — LOS SUBMARINOS DEL HOSPITAL (Berón 2026-11-03; docs/submarinos-medicos.md):
-- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Territorio.cs` — EL TERRITORIO POLAR (Berón 2026-11-05; docs/territorio-polar.md):
-- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.TestScenes.cs` — ESCENAS DE PRUEBA (Assets/Scenes/Pruebas; tabla completa en docs/escenas-de-prueba.md).
-- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Towers.cs` — TORRES TEMÁTICAS (Berón 2026-10-29; docs/plano-edificios.md):
-- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Training.cs` — ÁREAS DE ENTRENAMIENTO (docs/jornada-y-rotacion.md):
-- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Transport.cs` — TRANSPORTE EN ALFOMBRAS VOLADORAS (docs/alfombras-plan.md, Berón 2026-10-27):
-- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Tree.cs` — EL ÁRBOL DE LOS CAMPOS v2 (Berón 2026-10-30; docs/edificio-arbol.md, medidas en y el modelo genérico , construido con SampleSceneBuilder.Helix.cs, el mismo que las torres):
-- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.VerticalFarm.cs` — EL HUERTO VERTICAL (Berón 2026-11-08; docs/produccion-maquinaria.md §2026-11-08; medidas en ):
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.RoofGardens.cs` — JARDINES FRUTALES EN LA CIMA DE LOS EDIFICIOS-ÁRBOL (Berón 2026-11-03, docs/areas/jardines-frutales.md §Jardines en la cima):
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Slots.cs` — POSICIONES RESERVADAS DE CADA PISO (docs/reglas/reglas-plataformas.md, regla 8; Berón 2026-10-28):
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Submarines.cs` — LOS SUBMARINOS DEL HOSPITAL (Berón 2026-11-03; docs/areas/submarinos-medicos.md):
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Territorio.cs` — EL TERRITORIO POLAR (Berón 2026-11-05; docs/areas/territorio-polar.md):
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.TestScenes.cs` — ESCENAS DE PRUEBA (Assets/Scenes/Pruebas; tabla completa en docs/qa/escenas-de-prueba.md).
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Towers.cs` — TORRES TEMÁTICAS (Berón 2026-10-29; docs/areas/plano-edificios.md):
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Training.cs` — ÁREAS DE ENTRENAMIENTO (docs/sistemas/jornada-y-rotacion.md):
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Transport.cs` — TRANSPORTE EN ALFOMBRAS VOLADORAS (docs/areas/alfombras-plan.md, Berón 2026-10-27):
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Tree.cs` — EL ÁRBOL DE LOS CAMPOS v2 (Berón 2026-10-30; docs/areas/edificio-arbol.md, medidas en y el modelo genérico , construido con SampleSceneBuilder.Helix.cs, el mismo que las torres):
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.VerticalFarm.cs` — EL HUERTO VERTICAL (Berón 2026-11-08; docs/areas/produccion-maquinaria.md §2026-11-08; medidas en ):
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.WildCaps.cs` — LOS CASQUETES SILVESTRES SIN BOSQUE (Berón 2026-11-05:
-- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.WorldMix.cs` — LA MEZCLA DEL MUNDO EN EL HUERTO Y EN CONSTRUCCIÓN (Berón 2026-11-05; reglas S14 y F14; docs/huertos-y-cultivos.md §Métodos del mundo, docs/construccion-sostenible.md §Técnicas del mundo).
-- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Yoga.cs` — LOS PISOS DE YOGA (Berón 2026-11-04; docs/yoga-pisos.md).
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.WorldMix.cs` — LA MEZCLA DEL MUNDO EN EL HUERTO Y EN CONSTRUCCIÓN (Berón 2026-11-05; reglas S14 y F14; docs/areas/huertos-y-cultivos.md §Métodos del mundo, docs/areas/construccion-sostenible.md §Técnicas del mundo).
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Yoga.cs` — LOS PISOS DE YOGA (Berón 2026-11-04; docs/areas/yoga-pisos.md).
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.cs` — One-shot rough blockout for SampleScene:
 - **ScaleAudit** (class) — `Assets/Editor/ScaleAudit.cs` — AUDITORÍA DE ESCALA (menú):
 - **SceneDiagnostics** (class) — `Assets/Editor/SceneDiagnostics.cs` — Utilidades rápidas de medición para diagnosticar problemas de escala en la escena.
 - **ScriptProfiler** (class) — `Assets/Editor/ScriptProfiler.cs` — PERFIL DE SCRIPTS (menú Tools/Cold Sanctuary/Perfil de scripts, en Play):
 - **ShotRender** (class) — `Assets/Editor/ShotRender.cs` — (2026-11-19, piloto6) UNA FOTO SIN CIAN.
 - **StorySceneBuilder** (class) — `Assets/Editor/HawthorneDistrict.cs` — HAWTHORNE 2008, EL DISTRITO DESDE CERO (PB-165, Berón 2026-11-19:
-- **StorySceneBuilder** (class) — `Assets/Editor/StorySceneBuilder.Famosos.cs` — MICROCOSMOS DE LOS FAMOSOS (docs/microcosmos-famosos.md; Berón 2026-11-04:
+- **StorySceneBuilder** (class) — `Assets/Editor/StorySceneBuilder.Famosos.cs` — MICROCOSMOS DE LOS FAMOSOS (docs/microcosmos/microcosmos-famosos.md; Berón 2026-11-04:
 - **StorySceneBuilder** (class) — `Assets/Editor/StorySceneBuilder.Maya.cs` — LA HISTORIA MAYA:
-- **StorySceneBuilder** (class) — `Assets/Editor/StorySceneBuilder.Musica.cs` — MICROCOSMOS DE LA MÚSICA (docs/microcosmos-musica.md; Berón 2026-11-05).
-- **StorySceneBuilder** (class) — `Assets/Editor/StorySceneBuilder.Musk.cs` — PILOTO DEL REALISMO (docs/plan-microcosmos-realismo.md, fase 1; Berón 2026-11-18):
+- **StorySceneBuilder** (class) — `Assets/Editor/StorySceneBuilder.Musica.cs` — MICROCOSMOS DE LA MÚSICA (docs/microcosmos/microcosmos-musica.md; Berón 2026-11-05).
+- **StorySceneBuilder** (class) — `Assets/Editor/StorySceneBuilder.Musk.cs` — PILOTO DEL REALISMO (docs/microcosmos/plan-microcosmos-realismo.md, fase 1; Berón 2026-11-18):
 - **StorySceneBuilder** (class) — `Assets/Editor/StorySceneBuilder.MuskCity.cs` — HAWTHORNE 2008:
 - **StorySceneBuilder** (class) — `Assets/Editor/StorySceneBuilder.MuskDetail.cs` — EL DETALLE DEL PILOTO (Microcosmos_ElonMusk, ronda piloto 2 del 2026-11-18:
 - **StorySceneBuilder** (class) — `Assets/Editor/StorySceneBuilder.MuskDetail3.cs` — DETALLE 3 DEL PILOTO (ronda piloto 3 del 2026-11-18:
 - **StorySceneBuilder** (class) — `Assets/Editor/StorySceneBuilder.Omelek.cs` — MICROCOSMOS_ELONMUSKOMELEK:
-- **StorySceneBuilder** (class) — `Assets/Editor/StorySceneBuilder.Scientists.cs` — MICROCOSMOS DE CIENTÍFICOS E HISTÓRICOS (docs/microcosmos-cientificos.md; Berón 2026-11-01).
-- **StorySceneBuilder** (class) — `Assets/Editor/StorySceneBuilder.cs` — MICROCOSMOS DE HISTORIAS (docs/microcosmos-historias.md):
-- **StorySceneBuilder** (class) — `Assets/Editor/Historias/Historia.Atahualpa.cs` — CÓMO VIVÍAN LOS INCAS (docs/microcosmos-historias-3.md; Berón 2026-11-05:
-- **StorySceneBuilder** (class) — `Assets/Editor/Historias/Historia.Beethoven.cs` — BEETHOVEN Y EL ESTRENO DE LA NOVENA (docs/microcosmos-historias-3.md).
-- **StorySceneBuilder** (class) — `Assets/Editor/Historias/Historia.CheGuevara.cs` — ERNESTO GUEVARA Y ALBERTO GRANADO EN SAN PABLO (docs/microcosmos-historias-3.md).
-- **StorySceneBuilder** (class) — `Assets/Editor/Historias/Historia.Cleopatra.cs` — CLEOPATRA Y LOS AÑOS SIN CRECIDA (docs/microcosmos-historias-3.md).
-- **StorySceneBuilder** (class) — `Assets/Editor/Historias/Historia.Descartes.cs` — DESCARTES Y EL DISCURSO DEL MÉTODO (docs/microcosmos-historias-3.md).
-- **StorySceneBuilder** (class) — `Assets/Editor/Historias/Historia.EloyAlfaro.cs` — ELOY ALFARO Y EL TREN DE QUITO (docs/microcosmos-historias-3.md).
-- **StorySceneBuilder** (class) — `Assets/Editor/Historias/Historia.Galvarino.cs` — GALVARINO VUELVE CON SU GENTE (docs/microcosmos-historias-3.md).
-- **StorySceneBuilder** (class) — `Assets/Editor/Historias/Historia.GranLeyDeLaPaz.cs` — LA GRAN LEY DE LA PAZ (docs/microcosmos-historias-3.md, con la justificación de la elección).
-- **StorySceneBuilder** (class) — `Assets/Editor/Historias/Historia.Hazanas.cs` — LA FERIA DE LAS HAZAÑAS (docs/microcosmos-historias-3.md).
-- **StorySceneBuilder** (class) — `Assets/Editor/Historias/Historia.Langley.cs` — LAS CALCULADORAS DE LANGLEY (docs/microcosmos-historias-3.md).
-- **StorySceneBuilder** (class) — `Assets/Editor/Historias/Historia.Lincoln.cs` — LINCOLN EN GETTYSBURG (docs/microcosmos-historias-3.md, con la decisión:
-- **StorySceneBuilder** (class) — `Assets/Editor/Historias/Historia.PedroSanchez.cs` — PEDRO SÁNCHEZ Y LA MOCIÓN DE CENSURA DE 2018 (docs/microcosmos-historias-3.md).
-- **StorySceneBuilder** (class) — `Assets/Editor/Historias/Historias.Core.cs` — LA TANDA 3 DE MICROCOSMOS DE HISTORIAS (docs/microcosmos-historias-3.md; Berón 2026-11-05).
+- **StorySceneBuilder** (class) — `Assets/Editor/StorySceneBuilder.Scientists.cs` — MICROCOSMOS DE CIENTÍFICOS E HISTÓRICOS (docs/microcosmos/microcosmos-cientificos.md; Berón 2026-11-01).
+- **StorySceneBuilder** (class) — `Assets/Editor/StorySceneBuilder.cs` — MICROCOSMOS DE HISTORIAS (docs/microcosmos/microcosmos-historias.md):
+- **StorySceneBuilder** (class) — `Assets/Editor/Historias/Historia.Atahualpa.cs` — CÓMO VIVÍAN LOS INCAS (docs/microcosmos/microcosmos-historias-3.md; Berón 2026-11-05:
+- **StorySceneBuilder** (class) — `Assets/Editor/Historias/Historia.Beethoven.cs` — BEETHOVEN Y EL ESTRENO DE LA NOVENA (docs/microcosmos/microcosmos-historias-3.md).
+- **StorySceneBuilder** (class) — `Assets/Editor/Historias/Historia.CheGuevara.cs` — ERNESTO GUEVARA Y ALBERTO GRANADO EN SAN PABLO (docs/microcosmos/microcosmos-historias-3.md).
+- **StorySceneBuilder** (class) — `Assets/Editor/Historias/Historia.Cleopatra.cs` — CLEOPATRA Y LOS AÑOS SIN CRECIDA (docs/microcosmos/microcosmos-historias-3.md).
+- **StorySceneBuilder** (class) — `Assets/Editor/Historias/Historia.Descartes.cs` — DESCARTES Y EL DISCURSO DEL MÉTODO (docs/microcosmos/microcosmos-historias-3.md).
+- **StorySceneBuilder** (class) — `Assets/Editor/Historias/Historia.EloyAlfaro.cs` — ELOY ALFARO Y EL TREN DE QUITO (docs/microcosmos/microcosmos-historias-3.md).
+- **StorySceneBuilder** (class) — `Assets/Editor/Historias/Historia.Galvarino.cs` — GALVARINO VUELVE CON SU GENTE (docs/microcosmos/microcosmos-historias-3.md).
+- **StorySceneBuilder** (class) — `Assets/Editor/Historias/Historia.GranLeyDeLaPaz.cs` — LA GRAN LEY DE LA PAZ (docs/microcosmos/microcosmos-historias-3.md, con la justificación de la elección).
+- **StorySceneBuilder** (class) — `Assets/Editor/Historias/Historia.Hazanas.cs` — LA FERIA DE LAS HAZAÑAS (docs/microcosmos/microcosmos-historias-3.md).
+- **StorySceneBuilder** (class) — `Assets/Editor/Historias/Historia.Langley.cs` — LAS CALCULADORAS DE LANGLEY (docs/microcosmos/microcosmos-historias-3.md).
+- **StorySceneBuilder** (class) — `Assets/Editor/Historias/Historia.Lincoln.cs` — LINCOLN EN GETTYSBURG (docs/microcosmos/microcosmos-historias-3.md, con la decisión:
+- **StorySceneBuilder** (class) — `Assets/Editor/Historias/Historia.PedroSanchez.cs` — PEDRO SÁNCHEZ Y LA MOCIÓN DE CENSURA DE 2018 (docs/microcosmos/microcosmos-historias-3.md).
+- **StorySceneBuilder** (class) — `Assets/Editor/Historias/Historias.Core.cs` — LA TANDA 3 DE MICROCOSMOS DE HISTORIAS (docs/microcosmos/microcosmos-historias-3.md; Berón 2026-11-05).
 - **TestImpactTool** (class) — `Assets/Editor/TestImpactTool.cs` — HERRAMIENTAS DE LAS PRUEBAS RÁPIDAS (2026-11-11, scratchpad analisis-pruebas.md):
 - **VirtualMissionSceneBuilder** (class) — `Assets/Editor/VirtualMissionSceneBuilder.cs` — ESCENAS DE VIRTUALIZACIÓN, UNA POR MISIÓN (VirtualMissions).
-- **VisorExport** (class) — `Assets/Editor/VisorExport.cs` — VISOR WEB SIN BUILD (PB-168, docs/visor-web.md).
+- **VisorExport** (class) — `Assets/Editor/VisorExport.cs` — VISOR WEB SIN BUILD (PB-168, docs/plataforma/visor-web.md).
 - **WebLigeraBuild** (class) — `Assets/Editor/WebLigeraBuild.cs` — LOS BUILDS WEBGL LIGEROS (2026-11-13; Berón:
 
 ## Scripts
 
 - **AbsorbentThoughtMob** (class) — `Assets/Scripts/Meditation/AbsorbentThoughtMob.cs` — The "absorbent / obsessive thought" archetype (docs §8):
-- **ActionQueue** (class) — `Assets/Scripts/Control/ActionQueue.cs` — COLA DE ACCIONES de un anima (docs/typed-spells-and-queues.md) — ejecuta s en orden, estilo Sims.
+- **ActionQueue** (class) — `Assets/Scripts/Control/ActionQueue.cs` — COLA DE ACCIONES de un anima (docs/sistemas/typed-spells-and-queues.md) — ejecuta s en orden, estilo Sims.
 - **ActionSteps** (class) — `Assets/Scripts/Control/ActionSteps.cs` — LEY "todo es un superhechizo" (docs/spells-suprahechizo-and-thoughts, stats-as-truth §Hechizos):
-- **ActividadesTest** (class) — `Assets/Scripts/Tests/ActividadesTest.cs` — PRUEBA DE LAS ACTIVIDADES DE VERDAD (grupo 97; docs/actividades-y-uniformes.md; Berón 2026-11-04:
-- **ActivityKit** (class) — `Assets/Scripts/Activities/ActivityKit.cs` — HERRAMIENTAS PARA HACER LAS ACTIVIDADES (docs/actividades-y-uniformes.md; Berón 2026-11-04:
-- **ActivityPerformer** (class) — `Assets/Scripts/Activities/ActivityPerformer.cs` — HACER LA ACTIVIDAD, NO SOLO LLEGAR (docs/actividades-y-uniformes.md; Berón 2026-11-04:
-- **ActivityZone** (enum) — `Assets/Scripts/Soul/ActivityLevel.cs` — Zona de la carga de actividad (docs/consciousness-mechanics.md §activity).
+- **ActividadesTest** (class) — `Assets/Scripts/Tests/ActividadesTest.cs` — PRUEBA DE LAS ACTIVIDADES DE VERDAD (grupo 97; docs/sistemas/actividades-y-uniformes.md; Berón 2026-11-04:
+- **ActivityKit** (class) — `Assets/Scripts/Activities/ActivityKit.cs` — HERRAMIENTAS PARA HACER LAS ACTIVIDADES (docs/sistemas/actividades-y-uniformes.md; Berón 2026-11-04:
+- **ActivityPerformer** (class) — `Assets/Scripts/Activities/ActivityPerformer.cs` — HACER LA ACTIVIDAD, NO SOLO LLEGAR (docs/sistemas/actividades-y-uniformes.md; Berón 2026-11-04:
+- **ActivityZone** (enum) — `Assets/Scripts/Soul/ActivityLevel.cs` — Zona de la carga de actividad (docs/sistemas/consciousness-mechanics.md §activity).
 - **AcuteStressResponse** (class) — `Assets/Scripts/Soul/AcuteStressResponse.cs` — RESPUESTA AGUDA AL ESTRÉS ("el cuerpo se pasa de sus límites") — ciencia real anclada en la química que ya existe:
-- **AddictionState** (class) — `Assets/Scripts/Soul/AddictionState.cs` — ADICCIÓN (docs/apremios-guardian-observacion.md §3) — la sombra del estupefaciente.
+- **AddictionState** (class) — `Assets/Scripts/Soul/AddictionState.cs` — ADICCIÓN (docs/sistemas/apremios-guardian-observacion.md §3) — la sombra del estupefaciente.
 - **Adolescence** (class) — `Assets/Scripts/LifeStage/Adolescence.cs`
 - **Adulthood** (class) — `Assets/Scripts/LifeStage/Adulthood.cs`
-- **AereoBase** (class) — `Assets/Scripts/World/AereoBase.cs` — EL SANTUARIO AÉREO, la escena (docs/sitio-nuclear.md §23):
+- **AereoBase** (class) — `Assets/Scripts/World/AereoBase.cs` — EL SANTUARIO AÉREO, la escena (docs/areas/sitio-nuclear.md §23):
 - **AereoGate** (class) — `Assets/Scripts/World/AereoGate.cs` — El andén de cada casquete del Santuario Aéreo:
-- **AereoLift** (class) — `Assets/Scripts/World/AereoLift.cs` — EL ASCENSOR DEL TRONCO (docs/sitio-nuclear.md §23):
+- **AereoLift** (class) — `Assets/Scripts/World/AereoLift.cs` — EL ASCENSOR DEL TRONCO (docs/areas/sitio-nuclear.md §23):
 - **AereoLiftStop** (class) — `Assets/Scripts/World/AereoLiftStop.cs` — Una parada del :
-- **AereoRule** (class) — `Assets/Scripts/World/AereoLink.cs` — El Santuario Aéreo (docs/sitio-nuclear.md §23; docs/world-topology-and-planes.md §3):
-- **AereoTest** (class) — `Assets/Scripts/Tests/AereoTest.cs` — PRUEBA DEL SANTUARIO AÉREO (Berón 2026-11-05; docs/sitio-nuclear.md §23):
-- **AffordanceKind** (enum) — `Assets/Scripts/World/Affordance.cs` — Qué ofrece un elemento del entorno a un ser vivo (docs/natural-interactions.md).
+- **AereoRule** (class) — `Assets/Scripts/World/AereoLink.cs` — El Santuario Aéreo (docs/areas/sitio-nuclear.md §23; docs/sistemas/world-topology-and-planes.md §3):
+- **AereoTest** (class) — `Assets/Scripts/Tests/AereoTest.cs` — PRUEBA DEL SANTUARIO AÉREO (Berón 2026-11-05; docs/areas/sitio-nuclear.md §23):
+- **AffordanceKind** (enum) — `Assets/Scripts/World/Affordance.cs` — Qué ofrece un elemento del entorno a un ser vivo (docs/sistemas/natural-interactions.md).
 - **AiBrain** (class) — `Assets/Scripts/Control/AiBrain.cs` — El cerebro por defecto de un ser:
-- **AiCluster** (class) — `Assets/Scripts/World/AiCluster.cs` — EL CLÚSTER DE IA LOCAL DEL SANTUARIO (piso de Informática, torre de Ciencias; docs/piso-informatica.md; Berón 2026-11-04:
+- **AiCluster** (class) — `Assets/Scripts/World/AiCluster.cs` — EL CLÚSTER DE IA LOCAL DEL SANTUARIO (piso de Informática, torre de Ciencias; docs/areas/piso-informatica.md; Berón 2026-11-04:
 - **AlertaPisoNuevoTest** (class) — `Assets/Scripts/Tests/AlertaPisoNuevoTest.cs` — TEST DE LA ALERTA DE PISO NUEVO (grupo 76; manual §11, Berón 2026-11-04).
-- **AlimentadorTest** (class) — `Assets/Scripts/Tests/AlimentadorTest.cs` — PRUEBA DEL ALIMENTADOR (Berón 2026-11-05; docs/alimentador.md):
-- **AllostaticState** (class) — `Assets/Scripts/Soul/AllostaticState.cs` — HUB ALOSTÁTICO (docs/apremios-guardian-observacion.md §3) — el punto donde los hechizos-estado EXTERNOS modulan al Guardián (`MoodDynamics`), sin que este tenga que conocerlos:
+- **AlimentadorTest** (class) — `Assets/Scripts/Tests/AlimentadorTest.cs` — PRUEBA DEL ALIMENTADOR (Berón 2026-11-05; docs/areas/alimentador.md):
+- **AllostaticState** (class) — `Assets/Scripts/Soul/AllostaticState.cs` — HUB ALOSTÁTICO (docs/sistemas/apremios-guardian-observacion.md §3) — el punto donde los hechizos-estado EXTERNOS modulan al Guardián (`MoodDynamics`), sin que este tenga que conocerlos:
 - **AmbrosioStory** (class) — `Assets/Scripts/Microcosmos/AmbrosioStory.cs` — LA HISTORIA DE AMBROSIO (primer microcosmos del recién llegado; Berón 2026-10-26).
 - **Anima** (class) — `Assets/Scripts/Anima.cs`
-- **AnimaController** (class) — `Assets/Scripts/Control/AnimaController.cs` — Capa de CONTROL intercambiable de un `Anima` (docs/anima-architecture.md §11.5):
+- **AnimaController** (class) — `Assets/Scripts/Control/AnimaController.cs` — Capa de CONTROL intercambiable de un `Anima` (docs/sistemas/anima-architecture.md §11.5):
 - **AnimalRadar** (class) — `Assets/Scripts/UI/FollowingArrays/FollowingElementBehavior/AnimalRadar.cs`
 - **AnimalVitals** (class) — `Assets/Scripts/World/AnimalVitals.cs` — REGISTRO VITAL de un animal para el CENSO (`censo` en el lanzador, y `[ECO]` en el log):
-- **AnimaNameplate** (class) — `Assets/Scripts/UI/AnimaNameplate.cs` — ETIQUETAS DE NOMBRE sobre las animas (docs/typed-spells-and-queues.md):
-- **AnimaStatusHUD** (class) — `Assets/Scripts/UI/AnimaStatusHUD.cs` — HUD de ESTADO de un Ánima (docs/consciousness-mechanics.md §2) — hace VISIBLE lo que hay que autorregular:
-- **AnimaStatusPanels** (class) — `Assets/Scripts/UI/AnimaStatusPanels.cs` — HUD DECLARATIVO de estado — la mitad de CÓDIGO (docs/consciousness-mechanics.md §UI):
+- **AnimaNameplate** (class) — `Assets/Scripts/UI/AnimaNameplate.cs` — ETIQUETAS DE NOMBRE sobre las animas (docs/sistemas/typed-spells-and-queues.md):
+- **AnimaStatusHUD** (class) — `Assets/Scripts/UI/AnimaStatusHUD.cs` — HUD de ESTADO de un Ánima (docs/sistemas/consciousness-mechanics.md §2) — hace VISIBLE lo que hay que autorregular:
+- **AnimaStatusPanels** (class) — `Assets/Scripts/UI/AnimaStatusPanels.cs` — HUD DECLARATIVO de estado — la mitad de CÓDIGO (docs/sistemas/consciousness-mechanics.md §UI):
 - **AnimaTarget** (class) — `Assets/Scripts/Control/AnimaTarget.cs` — Adaptador para un que no lo es por sí mismo (compañeros, la Magnate, seres por composición…).
-- **AnimaThoughtHUD** (class) — `Assets/Scripts/UI/AnimaThoughtHUD.cs` — HUD del PENSAMIENTO del ser que MANEJA el jugador (docs/microcosmos-dungbeetle-level.md §5).
+- **AnimaThoughtHUD** (class) — `Assets/Scripts/UI/AnimaThoughtHUD.cs` — HUD del PENSAMIENTO del ser que MANEJA el jugador (docs/microcosmos/microcosmos-dungbeetle-level.md §5).
 - **AnimationsName** (class) — `Assets/Scripts/AnimationsName.cs`
-- **AnymaFactory** (class) — `Assets/Scripts/Control/AnymaFactory.cs` — FÁBRICA DE ANIMAS (docs/anyma-factory-and-control.md §2) — crea variantes a partir de un .
+- **AnymaFactory** (class) — `Assets/Scripts/Control/AnymaFactory.cs` — FÁBRICA DE ANIMAS (docs/sistemas/anyma-factory-and-control.md §2) — crea variantes a partir de un .
 - **AnymaSpecApplier** (class) — `Assets/Scripts/Control/AnymaSpecApplier.cs` — Aplica un a un anima recién instanciada, UN FRAME después (tras `Animal.Init`), y se autodestruye.
-- **AphidGuide** (class) — `Assets/Scripts/Microcosmos/AphidGuide.cs` — La MASCOTA-GUÍA de la 1ª misión del Microcosmos (docs/microcosmos-insects.md §4).
+- **AphidGuide** (class) — `Assets/Scripts/Microcosmos/AphidGuide.cs` — La MASCOTA-GUÍA de la 1ª misión del Microcosmos (docs/microcosmos/microcosmos-insects.md §4).
 - **AptitudeEvolution** (class) — `Assets/Scripts/AptitudeEvolution.cs` — Evolución lenta de una aptitud por uso/desuso, dentro de una banda alrededor de su valor base.
 - **AptitudeKind** (enum) — `Assets/Scripts/Progression/DerivedStats.cs` — Identifica una de las 12 aptitudes (para recompensas/ganancias por misión).
-- **ArbolCampos** (class) — `Assets/Scripts/World/ArbolCampos.cs` — EL ÁRBOL DE LOS CAMPOS en juego (docs/edificio-arbol.md, v2):
+- **ArbolCampos** (class) — `Assets/Scripts/World/ArbolCampos.cs` — EL ÁRBOL DE LOS CAMPOS en juego (docs/areas/edificio-arbol.md, v2):
 - **ArchetypeProfile** (class) — `Assets/Scripts/Soul/Archetypes.cs` — Perfil de un arquetipo (cuerpo o mente):
-- **AreaCapacity** (class) — `Assets/Scripts/World/AreaCapacity.cs` — REGLA DE CAPACIDAD (Berón 2026-11-04; docs/manual-de-diseno.md, regla S13 = J16:
+- **AreaCapacity** (class) — `Assets/Scripts/World/AreaCapacity.cs` — REGLA DE CAPACIDAD (Berón 2026-11-04; docs/reglas/manual-de-diseno.md, regla S13 = J16:
 - **AreaDesign** (class) — `Assets/Scripts/World/AreaDesign.cs` — DE DÓNDE SALE EL DISEÑO DE CADA ÁREA DEL SANTUARIO (Berón 2026-11-05:
 - **AreaEntry** (class) — `Assets/Scripts/CodeShip/AreaCatalog.cs` — Un área de la ventana «Áreas» (CodeShip areas.ts:
-- **AreaFunctionRegistryTest** (class) — `Assets/Scripts/Tests/AreaFunctionRegistryTest.cs` — TEST DEL REGISTRO DE FUNCIONES DE ÁREA (docs/microcosmos-civilizaciones.md §2).
-- **AreaFunctions** (class) — `Assets/Scripts/Progression/AreaFunctions.cs` — REGISTRO DE FUNCIONES DE ÁREA (docs/microcosmos-civilizaciones.md §2; Berón 2026-11-01:
-- **AreaFunctionSite** (class) — `Assets/Scripts/Microcosmos/AreaFunctionSite.cs` — UN EDIFICIO QUE HACE FUNCIONES (docs/microcosmos-civilizaciones.md §2):
+- **AreaFunctionRegistryTest** (class) — `Assets/Scripts/Tests/AreaFunctionRegistryTest.cs` — TEST DEL REGISTRO DE FUNCIONES DE ÁREA (docs/microcosmos/microcosmos-civilizaciones.md §2).
+- **AreaFunctions** (class) — `Assets/Scripts/Progression/AreaFunctions.cs` — REGISTRO DE FUNCIONES DE ÁREA (docs/microcosmos/microcosmos-civilizaciones.md §2; Berón 2026-11-01:
+- **AreaFunctionSite** (class) — `Assets/Scripts/Microcosmos/AreaFunctionSite.cs` — UN EDIFICIO QUE HACE FUNCIONES (docs/microcosmos/microcosmos-civilizaciones.md §2):
 - **AreaFunctionStation** (class) — `Assets/Scripts/Microcosmos/AreaFunctionStation.cs` — UN PUESTO de un edificio (el fogón, una cama, la esterilla, el muñeco de madera…):
-- **AreaHours** (class) — `Assets/Scripts/World/AreaHours.cs` — HORARIO de un área (docs/typed-spells-and-queues.md / world):
+- **AreaHours** (class) — `Assets/Scripts/World/AreaHours.cs` — HORARIO de un área (docs/sistemas/typed-spells-and-queues.md / world):
 - **AreaInitiator** (class) — `Assets/Scripts/World/AreaInitiator.cs` — INICIACIÓN DE ÁREA (Berón 2026-10-28):
-- **AreaProducer** (class) — `Assets/Scripts/Economy/AreaProducer.cs` — Hace que un área del santuario produzca un recurso (docs/world-topology-and-planes.md §4):
-- **AreaSeat** (class) — `Assets/Scripts/World/AreaSeat.cs` — UN PUESTO DE UN ÁREA (Berón 2026-11-04, regla de capacidad; docs/manual-de-diseno.md §9 C-capacidad):
-- **AreasEnObra** (class) — `Assets/Scripts/Progression/AreasEnObra.cs` — ÁREAS EN OBRA (Berón 2026-11-09; docs/areas-en-obra.md):
+- **AreaProducer** (class) — `Assets/Scripts/Economy/AreaProducer.cs` — Hace que un área del santuario produzca un recurso (docs/sistemas/world-topology-and-planes.md §4):
+- **AreaSeat** (class) — `Assets/Scripts/World/AreaSeat.cs` — UN PUESTO DE UN ÁREA (Berón 2026-11-04, regla de capacidad; docs/reglas/manual-de-diseno.md §9 C-capacidad):
+- **AreasEnObra** (class) — `Assets/Scripts/Progression/AreasEnObra.cs` — ÁREAS EN OBRA (Berón 2026-11-09; docs/areas/areas-en-obra.md):
 - **AreaTask** (class) — `Assets/Scripts/World/AreaTask.cs` — Defines one task available inside a SanctuaryArea.
 - **AreaVendor** (class) — `Assets/Scripts/Economy/AreaVendor.cs` — Handles buying and selling at a specific sanctuary area or at the market.
-- **AreaWork** (class) — `Assets/Scripts/Progression/AreaWork.cs` — CATÁLOGO DE MISIONES DE TRABAJO por área (docs/jornada-y-rotacion.md; base:
+- **AreaWork** (class) — `Assets/Scripts/Progression/AreaWork.cs` — CATÁLOGO DE MISIONES DE TRABAJO por área (docs/sistemas/jornada-y-rotacion.md; base:
 - **ArrangementPattern** (class) — `Assets/Scripts/UI/Palette/ArrangementPattern.cs`
-- **ArrivalExam** (class) — `Assets/Scripts/World/ArrivalExam.cs` — EL EXAMEN DE LLEGADA (docs/iniciacion-medica-investigacion.md, «Propuesta para el juego»):
-- **AsambleaTest** (class) — `Assets/Scripts/Tests/AsambleaTest.cs` — TEST DE LA SALA DE ASAMBLEAS, DEL DISEÑO DE LAS ÁREAS Y DE LA VERACIDAD (docs/piso-asambleas.md, docs/veracidad-frases.md; grupo 77).
+- **ArrivalExam** (class) — `Assets/Scripts/World/ArrivalExam.cs` — EL EXAMEN DE LLEGADA (docs/areas/iniciacion-medica-investigacion.md, «Propuesta para el juego»):
+- **AsambleaTest** (class) — `Assets/Scripts/Tests/AsambleaTest.cs` — TEST DE LA SALA DE ASAMBLEAS, DEL DISEÑO DE LAS ÁREAS Y DE LA VERACIDAD (docs/areas/piso-asambleas.md, docs/sistemas/veracidad-frases.md; grupo 77).
 - **Asana** (class) — `Assets/Scripts/Asana/Asana.cs` — Data asset for an Asana (yoga pose) or basic exercise.
 - **AsanaDetector** (class) — `Assets/Scripts/Asana/AsanaDetector.cs` — Attach to the Player.
 - **AsanaEvaluator** (class) — `Assets/Scripts/Asana/AsanaEvaluator.cs` — IPaletteEvaluator for the asana system.
 - **AsanaFormationMission** (class) — `Assets/Scripts/Meditation/AsanaFormationMission.cs` — Formation mission (docs §7/§8):
 - **AsanaQueue** (class) — `Assets/Scripts/Asana/AsanaQueue.cs` — Manages the active asana and the queue of upcoming ones.
-- **AshtangaPrimary** (class) — `Assets/Scripts/Asana/AshtangaPrimary.cs` — ASHTANGA — Serie Primaria (Yoga Chikitsa), "nivel 1" (docs/ashtanga-primary-series.md).
+- **AshtangaPrimary** (class) — `Assets/Scripts/Asana/AshtangaPrimary.cs` — ASHTANGA — Serie Primaria (Yoga Chikitsa), "nivel 1" (docs/areas/ashtanga-primary-series.md).
 - **ATPRegenSpell** (class) — `Assets/Scripts/Microcosmos/ATPRegenSpell.cs` — REGENERACIÓN PASIVA DE ENERGÍA (ATP) — hechizo de duración ilimitada siempre activo.
 - **Autoabandono** (class) — `Assets/Scripts/Autoabandono.cs` — Deriva el autoabandono (disposición al auto-sacrificio, 0..1) de la tensión entrega ↔ autoconservación (docs/soul-relations-reincarnation §2c).
 - **AutoCameraZone** (class) — `Assets/Scripts/Camera/AutoCameraZone.cs` — Trigger volume that automatically switches the camera mode when Kushal enters, then restores the player's preferred mode when he leaves.
 - **AvatarController** (class) — `Assets/Scripts/Avatar/AvatarController.cs` — Manages which avatar-robot the player is piloting and applies its config to the SurfaceWalker (docs §4).
 - **AvatarLocomotion** (enum) — `Assets/Scripts/Avatar/RobotAvatar.cs` — How an avatar moves — maps to the access plane it unlocks (docs §4, Eje A).
-- **BasalMetabolism** (class) — `Assets/Scripts/Soul/BasalMetabolism.cs` — METABOLISMO BASAL (BMR) — el coste de "solo estar vivo" (docs/apremios-guardian-observacion.md §3.1).
+- **BasalMetabolism** (class) — `Assets/Scripts/Soul/BasalMetabolism.cs` — METABOLISMO BASAL (BMR) — el coste de "solo estar vivo" (docs/sistemas/apremios-guardian-observacion.md §3.1).
 - **Bedroom** (class) — `Assets/Scripts/World/Bedroom.cs` — DORMITORIO de un habitante (arboleda residencial:
 - **BeeSwarm** (class) — `Assets/Scripts/World/BeeSwarm.cs` — EL ENJAMBRE DE PECOREADORAS de una colmena (Berón 2026-11-03:
-- **BigFiveProfile** (struct) — `Assets/Scripts/Soul/BigFive.cs` — Perfil de PERSONALIDAD Big Five / OCEAN (docs/apremios-guardian-observacion.md §8) — el modelo más usado en psicología.
+- **BigFiveProfile** (struct) — `Assets/Scripts/Soul/BigFive.cs` — Perfil de PERSONALIDAD Big Five / OCEAN (docs/sistemas/apremios-guardian-observacion.md §8) — el modelo más usado en psicología.
 - **BirdBehavior** (class) — `Assets/Scripts/BirdBehavior.cs`
-- **BirdRehabPoint** (class) — `Assets/Scripts/World/BirdRehabPoint.cs` — EL REFUGIO DE AVES (Berón 2026-11-05; docs/energia.md §7):
-- **BlendSlot** (class) — `Assets/Scripts/Soul/BlendSlot.cs` — Una ranura de MEZCLA (docs/soul-composition-blend.md):
+- **BirdRehabPoint** (class) — `Assets/Scripts/World/BirdRehabPoint.cs` — EL REFUGIO DE AVES (Berón 2026-11-05; docs/areas/energia.md §7):
+- **BlendSlot** (class) — `Assets/Scripts/Soul/BlendSlot.cs` — Una ranura de MEZCLA (docs/sistemas/soul-composition-blend.md):
 - **BloodBank** (class) — `Assets/Scripts/World/BloodBank.cs` — EL BANCO DE SANGRE DEL HOSPITAL (Berón 2026-11-03:
-- **BloodBankTest** (class) — `Assets/Scripts/Tests/BloodBankTest.cs` — PRUEBA DEL BANCO DE SANGRE (Berón 2026-11-03; docs/hospital.md §Banco de sangre):
+- **BloodBankTest** (class) — `Assets/Scripts/Tests/BloodBankTest.cs` — PRUEBA DEL BANCO DE SANGRE (Berón 2026-11-03; docs/areas/hospital.md §Banco de sangre):
 - **BloodDonorChair** (class) — `Assets/Scripts/World/BloodDonorChair.cs` — EL SILLÓN DE DONANTE del banco de sangre (F):
-- **BloodLoss** (class) — `Assets/Scripts/World/BloodLoss.cs` — PÉRDIDA DE SANGRE de un paciente (docs/hospital.md §Banco de sangre):
+- **BloodLoss** (class) — `Assets/Scripts/World/BloodLoss.cs` — PÉRDIDA DE SANGRE de un paciente (docs/areas/hospital.md §Banco de sangre):
 - **BodyAging** (class) — `Assets/Scripts/Body/BodyAging.cs` — EDAD COMO EFECTO DE LOS STATS (etapa 3 del cuerpo unificado):
 - **BodyInjuries** (class) — `Assets/Scripts/Body/BodyInjuries.cs` — HERIDAS PERMANENTES de un cuerpo (secuelas curadas:
 - **BodyMetabolismTest** (class) — `Assets/Scripts/BodyMetabolismTest.cs` — Unidad de test del METABOLISMO DEL CUERPO (docs/body-metabolism):
-- **BodyPartReactor** (class) — `Assets/Scripts/Emotion/BodyPartReactor.cs` — Una "parte" de la **orquesta** emocional (docs/emotion-model.md §orquesta / traducción).
+- **BodyPartReactor** (class) — `Assets/Scripts/Emotion/BodyPartReactor.cs` — Una "parte" de la **orquesta** emocional (docs/sistemas/emotion-model.md §orquesta / traducción).
 - **BodyPartStats** (class) — `Assets/Scripts/BodyPartStats.cs` — Physical stats for a single body part.
 - **BodyPosition** (class) — `Assets/Scripts/Asana/BodyPosition.cs` — Represents a single body part placement that composes an Asana or Exercise.
 - **BodyPositionButton** (class) — `Assets/Scripts/Asana/BodyPositionButton.cs` — Attach to each UI button in the posture interface.
 - **BodyPositionData** (class) — `Assets/Scripts/Asana/BodyPositionData.cs` — Data-only tag for one canonical BodyPosition — lives on a non-rendered GameObject, used as the data source for the Yoga hologram panel (one per BodyPart).
-- **BodyShape** (class) — `Assets/Scripts/Avatar/BodyShape.cs` — LAS STATS FÍSICAS MOLDEAN EL CUERPO DE CUBOS (docs/body-shape-from-stats.md).
-- **BodyShapeTest** (class) — `Assets/Scripts/Tests/BodyShapeTest.cs` — FORMA DEL CUERPO DESDE LAS STATS (docs/body-shape-from-stats.md):
+- **BodyShape** (class) — `Assets/Scripts/Avatar/BodyShape.cs` — LAS STATS FÍSICAS MOLDEAN EL CUERPO DE CUBOS (docs/sistemas/body-shape-from-stats.md).
+- **BodyShapeTest** (class) — `Assets/Scripts/Tests/BodyShapeTest.cs` — FORMA DEL CUERPO DESDE LAS STATS (docs/sistemas/body-shape-from-stats.md):
 - **BodyTemplate** (class) — `Assets/Scripts/Body/BodyMetabolism.cs` — PLANTILLA DE CUERPO por especie (el "template" sobre el que la vida va escribiendo).
 - **BondActivity** (class) — `Assets/Scripts/Bond/BondActivity.cs` — A practice that builds bond between the player and an IBondable target (companion, animal, object, place, natural element).
 - **BondActivityManager** (class) — `Assets/Scripts/Bond/BondActivityManager.cs` — Manages all BondActivities for the player.
 - **BondEscapeReader** (class) — `Assets/Scripts/Microcosmos/BondEscapeReader.cs` — LECTOR DE ESCAPE POR BOND — lee el estado de huida de los miembros del grupo con alto vínculo y ajusta el impulso de hogar propio para acompañarles.
-- **BondPillar** (class) — `Assets/Scripts/Soul/BondPillar.cs` — PILAR SOCIAL / de BONDS por COMPOSICIÓN (docs/anima-architecture.md · soul-relations-reincarnation §2 — fase 5).
-- **BondSpell** (class) — `Assets/Scripts/Soul/BondSpell.cs` — HECHIZO DE MANIPULACIÓN DE VÍNCULO (docs/anyma-factory-and-control.md §3:
+- **BondPillar** (class) — `Assets/Scripts/Soul/BondPillar.cs` — PILAR SOCIAL / de BONDS por COMPOSICIÓN (docs/sistemas/anima-architecture.md · soul-relations-reincarnation §2 — fase 5).
+- **BondSpell** (class) — `Assets/Scripts/Soul/BondSpell.cs` — HECHIZO DE MANIPULACIÓN DE VÍNCULO (docs/sistemas/anyma-factory-and-control.md §3:
 - **BondType** (enum) — `Assets/Scripts/Bond.cs`
 - **BottomlessFood** (class) — `Assets/Scripts/LifeCycle/BottomlessFood.cs` — CUENCO QUE NUNCA SE ACABA (escenas de ciclo de vida, Berón 2026-11-01:
 - **BreadSource** (class) — `Assets/Scripts/Compassion/BreadSource.cs` — De dónde sale la COMIDA de los escondidos:
-- **BreakfastCook** (class) — `Assets/Scripts/Kitchen/BreakfastCook.cs` — El loop de cocinar el desayuno (docs/kitchen-simulation.md §3).
-- **BreathingMask** (class) — `Assets/Scripts/World/BreathingMask.cs` — MÁSCARAS PARA RESPIRAR EN LOS EDIFICIOS-ÁRBOL (Berón 2026-11-03; docs/mascaras-de-oxigeno.md).
-- **BruceLeeStoryTest** (class) — `Assets/Scripts/Tests/BruceLeeStoryTest.cs` — TEST DEL MICROCOSMOS DE BRUCE LEE (docs/microcosmos-bruce-lee.md; Dojo).
-- **CadenaAlimenticiaTest** (class) — `Assets/Scripts/Tests/CadenaAlimenticiaTest.cs` — PRUEBA DE LA CADENA ALIMENTICIA (Berón 2026-11-05; docs/reglas-animales.md, regla E15):
+- **BreakfastCook** (class) — `Assets/Scripts/Kitchen/BreakfastCook.cs` — El loop de cocinar el desayuno (docs/areas/kitchen-simulation.md §3).
+- **BreathingMask** (class) — `Assets/Scripts/World/BreathingMask.cs` — MÁSCARAS PARA RESPIRAR EN LOS EDIFICIOS-ÁRBOL (Berón 2026-11-03; docs/areas/mascaras-de-oxigeno.md).
+- **BruceLeeStoryTest** (class) — `Assets/Scripts/Tests/BruceLeeStoryTest.cs` — TEST DEL MICROCOSMOS DE BRUCE LEE (docs/microcosmos/microcosmos-bruce-lee.md; Dojo).
+- **CadenaAlimenticiaTest** (class) — `Assets/Scripts/Tests/CadenaAlimenticiaTest.cs` — PRUEBA DE LA CADENA ALIMENTICIA (Berón 2026-11-05; docs/reglas/reglas-animales.md, regla E15):
 - **CameraManager** (class) — `Assets/Scripts/Camera/CameraManager.cs` — Central camera controller for Cold Sanctuary.
 - **CameraZoneTrigger** (class) — `Assets/Scripts/Camera/CameraZoneTrigger.cs` — Attach to a trigger collider surrounding a zone (e.g.
 - **CampoMagnetico** (class) — `Assets/Scripts/World/CampoMagnetico.cs` — CAMPO MAGNÉTICO de una puerta de la raíz:
 - **CapacidadPisosTest** (class) — `Assets/Scripts/Tests/CapacidadPisosTest.cs` — TEST DE LA REGLA DE CAPACIDAD (grupo 75; manual C8, Berón 2026-11-04).
 - **CarnivoreKeeper** (class) — `Assets/Scripts/World/CarnivoreKeeper.cs` — GUARDIA DEL SANTUARIO:
-- **CarpetPad** (class) — `Assets/Scripts/World/CarpetPad.cs` — ÁREA DE ALFOMBRAS VOLADORAS (docs/alfombras-plan.md, Berón 2026-10-27).
+- **CarpetPad** (class) — `Assets/Scripts/World/CarpetPad.cs` — ÁREA DE ALFOMBRAS VOLADORAS (docs/areas/alfombras-plan.md, Berón 2026-10-27).
 - **Carried** (class) — `Assets/Scripts/World/Carried.cs` — LLEVAR A UN SER (paciente o tripulante) dentro de un vehículo:
 - **CarryToRefuge** (class) — `Assets/Scripts/Prologue/CarryToRefuge.cs` — Misión de CUIDADO:
-- **CastMode** (enum) — `Assets/Scripts/Transformation/SpellBase.cs` — Cómo responde un hechizo a MANTENER pulsada su tecla (docs/stats-as-truth.md §hechizos).
+- **CastMode** (enum) — `Assets/Scripts/Transformation/SpellBase.cs` — Cómo responde un hechizo a MANTENER pulsada su tecla (docs/sistemas/stats-as-truth.md §hechizos).
 - **CavernRule** (class) — `Assets/Scripts/World/CavernRock.cs` — LA ROCA DE LAS CAVERNAS:
 - **CaveTrigger** (class) — `Assets/Scripts/Microcosmos/CaveTrigger.cs` — Zona "cueva" — detecta cuando un ítem de comida entra en su trigger y notifica a para registrarlo como recogido.
 - **ChannelMission** (class) — `Assets/Scripts/Meditation/ChannelMission.cs` — Universal channel mission (docs §7 matrix):
 - **ChannelMob** (class) — `Assets/Scripts/Meditation/ChannelMob.cs` — Universal "channel" archetype (docs §8):
-- **CharacterLevel** (class) — `Assets/Scripts/Progression/CharacterLevel.cs` — Progresión de un personaje por **margas del alma** (docs/creature-stats.md §Progresión):
+- **CharacterLevel** (class) — `Assets/Scripts/Progression/CharacterLevel.cs` — Progresión de un personaje por **margas del alma** (docs/sistemas/creature-stats.md §Progresión):
 - **CheapMaterials** (class) — `Assets/Scripts/World/CheapMaterials.cs` — MATERIALES BARATOS (Berón 2026-11-09, rendimiento):
 - **CheapMaterialsSweeper** (class) — `Assets/Scripts/World/CheapMaterialsSweeper.cs` — (2026-11-11, petición #152) Cada 15 s pasa a mate los materiales de los cuerpos ():
-- **ChecklistAuto** (class) — `Assets/Scripts/ChecklistAuto.cs` — Cubre por CÓDIGO bloques de `docs/testing-checklist.md` que la guía pedía comprobar **a mano en el inspector**, para que queden con evidencia `[TEST]` en el log como el resto.
-- **ChecklistFaunaTest** (class) — `Assets/Scripts/Tests/ChecklistFaunaTest.cs` — Automatiza por `TestProbe` ítems de FAUNA de `docs/testing-checklist.md` §23–§45 que pedían observar el Play:
-- **ChecklistMagicTest** (class) — `Assets/Scripts/Tests/ChecklistMagicTest.cs` — Automatiza por `TestProbe` los ítems de MAGIA de `docs/testing-checklist.md` §19a–§19g (que pedían el HUD del sandbox `Magia_AUTO`):
+- **ChecklistAuto** (class) — `Assets/Scripts/ChecklistAuto.cs` — Cubre por CÓDIGO bloques de `docs/qa/testing-checklist.md` que la guía pedía comprobar **a mano en el inspector**, para que queden con evidencia `[TEST]` en el log como el resto.
+- **ChecklistFaunaTest** (class) — `Assets/Scripts/Tests/ChecklistFaunaTest.cs` — Automatiza por `TestProbe` ítems de FAUNA de `docs/qa/testing-checklist.md` §23–§45 que pedían observar el Play:
+- **ChecklistMagicTest** (class) — `Assets/Scripts/Tests/ChecklistMagicTest.cs` — Automatiza por `TestProbe` los ítems de MAGIA de `docs/qa/testing-checklist.md` §19a–§19g (que pedían el HUD del sandbox `Magia_AUTO`):
 - **ChecklistProbeAnima** (class) — `Assets/Scripts/Tests/ChecklistProbeAnima.cs` — `Anima` de PRUEBA con ESPECIE configurable (solo para los tests `Checklist*Test`):
 - **ChecklistProbeSpell** (class) — `Assets/Scripts/Tests/ChecklistProbeSpell.cs` — Hechizo de PRUEBA (solo para los tests `Checklist*Test`):
-- **ChecklistProgressTest** (class) — `Assets/Scripts/Tests/ChecklistProgressTest.cs` — Automatiza por `TestProbe` ítems de PROGRESIÓN/MENTE de `docs/testing-checklist.md` que quedaron sin verificar en las pasadas manuales:
-- **ChecklistSoulTest** (class) — `Assets/Scripts/Tests/ChecklistSoulTest.cs` — Automatiza por `TestProbe` los ítems del ALMA de `docs/testing-checklist.md` §20–§22 (que pedían leer los logs `[Alma]` del sandbox `AlmaBlend_AUTO`/`AlmaCompartida_AUTO`):
-- **ChemistryHumors** (class) — `Assets/Scripts/Composition/ChemistryHumors.cs` — PUENTE COMPUESTOS → HUMORES (docs/consciousness-mechanics.md §2.2) — cierra el hueco de la cadena química:
+- **ChecklistProgressTest** (class) — `Assets/Scripts/Tests/ChecklistProgressTest.cs` — Automatiza por `TestProbe` ítems de PROGRESIÓN/MENTE de `docs/qa/testing-checklist.md` que quedaron sin verificar en las pasadas manuales:
+- **ChecklistSoulTest** (class) — `Assets/Scripts/Tests/ChecklistSoulTest.cs` — Automatiza por `TestProbe` los ítems del ALMA de `docs/qa/testing-checklist.md` §20–§22 (que pedían leer los logs `[Alma]` del sandbox `AlmaBlend_AUTO`/`AlmaCompartida_AUTO`):
+- **ChemistryHumors** (class) — `Assets/Scripts/Composition/ChemistryHumors.cs` — PUENTE COMPUESTOS → HUMORES (docs/sistemas/consciousness-mechanics.md §2.2) — cierra el hueco de la cadena química:
 - **Childhood** (class) — `Assets/Scripts/LifeStage/Childhood.cs`
 - **ChoiceDialog** (class) — `Assets/Scripts/UI/ChoiceDialog.cs` — DIÁLOGO DE OPCIONES (máquina de virtualización, alfombras voladoras…):
 - **ChoreCategory** (enum) — `Assets/Scripts/CodeShip/Chores/ChoreRun.cs` — Los grupos de la lista de tareas de CodeShip (chore.ts CHORE_CATEGORY), más el taller de los puestos de trabajo y las ideas.
@@ -361,8 +361,8 @@ _Total: 1040 tipos._
 - **CicloHumanoTest** (class) — `Assets/Scripts/Tests/CicloHumanoTest.cs` — PRUEBA DEL CICLO DE VIDA DE UNA PERSONA (grupo 59; Berón 2026-11-02:
 - **CicloVidaPanel** (class) — `Assets/Scripts/LifeCycle/CicloVidaPanel.cs` — ESCENAS DE CICLO DE VIDA (Berón 2026-11-01:
 - **CicloVidaTest** (class) — `Assets/Scripts/Tests/CicloVidaTest.cs` — PRUEBA DEL CICLO DE VIDA en su isla (grupo 58; Berón 2026-11-01:
-- **CivilizedErasTest** (class) — `Assets/Scripts/Tests/CivilizedErasTest.cs` — TEST DE LOS MICROCOSMOS DE ERAS CIVILIZADAS (docs/microcosmos-civilizaciones.md §8–9).
-- **Cleaner** (class) — `Assets/Scripts/Kitchen/Cleaner.cs` — Limpia manchas () por proximidad (docs/kitchen-simulation.md §5).
+- **CivilizedErasTest** (class) — `Assets/Scripts/Tests/CivilizedErasTest.cs` — TEST DE LOS MICROCOSMOS DE ERAS CIVILIZADAS (docs/microcosmos/microcosmos-civilizaciones.md §8–9).
+- **Cleaner** (class) — `Assets/Scripts/Kitchen/Cleaner.cs` — Limpia manchas () por proximidad (docs/areas/kitchen-simulation.md §5).
 - **CleanSpell** (class) — `Assets/Scripts/Kitchen/CleanSpell.cs` — HECHIZO DE LIMPIEZA (docs/spells-suprahechizo §; sanctuary1 onboarding):
 - **Climbable** (class) — `Assets/Scripts/Farming/Climbable.cs` — Marca un objeto por el que se puede TREPAR (árbol, pared).
 - **ClinicalAnalysisSpell** (class) — `Assets/Scripts/Soul/ClinicalSpells.cs` — HECHIZO DE ANÁLISIS CLÍNICO (docs/sanctuary1-level-and-live-tests §4) — el que lanza Linduarda en la enfermería al recibir a Kushal:
@@ -371,37 +371,37 @@ _Total: 1040 tipos._
 - **ClonePose** (class) — `Assets/Scripts/Body/ClonePose.cs` — Posturas para CUERPOS COPIADOS (clones de la Magnate, turistas virtuales):
 - **ClothingCraftingArea** (class) — `Assets/Scripts/Clothing/ClothingCraftingArea.cs` — The sanctuary's clothing crafting workshop.
 - **ClothingRecipe** (class) — `Assets/Scripts/Clothing/ClothingRecipe.cs` — Defines one clothing item craftable in the ClothingCraftingArea.
-- **CodeBlock** (class) — `Assets/Scripts/CodeShip/CodeExercise.cs` — UN RETO DE CÓDIGO (portado de CodeShip, src/modules/mind-duel/domain/exercise.ts; docs/plan-microcosmos-realismo.md §4.4).
-- **CodeChallenges** (class) — `Assets/Scripts/CodeShip/CodeChallenges.cs` — EL CATÁLOGO DE RETOS DE CÓDIGO DE LOS MICROCOSMOS (docs/plan-microcosmos-realismo.md §4.4; CodeShip reglas.md §4:
+- **CodeBlock** (class) — `Assets/Scripts/CodeShip/CodeExercise.cs` — UN RETO DE CÓDIGO (portado de CodeShip, src/modules/mind-duel/domain/exercise.ts; docs/microcosmos/plan-microcosmos-realismo.md §4.4).
+- **CodeChallenges** (class) — `Assets/Scripts/CodeShip/CodeChallenges.cs` — EL CATÁLOGO DE RETOS DE CÓDIGO DE LOS MICROCOSMOS (docs/microcosmos/plan-microcosmos-realismo.md §4.4; CodeShip reglas.md §4:
 - **CodeChallengeSheet** (class) — `Assets/Scripts/CodeShip/CodeChallengeSheet.cs` — LA HOJA DEL RETO DE CÓDIGO (IMGUI; CodeShip:
-- **CodeShipLogicTest** (class) — `Assets/Scripts/Tests/CodeShipLogicTest.cs` — PRUEBA DE LA LÓGICA PORTADA DE CODESHIP (grupo 119; docs/plan-microcosmos-realismo.md §4, Berón 2026-11-18:
+- **CodeShipLogicTest** (class) — `Assets/Scripts/Tests/CodeShipLogicTest.cs` — PRUEBA DE LA LÓGICA PORTADA DE CODESHIP (grupo 119; docs/microcosmos/plan-microcosmos-realismo.md §4, Berón 2026-11-18:
 - **CoinWallet** (class) — `Assets/Scripts/Economy/CoinWallet.cs` — Tracks the player's coin balance.
-- **ColdBirds** (class) — `Assets/Scripts/World/SnowPetrelLife.cs` — LAS AVES FRÍAS QUE VUELAN con (docs/fauna-fria-santuarios.md), y las del santuario aéreo:
+- **ColdBirds** (class) — `Assets/Scripts/World/SnowPetrelLife.cs` — LAS AVES FRÍAS QUE VUELAN con (docs/fauna/fauna-fria-santuarios.md), y las del santuario aéreo:
 - **CombatAbility** (class) — `Assets/Scripts/Combat/CombatAbility.cs` — Defines one combat ability usable against an IngredientMob.
 - **CombatAbilityBar** (class) — `Assets/Scripts/Combat/CombatAbilityBar.cs` — Manages the player's equipped ability bar (up to 10 slots, keys 1–0).
 - **CombatTargetSelector** (class) — `Assets/Scripts/Combat/CombatTargetSelector.cs` — Sistema de selección de target (Tab-targeting + clic).
 - **CommunicationSpell** (class) — `Assets/Scripts/Mind/CommunicationSpell.cs` — HECHIZO DE COMUNICACIÓN — "todas las animas pueden hablar entre sí".
-- **CompassionMission** (class) — `Assets/Scripts/Compassion/CompassionMission.cs` — SIMULACIÓN DE COMPASIÓN (docs/compassion-simulations.md):
+- **CompassionMission** (class) — `Assets/Scripts/Compassion/CompassionMission.cs` — SIMULACIÓN DE COMPASIÓN (docs/microcosmos/compassion-simulations.md):
 - **ComponentExt** (class) — `Assets/Scripts/Control/ComponentExt.cs` — `GetComponent&lt;T&gt;() ?? AddComponent&lt;T&gt;()` NO funciona en el editor:
 - **ConfirmationPanel** (class) — `Assets/Scripts/UI/ConfirmationPanel.cs` — Modal yes/no confirmation panel — separate from the linear DialogueSystem.
 - **ConstructionProgressTest** (class) — `Assets/Scripts/Tests/ConstructionProgressTest.cs` — PRUEBA DE LA OBRA VISIBLE (Berón 2026-11-04:
-- **ConstructionProject** (class) — `Assets/Scripts/World/ConstructionProject.cs` — OBRA EN CURSO (docs/jornada-y-rotacion.md, docs/construction-simulation.md):
-- **ConstructionSubmarine** (class) — `Assets/Scripts/World/ConstructionSubmarine.cs` — EL SUBMARINO DE OBRA (Berón 2026-11-03; docs/submarino-de-obra.md):
+- **ConstructionProject** (class) — `Assets/Scripts/World/ConstructionProject.cs` — OBRA EN CURSO (docs/sistemas/jornada-y-rotacion.md, docs/areas/construction-simulation.md):
+- **ConstructionSubmarine** (class) — `Assets/Scripts/World/ConstructionSubmarine.cs` — EL SUBMARINO DE OBRA (Berón 2026-11-03; docs/areas/submarino-de-obra.md):
 - **ContaminationMonitor** (class) — `Assets/Scripts/AtomicPlant/ContaminationMonitor.cs` — PÓRTICO DE CONTAMINACIÓN de manos y pies (salida de la zona controlada):
 - **ContextColumn** (class) — `Assets/Scripts/CodeShip/ContextColumn.cs` — LA COLUMNA DE CONTEXTO (CodeShip ux-acciones.md §1 reglas 1 y 5:
-- **Conversable** (class) — `Assets/Scripts/Social/Conversable.cs` — MARCA DE CHARLA (docs/conversaciones.md):
-- **ConversationContext** (class) — `Assets/Scripts/Social/ConversationContext.cs` — EL CONTEXTO DE LAS CHARLAS de una escena (docs/conversaciones.md §Temas):
-- **ConversationDirector** (class) — `Assets/Scripts/Social/ConversationDirector.cs` — CHARLAS ENTRE PERSONAS (docs/conversaciones.md; Berón 2026-11-04:
-- **ConversationSandbox** (class) — `Assets/Scripts/Social/ConversationSandbox.cs` — LA SALA DE CHARLAS de la escena de prueba Prueba_Conversaciones (docs/conversaciones.md §Escena de prueba):
-- **ConversationTest** (class) — `Assets/Scripts/Tests/ConversationTest.cs` — PRUEBA DE LAS CHARLAS ENTRE PERSONAS (grupo 88; docs/conversaciones.md; Berón 2026-11-04:
-- **ConversationTopics** (class) — `Assets/Scripts/Social/ConversationTopics.cs` — DE QUÉ HABLAN (docs/conversaciones.md §Temas).
-- **ConversionMode** (enum) — `Assets/Scripts/Soul/SoulMath.cs` — Modo de CONVERSIÓN de stats (docs/soul-relations-reincarnation.md §1):
+- **Conversable** (class) — `Assets/Scripts/Social/Conversable.cs` — MARCA DE CHARLA (docs/sistemas/conversaciones.md):
+- **ConversationContext** (class) — `Assets/Scripts/Social/ConversationContext.cs` — EL CONTEXTO DE LAS CHARLAS de una escena (docs/sistemas/conversaciones.md §Temas):
+- **ConversationDirector** (class) — `Assets/Scripts/Social/ConversationDirector.cs` — CHARLAS ENTRE PERSONAS (docs/sistemas/conversaciones.md; Berón 2026-11-04:
+- **ConversationSandbox** (class) — `Assets/Scripts/Social/ConversationSandbox.cs` — LA SALA DE CHARLAS de la escena de prueba Prueba_Conversaciones (docs/sistemas/conversaciones.md §Escena de prueba):
+- **ConversationTest** (class) — `Assets/Scripts/Tests/ConversationTest.cs` — PRUEBA DE LAS CHARLAS ENTRE PERSONAS (grupo 88; docs/sistemas/conversaciones.md; Berón 2026-11-04:
+- **ConversationTopics** (class) — `Assets/Scripts/Social/ConversationTopics.cs` — DE QUÉ HABLAN (docs/sistemas/conversaciones.md §Temas).
+- **ConversionMode** (enum) — `Assets/Scripts/Soul/SoulMath.cs` — Modo de CONVERSIÓN de stats (docs/sistemas/soul-relations-reincarnation.md §1):
 - **Convictions** (class) — `Assets/Scripts/Mind/Convictions.cs` — CONVICCIONES (Berón, 2026-10-23:
-- **CookingRecipe** (class) — `Assets/Scripts/Kitchen/CookingRecipe.cs` — RECETA de un platillo del restaurante (docs/kitchen-simulation.md, spell-genesis §...
-- **CookingStation** (class) — `Assets/Scripts/Kitchen/CookingStation.cs` — ESTACIÓN DE COCINA de UNA anima (docs/kitchen-simulation.md):
-- **CreatureRig** (class) — `Assets/Scripts/Avatar/CreatureRig.cs` — Mapa CENTRAL de un ser (docs/stats-as-truth.md §Composición):
-- **CriaCareTarget** (class) — `Assets/Scripts/Prologue/CriaCareTarget.cs` — Engancha la rutina de cuidado a los DRIVES REALES de una cría (`Animal`) — docs/cria-simulation.md §2/§3, fauna-gameplay.md.
-- **CriaFeeder** (class) — `Assets/Scripts/Prologue/CriaFeeder.cs` — TOMAS PROGRAMADAS de un recinto de la Cría (docs/cria-simulation.md):
+- **CookingRecipe** (class) — `Assets/Scripts/Kitchen/CookingRecipe.cs` — RECETA de un platillo del restaurante (docs/areas/kitchen-simulation.md, spell-genesis §...
+- **CookingStation** (class) — `Assets/Scripts/Kitchen/CookingStation.cs` — ESTACIÓN DE COCINA de UNA anima (docs/areas/kitchen-simulation.md):
+- **CreatureRig** (class) — `Assets/Scripts/Avatar/CreatureRig.cs` — Mapa CENTRAL de un ser (docs/sistemas/stats-as-truth.md §Composición):
+- **CriaCareTarget** (class) — `Assets/Scripts/Prologue/CriaCareTarget.cs` — Engancha la rutina de cuidado a los DRIVES REALES de una cría (`Animal`) — docs/areas/cria-simulation.md §2/§3, fauna-gameplay.md.
+- **CriaFeeder** (class) — `Assets/Scripts/Prologue/CriaFeeder.cs` — TOMAS PROGRAMADAS de un recinto de la Cría (docs/areas/cria-simulation.md):
 - **CsTheme** (class) — `Assets/Scripts/UI/CsTheme.cs` — EL TEMA DE LOS MENÚS (2026-11-19, Berón:
 - **CsUi** (class) — `Assets/Scripts/UI/CsUi.cs` — LAS PIEZAS DE LA INTERFAZ DE CODESHIP, A SU MEDIDA (2026-11-20, Berón:
 - **CubeBody** (class) — `Assets/Scripts/Avatar/CubeBody.cs` — MODELO CORPORAL DE CUBOS (estilo Minecraft) — construye el cuerpo de un anyma como un GRUPO DE CUBOS, uno por PARTE del cuerpo (`BodyPart`), y **cablea el `CreatureRig`** para que las **asanas/yoga** 
@@ -410,95 +410,95 @@ _Total: 1040 tipos._
 - **CubeGait** (class) — `Assets/Scripts/Avatar/CubeGait.cs` — MARCHA de la fauna de cubos ():
 - **CubeHair** (class) — `Assets/Scripts/Avatar/CubeHair.cs` — ASPECTO de cada persona (cabello, piel, ojos, barba) para el cuerpo de cubos:
 - **CubeHumanoid** (class) — `Assets/Scripts/Avatar/CubeHumanoid.cs` — CUERPO HUMANO DE CUBOS ARTICULADO (estilo Minecraft, sin .fbx ni esqueleto del modelo 3D):
-- **CubeInsect** (class) — `Assets/Scripts/Microcosmos/CubeInsect.Fauna.cs` — PIEZAS DE LA FAUNA DE CADA ERA (InsectMorphology.Fauna.cs; fuentes en docs/microcosmos-fauna-eras.md), sobre el mismo cuerpo de cubos articulado y centauro de siempre:
-- **CubeInsect** (class) — `Assets/Scripts/Microcosmos/CubeInsect.Folk.cs` — INSECTOS-HUMANOS DE LAS ERAS CIVILIZADAS (docs/microcosmos-civilizaciones.md §6; Berón 2026-11-01:
+- **CubeInsect** (class) — `Assets/Scripts/Microcosmos/CubeInsect.Fauna.cs` — PIEZAS DE LA FAUNA DE CADA ERA (InsectMorphology.Fauna.cs; fuentes en docs/microcosmos/microcosmos-fauna-eras.md), sobre el mismo cuerpo de cubos articulado y centauro de siempre:
+- **CubeInsect** (class) — `Assets/Scripts/Microcosmos/CubeInsect.Folk.cs` — INSECTOS-HUMANOS DE LAS ERAS CIVILIZADAS (docs/microcosmos/microcosmos-civilizaciones.md §6; Berón 2026-11-01:
 - **CubeInsect** (class) — `Assets/Scripts/Microcosmos/CubeInsect.Uniform.cs`
-- **CubeInsect** (class) — `Assets/Scripts/Microcosmos/CubeInsect.cs` — ARTRÓPODO ARTICULADO DE CUBOS, hecho con los datos de docs/insect-morphology.md (InsectMorphology):
+- **CubeInsect** (class) — `Assets/Scripts/Microcosmos/CubeInsect.cs` — ARTRÓPODO ARTICULADO DE CUBOS, hecho con los datos de docs/sistemas/insect-morphology.md (InsectMorphology):
 - **CubeJoint** (class) — `Assets/Scripts/Avatar/CubeJoint.cs` — ARTICULACIÓN de un cuerpo de cubos:
-- **CubeTree** (class) — `Assets/Scripts/World/CubeTree.cs` — ÁRBOL CARNÍVORO DE HIELO hecho de BLOQUES (estilo Minecraft, sin modelo 3D) — docs/ice-sanctuary-ecology.md §2:
+- **CubeTree** (class) — `Assets/Scripts/World/CubeTree.cs` — ÁRBOL CARNÍVORO DE HIELO hecho de BLOQUES (estilo Minecraft, sin modelo 3D) — docs/fauna/ice-sanctuary-ecology.md §2:
 - **CubeWalkCycle** (class) — `Assets/Scripts/Avatar/CubeWalkCycle.cs` — ANDAR del cuerpo de cubos:
-- **CulturedMeatLab** (class) — `Assets/Scripts/World/CulturedMeatLab.cs` — LABORATORIO DE CARNE CULTIVADA (área `CulturedMeatLab`, docs/carne-cultivada.md):
+- **CulturedMeatLab** (class) — `Assets/Scripts/World/CulturedMeatLab.cs` — LABORATORIO DE CARNE CULTIVADA (área `CulturedMeatLab`, docs/areas/carne-cultivada.md):
 - **CurieElectrometerLesson** (class) — `Assets/Scripts/AtomicPlant/CurieElectrometerLesson.cs` — EL MÉTODO DE MARIE CURIE (1898, «Rayos emitidos por los compuestos del uranio y del torio», Comptes Rendus 126):
-- **CutawayTest** (class) — `Assets/Scripts/Tests/CutawayTest.cs` — PRUEBA DE LA VISTA DE CORTE (docs/plan-microcosmos-realismo.md §3.3, P2; regla 2 de docs/microcosmos-reglas-edificacion.md), sin cargar escenas:
-- **CutawayView** (class) — `Assets/Scripts/Microcosmos/CutawayView.cs` — LA VISTA DE CORTE de un edificio de microcosmos (docs/plan-microcosmos-realismo.md §3.3, P2; Berón 2026-11-18:
-- **Cyclotron** (class) — `Assets/Scripts/AtomicPlant/Cyclotron.cs` — EL CICLOTRÓN MÉDICO (docs/atomic-plant.md §7), en la planta de arriba de la planta atómica:
+- **CutawayTest** (class) — `Assets/Scripts/Tests/CutawayTest.cs` — PRUEBA DE LA VISTA DE CORTE (docs/microcosmos/plan-microcosmos-realismo.md §3.3, P2; regla 2 de docs/reglas/microcosmos-reglas-edificacion.md), sin cargar escenas:
+- **CutawayView** (class) — `Assets/Scripts/Microcosmos/CutawayView.cs` — LA VISTA DE CORTE de un edificio de microcosmos (docs/microcosmos/plan-microcosmos-realismo.md §3.3, P2; Berón 2026-11-18:
+- **Cyclotron** (class) — `Assets/Scripts/AtomicPlant/Cyclotron.cs` — EL CICLOTRÓN MÉDICO (docs/areas/atomic-plant.md §7), en la planta de arriba de la planta atómica:
 - **CyclotronConsole** (class) — `Assets/Scripts/AtomicPlant/CyclotronConsole.cs` — Consola del ciclotrón:
 - **DailyPoses** (class) — `Assets/Scripts/Body/DailyLife.cs` — VIDA DIARIA del cuerpo humano (docs/vida-diaria.md):
 - **DecompositionLevel** (enum) — `Assets/Scripts/Economy/DecompositionJob.cs` — Nivel de desintegración:
 - **DecompSample** (class) — `Assets/Scripts/Economy/DecompositionMinigame.cs` — Una muestra de la jornada (compuesto / átomo / núcleo / nucleón según el santuario).
 - **DefecationNeed** (class) — `Assets/Scripts/Composition/DefecationNeed.cs` — NECESIDAD DE DEFECAR (popó) — una pulsión como el hambre o el sueño, anclada en biología real:
-- **DeshierbeTest** (class) — `Assets/Scripts/Tests/DeshierbeTest.cs` — PRUEBA DEL DESHIERBE CON CUIDADO (Berón 2026-11-05; docs/deshierbe-cuidadoso.md):
+- **DeshierbeTest** (class) — `Assets/Scripts/Tests/DeshierbeTest.cs` — PRUEBA DEL DESHIERBE CON CUIDADO (Berón 2026-11-05; docs/areas/deshierbe-cuidadoso.md):
 - **DialogueLine** (class) — `Assets/Scripts/Dialogue/DialogueLine.cs` — A single line of dialogue — one thing one character says.
 - **DialogueManager** (class) — `Assets/Scripts/Dialogue/DialogueManager.cs` — Singleton that drives all dialogue playback in Cold Sanctuary.
 - **DialoguePanel** (class) — `Assets/Scripts/Dialogue/DialoguePanel.cs` — The on-screen UI for dialogue.
 - **DialogueSequence** (class) — `Assets/Scripts/Dialogue/DialogueSequence.cs` — A ScriptableObject asset that represents a complete dialogue event — a series of lines spoken in order, with no branching.
 - **DialogueTrigger** (class) — `Assets/Scripts/Dialogue/DialogueTrigger.cs` — Attach to any collider (set to IsTrigger) to play a DialogueSequence when Kushal enters.
-- **DietPreferenceTest** (class) — `Assets/Scripts/DietPreferenceTest.cs` — Test de la PREFERENCIA DE DIETA (docs/microcosmos-sakshi-origin.md §5, testing-checklist §43), por `TestProbe`:
-- **DirtArea** (class) — `Assets/Scripts/Kitchen/DirtArea.cs` — Genera y contabiliza suciedad en una zona (docs/kitchen-simulation.md §5, paso A).
-- **DirtSpot** (class) — `Assets/Scripts/Kitchen/DirtSpot.cs` — Una mancha de suciedad como OBJETO real (docs/kitchen-simulation.md §5):
+- **DietPreferenceTest** (class) — `Assets/Scripts/DietPreferenceTest.cs` — Test de la PREFERENCIA DE DIETA (docs/microcosmos/microcosmos-sakshi-origin.md §5, testing-checklist §43), por `TestProbe`:
+- **DirtArea** (class) — `Assets/Scripts/Kitchen/DirtArea.cs` — Genera y contabiliza suciedad en una zona (docs/areas/kitchen-simulation.md §5, paso A).
+- **DirtSpot** (class) — `Assets/Scripts/Kitchen/DirtSpot.cs` — Una mancha de suciedad como OBJETO real (docs/areas/kitchen-simulation.md §5):
 - **Dormant** (class) — `Assets/Scripts/Microcosmos/Dormant.cs` — ALETARGADO por la estación de la historia (MicroBiome.Bug.dormant):
 - **DosimeterRack** (class) — `Assets/Scripts/AtomicPlant/DosimeterRack.cs` — TAQUILLA DE DOSÍMETROS (entrada de la planta):
 - **DrillMotion** (enum) — `Assets/Scripts/Microcosmos/HistoricTraining.cs` — Cómo se mueve el cuerpo en un ejercicio de época (para animarlo:
 - **DrivePreparation** (class) — `Assets/Scripts/DrivePreparation.cs`
-- **DroneDragon** (class) — `Assets/Scripts/World/DroneDragon.cs` — EL DRAGÓN DE DRONES (Berón 2026-11-05; docs/energia.md §7):
-- **Eater** (class) — `Assets/Scripts/Kitchen/Eater.cs` — Un personaje que se acerca a un a **comer** (docs/kitchen-simulation.md §6).
-- **EcosystemObservation** (class) — `Assets/Scripts/EcosystemObservation.cs` — Misión-OBSERVACIÓN (WASD) del mundo vivo (docs/testing-checklist.md §39).
+- **DroneDragon** (class) — `Assets/Scripts/World/DroneDragon.cs` — EL DRAGÓN DE DRONES (Berón 2026-11-05; docs/areas/energia.md §7):
+- **Eater** (class) — `Assets/Scripts/Kitchen/Eater.cs` — Un personaje que se acerca a un a **comer** (docs/areas/kitchen-simulation.md §6).
+- **EcosystemObservation** (class) — `Assets/Scripts/EcosystemObservation.cs` — Misión-OBSERVACIÓN (WASD) del mundo vivo (docs/qa/testing-checklist.md §39).
 - **EinsteinMassLesson** (class) — `Assets/Scripts/AtomicPlant/EinsteinMassLesson.cs` — E = mc² (Einstein, 1905:
 - **ElementalTone** (enum) — `Assets/Scripts/Mind/ElementalTone.cs` — Tono elemental de un ánima (personalidad/temperamento):
 - **ElementAmount** (class) — `Assets/Scripts/Composition/Constitution.cs` — Cantidad de un elemento (símbolo de la tabla periódica, `Chemistry`).
-- **ElementCost** (class) — `Assets/Scripts/Transformation/MagicReserves.cs` — Coste de un hechizo en elementos (docs/magic-metabolism-progression.md §1).
+- **ElementCost** (class) — `Assets/Scripts/Transformation/MagicReserves.cs` — Coste de un hechizo en elementos (docs/sistemas/magic-metabolism-progression.md §1).
 - **ElementFragment** (class) — `Assets/Scripts/Chemistry/ElementFragment.cs` — A collectible fragment dropped by an IngredientMob when processed.
-- **ElementLevel** (enum) — `Assets/Scripts/Chemistry/ElementsStatus.cs` — Estado de un elemento respecto a su cantidad IDEAL (docs/consciousness-mechanics.md §UI/estado ideal).
+- **ElementLevel** (enum) — `Assets/Scripts/Chemistry/ElementsStatus.cs` — Estado de un elemento respecto a su cantidad IDEAL (docs/sistemas/consciousness-mechanics.md §UI/estado ideal).
 - **ElementState** (enum) — `Assets/Scripts/UI/Palette/PaletteElement.cs`
 - **ElevatedElement** (class) — `Assets/Scripts/World/ElevatedElement.cs` — Un ELEMENTO ELEVADO (una torre, un árbol que crece, un anillo, lo que se añada):
-- **EmergenceAuto** (class) — `Assets/Scripts/EmergenceAuto.cs` — Sandbox AUTOEJECUTABLE del BUCLE EMERGENTE de temperamento (docs/capabilities-and-embodiment.md §4), reportando por `TestProbe`.
-- **EmotionExpression** (class) — `Assets/Scripts/Emotion/EmotionExpression.cs` — **Conductor** de la orquesta emocional de un `Anima` (docs/emotion-model.md).
-- **EmotionReader** (class) — `Assets/Scripts/Emotion/EmotionReader.cs` — LEGIBILIDAD (docs/emotion-model.md §6):
-- **EnergyRule** (class) — `Assets/Scripts/World/EnergyRule.cs` — LA REGLA DE LA ENERGÍA (Berón 2026-11-05; docs/energia.md):
-- **EnergySite** (class) — `Assets/Scripts/World/EnergySite.cs` — EL PARQUE ENERGÉTICO en juego (Berón 2026-11-05; docs/energia.md):
-- **EnergyTest** (class) — `Assets/Scripts/Tests/EnergyTest.cs` — PRUEBA DEL PARQUE ENERGÉTICO (Berón 2026-11-05; docs/energia.md):
+- **EmergenceAuto** (class) — `Assets/Scripts/EmergenceAuto.cs` — Sandbox AUTOEJECUTABLE del BUCLE EMERGENTE de temperamento (docs/sistemas/capabilities-and-embodiment.md §4), reportando por `TestProbe`.
+- **EmotionExpression** (class) — `Assets/Scripts/Emotion/EmotionExpression.cs` — **Conductor** de la orquesta emocional de un `Anima` (docs/sistemas/emotion-model.md).
+- **EmotionReader** (class) — `Assets/Scripts/Emotion/EmotionReader.cs` — LEGIBILIDAD (docs/sistemas/emotion-model.md §6):
+- **EnergyRule** (class) — `Assets/Scripts/World/EnergyRule.cs` — LA REGLA DE LA ENERGÍA (Berón 2026-11-05; docs/areas/energia.md):
+- **EnergySite** (class) — `Assets/Scripts/World/EnergySite.cs` — EL PARQUE ENERGÉTICO en juego (Berón 2026-11-05; docs/areas/energia.md):
+- **EnergyTest** (class) — `Assets/Scripts/Tests/EnergyTest.cs` — PRUEBA DEL PARQUE ENERGÉTICO (Berón 2026-11-05; docs/areas/energia.md):
 - **EphemeralThoughtMob** (class) — `Assets/Scripts/Meditation/EphemeralThoughtMob.cs` — The "distraction / ephemeral thought" archetype (docs §8, confirmed jugable by the user).
 - **EraPortal** (class) — `Assets/Scripts/Microcosmos/EraPortal.cs` — Portal de la SALA DE ERAS (escena de validación):
 - **Eras** (class) — `Assets/Scripts/Progression/Era.cs` — ERAS (Berón, 2026-10-23:
-- **EraSpeciesTest** (class) — `Assets/Scripts/Tests/EraSpeciesTest.cs` — CONDUCTA DE LAS ESPECIES DE LAS ERAS (docs/era-species-behavior.md §5) sin esperar a la noche ni a un depredador:
-- **EstrusTest** (class) — `Assets/Scripts/EstrusTest.cs` — Unidad de test del CELO (docs/testing-checklist.md §35), por `TestProbe`:
+- **EraSpeciesTest** (class) — `Assets/Scripts/Tests/EraSpeciesTest.cs` — CONDUCTA DE LAS ESPECIES DE LAS ERAS (docs/sistemas/era-species-behavior.md §5) sin esperar a la noche ni a un depredador:
+- **EstrusTest** (class) — `Assets/Scripts/EstrusTest.cs` — Unidad de test del CELO (docs/qa/testing-checklist.md §35), por `TestProbe`:
 - **ExertionCost** (class) — `Assets/Scripts/Soul/Exertion.cs` — COSTE FÍSICO de una acción de trabajo (vía A — docs/soul-relations-reincarnation §2b).
 - **ExperienciaJugadorTest** (class) — `Assets/Scripts/Tests/ExperienciaJugadorTest.cs` — TEST DE EXPERIENCIA DEL JUGADOR (Berón 2026-10-26:
 - **FallImpact** (class) — `Assets/Scripts/Player/FallImpact.cs` — IMPACTO DE LAS CAÍDAS:
 - **Family** (class) — `Assets/Scripts/Family.cs`
 - **FamilyGenerator** (class) — `Assets/Scripts/FamilyGenerator.cs` — Puebla la escena con familias de animales al arrancar Play.
-- **FamososStoryTest** (class) — `Assets/Scripts/Tests/FamososStoryTest.cs` — TEST DE LOS MICROCOSMOS DE LOS FAMOSOS (docs/microcosmos-famosos.md; grupo 69).
+- **FamososStoryTest** (class) — `Assets/Scripts/Tests/FamososStoryTest.cs` — TEST DE LOS MICROCOSMOS DE LOS FAMOSOS (docs/microcosmos/microcosmos-famosos.md; grupo 69).
 - **FarmingSandboxItems** (class) — `Assets/Scripts/Farming/FarmingSandboxItems.cs` — Bootstrapper de PRUEBA (runtime, solo para el sandbox de SampleSceneBuilder):
 - **FaunaChecks** (class) — `Assets/Scripts/FaunaChecks.cs` — Sandbox AUTOEJECUTABLE de CONDUCTA/lógica sobre la ESCENA REAL (NavMesh horneado + fauna de `FamilyGenerator`), reportando por `TestProbe` (`[TEST]` en `Editor.log`).
-- **FaunaFriaTest** (class) — `Assets/Scripts/Tests/FaunaFriaTest.cs` — PRUEBA DE LA FAUNA FRÍA DE LOS OTROS SANTUARIOS (Berón 2026-11-05; docs/fauna-fria-santuarios.md):
+- **FaunaFriaTest** (class) — `Assets/Scripts/Tests/FaunaFriaTest.cs` — PRUEBA DE LA FAUNA FRÍA DE LOS OTROS SANTUARIOS (Berón 2026-11-05; docs/fauna/fauna-fria-santuarios.md):
 - **FdgSynthesis** (class) — `Assets/Scripts/AtomicPlant/FdgSynthesis.cs` — CELDA DE SÍNTESIS DE FDG (fluorodesoxiglucosa):
-- **FearSpell** (class) — `Assets/Scripts/Microcosmos/FearSpell.cs` — Hechizo de MIEDO (docs/sanctuary-second-lap-and-fear.md, apremios §3):
+- **FearSpell** (class) — `Assets/Scripts/Microcosmos/FearSpell.cs` — Hechizo de MIEDO (docs/sistemas/sanctuary-second-lap-and-fear.md, apremios §3):
 - **FeedVisitorMission** (class) — `Assets/Scripts/Meditation/FeedVisitorMission.cs` — «ALIMENTAR A LOS VISITANTES» (huerto; antes «Limpiar la plaga»):
-- **FireTier** (enum) — `Assets/Scripts/Transformation/FireSpell.cs` — Presets documentados de fuego (docs/magic-metabolism-progression.md §13).
-- **FloorEnergy** (class) — `Assets/Scripts/World/FloorEnergy.cs` — LA DEMANDA DE UN PISO (Berón 2026-11-05; docs/energia.md):
+- **FireTier** (enum) — `Assets/Scripts/Transformation/FireSpell.cs` — Presets documentados de fuego (docs/sistemas/magic-metabolism-progression.md §13).
+- **FloorEnergy** (class) — `Assets/Scripts/World/FloorEnergy.cs` — LA DEMANDA DE UN PISO (Berón 2026-11-05; docs/areas/energia.md):
 - **FloorForms** (class) — `Assets/Scripts/World/FloorForms.cs` — LAS TRES FORMAS DE CADA PISO DEL SANTUARIO (la tercera, la de MICROCOSMOS, desde 2026-11-04:
 - **FlyingCarpet** (class) — `Assets/Scripts/World/FlyingCarpet.cs` — ALFOMBRA VOLADORA (una esterilla grande de la pista de aterrizaje).
-- **FolkCouple** (class) — `Assets/Scripts/Microcosmos/FolkCouple.cs` — UNA PAREJA de insectos-humanos de una era civilizada (docs/microcosmos-civilizaciones.md §7):
+- **FolkCouple** (class) — `Assets/Scripts/Microcosmos/FolkCouple.cs` — UNA PAREJA de insectos-humanos de una era civilizada (docs/microcosmos/microcosmos-civilizaciones.md §7):
 - **FolkLineage** (class) — `Assets/Scripts/Microcosmos/FolkLineage.cs` — El LINAJE de un insecto-humano:
-- **FolkScaleTest** (class) — `Assets/Scripts/Tests/FolkScaleTest.cs` — PRUEBA DEL CUERPO ENCOGIDO DE LOS INSECTOS-HUMANOS (docs/plan-microcosmos-realismo.md §3.1 y fase 0b; Berón 2026-11-18:
-- **FollowBrain** (class) — `Assets/Scripts/Control/FollowBrain.cs` — Cerebro de IA que hace que el ser SIGA a un objetivo (docs/anima-architecture.md §11.5).
+- **FolkScaleTest** (class) — `Assets/Scripts/Tests/FolkScaleTest.cs` — PRUEBA DEL CUERPO ENCOGIDO DE LOS INSECTOS-HUMANOS (docs/microcosmos/plan-microcosmos-realismo.md §3.1 y fase 0b; Berón 2026-11-18:
+- **FollowBrain** (class) — `Assets/Scripts/Control/FollowBrain.cs` — Cerebro de IA que hace que el ser SIGA a un objetivo (docs/sistemas/anima-architecture.md §11.5).
 - **FollowingArrayInArray** (struct) — `Assets/Scripts/UI/FollowingArrays/FollowingArrayInArray .cs`
 - **FollowingArrayInScript** (struct) — `Assets/Scripts/UI/FollowingArrays/FollowingArrayInScript.cs`
 - **FollowingArrays** (class) — `Assets/Scripts/UI/FollowingArrays/FollowingArrays.cs`
 - **FollowingElement** (class) — `Assets/Scripts/UI/FollowingArrays/FollowingElement.cs`
 - **FollowingElementBehavior** (class) — `Assets/Scripts/UI/FollowingArrays/FollowingElementBehavior/FollowingElementBehavior.cs`
 - **FollowSpell** (class) — `Assets/Scripts/Control/FollowSpell.cs` — HECHIZO DE SEGUIR (docs/anima-architecture §11.5):
-- **FoodChain** (class) — `Assets/Scripts/World/FoodChain.cs` — LA CADENA ALIMENTICIA (Berón 2026-11-05; docs/reglas-animales.md, regla E15):
-- **FoodContainer** (class) — `Assets/Scripts/Kitchen/FoodContainer.cs` — Contenedor de servicio (docs/kitchen-simulation.md §3/§6):
+- **FoodChain** (class) — `Assets/Scripts/World/FoodChain.cs` — LA CADENA ALIMENTICIA (Berón 2026-11-05; docs/reglas/reglas-animales.md, regla E15):
+- **FoodContainer** (class) — `Assets/Scripts/Kitchen/FoodContainer.cs` — Contenedor de servicio (docs/areas/kitchen-simulation.md §3/§6):
 - **FoodItem** (class) — `Assets/Scripts/FoodItem.cs` — Comida que el jugador (u otro sistema) deposita en el suelo.
 - **FormicAcidSpray** (class) — `Assets/Scripts/Transformation/FormicAcidSpray.cs` — Hechizo de ÁCIDO FÓRMICO — defensa AoE de Kushal hormiga (Nivel 1, Microcosmos).
-- **FotobioFacadeTest** (class) — `Assets/Scripts/Tests/FotobioFacadeTest.cs` — PRUEBA DE LAS FACHADAS DE FOTOBIORREACTORES (Berón 2026-10-31 y 2026-11-08; docs/fotobiorreactores.md):
-- **FotobioSpec** (class) — `Assets/Scripts/World/FotobioFacade.cs` — MEDIDAS Y NÚMEROS DE LA FACHADA DE FOTOBIORREACTORES del Árbol de los Campos (Berón 2026-10-31; docs/fotobiorreactores.md).
-- **FruitCare** (class) — `Assets/Scripts/Farming/FruitCare.cs` — FICHAS DE CUIDADO DE LOS FRUTALES (docs/jardines-frutales.md, Berón 2026-10-30):
+- **FotobioFacadeTest** (class) — `Assets/Scripts/Tests/FotobioFacadeTest.cs` — PRUEBA DE LAS FACHADAS DE FOTOBIORREACTORES (Berón 2026-10-31 y 2026-11-08; docs/areas/fotobiorreactores.md):
+- **FotobioSpec** (class) — `Assets/Scripts/World/FotobioFacade.cs` — MEDIDAS Y NÚMEROS DE LA FACHADA DE FOTOBIORREACTORES del Árbol de los Campos (Berón 2026-10-31; docs/areas/fotobiorreactores.md).
+- **FruitCare** (class) — `Assets/Scripts/Farming/FruitCare.cs` — FICHAS DE CUIDADO DE LOS FRUTALES (docs/areas/jardines-frutales.md, Berón 2026-10-30):
 - **FruitCareStation** (class) — `Assets/Scripts/Farming/FruitCareStation.cs` — Punto de cuidados de un techo de frutales:
-- **FruitGardener** (class) — `Assets/Scripts/Farming/FruitGardener.cs` — EL JARDINERO DE LOS FRUTALES (Berón 2026-10-30, docs/jardines-frutales.md):
-- **FruitOrchardTest** (class) — `Assets/Scripts/Tests/FruitOrchardTest.cs` — PRUEBA DE LOS FRUTALES DE LOS TECHOS (Berón 2026-10-30; docs/jardines-frutales.md):
-- **FruitPlant** (class) — `Assets/Scripts/Farming/FruitPlant.cs` — UNA FRUTAL EN SU MACETA del techo de una torre (docs/jardines-frutales.md).
+- **FruitGardener** (class) — `Assets/Scripts/Farming/FruitGardener.cs` — EL JARDINERO DE LOS FRUTALES (Berón 2026-10-30, docs/areas/jardines-frutales.md):
+- **FruitOrchardTest** (class) — `Assets/Scripts/Tests/FruitOrchardTest.cs` — PRUEBA DE LOS FRUTALES DE LOS TECHOS (Berón 2026-10-30; docs/areas/jardines-frutales.md):
+- **FruitPlant** (class) — `Assets/Scripts/Farming/FruitPlant.cs` — UNA FRUTAL EN SU MACETA del techo de una torre (docs/areas/jardines-frutales.md).
 - **FurnitureLine** (class) — `Assets/Scripts/World/FurnitureLine.cs` — LÍNEA DE MUEBLES que van UNIDOS (Berón 2026-10-28:
 - **FurnitureSpacing** (class) — `Assets/Scripts/World/FurnitureSpacing.cs` — ESPACIO ESTÁNDAR ENTRE MUEBLES:
 - **FxBurst** (class) — `Assets/Scripts/Activities/FxBurst.cs` — Un efecto de :
@@ -506,55 +506,55 @@ _Total: 1040 tipos._
 - **GalleryExplorer** (class) — `Assets/Scripts/Control/GalleryExplorer.cs` — EXPLORADOR de las escenas de validación (galería de insectos-humanos, sala de microcosmos):
 - **GameKeys** (class) — `Assets/Scripts/Control/GameKeys.cs` — TECLADO DEL JUEGO:
 - **GameSpeed** (class) — `Assets/Scripts/Time/GameSpeed.cs` — VELOCIDAD DEL JUEGO elegida en INICIO (Berón 2026-11-01:
-- **GameTick** (struct) — `Assets/Scripts/World/GameTick.cs` — RITMO REPARTIDO (docs/rendimiento.md):
-- **GardenBed** (class) — `Assets/Scripts/Farming/GardenBed.cs` — BANCAL DE TIERRA DE UN JARDÍN FRUTAL (Berón 2026-11-03, docs/jardines-frutales.md §Jardines en la cima):
+- **GameTick** (struct) — `Assets/Scripts/World/GameTick.cs` — RITMO REPARTIDO (docs/plataforma/rendimiento.md):
+- **GardenBed** (class) — `Assets/Scripts/Farming/GardenBed.cs` — BANCAL DE TIERRA DE UN JARDÍN FRUTAL (Berón 2026-11-03, docs/areas/jardines-frutales.md §Jardines en la cima):
 - **GardenCrop** (class) — `Assets/Scripts/Farming/GardenCrop.cs` — CULTIVO de bloques:
 - **GardenInitiationTest** (class) — `Assets/Scripts/Tests/GardenInitiationTest.cs` — TEST DE LA INICIACIÓN DEL HUERTO (Berón 2026-10-29):
 - **GardenPlot** (class) — `Assets/Scripts/Farming/GardenPlot.cs` — HUERTO POR GREMIO (policultivo):
 - **GardenVisitorTest** (class) — `Assets/Scripts/Tests/GardenVisitorTest.cs` — VISITANTES DEL HUERTO = ANIMAS REALES:
 - **GardenWeed** (class) — `Assets/Scripts/Farming/GardenWeed.cs` — Una mala hierba de un bancal:
-- **Gastronomy** (class) — `Assets/Scripts/Kitchen/Gastronomy.cs` — RECETARIO DEL RESTAURANTE (docs/cocina-profesional.md):
+- **Gastronomy** (class) — `Assets/Scripts/Kitchen/Gastronomy.cs` — RECETARIO DEL RESTAURANTE (docs/areas/cocina-profesional.md):
 - **Generator** (class) — `Assets/Scripts/Generator.cs`
 - **GlassWall** (class) — `Assets/Scripts/World/GlassWall.cs` — PARED DE CRISTAL (Berón 2026-11-03:
-- **GlassWallTest** (class) — `Assets/Scripts/Tests/GlassWallTest.cs` — PRUEBA DE LAS PAREDES DE CRISTAL (Berón 2026-11-03; docs/hospital.md §Paredes de cristal):
+- **GlassWallTest** (class) — `Assets/Scripts/Tests/GlassWallTest.cs` — PRUEBA DE LAS PAREDES DE CRISTAL (Berón 2026-11-03; docs/areas/hospital.md §Paredes de cristal):
 - **Gohageneis** (class) — `Assets/Scripts/Companion/Companions/Gohageneis.cs` — El Papi Gohageneis — celebración, arte de vivir, restauración emocional.
 - **Goluis** (class) — `Assets/Scripts/Companion/Companions/Goluis.cs` — El Maestro Goluis — cocina, doble turno, presión y resistencia.
 - **GrassPatch** (class) — `Assets/Scripts/World/GrassPatch.cs` — Marks a flat grazing area.
 - **GreekBuildSite** (class) — `Assets/Scripts/Microcosmos/GreekBuildSite.cs` — La OBRA de un edificio griego que se alza con la piedra que traen los trabajadores (un :
-- **GriefSpell** (class) — `Assets/Scripts/Microcosmos/GriefSpell.cs` — DUELO (docs/apremios-guardian-observacion.md §3, microcosmos-level1 §Beats) — el hechizo-estado de la pérdida:
-- **Grimoire** (class) — `Assets/Scripts/Transformation/Grimoire.cs` — GRIMORIO — registro de hechizos APRENDIDOS por un `Anima` (docs/magic-metabolism-progression.md).
-- **GrimoireTest** (class) — `Assets/Scripts/GrimoireTest.cs` — Unidad de test del REPERTORIO de doble vía (docs/capabilities-and-embodiment.md §2), por `TestProbe`.
+- **GriefSpell** (class) — `Assets/Scripts/Microcosmos/GriefSpell.cs` — DUELO (docs/sistemas/apremios-guardian-observacion.md §3, microcosmos-level1 §Beats) — el hechizo-estado de la pérdida:
+- **Grimoire** (class) — `Assets/Scripts/Transformation/Grimoire.cs` — GRIMORIO — registro de hechizos APRENDIDOS por un `Anima` (docs/sistemas/magic-metabolism-progression.md).
+- **GrimoireTest** (class) — `Assets/Scripts/GrimoireTest.cs` — Unidad de test del REPERTORIO de doble vía (docs/sistemas/capabilities-and-embodiment.md §2), por `TestProbe`.
 - **Grimorio** (class) — `Assets/Scripts/Control/Grimorio.cs` — EL GRIMORIO (2026-11-20, Berón:
 - **GroundGuard** (class) — `Assets/Scripts/Player/GroundGuard.cs` — SALVAGUARDA DE SUELO:
-- **GroupAnimalsTest** (class) — `Assets/Scripts/Tests/GroupAnimalsTest.cs` — PRUEBA DE LOS GRUPOS DE ANIMALES (Berón 2026-11-03; docs/grupos-de-animales.md):
-- **GuardBoard** (class) — `Assets/Scripts/World/GuardBoard.cs` — TABLERO DE GUARDIA (en la sala de guardia, docs/sala-de-guardia.md):
-- **GuardRoomTest** (class) — `Assets/Scripts/Tests/GuardRoomTest.cs` — PRUEBA DE LA SALA DE GUARDIA Y DE LA ARBOLEDA (Berón 2026-11-05; docs/sala-de-guardia.md, docs/ice-sanctuary-ecology.md §Sin bosque, docs/territorio-polar.md; grupo 91):
+- **GroupAnimalsTest** (class) — `Assets/Scripts/Tests/GroupAnimalsTest.cs` — PRUEBA DE LOS GRUPOS DE ANIMALES (Berón 2026-11-03; docs/sistemas/grupos-de-animales.md):
+- **GuardBoard** (class) — `Assets/Scripts/World/GuardBoard.cs` — TABLERO DE GUARDIA (en la sala de guardia, docs/areas/sala-de-guardia.md):
+- **GuardRoomTest** (class) — `Assets/Scripts/Tests/GuardRoomTest.cs` — PRUEBA DE LA SALA DE GUARDIA Y DE LA ARBOLEDA (Berón 2026-11-05; docs/areas/sala-de-guardia.md, docs/fauna/ice-sanctuary-ecology.md §Sin bosque, docs/areas/territorio-polar.md; grupo 91):
 - **GuardScreen** (class) — `Assets/Scripts/World/GuardScreen.cs` — Una pantalla del muro:
 - **GuardSpin** (class) — `Assets/Scripts/World/GuardSpin.cs` — Lo que gira en la sala:
-- **GuardWatchRule** (class) — `Assets/Scripts/World/GuardRoom.cs` — LA SALA DE GUARDIA (Berón 2026-11-05; docs/sala-de-guardia.md):
-- **GuidedTour** (class) — `Assets/Scripts/Kitchen/GuidedTour.cs` — El PASEO guiado de onboarding (docs/kitchen-simulation.md §1).
-- **GymCoach** (class) — `Assets/Scripts/Progression/GymCoach.cs` — EL ENTRENADOR DEL GIMNASIO en el bloque de las 14 h (docs/gimnasio-maquinas.md §15.5; el papel es de , Goluis).
+- **GuardWatchRule** (class) — `Assets/Scripts/World/GuardRoom.cs` — LA SALA DE GUARDIA (Berón 2026-11-05; docs/areas/sala-de-guardia.md):
+- **GuidedTour** (class) — `Assets/Scripts/Kitchen/GuidedTour.cs` — El PASEO guiado de onboarding (docs/areas/kitchen-simulation.md §1).
+- **GymCoach** (class) — `Assets/Scripts/Progression/GymCoach.cs` — EL ENTRENADOR DEL GIMNASIO en el bloque de las 14 h (docs/areas/gimnasio-maquinas.md §15.5; el papel es de , Goluis).
 - **GymFit** (class) — `Assets/Scripts/World/GymFit.cs` — EL CUERPO SE AJUSTA A LA MÁQUINA (Berón 2026-10-29:
 - **GymMachineType** (enum) — `Assets/Scripts/World/GymStation.cs` — Tipos de estación del gimnasio.
-- **GymRoutinePanel** (class) — `Assets/Scripts/UI/GymRoutinePanel.cs` — PANEL DE LA RUTINA DEL GIMNASIO (docs/gimnasio-maquinas.md §15.7):
-- **GymTrainingSession** (class) — `Assets/Scripts/Progression/GymTrainingSession.cs` — UNA SESIÓN DE GIMNASIO DE VERDAD (docs/gimnasio-maquinas.md §15):
+- **GymRoutinePanel** (class) — `Assets/Scripts/UI/GymRoutinePanel.cs` — PANEL DE LA RUTINA DEL GIMNASIO (docs/areas/gimnasio-maquinas.md §15.7):
+- **GymTrainingSession** (class) — `Assets/Scripts/Progression/GymTrainingSession.cs` — UNA SESIÓN DE GIMNASIO DE VERDAD (docs/areas/gimnasio-maquinas.md §15):
 - **GymTrainingTest** (class) — `Assets/Scripts/Tests/GymTrainingTest.cs` — ENTRENAMIENTOS REALES EN EL GIMNASIO (Berón 2026-11-04:
 - **GymUsabilityTest** (class) — `Assets/Scripts/Tests/GymUsabilityTest.cs` — TODAS LAS MÁQUINAS DEL GIMNASIO SE PUEDEN USAR (Berón 2026-10-29:
 - **HashSetHolder** (class) — `Assets/Scripts/UI/FollowingArrays/HashSetHolder/HashSetHolder.cs`
 - **HashSetHolderAnimalPopulation** (class) — `Assets/Scripts/UI/FollowingArrays/HashSetHolder/HashSetHolderAnimalPopulation.cs`
-- **HeadLook** (class) — `Assets/Scripts/Virtualization/HeadLook.cs` — Cámara-CABEZA del **modo primera persona** (docs/kitchen-simulation.md §3b).
+- **HeadLook** (class) — `Assets/Scripts/Virtualization/HeadLook.cs` — Cámara-CABEZA del **modo primera persona** (docs/areas/kitchen-simulation.md §3b).
 - **HealingMission** (class) — `Assets/Scripts/Meditation/HealingMission.cs` — "A curar" mission (docs §7/§8):
 - **HealMob** (class) — `Assets/Scripts/Meditation/HealMob.cs` — The "to heal" archetype (docs §8):
 - **HealthRecord** (class) — `Assets/Scripts/World/HealthRecord.cs` — FICHA DE SALUD de un anyma (docs/sanctuary1-level-and-live-tests §4):
-- **HelixTower** (class) — `Assets/Scripts/World/TreeSpec.cs` — EDIFICIO EN HÉLICE (modelo genérico, Berón 2026-10-30; docs/edificio-arbol.md):
-- **HelpRequest** (class) — `Assets/Scripts/Control/HelpRequest.cs` — Lado EMISOR de una petición entre personajes (docs/anima-architecture.md §11.7).
-- **HelpResponder** (class) — `Assets/Scripts/Control/HelpResponder.cs` — Lado RECEPTOR de una petición entre personajes (docs/anima-architecture.md §11.7).
+- **HelixTower** (class) — `Assets/Scripts/World/TreeSpec.cs` — EDIFICIO EN HÉLICE (modelo genérico, Berón 2026-10-30; docs/areas/edificio-arbol.md):
+- **HelpRequest** (class) — `Assets/Scripts/Control/HelpRequest.cs` — Lado EMISOR de una petición entre personajes (docs/sistemas/anima-architecture.md §11.7).
+- **HelpResponder** (class) — `Assets/Scripts/Control/HelpResponder.cs` — Lado RECEPTOR de una petición entre personajes (docs/sistemas/anima-architecture.md §11.7).
 - **HideFollowingArrays** (class) — `Assets/Scripts/UI/FollowingArrays/HideFollowingArrays.cs`
 - **HidingPlace** (class) — `Assets/Scripts/Compassion/HidingPlace.cs` — ESCONDITE de las simulaciones de compasión:
-- **HieloMarinoTest** (class) — `Assets/Scripts/Tests/HieloMarinoTest.cs` — PRUEBA DE LA VIDA BAJO EL HIELO (Berón 2026-11-05; docs/hielo-y-respiraderos.md):
-- **HistoriasDatosTest** (class) — `Assets/Scripts/Tests/HistoriasDatosTest.cs` — TEST DE DATOS DE LA TANDA 3 DE HISTORIAS (docs/microcosmos-historias-3.md; grupo 78).
-- **HistoriasStoryTest** (class) — `Assets/Scripts/Tests/HistoriasStoryTest.cs` — TEST DE LAS ESCENAS DE LA TANDA 3 DE HISTORIAS (docs/microcosmos-historias-3.md; grupo 79).
-- **HistoricSession** (class) — `Assets/Scripts/Microcosmos/HistoricSession.cs` — UNA SESIÓN DE ENTRENAMIENTO DE ÉPOCA en el edificio de entrenamiento de un pueblo (docs/gimnasio-maquinas.md §16):
+- **HieloMarinoTest** (class) — `Assets/Scripts/Tests/HieloMarinoTest.cs` — PRUEBA DE LA VIDA BAJO EL HIELO (Berón 2026-11-05; docs/fauna/hielo-y-respiraderos.md):
+- **HistoriasDatosTest** (class) — `Assets/Scripts/Tests/HistoriasDatosTest.cs` — TEST DE DATOS DE LA TANDA 3 DE HISTORIAS (docs/microcosmos/microcosmos-historias-3.md; grupo 78).
+- **HistoriasStoryTest** (class) — `Assets/Scripts/Tests/HistoriasStoryTest.cs` — TEST DE LAS ESCENAS DE LA TANDA 3 DE HISTORIAS (docs/microcosmos/microcosmos-historias-3.md; grupo 79).
+- **HistoricSession** (class) — `Assets/Scripts/Microcosmos/HistoricSession.cs` — UNA SESIÓN DE ENTRENAMIENTO DE ÉPOCA en el edificio de entrenamiento de un pueblo (docs/areas/gimnasio-maquinas.md §16):
 - **HistoryCard** (class) — `Assets/Scripts/Mission/HistoryCard.cs` — TARJETA DE HISTORIA de las simulaciones históricas y míticas del microcosmos (compasión, mirmidones…):
 - **Hive** (class) — `Assets/Scripts/World/Hive.cs` — COLMENA de las abejas de las nieves:
 - **Hologram** (class) — `Assets/Scripts/UI/Hologram/Hologram.cs` — One reusable, poolable flat UI card.
@@ -562,54 +562,54 @@ _Total: 1040 tipos._
 - **HologramPool** (class) — `Assets/Scripts/UI/Hologram/HologramPool.cs` — Fixed-size pool of Hologram cards, sized to the largest list the menu will ever need to show at once.
 - **HomeImpulse** (class) — `Assets/Scripts/Microcosmos/HomeImpulse.cs` — Impulso de HOGAR — atracción continua y baja hacia (el nido/cueva).
 - **HoneydewPickup** (class) — `Assets/Scripts/Microcosmos/HoneydewPickup.cs` — GOTA DE MELAZA recolectable — aparece en el suelo junto a Ambrosio cuando la «suelta».
-- **HoneydewProducer** (class) — `Assets/Scripts/Microcosmos/HoneydewProducer.cs` — El PULGÓN produce **melaza** (honeydew) cada cierto tiempo — el "líquido codiciado" por el que las hormigas lo cuidan y ordeñan (**mirmecofilia**, docs/microcosmos-insects.md §2).
+- **HoneydewProducer** (class) — `Assets/Scripts/Microcosmos/HoneydewProducer.cs` — El PULGÓN produce **melaza** (honeydew) cada cierto tiempo — el "líquido codiciado" por el que las hormigas lo cuidan y ordeñan (**mirmecofilia**, docs/microcosmos/microcosmos-insects.md §2).
 - **HoneydewSpell** (class) — `Assets/Scripts/Transformation/HoneydewSpell.cs` — Hechizo de LA MALEZA DE AMBROSIO — restaura energía al target.
-- **HorarioLibreTest** (class) — `Assets/Scripts/Tests/HorarioLibreTest.cs` — PRUEBA EN VIVO DEL HORARIO LIBRE (docs/horario-libre.md; Berón 2026-11-03).
-- **HorarioPanel** (class) — `Assets/Scripts/UI/HorarioPanel.cs` — PANEL DEL HORARIO LIBRE (docs/horario-libre.md):
-- **HospitalService** (enum) — `Assets/Scripts/World/HospitalStation.cs` — Servicios de un hospital aislado (docs/hospital.md):
-- **HospitalSubmarine** (class) — `Assets/Scripts/World/HospitalSubmarine.cs` — EL SUBMARINO-AMBULANCIA ANFIBIO DEL HOSPITAL (Berón 2026-11-03; docs/submarinos-medicos.md):
-- **HospitalSubmarineTest** (class) — `Assets/Scripts/Tests/HospitalSubmarineTest.cs` — PRUEBA DEL SUBMARINO-AMBULANCIA (Berón 2026-11-03; docs/submarinos-medicos.md), en vivo y a ×4:
+- **HorarioLibreTest** (class) — `Assets/Scripts/Tests/HorarioLibreTest.cs` — PRUEBA EN VIVO DEL HORARIO LIBRE (docs/sistemas/horario-libre.md; Berón 2026-11-03).
+- **HorarioPanel** (class) — `Assets/Scripts/UI/HorarioPanel.cs` — PANEL DEL HORARIO LIBRE (docs/sistemas/horario-libre.md):
+- **HospitalService** (enum) — `Assets/Scripts/World/HospitalStation.cs` — Servicios de un hospital aislado (docs/areas/hospital.md):
+- **HospitalSubmarine** (class) — `Assets/Scripts/World/HospitalSubmarine.cs` — EL SUBMARINO-AMBULANCIA ANFIBIO DEL HOSPITAL (Berón 2026-11-03; docs/areas/submarinos-medicos.md):
+- **HospitalSubmarineTest** (class) — `Assets/Scripts/Tests/HospitalSubmarineTest.cs` — PRUEBA DEL SUBMARINO-AMBULANCIA (Berón 2026-11-03; docs/areas/submarinos-medicos.md), en vivo y a ×4:
 - **HotCell** (class) — `Assets/Scripts/AtomicPlant/HotCell.cs` — LA CELDA CALIENTE:
-- **Household** (class) — `Assets/Scripts/Body/Household.cs` — UN HOGAR (docs/ciclo-de-vida.md §Humanos; docs/microcosmos-reglas-edificacion.md regla 6; Berón 2026-11-02:
+- **Household** (class) — `Assets/Scripts/Body/Household.cs` — UN HOGAR (docs/sistemas/ciclo-de-vida.md §Humanos; docs/reglas/microcosmos-reglas-edificacion.md regla 6; Berón 2026-11-02:
 - **HudGate** (class) — `Assets/Scripts/UI/HudGate.cs` — Decide cuándo se dibujan los HUD OnGUI de los SANDBOX de prueba.
-- **HudModals** (class) — `Assets/Scripts/UI/HudModals.cs` — LA PILA DE BOTONES DE LA DERECHA Y SUS VENTANAS (Berón 2026-11-05, docs/interfaz-botones.md):
-- **HudModalsTest** (class) — `Assets/Scripts/Tests/HudModalsTest.cs` — PRUEBA DE LA PILA DE BOTONES Y SUS VENTANAS (grupo 93; docs/interfaz-botones.md, Berón 2026-11-05):
+- **HudModals** (class) — `Assets/Scripts/UI/HudModals.cs` — LA PILA DE BOTONES DE LA DERECHA Y SUS VENTANAS (Berón 2026-11-05, docs/sistemas/interfaz-botones.md):
+- **HudModalsTest** (class) — `Assets/Scripts/Tests/HudModalsTest.cs` — PRUEBA DE LA PILA DE BOTONES Y SUS VENTANAS (grupo 93; docs/sistemas/interfaz-botones.md, Berón 2026-11-05):
 - **HudNotices** (class) — `Assets/Scripts/CodeShip/HudNotices.cs` — LOS AVISOS (CodeShip misiones.md «aviso dorado arriba (toca para abrir el registro)» y ux-acciones.md §1.8:
-- **Humor** (enum) — `Assets/Scripts/Mind/Humores.cs` — Compuesto bioquímico de un ser (docs/anima-architecture.md §10.1).
+- **Humor** (enum) — `Assets/Scripts/Mind/Humores.cs` — Compuesto bioquímico de un ser (docs/sistemas/anima-architecture.md §10.1).
 - **HumorProfile** (class) — `Assets/Scripts/Soul/HumorProfile.cs` — Deriva los HUMORES base (adrenalina/serotonina/cortisol/glucosa/calcio) de la **personalidad** (stats) de un ser (docs/soul-relations-reincarnation §2b).
 - **HungryVisitorMob** (class) — `Assets/Scripts/Meditation/HungryVisitorMob.cs` — VISITANTE HAMBRIENTO del huerto (misión «Alimentar a los visitantes»):
 - **HunterLab** (class) — `Assets/Scripts/World/HunterLab.cs` — EL LABORATORIO DE CONTENCIÓN, abajo:
-- **HunterRule** (class) — `Assets/Scripts/World/HunterCell.cs` — LAS NORMAS Y EL CICLO DEL ÁRBOL CAZADOR (Berón 2026-11-05; docs/contencion-arbol-cazador.md, regla S16).
-- **HuntQuota** (class) — `Assets/Scripts/World/HuntQuota.cs` — CUOTA DE CAZA (docs/reglas-animales.md, «Cadena alimenticia»).
-- **IAptitudes** (interface) — `Assets/Scripts/IAptitudes.cs` — Contrato de las 12 aptitudes que **todo ser vivo** expone (docs/creature-stats.md):
+- **HunterRule** (class) — `Assets/Scripts/World/HunterCell.cs` — LAS NORMAS Y EL CICLO DEL ÁRBOL CAZADOR (Berón 2026-11-05; docs/areas/contencion-arbol-cazador.md, regla S16).
+- **HuntQuota** (class) — `Assets/Scripts/World/HuntQuota.cs` — CUOTA DE CAZA (docs/reglas/reglas-animales.md, «Cadena alimenticia»).
+- **IAptitudes** (interface) — `Assets/Scripts/IAptitudes.cs` — Contrato de las 12 aptitudes que **todo ser vivo** expone (docs/sistemas/creature-stats.md):
 - **IBody** (interface) — `Assets/Scripts/IBody.cs` — Physical body interface — per-limb stats and posture stress for the asana/training system.
 - **IBondable** (interface) — `Assets/Scripts/Companion/IBondable.cs` — Anything that can form a bond — companions, NPCs, animals, objects, places.
-- **IBrain** (interface) — `Assets/Scripts/Control/IBrain.cs` — Un "cerebro" que puede conducir a un `Anima` (docs/anima-architecture.md §11.5).
+- **IBrain** (interface) — `Assets/Scripts/Control/IBrain.cs` — Un "cerebro" que puede conducir a un `Anima` (docs/sistemas/anima-architecture.md §11.5).
 - **ICarrier** (interface) — `Assets/Scripts/ICarrier.cs` — Entidad que puede recoger comida del suelo y depositarla en otra posición.
 - **IcebergRule** (class) — `Assets/Scripts/World/Iceberg.cs` — Icebergs:
-- **IcebergVidaTest** (class) — `Assets/Scripts/Tests/IcebergVidaTest.cs` — PRUEBA DE LA VIDA EN LOS ICEBERGS (Berón 2026-11-05; docs/vida-en-icebergs.md):
-- **IcebergVisitor** (class) — `Assets/Scripts/World/IcebergVisitor.cs` — POR QUÉ UN ANIMAL VA A UN ICEBERG, CUÁNTO SE QUEDA Y CUÁNDO SE VA (Berón 2026-11-05; docs/vida-en-icebergs.md).
-- **IceCarnivorousTree** (class) — `Assets/Scripts/World/IceCarnivorousTree.cs` — ÁRBOL CARNÍVORO DE HIELO (docs/ice-sanctuary-ecology.md) — la flora clave del Santuario 1:
-- **IceInsectLife** (class) — `Assets/Scripts/World/IceInsectLife.cs` — VIDA DE LOS INSECTOS DE HIELO (docs/ice-sanctuary-ecology.md §2–§3), sobre animas compuestas reales:
-- **IdealStateTest** (class) — `Assets/Scripts/IdealStateTest.cs` — Test del ESTADO IDEAL (docs/consciousness-mechanics.md, testing-checklist §46), por `TestProbe`:
-- **IdleBehavior** (class) — `Assets/Scripts/Control/IdleBehavior.cs` — COMPORTAMIENTO LIBRE vía COLA (docs/typed-spells-and-queues.md §4):
+- **IcebergVidaTest** (class) — `Assets/Scripts/Tests/IcebergVidaTest.cs` — PRUEBA DE LA VIDA EN LOS ICEBERGS (Berón 2026-11-05; docs/fauna/vida-en-icebergs.md):
+- **IcebergVisitor** (class) — `Assets/Scripts/World/IcebergVisitor.cs` — POR QUÉ UN ANIMAL VA A UN ICEBERG, CUÁNTO SE QUEDA Y CUÁNDO SE VA (Berón 2026-11-05; docs/fauna/vida-en-icebergs.md).
+- **IceCarnivorousTree** (class) — `Assets/Scripts/World/IceCarnivorousTree.cs` — ÁRBOL CARNÍVORO DE HIELO (docs/fauna/ice-sanctuary-ecology.md) — la flora clave del Santuario 1:
+- **IceInsectLife** (class) — `Assets/Scripts/World/IceInsectLife.cs` — VIDA DE LOS INSECTOS DE HIELO (docs/fauna/ice-sanctuary-ecology.md §2–§3), sobre animas compuestas reales:
+- **IdealStateTest** (class) — `Assets/Scripts/IdealStateTest.cs` — Test del ESTADO IDEAL (docs/sistemas/consciousness-mechanics.md, testing-checklist §46), por `TestProbe`:
+- **IdleBehavior** (class) — `Assets/Scripts/Control/IdleBehavior.cs` — COMPORTAMIENTO LIBRE vía COLA (docs/sistemas/typed-spells-and-queues.md §4):
 - **IEdible** (interface) — `Assets/Scripts/IEdible.cs` — Todo lo que puede ser comido:
 - **IFactory** (interface) — `Assets/Scripts/IFactory.cs`
 - **IHungryVisitor** (interface) — `Assets/Scripts/Meditation/VisitorAnimaMob.cs` — Un visitante con hambre al que se puede dar de comer (animal real o figura de cubos).
 - **IInteractable** (interface) — `Assets/Scripts/Interaction/IInteractable.cs` — Marker interface for any object Kushal can interact with.
 - **IMind** (interface) — `Assets/Scripts/IMind.cs` — Mental and emotional state contract for any entity with an inner life.
 - **ImpulseController** (class) — `Assets/Scripts/Microcosmos/ImpulseController.cs` — CONTROLADOR DE IMPULSOS de dirección — suma todos los activos y dirige el hacia el vector resultante.
-- **InfirmaryGate** (class) — `Assets/Scripts/World/InfirmaryGate.cs` — LA INICIACIÓN ES BLOQUEANTE (docs/jornada-y-rotacion.md).
+- **InfirmaryGate** (class) — `Assets/Scripts/World/InfirmaryGate.cs` — LA INICIACIÓN ES BLOQUEANTE (docs/sistemas/jornada-y-rotacion.md).
 - **InfirmaryProps** (class) — `Assets/Scripts/World/InfirmaryProps.cs` — MOBILIARIO Y MAQUINARIA DE LA ENFERMERÍA (docs/sanctuary1-level-and-live-tests §4:
-- **InformaticaAulaTest** (class) — `Assets/Scripts/Tests/InformaticaAulaTest.cs` — TEST DE LOS PISOS NUEVOS (grupo 74; docs/piso-informatica.md, docs/piso-aula.md).
+- **InformaticaAulaTest** (class) — `Assets/Scripts/Tests/InformaticaAulaTest.cs` — TEST DE LOS PISOS NUEVOS (grupo 74; docs/areas/piso-informatica.md, docs/areas/piso-aula.md).
 - **IngredientMob** (class) — `Assets/Scripts/Combat/IngredientMob.cs` — An ingredient that becomes a mob when the player enters the kitchen at miniaturized scale.
-- **InsectCast** (class) — `Assets/Scripts/Microcosmos/InsectCast.cs` — EL INSECTO DE CADA PERSONAJE (docs/microcosmos-civilizaciones.md §5).
+- **InsectCast** (class) — `Assets/Scripts/Microcosmos/InsectCast.cs` — EL INSECTO DE CADA PERSONAJE (docs/microcosmos/microcosmos-civilizaciones.md §5).
 - **InsectForm** (class) — `Assets/Scripts/Microcosmos/InsectForm.cs` — Recuerda qué se ocultó del cuerpo humano para devolvérselo (), y (2026-11-18) lo que se encogió al entrar con el cuerpo de insecto a la mitad (:
-- **InsectGenealogy** (class) — `Assets/Scripts/Microcosmos/InsectGenealogy.cs` — REPRODUCCIÓN ENTRE ESPECIES (docs/microcosmos-civilizaciones.md §7; Berón 2026-11-01:
+- **InsectGenealogy** (class) — `Assets/Scripts/Microcosmos/InsectGenealogy.cs` — REPRODUCCIÓN ENTRE ESPECIES (docs/microcosmos/microcosmos-civilizaciones.md §7; Berón 2026-11-01:
 - **InsectMorphology** (class) — `Assets/Scripts/Microcosmos/InsectMorphology.Fauna.cs` — FAUNA DE CADA ERA (Berón, 2026-10-24:
-- **InsectMorphology** (class) — `Assets/Scripts/Microcosmos/InsectMorphology.cs` — MORFOLOGÍA de los artrópodos del microcosmos, tal cual docs/insect-morphology.md:
-- **InsectOnly** (class) — `Assets/Scripts/Microcosmos/InsectOnly.cs` — EL BLOQUEO DE HUMANOS (docs/microcosmos-civilizaciones.md §3; Berón 2026-11-01:
-- **InsectOnlyTest** (class) — `Assets/Scripts/Tests/InsectOnlyTest.cs` — TEST DEL BLOQUEO DE HUMANOS (docs/microcosmos-civilizaciones.md §3, §5–7).
+- **InsectMorphology** (class) — `Assets/Scripts/Microcosmos/InsectMorphology.cs` — MORFOLOGÍA de los artrópodos del microcosmos, tal cual docs/sistemas/insect-morphology.md:
+- **InsectOnly** (class) — `Assets/Scripts/Microcosmos/InsectOnly.cs` — EL BLOQUEO DE HUMANOS (docs/microcosmos/microcosmos-civilizaciones.md §3; Berón 2026-11-01:
+- **InsectOnlyTest** (class) — `Assets/Scripts/Tests/InsectOnlyTest.cs` — TEST DEL BLOQUEO DE HUMANOS (docs/microcosmos/microcosmos-civilizaciones.md §3, §5–7).
 - **InsectPurge** (class) — `Assets/Scripts/World/InsectPurge.cs` — SIN INSECTOS EN EL SANTUARIO 1 (Berón 2026-11-09, rendimiento):
 - **InteractionController** (class) — `Assets/Scripts/Interaction/InteractionController.cs` — Attached to the Player.
 - **Inventory** (class) — `Assets/Scripts/Economy/Inventory.cs` — The player's inventory.
@@ -617,122 +617,122 @@ _Total: 1040 tipos._
 - **IslandsTest** (class) — `Assets/Scripts/Tests/IslandsTest.cs` — ARCHIPIÉLAGO (docs/ice-sanctuary-ecology):
 - **ITarget** (interface) — `Assets/Scripts/ITarget.cs` — Objetivo universal:
 - **ItemData** (class) — `Assets/Scripts/Economy/ItemData.cs` — Defines an equippable or consumable item in the sanctuary economy.
-- **ITestUnit** (interface) — `Assets/Scripts/ITestUnit.cs` — Una unidad de test que el ejecuta de forma coordinada (docs/testing-checklist.md §32).
-- **JeetKuneDo** (class) — `Assets/Scripts/Asana/JeetKuneDo.cs` — LAS TÉCNICAS DE BRUCE LEE en el cuerpo de cubos (docs/microcosmos-bruce-lee.md §3):
-- **JornadaSaberTest** (class) — `Assets/Scripts/Tests/JornadaSaberTest.cs` — PRUEBA DEL MODELO JORNADA/TAREA (Berón 2026-11-05; docs/jornada-y-rotacion.md):
+- **ITestUnit** (interface) — `Assets/Scripts/ITestUnit.cs` — Una unidad de test que el ejecuta de forma coordinada (docs/qa/testing-checklist.md §32).
+- **JeetKuneDo** (class) — `Assets/Scripts/Asana/JeetKuneDo.cs` — LAS TÉCNICAS DE BRUCE LEE en el cuerpo de cubos (docs/microcosmos/microcosmos-bruce-lee.md §3):
+- **JornadaSaberTest** (class) — `Assets/Scripts/Tests/JornadaSaberTest.cs` — PRUEBA DEL MODELO JORNADA/TAREA (Berón 2026-11-05; docs/sistemas/jornada-y-rotacion.md):
 - **JornadaTest** (class) — `Assets/Scripts/Tests/JornadaTest.cs` — PRUEBA EN VIVO DE LA JORNADA DE KUSHAL (Berón 2026-10-29:
 - **JoyConMap** (class) — `Assets/Scripts/Control/JoyConMap.cs` — LOS MANDOS DE LA SWITCH, COMO DATOS (2026-11-19, Berón:
-- **JoyConTest** (class) — `Assets/Scripts/Tests/JoyConTest.cs` — PRUEBA DE LOS MANDOS TÁCTILES TIPO SWITCH Y EL GRIMORIO (grupo 141; (PB-169) medidas del santuario 1 de CodeShip y ocultarse con los modales; docs/mandos-tactiles.md, Berón 2026-11-19:
-- **KitchenBoss** (class) — `Assets/Scripts/World/KitchenBoss.cs` — GOLUIS, el ENCARGADO de la cocina (Berón 2026-11-08; los rangos más altos son Maite y Amykhuz; docs/kitchen-simulation.md).
-- **KitchenCook** (class) — `Assets/Scripts/Kitchen/KitchenCook.cs` — COCINERO VISIBLE (docs/kitchen-simulation.md §3:
+- **JoyConTest** (class) — `Assets/Scripts/Tests/JoyConTest.cs` — PRUEBA DE LOS MANDOS TÁCTILES TIPO SWITCH Y EL GRIMORIO (grupo 141; (PB-169) medidas del santuario 1 de CodeShip y ocultarse con los modales; docs/sistemas/mandos-tactiles.md, Berón 2026-11-19:
+- **KitchenBoss** (class) — `Assets/Scripts/World/KitchenBoss.cs` — GOLUIS, el ENCARGADO de la cocina (Berón 2026-11-08; los rangos más altos son Maite y Amykhuz; docs/areas/kitchen-simulation.md).
+- **KitchenCook** (class) — `Assets/Scripts/Kitchen/KitchenCook.cs` — COCINERO VISIBLE (docs/areas/kitchen-simulation.md §3:
 - **KitchenFireMission** (class) — `Assets/Scripts/Microcosmos/KitchenFireMission.cs` — Misión "llevar la comida a la cueva" — Microcosmos de la Cocina (era pre-fuego).
 - **KitchenHands** (class) — `Assets/Scripts/Kitchen/KitchenHands.cs` — Lo que el anima sostiene en las manos al cocinar (una cosa a la vez).
 - **KitchenInitiationTest** (class) — `Assets/Scripts/Tests/KitchenInitiationTest.cs` — TEST DE LA INICIACIÓN DE LA COCINA (Berón 2026-10-28):
-- **KitchenLarder** (class) — `Assets/Scripts/Kitchen/KitchenLarder.cs` — DESPENSA Y OBRADOR del restaurante (docs/cocina-profesional.md).
-- **KitchenOriginStory** (class) — `Assets/Scripts/Microcosmos/KitchenOriginStory.cs` — CÓMO NACIÓ LA COCINA (docs/novela.md, «Cómo nació la cocina»):
-- **KitchenOriginStoryTest** (class) — `Assets/Scripts/Tests/KitchenOriginStoryTest.cs` — TEST DE «CÓMO NACIÓ LA COCINA» (, docs/novela.md):
-- **KitchenProps** (class) — `Assets/Scripts/Kitchen/KitchenProps.cs` — MOBILIARIO, UTENSILIOS E INGREDIENTES DE COCINA hechos con UNIONES DE CUBOS (docs/kitchen-simulation.md):
-- **KitchenStepSpell** (class) — `Assets/Scripts/Kitchen/KitchenStepSpells.cs` — HECHIZOS DE COCINA POR PASO (docs/typed-spells-and-queues.md §6.1, kitchen-simulation.md):
+- **KitchenLarder** (class) — `Assets/Scripts/Kitchen/KitchenLarder.cs` — DESPENSA Y OBRADOR del restaurante (docs/areas/cocina-profesional.md).
+- **KitchenOriginStory** (class) — `Assets/Scripts/Microcosmos/KitchenOriginStory.cs` — CÓMO NACIÓ LA COCINA (docs/historia/novela.md, «Cómo nació la cocina»):
+- **KitchenOriginStoryTest** (class) — `Assets/Scripts/Tests/KitchenOriginStoryTest.cs` — TEST DE «CÓMO NACIÓ LA COCINA» (, docs/historia/novela.md):
+- **KitchenProps** (class) — `Assets/Scripts/Kitchen/KitchenProps.cs` — MOBILIARIO, UTENSILIOS E INGREDIENTES DE COCINA hechos con UNIONES DE CUBOS (docs/areas/kitchen-simulation.md):
+- **KitchenStepSpell** (class) — `Assets/Scripts/Kitchen/KitchenStepSpells.cs` — HECHIZOS DE COCINA POR PASO (docs/sistemas/typed-spells-and-queues.md §6.1, kitchen-simulation.md):
 - **KitchenVessel** (class) — `Assets/Scripts/Kitchen/KitchenVessel.cs` — Un RECIPIENTE de cocina y su contenido.
 - **KushalVoice** (class) — `Assets/Scripts/Dialogue/KushalVoice.cs` — LA VOZ DE KUSHAL (OnGUI).
 - **KushalVoiceTest** (class) — `Assets/Scripts/Tests/KushalVoiceTest.cs` — TEST DE LA VOZ DE KUSHAL (, Berón 2026-10-29):
-- **LaunchHeightRule** (class) — `Assets/Scripts/World/LaunchSite.cs` — LA REGLA DE ALTURA DE LA LANZADERA DE COHETES (Berón 2026-11-04; docs/lanzadera-de-cohetes.md):
+- **LaunchHeightRule** (class) — `Assets/Scripts/World/LaunchSite.cs` — LA REGLA DE ALTURA DE LA LANZADERA DE COHETES (Berón 2026-11-04; docs/areas/lanzadera-de-cohetes.md):
 - **LaunchOptions** (class) — `Assets/Scripts/UI/SceneLauncher.cs` — Lo elegido en INICIO para la próxima escena (Berón 2026-10-30:
-- **LaunchSiteTest** (class) — `Assets/Scripts/Tests/LaunchSiteTest.cs` — PRUEBA DE LA LANZADERA DE COHETES (Berón 2026-11-04; docs/lanzadera-de-cohetes.md):
-- **LeisureDirector** (class) — `Assets/Scripts/Progression/LeisureDirector.cs` — EL HORARIO DE ACTIVIDADES LIBRE EN EL JUEGO (docs/horario-libre.md).
-- **LeisureRoster** (class) — `Assets/Scripts/Progression/LeisureRoster.cs` — EL HORARIO DE ACTIVIDADES LIBRE (docs/horario-libre.md; Berón 2026-11-03:
+- **LaunchSiteTest** (class) — `Assets/Scripts/Tests/LaunchSiteTest.cs` — PRUEBA DE LA LANZADERA DE COHETES (Berón 2026-11-04; docs/areas/lanzadera-de-cohetes.md):
+- **LeisureDirector** (class) — `Assets/Scripts/Progression/LeisureDirector.cs` — EL HORARIO DE ACTIVIDADES LIBRE EN EL JUEGO (docs/sistemas/horario-libre.md).
+- **LeisureRoster** (class) — `Assets/Scripts/Progression/LeisureRoster.cs` — EL HORARIO DE ACTIVIDADES LIBRE (docs/sistemas/horario-libre.md; Berón 2026-11-03:
 - **LessonPrompt** (class) — `Assets/Scripts/UI/LessonPrompt.cs` — AVISO DE LECCIÓN (OnGUI):
-- **Level1Director** (class) — `Assets/Scripts/Microcosmos/Level1Director.cs` — DIRECTOR de circunstancias del Nivel 1 (docs/microcosmos-level1.md §Beats, rebanada 3) — al estilo de MobWorldDirector:
-- **LifeCycleAuto** (class) — `Assets/Scripts/LifeCycleAuto.cs` — Unidad de test del CICLO DE VIDA (docs/testing-checklist.md §36), por `TestProbe`.
+- **Level1Director** (class) — `Assets/Scripts/Microcosmos/Level1Director.cs` — DIRECTOR de circunstancias del Nivel 1 (docs/microcosmos/microcosmos-level1.md §Beats, rebanada 3) — al estilo de MobWorldDirector:
+- **LifeCycleAuto** (class) — `Assets/Scripts/LifeCycleAuto.cs` — Unidad de test del CICLO DE VIDA (docs/qa/testing-checklist.md §36), por `TestProbe`.
 - **LifeStage** (class) — `Assets/Scripts/LifeStage/LifeStage.cs`
 - **Linduarda** (class) — `Assets/Scripts/World/Linduarda.cs` — LINDUARDA, la doctora (docs/character-linduarda, sanctuary1 §4) — hechicera avanzada cuyo **pensamiento custom** es **asegurar la salud del santuario**.
 - **Lod** (class) — `Assets/Scripts/Lod.cs` — LOD de simulación (docs/checklist.md — análisis de escala):
-- **LoteEstatico** (class) — `Assets/Scripts/World/LoteEstatico.cs` — LOTE ESTÁTICO (docs/rendimiento.md; 2026-11-05:
-- **LoteEstaticoTest** (class) — `Assets/Scripts/Tests/LoteEstaticoTest.cs` — PRUEBA DEL LOTE ESTÁTICO (docs/rendimiento.md):
+- **LoteEstatico** (class) — `Assets/Scripts/World/LoteEstatico.cs` — LOTE ESTÁTICO (docs/plataforma/rendimiento.md; 2026-11-05:
+- **LoteEstaticoTest** (class) — `Assets/Scripts/Tests/LoteEstaticoTest.cs` — PRUEBA DEL LOTE ESTÁTICO (docs/plataforma/rendimiento.md):
 - **LotusMeditationAbility** (class) — `Assets/Scripts/Meditation/LotusMeditationAbility.cs` — The lotus path into the Microcosmos — the endgame alternative to the machine (docs §1, §3).
 - **Lucidity** (class) — `Assets/Scripts/Soul/Lucidity.cs` — LUCIDEZ de los insectos con mente humana (los entomántropos:
 - **MaestraTeacher** (class) — `Assets/Scripts/Companion/MaestraTeacher.cs` — Personality:
-- **MageCells** (class) — `Assets/Scripts/Body/MageCells.cs` — CÉLULAS DE MAGO (docs/magic-metabolism-progression.md):
-- **MagicAura** (class) — `Assets/Scripts/Transformation/MagicAura.cs` — Aura mágica de un `Anima` (docs/stats-as-truth.md §2):
-- **MagicSandboxDriver** (class) — `Assets/Scripts/Transformation/MagicSandboxDriver.cs` — Driver de PRUEBA (OnGUI) del bucle de magia para el sandbox `Magia_AUTO` (docs/testing-checklist.md §15b/c/f).
-- **Magnate** (class) — `Assets/Scripts/World/Magnate.cs` — LA MAGNATE (docs/anyma-factory-and-control.md §Magnate) — la maestra del santuario.
+- **MageCells** (class) — `Assets/Scripts/Body/MageCells.cs` — CÉLULAS DE MAGO (docs/sistemas/magic-metabolism-progression.md):
+- **MagicAura** (class) — `Assets/Scripts/Transformation/MagicAura.cs` — Aura mágica de un `Anima` (docs/sistemas/stats-as-truth.md §2):
+- **MagicSandboxDriver** (class) — `Assets/Scripts/Transformation/MagicSandboxDriver.cs` — Driver de PRUEBA (OnGUI) del bucle de magia para el sandbox `Magia_AUTO` (docs/qa/testing-checklist.md §15b/c/f).
+- **Magnate** (class) — `Assets/Scripts/World/Magnate.cs` — LA MAGNATE (docs/sistemas/anyma-factory-and-control.md §Magnate) — la maestra del santuario.
 - **MagnateWarden** (class) — `Assets/Scripts/World/MagnateWarden.cs` — LA MAGNATE GUARDA LOS PUESTOS (Berón 2026-10-22).
-- **MantisFist** (class) — `Assets/Scripts/Asana/MantisFist.cs` — LAS FORMAS DE BRUCE LEE EN SU CUERPO DE MANTIS (docs/microcosmos-civilizaciones.md §4).
-- **MapasAManoTest** (class) — `Assets/Scripts/Tests/MapasAManoTest.cs` — PRUEBA DE LOS MAPAS A MANO (regla M9; petición 75; docs/microcosmos-mapas-a-mano.md):
+- **MantisFist** (class) — `Assets/Scripts/Asana/MantisFist.cs` — LAS FORMAS DE BRUCE LEE EN SU CUERPO DE MANTIS (docs/microcosmos/microcosmos-civilizaciones.md §4).
+- **MapasAManoTest** (class) — `Assets/Scripts/Tests/MapasAManoTest.cs` — PRUEBA DE LOS MAPAS A MANO (regla M9; petición 75; docs/microcosmos/microcosmos-mapas-a-mano.md):
 - **MarHorizonte** (class) — `Assets/Scripts/World/MarHorizonte.cs` — MAR HASTA EL HORIZONTE (Berón 2026-10-31:
-- **MarineBase** (class) — `Assets/Scripts/World/MarineBase.cs` — EL SANTUARIO MARINO, la escena (docs/sitio-nuclear.md §20):
+- **MarineBase** (class) — `Assets/Scripts/World/MarineBase.cs` — EL SANTUARIO MARINO, la escena (docs/areas/sitio-nuclear.md §20):
 - **MarineGuard** (class) — `Assets/Scripts/World/MarineGuard.cs` — LOS CETÁCEOS NO PISAN EL HIELO:
 - **MarineLife** (class) — `Assets/Scripts/World/MarineLife.cs` — VIDA MARINA (focas, ballenas, orcas):
 - **MarineLift** (class) — `Assets/Scripts/World/MarineLift.cs` — El andén de abajo, en el Santuario Marino:
-- **MartialForms** (class) — `Assets/Scripts/World/MartialForms.cs` — EL MAESTRO QUE ENSEÑA CON EL CUERPO (docs/microcosmos-bruce-lee.md):
+- **MartialForms** (class) — `Assets/Scripts/World/MartialForms.cs` — EL MAESTRO QUE ENSEÑA CON EL CUERPO (docs/microcosmos/microcosmos-bruce-lee.md):
 - **MaskStation** (class) — `Assets/Scripts/World/MaskStation.cs` — Un PUESTO DE MÁSCARAS de un edificio-árbol:
 - **MaterializationExecutor** (class) — `Assets/Scripts/UI/Palette/MaterializationExecutor.cs`
-- **MaterialStore** (class) — `Assets/Scripts/World/MaterialStore.cs` — ALMACÉN DE MATERIAL de Construcción (docs/construccion-sostenible.md).
-- **MealRitual** (class) — `Assets/Scripts/Activities/MealRitual.cs` — LA ORQUESTA DE LA COMIDA (docs/actividades-y-uniformes.md §2; Berón 2026-11-04:
+- **MaterialStore** (class) — `Assets/Scripts/World/MaterialStore.cs` — ALMACÉN DE MATERIAL de Construcción (docs/areas/construccion-sostenible.md).
+- **MealRitual** (class) — `Assets/Scripts/Activities/MealRitual.cs` — LA ORQUESTA DE LA COMIDA (docs/sistemas/actividades-y-uniformes.md §2; Berón 2026-11-04:
 - **MedicalIsotopes** (class) — `Assets/Scripts/AtomicPlant/PneumaticTransfer.cs` — ISÓTOPOS PARA EL HOSPITAL (no hay otro a miles de km):
 - **MeditationMob** (class) — `Assets/Scripts/Meditation/MeditationMob.cs` — Base for mobs that live inside a meditation / Microcosmos mission (docs §8).
 - **MeditationReward** (class) — `Assets/Scripts/Meditation/MeditationReward.cs` — Reusable reward block for meditation / Microcosmos missions (docs §7).
 - **MeditationSession** (class) — `Assets/Scripts/Meditation/MeditationSession.cs` — Orchestrates the Microcosmos entry flow shared by BOTH triggers (docs §3):
 - **Medium** (enum) — `Assets/Scripts/Medium.cs` — Medio físico en el que se encuentra una criatura.
 - **MediumZone** (class) — `Assets/Scripts/MediumZone.cs` — Volumen de un medio (normalmente agua).
-- **MicroBody** (class) — `Assets/Scripts/Microcosmos/MicroBody.cs` — EL CUERPO DE QUIEN USA UN MUEBLE (docs/microcosmos-reglas-edificacion.md §Muebles adaptados al cuerpo; Berón 2026-11-02:
-- **MicroBuildRules** (class) — `Assets/Scripts/Microcosmos/MicroBuildRules.cs` — LAS REGLAS DE EDIFICACIÓN DE LOS MICROCOSMOS Y MESOCOSMOS (docs/microcosmos-reglas-edificacion.md; Berón 2026-11-01:
-- **MicroBuildRulesTest** (class) — `Assets/Scripts/Tests/MicroBuildRulesTest.cs` — TEST DEL VALIDADOR DE LAS REGLAS DE EDIFICACIÓN (docs/microcosmos-reglas-edificacion.md, ), sin cargar escenas:
-- **MicroCivicScale** (class) — `Assets/Scripts/Microcosmos/MicroSeat.cs` — LA ESCALA DEL MOBILIARIO CÍVICO DE LOS MICROCOSMOS (docs/microcosmos-suelo-y-elementos.md §Escala; Berón 2026-11-04:
-- **MicrocosmosFloorTest** (class) — `Assets/Scripts/Tests/MicrocosmosFloorTest.cs` — TEST DEL PISO DE LOS MICROCOSMOS (docs/reglas-plataformas.md, regla 11; Berón 2026-10-29):
-- **MicroDoor** (class) — `Assets/Scripts/Microcosmos/MicroDoor.cs` — UNA PUERTA DE EDIFICIO DE MICROCOSMOS (docs/plan-microcosmos-realismo.md §3.3, P3–P4; Berón 2026-11-18):
+- **MicroBody** (class) — `Assets/Scripts/Microcosmos/MicroBody.cs` — EL CUERPO DE QUIEN USA UN MUEBLE (docs/reglas/microcosmos-reglas-edificacion.md §Muebles adaptados al cuerpo; Berón 2026-11-02:
+- **MicroBuildRules** (class) — `Assets/Scripts/Microcosmos/MicroBuildRules.cs` — LAS REGLAS DE EDIFICACIÓN DE LOS MICROCOSMOS Y MESOCOSMOS (docs/reglas/microcosmos-reglas-edificacion.md; Berón 2026-11-01:
+- **MicroBuildRulesTest** (class) — `Assets/Scripts/Tests/MicroBuildRulesTest.cs` — TEST DEL VALIDADOR DE LAS REGLAS DE EDIFICACIÓN (docs/reglas/microcosmos-reglas-edificacion.md, ), sin cargar escenas:
+- **MicroCivicScale** (class) — `Assets/Scripts/Microcosmos/MicroSeat.cs` — LA ESCALA DEL MOBILIARIO CÍVICO DE LOS MICROCOSMOS (docs/microcosmos/microcosmos-suelo-y-elementos.md §Escala; Berón 2026-11-04:
+- **MicrocosmosFloorTest** (class) — `Assets/Scripts/Tests/MicrocosmosFloorTest.cs` — TEST DEL PISO DE LOS MICROCOSMOS (docs/reglas/reglas-plataformas.md, regla 11; Berón 2026-10-29):
+- **MicroDoor** (class) — `Assets/Scripts/Microcosmos/MicroDoor.cs` — UNA PUERTA DE EDIFICIO DE MICROCOSMOS (docs/microcosmos/plan-microcosmos-realismo.md §3.3, P3–P4; Berón 2026-11-18):
 - **MicroElement** (class) — `Assets/Scripts/Microcosmos/MicroElement.cs` — UN ELEMENTO DEL PISO EN SU VERSIÓN DE MICROCOSMOS (bajo «Forma_microcosmos» de la raíz del microcosmos):
 - **MicroEra** (class) — `Assets/Scripts/Progression/MicroEra.cs` — La FECHA de un microcosmos:
-- **MicroFloor** (class) — `Assets/Scripts/Microcosmos/MicroFloor.cs` — EL PISO DEL MICROCOSMOS (docs/reglas-plataformas.md, regla 11; Berón 2026-10-29):
-- **MicroFloorElements** (class) — `Assets/Scripts/Microcosmos/MicroFloorElements.cs` — LOS ELEMENTOS DE CADA PISO, CON SU VERSIÓN DE MESOCOSMOS Y SU VERSIÓN DE MICROCOSMOS (docs/microcosmos-suelo-y-elementos.md §Elementos; Berón 2026-11-04:
+- **MicroFloor** (class) — `Assets/Scripts/Microcosmos/MicroFloor.cs` — EL PISO DEL MICROCOSMOS (docs/reglas/reglas-plataformas.md, regla 11; Berón 2026-10-29):
+- **MicroFloorElements** (class) — `Assets/Scripts/Microcosmos/MicroFloorElements.cs` — LOS ELEMENTOS DE CADA PISO, CON SU VERSIÓN DE MESOCOSMOS Y SU VERSIÓN DE MICROCOSMOS (docs/microcosmos/microcosmos-suelo-y-elementos.md §Elementos; Berón 2026-11-04:
 - **MicroFloorForm** (class) — `Assets/Scripts/Microcosmos/MicroFloorForm.cs` — LA FORMA DE MICROCOSMOS DE UN PISO DEL SANTUARIO («Forma_microcosmos», oculta bajo el área; FloorForms.microcosm):
-- **MicroFloors** (class) — `Assets/Scripts/Microcosmos/MicroFloors.cs` — LOS PISOS DE LOS MICROCOSMOS (docs/microcosmos-areas.md §Reglas de los microcosmos; Berón 2026-11-03:
+- **MicroFloors** (class) — `Assets/Scripts/Microcosmos/MicroFloors.cs` — LOS PISOS DE LOS MICROCOSMOS (docs/microcosmos/microcosmos-areas.md §Reglas de los microcosmos; Berón 2026-11-03:
 - **MicroFood** (class) — `Assets/Scripts/Microcosmos/MicroFood.cs` — Un RESTO DE COMIDA (o una hoja, en el huerto) que las hormigas recogen y llevan a la guarida.
 - **MicroForager** (class) — `Assets/Scripts/Microcosmos/MicroForager.cs` — RECOLECTORA de la tribu (los mirmidones):
 - **MicroGardener** (class) — `Assets/Scripts/Microcosmos/MicroGardener.cs` — CULTIVADORA DE HONGO (microcosmos del Huerto):
 - **MicroGround** (class) — `Assets/Scripts/Microcosmos/MicroGround.cs` — EL SUELO DE LOS MICROCOSMOS:
-- **MicroJornada** (class) — `Assets/Scripts/Microcosmos/MicroJornada.cs` — LA JORNADA DE UN INSECTO-HUMANO de una era civilizada (docs/microcosmos-civilizaciones.md §2; Berón 2026-11-01:
+- **MicroJornada** (class) — `Assets/Scripts/Microcosmos/MicroJornada.cs` — LA JORNADA DE UN INSECTO-HUMANO de una era civilizada (docs/microcosmos/microcosmos-civilizaciones.md §2; Berón 2026-11-01:
 - **MicroLair** (class) — `Assets/Scripts/Microcosmos/MicroLair.cs` — La GUARIDA de la tribu:
 - **MicroLeader** (class) — `Assets/Scripts/Microcosmos/MicroLeader.cs` — LA LÍDER de la tribu (Medea renacida, microcosmos de la Cocina):
 - **MicroLounger** (class) — `Assets/Scripts/Microcosmos/MicroLounger.cs` — NASATYA (Ambrosio renacido):
 - **MicroMove** (class) — `Assets/Scripts/Microcosmos/MicroMove.cs` — Andar en el microcosmos:
 - **MicroOnboarding** (class) — `Assets/Scripts/CodeShip/MicroOnboarding.cs` — LA GUÍA DE INICIO (CodeShip ux-acciones.md §1 y misiones.md:
-- **MicroPiece** (class) — `Assets/Scripts/Microcosmos/MicroPiece.cs` — UN MUEBLE DE MICROCOSMOS (docs/microcosmos-reglas-edificacion.md):
-- **MicroRootMenu** (class) — `Assets/Scripts/CodeShip/MicroRootMenu.cs` — EL MENÚ ÁRBOL (portado de CodeShip, src/ui/root-menu.ts y reglas.md §5.8; docs/plan-microcosmos-realismo.md §4.3).
-- **MicroRoutine** (class) — `Assets/Scripts/Microcosmos/MicroRoutine.cs` — La RUTINA de un mirmidón de las historias (docs/microcosmos-historias.md):
+- **MicroPiece** (class) — `Assets/Scripts/Microcosmos/MicroPiece.cs` — UN MUEBLE DE MICROCOSMOS (docs/reglas/microcosmos-reglas-edificacion.md):
+- **MicroRootMenu** (class) — `Assets/Scripts/CodeShip/MicroRootMenu.cs` — EL MENÚ ÁRBOL (portado de CodeShip, src/ui/root-menu.ts y reglas.md §5.8; docs/microcosmos/plan-microcosmos-realismo.md §4.3).
+- **MicroRoutine** (class) — `Assets/Scripts/Microcosmos/MicroRoutine.cs` — La RUTINA de un mirmidón de las historias (docs/microcosmos/microcosmos-historias.md):
 - **MicroSize** (class) — `Assets/Scripts/Microcosmos/MicroSize.cs` — TAMAÑO EN EL MICROCOSMOS:
 - **MicroSoil** (class) — `Assets/Scripts/Microcosmos/MicroSoil.cs` — LA CAPA DE TIERRA de un microcosmos ():
-- **MicroStoryMaps** (class) — `Assets/Scripts/Microcosmos/MicroStoryMaps.Bagdad.cs` — EL MAPA A MANO DE BAGDAD (2026-11-12; petición 75, regla M9; docs/microcosmos-mapas-a-mano.md §Tanda 4).
-- **MicroStoryMaps** (class) — `Assets/Scripts/Microcosmos/MicroStoryMaps.Cientificos.cs` — LOS MAPAS A MANO DE LOS CIENTÍFICOS (2026-11-12; petición 75, regla M9; docs/microcosmos-mapas-a-mano.md §Tanda 4).
-- **MicroStoryMaps** (class) — `Assets/Scripts/Microcosmos/MicroStoryMaps.Famosos.cs` — LOS MAPAS A MANO DE LOS FAMOSOS (2026-11-12; petición 75, regla M9; docs/microcosmos-mapas-a-mano.md §Tanda 4).
-- **MicroStoryMaps** (class) — `Assets/Scripts/Microcosmos/MicroStoryMaps.Historias.cs` — LOS MAPAS A MANO DE LA TANDA 3 (docs/microcosmos-historias-3.md; regla M9):
+- **MicroStoryMaps** (class) — `Assets/Scripts/Microcosmos/MicroStoryMaps.Bagdad.cs` — EL MAPA A MANO DE BAGDAD (2026-11-12; petición 75, regla M9; docs/microcosmos/microcosmos-mapas-a-mano.md §Tanda 4).
+- **MicroStoryMaps** (class) — `Assets/Scripts/Microcosmos/MicroStoryMaps.Cientificos.cs` — LOS MAPAS A MANO DE LOS CIENTÍFICOS (2026-11-12; petición 75, regla M9; docs/microcosmos/microcosmos-mapas-a-mano.md §Tanda 4).
+- **MicroStoryMaps** (class) — `Assets/Scripts/Microcosmos/MicroStoryMaps.Famosos.cs` — LOS MAPAS A MANO DE LOS FAMOSOS (2026-11-12; petición 75, regla M9; docs/microcosmos/microcosmos-mapas-a-mano.md §Tanda 4).
+- **MicroStoryMaps** (class) — `Assets/Scripts/Microcosmos/MicroStoryMaps.Historias.cs` — LOS MAPAS A MANO DE LA TANDA 3 (docs/microcosmos/microcosmos-historias-3.md; regla M9):
 - **MicroStoryMaps** (class) — `Assets/Scripts/Microcosmos/MicroStoryMaps.Historias2.cs` — LOS MAPAS A MANO DE LA TANDA 3 (II):
 - **MicroStoryMaps** (class) — `Assets/Scripts/Microcosmos/MicroStoryMaps.Historias3.cs` — LOS MAPAS A MANO DE LA TANDA 3 (III):
 - **MicroStoryMaps** (class) — `Assets/Scripts/Microcosmos/MicroStoryMaps.Historias4.cs` — LOS MAPAS A MANO DE LA TANDA 3 (IV):
 - **MicroStoryMaps** (class) — `Assets/Scripts/Microcosmos/MicroStoryMaps.Historias5.cs` — LOS MAPAS A MANO DE LA TANDA 3 (V):
-- **MicroStoryMaps** (class) — `Assets/Scripts/Microcosmos/MicroStoryMaps.Musica.cs` — LOS MAPAS A MANO DE LA MÚSICA (docs/microcosmos-musica.md; regla M9).
-- **MicroStoryMaps** (class) — `Assets/Scripts/Microcosmos/MicroStoryMaps.Tanda4.cs` — LOS MAPAS A MANO DE LA TANDA 4 (2026-11-12; petición 75, regla M9; docs/microcosmos-mapas-a-mano.md §Tanda 4):
-- **MicroStoryMaps** (class) — `Assets/Scripts/Microcosmos/MicroStoryMaps.Tanda5.cs` — LOS MAPAS A MANO DE LA TANDA 5 (2026-11-12; petición 75, regla M9; docs/microcosmos-mapas-a-mano.md §Tanda 4).
-- **MicroStoryMaps** (class) — `Assets/Scripts/Microcosmos/MicroStoryMaps.Tanda6.cs` — LOS MAPAS A MANO DE LA TANDA 6 (2026-11-12; petición 75, regla M9; docs/microcosmos-mapas-a-mano.md §Tanda 4).
-- **MicroStoryMaps** (class) — `Assets/Scripts/Microcosmos/MicroStoryMaps.Tanda7.cs` — LOS MAPAS A MANO DE LA TANDA 7 (2026-11-12; petición 75, regla M9; docs/microcosmos-mapas-a-mano.md §Tanda 6).
-- **MicroStoryMaps** (class) — `Assets/Scripts/Microcosmos/MicroStoryMaps.cs` — EL MAPA A MANO DE CADA HISTORIA (docs/microcosmos-mapas-a-mano.md; Berón 2026-11-04:
-- **MicroStyles** (class) — `Assets/Scripts/Microcosmos/MicroStyles.Civic.cs` — EL CATÁLOGO DE ESTILOS, AMPLIADO A LOS EDIFICIOS DEL PUEBLO Y A LOS FRUTALES (docs/microcosmos-reglas-edificacion.md §8–11; Berón 2026-11-03:
-- **MicroStyles** (class) — `Assets/Scripts/Microcosmos/MicroStyles.Historias.cs` — LOS ESTILOS DE LA TANDA 3 DE HISTORIAS (docs/microcosmos-historias-3.md, 2026-11-05):
-- **MicroStyles** (class) — `Assets/Scripts/Microcosmos/MicroStyles.cs` — EL CATÁLOGO DE ESTILOS DE ÉPOCA Y LUGAR de los muebles de los microcosmos (docs/microcosmos-reglas-edificacion.md §Catálogo; Berón 2026-11-02:
-- **MicroSueloTest** (class) — `Assets/Scripts/Tests/MicroSueloTest.cs` — PRUEBA 68 · EL SUELO Y LOS ELEMENTOS DE LOS MICROCOSMOS, SIN CARGAR ESCENAS (docs/microcosmos-suelo-y-elementos.md; Berón 2026-11-04).
+- **MicroStoryMaps** (class) — `Assets/Scripts/Microcosmos/MicroStoryMaps.Musica.cs` — LOS MAPAS A MANO DE LA MÚSICA (docs/microcosmos/microcosmos-musica.md; regla M9).
+- **MicroStoryMaps** (class) — `Assets/Scripts/Microcosmos/MicroStoryMaps.Tanda4.cs` — LOS MAPAS A MANO DE LA TANDA 4 (2026-11-12; petición 75, regla M9; docs/microcosmos/microcosmos-mapas-a-mano.md §Tanda 4):
+- **MicroStoryMaps** (class) — `Assets/Scripts/Microcosmos/MicroStoryMaps.Tanda5.cs` — LOS MAPAS A MANO DE LA TANDA 5 (2026-11-12; petición 75, regla M9; docs/microcosmos/microcosmos-mapas-a-mano.md §Tanda 4).
+- **MicroStoryMaps** (class) — `Assets/Scripts/Microcosmos/MicroStoryMaps.Tanda6.cs` — LOS MAPAS A MANO DE LA TANDA 6 (2026-11-12; petición 75, regla M9; docs/microcosmos/microcosmos-mapas-a-mano.md §Tanda 4).
+- **MicroStoryMaps** (class) — `Assets/Scripts/Microcosmos/MicroStoryMaps.Tanda7.cs` — LOS MAPAS A MANO DE LA TANDA 7 (2026-11-12; petición 75, regla M9; docs/microcosmos/microcosmos-mapas-a-mano.md §Tanda 6).
+- **MicroStoryMaps** (class) — `Assets/Scripts/Microcosmos/MicroStoryMaps.cs` — EL MAPA A MANO DE CADA HISTORIA (docs/microcosmos/microcosmos-mapas-a-mano.md; Berón 2026-11-04:
+- **MicroStyles** (class) — `Assets/Scripts/Microcosmos/MicroStyles.Civic.cs` — EL CATÁLOGO DE ESTILOS, AMPLIADO A LOS EDIFICIOS DEL PUEBLO Y A LOS FRUTALES (docs/reglas/microcosmos-reglas-edificacion.md §8–11; Berón 2026-11-03:
+- **MicroStyles** (class) — `Assets/Scripts/Microcosmos/MicroStyles.Historias.cs` — LOS ESTILOS DE LA TANDA 3 DE HISTORIAS (docs/microcosmos/microcosmos-historias-3.md, 2026-11-05):
+- **MicroStyles** (class) — `Assets/Scripts/Microcosmos/MicroStyles.cs` — EL CATÁLOGO DE ESTILOS DE ÉPOCA Y LUGAR de los muebles de los microcosmos (docs/reglas/microcosmos-reglas-edificacion.md §Catálogo; Berón 2026-11-02:
+- **MicroSueloTest** (class) — `Assets/Scripts/Tests/MicroSueloTest.cs` — PRUEBA 68 · EL SUELO Y LOS ELEMENTOS DE LOS MICROCOSMOS, SIN CARGAR ESCENAS (docs/microcosmos/microcosmos-suelo-y-elementos.md; Berón 2026-11-04).
 - **MicroTaskWindows** (class) — `Assets/Scripts/CodeShip/MicroTaskWindows.cs` — LAS VENTANAS «TAREAS» Y «ÁREAS» (portadas de CodeShip:
 - **MicroTeacher** (class) — `Assets/Scripts/Microcosmos/MicroTeacher.cs` — LA SEMBRADORA (Ruth renacida, microcosmos del Huerto):
-- **MicroVehicle** (class) — `Assets/Scripts/Microcosmos/MicroVehicle.cs` — UN TRANSPORTE DE ÉPOCA QUE SE USA (docs/plan-microcosmos-realismo.md §3.3, P6; Berón 2026-11-18):
-- **MicroVehicleTest** (class) — `Assets/Scripts/Tests/MicroVehicleTest.cs` — PRUEBA DEL TRANSPORTE DE ÉPOCA QUE SE USA (docs/plan-microcosmos-realismo.md §3.3, P6; ), sin cargar escenas:
+- **MicroVehicle** (class) — `Assets/Scripts/Microcosmos/MicroVehicle.cs` — UN TRANSPORTE DE ÉPOCA QUE SE USA (docs/microcosmos/plan-microcosmos-realismo.md §3.3, P6; Berón 2026-11-18):
+- **MicroVehicleTest** (class) — `Assets/Scripts/Tests/MicroVehicleTest.cs` — PRUEBA DEL TRANSPORTE DE ÉPOCA QUE SE USA (docs/microcosmos/plan-microcosmos-realismo.md §3.3, P6; ), sin cargar escenas:
 - **MigrationDiagnostics** (class) — `Assets/Scripts/MigrationDiagnostics.cs` — Diagnóstico de migración (TEMPORAL).
-- **Mind** (class) — `Assets/Scripts/Mind/Mind.cs` — El pilar MENTE de un ánima (docs/anima-architecture.md §3, §6, §10) — MVP.
+- **Mind** (class) — `Assets/Scripts/Mind/Mind.cs` — El pilar MENTE de un ánima (docs/sistemas/anima-architecture.md §3, §6, §10) — MVP.
 - **MindChannel** (enum) — `Assets/Scripts/MindChannel.cs` — Identifies which mental/emotional stat to target when restoring or draining.
 - **MissionCategory** (enum) — `Assets/Scripts/Meditation/MobMission.cs` — Category of mental practice a mission belongs to.
 - **MissionEndMode** (enum) — `Assets/Scripts/Meditation/MeditationMissionBase.cs` — How a mission finishes.
-- **MissionLibrary** (class) — `Assets/Scripts/CodeShip/Chores/MissionLibrary.Hawthorne.cs` — LAS MISIONES DE LOS SITIOS NUEVOS DE HAWTHORNE (lote 2; docs/microcosmos-musk-historia.md §4; Berón 2026-11-18:
+- **MissionLibrary** (class) — `Assets/Scripts/CodeShip/Chores/MissionLibrary.Hawthorne.cs` — LAS MISIONES DE LOS SITIOS NUEVOS DE HAWTHORNE (lote 2; docs/microcosmos/microcosmos-musk-historia.md §4; Berón 2026-11-18:
 - **MissionLibrary** (class) — `Assets/Scripts/CodeShip/Chores/MissionLibrary.Vinculos.cs` — LAS MISIONES DE VÍNCULO DE HAWTHORNE (2026-11-19, PB-166; Berón:
 - **MissionLibrary** (class) — `Assets/Scripts/CodeShip/Chores/MissionLibrary.cs` — LA BIBLIOTECA DE MISIONES POR RETOS DE CÓDIGO (portada de CodeShip origin/integracion:
-- **MissionRequirements** (class) — `Assets/Scripts/Progression/MissionRequirements.cs` — LOS REQUISITOS DE CADA MISIÓN (Berón 2026-11-05; docs/jornada-y-rotacion.md §Requisitos):
+- **MissionRequirements** (class) — `Assets/Scripts/Progression/MissionRequirements.cs` — LOS REQUISITOS DE CADA MISIÓN (Berón 2026-11-05; docs/sistemas/jornada-y-rotacion.md §Requisitos):
 - **MissionSelectMenu** (class) — `Assets/Scripts/Meditation/MissionSelectMenu.cs` — The list of available mob-missions, shown OVER the black screen (docs §3).
 - **MissionSites** (class) — `Assets/Scripts/CodeShip/Chores/MissionSites.cs` — DÓNDE VA CADA MISIÓN EN CADA MICROCOSMOS (datos; la biblioteca es ).
 - **MissionTracker** (class) — `Assets/Scripts/Mission/MissionTracker.cs` — Singleton that manages active missions, tracks progress, and distributes rewards.
@@ -740,43 +740,43 @@ _Total: 1040 tipos._
 - **MobSpawnPoint** (class) — `Assets/Scripts/MobWorld/MobSpawnPoint.cs` — Marks where the player appears inside a mob-world scene.
 - **MobWorldEventType** (enum) — `Assets/Scripts/MobWorld/MobWorldDirector.cs` — Type of world-changing event in a mob world (docs mob-world-architecture §6).
 - **MobWorldLoader** (class) — `Assets/Scripts/MobWorld/MobWorldLoader.cs` — Loads/unloads a mob-world scene behind the black screen and teleports the player in/out (docs mob-world-architecture §13 — "escena propia por mundo mob").
-- **MobWorldMapaTest** (class) — `Assets/Scripts/Tests/MobWorldMapaTest.cs` — PRUEBA DEL MAPA A MANO EN EL MOBWORLD DE MESOPOTAMIA (2026-11-12; petición 75, regla M9; docs/microcosmos-mapas-a-mano.md §Mesopotamia):
+- **MobWorldMapaTest** (class) — `Assets/Scripts/Tests/MobWorldMapaTest.cs` — PRUEBA DEL MAPA A MANO EN EL MOBWORLD DE MESOPOTAMIA (2026-11-12; petición 75, regla M9; docs/microcosmos/microcosmos-mapas-a-mano.md §Mesopotamia):
 - **MobWorldMission** (class) — `Assets/Scripts/MobWorld/MobWorldMission.cs` — Drives a MobMission that lives inside a mob-world SCENE (docs mob-world-architecture §13).
 - **MobWorldMissionBoard** (class) — `Assets/Scripts/MobWorld/MobWorldMissionBoard.cs` — TABLERO DE MISIONES de una escena de microcosmos por área:
 - **MoodDynamics** (class) — `Assets/Scripts/Soul/MoodDynamics.cs` — DINÁMICA de humores/estrés (docs/soul-relations-reincarnation §2b).
 - **MoodState** (class) — `Assets/Scripts/Companion/MoodState.cs` — Estado interno de un compañero (mood/fatiga/anchors) + vínculo con el jugador + efecto de proximidad — **extraído de `CompanionBase`** (que se retira, fase 5).
-- **MovementImpulse** (struct) — `Assets/Scripts/Microcosmos/MovementImpulse.cs` — Un IMPULSO DE DIRECCIÓN — vector normalizado + magnitud que contribuye a la decisión de movimiento de un ser (docs/stats-as-truth.md §impulsos).
+- **MovementImpulse** (struct) — `Assets/Scripts/Microcosmos/MovementImpulse.cs` — Un IMPULSO DE DIRECCIÓN — vector normalizado + magnitud que contribuye a la decisión de movimiento de un ser (docs/sistemas/stats-as-truth.md §impulsos).
 - **MusicAcoustics** (class) — `Assets/Scripts/World/MusicAcoustics.cs` — CUÁNTO SONIDO PARA EL CRISTAL (Berón 2026-11-05:
-- **MusicaStoryTest** (class) — `Assets/Scripts/Tests/MusicaStoryTest.cs` — TEST DE LOS MICROCOSMOS DE LA MÚSICA (docs/microcosmos-musica.md; grupo 86).
-- **MuskNeedsTest** (class) — `Assets/Scripts/Tests/MuskNeedsTest.cs` — FASE 2 DEL PLAN (docs/plan-microcosmos-realismo.md §2 y §4.1:
+- **MusicaStoryTest** (class) — `Assets/Scripts/Tests/MusicaStoryTest.cs` — TEST DE LOS MICROCOSMOS DE LA MÚSICA (docs/microcosmos/microcosmos-musica.md; grupo 86).
+- **MuskNeedsTest** (class) — `Assets/Scripts/Tests/MuskNeedsTest.cs` — FASE 2 DEL PLAN (docs/microcosmos/plan-microcosmos-realismo.md §2 y §4.1:
 - **MuskPilotTest** (class) — `Assets/Scripts/Tests/MuskPilotTest.cs` — PRUEBA DEL PILOTO DEL REALISMO:
-- **MythMission** (class) — `Assets/Scripts/Microcosmos/MythMission.cs` — EGINA, EL REINO DE LOS MIRMIDONES (docs/microcosmos-myrmidons.md):
-- **MythRecruit** (class) — `Assets/Scripts/Microcosmos/MythRecruit.cs` — Un insecto-humano de EGINA que aún no se ha unido al reino de Éaco (docs/microcosmos-myrmidons.md).
-- **MythRecruiter** (class) — `Assets/Scripts/Microcosmos/MythRecruiter.cs` — ZEUS en Egina (docs/microcosmos-myrmidons.md), en su versión humana:
+- **MythMission** (class) — `Assets/Scripts/Microcosmos/MythMission.cs` — EGINA, EL REINO DE LOS MIRMIDONES (docs/microcosmos/microcosmos-myrmidons.md):
+- **MythRecruit** (class) — `Assets/Scripts/Microcosmos/MythRecruit.cs` — Un insecto-humano de EGINA que aún no se ha unido al reino de Éaco (docs/microcosmos/microcosmos-myrmidons.md).
+- **MythRecruiter** (class) — `Assets/Scripts/Microcosmos/MythRecruiter.cs` — ZEUS en Egina (docs/microcosmos/microcosmos-myrmidons.md), en su versión humana:
 - **NameJar** (class) — `Assets/Scripts/Compassion/NameJar.cs` — LOS FRASCOS BAJO EL MANZANO:
-- **NarcoticSpell** (class) — `Assets/Scripts/Microcosmos/NarcoticSpell.cs` — Hechizo ESTUPEFACIENTE (docs/apremios-guardian-observacion.md §3):
+- **NarcoticSpell** (class) — `Assets/Scripts/Microcosmos/NarcoticSpell.cs` — Hechizo ESTUPEFACIENTE (docs/sistemas/apremios-guardian-observacion.md §3):
 - **NarrativeMode** (enum) — `Assets/Scripts/Mind/PhraseDistribution.cs` — Cómo se reparten las vivencias entre los seres al iniciar una partida (docs anima §11).
 - **NavAgentSafe** (class) — `Assets/Scripts/World/NavAgentSafe.cs` — (2026-11-11) VOLVER A ENCENDER UN AGENTE SIN «Failed to create agent because it is not close enough to the NavMesh» (64 por partida en vivo74):
 - **NeedsDriver** (class) — `Assets/Scripts/Body/NeedsDriver.cs` — EL CUERPO PIDE (etapa 2 del cuerpo unificado):
 - **NestTree** (class) — `Assets/Scripts/World/NestTree.cs` — Un árbol donde anidan abejas y arañas.
 - **NestType** (enum) — `Assets/Scripts/PostNatal/PostNatalEnums.cs`
-- **NewcomerInitiator** (class) — `Assets/Scripts/World/NewcomerInitiator.cs` — INICIACIÓN DE RECIÉN LLEGADOS (docs/jornada-y-rotacion.md, docs/iniciacion-medica-investigacion.md):
+- **NewcomerInitiator** (class) — `Assets/Scripts/World/NewcomerInitiator.cs` — INICIACIÓN DE RECIÉN LLEGADOS (docs/sistemas/jornada-y-rotacion.md, docs/areas/iniciacion-medica-investigacion.md):
 - **NewtonCannonLesson** (class) — `Assets/Scripts/AtomicPlant/NewtonCannonLesson.cs` — EL CAÑÓN DE NEWTON (su «Tratado del sistema del mundo»; gravitación de los Principia, 1687):
 - **NPCCombatBehavior** (class) — `Assets/Scripts/Combat/NPCCombatBehavior.cs` — Adds autonomous combat capability to any WorldCharacter that is in a combat zone.
 - **NPCEconomy** (class) — `Assets/Scripts/Economy/NPCEconomy.cs` — Gives an NPC their own wallet and mini-inventory so they can participate in the sanctuary's economy independently of the player.
-- **NuclearAccessTest** (class) — `Assets/Scripts/Tests/NuclearAccessTest.cs` — PRUEBA DE LOS DOS SANTUARIOS Y LA LÍNEA (Berón 2026-11-05; docs/sitio-nuclear.md §7–§20):
-- **NuclearSiteRule** (class) — `Assets/Scripts/World/NuclearSite.cs` — LA REGLA DEL SITIO NUCLEAR (Berón 2026-11-05; docs/sitio-nuclear.md):
-- **NuclearSiteTest** (class) — `Assets/Scripts/Tests/NuclearSiteTest.cs` — PRUEBA DEL SITIO NUCLEAR (Berón 2026-11-05; docs/sitio-nuclear.md).
-- **NuclearSubmarinaTest** (class) — `Assets/Scripts/Tests/NuclearSubmarinaTest.cs` — PRUEBA DE LA PLANTA NUCLEAR BAJO EL MAR (Berón 2026-11-08; docs/sitio-nuclear.md §25):
+- **NuclearAccessTest** (class) — `Assets/Scripts/Tests/NuclearAccessTest.cs` — PRUEBA DE LOS DOS SANTUARIOS Y LA LÍNEA (Berón 2026-11-05; docs/areas/sitio-nuclear.md §7–§20):
+- **NuclearSiteRule** (class) — `Assets/Scripts/World/NuclearSite.cs` — LA REGLA DEL SITIO NUCLEAR (Berón 2026-11-05; docs/areas/sitio-nuclear.md):
+- **NuclearSiteTest** (class) — `Assets/Scripts/Tests/NuclearSiteTest.cs` — PRUEBA DEL SITIO NUCLEAR (Berón 2026-11-05; docs/areas/sitio-nuclear.md).
+- **NuclearSubmarinaTest** (class) — `Assets/Scripts/Tests/NuclearSubmarinaTest.cs` — PRUEBA DE LA PLANTA NUCLEAR BAJO EL MAR (Berón 2026-11-08; docs/areas/sitio-nuclear.md §25):
 - **NutrientNeed** (class) — `Assets/Scripts/Composition/Metabolism.cs` — Necesidad de un NUTRIENTE (proteína/grasa/carbohidrato/minerales):
-- **Observation** (class) — `Assets/Scripts/Soul/Observation.cs` — OBSERVACIÓN / ECUANIMIDAD (docs/apremios-guardian-observacion.md §4) — la libertad frente al apremio.
-- **ObservationSkill** (class) — `Assets/Scripts/Soul/ObservationSkill.cs` — La OBSERVACIÓN como habilidad que EVOLUCIONA POR USO (docs/apremios-guardian-observacion.md §4) — como la agilidad/ percepción ya suben con el uso (`AptitudeEvolution`).
-- **ObservationTest** (class) — `Assets/Scripts/ObservationTest.cs` — Test de la OBSERVACIÓN/ecuanimidad (docs/apremios-guardian-observacion.md §4, testing-checklist §44), por `TestProbe`:
+- **Observation** (class) — `Assets/Scripts/Soul/Observation.cs` — OBSERVACIÓN / ECUANIMIDAD (docs/sistemas/apremios-guardian-observacion.md §4) — la libertad frente al apremio.
+- **ObservationSkill** (class) — `Assets/Scripts/Soul/ObservationSkill.cs` — La OBSERVACIÓN como habilidad que EVOLUCIONA POR USO (docs/sistemas/apremios-guardian-observacion.md §4) — como la agilidad/ percepción ya suben con el uso (`AptitudeEvolution`).
+- **ObservationTest** (class) — `Assets/Scripts/ObservationTest.cs` — Test de la OBSERVACIÓN/ecuanimidad (docs/sistemas/apremios-guardian-observacion.md §4, testing-checklist §44), por `TestProbe`:
 - **ObserveSpell** (class) — `Assets/Scripts/Microcosmos/ObserveSpell.cs` — HECHIZO PASIVO DE LOS OJOS:
 - **OmelekTest** (class) — `Assets/Scripts/Tests/OmelekTest.cs` — PRUEBA DEL SEGUNDO ESCENARIO DE LA HISTORIA DE MUSK:
 - **Orchestra** (class) — `Assets/Scripts/World/Orchestra.cs` — ORQUESTA (coreografía; Berón 2026-10-29):
 - **OrganicMaterial** (enum) — `Assets/Scripts/OrganicMaterial.cs`
-- **PacifySpell** (class) — `Assets/Scripts/Soul/PacifySpell.cs` — HECHIZO DE PACIFICACIÓN (docs/spells-suprahechizo-and-thoughts.md §5) — serena a un objetivo:
+- **PacifySpell** (class) — `Assets/Scripts/Soul/PacifySpell.cs` — HECHIZO DE PACIFICACIÓN (docs/sistemas/spells-suprahechizo-and-thoughts.md §5) — serena a un objetivo:
 - **PackAwareness** (class) — `Assets/Scripts/Microcosmos/PackAwareness.cs` — CONCIENCIA DE MANADA — lógica de ayuda emergente entre compañeros.
 - **PakalStoryTest** (class) — `Assets/Scripts/Tests/PakalStoryTest.cs` — TEST DEL MICROCOSMOS MAYA:
 - **Palette** (class) — `Assets/Scripts/UI/Palette/Palette.cs`
@@ -791,165 +791,165 @@ _Total: 1040 tipos._
 - **PathMover** (class) — `Assets/Scripts/Control/PathMover.cs` — ANDAR DE VERDAD hacia un punto (para personajes que se mueven por código:
 - **Patrol** (class) — `Assets/Scripts/Compassion/Patrol.cs` — PATRULLA genérica (sin uniformes ni símbolos):
 - **PatrolMission** (class) — `Assets/Scripts/World/PatrolMission.cs` — PATRULLA:
-- **PerceptChannel** (enum) — `Assets/Scripts/Soul/PerceptChannel.cs` — CANALES DE INFORMACIÓN de la percepción (docs/consciousness-mechanics.md §3) — QUÉ se extrae al observar, con independencia de POR QUÉ órgano.
-- **Performances** (class) — `Assets/Scripts/Activities/Performances.cs` — EL CATÁLOGO DE ACTUACIONES (docs/actividades-y-uniformes.md §3):
+- **PerceptChannel** (enum) — `Assets/Scripts/Soul/PerceptChannel.cs` — CANALES DE INFORMACIÓN de la percepción (docs/sistemas/consciousness-mechanics.md §3) — QUÉ se extrae al observar, con independencia de POR QUÉ órgano.
+- **Performances** (class) — `Assets/Scripts/Activities/Performances.cs` — EL CATÁLOGO DE ACTUACIONES (docs/sistemas/actividades-y-uniformes.md §3):
 - **PerfProbe** (class) — `Assets/Scripts/UI/PerfProbe.cs` — SONDA DE RENDIMIENTO (consola:
 - **PeriodicTableManager** (class) — `Assets/Scripts/Chemistry/PeriodicTableManager.cs` — Tracks which periodic table elements the player has discovered.
-- **PersonajesReglasTest** (class) — `Assets/Scripts/Tests/PersonajesReglasTest.cs` — PRUEBA DE LAS REGLAS DE PERSONAJES (grupo 95; docs/reglas-personajes.md, Berón 2026-11-05):
+- **PersonajesReglasTest** (class) — `Assets/Scripts/Tests/PersonajesReglasTest.cs` — PRUEBA DE LAS REGLAS DE PERSONAJES (grupo 95; docs/reglas/reglas-personajes.md, Berón 2026-11-05):
 - **PersonalDosimeter** (class) — `Assets/Scripts/AtomicPlant/PersonalDosimeter.cs` — EL DOSÍMETRO PERSONAL (se recoge en la taquilla de la entrada):
-- **PersonLife** (class) — `Assets/Scripts/Body/PersonLife.cs` — EL CICLO DE VIDA DE UNA PERSONA (docs/ciclo-de-vida.md §Humanos; Berón 2026-11-02:
+- **PersonLife** (class) — `Assets/Scripts/Body/PersonLife.cs` — EL CICLO DE VIDA DE UNA PERSONA (docs/sistemas/ciclo-de-vida.md §Humanos; Berón 2026-11-02:
 - **PeticionesSondaTest** (class) — `Assets/Scripts/Tests/PeticionesSondaTest.cs` — (2026-11-11) PETICIONES DE BERÓN QUE LA SONDA DE LA RONDA 65 VIO SIN CUMPLIR, en la escena construida:
-- **PetrelTest** (class) — `Assets/Scripts/Tests/PetrelTest.cs` — PRUEBA DEL PETREL DE LAS NIEVES (Berón 2026-11-05; docs/reglas-animales.md):
-- **PhraseCategory** (enum) — `Assets/Scripts/Mind/MindPhrase.cs` — Clasificación de una frase (docs/anima-architecture.md §6/§10).
-- **PhrasePools** (class) — `Assets/Scripts/Mind/PhrasePools.cs` — Pools de contenido de la biblioteca de frases (docs/anima-architecture.md §11).
-- **PhysicsHistoryMission** (class) — `Assets/Scripts/AtomicPlant/PhysicsHistoryMission.cs` — EL MICROCOSMOS DE LA PLANTA ATÓMICA (docs/atomic-plant.md §Microcosmos):
-- **PhysicsLesson** (class) — `Assets/Scripts/AtomicPlant/PhysicsLesson.cs` — UNA LECCIÓN DE FÍSICA del microcosmos de la planta atómica (docs/atomic-plant.md §Microcosmos):
+- **PetrelTest** (class) — `Assets/Scripts/Tests/PetrelTest.cs` — PRUEBA DEL PETREL DE LAS NIEVES (Berón 2026-11-05; docs/reglas/reglas-animales.md):
+- **PhraseCategory** (enum) — `Assets/Scripts/Mind/MindPhrase.cs` — Clasificación de una frase (docs/sistemas/anima-architecture.md §6/§10).
+- **PhrasePools** (class) — `Assets/Scripts/Mind/PhrasePools.cs` — Pools de contenido de la biblioteca de frases (docs/sistemas/anima-architecture.md §11).
+- **PhysicsHistoryMission** (class) — `Assets/Scripts/AtomicPlant/PhysicsHistoryMission.cs` — EL MICROCOSMOS DE LA PLANTA ATÓMICA (docs/areas/atomic-plant.md §Microcosmos):
+- **PhysicsLesson** (class) — `Assets/Scripts/AtomicPlant/PhysicsLesson.cs` — UNA LECCIÓN DE FÍSICA del microcosmos de la planta atómica (docs/areas/atomic-plant.md §Microcosmos):
 - **Phytoplankton** (class) — `Assets/Scripts/World/Phytoplankton.cs` — FITOPLANCTON:
-- **PillowFight** (class) — `Assets/Scripts/Progression/PillowFight.cs` — LA GUERRA DE ALMOHADAS en el ring de la arboleda (docs/guerra-de-almohadas.md; Berón 2026-11-04).
-- **PillowFightTest** (class) — `Assets/Scripts/Tests/PillowFightTest.cs` — PRUEBA DE LA GUERRA DE ALMOHADAS (grupo 89; docs/guerra-de-almohadas.md; Berón 2026-11-04).
+- **PillowFight** (class) — `Assets/Scripts/Progression/PillowFight.cs` — LA GUERRA DE ALMOHADAS en el ring de la arboleda (docs/areas/guerra-de-almohadas.md; Berón 2026-11-04).
+- **PillowFightTest** (class) — `Assets/Scripts/Tests/PillowFightTest.cs` — PRUEBA DE LA GUERRA DE ALMOHADAS (grupo 89; docs/areas/guerra-de-almohadas.md; Berón 2026-11-04).
 - **PillowRing** (class) — `Assets/Scripts/World/PillowRing.cs` — RING DE ALMOHADAS de la arboleda residencial (Berón 2026-11-04:
-- **PlaneMessenger** (class) — `Assets/Scripts/Prologue/PlaneMessenger.cs` — Mensajes que cruzan entre planos (docs/area-progression.md "Apertura"):
+- **PlaneMessenger** (class) — `Assets/Scripts/Prologue/PlaneMessenger.cs` — Mensajes que cruzan entre planos (docs/areas/area-progression.md "Apertura"):
 - **PlantEquipment** (class) — `Assets/Scripts/AtomicPlant/PlantEquipment.cs` — LOS EQUIPOS DE LA PLANTA que no son la consola, cada uno con su trabajo real (F):
 - **PlantNotice** (class) — `Assets/Scripts/AtomicPlant/PlantNotice.cs` — Avisos de la planta atómica en pantalla (vía , que también los deja en el log).
-- **PlatformSlots** (class) — `Assets/Scripts/World/PlatformSlots.cs` — POSICIONES RESERVADAS DE UN PISO (docs/reglas-plataformas.md, regla 8; Berón 2026-10-28):
-- **PlayableCreature** (class) — `Assets/Scripts/Farming/PlayableCreature.cs` — Farming NO-violento (docs/world-topology-and-planes.md §4.1).
-- **PlayController** (class) — `Assets/Scripts/Farming/PlayController.cs` — Input de "juego" del jugador para el farming no-violento (docs/world-topology-and-planes.md §4.1, MVP).
-- **PlayerBrain** (class) — `Assets/Scripts/Control/PlayerBrain.cs` — El input del JUGADOR como un cerebro más (docs/anima-architecture.md §11.5:
-- **PlayerClimber** (class) — `Assets/Scripts/Farming/PlayerClimber.cs` — Trepar (docs/creature-stats.md §Pools derivados → "Trepar").
+- **PlatformSlots** (class) — `Assets/Scripts/World/PlatformSlots.cs` — POSICIONES RESERVADAS DE UN PISO (docs/reglas/reglas-plataformas.md, regla 8; Berón 2026-10-28):
+- **PlayableCreature** (class) — `Assets/Scripts/Farming/PlayableCreature.cs` — Farming NO-violento (docs/sistemas/world-topology-and-planes.md §4.1).
+- **PlayController** (class) — `Assets/Scripts/Farming/PlayController.cs` — Input de "juego" del jugador para el farming no-violento (docs/sistemas/world-topology-and-planes.md §4.1, MVP).
+- **PlayerBrain** (class) — `Assets/Scripts/Control/PlayerBrain.cs` — El input del JUGADOR como un cerebro más (docs/sistemas/anima-architecture.md §11.5:
+- **PlayerClimber** (class) — `Assets/Scripts/Farming/PlayerClimber.cs` — Trepar (docs/sistemas/creature-stats.md §Pools derivados → "Trepar").
 - **PlayerCombat** (class) — `Assets/Scripts/Combat/PlayerCombat.cs` — Handles the player's melee attack in combat zones (kitchen, alchemy lab, etc.).
 - **PlayerController** (class) — `Assets/Scripts/Player/PlayerController.cs` — Kushal's player controller for Cold Sanctuary.
-- **PlayerCore** (class) — `Assets/Scripts/Control/PlayerCore.cs` — El "alma"/input PERSISTENTE del jugador (docs/anima-architecture.md §11.5).
+- **PlayerCore** (class) — `Assets/Scripts/Control/PlayerCore.cs` — El "alma"/input PERSISTENTE del jugador (docs/sistemas/anima-architecture.md §11.5).
 - **PlayerStats** (class) — `Assets/Scripts/Player/PlayerStats.cs` — Holds all runtime stats for the player.
 - **PlayerTarget** (class) — `Assets/Scripts/PlayerTarget.cs` — Añadir al GameObject del jugador para que los animales puedan tratarlo como presa o amenaza.
-- **PlayerTaskRunner** (class) — `Assets/Scripts/Progression/PlayerTaskRunner.cs` — EL QUE HACE LAS TAREAS DEL JUGADOR CON «E» (docs/tareas-del-jugador.md; el catálogo de pasos y sitios es ).
+- **PlayerTaskRunner** (class) — `Assets/Scripts/Progression/PlayerTaskRunner.cs` — EL QUE HACE LAS TAREAS DEL JUGADOR CON «E» (docs/sistemas/tareas-del-jugador.md; el catálogo de pasos y sitios es ).
 - **PlayerTasks** (class) — `Assets/Scripts/Progression/PlayerTasks.cs` — TAREAS DEL JUGADOR POR PASOS CON «E» (Berón 2026-11-04:
 - **PlayerTasksTest** (class) — `Assets/Scripts/Tests/PlayerTasksTest.cs` — TEST DE LAS TAREAS DEL JUGADOR CON «E» (Berón 2026-11-04:
 - **PlayerWorkday** (class) — `Assets/Scripts/Progression/PlayerWorkday.cs` — LA JORNADA DE KUSHAL (Berón 2026-10-29:
-- **PolarHabitats** (class) — `Assets/Scripts/World/PolarHabitats.cs` — HÁBITATS DEL SANTUARIO DE HIELO (docs/natural-interactions.md):
-- **PolarUnderstory** (class) — `Assets/Scripts/World/PolarUnderstory.cs` — SOTOBOSQUE POLAR (docs/ice-sanctuary-ecology.md):
-- **PopulationPlan** (class) — `Assets/Scripts/World/PopulationPlan.cs` — EQUILIBRIO DE ESPECIES (docs/ice-sanctuary-ecology.md; docs/reglas-animales.md §Fauna por humanos):
+- **PolarHabitats** (class) — `Assets/Scripts/World/PolarHabitats.cs` — HÁBITATS DEL SANTUARIO DE HIELO (docs/sistemas/natural-interactions.md):
+- **PolarUnderstory** (class) — `Assets/Scripts/World/PolarUnderstory.cs` — SOTOBOSQUE POLAR (docs/fauna/ice-sanctuary-ecology.md):
+- **PopulationPlan** (class) — `Assets/Scripts/World/PopulationPlan.cs` — EQUILIBRIO DE ESPECIES (docs/fauna/ice-sanctuary-ecology.md; docs/reglas/reglas-animales.md §Fauna por humanos):
 - **PositionEvaluation** (struct) — `Assets/Scripts/Asana/PositionEvaluation.cs` — How well a single body part position was executed during an asana attempt.
-- **PossessionSpell** (class) — `Assets/Scripts/Control/PossessionSpell.cs` — Hechizo de POSESIÓN del jugador (docs/anima-architecture.md §11.5).
+- **PossessionSpell** (class) — `Assets/Scripts/Control/PossessionSpell.cs` — Hechizo de POSESIÓN del jugador (docs/sistemas/anima-architecture.md §11.5).
 - **PostNatalManager** (class) — `Assets/Scripts/PostNatal/PostNatalManager.cs` — Añadir al GameObject de la MADRE.
 - **PostNatalStage** (class) — `Assets/Scripts/PostNatal/PostNatalStage.cs` — Una etapa del ciclo post-natal.
 - **PostureFormMob** (class) — `Assets/Scripts/Meditation/PostureFormMob.cs` — The "posture" archetype (docs §8):
-- **PostureSpell** (class) — `Assets/Scripts/Asana/YogaSpells.cs` — HECHIZO-POSTURA de UNA parte del cuerpo (docs/typed-spells-and-queues.md §4.1):
+- **PostureSpell** (class) — `Assets/Scripts/Asana/YogaSpells.cs` — HECHIZO-POSTURA de UNA parte del cuerpo (docs/sistemas/typed-spells-and-queues.md §4.1):
 - **PostureStressHandler** (class) — `Assets/Scripts/Player/PostureStressHandler.cs` — Reads IBody.postureStress every frame and applies physical consequences:
 - **PostureVisualizationMission** (class) — `Assets/Scripts/Meditation/PostureVisualizationMission.cs` — Visualization mission (docs §7):
-- **Predation** (class) — `Assets/Scripts/Transformation/Predation.cs` — Depredación por STATS (docs/stats-as-truth.md §2):
+- **Predation** (class) — `Assets/Scripts/Transformation/Predation.cs` — Depredación por STATS (docs/sistemas/stats-as-truth.md §2):
 - **PredatorFeeder** (class) — `Assets/Scripts/World/PredatorFeeder.cs` — EL ALIMENTADOR (misión de la jornada, por rotación:
-- **PredatorRound** (class) — `Assets/Scripts/World/PredatorRound.cs` — LA RONDA DEL ALIMENTADOR (Berón 2026-11-05; docs/alimentador.md):
-- **ProduccionTest** (class) — `Assets/Scripts/Tests/ProduccionTest.cs` — PRUEBA DE LA MAQUINARIA DE PRODUCCIÓN (Berón 2026-11-05; manual, regla P19; docs/produccion-maquinaria.md):
+- **PredatorRound** (class) — `Assets/Scripts/World/PredatorRound.cs` — LA RONDA DEL ALIMENTADOR (Berón 2026-11-05; docs/areas/alimentador.md):
+- **ProduccionTest** (class) — `Assets/Scripts/Tests/ProduccionTest.cs` — PRUEBA DE LA MAQUINARIA DE PRODUCCIÓN (Berón 2026-11-05; manual, regla P19; docs/areas/produccion-maquinaria.md):
 - **ProductionAudit** (class) — `Assets/Scripts/World/ProductionAudit.cs` — LA MAQUINARIA DE LAS ÁREAS DE PRODUCCIÓN (Berón 2026-11-05:
-- **ProductionOrder** (class) — `Assets/Scripts/Virtualization/ProductionOrder.cs` — La MISIÓN de producción de un área (docs/kitchen-simulation.md §3b):
-- **Professions** (class) — `Assets/Scripts/Progression/Professions.cs` — LAS PROFESIONES DEL PERSONAL (Berón 2026-11-04; docs/personajes-mesocosmos.md §Profesiones y parejas).
+- **ProductionOrder** (class) — `Assets/Scripts/Virtualization/ProductionOrder.cs` — La MISIÓN de producción de un área (docs/areas/kitchen-simulation.md §3b):
+- **Professions** (class) — `Assets/Scripts/Progression/Professions.cs` — LAS PROFESIONES DEL PERSONAL (Berón 2026-11-04; docs/historia/personajes-mesocosmos.md §Profesiones y parejas).
 - **Progress** (class) — `Assets/Scripts/Progression/Progress.cs` — PROGRESO DEL JUGADOR en la historia y las misiones (Berón 2026-10-24:
 - **ProgressPanel** (class) — `Assets/Scripts/UI/ProgressPanel.cs` — CHECKLIST DE PROGRESO (hechizo «progreso»):
-- **PrologueSequence** (class) — `Assets/Scripts/Prologue/PrologueSequence.cs` — El guion del PRÓLOGO (docs/area-progression.md "Apertura"):
+- **PrologueSequence** (class) — `Assets/Scripts/Prologue/PrologueSequence.cs` — El guion del PRÓLOGO (docs/areas/area-progression.md "Apertura"):
 - **ProtectionMission** (class) — `Assets/Scripts/Meditation/ProtectionMission.cs` — "A proteger" mission (docs §7/§8) — bespoke escort/defense, not a MeditationMissionBase subclass because it has two mob types, counts only repels, and can FAIL:
 - **ProtectMob** (class) — `Assets/Scripts/Meditation/ProtectMob.cs` — The fragile ward of the "a proteger" archetype (docs §8):
 - **PullDoor** (class) — `Assets/Scripts/PullDoor.cs`
 - **PullSpell** (class) — `Assets/Scripts/Microcosmos/PullSpell.cs` — Hechizo JALAR — Kushal atrae a otro ser hacia sí inyectando un en el del objetivo.
-- **QaCheck** (class) — `Assets/Scripts/QaCheck.cs` — EL COMPROBADOR DE QA (2026-11-13, docs/qa-propuesta.md §6; equivale a «qa:check» de CodeShip).
-- **QaCheckTest** (class) — `Assets/Scripts/Tests/QaCheckTest.cs` — (2026-11-13, docs/qa-propuesta.md §6) EL COMPROBADOR DE QA, en la lista rápida (0 s, sin escena):
-- **QuarkReserve** (class) — `Assets/Scripts/Transformation/QuarkReserve.cs` — SUSTRATO DE QUARKS del S4 (docs/magic-metabolism-progression.md §16).
-- **QueuedSpell** (class) — `Assets/Scripts/Control/QueuedSpell.cs` — Un HECHIZO EN COLA (docs/typed-spells-and-queues.md):
-- **RadiationSource** (class) — `Assets/Scripts/AtomicPlant/RadiationSource.cs` — UNA FUENTE DE RADIACIÓN en la planta atómica (docs/atomic-plant.md §Protección radiológica):
-- **ReachGoalMission** (class) — `Assets/Scripts/ReachGoalMission.cs` — Primera misión JUGABLE (WASD) que además es un TEST del juego real (docs/testing-checklist.md §33).
+- **QaCheck** (class) — `Assets/Scripts/QaCheck.cs` — EL COMPROBADOR DE QA (2026-11-13, docs/qa/qa-propuesta.md §6; equivale a «qa:check» de CodeShip).
+- **QaCheckTest** (class) — `Assets/Scripts/Tests/QaCheckTest.cs` — (2026-11-13, docs/qa/qa-propuesta.md §6) EL COMPROBADOR DE QA, en la lista rápida (0 s, sin escena):
+- **QuarkReserve** (class) — `Assets/Scripts/Transformation/QuarkReserve.cs` — SUSTRATO DE QUARKS del S4 (docs/sistemas/magic-metabolism-progression.md §16).
+- **QueuedSpell** (class) — `Assets/Scripts/Control/QueuedSpell.cs` — Un HECHIZO EN COLA (docs/sistemas/typed-spells-and-queues.md):
+- **RadiationSource** (class) — `Assets/Scripts/AtomicPlant/RadiationSource.cs` — UNA FUENTE DE RADIACIÓN en la planta atómica (docs/areas/atomic-plant.md §Protección radiológica):
+- **ReachGoalMission** (class) — `Assets/Scripts/ReachGoalMission.cs` — Primera misión JUGABLE (WASD) que además es un TEST del juego real (docs/qa/testing-checklist.md §33).
 - **ReactorConsole** (class) — `Assets/Scripts/AtomicPlant/ReactorConsole.cs` — LA CONSOLA DEL REACTOR (sala de control):
 - **RealityShiftController** (class) — `Assets/Scripts/Meditation/RealityShiftController.cs` — Generalizes KitchenScaleController:
-- **Refugee** (class) — `Assets/Scripts/Compassion/Refugee.cs` — Una persona a la que hay que PONER A SALVO en las simulaciones de compasión (docs/compassion-simulations.md):
+- **Refugee** (class) — `Assets/Scripts/Compassion/Refugee.cs` — Una persona a la que hay que PONER A SALVO en las simulaciones de compasión (docs/microcosmos/compassion-simulations.md):
 - **RefugeGrowth** (class) — `Assets/Scripts/World/RefugeGrowth.cs` — EL REFUGIO CRECE HASTA QUE SE PUEDE VIVIR ALLÍ (Berón 2026-11-05, #128:
 - **RefugeRule** (class) — `Assets/Scripts/World/Refuge.cs` — El refugio del fondo:
-- **RemoteStaff** (class) — `Assets/Scripts/Progression/RemoteStaff.cs` — QUIEN PASA EL DÍA EN OTRO SANTUARIO NO SE SIMULA AQUÍ (Berón 2026-11-08, por rendimiento; docs/jornada-y-rotacion.md §Reparto por santuarios).
-- **RepairTicket** (class) — `Assets/Scripts/Virtualization/RepairTicket.cs` — Un TICKET de avería (docs/forge-simulation.md §5):
-- **RepartoSantuariosTest** (class) — `Assets/Scripts/Tests/RepartoSantuariosTest.cs` — PRUEBA DEL REPARTO POR SANTUARIOS (grupo 113; Berón 2026-11-08; docs/jornada-y-rotacion.md §Reparto por santuarios).
-- **ResearchReactor** (class) — `Assets/Scripts/AtomicPlant/ResearchReactor.cs` — EL REACTOR DE LA PLANTA ATÓMICA (docs/atomic-plant.md):
+- **RemoteStaff** (class) — `Assets/Scripts/Progression/RemoteStaff.cs` — QUIEN PASA EL DÍA EN OTRO SANTUARIO NO SE SIMULA AQUÍ (Berón 2026-11-08, por rendimiento; docs/sistemas/jornada-y-rotacion.md §Reparto por santuarios).
+- **RepairTicket** (class) — `Assets/Scripts/Virtualization/RepairTicket.cs` — Un TICKET de avería (docs/areas/forge-simulation.md §5):
+- **RepartoSantuariosTest** (class) — `Assets/Scripts/Tests/RepartoSantuariosTest.cs` — PRUEBA DEL REPARTO POR SANTUARIOS (grupo 113; Berón 2026-11-08; docs/sistemas/jornada-y-rotacion.md §Reparto por santuarios).
+- **ResearchReactor** (class) — `Assets/Scripts/AtomicPlant/ResearchReactor.cs` — EL REACTOR DE LA PLANTA ATÓMICA (docs/areas/atomic-plant.md):
 - **Respawn** (class) — `Assets/Scripts/Respawn.cs`
-- **RestaurantKitchen** (class) — `Assets/Scripts/Kitchen/RestaurantKitchen.cs` — GESTOR del RESTAURANTE (cocina jugable, docs/kitchen-simulation.md + spell-genesis §cocina).
-- **RestaurantService** (class) — `Assets/Scripts/Kitchen/RestaurantService.cs` — SERVICIO EN VIVO DEL RESTAURANTE (docs/restaurant-plan.md §5, Berón 2026-10-29:
+- **RestaurantKitchen** (class) — `Assets/Scripts/Kitchen/RestaurantKitchen.cs` — GESTOR del RESTAURANTE (cocina jugable, docs/areas/kitchen-simulation.md + spell-genesis §cocina).
+- **RestaurantService** (class) — `Assets/Scripts/Kitchen/RestaurantService.cs` — SERVICIO EN VIVO DEL RESTAURANTE (docs/areas/restaurant-plan.md §5, Berón 2026-10-29:
 - **RestaurantServiceGame** (class) — `Assets/Scripts/Kitchen/RestaurantServiceGame.cs` — VIRTUALIZACIÓN «SERVICIO DEL RESTAURANTE» (escena Virtual_coc_servicio):
 - **RestaurantServiceStation** (class) — `Assets/Scripts/Kitchen/RestaurantServiceStation.cs` — Puesto del servicio del restaurante virtual:
 - **RestaurantServiceTest** (class) — `Assets/Scripts/Tests/RestaurantServiceTest.cs` — TEST EN VIVO DEL SERVICIO DEL RESTAURANTE (Berón 2026-10-29:
-- **RiverCurrent** (class) — `Assets/Scripts/Microcosmos/RiverCurrent.cs` — CORRIENTE DE RÍO (docs/microcosmos-sakshi-origin.md §4) — una ZONA (trigger) que **arrastra aguas abajo** a las ánimas que caen dentro, con **combate de stats** (la masa resiste:
-- **RiverCurrentTest** (class) — `Assets/Scripts/RiverCurrentTest.cs` — Test del RÍO (docs/microcosmos-sakshi-origin.md §4, testing-checklist §42), por `TestProbe`:
-- **RocketModel** (class) — `Assets/Scripts/World/RocketModel.cs` — EL COHETE, CON FORMA DE COHETE (ronda 7, 2026-11-05; docs/lanzadera-de-cohetes.md):
-- **RoofGardenTest** (class) — `Assets/Scripts/Tests/RoofGardenTest.cs` — PRUEBA DE LOS JARDINES EN LA CIMA (Berón 2026-11-03; docs/jardines-frutales.md §Jardines en la cima):
+- **RiverCurrent** (class) — `Assets/Scripts/Microcosmos/RiverCurrent.cs` — CORRIENTE DE RÍO (docs/microcosmos/microcosmos-sakshi-origin.md §4) — una ZONA (trigger) que **arrastra aguas abajo** a las ánimas que caen dentro, con **combate de stats** (la masa resiste:
+- **RiverCurrentTest** (class) — `Assets/Scripts/RiverCurrentTest.cs` — Test del RÍO (docs/microcosmos/microcosmos-sakshi-origin.md §4, testing-checklist §42), por `TestProbe`:
+- **RocketModel** (class) — `Assets/Scripts/World/RocketModel.cs` — EL COHETE, CON FORMA DE COHETE (ronda 7, 2026-11-05; docs/areas/lanzadera-de-cohetes.md):
+- **RoofGardenTest** (class) — `Assets/Scripts/Tests/RoofGardenTest.cs` — PRUEBA DE LOS JARDINES EN LA CIMA (Berón 2026-11-03; docs/areas/jardines-frutales.md §Jardines en la cima):
 - **RootInquiryMission** (class) — `Assets/Scripts/Meditation/RootInquiryMission.cs` — "Buscar la raíz" mission (docs §7/§8):
 - **SafeHaven** (class) — `Assets/Scripts/Compassion/SafeHaven.cs` — DESTINO SEGURO:
-- **SakshiRiverStory** (class) — `Assets/Scripts/Microcosmos/SakshiRiverStory.cs` — EL RÍO DE SAKSHI (docs/microcosmos-sakshi-origin.md):
+- **SakshiRiverStory** (class) — `Assets/Scripts/Microcosmos/SakshiRiverStory.cs` — EL RÍO DE SAKSHI (docs/microcosmos/microcosmos-sakshi-origin.md):
 - **SanctuaryArea** (class) — `Assets/Scripts/World/SanctuaryArea.cs` — A zone inside Cold Sanctuary.
 - **SanctuaryAreaType** (enum) — `Assets/Scripts/World/SanctuaryAreaType.cs` — All zones in Cold Sanctuary, ordered roughly by progression tier.
 - **SanctuaryDirector** (class) — `Assets/Scripts/World/SanctuaryDirector.cs` — The Magnate's world management component — the brain of the sanctuary's autonomous simulation.
 - **SanctuaryLifeTest** (class) — `Assets/Scripts/Tests/SanctuaryLifeTest.cs` — VIDA DEL SANTUARIO:
 - **SanctuaryMission** (class) — `Assets/Scripts/Mission/SanctuaryMission.cs` — Defines one mission available in the sanctuary.
 - **SanctuaryOnboarding** (class) — `Assets/Scripts/World/SanctuaryOnboarding.cs` — ONBOARDING de un aspirante al santuario (docs/sanctuary1-level-and-live-tests §4, founding-trio §7).
-- **SanctuaryPlacement** (class) — `Assets/Scripts/Progression/SanctuaryPlacement.cs` — DÓNDE VIVE CADA UNO (Berón 2026-11-08; docs/progresion-santuarios.md, docs/jornada-y-rotacion.md §Reparto por santuarios; manual J33).
-- **SanctuaryPower** (class) — `Assets/Scripts/Progression/SanctuaryPower.cs` — EL PODER QUE HACE SUBIR DE SANTUARIO (Berón 2026-11-08; docs/progresion-santuarios.md).
-- **SanctuaryResource** (enum) — `Assets/Scripts/Economy/SanctuaryResource.cs` — Recursos globales de un santuario (Mesocosmos / Macrocosmos, ver docs/world-topology-and-planes.md §4 y §7).
-- **SanctuaryResourceHUD** (class) — `Assets/Scripts/UI/SanctuaryResourceHUD.cs` — VENTANA DE RECURSOS del santuario activo (docs/world-topology-and-planes.md §7, docs/interfaz-botones.md):
-- **SanctuaryResources** (class) — `Assets/Scripts/Economy/SanctuaryResources.cs` — Libro mayor (ledger) de recursos del santuario ACTIVO (docs/world-topology-and-planes.md §4/§7).
+- **SanctuaryPlacement** (class) — `Assets/Scripts/Progression/SanctuaryPlacement.cs` — DÓNDE VIVE CADA UNO (Berón 2026-11-08; docs/sistemas/progresion-santuarios.md, docs/sistemas/jornada-y-rotacion.md §Reparto por santuarios; manual J33).
+- **SanctuaryPower** (class) — `Assets/Scripts/Progression/SanctuaryPower.cs` — EL PODER QUE HACE SUBIR DE SANTUARIO (Berón 2026-11-08; docs/sistemas/progresion-santuarios.md).
+- **SanctuaryResource** (enum) — `Assets/Scripts/Economy/SanctuaryResource.cs` — Recursos globales de un santuario (Mesocosmos / Macrocosmos, ver docs/sistemas/world-topology-and-planes.md §4 y §7).
+- **SanctuaryResourceHUD** (class) — `Assets/Scripts/UI/SanctuaryResourceHUD.cs` — VENTANA DE RECURSOS del santuario activo (docs/sistemas/world-topology-and-planes.md §7, docs/sistemas/interfaz-botones.md):
+- **SanctuaryResources** (class) — `Assets/Scripts/Economy/SanctuaryResources.cs` — Libro mayor (ledger) de recursos del santuario ACTIVO (docs/sistemas/world-topology-and-planes.md §4/§7).
 - **SceneCache** (class) — `Assets/Scripts/World/SceneCache.cs` — CACHÉ DE BÚSQUEDAS EN ESCENA.
 - **ScentEmitter** (class) — `Assets/Scripts/Microcosmos/ScentEmitter.cs` — EMISOR DE OLOR — cualquier objeto (comida, cadáver, nido) puede convertirse en fuente de atracción olfativa para depredadores cercanos.
 - **ScentScanner** (class) — `Assets/Scripts/Microcosmos/ScentScanner.cs` — ESCÁNER DE OLOR — detecta cercanos y genera un impulso de ATRACCIÓN hacia la fuente más intensa.
-- **ScreenEffects** (class) — `Assets/Scripts/Camera/ScreenEffects.cs` — Efectos de pantalla por ESTADO (docs/stats-as-truth.md §6 · "cámara artística").
+- **ScreenEffects** (class) — `Assets/Scripts/Camera/ScreenEffects.cs` — Efectos de pantalla por ESTADO (docs/sistemas/stats-as-truth.md §6 · "cámara artística").
 - **ScreenFader** (class) — `Assets/Scripts/Meditation/ScreenFader.cs` — Full-screen black overlay used to hide the reality-shift transition.
 - **SeaRule** (class) — `Assets/Scripts/Player/WaterZone.cs` — LOS DOS MARES (Berón 2026-11-05:
-- **SenseOrgan** (class) — `Assets/Scripts/Composition/SenseOrgan.cs` — ÓRGANO SENSORIAL (docs/consciousness-mechanics.md §3) — la clase de body-part que faltaba.
-- **Senses** (class) — `Assets/Scripts/Soul/Senses.cs` — Catálogo de SENTIDOS (docs/consciousness-mechanics.md §3) — "observar" no es solo la vista:
-- **SensesTest** (class) — `Assets/Scripts/SensesTest.cs` — Test de los SENTIDOS/ÓRGANOS (docs/consciousness-mechanics.md §3, testing-checklist §47), por `TestProbe`:
+- **SenseOrgan** (class) — `Assets/Scripts/Composition/SenseOrgan.cs` — ÓRGANO SENSORIAL (docs/sistemas/consciousness-mechanics.md §3) — la clase de body-part que faltaba.
+- **Senses** (class) — `Assets/Scripts/Soul/Senses.cs` — Catálogo de SENTIDOS (docs/sistemas/consciousness-mechanics.md §3) — "observar" no es solo la vista:
+- **SensesTest** (class) — `Assets/Scripts/SensesTest.cs` — Test de los SENTIDOS/ÓRGANOS (docs/sistemas/consciousness-mechanics.md §3, testing-checklist §47), por `TestProbe`:
 - **ServiceActor** (class) — `Assets/Scripts/Kitchen/ServiceActor.cs` — MARCA de quien se mueve en el SERVICIO DEL RESTAURANTE ():
-- **ServiceHub** (class) — `Assets/Scripts/Virtualization/ServiceHub.cs` — Tablero de servicio de un taller (Mecánica o Construcción; docs/forge-simulation.md §5).
+- **ServiceHub** (class) — `Assets/Scripts/Virtualization/ServiceHub.cs` — Tablero de servicio de un taller (Mecánica o Construcción; docs/areas/forge-simulation.md §5).
 - **Sex** (class) — `Assets/Scripts/Sex.cs`
 - **ShadowQuality** (class) — `Assets/Scripts/World/ShadowQuality.cs` — SOMBRAS BARATAS (Berón 2026-11-09, rendimiento).
-- **SharedSoul** (class) — `Assets/Scripts/Soul/SharedSoul.cs` — ALMA COMPARTIDA entre reencarnaciones (docs/soul-relations-reincarnation.md §4).
+- **SharedSoul** (class) — `Assets/Scripts/Soul/SharedSoul.cs` — ALMA COMPARTIDA entre reencarnaciones (docs/sistemas/soul-relations-reincarnation.md §4).
 - **SharedSoulDemo** (class) — `Assets/Scripts/Soul/SharedSoulDemo.cs` — Demo (OnGUI) del ALMA COMPARTIDA (docs/soul-relations-reincarnation §4) para el sandbox `AlmaCompartida_AUTO`:
 - **ShipCtrl** (class) — `Assets/Scripts/ShipCtrl.cs`
-- **SicknessTest** (class) — `Assets/Scripts/SicknessTest.cs` — Unidad de test de la ENFERMEDAD (docs/testing-checklist.md §38), por `TestProbe`, determinista:
+- **SicknessTest** (class) — `Assets/Scripts/SicknessTest.cs` — Unidad de test de la ENFERMEDAD (docs/qa/testing-checklist.md §38), por `TestProbe`, determinista:
 - **SimulationLod** (class) — `Assets/Scripts/SimulationLod.cs` — NIVEL DE DETALLE DE LA SIMULACIÓN (Berón 2026-11-09, rendimiento:
-- **SiteLineRule** (class) — `Assets/Scripts/World/SiteLine.cs` — Velocidades y tiempos de la línea (docs/sitio-nuclear.md §9 y §20).
+- **SiteLineRule** (class) — `Assets/Scripts/World/SiteLine.cs` — Velocidades y tiempos de la línea (docs/areas/sitio-nuclear.md §9 y §20).
 - **Sleepover** (class) — `Assets/Scripts/World/Sleepover.cs` — PIJAMADAS EN LAS CASAS DEL ÁRBOL (Berón 2026-11-04:
-- **SleepoverTest** (class) — `Assets/Scripts/Tests/SleepoverTest.cs` — PRUEBA DE LAS PIJAMADAS (grupo 92; docs/pijamadas.md; Berón 2026-11-04).
-- **SleepTest** (class) — `Assets/Scripts/SleepTest.cs` — Unidad de test del SUEÑO día/noche (docs/testing-checklist.md §41), por `TestProbe`:
+- **SleepoverTest** (class) — `Assets/Scripts/Tests/SleepoverTest.cs` — PRUEBA DE LAS PIJAMADAS (grupo 92; docs/areas/pijamadas.md; Berón 2026-11-04).
+- **SleepTest** (class) — `Assets/Scripts/SleepTest.cs` — Unidad de test del SUEÑO día/noche (docs/qa/testing-checklist.md §41), por `TestProbe`:
 - **SlideDoor** (class) — `Assets/Scripts/SlideDoor.cs`
 - **SlideSpell** (class) — `Assets/Scripts/Body/SlideSpell.cs` — BAJAR POR EL TOBOGÁN de la cama-litera (Berón 2026-11-04:
 - **SnowPetrelNest** (class) — `Assets/Scripts/World/SnowPetrelNest.cs` — Un nido de petrel de las nieves:
 - **SocialField** (class) — `Assets/Scripts/Soul/SocialField.cs` — CAMPO SOCIAL — efecto EMERGENTE y GLOBAL (docs/soul-relations-reincarnation §2b).
-- **SocialImpulse** (class) — `Assets/Scripts/Microcosmos/SocialImpulse.cs` — IMPULSO SOCIAL (docs/microcosmos-level1.md §Impulsos sociales, rebanada 2):
+- **SocialImpulse** (class) — `Assets/Scripts/Microcosmos/SocialImpulse.cs` — IMPULSO SOCIAL (docs/microcosmos/microcosmos-level1.md §Impulsos sociales, rebanada 2):
 - **SoftGround** (class) — `Assets/Scripts/World/SoftGround.cs` — SUPERFICIE AMORTIGUADORA VIVA:
 - **SoftMesh** (class) — `Assets/Scripts/Avatar/SoftMesh.cs` — MALLAS SUAVES para los cuerpos de "cubos":
 - **SolarArray** (class) — `Assets/Scripts/World/SolarArray.cs` — PANELES SOLARES (el santuario no usa gas ni combustibles).
-- **SoulComposition** (class) — `Assets/Scripts/Soul/SoulComposition.cs` — ALMA por MEZCLA (docs/soul-composition-blend.md + soul-relations-reincarnation.md §1).
+- **SoulComposition** (class) — `Assets/Scripts/Soul/SoulComposition.cs` — ALMA por MEZCLA (docs/sistemas/soul-composition-blend.md + soul-relations-reincarnation.md §1).
 - **SoulConvertDemo** (class) — `Assets/Scripts/Soul/SoulConvertDemo.cs` — Demo (OnGUI) de la CONVERSIÓN de stats (docs/soul-relations-reincarnation §1) para el sandbox `AlmaBlend_AUTO`.
-- **SoulMarga** (class) — `Assets/Scripts/Progression/SoulMarga.cs` — Una "marga del alma" (docs/creature-stats.md §Progresión):
-- **SoulRecord** (class) — `Assets/Scripts/Microcosmos/SoulRecord.cs` — Ficha de ALMA del mundo insecto (docs/microcosmos-insects.md §13).
-- **SoundDoor** (class) — `Assets/Scripts/World/SoundDoor.cs` — LA PUERTA CORREDERA DE UNA SALA DE SONIDO (Berón 2026-11-05, «hazlo real»; docs/piso-musica.md §Acústica):
+- **SoulMarga** (class) — `Assets/Scripts/Progression/SoulMarga.cs` — Una "marga del alma" (docs/sistemas/creature-stats.md §Progresión):
+- **SoulRecord** (class) — `Assets/Scripts/Microcosmos/SoulRecord.cs` — Ficha de ALMA del mundo insecto (docs/microcosmos/microcosmos-insects.md §13).
+- **SoundDoor** (class) — `Assets/Scripts/World/SoundDoor.cs` — LA PUERTA CORREDERA DE UNA SALA DE SONIDO (Berón 2026-11-05, «hazlo real»; docs/areas/piso-musica.md §Acústica):
 - **SpeciesKarma** (class) — `Assets/Scripts/Soul/SpeciesKarma.cs` — Resuelve la RELACIÓN kármica base de un ser hacia una especie (docs/soul-relations-reincarnation §2).
 - **SpeciesScaleFix** (class) — `Assets/Scripts/World/SpeciesScaleFix.cs` — ESCALA REAL de los animales del santuario respecto al humano (≈ 1,75 m).
-- **SpellConsole** (class) — `Assets/Scripts/Control/SpellConsole.cs` — LANZADOR DE HECHIZOS POR TECLADO (docs/typed-spells-and-queues.md) — la otra cara del principio "toda acción es un hechizo":
+- **SpellConsole** (class) — `Assets/Scripts/Control/SpellConsole.cs` — LANZADOR DE HECHIZOS POR TECLADO (docs/sistemas/typed-spells-and-queues.md) — la otra cara del principio "toda acción es un hechizo":
 - **SpellDemoHUD** (class) — `Assets/Scripts/Microcosmos/SpellDemoHUD.cs` — HUD de PRUEBA (OnGUI) del sandbox `SpellDemo_AUTO`:
 - **SpellElement** (enum) — `Assets/Scripts/Transformation/ElementalSpell.cs` — Elemento de un hechizo elemental básico.
 - **SpellReq** (class) — `Assets/Scripts/Transformation/SpellCatalog.cs` — REQUISITOS de los hechizos aprendibles (docs/spell-genesis-and-sanctuary-progression).
 - **SpiderWeb** (class) — `Assets/Scripts/World/SpiderWeb.cs` — TELA DE ARAÑA ORBICULAR de la araña de las nieves, tendida entre la rama de un panal y el aire por donde pasan las abejas:
 - **StaleNavCarver** (class) — `Assets/Scripts/World/StaleNavCarver.cs` — MUEBLES QUE EL NAVMESH NO VE:
 - **StartScreen** (class) — `Assets/Scripts/UI/StartScreen.cs` — PANTALLA DE INICIO (escena Inicio, la primera del build; Berón 2026-10-30):
-- **StarvationTest** (class) — `Assets/Scripts/StarvationTest.cs` — Unidad de test de la INANICIÓN (docs/testing-checklist.md §40), por `TestProbe`, determinista y NO destructiva:
+- **StarvationTest** (class) — `Assets/Scripts/StarvationTest.cs` — Unidad de test de la INANICIÓN (docs/qa/testing-checklist.md §40), por `TestProbe`, determinista y NO destructiva:
 - **StatBonus** (class) — `Assets/Scripts/Composition/CharacterComposition.cs` — Aporte ADITIVO de una parte a los stats (0 = sin cambio).
-- **StateSpellsTest** (class) — `Assets/Scripts/StateSpellsTest.cs` — Test de los HECHIZOS-ESTADO (docs/apremios-guardian-observacion.md §3, testing-checklist §45), por `TestProbe`:
+- **StateSpellsTest** (class) — `Assets/Scripts/StateSpellsTest.cs` — Test de los HECHIZOS-ESTADO (docs/sistemas/apremios-guardian-observacion.md §3, testing-checklist §45), por `TestProbe`:
 - **StationMission** (class) — `Assets/Scripts/CodeShip/Chores/StationMissions.cs` — Una misión de la biblioteca puesta en un mueble de una escena ().
-- **StationPart** (class) — `Assets/Scripts/Virtualization/StationPart.cs` — Una PARTE manipulable de una estación de virtualización (docs/kitchen-simulation.md §3b):
-- **StatPhysique** (class) — `Assets/Scripts/Soul/StatPhysique.cs` — APARIENCIA POR STATS (docs/anyma-factory-and-control.md §1):
-- **StatProfile** (class) — `Assets/Scripts/Transformation/StatProfile.cs` — Perfil de las aptitudes de un `Anima` (docs/stats-as-truth.md §4).
-- **StatRange** (class) — `Assets/Scripts/Control/AnymaSpec.cs` — Rango de multiplicador de stats (docs/anyma-factory-and-control.md §2):
+- **StationPart** (class) — `Assets/Scripts/Virtualization/StationPart.cs` — Una PARTE manipulable de una estación de virtualización (docs/areas/kitchen-simulation.md §3b):
+- **StatPhysique** (class) — `Assets/Scripts/Soul/StatPhysique.cs` — APARIENCIA POR STATS (docs/sistemas/anyma-factory-and-control.md §1):
+- **StatProfile** (class) — `Assets/Scripts/Transformation/StatProfile.cs` — Perfil de las aptitudes de un `Anima` (docs/sistemas/stats-as-truth.md §4).
+- **StatRange** (class) — `Assets/Scripts/Control/AnymaSpec.cs` — Rango de multiplicador de stats (docs/sistemas/anyma-factory-and-control.md §2):
 - **StatusSpell** (class) — `Assets/Scripts/World/StatusSpells.cs` — HECHIZO DE STATUS (docs/typed-spells-and-queues):
 - **StepAnimator** (class) — `Assets/Scripts/CodeShip/Chores/StepAnimator.cs` — CADA PASO DE UN RETO SE VE EN SU SITIO (CodeShip reglas.md §4.2:
-- **StockingTask** (class) — `Assets/Scripts/Virtualization/StockingTask.cs` — Tarea de ABASTECER / ORDENAR (docs/kitchen-simulation.md §2, docs/forge-simulation.md §1):
+- **StockingTask** (class) — `Assets/Scripts/Virtualization/StockingTask.cs` — Tarea de ABASTECER / ORDENAR (docs/areas/kitchen-simulation.md §2, docs/areas/forge-simulation.md §1):
 - **StockShelf** (class) — `Assets/Scripts/Kitchen/StockShelf.cs` — ESTANTE a abastecer (misiones de INVENTARIO, docs/sanctuary1 §4):
 - **StockSpell** (class) — `Assets/Scripts/Kitchen/StockSpell.cs` — HECHIZO DE ABASTECER (inventario, docs/sanctuary1 §4):
-- **StoryMission** (class) — `Assets/Scripts/Mission/StoryMission.cs` — MISIÓN DE HISTORIA POR PASOS (docs/microcosmos-historias.md):
+- **StoryMission** (class) — `Assets/Scripts/Mission/StoryMission.cs` — MISIÓN DE HISTORIA POR PASOS (docs/microcosmos/microcosmos-historias.md):
 - **StorySubtitle** (class) — `Assets/Scripts/UI/StorySubtitle.cs` — SUBTÍTULOS DE LAS HISTORIAS (OnGUI):
-- **StructuralLimits** (class) — `Assets/Scripts/World/StructuralLimits.cs` — LÍMITES DE LA ESTRUCTURA (Berón 2026-10-28; docs/columnas-sismicas.md §Límite de diseño):
-- **SubmarineTest** (class) — `Assets/Scripts/Tests/SubmarineTest.cs` — PRUEBA DEL SUBMARINO DE OBRA Y DE LAS MEDIDAS DE LA VÍA MARINA (Berón 2026-11-03; docs/submarino-de-obra.md):
+- **StructuralLimits** (class) — `Assets/Scripts/World/StructuralLimits.cs` — LÍMITES DE LA ESTRUCTURA (Berón 2026-10-28; docs/areas/columnas-sismicas.md §Límite de diseño):
+- **SubmarineTest** (class) — `Assets/Scripts/Tests/SubmarineTest.cs` — PRUEBA DEL SUBMARINO DE OBRA Y DE LAS MEDIDAS DE LA VÍA MARINA (Berón 2026-11-03; docs/areas/submarino-de-obra.md):
 - **SunCycle** (class) — `Assets/Scripts/Time/SunCycle.cs` — EL SOL POLAR DEL SANTUARIO:
 - **SunPhase** (enum) — `Assets/Scripts/Time/SolarPosition.cs`
 - **SupplySpell** (class) — `Assets/Scripts/Transformation/SupplySpell.cs` — Hechizo de ABASTECIMIENTO / "trasplante" (docs/magic-metabolism §16).
@@ -958,12 +958,12 @@ _Total: 1040 tipos._
 - **SwarmModels** (class) — `Assets/Scripts/World/SwarmModels.cs` — LOS INDIVIDUOS DE LOS GRUPOS (Berón 2026-11-03:
 - **SwimStyle** (enum) — `Assets/Scripts/Player/SwimBody.cs` — Cómo nada el cuerpo ahora mismo.
 - **SwimTest** (class) — `Assets/Scripts/Tests/SwimTest.cs` — TEST DEL NADO (, Berón 2026-10-29:
-- **TaskEntry** (class) — `Assets/Scripts/CodeShip/TaskBoard.cs` — UNA TAREA DE LA LISTA «TAREAS» (portado de CodeShip, src/modules/tasks/application/task-list.ts; docs/plan-microcosmos-realismo.md §4.1):
+- **TaskEntry** (class) — `Assets/Scripts/CodeShip/TaskBoard.cs` — UNA TAREA DE LA LISTA «TAREAS» (portado de CodeShip, src/modules/tasks/application/task-list.ts; docs/microcosmos/plan-microcosmos-realismo.md §4.1):
 - **TeacherNPC** (class) — `Assets/Scripts/Companion/TeacherNPC.cs` — Base for any NPC that can evaluate the player's asana attempts and give feedback.
 - **TeachingSession** (class) — `Assets/Scripts/Companion/TeachingSession.cs` — ENSEÑANZA INTERACTIVA (call-and-response).
 - **TeachSpell** (class) — `Assets/Scripts/Soul/TeachSpell.cs` — HECHIZO DE ENSEÑANZA / DEMOSTRACIÓN (docs/sanctuary1-level-and-live-tests §4, spells-suprahechizo §4):
-- **Territorio** (class) — `Assets/Scripts/World/Territorio.cs` — EL TERRITORIO POLAR (Berón 2026-11-05; docs/territorio-polar.md):
-- **TerritorioTest** (class) — `Assets/Scripts/Tests/TerritorioTest.cs` — PRUEBA DEL TERRITORIO POLAR (Berón 2026-11-05; docs/territorio-polar.md, docs/reglas-animales.md):
+- **Territorio** (class) — `Assets/Scripts/World/Territorio.cs` — EL TERRITORIO POLAR (Berón 2026-11-05; docs/areas/territorio-polar.md):
+- **TerritorioTest** (class) — `Assets/Scripts/Tests/TerritorioTest.cs` — PRUEBA DEL TERRITORIO POLAR (Berón 2026-11-05; docs/areas/territorio-polar.md, docs/reglas/reglas-animales.md):
 - **Test** (class) — `Assets/Scripts/Test.cs`
 - **TestDuties** (class) — `Assets/Scripts/Tests/TestDuties.cs` — (2026-11-11) LAS CONDUCTAS PROPIAS DE UNA MISIÓN (la ronda del jardinero, el alimentador, la veterinaria, Linduarda) siguen encendidas en el cuerpo cuando otra prueba toma a esa persona:
 - **TestImpact** (class) — `Assets/Scripts/TestImpact.cs` — MAPA DE IMPACTO DE LAS PRUEBAS (2026-11-11, scratchpad analisis-pruebas.md §3a):
@@ -971,86 +971,86 @@ _Total: 1040 tipos._
 - **TestPresetsData** (class) — `Assets/Scripts/TestPresetsData.cs` — LA LISTA RÁPIDA, COMO DATOS EN C# (el repositorio solo guarda .cs y documentos).
 - **TestProbe** (class) — `Assets/Scripts/TestProbe.cs` — Mini-harness de PRUEBAS por consola (PASS/FAIL) — la capa que faltaba:
 - **TestResults** (class) — `Assets/Scripts/TestResults.cs` — RESULTADOS DE LA BATERÍA, para máquinas (2026-11-11, pruebas rápidas; scratchpad analisis-pruebas.md §3a):
-- **TestRunner** (class) — `Assets/Scripts/TestRunner.cs` — Orquestador de tests (docs/testing-checklist.md §32) — el "array-de-arrays" del usuario:
+- **TestRunner** (class) — `Assets/Scripts/TestRunner.cs` — Orquestador de tests (docs/qa/testing-checklist.md §32) — el "array-de-arrays" del usuario:
 - **ThoughtAnchor** (class) — `Assets/Scripts/Companion/ThoughtAnchor.cs` — A belief or pattern that biases a companion's behavior.
-- **ThoughtField** (class) — `Assets/Scripts/Mind/ThoughtField.cs` — Campo de pensamiento (docs/anima-architecture.md §5, "campo social/semántico"):
-- **ThoughtSpell** (class) — `Assets/Scripts/Soul/ThoughtSpell.cs` — HECHIZO DE MANIPULACIÓN DE PENSAMIENTO/ÁNIMO (docs/anyma-factory-and-control.md §3).
+- **ThoughtField** (class) — `Assets/Scripts/Mind/ThoughtField.cs` — Campo de pensamiento (docs/sistemas/anima-architecture.md §5, "campo social/semántico"):
+- **ThoughtSpell** (class) — `Assets/Scripts/Soul/ThoughtSpell.cs` — HECHIZO DE MANIPULACIÓN DE PENSAMIENTO/ÁNIMO (docs/sistemas/anyma-factory-and-control.md §3).
 - **ThreatEmitter** (class) — `Assets/Scripts/Microcosmos/ThreatEmitter.cs` — EMISOR DE AMENAZA ambiental — cualquier objeto puede convertirse en fuente de peligro.
 - **ThreatScanner** (class) — `Assets/Scripts/Microcosmos/ThreatScanner.cs` — Escáner de AMENAZAS — detecta dos tipos de peligro y los combina en (leído por para decidir si ayudar a compañeros):
-- **TidalTurbineUnit** (class) — `Assets/Scripts/World/TidalTurbineUnit.cs` — LA TURBINA MAREAL PILOTO (docs/energia.md):
+- **TidalTurbineUnit** (class) — `Assets/Scripts/World/TidalTurbineUnit.cs` — LA TURBINA MAREAL PILOTO (docs/areas/energia.md):
 - **TimeController** (class) — `Assets/Scripts/Time/Time.cs`
 - **TimeTest** (class) — `Assets/Scripts/Time/TimeTest.cs`
-- **Toolbox** (class) — `Assets/Scripts/Virtualization/Toolbox.cs` — Las HERRAMIENTAS del jugador para reparar (docs/forge-simulation.md §5).
+- **Toolbox** (class) — `Assets/Scripts/Virtualization/Toolbox.cs` — Las HERRAMIENTAS del jugador para reparar (docs/areas/forge-simulation.md §5).
 - **TouchControls** (class) — `Assets/Scripts/Control/TouchControls.cs` — CONTROLES TÁCTILES:
-- **TourStation** (class) — `Assets/Scripts/Kitchen/TourStation.cs` — Una parada del paseo guiado (docs/kitchen-simulation.md §1):
-- **TraceChannel** (enum) — `Assets/Scripts/World/TraceField.cs` — Canales de rastro/subproducto (docs/environmental-navigation.md §4.2).
+- **TourStation** (class) — `Assets/Scripts/Kitchen/TourStation.cs` — Una parada del paseo guiado (docs/areas/kitchen-simulation.md §1):
+- **TraceChannel** (enum) — `Assets/Scripts/World/TraceField.cs` — Canales de rastro/subproducto (docs/sistemas/environmental-navigation.md §4.2).
 - **TraceFieldTest** (class) — `Assets/Scripts/TraceFieldTest.cs` — Sandbox AUTOEJECUTABLE de la rejilla de feromonas (`TraceField`), reportando por `TestProbe` (PASS/FAIL en `Editor.log`, grep `[TEST]`).
 - **TrackerBehavior** (class) — `Assets/Scripts/UI/FollowingArrays/FollowingElementBehavior/TrackerBehavior.cs`
 - **TrainingCentres** (class) — `Assets/Scripts/World/TrainingCentres.cs` — CUÁNTOS PISOS NECESITA CADA CENTRO DE ENTRENAMIENTO (regla J16 / S13, Berón 2026-11-04:
-- **TrainingGoal** (enum) — `Assets/Scripts/Progression/GymProgramming.cs` — Objetivo del plan (docs/gimnasio-maquinas.md §15):
-- **TransformationSpell** (class) — `Assets/Scripts/Transformation/TransformationSpell.cs` — Hechizo de **TRANSFORMACIÓN por combate de stats** (docs/stats-as-truth.md §4).
+- **TrainingGoal** (enum) — `Assets/Scripts/Progression/GymProgramming.cs` — Objetivo del plan (docs/areas/gimnasio-maquinas.md §15):
+- **TransformationSpell** (class) — `Assets/Scripts/Transformation/TransformationSpell.cs` — Hechizo de **TRANSFORMACIÓN por combate de stats** (docs/sistemas/stats-as-truth.md §4).
 - **TransitionCondition** (class) — `Assets/Scripts/PostNatal/TransitionCondition.cs` — Condición que debe cumplirse para avanzar al siguiente PostNatalStage.
 - **TravelMath** (class) — `Assets/Scripts/CodeShip/AutoTravel.cs` — LA CUENTA DEL VIAJE AUTOMÁTICO, PURA (sin escena; ):
-- **TreeBuildingsTest** (class) — `Assets/Scripts/Tests/TreeBuildingsTest.cs` — PRUEBA DE LOS EDIFICIOS-ÁRBOL (Berón 2026-10-31; docs/edificio-arbol.md §Migración):
+- **TreeBuildingsTest** (class) — `Assets/Scripts/Tests/TreeBuildingsTest.cs` — PRUEBA DE LOS EDIFICIOS-ÁRBOL (Berón 2026-10-31; docs/areas/edificio-arbol.md §Migración):
 - **TreeDoorExit** (class) — `Assets/Scripts/World/TreeDoorExit.cs` — SALIR DEL AGUA POR UNA PUERTA DEL ÁRBOL (Berón 2026-10-30:
 - **TreeFloor** (class) — `Assets/Scripts/World/TreeFloor.cs` — Un piso del árbol (marca):
-- **TreeMaskTest** (class) — `Assets/Scripts/Tests/TreeMaskTest.cs` — PRUEBA DE LAS MÁSCARAS, LAS PUERTAS GRANDES Y EL FONDO ABIERTO de los edificios-árbol (Berón 2026-11-03; docs/mascaras-de-oxigeno.md):
-- **TreeOfFieldsTest** (class) — `Assets/Scripts/Tests/TreeOfFieldsTest.cs` — PRUEBA DEL ÁRBOL DE LOS CAMPOS v2 (Berón 2026-10-30; docs/edificio-arbol.md):
+- **TreeMaskTest** (class) — `Assets/Scripts/Tests/TreeMaskTest.cs` — PRUEBA DE LAS MÁSCARAS, LAS PUERTAS GRANDES Y EL FONDO ABIERTO de los edificios-árbol (Berón 2026-11-03; docs/areas/mascaras-de-oxigeno.md):
+- **TreeOfFieldsTest** (class) — `Assets/Scripts/Tests/TreeOfFieldsTest.cs` — PRUEBA DEL ÁRBOL DE LOS CAMPOS v2 (Berón 2026-10-30; docs/areas/edificio-arbol.md):
 - **TreeRider** (class) — `Assets/Scripts/World/TreeRider.cs` — Marca para que algo sin Anima ni CharacterController (un cuerpo de prueba, un objeto) gire con el árbol si está encima de él.
-- **TreeRotator** (class) — `Assets/Scripts/World/TreeRotator.cs` — EL ÁRBOL GIRA (docs/edificio-arbol.md; Berón 2026-10-29):
+- **TreeRotator** (class) — `Assets/Scripts/World/TreeRotator.cs` — EL ÁRBOL GIRA (docs/areas/edificio-arbol.md; Berón 2026-10-29):
 - **TreeTrip** (class) — `Assets/Scripts/World/TreeTrip.cs` — UN VIAJE A NADO POR LA RAÍZ:
 - **TreeWalk** (class) — `Assets/Scripts/World/TreeWalk.cs` — Hechizo «piso»:
-- **TribeCohesion** (class) — `Assets/Scripts/Microcosmos/TribeCohesion.cs` — COHESIÓN DE MANADA + ABANDONO (docs/microcosmos-level1.md §Impulsos/beats, rebanada 2):
+- **TribeCohesion** (class) — `Assets/Scripts/Microcosmos/TribeCohesion.cs` — COHESIÓN DE MANADA + ABANDONO (docs/microcosmos/microcosmos-level1.md §Impulsos/beats, rebanada 2):
 - **TwoBoneIK** (class) — `Assets/Scripts/Asana/TwoBoneIK.cs` — IK ANALÍTICA de 2 huesos (ley de cosenos) para "alcance":
-- **TypingChallenge** (class) — `Assets/Scripts/Virtualization/TypingChallenge.cs` — Acción TEMPORIZADA que se acelera con MECANOGRAFÍA (docs/kitchen-simulation.md §4b).
+- **TypingChallenge** (class) — `Assets/Scripts/Virtualization/TypingChallenge.cs` — Acción TEMPORIZADA que se acelera con MECANOGRAFÍA (docs/areas/kitchen-simulation.md §4b).
 - **UI** (class) — `Assets/Scripts/UI/FollowingArrays/UI.cs`
 - **UIFollowingArrayElement** (struct) — `Assets/Scripts/UI/FollowingArrays/UIFollowingArray.cs`
-- **UniformDirector** (class) — `Assets/Scripts/Activities/UniformDirector.cs` — El VIGILANTE de la ropa y la vajilla (docs/actividades-y-uniformes.md):
-- **Uniforms** (class) — `Assets/Scripts/Activities/Uniforms.cs` — LOS UNIFORMES DE LA JORNADA (docs/actividades-y-uniformes.md §4; Berón 2026-11-04:
-- **UniformWearer** (class) — `Assets/Scripts/Activities/UniformWearer.cs` — QUIEN SE PONE EL UNIFORME (docs/actividades-y-uniformes.md §4; ).
+- **UniformDirector** (class) — `Assets/Scripts/Activities/UniformDirector.cs` — El VIGILANTE de la ropa y la vajilla (docs/sistemas/actividades-y-uniformes.md):
+- **Uniforms** (class) — `Assets/Scripts/Activities/Uniforms.cs` — LOS UNIFORMES DE LA JORNADA (docs/sistemas/actividades-y-uniformes.md §4; Berón 2026-11-04:
+- **UniformWearer** (class) — `Assets/Scripts/Activities/UniformWearer.cs` — QUIEN SE PONE EL UNIFORME (docs/sistemas/actividades-y-uniformes.md §4; ).
 - **UpaYoga** (class) — `Assets/Scripts/Asana/UpaYoga.cs` — UPA-YOGA DE CUELLO Y HOMBROS — lo PRIMERO que enseña la Magnate (antes de Yoga Namaskar y del Saludo al Sol).
-- **UpaYogaSession** (class) — `Assets/Scripts/Virtualization/UpaYogaSession.cs` — Primera virtualización de YOGA — **upa-yoga de cuello** ("Yoga for Success" de Sadhguru) en el Mesocosmos (docs/upa-yoga-mission.md).
+- **UpaYogaSession** (class) — `Assets/Scripts/Virtualization/UpaYogaSession.cs` — Primera virtualización de YOGA — **upa-yoga de cuello** ("Yoga for Success" de Sadhguru) en el Mesocosmos (docs/areas/upa-yoga-mission.md).
 - **Veracity** (enum) — `Assets/Scripts/Mission/LineTruth.cs` — El nivel de verdad de una frase (regla M39 del manual).
-- **VerticalFarm** (class) — `Assets/Scripts/Farming/VerticalFarm.cs` — EL HUERTO VERTICAL (Berón 2026-11-08; docs/produccion-maquinaria.md §2026-11-08):
+- **VerticalFarm** (class) — `Assets/Scripts/Farming/VerticalFarm.cs` — EL HUERTO VERTICAL (Berón 2026-11-08; docs/areas/produccion-maquinaria.md §2026-11-08):
 - **VetCare** (class) — `Assets/Scripts/World/VetCare.cs` — LOS ANIMALES INGRESADOS COMEN (JornadaTest 2026-10-29:
 - **VirtualFollower** (class) — `Assets/Scripts/Progression/VirtualFollower.cs` — El turista de la iniciación:
 - **VirtualInPlace** (class) — `Assets/Scripts/Progression/VirtualInPlace.cs` — Arranca una VIRTUALIZACIÓN EN EL ÁREA REAL (la de la máquina):
 - **VirtualizationMachine** (class) — `Assets/Scripts/Meditation/VirtualizationMachine.cs` — The virtualization machine — the universal trigger for mob / Microcosmos missions, present in every area (docs §3).
 - **VirtualizationTank** (class) — `Assets/Scripts/Meditation/VirtualizationTank.cs` — TANQUE DE VIRTUALIZACIÓN = una PECERA cuadrada y transparente, llena de agua, apoyada en el suelo (sobre un zócalo bajo).
 - **VirtualMissionRunner** (class) — `Assets/Scripts/Progression/VirtualMissionRunner.cs` — VIRTUALIZACIÓN EN EL ÁREA REAL:
-- **VirtualMissions** (class) — `Assets/Scripts/Progression/VirtualMissions.cs` — MISIONES DE VIRTUALIZACIÓN CON ESCENA PROPIA (docs/jornada-y-rotacion.md).
+- **VirtualMissions** (class) — `Assets/Scripts/Progression/VirtualMissions.cs` — MISIONES DE VIRTUALIZACIÓN CON ESCENA PROPIA (docs/sistemas/jornada-y-rotacion.md).
 - **VirtualMissionStation** (class) — `Assets/Scripts/Progression/VirtualMissionStation.cs` — Un paso de la misión:
-- **VirtualPointer** (class) — `Assets/Scripts/Virtualization/VirtualPointer.cs` — Mira de virtualización (docs/kitchen-simulation.md §3b).
+- **VirtualPointer** (class) — `Assets/Scripts/Virtualization/VirtualPointer.cs` — Mira de virtualización (docs/areas/kitchen-simulation.md §3b).
 - **VirtualSceneBootstrap** (class) — `Assets/Scripts/Progression/VirtualSceneBootstrap.cs` — ARRANQUE DE UNA ESCENA DE VIRTUALIZACIÓN (Virtual_&lt;clave&gt;):
 - **VirtualTask** (class) — `Assets/Scripts/Virtualization/VirtualTask.cs` — Base de una TAREA de virtualización que recibe pasos del (docs kitchen-simulation.md §3b).
-- **VisualAttention** (class) — `Assets/Scripts/Mind/VisualAttention.cs` — ATENCIÓN VISUAL (docs/atencion-visual.md).
-- **WalkSpell** (class) — `Assets/Scripts/Microcosmos/WalkSpell.cs` — Hechizo CAMINAR — la **contraparte de Jalar aplicada a UNO MISMO** (docs/stats-as-truth.md §hechizos), sobre el sistema unificado de `powerBonus` de `SpellBase`.
+- **VisualAttention** (class) — `Assets/Scripts/Mind/VisualAttention.cs` — ATENCIÓN VISUAL (docs/sistemas/atencion-visual.md).
+- **WalkSpell** (class) — `Assets/Scripts/Microcosmos/WalkSpell.cs` — Hechizo CAMINAR — la **contraparte de Jalar aplicada a UNO MISMO** (docs/sistemas/stats-as-truth.md §hechizos), sobre el sistema unificado de `powerBonus` de `SpellBase`.
 - **WalkWatch** (class) — `Assets/Scripts/Microcosmos/WalkWatch.cs` — (2026-11-18, piloto4:
 - **WardAttackerMob** (class) — `Assets/Scripts/Meditation/WardAttackerMob.cs` — Attacker of the "a proteger" archetype (docs §8):
 - **WeaknessEffect** (class) — `Assets/Scripts/Transformation/WeaknessEffect.cs` — Efecto de DEBILITAMIENTO progresivo — drena la energía del ser a ritmo fijo hasta dejarla en 0, momento en que se detiene (el NavMeshAgent se deshabilita).
-- **WeakOne** (class) — `Assets/Scripts/Prologue/WeakOne.cs` — Un ser DÉBIL al que hay que dar soporte y llevar a un refugio (docs/area-progression.md "Apertura"):
+- **WeakOne** (class) — `Assets/Scripts/Prologue/WeakOne.cs` — Un ser DÉBIL al que hay que dar soporte y llevar a un refugio (docs/areas/area-progression.md "Apertura"):
 - **WebLigera** (class) — `Assets/Scripts/Web/WebLigera.cs` — LA WEB LIGERA (2026-11-13; Berón:
 - **WebPrueba** (class) — `Assets/Scripts/Web/WebPrueba.cs` — LA PRUEBA EN LA PÁGINA (2026-11-16; Berón:
 - **WeedPatch** (class) — `Assets/Scripts/Farming/WeedPatch.cs` — Hace salir malas hierbas en un bancal, poco a poco y hasta un tope.
 - **WhaleHospitalSubmarine** (class) — `Assets/Scripts/World/WhaleHospitalSubmarine.cs` — EL LEVIATÁN:
 - **WhaleHospitalTest** (class) — `Assets/Scripts/Tests/WhaleHospitalTest.cs` — ESCENARIO:
 - **WildPlants** (class) — `Assets/Scripts/Farming/CarefulWeeding.cs` — DESHIERBE CON CUIDADO (Berón 2026-11-05:
-- **WindTurbineUnit** (class) — `Assets/Scripts/World/WindTurbineUnit.cs` — UN AEROGENERADOR del Parque Energético (docs/energia.md):
-- **WorkdayDirector** (class) — `Assets/Scripts/Progression/WorkdayDirector.cs` — LA JORNADA EN EL JUEGO (docs/jornada-y-rotacion.md).
-- **WorkRoster** (class) — `Assets/Scripts/Progression/WorkRoster.cs` — ROTACIÓN DIARIA DEL TRABAJO (docs/jornada-y-rotacion.md).
+- **WindTurbineUnit** (class) — `Assets/Scripts/World/WindTurbineUnit.cs` — UN AEROGENERADOR del Parque Energético (docs/areas/energia.md):
+- **WorkdayDirector** (class) — `Assets/Scripts/Progression/WorkdayDirector.cs` — LA JORNADA EN EL JUEGO (docs/sistemas/jornada-y-rotacion.md).
+- **WorkRoster** (class) — `Assets/Scripts/Progression/WorkRoster.cs` — ROTACIÓN DIARIA DEL TRABAJO (docs/sistemas/jornada-y-rotacion.md).
 - **WorldBondable** (class) — `Assets/Scripts/Bond/WorldBondable.cs` — Attach to any world object or place that can form a bond:
 - **WorldCharacter** (class) — `Assets/Scripts/World/WorldCharacter.cs` — Attach to any entity that participates in the sanctuary's world simulation:
 - **WorldExitPortal** (class) — `Assets/Scripts/MobWorld/WorldExitPortal.cs` — PORTAL DE SALIDA de un mundo interior — EL ÚNICO, REUTILIZABLE (no crees otro:
 - **WorldLabel** (class) — `Assets/Scripts/UI/WorldLabel.cs` — Etiqueta de nombre para un objeto NO-anima (mueble/ingrediente/utensilio/estación).
 - **YogaClass** (class) — `Assets/Scripts/World/YogaClass.cs` — CLASE DE YOGA EN GRUPO en una SALA de los pisos de yoga (; torre del Entrenamiento; Berón 2026-10-29 y 2026-11-04).
 - **YogaClassTest** (class) — `Assets/Scripts/Tests/YogaClassTest.cs` — CLASE DE YOGA EN VIVO (Berón 2026-10-29):
-- **YogaFloorsTest** (class) — `Assets/Scripts/Tests/YogaFloorsTest.cs` — LOS PISOS DE YOGA (Berón 2026-11-04; docs/yoga-pisos.md):
-- **YogaHall** (class) — `Assets/Scripts/World/YogaHall.cs` — UNA SALA DE PRÁCTICA de los PISOS DE YOGA (Berón 2026-11-04; docs/yoga-pisos.md).
+- **YogaFloorsTest** (class) — `Assets/Scripts/Tests/YogaFloorsTest.cs` — LOS PISOS DE YOGA (Berón 2026-11-04; docs/areas/yoga-pisos.md):
+- **YogaHall** (class) — `Assets/Scripts/World/YogaHall.cs` — UNA SALA DE PRÁCTICA de los PISOS DE YOGA (Berón 2026-11-04; docs/areas/yoga-pisos.md).
 - **YogaInitiationTest** (class) — `Assets/Scripts/Tests/YogaInitiationTest.cs` — TEST DE LA INICIACIÓN DE LA SALA DE YOGA COMO ORQUESTA (Berón 2026-10-29):
 - **YogaNamaskar** (class) — `Assets/Scripts/Asana/YogaNamaskar.cs` — YOGA NAMASKAR (lo que la Magnate enseña DESPUÉS del upa-yoga de cuello y ANTES del Saludo al Sol).
 - **YogaSession** (class) — `Assets/Scripts/Asana/YogaLibrary.cs` — REGISTRO de sesiones de yoga.
 - **YogaSessionRunner** (class) — `Assets/Scripts/Asana/YogaSessionRunner.cs` — DEMOSTRADOR de una sesión de yoga:
 - **YogaStatues** (class) — `Assets/Scripts/World/YogaStatues.cs` — ESTATUAS DE LA SALA DE YOGA (de cubos), al fondo, tras la tarima del maestro:
-- **YogaTest** (class) — `Assets/Scripts/YogaTest.cs` — Unidad de test del YOGA (docs/testing-checklist.md; stats-as-truth §Yoga), por `TestProbe`.
+- **YogaTest** (class) — `Assets/Scripts/YogaTest.cs` — Unidad de test del YOGA (docs/qa/testing-checklist.md; stats-as-truth §Yoga), por `TestProbe`.
 - **ZoneActivator** (class) — `Assets/Scripts/Camera/ZoneActivator.cs` — Attach to a trigger collider to drive multiple systems when the player enters or exits.
 

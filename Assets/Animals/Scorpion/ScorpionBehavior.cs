@@ -8,7 +8,7 @@ public class ScorpionBehavior : Animal
     // caza al ACECHO a la entrada de su madriguera bajo una piedra (sit-and-wait; Polis 1979, J Zool 188:333) y siente a
     // la presa por las vibraciones del suelo. La madre pare crías vivas que suben a su LOMO hasta la primera muda
     // (Polis & Sissom 1990, The Biology of Scorpions) → BroodRide. Brilla con luz UV (cutícula hialina). Ver
-    // docs/era-species-behavior.md.
+    // docs/sistemas/era-species-behavior.md.
 
     void Start() => base.Init();
 

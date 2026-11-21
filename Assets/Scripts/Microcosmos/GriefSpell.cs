@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// DUELO (docs/apremios-guardian-observacion.md §3, microcosmos-level1 §Beats) — el hechizo-estado de la pérdida: cuando
+/// DUELO (docs/sistemas/apremios-guardian-observacion.md §3, microcosmos-level1 §Beats) — el hechizo-estado de la pérdida: cuando
 /// muere un vínculo (lo dispara el `Level1Director`/quien corresponda con `Cast(self, elMuerto)`), el ser CARGA tristeza
 /// a intervalos (`EffectTiming.Periodic`) durante `duration`: sube su carga alostática y su estrés (baja la valencia →
 /// la emoción lo lee). No se "cura" solo con el tiempo; el acompañamiento/observación lo amortigua (Guardián). `force` =

@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// HECHIZO DE MANIPULACIÓN DE VÍNCULO (docs/anyma-factory-and-control.md §3: "control = alinear"). Modifica el **bond**
+/// HECHIZO DE MANIPULACIÓN DE VÍNCULO (docs/sistemas/anyma-factory-and-control.md §3: "control = alinear"). Modifica el **bond**
 /// del lanzador hacia un objetivo (lo acerca o lo aleja). Junto a `TransformationSpell` (stats) y `ThoughtSpell`
 /// (mente), es una de las tres vías por las que el jugador **prepara** a un anima para que esté alineado con lo que
 /// quiere — en vez de forzar una marioneta. Usa `Anima.GrowBond` (el mismo mecanismo que las amistades emergentes).

@@ -5,7 +5,7 @@ using UnityEngine.AI;
 
 
 /// <summary>
-/// EL SUBMARINO-AMBULANCIA ANFIBIO DEL HOSPITAL (Berón 2026-11-03; docs/submarinos-medicos.md): «crear un submarino para el
+/// EL SUBMARINO-AMBULANCIA ANFIBIO DEL HOSPITAL (Berón 2026-11-03; docs/areas/submarinos-medicos.md): «crear un submarino para el
 /// hospital de modo que se pueda trasladar personas y animales… equipado para brindar servicios de emergencia a los animales y
 /// personas más grandes terrestres». Va por el hielo con orugas, por el mar sumergido y POR DENTRO DE LOS EDIFICIOS-ÁRBOL: cabe
 /// por sus puertas (el vehículo de diseño, 14 × 5 × 5 m; las puertas, 7 × 7 m) y sube nadando por el tronco hasta la puerta del piso del hospital.
@@ -21,7 +21,7 @@ using UnityEngine.AI;
 /// </summary>
 public class HospitalSubmarine : MonoBehaviour
 {
-    /// <summary>El VEHÍCULO DE DISEÑO de los edificios-árbol (docs/submarino-de-obra.md: 14 × 5 × 5 m, 1 m de holgura a cada lado en las puertas de 7 × 7 m).</summary>
+    /// <summary>El VEHÍCULO DE DISEÑO de los edificios-árbol (docs/areas/submarino-de-obra.md: 14 × 5 × 5 m, 1 m de holgura a cada lado en las puertas de 7 × 7 m).</summary>
     public const float Length = TreeSpec.VehicleLength, Beam = TreeSpec.VehicleBeam, Height = TreeSpec.VehicleHeight;
     public static readonly Vector3 Bay = new Vector3(3.8f, 4f, 7.5f);   // ancho, alto, largo de la bodega
     public const int BloodCapacity = 4;

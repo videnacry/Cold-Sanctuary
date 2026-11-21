@@ -3,7 +3,7 @@ using UnityEngine;
 
 /// <summary>
 /// TEST DE LA INICIACIÓN DEL HUERTO (Berón 2026-10-29): tras la cocina, la Magnate lleva al recién llegado al huerto y allí
-/// el trabajador de turno lo inicia en PREPARAR EL SUELO del bancal (docs/garden-simulation.md §8: abono del compostero,
+/// el trabajador de turno lo inicia en PREPARAR EL SUELO del bancal (docs/areas/garden-simulation.md §8: abono del compostero,
 /// esparcirlo, la azada, los surcos, rastrillar), con la misma ORQUESTA que las demás iniciaciones: el trabajador va hasta
 /// 2 m, cada uno anda solo a su sitio en el borde del bancal, el trabajador demuestra cada paso y el jugador lo lanza
 /// (`step`; uno se lo deja pasar y lo hacen juntos al vencer el tiempo); después, los dos al tanque del huerto y su

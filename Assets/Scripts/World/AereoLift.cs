@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// EL ASCENSOR DEL TRONCO (docs/sitio-nuclear.md §23): sin alfombras en el Santuario Aéreo, Kushal sube del andén a los pisos, al techo y a la plataforma en esta cabina estanca.
+/// EL ASCENSOR DEL TRONCO (docs/areas/sitio-nuclear.md §23): sin alfombras en el Santuario Aéreo, Kushal sube del andén a los pisos, al techo y a la plataforma en esta cabina estanca.
 /// Vive en la escena y nunca sale de ella: no es de la red de alfombras. Los trabajadores no cargan la escena: su viaje se cuenta como tiempo (<see cref="AereoRule.TripSeconds"/>).
 /// </summary>
 public class AereoLift : MonoBehaviour

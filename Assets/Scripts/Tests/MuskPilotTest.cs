@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// PRUEBA DEL PILOTO DEL REALISMO: MICROCOSMOS_ELONMUSK (docs/plan-microcosmos-realismo.md, fase 1; Berón 2026-11-18). Carga la escena
+/// PRUEBA DEL PILOTO DEL REALISMO: MICROCOSMOS_ELONMUSK (docs/microcosmos/plan-microcosmos-realismo.md, fase 1; Berón 2026-11-18). Carga la escena
 /// (aditiva, espera acotada; la descarga al acabar) y mira, con las reglas nuevas:
 /// 1. montada con el cuerpo encogido (MicroFloor.folkScale = s) y sus vecinos a la estatura × s;
 /// 2. la nave de SpaceX («Fábrica de SpaceX (1 Rocket Road)»): muros y techo, su VISTA DE CORTE con muros y techo reunidos, una puerta

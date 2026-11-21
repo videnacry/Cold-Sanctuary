@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>Canales de rastro/subproducto (docs/environmental-navigation.md §4.2). Índice en el `float[]` de cada celda.</summary>
+/// <summary>Canales de rastro/subproducto (docs/sistemas/environmental-navigation.md §4.2). Índice en el `float[]` de cada celda.</summary>
 public enum TraceChannel
 {
     ScentFood,    // olor de comida/cadáver
@@ -15,7 +15,7 @@ public enum TraceChannel
 
 /// <summary>
 /// REJILLA DE RASTROS — un campo de **STIGMERGY** (coordinación indirecta dejando rastros que estimulan la siguiente
-/// acción; Grassé 1959, feromonas de hormigas). docs/environmental-navigation.md §4.2/§4.3: campo de depósito para los subproductos
+/// acción; Grassé 1959, feromonas de hormigas). docs/sistemas/environmental-navigation.md §4.2/§4.3: campo de depósito para los subproductos
 /// **continuos/de rastro** (caminar, saturar una zona), en vez de un GameObject por traza. El mundo se discretiza en
 /// celdas; cada celda guarda **cuánta señal hay por canal**. Depositar = O(1); leer/gradiente = O(9 celdas); el
 /// decaimiento es **PEREZOSO** (se aplica al TOCAR la celda, poniéndola al día por el tiempo transcurrido) + una poda

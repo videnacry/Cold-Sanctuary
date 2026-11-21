@@ -7,7 +7,7 @@ public enum DrillMotion { Levantar, Empujar, Balancear, Luchar, Correr, Lanzar, 
 
 /// <summary>
 /// ENTRENAR COMO EN SU ÉPOCA (Berón 2026-11-04: «¿en ninguna época de microcosmos hay gimnasio? desde la antigua Grecia se
-/// entrenaba físicamente…»; docs/gimnasio-maquinas.md §16). El CATÁLOGO de los lugares de entrenamiento de la historia
+/// entrenaba físicamente…»; docs/areas/gimnasio-maquinas.md §16). El CATÁLOGO de los lugares de entrenamiento de la historia
 /// (<see cref="Tradition"/>: el gimnasio y la palestra griegos, la palestra de las termas romanas, los patios de lucha del Nilo y de
 /// Sumer, el akhāṛā y el kalari de la India, el maydān de furusiyya abasí, el zurkhaneh persa, el tekke de luchadores otomano, la
 /// escuela de artes marciales china, el dojo, el juego de pelota maya, la sala de armas y la liza medievales, la sala de esgrima, el
@@ -21,7 +21,7 @@ public enum DrillMotion { Levantar, Empujar, Balancear, Luchar, Correr, Lanzar, 
 /// </summary>
 public static class HistoricTraining
 {
-    /// <summary>Plantillas del registro donde se entrena con este motor (las del pueblo; docs/microcosmos-actividades.md).</summary>
+    /// <summary>Plantillas del registro donde se entrena con este motor (las del pueblo; docs/microcosmos/microcosmos-actividades.md).</summary>
     public static readonly string[] Buildings = { "Centro de entrenamiento", "Dojo" };
     public static bool IsTrainingSite(AreaFunctionSite s) => s != null && (s.activity == AreaFunctionSite.Entrenamiento || System.Array.IndexOf(Buildings, s.building) >= 0);
 
@@ -273,7 +273,7 @@ public static class HistoricTraining
             "Fútbol y atletismo; y la lutte traditionnelle.",
             S("carrera_suave"), S("estirar"), S("pase con el interior del pie", "brazos activos al correr"),
             ("Campo y pista", S("pases", "regate", "velocidad_pista", "tiro_puerta", "lutte")));
-        // (2026-11-05) Los juegos de la tanda 3 (docs/microcosmos-entrenamiento-eras.md).
+        // (2026-11-05) Los juegos de la tanda 3 (docs/microcosmos/microcosmos-entrenamiento-eras.md).
         X("wino_golpes", "Golpes con el wiño a la pali", "wiño y pali", "hombros y tronco", DrillMotion.Golpear, compound: false);
         X("palin_partido", "Partido de palín por la cancha", "wiño y pali", "piernas", DrillMotion.Correr);
         X("carrera_cerro", "Carrera de la ladera al cerro", null, "piernas", DrillMotion.Correr);

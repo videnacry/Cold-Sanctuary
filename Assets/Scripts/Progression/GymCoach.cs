@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// EL ENTRENADOR DEL GIMNASIO en el bloque de las 14 h (docs/gimnasio-maquinas.md §15.5; el papel es de
+/// EL ENTRENADOR DEL GIMNASIO en el bloque de las 14 h (docs/areas/gimnasio-maquinas.md §15.5; el papel es de
 /// <see cref="GymProgramming.Trainer"/>, Goluis). Con los mismos datos de rutina que todos:
 ///  1. CLASE DE CALENTAMIENTO (los primeros 10 min de juego): se pone en la zona libre y dirige sentadillas con peso corporal y
 ///     saltos de tijera; quien llega a calentar (<see cref="GymTrainingSession"/> en su calentamiento) se coloca en una fila

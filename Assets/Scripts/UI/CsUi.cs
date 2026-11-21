@@ -5,7 +5,7 @@ using UnityEngine;
 /// LAS PIEZAS DE LA INTERFAZ DE CODESHIP, A SU MEDIDA (2026-11-20, Berón: «los mandos de switch están muy pequeños y se deben ocultar cuando
 /// se muestran modales… mirarlo en vivo [el santuario 1 de CodeShip] y de allí sacar información para su recreación»). Medido en vivo en el
 /// santuario 1 de CodeShip (rama integracion, Playwright en un iPhone 13: 390×664 en vertical y 750×342 en horizontal) y copiado de su CSS
-/// (src/ui/action-pad.css, style.css, map-window.css, nav-map.css, settings.css, task-board.css). docs/mandos-tactiles.md §6.
+/// (src/ui/action-pad.css, style.css, map-window.css, nav-map.css, settings.css, task-board.css). docs/sistemas/mandos-tactiles.md §6.
 ///
 /// · LA MEDIDA: CodeShip mide en píxeles CSS de un iPhone 13. <see cref="Dp"/> pasa esos píxeles a los de esta pantalla de modo que el mando
 ///   y las ventanas ocupan LA MISMA PARTE de la pantalla que en CodeShip (la pantalla virtual mide al menos 390×664 en vertical o 750×342 en

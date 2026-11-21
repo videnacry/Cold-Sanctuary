@@ -2,7 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// GUARDIA DEL SANTUARIO: patrulla los puestos de vigía. Dar de comer a los depredadores ya no es cosa suya ni tiene sitio fijo (Berón 2026-11-05: «retira el
-/// comedero»): es la misión del alimentador, que sigue a cada uno por el mapa (<see cref="PredatorFeeder"/>, docs/alimentador.md).
+/// comedero»): es la misión del alimentador, que sigue a cada uno por el mapa (<see cref="PredatorFeeder"/>, docs/areas/alimentador.md).
 /// </summary>
 public class CarnivoreKeeper : MonoBehaviour
 {

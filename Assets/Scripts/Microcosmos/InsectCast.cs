@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// EL INSECTO DE CADA PERSONAJE (docs/microcosmos-civilizaciones.md §5). Ley de microcosmos-eras-and-observation.md §1: el
+/// EL INSECTO DE CADA PERSONAJE (docs/microcosmos/microcosmos-civilizaciones.md §5). Ley de microcosmos-eras-and-observation.md §1: el
 /// animal se elige por su ETOLOGÍA (lo que hace en la naturaleza se parece a lo que la persona hizo), no al revés. En el
 /// microcosmos nadie entra con cuerpo humano (<see cref="InsectOnly"/>): esto dice en qué insecto se convierte cada uno.
 /// </summary>
@@ -11,7 +11,7 @@ public static class InsectCast
     /// caen en el personaje histórico antes que en el alma renacida.</summary>
     public static readonly (string match, string species, string why)[] Table =
     {
-        // La tanda 3 (docs/microcosmos-historias-3.md): las escenas pasan la especie explícita; aquí queda el porqué.
+        // La tanda 3 (docs/microcosmos/microcosmos-historias-3.md): las escenas pasan la especie explícita; aquí queda el porqué.
         ("alfaro",        "Ant",         "la hormiga abre un sendero y por él pasa toda la colonia: el tren de Quito"),
         ("galvarino",     "Cricket",     "el grillo puede soltar una pata (autotomía) y sigue saltando y cantando"),
         ("caupolic",      "DungBeetle",  "el escarabajo más fuerte por su peso: la prueba del tronco de La Araucana"),
@@ -46,7 +46,7 @@ public static class InsectCast
         ("newton",        "Spider",      "solitario y obsesivo, teje solo su obra (microcosmos-eras-and-observation.md §1: aislado → araña)"),
         ("curie",         "Firefly",     "la luz del radio en la oscuridad del cobertizo"),
         ("einstein",      "Cricket",     "el grillo marca la temperatura con su canto (ley de Dolbear): la física en un insecto"),
-        // Científicos e históricos (docs/microcosmos-cientificos.md)
+        // Científicos e históricos (docs/microcosmos/microcosmos-cientificos.md)
         ("tesla",         "SnowBee",     "el abejorro siente el campo eléctrico de las flores (Clarke et al. 2013, Science 340:66): la electricidad en un insecto"),
         ("nietzsche",     "Scorpionfly", "la mosca escorpión de la nieve (Boreus) vive sola en el frío de las alturas: «a 6000 pies más allá del hombre y del tiempo»"),
         ("bolívar",       "Grasshopper", "la langosta del desierto cruza montañas y hasta el océano en enjambre: la travesía de los Andes"),
@@ -62,7 +62,7 @@ public static class InsectCast
         ("herodoto",      "DungBeetle",  "el escarabajo sagrado de Egipto; Heródoto contó del fénix que lleva a su padre en una bola de mirra (II.73)"),
         ("juarismi",      "SnowBee",     "la abeja calcula: su danza codifica el ángulo con el sol y la distancia, y construye celdas hexagonales"),
         ("khwarizmi",     "SnowBee",     "la abeja calcula: su danza codifica el ángulo con el sol y la distancia, y construye celdas hexagonales"),
-        // Los famosos (docs/microcosmos-famosos.md): sus microcosmos piden la especie explícita; aquí, el porqué.
+        // Los famosos (docs/microcosmos/microcosmos-famosos.md): sus microcosmos piden la especie explícita; aquí, el porqué.
         ("elon musk",     "Grasshopper", "el salto es un lanzamiento: guarda energía en las patas y la suelta de golpe (Bennet-Clark 1975)"),
         ("goku",          "DungBeetle",  "el insecto más fuerte por su peso (Onthophagus taurus): entrena empujando cada día su carga"),
         ("bill gates",    "Ant",         "la colonia resuelve problemas repartiéndolos en pasos sencillos (algoritmos de colonia de hormigas, Dorigo 1992)"),

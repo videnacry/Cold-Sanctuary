@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LA REGLA DE LA ENERGÍA (Berón 2026-11-05; docs/energia.md): cada piso declara su demanda (<see cref="FloorEnergy"/>), su creación añade paneles en
+/// LA REGLA DE LA ENERGÍA (Berón 2026-11-05; docs/areas/energia.md): cada piso declara su demanda (<see cref="FloorEnergy"/>), su creación añade paneles en
 /// proporción (<see cref="TablesFor"/>) en el PARQUE ENERGÉTICO, y el validador (<see cref="Check"/>) comprueba que la oferta cubre la demanda. El reactor es la
 /// carga base: en la noche polar el sol da cero. Aquí están las medidas, los modelos (sol, viento, marea) y las distancias de seguridad para los animales.
 /// </summary>
@@ -23,9 +23,9 @@ public static class EnergyRule
     // ── LA DEMANDA ──
     /// <summary>Potencia media → punta (una base de servicios concentra el trabajo de día; supuesto de diseño).</summary>
     public const float PeakFactor = 1.6f;
-    /// <summary>Potencia eléctrica del microrreactor (docs/sitio-nuclear.md): la única oferta firme.</summary>
+    /// <summary>Potencia eléctrica del microrreactor (docs/areas/sitio-nuclear.md): la única oferta firme.</summary>
     public const float ReactorKW = 5000f;
-    /// <summary>Lo que consume el clúster de IA (docs/piso-informatica.md): 95 kW en total.</summary>
+    /// <summary>Lo que consume el clúster de IA (docs/areas/piso-informatica.md): 95 kW en total.</summary>
     public const float InformaticsKW = 95f;
     /// <summary>Cada casa del árbol (~1 kW de media): luz, cocina pequeña y carga.</summary>
     public const float HomeKW = 1f;
@@ -124,7 +124,7 @@ public static class EnergyRule
     public const float IslandBuffer = 200f;
     /// <summary>Cribado del lanzamiento de hielo (Seifert/DEWI): 1,5 × (buje + rotor).</summary>
     public static float IceThrowRadius => 1.5f * (HubH + RotorD);
-    /// <summary>El refugio de aves, a ≥ el doble del radio de parada de las turbinas: el alimento y los animales concentrados atraen a otras aves (docs/energia.md §7). Elección de diseño.</summary>
+    /// <summary>El refugio de aves, a ≥ el doble del radio de parada de las turbinas: el alimento y los animales concentrados atraen a otras aves (docs/areas/energia.md §7). Elección de diseño.</summary>
     public const float RehabMinDistance = 2f * BirdStopRadius;
     /// <summary>Turnos de cura antes de soltarla.</summary>
     public const int RehabDays = 3;

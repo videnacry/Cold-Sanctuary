@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// EL HORARIO DE ACTIVIDADES LIBRE EN EL JUEGO (docs/horario-libre.md). Una vez por semana reparte con <see cref="LeisureRoster"/> las
+/// EL HORARIO DE ACTIVIDADES LIBRE EN EL JUEGO (docs/sistemas/horario-libre.md). Una vez por semana reparte con <see cref="LeisureRoster"/> las
 /// horas libres de cada personaje de cada ESCENA (el santuario —el mesocosmos— y cada microcosmos cargado) y en esas horas lleva a
 /// cada uno a su actividad: anda (en alfombra si es otro piso) hasta el sitio, la hace (postura o gesto) y lo pone en su rótulo.
 ///  · SANTUARIO: el personal de la jornada (<see cref="WorkdayDirector.staff"/>, sin Kushal: el jugador hace lo que quiere) en las
@@ -165,7 +165,7 @@ public class LeisureDirector : MonoBehaviour
     public static readonly (string id, string title, LeisureRoster.Kind kind, string[] where, int cap, string pose)[] SanctuaryActivities =
     {
         ("pesas", "Pesas y saco en el gimnasio", LeisureRoster.Kind.Ocio, new[] { "Gimnasio" }, 6, "ejercicio"),
-        // LOS PISOS DE YOGA (docs/yoga-pisos.md): «Sala de Yoga · <sala>» es una sala de un piso de yoga (YogaHall); cada plaza, una
+        // LOS PISOS DE YOGA (docs/areas/yoga-pisos.md): «Sala de Yoga · <sala>» es una sala de un piso de yoga (YogaHall); cada plaza, una
         // de sus esterillas. Hatha y meditación junto al linga (la tradicional) y Ashtanga autoguiado al estilo Mysore (la occidental).
         ("yoga", "Hatha libre y meditación junto al linga", LeisureRoster.Kind.Recuperacion, new[] { YogaVenue + "Hatha tradicional", "Sala de Yoga" }, 8, "meditar"),
         ("ashtanga", "Ashtanga autoguiado (estilo Mysore)", LeisureRoster.Kind.Recuperacion, new[] { YogaVenue + "Ashtanga occidental", "Sala de Yoga" }, 8, "ejercicio"),
@@ -174,8 +174,8 @@ public class LeisureDirector : MonoBehaviour
         ("crias", "Jugar con las crías", LeisureRoster.Kind.Cuidado, new[] { "Cría" }, 4, "pie"),
         ("textil", "Manualidades en el estudio textil", LeisureRoster.Kind.Ocio, new[] { "Estudio Textil" }, 4, "sentado"),
         ("tertulia", "Tertulia en el restaurante", LeisureRoster.Kind.Ocio, new[] { "Cocina" }, 8, "sentado"),
-        ("asamblea", "Ir a la asamblea de la semana: hablar y escuchar", LeisureRoster.Kind.Ocio, new[] { "Sala de asambleas", "Cocina" }, 8, "sentado"),   // (2026-11-05) docs/piso-asambleas.md
-        ("concierto", "Ir al concierto o tocar en el escenario", LeisureRoster.Kind.Ocio, new[] { "Música", "Cocina" }, 8, "sentado"),   // (2026-11-05) docs/piso-musica.md
+        ("asamblea", "Ir a la asamblea de la semana: hablar y escuchar", LeisureRoster.Kind.Ocio, new[] { "Sala de asambleas", "Cocina" }, 8, "sentado"),   // (2026-11-05) docs/areas/piso-asambleas.md
+        ("concierto", "Ir al concierto o tocar en el escenario", LeisureRoster.Kind.Ocio, new[] { "Música", "Cocina" }, 8, "sentado"),   // (2026-11-05) docs/areas/piso-musica.md
         ("baile", "Bailar", LeisureRoster.Kind.Ocio, new[] { "Sala de Ballet", "Calistenia", "Gimnasio" }, 6, "baile"),
         ("artes", "Artes marciales con Gohageneis y Luciana",   // (2026-11-04: antes con Goku, que se fue a su microcosmos; 2026-11-05: y Luciana)
           LeisureRoster.Kind.Ocio, new[] { "Dojo (artes marciales)", "Gimnasio" }, 6, "ejercicio"),
@@ -247,7 +247,7 @@ public class LeisureDirector : MonoBehaviour
             }
             if (v == null) continue;   // no hay sitio abierto: la actividad no entra esta semana
             // REGLA J16: los centros de ocio dan cabida a TODOS los miembros a la vez (los que salen de la lista del personal). Las que no
-            // (crías y textil) son pequeñas por su naturaleza y van por turnos (docs/centros-para-todos.md).
+            // (crías y textil) son pequeñas por su naturaleza y van por turnos (docs/areas/centros-para-todos.md).
             int cap = AllMembers.Contains(d.id) ? Mathf.Max(d.cap, AreaCapacity.Members()) : d.cap;
             v.capacity = cap; v.index = k++;
             var act = new LeisureRoster.Activity(d.id, d.title, d.kind, v.title, cap, d.pose);
@@ -263,7 +263,7 @@ public class LeisureDirector : MonoBehaviour
         foreach (SanctuaryArea a in FindObjectsByType<SanctuaryArea>(FindObjectsSortMode.None))
         {
             if (a == null || a.displayName != name || a.gameObject.scene != scene) continue;
-            if (NuclearSiteRule.InZone(a.transform.position)) continue;   // el sitio nuclear no es para el tiempo libre (docs/sitio-nuclear.md)
+            if (NuclearSiteRule.InZone(a.transform.position)) continue;   // el sitio nuclear no es para el tiempo libre (docs/areas/sitio-nuclear.md)
             ConstructionProject cp = a.GetComponent<ConstructionProject>();
             if (cp != null && !cp.Finished) continue;
             return a;
@@ -290,7 +290,7 @@ public class LeisureDirector : MonoBehaviour
         var sites = new List<AreaFunctionSite>();
         foreach (GameObject root in gr.scene.GetRootGameObjects()) sites.AddRange(root.GetComponentsInChildren<AreaFunctionSite>(true));
         sites.RemoveAll(s => s == null || s.unreachable);   // (ronda 29) un mirador al que no se llega andando no entra en el horario
-        // ETIQUETAS DE ACTIVIDAD (docs/microcosmos-actividades.md): con los edificios etiquetados, el tiempo libre va a los de ocio,
+        // ETIQUETAS DE ACTIVIDAD (docs/microcosmos/microcosmos-actividades.md): con los edificios etiquetados, el tiempo libre va a los de ocio,
         // recuperación y descanso (no a los de trabajo: la escuela, el mercado o el huerto de un pueblo etiquetado son trabajo).
         bool tagged = sites.Any(s => !string.IsNullOrEmpty(s.activity));
         int k = 0;
@@ -669,9 +669,9 @@ public class LeisureDirector : MonoBehaviour
         // HACERLA: su postura o su gesto, mirando al centro del sitio.
         r.performed += Time.deltaTime;
         SetStatus(g, r, StatusOf(g));
-        // LA GUERRA DE ALMOHADAS (docs/guerra-de-almohadas.md): coge una almohada y da almohadazos a los de al lado, sin salir de su celda.
+        // LA GUERRA DE ALMOHADAS (docs/areas/guerra-de-almohadas.md): coge una almohada y da almohadazos a los de al lado, sin salir de su celda.
         if (r.entry.activity.pose == "almohadas") { if (a != null) PillowFight.Tick(g, a, r.venue.anchor != null ? r.venue.anchor.GetComponent<PillowRing>() : null); r.posed = true; return; }
-        // LA PIJAMADA (docs/pijamadas.md): al llegar a la casa del anfitrión se apunta a dormir allí esta noche (Sleepover: su plaza en la
+        // LA PIJAMADA (docs/areas/pijamadas.md): al llegar a la casa del anfitrión se apunta a dormir allí esta noche (Sleepover: su plaza en la
         // cama-litera, abajo o arriba); luego, sentado charlando con los demás.
         if (r.entry.activity.pose == Sleepover.ActivityId && a != null && !r.posed && r.venue.anchor != null && r.venue.anchor.TryGetComponent(out Bedroom host)) Sleepover.Join(a, host, r.entry.day);
         Vector3 c = r.st != null ? r.st.transform.position : r.venue.anchor != null ? r.venue.anchor.position : r.to;
@@ -679,7 +679,7 @@ public class LeisureDirector : MonoBehaviour
         string pose = r.entry.activity.pose;
         if (pose == "baile") g.transform.Rotate(0f, 120f * Time.deltaTime, 0f);
         else if (look.sqrMagnitude > 0.04f && !r.onBed) g.transform.rotation = Quaternion.Slerp(g.transform.rotation, Quaternion.LookRotation(look), Time.deltaTime * 4f);
-        // (2026-11-04) HACERLA DE VERDAD (docs/actividades-y-uniformes.md §3): leer con su libro, bordar, charlar con su taza, regar,
+        // (2026-11-04) HACERLA DE VERDAD (docs/sistemas/actividades-y-uniformes.md §3): leer con su libro, bordar, charlar con su taza, regar,
         // jugar con las crías…; el insecto-humano, la actuación de su actividad o el bucle de la clase del edificio (con lo que tenga en
         // las manos y su efecto). Las que tienen su propio sistema (yoga, baile, pesas, almohadas, pijamada, descansar) siguen igual.
         ActivityPerformer.Performance perf = Performances.ForLeisure(r.entry.activity.id);
@@ -806,7 +806,7 @@ public class LeisureDirector : MonoBehaviour
 }
 
 /// <summary>
-/// ETIQUETAS DE ACTIVIDAD de los edificios (docs/horario-libre.md §Sitios): lo que un edificio ofrece en el tiempo libre (ocio,
+/// ETIQUETAS DE ACTIVIDAD de los edificios (docs/sistemas/horario-libre.md §Sitios): lo que un edificio ofrece en el tiempo libre (ocio,
 /// descanso, recuperación), con su capacidad. Un edificio etiquetado entra en el catálogo de su escena como una actividad más.
 /// Los pueblos del microcosmos ponen la suya al construirse; mientras no la tengan, mandan las plantillas de
 /// <see cref="LeisureDirector.MicroActivities"/>.

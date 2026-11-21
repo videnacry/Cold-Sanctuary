@@ -281,7 +281,7 @@ public class AmbrosioStory : MonoBehaviour
             case Beat.Predator:
                 PredatorFight(p, dt);
                 break;
-            case Beat.Death:   // Ambrosio se derrumba en la entrada (el jugador lo mira); la escena, como en la novela (docs/novela.md, «La entrada de la cueva»)
+            case Beat.Death:   // Ambrosio se derrumba en la entrada (el jugador lo mira); la escena, como en la novela (docs/historia/novela.md, «La entrada de la cueva»)
             {
                 Face(p, _ambrosio);
                 float t = Time.time - _beatAt;
@@ -351,7 +351,7 @@ public class AmbrosioStory : MonoBehaviour
     }
     bool _sakshiSaid;
 
-    // Lo que se dicen por el camino (docs/microcosmos-level1.md: Héspero quiere dejar atrás a los débiles, Momo bromea,
+    // Lo que se dicen por el camino (docs/microcosmos/microcosmos-level1.md: Héspero quiere dejar atrás a los débiles, Momo bromea,
     // Ambrosio se agota): cada frase, una vez, a su segundo del tramo.
     readonly HashSet<string> _said = new HashSet<string>();
     void Once(string key, bool when, System.Action say) { if (when && _said.Add(key)) say(); }
@@ -452,10 +452,10 @@ public class AmbrosioStory : MonoBehaviour
             Walk(who, spot, 0.05f, dt);
             who.rotation = Quaternion.LookRotation(_dir) * Quaternion.Euler(12f + 18f * Mathf.Abs(bob) / 0.3f, 0f, 0f);   // inclinado hacia delante, más al empujar
             PushArms(who, Mathf.Abs(bob) / 0.3f);   // los BRAZOS empujan (son humanoides): extendidos en el empujón, recogidos entre uno y otro
-            // Medea, diminuta, empuja con todo: de vez en cuando se cae de bruces y se vuelve a levantar (docs/novela.md).
+            // Medea, diminuta, empuja con todo: de vez en cuando se cae de bruces y se vuelve a levantar (docs/historia/novela.md).
             if (who == _medea && Mathf.Repeat(Time.time, 9f) < 1.1f) who.rotation = Quaternion.LookRotation(_dir) * Quaternion.Euler(70f * Mathf.Sin(Mathf.Repeat(Time.time, 9f) / 1.1f * Mathf.PI), 0f, 0f);
         }
-        // MOMO, «floja» (docs/novela.md): va al lado de Shanidar animando y haciendo bromas; de vez en cuando (3 s de cada 15)
+        // MOMO, «floja» (docs/historia/novela.md): va al lado de Shanidar animando y haciendo bromas; de vez en cuando (3 s de cada 15)
         // se acuerda de empujar un poco.
         if (_momo != null && !(_collapsed && Now == Beat.Collapse))
         {
@@ -505,7 +505,7 @@ public class AmbrosioStory : MonoBehaviour
         // que en la naturaleza la echan a empujones de sus pulgones (Berón 2026-10-27: la araña lobo era imposible de ahuyentar).
         var go = new GameObject("Depredador_mariquita");
         go.transform.SetParent(transform, true);
-        CubeInsect.Dress(go, "Ladybug", new Color(0.8f, 0.12f, 0.1f), 2.4f);   // a la escala de la hormiga (docs/microcosmos-areas.md)
+        CubeInsect.Dress(go, "Ladybug", new Color(0.8f, 0.12f, 0.1f), 2.4f);   // a la escala de la hormiga (docs/microcosmos/microcosmos-areas.md)
         go.transform.position = Ground(mid + _side * 14f);
         go.transform.rotation = Quaternion.LookRotation((-_side));
         _predator = go.transform;

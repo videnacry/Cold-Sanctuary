@@ -34,13 +34,13 @@ public class Family
         { "Bunny",new Family(5, 0.4f,  maternal)   }, { "Whale",    new Family(3, 0.5f,  maternal) },
         { "Seal", new Family(3, 0.3f,  maternal)   },   // 2 adultos + 1 cría (una cría por madre y temporada) { "Deer",     new Family(6, 0.3f,  maternal) },
         // Fauna de hielo — POBLACIÓN BAJA (2-4/familia): son Animal completos (caros) y con reproducción ON crecen
-        // solos con las horas; arrancar pequeño evita la explosión demográfica. Ver docs/ice-sanctuary-ecology.md §5.
+        // solos con las horas; arrancar pequeño evita la explosión demográfica. Ver docs/fauna/ice-sanctuary-ecology.md §5.
         // El nº de CRÍAS se mantiene REAL: el parto es SIEMPRE 1 cría (Reproduction.SpawnOffspring, no depende de esto);
         // y el reparto semilla (parentsRate) deja pocas crías por familia (K-estrategas marinos): Orca 1, Ballena 1,
         // Foca 2, Pingüino 2. parentsRate alto = más adultos y menos crías (mamífero marino: 1 cría por hembra).
         { "Penguin", new Family(4, 0.3f, biparental) },  // colonia (representada pequeña); 2 adultos + 2 pollos
         { "Orca",    new Family(3, 0.25f, maternal)  },  // pod: una pareja adulta + 1 cría (antes 1 adulta sola: no podía criar)
-        // Territorio polar (docs/reglas-animales.md): el parto es siempre 1 cría; grupos pequeños para no multiplicar Animal completos.
+        // Territorio polar (docs/reglas/reglas-animales.md): el parto es siempre 1 cría; grupos pequeños para no multiplicar Animal completos.
         { "Walrus", new Family(3, 0.3f, maternal) }, { "EmperorPenguin", new Family(4, 0.3f, biparental) },
         { "Reindeer", new Family(5, 0.3f, maternal) }, { "MuskOx", new Family(4, 0.35f, maternal) },
         { "SnowPetrel", new Family(2, 1f, biparental) }, { "ArcticTern", new Family(2, 1f, biparental) }, { "WanderingAlbatross", new Family(2, 1f, biparental) }, { "CapePetrel", new Family(2, 1f, biparental) }, { "PolarSkua", new Family(2, 1f, biparental) }, { "ArcticHare", new Family(4, 0.4f, maternal) }, { "ArcticFox", new Family(4, 0.4f, biparental) },
@@ -58,7 +58,7 @@ public class Family
         { "Mantis",      new Family(1, 0.1f, maternal)   },  // solitaria (canibalismo sexual)
         { "Meerkat",     new Family(6, 0.5f, biparental) },  // cría cooperativa (helpers al nido)
         { "SnowBee",     new Family(6, 0.8f, maternal)   },  // colonia eusocial (reina = parents)
-        // Especies de las eras (docs/era-species-behavior.md)
+        // Especies de las eras (docs/sistemas/era-species-behavior.md)
         { "Scorpion",    new Family(3, 0.3f, maternal) },   // madre con crías a lomos (BroodRide)
         { "CamelSpider", new Family(1, 0.1f, maternal) },   // solitario (la madre guarda la puesta)
         { "Woodlouse",   new Family(5, 0.3f, maternal) },   // agregación bajo la piedra

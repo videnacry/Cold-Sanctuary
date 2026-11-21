@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// UNA LECCIÓN DE FÍSICA del microcosmos de la planta atómica (docs/atomic-plant.md §Microcosmos): un experimento que
+/// UNA LECCIÓN DE FÍSICA del microcosmos de la planta atómica (docs/areas/atomic-plant.md §Microcosmos): un experimento que
 /// se JUEGA junto a su científico. <see cref="PhysicsHistoryMission"/> la abre con E cerca del maestro; mientras está
 /// abierta se queda con el teclado (<see cref="GameKeys.MenuOpen"/>) y Esc la cierra. <see cref="Done"/> = el jugador
 /// ya entendió lo que enseña (lo comprobó con el experimento).

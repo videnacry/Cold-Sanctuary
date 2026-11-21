@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// RECETA de un platillo del restaurante (docs/kitchen-simulation.md, spell-genesis §... cocina jugable): un nombre +
+/// RECETA de un platillo del restaurante (docs/areas/kitchen-simulation.md, spell-genesis §... cocina jugable): un nombre +
 /// una **secuencia de pasos** (ingredientes/acciones) que el cocinero recorre. Data pura (el repo solo versiona `.cs`,
 /// así que los platillos viven en código como presets, no como assets). No se COME: se **prepara para vender** → el
 /// platillo listo se deposita en el stock del restaurante (<see cref="FoodContainer"/>) para que los personajes compren.

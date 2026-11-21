@@ -13,7 +13,7 @@ public struct SunPos
 }
 
 /// <summary>
-/// POSICIÓN DEL SOL por lugar, fecha y hora (ecuaciones de la NOAA; docs/luz-microcosmos.md). La comparten el santuario
+/// POSICIÓN DEL SOL por lugar, fecha y hora (ecuaciones de la NOAA; docs/microcosmos/luz-microcosmos.md). La comparten el santuario
 /// (polar: <see cref="SunCycle"/>) y la plantilla de los microcosmos, para que cada lugar y hora tenga su luz real
 /// (Berón 2026-10-27). Convenio de la escena: +Z = norte, +X = este.
 /// </summary>
@@ -108,7 +108,7 @@ public static class SolarPosition
     /// <summary>El sol del santuario ahora mismo.</summary>
     public static SunPos Sanctuary(TimeController t) => SunFor(SanctuaryLat, SanctuaryDayOfYear(t), t.Hour);
 
-    /// <summary>Lugar y día del año de cada microcosmos (docs/luz-microcosmos.md §2; * = fecha representativa).</summary>
+    /// <summary>Lugar y día del año de cada microcosmos (docs/microcosmos/luz-microcosmos.md §2; * = fecha representativa).</summary>
     public static bool GeoOf(string display, out float lat, out float lon, out float doy)
     {
         lat = lon = doy = 0f;

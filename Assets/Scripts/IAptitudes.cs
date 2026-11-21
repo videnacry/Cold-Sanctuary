@@ -1,5 +1,5 @@
 /// <summary>
-/// Contrato de las 12 aptitudes que **todo ser vivo** expone (docs/creature-stats.md): permite leer las
+/// Contrato de las 12 aptitudes que **todo ser vivo** expone (docs/sistemas/creature-stats.md): permite leer las
 /// aptitudes de forma UNIFORME sin importar la clase concreta (animal `Anima`, companion
 /// `CompanionBase`, jugador `PlayerStats`), mientras no exista `NPCBase` que las consolide.
 ///

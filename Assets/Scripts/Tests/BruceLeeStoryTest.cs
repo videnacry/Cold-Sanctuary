@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// TEST DEL MICROCOSMOS DE BRUCE LEE (docs/microcosmos-bruce-lee.md; Dojo). Tres partes, cada espera acotada:
+/// TEST DEL MICROCOSMOS DE BRUCE LEE (docs/microcosmos/microcosmos-bruce-lee.md; Dojo). Tres partes, cada espera acotada:
 /// (1) LAS POSTURAS (<see cref="JeetKuneDo"/>) caben en su cuerpo: en un Bruce Lee de cubos de 1,72 m, cada postura deja las
 ///     manos donde dice su IK (objetivos dentro del largo del brazo), los dos pies en el suelo, nada bajo el suelo, la cabeza
 ///     por encima de la cadera y ningún hueso en NaN; y cada forma tiene fotogramas.
@@ -145,7 +145,7 @@ public class BruceLeeStoryTest : MonoBehaviour, ITestUnit
         {
             TestProbe.Check("la historia es la de Bruce Lee", m.title.Contains("Bruce Lee"), m.title);
             TestProbe.Check("tiene entre 10 y 16 pasos (5 escenas)", m.steps.Length >= 10 && m.steps.Length <= 16, $"{m.steps.Length} pasos");
-            // En el microcosmos solo hay insectos (docs/microcosmos-civilizaciones.md §4): Bruce Lee es una MANTIS humanizada.
+            // En el microcosmos solo hay insectos (docs/microcosmos/microcosmos-civilizaciones.md §4): Bruce Lee es una MANTIS humanizada.
             CubeInsect bci = forms.GetComponent<CubeInsect>();
             TestProbe.Check("el maestro se llama «Bruce Lee» y es una mantis erguida (sin cuerpo humano)", forms.name == "Bruce Lee" && bci != null && bci.species == "Mantis" && bci.folk && !InsectOnly.IsHuman(forms.gameObject), bci != null ? bci.species : "sin cuerpo de insecto");
             TestProbe.Check("una forma y un sitio por paso", forms.formByStep.Length == m.steps.Length && forms.spotByStep.Length == m.steps.Length, $"{forms.formByStep.Length} formas, {forms.spotByStep.Length} sitios, {m.steps.Length} pasos");
@@ -217,7 +217,7 @@ public class BruceLeeStoryTest : MonoBehaviour, ITestUnit
                     TestProbe.Check("la historia está en su plaza reservada principal", d <= 1.5f, $"a {d:0.0} m de la plaza");
                 }
             }
-            // Era avanzada (docs/microcosmos-reglas-edificacion.md, regla 5): en el BARRIO de la historia (×100: el piso × 10 alrededor
+            // Era avanzada (docs/reglas/microcosmos-reglas-edificacion.md, regla 5): en el BARRIO de la historia (×100: el piso × 10 alrededor
             // de su plaza, MicroFloor.districtSize) el Dojo gigante se queda en su suelo (sin muebles: ni jaula, ni ring, ni andamio) y
             // la ciudad de la historia (Kowloon y Seattle) lo ocupa entero; fuera del barrio sigue el Dojo gigante. Las medidas del
             // suelo, a la escala del área (0,6 m y 1 m a ×10).

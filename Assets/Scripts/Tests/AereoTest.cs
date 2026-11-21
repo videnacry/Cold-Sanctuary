@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// PRUEBA DEL SANTUARIO AÉREO (Berón 2026-11-05; docs/sitio-nuclear.md §23):
+/// PRUEBA DEL SANTUARIO AÉREO (Berón 2026-11-05; docs/areas/sitio-nuclear.md §23):
 /// 1. SANTUARIO 1: sin lanzadera ni parque; con su muelle, la red de alfombras, la lógica de la energía y las misiones.
 /// 2. SIN ESCENA: un trabajador vuela y vuelve sin cargar nada; las turbinas paran por un petrel; el cable pierde lo que dice la regla.
 /// 3. CON ESCENA: carga aditiva medida, presta sus piezas a la lógica y las recupera al descargar, y la plataforma cumple T13.

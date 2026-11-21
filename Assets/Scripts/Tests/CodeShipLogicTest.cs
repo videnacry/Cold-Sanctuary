@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DE LA LÓGICA PORTADA DE CODESHIP (grupo 119; docs/plan-microcosmos-realismo.md §4, Berón 2026-11-18: «no sé qué hacer ni
+/// PRUEBA DE LA LÓGICA PORTADA DE CODESHIP (grupo 119; docs/microcosmos/plan-microcosmos-realismo.md §4, Berón 2026-11-18: «no sé qué hacer ni
 /// cómo jugar»). Solo lógica pura (no carga escenas ni mueve a nadie), así que va en la lista rápida:
 ///  · retos de código: validar el catálogo, acertar y fallar un reto de ordenar y uno de elegir, los intentos repetidos no cuentan
 ///    (el fallo de CodeShip: tres toques sobre la misma opción errónea terminaban la misión), el barajado nunca da la solución;

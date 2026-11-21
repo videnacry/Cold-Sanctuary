@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// EL REFUGIO DE AVES (Berón 2026-11-05; docs/energia.md §7): cajas de recuperación en la planta veterinaria del Hospital. Las aves heridas que encuentra la ronda del parque
+/// EL REFUGIO DE AVES (Berón 2026-11-05; docs/areas/energia.md §7): cajas de recuperación en la planta veterinaria del Hospital. Las aves heridas que encuentra la ronda del parque
 /// se curan aquí y se sueltan aquí, a ≥ <see cref="EnergyRule.RehabMinDistance"/> m de las turbinas, porque el alimento y los animales concentrados atraen a otras aves: no se
 /// cura ni se cría nada junto al rotor. Solo rehabilita: no cría aves.
 /// </summary>

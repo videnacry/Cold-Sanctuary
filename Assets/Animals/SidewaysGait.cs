@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// MARCHA DE LADO del cangrejo (docs/era-species-behavior.md §5): el cangrejo fantasma corre de costado —sus patas se
+/// MARCHA DE LADO del cangrejo (docs/sistemas/era-species-behavior.md §5): el cangrejo fantasma corre de costado —sus patas se
 /// doblan mejor hacia los lados— y es de los artrópodos más rápidos (Burrows &amp; Hoyle 1973, J Exp Biol 58:327; Blickhan
 /// &amp; Full 1987, J Exp Biol 130:155). El NavMeshAgent sigue llevando la ruta; aquí solo se gira el CUERPO para que el
 /// costado mire hacia donde avanza (alternando el lado de vez en cuando, como hacen). Parado, o erguido y lúcido (camina

@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// LA RESIDENCIA, UN EDIFICIO-ÁRBOL NUEVO EN LA ISLA (Berón 2026-11-05: «la residencia se puede pasar a un arbol-edificio y las casas arbol quedan para otro santuary»; docs/residencia.md)
+/// LA RESIDENCIA, UN EDIFICIO-ÁRBOL NUEVO EN LA ISLA (Berón 2026-11-05: «la residencia se puede pasar a un arbol-edificio y las casas arbol quedan para otro santuary»; docs/areas/residencia.md)
 ///.
 /// </summary>
 public static partial class SampleSceneBuilder

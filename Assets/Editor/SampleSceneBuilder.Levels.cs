@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// ÁREAS POR PISOS (docs/construcciones-elevadas.md §Pisos): en vez de una plataforma por área unida por puentes, una
+/// ÁREAS POR PISOS (docs/areas/construcciones-elevadas.md §Pisos): en vez de una plataforma por área unida por puentes, una
 /// misma base puede tener
 /// - PLATAFORMAS HIJAS (entreplantas) de 4 m con ESCALERA INCLINADA, dentro de la plataforma: p. ej. las camas de la
 ///   enfermería en una galería en U, que deja el suelo libre para pasillos anchos;
@@ -94,7 +94,7 @@ public static partial class SampleSceneBuilder
         if (HelixDeckOf(parent, out _, out _, out _)) h = Mathf.Max(h, TreeSpec.RingOverFloor);
         Transform ring = new GameObject(name).transform; ring.SetParent(parent, false); ring.localPosition = Vector3.up * h;
         _ringOpenBack = false;
-        // EN UN PISO PEGADO AL TRONCO de un edificio-árbol (docs/edificio-arbol.md §Migración): el anillo va en U, abierto hacia el
+        // EN UN PISO PEGADO AL TRONCO de un edificio-árbol (docs/areas/edificio-arbol.md §Migración): el anillo va en U, abierto hacia el
         // tronco (su lado −Z), con las alas hasta la cara del tronco y un BALCÓN de 3 m sobre el borde del piso, contra el tronco:
         // ahí está su puerta (se llega nadando, como a los anillos de las puntas).
         if (HelixDeckOf(parent, out Helix hxr, out _, out Transform deckr))

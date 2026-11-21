@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// CÓMO VIVÍAN LOS INCAS (docs/microcosmos-historias-3.md; Berón 2026-11-05: «lo que me parece más interesante es cómo funcionaban los incas, su estilo de
+/// CÓMO VIVÍAN LOS INCAS (docs/microcosmos/microcosmos-historias-3.md; Berón 2026-11-05: «lo que me parece más interesante es cómo funcionaban los incas, su estilo de
 /// vida y si hay registros de obras que quedaron sin terminar, también la amistosa bienvenida que ofrecieron a los recién llegados»). Cajamarca, 15 de
 /// noviembre de 1532, el día ANTES de la captura: el ayni entre vecinos, la mit'a, las colcas, los quipus, los caminos, la comida y la tela; un muro sin
 /// terminar; y la llegada de los extranjeros: lo que un anciano recuerda de Tumbes (1528) y la chicha que Atahualpa ofrece a los enviados. Lo que pasó

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-/// <summary>Una ranura de MEZCLA (docs/soul-composition-blend.md): un arquetipo (cuerpo o mente) con su
+/// <summary>Una ranura de MEZCLA (docs/sistemas/soul-composition-blend.md): un arquetipo (cuerpo o mente) con su
 /// **dominio (%)**. Si `shareDomain`, no fija un % sino que **se reparte lo que quede sin reclamar** con las
 /// demás marcadas.</summary>
 [System.Serializable]

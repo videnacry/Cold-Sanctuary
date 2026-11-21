@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// CUOTA DE CAZA (docs/reglas-animales.md, «Cadena alimenticia»). <see cref="FoodChain"/> hace el balance de un año del santuario
+/// CUOTA DE CAZA (docs/reglas/reglas-animales.md, «Cadena alimenticia»). <see cref="FoodChain"/> hace el balance de un año del santuario
 /// (28 días de juego) suponiendo que una presa da lo que cría: crías al año por hembra × ½ hembras, con un margen de 0,8. Pero la caza
 /// no lo respetaba: un cazador se lleva lo que pueda cada vez que tiene hambre, y en una batería (≈1,5 días de juego) caían 3 de las
 /// 6 liebres y los 2 zorros del santuario. Ahora en el santuario se caza, de cada especie, lo que esa cuenta da por año, y nunca por

@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DE LA GUERRA DE ALMOHADAS (grupo 89; docs/guerra-de-almohadas.md; Berón 2026-11-04). En SampleScene:
+/// PRUEBA DE LA GUERRA DE ALMOHADAS (grupo 89; docs/areas/guerra-de-almohadas.md; Berón 2026-11-04). En SampleScene:
 ///  1. EL RING: existe en la arboleda, su colchón mide lo que manda la regla (n × n celdas de 2,5 m, n = ⌈√residentes⌉), caben todos
 ///     los residentes y todo el personal (PillowRing.Validate), está lleno de almohadas (2 por luchador) y tiene su pista de alfombras.
 ///  2. LAS CAMAS DE 4: cada casa del árbol tiene cama de 4 plazas y la pareja duerme en plazas distintas.
@@ -139,12 +139,12 @@ public class PillowFightTest : MonoBehaviour, ITestUnit
         TestProbe.Check("fuera de su franja no se reparte", gr.plan.entries.Count(e => e.activity == act) == fighters);
         // REGLA J16 (= S13; Berón 2026-11-04: los centros de entrenamiento y de ocio dan servicio a TODOS los miembros a la vez), con el
         // único validador, AreaCapacity.CheckActivities: el ring y cada actividad de ocio «para todos». Las de por turnos (crías, textil;
-        // docs/centros-para-todos.md), al registro.
+        // docs/areas/centros-para-todos.md), al registro.
         var forAll = gr.catalog.Where(a => a.id == PillowRing.ActivityId || LeisureDirector.AllMembers.Contains(a.id)).Select(a => (a.title, a.capacity, a.Unlimited));
         var j16 = AreaCapacity.CheckActivities(forAll, AreaCapacity.Members());
         TestProbe.Check("regla J16: el ring y el ocio «para todos» tienen plazas para todos los miembros (AreaCapacity)", j16.Count > 0 && j16.All(l => l.ok), string.Join(" · ", j16));
         foreach (var a in gr.catalog.Where(a => a.id != PillowRing.ActivityId && !LeisureDirector.AllMembers.Contains(a.id) && !a.Unlimited))
-            Log($"por turnos (justificado en docs/centros-para-todos.md): {a.title} {a.capacity}");
+            Log($"por turnos (justificado en docs/areas/centros-para-todos.md): {a.title} {a.capacity}");
 
         // En vivo: toda la franja de las 20 h (acotado en tiempo real).
         PillowFight.ResetCounters();

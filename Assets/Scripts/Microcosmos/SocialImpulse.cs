@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// IMPULSO SOCIAL (docs/microcosmos-level1.md §Impulsos sociales, rebanada 2): una fuente de <see cref="MovementImpulse"/>
+/// IMPULSO SOCIAL (docs/microcosmos/microcosmos-level1.md §Impulsos sociales, rebanada 2): una fuente de <see cref="MovementImpulse"/>
 /// dirigida hacia (o lejos de) OTRO ser, según un DRIVE social. Se apoya en el <see cref="ImpulseController"/> ya
 /// existente (igual que <see cref="HomeImpulse"/>/<see cref="ThreatScanner"/>): cada tick calcula un objetivo y añade
 /// un impulso con su tag; el controlador suma todo y mueve al agente. Varios drives conviven en un mismo ser

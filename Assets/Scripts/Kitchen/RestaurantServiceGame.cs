@@ -92,7 +92,7 @@ public class RestaurantServiceGame : MonoBehaviour
             foreach (CarpetPad cp in area.GetComponentsInChildren<CarpetPad>()) if (cp.surface.Contains("#anillo")) { stair = cp.transform; break; }
         if (caja != null && stair != null)
         {
-            // COMEDOR EN ANILLO (docs/restaurant-plan.md): los turistas llegan por el PUENTE, suben su escalera, piden en la
+            // COMEDOR EN ANILLO (docs/areas/restaurant-plan.md): los turistas llegan por el PUENTE, suben su escalera, piden en la
             // CAJA y esperan allí; el CAMARERO sube cada plato del pase a la caja (los turistas no pisan la cocina).
             Vector3 top = stair.position; foreach (Transform t in stair) if (t.name == "Peldano" && t.position.y > top.y) top = t.position;
             top += stair.forward * 1.2f;

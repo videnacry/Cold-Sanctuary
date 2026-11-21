@@ -4,7 +4,7 @@ using UnityEngine;
 /// <summary>
 /// EL ENJAMBRE DE PECOREADORAS de una colmena (Berón 2026-11-03: «a las abejas del mesocosmos también se les debería plantear
 /// crear como esos grupos para optimizar los procesos; además serían más visibles al verlas volar en grupo de un árbol a otro;
-/// deben volar de un árbol a otro durante el día»; docs/grupos-de-animales.md). Un <see cref="Swarm"/> de abejas: un padre con
+/// deben volar de un árbol a otro durante el día»; docs/sistemas/grupos-de-animales.md). Un <see cref="Swarm"/> de abejas: un padre con
 /// sus abejas (modelos de <see cref="SwarmModels"/>) que DE DÍA vuela de árbol en árbol (las copas de los árboles a menos de
 /// <see cref="range"/> m de su colmena; en cada una se queda <see cref="dwellSeconds"/> s pecoreando y deja el néctar en la
 /// colmena al volver) y DE NOCHE vuelve a su colmena y se queda en racimo en la piquera.

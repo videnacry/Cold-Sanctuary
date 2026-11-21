@@ -5,7 +5,7 @@ using UnityEngine;
 /// MICROCOSMOS_ELONMUSKOMELEK: LA ISLA DE OMELEK (atolón de Kwajalein, Islas Marshall), la mañana del 29 de septiembre de 2008 (hora local;
 /// el 28 en California): el cuarto Falcon 1 ya está vertical en su plataforma y el equipo de lanzamiento hace las últimas revisiones,
 /// cierra el hangar y EVACÚA la isla en lancha antes del lanzamiento de las 11:15 (23:15 UTC). Es el clímax de la historia de Hawthorne
-/// (docs/microcosmos-musk-historia.md, escena 3) y el segundo escenario hecho con las reglas del plan de realismo: insectos-humanos a la
+/// (docs/microcosmos/microcosmos-musk-historia.md, escena 3) y el segundo escenario hecho con las reglas del plan de realismo: insectos-humanos a la
 /// mitad, lugar real a 1:1, edificios con muros, puerta y vista de corte, hito y transporte de época.
 ///
 /// FUENTES: Spaceflight Now, «Falcon 1 flight 4» y la crónica de 2009 («austere launch pad with propellant tanks, a processing hangar and
@@ -18,7 +18,7 @@ using UnityEngine;
 /// y de los contenedores de trabajo, la lancha (8 m), la granja de propelentes y el reparto de cocoteros y naupaka.
 /// Para los retos de CodeShip (los hace el trabajador de la interfaz), los SITIOS se llaman: «Consola de la plataforma (Omelek)», «Plataforma
 /// de lanzamiento», «Tanque de oxígeno líquido (LOX)», «Tanque de queroseno RP-1», «Botellas de helio», «Antena de telemetría» y
-/// «Muelle de Omelek»; los pasos, como dice la tabla de docs/microcosmos-musk-historia.md.
+/// «Muelle de Omelek»; los pasos, como dice la tabla de docs/microcosmos/microcosmos-musk-historia.md.
 /// </summary>
 public static partial class StorySceneBuilder
 {

@@ -52,7 +52,7 @@ public static class MobWorldSceneBuilder
         spawnGO.transform.SetPositionAndRotation(O + new Vector3(0f, 1f, -6f), Quaternion.LookRotation(Vector3.forward));
         spawnGO.AddComponent<MobSpawnPoint>();
 
-        // URUK (~3500 a. C.; docs/microcosmos-civilizaciones.md §8): la ciudad de verdad en vez de tres chozas-cubo. Su fecha (MicroEra:
+        // URUK (~3500 a. C.; docs/microcosmos/microcosmos-civilizaciones.md §8): la ciudad de verdad en vez de tres chozas-cubo. Su fecha (MicroEra:
         // las conductas y el bloqueo de humanos la leen), sus edificios de adobe (CivicBuilder.Uruk: casas con patio, el Templo Blanco
         // al pie de la terraza de Anu, la alfarería de los cuencos de borde biselado, el granero) con su gente, jornadas y familias,
         // y los tres vecinos de siempre (MobResident) como insectos-humanos delante de su edificio.

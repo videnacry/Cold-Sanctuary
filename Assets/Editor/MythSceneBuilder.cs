@@ -2,7 +2,7 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// EGINA, EL REINO DE LOS MIRMIDONES (docs/microcosmos-myrmidons.md): el mito de Ovidio (Metamorfosis VII) contado de
+/// EGINA, EL REINO DE LOS MIRMIDONES (docs/microcosmos/microcosmos-myrmidons.md): el mito de Ovidio (Metamorfosis VII) contado de
 /// forma humana, sobre la CONSTRUCCIÓN del santuario ×10 (levantar un reino = construir). Éaco sueña bajo la encina; Zeus,
 /// su padre, recluta a los insecto-humanos; unidos traen piedra de la cantera y alzan un templo dórico como el de Afaya
 /// (Egina, c. 500–490 a. C.: 6 × 12 columnas, estilóbato de 28,8 × 13,7 m). El elenco de la enfermería renace aquí con

@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// PRUEBA DEL MAPA A MANO EN EL MOBWORLD DE MESOPOTAMIA (2026-11-12; petición 75, regla M9; docs/microcosmos-mapas-a-mano.md §Mesopotamia):
+/// PRUEBA DEL MAPA A MANO EN EL MOBWORLD DE MESOPOTAMIA (2026-11-12; petición 75, regla M9; docs/microcosmos/microcosmos-mapas-a-mano.md §Mesopotamia):
 /// la escena MobWorld_Mesopotamia (Tools → Cold Sanctuary → Build MobWorld Mesopotamia) siembra la flora y la fauna del mapa de Uruk
 /// (MicroStoryMaps «Mesopotamia») con AreaMicrocosmos.Nature, escalado a su suelo de 120 m:
 /// - bajo «Flora_a_escala», las plantas del mapa (≥ la mitad de sus plantas, y al menos 6 de sus rodales distintos);

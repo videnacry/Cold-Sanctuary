@@ -6,7 +6,7 @@ using UnityEngine;
 /// antes llega la urgencia. Crece hasta volverse fuerte; al máximo, el ser **defeca**: se alivia, deja **excremento**
 /// (rastro de olor + prefab opcional = abono / bola del pelotero) y recupera algo de satisfacción. Cuando la urgencia
 /// es alta **incomoda** (sube `stress`) → participa del campo de pensamientos y del control-por-necesidad
-/// (`AcuteStressResponse`) igual que el hambre. docs/microcosmos-dungbeetle-level.md (necesidades) + magic-metabolism.
+/// (`AcuteStressResponse`) igual que el hambre. docs/microcosmos/microcosmos-dungbeetle-level.md (necesidades) + magic-metabolism.
 ///
 /// Es también la "acción natural" del futuro **hechizo de generar excremento** (SpawnSpell): defecar a demanda deja el
 /// prefab en el sitio. Opt-in por ahora (añádelo al ser); barato.

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>Servicios de un hospital aislado (docs/hospital.md): lo mínimo para tratar todos los casos sin derivar.</summary>
+/// <summary>Servicios de un hospital aislado (docs/areas/hospital.md): lo mínimo para tratar todos los casos sin derivar.</summary>
 public enum HospitalService
 {
     Urgencias, Consulta, UCI, Quirofano, Anestesia, Paritorio, Aislamiento, Imagen, Laboratorio, BancoDeSangre,
@@ -9,7 +9,7 @@ public enum HospitalService
 }
 
 /// <summary>
-/// PUESTO DEL HOSPITAL (docs/hospital.md): cada equipo importante es INTERACTUABLE (F) y actúa sobre el paciente más
+/// PUESTO DEL HOSPITAL (docs/areas/hospital.md): cada equipo importante es INTERACTUABLE (F) y actúa sobre el paciente más
 /// cercano según su servicio: urgencias estabiliza, la UCI y la farmacia curan, el quirófano opera (solo si hay alguien en
 /// la máquina de anestesia), imagen/laboratorio diagnostican, la veterinaria atiende animales. Los <see cref="doctorPost"/>
 /// son los 8 PUESTOS MÉDICOS: la jornada coloca a cada médico que trabaja en el hospital en uno libre (<see cref="PostFor"/>).
@@ -129,7 +129,7 @@ public class HospitalStation : MonoBehaviour, IInteractable
                     if (u == 0 && bl.NeedsBlood) { Debug.Log($"[Hospital] {Label(service)}: «{patient.name}» ha perdido el {bl.lost * 100f:0} % de su sangre y no hay sangre compatible: no se opera (banco de sangre andante: un donante de su grupo)."); return null; }
                 }
                 Heal(1f); patient.stress = Mathf.Min(1f, patient.stress + 0.1f); break;
-            case HospitalService.BancoDeSangre:   // cruzar y transfundir al paciente de al lado (docs/hospital.md §Banco de sangre)
+            case HospitalService.BancoDeSangre:   // cruzar y transfundir al paciente de al lado (docs/areas/hospital.md §Banco de sangre)
                 if (BloodBank.Instance != null) BloodBank.Instance.Transfuse(patient, by != null ? by.name : "el banco de sangre");
                 break;
         }
@@ -187,7 +187,7 @@ public class HospitalStation : MonoBehaviour, IInteractable
         }
     }
 
-    /// <summary>Qué enseña cada puesto (docs/hospital.md, con sus fuentes).</summary>
+    /// <summary>Qué enseña cada puesto (docs/areas/hospital.md, con sus fuentes).</summary>
     public static string Science(HospitalService s)
     {
         switch (s)

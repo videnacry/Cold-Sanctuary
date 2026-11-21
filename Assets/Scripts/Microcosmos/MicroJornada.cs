@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// LA JORNADA DE UN INSECTO-HUMANO de una era civilizada (docs/microcosmos-civilizaciones.md §2; Berón 2026-11-01: «al igual
+/// LA JORNADA DE UN INSECTO-HUMANO de una era civilizada (docs/microcosmos/microcosmos-civilizaciones.md §2; Berón 2026-11-01: «al igual
 /// que en el santuario se han creado jornadas para los personajes, en el microcosmos de eras civilizadas se crearía jornadas
 /// para los insectos-humanos»). Con el reloj del juego y el mismo horario del santuario (<see cref="WorkRoster"/>):
 /// 8–11 trabajo · 11–12 comida · 12–14 trabajo · 14–16 práctica · después, casa. Trabaja en SU edificio con las funciones del
@@ -97,11 +97,11 @@ public class MicroJornada : MonoBehaviour
         if (_q == null) { _a = GetComponent<Anima>(); _q = GetComponent<ActionQueue>(); }
         if (_a != null && (_a.death || _a.asleep)) return;
         if (NeedsDriver.Attending(_q)) { _resume = true; HistoricClass.Pause(this); return; }   // el cuerpo atiende una necesidad (en casa): la jornada espera
-        if (LeisureDirector.Drives(gameObject)) { _resume = true; return; }   // sus horas libres: lo lleva el HORARIO LIBRE (docs/horario-libre.md)
+        if (LeisureDirector.Drives(gameObject)) { _resume = true; return; }   // sus horas libres: lo lleva el HORARIO LIBRE (docs/sistemas/horario-libre.md)
         float k = Body;   // (2026-11-18) las distancias, a la estatura del cuerpo (× s en los encogidos)
         if (follow != null) { MicroMove.Step(transform, follow.position - follow.forward * 1.2f * k, speed * 1.2f, 1.5f * k); return; }
         string block = Block(Hour);
-        // ENTRENAR COMO EN SU ÉPOCA (2026-11-04, docs/gimnasio-maquinas.md §16): en la práctica, si su sitio es un edificio de entrenamiento
+        // ENTRENAR COMO EN SU ÉPOCA (2026-11-04, docs/areas/gimnasio-maquinas.md §16): en la práctica, si su sitio es un edificio de entrenamiento
         // (plantilla «Centro de entrenamiento» o «Dojo»), sigue su rutina de época con series y descanso, o da la clase si es el maestro.
         if (block == "practica") { if (HistoricClass.Drive(this)) { _resume = true; Say(HistoricClass.StatusOf(this) ?? "Entrenando"); return; } }
         else HistoricClass.Leave(this);
@@ -126,7 +126,7 @@ public class MicroJornada : MonoBehaviour
         if (_block == "comida") { Lunch(); return; }
         if (_fn != null)
         {
-            // (2026-11-04) HACERLO DE VERDAD (docs/actividades-y-uniformes.md §3): la actuación de su función —herramienta de su era en la
+            // (2026-11-04) HACERLO DE VERDAD (docs/sistemas/actividades-y-uniformes.md §3): la actuación de su función —herramienta de su era en la
             // mano, el gesto y su efecto— y, en el trabajo, el delantal de su oficio (antes solo un gesto de brazos sin nada en las manos).
             ActivityPerformer.Keep(gameObject, Performances.ForMission(_fn.id), _st.transform.position);
             if (_block == "trabajo") UniformWearer.Want(gameObject, Uniforms.ForFunction(_fn));
@@ -166,7 +166,7 @@ public class MicroJornada : MonoBehaviour
         }
     }
 
-    // ── LA COMIDA DEL MEDIODÍA en el comedor de la era, CON SU ORQUESTA (MealRitual; docs/actividades-y-uniformes.md §2) ──
+    // ── LA COMIDA DEL MEDIODÍA en el comedor de la era, CON SU ORQUESTA (MealRitual; docs/sistemas/actividades-y-uniformes.md §2) ──
     // 1 al mostrador por la bandeja · 2 a su mesa (sin mostrador, le sirven en ella) · 3 comer a bocados (~20 min de juego) ·
     // 4 devolver la bandeja al mostrador · 5 ya comió. El mismo efecto que comer en casa (HomeNeedSpell) o en el restaurante (DineSpell),
     // pero repartido por bocados.

@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// ÁRBOL CARNÍVORO DE HIELO (docs/ice-sanctuary-ecology.md) — la flora clave del Santuario 1: vive de agua+frío y
+/// ÁRBOL CARNÍVORO DE HIELO (docs/fauna/ice-sanctuary-ecology.md) — la flora clave del Santuario 1: vive de agua+frío y
 /// **atrae a los hambrientos** dejando un rastro de olor a comida (`TraceChannel.ScentFood` = su "néctar"). Quien se
 /// acerca cae en **SOPOR** (su miel soporífera): sube sueño/estrés y lo va **debilitando** (enfermedad) hasta morir
 /// cerca. Al morir una presa cerca, el árbol **la absorbe y CRECE** (ramas más largas). Las **abejas de las nieves**
@@ -52,7 +52,7 @@ public class IceCarnivorousTree : MonoBehaviour
             if (d > lureRadius) continue;
             if (d <= killRadius)
             {
-                // LA MIEL LETAL (docs/ice-sanctuary-ecology.md §2): quien llega con hambre come, y duerme un sueño del que no despierta. Muere cerca: el árbol lo absorbe.
+                // LA MIEL LETAL (docs/fauna/ice-sanctuary-ecology.md §2): quien llega con hambre come, y duerme un sueño del que no despierta. Muere cerca: el árbol lo absorbe.
                 Animal beast = a.GetComponent<Animal>();
                 if (_torpor.Contains(a) || beast == null || beast.hungry > PredatorRound.HungryAt) _torpor.Add(a);
                 if (_torpor.Contains(a)) { a.asleep = true; a.sleepiness = 1f; a.sickness = Mathf.Clamp01(a.sickness + 1.5f * step); }

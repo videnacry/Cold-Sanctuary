@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// UN MUEBLE DE MICROCOSMOS (docs/microcosmos-reglas-edificacion.md): la raíz de un mueble hecho de varias piezas (la cocina con
+/// UN MUEBLE DE MICROCOSMOS (docs/reglas/microcosmos-reglas-edificacion.md): la raíz de un mueble hecho de varias piezas (la cocina con
 /// su sartén, su olla y su cuchillo; la mesa con sus sillas; la cama; el retrete…). Lo pone <c>MicroFurniture</c> y lo lee
 /// <see cref="MicroBuildRules.Validate"/>: un mueble entero (con lo que lleva encima o pegado: sus hijos) guarda el paso
 /// (<see cref="MicroBuildRules.Passage"/>) con cualquier otro, y su <see cref="need"/> dice qué necesidad básica cubre.

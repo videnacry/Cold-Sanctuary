@@ -5,7 +5,7 @@ using F = ActivityKit.Fx;
 using B = BodyPart;
 
 /// <summary>
-/// EL CATÁLOGO DE ACTUACIONES (docs/actividades-y-uniformes.md §3): qué hace cada misión de la jornada, cada actividad del horario
+/// EL CATÁLOGO DE ACTUACIONES (docs/sistemas/actividades-y-uniformes.md §3): qué hace cada misión de la jornada, cada actividad del horario
 /// libre y cada clase de función del microcosmos cuando el personaje ya está en su sitio. Por orden de lo común que es en la jornada:
 ///  1. Las misiones del catálogo diario del santuario con PASOS PROPIOS (<see cref="ForMission"/>): pasar visita, regar, limpiar…
 ///  2. Las de prefijo (obras, elaboraciones del obrador).

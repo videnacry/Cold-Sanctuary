@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// El input del JUGADOR como un cerebro más (docs/anima-architecture.md §11.5: "el jugador es solo un
+/// El input del JUGADOR como un cerebro más (docs/sistemas/anima-architecture.md §11.5: "el jugador es solo un
 /// input"). Su relevancia = la fuerza de posesión inyectada por el <see cref="PossessionSpell"/>; 0 si el
 /// jugador no está en este ser. Cuando es el cerebro activo, traduce input a acciones (mover/interactuar);
 /// en este MVP solo lo registra por consola. Se inserta y se retira en runtime → posesión dinámica.

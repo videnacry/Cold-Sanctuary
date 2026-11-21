@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DE LA CADENA ALIMENTICIA (Berón 2026-11-05; docs/reglas-animales.md, regla E15):
+/// PRUEBA DE LA CADENA ALIMENTICIA (Berón 2026-11-05; docs/reglas/reglas-animales.md, regla E15):
 /// 1. PLAN: toda especie del santuario tiene dieta y nadie pasa hambre con lo planeado.
 /// 2. ESCENA: con lo que hay de verdad (bancos y plantas contados), tampoco.
 /// 3. ESPECIE NUEVA: añadir un depredador a <see cref="PopulationPlan.Groups"/> hace subir a sus presas sin tocar nada más.

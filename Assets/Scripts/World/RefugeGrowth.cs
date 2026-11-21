@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// EL REFUGIO CRECE HASTA QUE SE PUEDE VIVIR ALLÍ (Berón 2026-11-05, #128: «el refugio sería ideal irlo mejorando al punto que sea posible vivir alli»; docs/sitio-nuclear.md
+/// EL REFUGIO CRECE HASTA QUE SE PUEDE VIVIR ALLÍ (Berón 2026-11-05, #128: «el refugio sería ideal irlo mejorando al punto que sea posible vivir alli»; docs/areas/sitio-nuclear.md
 /// §21 fase 2 y §26). Crece por ETAPAS, cada una una obra (<see cref="ConstructionProject"/>) que el equipo de construcción del Marino va haciendo, una detrás de otra.
 /// Las tareas de obra son opcionales (se hacen con horas libres y nunca piden un clon: <see cref="AreasEnObra"/>). Cada etapa terminada sube lo que el refugio aguanta
 /// (<see cref="CapacityAfter"/>): plazas de emergencia, gente que puede vivir allí por turnos, días de autonomía o residentes fijos. La autonomía de un mes con el refugio

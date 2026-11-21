@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LAS STATS FÍSICAS MOLDEAN EL CUERPO DE CUBOS (docs/body-shape-from-stats.md). El peso (bodyMass) se reparte en tres
+/// LAS STATS FÍSICAS MOLDEAN EL CUERPO DE CUBOS (docs/sistemas/body-shape-from-stats.md). El peso (bodyMass) se reparte en tres
 /// componentes que se ven distinto:
 ///   · ESTATURA (armazón): la parte del peso que explican fuerza y agilidad juntas → un cuerpo alto pesa y empuja más
 ///     sin dejar de ser ágil. Escala el cuerpo entero (±12 %).

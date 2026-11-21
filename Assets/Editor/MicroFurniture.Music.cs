@@ -2,7 +2,7 @@ using UnityEngine;
 using St = MicroStyles;
 
 /// <summary>
-/// LOS INSTRUMENTOS Y EL EQUIPO DE LA MÚSICA (docs/microcosmos-musica.md, 2026-11-05): piano, batería, amplificador con su guitarra,
+/// LOS INSTRUMENTOS Y EL EQUIPO DE LA MÚSICA (docs/microcosmos/microcosmos-musica.md, 2026-11-05): piano, batería, amplificador con su guitarra,
 /// micrófono de pie, mesa de mezclas (magnetófono de cuatro pistas antes de 1990; portátil e interfaz después) y tarima de escenario
 /// (se pisa). Acompañan a los puestos de un edificio (<c>CivicBuilder.NotStation</c>): no son puestos. Muebles detallados (regla M25).
 /// </summary>

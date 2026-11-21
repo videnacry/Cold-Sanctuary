@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// ÁREAS EN OBRA (Berón 2026-11-09; docs/areas-en-obra.md): para que haya menos clones, solo las áreas BÁSICAS quedan terminadas. Son los servicios
+/// ÁREAS EN OBRA (Berón 2026-11-09; docs/areas/areas-en-obra.md): para que haya menos clones, solo las áreas BÁSICAS quedan terminadas. Son los servicios
 /// básicos de humanos y animales (hospital, cocina, guardia, huerto, cría, energía y lo que sostiene la vida), la construcción misma, el gimnasio y el yoga.
 /// Las demás vuelven a ser OBRAS (<see cref="ConstructionProject"/> con <see cref="ConstructionProject.reform"/>, con su forma en construcción a la vista: F1):
 ///  · no dan tareas de área (<see cref="Filter"/>), salvo lo que sostiene la vida o la obra (el O₂ de los fotobiorreactores, el material de obra);

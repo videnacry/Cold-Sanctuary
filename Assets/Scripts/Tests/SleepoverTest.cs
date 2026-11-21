@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DE LAS PIJAMADAS (grupo 92; docs/pijamadas.md; Berón 2026-11-04). En SampleScene:
+/// PRUEBA DE LAS PIJAMADAS (grupo 92; docs/areas/pijamadas.md; Berón 2026-11-04). En SampleScene:
 ///  1. LAS CASAS: cada casa del árbol duerme a 8 (una sola cama-litera de dos pisos de 4); sin escalera (se trepa por su poste) y
 ///     a ≥ 2 m de la alfombra-esterilla; tiene su tobogán para bajar del piso de arriba.
 ///  2. EL HORARIO: la pijamada del viernes a las 21 h va con su anfitrión (y su pareja) y no pasa de las plazas de la casa; el

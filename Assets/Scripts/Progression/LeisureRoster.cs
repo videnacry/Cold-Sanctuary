@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 /// <summary>
-/// EL HORARIO DE ACTIVIDADES LIBRE (docs/horario-libre.md; Berón 2026-11-03: «además de la jornada de trabajo que es diaria vamos
+/// EL HORARIO DE ACTIVIDADES LIBRE (docs/sistemas/horario-libre.md; Berón 2026-11-03: «además de la jornada de trabajo que es diaria vamos
 /// a crear el horario de actividades libre, dicho horario se fabrica semanalmente llenando las horas libres del humano/humano-insecto,
 /// se sigue la lógica de distribución de tareas de jornada»). Lógica pura (sin escena), como <see cref="WorkRoster"/>:
 ///  1. Las HORAS LIBRES de cada día son las que no cubren la jornada (8–16), las comidas (cena 19–20) ni el sueño (22–7):

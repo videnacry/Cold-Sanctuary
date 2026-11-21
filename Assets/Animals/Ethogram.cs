@@ -28,7 +28,7 @@ public readonly struct EthoAct
 }
 
 /// <summary>
-/// ETOGRAMA por especie (docs/natural-interactions.md): lo que cada animal o insecto HACE en la naturaleza y con qué
+/// ETOGRAMA por especie (docs/sistemas/natural-interactions.md): lo que cada animal o insecto HACE en la naturaleza y con qué
 /// elemento del entorno, con su fuente. Es data: el deseo «habit» (<see cref="DesireCatalog"/>) elige una actividad de
 /// aquí cuando el ser está en calma y el <see cref="Habit"/> la ejecuta sobre un <see cref="Affordance"/> real. El
 /// <see cref="Forager"/> lee <see cref="Eats"/> para saber qué plantas/interactuables cuentan como comida.
@@ -77,7 +77,7 @@ public static class Ethogram
             new EthoAct(AffordanceKind.Perch, 0.5f, 25f, HabitEffect.Watch, "hace de centinela en un punto alto", "Clutton-Brock et al. 1999, Science 284:1640"),
             new EthoAct(AffordanceKind.Shelter, 0.3f, 30f, HabitEffect.Rest, "descansa en la madriguera", "") } },
 
-        // ── ESPECIES DE LAS ERAS (docs/era-species-behavior.md): cada actividad con su fuente ──
+        // ── ESPECIES DE LAS ERAS (docs/sistemas/era-species-behavior.md): cada actividad con su fuente ──
         { "Scorpion", new[] {
             new EthoAct(AffordanceKind.Shelter, 0.6f, 60f, HabitEffect.Ambush, "acecha de noche a la entrada de su madriguera bajo una piedra", "sit-and-wait (Polis 1979, J Zool 188:333; Polis & Sissom 1990)"),
             new EthoAct(AffordanceKind.Shelter, 0.4f, 40f, HabitEffect.Shelter, "se refugia bajo la piedra", "excava hasta ~20 cm bajo piedras (Leiurus; Animal Diversity Web, Ceceli & Horsfield 2012)") } },

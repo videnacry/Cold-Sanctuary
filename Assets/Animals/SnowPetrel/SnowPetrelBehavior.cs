@@ -1,6 +1,6 @@
 using UnityEngine;
 
-// Petrel de las nieves (Pagodroma nivea): el ave de los icebergs. Vuela con SnowPetrelLife, sin NavMesh; anida en roca. Ficha: docs/reglas-animales.md (Fichas).
+// Petrel de las nieves (Pagodroma nivea): el ave de los icebergs. Vuela con SnowPetrelLife, sin NavMesh; anida en roca. Ficha: docs/reglas/reglas-animales.md (Fichas).
 public class SnowPetrelBehavior : Animal
 {
     protected override string SpeciesArchetype => "SnowPetrel";

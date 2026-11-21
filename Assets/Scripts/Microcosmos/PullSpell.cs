@@ -2,7 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// Hechizo JALAR — Kushal atrae a otro ser hacia sí inyectando un <see cref="MovementImpulse"/> en el
-/// <see cref="ImpulseController"/> del objetivo. **Fusión** de las dos versiones previas (docs/stats-as-truth.md
+/// <see cref="ImpulseController"/> del objetivo. **Fusión** de las dos versiones previas (docs/sistemas/stats-as-truth.md
 /// §hechizos): arquitectura EMERGENTE por impulsos (mantener tecla = forcejeo) + FÍSICA por stats.
 ///
 /// FORCEJEO ADAPTATIVO:

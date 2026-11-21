@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// EL SANTUARIO MARINO, escena propia (Berón 2026-11-05; docs/sitio-nuclear.md §20 y §25; docs/world-topology-and-planes.md §3.1): el lecho a su hondura real, las dos salas con columnas, la galería, la PLANTA NUCLEAR entera (2026-11-08: Central Nuclear y Planta Atómica, BuildMarinePlant),
+/// EL SANTUARIO MARINO, escena propia (Berón 2026-11-05; docs/areas/sitio-nuclear.md §20 y §25; docs/sistemas/world-topology-and-planes.md §3.1): el lecho a su hondura real, las dos salas con columnas, la galería, la PLANTA NUCLEAR entera (2026-11-08: Central Nuclear y Planta Atómica, BuildMarinePlant),
 /// el pie del tubo, el pie del pozo de escape y el refugio. Pocas piezas: se carga aditiva solo cuando Kushal baja. Se construye con su propio menú, sin tocar el santuario 1.
 /// Las coordenadas son las del sitio, muy por debajo de todo lo demás: al cargarla encima del santuario no choca con nada.
 /// </summary>
@@ -24,7 +24,7 @@ public static partial class SampleSceneBuilder
         MarineBase b = go.AddComponent<MarineBase>();
         Transform root = go.transform;
         BuildMarineBase(root, b);
-        PlaceMarineColdFauna(root, NuclearSiteRule.Center + new Vector3(0f, 0f, 40f), SeaRule.MarineFloorY);   // docs/fauna-fria-santuarios.md
+        PlaceMarineColdFauna(root, NuclearSiteRule.Center + new Vector3(0f, 0f, 40f), SeaRule.MarineFloorY);   // docs/fauna/fauna-fria-santuarios.md
         EditorSceneManager.SaveScene(scene, MarineScenePath);
         var bs = new System.Collections.Generic.List<EditorBuildSettingsScene>(EditorBuildSettings.scenes);
         if (!bs.Exists(s => s.path == MarineScenePath)) bs.Add(new EditorBuildSettingsScene(MarineScenePath, true));
@@ -101,7 +101,7 @@ public static partial class SampleSceneBuilder
 
         BuildRockMonitoring(b, cav, waste, hallR, hallW);
 
-        // ── LA PLANTA NUCLEAR (2026-11-08, docs/sitio-nuclear.md §25): la Central Nuclear y la Planta Atómica, al este de las salas, a la cota de la galería ──
+        // ── LA PLANTA NUCLEAR (2026-11-08, docs/areas/sitio-nuclear.md §25): la Central Nuclear y la Planta Atómica, al este de las salas, a la cota de la galería ──
         Rect plantZone = BuildMarinePlant(root, at, floorY, at.x + 50f);
         // ── EL SUELO: uno solo y sus cuatro límites. Se anda por las salas y la galería; las paredes de hormigón no tienen colisión todavía ──
         float x0 = at.x - 24f, x1 = at.x + 42f, z0 = at.z - 22f, z1 = wasteAt.z + 22f;

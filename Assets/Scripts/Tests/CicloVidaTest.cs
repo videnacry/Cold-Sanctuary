@@ -6,7 +6,7 @@ using UnityEngine;
 /// que realiza todos sus procesos naturales»). Corre DENTRO de una escena Assets/Scenes/CicloVida/CicloVida_*.unity (con
 /// «test» del buzón del editor con esa escena abierta, o el menú «Pruebas/Ciclo de vida (sola)» en Play): mira el mismo
 /// panel que ve Berón (<see cref="CicloVidaPanel"/>) y espera cada proceso, en orden, con la vida ACELERADA:
-///   el tiempo a ×8 y el año a 0,05 días de juego. TODO sigue ese año (docs/ciclo-de-vida.md §Calendario): la gestación, el
+///   el tiempo a ×8 y el año a 0,05 días de juego. TODO sigue ese año (docs/sistemas/ciclo-de-vida.md §Calendario): la gestación, el
 ///   huevo, la guarida, la colmena y también crecer y envejecer — así que a los padres se les alarga la vida adulta durante
 ///   la prueba (a 0,05 días el año, una foca vieja moriría en minutos) y, cuando nace la cría, su infancia se fija en
 ///   ~90 s de juego (le da tiempo a mamar, a seguir a su madre y a salir de la guarida) y su juventud en ~30 s.

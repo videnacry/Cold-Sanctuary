@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DE LA LANZADERA DE COHETES (Berón 2026-11-04; docs/lanzadera-de-cohetes.md):
+/// PRUEBA DE LA LANZADERA DE COHETES (Berón 2026-11-04; docs/areas/lanzadera-de-cohetes.md):
 /// 1. SITIO: en su casquete artificial, a ≥ <see cref="LaunchHeightRule.MinDistance"/> m de cualquier edificio-árbol y de las islas.
 /// 2. REGLA DE ALTURA: la plataforma ≥ máx(lo más alto del santuario, techo de vuelo de las aves) + margen, medido en la escena.
 /// 3. VALIDADOR: al aparecer un elemento elevado más alto (un árbol que crece por pisos), la plataforma sube sola; al quitarlo se baja

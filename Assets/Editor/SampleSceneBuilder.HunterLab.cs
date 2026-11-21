@@ -2,7 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// EL LABORATORIO DE CONTENCIÓN, EN EL SANTUARIO MARINO (Berón 2026-11-05: «quizás el piso del árbol carnivoro se podría realizar bajo el agua? el enjambre no podría salir de alli»;
-/// docs/contencion-arbol-cazador.md). Una sala propia en la roca, unida a la galería, a presión de una atmósfera. De dentro afuera: la celda de cristal, la antesala, la esclusa de aire,
+/// docs/areas/contencion-arbol-cazador.md). Una sala propia en la roca, unida a la galería, a presión de una atmósfera. De dentro afuera: la celda de cristal, la antesala, la esclusa de aire,
 /// la cámara de salida inundable y el pozo inundado al lecho. Un enjambre no pasa de la cámara: hay agua.
 /// </summary>
 public static partial class SampleSceneBuilder

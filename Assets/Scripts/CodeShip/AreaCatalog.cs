@@ -18,7 +18,7 @@ public class AreaEntry
 }
 
 /// <summary>
-/// LAS ÁREAS DE LA ESCENA (docs/plan-microcosmos-realismo.md §4.2): los sitios de la historia (los rótulos grandes bajo la
+/// LAS ÁREAS DE LA ESCENA (docs/microcosmos/plan-microcosmos-realismo.md §4.2): los sitios de la historia (los rótulos grandes bajo la
 /// <see cref="StoryMission"/>: la nave de montaje, el control de misión…), los edificios del pueblo (<see cref="AreaFunctionSite"/>, con
 /// lo que el registro dice que se hace en ellos este año) y, en el santuario, sus áreas (<see cref="SanctuaryArea"/>). En orden: lo de la
 /// historia, y lo demás de cerca a lejos. «Aquí» = a menos de <see cref="HereRadius"/> m.

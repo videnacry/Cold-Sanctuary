@@ -3,7 +3,7 @@ using UnityEngine;
 
 // (En su propio archivo: Unity solo serializa en la escena un MonoBehaviour cuyo archivo se llama como la clase; si no, en Play queda «Missing Script».)
 /// <summary>
-/// PÉRDIDA DE SANGRE de un paciente (docs/hospital.md §Banco de sangre): fracción del volumen de sangre perdida (0–1). Las
+/// PÉRDIDA DE SANGRE de un paciente (docs/areas/hospital.md §Banco de sangre): fracción del volumen de sangre perdida (0–1). Las
 /// clases de hemorragia del ATLS (American College of Surgeons, <i>Advanced Trauma Life Support</i>, 10.ª ed., 2018):
 /// I &lt; 15 %, II 15–30 %, III 30–40 % (hace falta sangre), IV &gt; 40 % (riesgo de muerte inmediato). Con más del 30 % el paciente
 /// empeora solo (shock); cada unidad transfundida devuelve su volumen (<see cref="BloodBank.UnitFraction"/>).

@@ -2,7 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// Objetivo universal: cualquier cosa que pueda ser presa o amenaza (animal o jugador).
-/// Ver docs/behavior-system.md (Componente C).
+/// Ver docs/sistemas/behavior-system.md (Componente C).
 /// </summary>
 public interface ITarget
 {

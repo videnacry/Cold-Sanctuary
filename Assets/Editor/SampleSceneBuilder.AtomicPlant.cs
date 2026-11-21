@@ -1,13 +1,13 @@
 using UnityEngine;
 
 /// <summary>
-/// PLANTA ATÓMICA (docs/atomic-plant.md): un reactor de investigación de piscina tipo TRIGA, elevado como todo el
+/// PLANTA ATÓMICA (docs/areas/atomic-plant.md): un reactor de investigación de piscina tipo TRIGA, elevado como todo el
 /// santuario. Todo lo que hay es INTERACTUABLE (sin decorado): la taquilla de dosímetros y el pórtico de contaminación
 /// en la entrada; en la nave del reactor, la piscina (puente para ver el núcleo y su brillo de Cherenkov), el conejo
 /// neumático, la purificación del agua, la bomba y el intercambiador; en la sala de control, la consola; la celda
 /// caliente; la torre de refrigeración; y el rincón de enseñanza (cámara de niebla y contador Geiger). La piscina baja
 /// como un pilar de hormigón hasta el suelo: el núcleo está a ~7 m bajo el agua, como en los TRIGA reales (7,3–8,2 m).
-/// Desde el 2026-11-05 está en el SITIO NUCLEAR (docs/sitio-nuclear.md), junto a la Central Nuclear: encima, el ciclotrón y la sala de experimentos.
+/// Desde el 2026-11-05 está en el SITIO NUCLEAR (docs/areas/sitio-nuclear.md), junto a la Central Nuclear: encima, el ciclotrón y la sala de experimentos.
 /// </summary>
 public static partial class SampleSceneBuilder
 {
@@ -22,7 +22,7 @@ public static partial class SampleSceneBuilder
         SanctuaryArea a = BuildAreaBox(areasGroup, "AtomicPlant_Area", "Planta Atómica", SanctuaryAreaType.AtomicPlant, 3,
             CienciasCenter, _marineFloors ? NuclearSize : CienciasSize, new Color(0.8f, 0.82f, 0.78f));
         TowerFloor(a.transform);   // la planta baja de la torre (la piscina del reactor baja hasta el suelo)
-        FurnishAtomicPlant(a.transform, NuclearSiteRule.PoolDepth - 0.1f);   // en el sitio nuclear, la piscina baja por el casquete hasta su cajón sumergido (docs/sitio-nuclear.md)
+        FurnishAtomicPlant(a.transform, NuclearSiteRule.PoolDepth - 0.1f);   // en el sitio nuclear, la piscina baja por el casquete hasta su cajón sumergido (docs/areas/sitio-nuclear.md)
         // PLANTA DE ARRIBA: el CICLOTRÓN médico (Berón, 2026-10-23: un acelerador de partículas). Un piso apilado, como la
         // planta veterinaria del hospital: el F-18 del PET se hace aquí, junto a su celda de síntesis.
         Transform up = InnerFloor(a.transform, "Planta_ciclotron", a.transform);
@@ -32,7 +32,7 @@ public static partial class SampleSceneBuilder
 
     /// <summary>
     /// El ciclotrón AUTOBLINDADO (como los GE PETtrace o IBA Cyclone de los hospitales: el blindaje va pegado a la máquina,
-    /// sin búnker de 2 m), su consola y la celda de síntesis de FDG. docs/atomic-plant.md §7.
+    /// sin búnker de 2 m), su consola y la celda de síntesis de FDG. docs/areas/atomic-plant.md §7.
     /// </summary>
     static void FurnishCyclotronFloor(Transform up, Vector2 size)
     {

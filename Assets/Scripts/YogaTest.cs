@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Unidad de test del YOGA (docs/testing-checklist.md; stats-as-truth §Yoga), por `TestProbe`. El yoga es central: cada
+/// Unidad de test del YOGA (docs/qa/testing-checklist.md; stats-as-truth §Yoga), por `TestProbe`. El yoga es central: cada
 /// asana es un <see cref="PostureSpell"/> que rota un hueso del <see cref="CreatureRig"/>; el Saludo al Sol
 /// (<see cref="SunSalutation"/>) encadena 12. Reusado por superhechizos (buscarComida encadena posturas). Este test crea
 /// un cuerpo de cubos (bípedo) con su rig, le encola una postura por la <see cref="ActionQueue"/> y asevera que el hueso

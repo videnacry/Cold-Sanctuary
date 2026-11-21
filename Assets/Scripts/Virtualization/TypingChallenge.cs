@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Acción TEMPORIZADA que se acelera con MECANOGRAFÍA (docs/kitchen-simulation.md §4b). Al lanzarse (desde
+/// Acción TEMPORIZADA que se acelera con MECANOGRAFÍA (docs/areas/kitchen-simulation.md §4b). Al lanzarse (desde
 /// una <see cref="StationPart"/> temporizada, p. ej. el fogón con los huevos), corre un tiempo base y
 /// muestra un banco de **palabras** (verbo/ingrediente/**compuesto/nutriente**: cook, eggs, protein, B2…).
 /// Teclear cada palabra correcta **recorta tiempo**; al agotarse el tiempo (o teclearlas todas) la acción

@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Una mancha de suciedad como OBJETO real (docs/kitchen-simulation.md §5): la cocina se ensucia
+/// Una mancha de suciedad como OBJETO real (docs/areas/kitchen-simulation.md §5): la cocina se ensucia
 /// literalmente y se limpia **mancha por mancha**. La crea y contabiliza un <see cref="DirtArea"/>.
 /// (Más adelante, cada mancha del Meso = una región a "extraer" en el MicroKitchen — §7 del doc.)
 /// </summary>

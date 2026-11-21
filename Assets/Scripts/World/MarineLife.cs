@@ -26,11 +26,11 @@ public class MarineLife : MonoBehaviour
     float _nextPick, _restUntil, _restCooldown;
     bool _onIce;
     Vector3 _beach;
-    IcebergVisitor _visitor;   // vive en un iceberg: es su hogar en vez de la laguna (docs/vida-en-icebergs.md)
+    IcebergVisitor _visitor;   // vive en un iceberg: es su hogar en vez de la laguna (docs/fauna/vida-en-icebergs.md)
     Transform _parent;
     Vector3 Home => _visitor != null && _visitor.berg != null ? _visitor.berg.transform.position : Lagoon;
     float _angleSeed, _nextKill, _nextSuckle;
-    // Etograma marino (Ethogram, docs/natural-interactions.md): descansadero en el hielo, respiradero, grava para mudar.
+    // Etograma marino (Ethogram, docs/sistemas/natural-interactions.md): descansadero en el hielo, respiradero, grava para mudar.
     Affordance _haul, _spot;
 
     /// <summary>¿Está en un hábito natural (respirando por su respiradero, frotándose en la grava, patrullando los témpanos,
@@ -42,7 +42,7 @@ public class MarineLife : MonoBehaviour
     static int _count;
     // BAJO EL HIELO: las placas de la banquisa («Casquete») van de IceTop (0) a −1,5 m. Nadando a −1 m se metían DENTRO de
     // la placa (respiraderos, orillas, ir a por la pareja): por debajo del hielo se bucea por debajo de su cara inferior.
-    /// <summary>La cara inferior del hielo (placas y HIELO FIJO: 1,5 m). Solo se nada por debajo del hielo fijo (docs/hielo-y-respiraderos.md): las placas son pared (P20).</summary>
+    /// <summary>La cara inferior del hielo (placas y HIELO FIJO: 1,5 m). Solo se nada por debajo del hielo fijo (docs/fauna/hielo-y-respiraderos.md): las placas son pared (P20).</summary>
     const float IceBottom = -SeaRule.PlateThickness;
     /// <summary>Nombre de los colisionadores del hielo fijo.</summary>
     public const string ThinIce = "Hielo_fijo";
@@ -142,7 +142,7 @@ public class MarineLife : MonoBehaviour
         if (fw.sqrMagnitude > 1e-4f && Vector3.Angle(transform.up, Vector3.up) > 0.5f)
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(fw.normalized), 3f * Time.deltaTime);
         bool night = TimeController.timeController != null && !TimeController.timeController.IsDay;
-        // (2026-11-04) Se aparta del SUBMARINO DE OBRA (docs/submarino-de-obra.md) si su casco pasa a menos de 6 m: nada hacia el lado contrario.
+        // (2026-11-04) Se aparta del SUBMARINO DE OBRA (docs/areas/submarino-de-obra.md) si su casco pasa a menos de 6 m: nada hacia el lado contrario.
         if (!_onIce && transform.position.y < -0.3f)
         {
             ConstructionSubmarine sub = ConstructionSubmarine.Nearest(transform.position, 6f + _halfLen);
@@ -329,7 +329,7 @@ public class MarineLife : MonoBehaviour
             else if (!onIce)
             {
                 np.y = Mathf.Min(np.y, -0.4f);   // nadando: siempre bajo la superficie
-                // Las PLACAS y la isla son paredes: se bordean (P20, docs/hielo-y-respiraderos.md). Bajo el HIELO FIJO se bucea; una orca que roza el borde con el cuerpo, también (IceOverBody).
+                // Las PLACAS y la isla son paredes: se bordean (P20, docs/fauna/hielo-y-respiraderos.md). Bajo el HIELO FIJO se bucea; una orca que roza el borde con el cuerpo, también (IceOverBody).
                 Vector3 flatDir = new Vector3(step.x, 0f, step.z);
                 Vector3 ahead = flatDir.sqrMagnitude > 1e-8f ? np + flatDir.normalized * (_halfH + 1f) : np;
                 Vector3 flatNow = new Vector3(step.x, 0f, step.z);
@@ -366,7 +366,7 @@ public class MarineLife : MonoBehaviour
                     dist = Vector3.Distance(new Vector3(to.x, 0f, to.z), new Vector3(np.x, 0f, np.z));   // bajo el hielo cuenta la distancia en planta
                 }
             }
-            // (2026-11-04) Los EDIFICIOS-ÁRBOL tienen el fondo abierto (docs/edificio-arbol.md): ballenas, orcas y focas no se meten por el
+            // (2026-11-04) Los EDIFICIOS-ÁRBOL tienen el fondo abierto (docs/areas/edificio-arbol.md): ballenas, orcas y focas no se meten por el
             // hueco a su tronco («cae» en el tronco de Entrenamiento, jornada 50): si el paso entra bajo un tronco, se queda fuera.
             if (!onIce && UnderTree(np, 2f) && !UnderTree(cur, 2f)) { np.x = cur.x; np.z = cur.z; np.y = Mathf.Min(np.y, cur.y); }
             // (2026-11-15, suite 120) NUNCA DENTRO DEL HIELO FIJO: con hielo fijo sobre el cuerpo (no una placa: esas se bordean) y por encima de su cara
@@ -419,7 +419,7 @@ public class MarineLife : MonoBehaviour
         }
         if (sp == "Seal")
         {
-            // Asoma por el agujero del hielo fijo, de morro: el agujero es de 1,6 m y la foca mide 1,7 (docs/hielo-y-respiraderos.md).
+            // Asoma por el agujero del hielo fijo, de morro: el agujero es de 1,6 m y la foca mide 1,7 (docs/fauna/hielo-y-respiraderos.md).
             float y = IceAbove(at) ? UnderIceY : -0.45f;
             transform.position = Vector3.MoveTowards(transform.position, new Vector3(at.x, y, at.z), speed * Time.deltaTime);
             Vector3 head = transform.forward; head.y = 0f; if (head.sqrMagnitude < 1e-4f) head = Vector3.forward;

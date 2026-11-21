@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// PEDRO SÁNCHEZ Y LA MOCIÓN DE CENSURA DE 2018 (docs/microcosmos-historias-3.md). Una escena CÍVICA y NEUTRAL de un político en activo: Madrid,
+/// PEDRO SÁNCHEZ Y LA MOCIÓN DE CENSURA DE 2018 (docs/microcosmos/microcosmos-historias-3.md). Una escena CÍVICA y NEUTRAL de un político en activo: Madrid,
 /// 31 de mayo a 2 de junio de 2018. La protagonista es la institución: cómo funciona el artículo 113 de la Constitución. A los políticos vivos NO
 /// se les ponen palabras en la boca: lo explican una letrada y un ujier inventados; lo único que dicen los reales es de registro público (la
 /// presidenta del Congreso lee el recuento y Sánchez, la fórmula legal de la promesa). La ficha no valora su gestión.

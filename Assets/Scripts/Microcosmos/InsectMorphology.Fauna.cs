@@ -3,8 +3,8 @@ using System.Collections.Generic;
 /// <summary>
 /// FAUNA DE CADA ERA (Berón, 2026-10-24: «investiga la flora y fauna de cada era/lugar de los microcosmos y crea los
 /// insectos-humanos para cada una»). Los artrópodos y demás invertebrados que faltaban en los biomas de
-/// docs/microcosmos-biomas.md, con su forma real, su ciclo de vida y su dimorfismo sexual (fuentes en
-/// docs/microcosmos-fauna-eras.md):
+/// docs/microcosmos/microcosmos-biomas.md, con su forma real, su ciclo de vida y su dimorfismo sexual (fuentes en
+/// docs/microcosmos/microcosmos-fauna-eras.md):
 /// - ARÁCNIDOS: escorpión (cola de 5 segmentos con aguijón, pinzas, peines), solífugo (quelíceros enormes, pedipalpos
 ///   como patas con ventosa; el macho con flagelo), ácaro de terciopelo (larva de 6 patas → ninfa → adulto de 8).
 /// - CRUSTÁCEOS: cochinilla (7 placas, la cría «manca» nace con 6 pares de patas; la hembra con marsupio), cangrejo

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// JARDINES FRUTALES EN LA CIMA DE LOS EDIFICIOS-ÁRBOL (Berón 2026-11-03, docs/jardines-frutales.md §Jardines en la cima):
+/// JARDINES FRUTALES EN LA CIMA DE LOS EDIFICIOS-ÁRBOL (Berón 2026-11-03, docs/areas/jardines-frutales.md §Jardines en la cima):
 /// «agrega los jardines frutales a las plataformas de alfombras voladoras en la cima de los edificio-árbol… y si sería más
 /// conveniente un área de tierra en lugar de macetas». En el techo de cada árbol (la plataforma de alfombras, <c>Copa_arbol</c>),
 /// lo que queda libre de las alfombras, de la columna y la puerta del techo, de su umbral y de los paneles se llena con

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// QUIEN SE PONE EL UNIFORME (docs/actividades-y-uniformes.md §4; <see cref="Uniforms"/>). La conducta que lo lleva (la jornada, la
+/// QUIEN SE PONE EL UNIFORME (docs/sistemas/actividades-y-uniformes.md §4; <see cref="Uniforms"/>). La conducta que lo lleva (la jornada, la
 /// jornada del microcosmos) dice qué uniforme QUIERE (<see cref="Want"/>); este componente se lo pone y se lo quita. Si está NADANDO
 /// (<see cref="SwimBody.Swimming"/>), manda el neopreno; al salir del agua vuelve al que tocaba. Humano: recolorea los cubos de la ropa
 /// (torso, brazos, cadera, piernas, pies y, con guantes, las manos) y los relieves de músculo que van con ellos, oculta los detalles de su

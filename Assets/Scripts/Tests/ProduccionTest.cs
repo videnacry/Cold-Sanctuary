@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DE LA MAQUINARIA DE PRODUCCIÓN (Berón 2026-11-05; manual, regla P19; docs/produccion-maquinaria.md): cada área produce lo que se le pide, y la cifra sale
+/// PRUEBA DE LA MAQUINARIA DE PRODUCCIÓN (Berón 2026-11-05; manual, regla P19; docs/areas/produccion-maquinaria.md): cada área produce lo que se le pide, y la cifra sale
 /// de las máquinas que hay en la escena, no de un número suelto.
 /// </summary>
 public class ProduccionTest : MonoBehaviour, ITestUnit

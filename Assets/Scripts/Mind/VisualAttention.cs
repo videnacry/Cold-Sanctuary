@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// ATENCIÓN VISUAL (docs/atencion-visual.md). Lo que vemos no es lo que entra por los ojos, sino lo que la atención
+/// ATENCIÓN VISUAL (docs/sistemas/atencion-visual.md). Lo que vemos no es lo que entra por los ojos, sino lo que la atención
 /// SELECCIONA: el ojo solo ve nítido una zona pequeña (la fóvea, ~2°) y la mirada salta (sacadas) a lo más SALIENTE.
 /// La saliencia mezcla lo que sale "de abajo" (contraste de color, movimiento, cercanía: lo que se acerca o se mueve
 /// roba la atención) con lo que sale "de arriba" (lo que nos importa: la misión, y los VÍNCULOS en sus dos extremos, lo

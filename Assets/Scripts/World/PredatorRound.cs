@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LA RONDA DEL ALIMENTADOR (Berón 2026-11-05; docs/alimentador.md): no hay comedero. Quien tiene la misión sigue a cada depredador de tierra por el
+/// LA RONDA DEL ALIMENTADOR (Berón 2026-11-05; docs/areas/alimentador.md): no hay comedero. Quien tiene la misión sigue a cada depredador de tierra por el
 /// mapa, al llegar evalúa si tiene hambre y le deja su ración o lo marca, y va a por el siguiente. La LISTA ES COMPARTIDA: cada alimentador se
 /// reserva uno, así un grupo se reparte el trabajo y nadie mira dos veces al mismo.
 /// La lista SOLO SE RENUEVA CUANDO ESTÁ COMPLETA (Berón 2026-11-05): puede durar varios días, pasa de una jornada a otra, y nadie sale de ella sin estar comprobado:
@@ -165,7 +165,7 @@ public static class PredatorRound
 
     /// <summary>(2026-11-11) Las especies cuya cría no sobrevive sin sus padres y que el alimentador cría a biberón: oseznos, lobeznos, zorreznos y
     /// cachorros de foca. No los polluelos de pingüino (vivo49: inflaban la lista a 37 y no se les alcanzaba en el hielo). INFERIDO: la documentación
-    /// (docs/ciclo-de-vida.md) no dice que la colonia alimente a un polluelo ajeno; en la naturaleza un polluelo sin padres no suele salir adelante.</summary>
+    /// (docs/sistemas/ciclo-de-vida.md) no dice que la colonia alimente a un polluelo ajeno; en la naturaleza un polluelo sin padres no suele salir adelante.</summary>
     public static readonly HashSet<string> OrphanSpecies = new HashSet<string> { "Bear", "Wolf", "ArcticFox", "Seal" };
 
     /// <summary>A qué distancia se queda: la del adulto de su especie; a la cría huérfana, en la mano (1,5 m).</summary>

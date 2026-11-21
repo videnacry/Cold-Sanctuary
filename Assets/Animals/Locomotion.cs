@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.AI;
 
 /// <summary>
-/// Componente de LOCOMOCIÓN (docs/anima-dissolving-animal.md, etapa 2). Envuelve el par **NavMesh + gait**
+/// Componente de LOCOMOCIÓN (docs/sistemas/anima-dissolving-animal.md, etapa 2). Envuelve el par **NavMesh + gait**
 /// (`ActionPrep`: animación + velocidad + cansancio) para que las conductas pidan "muévete a X andando/corriendo"
 /// sin tocar `nav`/`ActsPrep` a mano. Es el paso previo a `Forager`/`Predator` (perseguir/pastar es locomoción) y
 /// al mover autónomo (`AiBrain`). La velocidad fina la da `WalkSpell` (opt-in, ya integrado).

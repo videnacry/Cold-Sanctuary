@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// VIDA DE LOS INSECTOS DE HIELO (docs/ice-sanctuary-ecology.md §2–§3), sobre animas compuestas reales:
+/// VIDA DE LOS INSECTOS DE HIELO (docs/fauna/ice-sanctuary-ecology.md §2–§3), sobre animas compuestas reales:
 ///   · ABEJA DE LAS NIEVES (~20 cm, modificada): VUELA (sin NavMesh) alrededor de su árbol carnívoro; de día pecorea en
 ///     círculos a 3–10 m y, si hay un CADÁVER cerca del árbol (lo que el árbol atrae y adormece), va a recoger sus
 ///     nutrientes y los lleva al NIDO de las ramas → el árbol crece un poco (el bucle de nutrientes). De noche descansa en
@@ -20,7 +20,7 @@ public class IceInsectLife : MonoBehaviour
     public Hive hive;
     public bool isQueen;
     bool _queenDeathLogged;
-    // REPRODUCCIÓN DE LA COLONIA (docs/ciclo-de-vida.md §Abeja): como en Apis mellifera, la reina joven sale en VUELO NUPCIAL a
+    // REPRODUCCIÓN DE LA COLONIA (docs/sistemas/ciclo-de-vida.md §Abeja): como en Apis mellifera, la reina joven sale en VUELO NUPCIAL a
     // la zona de congregación de zánganos y se aparea en el aire (en la naturaleza con 10–20; aquí con los que haya); guarda
     // el esperma de por vida y ya no vuelve a salir. Huevo fecundado → obrera; sin fecundar → ZÁNGANO (24 días). El zángano no
     // trabaja: come miel, vuela a la zona de congregación por la tarde y muere al aparearse (cae).

@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Unidad de test de la ENFERMEDAD (docs/testing-checklist.md §38), por `TestProbe`, determinista: `MakeSick` sube
+/// Unidad de test de la ENFERMEDAD (docs/qa/testing-checklist.md §38), por `TestProbe`, determinista: `MakeSick` sube
 /// `Anima.sickness`, `Predation.PredatorPower`/`Defense` bajan (presa fácil), y se deposita el canal `Sickness`. `Heal`
 /// (enfermería) lo revierte. Muta/restaura la salud de un animal en el mismo bloque → sin efecto en la sim.
 /// </summary>

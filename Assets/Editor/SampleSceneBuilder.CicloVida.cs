@@ -205,7 +205,7 @@ public static partial class SampleSceneBuilder
         if (sp == "SnowBee")
         {
             Queen(female, true); Queen(male, false);   // la hembra es la REINA; el macho, un ZÁNGANO
-            // La reina, VIRGEN: sale en vuelo nupcial y se aparea con el zángano (que muere); luego pone (docs/ciclo-de-vida.md).
+            // La reina, VIRGEN: sale en vuelo nupcial y se aparea con el zángano (que muere); luego pone (docs/sistemas/ciclo-de-vida.md).
             if (female != null && female.TryGetComponent(out IceInsectLife q)) { q.mated = false; PrefabUtility.RecordPrefabInstancePropertyModifications(q); }
             if (male != null && male.TryGetComponent(out IceInsectLife d)) { d.drone = true; PrefabUtility.RecordPrefabInstancePropertyModifications(d); }
             // Y sus OBRERAS: una reina no funda colonia sola (la virgen hereda las obreras de la colmena madre). Sin nodrizas

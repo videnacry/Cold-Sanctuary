@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DE LOS JARDINES EN LA CIMA (Berón 2026-11-03; docs/jardines-frutales.md §Jardines en la cima):
+/// PRUEBA DE LOS JARDINES EN LA CIMA (Berón 2026-11-03; docs/areas/jardines-frutales.md §Jardines en la cima):
 /// 1. cada edificio-árbol tiene en su techo de alfombras al menos un BANCAL DE TIERRA con frutales;
 /// 2. cada bancal guarda sus 2 m con todo lo del techo (en el marco del techo: el del Árbol de los Campos gira), está a ≥ 2 m de
 ///    las áreas de alfombras y fuera del umbral de la puerta del techo;

@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// INSECTOS-HUMANOS DE LAS ERAS CIVILIZADAS (docs/microcosmos-civilizaciones.md §6; Berón 2026-11-01: «a los insectos-humanos
+/// INSECTOS-HUMANOS DE LAS ERAS CIVILIZADAS (docs/microcosmos/microcosmos-civilizaciones.md §6; Berón 2026-11-01: «a los insectos-humanos
 /// se les debe dar caras más humanas y cabello… todos tienen un tamaño más similar para que puedan interactuar de igual a
 /// igual»):
 /// - <see cref="DressFolk"/>: la especie, ERGUIDA y a la ESTATURA de la persona (1,6–1,9 m): una mariquita y una mantis
@@ -18,7 +18,7 @@ public partial class CubeInsect
     // Mientras DressFolk viste: Dress usa la ficha de insecto-humano (InsectMorphology.ForFolk).
     static bool _dressingFolk;
 
-    // ── LA POSTURA RECOGIDA (2026-11-18, docs/plan-microcosmos-realismo.md §1.1 b y §3.1; Berón: «el ancho es importante») ──────
+    // ── LA POSTURA RECOGIDA (2026-11-18, docs/microcosmos/plan-microcosmos-realismo.md §1.1 b y §3.1; Berón: «el ancho es importante») ──────
     // De pie, la hormiga real abre las patas 2,5 m a escala humana (P3 a −30°, tibia 60° bajo la horizontal). El vecino las lleva
     // RECOGIDAS: la rodilla más cerrada deja la tibia casi vertical, bajo el cuerpo, y el par trasero va algo más atrás. Calculado con
     // la geometría de BuildLeg: ancho de pie ~0,90 L y andando (coxa ±25°, trocánter alzado) ~1,0 L, frente a 1,24 L y 1,41 L con las

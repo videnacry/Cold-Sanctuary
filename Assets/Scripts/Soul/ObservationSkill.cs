@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// La OBSERVACIÓN como habilidad que EVOLUCIONA POR USO (docs/apremios-guardian-observacion.md §4) — como la agilidad/
+/// La OBSERVACIÓN como habilidad que EVOLUCIONA POR USO (docs/sistemas/apremios-guardian-observacion.md §4) — como la agilidad/
 /// percepción ya suben con el uso (`AptitudeEvolution`). `trained` sube al mirar sostenido (<see cref="ObserveSpell"/>);
 /// `boost` es un impulso temporal de ecuanimidad (mirar ahora mismo) que DECAE. <see cref="Observation.LevelOf"/> las suma.
 /// </summary>

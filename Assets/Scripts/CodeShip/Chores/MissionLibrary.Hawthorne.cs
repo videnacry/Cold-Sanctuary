@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using static ChoreKit;
 
 /// <summary>
-/// LAS MISIONES DE LOS SITIOS NUEVOS DE HAWTHORNE (lote 2; docs/microcosmos-musk-historia.md §4; Berón 2026-11-18: «quienes crean las naves son
+/// LAS MISIONES DE LOS SITIOS NUEVOS DE HAWTHORNE (lote 2; docs/microcosmos/microcosmos-musk-historia.md §4; Berón 2026-11-18: «quienes crean las naves son
 /// los trabajadores, los científicos … la producción de alimentos o la seguridad urbana … bacterias»). Como las demás, procedimientos reales con
 /// su fuente, un reto por paso (<see cref="ChoreKit.StepChain"/>) o retos de ordenar y elegir. Los sitios, por su nombre exacto, en
 /// <see cref="MissionSites"/>.

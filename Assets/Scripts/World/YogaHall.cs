@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// UNA SALA DE PRÁCTICA de los PISOS DE YOGA (Berón 2026-11-04; docs/yoga-pisos.md). Se quitó el anillo de yoga (desde él no se
+/// UNA SALA DE PRÁCTICA de los PISOS DE YOGA (Berón 2026-11-04; docs/areas/yoga-pisos.md). Se quitó el anillo de yoga (desde él no se
 /// veía al maestro) y la sala pasó a ser DOS PISOS de la torre del Entrenamiento: el de HATHA (el piso de la Sala de Yoga) y el de
 /// ASHTANGA (su planta propia, «Planta_ashtanga»), cada uno con dos ZONAS, la OCCIDENTAL (suelo de madera, esterillas, accesorios,
 /// sin espejos) y la TRADICIONAL (suelo de tierra, alfombras de algodón, un kund para sumergirse antes de practicar, lámparas de

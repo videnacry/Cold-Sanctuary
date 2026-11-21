@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Unidad de test del CELO (docs/testing-checklist.md §35), por `TestProbe`: hay una `TraceField` persistente, cada
+/// Unidad de test del CELO (docs/qa/testing-checklist.md §35), por `TestProbe`: hay una `TraceField` persistente, cada
 /// animal recibió un `EstrusState` (auto-add en `Init`), y `Emit()` deja rastro de `Estrus` legible en la rejilla.
 /// Determinista (fuerza el depósito con `Emit`, no espera al ciclo de celo).
 /// </summary>

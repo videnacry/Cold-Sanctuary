@@ -7,7 +7,7 @@ using Prescription = GymProgramming.Prescription;
 /// <summary>
 /// ENTRENAMIENTOS REALES EN EL GIMNASIO (Berón 2026-11-04: «hay que actualizar a los demás humanos para que realicen
 /// entrenamientos reales (series, repeticiones… rutinas donde se varían músculos por días) … y esto también serviría para el
-/// trabajo de entrenador del gym»; docs/gimnasio-maquinas.md §15). Comprueba:
+/// trabajo de entrenador del gym»; docs/areas/gimnasio-maquinas.md §15). Comprueba:
 ///  1. PLANES: cada humano del personal tiene plan (reparto, días, objetivo), con variedad entre personas; los humanos-insecto
 ///     no (en sus eras no hay gimnasio); cada día de su plan tiene rutina; los días del plan mandan en el reparto de las 14 h.
 ///  2. EL ENTRENADOR en la jornada: la misión «gym_planes» es solo suya (sin él no la hace nadie ni queda pendiente) y al
@@ -328,7 +328,7 @@ public class GymTrainingTest : MonoBehaviour, ITestUnit
         GymProgramming.ResetAll();
     }
 
-    // ── 5. Microcosmos: entrenar como en su época (docs/gimnasio-maquinas.md §16) ─────────────────────
+    // ── 5. Microcosmos: entrenar como en su época (docs/areas/gimnasio-maquinas.md §16) ─────────────────────
     /// <summary>Los microcosmos con fecha (Eras.OfMicrocosmos) y las clases estables de los pueblos (MicroStyles.TrainingKind).</summary>
     static readonly string[] Micros = { "Mesopotamia", "Kapilavastu", "Patanjali", "Egina", "Alejandría", "Escútari", "Dayton", "Tregua 1914", "Bruce Lee",
         "Irena Sendler", "Le Chambon-sur-Lignon", "Crotona", "Menfis", "Bagdad", "Woolsthorpe", "Berkeley", "Angostura", "Sils Maria", "París 1898",

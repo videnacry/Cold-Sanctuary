@@ -2,7 +2,7 @@ using UnityEngine;
 
 // (En su propio archivo: Unity solo serializa en la escena un MonoBehaviour cuyo archivo se llama como la clase; si no, en Play queda «Missing Script».)
 /// <summary>
-/// CÉLULAS DE MAGO (docs/magic-metabolism-progression.md): la fracción de células sostenidas por magia no pide comida ni
+/// CÉLULAS DE MAGO (docs/sistemas/magic-metabolism-progression.md): la fracción de células sostenidas por magia no pide comida ni
 /// sueño; ese mantenimiento lo paga la reserva mágica. Sin energía mágica, la fracción deja de ayudar (vuelven el
 /// hambre y el sueño). La Magnate es fracción 1 con reserva inagotable.
 /// </summary>

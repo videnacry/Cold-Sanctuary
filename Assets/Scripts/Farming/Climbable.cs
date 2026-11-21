@@ -2,7 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// Marca un objeto por el que se puede TREPAR (árbol, pared). El `PlayerClimber` del jugador permite
-/// subir por él (docs/creature-stats.md §Pools derivados → "Trepar").
+/// subir por él (docs/sistemas/creature-stats.md §Pools derivados → "Trepar").
 /// </summary>
 [RequireComponent(typeof(Collider))]
 public class Climbable : MonoBehaviour

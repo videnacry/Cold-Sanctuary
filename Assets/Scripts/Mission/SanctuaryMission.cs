@@ -50,7 +50,7 @@ public class SanctuaryMission : ScriptableObject
     public ItemData itemReward;
 
     [Tooltip("Aptitud que sube al completar (recompensa de simulacro; alimenta la marga de Stats). " +
-             "Ver docs/creature-stats.md §Progresión.")]
+             "Ver docs/sistemas/creature-stats.md §Progresión.")]
     public AptitudeKind rewardAptitude = AptitudeKind.Strength;
 
     [Tooltip("Cuánto sube esa aptitud al completar. 0 = sin recompensa de aptitud.")]

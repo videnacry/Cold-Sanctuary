@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// ÁRBOL CARNÍVORO DE HIELO hecho de BLOQUES (estilo Minecraft, sin modelo 3D) — docs/ice-sanctuary-ecology.md §2:
+/// ÁRBOL CARNÍVORO DE HIELO hecho de BLOQUES (estilo Minecraft, sin modelo 3D) — docs/fauna/ice-sanctuary-ecology.md §2:
 /// tronco alto que se estrecha, varios PISOS de ramas largas que suben y se abren, y en la punta de cada rama una
 /// PLATAFORMA plana (con collider) donde pueden posarse animales y anidar las abejas de las nieves; algunas llevan nido.
 /// El árbol sigue siendo el mismo depredador (<see cref="IceCarnivorousTree"/>: señuelo de olor + sopor + crece al

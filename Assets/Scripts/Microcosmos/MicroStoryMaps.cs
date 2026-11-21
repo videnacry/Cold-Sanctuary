@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// EL MAPA A MANO DE CADA HISTORIA (docs/microcosmos-mapas-a-mano.md; Berón 2026-11-04: «para crear territorios más
+/// EL MAPA A MANO DE CADA HISTORIA (docs/microcosmos/microcosmos-mapas-a-mano.md; Berón 2026-11-04: «para crear territorios más
 /// accurate/representativos/reales se puede crear a mano cada mapa de cada historia del microcosmos, de modo que la flora y fauna se
 /// colocan a mano y de paso se organizan los muebles y demás componentes del piso para recrear el mapa siendo que … se pueden usar como
 /// edificaciones y componentes naturales»). Regla M9 del manual: TODA historia tiene su mapa hecho a mano.
@@ -155,7 +155,7 @@ public static partial class MicroStoryMaps
         MapPasadena(),   // (2026-11-12) hecho: mapa a mano
         MapChernobil(),   // (2026-11-12) hecho: mapa a mano
         MapPalenque(),   // (2026-11-12) hecho: mapa a mano
-        // (2026-11-05) Los siete famosos que salieron del mesocosmos (docs/personajes-mesocosmos.md).
+        // (2026-11-05) Los siete famosos que salieron del mesocosmos (docs/historia/personajes-mesocosmos.md).
         MapVelliangiri(),   // (2026-11-12) hecho: MicroStoryMaps.Famosos.cs
         MapHawthorne(),   // (2026-11-12) hecho: MicroStoryMaps.Famosos.cs
         MapOmelek(),   // (2026-11-18) hecho: MicroStoryMaps.Famosos.cs (la isla de lanzamiento)

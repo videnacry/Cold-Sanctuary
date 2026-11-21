@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// UNA PUERTA DE EDIFICIO DE MICROCOSMOS (docs/plan-microcosmos-realismo.md §3.3, P3–P4; Berón 2026-11-18): el hueco libre de una
+/// UNA PUERTA DE EDIFICIO DE MICROCOSMOS (docs/microcosmos/plan-microcosmos-realismo.md §3.3, P3–P4; Berón 2026-11-18): el hueco libre de una
 /// fachada o de un tabique, en el marco local de este objeto (centro del umbral en el suelo, el paso hacia ±z). Una puerta solo
 /// da paso (nunca abre menús). Las reales se ponen a su medida; las de menos de <see cref="MicroBuildRules.DoorWidth"/> m de ancho
 /// se ENSANCHAN a esa medida y se anota «supuesto» (<see cref="widened"/>, <see cref="realWidth"/>), porque el cuerpo recogido no

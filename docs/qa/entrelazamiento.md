@@ -1,3 +1,9 @@
+---
+resumen: "Cada fila es un estado que escriben dos o más procesos. Cada cruce de escritores tiene su caso CV en casos.md."
+temas: [pruebas, unity]
+estado: vigente
+codigo: [TestRunner, Animal, NavAgentSafe, WorkdayDirector, CheapMaterialsPass, CheapMaterialsSweeper, Habit, MealRitual]
+---
 # Entrelazamiento: el estado de Unity que comparten varios procesos
 
 Cada fila es un estado que escriben **dos o más** procesos. Cada cruce de escritores tiene su caso `CV` en [casos.md](casos.md).

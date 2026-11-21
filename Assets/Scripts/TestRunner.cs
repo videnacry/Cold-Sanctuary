@@ -9,7 +9,7 @@ using UnityEngine;
 namespace ColdSanctuary
 {
 /// <summary>
-/// Orquestador de tests (docs/testing-checklist.md §32) — el "array-de-arrays" del usuario: reúne las
+/// Orquestador de tests (docs/qa/testing-checklist.md §32) — el "array-de-arrays" del usuario: reúne las
 /// <see cref="ITestUnit"/> de sus hijos/sí mismo y las corre **grupo a grupo EN SERIE** (menor `Group` primero);
 /// dentro de un grupo, EN PARALELO solo si TODAS son `ParallelSafe` (si no, en serie). Serie por defecto porque la
 /// mayoría de los tests mutan estado compartido (la rejilla es singleton; la fauna se muta y restaura) → correrlos
@@ -21,7 +21,7 @@ public class TestRunner : MonoBehaviour
     [Tooltip("Espera inicial para que FamilyGenerator + Init de la fauna asienten antes de correr las unidades.")]
     public float startDelay = 1.6f;
 
-    [Tooltip("Solo estos grupos (vacío = todos). Las escenas de prueba de un área (Assets/Scenes/Pruebas, docs/escenas-de-prueba.md) " +
+    [Tooltip("Solo estos grupos (vacío = todos). Las escenas de prueba de un área (Assets/Scenes/Pruebas, docs/qa/escenas-de-prueba.md) " +
              "corren solo las pruebas de su piso: las demás unidades, aunque se registren solas al pedir las pruebas, no corren.")]
     public int[] onlyGroups = new int[0];
 

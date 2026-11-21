@@ -2,7 +2,7 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// SIMULACIONES DE COMPASIÓN (docs/compassion-simulations.md): momentos históricos reales en que una persona o un pueblo
+/// SIMULACIONES DE COMPASIÓN (docs/microcosmos/compassion-simulations.md): momentos históricos reales en que una persona o un pueblo
 /// protegió a otros. Como todo microcosmos, cada una es un ÁREA DEL SANTUARIO AGRANDADA ×10 (`AreaMicrocosmos.Build`):
 /// - Le Chambon-sur-Lignon (1942) sobre la COCINA: el pueblo que alimentaba y escondía (la cocina de Magda Trocmé, la
 ///   panadería, las granjas, la pensión, la escuela).
@@ -91,7 +91,7 @@ public static class CompassionSceneBuilder
         n += Person(t, "Daniel Trocmé", new Vector3(14f, 0f, 5f), new Color(0.3f, 0.35f, 0.3f), Hat.None);
         n += Person(t, "Édouard Theis", new Vector3(18f, 0f, -3f), new Color(0.2f, 0.22f, 0.28f), Hat.Brimmed);
 
-        // LAS REENCARNACIONES (ficción del juego, ver docs/compassion-simulations.md §Reencarnaciones): el elenco de la
+        // LAS REENCARNACIONES (ficción del juego, ver docs/microcosmos/compassion-simulations.md §Reencarnaciones): el elenco de la
         // enfermería renace aquí con su nombre. Ambrosio y Momo llegan en el tren; el resto, del pueblo.
         n += Person(t, "Ruth · la campesina de la granja", new Vector3(-18f, 0f, -12.5f), new Color(0.45f, 0.4f, 0.25f), Hat.None);
         n += Person(t, "Atlas · el panadero", new Vector3(-4f, 0f, -6.5f), new Color(0.85f, 0.82f, 0.75f), Hat.Cap);
@@ -140,7 +140,7 @@ public static class CompassionSceneBuilder
         Vector3 g = new Vector3(-14f, 0f, 0f); float gx = 8f, gz = 10f;
         Material wm = AreaMicrocosmos.Mat("Compasion_Muro", wall);
         // El muro del gueto NO es un muro de edificio: es la historia (las salidas son los pasos). Se marca «historico»
-        // (docs/microcosmos-reglas-edificacion.md, regla 2: la excepción) y no lleva los nombres de los muros del piso.
+        // (docs/reglas/microcosmos-reglas-edificacion.md, regla 2: la excepción) y no lleva los nombres de los muros del piso.
         Transform ghetto = new GameObject("Muro del gueto").transform; ghetto.SetParent(t, false);
         var gmp = ghetto.gameObject.AddComponent<MicroPiece>(); gmp.kind = "historico"; gmp.walkable = true;
         AreaMicrocosmos.Box(ghetto, "Muro_del_gueto_N", g + new Vector3(0f, 1.75f, gz), new Vector3(gx * 2f, 3.5f, 0.5f), wm, true);
@@ -240,7 +240,7 @@ public static class CompassionSceneBuilder
         Material wm = AreaMicrocosmos.Mat($"Compasion_Pared_{ColorUtility.ToHtmlStringRGB(walls)}", walls);
         Material rm = AreaMicrocosmos.Mat($"Compasion_Tejado_{ColorUtility.ToHtmlStringRGB(roofColor)}", roofColor);
         Material dark = AreaMicrocosmos.Mat("Compasion_Puerta", new Color(0.25f, 0.17f, 0.12f)), glass = AreaMicrocosmos.Mat("Compasion_Ventana", new Color(0.55f, 0.65f, 0.72f));
-        // ABIERTO (docs/microcosmos-reglas-edificacion.md, regla 2: sin muros ni techo, como en el santuario): el «Cuerpo» es la
+        // ABIERTO (docs/reglas/microcosmos-reglas-edificacion.md, regla 2: sin muros ni techo, como en el santuario): el «Cuerpo» es la
         // losa de su planta (con el color de sus muros), una franja del color del tejado en el borde y los postes de las esquinas.
         // Los muebles los pone CivicBuilder.Porch encima.
         AreaMicrocosmos.Box(b, "Cuerpo", new Vector3(0f, 0.05f, 0f), new Vector3(size.x, 0.1f, size.z), wm, false);

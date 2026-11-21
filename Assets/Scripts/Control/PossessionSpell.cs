@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Hechizo de POSESIÓN del jugador (docs/anima-architecture.md §11.5). Inserta al jugador (un
+/// Hechizo de POSESIÓN del jugador (docs/sistemas/anima-architecture.md §11.5). Inserta al jugador (un
 /// <see cref="PlayerBrain"/> con relevancia = <see cref="power"/>) en cualquier `Anima` con
 /// <see cref="AnimaController"/>; si <c>power</c> supera la relevancia propia del ser, el jugador toma el
 /// mando. <c>power</c> y <c>range</c> CRECEN al mejorar el hechizo (dominar seres más poderosos y en mayor

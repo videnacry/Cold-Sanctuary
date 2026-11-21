@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// REGLA DE CAPACIDAD (Berón 2026-11-04; docs/manual-de-diseno.md, regla S13 = J16: ES LA MISMA REGLA y este validador es su ÚNICA
+/// REGLA DE CAPACIDAD (Berón 2026-11-04; docs/reglas/manual-de-diseno.md, regla S13 = J16: ES LA MISMA REGLA y este validador es su ÚNICA
 /// fuente; quien compruebe J16 —el horario libre, el ring de almohadas— llama a <see cref="Check"/> o <see cref="CheckActivities"/>). Cada piso o área tiene máquinas e infraestructura
 /// para que VARIAS personas hagan la misma tarea a la vez, como en el restaurante o el hospital. Los centros de ENTRENAMIENTO y
 /// de ESTUDIO son su propia categoría y deben servir a TODOS los miembros del santuario a la vez: el gimnasio, las dos salas de
@@ -105,7 +105,7 @@ public static class AreaCapacity
                 hatha = true; ashtanga = s2 > 0;
             }
         }
-        // El RING DE ALMOHADAS (ocio de todos a la vez; docs/guerra-de-almohadas.md): su capacidad, la de su colchón.
+        // El RING DE ALMOHADAS (ocio de todos a la vez; docs/areas/guerra-de-almohadas.md): su capacidad, la de su colchón.
         foreach (PillowRing r in Object.FindObjectsByType<PillowRing>(FindObjectsInactive.Include, FindObjectsSortMode.None))   // (no PillowRing.All: se llena en OnEnable, y esta regla corre también fuera de Play)
         {
             if (r == null) continue;

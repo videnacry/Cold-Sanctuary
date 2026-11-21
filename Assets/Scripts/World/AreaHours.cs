@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// HORARIO de un área (docs/typed-spells-and-queues.md / world): un área (restaurante, etc.) puede **cerrar de noche**.
+/// HORARIO de un área (docs/sistemas/typed-spells-and-queues.md / world): un área (restaurante, etc.) puede **cerrar de noche**.
 /// Reutiliza el reloj que YA existe (`TimeController.Hour`/`IsDay`, 6–18 = día). De noche los demás duermen y la Magnate
 /// (que no duerme) ronda el bosque → Kushal no puede hacer misiones de ciertas áreas. Ponlo en el GameObject del área.
 /// </summary>

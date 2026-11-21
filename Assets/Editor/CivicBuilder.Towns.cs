@@ -2,11 +2,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LOS PUEBLOS DE LOS CIENTÍFICOS E HISTÓRICOS (docs/microcosmos-cientificos.md; Berón 2026-11-01: «los microcosmos en eras
+/// LOS PUEBLOS DE LOS CIENTÍFICOS E HISTÓRICOS (docs/microcosmos/microcosmos-cientificos.md; Berón 2026-11-01: «los microcosmos en eras
 /// avanzadas deben ocupar todo el piso para recrear un pueblo o ciudad, poblada solo por insectos-humanos civilizados»).
 /// Cada historia trae su PUEBLO REAL: los edificios donde ocurrió (investigados, con fuentes en el doc) cerca del claro de la
 /// historia, y el resto del piso lleno de calles y solares de la era (casas, talleres, tiendas…) con su gente y sus familias.
-/// Sigue las reglas de edificación (docs/microcosmos-reglas-edificacion.md): edificios abiertos de <see cref="Building"/>,
+/// Sigue las reglas de edificación (docs/reglas/microcosmos-reglas-edificacion.md): edificios abiertos de <see cref="Building"/>,
 /// calles de <see cref="MicroBuildRules.Street"/>, el claro de la historia (radio ~26 m, entrada y portal en z −14…−20) libre.
 /// El piso viene de <see cref="AreaMicrocosmos.FloorRectLocal"/> (el área gigante ya sin muebles: era avanzada).
 /// </summary>
@@ -41,7 +41,7 @@ internal static partial class CivicBuilder
         public Lot Era(int y, string r) { year = y; region = r; return this; }
     }
 
-    const float ClearingRadius = 26f;   // el claro de la historia (docs/microcosmos-reglas-edificacion.md, receta 2)
+    const float ClearingRadius = 26f;   // el claro de la historia (docs/reglas/microcosmos-reglas-edificacion.md, receta 2)
     // Tope de edificios por pueblo (rendimiento). Las manzanas NO se agrandan para repartir el piso entre pocos edificios (con
     // 40, en el piso de 388 × 368 m de la Cocina salían manzanas de 59 m con casas de 10 m: un llano vacío con casitas sueltas);
     // tienen el tamaño de su edificio más grande + paso + calle, así que el pueblo es DENSO. Con 120 caben enteras las

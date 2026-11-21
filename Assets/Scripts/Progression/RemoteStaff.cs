@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// QUIEN PASA EL DÍA EN OTRO SANTUARIO NO SE SIMULA AQUÍ (Berón 2026-11-08, por rendimiento; docs/jornada-y-rotacion.md §Reparto por santuarios).
+/// QUIEN PASA EL DÍA EN OTRO SANTUARIO NO SE SIMULA AQUÍ (Berón 2026-11-08, por rendimiento; docs/sistemas/jornada-y-rotacion.md §Reparto por santuarios).
 /// La jornada reparte a cada uno en un sitio (<see cref="WorkRoster.DayPlan.place"/>). Si su día entero es en el Marino o en el Aéreo, su cuerpo se APAGA
 /// en esta escena (SetActive false: ni se dibuja, ni anda, ni piensa), como el vuelo de <see cref="AereoLink"/> y la bajada de <see cref="SiteLine"/>
 /// apagan al que viaja; sus misiones corren por el reloj de la jornada, igual que las de ellos. Vuelve al andén de su santuario (el muelle aéreo o la

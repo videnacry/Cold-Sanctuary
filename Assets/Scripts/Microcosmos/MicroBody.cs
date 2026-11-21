@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// EL CUERPO DE QUIEN USA UN MUEBLE (docs/microcosmos-reglas-edificacion.md §Muebles adaptados al cuerpo; Berón 2026-11-02: «las
+/// EL CUERPO DE QUIEN USA UN MUEBLE (docs/reglas/microcosmos-reglas-edificacion.md §Muebles adaptados al cuerpo; Berón 2026-11-02: «las
 /// camas y demás servicios deben estar adaptados para los usuarios, en este caso las de humanos-insectos no me han dado la
 /// impresión de que estén adaptadas»). Los insectos-humanos (<c>CubeInsect.DressFolk</c>) son CENTAUROS: el torso se yergue a la
 /// estatura de una persona, pero el abdomen (gáster, élitros, opistosoma) sigue horizontal detrás, sobre 4–6 patas. No caben en

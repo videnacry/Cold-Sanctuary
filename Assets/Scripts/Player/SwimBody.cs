@@ -118,7 +118,7 @@ public class SwimBody : MonoBehaviour
         if (FlyingCarpet.Riding(gameObject)) { if (Active) End(); return false; }   // en el tubo de la línea, bajo el mar, va seco
         if (_isPlayer && transform.position.y < SeaRule.FloorY + 3f && Time.time > _nextDeepHint)
         {
-            _nextDeepHint = Time.time + 120f;   // EL FONDO SOMERO (docs/sitio-nuclear.md §20): más abajo no se llega nadando
+            _nextDeepHint = Time.time + 120f;   // EL FONDO SOMERO (docs/areas/sitio-nuclear.md §20): más abajo no se llega nadando
             StorySubtitle.Show("Sonda", "Fin de la plataforma: agua a −1,8 °C y 16 m de fondo. A lo hondo solo se baja por la línea del sitio nuclear.", 6f);
         }
         Water w = ProbeHere();
@@ -295,7 +295,7 @@ public class SwimBody : MonoBehaviour
         if (!Active && Breath01 >= 1f) { HeadAboveWater = true; return; }
         Vector3 head = HeadPosition;
         HeadAboveWater = !(WaterZone.SurfaceAt(head, out float s) && head.y < s - 0.02f);
-        // MÁSCARA PUESTA (BreathingMask, edificios-árbol: docs/mascaras-de-oxigeno.md): oxígeno ilimitado, el aliento no se gasta.
+        // MÁSCARA PUESTA (BreathingMask, edificios-árbol: docs/areas/mascaras-de-oxigeno.md): oxígeno ilimitado, el aliento no se gasta.
         if (BreathingMask.Has(gameObject)) { Breath01 = Mathf.Min(1f, Breath01 + dt / Mathf.Max(0.1f, breathRefillSeconds)); return; }
         Breath01 = HeadAboveWater ? Mathf.Min(1f, Breath01 + dt / Mathf.Max(0.1f, breathRefillSeconds))
                                   : Mathf.Max(0f, Breath01 - dt / Mathf.Max(1f, HoldSeconds));

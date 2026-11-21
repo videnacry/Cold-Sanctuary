@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LA FERIA DE LAS HAZAÑAS (docs/microcosmos-historias-3.md). Un lugar INVENTADO que reúne, en pabellones, una hazaña documentada de varios líderes:
+/// LA FERIA DE LAS HAZAÑAS (docs/microcosmos/microcosmos-historias-3.md). Un lugar INVENTADO que reúne, en pabellones, una hazaña documentada de varios líderes:
 /// George Washington (dejar el poder, 1797), Franklin D. Roosevelt (la Seguridad Social, 1935), José Figueres (abolir el ejército, 1948), Lee Kuan Yew
 /// (de la pobreza a la riqueza y la educación; el «líder asiático» que pidió Berón; fue PRIMER MINISTRO, no presidente), Seretse Khama (Botsuana, 1966),
 /// Nelson Mandela (reconciliar y dejar el cargo, 1994–1999) y Ellen Johnson Sirleaf (primera mujer elegida presidenta en África, 2006). Cada pabellón,

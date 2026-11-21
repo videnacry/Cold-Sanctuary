@@ -3,7 +3,7 @@ using UnityEngine;
 
 /// <summary>
 /// Primera virtualización de YOGA — **upa-yoga de cuello** ("Yoga for Success" de Sadhguru) en el Mesocosmos
-/// (docs/upa-yoga-mission.md). Enseña el cuerpo **por partes**: en cada fase, los grupos de teclas
+/// (docs/areas/upa-yoga-mission.md). Enseña el cuerpo **por partes**: en cada fase, los grupos de teclas
 /// (**WASD** = izquierda, **IJKL** = derecha; los de caminar y de <see cref="HeadLook"/>) **cambian de
 /// dueño** y pasan a controlar un **pie**, un **hombro** o el **cuello**.
 ///

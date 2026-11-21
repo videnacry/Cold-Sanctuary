@@ -1,6 +1,6 @@
 using UnityEngine;
 
-// Charrán ártico (Sterna paradisaea). Vuela con SnowPetrelLife, sin NavMesh. Ficha: docs/fauna-fria-santuarios.md.
+// Charrán ártico (Sterna paradisaea). Vuela con SnowPetrelLife, sin NavMesh. Ficha: docs/fauna/fauna-fria-santuarios.md.
 public class ArcticTernBehavior : Animal
 {
     protected override string SpeciesArchetype => "ArcticTern";

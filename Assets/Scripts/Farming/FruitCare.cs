@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// FICHAS DE CUIDADO DE LOS FRUTALES (docs/jardines-frutales.md, Berón 2026-10-30): de cada planta frutal que ya existe
+/// FICHAS DE CUIDADO DE LOS FRUTALES (docs/areas/jardines-frutales.md, Berón 2026-10-30): de cada planta frutal que ya existe
 /// en el juego (<see cref="GardenCrop.Kind"/>), lo que necesita para estar bien en una MACETA GRANDE del techo de una
 /// torre, dentro del clima controlado del santuario (latitud −77,85°: fuera, −18 °C de media y 4 meses de noche polar):
 /// agua, luz, temperatura, sustrato, nutrientes, poda, plagas, cosecha y polinización, con su fuente. Es el saber de la

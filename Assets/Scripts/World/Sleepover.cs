@@ -4,7 +4,7 @@ using UnityEngine;
 /// <summary>
 /// PIJAMADAS EN LAS CASAS DEL ÁRBOL (Berón 2026-11-04: «las camas son grandes para permitir que los residentes puedan hacer
 /// pijamadas, se podría incluso crear literas para incrementar el número de personas que pueden participar en la pijamada»;
-/// docs/pijamadas.md).
+/// docs/areas/pijamadas.md).
 ///  · Una vez por SEMANA (el viernes, en la franja libre de las 21 h) hay pijamada en la casa de UN anfitrión. El anfitrión ROTA cada
 ///    semana por las casas del árbol (<see cref="LeisureRoster.HostIndex"/>): una casa distinta cada semana, en su orden.
 ///  · Van el anfitrión (y su pareja, que vive allí) y los que quepan en la casa (<see cref="Bedroom.Capacity"/>: la cama-litera, de 4

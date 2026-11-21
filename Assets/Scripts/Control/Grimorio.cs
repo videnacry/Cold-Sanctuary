@@ -9,7 +9,7 @@ using UnityEngine;
 /// los de prueba aparte; al tocar uno se abre su RETO DE CÓDIGO en la hoja de CodeShip (<see cref="CodeChallengeSheet"/>) y, al acertarlo,
 /// se lanza (<see cref="SpellConsole.CastFromUi"/>) con sus parámetros por defecto y el destino que sugiere el interés del poseído
 /// (<see cref="SpellConsole.LineFor"/>). Los que el poseído no ha aprendido se ven, apagados. El reto lo fabrica <see cref="SpellChallenge"/>:
-/// ordenar las piezas de la llamada si tiene parámetros, o elegir la línea buena si no. Tema: <see cref="CsTheme"/>. docs/mandos-tactiles.md §5.
+/// ordenar las piezas de la llamada si tiene parámetros, o elegir la línea buena si no. Tema: <see cref="CsTheme"/>. docs/sistemas/mandos-tactiles.md §5.
 /// </summary>
 public class Grimorio : MonoBehaviour
 {
@@ -126,7 +126,7 @@ public class Grimorio : MonoBehaviour
 }
 
 /// <summary>
-/// EL RETO DE CÓDIGO DE UN HECHIZO (Grimorio, docs/mandos-tactiles.md §5). Lógica pura: de la línea que se va a lanzar fabrica un
+/// EL RETO DE CÓDIGO DE UN HECHIZO (Grimorio, docs/sistemas/mandos-tactiles.md §5). Lógica pura: de la línea que se va a lanzar fabrica un
 /// <see cref="CodeExercise"/>. Con parámetros: ORDENAR las tres piezas de la llamada (nombre y paréntesis, el objeto de parámetros, el
 /// cierre) con una pieza trampa. Sin parámetros: ELEGIR la línea bien escrita entre cuatro. Cada pieza tiene su cara en pseudocódigo y en JS.
 /// </summary>

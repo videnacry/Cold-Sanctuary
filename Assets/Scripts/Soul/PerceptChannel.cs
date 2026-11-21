@@ -1,5 +1,5 @@
 /// <summary>
-/// CANALES DE INFORMACIÓN de la percepción (docs/consciousness-mechanics.md §3) — QUÉ se extrae al observar, con
+/// CANALES DE INFORMACIÓN de la percepción (docs/sistemas/consciousness-mechanics.md §3) — QUÉ se extrae al observar, con
 /// independencia de POR QUÉ órgano. Hay canales **GENERALES** (casi cualquier sentido los da: que algo ESTÁ ahí, a qué
 /// DISTANCIA, en qué DIRECCIÓN, si se MUEVE) y **ESPECÍFICOS** (color=vista, olor=olfato, sabor=gusto, sonido=oído,
 /// textura=tacto, temperatura=termo, campo=electro…). La clave del diseño: un ÓRGANO declara qué canales genera y con

@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Limpia manchas (<see cref="DirtSpot"/>) por proximidad (docs/kitchen-simulation.md §5). En el jugador:
+/// Limpia manchas (<see cref="DirtSpot"/>) por proximidad (docs/areas/kitchen-simulation.md §5). En el jugador:
 /// pulsa <see cref="cleanKey"/> cerca de una mancha. En un NPC/pinche: <see cref="auto"/> = limpia la más
 /// cercana cada <see cref="autoInterval"/> (para ver el loop en consola). Limpia **una mancha por vez**.
 /// </summary>

@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 /// <summary>
-/// LA VISTA DE CORTE de un edificio de microcosmos (docs/plan-microcosmos-realismo.md §3.3, P2; Berón 2026-11-18: vuelven los muros
+/// LA VISTA DE CORTE de un edificio de microcosmos (docs/microcosmos/plan-microcosmos-realismo.md §3.3, P2; Berón 2026-11-18: vuelven los muros
 /// y los techos, «con vista de corte cuando se está dentro»). Desde fuera el edificio se ve entero; cuando el jugador (o la cámara)
 /// está DENTRO de su planta, el TECHO se desvanece y también los MUROS que quedan entre la cámara y el jugador, para ver el interior
 /// sin perder la fachada del otro lado. «Desvanecer» = el renderer queda solo para sombras (<see cref="ShadowCastingMode.ShadowsOnly"/>):

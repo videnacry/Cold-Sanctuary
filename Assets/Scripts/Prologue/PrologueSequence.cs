@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Events;
 
 /// <summary>
-/// El guion del PRÓLOGO (docs/area-progression.md "Apertura"): una secuencia de **beats** que avanza cuando
+/// El guion del PRÓLOGO (docs/areas/area-progression.md "Apertura"): una secuencia de **beats** que avanza cuando
 /// cada uno se completa (<see cref="CompleteBeat"/>, llamado por el trigger real de ese beat — máquina,
 /// misión de cuidado, portal…) o, en demo, sola por tiempo (<see cref="autoDemo"/>). No implementa las
 /// escenas (eso es Unity); es el **hilo** que las encadena y las registra, reutilizando piezas existentes

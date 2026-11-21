@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// HECHIZO PASIVO DE LOS OJOS: OBSERVAR (docs/apremios-guardian-observacion.md §5) — mirar SOSTENIDO a un ánima (o a la
+/// HECHIZO PASIVO DE LOS OJOS: OBSERVAR (docs/sistemas/apremios-guardian-observacion.md §5) — mirar SOSTENIDO a un ánima (o a la
 /// tarea que se tiene delante) produce **observación/ecuanimidad**: entrena la habilidad (<see cref="ObservationSkill"/>,
 /// evolución por uso) y da un impulso temporal de calma. Es el pasivo que conceden los OJOS; en el modelo de anatomía se
 /// gatea por `CharacterComposition.grants` ("receptor visual") — aquí se añade al ser que tiene ojos (p.ej. Sakshi, que
@@ -86,7 +86,7 @@ public class ObserveSpell : MonoBehaviour
     /// <summary>QUÉ información extrae este ser de un objetivo: calidad [0,1] por <see cref="PerceptChannel"/>. Agrega los
     /// canales de sus ÓRGANOS (máxima calidad), atenuada por la distancia; y, si conoce el hechizo "observar" por el
     /// GRIMORIO (vía mágica), añade TODOS los canales a una calidad = su confianza en el hechizo (más habilidad → más
-    /// información). Devuelve un dict canal→calidad. docs/consciousness-mechanics.md §3.</summary>
+    /// información). Devuelve un dict canal→calidad. docs/sistemas/consciousness-mechanics.md §3.</summary>
     public Dictionary<PerceptChannel, float> Perceive(Anima target)
     {
         var result = new Dictionary<PerceptChannel, float>();

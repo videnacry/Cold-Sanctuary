@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 
 /// <summary>
-/// REGISTRO DE FUNCIONES DE ÁREA (docs/microcosmos-civilizaciones.md §2; Berón 2026-11-01: «¿tenemos una lista de funciones
+/// REGISTRO DE FUNCIONES DE ÁREA (docs/microcosmos/microcosmos-civilizaciones.md §2; Berón 2026-11-01: «¿tenemos una lista de funciones
 /// por área? organiza el código para tener las listas siendo que seguiremos agregando más funciones ya sea por requerimiento
 /// del santuario o por requerimiento del microcosmos»). Tres piezas:
 /// 1. <see cref="AreaFunction"/>: una cosa que se hace (cocinar la carta, pasar visita, guiar la clase de yoga, el muñeco de
@@ -140,26 +140,26 @@ public static class AreaFunctions
         Needs(S(Def("Central Nuclear", "nuc_turno", "Turno de la central: acceso, sala de control, conversión de potencia y calefacción", 1f, false, Kind.Operate, "consola")), Eras.Capability.Nuclear);
         Roles(S(Def(Guard, "gua_carnivoros", "Patrulla de los puestos de vigía", 2f, true, Kind.Guard)), "guardia");
         S(Def(AreaWork.GuardRoom, "gua_sala", "Turno en la sala de guardia: icebergs, radar, roca, sismos y mar", 2f, true, Kind.Guard, "consola"));
-        // EL ALIMENTADOR (docs/alimentador.md): sin papel: por la rotación, como todo. Dos plazas: la lista es compartida y se reparten el trabajo.
+        // EL ALIMENTADOR (docs/areas/alimentador.md): sin papel: por la rotación, como todo. Dos plazas: la lista es compartida y se reparten el trabajo.
         S(Def(Guard, "gua_alimentador", "Alimentador: sigue a los depredadores, evalúa su hambre y les lanza su ración o los marca", 2f, true, Kind.Guard));
         S(Def(Guard, "gua_alimentador_2", "Alimentador (segunda plaza): la misma lista compartida", 2f, false, Kind.Guard));
-        // EL TRASPLANTE (docs/deshierbe-cuidadoso.md): lo nativo del vivero, a la tundra de la isla.
+        // EL TRASPLANTE (docs/areas/deshierbe-cuidadoso.md): lo nativo del vivero, a la tundra de la isla.
         S(Effect(Def("Huerto", "hue_transplante", "Trasplantar a la tundra las plantas nativas del vivero", 1f, false, Kind.Tend, "bancal"), who => { WeedBench.TransplantAll(who); WeedBench.IncinerateBags(who); }));
-        // (2026-11-04) LOS PISOS NUEVOS (docs/piso-informatica.md, docs/piso-aula.md): el clúster de IA de Informática y el Aula.
+        // (2026-11-04) LOS PISOS NUEVOS (docs/areas/piso-informatica.md, docs/areas/piso-aula.md): el clúster de IA de Informática y el Aula.
         Roles(S(Effect(Def("Informática", "ifo_sysadmin", "Administrar el clúster de IA: colas, copias, parches y alertas (puesto de monitorización)", 1f, false, Kind.Operate, "consola"), who => AiCluster.Instance?.Sysadmin(who))), "informatico");
         Roles(S(Effect(Def("Informática", "ifo_refrigeracion", "Mantener la refrigeración líquida: filtros, fugas, bombas e intercambiadores", 1f, false, Kind.Make, "banco_taller"), who => AiCluster.Instance?.CoolingService(who))), "informatico");
         Roles(S(Effect(Def("Informática", "ifo_energia", "Revisar la acometida, el SAI y las baterías del clúster", 0.5f, false, Kind.Operate, "consola"), who => AiCluster.Instance?.PowerCheck(who))), "informatico");
         Roles(S(Def("Aula", "aul_clase", "Dar o recibir una clase en el aula (un tema de las áreas del santuario)", 1f, false, Kind.Teach, "pizarra")), "maestro", "alumno");
         S(Def("Aula", "aul_estudio", "Estudiar en la sala de estudio (biblioteca)", 1f, false, Kind.Study, "mesa"));
-        // (2026-11-05) LA ASAMBLEA (docs/piso-asambleas.md): por rotación normal, como todo (J30).
+        // (2026-11-05) LA ASAMBLEA (docs/areas/piso-asambleas.md): por rotación normal, como todo (J30).
         S(Def("Sala de asambleas", "asa_orden", "Preparar el orden del día de la asamblea de la semana", 1f, false, Kind.Study, "mesa"));
         S(Def("Sala de asambleas", "asa_acta", "Levantar el acta y guardarla en el archivo", 0.5f, false, Kind.Study, "mesa"));
         S(Def("Sala de asambleas", "asa_mediar", "Mediar en un desacuerdo, sentados en la toguna", 1f, false, Kind.Care, "banco"));
-        // (2026-11-05) LA MÚSICA (docs/piso-musica.md): grabar, ensayar y cuidar el equipo (los id son «son_»: «mus_» es el Museo).
+        // (2026-11-05) LA MÚSICA (docs/areas/piso-musica.md): grabar, ensayar y cuidar el equipo (los id son «son_»: «mus_» es el Museo).
         S(Def("Música", "son_grabar", "Grabar y mezclar en el estudio (la mesa de mezclas y la cabina de voz)", 1f, false, Kind.Operate, "consola"));
         S(Def("Música", "son_ensayo", "Preparar y ensayar el concierto de la semana", 1f, false, Kind.Practice, "pista"));
         S(Def("Música", "son_equipo", "Revisar instrumentos y sonido: cuerdas, cables, micrófonos y altavoces", 0.5f, false, Kind.Make, "banco_taller"));
-        // (2026-11-04) LAS PROFESIONES NUEVAS (Berón; docs/personajes-mesocosmos.md §Profesiones): asuntos legales y lenguas (Karen, en
+        // (2026-11-04) LAS PROFESIONES NUEVAS (Berón; docs/historia/personajes-mesocosmos.md §Profesiones): asuntos legales y lenguas (Karen, en
         // una mesa de la sala de estudio del Aula), la contabilidad (Alicita, desde el restaurante) y la dirección de las obras (Alicita).
         S(Def("Aula", "aul_legal", "Asuntos legales: contratos, permisos, normas y acuerdos del santuario (en una mesa de la sala de estudio)", 1f, false, Kind.Study, "mesa"));
         Roles(S(Def("Aula", "aul_lenguas", "Lenguas: traducir documentos y dar clase de idiomas", 1f, false, Kind.Teach, "pizarra")), "maestro", "alumno");
@@ -169,7 +169,7 @@ public static class AreaFunctions
         // (2026-11-04, más profesiones) La COMUNICACIÓN (Andrea: los avisos y la radio, en el comedor), las LETRAS (Irosene: poesía,
         // narración y lecturas en el Aula) y la CURANDERA (Maite: plantas medicinales en la farmacia del hospital).
         S(Def("Cocina", "coc_avisos", "Comunicación: preparar y dar los avisos del santuario y el programa de radio en el comedor", 0.5f, false, Kind.Trade, "mesa"));
-        // (2026-11-05) Consol prepara la clase de Ashtanga. Las misiones de Fernando (paneles solares) las añade EnergySite.Missions (docs/energia.md).
+        // (2026-11-05) Consol prepara la clase de Ashtanga. Las misiones de Fernando (paneles solares) las añade EnergySite.Missions (docs/areas/energia.md).
         S(Def("Sala de Yoga", "yog_ashtanga", "Preparar la clase de Ashtanga: la secuencia del día, las variaciones y los ajustes de cada alumno", 0.5f, false, Kind.Teach, "esterilla"));
         Roles(S(Def("Aula", "aul_letras", "Letras: clase de poesía y narración, y lecturas en la sala de estudio", 1f, false, Kind.Teach, "pizarra")), "maestro", "alumno");
         Roles(S(Def("Hospital", "hos_plantas", "Curandera: remedios de plantas medicinales (infusiones, cataplasmas y ungüentos) para los pacientes", 1f, false, Kind.Heal, "armario")), "enfermera");
@@ -178,7 +178,7 @@ public static class AreaFunctions
         Roles(S(Def("Hospital", "hos_pediatria", "Pediatría: consulta, vacunas y control del crecimiento de los niños", 1f, false, Kind.Heal, "camilla")), "medico");
         S(Def("Mecánica", "mec_alfombras", "Flota de alfombras voladoras: revisar circuitos, LED y tejido y repartirlas por las pistas (transporte aéreo)", 1f, false, Kind.Make, "banco_taller"));
         S(Def("Control de misión", "lan_control", "Control de misión: seguimiento de la lanzadera, del tiempo y de los vuelos", 1f, false, Kind.Operate, "consola"));
-        // (2026-11-08) EL HUERTO VERTICAL (docs/produccion-maquinaria.md §2026-11-08): los estantes LED de la torre de Producción. Cada tarea ≤ 1 h; la cosecha es
+        // (2026-11-08) EL HUERTO VERTICAL (docs/areas/produccion-maquinaria.md §2026-11-08): los estantes LED de la torre de Producción. Cada tarea ≤ 1 h; la cosecha es
         // obligatoria (la verdura del día es la de la cocina) y lleva la cosecha a la Cocina.
         S(Effect(Def(VerticalFarm.AreaName, "huv_siembra", "Huerto vertical: sembrar las bandejas de germinación y trasplantar las plántulas a los canales", 1f, false, Kind.Tend, "estante_cultivo"), who => VerticalFarm.Instance?.Sow(who)));
         S(Effect(Also(Def(VerticalFarm.AreaName, "huv_cosecha", "Huerto vertical: cosechar los estantes LED, lavar, embolsar y llevar la verdura a la cámara", 1f, true, Kind.Tend, "estante_cultivo"), "Cocina"), who => VerticalFarm.Instance?.Harvest(who)));
@@ -251,7 +251,7 @@ public static class AreaFunctions
         Roles(Def("Orfanato", "orf_cuidar", "Cuidar a los niños escondidos", 2f, false, Kind.Care, "cama"), "todos");
         Roles(Def("Trinchera", "tri_refugio", "Descansar en el refugio", 1f, false, Kind.Rest, "cama"), "soldado");
 
-        // ══ LOS EDIFICIOS DEL PUEBLO (2026-11-03, docs/microcosmos-reglas-edificacion.md §8; CivicBuilder.Civic): cada uno con su
+        // ══ LOS EDIFICIOS DEL PUEBLO (2026-11-03, docs/reglas/microcosmos-reglas-edificacion.md §8; CivicBuilder.Civic): cada uno con su
         //    interacción para humanos e insectos-humanos y su categoría de actividad (trabajo, descanso, recuperación u ocio) ══
         Roles(Def("Comisaría", "pol_atender", "Atender denuncias y avisos en el mostrador", 2f, false, Kind.Serve, "mesa"), "guardia", "todos");
         Roles(Def("Comisaría", "pol_ronda", "Salir de ronda por las calles", 2f, false, Kind.Guard, "armero", "armario"), "guardia");
@@ -281,8 +281,8 @@ public static class AreaFunctions
         Roles(Def("Plaza", "pla_contemplar", "Contemplar el monumento", 0.5f, false, Kind.Meditate, "estatua"), "todos");
         Roles(Def("Centro de entrenamiento", "ent_entrenar", "Entrenar (lucha, gimnasia o juego de pelota)", 1f, false, Kind.Practice, "tatami", "pista", "foso_lucha", "pista_carreras", "campo"), "alumno", "todos");
         Roles(Lead(Def("Centro de entrenamiento", "ent_ensenar", "Dirigir el entrenamiento", 1f, false, Kind.Teach, "tatami", "pista", "foso_lucha", "pista_carreras", "campo")), "maestro");
-        // (2026-11-04) LOS APARATOS DE ENTRENAR DE CADA ÉPOCA (docs/microcosmos-entrenamiento-eras.md; MicroFurniture.Training): cada
-        // función, con los puestos que la sirven. Los planes de entrenamiento de los insectos-humanos (docs/gimnasio-maquinas.md) las
+        // (2026-11-04) LOS APARATOS DE ENTRENAR DE CADA ÉPOCA (docs/microcosmos/microcosmos-entrenamiento-eras.md; MicroFurniture.Training): cada
+        // función, con los puestos que la sirven. Los planes de entrenamiento de los insectos-humanos (docs/areas/gimnasio-maquinas.md) las
         // eligen por la clase del sitio (AreaFunctionSite.training).
         Roles(Def("Centro de entrenamiento", "ent_lucha", "Luchar en el foso (pale, kushti, güreş, Schwingen…)", 1f, false, Kind.Practice, "foso_lucha", "tatami"), "alumno", "todos");
         Roles(Def("Centro de entrenamiento", "ent_correr", "Correr en la pista (dromos, xisto, parcours)", 1f, false, Kind.Practice, "pista_carreras", "campo"), "alumno", "todos");

@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// LA SALA DE GUARDIA (docs/sala-de-guardia.md): el piso libre del nivel 4 de Servicios, a 130 m, el más alto libre, junto a la Sala de asambleas y encima del hospital.
+/// LA SALA DE GUARDIA (docs/areas/sala-de-guardia.md): el piso libre del nivel 4 de Servicios, a 130 m, el más alto libre, junto a la Sala de asambleas y encima del hospital.
 /// No es un <see cref="SanctuaryArea"/>, como el piso de cardio: la jornada la conoce como un sitio (<see cref="GuardRoom"/>). Mezcla, con el origen en cada pieza:
 /// - el MURO DE PANTALLAS y las filas de CONSOLAS: el control de misión de Houston;
 /// - la MESA DE RADAR: los centros de tráfico marítimo (Hong Kong);

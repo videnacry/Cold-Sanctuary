@@ -87,19 +87,19 @@ public static partial class SampleSceneBuilder
         EnsurePlayerSystems();
         BuildHolographicMenu(root.transform);
         BuildMeditationContent(root.transform); // reemplaza la entrada legacy de cocina (KitchenEntrance/KitchenScaleController)
-        BuildSanctuaryEconomy(root.transform);  // recursos por santuario + HUD (Mesocosmos) — docs/world-topology-and-planes.md §4/§7
+        BuildSanctuaryEconomy(root.transform);  // recursos por santuario + HUD (Mesocosmos) — docs/sistemas/world-topology-and-planes.md §4/§7
         // Las PRUEBAS (farming, mente, posesión, cocina, oficios, prólogo, yoga, cámara/emoción, magia, alma, fauna) ya no van
         // aquí: cada grupo tiene su propia escena en Assets/Scenes/Pruebas (menú «Build Test Scenes»). Aquí solo el santuario.
         // El MICROCOSMOS es OTRA ESCENA (no va aquí, en el mesocosmos): Scene1 (Ambrosio/alba) y Mesopotamia son
         // escenas HERMANAS del microcosmos. Se generan abajo con MicrocosmosSceneBuilder/MobWorldSceneBuilder.
         new GameObject("MigrationDiagnostics_AUTO").AddComponent<MigrationDiagnostics>().transform.SetParent(root.transform); // vuelca validación por consola en Play
         // Rejilla de rastros PERSISTENTE (singleton): sin ella, todo el sistema de trazas (celo, byproducts, wander por
-        // olor) es no-op en juego. Vacía = no hace nada hasta que algo deposita. docs/environmental-navigation.md.
+        // olor) es no-op en juego. Vacía = no hace nada hasta que algo deposita. docs/sistemas/environmental-navigation.md.
         new GameObject("TraceField_AUTO").AddComponent<TraceField>().transform.SetParent(root.transform);
         new GameObject("Clock_AUTO").AddComponent<Clock>().transform.SetParent(root.transform);  // reloj del día (hora inicial + tic); la velocidad corre las horas
 
         // Tests automáticos coordinados por TestRunner (grupos en serie; [TEST] en Editor.log). Las unidades ITestUnit
-        // van en el MISMO GO; el TestRunner las reúne y ordena. Ver docs/testing-checklist.md §32.
+        // van en el MISMO GO; el TestRunner las reúne y ordena. Ver docs/qa/testing-checklist.md §32.
         GameObject tests = new GameObject("TestRunner_AUTO");
         tests.transform.SetParent(root.transform);
         tests.AddComponent<TraceFieldTest>();   // grupo 0: rejilla (pura lógica)
@@ -138,38 +138,38 @@ public static partial class SampleSceneBuilder
         new GameObject("AnimaThoughtHUD_AUTO").AddComponent<AnimaThoughtHUD>().transform.SetParent(root.transform);  // HUD del PENSAMIENTO del ser que maneja el jugador — docs microcosmos-dungbeetle-level §5
         new GameObject("AnimaNameplate_AUTO").AddComponent<AnimaNameplate>().transform.SetParent(root.transform);  // ETIQUETAS de nombre sobre las animas (para dirigir hechizos por teclado) — docs typed-spells-and-queues
         BuildAnimaStatusPanels(root.transform);  // HUD DECLARATIVO generado por CÓDIGO (paneles-GameObject por elemento) — demuestra prefabs-por-código
-        BuildRestaurantSandbox(root.transform);  // RESTAURANTE jugable (cocinar platillos para todos → stock → XP + inventario). docs/kitchen-simulation.md
-        BuildGoluisKitchen(root.transform);      // GOLUIS, encargado de cocina: inicia a los recién llegados (sígueme→limpiar→recetas). docs/kitchen-simulation.md
-        BuildMagnate(root.transform);            // LA MAGNATE: maestra-guardiana (estado infinito; pacifica; enseña yoga al rezagado). docs/anyma-factory-and-control.md
+        BuildRestaurantSandbox(root.transform);  // RESTAURANTE jugable (cocinar platillos para todos → stock → XP + inventario). docs/areas/kitchen-simulation.md
+        BuildGoluisKitchen(root.transform);      // GOLUIS, encargado de cocina: inicia a los recién llegados (sígueme→limpiar→recetas). docs/areas/kitchen-simulation.md
+        BuildMagnate(root.transform);            // LA MAGNATE: maestra-guardiana (estado infinito; pacifica; enseña yoga al rezagado). docs/sistemas/anyma-factory-and-control.md
         BuildLinduarda(root.transform);          // LINDUARDA (enfermería): guardiana de salud emergente (status→vacuna/analiza al que tenga HealthRecord false, p.ej. Kushal)
         BuildPatrolPosts(root.transform);          // los puestos de vigía de la patrulla
         BuildGourmetDining(root.transform);      // RESTAURANTE: el comedor gourmet para 30, en la misma plataforma que la cocina abierta
         RelocateTanks();       // los tanques, donde quedan 2 m libres con todos los muebles ya puestos
         PlaceCarpetAreas();    // alfombras voladoras: un área en cada piso y el piso de alfombras en el techo (ya con los muebles puestos)
-        FinishNuclearSite();   // el sitio nuclear: contención, agua pasiva, chimenea, vigilancia y exclusión (docs/sitio-nuclear.md)
+        FinishNuclearSite();   // el sitio nuclear: contención, agua pasiva, chimenea, vigilancia y exclusión (docs/areas/sitio-nuclear.md)
         SpotAtCarpets("CocinaSpot", "Kitchen_Area");   // la Magnate deja al nuevo donde se llega a la cocina: junto a sus alfombras
         PlaceRooftopSolar();   // paneles en el piso más alto de cada edificio, en un borde libre (antes del bosque: sus ramas los esquivan)
-        BuildAereoDock(root.transform);   // el muelle del Santuario Aéreo y la lógica de la energía (docs/sitio-nuclear.md §23)
-        PlaceRooftopOrchards();   // FRUTALES en maceta en el resto de cada techo, con su punto de cuidados (docs/jardines-frutales.md)
-        BuildMedicalSubmarines(root.transform);   // SUBMARINO-AMBULANCIA anfibio y LEVIATÁN de animales gigantes (docs/submarinos-medicos.md)
-        BuildIceFlora(root.transform);           // FLORA de hielo: árbol carnívoro (señuelo+sopor) + abejas de las nieves — docs/ice-sanctuary-ecology.md
-        new GameObject("Jornada_AUTO").AddComponent<WorkdayDirector>().transform.SetParent(root.transform);   // jornada de 8 h y rotación diaria (docs/jornada-y-rotacion.md)
+        BuildAereoDock(root.transform);   // el muelle del Santuario Aéreo y la lógica de la energía (docs/areas/sitio-nuclear.md §23)
+        PlaceRooftopOrchards();   // FRUTALES en maceta en el resto de cada techo, con su punto de cuidados (docs/areas/jardines-frutales.md)
+        BuildMedicalSubmarines(root.transform);   // SUBMARINO-AMBULANCIA anfibio y LEVIATÁN de animales gigantes (docs/areas/submarinos-medicos.md)
+        BuildIceFlora(root.transform);           // FLORA de hielo: árbol carnívoro (señuelo+sopor) + abejas de las nieves — docs/fauna/ice-sanctuary-ecology.md
+        new GameObject("Jornada_AUTO").AddComponent<WorkdayDirector>().transform.SetParent(root.transform);   // jornada de 8 h y rotación diaria (docs/sistemas/jornada-y-rotacion.md)
         { GameObject inf = GameObject.Find("Infirmary_Area"); if (inf != null) inf.AddComponent<InfirmaryGate>(); }   // la iniciación es bloqueante: la Magnate guarda la salida
         PlaceStaff();       // cada personaje nuevo en su área (Andrea en la tarima de yoga, el jefe de obra en Construcción…)
         DressHumanoids();   // Kushal, la Magnate, compañeros y seres de prueba → cuerpo de cubos articulado (sin .fbx)
-        BuildIcebergs(root.transform);   // dos icebergs, lejos de todo (docs/sitio-nuclear.md §14)
+        BuildIcebergs(root.transform);   // dos icebergs, lejos de todo (docs/areas/sitio-nuclear.md §14)
         BuildPolarIce(root.transform);   // banquisa: casquetes de hielo con canales y puentes + sotobosque polar
         PlaceGroundCarpetAreas();        // al pie de cada edificio, en el hielo (ya hecho), sus alfombras para subir
         FurnitureSpacing.Report();       // muebles sin su pasillo mínimo (máquinas, mesas, camas…): aviso por consola
         EnsureFloorForms();              // cada piso con su forma finalizada y su forma en construcción (FloorForms; los microcosmos, sobre la finalizada)
         ValidateNuclearSite("al final del Blockout");   // la regla del sitio nuclear, con todo ya puesto
-        ValidateEnergySite("al final del Blockout");   // oferta ≥ demanda, con todos los pisos ya puestos (docs/energia.md)
+        ValidateEnergySite("al final del Blockout");   // oferta ≥ demanda, con todos los pisos ya puestos (docs/areas/energia.md)
         // (2026-11-04) ALERTA DE PISO NUEVO (manual §11): TODOS los pisos de la escena (también los que no salen de BuildAreaStructures,
         // como el control de misión de la lanzadera) contra los microcosmos «pendiente de piso representativo». Y la REGLA DE CAPACIDAD (S13).
         { var fl = new List<(string, string)>(); foreach (SanctuaryArea sa in Object.FindObjectsByType<SanctuaryArea>(FindObjectsInactive.Include, FindObjectsSortMode.None)) fl.Add((sa.name, sa.displayName)); MicroFloors.AlertFloors(fl); AreaCapacity.LogScene(); }
         CheapMaterialsPass.Run(true);   // (2026-11-11, #152) los materiales ASSET también, mates y opacos (CheapMaterials solo toca los de la escena)
         ProductionAudit.Log();   // la maquinaria de cada área de producción contra lo que se le pide (regla P19)
-        FoodChain.Log();   // la cadena alimenticia, con todo ya puesto: quién come qué y si a alguien le falta (docs/reglas-animales.md, regla E15)
+        FoodChain.Log();   // la cadena alimenticia, con todo ya puesto: quién come qué y si a alguien le falta (docs/reglas/reglas-animales.md, regla E15)
         BakeNavMesh();
 
         // Genera también las ESCENAS HERMANAS del MICROCOSMOS (cada una es su propia .unity, no van en el mesocosmos):
@@ -214,7 +214,7 @@ public static partial class SampleSceneBuilder
 
     // ── Economía de santuario (recursos + HUD) ─────────────────────────────────
     //
-    // Backbone del mundo grande (docs/world-topology-and-planes.md §4/§7): cada área produce su
+    // Backbone del mundo grande (docs/sistemas/world-topology-and-planes.md §4/§7): cada área produce su
     // recurso (AreaProducer, pasivo + bonus por personaje asignado) hacia el ledger global
     // (SanctuaryResources), y un HUD prototipo lo muestra en el Mesocosmos.
 
@@ -254,7 +254,7 @@ public static partial class SampleSceneBuilder
 
     // ── Farming no-violento (MVP) ───────────────────────────────────────────────
     //
-    // docs/world-topology-and-planes.md §4.1: jugar con la criatura baja su tensión; al serenarse
+    // docs/sistemas/world-topology-and-planes.md §4.1: jugar con la criatura baja su tensión; al serenarse
     // suelta recursos/monedas y se le puede dar de comer (F/clic) para que descanse. PlayController
     // en el jugador (tecla V) + criaturas placeholder para probar.
 
@@ -324,7 +324,7 @@ public static partial class SampleSceneBuilder
 
     // ── Mind sandbox (MVP de mente: frases por tono elemental) ──────────────────
     //
-    // docs/anima-architecture.md §6/§10: 3 ánimas con Mind + aptitudes distintas → cada una tiende a un
+    // docs/sistemas/anima-architecture.md §6/§10: 3 ánimas con Mind + aptitudes distintas → cada una tiende a un
     // tono elemental y expresa frases hasta donde su poder mental alcanza. Mira la Console.
 
     static void BuildMindSandbox(Transform parent)
@@ -479,7 +479,7 @@ public static partial class SampleSceneBuilder
     }
 
     /// <summary>
-    /// Sandbox del paso A de la cocina (docs/kitchen-simulation.md §5): una `DirtArea` genera manchas; al
+    /// Sandbox del paso A de la cocina (docs/areas/kitchen-simulation.md §5): una `DirtArea` genera manchas; al
     /// pasar del umbral activa la misión de limpieza; un `Cleaner` (auto) las borra mancha a mancha y, al
     /// vaciarse, la completa. Todo por consola (`[Cocina]`).
     /// </summary>
@@ -513,7 +513,7 @@ public static partial class SampleSceneBuilder
     }
 
     /// <summary>
-    /// Paseo guiado (docs/kitchen-simulation.md §1) + paso B (loop de desayuno + contenedor, §3/§6). El
+    /// Paseo guiado (docs/areas/kitchen-simulation.md §1) + paso B (loop de desayuno + contenedor, §3/§6). El
     /// «Anfitrion» recorre las estaciones con el «Novato» (alma compartida); el «Cocinero» rellena el
     /// contenedor y el «Comensal» come. Todo por consola: [Paseo]/[Cocina].
     /// </summary>
@@ -560,7 +560,7 @@ public static partial class SampleSceneBuilder
     }
 
     /// <summary>
-    /// Sandbox del MOTOR de virtualización (docs/kitchen-simulation.md §3b): estaciones funcionales
+    /// Sandbox del MOTOR de virtualización (docs/areas/kitchen-simulation.md §3b): estaciones funcionales
     /// (partes manipulables) + una receta de huevos revueltos + el `VirtualPointer` (teclado/ratón/touch).
     /// En Play: mueve el puntero (flechas / ratón / touch), apunta a las partes EN ORDEN y confirma
     /// (Espacio / clic / toque). Logs [Virtual]/[Producción]/[Cocina].
@@ -622,7 +622,7 @@ public static partial class SampleSceneBuilder
     }
 
     /// <summary>
-    /// El MISMO motor de virtualización aplicado al Huerto (docs/garden-simulation.md §8): otras estaciones
+    /// El MISMO motor de virtualización aplicado al Huerto (docs/areas/garden-simulation.md §8): otras estaciones
     /// y otra receta (abonar→arar→trasplantar→regar→cosechar). Reutiliza el `VirtualPointer` del sandbox de
     /// cocina (uno por jugador; sus pasos llegan a TODAS las `ProductionOrder`).
     /// </summary>
@@ -662,7 +662,7 @@ public static partial class SampleSceneBuilder
     }
 
     /// <summary>
-    /// El mismo motor aplicado a la FORJA del **Microcosmos** (era de los metales; docs/forge-simulation.md
+    /// El mismo motor aplicado a la FORJA del **Microcosmos** (era de los metales; docs/areas/forge-simulation.md
     /// §2): receta de herramienta de bronce (TomarMineral → Fundir[typing] → Verter → Forjar → Templar). El
     /// crisol es una acción temporizada que se acelera tecleando elementos/compuestos. (La **Mecánica** del
     /// Mesocosmos —reparar máquinas/vehículos— usará recetas distintas, aún por construir.)
@@ -752,7 +752,7 @@ public static partial class SampleSceneBuilder
     }
 
     /// <summary>
-    /// Arranque de la MECÁNICA (Mesocosmos, docs/forge-simulation.md §1): las tareas más simples para
+    /// Arranque de la MECÁNICA (Mesocosmos, docs/areas/forge-simulation.md §1): las tareas más simples para
     /// alguien sin experiencia, igual que en la cocina — 1) LIMPIAR el taller (`DirtArea`/`Cleaner`),
     /// 2) ABASTECER/ordenar (cajas en la puerta → estantes, `StockingTask`: aprender dónde va cada cosa),
     /// 3) REPARACIÓN simple (receta con diagnóstico tecleado). Antes de tareas avanzadas (vehículos, drones…).
@@ -810,7 +810,7 @@ public static partial class SampleSceneBuilder
     }
 
     /// <summary>
-    /// Arranque de la CONSTRUCCIÓN (Meso, docs/construction-simulation.md §4): limpiar el solar → abastecer
+    /// Arranque de la CONSTRUCCIÓN (Meso, docs/areas/construction-simulation.md §4): limpiar el solar → abastecer
     /// materiales (cajas→almacén) → construir simple (cimentar[typing]→muro→techar→probar). Como todas las
     /// áreas, empieza por lo simple. Reusa el motor de virtualización.
     /// </summary>
@@ -866,7 +866,7 @@ public static partial class SampleSceneBuilder
     }
 
     /// <summary>
-    /// Demo del bucle de REPARACIÓN POR DISPATCH (docs/forge-simulation.md §5): un `ServiceHub` (taller) con
+    /// Demo del bucle de REPARACIÓN POR DISPATCH (docs/areas/forge-simulation.md §5): un `ServiceHub` (taller) con
     /// banco de herramientas + un `RepairTicket` (nevera averiada en la Cocina, lejos) cuya receta
     /// `requiresTools`. En Play: sin herramientas la reparación se rechaza; toma herramientas en el hub, ve
     /// a la nevera, repárala (ticket se cierra), vuelve y devuélvelas.
@@ -915,7 +915,7 @@ public static partial class SampleSceneBuilder
     }
 
     /// <summary>
-    /// 1ª simulación de MECÁNICA (docs/forge-simulation.md §5): el **camión** (que lleva las cajas de
+    /// 1ª simulación de MECÁNICA (docs/areas/forge-simulation.md §5): el **camión** (que lleva las cajas de
     /// suministros a las áreas — las mismas de `StockingTask`) viene al taller a mantenimiento. La primera
     /// reparación es el **CAMBIO DE RUEDA** (procedimiento real: aflojar→gato→quitar→poner→apretar→bajar).
     /// Extras: cambio de aceite (2 pasos) y agua (1 paso). Reusa el motor de virtualización.
@@ -977,26 +977,26 @@ public static partial class SampleSceneBuilder
     }
 
     /// <summary>
-    /// Sandbox del PRÓLOGO (docs/area-progression.md "Apertura"): el guion (`PrologueSequence`, auto-demo) se
+    /// Sandbox del PRÓLOGO (docs/areas/area-progression.md "Apertura"): el guion (`PrologueSequence`, auto-demo) se
     /// registra en consola; dos `WeakOne` (débiles) caminan a la `CarryToRefuge` (cueva-refugio) y, al
     /// reunirlos, el **Mesocosmos** envía un aviso (`PlaneMessenger`) de volver por la sala de meditación
     /// (`WorldExitPortal`). La escena real (Enfermería→máquina→Microcosmos→salida) se monta en Unity; esto scaffold.
     /// </summary>
     /// <summary>
-    /// Área de CRÍA — el corazón del santuario (docs/cria-simulation.md, fauna-gameplay.md): cuidar crías
+    /// Área de CRÍA — el corazón del santuario (docs/areas/cria-simulation.md, fauna-gameplay.md): cuidar crías
     /// para ganar su **bond** (que se gana, no se da). Arranque como las demás: 1) limpiar el nido, 2)
     /// abastecer (biberón/comida/paja), 3) **rutina de cuidado** (leer estado → calmar → alimentar → asear →
     /// arrullar) reutilizando `ProductionOrder`, 4) llevar la cría al **nido** (`CarryToRefuge`/`WeakOne`).
     /// </summary>
     /// <summary>
-    /// 1ª misión del MICROCOSMOS insecto (docs/microcosmos-insects.md §4): un **hormiguero** (refugio), un
+    /// 1ª misión del MICROCOSMOS insecto (docs/microcosmos/microcosmos-insects.md §4): un **hormiguero** (refugio), un
     /// **pulgón** que produce melaza (mirmecofilia) y hace de **mascota-guía** hacia su **familia caída**, y
     /// dos **hormigas** que lo cuidan (lo siguen por la melaza). El pulgón lleva a Kushal/al grupo a la
     /// familia, la rescata y la guía al hormiguero (`CarryToRefuge`/`WeakOne`). Auto-demo por consola.
     /// </summary>
     internal static void BuildMicrocosmosSandbox(Transform parent)
     {
-        // Nivel introductorio (alba/cueva) — historia y almas canónicas en docs/microcosmos-insects.md §13.
+        // Nivel introductorio (alba/cueva) — historia y almas canónicas en docs/microcosmos/microcosmos-insects.md §13.
         // Tableau del momento de la LLEGADA/muerte: Ambrosio (pulgón) se derrumba en la entrada; la tribu
         // (Héspero + Ruth) vela desde la cueva. Cada ser lleva su SoulRecord (nombre de alma · hilo · vida 2).
         GameObject group = new GameObject("MicrocosmosSandbox_AUTO");
@@ -1009,7 +1009,7 @@ public static partial class SampleSceneBuilder
         cave.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Cueva_MAT", new Color(0.35f, 0.32f, 0.30f));
         CarryToRefuge refuge = cave.AddComponent<CarryToRefuge>(); refuge.needed = 2; refuge.radius = 4f;
 
-        // ── El ELENCO con IDENTIDAD REAL por ALMA-MEZCLA (rebanada 1, docs/microcosmos-level1.md §2 + soul-composition-blend.md) ──
+        // ── El ELENCO con IDENTIDAD REAL por ALMA-MEZCLA (rebanada 1, docs/microcosmos/microcosmos-level1.md §2 + soul-composition-blend.md) ──
         // Cada uno es un Ánima real cuya identidad sale de un BLEND de arquetipos (SoulComposition), no de aptitudes a mano:
         //  · CUERPO = su INSECTO real (Ant; Ambrosio = Aphid) dominante + un poco de Human (la "desviación" proto-humana
         //    que los hace especiales). Ambrosio suma GALLINA (la "madre de la naturaleza": cuerpo nutridor, cluecas).
@@ -1076,7 +1076,7 @@ public static partial class SampleSceneBuilder
 
         // SHANIDAR: el anciano herido que la banda cuida. Lleva el nombre y las heridas del neandertal Shanidar 1 (sin
         // antebrazo derecho, ojo izquierdo dañado, cojera, sordera), que llegó a viejo porque su grupo lo cuidó
-        // (doi 10.1371/journal.pone.0186684). Ver docs/compassion-simulations.md.
+        // (doi 10.1371/journal.pone.0186684). Ver docs/microcosmos/compassion-simulations.md.
         GameObject anciano = Cast(group.transform, "Shanidar", new Vector3(-29.4f, 1f, 19.5f), new Vector3(0.5f, 0.5f, 0.6f),
             new Color(0.50f, 0.46f, 0.40f), "", "anciano herido de la banda: sin antebrazo derecho, medio ciego y sordo, cojo; vive porque lo cuidan",
             "", "necesita que lo carguen al refugio",
@@ -1148,7 +1148,7 @@ public static partial class SampleSceneBuilder
         return s;
     }
 
-    /// <summary>Rebanada 1 de identidad por ALMA-MEZCLA (docs/microcosmos-level1.md §2 + soul-composition-blend.md): crea un
+    /// <summary>Rebanada 1 de identidad por ALMA-MEZCLA (docs/microcosmos/microcosmos-level1.md §2 + soul-composition-blend.md): crea un
     /// miembro del elenco como ÁNIMA REAL — visual (MakeInsect) + <see cref="SoulRecord"/> + <see cref="Anima"/> +
     /// <see cref="Mind"/> + <see cref="SoulComposition"/> con los BLEND-slots de cuerpo/mente (arquetipo, %). En Start
     /// (resolveOnStart) el blend computa aptitudes/tono/pensamientos desde los arquetipos reales. `applyScale=false` para
@@ -1368,7 +1368,7 @@ public static partial class SampleSceneBuilder
 
         var honeydew = kushal.AddComponent<HoneydewSpell>();
         honeydew.range = 3f; honeydew.energyRestore = 40f; honeydew.maxCharges = 5;
-        honeydew.castKey = KeyCode.Period;   // (2026-11-04) la E es solo la tecla de interactuar (tareas con E, docs/tareas-del-jugador.md)
+        honeydew.castKey = KeyCode.Period;   // (2026-11-04) la E es solo la tecla de interactuar (tareas con E, docs/sistemas/tareas-del-jugador.md)
 
         // Defensa corporal (ácido fórmico, Q).
         // FormicAcidSpray hereda SpellBase: range = radio del spray, force = estrés por hit.
@@ -1801,7 +1801,7 @@ public static partial class SampleSceneBuilder
         return go;
     }
 
-    // Adjunta la ficha de alma (docs/microcosmos-insects.md §13) a un ser del Microcosmos.
+    // Adjunta la ficha de alma (docs/microcosmos/microcosmos-insects.md §13) a un ser del Microcosmos.
     static void AddSoul(GameObject go, string soulName, string hilo, string vida1, string vida2, string tell)
     {
         if (go == null) return;
@@ -2206,7 +2206,7 @@ public static partial class SampleSceneBuilder
         foreach (Anima a in Object.FindObjectsOfType<Anima>())
         {
             if (a is Animal || a.GetComponent<PlayableCreature>() != null) continue;
-            // Ya vestido o no, se (re)viste: así cada cambio de aspecto (docs/diseno-personajes.md) llega a la escena.
+            // Ya vestido o no, se (re)viste: así cada cambio de aspecto (docs/sistemas/diseno-personajes.md) llega a la escena.
             Renderer r = a.GetComponentInChildren<Renderer>();
             if (r == null) continue;
             Color clothes = r.sharedMaterial != null ? r.sharedMaterial.color : new Color(0.5f, 0.5f, 0.6f);
@@ -2214,7 +2214,7 @@ public static partial class SampleSceneBuilder
             // CUERPO con metabolismo (hambre/sueño) para todo humano; la Magnate, por sus células de mago, no los siente.
             if (a.GetComponent<BodyMetabolism>() == null) a.gameObject.AddComponent<BodyMetabolism>();
             if (a.GetComponent<BodyAging>() == null) a.gameObject.AddComponent<BodyAging>();   // edad = efecto del cuerpo
-            // ATENCIÓN VISUAL (docs/atencion-visual.md): cada persona con su perfil de mirada.
+            // ATENCIÓN VISUAL (docs/sistemas/atencion-visual.md): cada persona con su perfil de mirada.
             if (a.GetComponent<Mind>() != null || a.CompareTag("Player"))
             {
                 VisualAttention va = a.GetComponent<VisualAttention>() ?? a.gameObject.AddComponent<VisualAttention>();
@@ -2286,7 +2286,7 @@ public static partial class SampleSceneBuilder
         PolarUnderstory understory = under.AddComponent<PolarUnderstory>();
         understory.tundraArea = new Rect(-PolarLandscapeBuilder.Half, -PolarLandscapeBuilder.Half, 2f * PolarLandscapeBuilder.Half, PolarLandscapeBuilder.Half);   // la mitad sur del mapa: ahí está la isla de tierra
 
-        // Lo que la fauna polar USA (docs/natural-interactions.md): descansaderos y respiraderos de foca, guijarros de la
+        // Lo que la fauna polar USA (docs/sistemas/natural-interactions.md): descansaderos y respiraderos de foca, guijarros de la
         // colonia de pingüinos, guaridas de nieve de los osos y grava de las ballenas.
         GameObject hab = new GameObject("HabitatsPolares_AUTO");
         hab.transform.SetParent(root, false);
@@ -2299,7 +2299,7 @@ public static partial class SampleSceneBuilder
             if (lobe.name.StartsWith("BosqueNorte")) dens.Add(new Vector3(lobe.x + lobe.r * 0.4f, 0f, lobe.z - lobe.r * 0.3f));
         ph.denSites = dens.ToArray();
         ph.emperorColony = EmperorColony;
-        Territorio ter = BuildTerritorio(root);   // barreras, cuevas, acantilados, lomas, charcas y bivalvos (docs/territorio-polar.md)
+        Territorio ter = BuildTerritorio(root);   // barreras, cuevas, acantilados, lomas, charcas y bivalvos (docs/areas/territorio-polar.md)
         ph.walrusBeachAngle = 205f;
     }
 
@@ -2427,7 +2427,7 @@ public static partial class SampleSceneBuilder
     // Un "nido" es el centro real de una familia — FamilyGenerator lo usa como punto de
     // dispersión al generar (radius) y, desde el fix en FamilyGenerator.Start(), también como
     // HomeOrigin COMPARTIDO de todos los miembros (antes cada hermano fijaba su propio
-    // HomeOrigin a donde individualmente apareció — ver docs/refuge-and-adult-behavior.md
+    // HomeOrigin a donde individualmente apareció — ver docs/sistemas/refuge-and-adult-behavior.md
     // "Montaje de escena: nidos antes que familias").
     struct NestSpec
     {
@@ -2492,7 +2492,7 @@ public static partial class SampleSceneBuilder
             families.Add(new FamilyGenerator.Family { animalPrefab = prefab, position = pos, radius = radius, renderHeight = height, quantity = qty });   // qty 0 = el tamaño de su familia
         }
 
-        // SANTUARIO 1 = HIELO (docs/ice-sanctuary-ecology.md). El suelo ya es nieve (Ground_Snow_MAT); la
+        // SANTUARIO 1 = HIELO (docs/fauna/ice-sanctuary-ecology.md). El suelo ya es nieve (Ground_Snow_MAT); la
         // inconsistencia era la fauna TEMPLADA. Retirados conejo/ciervo/lobo/zorro — RESERVADOS para un santuario
         // templado (no pertenecen al hielo). La vida TERRESTRE de hielo (árbol carnívoro, abeja/araña de nieves,
         // pingüino) se añade al implementar esas especies. Base viva del hielo = marina: plancton → pez → foca → oso.
@@ -2516,7 +2516,7 @@ public static partial class SampleSceneBuilder
         AddFamily("Penguin", new Vector3(60f, 0f, -22f), 6f, NestKind.Prey, 0f);      // colonia en el borde hielo/agua; presa de foca/orca
         AddFamily("Penguin", new Vector3(66f, 0f, -19f), 6f, NestKind.Prey, 0f);
         AddFamily("Orca", new Vector3(72f, -1f, 32f), 12f, NestKind.Predator, -1f);  // apex marino; caza focas/ballenas
-        // TERRITORIO POLAR (docs/territorio-polar.md, docs/reglas-animales.md). Morsas en la laguna (sus bivalvos, en los bajíos) y emperadores en
+        // TERRITORIO POLAR (docs/areas/territorio-polar.md, docs/reglas/reglas-animales.md). Morsas en la laguna (sus bivalvos, en los bajíos) y emperadores en
         // su colonia; en la isla de tierra, los herbívoros repartidos y los lobos en su punta, junto a su cueva.
         AddFamily("Walrus", new Vector3(52f, -1f, 34f), 8f, NestKind.Prey, -1f);
         AddFamily("Walrus", new Vector3(70f, -1f, 12f), 8f, NestKind.Prey, -1f);
@@ -2533,7 +2533,7 @@ public static partial class SampleSceneBuilder
         // NOTA (2026-09-01): los 5 insectos (Ant/Aphid/Ladybug/Spider/Cricket) NO van aquí — se crearon para el
         // Microcosmos Nivel 1 (mundo insecto), no para este bioma. Su generación irá en la escena del Microcosmos con
         // su cadena trófica micro. La fauna de ESTE santuario (de HIELO) se está reconciliando: ver
-        // docs/ice-sanctuary-ecology.md (árbol carnívoro de hielo, abeja/araña de las nieves, pingüino, plancton…).
+        // docs/fauna/ice-sanctuary-ecology.md (árbol carnívoro de hielo, abeja/araña de las nieves, pingüino, plancton…).
 
         generator.families = families.ToArray();
         return nests;
@@ -2590,7 +2590,7 @@ public static partial class SampleSceneBuilder
         }
     }
 
-    // Bancos/enjambres marinos (Swarm): GRUPOS de individuos (docs/grupos-de-animales.md, Berón 2026-11-03): un padre vacío que se
+    // Bancos/enjambres marinos (Swarm): GRUPOS de individuos (docs/sistemas/grupos-de-animales.md, Berón 2026-11-03): un padre vacío que se
     // mueve como grupo y sus peces, krill o medusas de verdad (SwarmModels) como hijos, que los crea el propio Swarm al empezar.
     // Antes el padre era un CUBO translúcido escalado 10 × 2 × 10 (se veía como una plataforma). Los depredadores muerden al
     // padre (Swarm.OnTriggerStay) y desaparece UN individuo; el grupo se rehace con el tiempo (sin ciclo de vida).
@@ -2599,7 +2599,7 @@ public static partial class SampleSceneBuilder
         GameObject group = new GameObject("Swarms_AUTO");
         group.transform.SetParent(parent);
         // Tantos bancos como pide la cadena alimenticia (FoodChain). Cada banco, de una especie real: el Ártico y la Antártida se mezclan en la laguna,
-        // como todo el santuario (docs/reglas-animales.md §Peces, crustáceos y medusas).
+        // como todo el santuario (docs/reglas/reglas-animales.md §Peces, crustáceos y medusas).
         Vector3[] positions = LagoonRing(new Vector3(56f, -2f, 22f), new Vector3(66f, -2f, 30f), FoodChain.Banks(SwarmKind.Fish));
         for (int i = 0; i < positions.Length; i++)
             Swarm.Create<Swarm>(group.transform, $"Swarm_Fish_{i}", positions[i], SwarmKind.Fish, FishOf(i), 24f, 40f, 4f);
@@ -2639,7 +2639,7 @@ public static partial class SampleSceneBuilder
 
     // Fitoplancton: el PRODUCTOR base de la cadena marina ("césped del mar", vive de agua+luz, se autoregenera).
     // Los enjambres (Swarm) lo pastan por cercanía para crecer (fitoplancton→krill/pez). Marcadores baratos, sin
-    // collider (como GrassPatch). Sembrado en las mismas aguas que los bancos. Ver docs/ice-sanctuary-ecology.md §2.2.
+    // collider (como GrassPatch). Sembrado en las mismas aguas que los bancos. Ver docs/fauna/ice-sanctuary-ecology.md §2.2.
     // HUD DECLARATIVO generado por CÓDIGO (responde a "¿se pueden generar prefabs por código?" — SÍ): crea un panel-
     // GameObject por elemento (Quad + TextMesh) y los VINCULA con AnimaStatusPanels (color/valor vivos desde ElementsStatus).
     // No hace falta prefab manual en Unity; todo queda versionado en este .cs. (También se podría PrefabUtility.SaveAsPrefabAsset
@@ -2676,7 +2676,7 @@ public static partial class SampleSceneBuilder
         BuildRealKitchen(rest.transform, kitchen, stocks);   // cocina real: 4 puestos + 4 cocineros visibles + utensilios e ingredientes de cubos
     }
 
-    // COCINA REAL (docs/kitchen-simulation.md): dentro del ÁREA de Cocina, a tamaño real y para CUATRO cocineros a la
+    // COCINA REAL (docs/areas/kitchen-simulation.md): dentro del ÁREA de Cocina, a tamaño real y para CUATRO cocineros a la
     // vez. Cada puesto = fogón (con sartén y olla) + tramo de encimera (tabla con cuchillo, bol, bote de utensilios).
     // Compartido: dos neveras, estanterías de despensa llenas, fregadero, encimera de ingredientes, isla de emplatado y
     // barra de servicio con los contenedores del stock. Todo de UNIONES DE CUBOS (KitchenProps) para que cada cosa se
@@ -2693,7 +2693,7 @@ public static partial class SampleSceneBuilder
             foreach (Transform t in area.GetComponentsInChildren<Transform>())
                 if (t.name.EndsWith("_VirtualizationMachine")) { t.localPosition = new Vector3(18.4f, 1f, -17.4f); t.localRotation = Quaternion.Euler(0f, -45f, 0f); }   // en la esquina del fondo, fuera del paso y de las mesas
 
-        // TODA LA PLANTA ES COCINA (docs/restaurant-plan.md): pase central, 8 puestos completos en anillo y, junto a los
+        // TODA LA PLANTA ES COCINA (docs/areas/restaurant-plan.md): pase central, 8 puestos completos en anillo y, junto a los
         // bordes, recepción y cámaras, preparación y lavado, y los obradores duplicados. El comedor va en el anillo de arriba.
         var cooks = new List<KitchenCook>();
         KitchenFloorPlan(room, area != null ? area.transform : null, out Transform island, out Transform pass, out Transform desp, out Transform est2);
@@ -2718,7 +2718,7 @@ public static partial class SampleSceneBuilder
         }
 
         GourmetKitchen(room);   // aspecto de cocina abierta de restaurante gourmet
-        ProKitchen(room);       // equipo profesional y obrador para la carta (docs/cocina-profesional.md)
+        ProKitchen(room);       // equipo profesional y obrador para la carta (docs/areas/cocina-profesional.md)
 
         GameObject spot = GameObject.Find("CocinaSpot");   // la Magnate lleva a los nuevos a la cocina (luego, junto a sus alfombras: SpotAtCarpets)
         if (spot != null && area != null) spot.transform.position = area.transform.position;
@@ -2922,7 +2922,7 @@ public static partial class SampleSceneBuilder
         Swarm.Create<Swarm>(root, name, pos, kind, krill ? SwarmModels.Species.Krill : SwarmModels.Species.SilverFish, krill ? 30f : 20f, krill ? 60f : 40f, krill ? 3f : 3.5f);
     }
 
-    // ESCENARIOS POR ESPECIE (docs/ice-sanctuary-ecology.md): cada animal en un sandbox AISLADO con su CICLO/INTERACCIÓN
+    // ESCENARIOS POR ESPECIE (docs/fauna/ice-sanctuary-ecology.md): cada animal en un sandbox AISLADO con su CICLO/INTERACCIÓN
     // representativa (dieta + presa/depredador + convivencia). Coherentes con el Santuario 1 (hielo); los templados
     // (zorro/ciervo/malamute) quedan como demostración reservada. Reutilizan TestPack/TestFish/TestMeat/TestGrass/MiniSwarm;
     // los ciclos (celo/sueño/caza/depredación) se AUTOCONFIGURAN desde el arquetipo de la especie en runtime (Animal.Init).
@@ -2973,11 +2973,11 @@ public static partial class SampleSceneBuilder
         for (int i = 0; i < 2; i++) TestMeat(r, new Vector3(340f + i * 2f, 0.3f, 40f));
     }
 
-    // FLORA DE HIELO (docs/ice-sanctuary-ecology.md): el árbol carnívoro (atrae hambrientos con olor a comida → sopor →
+    // FLORA DE HIELO (docs/fauna/ice-sanctuary-ecology.md): el árbol carnívoro (atrae hambrientos con olor a comida → sopor →
     // muerte → crece) + una colonia de abejas de las nieves que anida cerca. Primitivas (independiente de modelos).
     public const string IslandTreePrefix = "ArbolIsla_";
 
-    /// <summary>LOS ÁRBOLES DE LA ISLA (Berón 2026-11-05): solo flora, sin sostener nada. Abedul de montaña, el árbol real de los bordes del Ártico (docs/residencia.md §Los árboles de
+    /// <summary>LOS ÁRBOLES DE LA ISLA (Berón 2026-11-05): solo flora, sin sostener nada. Abedul de montaña, el árbol real de los bordes del Ártico (docs/areas/residencia.md §Los árboles de
     /// la isla). Tienen los panales: una familia de abejas y arañas en dos de ellos.</summary>
     static void BuildIceFlora(Transform parent)
     {
@@ -3033,12 +3033,12 @@ public static partial class SampleSceneBuilder
         l.name = "Linduarda"; l.transform.SetParent(root.transform); l.transform.position = new Vector3(8f, 1f, 8f);
         var r = l.GetComponent<Renderer>(); if (r != null) r.sharedMaterial = MakeMaterial("Linduarda_MAT", new Color(0.9f, 0.8f, 0.85f));
         Anima la = l.AddComponent<Anima>();
-        // Deportista, gimnasio a diario (docs/character-linduarda.md): ágil y resistente, fuerza algo por encima de la media.
+        // Deportista, gimnasio a diario (docs/personajes/fichas-antiguas/character-linduarda.md): ágil y resistente, fuerza algo por encima de la media.
         la.strength = 1.15f; la.agility = 1.35f; la.endurance = 1.45f; la.bodyMass = 1.05f;
         l.AddComponent<Mind>().identity = "Linduarda";
         l.AddComponent<Linduarda>();
 
-        // LIZMIBET (docs/character-irosene.md): la gran amiga de Irosene, de su misma edad (70+), llegada con ella desde
+        // LIZMIBET (docs/personajes/fichas-antiguas/character-irosene.md): la gran amiga de Irosene, de su misma edad (70+), llegada con ella desde
         // Ecuador, co-abuela de Leo; también MÉDICA: atiende con Linduarda en la enfermería.
         GameObject liz = GameObject.CreatePrimitive(PrimitiveType.Capsule);
         liz.name = "Lizmibet"; liz.transform.SetParent(root.transform); liz.transform.position = new Vector3(10f, 1f, 8f);   // ficha: docs/personajes/lizmibet.md
@@ -3049,7 +3049,7 @@ public static partial class SampleSceneBuilder
         WorldLabel lzl = liz.AddComponent<WorldLabel>(); lzl.text = "Liz · Lizmibet (médica)";   // la suelen llamar Liz (Berón 2026-10-31)
         liz.AddComponent<WorldCharacter>().characterName = "Lizmibet";
 
-        // Su ESPOSO, JEFE DE CONSTRUCCIÓN (docs/construction-simulation.md): repara y levanta las estructuras de las áreas
+        // Su ESPOSO, JEFE DE CONSTRUCCIÓN (docs/areas/construction-simulation.md): repara y levanta las estructuras de las áreas
         // humanas desde el área de Construcción (maquinaria y material). JOSEDRILO da las clases de yoga (el profesional; antes Andrea y Sadhguru).
         // ANDREA es uno de los DUEÑOS del santuario (los turistas son una de sus vías de ingresos).
         MakeCharacter(root.transform, "JefeConstruccion", "Tote · Tofelite (jefe de construcción)",   // Tofelite, esposo de Lizmibet; lo suelen llamar Tote. El id sigue siendo JefeConstruccion (escenas y pruebas) · ficha: docs/personajes/tote.md
@@ -3057,8 +3057,8 @@ public static partial class SampleSceneBuilder
         MakeCharacter(root.transform, "Andrea", "Andrea (dueño del santuario y entrenador del gimnasio)", new Vector3(16f, 1f, 8f), new Color(0.08f, 0.08f, 0.09f), 1.6f, 1.2f, 1.3f, 1.05f);   // (2026-11-04) «el personaje con más fuerza es Andrea»: 1,6, por encima de Goluis (1,5) · ficha: docs/personajes/andrea.md
         // (2026-11-04) SADHGURU y LOS SEIS DEL MESOCOSMOS ya no se construyen aquí: Berón los sacó a sus microcosmos («los personajes
         // famosos … sácalos del mesocosmos y crea sus microcosmos respectivos»). Sus datos siguen en MesoCharacters y su aspecto en
-        // CubeHair.For; sus papeles los llevan otros (docs/personajes-mesocosmos.md §Reparto de papeles).
-        // LA FAMILIA Y LOS AMIGOS DE BERÓN (2026-11-04, de sus fotos; docs/diseno-personajes.md §Familia y amigos): personal
+        // CubeHair.For; sus papeles los llevan otros (docs/historia/personajes-mesocosmos.md §Reparto de papeles).
+        // LA FAMILIA Y LOS AMIGOS DE BERÓN (2026-11-04, de sus fotos; docs/sistemas/diseno-personajes.md §Familia y amigos): personal
         // de la rotación; cinco llevan además un papel de los famosos que se fueron. Entran en la jornada, el horario libre y la arboleda.
         foreach (var (id, label, x, clothes, s, ag, en, m) in FamilyCharacters)   // cada uno: su ficha en docs/personajes/
             MakeCharacter(root.transform, id, label, new Vector3(x, 1f, 8f), clothes, s, ag, en, m);
@@ -3091,7 +3091,7 @@ public static partial class SampleSceneBuilder
             if (!kushal.TryGetComponent(out SanctuaryOnboarding kon)) kon = kushal.AddComponent<SanctuaryOnboarding>();
             kon.introMissionsRequired = 1; kon.autoCompleteForDemo = false;
         }
-        BuildHospital(parent);   // el HOSPITAL equipado, de 2 plantas (y Linduarda + paciente dentro) — docs/hospital.md
+        BuildHospital(parent);   // el HOSPITAL equipado, de 2 plantas (y Linduarda + paciente dentro) — docs/areas/hospital.md
     }
 
     static void PlacePlayerAtInfirmary(Transform root)
@@ -3166,7 +3166,7 @@ public static partial class SampleSceneBuilder
     // vean un poco escondidos" (pedido explícito). Puramente visual: primitivas sin collider
     // (igual que GrassPatch/Swarm), sin componente de lógica — NO implementa detección ni
     // ocultamiento real, eso queda documentado como pendiente en
-    // docs/refuge-and-adult-behavior.md ("empezar documentando, luego implementar").
+    // docs/sistemas/refuge-and-adult-behavior.md ("empezar documentando, luego implementar").
     static void BuildHabitatCover(Transform parent, System.Collections.Generic.List<NestSpec> nests)
     {
         GameObject group = new GameObject("HabitatCover_AUTO");
@@ -3237,7 +3237,7 @@ public static partial class SampleSceneBuilder
     // target, and silently no-ops if it's empty; it doesn't crash anymore either
     // way (see LifeStage.cs fix), but without real birds every land animal's
     // Wander event is a permanent no-op. Full design + known issues with this
-    // whole bird subsystem are written up in docs/bird-logic.md — read that
+    // whole bird subsystem are written up in docs/sistemas/bird-logic.md — read that
     // before spending real time on birds, since it's likely to get replaced.
     static void BuildBirds(Transform parent)
     {
@@ -3326,7 +3326,7 @@ public static partial class SampleSceneBuilder
         panterilia.AddComponent<Panterilia>();
         panterilia.AddComponent<WorldCharacter>().characterName = "Panterilia";
 
-        // Irosene — compañera motivacional (canal primario = Satisfacción). Ver docs/character-irosene.md.
+        // Irosene — compañera motivacional (canal primario = Satisfacción). Ver docs/personajes/fichas-antiguas/character-irosene.md.
         GameObject irosene = MakePlaceholderPerson("Irosene_Post", new Vector3(3f, 1f, -13f), new Color(0.90f, 0.55f, 0.40f));   // ficha: docs/personajes/irosene.md
         irosene.transform.SetParent(charactersGroup.transform);
         MoodState iroMood = MakeCompanionCore(irosene, "Irosene");
@@ -3363,7 +3363,7 @@ public static partial class SampleSceneBuilder
         GameObject areasGroup = new GameObject("Areas_Placed");
         areasGroup.transform.SetParent(parent);
 
-        // TORRES TEMÁTICAS (Berón 2026-10-29; docs/plano-edificios.md, SampleSceneBuilder.Towers.cs): cada área nace en el sitio
+        // TORRES TEMÁTICAS (Berón 2026-10-29; docs/areas/plano-edificios.md, SampleSceneBuilder.Towers.cs): cada área nace en el sitio
         // de su torre con la planta de la torre (el «Mat»: el piso entero es suyo) y luego sube a su piso con TowerFloor.
         var areas = new List<SanctuaryArea>
         {
@@ -3371,16 +3371,16 @@ public static partial class SampleSceneBuilder
             BuildAreaBox(areasGroup.transform, "Kitchen_Area", "Cocina", SanctuaryAreaType.Kitchen, 1,
                 ServiciosCenter, ServiciosSize, new Color(0.75f, 0.45f, 0.30f)),   // P0 · restaurante: cocina abierta en el CENTRO y el comedor (para 30+) en su anillo
             BuildAreaBox(areasGroup.transform, "Infirmary_Area", AreaWork.Hospital, SanctuaryAreaType.Infirmary, 1,
-                ServiciosCenter, ServiciosSize, new Color(0.85f, 0.95f, 0.90f)),   // P1–P3 · HOSPITAL de 3 plantas: urgencias, quirófanos/UCI y veterinario (docs/hospital.md)
-            // CRÍA (docs/cria-simulation.md): el corazón del santuario, una sala de crías del hielo (recintos con crías de
+                ServiciosCenter, ServiciosSize, new Color(0.85f, 0.95f, 0.90f)),   // P1–P3 · HOSPITAL de 3 plantas: urgencias, quirófanos/UCI y veterinario (docs/areas/hospital.md)
+            // CRÍA (docs/areas/cria-simulation.md): el corazón del santuario, una sala de crías del hielo (recintos con crías de
             // verdad, cocina de leche, almacén), encima del hospital veterinario.
             BuildAreaBox(areasGroup.transform, "CubCare_Area", "Cría", SanctuaryAreaType.CubCare, 1,
                 ServiciosCenter, ServiciosSize, new Color(0.8f, 0.72f, 0.55f)),   // P4
-            // LABORATORIO DE CARNE CULTIVADA (nivel 3; docs/carne-cultivada.md): carne para los depredadores sin matar animales.
+            // LABORATORIO DE CARNE CULTIVADA (nivel 3; docs/areas/carne-cultivada.md): carne para los depredadores sin matar animales.
             BuildAreaBox(areasGroup.transform, "CulturedMeatLab_Area", "Carne Cultivada", SanctuaryAreaType.CulturedMeatLab, 3,
                 ServiciosCenter, ServiciosSize, new Color(0.85f, 0.7f, 0.68f)),   // P5
 
-            // ── ENTRENAMIENTO (2 h diarias, docs/jornada-y-rotacion.md y docs/entrenamiento-areas.md) ──
+            // ── ENTRENAMIENTO (2 h diarias, docs/sistemas/jornada-y-rotacion.md y docs/areas/entrenamiento-areas.md) ──
             BuildAreaBox(areasGroup.transform, "Gym_Area", "Gimnasio", SanctuaryAreaType.Gym, 1,
                 EntrenamientoCenter, GymSize, new Color(0.55f, 0.6f, 0.7f)),   // P0 (P1: cardio y zona libre)
             BuildAreaBox(areasGroup.transform, "Calisthenics_Area", "Calistenia", SanctuaryAreaType.Calisthenics, 1,
@@ -3392,11 +3392,11 @@ public static partial class SampleSceneBuilder
             BuildAreaBox(areasGroup.transform, "MartialArts_Area", "Dojo (artes marciales)", SanctuaryAreaType.MartialArts, 1,
                 EntrenamientoCenter, GymSize, new Color(0.8f, 0.7f, 0.55f)),   // P5 (en obras)
 
-            // ── EL HUERTO, en el ÁRBOL DE LOS CAMPOS (docs/edificio-arbol.md): una franja de 24 × 9 m de su piso 5 (32 × 32 m: el tanque, a 3 m del borde) ──
+            // ── EL HUERTO, en el ÁRBOL DE LOS CAMPOS (docs/areas/edificio-arbol.md): una franja de 24 × 9 m de su piso 5 (32 × 32 m: el tanque, a 3 m del borde) ──
             BuildAreaBox(areasGroup.transform, "Garden_Area", "Huerto", SanctuaryAreaType.Garden, 2,
                 TreeSpec.Site, new Vector2(24f, 9f), new Color(0.50f, 0.70f, 0.40f)),
             // ── PRODUCCIÓN (construcción, mecánica y textil; los cultivos se mudaron al Árbol de los Campos) ──
-            // CONSTRUCCIÓN (docs/construction-simulation.md): obras y reparaciones de las áreas humanas; aquí se guardan la
+            // CONSTRUCCIÓN (docs/areas/construction-simulation.md): obras y reparaciones de las áreas humanas; aquí se guardan la
             // maquinaria y el material. La dirige Tofelite («Tote»), el esposo de Lizmibet.
             BuildAreaBox(areasGroup.transform, "Construction_Area", "Construcción", SanctuaryAreaType.Construction, 2,
                 ProduccionCenter, ProduccionSize, new Color(0.85f, 0.72f, 0.4f)),   // P0
@@ -3412,7 +3412,7 @@ public static partial class SampleSceneBuilder
         // EL ÁRBOL DE LOS CAMPOS (Berón 2026-10-29; SampleSceneBuilder.Tree.cs): los 8 cultivos (antes parcelas sueltas junto al
         // agua y el huerto con su rotación en la torre de Producción) en los pisos del árbol; el Huerto, en su piso 5.
         BuildTree(areasGroup.transform, garden);
-        BuildFotobio(areasGroup.transform.Find(TreeSpec.RootName));   // su fachada de fotobiorreactores (docs/fotobiorreactores.md)
+        BuildFotobio(areasGroup.transform.Find(TreeSpec.RootName));   // su fachada de fotobiorreactores (docs/areas/fotobiorreactores.md)
         // POCOS EDIFICIOS CON MUCHOS PISOS (Berón 2026-10-29): todo lo construido va ELEVADO (12 m, sobre columnas: el suelo
         // queda para la naturaleza) y los pisos de cada torre se apilan 11 m uno sobre otro, de abajo arriba (TowerFloor →
         // StackOn); se sube y se baja en alfombra voladora. Las áreas con plantas propias (hospital, física, química, biología)
@@ -3421,17 +3421,17 @@ public static partial class SampleSceneBuilder
         void Floor(Transform t) => size[t] = TowerFloor(t);
         Transform Child(Transform area, string name) { Transform c = new GameObject(name).transform; c.SetParent(area, false); return c; }
         //  · SERVICIOS: Restaurante · Hospital (urgencias · quirófanos y UCI · veterinario) · Cría · Carne Cultivada · Sala de asambleas.
-        //    Un ÁRBOL (docs/edificio-arbol.md §Migración): 4 niveles de hélice (2026-11-05: el cuarto, para la Sala de asambleas: las mismas caras
+        //    Un ÁRBOL (docs/areas/edificio-arbol.md §Migración): 4 niveles de hélice (2026-11-05: el cuarto, para la Sala de asambleas: las mismas caras
         //    del nivel 2, así que la planta no cambia), sus 7 pisos en orden (nivel 1, lados a y c; nivel 2, b y d; nivel 3, a y c; nivel 4, b) y uno libre.
         BeginTreeTower(areasGroup.transform, TorreServicios, ServiciosCenter, ServiciosSize, ServiciosYaw, 4);
         Floor(kitchen.transform);
         Floor(hospital.transform); Floor(Child(hospital.transform, "Planta_hospitalizacion")); Floor(Child(hospital.transform, "Planta_veterinaria"));   // las amuebla BuildHospital
         Floor(cria.transform); Floor(meat.transform);
-        SanctuaryArea assembly = BuildAssembly(areasGroup.transform); areas.Add(assembly);   // (2026-11-05) docs/piso-asambleas.md
-        BuildGuardRoom(areasGroup.transform);   // (2026-11-05) el piso libre del nivel 4: docs/sala-de-guardia.md
+        SanctuaryArea assembly = BuildAssembly(areasGroup.transform); areas.Add(assembly);   // (2026-11-05) docs/areas/piso-asambleas.md
+        BuildGuardRoom(areasGroup.transform);   // (2026-11-05) el piso libre del nivel 4: docs/areas/sala-de-guardia.md
         //  · ENTRENAMIENTO: Gimnasio · Cardio y zona libre · Calistenia, parkour y crossfit · Yoga (Hatha) · Yoga (Ashtanga) · Ballet
         //    · Dojo. Lo pesado y ruidoso (las máquinas) abajo; lo silencioso (los dos pisos de yoga y las salas en obras) arriba.
-        //    Un ÁRBOL (Berón 2026-11-04: se quitó el anillo de yoga y el yoga pasó a sus propios pisos, docs/yoga-pisos.md): los niveles
+        //    Un ÁRBOL (Berón 2026-11-04: se quitó el anillo de yoga y el yoga pasó a sus propios pisos, docs/areas/yoga-pisos.md): los niveles
         //    que pidan sus pisos (regla J16, abajo) y sus pisos en orden; una punta con frutales en cada hueco de la hélice.
         //    (2026-11-04, regla J16: «se pueden agregar pisos, si las 2 de yoga existentes no son suficientes se crea una más y lo mismo con
         //    el dojo y demás áreas de estudio y entrenamiento») Cada centro lleva los PISOS que necesita para TODOS los miembros a la vez:
@@ -3455,26 +3455,26 @@ public static partial class SampleSceneBuilder
         var dojF = Copies(dojo.transform, dojo.transform, "Dojo", "Planta_dojo");
         var entFloors = new List<Transform>();
         entFloors.AddRange(gymF); entFloors.Add(cardio); entFloors.AddRange(calF); entFloors.AddRange(hatF); entFloors.AddRange(ashF); entFloors.AddRange(balF); entFloors.AddRange(dojF);
-        // Dos pisos por nivel; encima, los del Aula (AulaFloors, docs/piso-aula.md: la sala de estudio, con la misma regla).
-        int entLevels = Mathf.CeilToInt((entFloors.Count + AulaFloors() + MusicFloors()) / 2f);   // + los pisos de Música (docs/piso-musica.md), encima del Aula
+        // Dos pisos por nivel; encima, los del Aula (AulaFloors, docs/areas/piso-aula.md: la sala de estudio, con la misma regla).
+        int entLevels = Mathf.CeilToInt((entFloors.Count + AulaFloors() + MusicFloors()) / 2f);   // + los pisos de Música (docs/areas/piso-musica.md), encima del Aula
         Debug.Log($"[Centros] {members} miembros: Gimnasio {gymF.Count}, Calistenia {calF.Count}, Yoga Hatha {hatF.Count}, Yoga Ashtanga {ashF.Count}, Ballet {balF.Count}, Dojo {dojF.Count} pisos; la torre del Entrenamiento, {entFloors.Count} pisos en {entLevels} niveles.");
         BeginTreeTower(areasGroup.transform, TorreEntrenamiento, EntrenamientoCenter, GymSize, EntrenamientoYaw, entLevels);
         foreach (Transform t in entFloors) Floor(t);
-        // (2026-11-04) EL AULA (docs/piso-aula.md): encima del Dojo: aula de clases y sala de estudio para todos.
+        // (2026-11-04) EL AULA (docs/areas/piso-aula.md): encima del Dojo: aula de clases y sala de estudio para todos.
         SanctuaryArea aula = BuildClassroom(areasGroup.transform); areas.Add(aula);
-        // (2026-11-05) LA MÚSICA (docs/piso-musica.md): encima del Aula: sala de grabación y escenario de conciertos.
+        // (2026-11-05) LA MÚSICA (docs/areas/piso-musica.md): encima del Aula: sala de grabación y escenario de conciertos.
         SanctuaryArea music = BuildMusic(areasGroup.transform); areas.Add(music);
         //  · PRODUCCIÓN (más baja, junto al Árbol de los Campos): Construcción · Mecánica · Estudio Textil. La maquinaria
         //    pesada, abajo.
         //    Un ÁRBOL: sus 3 pisos en orden, el HUERTO VERTICAL (2026-11-08: los pisos de estantes LED que pida la demanda de verdura, regla P19;
-        //    docs/produccion-maquinaria.md) y el garaje del submarino en el primer piso libre; los niveles que hagan falta (2 pisos por nivel; hoy 3).
+        //    docs/areas/produccion-maquinaria.md) y el garaje del submarino en el primer piso libre; los niveles que hagan falta (2 pisos por nivel; hoy 3).
         var (farmRacks, farmFloors) = VerticalFarmPlan();
         int prodLevels = Mathf.Max(2, Mathf.CeilToInt((3 + farmFloors + 1) / 2f));
         BeginTreeTower(areasGroup.transform, TorreProduccion, ProduccionCenter, ProduccionSize, ProduccionYaw, prodLevels, ProduccionFirstY, 4f);
         Floor(works.transform); Floor(mech.transform); Floor(textile.transform);
         if (farmRacks > 0) { SanctuaryArea farm = BuildVerticalFarm(areasGroup.transform); areas.Add(farm); }
         Debug.Log($"[Torres] Producción: {prodLevels} niveles (Construcción, Mecánica, Estudio Textil, {farmFloors} piso(s) de Huerto vertical con {farmRacks} estantes y el garaje).");
-        BuildResidenceTower(areasGroup.transform);   // la Residencia: edificio-árbol en la isla (docs/residencia.md)
+        BuildResidenceTower(areasGroup.transform);   // la Residencia: edificio-árbol en la isla (docs/areas/residencia.md)
         // Los EDIFICIOS que juntan varias áreas llevan el nombre de su torre (el de su planta baja diría solo una).
         BuildingNames[kitchen.transform] = TorreServicios; BuildingNames[gym.transform] = TorreEntrenamiento; BuildingNames[works.transform] = TorreProduccion;
         FurnishYogaFloors(hatF, ashF, size[yoga.transform]);   // los pisos de yoga (regla J16: los que pidan los miembros), cada uno con su sala occidental y su sala tradicional
@@ -3485,7 +3485,7 @@ public static partial class SampleSceneBuilder
         for (int k = 0; k < calF.Count; k++) { FurnishCalisthenics(calF[k], size[calF[k]]); Centre(calF[k], "Calistenia", k + 1); }   // calistenia, parkour y crossfit (ya construidos)
         Vector2 criaLayout = new Vector2(26f, 20f);                      // la sala de crías y el laboratorio, con su distribución de 26 × 20, centrada en su piso
         FurnishCria(cria.transform, criaLayout);
-        // EN OBRAS, con su equipo de 3 y su acabado ya diseñado (docs/obras-dojo-ballet.md): aparece al terminar.
+        // EN OBRAS, con su equipo de 3 y su acabado ya diseñado (docs/areas/obras-dojo-ballet.md): aparece al terminar.
         for (int k = 0; k < balF.Count; k++) { PrepareSite(balF[k], size[balF[k]], k == 0 ? "Sala de Ballet" : $"Sala de Ballet (piso {k + 1})", 6, 3, FinishedBallet); Centre(balF[k], "Ballet", k + 1); }
         for (int k = 0; k < dojF.Count; k++) { PrepareSite(dojF[k], size[dojF[k]], k == 0 ? "Dojo (MMA, kickboxing y karate)" : $"Dojo (piso {k + 1})", 6, 3, FinishedDojo); Centre(dojF[k], "Dojo", k + 1); }
         // ASEOS en cada área humana (el restaurante y la enfermería los ponen al amueblarse).
@@ -3495,28 +3495,28 @@ public static partial class SampleSceneBuilder
         s2 = size[textile.transform]; Aseos(textile.transform, new Vector3(3.5f, 0.1f, -s2.y * 0.5f + 0.9f), 0f, 1);   // textil (al fondo, junto a los ovillos)
         s2 = criaLayout; Aseos(meat.transform, new Vector3(s2.x * 0.5f - 0.2f - 1.9f, 0.1f, -s2.y * 0.5f + 0.9f), 0f, 1);   // laboratorio
         s2 = size[works.transform]; Aseos(works.transform, new Vector3(s2.x * 0.5f - 0.2f - 1.9f, 0.1f, s2.y * 0.5f - 0.9f), 180f, 1);   // construcción
-        // El ALMACÉN DE RACIONES del alimentador, en el piso del laboratorio (Berón 2026-11-05: «retira el comedero»; docs/alimentador.md).
+        // El ALMACÉN DE RACIONES del alimentador, en el piso del laboratorio (Berón 2026-11-05: «retira el comedero»; docs/areas/alimentador.md).
         GameObject feeder = new GameObject("Almacen_raciones"); feeder.transform.SetParent(meat.transform, false);
         feeder.transform.localPosition = new Vector3(7.5f, 0f, 4.5f);   // libre: 2 m de la cámara fría y de la formadora
         KitchenProps.C(feeder.transform, new Vector3(0f, 0.7f, 0f), new Vector3(1.4f, 1.4f, 0.7f), KitchenProps.DarkSteel, 0f, "Camara_raciones");
         WorldLabel fwl = feeder.AddComponent<WorldLabel>(); fwl.text = "Raciones para el alimentador"; fwl.height = 1.8f;
         CulturedMeatLab.Build(meat.transform, criaLayout, feeder.transform);
-        //  · CIENCIAS (docs/edificios-investigacion.md): Física (reactor TRIGA, ciclotrón y la sala de experimentos con su anillo
+        //  · CIENCIAS (docs/areas/edificios-investigacion.md): Física (reactor TRIGA, ciclotrón y la sala de experimentos con su anillo
         //    y la torre de Foucault) · Química (síntesis y análisis) · Biología (cultivo y molecular). El reactor de
         //    investigación va abajo: su piscina baja como un pilar hasta el suelo.
         //    Un ÁRBOL: 4 niveles; sus 7 pisos en orden (el reactor abajo: su piscina cuelga 4 m bajo la losa) y uno libre; 8 puntas con frutales.
         Helix ciencias = BeginTreeTower(areasGroup.transform, TorreCiencias, CienciasCenter, CienciasSize, CienciasYaw, 4);
         SanctuaryArea chem = BuildChemistry(areasGroup.transform); areas.Add(chem);
         SanctuaryArea bio = BuildBiology(areasGroup.transform); areas.Add(bio);
-        // (2026-11-04) INFORMÁTICA (docs/piso-informatica.md): el piso libre de Ciencias, encima de Biología: el clúster de IA local.
+        // (2026-11-04) INFORMÁTICA (docs/areas/piso-informatica.md): el piso libre de Ciencias, encima de Biología: el clúster de IA local.
         SanctuaryArea info = BuildInformatics(areasGroup.transform); areas.Add(info);
-        // (2026-11-08) LA SEGUNDA FACHADA DE FOTOBIORREACTORES (docs/fotobiorreactores.md §2026-11-08): en el tronco de Ciencias, junto a Biología, que la cuida.
+        // (2026-11-08) LA SEGUNDA FACHADA DE FOTOBIORREACTORES (docs/areas/fotobiorreactores.md §2026-11-08): en el tronco de Ciencias, junto a Biología, que la cuida.
         BuildFotobioTower(ciencias);
-        // EL SITIO NUCLEAR (Berón 2026-11-05; docs/sitio-nuclear.md): lejos y a sotavento. Desde el 2026-11-08 (§25) la Central Nuclear y la Planta Atómica,
+        // EL SITIO NUCLEAR (Berón 2026-11-05; docs/areas/sitio-nuclear.md): lejos y a sotavento. Desde el 2026-11-08 (§25) la Central Nuclear y la Planta Atómica,
         // con el ciclotrón, la sala de experimentos y el Centro de emergencias, están BAJO EL MAR, en el Santuario Marino (BuildMarinePlant). Aquí, solo su
         // estación de alfombras con la Línea y la lógica del sitio.
         BuildNuclearStation(areasGroup.transform);
-        // Los EDIFICIOS (sus plantas bajas): sin puentes ni escaleras, cada uno con sus alfombras (docs/alfombras-plan.md).
+        // Los EDIFICIOS (sus plantas bajas): sin puentes ni escaleras, cada uno con sus alfombras (docs/areas/alfombras-plan.md).
         var ground = new List<SanctuaryArea>();   // (todos son edificios-árbol: llevan sus alfombras en el techo y en el suelo)
         // Techo de cada edificio: sobre su piso MÁS ALTO (la cadena entera); encima va su techo de alfombras, con sus paneles.
         _roofs.Clear();
@@ -3529,7 +3529,7 @@ public static partial class SampleSceneBuilder
         foreach (SanctuaryArea g in ground)
         {
             int nf = FloorsOf(g.transform).Count + 1;   // + el techo de alfombras
-            if (nf > StructuralLimits.MaxFloors) Debug.LogError($"[Estructura] «{BuildingOf(g.transform, g.displayName)}» tendría {nf} pisos y las columnas aguantan {StructuralLimits.MaxFloors}: refuérzalas (docs/columnas-sismicas.md).");
+            if (nf > StructuralLimits.MaxFloors) Debug.LogError($"[Estructura] «{BuildingOf(g.transform, g.displayName)}» tendría {nf} pisos y las columnas aguantan {StructuralLimits.MaxFloors}: refuérzalas (docs/areas/columnas-sismicas.md).");
         }
         foreach (SanctuaryArea g in ground)
         {
@@ -3545,7 +3545,7 @@ public static partial class SampleSceneBuilder
         return areas.ToArray();
     }
 
-    // HUERTOS POR GREMIO (docs/huertos-y-cultivos.md): parcelas de policultivo, cada una con plantas que se ayudan. Desde el
+    // HUERTOS POR GREMIO (docs/areas/huertos-y-cultivos.md): parcelas de policultivo, cada una con plantas que se ayudan. Desde el
     // 2026-10-29 están en los pisos del ÁRBOL DE LOS CAMPOS (SampleSceneBuilder.Tree.cs): el árbol las monta con MakePlot. Las
     // plantas las genera GardenPlot al arrancar; aquí se pone el suelo (si lo lleva) y el cartel.
     static GameObject MakePlot(Transform parent, GardenPlot.Guild guild, Vector3 center, Vector2 size, int seed, bool withSoil, Transform upperOf = null)
@@ -3566,7 +3566,7 @@ public static partial class SampleSceneBuilder
                 guild == GardenPlot.Guild.Arrozal ? new Color(0.62f, 0.78f, 0.84f) : new Color(0.70f, 0.64f, 0.58f));
         }
         CreateAreaLabel(go.transform, GardenPlot.Title(guild), new Vector3(0f, 2.2f, -size.y * 0.5f - 1f));
-        // Los CULTIVOS también van ELEVADOS (docs/construcciones-elevadas.md): el huerto no deja el suelo del bosque en
+        // Los CULTIVOS también van ELEVADOS (docs/areas/construcciones-elevadas.md): el huerto no deja el suelo del bosque en
         // sombra ni lo pisa; abajo crece el musgo y pasan los animales.
         if (upperOf != null) { _upperOf[go.transform] = upperOf; Elevate(go.transform, new Vector2(size.x + 2f, size.y + 2f), UpperFloorGap, groundBelow: false); }
         else if (withSoil) Elevate(go.transform, new Vector2(size.x + 2f, size.y + 2f), ElevatedHeight);
@@ -3574,10 +3574,10 @@ public static partial class SampleSceneBuilder
     }
 
 
-    // CONSTRUCCIONES ELEVADAS (docs/construcciones-elevadas.md): el santuario no ocupa el suelo que pertenece a la
+    // CONSTRUCCIONES ELEVADAS (docs/areas/construcciones-elevadas.md): el santuario no ocupa el suelo que pertenece a la
     // naturaleza. Cada área se sube a una PLATAFORMA a `height` m sobre columnas finas (bajo ella pasan animales y crece
-    // la flora) y se sube y se baja en ALFOMBRA VOLADORA (docs/alfombras-plan.md); el borde queda libre para saltar.
-    /// <summary>Cada piso del ENTRENAMIENTO (docs/entrenamiento-areas.md §3.1): 2 m libres alrededor de cada máquina.</summary>
+    // la flora) y se sube y se baja en ALFOMBRA VOLADORA (docs/areas/alfombras-plan.md); el borde queda libre para saltar.
+    /// <summary>Cada piso del ENTRENAMIENTO (docs/areas/entrenamiento-areas.md §3.1): 2 m libres alrededor de cada máquina.</summary>
     public static readonly Vector2 GymSize = new Vector2(36f, 26f);
     public const float ElevatedHeight = 12f;   // a 12 m las áreas humanas no tienen al bosque en sombra ni lo molestan con su ruido
 
@@ -3605,7 +3605,7 @@ public static partial class SampleSceneBuilder
         for (int sx = -1; sx <= 1; sx += 2)
             for (int sz = -1; sz <= 1; sz += 2)
                 Solid(s, new Vector3(sx * (X - c), -0.19f, sz * (Z - c)), new Vector3(c * 1.4142f, 0.3f, c * 1.4142f), woodDark, "Losa_chaflan").localRotation = Quaternion.Euler(0f, 45f, 0f);
-        // MEGACOLUMNAS SÍSMICAS (docs/columnas-sismicas.md): en cada punta, un TUBO DE ACERO RELLENO DE HORMIGÓN (CFST, la
+        // MEGACOLUMNAS SÍSMICAS (docs/areas/columnas-sismicas.md): en cada punta, un TUBO DE ACERO RELLENO DE HORMIGÓN (CFST, la
         // familia de Taipei 101 o Tianjin 117), Ø 0,9 m (Ø 1,2 en las plantas grandes), con collar en la losa y collar de
         // empalme a media altura; abajo, AISLADOR DE CAUCHO CON NÚCLEO DE PLOMO sobre pedestal y encepado; bajo cada losa, un
         // ANILLO-CINTURÓN de acero que ata las 8 columnas como un tubo, y riostras de pandeo restringido (BRB) en X en 4 caras
@@ -3637,7 +3637,7 @@ public static partial class SampleSceneBuilder
             // (Sin riostras en X entre columnas: tapaban el paisaje, Berón 2026-10-29. El anillo-cinturón ata las 8 columnas.)
         }
 
-        // SIN BORDES NI ESCALERA (Berón 2026-10-27, docs/alfombras-plan.md): el borde queda libre para saltar de una
+        // SIN BORDES NI ESCALERA (Berón 2026-10-27, docs/areas/alfombras-plan.md): el borde queda libre para saltar de una
         // plataforma a otra, y se sube y se baja en ALFOMBRA VOLADORA (cada piso tiene su área de alfombras; se ponen al
         // final, con los muebles ya puestos: PlaceCarpetAreas). Solo las plataformas hijas conservan sus escaleras.
 
@@ -3859,7 +3859,7 @@ public static partial class SampleSceneBuilder
 
 
     // ── Holographic menu (Menú → Magia / Yoga / Sistema) ────────────────────────
-    // Ver docs/ui-holographic-menu.md para el diseno completo. Sistema de UI propio en
+    // Ver docs/sistemas/ui-holographic-menu.md para el diseno completo. Sistema de UI propio en
     // pantalla (screen-space, no world-space) — no reutiliza FollowingArrays/UI (ese sigue
     // intacto para el radar de animales, ver ui-following-arrays.md), porque los requisitos
     // cambiaron a "hologramas planos, chicos, anclados a una esquina, pool reutilizable" que
@@ -3921,7 +3921,7 @@ public static partial class SampleSceneBuilder
     static List<BodyPosition> BuildBodyPositionList()
     {
         // Teclas elegidas para no chocar con WASD/Shift/Space/J-L-I-K/1-0/Tab/Enter/V/Escape/Z-X-C-V-B ni con la E (solo interactuar).
-        // Ver docs/ui-holographic-menu.md para la tabla completa y la colision conocida de V.
+        // Ver docs/sistemas/ui-holographic-menu.md para la tabla completa y la colision conocida de V.
         (BodyPart part, string description, KeyCode hotkey)[] defs =
         {
             (BodyPart.Elbows,    "Codos",    KeyCode.Q),
@@ -4111,15 +4111,15 @@ public static partial class SampleSceneBuilder
         WireMeditationArea(parent, "CubCare_Area", "Cría", new Color(0.8f, 0.72f, 0.55f), MissionKind.Channel, null, virtualOnly: true);
         // (2026-11-08) La Planta Atómica y la Central Nuclear están en el Santuario Marino: sus máquinas de virtualización las pone BuildMarinePlant.
         // Química (Curie, Patterson), Biología (Jenner) y Central Nuclear (Chernóbil): sus historias (VirtualizationMachine.StoryScenes)
-        // se entran por la máquina de SU área (docs/microcosmos-cientificos.md).
+        // se entran por la máquina de SU área (docs/microcosmos/microcosmos-cientificos.md).
         WireMeditationArea(parent, "Chemistry_Area", "Química", new Color(0.78f, 0.85f, 0.9f), MissionKind.Channel, null, virtualOnly: true);
         WireMeditationArea(parent, "Biology_Area", "Biología", new Color(0.78f, 0.9f, 0.78f), MissionKind.Channel, null, virtualOnly: true);
         // (2026-11-04) Los pisos nuevos: Informática (Bill Gates en Albuquerque) y el Aula (MacKenzie Scott en Prairie View).
         WireMeditationArea(parent, "Informatics_Area", "Informática", new Color(0.55f, 0.65f, 0.8f), MissionKind.Channel, null, virtualOnly: true);
         WireMeditationArea(parent, EnergyFloorName, EnergyRule.Area, new Color(0.55f, 0.75f, 0.6f), MissionKind.Channel, null, virtualOnly: true);   // (2026-11-05) el Parque Energético
         WireMeditationArea(parent, "Classroom_Area", "Aula", new Color(0.85f, 0.8f, 0.65f), MissionKind.Channel, null, virtualOnly: true);
-        WireMeditationArea(parent, AssemblyArea, AssemblyTitle, new Color(0.62f, 0.48f, 0.34f), MissionKind.Channel, null, virtualOnly: true);   // (2026-11-05) docs/piso-asambleas.md
-        WireMeditationArea(parent, MusicArea, "Música", new Color(0.62f, 0.5f, 0.72f), MissionKind.Channel, null, virtualOnly: true);   // (2026-11-05) docs/piso-musica.md
+        WireMeditationArea(parent, AssemblyArea, AssemblyTitle, new Color(0.62f, 0.48f, 0.34f), MissionKind.Channel, null, virtualOnly: true);   // (2026-11-05) docs/areas/piso-asambleas.md
+        WireMeditationArea(parent, MusicArea, "Música", new Color(0.62f, 0.5f, 0.72f), MissionKind.Channel, null, virtualOnly: true);   // (2026-11-05) docs/areas/piso-musica.md
 
         // Segunda vía de entrada: el hechizo de loto (arranca bloqueado; se activa al aprenderlo).
         GameObject player = GameObject.Find("Player");

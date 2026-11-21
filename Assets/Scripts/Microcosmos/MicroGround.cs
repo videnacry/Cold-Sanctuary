@@ -3,7 +3,7 @@ using Unity.Collections;
 using UnityEngine;
 
 /// <summary>
-/// EL SUELO DE LOS MICROCOSMOS: LA FLORA ENCIMA, NUNCA DEBAJO, Y LA CAPA DE TIERRA (docs/microcosmos-suelo-y-elementos.md; Berón
+/// EL SUELO DE LOS MICROCOSMOS: LA FLORA ENCIMA, NUNCA DEBAJO, Y LA CAPA DE TIERRA (docs/microcosmos/microcosmos-suelo-y-elementos.md; Berón
 /// 2026-11-04: «en el microcosmos de Ambrosio he visto que la vegetación se está creando bajo el suelo … una de las reglas debería
 /// ser que la vegetación se cree encima de cada superficie y nunca debajo … colocar una capa de superficie que tenga una altura de
 /// 10 cm … un suelo de tierra, el cual tiene sus irregularidades, cúmulos y piedras»).

@@ -4,7 +4,7 @@ using UnityEngine;
 /// Evolución lenta de una aptitud por uso/desuso, dentro de una banda alrededor de su valor base.
 /// El uso la empuja hacia arriba; el desuso la deja decaer. Modela el cambio por tarea/tiempo
 /// (trabajo físico → fuerza, estudio → percepción/razón, variedad → adaptabilidad, sedentarismo → ↓).
-/// Ver docs/creature-stats.md §Evolución de aptitudes.
+/// Ver docs/sistemas/creature-stats.md §Evolución de aptitudes.
 /// </summary>
 public static class AptitudeEvolution
 {

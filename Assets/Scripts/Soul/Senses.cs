@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Catálogo de SENTIDOS (docs/consciousness-mechanics.md §3) — "observar" no es solo la vista: es PERCIBIR por cualquier
+/// Catálogo de SENTIDOS (docs/sistemas/consciousness-mechanics.md §3) — "observar" no es solo la vista: es PERCIBIR por cualquier
 /// receptor que el ser tenga. Base científica (el ser humano ya tiene &gt;5; los animales, más): exterocepción
 /// (vista/oído/olfato/gusto/tacto/termocepción/ecolocalización/magneto/electrorrecepción) + interocepción/propiocepción/
 /// vestibular/nocicepción. Cada sentido tiene un ALCANCE distinto (el olfato llega lejos; el tacto exige contacto). Un

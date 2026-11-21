@@ -16,7 +16,7 @@ using UnityEngine;
 /// • Si fatReserves baja de <see cref="minFatThreshold"/>, no hay combustible
 ///   para generar ATP: el regen se pausa igualmente.
 ///
-/// Diseño docs/stats-as-truth.md: fatReserves → elemento → energía (ATP).
+/// Diseño docs/sistemas/stats-as-truth.md: fatReserves → elemento → energía (ATP).
 /// </summary>
 [RequireComponent(typeof(CharacterLevel))]
 public class ATPRegenSpell : MonoBehaviour

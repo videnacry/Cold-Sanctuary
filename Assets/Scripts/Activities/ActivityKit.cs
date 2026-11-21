@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// HERRAMIENTAS PARA HACER LAS ACTIVIDADES (docs/actividades-y-uniformes.md; Berón 2026-11-04: «parece que solo van al piso que les
+/// HERRAMIENTAS PARA HACER LAS ACTIVIDADES (docs/sistemas/actividades-y-uniformes.md; Berón 2026-11-04: «parece que solo van al piso que les
 /// toca y no hacen nada, deberían realizar las actividades»). Lo que comparten la comida (<see cref="MealRitual"/>), el que hace una
 /// actividad (<see cref="ActivityPerformer"/>) y los uniformes (<see cref="Uniforms"/>), para un cuerpo de cubos humano
 /// (<see cref="CreatureRig"/>) y para un insecto-humano (<see cref="CubeInsect"/>):

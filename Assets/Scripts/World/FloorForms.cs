@@ -3,7 +3,7 @@ using UnityEngine;
 
 /// <summary>
 /// LAS TRES FORMAS DE CADA PISO DEL SANTUARIO (la tercera, la de MICROCOSMOS, desde 2026-11-04: <see cref="MicroName"/>,
-/// docs/microcosmos-suelo-y-elementos.md) (docs/construcciones-elevadas.md §Formas del piso; Berón 2026-11-03: «todos los pisos
+/// docs/microcosmos/microcosmos-suelo-y-elementos.md) (docs/areas/construcciones-elevadas.md §Formas del piso; Berón 2026-11-03: «todos los pisos
 /// deben tener preparada su forma en construcción y su forma finalizada, y los microcosmos se crean siempre sobre la forma
 /// finalizada»).
 /// - FORMA FINALIZADA: lo que el piso es terminado. En un piso en obras (Dojo, Sala de Ballet: <see cref="ConstructionProject"/>)

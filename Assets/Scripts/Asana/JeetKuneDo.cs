@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LAS TÉCNICAS DE BRUCE LEE en el cuerpo de cubos (docs/microcosmos-bruce-lee.md §3): las posturas y secuencias que enseña
+/// LAS TÉCNICAS DE BRUCE LEE en el cuerpo de cubos (docs/microcosmos/microcosmos-bruce-lee.md §3): las posturas y secuencias que enseña
 /// en su microcosmos del Dojo. Como el yoga (<see cref="SunSalutation"/>), cada postura es un <see cref="AsanaPoseSpell"/>
 /// (rotación local por <see cref="BodyPart"/>, las no nombradas vuelven a 0) y las MANOS van por IK (<c>reaches</c>, en
 /// coordenadas del cuerpo nativo: pies y≈0, cadera y≈0,95, hombros en (±0,26; 1,51; 0), +Z delante). El brazo mide ~0,57
