@@ -10,14 +10,14 @@ codigo: [CsTheme, Anima, Animal, BirdBehavior, CarpetPad, CsUi, GameKeys, NeedsD
 
 | # | Qué | Por qué quedó pendiente |
 |---|---|---|
-| V1 | Revisar y fusionar el PR de `claude/docs-indexacion` (docs por carpetas, cabeceras, `tools/docs.py`, CI `docs.yml`) | Regla 9: otra sesión revisa antes de fusionar |
+| ~~V1~~ | Hecho 2026-11-24: revisado y fusionado (PR #315). Revisar y fusionar el PR de `claude/docs-indexacion` (docs por carpetas, cabeceras, `tools/docs.py`, CI `docs.yml`) | Regla 9: otra sesión revisa antes de fusionar |
 | V2 | En tu PC: `git checkout master && git pull` en `Documents/GitHub/Cold-Sanctuary` | Tu master local estaba ~780 commits atrás; desde la nube no se borran los `.lock` de git en tu PC |
 | V3 | Decidir las ramas con commits fuera de master: `bk` (copia de julio, 1 commit) y `codeship-export` (2 commits: datos de exportación que `.gitignore` excluye) | No se fusionaron a ciegas; el resto ya está en master (`edificios` + `project-thread-t4uk91`) |
 | V4 | Unity: no se compiló ni se lanzaron tests | El Editor no respondía por MCP y la regla 2 pide preguntar antes de usar Unity |
 | V5 | Fusionar `personajes/fichas-antiguas/character-*.md` (más largas) en sus fichas de `personajes/` | No se borra información sin revisarla |
 | V6 | Revisar las cabeceras automáticas (`temas`, `codigo`) y rellenar `modelos/animaciones/retos` al tocar cada doc | Se generaron por palabras clave; `python3 tools/docs.py temas` las lista |
 | V7 | Ramas abiertas que tocan docs: al fusionarlas tras V1, si un `.cs` choca solo en la ruta de un comentario, quedarse con la ruta nueva; `python3 tools/docs.py check` señala enlaces rotos | 191 docs cambiaron de carpeta |
-| V8 | El documento de CodeShip «trabajar con subagentes y ahorrar tokens» no está en su rama `integracion` local | Puede estar en otra rama de CodeShip sin fusionar |
+| ~~V8~~ | Resuelto 2026-11-24: es `docs/relevo.md` de CodeShip (PR #12). El documento de CodeShip «trabajar con subagentes y ahorrar tokens» no está en su rama `integracion` local | Puede estar en otra rama de CodeShip sin fusionar |
 
 Escrito el 2026-11-18 para **repartir el trabajo en hilos nuevos y cortos**. Recoge lo que llevaba el hilo
 «Pruebas en vivo en Unity» (el probador en el PC de Berón) y lo que dicen el sistema de QA y el checklist.
@@ -52,6 +52,7 @@ Ramas (2026-11-18): la integración es `claude/edificios` (por delante de `maste
 | 12 | **Ver el microcosmos sin Unity** (PB-168, Berón 11-20): Unity se cuelga y tarda en reiniciar; ver el escenario de Musk y sus retos sin él. En la web, la máquina de simulación no puede abrir microcosmos porque cada build lleva solo sus escenas (límite de 100 MB de Pages), y una entrada en Inicio choca con lo mismo | En curso: visor three.js estilo CodeShip que lee un volcado de la escena (cubos con su color) y los retos; en el PC solo hace falta el menú de exportar (sin Play ni build) | `claude/project-thread-s9krva` → `edificios` | [visor-web.md](plataforma/visor-web.md) |
 | 13 | **Microcosmos de Musk recreado en CodeShip** (PB-168, Berón 11-20 09:45): reconstruirlo en CodeShip (three.js) con sus retos, entrar desde su página de inicio y desde la máquina de virtualización del santuario 1 de CodeShip. Choca con `REAL_ONLY` de CodeShip (la virtualización y Hawthorne están marcados «no se trae»): necesita la excepción de Berón | Plan y prompt para el chat de CodeShip en la carpeta del proyecto (`codeship-microcosmos/`); los retos ya en JSON (`musk-retos.json`) | `Catravcul/CodeShip` | [visor-web.md](plataforma/visor-web.md) |
 | 14 | **Mandos y menús móviles rehechos según CodeShip santuario 1** (PB-169, Berón 11-20 14:10): «los mandos de switch están muy pequeños y se deben ocultar cuando se muestran modales»; mirar en vivo el santuario 1 de CodeShip y rehacer desde cero mandos, modales y menús con su fidelidad (reutilizar solo si no la baja) | En código: mandos a la medida de CodeShip (misma parte de la pantalla), ocultos con cualquier modal, y las ventanas rehechas con su kit (`CsUi`: Grimorio, Ajustes, opciones, reto, Misiones, Tareas, Áreas). Falta: verify-compile y g141 en el PC (UI-13/14/15) y prueba en el móvil | `claude/project-thread-1xo1dy` → `edificios` | [mandos-tactiles.md](sistemas/mandos-tactiles.md) §6 |
+| 15 | **Portar los cambios del santuario 1 de CodeShip** (PB-170, Berón 11-24 21:24): retos por objeto (≈290 con fuente) y animación por paso, diálogos como retos, retos de equipo en la pecera con recompensa para todos, ropa según horario, regla de realismo con puntaje; el rediseño de pisos/árboles/globo y la Academia de Platón esperan su decisión | Propuesta por prioridad hecha | — | [portar-codeship-s1.md](sistemas/portar-codeship-s1.md) |
 
 ## 2. Decisiones que esperan a Berón
 
