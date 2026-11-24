@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>Icebergs: cifras y umbrales (docs/sitio-nuclear.md §14). Tamaños de tabular real: en el santuario 1 la quilla solo se dibuja hasta el fondo somero, pero su masa cuenta entera (§20). Remolcar sale bien el 85–95 % de las veces (Grand Banks).</summary>
+/// <summary>Icebergs: cifras y umbrales (docs/areas/sitio-nuclear.md §14). Tamaños de tabular real: en el santuario 1 la quilla solo se dibuja hasta el fondo somero, pero su masa cuenta entera (§20). Remolcar sale bien el 85–95 % de las veces (Grand Banks).</summary>
 public static class IcebergRule
 {
     /// <summary>Los sitios que se vigilan: los tres casquetes artificiales.</summary>
@@ -32,7 +32,7 @@ public static class IcebergRule
 }
 
 /// <summary>
-/// UN ICEBERG (Berón 2026-11-05; docs/sitio-nuclear.md §14): deriva despacio entre dos puntos, o está varado en un banco. Barato: unas pocas cajas, sin luces propias, y solo
+/// UN ICEBERG (Berón 2026-11-05; docs/areas/sitio-nuclear.md §14): deriva despacio entre dos puntos, o está varado en un banco. Barato: unas pocas cajas, sin luces propias, y solo
 /// se mueve una vez por fotograma. Alrededor, como en los estudios reales, aves, kril, peces y animales de verdad (<see cref="IcebergVisitor"/>). Si se acerca a un casquete: ALERTA → misión de remolque de ese sitio; PELIGRO → en el
 /// nuclear se desconecta la línea (<see cref="SiteLine.Disconnected"/>); en la lanzadera, vaciar los propulsores; en el parque, parar molinos y turbina.
 /// </summary>
@@ -45,7 +45,7 @@ public class Iceberg : MonoBehaviour
     [Tooltip("Extremos de la deriva (mundo). Empieza yendo hacia driftB.")] public Vector3 driftA, driftB;
     [Tooltip("Tamaño total (m): ancho, de arriba abajo, largo.")] public Vector3 size;
     [Tooltip("El kril que lo sigue.")] public Swarm krill;
-    [Tooltip("Los peces que lo siguen (docs/vida-en-icebergs.md).")] public Swarm fish;
+    [Tooltip("Los peces que lo siguen (docs/fauna/vida-en-icebergs.md).")] public Swarm fish;
     [Tooltip("El pie de hielo a ras de agua: lo único a lo que se puede subir.")] public Transform ledge;
 
     /// <summary>Dónde nada quien vive aquí: un corro alrededor, fuera del hielo (la quilla no tiene colisión).</summary>

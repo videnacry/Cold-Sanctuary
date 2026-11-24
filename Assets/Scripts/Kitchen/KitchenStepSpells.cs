@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// HECHIZOS DE COCINA POR PASO (docs/typed-spells-and-queues.md §6.1, kitchen-simulation.md): `take`, `putIn`, `beat`.
+/// HECHIZOS DE COCINA POR PASO (docs/sistemas/typed-spells-and-queues.md §6.1, kitchen-simulation.md): `take`, `putIn`, `beat`.
 /// Cada paso de una receta deja de ser un "step" genérico y pasa a ser un hechizo encolable **ligado a una estación
 /// exacta**: se toma DE un ingrediente/nevera (o del contenido de un recipiente), se pone EN un recipiente
 /// (olla/bol/plancha/mesa de emplatado) y se bate DENTRO de un recipiente con algo. Cada uno exige **RANGO** = alcance

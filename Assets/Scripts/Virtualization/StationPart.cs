@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Una PARTE manipulable de una estación de virtualización (docs/kitchen-simulation.md §3b): la puerta del
+/// Una PARTE manipulable de una estación de virtualización (docs/areas/kitchen-simulation.md §3b): la puerta del
 /// mesón, la sartén, la nevera, un huevo, el fogón… Es puro dato + un collider para que el
 /// <see cref="VirtualPointer"/> la pueda apuntar. Al confirmar sobre ella, el puntero emite el paso
 /// <c>(stationId, actionId)</c> a las <see cref="ProductionOrder"/> activas. Generalizable a TODAS las

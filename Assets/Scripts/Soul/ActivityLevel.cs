@@ -1,10 +1,10 @@
 using UnityEngine;
 
-/// <summary>Zona de la carga de actividad (docs/consciousness-mechanics.md §activity).</summary>
+/// <summary>Zona de la carga de actividad (docs/sistemas/consciousness-mechanics.md §activity).</summary>
 public enum ActivityZone { Desentrenado, Bendecido, Sobrecarga }
 
 /// <summary>
-/// NIVEL DE ACTIVIDAD (docs/consciousness-mechanics.md §activity) — el modelo científico REAL del deporte:
+/// NIVEL DE ACTIVIDAD (docs/sistemas/consciousness-mechanics.md §activity) — el modelo científico REAL del deporte:
 ///   • **Carga aguda (ATL)** = media de los últimos ~**7 días** (fatiga reciente).
 ///   • **Carga crónica (CTL)** = media de los últimos ~**28 días** (**forma/fitness** acumulada).
 ///   • **ACWR = aguda / crónica**: la "ventana de 7 días" que intuías. Zona **BENDECIDA (óptima) = 0.8–1.3** (fitness y

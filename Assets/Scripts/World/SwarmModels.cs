@@ -3,7 +3,7 @@ using UnityEngine;
 
 /// <summary>
 /// LOS INDIVIDUOS DE LOS GRUPOS (Berón 2026-11-03: «los peces ahora mismo parecen plataformas, deberían tener la apariencia de
-/// peces»; docs/grupos-de-animales.md). Modelos low-poly hechos por código, con mallas y materiales COMPARTIDOS (una malla por
+/// peces»; docs/sistemas/grupos-de-animales.md). Modelos low-poly hechos por código, con mallas y materiales COMPARTIDOS (una malla por
 /// especie y pieza, para todos los individuos): así un grupo de 40 peces cuesta 80 renderers baratos y ninguna malla nueva.
 /// Medidas reales de las especies del mar de Ross (el santuario está a −77,85°, el de McMurdo):
 ///   · PEZ PLATEADO ANTÁRTICO (<i>Pleuragramma antarctica</i>): el pez pelágico que forma bancos en la plataforma antártica;

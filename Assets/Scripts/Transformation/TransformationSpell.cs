@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Hechizo de **TRANSFORMACIÓN por combate de stats** (docs/stats-as-truth.md §4). Transforma a un `Anima`
+/// Hechizo de **TRANSFORMACIÓN por combate de stats** (docs/sistemas/stats-as-truth.md §4). Transforma a un `Anima`
 /// (o a sí mismo) en una <see cref="TransformPreset"/>. **3 niveles** según la potencia del lanzador vs el
 /// coste:
 ///   1) potencia ≥ **coste** → **cuerpo Y stats** (real);

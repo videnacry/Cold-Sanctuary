@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// UNA FRUTAL EN SU MACETA del techo de una torre (docs/jardines-frutales.md). Lleva su ESTADO de cuidado, que se ve en
+/// UNA FRUTAL EN SU MACETA del techo de una torre (docs/areas/jardines-frutales.md). Lleva su ESTADO de cuidado, que se ve en
 /// tres barras sobre el borde de la maceta (azul: agua · ámbar: abono · verde: salud) y en su etiqueta:
 /// - el AGUA la repone el GOTERO (<see cref="drip"/>, al 85 %; Berón 2026-10-31) y el ABONO baja cada día de juego según su ficha (<see cref="FruitCare.Ficha.aguaDia"/>, <c>abonoDia</c>);
 /// - la PLAGA sube poco a poco (la revisión diaria la descubre y la trata);

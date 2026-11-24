@@ -1,10 +1,10 @@
 using UnityEngine;
 
-/// <summary>Reacción ante una amenaza (docs/behavior-system.md): huir, plantar cara, o pegar-y-correr.</summary>
+/// <summary>Reacción ante una amenaza (docs/sistemas/behavior-system.md): huir, plantar cara, o pegar-y-correr.</summary>
 public enum Reaction { Flee, Fight, HitAndRun, Hold }   // Hold = defensa pasiva (bola/concha): ver PassiveDefence
 
 /// <summary>
-/// Componente de RESPUESTA A AMENAZAS (docs/anima-dissolving-animal.md, etapa 1). Extrae de `Animal` la
+/// Componente de RESPUESTA A AMENAZAS (docs/sistemas/anima-dissolving-animal.md, etapa 1). Extrae de `Animal` la
 /// **política de decisión** luchar/huir/pegar-y-correr, que es **portable** porque sale de STATS
 /// (`Predation.EffectivePower` = fuerza/masa/textura/agilidad + manada por facción), del `autoabandono` (valentía)
 /// y de los **bonds** (no dañar a quien quieres; defender crías). Cualquier `Anima` puede llevarlo — no depende de

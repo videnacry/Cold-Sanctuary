@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// EDIFICIO EN HÉLICE (modelo genérico, Berón 2026-10-30; docs/edificio-arbol.md): un TRONCO CUADRADO de agua (se nada por
+/// EDIFICIO EN HÉLICE (modelo genérico, Berón 2026-10-30; docs/areas/edificio-arbol.md): un TRONCO CUADRADO de agua (se nada por
 /// dentro de nivel a nivel) del que salen plataformas CUADRADAS por sus lados. Lados a (+Z), b (+X), c (−Z), d (−X) en el
 /// marco del edificio. En cada NIVEL de la hélice:
 /// - dos PISOS pegados al tronco en dos lados opuestos (nivel impar: a y c; par: b y d), en MOLINETE: cada piso arranca en
@@ -82,7 +82,7 @@ public class HelixTower
 }
 
 /// <summary>
-/// MEDIDAS DEL ÁRBOL DE LOS CAMPOS v2 (docs/edificio-arbol.md; Berón 2026-10-30). Las comparten el constructor
+/// MEDIDAS DEL ÁRBOL DE LOS CAMPOS v2 (docs/areas/edificio-arbol.md; Berón 2026-10-30). Las comparten el constructor
 /// (SampleSceneBuilder.Tree.cs), el árbol en juego (<see cref="ArbolCampos"/>, <see cref="TreeRotator"/>) y las pruebas.
 /// - TRONCO CUADRADO de agua TRANSPARENTE (el cristal y el agua del tanque de virtualización): 20 × 20 m de agua, pared de
 ///   acrílico de 1 m (22 m), de 0 a 92 m; 24 nervios CFST y zunchos. Puerta abajo (suelo) y entrada por el TECHO (una columna de agua que
@@ -135,7 +135,7 @@ public static class TreeSpec
     /// <summary>PUERTAS CUADRADAS para 8 personas A LA VEZ (Berón 2026-11-03; antes 3 × 3 m): un personaje mide 0,70 m de ancho (la
     /// cápsula de 0,35 m de radio del jugador y de los NavMeshAgent) y se deja 0,05 m entre uno y otro: 8 × 0,75 = 6,0 m.</summary>
     public const float PersonWidth = 0.70f, PersonGap = 0.05f, PeopleAtOnce = 8f;
-    /// <summary>EL VEHÍCULO DE DISEÑO (Berón 2026-11-03, docs/submarino-de-obra.md): el submarino de obra con su carga más grande (una
+    /// <summary>EL VEHÍCULO DE DISEÑO (Berón 2026-11-03, docs/areas/submarino-de-obra.md): el submarino de obra con su carga más grande (una
     /// excavadora de 20 t —CAT 320: 9,5 × 3,0 × 3,0 m de transporte— o un contenedor de 20 pies —6,06 × 2,44 × 2,59 m, hasta 30 t—) y
     /// el submarino hospital con la camilla de un animal grande (un elefante tumbado, ~7 × 3 × 2 m y 6 t; un oso, 3 × 1,5 m): 14 × 5 × 5 m.</summary>
     public const float VehicleLength = 14f, VehicleBeam = 5f, VehicleHeight = 5f;

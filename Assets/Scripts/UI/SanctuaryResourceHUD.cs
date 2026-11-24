@@ -2,7 +2,7 @@ using System.Text;
 using UnityEngine;
 
 /// <summary>
-/// VENTANA DE RECURSOS del santuario activo (docs/world-topology-and-planes.md §7, docs/interfaz-botones.md): los totales y las margas
+/// VENTANA DE RECURSOS del santuario activo (docs/sistemas/world-topology-and-planes.md §7, docs/sistemas/interfaz-botones.md): los totales y las margas
 /// de Kushal. Era un panel fijo arriba a la izquierda; desde el 2026-11-05 (Berón) se abre con el botón «Recursos» de la pila de la
 /// derecha o con F3 (<see cref="HudModals"/>) y se cierra con Esc. Prototipo OnGUI, sin dependencias de escena; se sustituirá por la UI
 /// declarativa (FollowingArrays/Palette) más adelante.

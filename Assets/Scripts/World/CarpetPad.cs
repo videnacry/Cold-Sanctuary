@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// ÁREA DE ALFOMBRAS VOLADORAS (docs/alfombras-plan.md, Berón 2026-10-27). Ya no hay escaleras ni puentes: se va de un
+/// ÁREA DE ALFOMBRAS VOLADORAS (docs/areas/alfombras-plan.md, Berón 2026-10-27). Ya no hay escaleras ni puentes: se va de un
 /// piso a otro y de un edificio a otro en alfombra. Cada área es de un TIPO, y sus alfombras solo llevan a las de su red:
 /// - <see cref="Kind.Edificio"/>: una en cada piso de un edificio (y en el suelo de hielo, a su pie, y en su techo): a los
 ///   demás pisos del MISMO edificio.
@@ -383,7 +383,7 @@ public class CarpetPad : MonoBehaviour
     public static bool Route(GameObject g, ref Vector3 to)
     {
         if (FlyingCarpet.Riding(g)) return Noted(g, true, "volando");
-        // El ÁRBOL DE LOS CAMPOS (docs/edificio-arbol.md): entre sus pisos no hay alfombras; a la puerta y nadando por la raíz.
+        // El ÁRBOL DE LOS CAMPOS (docs/areas/edificio-arbol.md): entre sus pisos no hay alfombras; a la puerta y nadando por la raíz.
         // (Aquí y no en PathMover: la jornada, las iniciaciones y los hechizos llaman a Route directamente.)
         ArbolCampos.Hop tree = ArbolCampos.Route(g, ref to);
         if (tree == ArbolCampos.Hop.Swimming) return Noted(g, true, "nadando por el árbol");

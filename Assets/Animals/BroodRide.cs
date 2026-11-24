@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// CUIDADO DE LA CRÍA de los artrópodos que lo tienen (docs/era-species-behavior.md §4). Dos formas reales:
+/// CUIDADO DE LA CRÍA de los artrópodos que lo tienen (docs/sistemas/era-species-behavior.md §4). Dos formas reales:
 /// - **A lomos** (<see cref="Carries"/>): las crías del ESCORPIÓN suben al dorso de la madre al nacer y viven allí, sin
 ///   comer (del vitelo), hasta su primera muda; luego bajan y se dispersan (Polis &amp; Sissom 1990, en Polis (ed.) The
 ///   Biology of Scorpions, Stanford Univ. Press). Las de la ARAÑA LOBO (Lycosidae) igual, sobre el abdomen, ~1 semana

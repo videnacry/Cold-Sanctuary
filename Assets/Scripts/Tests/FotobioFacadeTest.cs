@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DE LAS FACHADAS DE FOTOBIORREACTORES (Berón 2026-10-31 y 2026-11-08; docs/fotobiorreactores.md):
+/// PRUEBA DE LAS FACHADAS DE FOTOBIORREACTORES (Berón 2026-10-31 y 2026-11-08; docs/areas/fotobiorreactores.md):
 /// 0. DOS FACHADAS: la del Árbol de los Campos (tronco y quillas) y la del tronco de la torre de Ciencias (solo tronco, 480 m²).
 /// Para CADA fachada:
 /// 1. EXISTE: cuelga de su árbol con sus módulos de tubos (tronco), sus quillas (solo el Árbol), sus LED, bombas, cuadro, etiqueta y su

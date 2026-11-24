@@ -12,10 +12,10 @@ using UnityEngine;
 /// - <see cref="Kind.Kitchen"/> — la cocina: cocinan JUNTOS el platillo con MENOS stock del restaurante, POR MAYOR (para que
 ///   coma todo el personal: las cantidades se multiplican y salen <see cref="StaffServings"/> raciones de una tanda; las
 ///   individuales son para los turistas), el jugador lanza cada paso (`step`) → stock +N → tanque → el primer microcosmos de
-///   la cocina, la era del fuego: las reencarnaciones (<see cref="KitchenMicrocosmos"/>, docs/microcosmos-areas.md).
+///   la cocina, la era del fuego: las reencarnaciones (<see cref="KitchenMicrocosmos"/>, docs/microcosmos/microcosmos-areas.md).
 /// Todas las esperas tienen tope (docs: no stalls): cada tramo andando, cada paso y la iniciación entera.
 /// (2026-11-04, modelo de Ambrosio) Cada paso que se le pide al jugador sale como MARCADOR «E — paso» en su sitio (la mesa,
-/// el borde del bancal, la esterilla): la E allí lo lanza (<see cref="PlayerTaskRunner.Live"/>; docs/tareas-del-jugador.md).
+/// el borde del bancal, la esterilla): la E allí lo lanza (<see cref="PlayerTaskRunner.Live"/>; docs/sistemas/tareas-del-jugador.md).
 /// </summary>
 public class AreaInitiator : MonoBehaviour
 {
@@ -436,7 +436,7 @@ public class AreaInitiator : MonoBehaviour
     }
     static void Bone(CreatureRig rig, BodyPart p, Quaternion q) { Transform t = rig.Get(p); if (t == null) return; rig.LockPose(p, 0.35f); t.localRotation = q; }
 
-    // ── HUERTO: PREPARAR EL SUELO del bancal (docs/garden-simulation.md §8, receta base: 1 abonar · 2 arar) ─────────────
+    // ── HUERTO: PREPARAR EL SUELO del bancal (docs/areas/garden-simulation.md §8, receta base: 1 abonar · 2 arar) ─────────────
     /// <summary>Un paso de la preparación del suelo: lo que dice el trabajador, la herramienta y los dos fotogramas del
     /// gesto (el trabajador lo demuestra y el alumno lo repite al lanzarlo).</summary>
     public class SoilStep { public string say, tool; public System.Func<AsanaPoseSpell> a, b; }

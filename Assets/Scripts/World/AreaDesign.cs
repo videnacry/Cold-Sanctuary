@@ -1,6 +1,6 @@
 /// <summary>
 /// DE DÓNDE SALE EL DISEÑO DE CADA ÁREA DEL SANTUARIO (Berón 2026-11-05: «en el santuario se crean las áreas como mix de lo mejor del mundo con lo que puede tener
-/// maquinaria/diseño con componentes de diversos países y culturas»; reglas S14 y F14 del manual; docs/piso-asambleas.md §Auditoría). Una fila por área: si su diseño está
+/// maquinaria/diseño con componentes de diversos países y culturas»; reglas S14 y F14 del manual; docs/areas/piso-asambleas.md §Auditoría). Una fila por área: si su diseño está
 /// investigado y de qué culturas viene lo que ya tiene. <see cref="State.Cumple"/> = investigado y ≥ 3 culturas; lo demás está pendiente y es la lista de trabajo.
 /// </summary>
 public static class AreaDesign

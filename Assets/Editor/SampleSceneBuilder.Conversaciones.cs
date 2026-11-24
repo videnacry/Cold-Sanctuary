@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// ESCENA DE PRUEBA DE LAS CHARLAS (Assets/Scenes/Pruebas/Prueba_Conversaciones; docs/conversaciones.md §Escena de prueba; Berón
+/// ESCENA DE PRUEBA DE LAS CHARLAS (Assets/Scenes/Pruebas/Prueba_Conversaciones; docs/sistemas/conversaciones.md §Escena de prueba; Berón
 /// 2026-11-04: «también debería haber una escena específica creada para poder probar esta lógica al detalle»). Como las de ciclo de
 /// vida de una persona (SampleSceneBuilder.CicloHumano): una escena PROPIA y pequeña, sin copiar el santuario (no abre ni poda
 /// SampleScene: poca memoria), lejos del origen. Una sala de charlas: suelo, una mesa larga y dos bancos, y seis personas sentadas

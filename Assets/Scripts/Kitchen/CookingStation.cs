@@ -1,12 +1,12 @@
 using UnityEngine;
 
 /// <summary>
-/// ESTACIÓN DE COCINA de UNA anima (docs/kitchen-simulation.md): toma un platillo asignado por el
+/// ESTACIÓN DE COCINA de UNA anima (docs/areas/kitchen-simulation.md): toma un platillo asignado por el
 /// <see cref="RestaurantKitchen"/> y **recorre sus pasos**. Si `playerDriven`, el jugador **avanza cada paso con una
 /// tecla** (jugable, con HUD); si no, el NPC avanza solo por tiempo. Al terminar un platillo lo **entrega al stock** y
 /// pide el siguiente que el restaurante necesite (equilibrio). Varias estaciones = varias animas cocinando a la vez.
 /// Prototipo: pasos por tecla/tiempo + HUD OnGUI; la versión con **estaciones manipulables reales** (Virtualization
-/// `StationPart`: ir a la nevera, agarrar…) necesita prefabs (Unity) — ver docs/unity-editor-manual.md.
+/// `StationPart`: ir a la nevera, agarrar…) necesita prefabs (Unity) — ver docs/plataforma/unity-editor-manual.md.
 /// </summary>
 public class CookingStation : MonoBehaviour
 {

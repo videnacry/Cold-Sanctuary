@@ -16,7 +16,7 @@ using UnityEngine;
 /// - LAS BACTERIAS donde importan: la SALA LIMPIA de aviónica con su vestuario (buzos, gorros, calzas, alfombra adhesiva), la higiene de la
 ///   cocina y el POZO DE REGISTRO del alcantarillado (Hawthorne es miembro de los Sanitation Districts del Condado; su red, el Joint Outfall
 ///   System, depura en Carson —A. K. Warren Water Resource Facility—, según lacsd.org).
-/// Todo lo que no es mueble es decorado con NOMBRE FIJO (para los retos de CodeShip: docs/microcosmos-musk-historia.md §Hawthorne 2008) y
+/// Todo lo que no es mueble es decorado con NOMBRE FIJO (para los retos de CodeShip: docs/microcosmos/microcosmos-musk-historia.md §Hawthorne 2008) y
 /// fuera del paso de los muebles; la nave anexa, con muros, puerta y vista de corte.
 /// </summary>
 public static partial class StorySceneBuilder

@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DEL PARQUE ENERGÉTICO (Berón 2026-11-05; docs/energia.md):
+/// PRUEBA DEL PARQUE ENERGÉTICO (Berón 2026-11-05; docs/areas/energia.md):
 /// 1. SITIO: casquete y árbol bajo, a ≥ 300 m de todo; turbinas a ≥ 200 m de las islas y fuera del alcance del hielo.
 /// 2. DEMANDA: todo piso la declara; los paneles salen en proporción; el validador cumple.
 /// 3. SOL: cero en la noche polar, ~900 kWh/kWp al año, la suciedad resta y limpiar lo devuelve.

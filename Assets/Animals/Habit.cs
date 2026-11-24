@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// HÁBITO NATURAL (docs/natural-interactions.md): ejecuta UNA actividad del <see cref="Ethogram"/> de su especie sobre un
+/// HÁBITO NATURAL (docs/sistemas/natural-interactions.md): ejecuta UNA actividad del <see cref="Ethogram"/> de su especie sobre un
 /// <see cref="Affordance"/> real del entorno — ir al tallo y chupar savia, cortar hierba y llevarla al termitero, acechar
 /// junto a un respiradero, llevar un guijarro al nido, asolearse en lo alto de una brizna… Lo conduce el deseo «habit» de
 /// <see cref="DesireCatalog"/> (gana cuando el ser está en calma y saciado, por encima del merodeo al azar): cada tick de

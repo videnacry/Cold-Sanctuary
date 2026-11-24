@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// UN EDIFICIO QUE HACE FUNCIONES (docs/microcosmos-civilizaciones.md §2): dice qué plantilla del registro es
+/// UN EDIFICIO QUE HACE FUNCIONES (docs/microcosmos/microcosmos-civilizaciones.md §2): dice qué plantilla del registro es
 /// (<see cref="AreaFunctions.Buildings"/>: «Cocina», «Restaurante», «Hospital», «Dojo», «Sala de Yoga», «Huerto», «Taller»…)
 /// y sus muebles (<see cref="AreaFunctionStation"/>) qué puesto cubre cada uno. Lo que se puede hacer en él sale del registro
 /// filtrado por el año de la escena (<see cref="Eras.Now"/>). Lo usan los insectos-humanos en su jornada
@@ -19,7 +19,7 @@ public class AreaFunctionSite : MonoBehaviour
     [Tooltip("La región o cultura de este edificio (MicroStyles.Region): con el año, el estilo de sus muebles.")]
     public string region = "";
 
-    // ── LAS ETIQUETAS DE ACTIVIDAD (2026-11-03, docs/microcosmos-actividades.md; Berón: «que deben crearse junto a su interacción
+    // ── LAS ETIQUETAS DE ACTIVIDAD (2026-11-03, docs/microcosmos/microcosmos-actividades.md; Berón: «que deben crearse junto a su interacción
     //    con los humanos y humanos-insecto … para poder pertenecer a sus áreas de trabajo, descanso, recuperación u ocio, de modo
     //    que formen parte de sus actividades semanales»). Las pone el constructor (CivicBuilder.Tag) y las LEE el horario semanal:
     //    qué se hace aquí, para cuántos y para qué cuerpos.
@@ -30,7 +30,7 @@ public class AreaFunctionSite : MonoBehaviour
     /// <summary>(2026-11-04, regla 16 de los microcosmos) Las cuatro categorías que TODO pueblo de historia debe tener (al menos un
     /// edificio de cada una; MicroFloors.Validate). El descanso lo dan las casas.</summary>
     public static readonly string[] TownCategories = { Trabajo, Ocio, Entrenamiento, Recuperacion };
-    [Tooltip("(2026-11-04) Si es de entrenamiento: su CLASE ESTABLE de época y lugar (gimnasio_griego, akhara, zurkhaneh, wuguan, dojo, turnhalle, juego_pelota…; MicroStyles.TrainingKind). La leen los planes de entrenamiento de los insectos-humanos (docs/gimnasio-maquinas.md).")]
+    [Tooltip("(2026-11-04) Si es de entrenamiento: su CLASE ESTABLE de época y lugar (gimnasio_griego, akhara, zurkhaneh, wuguan, dojo, turnhalle, juego_pelota…; MicroStyles.TrainingKind). La leen los planes de entrenamiento de los insectos-humanos (docs/areas/gimnasio-maquinas.md).")]
     public string training = "";
     [Tooltip("(2026-11-04) De dónde sale su POSICIÓN: vacío = del plano histórico o de la historia; «mapa actual: …» = de un mapa de hoy (el plano histórico no lo tenía; se recrea con lo nativo de la época); «FALTA …» = puesto sin posición (lo marca el validador).")]
     public string mapSource = "";

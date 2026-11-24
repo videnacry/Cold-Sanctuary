@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LA INICIACIÓN ES BLOQUEANTE (docs/jornada-y-rotacion.md). Quien acaba de llegar (Kushal, un turista) no está registrado
+/// LA INICIACIÓN ES BLOQUEANTE (docs/sistemas/jornada-y-rotacion.md). Quien acaba de llegar (Kushal, un turista) no está registrado
 /// en el santuario: no puede quedarse fuera de la ENFERMERÍA hasta hacerse los análisis, vacunarse y completar la
 /// iniciación con quien tenga hoy la misión de iniciación (NewcomerInitiator). Dentro se mueve libre.
 /// Nadie bloquea la salida: si sale, LA MAGNATE se teletransporta delante de él, le explica que aún no puede irse y lo
@@ -28,7 +28,7 @@ public class InfirmaryGate : MonoBehaviour
     SanctuaryArea _area;
 
     // Dentro = en cualquier parte del HOSPITAL: sus tres plantas, sus anillos de camas y sus áreas de alfombras. No el resto de
-    // su torre (docs/plano-edificios.md: el restaurante, la cría y la carne cultivada comparten el edificio de Servicios, y
+    // su torre (docs/areas/plano-edificios.md: el restaurante, la cría y la carne cultivada comparten el edificio de Servicios, y
     // antes de iniciarse no se va a ellos), así que no vale InBuilding (todo el edificio) sino el área con sus plantas.
     bool Inside(Vector3 p)
     {

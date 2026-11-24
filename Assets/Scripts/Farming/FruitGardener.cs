@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// EL JARDINERO DE LOS FRUTALES (Berón 2026-10-30, docs/jardines-frutales.md): la misión diaria «Ronda de frutales» de la
+/// EL JARDINERO DE LOS FRUTALES (Berón 2026-10-30, docs/areas/jardines-frutales.md): la misión diaria «Ronda de frutales» de la
 /// jornada (<see cref="AreaWork"/>; la reparte la rotación como las demás). Quien la tiene va al punto de cuidados del
 /// primer techo de su ronda (prepara el abono y mira el cabezal del goteo: filtro, válvula y programador), recorre las macetas
 /// en orden, revisa cada una (<see cref="FruitPlant.Care"/>: el gotero, hojas y envés, abona y trata la plaga; el AGUA la pone
@@ -50,7 +50,7 @@ public class FruitGardener : MonoBehaviour
     {
         public string building; public List<FruitPlant> plants = new List<FruitPlant>(); public FruitCareStation station; public float hours;
         /// <summary>Tramo de TAREAS DEL ÁRBOL (Berón 2026-11-03): revisar las máscaras de oxígeno de sus puertas y cuidar el fitoplancton
-        /// de su fondo abierto (docs/mascaras-de-oxigeno.md). Sin macetas.</summary>
+        /// de su fondo abierto (docs/areas/mascaras-de-oxigeno.md). Sin macetas.</summary>
         public ArbolCampos tree; public List<MaskStation> masks = new List<MaskStation>(); public List<Phytoplankton> beds = new List<Phytoplankton>();
         public bool TreeTasks => tree != null;
         /// <summary>Lo que se planea para las tareas de la semana de sus macetas (h de juego, media diaria; <see cref="WeeklyHoursPerDay"/>) y
@@ -64,7 +64,7 @@ public class FruitGardener : MonoBehaviour
     static float SecondsPerGameHour => TimeController.timeController != null ? Mathf.Max(1f, TimeController.timeController.SecondsPerGameDay / 24f) : 150f;
     public static float RealSecondsForGameMinutes(float min) => min / 60f * SecondsPerGameHour;
 
-    /// <summary>Lo que se anda (y se nada) de una maceta a otra: en una torre-árbol (docs/edificio-arbol.md §Migración) las puntas
+    /// <summary>Lo que se anda (y se nada) de una maceta a otra: en una torre-árbol (docs/areas/edificio-arbol.md §Migración) las puntas
     /// están a distinta altura y en ramas distintas: de una a otra se va a la puerta de su columna, se nada por la rama y el tronco
     /// y se sale por la de la otra (≈ 1,3 × la recta + 10 m).</summary>
     public static float Hop(FruitPlant a, FruitPlant b)
@@ -209,7 +209,7 @@ public class FruitGardener : MonoBehaviour
         return _rounds;
     }
 
-    // ── TAREAS DEL ÁRBOL: máscaras de oxígeno y fitoplancton (Berón 2026-11-03; docs/mascaras-de-oxigeno.md) ──
+    // ── TAREAS DEL ÁRBOL: máscaras de oxígeno y fitoplancton (Berón 2026-11-03; docs/areas/mascaras-de-oxigeno.md) ──
     /// <summary>Minutos de juego por puerta: revisar las máscaras del perchero de fuera y de la estación de dentro (juntas y visor,
     /// la válvula y la carga de cada botella; reponer las que falten).</summary>
     public static float MaskDoorMinutes => MaskStation.CheckMinutes * 2f;
@@ -257,7 +257,7 @@ public class FruitGardener : MonoBehaviour
         return units;
     }
 
-    /// <summary>Lo que toca HOY en un árbol (2026-11-04: revisión BARATA, docs/mascaras-de-oxigeno.md §El jardinero): las estaciones
+    /// <summary>Lo que toca HOY en un árbol (2026-11-04: revisión BARATA, docs/areas/mascaras-de-oxigeno.md §El jardinero): las estaciones
     /// que le tocan por la ROTACIÓN semanal (1/7 de las puertas cada día) y las que el panel marca en rojo (<see cref="MaskStation.FlagBelow"/>),
     /// de abajo arriba, y sus cortinas de fitoplancton.</summary>
     public static (List<MaskStation> masks, List<Phytoplankton> beds) TreeTaskList(ArbolCampos t)
@@ -391,7 +391,7 @@ public class FruitGardener : MonoBehaviour
     }
 
 
-    // ── LAS TAREAS DEL ÁRBOL EN EL JUEGO (Berón 2026-11-03; docs/mascaras-de-oxigeno.md) ──
+    // ── LAS TAREAS DEL ÁRBOL EN EL JUEGO (Berón 2026-11-03; docs/areas/mascaras-de-oxigeno.md) ──
     // Va al techo de su árbol, coge una máscara del perchero y entra; baja nadando de puerta en puerta (por el camino de los viajes:
     // el tronco, las ramas y las columnas) y en cada una revisa las máscaras de la estación de dentro y del perchero de fuera; al
     // final baja al fondo abierto a cuidar las cortinas de fitoplancton y sale por la puerta del suelo (dejando la máscara).

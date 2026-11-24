@@ -38,7 +38,7 @@ public class InsectForm : MonoBehaviour
     }
 
     /// <summary>
-    /// ENCOGE el cuerpo físico a <paramref name="s"/> (MicroBuildRules.FolkScale, docs/plan-microcosmos-realismo.md §3.1 E1: «el avatar
+    /// ENCOGE el cuerpo físico a <paramref name="s"/> (MicroBuildRules.FolkScale, docs/microcosmos/plan-microcosmos-realismo.md §3.1 E1: «el avatar
     /// del jugador insecto, igual»): la cápsula o el CharacterController, el NavMeshAgent, la velocidad del PlayerController y los
     /// anclajes de la cámara (las distancias de seguimiento). Una sola vez; <see cref="Restore"/> lo devuelve todo.
     /// </summary>

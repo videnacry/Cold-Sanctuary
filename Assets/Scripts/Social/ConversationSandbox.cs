@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// LA SALA DE CHARLAS de la escena de prueba <c>Prueba_Conversaciones</c> (docs/conversaciones.md §Escena de prueba): la mesa con
+/// LA SALA DE CHARLAS de la escena de prueba <c>Prueba_Conversaciones</c> (docs/sistemas/conversaciones.md §Escena de prueba): la mesa con
 /// sus bancos y las seis personas que charlan (dos humanos, dos insectos-humanos de especies distintas y una pareja mixta). Aquí no
 /// hay casa, restaurante ni jornada: para que las charlas se vean sin que el cuerpo se los lleve, sus necesidades se mantienen bajas
 /// (<see cref="sustainNeeds"/>) salvo cuando la prueba quiere una urgente; los humanos se quedan sentados en su banco.

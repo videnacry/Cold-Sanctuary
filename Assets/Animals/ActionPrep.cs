@@ -28,7 +28,7 @@ public class ActionPrep
         if (pScript != null && pScript.ActsPrep != null && this == pScript.ActsPrep.idle && DesireCatalog.LiveTrip(pScript, out _)) { IdleRefused++; return; }
         // ROBUSTEZ: el sistema reproduce clips POR NOMBRE (ani.Play("Idle"/"Walk"/"Run"+especie)). Si el prefab no trae
         // Animator/Controller o le falta ese estado, NO reventamos (antes NPE-aba al primer movimiento): saltamos la
-        // animación y seguimos con nav/exhaustion. Ver docs/unity-editor-manual.md §1.
+        // animación y seguimos con nav/exhaustion. Ver docs/plataforma/unity-editor-manual.md §1.
         if (pScript.ani != null && pScript.ani.runtimeAnimatorController != null && pScript.ani.HasState(0, Animator.StringToHash(this.aniName)))
         {
             pScript.ani.Play(this.aniName);

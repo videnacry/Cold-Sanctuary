@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 /// <summary>
-/// SOTOBOSQUE POLAR (docs/ice-sanctuary-ecology.md): solo crece al pie de los árboles carnívoros (su sombra y la materia
+/// SOTOBOSQUE POLAR (docs/fauna/ice-sanctuary-ecology.md): solo crece al pie de los árboles carnívoros (su sombra y la materia
 /// que dejan sus presas hacen de suelo), no por todo el hielo. Son especies REALES del Ártico, modificadas para verse
 /// más, cada una con su forma reconocible hecha de bloques:
 ///   · Amapola ártica: roseta de hojas, tallos finos y flor en copa de 5 pétalos amarillo pálido.
@@ -14,7 +14,7 @@ using UnityEngine.Rendering;
 ///   · Sauce ártico: ramas leñosas rastreras con hojas ovaladas y amentos erguidos.
 ///   · Camarina: arbusto bajo de hojas aciculares con bayas.
 ///   · Liquen de reno: matas ramificadas gris verdoso.
-/// LA TUNDRA DE LA ISLA DE TIERRA (docs/territorio-polar.md): sobre el suelo «Tierra» crece la misma flora y, además, juncia, abedul enano y, en la
+/// LA TUNDRA DE LA ISLA DE TIERRA (docs/areas/territorio-polar.md): sobre el suelo «Tierra» crece la misma flora y, además, juncia, abedul enano y, en la
 /// orilla («Tierra_orilla»), tussac (Poa flabellata), repartidas por comunidades: pradera húmeda, brezal y pedregal de líquenes, con manchas de musgo.
 /// Se genera al arrancar (determinista) y se fusiona en pocas mallas por trozo y color. Las manchas de sauce, camarina y
 /// liquen además son <see cref="Affordance"/> (comida que se gasta y rebrota).
@@ -202,7 +202,7 @@ public class PolarUnderstory : MonoBehaviour
             Quaternion yaw = Quaternion.Euler(0f, R(0f, 360f), 0f);
             // Un pequeño grupo de la misma especie (así crecen: en manchas).
             int species = _rnd.Next(8), group = 1 + _rnd.Next(3);
-            // Las que algo COME son interactuables (docs/natural-interactions.md): sauce ártico (liebre), camarina (bayas:
+            // Las que algo COME son interactuables (docs/sistemas/natural-interactions.md): sauce ártico (liebre), camarina (bayas:
             // oso en verano) y liquen de reno (reno). Un punto por mancha; se gastan y rebrotan.
             AffordanceKind food = species == 5 ? AffordanceKind.Willow : species == 6 ? AffordanceKind.Berry : AffordanceKind.Lichen;
             // (solo las manchas con sitio alrededor: un oso que come camarina junto a una raíz del árbol se metía en la

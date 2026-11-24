@@ -3,7 +3,7 @@ using System.Text;
 using UnityEngine;
 
 /// <summary>
-/// Driver de PRUEBA (OnGUI) del bucle de magia para el sandbox `Magia_AUTO` (docs/testing-checklist.md §15b/c/f).
+/// Driver de PRUEBA (OnGUI) del bucle de magia para el sandbox `Magia_AUTO` (docs/qa/testing-checklist.md §15b/c/f).
 /// No necesita un `Anima` concreto: los componentes de magia son null-safe en `anima`. Botones: aprender el 1er
 /// hechizo (desbloquea las pools), comer (rellena reservas vía `Metabolism`), consumir/transformar quarks, lanzar
 /// fuego (químico / masa-energía). Muestra las reservas por elemento + energía + quarks. Solo para el sandbox.

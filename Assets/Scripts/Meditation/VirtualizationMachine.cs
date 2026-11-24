@@ -50,7 +50,7 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
 
     public void Interact()
     {
-        // VIRTUALIZACIÓN o SIMULACIÓN: la máquina sirve para las dos. Primero se elige (docs/jornada-y-rotacion.md).
+        // VIRTUALIZACIÓN o SIMULACIÓN: la máquina sirve para las dos. Primero se elige (docs/sistemas/jornada-y-rotacion.md).
         if (!SceneMode && MeditationSession.Instance.IsInMission) { EnterSimulation(); return; }   // dentro de una misión in-place: salir
         ShowMenu();
     }
@@ -121,16 +121,16 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
         if (areaName == AreaWork.Hospital) { opts.Add("Virtualización: iniciar a un turista (examen de llegada, vacuna y normas)"); acts.Add(() => ChooseId("enf_iniciacion")); }
         opts.Add("Virtualización: misiones de trabajo de esta área"); acts.Add(() => ShowArea(areaName));
         if (SceneMode || shift != null) { opts.Add("Simulación: el microcosmos del área"); acts.Add(EnterSimulation); }
-        // Simulaciones de COMPASIÓN (docs/compassion-simulations.md): momentos históricos reales, sobre esta misma área agrandada.
+        // Simulaciones de COMPASIÓN (docs/microcosmos/compassion-simulations.md): momentos históricos reales, sobre esta misma área agrandada.
         if (areaName == "Cocina") { opts.Add("Simulación: Le Chambon-sur-Lignon, 1942 (el pueblo que escondió a miles)"); acts.Add(() => EnterWithTank(GameObject.FindGameObjectWithTag("Player")?.transform, "Microcosmos_LeChambon")); }
         if (areaName == AreaWork.Hospital) { opts.Add("Simulación: Irena Sendler, Varsovia 1942 (los niños del gueto)"); acts.Add(() => EnterWithTank(GameObject.FindGameObjectWithTag("Player")?.transform, "Microcosmos_IrenaSendler")); }
-        // MITO (docs/microcosmos-myrmidons.md): Egina y los mirmidones, sobre la Construcción agrandada.
+        // MITO (docs/microcosmos/microcosmos-myrmidons.md): Egina y los mirmidones, sobre la Construcción agrandada.
         if (areaName == "Construcción") { opts.Add("Simulación: Egina, el reino de los mirmidones (Éaco y Zeus)"); acts.Add(() => EnterWithTank(GameObject.FindGameObjectWithTag("Player")?.transform, "Microcosmos_Egina")); }
-        // FÍSICA (docs/atomic-plant.md): la escalera de la física vive en la planta atómica. «El microcosmos del área» (arriba) es el
+        // FÍSICA (docs/areas/atomic-plant.md): la escalera de la física vive en la planta atómica. «El microcosmos del área» (arriba) es el
         // de Newton, Curie y Einstein; Eratóstenes, el primer tramo, tiene el suyo.
         if (areaName == "Aula" && Application.CanStreamedLevelBeLoaded("Microcosmos_Eratostenes"))   // (2026-11-04) al Aula (la biblioteca de Alejandría)
             { opts.Add("Simulación: Eratóstenes mide la Tierra (~240 a. C.)"); acts.Add(() => EnterWithTank(GameObject.FindGameObjectWithTag("Player")?.transform, "Microcosmos_Eratostenes")); }
-        // HISTORIAS (docs/microcosmos-historias.md): grandes figuras sobre el área que mejor las cuenta.
+        // HISTORIAS (docs/microcosmos/microcosmos-historias.md): grandes figuras sobre el área que mejor las cuenta.
         foreach (var (area, label, scene) in StoryScenes)
             if (areaName == area) { string sc = scene; opts.Add(label); acts.Add(() => EnterWithTank(GameObject.FindGameObjectWithTag("Player")?.transform, sc)); }
         ChoiceDialog.Show($"Máquina de virtualización · {areaName}", opts.ToArray(), i => acts[i](), null, transform, 4.5f);
@@ -143,13 +143,13 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
         (AreaWork.Hospital, "Simulación: Florence Nightingale en Escútari, 1854", "Microcosmos_Nightingale"),
         (AreaWork.Hospital, "Simulación: Siddhārtha y los cuatro encuentros (Buda)", "Microcosmos_Buda"),
         ("Mecánica",     "Simulación: los hermanos Wright, de la bicicleta al avión (1903)", "Microcosmos_Wright"),
-        // BRUCE LEE (docs/microcosmos-bruce-lee.md): el microcosmos es el del DOJO, que sigue en obras y aún no tiene máquina; mientras,
+        // BRUCE LEE (docs/microcosmos/microcosmos-bruce-lee.md): el microcosmos es el del DOJO, que sigue en obras y aún no tiene máquina; mientras,
         // se entra desde la del Gimnasio (la misma torre de Entrenamiento).
         ("Dojo (artes marciales)", "Simulación: Bruce Lee, del Wing Chun al Jeet Kune Do (1957–1971)", "Microcosmos_BruceLee"),
         ("Gimnasio",     "Simulación del Dojo: Bruce Lee, del Wing Chun al Jeet Kune Do (1957–1971)", "Microcosmos_BruceLee"),
-        // PAKAL DE PALENQUE (docs/microcosmos-maya-pakal.md): pendiente de su piso representativo (un templo de los antepasados); hoy, el Huerto (la milpa).
+        // PAKAL DE PALENQUE (docs/microcosmos/microcosmos-maya-pakal.md): pendiente de su piso representativo (un templo de los antepasados); hoy, el Huerto (la milpa).
         ("Huerto", "Simulación: Pakal de Palenque, el rey que renace como el maíz (683)", "Microcosmos_Pakal"),
-        // LA TANDA 3 (docs/microcosmos-historias-3.md). Viena va en el piso de Música.
+        // LA TANDA 3 (docs/microcosmos/microcosmos-historias-3.md). Viena va en el piso de Música.
         ("Mecánica", "Simulación: Eloy Alfaro y el tren de Guayaquil a Quito (1908)", "Microcosmos_EloyAlfaro"),
         (AreaWork.Hospital, "Simulación: Galvarino vuelve con su gente (Arauco, 1557)", "Microcosmos_Galvarino"),
         ("Estudio Textil", "Simulación: Atahualpa y los incas: cómo vivían, Cajamarca (1532)", "Microcosmos_Atahualpa"),
@@ -162,7 +162,7 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
         ("Sala de asambleas", "Simulación: el Congreso de los Diputados: la moción de censura de 2018", "Microcosmos_PedroSanchez"),
         ("Sala de asambleas", "Simulación: Lincoln en Gettysburg (1863)", "Microcosmos_Lincoln"),
         ("Sala de asambleas", "Simulación: la Feria de las Hazañas de presidentes", "Microcosmos_Hazanas"),
-        // LOS FAMOSOS (docs/microcosmos-famosos.md): una historia de su vida pública, en su pueblo real.
+        // LOS FAMOSOS (docs/microcosmos/microcosmos-famosos.md): una historia de su vida pública, en su pueblo real.
         ("Sala de Yoga", "Simulación: Sadhguru en Velliangiri: el Dhyanalinga (1999)", "Microcosmos_Sadhguru"),
         (LaunchSite.ControlArea, "Simulación: Elon Musk en Hawthorne: el Falcon 1 llega a órbita (2008)", "Microcosmos_ElonMusk"),
         (LaunchSite.ControlArea, "Simulación: Omelek, el día del lanzamiento del Falcon 1 (Kwajalein, 2008)", "Microcosmos_ElonMuskOmelek"),
@@ -182,7 +182,7 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
         ("Música", "Simulación: John Lennon y Yoko Ono en Montreal: una cama por la paz (1969)", "Microcosmos_JohnLennon"),
         ("Música", "Simulación: Bad Bunny en Vega Baja: del empaque del súper a SoundCloud (2016)", "Microcosmos_BadBunny"),
         ("Aula", "Simulación: Shakira en Barranquilla: el colegio Pies Descalzos de La Playa (2009)", "Microcosmos_Shakira"),
-        // Científicos e históricos (docs/microcosmos-cientificos.md): el pueblo donde ocurrió, sobre el área que mejor lo cuenta.
+        // Científicos e históricos (docs/microcosmos/microcosmos-cientificos.md): el pueblo donde ocurrió, sobre el área que mejor lo cuenta.
         ("Aula", "Simulación: Pitágoras en Crotona: el número, la música y Milón (~530 a. C.)", "Microcosmos_Pitagoras"),
         ("Aula", "Simulación: Heródoto en Egipto: «el don del río» (~450 a. C.)", "Microcosmos_Herodoto"),
         ("Aula", "Simulación: al-Juarismi en Bagdad: el álgebra y los números indios (~820)", "Microcosmos_AlJuarismi"),

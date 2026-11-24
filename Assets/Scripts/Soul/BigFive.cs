@@ -1,6 +1,6 @@
 using UnityEngine;
 
-/// <summary>Perfil de PERSONALIDAD Big Five / OCEAN (docs/apremios-guardian-observacion.md §8) — el modelo más usado en
+/// <summary>Perfil de PERSONALIDAD Big Five / OCEAN (docs/sistemas/apremios-guardian-observacion.md §8) — el modelo más usado en
 /// psicología. NO son stats nuevos: se **DERIVAN** de las aptitudes que ya tiene el ser (mapeo formalizado), para dar una
 /// personalidad legible (0..1 por rasgo).</summary>
 public struct BigFiveProfile

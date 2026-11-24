@@ -10,7 +10,7 @@ using UnityEngine;
 ///  · AUM (ॐ): la sílaba sagrada en oro sobre una estela de piedra oscura, en el centro.
 ///  · SHIVA en meditación: piel azulada, moño de rastas (jata) con la luna creciente, tercer ojo, cobra al cuello, collar
 ///    de rudraksha, sentado sobre piel de tigre, y a su lado el tridente (trishula) con el tambor damaru.
-/// Y los de los PISOS DE YOGA (2026-11-04; docs/yoga-pisos.md; el anillo de yoga, con sus estatuas en los puntos cardinales, se
+/// Y los de los PISOS DE YOGA (2026-11-04; docs/areas/yoga-pisos.md; el anillo de yoga, con sus estatuas en los puntos cardinales, se
 /// quitó): el LINGA como el Dhyanalinga, el busto de ADIYOGI, GANESHA y las LÁMPARAS DE ACEITE.
 /// </summary>
 public static class YogaStatues
@@ -187,7 +187,7 @@ public static class YogaStatues
         C(tr, new Vector3(0f, 1.8f, 0f), new Vector3(0.12f, 0.1f, 0.12f), new Color(0.6f, 0.45f, 0.3f), 45f);   // damaru
     }
 
-    // ── LOS PISOS DE YOGA (Berón 2026-11-04; docs/yoga-pisos.md): los elementos distintivos de cada sala ──
+    // ── LOS PISOS DE YOGA (Berón 2026-11-04; docs/areas/yoga-pisos.md): los elementos distintivos de cada sala ──
 
     /// <summary>LINGA como el DHYANALINGA de Isha (Coimbatore): una piedra negra pulida, alta y redondeada (allí, granito negro de
     /// 13 pies y 9 pulgadas) que sale del AVUDAIYAR, el receptáculo en forma de serpiente de SIETE vueltas (de cobre), sobre un zócalo de

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// REPRODUCCIÓN ENTRE ESPECIES (docs/microcosmos-civilizaciones.md §7; Berón 2026-11-01: «se podrían reproducir entre todos
+/// REPRODUCCIÓN ENTRE ESPECIES (docs/microcosmos/microcosmos-civilizaciones.md §7; Berón 2026-11-01: «se podrían reproducir entre todos
 /// y los hijos podrían salir como cualquier insecto del árbol genealógico, de modo que una mariquita se podría casar con una
 /// araña y tener un hijo ciempiés como el tatarabuelo»). En las eras civilizadas los insectos-humanos conviven y se casan
 /// entre especies. Cada uno lleva su LINAJE (<see cref="FolkLineage"/>): su especie y la de sus antepasados con su

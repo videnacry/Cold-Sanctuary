@@ -31,7 +31,7 @@ public class MeditationReward
 
     [Header("Marga de Yoga")]
     [Tooltip("XP para la marga de Yoga del jugador (pool GENERAL de yoga, no por asana). 0 = none. " +
-             "Ver docs/creature-stats.md §Progresión.")]
+             "Ver docs/sistemas/creature-stats.md §Progresión.")]
     [Min(0f)] public float yogaXp = 0f;
 
     /// <summary>Apply every reward. <paramref name="player"/> is the player's transform (may be null).</summary>

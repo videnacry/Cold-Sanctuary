@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// DESPENSA Y OBRADOR del restaurante (docs/cocina-profesional.md). Lleva el stock de materias primas y de ELABORACIONES
+/// DESPENSA Y OBRADOR del restaurante (docs/areas/cocina-profesional.md). Lleva el stock de materias primas y de ELABORACIONES
 /// (harina, masa madre, quesos, yogur, tofu, caldos…) y planifica la producción como una brigada real (mise en place):
 /// para servir un platillo primero tiene que haber sus elaboraciones; si falta una, se pone en marcha… y si esa a su vez
 /// pide otra (el queso pide leche; la leche, proteína de fermentación), se encadena. Las elaboraciones con REPOSO

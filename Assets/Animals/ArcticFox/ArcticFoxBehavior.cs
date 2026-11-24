@@ -1,6 +1,6 @@
 using UnityEngine;
 
-// Zorro ártico (Vulpes lagopus): caza, carroña y bayas; madriguera en montículos; crían los dos padres. Ficha: docs/reglas-animales.md (Fichas).
+// Zorro ártico (Vulpes lagopus): caza, carroña y bayas; madriguera en montículos; crían los dos padres. Ficha: docs/reglas/reglas-animales.md (Fichas).
 public class ArcticFoxBehavior : Animal
 {
     protected override string SpeciesArchetype => "ArcticFox";

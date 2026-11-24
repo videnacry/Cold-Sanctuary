@@ -7,7 +7,7 @@ using UnityEngine;
 /// <summary>
 /// Prueba EN VIVO automatizada: abre la escena, monta el blockout, **entra en Play**, deja correr el
 /// mundo N segundos y sale, todo desde la línea de comandos. Sirve para recorrer el checklist de
-/// `docs/testing-checklist.md` sin depender del bridge MCP (que no conecta de forma fiable).
+/// `docs/qa/testing-checklist.md` sin depender del bridge MCP (que no conecta de forma fiable).
 ///
 /// Uso (modo GUI, NO -batchmode — y nunca los dos a la vez):
 /// <code>

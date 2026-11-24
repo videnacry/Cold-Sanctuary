@@ -1,15 +1,21 @@
+---
+resumen: "empezar aquí para continuar: tablero de tareas pendientes."
+temas: [pruebas, jornada]
+estado: vigente
+codigo: [Animal, Anima, Mind, Forager, SampleSceneBuilder, Predation, WalkSpell, CharacterLevel]
+---
 # Checklist — continuar
 
 Tablero para retomar. Última sesión: 2026-08-28. Marca lo que completes.
-Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-planteamiento.md`](gaps-vs-planteamiento.md),
-[`world-topology-and-planes.md`](world-topology-and-planes.md) (visión del mundo grande / los 3 planos).
+Contexto de fondo: [`AUDIT-2026-07-09.md`](historial/AUDIT-2026-07-09.md), [`gaps-vs-planteamiento.md`](historial/gaps-vs-planteamiento.md),
+[`world-topology-and-planes.md`](sistemas/world-topology-and-planes.md) (visión del mundo grande / los 3 planos).
 
-> **HECHO 2026-11-12 (#128, el refugio crece, rama claude/refugio-crece; solo código, sin probar en vivo):** cinco obras en orden (dormitorios, comedor y despensa, agua y aire para 24, invernadero, enfermería y taller) que hace el equipo del Marino con horas libres; cada una sube lo que aguanta el refugio y la autonomía de un mes (#125) se mantiene ([sitio-nuclear.md](sitio-nuclear.md) §26).
+> **HECHO 2026-11-12 (#128, el refugio crece, rama claude/refugio-crece; solo código, sin probar en vivo):** cinco obras en orden (dormitorios, comedor y despensa, agua y aire para 24, invernadero, enfermería y taller) que hace el equipo del Marino con horas libres; cada una sube lo que aguanta el refugio y la autonomía de un mes (#125) se mantiene ([sitio-nuclear.md](areas/sitio-nuclear.md) §26).
 > - [ ] Probar 113 y, en vivo, ver el registro `[Refugio] Obra abierta` y sus turnos en la Línea.
 
 > **REGLA (2026-11-10): toda petición de Berón se anota aquí el mismo día**, con su fecha y el doc o la regla a la que apunta. **Un
 > punto solo cuenta como hecho cuando se ha verificado en vivo**: programado y compilado es «sin verificar», no «hecho».
-> Auditoría completa: [`auditoria-peticiones.md`](auditoria-peticiones.md).
+> Auditoría completa: [`auditoria-peticiones.md`](historial/auditoria-peticiones.md).
 
 ## Pendiente de verificar en vivo y peticiones sin anotar (auditoría 2026-11-10)
 
@@ -18,7 +24,7 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 > [`qa/casos.md`](qa/casos.md) y estados en [`qa/registro.md`](qa/registro.md). **Lo pendiente de verificar en vivo** es lo que el
 > registro tiene en `Solo código` y `Sin probar`. Esta sección se queda como histórico de la auditoría del 2026-11-10: no se marca aquí.
 
-Las 155 peticiones del 10-27 al 11-09, una por fila, están en [`auditoria-peticiones.md`](auditoria-peticiones.md) (el número con #).
+Las 155 peticiones del 10-27 al 11-09, una por fila, están en [`auditoria-peticiones.md`](historial/auditoria-peticiones.md) (el número con #).
 Las referencias «L» llevan al checklist tal como estaba en `b0add6e`, antes de añadir esta sección.
 
 ### 1. Flora del microcosmos (en curso, ronda 34)
@@ -31,9 +37,9 @@ Las referencias «L» llevan al checklist tal como estaba en `b0add6e`, antes de
 ### 2. Peticiones sin anotar (30)
 
 - [x] 10-27 · Sin escaleras, puentes ni barreras de borde; saltos entre plataformas sobre cojines de musgo (#1) · manual S5. · ✓ 2026-11-13: «#1 sin pretiles ni barandillas de borde, ni escaleras ni puentes» (g117, ronda 73, 2026-11-13)
-- [x] 10-27 · Todos los pisos del mismo tamaño, `SetBack` 0 (#2) · [plano-edificios.md](plano-edificios.md). · ✓ 2026-11-13: «#2 todos los pisos de cada edificio del mismo tamaño» (g117, ronda 73, 2026-11-13)
-- [ ] 10-27 · Alfombras de 4 tipos (edificio, santuario, residencia, habitación) y rutas de los NPC por `CarpetPad.Route` (#3) · [transporte-alfombras.md](transporte-alfombras.md); [L154](https://github.com/videnacry/Cold-Sanctuary/blob/b0add6e/docs/checklist.md#L154) solo cubre el grosor.
-- [x] 10-27 · Muebles para la persona más alta, 1,85 m (#4) · [medidas-muebles.md](medidas-muebles.md). · ✓ 2026-11-13: «#4 camas y camillas de ≥ 2,00 m (gente de 1,85 m) — 84 camas y camillas» (g117, ronda 73, 2026-11-13)
+- [x] 10-27 · Todos los pisos del mismo tamaño, `SetBack` 0 (#2) · [plano-edificios.md](areas/plano-edificios.md). · ✓ 2026-11-13: «#2 todos los pisos de cada edificio del mismo tamaño» (g117, ronda 73, 2026-11-13)
+- [ ] 10-27 · Alfombras de 4 tipos (edificio, santuario, residencia, habitación) y rutas de los NPC por `CarpetPad.Route` (#3) · [transporte-alfombras.md](areas/transporte-alfombras.md); [L154](https://github.com/videnacry/Cold-Sanctuary/blob/b0add6e/docs/checklist.md#L154) solo cubre el grosor.
+- [x] 10-27 · Muebles para la persona más alta, 1,85 m (#4) · [medidas-muebles.md](areas/medidas-muebles.md). · ✓ 2026-11-13: «#4 camas y camillas de ≥ 2,00 m (gente de 1,85 m) — 84 camas y camillas» (g117, ronda 73, 2026-11-13)
 - [ ] 10-27 · Todo microcosmos sale de la plantilla: fecha, hora y piso (#5) · manual M1, `MicrocosmTemplate`.
 - [x] 10-27 · Ambrosio en el hospital al alba de la taiga; Sakshi, segunda anciana; mariquita de 2,4 m como depredador (#6) · [L157](https://github.com/videnacry/Cold-Sanctuary/blob/b0add6e/docs/checklist.md#L157) solo dice «reconstruir Ambrosio». · ✓ 2026-11-12: g40 ExperienciaJugadorTest (iniciación → Ambrosio → vuelta) en verde; ronda 13 en vivo: Ambrosio, Sakshi y la mariquita en la historia
 - [x] 10-28 · 2 m de paso entre lo que no va junto (#7) · manual S7, `FurnitureSpacing`. · ✓ 2026-11-12: «…: 2 m libres entre muebles (y ninguno sobre un área de alfombras) — 0 pares» (21 comprobaciones, una por área)
@@ -43,18 +49,18 @@ Las referencias «L» llevan al checklist tal como estaba en `b0add6e`, antes de
 - [x] 10-29 · El microcosmos es solo su piso, amurallado; nada fuera (#12) · manual M5. · ✓ 2026-11-12: «al construirlo no quedó nada fuera — 0 piezas fuera» (microcosmos)
 - [x] 10-29 · Iniciaciones en «orquesta»: a ≤ 2 m, cada uno anda solo, sin tirones ni teletransportes (#13) · manual J5. · ✓ 2026-11-12: «orquesta (cocina): sin saltos ni teletransportes de emergencia ni empujones de otros»
 - [x] 10-29 · Pocas torres temáticas con muchos pisos (#14) · manual S2. · ✓ 2026-11-12: «4 torres temáticas (servicios, entrenamiento, ciencias, producción) y el Árbol de los campos con sus pisos»
-- [x] 10-30 · Árbol v2: tronco cuadrado, hélice, primer piso a ≥ 50 m, entradas solo abajo y en el techo, nado entre niveles (#15) · manual T1–T2, [edificio-arbol.md](edificio-arbol.md). · ✓ 2026-11-12: g57 y g53: «Ciencias: en cada nivel, pisos en dos lados opuestos y ramas a las puntas…, alternando (hélice)» y las puertas cuadradas de 7 × 7 m
+- [x] 10-30 · Árbol v2: tronco cuadrado, hélice, primer piso a ≥ 50 m, entradas solo abajo y en el techo, nado entre niveles (#15) · manual T1–T2, [edificio-arbol.md](areas/edificio-arbol.md). · ✓ 2026-11-12: g57 y g53: «Ciencias: en cada nivel, pisos en dos lados opuestos y ramas a las puntas…, alternando (hélice)» y las puertas cuadradas de 7 × 7 m
 - [ ] 10-31 · Migrar todos los edificios al modelo árbol antes de arreglar fallos de pruebas (#17) · manual S3.
 - [ ] 11-02 · Un hogar para cada personaje del pueblo, además de trabajo y servicios (#23) · manual M18.
-- [x] 11-02 · El mismo ciclo de vida para humanos e insectos-humanos, con su escena de prueba (#24) · manual M19, [ciclo-de-vida.md](ciclo-de-vida.md). · ✓ 2026-11-12: g59 CicloHumanoTest (ciclo de vida de humano e insecto-humano) en verde
+- [x] 11-02 · El mismo ciclo de vida para humanos e insectos-humanos, con su escena de prueba (#24) · manual M19, [ciclo-de-vida.md](sistemas/ciclo-de-vida.md). · ✓ 2026-11-12: g59 CicloHumanoTest (ciclo de vida de humano e insecto-humano) en verde
 - [x] 11-02 · Escala ×100, todo relativo a `AreaScale` (#25) · manual M11. · ✓ 2026-11-12: ronda 30 en vivo: «[Microcosmos] Kapilavastu: piso ×100 con muros…»; g43 en verde
-- [ ] 11-02 · Se permiten los muros históricos que pida la historia (gueto, reactor) (#26) · [microcosmos-reglas-edificacion.md](microcosmos-reglas-edificacion.md).
+- [ ] 11-02 · Se permiten los muros históricos que pida la historia (gueto, reactor) (#26) · [microcosmos-reglas-edificacion.md](reglas/microcosmos-reglas-edificacion.md).
 - [ ] 11-03 · Dejar siempre los docs y el checklist al día (#45) · regla de proceso; **incumplida** con lo del 11-09. La refuerza la regla de arriba.
 - [ ] 11-04 · Al cambiar un piso, área, árbol o microcosmos, revisar jornadas, reparto y horario libre (#64) · manual W9 y su gancho.
-- [ ] 11-05 · El refugio crece hasta que se pueda vivir en él, con áreas nuevas (#128) · [sitio-nuclear.md](sitio-nuclear.md); [L172](https://github.com/videnacry/Cold-Sanctuary/blob/b0add6e/docs/checklist.md#L172)–[L173](https://github.com/videnacry/Cold-Sanctuary/blob/b0add6e/docs/checklist.md#L173) solo dan 12 plazas para 1 mes.
+- [ ] 11-05 · El refugio crece hasta que se pueda vivir en él, con áreas nuevas (#128) · [sitio-nuclear.md](areas/sitio-nuclear.md); [L172](https://github.com/videnacry/Cold-Sanctuary/blob/b0add6e/docs/checklist.md#L172)–[L173](https://github.com/videnacry/Cold-Sanctuary/blob/b0add6e/docs/checklist.md#L173) solo dan 12 plazas para 1 mes.
 - [ ] 11-05 · Focos brillantes: revisar en vivo las medusas y todo lo que brilla (#138) · [L178](https://github.com/videnacry/Cold-Sanctuary/blob/b0add6e/docs/checklist.md#L178) es anterior; ver los materiales opacos del 11-09.
-- [x] 11-08 · Para subir de santuario hay que superar al animal más poderoso; la magia como camino (#141) · [progresion-santuarios.md](progresion-santuarios.md). · ✓ 2026-11-12: «cada jefe es al menos tan fuerte como el anterior (hay que superar a todos sus animales)»
-- [x] 11-08 · Varias tareas a la vez en un área; las opcionales se saltan si nadie está libre (#148) · [jornada-y-rotacion.md](jornada-y-rotacion.md) §6. · ✓ 2026-11-12: «un área sin tareas hoy (la B) no pide a nadie ni tiene clon» (g113)
+- [x] 11-08 · Para subir de santuario hay que superar al animal más poderoso; la magia como camino (#141) · [progresion-santuarios.md](sistemas/progresion-santuarios.md). · ✓ 2026-11-12: «cada jefe es al menos tan fuerte como el anterior (hay que superar a todos sus animales)»
+- [x] 11-08 · Varias tareas a la vez en un área; las opcionales se saltan si nadie está libre (#148) · [jornada-y-rotacion.md](sistemas/jornada-y-rotacion.md) §6. · ✓ 2026-11-12: «un área sin tareas hoy (la B) no pide a nadie ni tiene clon» (g113)
 - [x] 11-09 · Control de misión también en obra (#150) · commit `99516a0`. · ✓ 2026-11-12: «Control de misión no es básico; en obra solo siguen sus emergencias»
 - [x] 11-09 · Fauna = K × humanos, K = 3, por la pirámide trófica (#151) · manual E11, grupo 113, commit `6fa02b7`. · ✓ 2026-11-12: «la fauna salvaje no pasa de K × humanos (81)»
 - [x] 11-09 · Todo opaco, sin brillo, con materiales baratos (#152) · `CheapMaterials`, ya fusionado en edificios (`d0d8021`). · ✓ 2026-11-13: «#152 ningún material brillante (suavidad ≤ 0,2) — 1662 materiales» (g117, ronda 73, 2026-11-13)
@@ -85,23 +91,23 @@ Las referencias «L» llevan al checklist tal como estaba en `b0add6e`, antes de
 - [x] **Actividades y estructuras** (#33) · [L253](https://github.com/videnacry/Cold-Sanctuary/blob/b0add6e/docs/checklist.md#L253), [L274](https://github.com/videnacry/Cold-Sanctuary/blob/b0add6e/docs/checklist.md#L274), [L713](https://github.com/videnacry/Cold-Sanctuary/blob/b0add6e/docs/checklist.md#L713). · ✓ suite 63 en vivo, 2026-11-12, d0542db: 4477 PASS de 4481, los 4 FAIL en g50. Pasa g97
 - [ ] **Luz de las abejas** (#59) · [L178](https://github.com/videnacry/Cold-Sanctuary/blob/b0add6e/docs/checklist.md#L178). · ⚠ 2026-11-12: no se puede verificar mientras no haya insectos en el santuario 1 (InsectsInSanctuary1 = false)
 
-> **HECHO 2026-11-09 (áreas en obra, rama claude/areas-en-obra; solo código, sin probar en vivo):** solo lo básico queda terminado (servicios básicos, construcción, gimnasio y yoga); ciencias, aula, asambleas, música y estudio textil vuelven a ser obra, sin tareas de área y con tareas de obra opcionales ([areas-en-obra.md](areas-en-obra.md)).
+> **HECHO 2026-11-09 (áreas en obra, rama claude/areas-en-obra; solo código, sin probar en vivo):** solo lo básico queda terminado (servicios básicos, construcción, gimnasio y yoga); ciencias, aula, asambleas, música y estudio textil vuelven a ser obra, sin tareas de área y con tareas de obra opcionales ([areas-en-obra.md](areas/areas-en-obra.md)).
 > - [ ] Probar 113 y 28; jugar un día sin pruebas y ver las obras en la escena y el registro `[Obras]`.
 
-> **HECHO 2026-11-08 (planta nuclear bajo el mar, rama claude/nuclear-submarina; solo código, sin probar en vivo):** la Central Nuclear y la Planta Atómica, enteras en el Santuario Marino junto a las cavernas (`BuildMarinePlant`); arriba solo la estación de 40 × 40 m con la Línea y su pista de la red del santuario; la jornada baja por la Línea sin cargar nada. Regla T25; docs/sitio-nuclear.md §25.
+> **HECHO 2026-11-08 (planta nuclear bajo el mar, rama claude/nuclear-submarina; solo código, sin probar en vivo):** la Central Nuclear y la Planta Atómica, enteras en el Santuario Marino junto a las cavernas (`BuildMarinePlant`); arriba solo la estación de 40 × 40 m con la Línea y su pista de la red del santuario; la jornada baja por la Línea sin cargar nada. Regla T25; docs/areas/sitio-nuclear.md §25.
 > - [ ] Reconstruir: «Build Santuario Marino (escena del fondo)» y después «Build Sample Scene Blockout (solo el santuario, sin microcosmos)», y guardar.
 > - [ ] Probar los grupos 114, 94, 100, 101, 50, 61, 96, 75 y 73.
 > - [x] T16: columnas de roca en las salas de la planta (y una viga de transferencia sobre la piscina del TRIGA); plazas de sus microcosmos abajo; garaje del submarino de obra en la estación; puertas de 2 m en las salas.
 >
-> **HECHO 2026-11-08 (reparto por santuarios, rama claude/reparto-santuarios; solo código, sin probar en vivo):** cada humano tiene su casa (santuario y nivel; los nueve de siempre en s1n1, los demás por sus margas), solo va a lo anterior, y cada día pasa la jornada en un sitio al que llega. El orden del personal cambia cada día; las horas de cada área entera salen de su lista de hoy; las horas de cada sitio se reparten por igual (≤ 5 h; clones para lo que sobra y para las áreas sin nadie; nada pasa a mañana; la planta nuclear es del Marino); quien pasa el día fuera se apaga en SampleScene y vuelve para las fiestas ([jornada-y-rotacion.md](jornada-y-rotacion.md) §Reparto por santuarios; manual J33–J36).
+> **HECHO 2026-11-08 (reparto por santuarios, rama claude/reparto-santuarios; solo código, sin probar en vivo):** cada humano tiene su casa (santuario y nivel; los nueve de siempre en s1n1, los demás por sus margas), solo va a lo anterior, y cada día pasa la jornada en un sitio al que llega. El orden del personal cambia cada día; las horas de cada área entera salen de su lista de hoy; las horas de cada sitio se reparten por igual (≤ 5 h; clones para lo que sobra y para las áreas sin nadie; nada pasa a mañana; la planta nuclear es del Marino); quien pasa el día fuera se apaga en SampleScene y vuelve para las fiestas ([jornada-y-rotacion.md](sistemas/jornada-y-rotacion.md) §Reparto por santuarios; manual J33–J36).
 > - [ ] Probar los grupos 113, 28, 104, 50, 65, 87 y 95; después 55, 110, 100, 94, 45, 75, 74 y 77.
 > - [ ] Jugar un día sin pruebas: Fernando y Luciana se apagan a las 7:50 y vuelven en la fiesta; el HUD dice «Libre» a su hora.
-> - [ ] **Berón**: los valores de los bonusPacks, la fauna del Marino y del Aéreo, y si Linduarda (la médica) pasa el día en el Aéreo ([progresion-santuarios.md](progresion-santuarios.md)).
+> - [ ] **Berón**: los valores de los bonusPacks, la fauna del Marino y del Aéreo, y si Linduarda (la médica) pasa el día en el Aéreo ([progresion-santuarios.md](sistemas/progresion-santuarios.md)).
 > **HECHO 2026-11-08 (fichas de personajes, rama claude/perfiles-personajes; solo docs y comentarios, sin cambios de conducta):** una ficha
 > por persona en [`personajes/`](personajes/README.md) con la plantilla de 11 secciones (cada dato con su veracidad M39 y su fuente), 32 del
 > santuario y 8 figuras de fuera; tabla de lo completa que está cada una, de Irosene y la Magnate (16 de 18) a Nesvitor, David y Adonis
 > (6); 13 contradicciones entre fuentes; comentarios «ficha: docs/personajes/…» en cada sitio del código donde se define una persona.
-> Regla nueva **P24** en el [manual](manual-de-diseno.md) §9.1.
+> Regla nueva **P24** en el [manual](reglas/manual-de-diseno.md) §9.1.
 > - [ ] **Berón**: contestar la sección 11 de las fichas con menos puntos (de dónde es cada uno, cómo llegó, cómo es, las fotos que faltan).
 > - [x] Berón (2026-11-08): Irosene es Irene y Nesvitor es Néstor, el de su historia (nombres reales solo en las fichas); Goluis es encargado de cocina, Maite y Amykhuz los rangos más altos.
 > - [ ] **Berón**: si Alicita es la «Alicia» de la historia de Irosene, si Josedrilo es el padre de Leo y si Lizmibet es su consuegra.
@@ -118,24 +124,24 @@ Las referencias «L» llevan al checklist tal como estaba en `b0add6e`, antes de
 > - [ ] Comprobar en vivo que el personal anda a su velocidad y volver a medir `WorkdayDirector.Update`.
 > - [x] Decidir: el O₂ de la fachada (faltan 425 m²) y el Huerto (faltan 1290 m²) para 31 personas. Berón (2026-11-08): segunda fachada y Huerto vertical.
 >
-> **HECHO 2026-11-08 (oxígeno y huerto, rama claude/oxigeno-huerto; solo código, sin probar en vivo):** segunda fachada de fotobiorreactores en el tronco de la torre de Ciencias (480 m²; con la del Árbol, 1075 m²: 27,4 kg de O₂/día a salud 0,85 para 26,9 que respiran 32 personas) y su misión `bio_fotobio_2`; Huerto vertical en la torre de Producción (3 niveles), 8 estantes LED que salen de la demanda (25,6 kg/día; da 29,4 con los bancales) y sus tareas `huv_*`; las cargas en el balance de energía (~+127 kW de media). Reglas P22 y P23 del manual. docs/fotobiorreactores.md, docs/produccion-maquinaria.md y docs/energia.md §2026-11-08.
+> **HECHO 2026-11-08 (oxígeno y huerto, rama claude/oxigeno-huerto; solo código, sin probar en vivo):** segunda fachada de fotobiorreactores en el tronco de la torre de Ciencias (480 m²; con la del Árbol, 1075 m²: 27,4 kg de O₂/día a salud 0,85 para 26,9 que respiran 32 personas) y su misión `bio_fotobio_2`; Huerto vertical en la torre de Producción (3 niveles), 8 estantes LED que salen de la demanda (25,6 kg/día; da 29,4 con los bancales) y sus tareas `huv_*`; las cargas en el balance de energía (~+127 kW de media). Reglas P22 y P23 del manual. docs/areas/fotobiorreactores.md, docs/areas/produccion-maquinaria.md y docs/areas/energia.md §2026-11-08.
 > - [ ] Reconstruir SampleScene solo el santuario (menú «Build Sample Scene Blockout (solo el santuario, sin microcosmos)») y guardarla.
 > - [ ] Probar los grupos 56, 103, 101, 61, 96 (PlayerTasks), 75 (capacidad), 97 (actividades), 73 (garaje del submarino), 57 (torres-árbol), 55 (frutales) y 50 (jornada).
 > - [ ] Mirar en fotos: las arpas en las 4 esquinas del tronco de Ciencias (10–56 m) y el piso del Huerto vertical.
 >
-> **HECHO 2026-11-05 (rendimiento, rama claude/rendimiento; solo código, sin probar en vivo):** lote estático en Play sin reconstruir nada (las piezas siguen con nombre, collider y `enabled`), detalle apagado a más de 120 m, cuerpos y grupos sin dibujar a más de 130 m, sonda con A/B y renderers por builder, menú con los ajustes de URP. Detalle y riesgos: [rendimiento.md](rendimiento.md).
+> **HECHO 2026-11-05 (rendimiento, rama claude/rendimiento; solo código, sin probar en vivo):** lote estático en Play sin reconstruir nada (las piezas siguen con nombre, collider y `enabled`), detalle apagado a más de 120 m, cuerpos y grupos sin dibujar a más de 130 m, sonda con A/B y renderers por builder, menú con los ajustes de URP. Detalle y riesgos: [rendimiento.md](plataforma/rendimiento.md).
 > - [ ] Medir en SampleScene: *Perfilar scripts* (da el coste por tipo), `rendimiento-ab` y el build de medida (`tools/build-perf.sh`).
 > - [ ] Probar los grupos 112, 28, 43, 53, 71, 80, 84, 99 y 110 (lote, árbol que gira y las pruebas que miden piezas).
 > - [ ] Fotos: colores de la paleta contra sin lotes; una torre vista a 100 y 140 m; un perchero tras coger máscaras.
 
-> **HECHO 2026-11-05 (interfaz y personajes, rama claude/edif-interfaz; solo código, sin probar en vivo):** pila de botones sobre F10 con ventanas de horario (F2), recursos (F3) y misiones y jornada (F4), y el panel de recursos ya no está siempre a la vista ([interfaz-botones.md](interfaz-botones.md)). **Consol**, maestra jefa de Ashtanga, con su clase profunda; **Josedrilo**, jefe de Hatha; **Panterilia** deja el yoga. **Fernando**, paneles solares, con las misiones `sol_` de la rama de energía, ya integrada. Quinta casa por árbol. **Reglas de personajes** P1–P10 y una ficha por persona ([reglas-personajes.md](reglas-personajes.md), `docs/personajes/`).
+> **HECHO 2026-11-05 (interfaz y personajes, rama claude/edif-interfaz; solo código, sin probar en vivo):** pila de botones sobre F10 con ventanas de horario (F2), recursos (F3) y misiones y jornada (F4), y el panel de recursos ya no está siempre a la vista ([interfaz-botones.md](sistemas/interfaz-botones.md)). **Consol**, maestra jefa de Ashtanga, con su clase profunda; **Josedrilo**, jefe de Hatha; **Panterilia** deja el yoga. **Fernando**, paneles solares, con las misiones `sol_` de la rama de energía, ya integrada. Quinta casa por árbol. **Reglas de personajes** P1–P10 y una ficha por persona ([reglas-personajes.md](reglas/reglas-personajes.md), `docs/personajes/`).
 > - [ ] Reconstruir SampleScene (solo el santuario) y guardarla: personas, casas y árboles nuevos.
 > - [ ] Probar los grupos 93, 95, 101, 64, 65, 87, 89, 75, 50 y 28.
 > - [ ] Fotos: la pila de botones y sus 3 ventanas; las 3 variaciones de Consol; la quinta casa.
-> - [ ] **Berón**: fotos de Consol y Fernando, y la lista de puestos sin confirmar de [reglas-personajes.md](reglas-personajes.md).
+> - [ ] **Berón**: fotos de Consol y Fernando, y la lista de puestos sin confirmar de [reglas-personajes.md](reglas/reglas-personajes.md).
 > - [ ] Comprobar en vivo que Fernando coge sus `sol_` (rama de energía ya integrada aquí; grupo 101).
 
-> **MANUAL DE DISEÑO (2026-11-04):** todas las reglas de Berón están en [`manual-de-diseno.md`](manual-de-diseno.md): 119 reglas,
+> **MANUAL DE DISEÑO (2026-11-04):** todas las reglas de Berón están en [`manual-de-diseno.md`](reglas/manual-de-diseno.md): 119 reglas,
 > dónde se comprueba cada una, las 2 que quedan pendientes del 2026-11-04 (M9 y el gancho de §11 para los demás pisos) y la
 > tabla piso → microcosmos para revisarlos cuando cambia un piso. Al recibir una regla nueva, añadirla allí.
 
@@ -144,7 +150,7 @@ Las referencias «L» llevan al checklist tal como estaba en `b0add6e`, antes de
 > - [ ] **Revisar con 32 humanos:** el grupo 103 (carne, cocina) y cuánta fauna sale al construir.
 
 > **HECHO 2026-11-05 (tanda 3 de historias, rama claude/edif-histo; solo código y compilación, sin probar en vivo):** 12 microcosmos con su historia de
-> 8 pasos, su pueblo, sus cuatro categorías y su mapa a mano HECHO ([`microcosmos-historias-3.md`](microcosmos-historias-3.md)): Eloy Alfaro, Galvarino, Atahualpa, la Gran
+> 8 pasos, su pueblo, sus cuatro categorías y su mapa a mano HECHO ([`microcosmos-historias-3.md`](microcosmos/microcosmos-historias-3.md)): Eloy Alfaro, Galvarino, Atahualpa, la Gran
 > Ley de la Paz, Cleopatra, las calculadoras de Langley, Beethoven, Descartes, Ernesto Guevara, Pedro Sánchez, Lincoln y la Feria de las Hazañas. Lincoln, decidido: C-SPAN 1.º,
 > Siena 2.º. Pruebas: grupos 78 y 79.
 > - [ ] **Probar en vivo** (probador): reconstruir de una en una, en el orden del doc, y «Build Sala de Eras»; grupos 78, 79, 43, 63 y 87; fotos.
@@ -152,19 +158,19 @@ Las referencias «L» llevan al checklist tal como estaba en `b0add6e`, antes de
 > - [x] Atahualpa rehecho: cómo vivían los incas, obras sin terminar y la bienvenida (el día antes de la captura, 1532).
 > - [x] Regla W10 (manual §11): revelar lo altruista, bello o de superación; lo inventado, marcado; nada inventado de personas vivas. Las 12 revisadas.
 > - [x] **W10 en las anteriores** (2026-11-05): Pitágoras, Heródoto, Eratóstenes, Newton, Nietzsche, al-Juarismi, Einstein, Tesla, Jenner y Curie con su momento; Gates, Buffett y Traoré con hechos públicos. Reconstruirlos de uno en uno cuando se puedan probar.
-> - [x] Regla W11 (auditar al cambiar una regla), primera auditoría hecha; reglas nuevas M36–M38. Propuestas sin hacer en [`microcosmos-historias-3.md`](microcosmos-historias-3.md) §W11.
-> - [x] **Sala de asambleas** ([`piso-asambleas.md`](piso-asambleas.md)): nivel 4 de Servicios, 72 plazas; Angostura, Onondaga, Madrid, Gettysburg y la Feria re-apuntadas. Reglas S14 y F14, y `AreaDesign`.
-> - [x] **Veracidad de las frases** ([`veracidad-frases.md`](veracidad-frases.md), regla M39).
+> - [x] Regla W11 (auditar al cambiar una regla), primera auditoría hecha; reglas nuevas M36–M38. Propuestas sin hacer en [`microcosmos-historias-3.md`](microcosmos/microcosmos-historias-3.md) §W11.
+> - [x] **Sala de asambleas** ([`piso-asambleas.md`](areas/piso-asambleas.md)): nivel 4 de Servicios, 72 plazas; Angostura, Onondaga, Madrid, Gettysburg y la Feria re-apuntadas. Reglas S14 y F14, y `AreaDesign`.
+> - [x] **Veracidad de las frases** ([`veracidad-frases.md`](sistemas/veracidad-frases.md), regla M39).
 > - [ ] **Sala de asambleas: probar en vivo**: Blockout de solo santuario, «Build Microcosmos…» de las 5 y grupos 77, 43, 28, 57, 90.
 > - [x] **S6**: la tapa de cristal de la cabina y los listones de la toguna, permitidos (2026-11-05).
-> - [x] **S14/F14 en Huerto y Construcción**: seis métodos y cinco técnicas del mundo, a la vista, con su origen ([`huertos-y-cultivos.md`](huertos-y-cultivos.md), [`construccion-sostenible.md`](construccion-sostenible.md)).
+> - [x] **S14/F14 en Huerto y Construcción**: seis métodos y cinco técnicas del mundo, a la vista, con su origen ([`huertos-y-cultivos.md`](areas/huertos-y-cultivos.md), [`construccion-sostenible.md`](areas/construccion-sostenible.md)).
 > - [x] **M39 en lo que faltaba**: Le Chambon, Sendler, Egina, Sakshi, Ambrosio y Cocina; cuatro frases de la música con fuente en `Quoted`.
 > - [ ] **Huerto y Construcción: probar en vivo**: Blockout de solo santuario; grupos 77, 28; reconstruir Huerto, Palenque, Uagadugú, Egina y Colorado Springs (F6); Música por las frases de Marley y Gabriel.
-> - [x] **Sala de guardia** ([`sala-de-guardia.md`](sala-de-guardia.md)): nivel 4 de Servicios, misión `gua_sala`.
-> - [x] **Árbol gigante retirado**; sus récords siguen en [`arbol-guardian.md`](arbol-guardian.md).
-> - [x] **El cazador, en los 6 árboles de la residencia**; casquetes silvestres con estructuras para la fauna ([`territorio-polar.md`](territorio-polar.md)).
-> - [x] **Sin bosque** ([`ice-sanctuary-ecology.md`](ice-sanctuary-ecology.md) §Sin bosque).
-> - [x] **Residencia en edificio-árbol** ([`residencia.md`](residencia.md)); casas de árbol guardadas ([`casas-de-arbol.md`](casas-de-arbol.md)); cazador en su celda ([`contencion-arbol-cazador.md`](contencion-arbol-cazador.md)).
+> - [x] **Sala de guardia** ([`sala-de-guardia.md`](areas/sala-de-guardia.md)): nivel 4 de Servicios, misión `gua_sala`.
+> - [x] **Árbol gigante retirado**; sus récords siguen en [`arbol-guardian.md`](areas/arbol-guardian.md).
+> - [x] **El cazador, en los 6 árboles de la residencia**; casquetes silvestres con estructuras para la fauna ([`territorio-polar.md`](areas/territorio-polar.md)).
+> - [x] **Sin bosque** ([`ice-sanctuary-ecology.md`](fauna/ice-sanctuary-ecology.md) §Sin bosque).
+> - [x] **Residencia en edificio-árbol** ([`residencia.md`](areas/residencia.md)); casas de árbol guardadas ([`casas-de-arbol.md`](areas/casas-de-arbol.md)); cazador en su celda ([`contencion-arbol-cazador.md`](areas/contencion-arbol-cazador.md)).
 > - [x] **El cazador, bajo el agua**: Santuario Marino, con abejas y arañas y ciclo cerrado. Producción vuelve a 2 niveles.
 > - [ ] **Probar en vivo sala, residencia, celda y casquetes**: Blockout de solo santuario; grupos 91, 61, 57, 55, 53, 28, 77, y los de pijamadas y almohadas; medir FPS y renderers antes y después.
 > - [ ] **Decidir con Berón**: si bastan los abedules como árboles de la isla.
@@ -174,25 +180,25 @@ Las referencias «L» llevan al checklist tal como estaba en `b0add6e`, antes de
 > - [ ] **Decidir con Berón**: lo que el jugador aún no puede hacer (P11).
 > - [ ] **Revisar la ficha de Pedro Sánchez tras las elecciones del 29-11-2026** (`Historia.PedroSanchez.cs`, último párrafo).
 > - [ ] Repasar los [verificar] del doc (día del clavo de oro, fecha de Lagunillas, número de enfermos de San Pablo y fecha del cruce a nado, cifras de Singapur).
-> **HECHO 2026-11-05 (requisitos e iniciaciones como tareas, rama claude/edif-energia; solo código, sin probar en vivo):** cada misión tiene requisitos (`MissionRequirements`). Entrenamiento 8–9 y 14–15, 5 h de tareas. Las iniciaciones son tareas: lista diaria, primero a quien menos sabe (recién llegado, 5 h; luego, 2). Hoy inicia la Magnate; `WorkRoster.instructorsTeach` lo pasa a los compañeros. Reglas J31 y J32; auditoría en [`jornada-y-rotacion.md`](jornada-y-rotacion.md) §Auditoría.
+> **HECHO 2026-11-05 (requisitos e iniciaciones como tareas, rama claude/edif-energia; solo código, sin probar en vivo):** cada misión tiene requisitos (`MissionRequirements`). Entrenamiento 8–9 y 14–15, 5 h de tareas. Las iniciaciones son tareas: lista diaria, primero a quien menos sabe (recién llegado, 5 h; luego, 2). Hoy inicia la Magnate; `WorkRoster.instructorsTeach` lo pasa a los compañeros. Reglas J31 y J32; auditoría en [`jornada-y-rotacion.md`](sistemas/jornada-y-rotacion.md) §Auditoría.
 > - [ ] Probar en vivo, sin reconstruir nada: grupos 104, 50, 28, 55, 65, 87, 96 y 97. En el registro, `[Iniciación]` y el balance: cuántos clones hacen falta los primeros días.
 > - [ ] Mirar si llegan a tiempo: el viaje entre árboles se come parte de cada hora, y ahora hay iniciaciones por toda la jornada.
 
 > **HECHO 2026-11-05 (la energía, rama claude/edif-energia; solo código, sin probar en vivo):** el **Parque Energético**, un casquete artificial al noroeste con su árbol bajo:
 > campo solar con las mesas que piden los pisos, 3 aerogeneradores de 330 kW con pala negra, cámaras y radar, turbina mareal piloto con sonar, baterías y silo de arena. Cada piso declara
-> su demanda (`FloorEnergy`) y paga sus paneles; el validador comprueba oferta ≥ demanda. Las misiones `sol_*` y `ene_*` son de Fernando. Investigación y decisión en [`energia.md`](energia.md);
+> su demanda (`FloorEnergy`) y paga sus paneles; el validador comprueba oferta ≥ demanda. Las misiones `sol_*` y `ene_*` son de Fernando. Investigación y decisión en [`energia.md`](areas/energia.md);
 > reglas S15 y T18 del manual. Prueba nueva `EnergyTest` (grupo 101).
 > - [ ] **Probar en vivo:** reconstruir SampleScene con «Build Sample Scene Blockout (solo el santuario, sin microcosmos)», guardarla, y mirar el registro `[Energía]` (la regla debe cumplir, con los kW de verdad).
 > - [ ] Grupos 101, 96 (pasos con E), 97 (actuación y uniforme), 61 (catálogo: quité `sol_instalar` y `sol_reparar`), 57 (primer piso a 12 m), 90 (turbinas en T13), 75 (capacidad) y 50 (jornada).
 > - [ ] Fotos: el campo desde el techo del árbol, una torre con la pala negra y su detector, la pontona y el rotor bajo el agua, el almacén, Fernando con el uniforme en una mesa.
-> - [ ] Aves (Berón, 4 ideas, [`energia.md`](energia.md) §7): el refugio en la planta veterinaria (mirar en `[Refugio de aves]` que no cayó sobre un mueble); la ronda; las figuras y el dragón de drones al saltar un detector (el dragón es un adorno del juego, sin pruebas).
+> - [ ] Aves (Berón, 4 ideas, [`energia.md`](areas/energia.md) §7): el refugio en la planta veterinaria (mirar en `[Refugio de aves]` que no cayó sobre un mueble); la ronda; las figuras y el dragón de drones al saltar un detector (el dragón es un adorno del juego, sin pruebas).
 
 > **HECHO 2026-11-04 (entrenamientos reales en el gimnasio, rama claude/edif-entreno; solo código, sin probar en vivo):** cada
 > humano del personal tiene un **plan semanal** (reparto, días, objetivo) y en sus días de gimnasio sigue la rutina del día en
 > orden: calentamiento, series × repeticiones contadas en cada máquina, descanso entre series, cambio de máquina si está ocupada
 > (alternativa, espera acotada o al final) y vuelta a la calma; progresión doble semanal y descarga cada 4.ª semana. **Entrenador:
 > Andrea** (el de más fuerza; el yoga pasa a Josedrilo en la rama de personajes) (misión de papel fijo «gym_planes», clase de calentamiento, correcciones y spotter). Panel: consola `rutina`.
-> Investigación con fuentes y planes asignados en [`gimnasio-maquinas.md`](gimnasio-maquinas.md) §15; reglas J19–J23 del manual. **Microcosmos (§16)**: los insectos-humanos entrenan como en su época (23 clases de lugar de entrenar de los pueblos, ejercicios con sus años, el maestro del pueblo), con el mismo motor.
+> Investigación con fuentes y planes asignados en [`gimnasio-maquinas.md`](areas/gimnasio-maquinas.md) §15; reglas J19–J23 del manual. **Microcosmos (§16)**: los insectos-humanos entrenan como en su época (23 clases de lugar de entrenar de los pueblos, ejercicios con sus años, el maestro del pueblo), con el mismo motor.
 > Prueba nueva `GymTrainingTest` (grupo 87).
 > - [ ] **Probar en vivo** (reconstruir SampleScene con «Build Sample Scene Blockout (solo el santuario, sin microcosmos)» y guardarla: la fuerza 1,6 de Andrea y que salga en el gimnasio están en el constructor; luego la escena `Prueba_Yoga`): grupos 87 y 50 (`GymUsabilityTest`), y 28/50
 >   (`SanctuaryLifeTest`, `JornadaTest`: el reparto de las 14 h cambia con los días de cada plan y Andrea tiene la misión de 1 h).
@@ -208,14 +214,14 @@ Las referencias «L» llevan al checklist tal como estaba en `b0add6e`, antes de
 > sumergirse antes de practicar). Tarima en el centro y 8 esterillas en un solo anillo (líneas de visión medidas,
 > `YogaHall.BlockedSightLines`). La clase guiada es **Hatha** y el entrenamiento de las 14 h **Ashtanga**; la sala del día alterna
 > (tradicional los pares); puede haber una clase por sala a la vez. Ocio: Hatha tradicional y Ashtanga occidental. Investigación
-> con fuentes en [`yoga-pisos.md`](yoga-pisos.md); reglas F7–F12 del manual. Prueba nueva `YogaFloorsTest` (grupo 64).
+> con fuentes en [`yoga-pisos.md`](areas/yoga-pisos.md); reglas F7–F12 del manual. Prueba nueva `YogaFloorsTest` (grupo 64).
 > - [ ] **Probar en vivo**: reconstruir la torre del Entrenamiento y los microcosmos de la Sala de Yoga (río de Sakshi, Patanjali,
 >   Nietzsche); grupos 64, 51, 42, 57, 28 y el horario libre; fotos de las cuatro salas.
 > - [ ] Ver si la Ashtanga Primaria cabe en el bloque de entrenamiento (si no, una versión corta para la clase).
 
 ## Actividades de verdad, la orquesta de la comida y los uniformes (2026-11-04, rama claude/edif-actividades)
 
-Doc: [`actividades-y-uniformes.md`](actividades-y-uniformes.md) (auditoría, pasos, uniformes, pendientes); manual J22–J25. Sin probar en vivo.
+Doc: [`actividades-y-uniformes.md`](sistemas/actividades-y-uniformes.md) (auditoría, pasos, uniformes, pendientes); manual J22–J25. Sin probar en vivo.
 - [x] **Auditoría** de cada misión de la jornada, actividad libre, recuperación y jornada del insecto-humano (doc §1): casi todo «llegaba y se quedaba».
 - [x] **Orquesta de la comida** (`MealRitual`): bandeja → sentarse → cubiertos → bocados (la comida mengua, saciedad y nutrientes por bocado) → beber → recoger → devolver; en el restaurante (`DineSpell`), en casa (`HomeNeedSpell`) y en el comedor de la era (`MicroJornada`, cuchara).
 - [x] **Hacer la actividad** (`ActivityPerformer`, `Performances`): 51 de las 55 misiones del catálogo diario con pasos propios (las 4 de la clase de Hatha ya las hace `YogaClass`), las del día y de prefijo, ballet/calistenia/dojo, el ocio que era solo una postura y la brigada del restaurante con su utensilio; la cola larga (funciones de los microcosmos) con el bucle de su clase.
@@ -227,7 +233,7 @@ Doc: [`actividades-y-uniformes.md`](actividades-y-uniformes.md) (auditoría, pas
 
 ## Suelo, flora encima, elementos del piso, alfombras, escala cívica y estatuas (2026-11-04, rama claude/edif-micro3)
 
-Doc: [`microcosmos-suelo-y-elementos.md`](microcosmos-suelo-y-elementos.md); manual F2, F3, C7, H8, M9, M13, M30, M32, M33, M34, §11.
+Doc: [`microcosmos-suelo-y-elementos.md`](microcosmos/microcosmos-suelo-y-elementos.md); manual F2, F3, C7, H8, M9, M13, M30, M32, M33, M34, §11.
 - [x] **Flora encima, nunca debajo** (`MicroGround.Settle`/`ValidateFlora`, regla 7 de `MicroFloors.Validate`); causa de Ambrosio: la flora iba al suelo bajado del área, bajo las losas del hospital.
 - [x] **Capa de tierra de 10 cm** con ruido, cúmulos y piedras, en mosaicos combinados y con collider (`MicroSoilBuilder`, regla 8); la historia y el pueblo encima (`RaiseTown`).
 - [x] **Tercera forma «Forma_microcosmos»** (`FloorForms.MicroName`, `MicroFloorForm`) y **catálogo de elementos** (`MicroFloorElements`) con versión meso y micro; vestida en su sitio (`MicroFloorDress`); cambios de historia (`Overrides`).
@@ -237,27 +243,27 @@ Doc: [`microcosmos-suelo-y-elementos.md`](microcosmos-suelo-y-elementos.md); man
 - [x] **Estatuas de insecto-humano** (`MicroStatue`) en la plaza y colosos en la forma de microcosmos.
 - [ ] **Verificar en vivo** (probador): reconstruir SampleScene y luego, UNO A UNO, Bolívar, Ambrosio, Hospital, Sakshi y Cocina (y el resto cuando se pueda); grupos 68 y 67, y 43, 60, 62, 63, 66 (las reglas nuevas 7–9 y 13–15 harán fallar los microcosmos aún sin reconstruir); fotos con `Tools/TmpCheck/Microcosmos suelo fotos` y `Alfombra canto foto`.
 - [x] **Capa de tierra APAGADA** por defecto (`MicroGround.SoilEnabled`; colgaba el NavMesh de la Cocina) y, encendida, con collider liso aparte.
-- [x] **Mapas a mano** (`MicroStoryMaps`, regla M9, [`microcosmos-mapas-a-mano.md`](microcosmos-mapas-a-mano.md)): Angostura hecho (flora, fauna, piso, edificios); lo colocado cae desde el aire (`MicroGround.Drop`); la siembra al azar es respaldo y se registra.
-- [x] **Mapas a mano, tandas 4 y 5** (2026-11-12, rama `claude/mapas-a-mano`, petición 75; [`microcosmos-mapas-a-mano.md`](microcosmos-mapas-a-mano.md)): Kapilavastu, Woolsthorpe, Berkeley, Berna, París 1898, Colorado Springs, Pasadena, Dayton, Alejandría, Bagdad, Escútari, Egina, Crotona, Menfis, Sils Maria, Chernóbil, Palenque y los siete famosos (Velliangiri, Hawthorne, la aldea de la montaña —plano inventado, naturaleza real—, Albuquerque, Omaha, Prairie View, Uagadugú), Patanjali, la tregua de 1914, Bruce Lee, Irena Sendler, Le Chambon-sur-Lignon y Mesopotamia (Uruk; bioma nuevo; el MobWorld lo siembra escalado, prueba 116) HECHOS, con fuentes; Ambrosio y Sakshi, escenario imaginado; las seis áreas, «Imaginado (área)»; la Planta Atómica, imaginada. Ya no queda ningún esbozo. Prueba `MapasAManoTest` (grupo 115).
+- [x] **Mapas a mano** (`MicroStoryMaps`, regla M9, [`microcosmos-mapas-a-mano.md`](microcosmos/microcosmos-mapas-a-mano.md)): Angostura hecho (flora, fauna, piso, edificios); lo colocado cae desde el aire (`MicroGround.Drop`); la siembra al azar es respaldo y se registra.
+- [x] **Mapas a mano, tandas 4 y 5** (2026-11-12, rama `claude/mapas-a-mano`, petición 75; [`microcosmos-mapas-a-mano.md`](microcosmos/microcosmos-mapas-a-mano.md)): Kapilavastu, Woolsthorpe, Berkeley, Berna, París 1898, Colorado Springs, Pasadena, Dayton, Alejandría, Bagdad, Escútari, Egina, Crotona, Menfis, Sils Maria, Chernóbil, Palenque y los siete famosos (Velliangiri, Hawthorne, la aldea de la montaña —plano inventado, naturaleza real—, Albuquerque, Omaha, Prairie View, Uagadugú), Patanjali, la tregua de 1914, Bruce Lee, Irena Sendler, Le Chambon-sur-Lignon y Mesopotamia (Uruk; bioma nuevo; el MobWorld lo siembra escalado, prueba 116) HECHOS, con fuentes; Ambrosio y Sakshi, escenario imaginado; las seis áreas, «Imaginado (área)»; la Planta Atómica, imaginada. Ya no queda ningún esbozo. Prueba `MapasAManoTest` (grupo 115).
 - [ ] Verificación en vivo del grupo 115 y reconstrucción de cada microcosmos con su menú (tester único).
 - [ ] Hacer los mapas a mano de las demás historias (esbozos con lo que les falta); el gancho de Claude Code para los demás pisos.
 
 > **HECHO 2026-11-04 (hilo de personajes, rama claude/edif-personajes):** la **familia y los amigos de Berón** (Nesvitor, Amykhuz y Karen, Alicita, Ducristin, Josedrilo, Maite, Shalva, Adaguchi) en el santuario con su aspecto de sus fotos, Tote mejorado, y los **famosos** (Sadhguru y los seis del mesocosmos) **fuera, a sus microcosmos**, con sus papeles repartidos (yoga → Andrea). *Falta:* la verificación en vivo del tester y que Berón confirme los nombres de `cumbaya.jpg`. Ver la sección «Familia y amigos de Berón» abajo.>
 >
-> **HECHO 2026-11-03 (hilo del hospital, rama claude/edif-hospital):** **jardines frutales en la cima** de cada edificio-árbol en **bancales de tierra** por gremios (compañeras, flores, insectos útiles, abejorros, lombrices; tierra frente a maceta, con fuentes), **submarino-ambulancia anfibio** que entra por el tronco a por el equipo y lleva personas y grandes animales a urgencias o veterinaria, el **Leviatán** (hospital submarino de ballenas y orcas con pozo médico de suelo elevable), **banco de sangre** y **paredes de cristal** (la única pared permitida, con sus 2 m) en las salas aisladas del hospital. Pruebas 80–84; [`submarinos-medicos.md`](submarinos-medicos.md), [`hospital.md`](hospital.md) §4–§6.
+> **HECHO 2026-11-03 (hilo del hospital, rama claude/edif-hospital):** **jardines frutales en la cima** de cada edificio-árbol en **bancales de tierra** por gremios (compañeras, flores, insectos útiles, abejorros, lombrices; tierra frente a maceta, con fuentes), **submarino-ambulancia anfibio** que entra por el tronco a por el equipo y lleva personas y grandes animales a urgencias o veterinaria, el **Leviatán** (hospital submarino de ballenas y orcas con pozo médico de suelo elevable), **banco de sangre** y **paredes de cristal** (la única pared permitida, con sus 2 m) en las salas aisladas del hospital. Pruebas 80–84; [`submarinos-medicos.md`](areas/submarinos-medicos.md), [`hospital.md`](areas/hospital.md) §4–§6.
 >
-> **HECHO 2026-11-03 (hilo de los árboles, rama claude/edif-arboles):** **máscaras de oxígeno** en los edificios-árbol (perchero en cada puerta, estación dentro, oxígeno ilimitado, rescate; [`mascaras-de-oxigeno.md`](mascaras-de-oxigeno.md)), **puertas cuadradas de 7 × 7 m** (8 personas y el submarino), **fondo abierto** al mar con cortinas de fitoplancton, **tareas del jardinero** (máscaras y fitoplancton; rondas repartidas de nuevo), **grupos de animales** con individuos de verdad (peces plateados, kril, medusas de McMurdo y enjambres de abejas de árbol en árbol; [`grupos-de-animales.md`](grupos-de-animales.md)) y el **submarino de obra** anfibio con su garaje ([`submarino-de-obra.md`](submarino-de-obra.md)). Pruebas 70–73 y la escena `Prueba_Mascaras`. *Falta:* lo que diga el informe del hilo (verificación en vivo).
-> **HECHO 2026-11-04 (rama claude/edif-cohetes):** **lanzadera de cohetes** en un casquete artificial a ≥ 300 m del santuario, con un árbol-edificio reforzado (pisos «Fábrica de cohetes», «Control de misión» y garaje), la corona de lanzamiento con deflector, trinchera de llamas, diluvio, cubeta y escudo, y la **regla de altura** (plataforma ≥ máx(lo más alto, aves) + 30 m; se valida y sube sola). [`lanzadera-de-cohetes.md`](lanzadera-de-cohetes.md), prueba 90. *Falta:* verificación en vivo, el aviso y el lanzamiento en la jornada.
-> **HECHO 2026-11-04 (rama claude/edif-cohetes):** **árbol guardián, el más grande de la historia**: injerto de la base del castaño de los cien caballos (18,4 m, acanalada y con contrafuertes como el Tule) y del fuste y la copa de la secuoya (Hyperion / el récord de Ferguson, 132,6 m; alto = lo mayor de eso y del edificio más alto), con **dos pasadizos de 7 × 7 m** en cruz, colores de hielo y panales. [`arbol-guardian.md`](arbol-guardian.md), prueba 91. *Falta:* verificación en vivo.
-> **HECHO 2026-11-05 (rama claude/edif-nuclear):** **sitio nuclear**: Central Nuclear y Planta Atómica (con ciclotrón y sala de experimentos) se mudan a su casquete artificial en (510, −510), a ≥ 500 m y a sotavento, en un árbol bajo: reactores a 12 m, contención, tronco como depósito por gravedad, chimenea filtrada, vigilancia, boyas y simulacro semanal. **Sin gran altura**: se explica por qué en [`sitio-nuclear.md`](sitio-nuclear.md). Manual T14, prueba 94. Ciencias queda con 3 pisos libres. Después (2026-11-05): **el microrreactor y los residuos, en cavernas con 60 m de roca bajo el lecho**; el TRIGA, en su cajón de doble casco apoyado en el lecho; evacuación real y sin tiempo libre en la zona (§3 y §4). **Sin energía sísmica** (§5). Propulsores y polvorín, al aire en el casquete de la lanzadera (§6, T15). *Falta:* rehacer el santuario y verificación en vivo.
-> **HECHO 2026-11-05 (rama claude/edif-nuclear, sin probar en vivo):** **la roca de las cavernas y la línea** ([`sitio-nuclear.md`](sitio-nuclear.md) §7–§8): holgura medida de ≥ 3 m, caverna de residuos más grande, pilar de 18 m, instrumentos y panel de la roca, pilotes e hitos en el cajón del TRIGA; misiones `nuc_roca`, `nuc_bajada` y `nuc_refuerzo`; funicular sellado del borde del casquete a la galería (~53 s, con pista de alfombras) y pozo de escape propio. Prueba: `NuclearAccessTest` (grupo 100). Reglas T16 y T17.
-> **HECHO 2026-11-05 (rama claude/edif-nuclear, sin probar en vivo):** **mar de 500 m en todo el mapa** (`SeaRule`), **viaje a la galería en ~58 s** (20 m/s, 1,5 m/s², esclusas de 8 s; [`sitio-nuclear.md`](sitio-nuclear.md) §9), cajón del TRIGA colgado con tendones, casquetes atados al lecho, **salas de 44 × 40 m con columnas de roca**, bulones y cables (§10), y revisión de lo existente (§11). Sin revisar: el hielo de las islas sobre un mar de 500 m. Reglas T14, T16, T17 y T19.
-> **HECHO 2026-11-05 (rama claude/edif-nuclear, sin probar en vivo):** **refugio del fondo** (12 plazas, 7 días, `nuc_refugio`), **plataforma de hielo de 300 m** con el submarino de obra por debajo, **escudo, compuerta, radar y sonar** en el tubo, intercambiador en un hoyo y **dos icebergs** con kril, remolque (`nuc_remolque`) y desconexión de la línea ([`sitio-nuclear.md`](sitio-nuclear.md) §12–§15). Pendiente: la fauna que pasa bajo las placas y los respiraderos de focas. Reglas T20–T22.
-> **HECHO 2026-11-05 (rama claude/edif-nuclear, sin probar en vivo):** **refugio para un mes** (ósmosis, electrólisis, sondeos, perforadora, hojas y espirulina; sin gallinas), **protección de icebergs en los tres casquetes** y **tubo que se suelta por encima de −420 m** ([`sitio-nuclear.md`](sitio-nuclear.md) §16–§19).
-> **HECHO 2026-11-05 (rama claude/edif-nuclear, sin probar en vivo):** **dos santuarios**: `Santuario_Marino` con su menú (lecho a 500 m, salas, refugio) y santuario 1 con mar de 16 m, placas de 1,5 m, falda de roca y submarino a −12 m. Los trabajadores bajan sin cargar la escena; Kushal, en persona, con carga aditiva dentro de los ~58 s. Sitio nuclear a (360, −360) ([`sitio-nuclear.md`](sitio-nuclear.md) §20–§22). **Sustituye** a lo de abajo: el mar de 500 m, la plataforma de 300 m y los túneles de la isla. Falta construir la escena y medir su memoria.
-> **HECHO 2026-11-05 (rama claude/edif-nuclear, sin probar en vivo):** **Santuario Aéreo**: escena `Santuario_Aereo` con su menú, con la lanzadera, lo que se ve del parque y las aves frías; muelle aéreo en el santuario 1; los trabajadores van sin cargarla y Kushal en persona; la energía llega por cable ([`sitio-nuclear.md`](sitio-nuclear.md) §23). Falta construir la escena y medir la memoria.
-> **HECHO 2026-11-05 (ronda 10, rama claude/ronda10; solo compilado, sin probar en vivo):** integrados nuclear, territorio, energia, histo y fix-ronda8. Hielo fijo a 1,5 m, placas como pared por diseño (P20), `IceOverBody` junto a las paredes, **inician los trabajadores y la Magnate es el último recurso** (`instructorsTeach`), pasos virtuales de las misiones de roca e iceberg, y cómo volver a juntar los santuarios en [sitio-nuclear.md](sitio-nuclear.md) §24. 201 reglas.
-> **HECHO 2026-11-04 (rama claude/edif-cohetes):** **obras que avanzan a la vista** («el progreso de las obras podría ser visual?»): las piezas del acabado salen día a día por etapas (cimientos y suelo → estructura → instalaciones → muebles y máquinas → acabados y decoración) durante cada turno de «Trabajar la obra», con martillo y polvo, palés que menguan, andamio que va a lo que se construye y cartel con etapa y %; maqueta sin colisiones ni conductas hasta terminar; se guarda por días hechos. [`construction-simulation.md`](construction-simulation.md) §7, manual F13, prueba 98. *Falta:* verificación en vivo.
+> **HECHO 2026-11-03 (hilo de los árboles, rama claude/edif-arboles):** **máscaras de oxígeno** en los edificios-árbol (perchero en cada puerta, estación dentro, oxígeno ilimitado, rescate; [`mascaras-de-oxigeno.md`](areas/mascaras-de-oxigeno.md)), **puertas cuadradas de 7 × 7 m** (8 personas y el submarino), **fondo abierto** al mar con cortinas de fitoplancton, **tareas del jardinero** (máscaras y fitoplancton; rondas repartidas de nuevo), **grupos de animales** con individuos de verdad (peces plateados, kril, medusas de McMurdo y enjambres de abejas de árbol en árbol; [`grupos-de-animales.md`](sistemas/grupos-de-animales.md)) y el **submarino de obra** anfibio con su garaje ([`submarino-de-obra.md`](areas/submarino-de-obra.md)). Pruebas 70–73 y la escena `Prueba_Mascaras`. *Falta:* lo que diga el informe del hilo (verificación en vivo).
+> **HECHO 2026-11-04 (rama claude/edif-cohetes):** **lanzadera de cohetes** en un casquete artificial a ≥ 300 m del santuario, con un árbol-edificio reforzado (pisos «Fábrica de cohetes», «Control de misión» y garaje), la corona de lanzamiento con deflector, trinchera de llamas, diluvio, cubeta y escudo, y la **regla de altura** (plataforma ≥ máx(lo más alto, aves) + 30 m; se valida y sube sola). [`lanzadera-de-cohetes.md`](areas/lanzadera-de-cohetes.md), prueba 90. *Falta:* verificación en vivo, el aviso y el lanzamiento en la jornada.
+> **HECHO 2026-11-04 (rama claude/edif-cohetes):** **árbol guardián, el más grande de la historia**: injerto de la base del castaño de los cien caballos (18,4 m, acanalada y con contrafuertes como el Tule) y del fuste y la copa de la secuoya (Hyperion / el récord de Ferguson, 132,6 m; alto = lo mayor de eso y del edificio más alto), con **dos pasadizos de 7 × 7 m** en cruz, colores de hielo y panales. [`arbol-guardian.md`](areas/arbol-guardian.md), prueba 91. *Falta:* verificación en vivo.
+> **HECHO 2026-11-05 (rama claude/edif-nuclear):** **sitio nuclear**: Central Nuclear y Planta Atómica (con ciclotrón y sala de experimentos) se mudan a su casquete artificial en (510, −510), a ≥ 500 m y a sotavento, en un árbol bajo: reactores a 12 m, contención, tronco como depósito por gravedad, chimenea filtrada, vigilancia, boyas y simulacro semanal. **Sin gran altura**: se explica por qué en [`sitio-nuclear.md`](areas/sitio-nuclear.md). Manual T14, prueba 94. Ciencias queda con 3 pisos libres. Después (2026-11-05): **el microrreactor y los residuos, en cavernas con 60 m de roca bajo el lecho**; el TRIGA, en su cajón de doble casco apoyado en el lecho; evacuación real y sin tiempo libre en la zona (§3 y §4). **Sin energía sísmica** (§5). Propulsores y polvorín, al aire en el casquete de la lanzadera (§6, T15). *Falta:* rehacer el santuario y verificación en vivo.
+> **HECHO 2026-11-05 (rama claude/edif-nuclear, sin probar en vivo):** **la roca de las cavernas y la línea** ([`sitio-nuclear.md`](areas/sitio-nuclear.md) §7–§8): holgura medida de ≥ 3 m, caverna de residuos más grande, pilar de 18 m, instrumentos y panel de la roca, pilotes e hitos en el cajón del TRIGA; misiones `nuc_roca`, `nuc_bajada` y `nuc_refuerzo`; funicular sellado del borde del casquete a la galería (~53 s, con pista de alfombras) y pozo de escape propio. Prueba: `NuclearAccessTest` (grupo 100). Reglas T16 y T17.
+> **HECHO 2026-11-05 (rama claude/edif-nuclear, sin probar en vivo):** **mar de 500 m en todo el mapa** (`SeaRule`), **viaje a la galería en ~58 s** (20 m/s, 1,5 m/s², esclusas de 8 s; [`sitio-nuclear.md`](areas/sitio-nuclear.md) §9), cajón del TRIGA colgado con tendones, casquetes atados al lecho, **salas de 44 × 40 m con columnas de roca**, bulones y cables (§10), y revisión de lo existente (§11). Sin revisar: el hielo de las islas sobre un mar de 500 m. Reglas T14, T16, T17 y T19.
+> **HECHO 2026-11-05 (rama claude/edif-nuclear, sin probar en vivo):** **refugio del fondo** (12 plazas, 7 días, `nuc_refugio`), **plataforma de hielo de 300 m** con el submarino de obra por debajo, **escudo, compuerta, radar y sonar** en el tubo, intercambiador en un hoyo y **dos icebergs** con kril, remolque (`nuc_remolque`) y desconexión de la línea ([`sitio-nuclear.md`](areas/sitio-nuclear.md) §12–§15). Pendiente: la fauna que pasa bajo las placas y los respiraderos de focas. Reglas T20–T22.
+> **HECHO 2026-11-05 (rama claude/edif-nuclear, sin probar en vivo):** **refugio para un mes** (ósmosis, electrólisis, sondeos, perforadora, hojas y espirulina; sin gallinas), **protección de icebergs en los tres casquetes** y **tubo que se suelta por encima de −420 m** ([`sitio-nuclear.md`](areas/sitio-nuclear.md) §16–§19).
+> **HECHO 2026-11-05 (rama claude/edif-nuclear, sin probar en vivo):** **dos santuarios**: `Santuario_Marino` con su menú (lecho a 500 m, salas, refugio) y santuario 1 con mar de 16 m, placas de 1,5 m, falda de roca y submarino a −12 m. Los trabajadores bajan sin cargar la escena; Kushal, en persona, con carga aditiva dentro de los ~58 s. Sitio nuclear a (360, −360) ([`sitio-nuclear.md`](areas/sitio-nuclear.md) §20–§22). **Sustituye** a lo de abajo: el mar de 500 m, la plataforma de 300 m y los túneles de la isla. Falta construir la escena y medir su memoria.
+> **HECHO 2026-11-05 (rama claude/edif-nuclear, sin probar en vivo):** **Santuario Aéreo**: escena `Santuario_Aereo` con su menú, con la lanzadera, lo que se ve del parque y las aves frías; muelle aéreo en el santuario 1; los trabajadores van sin cargarla y Kushal en persona; la energía llega por cable ([`sitio-nuclear.md`](areas/sitio-nuclear.md) §23). Falta construir la escena y medir la memoria.
+> **HECHO 2026-11-05 (ronda 10, rama claude/ronda10; solo compilado, sin probar en vivo):** integrados nuclear, territorio, energia, histo y fix-ronda8. Hielo fijo a 1,5 m, placas como pared por diseño (P20), `IceOverBody` junto a las paredes, **inician los trabajadores y la Magnate es el último recurso** (`instructorsTeach`), pasos virtuales de las misiones de roca e iceberg, y cómo volver a juntar los santuarios en [sitio-nuclear.md](areas/sitio-nuclear.md) §24. 201 reglas.
+> **HECHO 2026-11-04 (rama claude/edif-cohetes):** **obras que avanzan a la vista** («el progreso de las obras podría ser visual?»): las piezas del acabado salen día a día por etapas (cimientos y suelo → estructura → instalaciones → muebles y máquinas → acabados y decoración) durante cada turno de «Trabajar la obra», con martillo y polvo, palés que menguan, andamio que va a lo que se construye y cartel con etapa y %; maqueta sin colisiones ni conductas hasta terminar; se guarda por días hechos. [`construction-simulation.md`](areas/construction-simulation.md) §7, manual F13, prueba 98. *Falta:* verificación en vivo.
 > **HECHO 2026-11-05 (ronda 7, rama claude/edif-cohetes):** el **cohete con forma de cohete** (`RocketModel`: toberas, faldón, aletas, etapas, cofia ojival), torre umbilical de celosía y escudo con contrafuertes (hace falta rehacer el santuario); **abejas y medusas con luz propia suave** para que no salgan negras a contraluz; la **araña ya no mata a la reina** dentro de su colonia (solo en el vuelo nupcial) y la muerte de una reina deja su registro `[Colmena]`. Pruebas corregidas: 98 (los nombres de pieza se repiten), 28 (colmena con reina viva) y 50 (si la misión recorre áreas, se escapa al hielo). *Falta:* verificación en vivo; una colonia sin reina sigue sin criar otra.
 >
 >
@@ -268,8 +274,8 @@ Doc: [`microcosmos-suelo-y-elementos.md`](microcosmos-suelo-y-elementos.md); man
 > completo** (reproducción runtime, celo, enfermedad, **inanición→muerte**). Los flags **`AiBrain.useVolition` y
 > `Reproduction.Enabled` están ON** (#159) → ecosistema auto-sostenible; reversibles poniéndolos en false.
 > **Testing:** `TestProbe`/`TestRunner` (grep `[TEST]`), 8 sandboxes en `TestRunner_AUTO`, misión-observación
-> `EcosystemObservation` (`[ECO]`) + misión WASD. Diseño vivo en `docs/capabilities-and-embodiment.md`,
-> `docs/volition-selection-engine.md`, `docs/environmental-navigation.md`. **Validación en Unity:** el compañero
+> `EcosystemObservation` (`[ECO]`) + misión WASD. Diseño vivo en `docs/sistemas/capabilities-and-embodiment.md`,
+> `docs/sistemas/volition-selection-engine.md`, `docs/sistemas/environmental-navigation.md`. **Validación en Unity:** el compañero
 > confirmó compilación limpia + 0 regresiones hasta #148. **2026-10-12: master hasta #217 (7eb29ec) COMPILA con 0 errores**
 > (`tools/verify-compile.sh`, Unity 6000.5.1f1: runtime 0 err/43 warnings, editor 0 err/3 warnings). Falta **probar en
 > escena** (regresiones) lo de #149 en adelante. En el proyecto Unity sobran 3 `.cs` fuera de git: `Assets/Editor/HeadlessLive.cs`
@@ -278,7 +284,7 @@ Doc: [`microcosmos-suelo-y-elementos.md`](microcosmos-suelo-y-elementos.md); man
 > a lugares), o status del jugador (atacado/huida) en el HUD.
 >
 > *(Arco previo cerrado — magia/metabolismo/descomposición #45–#61: sandboxes `Descomposicion_AUTO`/`Magia_AUTO`,
-> guion en [`testing-checklist.md` §19](testing-checklist.md).)*
+> guion en [`testing-checklist.md` §19](qa/testing-checklist.md).)*
 >
 > **HECHO 2026-10-12 (PRs #222–#231, pendiente verify-compile del compi):** habilidades/enseñanza como hechizos
 > (`CleanSpell`/`TeachSpell`); **migración postnatal→deseos** (`nurse`/`homebound` + flag `delegateMovementToVolition`);
@@ -286,7 +292,7 @@ Doc: [`microcosmos-suelo-y-elementos.md`](microcosmos-suelo-y-elementos.md); man
 > superhechizos clínicos (`análisis`/`vacunar`); **stock SIN tope + equilibrio** (varios obreros por producto);
 > **UIs por hechizo** (`status`/`open`/`close`; `AnimaStatusHUD` on-demand); **modelos corporales de CUBOS** por anyma
 > (`CubeBody`, con partes para asanas) + escala real del restaurante; **Linduarda** guardiana de salud emergente +
-> **guion emergente** documentado. Detalle en [`sanctuary1-level-and-live-tests.md`](sanctuary1-level-and-live-tests.md).
+> **guion emergente** documentado. Detalle en [`sanctuary1-level-and-live-tests.md`](qa/sanctuary1-level-and-live-tests.md).
 > *Falta para Nivel 1 completo:* guion/triggers de enfermería→micro→yoga→cocina→mundo abierto, gating de misiones
 > (diarias/prioridad/equipo/automisiones/muestras/salto-temporal), guardería.
 >
@@ -309,15 +315,15 @@ Doc: [`microcosmos-suelo-y-elementos.md`](microcosmos-suelo-y-elementos.md); man
 > **HECHO 2026-10-16 (PRs #244–#248, pendiente verify-compile del compi) — YOGA a fondo:** sin bucle de la asana
 > (arbitraje por hueso `CreatureRig.LockPose`: yoga manda sobre emoción/andar) + **timing por RESPIRACIONES** (fase de
 > 8 s; Saludo al Sol = 1 fase llegar + 2 mantener = 24 s/postura); **asanas más exactas** (brazos arriba paralelos por
-> flexión, Ashtanga cadera alta) + **ficha anatómica** [`yoga-asanas-spec.md`](yoga-asanas-spec.md); **3 prácticas**:
+> flexión, Ashtanga cadera alta) + **ficha anatómica** [`yoga-asanas-spec.md`](sistemas/yoga-asanas-spec.md); **3 prácticas**:
 > `UpaYoga.NeckSequence` (6 ejercicios de cuello/hombros, respiración silenciosa; + articulación nueva `ScapulaLeft/Right`),
 > `YogaNamaskar.Sequence` (palmas juntas, Ujjayi, Balasana), `SunSalutation.Sequence`; **Magnate enseña por etapas**
 > (upa-yoga cuello→namaskar→saludo); **stance por postura** (`AsanaPoseSpell.stanceWidth`, talones juntos) + **alcance
 > IK** (`TwoBoneIK` + `reaches`: palmas juntas/dedos al suelo, opt-in).
 >
 > **HECHO 2026-10-16 (PRs #249–#255, pendiente verify-compile del compi) — YOGA + NIVEL 1:** **escena por sesión**
-> (`YogaLibrary` + `YogaSessionRunner` + `Yoga_UpaCuello/Namaskar/SaludoSol`, hoy `Prueba_YogaSesiones`: una por esterilla en la sala de yoga, docs/escenas-de-prueba.md); **Ashtanga Serie Primaria** (núcleo +
-> [`ashtanga-primary-series.md`](ashtanga-primary-series.md) + `Yoga_Ashtanga1`). **CABLEADO Nivel 1 (plan completo):**
+> (`YogaLibrary` + `YogaSessionRunner` + `Yoga_UpaCuello/Namaskar/SaludoSol`, hoy `Prueba_YogaSesiones`: una por esterilla en la sala de yoga, docs/qa/escenas-de-prueba.md); **Ashtanga Serie Primaria** (núcleo +
+> [`ashtanga-primary-series.md`](areas/ashtanga-primary-series.md) + `Yoga_Ashtanga1`). **CABLEADO Nivel 1 (plan completo):**
 > **(1)** enseñanza interactiva `TeachingSession` (el maestro pide y ESPERA al alumno; `LessonPrompt`) → la Magnate la usa;
 > **(2)** hechizos **enseñables/aprendibles con requisitos** (`SpellCatalog` prerequisitos+items, `Grimoire.CanLearn`/`knowsAll`,
 > `TeachSpell` gateado, recetas con `RequiredItems`); **(3)** `FollowSpell` + **Linduarda iniciación** (curar→«sígueme»→
@@ -327,10 +333,10 @@ Doc: [`microcosmos-suelo-y-elementos.md`](microcosmos-suelo-y-elementos.md); man
 > ángulos/IK en Unity; sesiones de yoga futuras (Ashtanga 2–4, Shambhavi, brazos).
 
 ## Pueblos desde su mapa, reglas de los microcosmos y Pakal de Palenque (2026-11-03, rama `claude/edif-pueblos`)
-Docs: [`microcosmos-pueblos-mapas.md`](microcosmos-pueblos-mapas.md), [`microcosmos-reglas-edificacion.md`](microcosmos-reglas-edificacion.md) (reglas 8–12),
-[`microcosmos-areas.md`](microcosmos-areas.md#reglas-de-los-microcosmos-2026-11-03) (reglas de los microcosmos y tabla de pisos),
-[`microcosmos-actividades.md`](microcosmos-actividades.md), [`microcosmos-maya-pakal.md`](microcosmos-maya-pakal.md),
-[`construcciones-elevadas.md`](construcciones-elevadas.md#las-dos-formas-de-cada-piso-2026-11-03), [`microcosmos-bruce-lee.md`](microcosmos-bruce-lee.md) §6.
+Docs: [`microcosmos-pueblos-mapas.md`](microcosmos/microcosmos-pueblos-mapas.md), [`microcosmos-reglas-edificacion.md`](reglas/microcosmos-reglas-edificacion.md) (reglas 8–12),
+[`microcosmos-areas.md`](microcosmos/microcosmos-areas.md#reglas-de-los-microcosmos-2026-11-03) (reglas de los microcosmos y tabla de pisos),
+[`microcosmos-actividades.md`](microcosmos/microcosmos-actividades.md), [`microcosmos-maya-pakal.md`](microcosmos/microcosmos-maya-pakal.md),
+[`construcciones-elevadas.md`](areas/construcciones-elevadas.md#las-dos-formas-de-cada-piso-2026-11-03), [`microcosmos-bruce-lee.md`](microcosmos/microcosmos-bruce-lee.md) §6.
 - [x] **Pueblos sobre su plano real** (24 planos: calles, río, lago, colinas, montes, campos, murallas, hitos), barrio ×60 (1,4–2,8 km), ≤ 150 edificios.
 - [x] **Edificios del pueblo** (plaza, mercado, escuela, estación, comisaría, bomberos, museo, guardería, baños, hotel, carpintería, obra, cuartel, centro de tecnología, parque, monumento, pileta, edificios de varias plantas en terraza) con su nombre de época y lugar (`MicroStyles.CivicName`).
 - [x] **Etiquetas de actividad** (trabajo / descanso / recuperación / ocio, capacidad, interacción, cuerpos) en cada `AreaFunctionSite` — gancho para el horario semanal.
@@ -339,15 +345,15 @@ Docs: [`microcosmos-pueblos-mapas.md`](microcosmos-pueblos-mapas.md), [`microcos
 - [x] **Dos formas de cada piso** (`FloorForms`, `EnsureFloorForms`): 17 pisos (2 en obras, 15 con su forma en obra oculta). Bruce Lee, verificado: antes 3 conos de obra en el Dojo gigante; ahora forma finalizada.
 - [x] **Frutales** de época y lugar en todas las residencias (19 estilos).
 - [x] **Pakal de Palenque** (`Microcosmos_Pakal`, `PakalStoryTest` grupo 66; región `Maya`, estilo `maya_clasico`, bioma, plano de Lakamha').
-- [x] **Microcosmos de los famosos** (2026-11-04, [`microcosmos-famosos.md`](microcosmos-famosos.md); rama `claude/edif-famosos`): Sadhguru (Velliangiri 1999, Sala de Yoga), Elon Musk (Hawthorne 2008, Mecánica, pendiente), Goku (aldea de la montaña, homenaje de ficción, Dojo), Bill Gates (Albuquerque 1975, Mecánica, pendiente), Warren Buffett (Omaha 1983, Estudio Textil, pendiente), MacKenzie Scott (Prairie View 2020, Química, pendiente) e Ibrahim Traoré (Uagadugú 2024, acto civil, Huerto). Código, plano, bioma, estilos (`india_moderna`, `sahel_moderno`, `norteamerica_interior`), menú por escena y `FamososStoryTest` (grupo 69). Los pisos que faltan pasan de 9 a 13.
+- [x] **Microcosmos de los famosos** (2026-11-04, [`microcosmos-famosos.md`](microcosmos/microcosmos-famosos.md); rama `claude/edif-famosos`): Sadhguru (Velliangiri 1999, Sala de Yoga), Elon Musk (Hawthorne 2008, Mecánica, pendiente), Goku (aldea de la montaña, homenaje de ficción, Dojo), Bill Gates (Albuquerque 1975, Mecánica, pendiente), Warren Buffett (Omaha 1983, Estudio Textil, pendiente), MacKenzie Scott (Prairie View 2020, Química, pendiente) e Ibrahim Traoré (Uagadugú 2024, acto civil, Huerto). Código, plano, bioma, estilos (`india_moderna`, `sahel_moderno`, `norteamerica_interior`), menú por escena y `FamososStoryTest` (grupo 69). Los pisos que faltan pasan de 9 a 13.
 - [ ] **Famosos: verificar en vivo** (lo hace el probador): reconstruir de una en una las 7 escenas (menú «Build Microcosmos de famosos/…») y la Sala de Eras; grupo 69; fotos. Repasar los [verificar] del doc (direcciones de MITS y del motel, cifras de la compra de la Nebraska Furniture Mart, día exacto del Dhyanalinga).
-- [x] **Microcosmos de la música** (2026-11-05, [`microcosmos-musica.md`](microcosmos-musica.md); rama `claude/edif-musica`; solo código): Shakira (La Playa, Barranquilla, 2009), Bad Bunny (Vega Baja, 2016), John Lennon y Yoko Ono (Montreal, 1969), los Jackson (Gary, 1966), BLACKPINK (Seúl, 2016), Bob Marley y los Wailers (Kingston, 1978), U2 (Belfast, 1998), Public Enemy (Long Island, 1989) y «Grandes aportes de las canciones» (lugar inventado, seis canciones). Cada una con historia de 8 pasos y fuentes, pueblo con plano y las cuatro categorías, **mapa a mano Hecho**, ninguna letra ni logotipo. Prueba `MusicaStoryTest` (grupo 86). Su piso: **Música** (ver abajo).
+- [x] **Microcosmos de la música** (2026-11-05, [`microcosmos-musica.md`](microcosmos/microcosmos-musica.md); rama `claude/edif-musica`; solo código): Shakira (La Playa, Barranquilla, 2009), Bad Bunny (Vega Baja, 2016), John Lennon y Yoko Ono (Montreal, 1969), los Jackson (Gary, 1966), BLACKPINK (Seúl, 2016), Bob Marley y los Wailers (Kingston, 1978), U2 (Belfast, 1998), Public Enemy (Long Island, 1989) y «Grandes aportes de las canciones» (lugar inventado, seis canciones). Cada una con historia de 8 pasos y fuentes, pueblo con plano y las cuatro categorías, **mapa a mano Hecho**, ninguna letra ni logotipo. Prueba `MusicaStoryTest` (grupo 86). Su piso: **Música** (ver abajo).
 - [ ] **Música: verificar en vivo** (lo hace el probador): reconstruir de una en una las 9 escenas (orden en el doc), «Build Sala de Eras» y pasar 86, 62, 43, 63, 87, 68 y 76; fotos del doc.
 - [ ] **Música: contrastar** lo marcado [verificar] en el doc (flora y fauna, calles de los planos, algunos datos biográficos) y que Berón decida sobre Michael Jackson niño (doc, «Michael Jackson: cómo se trata»).
-- [x] **Piso de Música** (2026-11-05, [`piso-musica.md`](piso-musica.md); rama `claude/edif-musica`; solo código): el área `Music_Area` en la torre del Entrenamiento, encima del Aula (hoy 3 pisos: 2 escenarios, 4 estudios y 8 salas de ensayo en doble cristal con tapa), con misiones `son_*`, pasos con «E», uniforme y concierto en el horario libre. 8 microcosmos re-apuntados a él, Viena incluida. Cada historia de la música nombra su momento altruista, bello o de superación.
-- [x] **Música: resuelto** (Berón 2026-11-05): tapas de cristal permitidas en S6, rampas en los escenarios, puertas correderas (`SoundDoor`), huecos de cristal de 2 m en todo el santuario y S4 por cálculo ([`piso-musica.md`](piso-musica.md)).
+- [x] **Piso de Música** (2026-11-05, [`piso-musica.md`](areas/piso-musica.md); rama `claude/edif-musica`; solo código): el área `Music_Area` en la torre del Entrenamiento, encima del Aula (hoy 3 pisos: 2 escenarios, 4 estudios y 8 salas de ensayo en doble cristal con tapa), con misiones `son_*`, pasos con «E», uniforme y concierto en el horario libre. 8 microcosmos re-apuntados a él, Viena incluida. Cada historia de la música nombra su momento altruista, bello o de superación.
+- [x] **Música: resuelto** (Berón 2026-11-05): tapas de cristal permitidas en S6, rampas en los escenarios, puertas correderas (`SoundDoor`), huecos de cristal de 2 m en todo el santuario y S4 por cálculo ([`piso-musica.md`](areas/piso-musica.md)).
 - [ ] **Piso de Música: verificar en vivo** (lo hace el probador; grupos en el doc) y, al unir `claude/edif-energia`, añadir `SanctuaryAreaType.Music` a los 18 W/m² de `EnergyRule.WattsPerM2`.
-- [x] **Pisos nuevos (2026-11-04, rama `claude/edif-pisos`)**: **Informática** ([`piso-informatica.md`](piso-informatica.md): clúster de IA local, refrigeración líquida en circuito cerrado, calor a la red de distrito, SAI; `AiCluster`; misiones `ifo_*`) en el piso libre de Ciencias, y el **Aula** ([`piso-aula.md`](piso-aula.md): clases y sala de estudio, plazas para todos los miembros, pisos según la lista del personal; misiones `aul_*`) en el piso libre del Entrenamiento. **Regla de capacidad** (manual S13, `AreaCapacity`, grupo 75) y **alerta de piso nuevo** (manual §11, `MicroFloors.AlertFloors`, grupo 76; gancho ampliado): Gates → Informática y Scott → Aula. Pruebas 74, 75 y 76.
+- [x] **Pisos nuevos (2026-11-04, rama `claude/edif-pisos`)**: **Informática** ([`piso-informatica.md`](areas/piso-informatica.md): clúster de IA local, refrigeración líquida en circuito cerrado, calor a la red de distrito, SAI; `AiCluster`; misiones `ifo_*`) en el piso libre de Ciencias, y el **Aula** ([`piso-aula.md`](areas/piso-aula.md): clases y sala de estudio, plazas para todos los miembros, pisos según la lista del personal; misiones `aul_*`) en el piso libre del Entrenamiento. **Regla de capacidad** (manual S13, `AreaCapacity`, grupo 75) y **alerta de piso nuevo** (manual §11, `MicroFloors.AlertFloors`, grupo 76; gancho ampliado): Gates → Informática y Scott → Aula. Pruebas 74, 75 y 76.
 - [ ] **Pisos nuevos: verificar en vivo** (probador): antes, «Build escenas de virtualización (una por misión)» (las 5 misiones nuevas tienen ya sus pasos y anclas); reconstruir SampleScene (Blockout solo santuario) y después Gates y Scott; grupos 74, 75, 76, 61 (registro con las 5 misiones nuevas), 28, 69; fotos. Ver los `[Capacidad]` que fallen (gimnasio y yoga frente a 18 miembros: si no caben, otro piso, regla S13) y construir el **ring de almohadas**.
 - [x] Menfis, Alejandría, Bagdad, Crotona y Sils Maria re-apuntados al Aula y Hawthorne (Musk) al control de misión de la lanzadera (2026-11-04, la alerta de piso nuevo). Reconstruirlos de uno en uno; grupos 69 y 76.
 - [x] S13 = J16 (manual): un solo validador, `AreaCapacity` (también el ring de almohadas y `CheckActivities` para el catálogo del horario libre).
@@ -360,12 +366,12 @@ Docs: [`microcosmos-pueblos-mapas.md`](microcosmos-pueblos-mapas.md), [`microcos
 - [x] **Relieve real low-poly** (`CivicBuilder.Terrain`): montes y colinas con ruido, roca y nieve; lagos; ríos con riberas; acantilados (6 pueblos).
 - [x] **Frutales en las residencias del santuario**: terraza frutal en cada casa de árbol (`ResidentialBuilder`), en la ronda del jardinero; `FruitOrchardTest` (55) lo mira.
 - [ ] **Verificar en vivo la 2.ª vuelta** (lo hace el probador): reconstruir SampleScene y todos los microcosmos; grupos 43, 55, 60, 62, 63, 66; fotos. Probador (2026-11-04): 829/6; arreglado en código: el banco de la casa redonda del Huerto a 3,5 m (1,93 m del hogar) y `Layout` con la caja girada y 10 cm de holgura; la prueba de la flora ya no cuenta como solar el de un edificio del barrio alto sobre un mueble (3 plantas de Bruce Lee bajo el tablero). Falta repasar 43 y 62.
-- [x] **Entrenamiento de cada época y las cuatro categorías** (2026-11-04, regla 16, manual M35): el entrenamiento es ahora categoría propia y tiene su clase estable (`AreaFunctionSite.training`, `MicroStyles.TrainingKind`), con aparatos nativos (`MicroFurniture.Training`, funciones `ent_*`). Cada hueco del plano histórico se rellena con una posición de un mapa actual, marcada en el plano (`| actual: fuente`): entrenamiento en 10 pueblos, recuperación en 3 y ocio en la Tregua. `MicroFloors.ValidateCategories` lo comprueba y `CivilizedErasTest` (62) también. Docs: [`microcosmos-entrenamiento-eras.md`](microcosmos-entrenamiento-eras.md), regla 16, [`microcosmos-pueblos-mapas.md`](microcosmos-pueblos-mapas.md) §Huecos, [`gimnasio-maquinas.md`](gimnasio-maquinas.md) §Microcosmos y [`microcosmos-actividades.md`](microcosmos-actividades.md).
+- [x] **Entrenamiento de cada época y las cuatro categorías** (2026-11-04, regla 16, manual M35): el entrenamiento es ahora categoría propia y tiene su clase estable (`AreaFunctionSite.training`, `MicroStyles.TrainingKind`), con aparatos nativos (`MicroFurniture.Training`, funciones `ent_*`). Cada hueco del plano histórico se rellena con una posición de un mapa actual, marcada en el plano (`| actual: fuente`): entrenamiento en 10 pueblos, recuperación en 3 y ocio en la Tregua. `MicroFloors.ValidateCategories` lo comprueba y `CivilizedErasTest` (62) también. Docs: [`microcosmos-entrenamiento-eras.md`](microcosmos/microcosmos-entrenamiento-eras.md), regla 16, [`microcosmos-pueblos-mapas.md`](microcosmos/microcosmos-pueblos-mapas.md) §Huecos, [`gimnasio-maquinas.md`](areas/gimnasio-maquinas.md) §Microcosmos y [`microcosmos-actividades.md`](microcosmos/microcosmos-actividades.md).
 - [ ] **Verificar en vivo la regla 16** (lo hace el probador): reconstruir los microcosmos de historias, de compasión, de la Planta Atómica, Egina y los famosos; grupos 62 y 43.
 - [ ] Afinar con OpenStreetMap las posiciones «aproximadas» del mapa actual (Berkeley, Angostura, Tregua, Planta Atómica, Varsovia, Le Chambon, Uagadugú, Dayton) cuando se haga el mapa a mano de cada historia (M9).
-- [ ] El hilo «entreno»: planes de entrenamiento de los insectos-humanos por clase de lugar (`training`), según [`gimnasio-maquinas.md`](gimnasio-maquinas.md) §Microcosmos.
+- [ ] El hilo «entreno»: planes de entrenamiento de los insectos-humanos por clase de lugar (`training`), según [`gimnasio-maquinas.md`](areas/gimnasio-maquinas.md) §Microcosmos.
 
-## Microcosmos — eras/especies + observación (diseño en [`microcosmos-eras-and-observation.md`](microcosmos-eras-and-observation.md))
+## Microcosmos — eras/especies + observación (diseño en [`microcosmos-eras-and-observation.md`](microcosmos/microcosmos-eras-and-observation.md))
 - [ ] **Fauna de la era del fuego** (a escala insecto, sabana Pleistoceno): arquetipos de alma +
       clases/config de **hormiga cosechadora, termita cosechadora, escarabajo pelotero, hormiga león,
       mantis, grillo, saltamontes, áfido, colémbolo, araña**; + skin **suricata** (render de la máquina).
@@ -382,9 +388,9 @@ Docs: [`microcosmos-pueblos-mapas.md`](microcosmos-pueblos-mapas.md), [`microcos
       de Kushal (fuente `Mind`/`PhraseLibrary`), persistente ~10 min; + **área de automisiones** (un bloque
       por misión, como la tabla periódica).
 - [ ] **Linduarda** (doctora, **hechicera nivel 4/S4**): clase `Companion` + rol de puerta al Micro. Ficha:
-      [`character-linduarda.md`](character-linduarda.md).
+      [`character-linduarda.md`](personajes/fichas-antiguas/character-linduarda.md).
 
-## Nivel de los peloteros + mecánicas nuevas (diseño en [`microcosmos-dungbeetle-level.md`](microcosmos-dungbeetle-level.md))
+## Nivel de los peloteros + mecánicas nuevas (diseño en [`microcosmos-dungbeetle-level.md`](microcosmos/microcosmos-dungbeetle-level.md))
 Orden sugerido; cada una con su veredicto de estado en el doc (EXISTE/PARCIAL/FALTA):
 - [x] **UI de pensamiento del ser controlado** (`AnimaThoughtHUD`, OnGUI, ~10 min) — HECHO 2026-09-23.
       `Mind` expone `lastThought`/`lastIntensity`/`lastPositive`. *Siguiente: versión FollowingArrays.*
@@ -406,7 +412,7 @@ Orden sugerido; cada una con su veredicto de estado en el doc (EXISTE/PARCIAL/FA
       stock equilibrado (multi-anima) → jugador avanza con E → XP + porción al inventario — HECHO 2026-10-06.
       *Falta:* estaciones manipulables reales (Virtualization `StationPart`, prefabs Unity).
 
-## Hechizos por teclado + colas (diseño en [`typed-spells-and-queues.md`](typed-spells-and-queues.md))
+## Hechizos por teclado + colas (diseño en [`typed-spells-and-queues.md`](sistemas/typed-spells-and-queues.md))
 - [x] **Etiquetas de nombre** (`AnimaNameplate`) — HECHO 2026-10-10.
 - [x] **Consola de hechizos por teclado** (`SpellConsole`) + `walkTo` (destino anima-visible/área; "¿Dónde está X?") — HECHO.
 - [x] **Cola de acciones 2-carriles** (`ActionQueue`: `own` prioritaria + `player` editable) + `QueuedSpell`/`WalkToSpell` — HECHO.
@@ -418,7 +424,7 @@ Orden sugerido; cada una con su veredicto de estado en el doc (EXISTE/PARCIAL/FA
 - [x] **`AnymaSpec` + `AnymaFactory`** (spec opcional → random 0.8..2; `CreateMany`) + `StatPhysique` (apariencia por
       stats) + **`BondSpell`/`ThoughtSpell`** (modificación de vínculo/mente; stats ya=`TransformationSpell`) — HECHO.
 - [x] **22 platillos** (6 base + 16 bomba por país, `CookingRecipe.All`) + **cierre nocturno** (`AreaHours`+`IsDay`) — HECHO 2026-10-10.
-- [x] **Guía de pruebas para Unity** ([`testing-recent-features.md`](testing-recent-features.md)) — HECHO (montaje + tests por feature).
+- [x] **Guía de pruebas para Unity** ([`testing-recent-features.md`](qa/testing-recent-features.md)) — HECHO (montaje + tests por feature).
 - [x] **Hechizos de cocina por PASO** (`take`/`putIn`/`beat` ligados a estación exacta, con RANGO = alcance del miembro; a distancia irreal con magia) — HECHO 2026-10-12 (`Assets/Scripts/Kitchen/KitchenStepSpells.cs`: manos `KitchenHands`, recipientes `KitchenVessel`, avanzan la receta si casan con el verbo del paso).
 - [ ] **Selector de reemplazo de primitivas** del restaurante (cambiar los cubos por prefabs).
 - [x] **Magnate** (1ª rebanada): estado infinito + sin necesidades + imposeíble de poseer + **pacifica** + va al
@@ -439,12 +445,12 @@ Orden sugerido; cada una con su veredicto de estado en el doc (EXISTE/PARCIAL/FA
 - [x] **MIGRACIÓN postnatal→deseos (1ª rebanada)** — HECHO 2026-10-12: deseo **`nurse`** (padre alimenta cría
       `lifeStage='c'` vinculada+hambrienta) compite en la arena y corre por la cola. *Falta:* retirar los drives
       directos de `PostNatalManager` (guardCub/fetchCub/cub-side) — el calendario de etapas se queda. Ver
-      [`sanctuary1-level-and-live-tests.md`](sanctuary1-level-and-live-tests.md) §3.
+      [`sanctuary1-level-and-live-tests.md`](qa/sanctuary1-level-and-live-tests.md) §3.
 - [x] **Prueba en vivo de vida familiar** (`BuildFamilyLifeTest`: lobos+carne / conejos+pasto, aislados) — HECHO.
 - [ ] **Escenarios en vivo que faltan**: apareamiento · caza · 1v1 · pack-vs-1 · pack-vs-pack (patrón aislado+comida). §2.
 - [ ] **Nivel 1 jugable — cablear el onboarding** (enfermería→análisisClínico/vacunar→micro→limpieza+automisiones→
       muestras→yoga→comer→paseo nocturno/sueño→día2 cocina→mundo abierto→guardería). Lo existente vs lo que falta:
-      [`sanctuary1-level-and-live-tests.md`](sanctuary1-level-and-live-tests.md) §4.
+      [`sanctuary1-level-and-live-tests.md`](qa/sanctuary1-level-and-live-tests.md) §4.
 - [ ] **Área de Guardián / torre de vigía** (puesto de misiones: patrullar/alimentar/llevar a enfermería/enseñar) — no existe; ver spells-suprahechizo §5b.
 - [x] **Prefabs-cubo por defecto** en `AnimalPrefabGenerator` cuando falta el `.fbx` — HECHO 2026-10-12: `Generate
       Animal Prefabs` crea un prefab-CUBO (misma pipeline de componentes) para las especies sin modelo → las 21 tienen prefab.
@@ -456,12 +462,12 @@ Orden sugerido; cada una con su veredicto de estado en el doc (EXISTE/PARCIAL/FA
 - [ ] **UI de colas del poseído** + cast time NPC (~40 ppm).
 - [ ] **Factory en niveles del Microcosmos**: poblar con insectos neutros de ambiente (+ sonidos, necesita audio en Unity).
 
-## Anyma factory + control (diseño en [`anyma-factory-and-control.md`](anyma-factory-and-control.md))
+## Anyma factory + control (diseño en [`anyma-factory-and-control.md`](sistemas/anyma-factory-and-control.md))
 - [x] **`AnymaSpec` + `AnymaFactory`** (props opcionales → random 0.8..2) + `CreateMany` — HECHO (falta: roles compuestos + sexualidad/pensamientos random; asignar prefabs en Unity).
 - [x] Hechizos de **modificación de vínculos (`BondSpell`) y mente (`ThoughtSpell`)** — HECHO (stats ya: `TransformationSpell`).
 - [x] **Apariencia por stats** (`StatPhysique`, auto en `Animal.Init`) — HECHO.
 
-## Génesis de hechizos + progresión (diseño en [`spell-genesis-and-sanctuary-progression.md`](spell-genesis-and-sanctuary-progression.md))
+## Génesis de hechizos + progresión (diseño en [`spell-genesis-and-sanctuary-progression.md`](sistemas/spell-genesis-and-sanctuary-progression.md))
 - [ ] **`SpellLadder`** (escalera de intensidad por array + hechizos compuestos + `requires`) → caminar→correr→teletransporte.
 - [ ] **`EatSpell : SpellBase`** (comer = descomponer anima por intensidad/stats: platillo/compuestos/elementos/quarks;
       afecta gramos del objetivo + llena pools). Envuelve `Forager`/`Metabolism`/`DecompositionMinigame`.
@@ -481,10 +487,10 @@ Orden sugerido; cada una con su veredicto de estado en el doc (EXISTE/PARCIAL/FA
 - [ ] **`StinkSpell`/reduce-comestibilidad** (crías apestosas por edad) + **depredador de miedo
       diferencial** (aterra al pelotero, no a Kushal; `Archetypes._relations` + veneno/hipnosis).
 - [ ] **`AnticipationGrowth`** (el deseo intenso hace crecer stats; patrón `ObservationSkill.Train`/`Confidence`).
-- [ ] **Modelos/escena** del pelotero (con su bola) + crías — ver [`unity-editor-manual.md`](unity-editor-manual.md).
+- [ ] **Modelos/escena** del pelotero (con su bola) + crías — ver [`unity-editor-manual.md`](plataforma/unity-editor-manual.md).
 
 ## Decisiones abiertas (rápidas)
-- [~] **Microcosmos = mundo de INSECTOS (DECIDIDO opción B)** — [`microcosmos-insects.md`](microcosmos-insects.md).
+- [~] **Microcosmos = mundo de INSECTOS (DECIDIDO opción B)** — [`microcosmos-insects.md`](microcosmos/microcosmos-insects.md).
       Históricos encarnados como insectos (violencia = "volverse salvaje", sin trauma humano). **Hormigas**
       civilización primaria; **cría = mirmecofilia** (pulgón = ganado/mascota); su "fuego" = **feromonas**;
       **hongos** (Physarum oráculo, Ophiocordyceps amenaza); abeja/avispa/termita = otras ciudades. **Pipeline:
@@ -498,7 +504,7 @@ Orden sugerido; cada una con su veredicto de estado en el doc (EXISTE/PARCIAL/FA
 - [x] **Aptitudes adicionales**: set cerrado — `endurance/reasoning/memory/creativity/sociability/discipline`
       añadidas a `CompanionBase`; `flexibility` → `BodyPartStats` (pendiente de conectar).
 - [ ] **Economía circular** (aprobada): cerrar la tabla final residuo→subproducto→área
-      (ver [`mission-mode.md`](mission-mode.md)).
+      (ver [`mission-mode.md`](sistemas/mission-mode.md)).
 - [x] **`Generator.cs`**: revisado 2026-07-23 — **se mantiene**. No es redundante con `FamilyGenerator`
       (uno genera familias, el otro es un spawner por área vía `IFactory`/`Animal.StaticGenerateSquareRange`);
       sin invocadores en código pero es una herramienta scene-wireable útil.
@@ -525,7 +531,7 @@ Orden sugerido; cada una con su veredicto de estado en el doc (EXISTE/PARCIAL/FA
       los que pescan deben tener `waterAffinity ≥ umbral`. `CorrectMedium` intenta sacarlo antes → esto le da consecuencia.
 - [x] **Lógica de agua/tierra**: detector (`MediumZone`) + comportamiento (`Animal.CorrectMedium`:
       acuáticos buscan agua, terrestres salen) + **asfixia** (PR #139). Evitación *proactiva* → parte del sistema
-      mayor de **navegación por lectura del entorno** ([`environmental-navigation.md`](environmental-navigation.md),
+      mayor de **navegación por lectura del entorno** ([`environmental-navigation.md`](sistemas/environmental-navigation.md),
       rebanada N2): el overworld navegará por **impulsos** leyendo el entorno (como las hormigas), no siguiendo aves.
       **N0 hecho (PR #140):** `Wander` deambula local, ya no hacia un ave al azar.
 - [~] **Refinar selección de caza**: **hecho (PR #32)** `Predation` — `SelectPrey` ya no caza lo que no puede
@@ -545,7 +551,7 @@ Orden sugerido; cada una con su veredicto de estado en el doc (EXISTE/PARCIAL/FA
 - [ ] **Territorios + poblaciones**: `Territory` trigger con `residents` (enter/exit, como `MediumZone`/
       `SanctuaryArea`) → escaneos locales (arregla el perf de `SenseThreats`/banco); barreras/conectores para estabilidad.
 - [ ] **Montaje de escena** (`SampleSceneBuilder`): crear **nidos/madrigueras primero**, luego poblar
-      familias en torno a ellos, con nidos **fuera del alcance de depredadores**. Ver [`refuge-and-adult-behavior.md`](refuge-and-adult-behavior.md).
+      familias en torno a ellos, con nidos **fuera del alcance de depredadores**. Ver [`refuge-and-adult-behavior.md`](sistemas/refuge-and-adult-behavior.md).
 - [x] **Dietas** revisadas (todos los carnívoros): oso +ciervo/zorro/malamute/**humano**; lobo +zorro/malamute/oso(manada)/humano; zorro/malamute sin cambios.
 - [x] **Banco de peces como organismo** (hecho): `FishSchool` es entidad viva (deriva/huye/crece/autoregenera)
       + `ITarget`/`IEdible`; en dietas de oso/zorro; herbívoros marinos lo depletan al pastar. **Pendiente:
@@ -554,7 +560,7 @@ Orden sugerido; cada una con su veredicto de estado en el doc (EXISTE/PARCIAL/FA
 - [ ] **Personajes/mascotas como presa**: `PlayerTarget` hoy = solo el jugador. Que companions/malamute-mascota sean `ITarget` con población objetivo (futuro, `NPCBase`).
 - [~] **Comportamiento adulto / territorialidad**: hecho el evitar-depredadores (`SenseThreats`). Falta:
       idle enriquecido (explorar/jugar), separación *espacial* (montaje nidos-primero), refugio/ocultarse
-      (árboles/arbustos) y memoria de lugares (solo documentado). Ver [`refuge-and-adult-behavior.md`](refuge-and-adult-behavior.md).
+      (árboles/arbustos) y memoria de lugares (solo documentado). Ver [`refuge-and-adult-behavior.md`](sistemas/refuge-and-adult-behavior.md).
 
 ## Aclaraciones → siguiente paso (learning-unlocks.md)
 - [ ] Crear un **registro de "aprendidos"** por jugador (elementos, posturas, habilidades) + evento
@@ -693,7 +699,7 @@ dispatch (§11/§12).
 - [ ] **Cambio conocido**: NPC arrancan `physicalResistance=1` → posible re-tuning de `promotionStrength`.
 
 ## La Cocina — primera simulación (nivel de referencia)
-Diseño completo en [`kitchen-simulation.md`](kitchen-simulation.md). Escalera de construcción (§12):
+Diseño completo en [`kitchen-simulation.md`](areas/kitchen-simulation.md). Escalera de construcción (§12):
 - [~] **★ INTERACCIÓN DE VIRTUALIZACIÓN (el núcleo jugable, kitchen §3b)** — **MOTOR + FEEL + TYPING HECHOS**
       (`Assets/Scripts/Virtualization/`): **`VirtualPointer`** = **mira FIJA en el centro** (no se mueve);
       apuntas girando la **cabeza=cámara** con **`HeadLook`** (I/K/J/L, con **restricciones** de yaw/pitch);
@@ -718,13 +724,13 @@ Diseño completo en [`kitchen-simulation.md`](kitchen-simulation.md). Escalera d
 - **Mínimo jugable:** A + B → luego D (la unión Micro/Meso).
 - **Próxima área (principiante): el HUERTO** (kitchen-simulation §13) — continúa el microworld (fuego→
   agricultura, La Sembradora) y cierra el bucle con la cocina (produce ingredientes). 2ª simulación.
-  Misiones de virtualización DISEÑADAS: [`garden-simulation.md`](garden-simulation.md) §8 (abonar→arar→
+  Misiones de virtualización DISEÑADAS: [`garden-simulation.md`](areas/garden-simulation.md) §8 (abonar→arar→
   trasplantar→regar→proteger→cosechar) y §9 (**mundo-insecto: misiones de guardián**, proteger las plantas
   de otros insectos).
 
 ## Áreas / historia — roadmap (area-progression.md)
 Orden alineado con la línea temporal del microworld (una época por área). Ver
-[`area-progression.md`](area-progression.md), [`garden-simulation.md`](garden-simulation.md).
+[`area-progression.md`](areas/area-progression.md), [`garden-simulation.md`](areas/garden-simulation.md).
 - [~] **0. PRÓLOGO — Enfermería** (apertura del juego): a Kushal (viene de fuera) le hacen exámenes+vacuna;
       curiosea → **máquina de avatares** (`VirtualizationMachine`) → **Microcosmos PRE-FUEGO** (plantas
       medicinales, **La Recolectora** — autorada); apoya y **lleva a los débiles a la cueva** (`CarryToRefuge`/
@@ -733,19 +739,19 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       `CarryToRefuge`; sandbox `PrologueSandbox_AUTO`). **Falta**: montar la ESCENA real en Unity.
 - [~] 1. **Cocina** (Paleolítico/fuego) · 2. **Huerto** (Neolítico/agricultura) — diseñadas.
 - [~] **3. CRÍA** (corazón del santuario; **confirmada área 3, tras el Huerto** → Construcción=4, Mecánica=5,
-      Enfermería=6, Yoga=7) — [`cria-simulation.md`](cria-simulation.md) + `CriaBeginner_AUTO` (limpiar→
+      Enfermería=6, Yoga=7) — [`cria-simulation.md`](areas/cria-simulation.md) + `CriaBeginner_AUTO` (limpiar→
       abastecer→rutina→nido). **Enganche a drives REALES**: `CriaCareTarget` toca `Animal.stress`/`hungry` y
       `GrowBond` (que ya factoriza trauma); el bond **se gana** (estrés alto → rechaza). **La Recolectora**
       (raíz pre-fuego) con cadena de misión (founding-trio §7.4). **Histórico fundacional: El Perro de
       Oberkassel** (real ~14.200 años; cachorro salvado del moquillo por amor → mito del santuario; autorado
       con vivencias POV-perro + cadena de misión, cria-simulation §5). **Falta**: cablear a crías reales
       (`Animal` del `FamilyGenerator`) y el gateo de actividades por bond.
-- [~] 3. **Construcción (Meso) / Levantar refugio (Micro)** ([`construction-simulation.md`](construction-simulation.md))
+- [~] 3. **Construcción (Meso) / Levantar refugio (Micro)** ([`construction-simulation.md`](areas/construction-simulation.md))
       — **va ANTES que la Mecánica** (refugio antes que metal, Neolítico). Meso = hub de **estructuras** por
       **dispatch/tickets**. **Hecho**: arranque `ConstructionBeginner_AUTO` (limpiar→abastecer→cimentar/muro/
       techar), **El Tallador** autorado + base de historia (§5). **Falta**: recetas de estructura reales por
       área, misiones-historia cableadas, históricos posteriores (Maestro de catedrales/Brunelleschi).
-- [~] 4. **Mecánica (Meso) + Forja (Micro)** ([`forge-simulation.md`](forge-simulation.md)): la área Meso
+- [~] 4. **Mecánica (Meso) + Forja (Micro)** ([`forge-simulation.md`](areas/forge-simulation.md)): la área Meso
       es la **Mecánica** (reparar/mejorar **máquinas** de todas las áreas + vehículos/drones/teleportadores).
       **Arranque cableado** (`MechanicsBeginner_AUTO`): **limpiar** → **abastecer** → **reparación simple**.
       **1ª reparación real de máquina = CAMBIO DE RUEDA del camión** (`TruckMaintenance_AUTO`: aflojar→gato→
@@ -768,7 +774,7 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       Reutilizable en todas las áreas; debut en el Huerto. Núcleo: "que los fuertes no se coman a los débiles".
 
 ## Microcosmos — era pre-Ambrosio (origen de Sakshi) — DISEÑO acordado, a construir por rebanadas
-Docs: [`microcosmos-sakshi-origin.md`](microcosmos-sakshi-origin.md) (nivel/era) + [`apremios-guardian-observacion.md`](apremios-guardian-observacion.md) (subsistema).
+Docs: [`microcosmos-sakshi-origin.md`](microcosmos/microcosmos-sakshi-origin.md) (nivel/era) + [`apremios-guardian-observacion.md`](sistemas/apremios-guardian-observacion.md) (subsistema).
 Decisión del usuario (2026-09-11): **diseñar a fondo primero** (hecho) → **empezar por el RÍO**.
 - [x] **`RiverCurrent`** (1er build) ✅ **PR #182**: componente-zona que arrastra por empuje neto = fuerza − masa·resist (grande aguanta, cría no) + **debilita** (drena ATP + estrés). Test `RiverCurrentTest` (grupo 9). **Falta:** colocarlo en la escena del nivel (cuando montemos el nivel de Sakshi).
 - [ ] **Preferencia de dieta** en `Forager.SelectPrey`: peso de apetencia por material/especie (el depredador **prefiere hormiga a gusano**) → va a Sakshi, no a Kushal.
@@ -779,7 +785,7 @@ Decisión del usuario (2026-09-11): **diseñar a fondo primero** (hecho) → **e
 - [ ] Ley de la saga: **≥6 personajes vivos por historia, misma alma en cuerpos distintos**. En esta era, Momo/Medea = almas en **ancianas** que mueren cerca de su nacimiento.
 - [ ] Escenarios INTERMEDIOS entre este nivel y el alba de Ambrosio (a definir).
 
-## Hospital, jardines en la cima y submarinos médicos (2026-11-03; [`hospital.md`](hospital.md) §4–§6, [`submarinos-medicos.md`](submarinos-medicos.md), [`jardines-frutales.md`](jardines-frutales.md) §Jardines en la cima)
+## Hospital, jardines en la cima y submarinos médicos (2026-11-03; [`hospital.md`](areas/hospital.md) §4–§6, [`submarinos-medicos.md`](areas/submarinos-medicos.md), [`jardines-frutales.md`](areas/jardines-frutales.md) §Jardines en la cima)
 - [x] Jardines frutales en la cima (el techo de alfombras) de cada edificio-árbol: **bancales de tierra** por gremios de pH (cítricos, andino de semisombra, bayas ácidas, mediterráneo, trópico húmedo) con compañeras, flores de néctar, hotel de insectos, abejorros, caja nido, lombrices y goteo; investigación con fuentes y decisión tierra frente a maceta (`GardenBed`, `RoofGardenTest`, grupo 80).
 - [x] La jornada del jardinero: los frutales de la cima entran solos en su ronda y van primero (`TipOrder`).
 - [x] **Submarino-ambulancia anfibio** (14 × 5 × 5 m, el vehículo de diseño de los árboles): por el tronco a por el equipo del hospital, al paciente, a la puerta de urgencias o de veterinaria; bodega para oso o elefante, O₂, monitor, desfibrilador, ventilador, sangre O−, fluidos (`HospitalSubmarine`, grupo 81).
@@ -790,7 +796,7 @@ Decisión del usuario (2026-09-11): **diseñar a fondo primero** (hecho) → **e
 - [ ] La ducha de descontaminación de Prípiat (1986) con cristal: es del constructor de los pueblos.
 - [ ] Una alarma que llame sola a la ambulancia cuando alguien cae herido lejos; las ballenas mayores, junto al casco con los pontones.
 
-## Horario libre semanal y los seis del mesocosmos (2026-11-03; [`horario-libre.md`](horario-libre.md), [`personajes-mesocosmos.md`](personajes-mesocosmos.md))
+## Horario libre semanal y los seis del mesocosmos (2026-11-03; [`horario-libre.md`](sistemas/horario-libre.md), [`personajes-mesocosmos.md`](historia/personajes-mesocosmos.md))
 - [x] Reparto semanal de las horas libres (16, 17, 18, 20 y 21 h) con la lógica de la jornada (`LeisureRoster`): catálogo que rota por franja, a quien menos la ha hecho, con plazas.
 - [x] Horario en el juego por escena (`LeisureDirector`): santuario (personal de la jornada) y microcosmos (insectos-humanos con `MicroJornada`); andar al sitio y hacer la actividad; las necesidades van antes.
 - [x] Etiquetas de actividad de los edificios (ocio, recuperación, descanso, capacidad, interacción): el tiempo libre no va a edificios de trabajo.
@@ -804,7 +810,7 @@ Decisión del usuario (2026-09-11): **diseñar a fondo primero** (hecho) → **e
 - [ ] Horario libre de Kushal como sugerencia (hoy el jugador es libre y no entra en el reparto).
 - [x] ~~Los seis en el santuario~~ → **2026-11-04: salen a sus microcosmos** (ver la sección siguiente).
 
-## Familia y amigos de Berón; los famosos, a sus microcosmos (2026-11-04; rama `claude/edif-personajes`; [`diseno-personajes.md`](diseno-personajes.md) §Familia y amigos, [`personajes-mesocosmos.md`](personajes-mesocosmos.md))
+## Familia y amigos de Berón; los famosos, a sus microcosmos (2026-11-04; rama `claude/edif-personajes`; [`diseno-personajes.md`](sistemas/diseno-personajes.md) §Familia y amigos, [`personajes-mesocosmos.md`](historia/personajes-mesocosmos.md))
 - [x] Aspecto de cubos de Nesvitor, Amykhuz, Karen, Alicita, Ducristin, Josedrilo, Maite, Shalva y Adaguchi, de sus fotos; Tote mejorado según `tote.jpg`. Piezas nuevas en `CubeHair`/`CubeHumanoid` (peinados, bigote, gafas de sol, chaqueta, cuadros/rayas/canalé, falda, reloj, bolso…).
 - [x] En la escena (`FamilyCharacters`), `PlaceStaff`, `WorkdayDirector.staff`, `HomeArea`, horario libre y galería («Character Gallery (familia y amigos de Berón)»).
 - [x] Casas del árbol: las 18 para el personal que queda y los nueve; Amykhuz y Karen comparten casa (`Bedroom.partner`). No queda casa libre.
@@ -817,26 +823,26 @@ Decisión del usuario (2026-09-11): **diseñar a fondo primero** (hecho) → **e
 - [ ] Vivencias (frases de conversación, `PhrasePools`) de la familia y los amigos: hacen falta datos de Berón sobre cada uno.
 - [ ] Más casas del árbol (una 4.ª por árbol, con árboles más altos) para los recién llegados.
 
-## Camas de 4 y guerra de almohadas (2026-11-04; rama `claude/edif-personajes`; [`guerra-de-almohadas.md`](guerra-de-almohadas.md))
+## Camas de 4 y guerra de almohadas (2026-11-04; rama `claude/edif-personajes`; [`guerra-de-almohadas.md`](areas/guerra-de-almohadas.md))
 - [x] Camas de 4 plazas (colchón de 3,60 × 2,10) en las 18 casas del árbol; casa de 9 × 7 m con los 2 m de paso; cada uno duerme en su plaza (la pareja, en plazas distintas).
 - [x] Ring de almohadas sobre la plataforma central: cama colosal de n × n celdas de 2,5 m (n = ⌈√residentes⌉: hoy 5 × 5, caben 25 para 19), borde blando, almohadones, 50 almohadas sueltas, pista de alfombras propia.
 - [x] Regla y validador (`PillowRing.Validate`, manual J15): falla si no caben los residentes o el personal; al reconstruir crece.
 - [x] Actividad de todos a la vez en el horario libre (sábado 20 h; `LeisureRoster.Activity.together`, etiqueta del ring) con `PillowFight` (coger almohada, almohadazo, risa, vínculo, acotado).
 - [x] Prueba `PillowFightTest` (grupo 89).
 - [ ] Tester: reconstruir SampleScene (solo el santuario) y guardarla; grupos 89, 65, 28 y 55 (frutales de las terrazas); fotos del ring y de una casa.
-- [x] Regla J16 en el resto de centros ([`centros-para-todos.md`](centros-para-todos.md)): pisos según los miembros (yoga, 2 de Hatha y 2 de Ashtanga; gimnasio, calistenia, dojo y ballet, 1), clases de Ashtanga que se reparten por las salas, ocio para todos (crías y textil por turnos, justificado); lo comprueba la regla de capacidad (`AreaCapacity`, grupo 75). Las alfombras rodean el ring de almohadas (`FlyingCarpet.Legs`).
+- [x] Regla J16 en el resto de centros ([`centros-para-todos.md`](areas/centros-para-todos.md)): pisos según los miembros (yoga, 2 de Hatha y 2 de Ashtanga; gimnasio, calistenia, dojo y ballet, 1), clases de Ashtanga que se reparten por las salas, ocio para todos (crías y textil por turnos, justificado); lo comprueba la regla de capacidad (`AreaCapacity`, grupo 75). Las alfombras rodean el ring de almohadas (`FlyingCarpet.Legs`).
 - [ ] Tester: reconstruir SampleScene (la torre del Entrenamiento sube a 5 niveles) y pasar 75, 89, 65, 50 y las de yoga (`YogaFloorsTest`, `YogaClassTest`); fotos de los pisos de yoga nuevos y de un vuelo de alfombra desde la plataforma central.
-- [x] Pijamadas ([`pijamadas.md`](pijamadas.md), manual J17): una sola cama-litera por casa, de dos pisos de 4, con tobogán para bajar del piso de arriba (8 por casa; la litera triple aparte se quitó por indicación de Berón), pijamada semanal con anfitrión que rota, dormir en su plaza esa noche y volver a casa a la mañana; prueba `SleepoverTest` (grupo 92).
+- [x] Pijamadas ([`pijamadas.md`](areas/pijamadas.md), manual J17): una sola cama-litera por casa, de dos pisos de 4, con tobogán para bajar del piso de arriba (8 por casa; la litera triple aparte se quitó por indicación de Berón), pijamada semanal con anfitrión que rota, dormir en su plaza esa noche y volver a casa a la mañana; prueba `SleepoverTest` (grupo 92).
 - [ ] Tester: con la escena reconstruida, grupo 92 y fotos de una casa con su cama-litera y de una pijamada.
-- [x] Profesiones y parejas (Berón 2026-11-04; [`personajes-mesocosmos.md`](personajes-mesocosmos.md) §Profesiones y parejas, manual J14 y J18): Josedrilo maestro de yoga (y bioconstrucción), Maite cocina, Shalva cultivo y bioconstrucción, Adaguchi submarinismo y cocina, Amykhuz cocina y química, Karen asuntos legales y lenguas (Aula), Alicita contabilidad y proyectos; Nesvitor consejero; Gallarle nuevo (pareja de Ducristin, pendiente de foto y de profesión). Parejas en una casa: Lizmibet y Tote, Amykhuz y Karen, Ducristin y Gallarle, Josedrilo y Maite (16 de 18 casas).
+- [x] Profesiones y parejas (Berón 2026-11-04; [`personajes-mesocosmos.md`](historia/personajes-mesocosmos.md) §Profesiones y parejas, manual J14 y J18): Josedrilo maestro de yoga (y bioconstrucción), Maite cocina, Shalva cultivo y bioconstrucción, Adaguchi submarinismo y cocina, Amykhuz cocina y química, Karen asuntos legales y lenguas (Aula), Alicita contabilidad y proyectos; Nesvitor consejero; Gallarle nuevo (pareja de Ducristin, pendiente de foto y de profesión). Parejas en una casa: Lizmibet y Tote, Amykhuz y Karen, Ducristin y Gallarle, Josedrilo y Maite (16 de 18 casas).
 - [ ] Berón: confirmar que Amykhuz y Karen son pareja; la foto y la profesión de Gallarle.
 - [ ] Tester: reconstruir SampleScene; grupos 50 (jornada con profesiones), 51 y 64 (Josedrilo de maestro), 45 (brigada de cocina), 65 (horario libre, Gallarle), 28, 89 y 92 (casas y ring con 20 residentes).
-- [x] Más datos de Berón (2026-11-04; [`personajes-mesocosmos.md`](personajes-mesocosmos.md) §Profesiones y parejas, manual J14, J18 y J19): Amahuz → **Amykhuz** (alias para escenas viejas); parejas Amykhuz y Karen (confirmada), Alicita y Julian, Irosene y Fausto; Julian y Fausto nuevos (pendientes de foto; Fausto, mecánico); Josedrilo jefe de obra nueva, Tote jefe de reparaciones y guardia, Nesvitor guardia y agricultor, Ducristin gerente de banca y profesor, Andrea comunicación, Maite jefa de cocina y curandera, Irosene letras en el Aula, Panterilia segunda maestra de yoga; nada de ocio ni entrenamiento en pisos en obras; frutal de la terraza a 5,5 m.
+- [x] Más datos de Berón (2026-11-04; [`personajes-mesocosmos.md`](historia/personajes-mesocosmos.md) §Profesiones y parejas, manual J14, J18 y J19): Amahuz → **Amykhuz** (alias para escenas viejas); parejas Amykhuz y Karen (confirmada), Alicita y Julian, Irosene y Fausto; Julian y Fausto nuevos (pendientes de foto; Fausto, mecánico); Josedrilo jefe de obra nueva, Tote jefe de reparaciones y guardia, Nesvitor guardia y agricultor, Ducristin gerente de banca y profesor, Andrea comunicación, Maite jefa de cocina y curandera, Irosene letras en el Aula, Panterilia segunda maestra de yoga; nada de ocio ni entrenamiento en pisos en obras; frutal de la terraza a 5,5 m.
 - [x] Maestros de baile (Panterilia, también finanzas, y Gohageneis) que se turnan por días: guían el baile de las 20 h (en la Sala de Ballet o en la de reserva mientras está en obras) y el entrenamiento de ballet si la sala está terminada; Julian, dirección de proyectos con Alicita (`con_proyectos2`). Prueba en `HorarioLibreTest` (65).
 - [ ] Berón: fotos de Gallarle, Julian y Fausto; profesión de Gallarle.
-- [x] Seis nuevos (Berón 2026-11-04; [`personajes-mesocosmos.md`](personajes-mesocosmos.md) §Los seis nuevos): David y Adonis (informática), Yulo y Lale (biotecnología), Ivelyna (pediatra), Luciana (piloto); aspecto provisional pendiente de foto (Fem por el nombre, pendiente de confirmar); cuarta casa por árbol (árboles de 38 m, 24 casas); ring 6 × 6; 27 miembros (dojo 2 pisos, Aula 2; la torre del Entrenamiento, 7 niveles; simulador de holguras pasado).
-- [x] Neo, niño, hijo de Ducristin y Gallarle: vive en su casa, sin jornada, va con su madre ([`personajes-mesocosmos.md`](personajes-mesocosmos.md) §Neo). Lale es hombre (confirmado).
-- [x] Lale y Yulo (antes Ale y Julito), Malena (pediatra; 28 miembros, 23 casas ocupadas) y aspecto de las fotos de Yulo, Lale, Neo, Gallarle, Luciana, Ivelyna, Malena y Ducristin ([`personajes-mesocosmos.md`](personajes-mesocosmos.md) §Lale, Yulo, Malena y las fotos).
+- [x] Seis nuevos (Berón 2026-11-04; [`personajes-mesocosmos.md`](historia/personajes-mesocosmos.md) §Los seis nuevos): David y Adonis (informática), Yulo y Lale (biotecnología), Ivelyna (pediatra), Luciana (piloto); aspecto provisional pendiente de foto (Fem por el nombre, pendiente de confirmar); cuarta casa por árbol (árboles de 38 m, 24 casas); ring 6 × 6; 27 miembros (dojo 2 pisos, Aula 2; la torre del Entrenamiento, 7 niveles; simulador de holguras pasado).
+- [x] Neo, niño, hijo de Ducristin y Gallarle: vive en su casa, sin jornada, va con su madre ([`personajes-mesocosmos.md`](historia/personajes-mesocosmos.md) §Neo). Lale es hombre (confirmado).
+- [x] Lale y Yulo (antes Ale y Julito), Malena (pediatra; 28 miembros, 23 casas ocupadas) y aspecto de las fotos de Yulo, Lale, Neo, Gallarle, Luciana, Ivelyna, Malena y Ducristin ([`personajes-mesocosmos.md`](historia/personajes-mesocosmos.md) §Lale, Yulo, Malena y las fotos).
 - [x] Ronda 7: 89 (necesidades tras el salto de reloj), 92 (alfombra y tobogán), 50 (tumbado en su cama) y `AreaCapacity` (ring fuera de Play).
 - [ ] Tester: reconstruir el santuario; grupos 89, 92, 50 y 75; galería de la familia.
 - [x] Berón confirmó el orden de las fotos `gallarle_luciana` e `ivelyna_malena` y la grafía «Ducristin». Luciana, también artes marciales (el dojo, con Gohageneis).
@@ -845,7 +851,7 @@ Decisión del usuario (2026-09-11): **diseñar a fondo primero** (hecho) → **e
 - [ ] Tester: reconstruir SampleScene; mirar la lanzadera (T13: debe subir con el nuevo techo del Entrenamiento, `LaunchSiteTest` 90), y grupos 28, 50, 55, 65, 75, 89 y 92.
 - [ ] Tester: reconstruir SampleScene (la torre del Entrenamiento sube a 6 niveles: el ballet pide 2 pisos con 21 miembros); grupos 45, 50, 51, 55, 64, 65, 75, 89 y 92.
 
-## Tareas e iniciaciones del jugador con «E» (2026-11-04; rama `claude/edif-tareasE`; [`tareas-del-jugador.md`](tareas-del-jugador.md), manual J18)
+## Tareas e iniciaciones del jugador con «E» (2026-11-04; rama `claude/edif-tareasE`; [`tareas-del-jugador.md`](sistemas/tareas-del-jugador.md), manual J18)
 - [x] Estudiado el modelo de Ambrosio (`AmbrosioStory.Act`: una E que hace lo que toca según el sitio) y generalizado: `PlayerTasks` (catálogo de pasos «acción · puesto · objeto · gesto» y localizador de sitios) y `PlayerTaskRunner` (marcadores «E — acción», aviso en el sitio, pista de ruta, progreso, gesto 2,5 s, objeto en la mano, efecto al cerrar).
 - [x] Las 66 misiones del catálogo de la jornada, las del material, fotobiorreactores y lanzadera con pasos escritos; elaboraciones, obras, reparaciones y frutales por prefijo; el resto, pasos genéricos de su clase.
 - [x] Jornada de Kushal: al empezar la hora de su misión salen los marcadores y la pista; hecha solo con todos los pasos (o virtualizada); si la ignora caduca sin efecto; `WorkdayDirector.Finish` ya no aplica el efecto de sus misiones; el piloto de `JornadaTest` pulsa la E en su puesto.
@@ -854,7 +860,7 @@ Decisión del usuario (2026-09-11): **diseñar a fondo primero** (hecho) → **e
 - [ ] Tester: con SampleScene reconstruida (solo el santuario), grupos 96, 50, 41, 42 y 43; fotos de un marcador «E — acción» en el telar, en el bancal y en la mesa de emplatado durante la iniciación, y del panel de la tarea con la pista de ruta.
 - [ ] Pendiente: pasos con E en el examen médico de llegada (`NewcomerInitiator`), si Berón lo quiere; efectos propios por paso (regar de verdad, servir un plato); que Kushal dirija la clase de yoga real cuando le toca `yog_guia`. Hecho: «Manos» pasa a la N y la melaza al punto (.); la E es solo la de interactuar (reconstruir SampleScene).
 
-## Charlas entre personas (2026-11-04; [`conversaciones.md`](conversaciones.md))
+## Charlas entre personas (2026-11-04; [`conversaciones.md`](sistemas/conversaciones.md))
 - [x] Resumen del sistema que había (`CommunicationSpell`, `Mind`, `SocialField`, vínculos): nadie llevaba el hechizo, solo Mentes, no se veía, sin contexto.
 - [x] `ConversationDirector` (uno por escena con personas): humanos e insectos-humanos (`PersonLife`), personal de la jornada y `Conversable`; humano↔humano, insecto↔insecto y humano↔insecto en la misma escena; cercanía, vínculo, actividad compartida (puesto, comida, franja libre) y ganas de hablar.
 - [x] Turnos A/B de 4–6 frases, bocadillo con el tema sobre quien habla; vínculo, estrés, humores, cara y memoria.
@@ -865,7 +871,7 @@ Decisión del usuario (2026-09-11): **diseñar a fondo primero** (hecho) → **e
 - [ ] Ver charlas en SampleScene y en Kapilavastu (comida, franjas libres) y que el registro no se llena.
 - [ ] `ConversationContext` con su historia en los microcosmos de historia.
 
-## Animales polares y territorio (2026-11-05; rama `claude/edif-territorio`; [`reglas-animales.md`](reglas-animales.md), [`territorio-polar.md`](territorio-polar.md))
+## Animales polares y territorio (2026-11-05; rama `claude/edif-territorio`; [`reglas-animales.md`](reglas/reglas-animales.md), [`territorio-polar.md`](areas/territorio-polar.md))
 
 Código y compilación hechos; falta la prueba en vivo.
 
@@ -875,15 +881,15 @@ Código y compilación hechos; falta la prueba en vivo.
 - [x] Bivalvos (`SwarmKind.Clam`) para la morsa.
 - [x] Isla de tierra (58 %) con orilla, zócalo, lomas, charcas y tundra; reemplaza a los casquetes Sur y Este.
 - [x] Producción y los osos en la isla (−180, −140); holgura 28,1 m.
-- [x] Comedero retirado; alimentador por rotación con lista compartida y distancia segura; `LabShare` en vez del 80 % (grupo 105, [`alimentador.md`](alimentador.md)).
-- [x] Deshierbe con raíz: malas hierbas de verdad, vivero, trasplante a la tundra e incinerador para las no nativas (grupo 102, [`deshierbe-cuidadoso.md`](deshierbe-cuidadoso.md)).
+- [x] Comedero retirado; alimentador por rotación con lista compartida y distancia segura; `LabShare` en vez del 80 % (grupo 105, [`alimentador.md`](areas/alimentador.md)).
+- [x] Deshierbe con raíz: malas hierbas de verdad, vivero, trasplante a la tundra e incinerador para las no nativas (grupo 102, [`deshierbe-cuidadoso.md`](areas/deshierbe-cuidadoso.md)).
 - [x] La lista del alimentador solo se renueva completa; quien no se alcanza vuelve a la cola.
-- [x] Regla P19: maquinaria a la altura de lo que se pide (grupo 103, [`produccion-maquinaria.md`](produccion-maquinaria.md)). Laboratorio ampliado.
-- [x] La isla es roca hasta el lecho; el hielo flota; túneles para el submarino, fauna fuera de la plataforma y respiraderos en hielo fijo (grupo 107, [`hielo-y-respiraderos.md`](hielo-y-respiraderos.md)).
+- [x] Regla P19: maquinaria a la altura de lo que se pide (grupo 103, [`produccion-maquinaria.md`](areas/produccion-maquinaria.md)). Laboratorio ampliado.
+- [x] La isla es roca hasta el lecho; el hielo flota; túneles para el submarino, fauna fuera de la plataforma y respiraderos en hielo fijo (grupo 107, [`hielo-y-respiraderos.md`](fauna/hielo-y-respiraderos.md)).
 - [x] `FaunaScale`: la fauna no sigue a la plantilla en Play.
-- [x] Icebergs con focas y pingüinos de verdad, con su motivo y su estancia (grupo 108, [`vida-en-icebergs.md`](vida-en-icebergs.md)).
+- [x] Icebergs con focas y pingüinos de verdad, con su motivo y su estancia (grupo 108, [`vida-en-icebergs.md`](fauna/vida-en-icebergs.md)).
 - [x] Petrel de las nieves real: vuela, se posa en icebergs y anida en la roca (grupo 109).
-- [x] Fauna fría de los santuarios marino y aéreo (grupo 111, [`fauna-fria-santuarios.md`](fauna-fria-santuarios.md)); `PlaceAirColdFauna` ya se llama desde el Santuario Aéreo.
+- [x] Fauna fría de los santuarios marino y aéreo (grupo 111, [`fauna-fria-santuarios.md`](fauna/fauna-fria-santuarios.md)); `PlaceAirColdFauna` ya se llama desde el Santuario Aéreo.
 - [ ] Auditar la energía (falta su demanda total) y dar máquinas a las cifras de `AreaProducer`.
 - [x] Cadena alimenticia (`FoodChain`, regla E15, grupo 85) y especie real para todo pez, crustáceo y medusa: 6 especies nuevas.
 - [x] Frentes de barrera, 5 cuevas, acantilados, colonia del emperador, playa de morsas y nidos de Adelia.
@@ -902,8 +908,8 @@ Código y compilación hechos; falta la prueba en vivo.
 - [ ] **Asana/hechizo como frases reales** (hoy solo categoría); **multi-instancia** (madre flyweight + relevancia).
 - [ ] **Flag futuro** `absorbsPublic` si un bloqueado debe además recibir del pool (hoy: no recibe).
 - [ ] **Más históricos** con `Historico()` (quedan Gilgamesh/Enheduanna y eras posteriores;
-      docs/mob-characters.md, mob-epochs-matrix.md).
-- [ ] **Históricos ANIMALES** (POV animal, docs/animal-heroes.md): autorados El Perro de Oberkassel, Togo,
+      docs/historia/mob-characters.md, mob-epochs-matrix.md).
+- [ ] **Históricos ANIMALES** (POV animal, docs/historia/animal-heroes.md): autorados El Perro de Oberkassel, Togo,
       Hachikō, Cher Ami; **candidatos** Balto, Laika, Clever Hans (→Mente), Koko, Jumbo, Greyfriars Bobby.
 - [ ] **Enfermería "Una Salud"** (área 6): **una sola** clínica que cuida a **personas Y animales** (lado
       veterinario dominante; también los voluntarios). Basada en el marco real One Health; el mismo sanador
@@ -914,7 +920,7 @@ Código y compilación hechos; falta la prueba en vivo.
 - [ ] **Transformar la Cocina** (hoy humana) → reencarnaciones (viaje 2: Nasatya llevando restos) + viaje 3
       (Enfermería insecto: guiar al refugio + motivar a los deprimidos). Cerrar §13.4 (nombre anciano-pintor;
       vidas 2 de Atlas/Sakshi/Momo; ubicación de reencarnaciones).
-- [ ] **Stats-as-truth — rebanadas** (docs/stats-as-truth.md §8): `CreatureRig` ✔ · `BodyPart` única ✔ ·
+- [ ] **Stats-as-truth — rebanadas** (docs/sistemas/stats-as-truth.md §8): `CreatureRig` ✔ · `BodyPart` única ✔ ·
       `ScreenEffects` ✔ · **emotion-slice ✔** (`EmotionExpression`/`BodyPartReactor`/`EmotionReader`; circumplex+
       Laban+frases+legibilidad; `afabilidad`/`sensibilidad`; `emotion-model.md`) → **quedan**: **composición**
       (fases 1-2 ✔ `CharacterComposition`: adornos/ropa/miembros→visual+delta gestionado, host-mod, injerto progresivo; fase 3: BodyPartStats/assets)
@@ -952,7 +958,7 @@ Santuario 1 (mesocosmos). Ya reorganizado así (PR #174):
 ## ⚠ Compilar y PROBAR en Unity (PRs #16–#96 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
-prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
+prueba en [`testing-checklist.md`](qa/testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
 `AnimaController.PickBest` (Object null-check), `GuidedTour.stopDistance`, y `CarryToRefuge`/`PrologueSequence`
 `UnityEvent` sin inicializar (abortaba `Build()`). *(Pendiente reportado: los `AddListener` puestos en el
 editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox no dispara; no bloquea.)*
@@ -967,7 +973,7 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
-- **03-nov: horario libre semanal y los seis del mesocosmos.** Las horas libres de cada personaje de cada escena se reparten una vez por semana con la lógica de la jornada (el catálogo de ocio y cuidado rota por franja; cada actividad, a quien menos la ha hecho; plazas por sitio): `LeisureRoster`, `LeisureDirector`, `HorarioPanel`, prueba del grupo 65 (docs/horario-libre.md). Elon Musk (mecánica), Goku (artes marciales), Bill Gates (hospital), Warren Buffett (cuentas), MacKenzie Scott (huerto) e Ibrahim Traoré (guardia) se suman al santuario (docs/personajes-mesocosmos.md).
+- **03-nov: horario libre semanal y los seis del mesocosmos.** Las horas libres de cada personaje de cada escena se reparten una vez por semana con la lógica de la jornada (el catálogo de ocio y cuidado rota por franja; cada actividad, a quien menos la ha hecho; plazas por sitio): `LeisureRoster`, `LeisureDirector`, `HorarioPanel`, prueba del grupo 65 (docs/sistemas/horario-libre.md). Elon Musk (mecánica), Goku (artes marciales), Bill Gates (hospital), Warren Buffett (cuentas), MacKenzie Scott (huerto) e Ibrahim Traoré (guardia) se suman al santuario (docs/historia/personajes-mesocosmos.md).
 - **01-sep (PRs #166–#171): cadena trófica del Santuario 1 (HIELO) + sueño día/noche.** (#166) limpieza del bioma:
   fuera la fauna templada (conejo/ciervo/lobo/zorro → reservados a un santuario templado); base viva = marina. (#167/#168)
   **banco como ORGANISMO**: `FishSchool` con crías-hijas que se multiplican con el tamaño; **mordisco-por-colisión**
@@ -980,8 +986,8 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
   `asleep` por el reloj, diurno/nocturno, **despierta ante amenazas**; peces/krill derivan más lento de noche); test
   `SleepTest` (grupo 8). Cadena real cerrada: **fitoplancton→krill→pez→foca/pingüino/ballena→oso/orca**. Falta el prefab de
   Penguin/Orca (los crea el compañero en Unity). **Siguiente**: las MUTACIONES del santuario (árbol carnívoro + miel letal
-  `Torpor` + abejas de las nieves), y opcionalmente sueño por fatiga. Ver `docs/ice-sanctuary-ecology.md`.
-- **01-sep (PR #165):** **LOD de simulación + limpieza de bioma + doc de ecología de hielo**. **`Lod`** (estático): las ánimas LEJOS del foco (jugador, tag Player) "piensan más lento" — se escala el intervalo de los ticks caros (`Volition.Tick`/`ActiveBehaveTick` — donde corre `SenseThreats` O(n²) — y el `Restore` de mantenimiento) por `SlowFactor` (1 cerca → `maxSlow`=8 lejos). No altera la lógica, solo la frecuencia → **muchas más ánimas** sin caída de FPS (complementa la deuda de partición espacial). **Insectos retirados** de `BuildWildlifePopulation` (#164): son del Microcosmos Nivel 1, no del Santuario 1 (hielo). **`docs/ice-sanctuary-ecology.md`** (nuevo): ecología de hielo + spec de especies (árbol carnívoro de hielo con rastro `Nectar`→miel letal `Torpor`→muerte→abejas hacen nidos de los nutrientes→árbol absorbe; abeja/araña de nieves, pingüino, foca/oso ya coherentes; plancton base). Análisis de escala (cuántas ánimas: alto solo el `Animal` completo; inanimadas/`SharedSoul` casi gratis). **Respuestas:** los insectos no trepan/vuelan (falta cablear el modo del hechizo de locomoción); `FishSchool` tiene comportamiento (deriva/huye/crece) y está en `refuge-and-adult-behavior.md` pero NO es Anima (podría volverse integral); `SharedSoul`/`SoulComposition`/`BlendSlot` (ánima integral + padres de alma por pilar mente/cuerpo/bond) YA existen (scaffold).
+  `Torpor` + abejas de las nieves), y opcionalmente sueño por fatiga. Ver `docs/fauna/ice-sanctuary-ecology.md`.
+- **01-sep (PR #165):** **LOD de simulación + limpieza de bioma + doc de ecología de hielo**. **`Lod`** (estático): las ánimas LEJOS del foco (jugador, tag Player) "piensan más lento" — se escala el intervalo de los ticks caros (`Volition.Tick`/`ActiveBehaveTick` — donde corre `SenseThreats` O(n²) — y el `Restore` de mantenimiento) por `SlowFactor` (1 cerca → `maxSlow`=8 lejos). No altera la lógica, solo la frecuencia → **muchas más ánimas** sin caída de FPS (complementa la deuda de partición espacial). **Insectos retirados** de `BuildWildlifePopulation` (#164): son del Microcosmos Nivel 1, no del Santuario 1 (hielo). **`docs/fauna/ice-sanctuary-ecology.md`** (nuevo): ecología de hielo + spec de especies (árbol carnívoro de hielo con rastro `Nectar`→miel letal `Torpor`→muerte→abejas hacen nidos de los nutrientes→árbol absorbe; abeja/araña de nieves, pingüino, foca/oso ya coherentes; plancton base). Análisis de escala (cuántas ánimas: alto solo el `Animal` completo; inanimadas/`SharedSoul` casi gratis). **Respuestas:** los insectos no trepan/vuelan (falta cablear el modo del hechizo de locomoción); `FishSchool` tiene comportamiento (deriva/huye/crece) y está en `refuge-and-adult-behavior.md` pero NO es Anima (podría volverse integral); `SharedSoul`/`SoulComposition`/`BlendSlot` (ánima integral + padres de alma por pilar mente/cuerpo/bond) YA existen (scaffold).
 - **01-sep (PR #164):** **cablear los 5 insectos en la generación de fauna**. `SampleSceneBuilder.BuildWildlifePopulation` añade una "pradera micro" en el noreste terrestre (~100,0,130) con la cadena trófica: **Aphid** (savia, base, ×2) ← **Ant/Ladybug** (cazan pulgones) ← **Spider** (tope); **Cricket** omnívoro grazea. Cluster APRETADO (radios 6–10) para que el corto rango de percepción del insecto alcance a su presa. Aphid/Cricket como `Prey` → reciben `GrassPatch`. Los 5 ya están completos en los catálogos (`SpeciesProfile`/`StageProfile`/`Physiognomy`/`Family`/`Archetypes`/`Forager`, del commit del usuario `5a892f5`); **falta el prefab** `Assets/Animals/{especie}/{especie}.prefab` de cada uno → hoy `AddFamily` los omite con warning (graceful), spawnean en cuanto exista el prefab (mismo patrón que Wolf/Bunny). Al spawnear, salen en el HUD `[ECO]` categorizados por sus flags de `Forager`. *(Bugs previos: el compañero arregló en #0191129 el choque de nombre `TestRunner`↔`UnityEditor.TestRunner` (CS0434) y un guard nulo en `ReachGoalMission.OnGUI`; el harness dio `[TEST] TOTAL: 42 PASS / 0 FAIL` en Unity.)*
 - **28-ago (PR #162):** **inanición (hambre prolongada → enfermedad → muerte)** (testing §40). `Animal.Starve()` en el tick `Restore` (junto a `Suffocate`): si el hambre supera `starvationMeals` comidas máximas → (1) gasta **grasa** (`fatReserves`); (2) sin grasa, **consume masa** (`rig.mass`↓ → menos poder/defensa = debilitado); (3) el hambre prolongada **lanza el hechizo de enfermedad** (`SicknessState.MakeSick` — el "punto físico" que necesita tratamiento, idea del usuario); (4) bajo `baseMass × lethalMassFrac` → **muere** por el camino normal (`Hurt`). Comer la detiene; recuperarse pide tratamiento (comer + curar la enfermedad). Cierra el bucle de balance que observa el HUD `[ECO]` (herbívoros sin pasto mueren, no solo pasan hambre). `WeaknessEffect` (viejos de Ambrosio) es un HECHIZO de drenaje de ATP→inmovilizar, aparte (no age-based). `StarvationTest` (grupo 7) asevera masa↓+enferma, no destructivo. Nota: el HUD del jugador ya tiene barras de energía/vitalidad (`CharacterLevel`).
 - **28-ago (PR #161):** **misión-observación del ecosistema** (reencuadre WASD; testing §39). `EcosystemObservation` (WASD): no un check mecánico sino una EXPERIENCIA — el jugador recorre el santuario y un **HUD de status global** muestra, por especie, etapas (cría/juv/adulto) + hambrientos/celo/enfermos + totales herbívoros vs depredadores. Loguea `[ECO]` cada ~10s con la **tendencia** (Δ vivos) y emite **`[ECO] ALERTA`** (warning) ante desbalances (especie extinta, colapso de herbívoros/depredadores) → delata bugs de balance del mundo vivo (#159) que un test automático no capta. Solo lectura (agrega `Animal.wholePopulation`, barato). Uso QA (visión del usuario): el compañero la juega/vive, documenta fricción y arregla lo que impida completarla. `SampleSceneBuilder` la añade como `EcoObservation_AUTO`. (Status jugador atacado/huida = futuro.)
@@ -1004,7 +1010,7 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
 - **25-ago (PR #139):** **ahogo/asfixia por medio de baja afinidad** (era "solo documentado"). `Animal.Suffocate()` (en el tick pasivo `Restore`): si la afinidad del medio actual (`MediumFactor`) cae por debajo de `asphyxiaThreshold` (0.3, tunable), aplica daño progresivo `(umbral − MediumFactor) × asphyxiaRate × masa` vía `Hurt` → muere por el mismo camino que cualquier daño. Da consecuencia a quedarse varado donde no se puede respirar/mover (pez fuera del agua, ballena en tierra), mientras `CorrectMedium` sigue intentando llevarlo a su medio primero. Balance-safe por diseño: umbral 0.3 < afinidad-agua por defecto (0.4) → un terrestre nada torpe pero NO se ahoga, y los depredadores que pescan no se ahogan si su `waterAffinity ≥ umbral`. Solo `Animal` (universal a `Anima` = futuro).
 - **25-ago (PR #137):** **D-cola — productor de FIGHT + decaimiento pasivo de la confianza** (capabilities-and-embodiment.md §4). Cierra el bucle de la confianza-por-uso: **productor de FIGHT** (`Animal.Fight` finally → `RecordUse(Capability.Combat, true)` al abatir la amenaza; solo victoria clara, sin penalizar que se aleje) — el que vence se envalentona, como en la caza (D2). **Decaimiento pasivo** (`Anima.DecayConfidence(amount)` que baja todas las capacidades; llamado en `Animal.Restore` con 0.02/tick) — la maestría se enfría sin uso, y el uso activo la supera. Ahora la confianza sube (cazar/pelear con éxito) Y baja (fallar/no usar) → temperamento verdaderamente histórico. Balance-safe (arranca en 0; el decaimiento sobre 0 no hace nada).
 - **25-ago (PR #136):** **rebanada D3b1 — scaffold del motor de volición tras flag (paridad)** (volition-selection-engine.md §7). `DesireCatalog` (deseo = `NeedProbe` de drives + `Dispatch` a handler existente; hoy solo `eat` → `Feed`), componente `Volition.Tick` (mismo throttle que `ActiveBehaveTick`: deseo de mayor necesidad si libre + `SenseThreats` como reflejo siempre), y flag `AiBrain.useVolition` (**default OFF** → `ActiveBehaveTick` intacto). Con el flag ON reproduce la conducta actual (comer con hambre + sensar amenaza) — **balance-safe**. `Animal.SenseThreats`/`Feed` expuestos public. **No cambia conducta** hasta activar el flag y validar paridad en Unity. Pendiente D3b2 (deseos rest/wander + amenaza como deseo con piso de seguridad; flip del flag; retirar la rama fija) y D3b3 (hechizos como acciones → despiertan D3a/E2).
-- **24-ago (PR #135):** **doc de diseño de D3b — motor de volición** (`docs/volition-selection-engine.md`). Contrato del pivote que conecta `Mind`→acción: un **deseo** (`PhraseCategory.Deseo` = frase + binding vía `DesireCatalog`: `NeedProbe`+`Dispatch`) se elige por `necesidad × EffectiveWeight` (que ya incluye confianza D3a) filtrado por `PassesGate` (aptitud + receptor E2), con **piso de seguridad** para amenazas (la supervivencia no sale a la suerte), y despacha los handlers EXISTENTES (`RespondToHunger`/`SenseThreats`/…) — reemplazando la prioridad fija de `ActiveBehaveTick`. Selector `Volition` que `AiBrain` invoca; deseos base sembrados por `SpeciesBody`. **Migración por rebanadas tras flag con paridad** (D3b1 catálogo+selector OFF por defecto → validar en Unity → D3b2 flip+retirar ramas → D3b3 hechizos como acciones + activar D3a/E2 en vivo). No toca conducta todavía (solo doc). Indexado en CLAUDE.md.
+- **24-ago (PR #135):** **doc de diseño de D3b — motor de volición** (`docs/sistemas/volition-selection-engine.md`). Contrato del pivote que conecta `Mind`→acción: un **deseo** (`PhraseCategory.Deseo` = frase + binding vía `DesireCatalog`: `NeedProbe`+`Dispatch`) se elige por `necesidad × EffectiveWeight` (que ya incluye confianza D3a) filtrado por `PassesGate` (aptitud + receptor E2), con **piso de seguridad** para amenazas (la supervivencia no sale a la suerte), y despacha los handlers EXISTENTES (`RespondToHunger`/`SenseThreats`/…) — reemplazando la prioridad fija de `ActiveBehaveTick`. Selector `Volition` que `AiBrain` invoca; deseos base sembrados por `SpeciesBody`. **Migración por rebanadas tras flag con paridad** (D3b1 catálogo+selector OFF por defecto → validar en Unity → D3b2 flip+retirar ramas → D3b3 hechizos como acciones + activar D3a/E2 en vivo). No toca conducta todavía (solo doc). Indexado en CLAUDE.md.
 - **23-ago (PR #134):** **rebanadas D3a + E2 — el motor de selección de `Mind` gana confianza + receptor** (capabilities-and-embodiment.md §2/§5/§8). **D3a:** `MindPhrase.capability` (opcional) + `Mind.EffectiveWeight` pondera esa frase por `Anima.Confidence(capability)` (el bond-hacia-el-hechizo; piso `minConfidenceFactor=0.25` para poder probar lo nuevo). **E2:** `CompositionPart.grants` (ojo→`"see"`, colmillo→`"bite"`) + `CharacterComposition.Grants(cap)` (la query "¿tengo receptor?") + `MindPhrase.gateCapability` que `Mind.PassesGate` comprueba (reusa el patrón del gate por aptitud). Ambos mecanismos **DORMIDOS y balance-safe**: ninguna frase actual fija `capability`/`gateCapability` → conducta idéntica; se activan cuando existan las frases de categoría `Hechizo`/`Deseo` (D3b). Falta el salto grande **D3b** (que la selección de `Mind` CONDUZCA la acción, reemplazando la prioridad fija de `ActiveBehaveTick`; conviene doc de diseño antes).
 - **23-ago (PR #133):** **rebanada E1 — anatomía→stats: el arma sale de una bodyPart** (capabilities-and-embodiment.md §2/§8). `StatBonus.armament` + su aplicación por el delta gestionado de `CharacterComposition` (modulada por la vitalidad del huésped, como lo biológico; `_aWpn` accumulator + `Step` sobre `anima.armament`). Loop completo: un **colmillo/veneno como `CompositionPart`** → sube `Anima.armament` → `Predation.PredatorPower` lo lee. Cierra B desde la anatomía (el arma ya es una PARTE, no un escalar suelto); realiza la idea de "crear el colmillo/veneno como bodyparts". Balance-safe (armament default 0 en `StatBonus`). Falta **E2**: el tag de receptor/capacidad en `CompositionPart` (ojo→`Ver`, aguijón→`Picar`) + query "¿tengo receptor?", que se cablea con las entidades de hechizo (D3).
 - **23-ago (PR #132):** **rebanada D2 — confianza-por-uso conectada a la conducta** (capabilities-and-embodiment.md §4/§8). Primer bucle productor→consumidor de la confianza-por-hechizo. **Productor:** `Forager.Hunt` llama `RecordUse(Capability.Combat, victim.Dead)` solo si la presa estaba VIVA al empezar (una carroña no cuenta como caza) → abatirla refuerza, rendirse (agotado) merma. **Consumidor:** `ThreatResponder.Decide` calcula **agresividad efectiva = `aggressiveness` innata + `Confidence(Combat)/100 × confidenceAggressionWeight`** para el gate de atacar-si-más-fuerte. Nueva clave central `Capability.Combat` (evita magic-strings). **Balance-safe:** confianza 0 al nacer → conducta idéntica; el temperamento se vuelve HISTÓRICO (el depredador que caza con éxito se envalentona; el herbívoro nunca). Falta (D-cola): productor de FIGHT, decaimiento pasivo, y la selección ponderada (D3).
@@ -1040,11 +1046,11 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
 - **18-ago (PR #101):** **`Locomotion` — resto de comportamientos migrados**. `Carnivore.Feed` (persecución/comer), `Flee`/`Fight`/`HitAndRun`, wander y salidas de amenaza pasan por `Loco.*` (`GoTo`/`SetGait`/`Idle`/`Walk`/`Run`). Ya NO hay `nav.SetDestination`/`ActsPrep.*.Prep` en conductas (solo dentro del wrapper + lecturas de config). Falta reconciliar IA (que `AiBrain` conduzca) y sacar `ActsPrep` a data de arquetipo.
 - **18-ago (PR #100):** **etapa 2 — semilla de `Locomotion`** (+ reorden del plan: `Locomotion` antes que `Forager`, porque `Feed` es sobre todo locomoción). Componente `Locomotion` (envuelve NavMesh + gait `ActionPrep`: `Walk`/`Run`/`Idle`/`Move`). `Animal` lo auto-añade en `Init`. Migrados los sitios emparejados (SetDestination+gait): `CorrectMedium` (agua↔tierra) y `Herbivore.Feed` (ir a comer + pastar). El resto (`Carnivore.Feed`, `Flee`/`Fight`/`HitAndRun`) coexisten con el patrón viejo hasta el siguiente PR.
 - **17-ago (PR #98, docs):** ampliada `sanctuary-second-lap-and-fear.md` — S3 aire V2 = ciudad flotante (esfera de aire artificial) con insectos gigantes; S2 abisal V2 = laboratorio + burbuja prehistórica (megalodón/reptiles marinos/calamar gigante); S4 volcán V2 = quimeras + caracoles de fuego; S1 hielo CONFIRMADO (conejo→liebre ártica, +pingüino, +leopardo). **Santuario de la Magnate** (núcleo plasma+diamante): desierto artificial (sol/luna = plasma), puerta al infierno (desierto)/paraíso (plasma), demonios/ángeles, arco de Kushal (radar/evitar/misión secreta). **Amplificación V1 = `bonusPack`** (evento de entrenamiento, no multiplicador; falta enchufarlo a `Animal`). Australia por ubicar (¿cuarteles de jefes?).
-- **17-ago (PR #97, docs):** `docs/sanctuary-second-lap-and-fear.md` — 2ª vuelta por los santuarios (V1→V2, inversión de poder, guerras, biomas por elemento, especies en peligro) + **miedo como efecto de hechizo** (magnitud+AoE, escalado por temple → stress + bond negativo; `auraFear` pasa a ser del hechizo) + control de AoE/potencia (futuro) + **hechizo de bloqueo de la Magnate** (cancela hechizos aterradores + daña al lanzador). Decisiones de especies/biomas **por confirmar**.
+- **17-ago (PR #97, docs):** `docs/sistemas/sanctuary-second-lap-and-fear.md` — 2ª vuelta por los santuarios (V1→V2, inversión de poder, guerras, biomas por elemento, especies en peligro) + **miedo como efecto de hechizo** (magnitud+AoE, escalado por temple → stress + bond negativo; `auraFear` pasa a ser del hechizo) + control de AoE/potencia (futuro) + **hechizo de bloqueo de la Magnate** (cancela hechizos aterradores + daña al lanzador). Decisiones de especies/biomas **por confirmar**.
 - **17-ago (PR #96):** **amenaza 100% stat-based**. Migrado el último punto ciego: la alerta de proximidad de `Escape` (antes `Rigidbody.mass × NavMeshAgent.speed`) ahora usa `EvaluateThreat` (Assess) + `alertReach` (tunable en `ThreatResponder`). Todo el sistema de amenaza (evaluación/decisión/detección/alerta) depende de stats; solo quedan las coroutines de acción (locomoción) para la etapa de `Locomotion`.
 - **17-ago (PR #95):** **etapa 1 completada (assessment)** — `EvaluateThreat` → `ThreatResponder.Assess` plenamente stat-based (ratio `Predation.EffectivePower`, sin `rig.mass`/NavMesh; escala = fracción de mi poder, `ThreatThreshold` recalibrable). **Defensa de crías emergente**: retirado el flag `DefendsCubs` (base + 8 overrides) → sale del vínculo (cubBond) + autoabandono vs peligro. Dirección: el CUIDADO de crías (PostNatal) también debería volverse emergente en su etapa.
 - **17-ago (PR #94):** **etapa 1 disolución — `ThreatResponder`**. Extraída la POLÍTICA de decisión luchar/huir/pegar-y-correr de `Animal.ResolveReaction` a un componente `ThreatResponder` (portable: `Predation.EffectivePower` + `autoabandono` + bonds). `Animal` lo auto-añade en `Init` y le pasa el contexto de crías (`defendingCubs`/`cubBond`, aún de `Family`/`Group`). `enum Reaction` movido. *Pendiente en etapa 1:* `EvaluateThreat`→`Assess` (tras recalibrar), detección y coroutines (con `Locomotion`).
-- **17-ago (PR #93):** **plan de disolución de `Animal`** (`docs/anima-dissolving-animal.md`: disolver > extender+renombrar, kit-objetivo, qué método va a qué componente, orden por etapas) + **Fase 0 inicio** — `Animal.ResolveReaction` (fight/flee) migrado a `Predation.EffectivePower` (poder por stats + manada) × `(1+autoabandono)`, en vez de `rig.mass × NavMeshAgent.speed` + bucle de manada propio (scale-invariant, sin recalibrar). *Siguiente:* `EvaluateThreat` base y alerta de proximidad (cambian de escala → recalibrar con test).
+- **17-ago (PR #93):** **plan de disolución de `Animal`** (`docs/sistemas/anima-dissolving-animal.md`: disolver > extender+renombrar, kit-objetivo, qué método va a qué componente, orden por etapas) + **Fase 0 inicio** — `Animal.ResolveReaction` (fight/flee) migrado a `Predation.EffectivePower` (poder por stats + manada) × `(1+autoabandono)`, en vez de `rig.mass × NavMeshAgent.speed` + bucle de manada propio (scale-invariant, sin recalibrar). *Siguiente:* `EvaluateThreat` base y alerta de proximidad (cambian de escala → recalibrar con test).
 - **17-ago (PR #92):** **rollout locomoción — animales (opt-in)**. El `NavMeshAgent` sigue navegando (pathfinding); si el animal lleva un `WalkSpell`, su `nav.speed` sale del hechizo cada tick (`Animal.FeedWalkSpeed` → `WalkSpell.StepSpeed`): correr (`Running`→channeling) sube gradual a la punta, andar decae, con la lógica del `powerBonus`. `ActionPrep.Prep` fija `Animal.Running` (¿es la acción de correr?). Auto-cablea base=walk.navSpeed, punta=run−walk. **Cero regresión** (solo cambia si se añade el WalkSpell). Los animales corren para huir/cazar/salir del agua/alerta-random. *Pendiente:* que la IA humana navegue por NavMesh con esta misma velocidad (AiBrain→NavMesh).
 - **17-ago (PR #91):** **rollout locomoción — jugador**. `PlayerController` delega la VELOCIDAD horizontal al `WalkSpell` (carga-postura + punta + decaimiento + ATP), conservando dirección cámara-relativa, gravedad, salto y `_cc.Move`. `WalkSpell.StepSpeed(charging,channeling,moving,dt)` provee la velocidad sin mover. LeftShift parado = postura de salida; RightShift = punta. Builder añade el `WalkSpell` al jugador (base=walkSpeed, topes=sprint−walk). *Pendiente:* animales (NavMesh) al mismo hechizo.
 - **17-ago (PR #90):** **locomoción universal** — `WalkSpell` conducible por brains. `SpellBase.TickPowerBonus(c,dt,charging,channeling)` explícito; `WalkSpell` gana `selfDriven`, `DriveFromInput()` (input propio) y `Drive(dir,...)` (programático). `PlayerBrain` conduce el WalkSpell si existe (ESDF + carga/correr); `AiBrain` lo conduce hacia `moveTarget` (rellena el hueco de locomoción IA). Andar/correr = un hechizo que cualquier brain mueve. Sandbox `WalkUniversal_AUTO` (caminante IA→destino). *Pendiente:* migrar el jugador principal (`PlayerController`) y los animales (NavMesh) a este hechizo.
@@ -1208,7 +1214,7 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
   minijuegos de desintegracion, organos como componentes (meso/micro, Da Vinci), trascender (espacio/dark/gravedad), MCP/fuentes.
 - **07-ago (PR #44):** **la necesidad decide la depredacion** — `SelectPrey` sesga la presa por el `Craving`
   (x`Selectivity`: saciado exquisito/hambriento come todo) y `AbsorbFood` come mas de la parte que le falta
-  (oso craves grasa -> foca -> blubber). + **`docs/magic-metabolism-progression.md`**: arco de progresion del
+  (oso craves grasa -> foca -> blubber). + **`docs/sistemas/magic-metabolism-progression.md`**: arco de progresion del
   hechizo de comer (comida->compuestos->elementos->quarks; luego invertir hacia super-celulas->quimeras;
   magia=reservas quimicas; adiccion). Cocinas por santuario (cocina/tienda/laboratorio/planta nuclear).
 - **06-ago (PR #43):** **apetito por NUTRIENTES** (`Metabolism` reescrito, base cientifica): pools por nutriente
@@ -1277,21 +1283,21 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
   activación/tensión+`Jolt`, sesgo por aptitudes) + `BodyPartReactor` (instrumento: reacción pasiva/violenta
   por parte, traducción entre especies orejas↔brazos↔antenas↔alas) + aptitudes nuevas en `Anima`
   (`afabilidad`, `sensibilidad`) + `UpaYogaSession` resuelve huesos vía `CreatureRig`/`BodyPart`. Sandbox
-  `EmotionOrchestraSandbox_AUTO`, `EmotionReader_AUTO`. (`docs/emotion-model.md §4b`.)
-- **05-ago (PR #26):** **`docs/emotion-model.md`** — modelo de emoción para **toda Anima** con base científica
+  `EmotionOrchestraSandbox_AUTO`, `EmotionReader_AUTO`. (`docs/sistemas/emotion-model.md §4b`.)
+- **05-ago (PR #26):** **`docs/sistemas/emotion-model.md`** — modelo de emoción para **toda Anima** con base científica
   (circumplex=`Humores.Positividad×Energia` ya en código; Laban→`CreatureRig`; Big Five→aptitudes; etología/
   Darwin→señales animales+legibilidad). Aptitudes nuevas propuestas (`afabilidad`; promover `sensibilidad`).
   La **firma emocional = tell de reencarnación**. (Doc; código = `EmotionExpression` a continuación.)
 - **05-ago (PR #25):** **fuente única de partes**: se retira `RigPart` y se **amplía el `BodyPart` de Asana**
   (0–7 = regiones de yoga intactas; + huesos finos L/R + insecto/quimera). `CreatureRig` tira de ella;
   `bodyStats[8]` sigue igual (los huesos finos no se indexan → `GetBodyPartStats` vacío por el guard). Base
-  para la emotion-slice (`docs/stats-as-truth.md §8`).
+  para la emotion-slice (`docs/sistemas/stats-as-truth.md §8`).
 - **05-ago (PR #24):** **`ScreenEffects`** (cámara artística: tintes por estado sueño/fatiga/estrés/
   satisfacción + `Fade` que completa el blackout de `CameraManager`) + **hotfix:** el `enum` de `CreatureRig`
   colisionaba con `BodyPart` de Asana → renombrado (y en **#25 unificado** en una sola `BodyPart`) (master #23
   no compilaba). Sandbox
   `ScreenEffectsSandbox_AUTO`, `EmotionOrchestraSandbox_AUTO`, `EmotionReader_AUTO`.
-- **05-ago (PR #23):** **`docs/stats-as-truth.md`** (la ley única: `stats→frases→todo`; hechizo=modo/energía=
+- **05-ago (PR #23):** **`docs/sistemas/stats-as-truth.md`** (la ley única: `stats→frases→todo`; hechizo=modo/energía=
   timer; transformación por combate de stats con farol-vs-real; composición por componentes tipo CodeShip;
   stats bidireccionales; Quimeras) + **`CreatureRig`** (parte lógica→hueso; auto `HumanBodyBones` humanoide /
   manual insecto — un motor de yoga/emoción para cualquier cuerpo).
@@ -1325,7 +1331,7 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
   Micro/Meso/Macro; diseño del mundo grande (`world-topology`); backbone de recursos + HUD.
 - **09/10-jul:** auditoría + sync de 18 docs; retirada del disparo (no-violencia); **12 aptitudes** + perfiles;
   medios tierra/agua/aire; evolución de aptitudes; dietas/territorialidad; `FishSchool`; Malamute.
-- [x] **Web ligera** (2026-11-13, rama `claude/web-ligera`, [`web-ligera.md`](web-ligera.md); solo código): menús `Tools/Cold Sanctuary/Web/Build WebGL: Santuario ligero` y `… Microcosmos ligero` (Buda); `WEB_LIGERA` solo en el build; Kushal miembro, ≤ 30 animales, sin sombras, media resolución, controles táctiles (`TouchControls` por `GameKeys`), sin escenas marina ni aérea.
+- [x] **Web ligera** (2026-11-13, rama `claude/web-ligera`, [`web-ligera.md`](plataforma/web-ligera.md); solo código): menús `Tools/Cold Sanctuary/Web/Build WebGL: Santuario ligero` y `… Microcosmos ligero` (Buda); `WEB_LIGERA` solo en el build; Kushal miembro, ≤ 30 animales, sin sombras, media resolución, controles táctiles (`TouchControls` por `GameKeys`), sin escenas marina ni aérea.
 - [ ] Hacer los dos builds WebGL, medir su tamaño y abrirlos en un móvil (joystick, mirar, E/F, ½ res; entrar en Kapilavastu) — tester único.
-- [x] **Web continua** (2026-11-16, rama `claude/web-continua` desde `claude/edificios` + `web-ligera`, [`web-continua.md`](web-continua.md); solo código): una página por microcosmos (lista sola de `Assets/Scenes`), builds por grupos (≤ 90 MB de `.data`), portal y `escenas.json`; prueba en la página `?prueba=1` (`WebPrueba`); `tools/web/construir-web.ps1`, `subir-web.ps1` y `probar-web.ps1` (Edge sin ventana).
+- [x] **Web continua** (2026-11-16, rama `claude/web-continua` desde `claude/edificios` + `web-ligera`, [`web-continua.md`](plataforma/web-continua.md); solo código): una página por microcosmos (lista sola de `Assets/Scenes`), builds por grupos (≤ 90 MB de `.data`), portal y `escenas.json`; prueba en la página `?prueba=1` (`WebPrueba`); `tools/web/construir-web.ps1`, `subir-web.ps1` y `probar-web.ps1` (Edge sin ventana).
 - [ ] Construir la web continua (6–7 builds), subirla y pasar `probar-web.ps1` en vivo; decidir con Berón `-Squash` o compresión gzip (el historial de `cs-web-pages` crece ~700 MB por subida) — tester único.

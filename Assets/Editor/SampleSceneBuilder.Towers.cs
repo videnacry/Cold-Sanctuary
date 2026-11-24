@@ -2,13 +2,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// TORRES TEMÁTICAS (Berón 2026-10-29; docs/plano-edificios.md): POCOS edificios con MUCHOS pisos (las megacolumnas ya están
+/// TORRES TEMÁTICAS (Berón 2026-10-29; docs/areas/plano-edificios.md): POCOS edificios con MUCHOS pisos (las megacolumnas ya están
 /// dimensionadas para 30, <see cref="StructuralLimits"/>), cada uno con un tema:
 ///  · SERVICIOS (personas y animales): Restaurante · Hospital (3 plantas) · Cría · Carne Cultivada;
 ///  · ENTRENAMIENTO: Gimnasio · Cardio y zona libre · Calistenia · Sala de Yoga · Sala de Ballet · Dojo;
 ///  · CIENCIAS: Química (2) · Biología (2) · Informática;
 ///  · PRODUCCIÓN (huertos, jardines y construcción): Huerto · Rotación · Construcción · Mecánica · Estudio Textil.
-/// Los reactores (Central Nuclear y Planta Atómica, con el ciclotrón y la sala de experimentos) van en el SITIO NUCLEAR (docs/sitio-nuclear.md).
+/// Los reactores (Central Nuclear y Planta Atómica, con el ciclotrón y la sala de experimentos) van en el SITIO NUCLEAR (docs/areas/sitio-nuclear.md).
 /// Todos los pisos de una torre miden lo mismo (la planta del área más grande de la torre): así las 8 megacolumnas de las
 /// puntas del octógono son continuas de abajo arriba. Cada área amuebla su piso centrada en él. Un área con PLANTAS
 /// PROPIAS (hospital, física, química, biología) las monta como hijas; la siguiente área va encima de la MÁS ALTA de ellas
@@ -24,7 +24,7 @@ public static partial class SampleSceneBuilder
     public static readonly Vector2 ServiciosSize = new Vector2(40f, 38f);        // el restaurante (cocina abierta + comedor en anillo)
     public static readonly Vector2 CienciasSize = new Vector2(32f, 20f);         // biología
     public static readonly Vector2 ProduccionSize = new Vector2(26f, 20f);       // el huerto (y la rotación de encima: 24 × 18 + 2 m de suelo)
-    // LAS TORRES-ÁRBOL (Berón 2026-10-31; docs/edificio-arbol.md §Migración): cada torre es un árbol en hélice (su tronco, en hielo
+    // LAS TORRES-ÁRBOL (Berón 2026-10-31; docs/areas/edificio-arbol.md §Migración): cada torre es un árbol en hélice (su tronco, en hielo
     // firme), y entre las piezas de dos árboles (pisos con sus anillos, puntas, ramas, troncos) hay ≥ 16 m en 3D, con el Árbol de
     // los Campos girando (se barre su círculo). En sus sitios de antes, a 70–100 m unas de otras, no cabían (cada árbol alcanza
     // 51–71 m): se movieron (búsqueda en scratchpad/mig). Los giros (múltiplos de 90°) orientan el molinete para que no choque con el
@@ -36,7 +36,7 @@ public static partial class SampleSceneBuilder
     public static readonly Vector3 EntrenamientoCenter = new Vector3(-77f, 0f, 52f);  // lóbulo Norte:Bosque_Comestible (antes en el hub, (10, 0); sus cultivos ya están en el Árbol de los Campos)
     public static readonly Vector3 CienciasCenter = new Vector3(92f, 0f, -117f);     // lóbulo Sur:Biologia (antes (92, −107))
     // 2026-11-05 (Berón: «en la isla debe haber alguno de los edificios […] la isla reemplace a uno o más casquetes»): Producción, con el comedero y los
-    // osos, se va a la tundra y el casquete Este desaparece (docs/territorio-polar.md). Holgura de mig/Clear.cs: 28,1 m al Árbol de los Campos.
+    // osos, se va a la tundra y el casquete Este desaparece (docs/areas/territorio-polar.md). Holgura de mig/Clear.cs: 28,1 m al Árbol de los Campos.
     public static readonly Vector3 ProduccionCenter = new Vector3(-180f, 0f, -140f);   // lóbulo Isla:Tundra     // lóbulo Este:Mecanica_Osos (antes (114, 0), en Este:Paso; y antes aún en Sur:Rotacion)
     public const float ServiciosYaw = 0f, EntrenamientoYaw = 90f, CienciasYaw = 90f, ProduccionYaw = 90f;
     public const float ProduccionFirstY = 64f;   // (antes 96 m, por encima de Servicios y Ciencias; en su sitio nuevo ya no hace falta)
@@ -50,7 +50,7 @@ public static partial class SampleSceneBuilder
     /// <summary>Empieza una torre: los siguientes <see cref="TowerFloor"/> van uno encima de otro en este sitio.</summary>
     static void BeginTower(Vector3 center, Vector2 size) { _towerCenter = center; _towerSize = size; _towerTop = null; _towerHelix = null; }
 
-    // EL MODELO DEL ÁRBOL (Berón 2026-10-31; docs/edificio-arbol.md §Migración): la torre que se está levantando es un edificio en
+    // EL MODELO DEL ÁRBOL (Berón 2026-10-31; docs/areas/edificio-arbol.md §Migración): la torre que se está levantando es un edificio en
     // hélice; sus pisos van, en orden, a los pisos pegados al tronco (nivel 1: lados a y c; nivel 2: b y d…).
     static Helix _towerHelix;
 

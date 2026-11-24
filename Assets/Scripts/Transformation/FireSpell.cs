@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>Presets documentados de fuego (docs/magic-metabolism-progression.md §13).</summary>
+/// <summary>Presets documentados de fuego (docs/sistemas/magic-metabolism-progression.md §13).</summary>
 public enum FireTier
 {
     Spark,          // chispa / encender: ~800 W · 1 s = 800 J → ~0,018 g de combustible.
@@ -10,7 +10,7 @@ public enum FireTier
 }
 
 /// <summary>
-/// HECHIZO DE FUEGO con **coste físico REAL** (docs/magic-metabolism-progression.md §13/§15). El fuego es
+/// HECHIZO DE FUEGO con **coste físico REAL** (docs/sistemas/magic-metabolism-progression.md §13/§15). El fuego es
 /// **combustión**: quemar combustible (hidrocarburo/grasa, ~45 MJ/kg) libera la energía de la llama. El coste =
 /// **potencia × tiempo** → energía (J) → **masa de combustible** (g). Se paga de `MagicReserves`:
 ///   • **Modo químico** (T1/T2): cuesta el **combustible en elementos** (C+H; el O₂ del aire es gratis) + una

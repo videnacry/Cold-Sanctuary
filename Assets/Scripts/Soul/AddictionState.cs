@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// ADICCIÓN (docs/apremios-guardian-observacion.md §3) — la sombra del estupefaciente. Cada dosis (`Dose`, la llama
+/// ADICCIÓN (docs/sistemas/apremios-guardian-observacion.md §3) — la sombra del estupefaciente. Cada dosis (`Dose`, la llama
 /// <see cref="NarcoticSpell"/>) sube el DESEO (craving) y la TOLERANCIA (cada vez seda menos). Con el tiempo, el deseo
 /// crece solo; si no se satisface (no hay dosis reciente), llega la ABSTINENCIA: añade carga alostática (sufrimiento) al
 /// hub → el ser "necesita" repetir. Modela el bucle real; es un apremio propio. Balance-safe: sin dosis, inerte.

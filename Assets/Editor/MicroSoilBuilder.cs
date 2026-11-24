@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LA CAPA DE TIERRA DE LOS MICROCOSMOS (docs/microcosmos-suelo-y-elementos.md §Capa de tierra; Berón 2026-11-04: «colocar una capa
+/// LA CAPA DE TIERRA DE LOS MICROCOSMOS (docs/microcosmos/microcosmos-suelo-y-elementos.md §Capa de tierra; Berón 2026-11-04: «colocar una capa
 /// de superficie que tenga una altura de 10cm de alto o lo necesario para cubrir las superficies de los pisos que se usan … un suelo
 /// de tierra, el cual tiene sus irregularidades, cúmulos y piedras»). Sobre cada suelo que usa el microcosmos:
 /// - la TIERRA sigue la cara de arriba MÁS ALTA de los suelos del piso gigante en cada punto (el suelo, las alfombras, las losas del

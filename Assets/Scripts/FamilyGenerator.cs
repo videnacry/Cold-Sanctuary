@@ -70,7 +70,7 @@ public class FamilyGenerator : MonoBehaviour
     // mismo, Init() lo pisaría después con el punto de aparición individual. Por eso
     // esperamos un frame (todos los Start() del frame ya corrieron) antes de fijar el nido
     // compartido, así el nuestro es el que gana. Ver
-    // docs/refuge-and-adult-behavior.md "Montaje de escena: nidos antes que familias".
+    // docs/sistemas/refuge-and-adult-behavior.md "Montaje de escena: nidos antes que familias".
     IEnumerator ApplyHomeOriginsNextFrame(List<PendingHomeOrigin> pending)
     {
         yield return null;

@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// TEST DE LA SALA DE ASAMBLEAS, DEL DISEÑO DE LAS ÁREAS Y DE LA VERACIDAD (docs/piso-asambleas.md, docs/veracidad-frases.md; grupo 77). Datos, y el piso si está en la escena:
+/// TEST DE LA SALA DE ASAMBLEAS, DEL DISEÑO DE LAS ÁREAS Y DE LA VERACIDAD (docs/areas/piso-asambleas.md, docs/sistemas/veracidad-frases.md; grupo 77). Datos, y el piso si está en la escena:
 /// - las 5 historias que la esperaban están en «Assembly_Area», representadas; su misión, con pasos y uniforme; la asamblea es de todos;
 /// - el piso (si existe): en Servicios, con plazas para todos, sus piezas del mundo y sin muebles a menos de 2 m (S7, lo mira FurnitureSpacing en 28);
 /// - AreaDesign: cada fila Cumple con ≥ 3 culturas y su doc;

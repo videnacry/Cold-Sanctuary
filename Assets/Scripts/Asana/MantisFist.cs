@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 
 /// <summary>
-/// LAS FORMAS DE BRUCE LEE EN SU CUERPO DE MANTIS (docs/microcosmos-civilizaciones.md §4). Las mismas claves que
+/// LAS FORMAS DE BRUCE LEE EN SU CUERPO DE MANTIS (docs/microcosmos/microcosmos-civilizaciones.md §4). Las mismas claves que
 /// <see cref="JeetKuneDo"/> (el cuerpo humano), adaptadas a los brazos raptoriales (<see cref="CubeInsect.Martial"/>):
 /// - guardia: los dos brazos raptoriales plegados delante del pecho, en la línea central (la «oración» de la mantis = la
 ///   guardia de Wing Chun), con un leve balanceo;

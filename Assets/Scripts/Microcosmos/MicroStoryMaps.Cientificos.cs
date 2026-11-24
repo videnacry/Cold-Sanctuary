@@ -1,6 +1,6 @@
 using UnityEngine;
 
-/// <summary>LOS MAPAS A MANO DE LOS CIENTÍFICOS (2026-11-12; petición 75, regla M9; docs/microcosmos-mapas-a-mano.md §Tanda 4). Mismo marco que el plano del
+/// <summary>LOS MAPAS A MANO DE LOS CIENTÍFICOS (2026-11-12; petición 75, regla M9; docs/microcosmos/microcosmos-mapas-a-mano.md §Tanda 4). Mismo marco que el plano del
 /// pueblo (<c>CivicBuilder.TownPlans</c>). En las CIUDADES no hay flora ni bichos salvajes (MicroBiome): solo lo plantado y los animales del pueblo
 /// (los caballos, pulgones de tiro; los gatos, cochinillas; las ratas, cucarachas), cada uno donde estaba.</summary>
 public static partial class MicroStoryMaps

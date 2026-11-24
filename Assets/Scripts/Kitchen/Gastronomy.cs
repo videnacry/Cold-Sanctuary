@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 
 /// <summary>
-/// RECETARIO DEL RESTAURANTE (docs/cocina-profesional.md): los platillos de la carta y las ELABORACIONES BASE que piden
+/// RECETARIO DEL RESTAURANTE (docs/areas/cocina-profesional.md): los platillos de la carta y las ELABORACIONES BASE que piden
 /// (harina, masa madre, pan, pasta, queso, yogur, tofu, tempeh, tortillas, caldos…), con su equipo, su tiempo activo y su
 /// tiempo de REPOSO (fermentar, madurar, cuajar, curar). Las materias primas salen de los HUERTOS (cultivos), del
 /// LABORATORIO de carne cultivada (res, cerdo, pollo, conejo, pescado, marisco) y de la FERMENTACIÓN DE PRECISIÓN (proteínas

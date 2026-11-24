@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LOS REQUISITOS DE CADA MISIÓN (Berón 2026-11-05; docs/jornada-y-rotacion.md §Requisitos): antes de asignar una misión se mira si se puede hacer. Dos clases:
+/// LOS REQUISITOS DE CADA MISIÓN (Berón 2026-11-05; docs/sistemas/jornada-y-rotacion.md §Requisitos): antes de asignar una misión se mira si se puede hacer. Dos clases:
 /// - DEL MUNDO (<see cref="Blocked"/>): herramientas, materiales, estado del área y seguridad. Si falla, HOY no se le da a nadie, y queda anotada con su motivo.
 /// - DE LA PERSONA (<see cref="NeedsLesson"/>): las tareas con riesgo o técnica piden haberlas aprendido (o ser de su profesión). Las demás se aprenden haciéndolas, como siempre.
 /// La regla de oro no cambia: todos acaban sabiendo hacer de todo y ninguna tarea es de nadie. El conocimiento es una etapa, y la Magnate (que lo sabe todo) cubre las obligatorias mientras tanto.

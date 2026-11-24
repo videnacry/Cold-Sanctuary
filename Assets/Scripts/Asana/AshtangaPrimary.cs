@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// ASHTANGA — Serie Primaria (Yoga Chikitsa), "nivel 1" (docs/ashtanga-primary-series.md). Vinyasa por respiraciones
+/// ASHTANGA — Serie Primaria (Yoga Chikitsa), "nivel 1" (docs/areas/ashtanga-primary-series.md). Vinyasa por respiraciones
 /// (Ujjayi), posturas principales mantenidas **5 respiraciones**. Aquí va el **núcleo runnable** (apertura + posturas
 /// SAGITALES + cierre); las laterales/invertidas (triángulo, torsiones, vela, parada de cabeza) están en el doc para
 /// añadirlas con validación visual en Unity. Reutiliza el Saludo al Sol (`SunSalutation`) para la apertura.
@@ -67,7 +67,7 @@ public static class AshtangaPrimary
     /// <summary>Respiraciones de la clase de Consol: cada postura se sostiene 8 (5 en la Primaria) y después su variación, 5.</summary>
     public const int DeepHoldBreaths = 8, DeepVariationBreaths = 5;
 
-    /// <summary>LA CLASE PROFUNDA DE CONSOL (Berón 2026-11-05: posturas largas, con variaciones y secuencias como en Ashtanga; docs/ashtanga-primary-series.md
+    /// <summary>LA CLASE PROFUNDA DE CONSOL (Berón 2026-11-05: posturas largas, con variaciones y secuencias como en Ashtanga; docs/areas/ashtanga-primary-series.md
     /// §Clase profunda): el Surya Namaskara A de apertura y tres posturas de la Primaria, cada una sostenida <see cref="DeepHoldBreaths"/> respiraciones y
     /// seguida de su variación, y la relajación final. El orden cambia con el día (<paramref name="day"/>): la que abre hoy es la que más tiempo se trabaja,
     /// porque la clase pasa a la relajación a las 15:45 aunque no haya acabado (<see cref="YogaClass.DeepCloseHour"/>).</summary>

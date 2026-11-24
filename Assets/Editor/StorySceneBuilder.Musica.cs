@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// MICROCOSMOS DE LA MÚSICA (docs/microcosmos-musica.md; Berón 2026-11-05). Como los famosos (StorySceneBuilder.Famosos): UNA historia
+/// MICROCOSMOS DE LA MÚSICA (docs/microcosmos/microcosmos-musica.md; Berón 2026-11-05). Como los famosos (StorySceneBuilder.Famosos): UNA historia
 /// de la vida pública de cada artista o banda, documentada, respetuosa y con su ficha de fuentes, en el PUEBLO REAL donde ocurrió
 /// (CivicBuilder.Musica, su plano; MicroStoryMaps.Musica, su mapa a mano), más «Grandes aportes de las canciones», que reúne en un
 /// sitio inventado las canciones que cambiaron el mundo. Reglas de este lote: NINGUNA LETRA de canción (títulos y tema contado con
@@ -213,7 +213,7 @@ public static partial class StorySceneBuilder
 
     // ══ JOHN LENNON · el Bed-In de Montreal, 1 de junio de 1969 · Música ════════
     //    Se eligió Montreal y no Liverpool: es un acto público, cívico y bien documentado, hecho a dos con Yoko Ono, y de esa habitación
-    //    salió la canción que cantó medio millón de personas en Washington (docs/microcosmos-musica.md, «Lennon: por qué Montreal»).
+    //    salió la canción que cantó medio millón de personas en Washington (docs/microcosmos/microcosmos-musica.md, «Lennon: por qué Montreal»).
 
     static int JohnLennon(Transform t)
     {
@@ -439,7 +439,7 @@ public static partial class StorySceneBuilder
     }
 
     // ══ BOB MARLEY Y LOS WAILERS · el One Love Peace Concert, Kingston, 22 de abril de 1978 · Música ════
-    //    La otra banda de la comparación con BLACKPINK (docs/microcosmos-musica.md): de los patios de Trench Town a un estadio que pide la paz en plena
+    //    La otra banda de la comparación con BLACKPINK (docs/microcosmos/microcosmos-musica.md): de los patios de Trench Town a un estadio que pide la paz en plena
     //    guerra entre barrios. Sin armas en escena: los partidos y la violencia se cuentan de palabra.
 
     static int Wailers(Transform t)

@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Una "marga del alma" (docs/creature-stats.md §Progresión): un track de progresión **independiente**
+/// Una "marga del alma" (docs/sistemas/creature-stats.md §Progresión): un track de progresión **independiente**
 /// con su propio **pool de XP** y su **nivel**. Varias margas coexisten (Stats, Yoga, Vínculos, futura
 /// Hechizos) y son independientes entre sí — p.ej. nivel 20 en Stats y 1 en Yoga.
 ///

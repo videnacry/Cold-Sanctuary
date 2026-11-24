@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// UN PUESTO DE UN ÁREA (Berón 2026-11-04, regla de capacidad; docs/manual-de-diseno.md §9 C-capacidad): marca un mueble o una
+/// UN PUESTO DE UN ÁREA (Berón 2026-11-04, regla de capacidad; docs/reglas/manual-de-diseno.md §9 C-capacidad): marca un mueble o una
 /// máquina donde <see cref="seats"/> personas hacen la misma <see cref="activity"/> a la vez (un pupitre de seis plazas, un
 /// puesto de monitorización, un banco de mantenimiento). <see cref="AreaCapacity"/> los cuenta por área y por actividad.
 /// </summary>

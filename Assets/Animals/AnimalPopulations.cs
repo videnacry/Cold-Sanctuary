@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Registro de poblaciones vivas POR ESPECIE (docs/anima-dissolving-animal.md, etapa 5). Antes cada clase de especie
+/// Registro de poblaciones vivas POR ESPECIE (docs/sistemas/anima-dissolving-animal.md, etapa 5). Antes cada clase de especie
 /// tenía su `static HashSet&lt;GameObject&gt; population`; ahora está centralizado por nombre de especie. Lo usan
 /// `Animal.Population` (alta/baja del ser) y las `Diet` (targeting de presa por especie). Así el "quién existe de
 /// cada especie" deja de vivir en la clase y se puede referir por nombre — un paso para disolver las subclases.

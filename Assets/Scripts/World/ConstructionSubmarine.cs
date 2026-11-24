@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// EL SUBMARINO DE OBRA (Berón 2026-11-03; docs/submarino-de-obra.md): un vehículo ANFIBIO —anda por tierra sobre orugas y nada
+/// EL SUBMARINO DE OBRA (Berón 2026-11-03; docs/areas/submarino-de-obra.md): un vehículo ANFIBIO —anda por tierra sobre orugas y nada
 /// con hélices— que lleva la maquinaria pesada y el material de obra por la VÍA MARINA de los edificios-árbol (sin suelo: se baja
 /// por el tronco al mar y se sube por el de otro árbol). Vive en el GARAJE (un piso de la torre de Producción); cuando una obra
 /// (<see cref="ConstructionProject"/>) no tiene el material del día, carga el kit en el almacén y la maquinaria, y lo lleva:
@@ -157,7 +157,7 @@ public class ConstructionSubmarine : MonoBehaviour
     }
 
     /// <summary>Lleva la carga a un PISO cualquiera de un edificio-árbol (sin obra: la fábrica de cohetes o el garaje de la lanzadera,
-    /// docs/lanzadera-de-cohetes.md). false si no hay camino o no está aparcado.</summary>
+    /// docs/areas/lanzadera-de-cohetes.md). false si no hay camino o no está aparcado.</summary>
     public bool SendTo(ArbolCampos to, TreeLevel lb, string title)
     {
         if (to == null || lb == null) return false;
@@ -178,7 +178,7 @@ public class ConstructionSubmarine : MonoBehaviour
     bool _freeTrip;
     ArbolCampos _pendingTo; TreeLevel _pendingLevel; string _pendingTitle;
 
-    // ── UN MUELLE FUERA DE LOS ÁRBOLES (2026-11-08, docs/sitio-nuclear.md §25): el garaje del sitio nuclear está en su estación, sobre el agua. El submarino sale
+    // ── UN MUELLE FUERA DE LOS ÁRBOLES (2026-11-08, docs/areas/sitio-nuclear.md §25): el garaje del sitio nuclear está en su estación, sobre el agua. El submarino sale
     // por el fondo de su árbol, cruza bajo el hielo, sube por la escotilla de la estación y el elevador lo deja en su plaza; y vuelve igual.
     Transform _berth;
     /// <summary>¿Está (o va) en un muelle de fuera de los árboles?</summary>

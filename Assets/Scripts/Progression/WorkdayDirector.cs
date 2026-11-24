@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// LA JORNADA EN EL JUEGO (docs/jornada-y-rotacion.md). Cada día a las 8:00 reparte el trabajo con <see cref="WorkRoster"/>
+/// LA JORNADA EN EL JUEGO (docs/sistemas/jornada-y-rotacion.md). Cada día a las 8:00 reparte el trabajo con <see cref="WorkRoster"/>
 /// entre los miembros del santuario y lo hace cumplir hasta las 16:00:
 ///   8–9 entrenamiento · 9–11 tareas · 11–12 comida (en el restaurante) · 12–14 tareas · 14–15 entrenamiento (yoga, gimnasio…) · 15–16 tareas · LIBRE.
 /// Durante esas 8 h los personajes van al área de su misión y se quedan allí (bloqueados); después merodean a su aire.
@@ -17,7 +17,7 @@ public class WorkdayDirector : MonoBehaviour
     public static WorkdayDirector Instance { get; private set; }
 
     public static readonly string[] Staff = { "Player", "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene", "JefeConstruccion", "Andrea",   // FICHA DE CADA UNO: docs/personajes/<nombre>.md (Professions.DocName; índice: docs/personajes/README.md)
-                               "Nesvitor", "Amykhuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi",   // familia y amigos de Berón (docs/diseno-personajes.md)
+                               "Nesvitor", "Amykhuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi",   // familia y amigos de Berón (docs/sistemas/diseno-personajes.md)
                                "Gallarle", "Julian", "Fausto",   // (2026-11-04) parejas: de Ducristin (Gallarle), de Alicita (Julian) y de Irosene (Fausto); pendientes de foto
                                "David", "Adonis", "Yulo", "Lale", "Ivelyna", "Luciana", "Malena",   // (2026-11-04) seis nuevos y Malena (2026-11-05): informática, biotecnología, pediatría y piloto
                                "Consol", "Fernando" };   // (2026-11-05) Consol, maestra de Ashtanga, y Fernando, paneles solares (docs/personajes/)
@@ -27,7 +27,7 @@ public class WorkdayDirector : MonoBehaviour
     public string[] staff = (string[])Staff.Clone();
     // (2026-11-04, Berón: «los personajes famosos … sácalos del mesocosmos y crea sus microcosmos respectivos») Sadhguru y los seis
     // del mesocosmos (Elon Musk, Goku, Bill Gates, Warren Buffett, MacKenzie Scott, Ibrahim Traoré) ya no son personal del santuario:
-    // viven en sus microcosmos. Sus papeles los llevan otros (docs/personajes-mesocosmos.md §Reparto de papeles).
+    // viven en sus microcosmos. Sus papeles los llevan otros (docs/historia/personajes-mesocosmos.md §Reparto de papeles).
     public float walkSpeed = 2.6f;
 
     public readonly WorkRoster roster = new WorkRoster();
@@ -58,7 +58,7 @@ public class WorkdayDirector : MonoBehaviour
         WorkRoster.FarFromLunch = FarFromLunch;
         WorkRoster.FarApart = FarApart;   // (2026-11-11) y la media hora de Kushal, en la misma torre que lo de antes   // (2026-11-11) la misión de Kushal justo tras comer, cerca del restaurante
         if (KitchenLarder.Instance != null) KitchenLarder.Instance.autoPlan = false;   // la cocina produce por misiones desde el primer día
-        AreasEnObra.Apply();   // (Berón 2026-11-09) solo lo básico queda terminado: lo demás vuelve a ser obra (docs/areas-en-obra.md)
+        AreasEnObra.Apply();   // (Berón 2026-11-09) solo lo básico queda terminado: lo demás vuelve a ser obra (docs/areas/areas-en-obra.md)
         foreach (SanctuaryArea a in FindObjectsByType<SanctuaryArea>(FindObjectsSortMode.None))
             if (a.GetComponent<ConstructionProject>() == null && !IsTraining(a.areaType) && !roster.areas.Contains(WorkRoster.AreaGroup(a.displayName))) roster.areas.Add(WorkRoster.AreaGroup(a.displayName));   // (un área de varios pisos, una sola)
         roster.areas.Sort(System.StringComparer.Ordinal);   // orden base estable (día 0)
@@ -127,9 +127,9 @@ public class WorkdayDirector : MonoBehaviour
         _clones.Clear(); _done.Clear(); _started.Clear();
         _lunched.Clear(); _lunchStocked = false; _dinnerStocked = false; _heading.Clear();   // [Jornada] la comida de hoy
         ReleaseGym(); _coachDay = int.MinValue;   // las sesiones de gimnasio de ayer
-        roster.initiationModel = true; roster.worldCheck = MissionRequirements.Blocked;   // la mañana nueva y los requisitos (docs/jornada-y-rotacion.md)
+        roster.initiationModel = true; roster.worldCheck = MissionRequirements.Blocked;   // la mañana nueva y los requisitos (docs/sistemas/jornada-y-rotacion.md)
         // (Berón 2026-11-08) EL REPARTO POR SANTUARIOS: la casa de cada uno (santuario y nivel). Se sube por PODER: quien supera al jefe de su
-        // santuario (el animal más poderoso de su fauna) pasa al siguiente (docs/progresion-santuarios.md). Cada día, con la fauna y los cuerpos de hoy.
+        // santuario (el animal más poderoso de su fauna) pasa al siguiente (docs/sistemas/progresion-santuarios.md). Cada día, con la fauna y los cuerpos de hoy.
         roster.sanctuaryModel = true;
         var bosses = SanctuaryPower.Bosses(SanctuaryPower.LiveFauna());
         Debug.Log($"[Progresión] Día {day} · jefes: {string.Join(" · ", bosses.Select((b, i) => $"{SanctuaryPlacement.Home.At(i)}: {b.who} {b.power:0.00}"))}");
@@ -417,7 +417,7 @@ public class WorkdayDirector : MonoBehaviour
     // devolviendo a su sitio.
     static bool OnOwnDuty(GameObject g)
     {
-        if (HospitalSubmarine.Engaged(g)) return true;   // va en el submarino-ambulancia o en el Leviatán (docs/submarinos-medicos.md)
+        if (HospitalSubmarine.Engaged(g)) return true;   // va en el submarino-ambulancia o en el Leviatán (docs/areas/submarinos-medicos.md)
         NewcomerInitiator ni = g.GetComponent<NewcomerInitiator>();
         if (ni != null && ni.Busy) return true;
         if (AreaInitiator.Leading(g)) return true;   // inicia a un recién llegado en su área (yoga, cocina): lo lleva él
@@ -496,7 +496,7 @@ public class WorkdayDirector : MonoBehaviour
         if (AereoRule.IsArea(name)) { if (AereoRule.InSector(pos) || AereoLink.PlayerThere) return true; AereoLink l = AereoLink.Instance; if (l != null && (pos - l.transform.position).sqrMagnitude < 400f) return true; }
         // La sala de guardia es un sitio, no un área: nadie contaba como dentro aunque estuviera en ella (Gohageneis «parado fuera» ×123; a Kushal lo traería la Magnate).
         if (name == AreaWork.GuardRoom) { Transform gr = AreaTransform(name); if (gr == null) return false; Vector3 gl = gr.InverseTransformPoint(pos); return Mathf.Abs(gl.x) < 24f && Mathf.Abs(gl.z) < 24f && gl.y > -2f && gl.y < 7f; }
-        if (name == SiteLine.AreaName || NuclearSite.Underwater(name)) return SiteLine.Instance != null && (pos - SiteLine.Instance.transform.position).sqrMagnitude < 225f;   // la estación no es un área: a 15 m del andén (y la planta, que está abajo, se trabaja desde ella: docs/sitio-nuclear.md §25)
+        if (name == SiteLine.AreaName || NuclearSite.Underwater(name)) return SiteLine.Instance != null && (pos - SiteLine.Instance.transform.position).sqrMagnitude < 225f;   // la estación no es un área: a 15 m del andén (y la planta, que está abajo, se trabaja desde ella: docs/areas/sitio-nuclear.md §25)
         foreach (SanctuaryArea a in SceneCache.All<SanctuaryArea>(2f))
             if (a != null && a.displayName == name && a.InBuilding(pos)) return true;
         if (name == "Huerto")
@@ -692,16 +692,16 @@ public class WorkdayDirector : MonoBehaviour
 
     void Drive(GameObject g, string area, string doing, string missionId, bool alwaysMove = false)
     {
-        // EVACUACIÓN DEL SITIO NUCLEAR (docs/sitio-nuclear.md): nadie va a sus pisos, y quien estaba allí, al hospital.
+        // EVACUACIÓN DEL SITIO NUCLEAR (docs/areas/sitio-nuclear.md): nadie va a sus pisos, y quien estaba allí, al hospital.
         // Quien está en la zona se va, sea cual sea su misión: la jornada lo pide cada fotograma y la evacuación solo cada 2 s (ronda 12: a Linduarda, de obra, la dejaba allí).
         bool evacuating = NuclearSite.Evacuating && (NuclearSite.IsSiteArea(area) || NuclearSiteRule.InZone(g.transform.position));
         if (evacuating) { area = AreaWork.Hospital; doing = EvacuationDoing; missionId = null; alwaysMove = true; }
-        AereoLink.Note(g, area);   // SANTUARIO AÉREO (docs/sitio-nuclear.md §23): quien trabaja allí vuela desde el muelle y su misión corre por el reloj
+        AereoLink.Note(g, area);   // SANTUARIO AÉREO (docs/areas/sitio-nuclear.md §23): quien trabaja allí vuela desde el muelle y su misión corre por el reloj
         if (AereoRule.IsArea(area) && (AereoLink.IsAway(g) || AereoLink.Board(g))) return;
-        SiteLine.Note(g, area);   // LA PLANTA BAJO EL MAR (docs/sitio-nuclear.md §25): quien trabaja en ella baja por la Línea desde la estación y su misión corre por el reloj
+        SiteLine.Note(g, area);   // LA PLANTA BAJO EL MAR (docs/areas/sitio-nuclear.md §25): quien trabaja en ella baja por la Línea desde la estación y su misión corre por el reloj
         if (NuclearSite.Underwater(area) && (SiteLine.IsAway(g) || SiteLine.BoardWork(g))) return;
         if (SiteLine.IsAway(g)) return;   // (ronda 30) sube por la Línea (en una emergencia, ya de vuelta): al salir a la pista, la jornada lo lleva
-        if ((missionId == SiteLine.MissionId || missionId == Refuge.MissionId || HunterCell.Rides(missionId)) && SiteLine.Board(g, missionId)) return;   // la bajada: ya en la estación, sube al carro (docs/sitio-nuclear.md §8)
+        if ((missionId == SiteLine.MissionId || missionId == Refuge.MissionId || HunterCell.Rides(missionId)) && SiteLine.Board(g, missionId)) return;   // la bajada: ya en la estación, sube al carro (docs/areas/sitio-nuclear.md §8)
         NewcomerInitiator ini = g.GetComponent<NewcomerInitiator>();
         if (ini != null && ini.InProgress) return;   // está iniciando a un recién llegado: lo lleva ella (si no, la jornada la mandaba en alfombra a otro piso)
         Dress(g, area, doing, missionId);   // (2026-11-04) el uniforme de su tarea al llegar; su ropa al acabar
@@ -717,13 +717,13 @@ public class WorkdayDirector : MonoBehaviour
         bool guardDuty = missionId == "gua_carnivoros";
         if (guardDuty && keeper == null && IsPerson(g)) keeper = g.AddComponent<CarnivoreKeeper>();
         if (keeper != null) keeper.enabled = guardDuty;
-        // EL ALIMENTADOR (docs/alimentador.md): quien tiene la misión sigue la lista compartida, sea quien sea.
+        // EL ALIMENTADOR (docs/areas/alimentador.md): quien tiene la misión sigue la lista compartida, sea quien sea.
         bool feederDuty = missionId != null && missionId.StartsWith("gua_alimentador");
         PredatorFeeder predatorFeeder = g.GetComponent<PredatorFeeder>();
         if (feederDuty && predatorFeeder == null && IsPerson(g)) predatorFeeder = g.AddComponent<PredatorFeeder>();
         if (predatorFeeder != null) predatorFeeder.enabled = feederDuty;
         if (feederDuty && predatorFeeder != null && idle != null) idle.enabled = false;
-        // LA RONDA DE FRUTALES (docs/jardines-frutales.md): quien la tiene recorre los techos con su conducta propia.
+        // LA RONDA DE FRUTALES (docs/areas/jardines-frutales.md): quien la tiene recorre los techos con su conducta propia.
         bool gardenDuty = FruitGardener.IsRound(missionId);
         FruitGardener gardener = g.GetComponent<FruitGardener>();
         if (gardenDuty && gardener == null) gardener = g.AddComponent<FruitGardener>();
@@ -741,7 +741,7 @@ public class WorkdayDirector : MonoBehaviour
         if (RestaurantService.Drives(g)) { if (idle != null) idle.enabled = false; return; }   // la brigada del restaurante: la mueve el servicio (puesto, pase, obrador, limpieza)
         if (area == null)
         {
-            // EL HORARIO LIBRE (docs/horario-libre.md): en sus horas libres lo lleva a su actividad de ocio o cuidado de la semana.
+            // EL HORARIO LIBRE (docs/sistemas/horario-libre.md): en sus horas libres lo lleva a su actividad de ocio o cuidado de la semana.
             if (LeisureDirector.Drives(g)) { if (idle != null) idle.enabled = false; if (lin != null && !NewcomerWaiting()) lin.enabled = false; return; }
             // El sitio nuclear no es para el tiempo libre: quien acaba allí su turno, se va.
             if (NuclearSiteRule.InZone(g.transform.position)) { Drive(g, GymArea, "Sale del sitio nuclear al acabar su turno", null, true); return; }
@@ -787,7 +787,7 @@ public class WorkdayDirector : MonoBehaviour
         else Perform(g, area, doing, missionId);   // (2026-11-04) YA EN SU SITIO: hace la tarea, no se queda de pie
     }
 
-    // ── HACER LA TAREA (docs/actividades-y-uniformes.md §3; Berón 2026-11-04: «parece que solo van al piso que les toca y no hacen
+    // ── HACER LA TAREA (docs/sistemas/actividades-y-uniformes.md §3; Berón 2026-11-04: «parece que solo van al piso que les toca y no hacen
     // nada»). En su puesto, cada uno hace la actuación de su misión (Performances: pasos con postura, herramienta en la mano y su
     // efecto); la cola larga, el bucle genérico de su clase. Mientras la jornada lo tenga aquí se llama cada fotograma: si se va (a
     // comer, al baño, a otra misión), el que actúa se para solo (ActivityPerformer.KeepAlive).
@@ -829,7 +829,7 @@ public class WorkdayDirector : MonoBehaviour
         }
     }
 
-    // ── EL UNIFORME DE LA TAREA (docs/actividades-y-uniformes.md §4): al llegar a su tarea se lo pone; al acabar (libre, la comida, otra
+    // ── EL UNIFORME DE LA TAREA (docs/sistemas/actividades-y-uniformes.md §4): al llegar a su tarea se lo pone; al acabar (libre, la comida, otra
     // tarea sin uniforme) vuelve a su ropa. Se mira una vez por segundo por persona.
     readonly Dictionary<GameObject, float> _dressAt = new Dictionary<GameObject, float>();
     void Dress(GameObject g, string area, string doing, string missionId)
@@ -915,14 +915,14 @@ public class WorkdayDirector : MonoBehaviour
         Debug.Log($"[Jornada] {what}: el servicio deja en la barra +{added} raciones ({per} de cada uno de {rk.dishes.Length} platillos, para {people} personas × {meals} comida(s); en la barra quedan {rk.dishes.Sum(d => d.Have)}.");
     }
 
-    // ── PISOS DE YOGA (docs/yoga-pisos.md) ─────────────────────────────────────────────────────
+    // ── PISOS DE YOGA (docs/areas/yoga-pisos.md) ─────────────────────────────────────────────────────
     // Dos pisos (Hatha y Ashtanga) con dos salas cada uno (occidental y tradicional; YogaHall); la de cada día la da
     // YogaHall.VersionOn (tradicional los pares, occidental los impares). La CLASE DE HATHA (misión de grupo «clase_yoga»): el
     // guía hace la secuencia en la tarima de su sala, el demostrador la hace entre los alumnos y los correctores van de
     // esterilla en esterilla. El ENTRENAMIENTO de las 14 h es la CLASE DE ASHTANGA, en el piso de Ashtanga: la da su maestra (Consol) y, si no está, el primero que
     // llega. En su tiempo libre, el MAESTRO DE YOGA ('YogaTeacher': Josedrilo, el profesional de yoga; antes Andrea y Sadhguru) medita en la tarima de la sala de Hatha tradicional, junto al linga.
     const string YogaArea = "Sala de Yoga";
-    /// <summary>LOS DOS MAESTROS JEFES DE YOGA (Berón 2026-11-05, docs/reglas-personajes.md): <see cref="AshtangaTeacher"/>, CONSOL, experta en
+    /// <summary>LOS DOS MAESTROS JEFES DE YOGA (Berón 2026-11-05, docs/reglas/reglas-personajes.md): <see cref="AshtangaTeacher"/>, CONSOL, experta en
     /// Ashtanga, dirige ese estilo; <see cref="YogaTeacher"/>, JOSEDRILO, dirige el Hatha y medita junto al linga en su tiempo libre.
     /// Ya no hay segunda maestra: Panterilia, que lo fue sin base documentada, se queda con el baile y las finanzas. Historia: el maestro fue
     /// primero Sadhguru (se fue a su microcosmos), luego Andrea (pasó a entrenador del gimnasio) y luego JOSEDRILO, el profesional de
@@ -1034,7 +1034,7 @@ public class WorkdayDirector : MonoBehaviour
         g.GetComponentInChildren<CubeFace>()?.Show(CubeFace.Expression.Asleep, 2f);   // ojos cerrados
     }
 
-    // ── GIMNASIO (docs/gimnasio-maquinas.md, §13 y §15) ────────────────────────────────────────
+    // ── GIMNASIO (docs/areas/gimnasio-maquinas.md, §13 y §15) ────────────────────────────────────────
     // El entrenamiento en el gimnasio (14–16 h) ya no es un circuito igual para todos: cada uno sigue la RUTINA DE HOY de su plan
     // (GymProgramming: reparto, series × repeticiones, carga, descanso y RPE) con una GymTrainingSession: calentamiento (la clase
     // del entrenador o cardio suave), los ejercicios en orden —máquina libre, si no una alternativa, si no espera o lo deja para el
@@ -1231,7 +1231,7 @@ public class WorkdayDirector : MonoBehaviour
     }
 
     /// <summary>Dónde trabaja <paramref name="who"/> en <paramref name="area"/>: en el HOSPITAL, en uno de sus 8 puestos médicos
-    /// (docs/hospital.md); en el resto (o si los puestos están llenos), un punto del área.</summary>
+    /// (docs/areas/hospital.md); en el resto (o si los puestos están llenos), un punto del área.</summary>
     static Vector3 WorkPoint(string area, string who)
     {
         if (area == AreaWork.Hospital) { HospitalStation post = HospitalStation.PostFor(who); if (post != null) return Clear(area, who, post.ClearStandPoint, 0.12f); }   // (radio justo: pegado a la mesa es su sitio; dentro de ella, no)
@@ -1343,7 +1343,7 @@ public class WorkdayDirector : MonoBehaviour
     void Begin(WorkRoster.Assignment a)
     {
         Debug.Log($"[Jornada] {a.start:00.0} h · {a.worker.name} empieza «{a.mission.title}» ({a.mission.area}).");
-        // OBRA VISIBLE (docs/construction-simulation.md): el turno de «Trabajar la obra» va colocando las piezas del día.
+        // OBRA VISIBLE (docs/areas/construction-simulation.md): el turno de «Trabajar la obra» va colocando las piezas del día.
         if (a.mission.id != null && a.mission.id.StartsWith("obra_trabajo_") && a.mission.site != null)
             foreach (ConstructionProject cp in ConstructionProject.All)
                 if (cp != null && cp.title == a.mission.site) cp.BeginShift(a.worker.name, Body(a.worker.name), a.start, a.mission.hours);

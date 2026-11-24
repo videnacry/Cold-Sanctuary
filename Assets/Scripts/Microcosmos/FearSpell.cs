@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Hechizo de MIEDO (docs/sanctuary-second-lap-and-fear.md, apremios §3): inyecta PAVOR — una carga alostática
+/// Hechizo de MIEDO (docs/sistemas/sanctuary-second-lap-and-fear.md, apremios §3): inyecta PAVOR — una carga alostática
 /// (`AllostaticState.AddLoad`) en el/los objetivo(s), **resistida por su temple** (composure), que sube su estrés. Con
 /// `range>0` es AoE (afecta a todo ánima en el radio); con `range=0`, solo al objetivo. Su <see cref="EffectTiming"/>:
 /// `Instant` = un susto puntual; `Periodic` = terror que REINCIDE cada `tickInterval` durante `duration` (pesadilla).

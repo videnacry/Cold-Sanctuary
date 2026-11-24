@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// HECHIZO DE PACIFICACIÓN (docs/spells-suprahechizo-and-thoughts.md §5) — serena a un objetivo: **elimina los humores
+/// HECHIZO DE PACIFICACIÓN (docs/sistemas/spells-suprahechizo-and-thoughts.md §5) — serena a un objetivo: **elimina los humores
 /// negativos** (cortisol/adrenalina) y **impulsa los positivos** (serotonina), y lo saca del estado `aware` (deja de
 /// responder a amenazas). Como todo hechizo, se aplica a uno mismo, a un target o (iterando) al mundo cercano. Es el
 /// hechizo con el que la Magnate calma el bosque (el lobo suelta al conejo). Intensidad por `force`.

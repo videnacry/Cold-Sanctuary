@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// MICROCOSMOS DE HISTORIAS (docs/microcosmos-historias.md): la vida de grandes figuras recreada sobre el área del
+/// MICROCOSMOS DE HISTORIAS (docs/microcosmos/microcosmos-historias.md): la vida de grandes figuras recreada sobre el área del
 /// santuario que mejor la cuenta, ×10, cada una en SU escena y con entrada por la máquina de virtualización del área. El
 /// elenco de la enfermería renace con su nombre en cada historia. La misión es una <see cref="StoryMission"/> (pasos con E)
 /// y al terminar la <see cref="HistoryCard"/> cuenta lo que pasó de verdad, con fuentes.
@@ -24,7 +24,7 @@ public static partial class StorySceneBuilder
         ("VehicleWorkshop_Area", "Dayton",      "Microcosmos_Wright",      new Color(0.55f, 0.55f, 0.6f), new System.Func<Transform, int>(Wright)),
         ("Classroom_Area",       "Alejandría",  "Microcosmos_Eratostenes", new Color(0.8f, 0.75f, 0.55f), new System.Func<Transform, int>(Eratosthenes)),
         ("MartialArts_Area",     "Bruce Lee",   "Microcosmos_BruceLee",    new Color(0.8f, 0.7f, 0.55f), new System.Func<Transform, int>(BruceLee)),
-        // Científicos e históricos (StorySceneBuilder.Scientists.cs, docs/microcosmos-cientificos.md): cada uno en el PUEBLO donde ocurrió.
+        // Científicos e históricos (StorySceneBuilder.Scientists.cs, docs/microcosmos/microcosmos-cientificos.md): cada uno en el PUEBLO donde ocurrió.
         ("Classroom_Area", "Crotona", "Microcosmos_Pitagoras", new Color(0.8f, 0.7f, 0.5f), new System.Func<Transform, int>(Pythagoras)),
         ("Classroom_Area", "Menfis", "Microcosmos_Herodoto", new Color(0.75f, 0.65f, 0.45f), new System.Func<Transform, int>(Herodotus)),
         ("Classroom_Area", "Bagdad", "Microcosmos_AlJuarismi", new Color(0.85f, 0.75f, 0.55f), new System.Func<Transform, int>(AlKhwarizmi)),
@@ -37,10 +37,10 @@ public static partial class StorySceneBuilder
         ("AtomicPlant_Area", "Berna", "Microcosmos_Einstein", new Color(0.7f, 0.65f, 0.55f), new System.Func<Transform, int>(Einstein)),
         ("Chemistry_Area", "Pasadena", "Microcosmos_Patterson", new Color(0.75f, 0.75f, 0.75f), new System.Func<Transform, int>(Patterson)),
         ("NuclearPower_Area", "Chernóbil", "Microcosmos_Chernobil", new Color(0.5f, 0.55f, 0.5f), new System.Func<Transform, int>(Chernobyl)),
-        // LA HISTORIA MAYA (StorySceneBuilder.Maya.cs, docs/microcosmos-maya-pakal.md): Pakal de Palenque, sobre el Huerto (la milpa) mientras
+        // LA HISTORIA MAYA (StorySceneBuilder.Maya.cs, docs/microcosmos/microcosmos-maya-pakal.md): Pakal de Palenque, sobre el Huerto (la milpa) mientras
         // falta su piso representativo (MicroFloors: «Templo de los antepasados»).
         ("Garden_Area", "Palenque", "Microcosmos_Pakal", new Color(0.55f, 0.7f, 0.45f), new System.Func<Transform, int>(Pakal)),
-        // LA TANDA 3 (Assets/Editor/Historias/, docs/microcosmos-historias-3.md): cada historia en su archivo, con su pueblo y su bioma.
+        // LA TANDA 3 (Assets/Editor/Historias/, docs/microcosmos/microcosmos-historias-3.md): cada historia en su archivo, con su pueblo y su bioma.
         ("VehicleWorkshop_Area", "Chimbacalle", "Microcosmos_EloyAlfaro", new Color(0.6f, 0.55f, 0.5f), new System.Func<Transform, int>(EloyAlfaro)),
         ("Infirmary_Area", "Lagunillas", "Microcosmos_Galvarino", new Color(0.55f, 0.65f, 0.45f), new System.Func<Transform, int>(Galvarino)),
         ("TextileStudio_Area", "Cajamarca", "Microcosmos_Atahualpa", new Color(0.8f, 0.6f, 0.35f), new System.Func<Transform, int>(Atahualpa)),
@@ -53,7 +53,7 @@ public static partial class StorySceneBuilder
         ("Assembly_Area", "Madrid 2018", "Microcosmos_PedroSanchez", new Color(0.65f, 0.6f, 0.55f), new System.Func<Transform, int>(PedroSanchez)),
         ("Assembly_Area", "Gettysburg", "Microcosmos_Lincoln", new Color(0.6f, 0.58f, 0.55f), new System.Func<Transform, int>(Lincoln)),
         ("Assembly_Area", "Feria de las Hazañas", "Microcosmos_Hazanas", new Color(0.75f, 0.68f, 0.5f), new System.Func<Transform, int>(Hazanas)),
-        // LOS FAMOSOS (StorySceneBuilder.Famosos.cs, docs/microcosmos-famosos.md): una historia de su vida pública en su pueblo real.
+        // LOS FAMOSOS (StorySceneBuilder.Famosos.cs, docs/microcosmos/microcosmos-famosos.md): una historia de su vida pública en su pueblo real.
         ("YogaRoom_Area", "Velliangiri", "Microcosmos_Sadhguru", new Color(0.8f, 0.7f, 0.55f), new System.Func<Transform, int>(Sadhguru)),
         ("Control_de_mision", "Hawthorne", "Microcosmos_ElonMusk", new Color(0.7f, 0.72f, 0.78f), new System.Func<Transform, int>(ElonMusk)),
         ("Control_de_mision", "Omelek", "Microcosmos_ElonMuskOmelek", new Color(0.55f, 0.75f, 0.8f), new System.Func<Transform, int>(Omelek)),   // (2026-11-18) el día del lanzamiento: StorySceneBuilder.Omelek.cs
@@ -62,7 +62,7 @@ public static partial class StorySceneBuilder
         ("TextileStudio_Area", "Omaha", "Microcosmos_WarrenBuffett", new Color(0.7f, 0.6f, 0.5f), new System.Func<Transform, int>(WarrenBuffett)),
         ("Classroom_Area", "Prairie View", "Microcosmos_MacKenzieScott", new Color(0.62f, 0.72f, 0.85f), new System.Func<Transform, int>(MacKenzieScott)),
         ("Garden_Area", "Uagadugú", "Microcosmos_IbrahimTraore", new Color(0.8f, 0.55f, 0.35f), new System.Func<Transform, int>(IbrahimTraore)),
-        // LA MÚSICA (StorySceneBuilder.Musica.cs, docs/microcosmos-musica.md): una historia de cada artista o banda en su pueblo real, y las canciones que cambiaron el mundo.
+        // LA MÚSICA (StorySceneBuilder.Musica.cs, docs/microcosmos/microcosmos-musica.md): una historia de cada artista o banda en su pueblo real, y las canciones que cambiaron el mundo.
         ("Music_Area", "Grandes aportes de las canciones", "Microcosmos_GrandesCanciones", new Color(0.85f, 0.7f, 0.5f), new System.Func<Transform, int>(GrandesCanciones)),
         ("Music_Area", "Long Island", "Microcosmos_PublicEnemy", new Color(0.5f, 0.5f, 0.55f), new System.Func<Transform, int>(PublicEnemy)),
         ("Music_Area", "Belfast", "Microcosmos_U2", new Color(0.6f, 0.62f, 0.68f), new System.Func<Transform, int>(U2)),
@@ -128,7 +128,7 @@ public static partial class StorySceneBuilder
         ["Barranquilla"] = ("2009 (abre el colegio de La Playa)", 8.0f),   // la entrada al colegio (hora representativa; el día exacto no consta)
     };
 
-    // Las historias son de ERAS CIVILIZADAS (docs/microcosmos-civilizaciones.md §8): tras la historia, los EDIFICIOS REALES de su era
+    // Las historias son de ERAS CIVILIZADAS (docs/microcosmos/microcosmos-civilizaciones.md §8): tras la historia, los EDIFICIOS REALES de su era
     // (CivicBuilder: interactuables, con las funciones del registro) y su gente con jornada y familias. Sin cuadrilla de recolectoras.
     static System.Func<Transform, int> Civilized(System.Func<Transform, int> story, string display) => t => story(t) + CivicBuilder.Civilize(t, display);
 
@@ -168,7 +168,7 @@ public static partial class StorySceneBuilder
     /// <summary>Solo el de Buda (Kapilavastu), sin rehacer los demás (límite de memoria del PC).</summary>
     [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias: Buda (Kapilavastu)")]
 
-    /// <summary>(2026-11-12) Solo el de Newton (Woolsthorpe) o solo el de Jenner (Berkeley): sus mapas a mano (docs/microcosmos-mapas-a-mano.md §Tanda 4),
+    /// <summary>(2026-11-12) Solo el de Newton (Woolsthorpe) o solo el de Jenner (Berkeley): sus mapas a mano (docs/microcosmos/microcosmos-mapas-a-mano.md §Tanda 4),
     /// sin rehacer los doce científicos de una vez (límite de memoria del PC).</summary>
     [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias: Newton (Woolsthorpe)")]
     public static void BuildNewton() => BuildOne("Microcosmos_Newton");
@@ -385,7 +385,7 @@ public static partial class StorySceneBuilder
         Color skin = new Color(0.42f, 0.28f, 0.2f), red = new Color(0.65f, 0.15f, 0.15f), dress = new Color(0.25f, 0.22f, 0.24f);
 
         Transform ward = Spot(t, "Sala de los heridos", new Vector3(0f, 0f, 10f), "Sala de los heridos (cuartel de Selimiye)", 3.5f);
-        // Sin muros (docs/microcosmos-reglas-edificacion.md, regla 2): las ventanas de la sala, en sus marcos sueltos (un poste bajo cada una).
+        // Sin muros (docs/reglas/microcosmos-reglas-edificacion.md, regla 2): las ventanas de la sala, en sus marcos sueltos (un poste bajo cada una).
         for (int k = 0; k < 4; k++) AreaMicrocosmos.Box(ward, "Marco de la ventana", new Vector3(k < 2 ? -11.7f : 11.7f, 0.55f, -6f + (k % 2) * 12f), new Vector3(0.2f, 1.1f, 0.2f), wall, true);
         var windows = new List<Transform>();
         for (int k = 0; k < 4; k++) { Transform w = AreaMicrocosmos.Box(ward, "Ventana cerrada", new Vector3(k < 2 ? -11.7f : 11.7f, 1.8f, -6f + (k % 2) * 12f), new Vector3(0.2f, 1.4f, 1.6f), shut, false); Label(w, "Ventana cerrada", 1f); windows.Add(w); }
@@ -684,19 +684,19 @@ public static partial class StorySceneBuilder
     }
 
     // ══ BRUCE LEE · Dojo (artes marciales) ═════════════════════════════════════════════════════════════════════════
-    // docs/microcosmos-bruce-lee.md: cinco escenas en su propia voz, en estaciones del claro de la historia (Hong Kong →
+    // docs/microcosmos/microcosmos-bruce-lee.md: cinco escenas en su propia voz, en estaciones del claro de la historia (Hong Kong →
     // la bahía → Seattle y Long Beach → Los Ángeles → 1970), que enseñan el oficio del Dojo: la guardia, los golpes en
     // cadena en el muñeco de madera, «sé agua», el golpe de una pulgada y el juego de pies. Bruce Lee es un cuerpo de CUBOS
     // humano (1,72 m, delgado y atlético; sin parecido de cine) que enseña con el cuerpo (MartialForms → JeetKuneDo); su
     // gente (el elenco renacido) son mirmidones, como en las demás historias. El Dojo sigue en obras en el santuario: su
-    // microcosmos lo enseña TERMINADO (el «Acabado» de la obra, docs/obras-dojo-ballet.md).
+    // microcosmos lo enseña TERMINADO (el «Acabado» de la obra, docs/areas/obras-dojo-ballet.md).
 
     internal const string BruceLeeName = "Bruce Lee";
 
     static int BruceLee(Transform t)
     {
         // El Dojo TERMINADO: AreaMicrocosmos.Build ya montó la forma finalizada del piso (FloorForms.ShowFinished) y no se toca más (el piso
-        // no se rompe: docs/microcosmos-areas.md §Reglas).
+        // no se rompe: docs/microcosmos/microcosmos-areas.md §Reglas).
 
         Material wood = AreaMicrocosmos.Mat("Hist_Madera", new Color(0.55f, 0.4f, 0.25f)), mat = AreaMicrocosmos.Mat("Hist_Tatami", new Color(0.78f, 0.72f, 0.5f));
         Material water = AreaMicrocosmos.Mat("Hist_Agua", new Color(0.3f, 0.5f, 0.7f)), paper = AreaMicrocosmos.Mat("Hist_Papel", new Color(0.93f, 0.9f, 0.82f));
@@ -744,7 +744,7 @@ public static partial class StorySceneBuilder
         AreaMicrocosmos.Box(rest, "Mesa de notas", new Vector3(1.4f, 0.38f, 0f), new Vector3(1.2f, 0.75f, 0.6f), wood, true);
         AreaMicrocosmos.Box(rest, "Cuadernos", new Vector3(1.4f, 0.8f, 0f), new Vector3(0.5f, 0.1f, 0.35f), paper, false);
 
-        // ── La gente: Bruce Lee, MANTIS (docs/microcosmos-civilizaciones.md §4: en el microcosmos solo hay insectos; la mantis es
+        // ── La gente: Bruce Lee, MANTIS (docs/microcosmos/microcosmos-civilizaciones.md §4: en el microcosmos solo hay insectos; la mantis es
         //    el kung fu de la mantis, espera y golpea primero —intercepta—, y es de Hong Kong: Hierodula patellifera), y el elenco
         //    renacido, cada uno su insecto. Erguida, a su estatura (1,72 m), con su pelo negro corto y cara humana; ropa negra.
         GameObject bruce = new GameObject(BruceLeeName);
@@ -830,7 +830,7 @@ public static partial class StorySceneBuilder
     static StoryMission.StoryStep Collect(string goal, List<Transform> items, Transform to, string speaker, string line)
     { var s = Make(goal, StoryMission.Kind.Collect, items.ToArray(), speaker, line); s.deliverTo = to; return s; }
 
-    // Un insecto-humano de su era (docs/microcosmos-civilizaciones.md §5–6): todas las historias son de eras civilizadas; cada uno, el insecto
+    // Un insecto-humano de su era (docs/microcosmos/microcosmos-civilizaciones.md §5–6): todas las historias son de eras civilizadas; cada uno, el insecto
     // que mejor le representa (InsectCast), erguido, a su estatura, con cara humana y pelo. (El color ya no es el de la piel: es el de su especie.)
     static GameObject Person(Transform t, string name, Vector3 pos, Color c, float height, float bulk = 1f) => AreaMicrocosmos.Folk(t, name, pos, height, bulk);
 

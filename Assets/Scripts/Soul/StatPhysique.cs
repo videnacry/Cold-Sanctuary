@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// APARIENCIA POR STATS (docs/anyma-factory-and-control.md §1): los stats moldean el cuerpo. Mucha **fuerza/masa** →
+/// APARIENCIA POR STATS (docs/sistemas/anyma-factory-and-control.md §1): los stats moldean el cuerpo. Mucha **fuerza/masa** →
 /// más **músculo/grosor**; muchas **reservas de grasa** → más **grosor** aún. Se expresa como el **ANCHO** (ejes X/Z)
 /// relativo a la **altura** (Y) — así NO pisa a `LifeStage`, que controla el tamaño/altura por etapa: este componente
 /// solo ajusta la proporción ancho↔alto cada poco. Gentil y barato. Útil sobre todo en animas de la `AnymaFactory`

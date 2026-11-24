@@ -4,7 +4,7 @@ using UnityEngine;
 using P = BodyPart;
 
 /// <summary>
-/// EL EXAMEN DE LLEGADA (docs/iniciacion-medica-investigacion.md, «Propuesta para el juego»): lo que de verdad se hace al
+/// EL EXAMEN DE LLEGADA (docs/areas/iniciacion-medica-investigacion.md, «Propuesta para el juego»): lo que de verdad se hace al
 /// llegar a una base polar. La analítica, la radiografía y el dentista se hacen ANTES del viaje (USAP, BAS, AAD), así que
 /// aquí no se saca sangre. Cada paso es una pequeña ANIMACIÓN: el sitio, la postura del que examina y la del examinado
 /// (dos fotogramas que se alternan, A y B, para que se vea el gesto), la herramienta en la mano, lo que dice y cuánto dura.
@@ -63,7 +63,7 @@ public static class ArrivalExam
     static AsanaPoseSpell ExGauze() => M("presiona con la gasa", -1f, (P.Back, new Vector3(10, 0, 0)), (P.ShoulderRight, new Vector3(-75, 0, 10)), (P.ForearmRight, new Vector3(-50, 0, 0)), (P.ShoulderLeft, new Vector3(-30, 0, 0)));
     static AsanaPoseSpell ExHandshake() => M("da la mano y la credencial", -1f, (P.ShoulderRight, new Vector3(-55, 0, 0)), (P.ForearmRight, new Vector3(-15, 0, 0)), (P.ShoulderLeft, new Vector3(-45, 0, 10)), (P.ForearmLeft, new Vector3(-45, 0, 0)));
 
-    /// <summary>Los pasos, en orden (docs/iniciacion-medica-investigacion.md).</summary>
+    /// <summary>Los pasos, en orden (docs/areas/iniciacion-medica-investigacion.md).</summary>
     public static readonly Beat[] Beats =
     {
         new Beat { id = "expediente", title = "Expediente y cuestionario", place = "Silla_examen", patient = Spot.Sit, seconds = 30f, period = 3f, tool = "Tablet",
@@ -151,7 +151,7 @@ public static class ArrivalExam
     {
         Vector3 fr = Front(place);
         if (spot == Spot.Stand) { at = Center(place) + fr * 0.7f; rot = Quaternion.LookRotation(-fr); return; }
-        // Escala del cuerpo de cubos (1,9 u nativas) y desfase de su raíz: 0,974 es el de 1,85 m (docs/medidas-muebles.md).
+        // Escala del cuerpo de cubos (1,9 u nativas) y desfase de su raíz: 0,974 es el de 1,85 m (docs/areas/medidas-muebles.md).
         Transform body = who != null ? who.Find(CubeHumanoid.BodyName) : null;
         float s = body != null ? body.lossyScale.y : 0.974f, dy = body != null ? body.position.y - who.position.y : 0f;
         if (spot == Spot.Lie)

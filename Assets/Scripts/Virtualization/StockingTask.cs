@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Tarea de ABASTECER / ORDENAR (docs/kitchen-simulation.md §2, docs/forge-simulation.md §1): coges ítems de
+/// Tarea de ABASTECER / ORDENAR (docs/areas/kitchen-simulation.md §2, docs/areas/forge-simulation.md §1): coges ítems de
 /// las **cajas** (dejadas en la puerta) y los colocas en su **despensa/estante correcto** → el jugador
 /// **aprende dónde va cada cosa** antes de producir. Es el segundo escalón del onboarding (tras limpiar,
 /// antes de cocinar/reparar) y sirve a cualquier área.

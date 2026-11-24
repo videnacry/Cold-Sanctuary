@@ -143,7 +143,7 @@ public class ChoreLibraryTest : MonoBehaviour, ITestUnit
         foreach (MissionSites.Binding x in b) if (MissionLibrary.Find(x.template) == null) unknown += x.template + " ";
         TestProbe.Check("[CS-81] cada misión de Hawthorne es una plantilla de la biblioteca", unknown.Length == 0, unknown);
 
-        // Los sitios del lote 2 de Hawthorne (docs/microcosmos-musk-historia.md §4, por su nombre exacto) tienen su misión.
+        // Los sitios del lote 2 de Hawthorne (docs/microcosmos/microcosmos-musk-historia.md §4, por su nombre exacto) tienen su misión.
         string[] sites = { "Rincón de gimnasio", "Soldadura por fricción (FSW): tanque del Falcon 9", "Laboratorio de materiales", "Sala de datos de pruebas (propulsión)",
                            "Vestuario de la sala limpia", "Dispensador de gel hidroalcohólico", "Cámara frigorífica de la cocina", "Tarjeta de inspección sanitaria (A)",
                            "Furgoneta del proveedor de comida (supuesto)", "Lonchera (camión de comida)", "Garita de seguridad (1 Rocket Road)", "Hidrante", "Bomberos",

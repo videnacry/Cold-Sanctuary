@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LAS CALCULADORAS DE LANGLEY (docs/microcosmos-historias-3.md). Hampton (Virginia), 19–20 de febrero de 1962: Katherine Johnson comprueba a mano
+/// LAS CALCULADORAS DE LANGLEY (docs/microcosmos/microcosmos-historias-3.md). Hampton (Virginia), 19–20 de febrero de 1962: Katherine Johnson comprueba a mano
 /// la órbita de John Glenn; Dorothy Vaughan, que dirigió a las calculadoras negras de West Area, domina FORTRAN; Mary Jackson trabaja en el
 /// túnel supersónico tras conseguir permiso para estudiar en un instituto segregado. Glenn no está aquí: está en cabo Cañaveral.
 /// Las frases son de juego, y no citas; los hechos, de NASA y de Shetterly (2016).

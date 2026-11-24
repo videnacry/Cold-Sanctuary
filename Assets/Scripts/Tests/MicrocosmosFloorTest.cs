@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// TEST DEL PISO DE LOS MICROCOSMOS (docs/reglas-plataformas.md, regla 11; Berón 2026-10-29): el mapa de un microcosmos es SOLO
+/// TEST DEL PISO DE LOS MICROCOSMOS (docs/reglas/reglas-plataformas.md, regla 11; Berón 2026-10-29): el mapa de un microcosmos es SOLO
 /// el piso elegido ×10, con MUROS en su borde, y todo —flora, fauna, personajes y estructuras de la historia— vive DENTRO. Mira
 /// los microcosmos que ya estén cargados (el de la experiencia del jugador) y, uno a uno, los de Build Settings («Microcosmos_…»):
 /// los carga en aditivo, los revisa y los descarga (cada espera, acotada). Por cada uno comprueba:
@@ -28,7 +28,7 @@ public class MicrocosmosFloorTest : MonoBehaviour, ITestUnit
     public float tolerance = 1.5f;
     [Tooltip("Cargar también los microcosmos de Build Settings que no estén cargados.")]
     public bool loadFromBuildSettings = true;
-    public int maxScenes = 70;   // (2026-11-04) ya hay ~31 microcosmos y 7 más de los famosos (docs/microcosmos-famosos.md): con 30 se saltaba los últimos
+    public int maxScenes = 70;   // (2026-11-04) ya hay ~31 microcosmos y 7 más de los famosos (docs/microcosmos/microcosmos-famosos.md): con 30 se saltaba los últimos
     public float loadTimeout = 120f;   // (2026-11-03) los pueblos ×60 tardan más en cargar (40 s no bastaban: Bagdad, Berkeley, Angostura, Palenque)
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -152,7 +152,7 @@ public class MicrocosmosFloorTest : MonoBehaviour, ITestUnit
         }
         else TestProbe.Check($"{scene}: el piso tiene muebles con cara de arriba que poblar (o ninguno, y se dice)", true, "ningún mueble a nivel de ≥ 6 m²");
 
-        // (6) EL PUEBLO (eras avanzadas, regla 5 de docs/microcosmos-reglas-edificacion.md; Berón 2026-11-01: «en Bruce Lee las flores
+        // (6) EL PUEBLO (eras avanzadas, regla 5 de docs/reglas/microcosmos-reglas-edificacion.md; Berón 2026-11-01: «en Bruce Lee las flores
         //     gigantes tapan el pueblo; en Berna el musgo son cubos verdes enormes»): la flora es la de un pueblo humano — nada más
         //     alto que un árbol de calle (25 m), nada flotando, nada plantado en una calle ni en un solar — y hay animales.
         if (f.town && flora != null) TownChecks(f, scene, rect, flora, story);

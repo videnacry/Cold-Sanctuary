@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// TEST DE LOS PISOS NUEVOS (grupo 74; docs/piso-informatica.md, docs/piso-aula.md).
+/// TEST DE LOS PISOS NUEVOS (grupo 74; docs/areas/piso-informatica.md, docs/areas/piso-aula.md).
 /// 1. EL MODELO DEL CLÚSTER DE IA (<see cref="AiCluster"/>, sin escena): ~90 kW de TI con 64 GPU; PUE de refrigeración líquida
 ///    (1,03–1,20); casi sin agua (WUE &lt; 0,05 L/kWh, frente a ~1,8 de la media con torres); el calor va primero a la red de
 ///    distrito; la suciedad sube y, sin mantenimiento, las GPU bajan potencia; la misión de refrigeración lo arregla; si cae la red,

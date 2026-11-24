@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// El loop de cocinar el desayuno (docs/kitchen-simulation.md §3). Recorre la **cadena de huevos
+/// El loop de cocinar el desayuno (docs/areas/kitchen-simulation.md §3). Recorre la **cadena de huevos
 /// revueltos** paso a paso y, al emplatar, deposita una ración en el <see cref="FoodContainer"/>; luego
 /// vuelve a empezar → el contenedor **siempre se rellena** mientras cocina.
 ///

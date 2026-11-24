@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Depredación por STATS (docs/stats-as-truth.md §2): quién es presa / depredador / amenaza sale de los
+/// Depredación por STATS (docs/sistemas/stats-as-truth.md §2): quién es presa / depredador / amenaza sale de los
 /// **stats** (masa/fuerza/textura), no de una tabla fija. Así el **tamaño invierte presa↔depredador** (un
 /// conejo del tamaño de Kushal deja de ser presa; una hormiga con stats de ápex a lo grande aterra a los osos,
 /// pero sigue siendo presa de las Quimeras del subsuelo). Engancha con la transformación: el **farol**
@@ -23,7 +23,7 @@ public static class Predation
     public static float PredatorPower(Anima a) => a == null ? 0f : Power(a.strength, a.bodyMass, a.armadura, a.agility, a.armament, a.sickness);
 
     /// <summary>LA FÓRMULA del poder depredador, en un solo sitio (2026-11-08): la usan <see cref="PredatorPower"/> y el poder de los humanos y de
-    /// los jefes de cada santuario (<see cref="SanctuaryPower"/>, docs/progresion-santuarios.md).</summary>
+    /// los jefes de cada santuario (<see cref="SanctuaryPower"/>, docs/sistemas/progresion-santuarios.md).</summary>
     public static float Power(float strength, float bodyMass, float armadura, float agility, float armament, float sickness = 0f)
         => (strength * 0.4f + bodyMass * 0.4f + armadura * 0.15f + agility * 0.05f + armament * ArmamentPower) * (1f - Mathf.Clamp01(sickness));
 

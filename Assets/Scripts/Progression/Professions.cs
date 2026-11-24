@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 
 /// <summary>
-/// LAS PROFESIONES DEL PERSONAL (Berón 2026-11-04; docs/personajes-mesocosmos.md §Profesiones y parejas).
+/// LAS PROFESIONES DEL PERSONAL (Berón 2026-11-04; docs/historia/personajes-mesocosmos.md §Profesiones y parejas).
 /// La profesión da a cada uno su papel en la jornada sin quitarle la rotación (regla J2, todos aprenden todo):
 ///  · <see cref="WorkRoster"/> le da cada día, ANTES de las vueltas, UNA misión de cada área de su profesión (la que menos ha hecho; si
 ///    la profesión nombra misiones —«rep_» las reparaciones, «obra_» la obra nueva—, de esas);
@@ -32,7 +32,7 @@ public static class Professions
         // Consol (2026-11-05): MAESTRA JEFA DE ASHTANGA (AshtangaTeacher). Da la clase de las 14 h y prepara la del día (yog_ashtanga). Las de grupo
         // «clase_yoga» son Hatha: no entran en su profesión.
         new Entry("Consol", "maestra de Ashtanga", "Sala de Yoga:yog_ashtanga"),   // ficha: docs/personajes/consol.md
-        // Fernando (2026-11-05): PANELES SOLARES. Sus misiones son las del área Energía: los paneles («sol_») y las revisiones del parque («ene_»; docs/energia.md).
+        // Fernando (2026-11-05): PANELES SOLARES. Sus misiones son las del área Energía: los paneles («sol_») y las revisiones del parque («ene_»; docs/areas/energia.md).
         new Entry("Fernando", "instalador y reparador de paneles solares", EnergyRule.Area),   // ficha: docs/personajes/fernando.md
         // Tote: JEFE DE REPARACIONES («rep_») y guardia.
         new Entry("JefeConstruccion", "jefe de reparaciones y guardia", "Construcción:rep_", "Guardia", AreaWork.GuardRoom),   // ficha: docs/personajes/tote.md
@@ -97,7 +97,7 @@ public static class Professions
     /// <summary>El maestro de <paramref name="cls"/> el día <paramref name="day"/> (null si no tiene).</summary>
     public static string LeadOn(string cls, int day) => ClassLeads.TryGetValue(cls, out string[] l) && l.Length > 0 ? l[((day % l.Length) + l.Length) % l.Length] : null;
 
-    /// <summary>LAS PERSONAS DEL MESOCOSMOS (docs/reglas-personajes.md, R2): el personal de la jornada, la Magnate y Neo. Cada una con su ficha.</summary>
+    /// <summary>LAS PERSONAS DEL MESOCOSMOS (docs/reglas/reglas-personajes.md, R2): el personal de la jornada, la Magnate y Neo. Cada una con su ficha.</summary>
     public static IEnumerable<string> Mesocosmos
     {
         get
@@ -111,7 +111,7 @@ public static class Professions
     /// <summary>El nombre de su ficha: docs/personajes/&lt;nombre&gt;.md.</summary>
     public static string DocName(string who) => who == "Player" ? "kushal" : who == "JefeConstruccion" ? "tote" : who.ToLowerInvariant();   // índice, plantilla y tabla de lo completa que está cada ficha: docs/personajes/README.md
 
-    /// <summary>LA BASE DOCUMENTADA DE CADA PUESTO (Berón 2026-11-05; docs/reglas-personajes.md, R7): de dónde sale.
+    /// <summary>LA BASE DOCUMENTADA DE CADA PUESTO (Berón 2026-11-05; docs/reglas/reglas-personajes.md, R7): de dónde sale.
     /// Lo que queda por confirmar va en <see cref="Unconfirmed"/>. Al añadir o cambiar un puesto, se cambia aquí y en su ficha.</summary>
     public static readonly Dictionary<string, string> Basis = new Dictionary<string, string>
     {
@@ -143,7 +143,7 @@ public static class Professions
         { "Luciana", "Berón 2026-11-04: piloto; 2026-11-05: experta en artes marciales" },
     };
 
-    /// <summary>LOS PUESTOS O PARTES DE UN PUESTO SIN CONFIRMAR: los dedujimos nosotros; quedan así hasta que Berón diga (docs/reglas-personajes.md §Auditoría).</summary>
+    /// <summary>LOS PUESTOS O PARTES DE UN PUESTO SIN CONFIRMAR: los dedujimos nosotros; quedan así hasta que Berón diga (docs/reglas/reglas-personajes.md §Auditoría).</summary>
     public static readonly Dictionary<string, string> Unconfirmed = new Dictionary<string, string>
     {
         { "Gohageneis", "artes marciales: salió del reparto provisional («ágil y atlético»), sin palabra de Berón; la experta documentada es Luciana" },

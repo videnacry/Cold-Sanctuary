@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// EDIFICIOS DE INVESTIGACIÓN Y DE PRODUCCIÓN (Berón 2026-10-23/24; docs/laboratorios-investigacion.md y
-/// docs/edificios-investigacion.md): un edificio por materia y la central de producción, en el casquete Sur, junto a la
+/// EDIFICIOS DE INVESTIGACIÓN Y DE PRODUCCIÓN (Berón 2026-10-23/24; docs/areas/laboratorios-investigacion.md y
+/// docs/areas/edificios-investigacion.md): un edificio por materia y la central de producción, en el casquete Sur, junto a la
 /// planta atómica (que es el edificio de FÍSICA: reactor, ciclotrón y, arriba, la sala de experimentos con su anillo).
 ///  · QUÍMICA: abajo, la síntesis (4 campanas con su línea Schlenk, 4 rotavapores, caja de guantes, armarios separados por
 ///    riesgo, duchas); arriba, el análisis (RMN de 400 MHz en su sala, 4 HPLC, GC-MS, IR/UV-Vis, DRX, hornos, balanzas).
@@ -18,7 +18,7 @@ using UnityEngine;
 /// </summary>
 public static partial class SampleSceneBuilder
 {
-    // Química y Biología son pisos de la torre de CIENCIAS (CienciasSize, docs/plano-edificios.md); la central, aparte.
+    // Química y Biología son pisos de la torre de CIENCIAS (CienciasSize, docs/areas/plano-edificios.md); la central, aparte.
     public static readonly Vector2 NuclearSize = new Vector2(46f, 30f);
 
     static readonly Color LabWhite = new Color(0.9f, 0.92f, 0.93f), LabSteel = new Color(0.68f, 0.71f, 0.74f), LabDark = new Color(0.22f, 0.24f, 0.27f),
@@ -96,7 +96,7 @@ public static partial class SampleSceneBuilder
     }
 
     // Zonas que no se amueblan en una planta: el hueco de su ÁREA DE ALFOMBRAS (+Z, en <paramref name="x"/>; PlaceCarpetAreas
-    // la pone donde no hay muebles) y la máquina de virtualización (esquina +X +Z). Ya no hay escaleras (docs/alfombras-plan.md).
+    // la pone donde no hay muebles) y la máquina de virtualización (esquina +X +Z). Ya no hay escaleras (docs/areas/alfombras-plan.md).
     static List<Rect> CarpetKeepOut(Vector2 size, float x = 0f) => _marineFloors ? MarineKeepOut(size) :
         new List<Rect> { new Rect(x - 4.2f, size.y * 0.5f - 5f, 8.4f, 5f), new Rect(size.x * 0.5f - 4f, size.y * 0.5f - 4f, 4f, 4f) };
 
@@ -329,7 +329,7 @@ public static partial class SampleSceneBuilder
     static SanctuaryArea BuildNuclearPlant(Transform areasGroup)
     {
         SanctuaryArea a = BuildAreaBox(areasGroup, "NuclearPower_Area", "Central Nuclear", SanctuaryAreaType.NuclearPower, 4, NuclearSiteRule.Center, NuclearSize, new Color(0.75f, 0.78f, 0.8f));
-        TowerFloor(a.transform);   // el primer piso del árbol del sitio nuclear (docs/sitio-nuclear.md)
+        TowerFloor(a.transform);   // el primer piso del árbol del sitio nuclear (docs/areas/sitio-nuclear.md)
         Transform g = new GameObject("Planta_central").transform; g.SetParent(a.transform, false); g.localPosition = Vector3.up * 0.1f;
         Color concrete = new Color(0.7f, 0.7f, 0.68f);
         var blocks = new List<LabBlock>

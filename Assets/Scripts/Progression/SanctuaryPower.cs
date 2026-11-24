@@ -3,14 +3,14 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// EL PODER QUE HACE SUBIR DE SANTUARIO (Berón 2026-11-08; docs/progresion-santuarios.md). Un humano sale de su santuario solo cuando su poder
+/// EL PODER QUE HACE SUBIR DE SANTUARIO (Berón 2026-11-08; docs/sistemas/progresion-santuarios.md). Un humano sale de su santuario solo cuando su poder
 /// supera al del animal más poderoso de ese santuario (su JEFE): en s1n1, la ballena, la orca o el oso polar, el que sea más fuerte de la fauna que hay.
 /// Todo en la escala de <see cref="Predation.PredatorPower"/> (una sola fórmula: <see cref="Predation.Power"/>):
 ///   PODER HUMANO = cuerpo (Predation.Power de sus aptitudes: el Anima de la escena o, sin cuerpo, su arquetipo)
 ///                + MAGIA (lo que las margas suben su poder de hechizo: SpellPower(nivel) − SpellPower(0), <see cref="DerivedStats.SpellPower"/>)
-///                + bonusPacks que lleve y su cuerpo aún no tenga (Predation.Power del pack: docs/soul-composition-blend.md §bonusPacks).
+///                + bonusPacks que lleve y su cuerpo aún no tenga (Predation.Power del pack: docs/sistemas/soul-composition-blend.md §bonusPacks).
 ///   JEFE de la posición p = el mayor de: el animal más poderoso de los santuarios hasta el suyo (hay que ser más fuerte que TODOS sus animales:
-///                docs/sanctuary-second-lap-and-fear.md §3) y un humano corriente con el bonusPack del santuario (bonusPackN ≈ lo que hace falta
+///                docs/sistemas/sanctuary-second-lap-and-fear.md §3) y un humano corriente con el bonusPack del santuario (bonusPackN ≈ lo que hace falta
 ///                para superar el santuario N). Sin pack para la posición, no se sube más.
 /// Lógica pura salvo <see cref="LiveFauna"/> (lee la fauna de la escena).
 /// </summary>
@@ -33,7 +33,7 @@ public static class SanctuaryPower
     /// <summary>Un humano corriente (el arquetipo «Human», sin magia ni packs): la base con la que se calibran los packs.</summary>
     public static float PlainHuman => OfSpecies("Human");
 
-    /// <summary>LOS PACKS DE INICIO (Berón 2026-11-08): Irosene, bonusPack2 (docs/soul-composition-blend.md §bonusPacks); Lizmibet, el mismo (inferido:
+    /// <summary>LOS PACKS DE INICIO (Berón 2026-11-08): Irosene, bonusPack2 (docs/sistemas/soul-composition-blend.md §bonusPacks); Lizmibet, el mismo (inferido:
     /// los docs no dicen otro). Se suman si su cuerpo aún no los lleva (<see cref="SoulComposition.bonusPacks"/>).</summary>
     public static readonly Dictionary<string, string[]> StartingPacks = new Dictionary<string, string[]> { { "Irosene", new[] { "bonusPack2" } }, { "Lizmibet", new[] { "bonusPack2" } } };
 
@@ -52,7 +52,7 @@ public static class SanctuaryPower
 
     /// <summary>LA FAUNA DE CADA SANTUARIO, por especie (arquetipo). El 1 se lee de la escena (<see cref="LiveFauna"/>); esto es para cuando no está
     /// cargada y para los otros dos. INFERIDO: la lista de la tierra son las especies del territorio polar de SampleScene; el Aéreo, sus aves frías
-    /// (docs/sitio-nuclear.md §23); el Marino aún no tiene animales propios (el árbol cazador es una planta).</summary>
+    /// (docs/areas/sitio-nuclear.md §23); el Marino aún no tiene animales propios (el árbol cazador es una planta).</summary>
     public static readonly Dictionary<int, string[]> FaunaOf = new Dictionary<int, string[]>
     {
         { SanctuaryPlacement.Land, new[] { "Whale", "Orca", "Bear", "Walrus", "Seal", "Wolf", "Malamute", "Reindeer", "MuskOx", "ArcticFox", "ArcticHare", "EmperorPenguin", "Penguin" } },

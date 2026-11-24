@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// ESCENARIO: UNA ORCA HERIDA (Berón 2026-11-03; docs/submarinos-medicos.md). En vivo y a ×4:
+/// ESCENARIO: UNA ORCA HERIDA (Berón 2026-11-03; docs/areas/submarinos-medicos.md). En vivo y a ×4:
 /// 1. el Leviatán existe, atracado a ras del hielo con su pasarela en la orilla, y su pozo médico cabe la orca (con margen);
 /// 2. una orca herida (enfermedad, estrés y una herida que sangra) queda a la deriva en mar abierto;
 /// 3. la lanzadera (el submarino-ambulancia) trae al equipo veterinario del hospital; el Leviatán se sumerge, va, emerge a su

@@ -75,7 +75,7 @@ public class NeedsDriver : MonoBehaviour
     }
 
     /// <summary>
-    /// LAS NECESIDADES EN CASA (<see cref="Household"/>, docs/ciclo-de-vida.md §Humanos): dormir (con sueño, o de noche en el bloque
+    /// LAS NECESIDADES EN CASA (<see cref="Household"/>, docs/sistemas/ciclo-de-vida.md §Humanos): dormir (con sueño, o de noche en el bloque
     /// de casa con algo de sueño), el baño, comer (en turno solo si aprieta: la comida del mediodía es la de su jornada) y lavarse.
     /// Igual para un humano y un insecto-humano. Si su horario lo tiene retenido (<see cref="MicroJornada.hold"/>: la historia lo
     /// necesita quieto) o no tiene horario ni vida libre (un personaje de la historia), el cuerpo espera.
@@ -97,7 +97,7 @@ public class NeedsDriver : MonoBehaviour
             && !(_body.hunger < starvingAbove && mj != null && mj.OnShift))
         { _q.EnqueueOwn(new HomeNeedSpell { need = HomeNeedSpell.Need.Comer, home = home }); return; }
         if (_body.dirt >= 0.85f) { _q.EnqueueOwn(new HomeNeedSpell { need = HomeNeedSpell.Need.Lavarse, home = home }); return; }
-        // (2026-11-04) SENTARSE EN LA PLAZA (MicroSeat, docs/microcosmos-suelo-y-elementos.md §Escala; Berón: «debe ser posible sentarse
+        // (2026-11-04) SENTARSE EN LA PLAZA (MicroSeat, docs/microcosmos/microcosmos-suelo-y-elementos.md §Escala; Berón: «debe ser posible sentarse
         // en las sillas de restaurantes y bancos de las plazas»): en su tiempo libre de día, de vez en cuando, en el asiento público
         // libre más cercano (un banco de la plaza, una silla de un comedor, el pretil de la fuente), un cuarto de hora.
         bool free = mj == null || (!mj.OnShift && !mj.AtHomeBlock);

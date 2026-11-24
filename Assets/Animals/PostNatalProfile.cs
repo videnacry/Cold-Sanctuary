@@ -1,5 +1,5 @@
 /// <summary>
-/// Config POST-NATAL por especie (docs/anima-dissolving-animal.md, etapa 5): las secuencias de crianza (etapas con
+/// Config POST-NATAL por especie (docs/sistemas/anima-dissolving-animal.md, etapa 5): las secuencias de crianza (etapas con
 /// nido/rol paterno/presencia/alimentacion/transiciones). Antes un `_postNatalStages` estatico por clase; ahora DATA,
 /// movida VERBATIM (sin reparsear valores). La lee `Animal.PostNatalStages` (que la pasa a `PostNatalManager`).
 /// </summary>

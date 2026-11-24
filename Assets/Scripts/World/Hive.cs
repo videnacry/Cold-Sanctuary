@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// COLMENA de las abejas de las nieves: el panal (Nido_Abejas) como lo usan las abejas de verdad (docs/abejas-y-panal.md).
+/// COLMENA de las abejas de las nieves: el panal (Nido_Abejas) como lo usan las abejas de verdad (docs/fauna/abejas-y-panal.md).
 /// Cada CELDILLA tiene un estado y un color que lo deja ver:
 ///   vacía (oscura) → huevo (la reina pone uno por celdilla) → larva (las nodrizas la alimentan) → cría operculada (tapada
 ///   de cera parda) → nace una abeja y la celdilla queda sucia hasta que una limpiadora la deja lista.
@@ -20,7 +20,7 @@ public class Hive : MonoBehaviour
     public float secondsPerDay = 0f;
     /// <summary>Segundos reales de un día de abeja: un día real de vida en el calendario del santuario (LifeStage.SecondsPerLifeDay),
     /// salvo que se fije otro. Antes era un día de JUEGO entero (1 h): la cría de la colmena iba 13 veces más despacio que la
-    /// gestación de los mamíferos y que el resto del ciclo de vida (docs/ciclo-de-vida.md §Calendario).</summary>
+    /// gestación de los mamíferos y que el resto del ciclo de vida (docs/sistemas/ciclo-de-vida.md §Calendario).</summary>
     public float DaySeconds => secondsPerDay > 0f ? secondsPerDay : LifeStage.SecondsPerLifeDay(TimeController.timeController);
     [Tooltip("Máximo de abejas de la colonia (las que nacen de más no se crean).")]
     public int maxBees = 12;
@@ -70,7 +70,7 @@ public class Hive : MonoBehaviour
         honeyStock = Count(Cell.Honey) * 2f;
     }
 
-    /// <summary>Su ENJAMBRE de pecoreadoras (BeeSwarm: de día de árbol en árbol, de noche en la piquera; docs/grupos-de-animales.md).</summary>
+    /// <summary>Su ENJAMBRE de pecoreadoras (BeeSwarm: de día de árbol en árbol, de noche en la piquera; docs/sistemas/grupos-de-animales.md).</summary>
     public BeeSwarm BeeGroup { get; private set; }
     void Start() { BeeGroup = BeeSwarm.EnsureFor(this); }
 

@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Progresión de un personaje por **margas del alma** (docs/creature-stats.md §Progresión): varios
+/// Progresión de un personaje por **margas del alma** (docs/sistemas/creature-stats.md §Progresión): varios
 /// tracks independientes (Stats, Yoga, Vínculos…), cada uno con su pool de XP y nivel. Los **pools**
 /// (vida/energía/maná/defensa/poder) se **derivan de las aptitudes** (`DerivedStats`), escalados por el
 /// nivel de la marga de **Stats** (la del cuerpo/alma) — subir esa marga = el "incremento de la base".

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 /// <summary>
 /// One reusable, poolable flat UI card. HologramPool owns a fixed set of these and
 /// HologramMenuController reconfigures them (label/icon, screen position, click behavior) as
-/// the player navigates — no per-item Instantiate/Destroy. See docs/ui-holographic-menu.md.
+/// the player navigates — no per-item Instantiate/Destroy. See docs/sistemas/ui-holographic-menu.md.
 /// </summary>
 [RequireComponent(typeof(RectTransform))]
 public class Hologram : MonoBehaviour

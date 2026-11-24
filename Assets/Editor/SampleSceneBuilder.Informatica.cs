@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LOS DOS PISOS NUEVOS (Berón 2026-11-04; docs/piso-informatica.md y docs/piso-aula.md), en el piso libre de su torre-árbol:
+/// LOS DOS PISOS NUEVOS (Berón 2026-11-04; docs/areas/piso-informatica.md y docs/areas/piso-aula.md), en el piso libre de su torre-árbol:
 /// - INFORMÁTICA (torre de Ciencias, encima de Biología): el CLÚSTER DE IA LOCAL del santuario: dos filas de racks de GPU con
 ///   refrigeración líquida directa al chip en circuito cerrado (CDU en cada fila), red y almacenamiento, el intercambiador que da
 ///   el calor a la red de distrito (fotobiorreactores, frutales), el de agua de mar (el foco frío), las bombas, el depósito de

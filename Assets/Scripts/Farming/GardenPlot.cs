@@ -3,7 +3,7 @@ using UnityEngine;
 
 /// <summary>
 /// HUERTO POR GREMIO (policultivo): una parcela repartida por el mapa donde crecen JUNTAS las plantas que se ayudan
-/// (docs/huertos-y-cultivos.md): la milpa de las Tres Hermanas, la chacra andina, el arrozal con soja en los bordes,
+/// (docs/areas/huertos-y-cultivos.md): la milpa de las Tres Hermanas, la chacra andina, el arrozal con soja en los bordes,
 /// las hortalizas asociadas (tomate+albahaca, zanahoria+cebolla…), el campo de rotación de legumbres y granos, y el
 /// bosque comestible por capas. Con SETO CORTAVIENTOS al norte (de donde sopla el viento polar).
 /// Las plantas se generan al arrancar (no se guardan en la escena); la parcela (suelo con collider) la pone el editor.
@@ -24,7 +24,7 @@ public class GardenPlot : MonoBehaviour
 
     public int Plants { get; private set; }
 
-    // ── EL SUELO (docs/garden-simulation.md §8, receta base: abonar · arar): lo prepara la iniciación del huerto ──
+    // ── EL SUELO (docs/areas/garden-simulation.md §8, receta base: abonar · arar): lo prepara la iniciación del huerto ──
     /// <summary>¿El suelo está listo para sembrar (abonado, labrado, con surcos y rastrillado)?</summary>
     public bool SoilPrepared { get; private set; }
     /// <summary>Cuánto se ha preparado (0 = sin tocar, 1 = listo).</summary>
@@ -82,7 +82,7 @@ public class GardenPlot : MonoBehaviour
     public void Generate()
     {
         if (_root != null) return;
-        if (GetComponent<WeedPatch>() == null) gameObject.AddComponent<WeedPatch>();   // sus malas hierbas (docs/deshierbe-cuidadoso.md)
+        if (GetComponent<WeedPatch>() == null) gameObject.AddComponent<WeedPatch>();   // sus malas hierbas (docs/areas/deshierbe-cuidadoso.md)
         _rnd = new System.Random(seed);
         _root = new GameObject("Plantas").transform;
         _root.SetParent(transform, false);

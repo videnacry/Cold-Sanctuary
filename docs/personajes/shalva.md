@@ -1,14 +1,19 @@
+---
+resumen: "Ficha con la plantilla de README.md. Id en el código: Shalva. Revisada: 2026-11-08. Veracidad de cada dato (regla M39, veracidad-frases.md): documentada = lo dijo Berón (sus mensajes o la…"
+temas: [personajes]
+estado: vigente
+---
 # Shalva
 
 > Ficha con la plantilla de [README.md](README.md). Id en el código: `Shalva`. Revisada: 2026-11-08.
-> Veracidad de cada dato (regla M39, [veracidad-frases.md](../veracidad-frases.md)): **documentada** = lo dijo Berón (sus mensajes o la
+> Veracidad de cada dato (regla M39, [veracidad-frases.md](../sistemas/veracidad-frases.md)): **documentada** = lo dijo Berón (sus mensajes o la
 > ficha larga que contó él); **atestiguada** = se ve en su foto o captura; **recreada** = decisión de juego hecha a partir de un dato
 > suyo; **inventada** = la puso el juego o un agente, sin base. ⚠️ = la ficha larga lo marca «confirmar». **Falta** = no se sabe.
 
 ## 1. Identidad y aspecto
 
-- Persona real, de la familia o los amigos de Berón. *documentada · [diseno-personajes.md §Familia y amigos](../diseno-personajes.md)*
-- Pelo corto castaño; jersey grueso de canalé verde oliva y vaqueros azul claro. *atestiguada, pero de una foto de tres sin confirmar (`cumbaya.jpg`, a la derecha, **supuesto**) · [diseno-personajes.md §Familia y amigos](../diseno-personajes.md) · [CubeHair.cs:215](../../Assets/Scripts/Avatar/CubeHair.cs#L215)*
+- Persona real, de la familia o los amigos de Berón. *documentada · [diseno-personajes.md §Familia y amigos](../sistemas/diseno-personajes.md)*
+- Pelo corto castaño; jersey grueso de canalé verde oliva y vaqueros azul claro. *atestiguada, pero de una foto de tres sin confirmar (`cumbaya.jpg`, a la derecha, **supuesto**) · [diseno-personajes.md §Familia y amigos](../sistemas/diseno-personajes.md) · [CubeHair.cs:215](../../Assets/Scripts/Avatar/CubeHair.cs#L215)*
 - 1,72 m. *inventada (estatura estimada) · ídem*
 - Edad, origen y género: **Falta** (no se suponen, J13).
 
@@ -27,15 +32,15 @@
 
 ## 5. Profesión y lo que sabe hacer
 
-- Profesional de **cultivo** y **bioconstrucción**. *documentada (Berón 2026-11-04) · [personajes-mesocosmos.md §Profesiones y parejas](../personajes-mesocosmos.md) · [Professions.cs:129](../../Assets/Scripts/Progression/Professions.cs#L129)*
-- **Jardinero frutal**: cada día una ronda de frutales (`jar_frutales`), heredada de Irosene. *inventada (deducido de «cultivo», sin confirmar) · [Professions.cs:153](../../Assets/Scripts/Progression/Professions.cs#L153) · [jardines-frutales.md §Ronda 7](../jardines-frutales.md) · [FruitGardener.cs:25](../../Assets/Scripts/Farming/FruitGardener.cs#L25)*
+- Profesional de **cultivo** y **bioconstrucción**. *documentada (Berón 2026-11-04) · [personajes-mesocosmos.md §Profesiones y parejas](../historia/personajes-mesocosmos.md) · [Professions.cs:129](../../Assets/Scripts/Progression/Professions.cs#L129)*
+- **Jardinero frutal**: cada día una ronda de frutales (`jar_frutales`), heredada de Irosene. *inventada (deducido de «cultivo», sin confirmar) · [Professions.cs:153](../../Assets/Scripts/Progression/Professions.cs#L153) · [jardines-frutales.md §Ronda 7](../areas/jardines-frutales.md) · [FruitGardener.cs:25](../../Assets/Scripts/Farming/FruitGardener.cs#L25)*
 - Bioconstrucción en el juego: misiones de material (`mat_`). *recreada · [Professions.cs:53](../../Assets/Scripts/Progression/Professions.cs#L53)*
 
 ## 6. Puesto y áreas
 
 - Huerto (`jar_frutales`) y Construcción (`mat_`). *recreada · [Professions.cs:53](../../Assets/Scripts/Progression/Professions.cs#L53)*
 - Sale en el huerto. *recreada · [SanctuaryDirector.cs:170](../../Assets/Scripts/World/SanctuaryDirector.cs#L170) · [SampleSceneBuilder.Construction.cs:173](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L173)*
-- Su nombre sale en el cartel de la sala de cuidados de los frutales. *recreada · [SampleSceneBuilder.Orchards.cs:274](../../Assets/Editor/SampleSceneBuilder.Orchards.cs#L274) · [jardines-frutales.md §La sala de cuidados](../jardines-frutales.md)*
+- Su nombre sale en el cartel de la sala de cuidados de los frutales. *recreada · [SampleSceneBuilder.Orchards.cs:274](../../Assets/Editor/SampleSceneBuilder.Orchards.cs#L274) · [jardines-frutales.md §La sala de cuidados](../areas/jardines-frutales.md)*
 
 ## 7. Relaciones
 
@@ -44,13 +49,13 @@
 
 ## 8. Horario y costumbres
 
-- Gimnasio: torso/pierna, martes, miércoles, viernes y sábado, hipertrofia («personal general»). *inventada · [GymProgramming.cs:217](../../Assets/Scripts/Progression/GymProgramming.cs#L217) · [gimnasio-maquinas.md §15.6](../gimnasio-maquinas.md)*
+- Gimnasio: torso/pierna, martes, miércoles, viernes y sábado, hipertrofia («personal general»). *inventada · [GymProgramming.cs:217](../../Assets/Scripts/Progression/GymProgramming.cs#L217) · [gimnasio-maquinas.md §15.6](../areas/gimnasio-maquinas.md)*
 - Horario libre: el reparto común. *recreada · [LeisureDirector.cs:87](../../Assets/Scripts/Progression/LeisureDirector.cs#L87)*
 - Costumbres propias: **Falta**.
 
 ## 9. Microcosmos y santuario
 
-- Insecto en los microcosmos: ninguno propio («cualquier otro»: una especie por su nombre). *recreada · [microcosmos-civilizaciones.md §5](../microcosmos-civilizaciones.md)*
+- Insecto en los microcosmos: ninguno propio («cualquier otro»: una especie por su nombre). *recreada · [microcosmos-civilizaciones.md §5](../microcosmos/microcosmos-civilizaciones.md)*
 - Santuario y nivel: **Falta**.
 
 ## 10. En el código

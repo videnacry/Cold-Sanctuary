@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Tablero de servicio de un taller (Mecánica o Construcción; docs/forge-simulation.md §5). Al empezar,
+/// Tablero de servicio de un taller (Mecánica o Construcción; docs/areas/forge-simulation.md §5). Al empezar,
 /// **lista los tickets abiertos** (avisos de avería por áreas). Gestiona **TOMAR/DEVOLVER herramientas**:
 /// las <see cref="StationPart"/> del banco usan <c>stationId = toolStation</c> con
 /// <c>actionId = "Tomar" | "Devolver"</c>. Es el punto de partida del bucle de reparación por dispatch:

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// El pilar MENTE de un ánima (docs/anima-architecture.md §3, §6, §10) — MVP.
+/// El pilar MENTE de un ánima (docs/sistemas/anima-architecture.md §3, §6, §10) — MVP.
 ///
 /// Cada `thinkInterval` tiene un "momento de pensamiento": elige una FRASE según su TONO elemental
 /// (derivado de sus aptitudes + humores), la expresa hasta donde su PODER MENTAL alcanza
@@ -33,7 +33,7 @@ public class Mind : MonoBehaviour
 
     // ── PENSAMIENTO ACTUAL EXPUESTO (para la UI que lee al ser que maneja el jugador) ────────────
     // La UI (AnimaThoughtHUD) muestra el ÚLTIMO pensamiento formulado + su intensidad; el jugador "lee"
-    // así a Kushal/al ser poseído (miedo, deseo…). Ver docs/microcosmos-dungbeetle-level.md §5.
+    // así a Kushal/al ser poseído (miedo, deseo…). Ver docs/microcosmos/microcosmos-dungbeetle-level.md §5.
     [HideInInspector] public string lastThought = "";     // texto del último pensamiento expresado
     [HideInInspector] public float  lastIntensity = 0f;   // 0..1 (profundidad del pensamiento / poder mental)
     [HideInInspector] public bool   lastPositive = true;  // valencia (verde/rojo en la UI)
@@ -80,7 +80,7 @@ public class Mind : MonoBehaviour
 
     [Header("Campo de pensamientos: percepción del entorno")]
     [Tooltip("Radio en el que la mente PERCIBE otras animas y deja que tiñan su pensamiento (todo es anima, hasta el " +
-             "suelo). docs/microcosmos-dungbeetle-level.md §? / campo de pensamientos.")]
+             "suelo). docs/microcosmos/microcosmos-dungbeetle-level.md §? / campo de pensamientos.")]
     [Min(0f)] public float awarenessRadius = 8f;
     float _nextSense;
     static readonly Collider[] _senseHits = new Collider[24];
@@ -187,7 +187,7 @@ public class Mind : MonoBehaviour
 
     int UsesOf(MindPhrase p) => (_uses != null && _uses.TryGetValue(p, out int n)) ? n : 0;
 
-    // ── CUENTA del pensamiento (docs/spells-suprahechizo-and-thoughts.md §2): cada pensamiento tiene un NÚMERO que su
+    // ── CUENTA del pensamiento (docs/sistemas/spells-suprahechizo-and-thoughts.md §2): cada pensamiento tiene un NÚMERO que su
     // realización incrementa y que el entorno/trauma erosiona. Números "infinitos" (sin tope); el % sale al comparar.
     // La selección usa la cuenta → lo más practicado se piensa (y hace) más; el trauma puede cambiar la dirección.
     System.Collections.Generic.Dictionary<MindPhrase, float> _counts;
@@ -306,7 +306,7 @@ public class Mind : MonoBehaviour
 
     /// <summary>¿Este ser puede pensar/lanzar esta frase? Gate por APTITUD (mínimo) y por RECEPTOR/anatomía (E2):
     /// si la frase fija `gateCapability`, requiere que alguna `CompositionPart` lo conceda (ojo→Ver, colmillo→Morder).
-    /// Sin gates → siempre sí. Ver docs/capabilities-and-embodiment.md §2.</summary>
+    /// Sin gates → siempre sí. Ver docs/sistemas/capabilities-and-embodiment.md §2.</summary>
     bool PassesGate(MindPhrase p)
     {
         if (p.gated && aptitudes.Get(p.gateAptitude) < p.gateMin) return false;

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// EL MENÚ ÁRBOL (portado de CodeShip, src/ui/root-menu.ts y reglas.md §5.8; docs/plan-microcosmos-realismo.md §4.3). Un botón raíz «☰ Menú»
+/// EL MENÚ ÁRBOL (portado de CodeShip, src/ui/root-menu.ts y reglas.md §5.8; docs/microcosmos/plan-microcosmos-realismo.md §4.3). Un botón raíz «☰ Menú»
 /// (F5) en el hueco siguiente de la pila de ventanas (<see cref="HudModals"/>): abajo a la derecha en el ordenador, arriba a la izquierda en el
 /// móvil. Al pulsarlo se vuelve «✕ Menú» y brotan las ramas; tocar una rama la abre y enseña sus hojas (las acciones de ahora):
 ///  · Misiones: el objetivo de ahora (hacerlo aquí o ir), Tareas (F6), Misiones y jornada (F4), la guía de inicio.

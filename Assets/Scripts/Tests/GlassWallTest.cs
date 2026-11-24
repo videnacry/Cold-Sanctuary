@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DE LAS PAREDES DE CRISTAL (Berón 2026-11-03; docs/hospital.md §Paredes de cristal):
+/// PRUEBA DE LAS PAREDES DE CRISTAL (Berón 2026-11-03; docs/areas/hospital.md §Paredes de cristal):
 /// 1. las salas que deben aislarse de los hospitales del santuario tienen su sala de cristal: los 4 quirófanos, la UCI, los 4
 ///    aislamientos y su esclusa (hospital de personas) y los 4 quirófanos veterinarios, la sala fría de los pingüinos y el
 ///    aislamiento veterinario;

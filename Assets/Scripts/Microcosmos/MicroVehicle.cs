@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// UN TRANSPORTE DE ÉPOCA QUE SE USA (docs/plan-microcosmos-realismo.md §3.3, P6; Berón 2026-11-18): se sube, se mueve y, si tiene
+/// UN TRANSPORTE DE ÉPOCA QUE SE USA (docs/microcosmos/plan-microcosmos-realismo.md §3.3, P6; Berón 2026-11-18): se sube, se mueve y, si tiene
 /// horquillas o caja, lleva carga. A tamaño REAL (el mundo es 1:1): para el insecto-humano encogido, un coche es un vehículo grande y
 /// creíble. Va en la raíz de un mueble <see cref="MicroPiece"/> «vehiculo». Sin física de ruedas: un movimiento cinemático sobre el
 /// suelo (avanza, gira y frena), con tope de velocidad real, que basta para recorrer un aparcamiento o una nave.

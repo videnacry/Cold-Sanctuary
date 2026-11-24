@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// EL ÁRBOL DE LOS CAMPOS en juego (docs/edificio-arbol.md, v2): sus niveles y la RUTA por el tronco. Entre pisos no hay
+/// EL ÁRBOL DE LOS CAMPOS en juego (docs/areas/edificio-arbol.md, v2): sus niveles y la RUTA por el tronco. Entre pisos no hay
 /// escaleras ni alfombras (solo en el techo y en el suelo): se va a la puerta del piso, se entra al agua (el campo magnético
 /// la sujeta), se nada por el tronco [y por la rama y la columna de la punta] hasta la puerta del nivel de destino y se sale
 /// andando. Nada de teletransportes: el cuerpo nada cada metro (<see cref="SwimBody.SwimTo"/>). <see cref="PathMover"/> lo usa
@@ -12,7 +12,7 @@ using UnityEngine;
 public class ArbolCampos : MonoBehaviour
 {
     /// <summary>TODOS los edificios en hélice de la escena (el Árbol de los Campos y las torres migradas al modelo del árbol:
-    /// Servicios, Entrenamiento, Ciencias, Producción; docs/edificio-arbol.md §Migración).</summary>
+    /// Servicios, Entrenamiento, Ciencias, Producción; docs/areas/edificio-arbol.md §Migración).</summary>
     public static readonly List<ArbolCampos> All = new List<ArbolCampos>();
     /// <summary>El Árbol de los Campos (el que gira y tiene los cultivos); si no está, el primero que haya.</summary>
     public static ArbolCampos Instance { get { ArbolCampos f = null; foreach (ArbolCampos t in All) { if (t == null) continue; if (t.building == TreeSpec.Building) return t; if (f == null) f = t; } return f; } }

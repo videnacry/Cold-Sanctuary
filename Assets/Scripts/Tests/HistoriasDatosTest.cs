@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// TEST DE DATOS DE LA TANDA 3 DE HISTORIAS (docs/microcosmos-historias-3.md; grupo 78). Datos puros, sin cargar escenas: por cada una de las doce,
+/// TEST DE DATOS DE LA TANDA 3 DE HISTORIAS (docs/microcosmos/microcosmos-historias-3.md; grupo 78). Datos puros, sin cargar escenas: por cada una de las doce,
 /// su piso en <see cref="MicroFloors.Table"/> (representativo o «pendiente»), su fecha y lugar (<see cref="Eras.OfMicrocosmos"/>), su región y
 /// su entrada de estilo propia, su mapa a mano HECHO con flora, fauna, órdenes sobre el piso y edificios, su lugar de entrenar de la época con
 /// tradición y sesiones, sus frutales y la luz (<see cref="SolarPosition.GeoOf"/>). Y los juicios: Onondaga sin manzanos, Madrid sin nada militar.

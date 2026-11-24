@@ -7,7 +7,7 @@ using UnityEditorInternal;
 using UnityEngine;
 
 /// <summary>
-/// QUÉ SCRIPTS CUESTAN, CON NOMBRE (docs/rendimiento.md). Los ProfilerRecorder de <see cref="PerfProbe"/> no ven los marcadores por
+/// QUÉ SCRIPTS CUESTAN, CON NOMBRE (docs/plataforma/rendimiento.md). Los ProfilerRecorder de <see cref="PerfProbe"/> no ven los marcadores por
 /// script sin el perfilador en marcha. Esto lo enciende, graba unos frames en Play y lee los mismos datos que la ventana Profiler:
 /// el coste de cada «Clase.Update()» bajo BehaviourUpdate y los demás bucles, y lo más caro del hilo principal por tiempo propio.
 /// Todo va al log con [Rendimiento] y acaba en «perfil: fin». Espera acotada: <see cref="MaxSeconds"/>.

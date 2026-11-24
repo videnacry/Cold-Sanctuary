@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// MISIONES DE VIRTUALIZACIÓN CON ESCENA PROPIA (docs/jornada-y-rotacion.md). Todas las misiones de trabajo del catálogo
+/// MISIONES DE VIRTUALIZACIÓN CON ESCENA PROPIA (docs/sistemas/jornada-y-rotacion.md). Todas las misiones de trabajo del catálogo
 /// (AreaWork) se practican DENTRO de la máquina de virtualización, cada una en su escena «Virtual_&lt;clave&gt;»: se recorren
 /// sus pasos en orden (puestos numerados, F para hacerlo) y al terminar la misión cuenta como hecha (WorkdayDirector).
 /// La del HOSPITAL (antes enfermería) es iniciar a un turista: recibirlo, análisis, vacuna, normas y acompañarlo a su primera
@@ -113,7 +113,7 @@ public static class VirtualMissions
             case "asa_acta": return new[] { "Escribir lo acordado", "Guardarlo en el archivo" };
             case "asa_mediar": return new[] { "Escuchar a una parte", "Escuchar a la otra", "Apuntar el acuerdo" };
             case "son_equipo": return new[] { "Revisar cuerdas y cables", "Probar micrófonos y altavoces" };
-            // (2026-11-05) El Parque Energético (docs/energia.md).
+            // (2026-11-05) El Parque Energético (docs/areas/energia.md).
             case "sol_mantenimiento": return new[] { "Quitar la escarcha de las mesas", "Revisar los módulos", "Anotar las mesas revisadas" };
             case "sol_instalacion": return new[] { "Preparar los módulos", "Montar la mesa", "Conectarla y probar la cadena" };
             case "sol_reparacion": return new[] { "Encontrar la mesa averiada", "Cambiar el módulo roto", "Comprobar la baliza" };
@@ -201,7 +201,7 @@ public static class VirtualMissions
             case "Química": return new Color(0.78f, 0.85f, 0.9f);
             case "Biología": return new Color(0.78f, 0.9f, 0.78f);
             case "Central Nuclear": return new Color(0.75f, 0.78f, 0.8f);
-            case "Informática": return new Color(0.55f, 0.65f, 0.8f);   // (2026-11-04) los pisos nuevos (docs/piso-informatica.md, docs/piso-aula.md)
+            case "Informática": return new Color(0.55f, 0.65f, 0.8f);   // (2026-11-04) los pisos nuevos (docs/areas/piso-informatica.md, docs/areas/piso-aula.md)
             case EnergyRule.Area: return new Color(0.55f, 0.75f, 0.6f);
             case "Aula": return new Color(0.85f, 0.8f, 0.65f);
             case "Sala de asambleas": return new Color(0.62f, 0.48f, 0.34f);

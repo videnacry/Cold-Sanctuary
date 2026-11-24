@@ -35,7 +35,7 @@ public static partial class MissionLibrary
     const string AHA = "American Heart Association, «Monitoring Your Blood Pressure at Home»: 5 min sentado en reposo, manguito a la altura del corazón; normal, sistólica < 120 mmHg";
     const string AASM = "Watson et al. (2015), consenso AASM/SRS: un adulto necesita 7 horas o más de sueño por noche";
     const string WHO_HANDS = "OMS, «How to Handwash?» (2009): mojar, jabón, palmas, dorsos, entre los dedos, pulgares, aclarar y secar; 40–60 s";
-    const string YOGA = "Cold Sanctuary, docs/yoga-asanas-spec.md (la hoja de asanas que también usa CodeShip, wellness/data/yoga.ts)";
+    const string YOGA = "Cold Sanctuary, docs/sistemas/yoga-asanas-spec.md (la hoja de asanas que también usa CodeShip, wellness/data/yoga.ts)";
     const string SPRINT = "English et al. (2020), «High intensity training during spaceflight: the NASA Sprint Study», npj Microgravity 6:21; Tanaka et al. (2001), J. Am. Coll. Cardiol. 37:153 (FCmáx = 208 − 0,7 × edad)";
     const string WSAVA = "WSAVA, «Global Nutrition Guidelines» (2011): energía en reposo RER = 70 × kg^0,75; adulto castrado ≈ 1,6 × RER";
     const string ASPCA_PLAY = "ASPCA / Bekoff (1995), «Play signals as punctuation»: la reverencia de juego (pecho abajo, cola arriba) invita a jugar";
@@ -107,7 +107,7 @@ public static partial class MissionLibrary
             new[] { "ponte guantes", "presiona para parar el sangrado", "irriga la herida con suero salino", "revisa si hay cuerpos extraños", "cubre con un apósito limpio" }, pool);
         Patient("golpe", "Primeros auxilios: un golpe en el tobillo", "Una técnica ha bajado mal de la tarima de su puesto", RED_CROSS,
             new[] { "deja la zona en reposo", "aplica frío envuelto en un paño durante {20|2|90} minutos", "comprime con una venda sin apretar", "eleva el tobillo por encima del corazón", "si hay deformidad o el dolor no cede, al hospital" }, pool);
-        Patient("estres-agudo", "Atender a alguien con estrés agudo", "Tras tres lanzamientos fallidos, alguien del equipo tiembla y no puede respirar con calma", "Cold Sanctuary, docs/hospital.md (resumen de juego, como en CodeShip medical/data/protocols.ts)",
+        Patient("estres-agudo", "Atender a alguien con estrés agudo", "Tras tres lanzamientos fallidos, alguien del equipo tiembla y no puede respirar con calma", "Cold Sanctuary, docs/areas/hospital.md (resumen de juego, como en CodeShip medical/data/protocols.ts)",
             new[] { "lleva a la persona a un lugar tranquilo", "baja la luz", "revisa lesiones ocultas", "ofrece agua", "deja que descanse" }, pool, "licencia");
         Add("medico-tension", "medico", ChoreCategory.Salud, "Tomar la tensión con el tensiómetro del botiquín", "Revisión del turno: tensión en reposo, apuntada", AHA,
             StepChain("medico-tension", 1, i => $"Tensión: paso {i + 1}", new[] { "siéntate cinco minutos en reposo", "pon el manguito en el brazo a la altura del corazón", "toma la tensión: normal, por debajo de {120|180|60} mmHg de sistólica", "apunta el resultado con la hora" }, new[] { "tómala justo después de subir corriendo", "habla mientras se infla el manguito" }));

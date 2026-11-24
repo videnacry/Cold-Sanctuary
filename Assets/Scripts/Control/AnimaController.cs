@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Capa de CONTROL intercambiable de un `Anima` (docs/anima-architecture.md §11.5): reúne los cerebros
+/// Capa de CONTROL intercambiable de un `Anima` (docs/sistemas/anima-architecture.md §11.5): reúne los cerebros
 /// (<see cref="IBrain"/>) del objeto y cede el mando al de MAYOR relevancia. Así el mismo ser lo conduce
 /// su IA o el jugador (posesión) sin cambiar de clase — "controlar = enchufar el cerebro de input en
 /// vez del de IA". Barato: solo compara relevancias y delega en el activo.

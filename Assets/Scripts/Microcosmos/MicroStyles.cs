@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// EL CATÁLOGO DE ESTILOS DE ÉPOCA Y LUGAR de los muebles de los microcosmos (docs/microcosmos-reglas-edificacion.md §Catálogo;
+/// EL CATÁLOGO DE ESTILOS DE ÉPOCA Y LUGAR de los muebles de los microcosmos (docs/reglas/microcosmos-reglas-edificacion.md §Catálogo;
 /// Berón 2026-11-02: «asegúrate de estar usando camas y demás servicios con el estilo de época/lugar, deberíamos tener una lista
 /// así podemos reutilizar para épocas/lugares similares y el template de microcosmos podría escoger automáticamente»).
 /// Cada <see cref="Entry"/> es un intervalo de años y una o varias <see cref="Region"/> (región o cultura) y dice, para cada
@@ -20,12 +20,12 @@ public static partial class MicroStyles
         Prehistoria, Mesopotamia, Egipto, Egeo, Roma, SurAsia, China, HongKong, Japon, Islam, Otomano,
         EuropaMedieval, EuropaNorte, Alpes, EuropaUrbana, FranciaRural, Norteamerica, Hispanoamerica, Sovietico, Frente,
         Maya,   // (2026-11-03) Mesoamérica maya clásica (Palenque)
-        // (2026-11-05) Las historias de la tanda 3 (docs/microcosmos-historias-3.md; nombres y frutales en MicroStyles.Historias.cs).
+        // (2026-11-05) Las historias de la tanda 3 (docs/microcosmos/microcosmos-historias-3.md; nombres y frutales en MicroStyles.Historias.cs).
         Andes, Mapuche, Inca, Haudenosaunee, EgiptoPtolemaico, VirginiaTidewater, Viena, ProvinciasUnidas, Amazonia, EspanaActual, Exposicion,
-        // (2026-11-04) Los famosos (docs/microcosmos-famosos.md): el Sahel (Uagadugú) y el interior de Norteamérica (Albuquerque,
+        // (2026-11-04) Los famosos (docs/microcosmos/microcosmos-famosos.md): el Sahel (Uagadugú) y el interior de Norteamérica (Albuquerque,
         // Omaha, Prairie View: frutales de clima continental, no los naranjos de California).
         Sahel, NorteamericaInterior,
-        // (2026-11-05) La música (docs/microcosmos-musica.md): el Caribe hispano (Barranquilla, Vega Baja), Jamaica, Corea, las islas
+        // (2026-11-05) La música (docs/microcosmos/microcosmos-musica.md): el Caribe hispano (Barranquilla, Vega Baja), Jamaica, Corea, las islas
         // Británicas (Belfast, Ascot), el noreste de Norteamérica y los Grandes Lagos (Montreal, Gary, Long Island) y Sudáfrica.
         CaribeHispano, Jamaica, Corea, IslasBritanicas, NorteamericaNorte, Sudafrica,
     }
@@ -132,7 +132,7 @@ public static partial class MicroStyles
         E("maya_clasico", "Maya clásico (Palenque, 250–900)", 250, 900, R(Region.Maya),
           Bed.Estera, Seat.Banco, Table.Baja, Hearth.Topias, Toilet.Pozo, Basin.Cantaro, Storage.Tinaja, Light.Fuego,
           "8A5A3A", "C8B48A", "6E8A7A", "Banca de mampostería enlucida con petate (estera de palma) para dormir y sentarse; el k'oben (fogón de tres piedras) con su comal; ollas y cántaros de barro; tinajas; tea de ocote. Letrinas y baños de vapor en el Palacio de Palenque (Barnhart 2001; Stuart y Stuart 2008)"),
-        // (2026-11-05) LAS HISTORIAS DE LA TANDA 3 (docs/microcosmos-historias-3.md; sus nombres de edificios y frutales, en MicroStyles.Historias.cs).
+        // (2026-11-05) LAS HISTORIAS DE LA TANDA 3 (docs/microcosmos/microcosmos-historias-3.md; sus nombres de edificios y frutales, en MicroStyles.Historias.cs).
         E("andes_republicano", "Andes republicanos (Quito, 1820–1960)", 1820, 1960, R(Region.Andes),
           Bed.Hierro, Seat.Butaca, Table.Refectorio, Hearth.Topias, Toilet.Caseta, Basin.Aguamanil, Storage.Arcon, Light.Quinque,
           "6E4B2E", "B5462F", "8C857A", "Casa quiteña de patio: cama de hierro, sillas de cuero, mesa larga; tulpa (fogón de tres piedras) en la cocina del fondo; letrina del patio, palangana y jarra; lámpara de queroseno"),
@@ -166,7 +166,7 @@ public static partial class MicroStyles
         E("exposicion_mundial", "Feria internacional (2000–)", 2000, 2100, R(Region.Exposicion),
           Bed.Moderna, Seat.Cromado, Table.Formica, Hearth.Electrica, Toilet.CisternaBaja, Basin.Pedestal, Storage.Estanteria, Light.Bombilla,
           "A08058", "D9A441", "C0C4C8", "Pabellones de una feria inventada: cada uno lleva el aire de su país; el mobiliario de servicio es el de cualquier feria"),
-        // (2026-11-04) LOS FAMOSOS (docs/microcosmos-famosos.md).
+        // (2026-11-04) LOS FAMOSOS (docs/microcosmos/microcosmos-famosos.md).
         E("india_moderna", "India moderna (Tamil Nadu, 1900–)", 1900, 2100, R(Region.SurAsia),
           Bed.Charpai, Seat.Suelo, Table.Baja, Hearth.Gas, Toilet.Turca, Basin.Cantaro, Storage.Estanteria, Light.Bombilla,
           "7A5A3A", "F2EEE2", "B0714A", "Ashram: esterilla y cojín para sentarse en el suelo, catre de cuerdas (kattil) o colchón fino; cocina de gas con ollas de acero y de barro; letrina a la turca con su jarra; vasija de agua de barro; estante de acero (Isha Yoga Center, Velliangiri)"),
@@ -176,7 +176,7 @@ public static partial class MicroStyles
         E("norteamerica_interior", "Norteamérica interior (1920–)", 1920, 2100, R(Region.NorteamericaInterior),
           Bed.Moderna, Seat.Cromado, Table.Formica, Hearth.Gas, Toilet.CisternaBaja, Basin.Pedestal, Storage.Alacena, Light.Bombilla,
           "8A6A44", "6E9CC0", "C0C4C8", "Cama con colcha, mesa de cocina de fórmica y sillas de cromo, cocina de gas o eléctrica, inodoro de tanque bajo y lavabo de pie (las casas de posguerra de Albuquerque, Omaha y el este de Texas)"),
-        // (2026-11-05) LA MÚSICA (docs/microcosmos-musica.md).
+        // (2026-11-05) LA MÚSICA (docs/microcosmos/microcosmos-musica.md).
         E("caribe_hispano", "Caribe hispano (Barranquilla, Vega Baja, 1950–)", 1950, 2100, R(Region.CaribeHispano),
           Bed.Moderna, Seat.Butaca, Table.Formica, Hearth.Gas, Toilet.CisternaBaja, Basin.Pedestal, Storage.Alacena, Light.Bombilla,
           "8A6A44", "E8B04A", "C0C4C8", "La casa de bloque del Caribe: cama con ventilador, mecedora o butaca en la terraza, mesa de fórmica, cocina de gas de bombona, inodoro y lavadero en el patio (Barranquilla, Vega Baja)"),
@@ -293,21 +293,21 @@ public static partial class MicroStyles
             case "Bruce Lee": return Region.HongKong;   // (Seattle, Oakland y Los Ángeles: CivicBuilder los pone en Norteamérica)
             case "Chernóbil": return Region.Sovietico;
             case "Palenque": return Region.Maya;
-            // Los famosos (docs/microcosmos-famosos.md)
+            // Los famosos (docs/microcosmos/microcosmos-famosos.md)
             case "Velliangiri": return Region.SurAsia;   // 1999: la entrada india_moderna
             case "Hawthorne": return Region.Norteamerica;
             case "Omelek": return Region.Norteamerica;   // el Reagan Test Site del Ejército de EE. UU. en Kwajalein (instalaciones de EE. UU.)
             case "Aldea de la montaña": return Region.China;
             case "Albuquerque": case "Omaha": case "Prairie View": return Region.NorteamericaInterior;
             case "Uagadugú": return Region.Sahel;
-            // La música (docs/microcosmos-musica.md)
+            // La música (docs/microcosmos/microcosmos-musica.md)
             case "Barranquilla": case "Vega Baja": return Region.CaribeHispano;
             case "Kingston": return Region.Jamaica;
             case "Seúl": return Region.Corea;
             case "Belfast": return Region.IslasBritanicas;
             case "Montreal": case "Gary": case "Long Island": return Region.NorteamericaNorte;
             case "Grandes aportes de las canciones": return Region.Hispanoamerica;   // el pueblo inventado; cada rincón lleva la suya (CivicBuilder.Musica)
-            // Las historias de la tanda 3 (docs/microcosmos-historias-3.md)
+            // Las historias de la tanda 3 (docs/microcosmos/microcosmos-historias-3.md)
             case "Chimbacalle": return Region.Andes;
             case "Lagunillas": return Region.Mapuche;
             case "Cajamarca": return Region.Inca;

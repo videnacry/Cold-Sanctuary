@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// LOS PISOS DE YOGA (Berón 2026-11-04; docs/yoga-pisos.md): se quitó el anillo de yoga (desde él no se veía al maestro) y el yoga
+/// LOS PISOS DE YOGA (Berón 2026-11-04; docs/areas/yoga-pisos.md): se quitó el anillo de yoga (desde él no se veía al maestro) y el yoga
 /// pasó a DOS PISOS de la torre del Entrenamiento —Hatha (el de la Sala de Yoga) y Ashtanga (su planta propia)—, cada uno con su
 /// sala OCCIDENTAL y su sala TRADICIONAL. Comprueba:
 ///  1. SIN ANILLO: ni «Anillo_yoga» ni losas de anillo en la Sala de Yoga.

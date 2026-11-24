@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LOS EDIFICIOS REALES DE CADA ERA en los microcosmos civilizados (docs/microcosmos-civilizaciones.md §8; Berón 2026-11-01:
+/// LOS EDIFICIOS REALES DE CADA ERA en los microcosmos civilizados (docs/microcosmos/microcosmos-civilizaciones.md §8; Berón 2026-11-01:
 /// «se deben crear edificaciones reales, debes investigar planos e imágenes para poder recrear las estructuras de la era e
 /// historia, y deben ser interactuables, por ejemplo restaurantes o cocinas o dojos o salas de yoga o hospitales o jardines»).
 /// Cada edificio es un <see cref="AreaFunctionSite"/> con una plantilla del REGISTRO (<see cref="AreaFunctions.Buildings"/>) y
@@ -46,7 +46,7 @@ internal static partial class CivicBuilder
     static readonly Style Sandbag = new Style(C(0.62f, 0.55f, 0.4f), C(0.33f, 0.27f, 0.2f), C(0.4f, 0.33f, 0.25f), Roof.Flat, 2.2f);       // refugio de trinchera
 
     /// <summary>Añade a la historia los edificios de su era (por su nombre de microcosmos) y aplica las REGLAS DE EDIFICACIÓN
-    /// (docs/microcosmos-reglas-edificacion.md): lo que falte de las necesidades básicas va a unos aseos de la era en un solar libre,
+    /// (docs/reglas/microcosmos-reglas-edificacion.md): lo que falte de las necesidades básicas va a unos aseos de la era en un solar libre,
     /// y la escena se valida (<see cref="MicroBuildRules.Validate"/>). Devuelve cuántos insectos-humanos puso.</summary>
     internal static int Civilize(Transform t, string display)
     {
@@ -417,7 +417,7 @@ internal static partial class CivicBuilder
     // ── Piezas ──────────────────────────────────────────────────────────────────────────────────────────────────────
 
     /// <summary>Un puesto: clave del registro, posición local (x, z) dentro del edificio, tamaño (ancho, fondo) y rótulo. Desde las
-    /// reglas de edificación (docs/microcosmos-reglas-edificacion.md) la posición solo da el ORDEN (los muebles se colocan con el
+    /// reglas de edificación (docs/reglas/microcosmos-reglas-edificacion.md) la posición solo da el ORDEN (los muebles se colocan con el
     /// paso de 2 m) y el tamaño solo cuenta en lo que se pisa (tatami, esterilla, bancal).</summary>
     static (string key, Vector2 at, Vector2 size, string label) S(string key, float x, float z, float w, float d, string label) => (key, new Vector2(x, z), new Vector2(w, d), label);
 
@@ -514,7 +514,7 @@ internal static partial class CivicBuilder
     }
 
     /// <summary>
-    /// LAS ETIQUETAS DE ACTIVIDAD de un edificio (regla 8, docs/microcosmos-actividades.md): su categoría (trabajo, descanso,
+    /// LAS ETIQUETAS DE ACTIVIDAD de un edificio (regla 8, docs/microcosmos/microcosmos-actividades.md): su categoría (trabajo, descanso,
     /// recuperación u ocio: <see cref="AreaFunctionSite.ActivityOf"/>), si tiene puestos de trabajo, su capacidad (camas, asientos,
     /// puestos, sitio en lo que se pisa), la interacción que ofrece y los cuerpos para los que está adaptado. Es lo que el horario
     /// semanal lee para mandar a cada uno a trabajar, descansar, recuperarse o divertirse.

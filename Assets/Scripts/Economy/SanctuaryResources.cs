@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Libro mayor (ledger) de recursos del santuario ACTIVO (docs/world-topology-and-planes.md §4/§7).
+/// Libro mayor (ledger) de recursos del santuario ACTIVO (docs/sistemas/world-topology-and-planes.md §4/§7).
 /// Los <see cref="AreaProducer"/> aportan de forma pasiva/activa; construcción, mejoras y guerra
 /// gastan. La escala de tiempo (Mesocosmos lento / Macrocosmos rápido) NO vive aquí: la dan los
 /// productores al tickear en tiempo de juego (TimeController), así que subir la velocidad acelera

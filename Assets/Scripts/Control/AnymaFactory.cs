@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// FÁBRICA DE ANIMAS (docs/anyma-factory-and-control.md §2) — crea variantes a partir de un <see cref="AnymaSpec"/>.
+/// FÁBRICA DE ANIMAS (docs/sistemas/anyma-factory-and-control.md §2) — crea variantes a partir de un <see cref="AnymaSpec"/>.
 /// Alberga las plantillas por especie (prefabs) en un array (los prefabs no se versionan → se asignan en Unity). Un
 /// spec **vacío** → todo random dentro de márgenes; con campos, esos se fijan y el resto es random. Instancia el prefab
 /// de la especie y aplica el spec DESPUÉS de `Animal.Init` (vía <see cref="AnymaSpecApplier"/>, un frame después).

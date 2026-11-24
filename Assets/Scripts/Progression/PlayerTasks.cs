@@ -3,7 +3,7 @@ using UnityEngine;
 
 /// <summary>
 /// TAREAS DEL JUGADOR POR PASOS CON «E» (Berón 2026-11-04: «de momento para todas las tareas e iniciaciones vamos a utilizar el
-/// modelo de Ambrosio, de modo que se pueden resolver pulsando "E" en los lugares indicados»; docs/tareas-del-jugador.md).
+/// modelo de Ambrosio, de modo que se pueden resolver pulsando "E" en los lugares indicados»; docs/sistemas/tareas-del-jugador.md).
 /// El modelo de Ambrosio (<see cref="AmbrosioStory.Act"/>): hay SITIOS marcados y en cada uno la E hace lo que toca allí
 /// («Empuja a Shanidar», «Toma la melaza», «Dásela»). Aquí se generaliza para la jornada de Kushal: cada misión de la jornada
 /// (<see cref="AreaFunctions"/>, <see cref="AreaWork.Today"/>) es una SECUENCIA de pasos; cada paso tiene su acción («Riega el
@@ -66,7 +66,7 @@ public static class PlayerTasks
         T("coc_comedor", "Recoge las mesas|mesa|Bandeja", "Friega el suelo del comedor|mesa|Fregona", "Limpia los aseos|aseos|Cepillo");
         // ══ HUERTO ══
         T("hue_riego", "Coge la regadera|bancal|Regadera", "Riega el bancal|bancal|Regadera", "Levanta las malas hierbas con su raíz|bancal|Almocafre");
-        // (2026-11-08) El HUERTO VERTICAL (estantes LED de la torre de Producción; docs/produccion-maquinaria.md).
+        // (2026-11-08) El HUERTO VERTICAL (estantes LED de la torre de Producción; docs/areas/produccion-maquinaria.md).
         T("huv_siembra", "Llena las bandejas de germinación|vivero|Bandeja de semillero", "Siembra las semillas en los tacos|vivero|Sobre de semillas", "Trasplanta las plántulas a los canales|estante_cultivo|Bandeja de plántulas");
         T("huv_cosecha", "Coge la caja de cosecha|estante_cultivo|Caja de cosecha", "Corta las plantas de las bandejas maduras|estante_cultivo|Cuchillo de cosecha", "Lava y embolsa la verdura|lavado|Bolsa", "Llévala a la cámara de la cocina|camara_verdura|Caja de cosecha"); Elsewhere("huv_cosecha", 3, "Cocina");
         T("huv_solucion", "Mide la conductividad y el pH|dosificador|Medidor de EC y pH", "Dosifica los nutrientes|dosificador|Garrafa de nutrientes", "Limpia los canales y el filtro|estante_cultivo|Cepillo");
@@ -161,7 +161,7 @@ public static class PlayerTasks
         T("aul_legal", "Saca los contratos y los permisos|estante|Carpeta", "Revisa las normas y los acuerdos en la mesa|mesa|Contrato", "Archiva lo firmado|estante|Carpeta");
         T("aul_lenguas", "Reúne los documentos por traducir|mesa|Diccionario", "Tradúcelos|mesa|Diccionario", "Da la clase de idiomas|pizarra|Tiza");
         T("aul_letras", "Prepara la lectura|estante|Libro", "Da la clase de poesía y narración|pizarra|Tiza", "Lee en voz alta en la sala de estudio|mesa|Libro");
-        // ══ LOS PUESTOS NUEVOS DEL PERSONAL (2026-11-04, docs/personajes-mesocosmos.md) ══
+        // ══ LOS PUESTOS NUEVOS DEL PERSONAL (2026-11-04, docs/historia/personajes-mesocosmos.md) ══
         T("coc_cuentas", "Recoge los ingresos del restaurante|barra|Libro de cuentas", "Anota las compras|mesa|Libro de cuentas", "Cuadra el presupuesto|mesa|Tablet");
         T("coc_avisos", "Prepara los avisos del santuario|mesa|Hoja de avisos", "Dalos en el comedor|mesa|Hoja de avisos", "Haz el programa de radio|mesa|Micrófono");
         T("con_proyectos", "Revisa el plan y los plazos|almacen|Planos", "Comprueba el material|almacen|Tablet", "Asigna los equipos en la obra|obra|Planos");
@@ -175,7 +175,7 @@ public static class PlayerTasks
         T("lanz_control", "Revisa la telemetría|consola|Tablet", "Mira el viento en altura y el techo de nubes|consola|Tablet", "Lleva la cuenta atrás|consola|");
         T("lanz_seguridad", "Prueba el diluvio de agua|plataforma|Llave", "Limpia la trinchera de llamas|trinchera|Escoba", "Revisa el escudo y la cubeta|plataforma|Linterna");
         T("lanz_fabrica", "Integra la primera etapa|etapa|Llave inglesa", "Integra la segunda etapa|etapa|Llave inglesa", "Monta la carga útil|carga|Tablet");
-        // ══ EL PARQUE ENERGÉTICO (2026-11-05, docs/energia.md) ══
+        // ══ EL PARQUE ENERGÉTICO (2026-11-05, docs/areas/energia.md) ══
         T("sol_mantenimiento", "Coge el cepillo del taller|banco_taller|Cepillo", "Quita la escarcha de las mesas|panel|Cepillo", "Revisa los módulos y el cableado|panel|Tablet");
         T("sol_instalacion", "Prepara los módulos en el taller|banco_taller|Panel solar", "Monta la mesa|panel|Llave inglesa", "Conéctala y prueba la cadena|panel|Tablet");
         T("sol_reparacion", "Coge los repuestos|estante|Panel solar", "Cambia el módulo roto|panel|Destornillador", "Comprueba que la baliza se apaga|panel|Tablet");

@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// (2026-11-13, docs/qa-propuesta.md §6) EL COMPROBADOR DE QA, en la lista rápida (0 s, sin escena): primero sus reglas sobre textos de
+/// (2026-11-13, docs/qa/qa-propuesta.md §6) EL COMPROBADOR DE QA, en la lista rápida (0 s, sin escena): primero sus reglas sobre textos de
 /// ejemplo (<see cref="QaCheckFixtures"/>), luego los docs de verdad (docs/qa/ del repositorio que dice Temp/qa-root.txt, lo escribe
 /// tools/sync-to-unity.sh). Falla si el catálogo, el registro, las peticiones y las pruebas no cuadran.
 /// </summary>
@@ -186,7 +186,7 @@ public static class QaCheckFixtures
         Expect(check, "§6.9 un doc de QA que encoge más de la mitad (82878fc)", With(i => { i.Sizes.Add(new QaCheck.SizeChange("docs/checklist.md", 0, 231000, "último commit")); return i; }), "encoge");
         Expect(check, "§6.9 un doc de QA borrado", With(i => { i.Sizes.Add(new QaCheck.SizeChange("docs/qa/registro.md", -1, 5000, "sin commitear")); return i; }), "encoge");
         Expect(check, "§6.10 un archivo de TmpCheck en git", With(i => { i.Tracked.Add("Assets/Editor/TmpCheck/FotoProbe.cs"); return i; }), "tmpcheck");
-        QaCheck.Report half = QaCheck.Run(With(i => { i.Sizes.Add(new QaCheck.SizeChange("docs/qa/casos.md", 160, 300, "último commit")); i.Sizes.Add(new QaCheck.SizeChange("docs/auditoria-peticiones.md", -1, 66000, "último commit")); return i; }));
+        QaCheck.Report half = QaCheck.Run(With(i => { i.Sizes.Add(new QaCheck.SizeChange("docs/qa/casos.md", 160, 300, "último commit")); i.Sizes.Add(new QaCheck.SizeChange("docs/historial/auditoria-peticiones.md", -1, 66000, "último commit")); return i; }));
         check("[QA] encoger menos de la mitad no es problema, y la auditoría vieja se puede retirar (la sustituye peticiones.md)", half.Problems.Count == 0, string.Join(" · ", half.Problems.Select(p => p.ToString())));
     }
 

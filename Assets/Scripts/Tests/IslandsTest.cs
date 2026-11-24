@@ -55,7 +55,7 @@ public class IslandsTest : MonoBehaviour, ITestUnit
         }
         TestProbe.Check("la fauna marina vive en la laguna", marine > 0 && marineInLagoon * 2 >= marine, $"{marineInLagoon}/{marine} en la laguna");
 
-        // Sin escaleras verticales (Berón 2026-10-27, docs/alfombras-plan.md).
+        // Sin escaleras verticales (Berón 2026-10-27, docs/areas/alfombras-plan.md).
         int ladders = 0;
         foreach (Transform t in FindObjectsByType<Transform>(FindObjectsSortMode.None)) if (t.name == "Escalera" && t.Find("Peldano") != null) ladders++;
         TestProbe.Check("ya no hay escaleras verticales (se sube en alfombra)", ladders == 0, $"{ladders} escaleras");

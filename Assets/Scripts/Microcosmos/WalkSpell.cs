@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Hechizo CAMINAR — la **contraparte de Jalar aplicada a UNO MISMO** (docs/stats-as-truth.md §hechizos), sobre
+/// Hechizo CAMINAR — la **contraparte de Jalar aplicada a UNO MISMO** (docs/sistemas/stats-as-truth.md §hechizos), sobre
 /// el sistema unificado de `powerBonus` de `SpellBase`. Direcciones **ESDF** (s=izq, e=adelante, d=atrás, f=der):
 ///   • **Carga** (`chargeKey`/LeftShift): mantener `e`+LeftShift = **tomar postura de salida** (el personaje se
 ///     queda quieto acumulando); al **soltar**, arranca con la **velocidad inicial ∝ carga** (como el velocista).

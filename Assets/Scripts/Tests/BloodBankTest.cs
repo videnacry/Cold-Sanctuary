@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DEL BANCO DE SANGRE (Berón 2026-11-03; docs/hospital.md §Banco de sangre):
+/// PRUEBA DEL BANCO DE SANGRE (Berón 2026-11-03; docs/areas/hospital.md §Banco de sangre):
 /// 1. está en el hospital, con su equipo: nevera de hematíes, agitador de plaquetas, congelador de plasma, descongelador, nevera
 ///    veterinaria y sillón de donante; cada producto a su temperatura;
 /// 2. compatibilidad ABO/Rh de hematíes y de plasma, perros DEA 1 y gatos sin donante universal;

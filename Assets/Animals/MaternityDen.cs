@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// GUARIDA DE MATERNIDAD (docs/ciclo-de-vida.md): la hembra preñada de una especie que pare en guarida
+/// GUARIDA DE MATERNIDAD (docs/sistemas/ciclo-de-vida.md): la hembra preñada de una especie que pare en guarida
 /// (<see cref="LifeHistory.den"/>: oso polar, malamute) entra en ella <see cref="LifeHistory.denBeforeMonths"/> antes del
 /// parto, pare DENTRO (<see cref="Reproduction"/> la deja parir a su lado), amamanta allí a las crías y sale con ellas
 /// <see cref="LifeHistory.denAfterMonths"/> después. La osa AYUNA todo ese tiempo (vive de su grasa); la perra sale un

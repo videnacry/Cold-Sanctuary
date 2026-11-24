@@ -4,7 +4,7 @@ using System.Reflection;
 using UnityEngine;
 
 /// <summary>
-/// Automatiza por `TestProbe` ítems de FAUNA de `docs/testing-checklist.md` §23–§45 que pedían observar el Play:
+/// Automatiza por `TestProbe` ítems de FAUNA de `docs/qa/testing-checklist.md` §23–§45 que pedían observar el Play:
 /// forrajeo (`Forager.SelectTarget`), decisión de amenaza (`ThreatResponder.Decide/Assess`: huir, cazar, manada,
 /// defensa de crías y acoso), posesión (`AnimaController`/`PlayerBrain`), penalización de medio, fauna recién nacida
 /// neutra, frases sin gates de capacidad, asfixia, deambular local con sesgo hacia delante, `TraceField` sin instancia,

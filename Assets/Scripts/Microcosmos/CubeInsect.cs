@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// ARTRÓPODO ARTICULADO DE CUBOS, hecho con los datos de docs/insect-morphology.md (InsectMorphology):
+/// ARTRÓPODO ARTICULADO DE CUBOS, hecho con los datos de docs/sistemas/insect-morphology.md (InsectMorphology):
 /// - el cuerpo por segmentos (cabeza, tórax, pecíolo, gáster…) con sus largos y anchos relativos a L;
 /// - las patas de 5 segmentos (coxa, trocánter, fémur, tibia, tarso) con su pose de reposo; en las arañas, 8 patas de 7
 ///   segmentos (con patela y metatarso), quelíceros y pedipalpos;
@@ -348,7 +348,7 @@ public partial class CubeInsect : MonoBehaviour
         int np = sp.legs.Length; float edge = sp.spider ? 45f : 30f;
         float restYaw = np <= 1 ? 0f : Mathf.Lerp(edge, -edge, p / (float)(np - 1));
         if (raptor) restYaw = 75f; if (jump) restYaw = -70f;
-        // POSTURA RECOGIDA del insecto-humano (2026-11-18, docs/plan-microcosmos-realismo.md §3.1): el par trasero, algo más atrás.
+        // POSTURA RECOGIDA del insecto-humano (2026-11-18, docs/microcosmos/plan-microcosmos-realismo.md §3.1): el par trasero, algo más atrás.
         bool tuck = _dressingFolk && TuckFolkLegs && !sp.spider && !raptor && !jump;
         if (tuck && np > 1 && p == np - 1) restYaw = FolkTuckRearYaw;
         var coxa = new GameObject($"Pata_{p}_{(s < 0 ? "I" : "D")}").transform; coxa.SetParent(pivot, false);

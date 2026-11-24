@@ -4,7 +4,7 @@ using UnityEngine;
 /// HECHIZO DE COMUNICACIÓN — "todas las animas pueden hablar entre sí". Su ACCIÓN NATURAL es vocalizar/expresar (la
 /// <see cref="Mind"/> ya *piensa*); el hechizo lo lleva a **charla**: cada cierto rato, dos animas cercanas que lo
 /// tengan **alternan sus pensamientos** como diálogo (ligado al **campo de pensamientos** y a los **pensamientos
-/// nativos** de cada una — ver docs/spell-genesis-and-sanctuary-progression.md §7). Al hablar hay **contagio
+/// nativos** de cada una — ver docs/sistemas/spell-genesis-and-sanctuary-progression.md §7). Al hablar hay **contagio
 /// emocional** (ciencia real: la emoción se mimetiza entre próximos): el que escucha mueve sus humores hacia la
 /// VALENCIA del que habla, escalado por el **vínculo** (más bond → más contagio); y charlar en positivo **crece la
 /// amistad**. Opt-in = es un hechizo que se APRENDE (no todos lo tienen innato), coherente con el modelo de desbloqueo

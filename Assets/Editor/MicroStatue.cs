@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LAS ESTATUAS DE LOS MICROCOSMOS MODELAN INSECTOS-HUMANOS (docs/microcosmos-suelo-y-elementos.md §Estatuas; Berón 2026-11-04: «me ha
+/// LAS ESTATUAS DE LOS MICROCOSMOS MODELAN INSECTOS-HUMANOS (docs/microcosmos/microcosmos-suelo-y-elementos.md §Estatuas; Berón 2026-11-04: «me ha
 /// parecido que la estatua tenía forma humana, todas las estatuas humanas deben tener su versión para el microcosmos donde modelan
 /// figuras de insectos-humanos»). La figura es el CUERPO de un insecto-humano de verdad (<see cref="CubeInsect.DressFolk"/>: su especie
 /// por el papel que representa —<see cref="InsectCast.SpeciesFor"/>—, erguido, con su cara y su pelo), sin conducta ni colliders y

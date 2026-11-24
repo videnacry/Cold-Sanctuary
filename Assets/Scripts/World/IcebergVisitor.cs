@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// POR QUÉ UN ANIMAL VA A UN ICEBERG, CUÁNTO SE QUEDA Y CUÁNDO SE VA (Berón 2026-11-05; docs/vida-en-icebergs.md). Son animales de verdad (foca y pingüino de Adelia) que
+/// POR QUÉ UN ANIMAL VA A UN ICEBERG, CUÁNTO SE QUEDA Y CUÁNDO SE VA (Berón 2026-11-05; docs/fauna/vida-en-icebergs.md). Son animales de verdad (foca y pingüino de Adelia) que
 /// viven alrededor de su iceberg con <see cref="MarineLife"/>, pero con este sitio de hogar. No crían aquí y no suman coste de cría: son pocos y fijos.
 /// VA: tras comer o de noche, como en la laguna (descansar lejos del agua). SE QUEDA: lo que marca <see cref="Stay"/>. SE VA: al acabar, o antes si tiene hambre.
 /// </summary>

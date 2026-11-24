@@ -4,7 +4,7 @@ using UnityEngine;
 /// CUÁNTOS PISOS NECESITA CADA CENTRO DE ENTRENAMIENTO (regla J16 / S13, Berón 2026-11-04: «los centros de entrenamiento y de ocio
 /// deben dar servicio a todos los miembros a la vez»; «algunas áreas tienen más de un piso justo para abastecer a todos los miembros
 /// y se pueden agregar pisos, si las 2 de yoga existentes no son suficientes se crea una más y lo mismo con el dojo y demás áreas de
-/// estudio y entrenamiento»; docs/centros-para-todos.md).
+/// estudio y entrenamiento»; docs/areas/centros-para-todos.md).
 /// El constructor de la torre del Entrenamiento pide <see cref="FloorsFor"/> pisos de cada centro, ⌈miembros / plazas de un piso⌉, con
 /// los miembros de la lista del personal (<see cref="AreaCapacity.DefaultMembers"/>; nunca un número fijo), y los apila en el
 /// edificio-árbol como cualquier otro piso (hélice, 22 m entre niveles, anillos, alfombras, máscaras). La comprobación es la de la
@@ -20,7 +20,7 @@ public static class TrainingCentres
         public Spec(string n, string act, int p, string u, string w) { name = n; activity = act; perFloor = p; unit = u; why = w; }
     }
 
-    /// <summary>Lo que cabe en UN piso de cada centro (de su distribución; docs/centros-para-todos.md). <c>activity</c>: la actividad de
+    /// <summary>Lo que cabe en UN piso de cada centro (de su distribución; docs/areas/centros-para-todos.md). <c>activity</c>: la actividad de
     /// su <see cref="AreaSeat"/> (vacía si AreaCapacity lo cuenta por sí mismo: máquinas del gimnasio, esterillas del yoga).</summary>
     public static readonly Spec[] All =
     {
@@ -29,7 +29,7 @@ public static class TrainingCentres
         new Spec("Yoga Hatha", "", 16, "esterillas", "dos salas por piso (occidental y tradicional) de 8 esterillas: con ≥ 2 m entre ellas y a ≤ 9 m del maestro no caben más en 18 × 26 m"),
         new Spec("Yoga Ashtanga", "", 16, "esterillas", "como el de Hatha: dos salas de 8 esterillas por piso"),
         new Spec("Dojo", "artes marciales", 25, "puestos", "tatami de 8 × 8 (16 a 2 m), jaula 2, ring 2, sacos 3, makiwaras 2"),
-        new Spec("Ballet", "ballet", 20, "plazas", "suelo de 18 × 8,6 m y barras dobles (16–23 alumnos, docs/obras-dojo-ballet.md)"),
+        new Spec("Ballet", "ballet", 20, "plazas", "suelo de 18 × 8,6 m y barras dobles (16–23 alumnos, docs/areas/obras-dojo-ballet.md)"),
     };
 
     public static Spec? Of(string centre) { foreach (Spec s in All) if (s.name == centre) return s; return null; }

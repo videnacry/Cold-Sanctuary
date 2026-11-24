@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DE LA SALA DE GUARDIA Y DE LA ARBOLEDA (Berón 2026-11-05; docs/sala-de-guardia.md, docs/ice-sanctuary-ecology.md §Sin bosque, docs/territorio-polar.md; grupo 91):
+/// PRUEBA DE LA SALA DE GUARDIA Y DE LA ARBOLEDA (Berón 2026-11-05; docs/areas/sala-de-guardia.md, docs/fauna/ice-sanctuary-ecology.md §Sin bosque, docs/areas/territorio-polar.md; grupo 91):
 /// 1. LA SALA DE GUARDIA: en Servicios, con sus piezas, sus pantallas y su misión; sus lecturas no fallan aunque falte un sistema.
 /// 2. EL CAZADOR: solo los 6 árboles de la residencia, y caza animales, no personas ni sus abejas; no crece, porque sostiene casas.
 /// 3. LOS CASQUETES SILVESTRES: sus estructuras, sus nidos y sus descansaderos, en una malla por material.

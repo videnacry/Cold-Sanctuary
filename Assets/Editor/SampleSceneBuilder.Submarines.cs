@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LOS SUBMARINOS DEL HOSPITAL (Berón 2026-11-03; docs/submarinos-medicos.md):
+/// LOS SUBMARINOS DEL HOSPITAL (Berón 2026-11-03; docs/areas/submarinos-medicos.md):
 /// - el SUBMARINO-AMBULANCIA anfibio (<see cref="HospitalSubmarine"/>): 14 × 5 × 5 m (el vehículo de diseño de los árboles), con orugas para el hielo y hélices para el
 ///   mar; cabe por las puertas de los edificios-árbol y sube nadando por el tronco a la puerta del piso del hospital. Aparcado
 ///   junto a la puerta del suelo del árbol del hospital (a un lado del paso).

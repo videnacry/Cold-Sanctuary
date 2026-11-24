@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// LOS UNIFORMES DE LA JORNADA (docs/actividades-y-uniformes.md §4; Berón 2026-11-04: «sería posible que los humanos se coloquen
+/// LOS UNIFORMES DE LA JORNADA (docs/sistemas/actividades-y-uniformes.md §4; Berón 2026-11-04: «sería posible que los humanos se coloquen
 /// uniformes para las tareas que vayan a realizar de la jornada?»). Al llegar a su tarea, cada uno se pone el uniforme de esa tarea
 /// y al acabarla vuelve a su ropa: blanco de cocina con delantal y gorro, pijama de quirófano o bata blanca con fonendo, peto
 /// vaquero y guantes de hortelano, chaleco reflectante y casco de obra, polo del gimnasio, bata de laboratorio con gafas, neopreno

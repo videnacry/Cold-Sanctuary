@@ -3,8 +3,8 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// DÓNDE VIVE CADA UNO (Berón 2026-11-08; docs/progresion-santuarios.md, docs/jornada-y-rotacion.md §Reparto por santuarios; manual J33). Cada humano tiene
-/// su CASA: un santuario y un nivel. Santuario 1 = la tierra (SampleScene), 2 = el Marino (docs/sitio-nuclear.md §20), 3 = el Aéreo (§23).
+/// DÓNDE VIVE CADA UNO (Berón 2026-11-08; docs/sistemas/progresion-santuarios.md, docs/sistemas/jornada-y-rotacion.md §Reparto por santuarios; manual J33). Cada humano tiene
+/// su CASA: un santuario y un nivel. Santuario 1 = la tierra (SampleScene), 2 = el Marino (docs/areas/sitio-nuclear.md §20), 3 = el Aéreo (§23).
 ///  · SE SUBE POR PODER: un humano sale de su santuario solo cuando su poder supera al JEFE de ese santuario, el animal más poderoso de su fauna
 ///    (<see cref="SanctuaryPower"/>). Entonces pasa al siguiente santuario del mismo nivel, o al primero del nivel siguiente tras el último.
 ///    Se prepara con tareas, entrenamiento, yoga y meditación; después se le enseña magia, y magia y bonusPacks son lo que le deja superar a una ballena.

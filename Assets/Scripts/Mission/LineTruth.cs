@@ -16,7 +16,7 @@ public enum Veracity
 
 /// <summary>
 /// LA VERACIDAD DE LAS FRASES (Berón 2026-11-05: «las frases se pueden conservar pero como regla general se deben tener la property que ofrezca fuentes para saber si tiene
-/// nivel de veracidad o es inventado»; regla M39, docs/veracidad-frases.md). Cada paso de una <see cref="StoryMission"/> lleva su <see cref="Veracity"/> y su fuente.
+/// nivel de veracidad o es inventado»; regla M39, docs/sistemas/veracidad-frases.md). Cada paso de una <see cref="StoryMission"/> lleva su <see cref="Veracity"/> y su fuente.
 /// <see cref="Fill"/> las pone: si la frase está en <see cref="Quoted"/>, lo que diga esa tabla; si la dice una persona real (<see cref="Real"/>), Recreada, con las fuentes de
 /// la ficha; si no, Inventada. Se aplica al construir y, en las escenas ya construidas, al arrancar (no hace falta reconstruirlas).
 /// El jugador lo ve en la nota de cada frase y, al final, en la ficha, con la tecla V (<see cref="HistoryCard"/>).
@@ -97,9 +97,9 @@ public static class LineTruth
     {
         ("Compasión", Veracity.Inventada, "Los avisos de la misión (Le Chambon, Sendler) son voz de juego; los hechos, en esta ficha", "las fuentes de la ficha"),
         ("Egina", Veracity.Inventada, "Zeus, Éaco y los mirmidones hablan con frases de juego sobre un mito", "el mito, en las fuentes de esta ficha"),
-        ("Sakshi", Veracity.Inventada, "Personajes de ficción del juego", "docs/microcosmos-sakshi-origin.md"),
-        ("Ambrosio", Veracity.Inventada, "Personajes de ficción del juego", "docs/novela.md"),
-        ("Cocina", Veracity.Inventada, "Personajes de ficción del juego", "docs/novela.md, «Cómo nació la cocina»"),
+        ("Sakshi", Veracity.Inventada, "Personajes de ficción del juego", "docs/microcosmos/microcosmos-sakshi-origin.md"),
+        ("Ambrosio", Veracity.Inventada, "Personajes de ficción del juego", "docs/historia/novela.md"),
+        ("Cocina", Veracity.Inventada, "Personajes de ficción del juego", "docs/historia/novela.md, «Cómo nació la cocina»"),
     };
 
     /// <summary>La línea de una historia de <see cref="Scripted"/> para su ficha, con el formato de <see cref="Fill"/>.</summary>

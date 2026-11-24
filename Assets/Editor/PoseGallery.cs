@@ -103,7 +103,7 @@ public static class PoseGallery
     [MenuItem("Tools/Cold Sanctuary/Character Gallery (PNG de las personas)")]
     public static void Characters() => Portraits(new[] { "Player", "Magnate", "Linduarda", "Lizmibet", "JefeConstruccion", "Goluis", "Panterilia", "Gohageneis", "Irosene", "Andrea" }, "Personajes", "Caras");   // fichas: docs/personajes/
 
-    /// <summary>RETRATOS de la familia y los amigos de Berón (2026-11-04, de sus fotos; docs/diseno-personajes.md §Familia y amigos)
+    /// <summary>RETRATOS de la familia y los amigos de Berón (2026-11-04, de sus fotos; docs/sistemas/diseno-personajes.md §Familia y amigos)
     /// en Temp/PoseGallery/Familia.png y FamiliaCaras.png.</summary>
     [MenuItem("Tools/Cold Sanctuary/Character Gallery (familia y amigos de Berón)")]
     public static void FamilyCharacters()

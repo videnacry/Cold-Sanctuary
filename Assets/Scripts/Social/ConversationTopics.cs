@@ -2,13 +2,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// DE QUÉ HABLAN (docs/conversaciones.md §Temas). Los temas salen del CONTEXTO de los dos, no de un árbol de diálogo: su trabajo
+/// DE QUÉ HABLAN (docs/sistemas/conversaciones.md §Temas). Los temas salen del CONTEXTO de los dos, no de un árbol de diálogo: su trabajo
 /// (<see cref="MicroJornada"/>, la jornada del santuario), la actividad que comparten (el mismo puesto, la comida, la misma franja
 /// libre), su familia (<see cref="PersonLife"/>: pareja, hijos, madre), su linaje de insecto (<see cref="FolkLineage"/>), la era y el
 /// lugar (<see cref="MicroEra"/>, <see cref="ConversationContext"/>), la historia del sitio, sus necesidades (hambre, cansancio) y lo
 /// que piensa su <see cref="Mind"/>. Cada tema pesa según el contexto; lo ya hablado con esa persona pesa menos (memoria).
 /// El guion son 4–6 frases cortas que se turnan (A, B, A, B…), compuestas de plantillas con los datos de los dos: pocas plantillas ×
-/// muchos datos = variedad barata (docs/mind-model.md §6).
+/// muchos datos = variedad barata (docs/sistemas/mind-model.md §6).
 /// </summary>
 public static class ConversationTopics
 {

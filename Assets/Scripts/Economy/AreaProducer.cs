@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Hace que un área del santuario produzca un recurso (docs/world-topology-and-planes.md §4):
+/// Hace que un área del santuario produzca un recurso (docs/sistemas/world-topology-and-planes.md §4):
 /// un **aporte pasivo lineal** (por minuto de juego) más un **bonus por cada personaje asignado** al
 /// área ("como mandar un peón a la mina de oro en Warcraft").
 ///

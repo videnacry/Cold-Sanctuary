@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// HUD del PENSAMIENTO del ser que MANEJA el jugador (docs/microcosmos-dungbeetle-level.md §5). El jugador puede
+/// HUD del PENSAMIENTO del ser que MANEJA el jugador (docs/microcosmos/microcosmos-dungbeetle-level.md §5). El jugador puede
 /// controlar CUALQUIER `Anima` (posesión: cambia el puntero de control + la cámara); esta UI lee la `Mind` del ser
 /// cuyo `AnimaController.Active` es un `PlayerBrain` y muestra su **pensamiento actual + intensidad** (verde=positivo /
 /// rojo=negativo). Es el canal por el que el jugador "lee" a Kushal/al poseído (miedo a acercarse, deseo…), pilar del

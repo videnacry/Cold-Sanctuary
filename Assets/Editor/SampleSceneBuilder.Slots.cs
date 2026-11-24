@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// POSICIONES RESERVADAS DE CADA PISO (docs/reglas-plataformas.md, regla 8; Berón 2026-10-28): al final de la blockout, con
+/// POSICIONES RESERVADAS DE CADA PISO (docs/reglas/reglas-plataformas.md, regla 8; Berón 2026-10-28): al final de la blockout, con
 /// los muebles y las áreas de alfombras ya puestos (<see cref="PlaceCarpetAreas"/>), cada piso apunta en su
 /// <see cref="PlatformSlots"/> dónde irán la HISTORIA, los PERSONAJES, la FAUNA y la FLORA de su microcosmos
 /// (<c>AreaMicrocosmos</c> las usa). Rejilla de 1 m sobre el rectángulo del piso; una celda está LIBRE si queda a ≥ 1 m de

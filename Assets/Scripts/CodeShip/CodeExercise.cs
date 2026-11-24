@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 
 /// <summary>
-/// UN RETO DE CÓDIGO (portado de CodeShip, src/modules/mind-duel/domain/exercise.ts; docs/plan-microcosmos-realismo.md §4.4). Datos puros,
+/// UN RETO DE CÓDIGO (portado de CodeShip, src/modules/mind-duel/domain/exercise.ts; docs/microcosmos/plan-microcosmos-realismo.md §4.4). Datos puros,
 /// sin Unity, para probarlo sin escena (<see cref="CodeShipLogicTest"/>). Dos clases, como en CodeShip:
 ///  · <see cref="Kind.Order"/>: poner los bloques en orden (problema de Parsons). Los bloques que no están en <see cref="solution"/> son
 ///    distracciones.

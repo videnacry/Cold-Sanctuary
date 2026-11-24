@@ -3,7 +3,7 @@ using St = MicroStyles;
 
 /// <summary>
 /// LOS APARATOS DE ENTRENAR DE CADA ÉPOCA (2026-11-04; Berón: «¿en ninguna época de microcosmos hay gimnasio? … se investigaría la
-/// época/lugar para recrear edificaciones, muebles y maquinaria nativos»; docs/microcosmos-entrenamiento-eras.md, con fuentes).
+/// época/lugar para recrear edificaciones, muebles y maquinaria nativos»; docs/microcosmos/microcosmos-entrenamiento-eras.md, con fuentes).
 /// Como el resto de <see cref="MicroFurniture"/>: pocas piezas low-poly con los materiales de su estilo. Claves nuevas:
 /// - foso_lucha (se pisa): el skamma griego de arena, la akhāṛā de tierra con aceite, el ruedo de serrín del Schwingen, el círculo
 ///   de lucha del prado inglés;

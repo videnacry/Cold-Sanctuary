@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Campo de pensamiento (docs/anima-architecture.md §5, "campo social/semántico"): una fuente en el
+/// Campo de pensamiento (docs/sistemas/anima-architecture.md §5, "campo social/semántico"): una fuente en el
 /// mundo que **empuja** a las mentes cercanas hacia un tono elemental y/o **altera sus humores**. Sirve
 /// para guiar a los personajes pensantes por el entorno (un árbol sagrado, un tótem, un hechizo
 /// persistente…). Colócalo en cualquier objeto.

@@ -139,7 +139,7 @@ public class TreeTrip : MonoBehaviour
         if (_i >= _path.Count) Finish(true);
     }
 
-    // LA MÁSCARA (docs/mascaras-de-oxigeno.md): al llegar a la puerta (punto 1, fuera) coge una del perchero de la entrada y se la
+    // LA MÁSCARA (docs/areas/mascaras-de-oxigeno.md): al llegar a la puerta (punto 1, fuera) coge una del perchero de la entrada y se la
     // pone antes de meterse en el agua (o, si el perchero está vacío, de la estación de dentro, junto a la puerta). Si el viaje
     // empieza ya en el agua y sin máscara, primero nada a la estación más cercana. true mientras está en ello.
     bool _maskDone; float _maskUntil;

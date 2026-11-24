@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// PRUEBA EN VIVO DEL HORARIO LIBRE (docs/horario-libre.md; Berón 2026-11-03). En cuatro partes:
+/// PRUEBA EN VIVO DEL HORARIO LIBRE (docs/sistemas/horario-libre.md; Berón 2026-11-03). En cuatro partes:
 ///  1. LÓGICA (sin escena): con el catálogo del santuario y 16 personas, una semana entera: todas las franjas llenas, la capacidad
 ///     respetada y cada actividad repartida por igual (Δ ≤ 1); con poca capacidad (40 personas) sigue llena y Δ ≤ 3.
 ///  2. LA FAMILIA Y LOS AMIGOS DE BERÓN (2026-11-04: Nesvitor, Amykhuz, Karen, Alicita, Ducristin, Josedrilo, Maite, Shalva y

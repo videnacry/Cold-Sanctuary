@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 /// <summary>
-/// PRUEBA DE LA VISTA DE CORTE (docs/plan-microcosmos-realismo.md §3.3, P2; regla 2 de docs/microcosmos-reglas-edificacion.md), sin
+/// PRUEBA DE LA VISTA DE CORTE (docs/microcosmos/plan-microcosmos-realismo.md §3.3, P2; regla 2 de docs/reglas/microcosmos-reglas-edificacion.md), sin
 /// cargar escenas: una casa de 6 × 6 m con cuatro muros de 3 m (uno con su puerta de 1,2 m) y su tejado.
 /// 1. <see cref="CutawayView.Ensure"/> reúne los cuatro muros y el tejado (por nombre y por forma) y su planta;
 /// 2. con el jugador y la cámara fuera, todo se ve;

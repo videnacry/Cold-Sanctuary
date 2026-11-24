@@ -6,7 +6,7 @@ using UnityEngine;
 /// Scales the environment root UP rather than scaling the player down — same trick as
 /// KitchenScaleController, to avoid breaking the CharacterController / physics.
 ///
-/// Key difference (docs/magic-plane-and-meditation.md §3): the transition is NEVER shown, so
+/// Key difference (docs/sistemas/magic-plane-and-meditation.md §3): the transition is NEVER shown, so
 /// the shift is a SNAP (no animated lerp, no shader). It happens while ScreenFader is black,
 /// so the player only ever sees the world before and after — never the resize.
 ///

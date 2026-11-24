@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DEL CUERPO ENCOGIDO DE LOS INSECTOS-HUMANOS (docs/plan-microcosmos-realismo.md §3.1 y fase 0b; Berón 2026-11-18: «la mitad de
+/// PRUEBA DEL CUERPO ENCOGIDO DE LOS INSECTOS-HUMANOS (docs/microcosmos/plan-microcosmos-realismo.md §3.1 y fase 0b; Berón 2026-11-18: «la mitad de
 /// grandes» y «el ancho es importante»), sin cargar escenas. Un vecino hormiga (<see cref="CubeInsect.DressFolk"/>) a la estatura
 /// tipo × s (<see cref="MicroBuildRules.FolkStature"/>, 0,875 m):
 /// 1. mide eso de alto (± 8 cm, con las antenas);

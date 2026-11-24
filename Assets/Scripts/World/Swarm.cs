@@ -10,7 +10,7 @@ public enum SwarmKind { Fish, Krill, Jellyfish, Bee, Clam }
 
 /// <summary>
 /// GRUPO DE ANIMALES PEQUEÑOS COMO UN SOLO ORGANISMO (banco de peces, enjambre de kril, grupo de medusas, enjambre de abejas;
-/// docs/grupos-de-animales.md, Berón 2026-11-03). Un GameObject PADRE que se mueve como grupo y lleva a sus INDIVIDUOS como hijos
+/// docs/sistemas/grupos-de-animales.md, Berón 2026-11-03). Un GameObject PADRE que se mueve como grupo y lleva a sus INDIVIDUOS como hijos
 /// (modelos low-poly de su especie, <see cref="SwarmModels"/>): se mueven todos juntos, cada uno con su sitio en el grupo y su
 /// coleteo. Sin ciclo de vida por individuo (barato): el tamaño es <see cref="count"/> = el número de individuos (uno por
 /// unidad, <see cref="Visible"/>), que CRECE con el tiempo (un individuo nuevo cada 1/<see cref="growthPerSecond"/> s de juego)
@@ -20,7 +20,7 @@ public enum SwarmKind { Fish, Krill, Jellyfish, Bee, Clam }
 /// cubre a los individuos); al contacto, si está hambriento, muerde: desaparece UN individuo (<see cref="Hurt"/> 1 = uno menos, al
 /// momento) y obtiene sus nutrientes. Antes (auditoría 2026-11-03): el padre era un cubo translúcido escalado 10 × 2 × 10 (se veía
 /// como una plataforma) y los individuos, cubos de 0,4 heredando esa escala (losas de 4 × 0,8 × 4 m); el trigger, de 40 m de radio;
-/// y cada individuo valía 5 de la cuenta, así que un mordisco no quitaba ninguno a la vista. Ver docs/ice-sanctuary-ecology.md §2.2.
+/// y cada individuo valía 5 de la cuenta, así que un mordisco no quitaba ninguno a la vista. Ver docs/fauna/ice-sanctuary-ecology.md §2.2.
 /// </summary>
 public class Swarm : MonoBehaviour, ITarget, IEdible
 {

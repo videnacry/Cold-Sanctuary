@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// FORMA DEL CUERPO DESDE LAS STATS (docs/body-shape-from-stats.md): alto+fuerte+ágil → más alto y piernas más gruesas;
+/// FORMA DEL CUERPO DESDE LAS STATS (docs/sistemas/body-shape-from-stats.md): alto+fuerte+ágil → más alto y piernas más gruesas;
 /// fuerte sin agilidad → brazos más gruesos que piernas; pesado y débil → tronco más ancho (grasa) que el atlético.
 /// </summary>
 public class BodyShapeTest : MonoBehaviour, ITestUnit

@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Test del RÍO (docs/microcosmos-sakshi-origin.md §4, testing-checklist §42), por `TestProbe`: la corriente
+/// Test del RÍO (docs/microcosmos/microcosmos-sakshi-origin.md §4, testing-checklist §42), por `TestProbe`: la corriente
 /// ARRASTRA a la cría pequeña (masa baja) aguas abajo pero la hormiga GRANDE (masa alta) AGUANTA (combate de stats),
 /// y el arrastre DEBILITA (drena ATP). Determinista: llama a `RiverCurrent.ApplyTo` directo (no depende del barrido
 /// por física ni de NavMesh). Las ánimas se crean LEJOS de la zona para que el `Update` del río no interfiera.

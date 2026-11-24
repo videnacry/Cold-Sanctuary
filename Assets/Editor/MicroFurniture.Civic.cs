@@ -2,7 +2,7 @@ using UnityEngine;
 using St = MicroStyles;
 
 /// <summary>
-/// LOS MUEBLES DE LOS EDIFICIOS DEL PUEBLO Y LOS FRUTALES (docs/microcosmos-reglas-edificacion.md §8–11; Berón 2026-11-03). Como
+/// LOS MUEBLES DE LOS EDIFICIOS DEL PUEBLO Y LOS FRUTALES (docs/reglas/microcosmos-reglas-edificacion.md §8–11; Berón 2026-11-03). Como
 /// el resto de <see cref="MicroFurniture"/>: varias piezas de pocos cubos (low-poly), con el color de los materiales de su estilo
 /// de época y lugar (<see cref="MicroStyles"/>). Claves nuevas: frutal (el de la región: <see cref="MicroStyles.Fruits"/>), estatua
 /// (o estela maya, o león guardián chino), fuente, vitrina, piscina (se pisa), temazcal, pista de baile (se pisa), consola (centralita

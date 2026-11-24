@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// ZEUS en Egina (docs/microcosmos-myrmidons.md), en su versión humana: no hace magia; es un padre con muchos contactos
+/// ZEUS en Egina (docs/microcosmos/microcosmos-myrmidons.md), en su versión humana: no hace magia; es un padre con muchos contactos
 /// y mucha influencia que, conmovido por el sueño de su hijo, va a ver a cada insecto-humano que conoce y le pide que se
 /// una a construir un reino de virtud. Va al más cercano que esté dispuesto, habla con él un rato y lo suma. Si nadie
 /// está dispuesto todavía, vuelve junto a su hijo bajo la encina.

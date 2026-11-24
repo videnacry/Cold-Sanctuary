@@ -6,7 +6,7 @@ using UnityEngine;
 /// ÉPOCA: cada microcosmos lleva su fecha (<see cref="MicroEra"/>) y cada capacidad cultural tiene un año de inicio con su
 /// fuente. Las conductas preguntan <see cref="Eras.Allows"/> antes de hacer algo que no existía en esa época (los
 /// mirmidones no ordeñan pulgones antes de la ganadería lechera). El santuario es el presente.
-/// Años: negativos = antes de Cristo (−7000 = 7000 a. C.). Ver docs/eras.md.
+/// Años: negativos = antes de Cristo (−7000 = 7000 a. C.). Ver docs/microcosmos/eras.md.
 /// </summary>
 public static class Eras
 {
@@ -54,7 +54,7 @@ public static class Eras
     public static bool Allows(Capability c, int? year = null) => (year ?? Now) >= StartOf(c);
 
     /// <summary>Desde cuándo hay ESTRUCTURAS HUMANAS (aldeas de casas redondas del Natufiense / PPNA, ~9500 a. C.): antes, la tribu vive en
-    /// una guarida o refugio natural; después, cada era tiene sus edificios (docs/microcosmos-civilizaciones.md §8).</summary>
+    /// una guarida o refugio natural; después, cada era tiene sus edificios (docs/microcosmos/microcosmos-civilizaciones.md §8).</summary>
     public const int StructuresFrom = -9500;
     public static bool HasStructures(int year) => year >= StructuresFrom;
 
@@ -83,7 +83,7 @@ public static class Eras
             case "Bruce Lee":             return (1964, "Hong Kong, Seattle, Long Beach y Los Ángeles");
             case "Irena Sendler":         return (1942, "Varsovia");
             case "Le Chambon-sur-Lignon": return (1942, "Le Chambon-sur-Lignon, Francia");
-            // Los microcosmos de científicos e históricos (docs/microcosmos-cientificos.md): cada uno, el pueblo donde ocurrió.
+            // Los microcosmos de científicos e históricos (docs/microcosmos/microcosmos-cientificos.md): cada uno, el pueblo donde ocurrió.
             case "Crotona":               return (-530, "Crotona, Magna Grecia (Pitágoras)");
             case "Menfis":                return (-450, "Menfis y el Nilo, Egipto (Heródoto)");
             case "Bagdad":                return (820, "Bagdad, la Ciudad Redonda (al-Juarismi)");
@@ -114,7 +114,7 @@ public static class Eras
             case "Montreal":              return (1969, "Queen Elizabeth Hotel, Montreal (John Lennon y Yoko Ono: el Bed-In y Give Peace a Chance)");
             case "Vega Baja":             return (2016, "Vega Baja, Puerto Rico (Bad Bunny, del empaque del súper a SoundCloud)");
             case "Barranquilla":          return (2009, "La Playa, Barranquilla (Shakira y el colegio de la Fundación Pies Descalzos)");
-            // La tanda 3 (docs/microcosmos-historias-3.md)
+            // La tanda 3 (docs/microcosmos/microcosmos-historias-3.md)
             case "Chimbacalle":           return (1908, "Chimbacalle, Quito (Eloy Alfaro y la llegada del tren de Guayaquil)");
             case "Lagunillas":            return (1557, "Tierras de Arauco, Chile (Galvarino vuelve con su gente)");
             case "Cajamarca":             return (1532, "Cajamarca, Perú (cómo vivían los incas; Atahualpa recibe a los enviados)");

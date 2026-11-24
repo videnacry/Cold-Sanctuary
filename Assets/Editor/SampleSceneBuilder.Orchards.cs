@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// FRUTALES EN LOS TECHOS DE ALFOMBRAS (Berón 2026-10-30, docs/jardines-frutales.md). Los techos de las torres (el «piso de
+/// FRUTALES EN LOS TECHOS DE ALFOMBRAS (Berón 2026-10-30, docs/areas/jardines-frutales.md). Los techos de las torres (el «piso de
 /// alfombras» encima del último piso, del tamaño de la planta) solo llevaban dos áreas de alfombras y una fila de paneles:
 /// el resto se llena con FRUTALES EN MACETA, UNA DE CADA ESPECIE (<see cref="FruitCare.All"/>) y otra vuelta, y otra…
 /// hasta que no cabe ninguna más:
@@ -38,7 +38,7 @@ public static partial class SampleSceneBuilder
             total += PlantRoof(roof, size, bname, scene);
             roofs++;
         }
-        // LAS PUNTAS DE LAS TORRES-ÁRBOL (docs/edificio-arbol.md §Migración): sus techos son pequeños (las alfombras y la puerta); los
+        // LAS PUNTAS DE LAS TORRES-ÁRBOL (docs/areas/edificio-arbol.md §Migración): sus techos son pequeños (las alfombras y la puerta); los
         // frutales van en las puntas de sus ramas, al aire. La sala de la experta, en la primera punta de Servicios.
         // Primero las puntas más altas de cada torre (las más cercanas a su techo, adonde llega el jardinero en alfombra): ahí caben
         // las 19 especies y la ronda nada lo menos posible.
@@ -410,7 +410,7 @@ public static partial class SampleSceneBuilder
         return len;
     }
 
-    // ── RIEGO POR GOTEO (Berón 2026-10-31, docs/jardines-frutales.md) ──────────────────────────────
+    // ── RIEGO POR GOTEO (Berón 2026-10-31, docs/areas/jardines-frutales.md) ──────────────────────────────
     // CABEZAL de cada techo: filtro de anillas, electroválvula, regulador de presión y programador, sobre el depósito de su
     // punto de cuidados. De él sale la TUBERÍA (polietileno de 16 mm, en el suelo: 3 cm, se pisa) que va de maceta en maceta en
     // el orden de la ronda, y en cada maceta un GOTERO autocompensante con su anillo sobre el sustrato.

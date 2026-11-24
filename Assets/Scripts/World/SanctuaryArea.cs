@@ -127,7 +127,7 @@ public class SanctuaryArea : MonoBehaviour
         return l.y > -2f && l.y < Top() + 3f;
     }
 
-    // EDIFICIO-ÁRBOL (docs/edificio-arbol.md §Migración): sus pisos no van apilados, salen del tronco en hélice. El árbol del
+    // EDIFICIO-ÁRBOL (docs/areas/edificio-arbol.md §Migración): sus pisos no van apilados, salen del tronco en hélice. El árbol del
     // área (null si el área no es un piso de uno: el Huerto es una franja de un piso del Árbol de los Campos y sigue con su
     // planta).
     ArbolCampos _tree; bool _treeChecked;

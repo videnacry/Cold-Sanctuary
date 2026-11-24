@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// LA TANDA 3 DE MICROCOSMOS DE HISTORIAS (docs/microcosmos-historias-3.md; Berón 2026-11-05). Cada historia vive en SU archivo de esta
+/// LA TANDA 3 DE MICROCOSMOS DE HISTORIAS (docs/microcosmos/microcosmos-historias-3.md; Berón 2026-11-05). Cada historia vive en SU archivo de esta
 /// carpeta, con sus tres partes: la escena (<see cref="StorySceneBuilder"/>), el pueblo con su plano (<see cref="CivicBuilder"/>) y su flora y
 /// fauna (<see cref="MicroBiome"/>); el mapa a mano va en <c>MicroStoryMaps.Historias.cs</c> (código de juego). Aquí, los menús (uno por
 /// escena) y el reparto por nombre. Figuras reales: escenas civiles y humanas, sin violencia gloriosa ni juicio político; lo discutido,

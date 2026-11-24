@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Unidad de test del SUEÑO día/noche (docs/testing-checklist.md §41), por `TestProbe`: cada animal recibió un
+/// Unidad de test del SUEÑO día/noche (docs/qa/testing-checklist.md §41), por `TestProbe`: cada animal recibió un
 /// `SleepCycle` (auto-add en `Init`) y el reloj (`TimeController`) dispara la compuerta `asleep`. Determinista: fuerza
 /// la hora con `SetHour` y llama a `Evaluate()` (no espera al ciclo real). Restaura la hora al terminar.
 /// </summary>

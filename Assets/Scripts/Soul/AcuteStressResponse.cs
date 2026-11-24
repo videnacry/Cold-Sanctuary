@@ -9,7 +9,7 @@ using UnityEngine;
 /// (EvaluateThreat/SenseThreats/Volition/…). Y, si el apremio es muy alto, **el ser toma el mando** subiendo la
 /// relevancia de su <see cref="AiBrain"/> por encima de la posesión del jugador (control-por-necesidad).
 ///
-/// Modelo (docs/microcosmos-dungbeetle-level.md §3): FÍSICO monotónico con la activación (Yerkes-Dodson: tareas simples/
+/// Modelo (docs/microcosmos/microcosmos-dungbeetle-level.md §3): FÍSICO monotónico con la activación (Yerkes-Dodson: tareas simples/
 /// motoras mejoran con arousal), pero **gateado por combustible**; COGNITIVO degradado más allá del óptimo. Opt-in:
 /// añade este componente al ser (necesita `Anima`; usa `Mind.humores` si hay `Mind`, si no cae al `stress` directo).
 /// </summary>
@@ -82,7 +82,7 @@ public class AcuteStressResponse : MonoBehaviour
         }
 
         // ── CARRIL PRIVADO (own): al TOMAR EL MANDO, el cuerpo mete su reflejo prioritario en la cola → bloquea al
-        // jugador mientras el apremio manda (la IA de alta relevancia es quien conduce). docs/typed-spells-and-queues.md §4.
+        // jugador mientras el apremio manda (la IA de alta relevancia es quien conduce). docs/sistemas/typed-spells-and-queues.md §4.
         bool nowTakeover = arousal >= takeoverArousal;
         if (nowTakeover && !InTakeover)
         {

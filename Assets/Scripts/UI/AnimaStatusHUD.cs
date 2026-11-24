@@ -2,7 +2,7 @@ using System.Text;
 using UnityEngine;
 
 /// <summary>
-/// HUD de ESTADO de un Ánima (docs/consciousness-mechanics.md §2) — hace VISIBLE lo que hay que autorregular: los drives
+/// HUD de ESTADO de un Ánima (docs/sistemas/consciousness-mechanics.md §2) — hace VISIBLE lo que hay que autorregular: los drives
 /// (estrés/sueño/fatiga/satisfacción), la ZONA de actividad (ACWR) y la composición de elementos IDEAL por masa. Cada
 /// valor sale con **número + unidad + COLOR** (verde=estable / naranja=fuera de rango / rojo=crítico) — para que el
 /// jugador sepa si Kushal debe comer, descansar o entrenar. Prototipo OnGUI (como `SanctuaryResourceHUD`); la versión

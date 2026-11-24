@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 /// <summary>
-/// ROTACIÓN DIARIA DEL TRABAJO (docs/jornada-y-rotacion.md). Cada persona trabaja 8 h al día: 3 h de trabajo, 1 h de
+/// ROTACIÓN DIARIA DEL TRABAJO (docs/sistemas/jornada-y-rotacion.md). Cada persona trabaja 8 h al día: 3 h de trabajo, 1 h de
 /// comida, 2 h de trabajo y 2 h de entrenamiento; después, tiempo libre. Las 5 h de trabajo se reparten así:
 ///  1. Cada día hay una lista de MISIONES POR ÁREA (las obligatorias de cada día primero, y antes que todas, las que
 ///     quedaron pendientes ayer).
@@ -146,7 +146,7 @@ public class WorkRoster
 
     /// <summary>(2026-11-05) La mañana nueva y los requisitos. Apagado, el reparto puro de siempre (el que usan las pruebas de la rotación).</summary>
     public bool initiationModel;
-    /// <summary>(Berón 2026-11-08) EL REPARTO POR SANTUARIOS (lo enciende <c>WorkdayDirector</c>; docs/jornada-y-rotacion.md §Reparto por santuarios):
+    /// <summary>(Berón 2026-11-08) EL REPARTO POR SANTUARIOS (lo enciende <c>WorkdayDirector</c>; docs/sistemas/jornada-y-rotacion.md §Reparto por santuarios):
     ///  1. Cada uno pasa el día en UN sitio (santuario y nivel) al que puede ir (<see cref="SanctuaryPlacement.CanAccess"/>). Primero se cubren las horas
     ///     de cada sitio, empezando por el que menos gente alcanza; los que sobran van, en un segundo reparto, al sitio con más horas por persona.
     ///  2. El orden del personal es una PERMUTACIÓN sembrada con el día (<see cref="DayOrder"/>): el reparto cambia cada día.
@@ -162,7 +162,7 @@ public class WorkRoster
     /// <summary>EL ÁREA ENTERA (Berón 2026-11-08): un área de varios pisos o salas cuenta como UNA para el reparto (horas, personas que pide y «al
     /// menos 1»). Las misiones ya usan un solo nombre por área («Hospital», «Sala de Yoga»); esto junta además los nombres de sus pisos o salas
     /// («Sala de Yoga · Hatha tradicional», «Hospital veterinario…») si alguno llega como área propia.</summary>
-    /// <summary>LAS OPCIONALES (Berón 2026-11-08; docs/tareas-por-area.md): investigación, formación, cultura, cuentas y avisos, y lo que puede
+    /// <summary>LAS OPCIONALES (Berón 2026-11-08; docs/sistemas/tareas-por-area.md): investigación, formación, cultura, cuentas y avisos, y lo que puede
     /// esperar. Nunca la seguridad, el cuidado de seres vivos (pacientes, crías, animales, plantas), la comida del día ni las obras.</summary>
     public static readonly HashSet<string> OptionalIds = new HashSet<string>
     {

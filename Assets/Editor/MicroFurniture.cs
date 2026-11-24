@@ -5,7 +5,7 @@ using Plan = MicroBody.Plan;
 using St = MicroStyles;
 
 /// <summary>
-/// LOS MUEBLES DETALLADOS DE LOS MICROCOSMOS (docs/microcosmos-reglas-edificacion.md, reglas 3 y 7; Berón 2026-11-01: «la cocina y
+/// LOS MUEBLES DETALLADOS DE LOS MICROCOSMOS (docs/reglas/microcosmos-reglas-edificacion.md, reglas 3 y 7; Berón 2026-11-01: «la cocina y
 /// los muebles parecían cubos»; 2026-11-02: «las camas y demás servicios deben estar adaptados para los usuarios… con el estilo de
 /// época/lugar»). Cada mueble es una unión de piezas que se reconoce por su forma y lleva sus DEPENDENCIAS (la cocina, su sartén,
 /// su olla, su tabla con cuchillo, sus cucharones, cuencos y platos; la mesa, sus asientos; la cama, su colchón y su manta).
@@ -184,7 +184,7 @@ internal static partial class MicroFurniture
         return b;
     }
 
-    // (2026-11-18) LOS MÍNIMOS FIJOS DE LOS MUEBLES DE INSECTO-HUMANO, × s (docs/plan-microcosmos-realismo.md §3.4): con el cuerpo
+    // (2026-11-18) LOS MÍNIMOS FIJOS DE LOS MUEBLES DE INSECTO-HUMANO, × s (docs/microcosmos/plan-microcosmos-realismo.md §3.4): con el cuerpo
     // encogido a la mitad, los de antes (asiento ≥ 0,15 m, mesa ≥ 0,6 m, cama ≥ 1,4 m…) dejaban los muebles a la medida de antes.
     static float S => MicroBuildRules.FolkScale;
 

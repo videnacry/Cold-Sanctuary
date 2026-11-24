@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 
 /// <summary>
-/// Pools de contenido de la biblioteca de frases (docs/anima-architecture.md §11). Separado de la
+/// Pools de contenido de la biblioteca de frases (docs/sistemas/anima-architecture.md §11). Separado de la
 /// mecánica (MindPhrase/PhraseLibrary) para poder AUTORAR sin tocar la lógica.
 ///
 /// - <see cref="Vivencias"/>: biografías. Las de los COMPAÑEROS del santuario (Goluis/Panterilia/
-///   Gohageneis/Irosene) salen fielmente de docs/creature-stats.md. El MISMO formato sirve para los
-///   PERSONAJES HISTÓRICOS del Microcosmos (docs/mob-characters.md): se autoran con sus pensamientos
+///   Gohageneis/Irosene) salen fielmente de docs/sistemas/creature-stats.md. El MISMO formato sirve para los
+///   PERSONAJES HISTÓRICOS del Microcosmos (docs/historia/mob-characters.md): se autoran con sus pensamientos
 ///   documentados / lo que fueron o hicieron, con su `source` propio → el modo narración los reconstruye.
 /// - <see cref="Deseos"/>: deseos base genéricos (anónimos, reutilizables), de lo simple a lo complejo.
 ///
@@ -79,7 +79,7 @@ public static class PhrasePools
             new[] { "Mi cuerpo volvió a moverse.", "Corro, escalo, buceo: otra vez viva.", "Nunca es tarde para renacer." },
             new[] { "Mi cuerpo me falló una vez.", "Temo que vuelva a fallar.", "El tiempo aprieta." }),
 
-        // ═══ Personajes históricos del Microcosmos (bloqueados; docs/mob-quests-early.md §2) ═══════════════
+        // ═══ Personajes históricos del Microcosmos (bloqueados; docs/historia/mob-quests-early.md §2) ═══════════════
         // ── Ötzi, el Hombre de Hielo (~3300 a.C., Edad del Cobre; mecánica "buscar la raíz"; Tierra) ──────
         Historico("Ötzi", ElementalTone.Tierra,        // hombre común: pastor y trabajador del cobre
             new[] { "Trabajo el cobre con mis manos.", "Guío el rebaño por el monte.", "Soy un hombre común, y basta." },
@@ -95,7 +95,7 @@ public static class PhrasePools
             new[] { "Llevo cinco mil años sin descanso.", "Mi muerte quedó sin resolver.", "El hielo me guardó y me olvidó." }),
 
         // ── Nasatya (guardián ficticio; encarna a un Ashvin — veloz, generoso, rescata a los débiles;
-        //    con Kushal, "los recolectores estrella"). Era temprana; docs/founding-trio-stories.md ──────────
+        //    con Kushal, "los recolectores estrella"). Era temprana; docs/historia/founding-trio-stories.md ──────────
         Historico("Nasatya", ElementalTone.Fuego,      // huérfano; el Señor del Fuego le sembró calidez con piedras
             new[] { "Unas piedras encendieron mi alma huérfana.", "Aprendí a jugar, a lanzar, a reír.", "Llevo el calor que me dieron." },
             new[] { "Perdí a mis padres muy pronto.", "El frío de dentro no se apaga solo.", "Cargo una orfandad callada." }),
@@ -139,7 +139,7 @@ public static class PhrasePools
             new[] { "Mi vasija guarda el agua de otros.", "Creo cosas que sostienen a la tribu.", "Frágil como soy, mi obra perdura." },
             new[] { "Soy tan frágil como el barro.", "Sobrevivo en cosas, no en memoria.", "Nadie recordará al alfarero." }),
 
-        // ── El Primer Herrero (Edad de los Metales, Forja; hilo B; Fuego/Tierra) — docs/forge-simulation.md ─
+        // ── El Primer Herrero (Edad de los Metales, Forja; hilo B; Fuego/Tierra) — docs/areas/forge-simulation.md ─
         Historico("El Primer Herrero", ElementalTone.Fuego,    // dominar la forja (bronce = cobre+estaño; luego hierro)
             new[] { "Fundo cobre y estaño en bronce.", "Del fuego saco herramientas nuevas.", "Mis arados hacen crecer la aldea." },
             new[] { "El metal exige más y más fuego.", "Me quemo por dar de comer a otros.", "La fragua nunca descansa." }),
@@ -159,7 +159,7 @@ public static class PhrasePools
             new[] { "Someto para gobernar.", "Confundo el miedo con el respeto.", "Nadie recuerda a quién pisé para subir." }),
 
         // ── El Tallador (hilo B · Barro y Metal; ancla: primer útil de piedra → levantar refugio; Tierra) ──
-        //    Base de la historia del área de CONSTRUCCIÓN. docs/construction-simulation.md
+        //    Base de la historia del área de CONSTRUCCIÓN. docs/areas/construction-simulation.md
         Historico("El Tallador", ElementalTone.Tierra,         // tallar la piedra: de un canto, una herramienta
             new[] { "Doy forma a la piedra con paciencia.", "De un canto saco una herramienta.", "Mis manos moldean lo duro." },
             new[] { "La piedra se astilla mal.", "Golpeo y golpeo sin lograr filo.", "Lo duro no cede a la prisa." }),
@@ -184,7 +184,7 @@ public static class PhrasePools
 
         // ── El Perro de Oberkassel (real, ~14.200 años; PRIMER PERRO-compañero; POV de un ANIMA-perro; Agua) ──
         //    Mito fundacional de la cría/santuario: cachorro salvado del moquillo por amor, no por utilidad.
-        //    docs/cria-simulation.md · founding: cuidar al débil e "inútil" funda el vínculo.
+        //    docs/areas/cria-simulation.md · founding: cuidar al débil e "inútil" funda el vínculo.
         Historico("El Perro de Oberkassel", ElementalTone.Agua,   // la enfermedad: casi muere, lo mantienen vivo
             new[] { "Sobreviví a la fiebre que casi me lleva.", "Unas manos me mantuvieron caliente.", "Volví del borde gracias a ellos." },
             new[] { "Ardía y temblaba, sin poder moverme.", "Enfermo no servía de nada, solo estorbaba.", "Temí que me dejaran atrás." }),
@@ -195,7 +195,7 @@ public static class PhrasePools
             new[] { "Descanso junto a los que amé.", "Nos enterraron juntos, como manada.", "El cariño no cabe en una vida corta." },
             new[] { "Me fui demasiado pronto.", "No pude devolverles todo.", "Mi tiempo fue breve." }),
 
-        // ── Animales-protagonista (reales; POV animal). Lista curada en docs/animal-heroes.md ──────────────
+        // ── Animales-protagonista (reales; POV animal). Lista curada en docs/historia/animal-heroes.md ──────────────
         // Togo (1925, carrera del suero a Nome) — heroísmo + reivindicación (hizo el tramo más duro; Balto se llevó la fama).
         Historico("Togo", ElementalTone.Viento,
             new[] { "Corrí en la ventisca por los que enferman.", "Guié al trineo por el hielo que cruje.", "Mis patas no se rindieron." },
@@ -322,7 +322,7 @@ public static class PhrasePools
             new[] { "Tiro con ganas.", "Mi humano es mi manada.", "El frío no me para." },
             new[] { "Me han dejado atado.", "Echo de menos a los míos.", "Aúllo a la puerta." }),
 
-        // ── Insectos (docs/insect-biology-audit.md): cada frase nace de su biología real ──────────────────
+        // ── Insectos (docs/fauna/insect-biology-audit.md): cada frase nace de su biología real ──────────────────
         Especie("Ant", ElementalTone.Tierra,   // feromona de rastro, trofalaxia, cuidar pulgones
             new[] { "El rastro huele a los míos.", "Comparto lo que traigo en el buche.", "Ordeño a los pulgones y los guardo." },
             new[] { "Se perdió el rastro.", "Huelo a otra colonia.", "Sin el nido no soy nada." }),
@@ -357,7 +357,7 @@ public static class PhrasePools
             new[] { "Bailo para decir dónde está la comida.", "En el racimo, juntas, no hay frío.", "La miel guarda el verano." },
             new[] { "La reina huele débil.", "El frío entra en el panal.", "Algo acecha en el tronco." }),
 
-        // ── Especies de las eras (docs/era-species-behavior.md) ──
+        // ── Especies de las eras (docs/sistemas/era-species-behavior.md) ──
         Especie("Scorpion", ElementalTone.Tierra,   // acecho en la madriguera, vibraciones, crías a lomos
             new[] { "Noto sus pasos por el suelo.", "Espero en la boca de mi refugio.", "Mis hijos viajan sobre mi espalda." },
             new[] { "La luna me delata.", "Otro escorpión ronda mi piedra.", "Hace semanas que no como, y aguanto." }),

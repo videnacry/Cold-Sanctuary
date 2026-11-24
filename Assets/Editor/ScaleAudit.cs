@@ -6,7 +6,7 @@ using UnityEngine;
 /// AUDITORÍA DE ESCALA (menú): mide en la escena abierta el largo de cada especie (adultos, por los bounds de sus
 /// renderers) y lo compara con su tamaño real respecto al HUMANO (≈ 1,75 m). Avisa de lo que se sale (×0,7–×1,3).
 /// Excepción a propósito: las abejas y arañas de hielo (no son reales) miden como una CABEZA (≈ 25–30 cm).
-/// En los microcosmos (2026-11-18, docs/plan-microcosmos-realismo.md §3.1) la referencia es «humano × s»: el insecto-humano
+/// En los microcosmos (2026-11-18, docs/microcosmos/plan-microcosmos-realismo.md §3.1) la referencia es «humano × s»: el insecto-humano
 /// (el mirmidón) mide la estatura de una persona × MicroBuildRules.FolkScale, y el mundo (muebles, edificios, árboles) va a 1:1.
 /// Se audita también cada insecto-humano de la escena: su estatura frente a 1,6–1,85 m × s y su ancho andando con las patas
 /// recogidas frente a MicroBuildRules.TuckedWalkWidth (CubeInsect.Footprint).

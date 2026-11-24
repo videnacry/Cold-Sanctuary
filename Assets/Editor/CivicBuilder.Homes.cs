@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// REGLA 6 DE EDIFICACIÓN: UN HOGAR PARA CADA PERSONAJE (docs/microcosmos-reglas-edificacion.md §6; Berón 2026-11-02: «los pueblos
+/// REGLA 6 DE EDIFICACIÓN: UN HOGAR PARA CADA PERSONAJE (docs/reglas/microcosmos-reglas-edificacion.md §6; Berón 2026-11-02: «los pueblos
 /// de historia de los microcosmos deben ser reconstruidos para que haya hogares para los demás personajes, además de los lugares
 /// de trabajo y los servicios básicos, para que cada personaje realice su ciclo de vida correctamente»).
 /// Tras el constructor de cada era o pueblo (y sus casas de relleno), <see cref="Homes"/> reparte a TODOS los insectos-humanos del
@@ -132,7 +132,7 @@ internal static partial class CivicBuilder
 
     /// <summary>El HOGAR de una familia en el edificio <paramref name="site"/>: sus camas, el retrete, el lavabo, la mesa con sus
     /// asientos y la despensa; la jornada de cada uno va a esa casa. Los muebles se REHACEN A LA MEDIDA de cada uno
-    /// (docs/microcosmos-reglas-edificacion.md, regla 7; <see cref="MicroBody"/>): su cama para su cuerpo (de vientre, nido,
+    /// (docs/reglas/microcosmos-reglas-edificacion.md, regla 7; <see cref="MicroBody"/>): su cama para su cuerpo (de vientre, nido,
     /// percha, hamaca de seda…), un asiento a la mesa para cada uno, y el retrete y el lavamanos para todos (los de la primera
     /// familia de la casa), en el estilo de su época y lugar; luego se recolocan con el paso de 2 m.</summary>
     internal static Household MakeHousehold(AreaFunctionSite site, List<GameObject> fam, HashSet<Transform> used = null)

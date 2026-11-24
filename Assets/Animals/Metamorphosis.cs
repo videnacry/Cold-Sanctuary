@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// METAMORFOSIS de los insectos (docs/insect-biology-audit.md). Lee las 3 etapas de `LifeStage` según el desarrollo
+/// METAMORFOSIS de los insectos (docs/fauna/insect-biology-audit.md). Lee las 3 etapas de `LifeStage` según el desarrollo
 /// de la especie (<see cref="StageProfile.development"/>) y da a cada una su conducta real:
 /// - **Completa** (holometábolo: hormiga, abeja, mariquita, pelotero, hormiga león): cría = LARVA, juvenil = PUPA,
 ///   adulto = imago. La pupa **no se mueve, no come y no huye**: este componente la deja quieta (toma el sueño con

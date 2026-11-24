@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// DEFENSA PASIVA (docs/era-species-behavior.md §2): en vez de huir, el ser se ACORAZA y se queda quieto hasta que pasa el
+/// DEFENSA PASIVA (docs/sistemas/era-species-behavior.md §2): en vez de huir, el ser se ACORAZA y se queda quieto hasta que pasa el
 /// peligro — la cochinilla se hace BOLA (conglobación), el caracol se METE en la concha, la babosa se CONTRAE y se balancea,
 /// la lombriz se RETRAE a su galería. Mientras dura, su `armadura` sube (la bola/concha es coraza): `Predation.Defense` la
 /// lee, así que un depredador que ya no puede con ella la DESCARTA solo (`Forager.SelectPrey`) — no hay regla «el pájaro

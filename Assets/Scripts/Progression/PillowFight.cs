@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LA GUERRA DE ALMOHADAS en el ring de la arboleda (docs/guerra-de-almohadas.md; Berón 2026-11-04). La lleva el horario libre
+/// LA GUERRA DE ALMOHADAS en el ring de la arboleda (docs/areas/guerra-de-almohadas.md; Berón 2026-11-04). La lleva el horario libre
 /// (<see cref="LeisureDirector"/>, pose «almohadas»): cuando cada uno llega a su celda del colchón,
 ///  1. COGE UNA ALMOHADA del ring (la suelta más cercana se esconde y aparece una en su mano derecha);
 ///  2. cada ~1,1–1,7 s busca al luchador más cercano a su alcance (≤ <see cref="Reach"/> m), se gira hacia él y le da un ALMOHADAZO

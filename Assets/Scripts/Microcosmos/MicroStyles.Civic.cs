@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// EL CATÁLOGO DE ESTILOS, AMPLIADO A LOS EDIFICIOS DEL PUEBLO Y A LOS FRUTALES (docs/microcosmos-reglas-edificacion.md §8–11;
+/// EL CATÁLOGO DE ESTILOS, AMPLIADO A LOS EDIFICIOS DEL PUEBLO Y A LOS FRUTALES (docs/reglas/microcosmos-reglas-edificacion.md §8–11;
 /// Berón 2026-11-03: «entran actividades del santuario como centros de estudio, centros de entrenamiento, de baile, plazas,
 /// estaciones de transporte, parques, museos, centros de investigación, guarderías, estatuas, calles, edificios de varios pisos,
 /// centros de policía, bomberos, mercados, mecánicas, talleres, milicia, piscinas, hoteles, carpintería, piletas, construcción,
@@ -68,7 +68,7 @@ public static partial class MicroStyles
                        Is(e, "maya_clasico") ? "Casa de los escribas (aj tz'ib)" : Is(e, "sur_asia") ? "Escuela del maestro (gurukula)" : Is(e, "china_tradicional") ? "Escuela (sishu)" :
                        Is(e, "frente_1914") ? null : "Escuela";
             case Civic.Entrenamiento:
-                // (2026-11-04) EL LUGAR DE ENTRENAR DE CADA ÉPOCA Y LUGAR (docs/microcosmos-entrenamiento-eras.md, con fuentes): su clase
+                // (2026-11-04) EL LUGAR DE ENTRENAR DE CADA ÉPOCA Y LUGAR (docs/microcosmos/microcosmos-entrenamiento-eras.md, con fuentes): su clase
                 // estable es TrainingKind (la leen los planes de entrenamiento de los insectos-humanos).
                 switch (TrainingKind(e, year))
                 {
@@ -162,7 +162,7 @@ public static partial class MicroStyles
     /// <summary>
     /// (2026-11-04) LA CLASE ESTABLE DEL LUGAR DE ENTRENAR de la época y el lugar <paramref name="e"/> en <paramref name="year"/>
     /// (null si no había ninguno: la prehistoria). Es la etiqueta que leen los planes de entrenamiento de los insectos-humanos
-    /// (AreaFunctionSite.training; docs/gimnasio-maquinas.md y docs/microcosmos-entrenamiento-eras.md, con sus fuentes):
+    /// (AreaFunctionSite.training; docs/areas/gimnasio-maquinas.md y docs/microcosmos/microcosmos-entrenamiento-eras.md, con sus fuentes):
     /// juegos_heroicos, gimnasio_griego, palestra_romana, patio_lucha_egipcio, patio_lucha, akhara, furusiyya, tekke_guresh,
     /// juego_pelota, wuguan, dojo, sala_armas, sala_esgrima, prado_juegos, garrote_coleo, turnplatz_schwingen, turnhalle, hebert,
     /// futbol_tregua, club_deportivo, gimnasio_moderno, estadio.
@@ -172,7 +172,7 @@ public static partial class MicroStyles
         switch (e.id)
         {
             case "prehistoria": return null;
-            // (2026-11-05) La tanda 3 (docs/microcosmos-historias-3.md, docs/microcosmos-entrenamiento-eras.md).
+            // (2026-11-05) La tanda 3 (docs/microcosmos/microcosmos-historias-3.md, docs/microcosmos/microcosmos-entrenamiento-eras.md).
             case "andes_republicano": return "pelota_nacional";
             case "mapuche": return "palin";
             case "inca": return "warachikuy";
@@ -212,7 +212,7 @@ public static partial class MicroStyles
 
     static Color F(float r, float g, float b) => new Color(r, g, b);
 
-    /// <summary>LOS FRUTALES de cada estilo de época y lugar: los que se cultivaban allí y entonces (docs/microcosmos-reglas-edificacion.md
+    /// <summary>LOS FRUTALES de cada estilo de época y lugar: los que se cultivaban allí y entonces (docs/reglas/microcosmos-reglas-edificacion.md
     /// §11, con fuentes). Cada casa planta uno (o más) de su lista.</summary>
     public static Fruit[] Fruits(Entry e)
     {
@@ -237,11 +237,11 @@ public static partial class MicroStyles
             case "frente_1914": return new[] { new Fruit("Manzano de la granja en ruinas (Malus domestica)", 4f, leaf, F(0.75f, 0.15f, 0.12f)) };
             case "hispanoamerica": return new[] { new Fruit("Mango (Mangifera indica)", 8f, dark, F(0.95f, 0.65f, 0.15f)), new Fruit("Guayabo (Psidium guajava)", 4f, leaf, F(0.85f, 0.85f, 0.4f)), new Fruit("Lechosa (Carica papaya)", 4f, F(0.3f, 0.55f, 0.25f), F(0.95f, 0.6f, 0.15f), palm: true) };
             case "maya_clasico": return new[] { new Fruit("Cacao (Theobroma cacao)", 4f, dark, F(0.85f, 0.5f, 0.15f)), new Fruit("Aguacate (Persea americana)", 8f, dark, F(0.2f, 0.35f, 0.15f)), new Fruit("Ramón (Brosimum alicastrum)", 9f, leaf, F(0.85f, 0.6f, 0.2f)), new Fruit("Zapote (Manilkara zapota)", 8f, dark, F(0.55f, 0.4f, 0.25f)), new Fruit("Papaya (Carica papaya)", 4f, F(0.3f, 0.55f, 0.25f), F(0.95f, 0.6f, 0.15f), palm: true) };
-            // (2026-11-04) Los famosos (docs/microcosmos-famosos.md).
+            // (2026-11-04) Los famosos (docs/microcosmos/microcosmos-famosos.md).
             case "india_moderna": return new[] { new Fruit("Mango (Mangifera indica)", 8f, dark, F(0.95f, 0.65f, 0.15f)), new Fruit("Cocotero (Cocos nucifera)", 12f, F(0.3f, 0.5f, 0.25f), F(0.55f, 0.4f, 0.2f), palm: true), new Fruit("Banano (Musa)", 4f, F(0.3f, 0.55f, 0.25f), F(0.9f, 0.85f, 0.3f), palm: true), new Fruit("Yaca (Artocarpus heterophyllus)", 9f, dark, F(0.6f, 0.65f, 0.25f)) };   // los huertos del pie de Velliangiri
             case "sahel_moderno": return new[] { new Fruit("Mango (Mangifera indica)", 8f, dark, F(0.95f, 0.65f, 0.15f)), new Fruit("Papayo (Carica papaya)", 4f, F(0.3f, 0.55f, 0.25f), F(0.95f, 0.6f, 0.15f), palm: true), new Fruit("Guayabo (Psidium guajava)", 4f, leaf, F(0.85f, 0.85f, 0.4f)), new Fruit("Karité (Vitellaria paradoxa)", 9f, dark, F(0.5f, 0.55f, 0.3f)) };   // el mango de las cours y el karité de la sabana
             case "norteamerica_interior": return new[] { new Fruit("Manzano (Malus domestica)", 4.5f, leaf, F(0.75f, 0.15f, 0.12f)), new Fruit("Melocotonero (Prunus persica)", 3.5f, leaf, F(0.95f, 0.6f, 0.4f)), new Fruit("Albaricoquero (Prunus armeniaca)", 4f, leaf, F(0.95f, 0.65f, 0.3f)), new Fruit("Pacano (Carya illinoinensis)", 12f, leaf, F(0.5f, 0.38f, 0.22f)) };   // los albaricoques de Albuquerque, los manzanos de Omaha, los pacanos de Texas
-            // (2026-11-05) La música (docs/microcosmos-musica.md).
+            // (2026-11-05) La música (docs/microcosmos/microcosmos-musica.md).
             case "caribe_hispano": return new[] { new Fruit("Mango (Mangifera indica)", 8f, dark, F(0.95f, 0.65f, 0.15f)), new Fruit("Guanábana (Annona muricata)", 5f, dark, F(0.45f, 0.6f, 0.3f)), new Fruit("Aguacate (Persea americana)", 8f, dark, F(0.2f, 0.35f, 0.15f)), new Fruit("Quenepa (Melicoccus bijugatus)", 9f, leaf, F(0.5f, 0.6f, 0.25f)) };   // el mamón de Barranquilla es la quenepa de Puerto Rico
             case "jamaica_moderna": return new[] { new Fruit("Ackee (Blighia sapida)", 9f, dark, F(0.85f, 0.25f, 0.15f)), new Fruit("Árbol del pan (Artocarpus altilis)", 10f, dark, F(0.55f, 0.65f, 0.25f)), new Fruit("Mango (Mangifera indica)", 8f, dark, F(0.95f, 0.65f, 0.15f)) };   // el mango de Second Street bajo el que ensayaban los Wailers
             case "corea_moderna": return new[] { new Fruit("Caqui (Diospyros kaki)", 5f, leaf, F(0.95f, 0.5f, 0.1f)), new Fruit("Peral de Corea (Pyrus pyrifolia)", 5f, leaf, F(0.8f, 0.7f, 0.35f)), new Fruit("Azufaifo (Ziziphus jujuba)", 5f, leaf, F(0.6f, 0.2f, 0.12f)) };

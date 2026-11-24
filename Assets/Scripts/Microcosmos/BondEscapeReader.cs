@@ -5,7 +5,7 @@ using UnityEngine;
 /// LECTOR DE ESCAPE POR BOND — lee el estado de huida de los miembros del grupo
 /// con alto vínculo y ajusta el impulso de hogar propio para acompañarles.
 ///
-/// Mecánica (docs/stats-as-truth.md §bond):
+/// Mecánica (docs/sistemas/stats-as-truth.md §bond):
 /// • Si varios miembros bonded están en modo escape (ThreatScanner tiene impulso
 ///   "flee_" con magnitud > <see cref="escapeThreshold"/>), este ser "siente" el
 ///   peligro del grupo aunque él mismo no haya visto al depredador.

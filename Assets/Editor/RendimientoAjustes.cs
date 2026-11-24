@@ -6,7 +6,7 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
 /// <summary>
-/// AJUSTES DE RENDIMIENTO DEL PROYECTO (docs/rendimiento.md). Los ajustes de URP no están en git (Assets/Settings y ProjectSettings
+/// AJUSTES DE RENDIMIENTO DEL PROYECTO (docs/plataforma/rendimiento.md). Los ajustes de URP no están en git (Assets/Settings y ProjectSettings
 /// viven en la carpeta de Unity), así que se aplican con este menú, sin reconstruir nada, y cada uno se puede deshacer.
 /// - SSAO SIN PREPASO: el SSAO de PC_Renderer pedía profundidad + normales antes de lo opaco, y eso obliga a un prepaso que dibuja
 ///   TODA la escena una vez más. Tras lo opaco y solo con profundidad no hay prepaso; a media resolución, además, pesa la cuarta parte.

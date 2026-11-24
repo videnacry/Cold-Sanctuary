@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// HECHIZO DE MANIPULACIÓN DE PENSAMIENTO/ÁNIMO (docs/anyma-factory-and-control.md §3). "Planta" una inclinación en la
+/// HECHIZO DE MANIPULACIÓN DE PENSAMIENTO/ÁNIMO (docs/sistemas/anyma-factory-and-control.md §3). "Planta" una inclinación en la
 /// mente del objetivo moviendo sus **humores** hacia una valencia (calma/serotonina o desasosiego/cortisol), con lo
 /// que cambia el **tono y la valencia** de sus pensamientos (PickTone/Think leen humores) — y los **hace aflorar**
 /// (`Mind.SpeakNow`). Es la vía "mente" de la tríada de modificación (con `TransformationSpell`=stats y

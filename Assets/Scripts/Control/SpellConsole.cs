@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LANZADOR DE HECHIZOS POR TECLADO (docs/typed-spells-and-queues.md) — la otra cara del principio "toda acción es un
+/// LANZADOR DE HECHIZOS POR TECLADO (docs/sistemas/typed-spells-and-queues.md) — la otra cara del principio "toda acción es un
 /// hechizo": el jugador puede **escribir** hechizos además de pulsar botones. Mientras POSEE a un anima, abre la consola
 /// (tecla `~`) y escribe, p. ej.: <c>walkTo({destiny:"Marilia", maxSpeed:true})</c>. Se resuelve el **destino** por
 /// nombre (otra anima que el poseído ALCANCE a ver, o un área/gameobject por su `name`) y se **encola** en la cola del
@@ -521,7 +521,7 @@ public class SpellConsole : MonoBehaviour
             case "rendimiento": case "perf":   // mide unos segundos y escribe en el log qué cuesta (fases, dibujado, scripts)
                 { PerfProbe probe = PerfProbe.Instance != null ? PerfProbe.Instance : new GameObject("PerfProbe").AddComponent<PerfProbe>(); probe.Run(); Log("Midiendo el rendimiento (240 frames)… mira el log [Rendimiento]."); }
                 break;
-            case "rendimiento-ab": case "perf-ab":   // lo mismo con los lotes estáticos, sin ellos y otra vez con ellos (docs/rendimiento.md)
+            case "rendimiento-ab": case "perf-ab":   // lo mismo con los lotes estáticos, sin ellos y otra vez con ellos (docs/plataforma/rendimiento.md)
                 { PerfProbe probe = PerfProbe.Instance != null ? PerfProbe.Instance : new GameObject("PerfProbe").AddComponent<PerfProbe>(); probe.RunAB(); Log("Midiendo con lotes, sin lotes y con lotes otra vez (360 frames): el resultado va al log, [Rendimiento]."); }
                 break;
             case "enfocar": case "focus":   // ATENCIÓN VISUAL a conciencia: fija la mirada en algo (la cámara en 1ª persona lo acerca)
@@ -586,16 +586,16 @@ public class SpellConsole : MonoBehaviour
                 if (WorkdayDirector.Instance.today == null && TimeController.timeController != null) WorkdayDirector.Instance.PlanDay(TimeController.timeController.Day);
                 foreach (string jl in WorkdayDirector.Instance.Report()) Log("  " + jl);
                 break;
-            case "rutina": case "routine":   // RUTINA DEL GIMNASIO (docs/gimnasio-maquinas.md §15): el plan y la rutina de hoy de una persona; rutina(Nombre)
+            case "rutina": case "routine":   // RUTINA DEL GIMNASIO (docs/areas/gimnasio-maquinas.md §15): el plan y la rutina de hoy de una persona; rutina(Nombre)
                 Log(GymRoutinePanel.Toggle(args.TryGetValue("destiny", out string rw) ? Clean(rw) : null));
                 break;
-            case "recursos": case "resources":   // VENTANA DE RECURSOS (F3; docs/interfaz-botones.md)
+            case "recursos": case "resources":   // VENTANA DE RECURSOS (F3; docs/sistemas/interfaz-botones.md)
                 if (HudModals.Available(HudModals.Modal.Recursos)) { HudModals.Toggle(HudModals.Modal.Recursos); Log(HudModals.Current == HudModals.Modal.Recursos ? "Recursos: abierto." : "Recursos: cerrado."); } else Log("No hay recursos en esta escena.");
                 break;
-            case "misiones": case "missions":   // VENTANA DE MISIONES ACEPTADAS Y JORNADA (F4; docs/interfaz-botones.md)
+            case "misiones": case "missions":   // VENTANA DE MISIONES ACEPTADAS Y JORNADA (F4; docs/sistemas/interfaz-botones.md)
                 if (HudModals.Available(HudModals.Modal.Misiones)) { HudModals.Toggle(HudModals.Modal.Misiones); Log(HudModals.Current == HudModals.Modal.Misiones ? "Misiones y jornada: abierto." : "Misiones y jornada: cerrado."); } else Log("No hay misiones en esta escena.");
                 break;
-            case "horario": case "ocio":   // HORARIO LIBRE de la semana (docs/horario-libre.md): abre o cierra el panel y escribe el de hoy
+            case "horario": case "ocio":   // HORARIO LIBRE de la semana (docs/sistemas/horario-libre.md): abre o cierra el panel y escribe el de hoy
                 Log(HorarioPanel.Toggle());
                 if (LeisureDirector.Instance != null) foreach (LeisureDirector.Group hg in LeisureDirector.Instance.groups) foreach (string hl in LeisureDirector.Instance.Report(hg)) Log("  " + hl);
                 break;
@@ -1028,7 +1028,7 @@ public class SpellConsole : MonoBehaviour
     }
 
     // El anima que el jugador MANEJA ahora (su AnimaController.Active es un PlayerBrain).
-    // ── (2026-11-20) EL GRIMORIO (móvil, docs/mandos-tactiles.md §5): todos los hechizos en una ventana, lanzados resolviendo su reto ──
+    // ── (2026-11-20) EL GRIMORIO (móvil, docs/sistemas/mandos-tactiles.md §5): todos los hechizos en una ventana, lanzados resolviendo su reto ──
     /// <summary>Los hechizos de prueba o de administrador: el Grimorio los pone aparte.</summary>
     public static readonly HashSet<string> AdminSpells = new HashSet<string> { "reemplazar", "admin", "tercera", "miembro", "arbol", "piso" };
     /// <summary>Todos los hechizos que el lanzador conoce (nombre y plantilla con sus parámetros por defecto).</summary>

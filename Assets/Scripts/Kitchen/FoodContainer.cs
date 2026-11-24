@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Contenedor de servicio (docs/kitchen-simulation.md §3/§6): donde queda la comida lista. Se **rellena**
+/// Contenedor de servicio (docs/areas/kitchen-simulation.md §3/§6): donde queda la comida lista. Se **rellena**
 /// mientras alguien cocina (<see cref="BreakfastCook"/>) y los personajes se acercan a **comer**
 /// (<see cref="Eater"/>). En el paso C, comer aplicará los **compuestos** del platillo a los humores.
 /// </summary>

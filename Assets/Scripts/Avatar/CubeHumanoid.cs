@@ -21,7 +21,7 @@ public static class CubeHumanoid
         CubeHair.Look look = CubeHair.For(who.name);
         skin = look.skin;                              // cada persona con su tono de piel…
         if (look.hasClothes) clothes = look.clothes;   // …su ropa (bata, chaqueta de cocina, tejido andino…)
-        if (height <= 0f && look.height > 0f) height = look.height;   // …y su estatura (docs/diseno-personajes.md)
+        if (height <= 0f && look.height > 0f) height = look.height;   // …y su estatura (docs/sistemas/diseno-personajes.md)
         Transform old = who.transform.Find(BodyName);
         // VOLVER A VESTIR: el cuerpo anterior dice dónde están los pies (la malla original ya está oculta).
         float? oldFeet = old != null ? old.localPosition.y * who.transform.lossyScale.y : (float?)null;
@@ -205,7 +205,7 @@ public static class CubeHumanoid
         }
     }
 
-    // ROPA Y COMPLEMENTOS de la familia y los amigos de Berón (2026-11-04, docs/diseno-personajes.md §Familia y amigos):
+    // ROPA Y COMPLEMENTOS de la familia y los amigos de Berón (2026-11-04, docs/sistemas/diseno-personajes.md §Familia y amigos):
     // chaqueta con cremallera, cuadros/rayas/canalé, cuello de camisa, mangas remangadas, volantes, capucha, gafas colgadas,
     // cinturón, bolso cruzado, falda de flores y reloj. Medidas de los segmentos: pecho 0,4 × 0,3 × 0,24 (de y 0 a 0,3),
     // vientre 0,36 × 0,24 × 0,22 (de y 0 a 0,24), cadera 0,34 × 0,2 × 0,22 (centrada).

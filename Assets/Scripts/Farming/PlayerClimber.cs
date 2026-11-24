@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Trepar (docs/creature-stats.md §Pools derivados → "Trepar"). Cerca de un <see cref="Climbable"/>, mantén la tecla de trepar para subir:
+/// Trepar (docs/sistemas/creature-stats.md §Pools derivados → "Trepar"). Cerca de un <see cref="Climbable"/>, mantén la tecla de trepar para subir:
 ///   - **Requiere fuerza mínima** para poder trepar.
 ///   - **Velocidad ∝ strength · agility.**
 ///   - **Altura máxima ∝ strength / bodyMass** (potencia-peso), tope en `Climbable.topY`.

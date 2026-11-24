@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// CONDUCTA DE LAS ESPECIES DE LAS ERAS (docs/era-species-behavior.md §5) sin esperar a la noche ni a un depredador: el
+/// CONDUCTA DE LAS ESPECIES DE LAS ERAS (docs/sistemas/era-species-behavior.md §5) sin esperar a la noche ni a un depredador: el
 /// test monta cada ESCENARIO a mano (pone la hora, mete al depredador, fuerza el celo) en una losa aparte, y comprueba
 /// por `TestProbe` lo que en 2 min de Play casi nunca coincide:
 /// - Defensa pasiva: una cochinilla ante una araña elige acorazarse (`Reaction.Hold`), la bola sube su `armadura` y su

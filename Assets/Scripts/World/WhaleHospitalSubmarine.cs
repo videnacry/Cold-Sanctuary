@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// EL LEVIATÁN: HOSPITAL SUBMARINO COLOSAL PARA ANIMALES GIGANTES (Berón 2026-11-03: «quizás que sea un submarino gigante que se
 /// encuentra parqueado a ras del suelo y directamente va hacia la ballena herida y la tratarían directamente en dicho submarino
-/// colosal»; docs/submarinos-medicos.md, con la investigación y sus fuentes). Una ballena o una orca no se puede sacar del agua:
+/// colosal»; docs/areas/submarinos-medicos.md, con la investigación y sus fuentes). Una ballena o una orca no se puede sacar del agua:
 /// fuera de ella su propio peso le aplasta los pulmones y los órganos y se recalienta (Geraci y Lounsbury 2005; NOAA). Por eso
 /// el Leviatán lleva el agua con ella: un POZO MÉDICO inundado de 20 × 8 m con SUELO ELEVABLE (como la piscina médica de suelo
 /// móvil de los acuarios), abierto a popa por una compuerta.

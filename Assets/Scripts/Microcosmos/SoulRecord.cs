@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Ficha de ALMA del mundo insecto (docs/microcosmos-insects.md §13). Marca a un ser con su
+/// Ficha de ALMA del mundo insecto (docs/microcosmos/microcosmos-insects.md §13). Marca a un ser con su
 /// **nombre de alma**, el **hilo-arquetipo** que encarna en esta vida (A..G, ver mob-epochs-matrix.md),
 /// su **rol en la vida 1** (alba/cueva) y el **nombre/cuerpo con que reencarna en la vida 2** (la Cocina,
 /// era del fuego), más el **tell**: el indicio de vida pasada que deja **notar** el vínculo sin afirmarlo

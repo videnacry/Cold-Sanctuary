@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// CÓMO NACIÓ LA COCINA (docs/novela.md, «Cómo nació la cocina»): la historia jugable del microcosmos de la Cocina, al que el
+/// CÓMO NACIÓ LA COCINA (docs/historia/novela.md, «Cómo nació la cocina»): la historia jugable del microcosmos de la Cocina, al que el
 /// trabajador de turno manda al recién llegado al acabar su iniciación (otoño, la era del fuego, las 19 h). Las reencarnaciones,
 /// sin que nadie lo diga: Nasatya (Ambrosio), el Señor del Fuego (Héspero), la Tirana de las Feromonas (Medea), el Chamán
 /// (Sakshi) y el Bufón (Momo).
@@ -11,7 +11,7 @@ using UnityEngine;
 ///  2. Carry: Kushal le ayuda a llevar <see cref="ScrapsNeeded"/> restos AL HOGAR (E junto a un resto lo coge; E junto al fuego
 ///     lo deja). Nasatya lleva los suyos a la vez. La Tirana manda a las demás por su rastro… y a Nasatya le deja hacer.
 ///  3. Accident: el Bufón hace malabares y un grano cae en la piedra caliente: chisporrotea, huele dulce. El fuego «mastica».
-///  4. Vigil: la VIGILIA DEL FUEGO (docs/microcosmos-eras-and-observation.md §4.1): la llama baja; Kushal la alimenta
+///  4. Vigil: la VIGILIA DEL FUEGO (docs/microcosmos/microcosmos-eras-and-observation.md §4.1): la llama baja; Kushal la alimenta
 ///     <see cref="FeedsNeeded"/> veces (E junto al fuego) mientras los restos se tuestan. El Señor del Fuego queda absorto
 ///     mirando la llama; el Chamán no mira el fuego: lo mira a él.
 ///  5. Circle: toda la tribu alrededor del fuego: nadie queda fuera del círculo. Nasatya da su trozo a la más pequeña; la

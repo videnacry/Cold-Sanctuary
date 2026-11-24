@@ -5,7 +5,7 @@ using UnityEngine.AI;
 /// <summary>
 /// Añadir al GameObject del jugador para que los animales puedan tratarlo como presa o amenaza.
 /// Los animales que quieran cazar al jugador deben incluir PlayerTarget.population en su Diet.
-/// Ver docs/behavior-system.md (Componente C).
+/// Ver docs/sistemas/behavior-system.md (Componente C).
 /// </summary>
 public class PlayerTarget : MonoBehaviour, ITarget, ICarrier
 {

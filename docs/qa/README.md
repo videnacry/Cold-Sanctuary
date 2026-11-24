@@ -1,6 +1,6 @@
 # Sistema de QA de Cold Sanctuary
 
-Aprobado por Berón el 2026-11-13. Diseño completo y por qué: [qa-propuesta.md](../qa-propuesta.md).
+Aprobado por Berón el 2026-11-13. Diseño completo y por qué: [qa-propuesta.md](qa-propuesta.md).
 
 La idea en una línea: **una petición de Berón está hecha cuando sus casos están probados, con su run log**, y eso lo calcula una
 máquina (`QaCheck`), no una persona que marca `[x]`. Programado no es hecho.
@@ -20,8 +20,8 @@ máquina (`QaCheck`), no una persona que marca `[x]`. Programado no es hecho.
 | [../conocimiento/](../conocimiento/README.md) | Lo que «volverá a morder»: síntoma, medido, cómo se evita, dónde | cualquiera |
 | [migracion/](migracion/) | Los scripts que generaron peticiones, casos, registro y los run logs retro (2026-11-13) | — |
 
-Se quedan donde estaban: las reglas, en el [manual de diseño](../manual-de-diseno.md) (S, T, M, J, W…); el tablero de trabajo, en el
-[checklist](../checklist.md); y la [auditoría](../auditoria-peticiones.md) del 2026-11-10, como histórico (sus filas son las PB-001…PB-155).
+Se quedan donde estaban: las reglas, en el [manual de diseño](../reglas/manual-de-diseno.md) (S, T, M, J, W…); el tablero de trabajo, en el
+[checklist](../checklist.md); y la [auditoría](../historial/auditoria-peticiones.md) del 2026-11-10, como histórico (sus filas son las PB-001…PB-155).
 
 ## La cadena de IDs
 
@@ -87,8 +87,8 @@ tiene un `HC` o le falta código.
 
 ## El comprobador (`QaCheck`)
 
-Regla W16 del [manual](../manual-de-diseno.md) §10. Código: `Assets/Scripts/QaCheck.cs` (lógica pura sobre texto, sin Unity, como
-`TestImpact`), `Assets/Scripts/Tests/QaCheckTest.cs` y `Assets/Editor/QaCheckTool.cs`. Las reglas que mira: [qa-propuesta.md §6](../qa-propuesta.md).
+Regla W16 del [manual](../reglas/manual-de-diseno.md) §10. Código: `Assets/Scripts/QaCheck.cs` (lógica pura sobre texto, sin Unity, como
+`TestImpact`), `Assets/Scripts/Tests/QaCheckTest.cs` y `Assets/Editor/QaCheckTool.cs`. Las reglas que mira: [qa-propuesta.md §6](qa-propuesta.md).
 
 ### Cómo se corre
 

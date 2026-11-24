@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// CHARLAS ENTRE PERSONAS (docs/conversaciones.md; Berón 2026-11-04: «se supone que tenemos un sistema montado para que surjan
+/// CHARLAS ENTRE PERSONAS (docs/sistemas/conversaciones.md; Berón 2026-11-04: «se supone que tenemos un sistema montado para que surjan
 /// conversaciones entre ánimas, ¿no? En este caso los humanos e insectos humanos deberían poder hacerlo»).
 ///
 /// El sistema de ánimas ya tenía la charla (<see cref="CommunicationSpell"/>: dos <see cref="Mind"/> alternan un pensamiento, hay

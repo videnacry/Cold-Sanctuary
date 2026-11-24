@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// UN HOGAR (docs/ciclo-de-vida.md §Humanos; docs/microcosmos-reglas-edificacion.md regla 6; Berón 2026-11-02: «los pueblos de
+/// UN HOGAR (docs/sistemas/ciclo-de-vida.md §Humanos; docs/reglas/microcosmos-reglas-edificacion.md regla 6; Berón 2026-11-02: «los pueblos de
 /// historia de los microcosmos deben ser reconstruidos para que haya hogares para los demás personajes, además de los lugares de
 /// trabajo y los servicios básicos, para que cada personaje realice su ciclo de vida correctamente»).
 /// La casa de una FAMILIA (una persona sola, una pareja, una pareja con hijos): sus camas (una por persona), el retrete, el
@@ -183,7 +183,7 @@ public class HomeNeedSpell : QueuedSpell
     Transform _spot;
     /// <summary>El mueble entero del sitio (la mesa del apoyo de abdomen): junto a él ya se puede usar (ronda 4 de Hawthorne).</summary>
     static Transform PieceOf(Transform spot) { MicroPiece mp = spot != null ? spot.GetComponentInParent<MicroPiece>() : null; return mp != null ? mp.transform : spot; }
-    // (2026-11-04) COMER CON SU ORQUESTA (MealRitual, docs/actividades-y-uniformes.md §2): coge el plato de la despensa, se sienta, come a
+    // (2026-11-04) COMER CON SU ORQUESTA (MealRitual, docs/sistemas/actividades-y-uniformes.md §2): coge el plato de la despensa, se sienta, come a
     // bocados con los cubiertos y bebe, y al acabar lleva el plato al fregadero (el lavabo de casa).
     MealRitual _meal; bool _fetched; float _fetchSince = -1f;
     readonly WalkWatch _walk = new WalkWatch();   // (2026-11-18) el tope de andar, a la medida del camino (MIC-93)

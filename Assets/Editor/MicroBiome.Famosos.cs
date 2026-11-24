@@ -1,9 +1,9 @@
 using UnityEngine;
 
 /// <summary>
-/// FLORA Y FAUNA DE LOS PUEBLOS DE LOS FAMOSOS (docs/microcosmos-famosos.md). Como en los científicos: en el campo, la del lugar y la
+/// FLORA Y FAUNA DE LOS PUEBLOS DE LOS FAMOSOS (docs/microcosmos/microcosmos-famosos.md). Como en los científicos: en el campo, la del lugar y la
 /// estación; en las ciudades (Hawthorne, Albuquerque, Omaha, Uagadugú), solo lo plantado y los animales del pueblo con el cuerpo de su
-/// análogo (docs/microcosmos-fauna-eras.md), ningún bicho salvaje suelto.
+/// análogo (docs/microcosmos/microcosmos-fauna-eras.md), ningún bicho salvaje suelto.
 /// </summary>
 public static partial class MicroBiome
 {

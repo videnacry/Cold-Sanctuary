@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-/// <summary>Velocidades y tiempos de la línea (docs/sitio-nuclear.md §9 y §20). Son valores del juego, sostenidos en precedentes reales.</summary>
+/// <summary>Velocidades y tiempos de la línea (docs/areas/sitio-nuclear.md §9 y §20). Son valores del juego, sostenidos en precedentes reales.</summary>
 public static class SiteLineRule
 {
     /// <summary>LA LÍNEA DE SÚPER VELOCIDAD: 20 m/s, justo bajo el récord de ascensores de pasajeros (20,5 m/s, Shanghái); 1,5 m/s², el tope de confort de los
@@ -48,7 +48,7 @@ public static class SiteLineRule
 }
 
 /// <summary>
-/// LA LÍNEA DE LAS CAVERNAS (docs/sitio-nuclear.md §20): vive en el santuario 1, donde están su estación y los primeros metros del tubo. Lo hondo es otra escena, Santuario_Marino,
+/// LA LÍNEA DE LAS CAVERNAS (docs/areas/sitio-nuclear.md §20): vive en el santuario 1, donde están su estación y los primeros metros del tubo. Lo hondo es otra escena, Santuario_Marino,
 /// y solo se carga para quien va en persona (Kushal), aditiva, durante el viaje: el santuario sigue vivo arriba y la memoria solo sube mientras él está abajo.
 /// Los demás viajan SIN CARGAR NADA: el carro baja lo que se ve, el cuerpo se oculta y el viaje corre en <see cref="Depth"/>, con el mismo tiempo, las mismas emergencias y la misma salida.
 /// Quien va dentro cuenta como «en alfombra» (<see cref="FlyingCarpet.Carry"/>). A la estación se llega en alfombra. Todas las esperas son finitas.
@@ -104,7 +104,7 @@ public class SiteLine : MonoBehaviour
     {
         Instance = this;
         WorkdayDirector.RegisterPlace(AreaName, transform);
-        // (2026-11-08) La planta está abajo: en el santuario 1 sus dos áreas son la estación (docs/sitio-nuclear.md §25).
+        // (2026-11-08) La planta está abajo: en el santuario 1 sus dos áreas son la estación (docs/areas/sitio-nuclear.md §25).
         WorkdayDirector.RegisterPlace(NuclearSite.PlantArea, transform);
         WorkdayDirector.RegisterPlace(NuclearSite.PowerArea, transform);
     }
@@ -238,7 +238,7 @@ public class SiteLine : MonoBehaviour
     public Transform Pad { get { CarpetPad p = CarpetPad.For(transform.position); return p != null && (p.transform.position - transform.position).sqrMagnitude < 144f ? p.transform : null; } }
 
 
-    // ── LA PLANTA BAJO EL MAR (Berón 2026-11-08; docs/sitio-nuclear.md §25): la Central Nuclear y la Planta Atómica están en el Santuario Marino. Quien trabaja
+    // ── LA PLANTA BAJO EL MAR (Berón 2026-11-08; docs/areas/sitio-nuclear.md §25): la Central Nuclear y la Planta Atómica están en el Santuario Marino. Quien trabaja
     // en ellas llega en alfombra a la estación, baja por la Línea SIN CARGAR NADA (como el muelle del Aéreo: el cuerpo se oculta y su misión corre por el reloj)
     // y vuelve cuando su jornada lo lleva a otra parte. No ocupa el carro de las bajadas a la roca: es su propio viaje, del mismo minuto.
     readonly Dictionary<GameObject, string> _wanted = new Dictionary<GameObject, string>();

@@ -3,7 +3,7 @@ using Unity.AI.Navigation;
 using UnityEngine;
 
 /// <summary>
-/// PAISAJE POLAR del santuario de hielo (docs/ice-sanctuary-ecology.md):
+/// PAISAJE POLAR del santuario de hielo (docs/fauna/ice-sanctuary-ecology.md):
 ///  · CASQUETES: el suelo deja de ser una losa única. Es banquisa: placas de hielo separadas por CANALES de agua
 ///    (grietas por donde asoma el mar), con PUENTES de hielo cada cierto tramo para cruzar a pie; al este, mar abierto
 ///    con témpanos sueltos. Las áreas del santuario, los nidos, los seres y el hub quedan siempre sobre hielo firme.
@@ -22,7 +22,7 @@ public static class PolarLandscapeBuilder
     /// (los árboles crecen junto a las áreas elevadas). Rodean una gran LAGUNA central donde viven los animales marinos.
     /// (casquete, x, z, radio). Los lóbulos de un mismo casquete se solapan; entre casquetes quedan ≥ 8 m de agua.
     /// </summary>
-    /// LA ISLA DE TIERRA (Berón 2026-11-05; docs/territorio-polar.md): el casquete Sur y los lóbulos «Isla:» ya no son hielo sino tierra (mitad y
+    /// LA ISLA DE TIERRA (Berón 2026-11-05; docs/areas/territorio-polar.md): el casquete Sur y los lóbulos «Isla:» ya no son hielo sino tierra (mitad y
     /// mitad del territorio, medido por <see cref="SampleSceneBuilder"/>). <see cref="NaturalIce"/> sigue diciendo «suelo firme»;
     /// <see cref="IceAt"/> y <see cref="LandAt"/> distinguen cuál. Los índices no se mueven: lo nuevo va al final.
     public static readonly (string name, float x, float z, float r)[] Islands =

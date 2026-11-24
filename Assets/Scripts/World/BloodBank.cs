@@ -3,7 +3,7 @@ using UnityEngine;
 
 
 /// <summary>
-/// EL BANCO DE SANGRE DEL HOSPITAL (Berón 2026-11-03: «en el hospital debe existir un banco de sangre»; docs/hospital.md
+/// EL BANCO DE SANGRE DEL HOSPITAL (Berón 2026-11-03: «en el hospital debe existir un banco de sangre»; docs/areas/hospital.md
 /// §Banco de sangre). Un hospital aislado a −77,85° no recibe sangre de fuera: la guarda y la saca de su gente.
 /// - ALMACÉN, cada producto a su temperatura (OMS, <i>Clinical Transfusion Process and Patient Safety</i>, 2010; Council of
 ///   Europe, <i>Guide to the preparation, use and quality assurance of blood components</i>, 21.ª ed., 2023; AABB Standards):

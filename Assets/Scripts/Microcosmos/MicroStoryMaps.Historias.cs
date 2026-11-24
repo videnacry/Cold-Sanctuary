@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// LOS MAPAS A MANO DE LA TANDA 3 (docs/microcosmos-historias-3.md; regla M9): todos HECHOS. Metros desde la «Historia», x al este y z al
+/// LOS MAPAS A MANO DE LA TANDA 3 (docs/microcosmos/microcosmos-historias-3.md; regla M9): todos HECHOS. Metros desde la «Historia», x al este y z al
 /// norte: el mismo marco que su plano (Assets/Editor/Historias/). Los nombres de planta empiezan como en su bioma; al construir, el
 /// registro lo dice si no («[Mapa] … no está en su bioma»). En un mapa hecho no se siembra nada al azar: los animales del pueblo (perros,
 /// burros…) también van aquí. Cada mapa, un método (el orden de inicialización entre archivos de una clase parcial no está garantizado).

@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DE LOS MAPAS A MANO (regla M9; petición 75; docs/microcosmos-mapas-a-mano.md): las historias de esta tanda tienen su mapa HECHO, como Angostura:
+/// PRUEBA DE LOS MAPAS A MANO (regla M9; petición 75; docs/microcosmos/microcosmos-mapas-a-mano.md): las historias de esta tanda tienen su mapa HECHO, como Angostura:
 /// - su lugar, su fecha y sus FUENTES;
 /// - la flora (≥ 40 plantas) y la fauna (≥ 8 bichos) en sus sitios reales, ninguna sobre el escenario de la propia historia (≤ 30 m del origen);
 /// - ≥ 2 órdenes sobre las piezas del piso y ≥ 4 edificios o lugares del plano;

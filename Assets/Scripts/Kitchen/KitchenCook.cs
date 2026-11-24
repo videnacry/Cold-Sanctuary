@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// COCINERO VISIBLE (docs/kitchen-simulation.md §3: «cadena de acciones espaciales, no un botón»): convierte cada paso
+/// COCINERO VISIBLE (docs/areas/kitchen-simulation.md §3: «cadena de acciones espaciales, no un botón»): convierte cada paso
 /// de la receta que le asigna el <see cref="RestaurantKitchen"/> (vía su <see cref="CookingStation"/>) en un trayecto
 /// y una acción que SE VEN: va a la nevera o a la despensa y saca el ingrediente (lo lleva en la mano), lo lava en el
 /// fregadero, lo corta en su tabla, lo pone en su sartén u olla del fogón y lo remueve, lo pasa al bol, emplata en la

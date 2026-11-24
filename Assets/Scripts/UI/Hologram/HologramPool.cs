@@ -8,7 +8,7 @@ using UnityEngine.UI;
 /// show at once. Today that's the periodic table catalog (Magia) — nothing else in the menu
 /// shows more items simultaneously, so bounding the pool to that count is safe. If a future
 /// submenu needs more, raise poolSize; don't build a second pool.
-/// See docs/ui-holographic-menu.md.
+/// See docs/sistemas/ui-holographic-menu.md.
 /// </summary>
 public class HologramPool : MonoBehaviour
 {
@@ -58,7 +58,7 @@ public class HologramPool : MonoBehaviour
 
     // Flat card: translucent background + optional icon + text fallback. No 3D mesh, no
     // world-space Canvas — this is a plain screen-space UI element so it can be small,
-    // corner-pinned and mobile-friendly (see docs/ui-holographic-menu.md).
+    // corner-pinned and mobile-friendly (see docs/sistemas/ui-holographic-menu.md).
     Hologram CreateHologramInstance(string name)
     {
         GameObject go = new GameObject(name, typeof(RectTransform), typeof(Image), typeof(Button));

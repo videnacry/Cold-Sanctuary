@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// HUEVO de verdad (docs/ciclo-de-vida.md; Berón 2026-11-01): los ovíparos del santuario (<see cref="LifeHistory.eggs"/>) ya
+/// HUEVO de verdad (docs/sistemas/ciclo-de-vida.md; Berón 2026-11-01): los ovíparos del santuario (<see cref="LifeHistory.eggs"/>) ya
 /// no «gestan» el huevo dentro de la madre. Tras la cópula y su tiempo de formación (<see cref="Reproduction.Calendar"/>),
 /// la hembra PONE: un objeto en el mundo que se incuba y del que nace la cría.
 ///   · PINGÜINO EMPERADOR: un huevo de ~12 cm sobre las PATAS de quien incuba (no hay nido de piedras). La hembra se lo pasa

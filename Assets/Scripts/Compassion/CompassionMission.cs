@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// SIMULACIÓN DE COMPASIÓN (docs/compassion-simulations.md): reencarna un momento histórico real en el que una persona o
+/// SIMULACIÓN DE COMPASIÓN (docs/microcosmos/compassion-simulations.md): reencarna un momento histórico real en el que una persona o
 /// un pueblo protegió a otros arriesgándolo todo — Le Chambon-sur-Lignon (1940–44) o Irena Sendler en Varsovia (1942–43).
 /// El jugador guía a los refugiados (E: «sígueme»), los esconde, les lleva pan, les consigue papeles y los pone a salvo,
 /// esquivando las patrullas. Al poner a salvo a <see cref="goal"/>, la <see cref="HistoryCard"/> cuenta lo que pasó de

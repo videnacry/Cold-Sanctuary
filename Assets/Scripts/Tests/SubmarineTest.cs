@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DEL SUBMARINO DE OBRA Y DE LAS MEDIDAS DE LA VÍA MARINA (Berón 2026-11-03; docs/submarino-de-obra.md):
+/// PRUEBA DEL SUBMARINO DE OBRA Y DE LAS MEDIDAS DE LA VÍA MARINA (Berón 2026-11-03; docs/areas/submarino-de-obra.md):
 /// 1. MEDIDAS: las puertas son cuadradas y caben 8 personas y el vehículo de diseño con su holgura; las ramas, también; el tronco
 ///    deja pasar el submarino junto a un banco de peces; los anillos de los pisos van por encima de la puerta del piso.
 /// 2. GARAJE: hay un garaje (un piso de Producción) con el submarino aparcado.

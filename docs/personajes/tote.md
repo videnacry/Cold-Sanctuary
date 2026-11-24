@@ -1,7 +1,12 @@
+---
+resumen: "Ficha con la plantilla de README.md. Id en el código: JefeConstruccion. Revisada: 2026-11-08. Veracidad de cada dato (regla M39, veracidad-frases.md): documentada = lo dijo Berón (sus…"
+temas: [construccion, personajes]
+estado: vigente
+---
 # Tofelite «Tote»
 
 > Ficha con la plantilla de [README.md](README.md). Id en el código: `JefeConstruccion`. Revisada: 2026-11-08.
-> Veracidad de cada dato (regla M39, [veracidad-frases.md](../veracidad-frases.md)): **documentada** = lo dijo Berón (sus mensajes o la
+> Veracidad de cada dato (regla M39, [veracidad-frases.md](../sistemas/veracidad-frases.md)): **documentada** = lo dijo Berón (sus mensajes o la
 > ficha larga que contó él); **atestiguada** = se ve en su foto o captura; **recreada** = decisión de juego hecha a partir de un dato
 > suyo; **inventada** = la puso el juego o un agente, sin base. ⚠️ = la ficha larga lo marca «confirmar». **Falta** = no se sabe.
 
@@ -9,7 +14,7 @@
 
 - Se llama Tofelite y lo llaman «Tote». El id del código sigue siendo `JefeConstruccion` (escenas y pruebas). *documentada (Berón 2026-10-31) · memoria `character-roles` · [SampleSceneBuilder.cs:3054](../../Assets/Editor/SampleSceneBuilder.cs#L3054)*
 - Hombre: «el esposo de Lizmibet». *documentada · ídem*
-- 1,68 m, robusto; piel morena, pelo corto oscuro, gafas de sol envolventes oscuras; camisa rosa pálido de rayas finas, remangada y con el cuello abierto; pantalón gris de vestir con cinturón oscuro, zapatos marrones de cordones y reloj dorado en la muñeca izquierda. *atestiguada (foto `tote.jpg`, 2026-11-04) · [diseno-personajes.md §Fichas](../diseno-personajes.md) · [CubeHair.cs:155](../../Assets/Scripts/Avatar/CubeHair.cs#L155)*
+- 1,68 m, robusto; piel morena, pelo corto oscuro, gafas de sol envolventes oscuras; camisa rosa pálido de rayas finas, remangada y con el cuello abierto; pantalón gris de vestir con cinturón oscuro, zapatos marrones de cordones y reloj dorado en la muñeca izquierda. *atestiguada (foto `tote.jpg`, 2026-11-04) · [diseno-personajes.md §Fichas](../sistemas/diseno-personajes.md) · [CubeHair.cs:155](../../Assets/Scripts/Avatar/CubeHair.cs#L155)*
 - Antes llevaba polo gris y bermudas, de la foto con Lizmibet. *atestiguada · [CubeHair.cs:155](../../Assets/Scripts/Avatar/CubeHair.cs#L155)*
 - Edad, país y ojos: **Falta**.
 
@@ -19,7 +24,7 @@
 
 ## 3. Personalidad y frases
 
-- Una pose relajada en su foto, que el juego aún no copia. *atestiguada · [diseno-personajes.md §Familia y amigos](../diseno-personajes.md)*
+- Una pose relajada en su foto, que el juego aún no copia. *atestiguada · [diseno-personajes.md §Familia y amigos](../sistemas/diseno-personajes.md)*
 - Carácter, frases, vivencias y anclas: **Falta**.
 
 ## 4. Stats, margas y aptitudes
@@ -30,8 +35,8 @@
 ## 5. Profesión y lo que sabe hacer
 
 - Jefe de reparaciones (las misiones `rep_`) y guardia. *documentada (Berón 2026-11-04) · [Professions.cs:38](../../Assets/Scripts/Progression/Professions.cs#L38) · [Professions.cs:121](../../Assets/Scripts/Progression/Professions.cs#L121)*
-- Antes: jefe de construcción, obras y reparaciones de las áreas humanas. *documentada (Berón 2026-10-31) · memoria `character-roles`*. Desde el 2026-11-04 la obra nueva la dirige Josedrilo. *documentada · [personajes-mesocosmos.md §Profesiones](../personajes-mesocosmos.md)*
-- Guardia con Gohageneis y Nesvitor; su profesión incluye la Sala de guardia. *documentada · [sala-de-guardia.md](../sala-de-guardia.md)*
+- Antes: jefe de construcción, obras y reparaciones de las áreas humanas. *documentada (Berón 2026-10-31) · memoria `character-roles`*. Desde el 2026-11-04 la obra nueva la dirige Josedrilo. *documentada · [personajes-mesocosmos.md §Profesiones](../historia/personajes-mesocosmos.md)*
+- Guardia con Gohageneis y Nesvitor; su profesión incluye la Sala de guardia. *documentada · [sala-de-guardia.md](../areas/sala-de-guardia.md)*
 
 ## 6. Puesto y áreas
 
@@ -41,17 +46,17 @@
 
 ## 7. Relaciones
 
-- Esposa: Lizmibet; comparten casa del árbol. *documentada (Berón 2026-11-04) · [ResidentialBuilder.cs:39](../../Assets/Editor/ResidentialBuilder.cs#L39) · [manual-de-diseno.md J14](../manual-de-diseno.md)*
+- Esposa: Lizmibet; comparten casa del árbol. *documentada (Berón 2026-11-04) · [ResidentialBuilder.cs:39](../../Assets/Editor/ResidentialBuilder.cs#L39) · [manual-de-diseno.md J14](../reglas/manual-de-diseno.md)*
 - Hijos, nietos (¿Leo?) y amigos: **Falta**.
 
 ## 8. Horario y costumbres
 
-- Gimnasio: torso/pierna, martes, miércoles, viernes y sábado, resistencia («robusto, jornadas de obra»). *recreada · [GymProgramming.cs:208](../../Assets/Scripts/Progression/GymProgramming.cs#L208) · [gimnasio-maquinas.md §15](../gimnasio-maquinas.md)*
+- Gimnasio: torso/pierna, martes, miércoles, viernes y sábado, resistencia («robusto, jornadas de obra»). *recreada · [GymProgramming.cs:208](../../Assets/Scripts/Progression/GymProgramming.cs#L208) · [gimnasio-maquinas.md §15](../areas/gimnasio-maquinas.md)*
 - Horario libre: el reparto común ([LeisureDirector.cs:86](../../Assets/Scripts/Progression/LeisureDirector.cs#L86)). Aficiones: **Falta**.
 
 ## 9. Microcosmos y santuario
 
-- En los microcosmos es una **termita** (constructora de montículos). *recreada · [microcosmos-civilizaciones.md](../microcosmos-civilizaciones.md)*
+- En los microcosmos es una **termita** (constructora de montículos). *recreada · [microcosmos-civilizaciones.md](../microcosmos/microcosmos-civilizaciones.md)*
 - Su cuerpo sirve de turista del restaurante. *código · [RestaurantService.cs:571](../../Assets/Scripts/Kitchen/RestaurantService.cs#L571)*
 - Santuario y nivel: **Falta**.
 

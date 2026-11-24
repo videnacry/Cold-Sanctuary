@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// DIRECTOR de circunstancias del Nivel 1 (docs/microcosmos-level1.md §Beats, rebanada 3) — al estilo de
+/// DIRECTOR de circunstancias del Nivel 1 (docs/microcosmos/microcosmos-level1.md §Beats, rebanada 3) — al estilo de
 /// <c>MobWorldDirector</c>: **no mueve a nadie**. Secuencia los BEATS del alba **sembrando circunstancias**
 /// (campos de pensamiento/humor, estímulos) y **leyendo el estado emergente** (<see cref="TribeCohesion"/>, la
 /// cercanía de los que cuidan). Quien mueve son los <see cref="SocialImpulse"/> (rebanada 2); el director solo

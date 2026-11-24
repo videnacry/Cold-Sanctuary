@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DE LAS CHARLAS ENTRE PERSONAS (grupo 88; docs/conversaciones.md; Berón 2026-11-04: «debería haber una escena específica
+/// PRUEBA DE LAS CHARLAS ENTRE PERSONAS (grupo 88; docs/sistemas/conversaciones.md; Berón 2026-11-04: «debería haber una escena específica
 /// creada para poder probar esta lógica al detalle»). Corre en <c>Assets/Scenes/Pruebas/Prueba_Conversaciones</c>: una mesa con
 /// bancos y seis personas (dos humanos, dos insectos-humanos de especies distintas y una pareja humano-insecto). Mira:
 ///   1. que surge una charla de cada clase (humano-humano, insecto-insecto, humano-insecto) en menos de <see cref="StartMinutes"/>

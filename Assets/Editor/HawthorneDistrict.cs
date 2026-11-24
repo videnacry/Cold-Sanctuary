@@ -3,7 +3,7 @@ using UnityEngine;
 
 /// <summary>
 /// HAWTHORNE 2008, EL DISTRITO DESDE CERO (PB-165, Berón 2026-11-19: «primero montamos un buen distrito sin huecos, bien estructurado,
-/// como GTA en cuanto a estar lleno de edificaciones y espacios urbanos»). Plan, plano y fuentes: docs/hawthorne-distrito.md.
+/// como GTA en cuanto a estar lleno de edificaciones y espacios urbanos»). Plan, plano y fuentes: docs/microcosmos/hawthorne-distrito.md.
 ///
 /// El microcosmos ya NO se monta sobre el piso del santuario (MicrocosmSpec.ownGround): es un rectángulo urbano de
 /// <see cref="HawthorneGround"/> que esta historia llena entero. Coordenadas del plano en el marco de la FÁBRICA (F: su centro en el
@@ -21,7 +21,7 @@ using UnityEngine;
 /// - cada edificio con FACHADA DE VERDAD (escaparates o ventanas, rótulo, toldo, azotea con climatización) e INTERIOR con la maquinaria
 ///   de su uso (lo que hace falta para usarlo);
 /// - en Hawthorne todos son insectos-humanos: SOLO mobiliario de insecto-humano (mesa alta con apoyo de abdomen; nada de sillas de persona).
-/// [C] = confirmado con fuente, [S] = supuesto (docs/hawthorne-distrito.md §3).
+/// [C] = confirmado con fuente, [S] = supuesto (docs/microcosmos/hawthorne-distrito.md §3).
 /// </summary>
 public static partial class StorySceneBuilder
 {
@@ -1250,7 +1250,7 @@ public static partial class StorySceneBuilder
         foreach (float x in new[] { -24f, -16f, -8f, 8f, 16f, 24f }) Prop(v, "Arriate_de_la_fachada", DRaw(x, -MuskFactorySize.y * 0.5f * MuskK - 3f, 0.15f), new Vector3(3f, 0.3f, 1.2f), M("Arriate_ladrillo", 0.6f, 0.35f, 0.28f), true);
     }
     // ── 14 · EL GIMNASIO DEL BARRIO (entrenamiento) y la CLÍNICA DE URGENCIAS (recuperación), en Wilkie Ave [S]: la regla 16 pide en cada
-    //    pueblo trabajo, ocio, entrenamiento y recuperación (docs/manual-de-diseno.md). Gimnasios de cadena y «urgent care» de 2008 en LA.
+    //    pueblo trabajo, ocio, entrenamiento y recuperación (docs/reglas/manual-de-diseno.md). Gimnasios de cadena y «urgent care» de 2008 en LA.
     static AreaFunctionSite Gym(Transform city)
     {
         var site = Shell(city, "Gimnasio del barrio (Wilkie Ave)", "Centro de entrenamiento", new Vector2(216f, -20f), new Vector2(44f, 24f), 90f, 6f,

@@ -9,7 +9,7 @@ using UnityEngine;
 /// Trauma from stressful contexts can block the activity until the player's
 /// Satisfaction reaches the required threshold.
 ///
-/// See docs/bond-activity-system.md for full design rationale.
+/// See docs/sistemas/bond-activity-system.md for full design rationale.
 /// </summary>
 [CreateAssetMenu(fileName = "NewBondActivity", menuName = "Cold Sanctuary/Bond Activity")]
 public class BondActivity : ScriptableObject

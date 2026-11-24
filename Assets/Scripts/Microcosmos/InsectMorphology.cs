@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 
 /// <summary>
-/// MORFOLOGÍA de los artrópodos del microcosmos, tal cual docs/insect-morphology.md: cada segmento con su largo y ancho
+/// MORFOLOGÍA de los artrópodos del microcosmos, tal cual docs/sistemas/insect-morphology.md: cada segmento con su largo y ancho
 /// como fracción del largo del cuerpo L, las patas (5 segmentos en insectos, 7 en arañas) y sus rasgos (antena acodada,
 /// mandíbulas, alas, patas raptoras o saltadoras…). CubeInsect construye el cuerpo de cubos a partir de estos datos.
 /// </summary>

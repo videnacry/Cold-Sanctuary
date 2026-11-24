@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// BAJAR POR EL TOBOGÁN de la cama-litera (Berón 2026-11-04: «las literas tienen resbaladera»; docs/pijamadas.md). Quien despierta en
+/// BAJAR POR EL TOBOGÁN de la cama-litera (Berón 2026-11-04: «las literas tienen resbaladera»; docs/areas/pijamadas.md). Quien despierta en
 /// el piso de ARRIBA (un invitado de la pijamada) no baja trepando: se sienta en lo alto del tobogán y se desliza por él hasta el
 /// suelo de la casa (<see cref="Bedroom.slideTop"/> → <see cref="Bedroom.slideBottom"/>), y allí se pone de pie. Para subir se sigue
 /// trepando por el poste del pie. Acotado: <see cref="Seconds"/> de bajada, sin esperas.

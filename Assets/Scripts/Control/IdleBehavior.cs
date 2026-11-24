@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// COMPORTAMIENTO LIBRE vía COLA (docs/typed-spells-and-queues.md §4): cuando el anima está **libre** (necesidades
+/// COMPORTAMIENTO LIBRE vía COLA (docs/sistemas/typed-spells-and-queues.md §4): cuando el anima está **libre** (necesidades
 /// cubiertas, no poseída, cola vacía), se **encola a sí misma** acciones random (merodear) en el carril del jugador —
 /// el carril "opcional" que el jugador, al poseerla, puede vaciar/reprogramar. Así el NPC **usa la cola** en vez de
 /// actuar directo: "escribe" virtualmente sus hechizos. Pensado para animas por composición (que no tienen Volición

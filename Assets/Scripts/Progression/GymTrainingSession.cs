@@ -4,7 +4,7 @@ using UnityEngine;
 using Prescription = GymProgramming.Prescription;
 
 /// <summary>
-/// UNA SESIÓN DE GIMNASIO DE VERDAD (docs/gimnasio-maquinas.md §15): la persona sigue la rutina de su plan para hoy
+/// UNA SESIÓN DE GIMNASIO DE VERDAD (docs/areas/gimnasio-maquinas.md §15): la persona sigue la rutina de su plan para hoy
 /// (<see cref="GymProgramming.Prescribe"/>) en orden:
 ///  1. CALENTAMIENTO: la clase del entrenador (<see cref="GymCoach"/>) si la hay; si no, 5 min de cardio suave en una máquina.
 ///  2. Cada EJERCICIO: busca una copia libre de su máquina (la del mismo piso primero); si todas están ocupadas, la cambia por una

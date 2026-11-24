@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DEL REPARTO POR SANTUARIOS (grupo 113; Berón 2026-11-08; docs/jornada-y-rotacion.md §Reparto por santuarios). Casi todo es lógica pura, sin escena:
+/// PRUEBA DEL REPARTO POR SANTUARIOS (grupo 113; Berón 2026-11-08; docs/sistemas/jornada-y-rotacion.md §Reparto por santuarios). Casi todo es lógica pura, sin escena:
 ///  1. La casa de cada uno: los nueve de siempre en s1n1, los demás por la tabla de umbrales; se va a lo anterior, nunca a lo siguiente.
 ///  2. Cada uno pasa el día en un sitio al que llega; las horas de cada área ENTERA (el hospital, el yoga) salen de su lista de hoy.
 ///  3. Las horas se estiran desde las 16:00 para acabar; Kushal no. La Magnate, solo para áreas sin nadie; lo que sobra, segundo reparto.
@@ -48,7 +48,7 @@ public class RepartoSantuariosTest : MonoBehaviour, ITestUnit
         TestProbe.Begin("Reparto por santuarios: casa por estadísticas, acceso hacia atrás, horas por área, jornada estirada y clones solo donde no hay nadie");
 
         // ── 1. La casa de cada uno ──
-        // SE SUBE POR PODER (Berón 2026-11-08; docs/progresion-santuarios.md): jefe = el animal más poderoso; magia y bonusPacks para superarlo
+        // SE SUBE POR PODER (Berón 2026-11-08; docs/sistemas/progresion-santuarios.md): jefe = el animal más poderoso; magia y bonusPacks para superarlo
         var bosses = SanctuaryPower.Bosses();
         float whale = SanctuaryPower.OfSpecies("Whale");
         float faunaMax = SanctuaryPower.FaunaOf[SanctuaryPlacement.Land].Max(SanctuaryPower.OfSpecies);
@@ -171,7 +171,7 @@ public class RepartoSantuariosTest : MonoBehaviour, ITestUnit
         WorkRoster.DayPlan py = nobody.Plan(0, yoga);
         TestProbe.Check("el yoga de varios pisos: sus horas juntas y un solo clon", py.clones.Count == 1 && py.hoursByArea.Count == 1 && Mathf.Approximately(py.hoursByArea["Sala de Yoga"], 4f) && py.quota["Sala de Yoga"] == 1, $"{py.clones.Count} clones · {string.Join(", ", py.hoursByArea.Select(kv => $"{kv.Key} {kv.Value} h"))}");
 
-        // VARIAS TAREAS A LA VEZ EN UN ÁREA (Berón 2026-11-08; docs/tareas-por-area.md): con varias personas se reparten; con una, las encadena
+        // VARIAS TAREAS A LA VEZ EN UN ÁREA (Berón 2026-11-08; docs/sistemas/tareas-por-area.md): con varias personas se reparten; con una, las encadena
         // todas, sin un clon por puesto. El clon, solo si las horas del área pasan de lo que cubren sus humanos.
         string[] posts = { "coc_caja", "coc_comanda", "coc_cocinar", "coc_servir", "coc_limpiar" };
         List<WorkRoster.Mission> Restaurant() => posts.Select(id => new WorkRoster.Mission("Cocina", id, id, 1f, true)).ToList();
@@ -200,7 +200,7 @@ public class RepartoSantuariosTest : MonoBehaviour, ITestUnit
         TestProbe.Check("5 h justas (1 + 2 + 2) para una persona: caben todas, sin clon", Mathf.Approximately(Worked(pfit, fw), 5f) && pfit.clones.Count == 0, string.Join(" · ", pfit.work.Select(a => $"{a.worker.name} {a.start:0.#} {a.mission.id}")));
         TestProbe.Check("la obra cuenta turnos, no personas: uno puede hacer los tres del equipo", ConstructionProject.ShiftOf("obra_trabajo_Sala de Ballet") == "#1" && ConstructionProject.ShiftOf("obra_trabajo_Sala de Ballet#3") == "#3");
 
-        // LAS OPCIONALES (Berón 2026-11-08; docs/tareas-por-area.md): si nadie tiene tiempo, ese día no se hacen; nunca un clon para ellas
+        // LAS OPCIONALES (Berón 2026-11-08; docs/sistemas/tareas-por-area.md): si nadie tiene tiempo, ese día no se hacen; nunca un clon para ellas
         TestProbe.Check("la lista de opcionales: estudio y cuentas sí; seguridad, cuidado de seres vivos, comida y obras, nunca",
             WorkRoster.IsOptional("aul_estudio") && WorkRoster.IsOptional("coc_cuentas") && !WorkRoster.IsOptional("hos_urgencias") && !WorkRoster.IsOptional("cri_vinculo") && !WorkRoster.IsOptional("coc_servicio") && !WorkRoster.IsOptional("con_almacen") && !WorkRoster.IsOptional("nuc_vigilancia")
             && new WorkRoster.Mission("Aula", "aul_estudio", "", 1f).optional && !new WorkRoster.Mission("Aula", "aul_estudio", "", 1f, true).optional);
@@ -219,7 +219,7 @@ public class RepartoSantuariosTest : MonoBehaviour, ITestUnit
         WorkRoster.DayPlan pbefore = Roster(("Antes", 0)).Plan(0, asBefore);
         TestProbe.Check("los clones del día no suben con las opcionales (si antes no había, tampoco ahora)", pfull.clones.Count <= pbefore.clones.Count, $"antes {pbefore.clones.Count} · ahora {pfull.clones.Count}");
 
-        // ÁREAS EN OBRA (Berón 2026-11-09; docs/areas-en-obra.md): solo lo básico queda terminado; lo demás es una obra, sin tareas de área
+        // ÁREAS EN OBRA (Berón 2026-11-09; docs/areas/areas-en-obra.md): solo lo básico queda terminado; lo demás es una obra, sin tareas de área
         TestProbe.Check("básicas: hospital, cocina, guardia, huerto, cría, energía, carne cultivada, mecánica, construcción, gimnasio y yoga",
             new[] { AreaWork.Hospital, "Cocina", AreaWork.Guard, AreaWork.GuardRoom, "Huerto", "Cría", EnergyRule.Area, "Carne Cultivada", "Mecánica", "Construcción", "Gimnasio", "Sala de Yoga", NuclearSite.PlantArea, NuclearSite.PowerArea }.All(AreasEnObra.IsBasic)
             && !new[] { "Química", "Biología", "Informática", "Aula", "Sala de asambleas", "Música", "Estudio Textil" }.Any(AreasEnObra.IsBasic));
@@ -285,7 +285,7 @@ public class RepartoSantuariosTest : MonoBehaviour, ITestUnit
         WorkRoster.DayPlan pair = air.Plan(0, airDay);
         TestProbe.Check("la del Aéreo hace sus tareas y, con el tiempo que le queda, turnos de la obra", pair.Of(air.Find("Linda")).Any(a => a.mission.area == EnergyRule.Area) && pair.Of(air.Find("Linda")).Any(a => a.mission.id.StartsWith("obra_")) && pair.clones.Count == 0, string.Join(", ", pair.Of(air.Find("Linda")).Select(a => a.mission.id)));
 
-        // LA FAUNA POR HUMANOS (Berón 2026-11-09; docs/reglas-animales.md §Fauna por humanos): K × los humanos de cada santuario, repartido por niveles tróficos
+        // LA FAUNA POR HUMANOS (Berón 2026-11-09; docs/reglas/reglas-animales.md §Fauna por humanos): K × los humanos de cada santuario, repartido por niveles tróficos
         TestProbe.Check("K por defecto 3: 26 humanos dan 78 animales", PopulationPlan.AnimalsPerHuman == 3 && PopulationPlan.TotalFor(26) == 78);
         TestProbe.Check("las partes de cada especie suman 1", Mathf.Abs(PopulationPlan.Shares(PopulationPlan.Groups.Keys).Values.Sum() - 1f) < 1e-3f);
         var alloc = PopulationPlan.Allocate(78, PopulationPlan.Groups.Keys, out List<string> dropped78);
@@ -392,7 +392,7 @@ public class RepartoSantuariosTest : MonoBehaviour, ITestUnit
         TestProbe.Check("en el Marino, el primer día se inician en más de 2 h y aprenden casi todo lo de su sitio", lessonsMax > 2 && seaDay.Count(m => learned.Contains(MissionRequirements.KnowledgeKey(m.id))) >= 5,
             $"clases por persona hasta {lessonsMax} · aprendidas {seaDay.Count(m => learned.Contains(MissionRequirements.KnowledgeKey(m.id)))}/7");
 
-        // EL REFUGIO CRECE (Berón 2026-11-05, #128; docs/sitio-nuclear.md §26): por obras que hace el equipo, hasta que se puede vivir allí
+        // EL REFUGIO CRECE (Berón 2026-11-05, #128; docs/areas/sitio-nuclear.md §26): por obras que hace el equipo, hasta que se puede vivir allí
         TestProbe.Check("autonomía de un mes (#125): 12 personas con corriente, 720 h; sin corriente, una semana", RefugeGrowth.AutonomyHours(12, 0, true) >= 720f - 1e-3f && Mathf.Approximately(RefugeGrowth.AutonomyHours(12, 0, false), RefugeRule.StoredHours));
         TestProbe.Check("las obras del refugio: al menos 4 etapas, cada una con días y equipo, y la hacen los del Marino",
             RefugeGrowth.Stages.Length >= 4 && RefugeGrowth.Stages.All(s => s.days > 0 && s.crew > 0 && RefugeGrowth.IsStage(s.title) && AreasEnObra.ObraArea(s.title) == SiteLine.AreaName));

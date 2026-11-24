@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DEL ALIMENTADOR (Berón 2026-11-05; docs/alimentador.md): no hay comedero; la lista es compartida y nadie mira dos veces al mismo; quien tiene
+/// PRUEBA DEL ALIMENTADOR (Berón 2026-11-05; docs/areas/alimentador.md): no hay comedero; la lista es compartida y nadie mira dos veces al mismo; quien tiene
 /// hambre recibe su ración desde lejos, quien no, queda marcado; misión por rotación, con E, gesto y pasos virtuales. Y la cadena alimenticia lo cuenta.
 /// </summary>
 public class AlimentadorTest : MonoBehaviour, ITestUnit

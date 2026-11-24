@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>Coste de un hechizo en elementos (docs/magic-metabolism-progression.md §1).</summary>
+/// <summary>Coste de un hechizo en elementos (docs/sistemas/magic-metabolism-progression.md §1).</summary>
 [System.Serializable]
 public class ElementCost
 {
@@ -10,7 +10,7 @@ public class ElementCost
 }
 
 /// <summary>
-/// RESERVAS DE MAGIA por elemento (docs/magic-metabolism-progression.md §1): el mago **sostiene mágicamente**
+/// RESERVAS DE MAGIA por elemento (docs/sistemas/magic-metabolism-progression.md §1): el mago **sostiene mágicamente**
 /// un stock de cada elemento — **lo que el jugador ve en la tabla periódica, con su conteo**. Cada **hechizo es
 /// una reacción química** con un **coste** (`ElementCost`s); al **agotar** un elemento, no se pueden lanzar
 /// hechizos que dependan de él. Se rellena procesando materia (comer/absorber → `Add`). Opt-in.

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// GESTOR del RESTAURANTE (cocina jugable, docs/kitchen-simulation.md + spell-genesis §cocina). La misión = **preparar
+/// GESTOR del RESTAURANTE (cocina jugable, docs/areas/kitchen-simulation.md + spell-genesis §cocina). La misión = **preparar
 /// platillos para TODOS los personajes del santuario** (no se come: se cocina para VENDER). Cada platillo tiene su
 /// **stock** (<see cref="FoodContainer"/>) y un objetivo de raciones; el restaurante **mantiene el equilibrio**:
 /// cuando una anima entra a cocinar (<see cref="CookingStation"/>) se le asigna el platillo **más por debajo** de su

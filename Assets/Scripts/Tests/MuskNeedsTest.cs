@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// FASE 2 DEL PLAN (docs/plan-microcosmos-realismo.md §2 y §4.1: «necesidades verificadas»): LA VIDA DE VERDAD EN EL PILOTO
+/// FASE 2 DEL PLAN (docs/microcosmos/plan-microcosmos-realismo.md §2 y §4.1: «necesidades verificadas»): LA VIDA DE VERDAD EN EL PILOTO
 /// Microcosmos_ElonMusk. Carga la escena (aditiva, espera acotada) y, con el reloj adelantado por bloques de un día simulado y el tiempo
 /// a ×4, sigue a los insectos-humanos que trabajan en la nave de SpaceX y viven en ella (el turno de noche: CivicBuilder.NightShiftHome):
 /// 1. [MIC-89] TRABAJAN: a las 9 (bloque de trabajo) llegan andando a su puesto de la nave (a su sitio de trabajo, MicroJornada.WorkSpotOf);

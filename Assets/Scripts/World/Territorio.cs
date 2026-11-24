@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// EL TERRITORIO POLAR (Berón 2026-11-05; docs/territorio-polar.md): lo que el constructor deja apuntado para el juego y la prueba (grupo 99):
+/// EL TERRITORIO POLAR (Berón 2026-11-05; docs/areas/territorio-polar.md): lo que el constructor deja apuntado para el juego y la prueba (grupo 99):
 /// puntos de la isla de tierra, cuevas y colonias. La isla y los casquetes son las placas de «Banquisa_Casquetes» (hielo: «Casquete»;
 /// tierra: «Tierra» y «Tierra_orilla»). Cada cueva lleva dos hijos: «Boca» (fuera, en el suelo) y «Fondo» (dentro).
 /// </summary>

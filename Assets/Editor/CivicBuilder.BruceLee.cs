@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// EL PUEBLO DE BRUCE LEE (docs/microcosmos-bruce-lee.md §5, docs/microcosmos-reglas-edificacion.md): era avanzada (1957–1971), así
+/// EL PUEBLO DE BRUCE LEE (docs/microcosmos/microcosmos-bruce-lee.md §5, docs/reglas/microcosmos-reglas-edificacion.md): era avanzada (1957–1971), así
 /// que la ciudad real ocupa TODO el piso del Dojo ×10 (sin sus muebles gigantes). Dos barrios, como la historia: KOWLOON en los
 /// años 50 (oeste del piso: la escuela de Yip Man, el piso de la familia Lee en Nathan Road, el colegio de St. Francis Xavier,
 /// un cha chaan teng, el mercado de la calle del Templo y el templo de Tin Hau, con calles de tong lau y banianos) y SEATTLE
@@ -20,7 +20,7 @@ internal static partial class CivicBuilder
     static readonly Style Campus = new Style(C(0.7f, 0.55f, 0.42f), C(0.6f, 0.52f, 0.44f), C(0.3f, 0.3f, 0.3f), Roof.None);
 
     // ══ BRUCE LEE: Kowloon (años 50), Seattle (1959–64), Oakland (1964) y Los Ángeles (1967) ══════════════════════
-    // Fuentes (docs/microcosmos-bruce-lee.md §5): HistoryLink 3999; Polly 2018 (Bruce Lee: A Life); Hong Kong Heritage Museum,
+    // Fuentes (docs/microcosmos/microcosmos-bruce-lee.md §5): HistoryLink 3999; Polly 2018 (Bruce Lee: A Life); Hong Kong Heritage Museum,
     // «Bruce Lee: Kung Fu · Art · Life» (2013); Wikipedia «Tin Hau Temple, Yau Ma Tei», «Temple Street», «Cha chaan teng»,
     // «St. Francis Xavier's College», «Ruby Chow».
     static int BruceLeeEra(Transform t)

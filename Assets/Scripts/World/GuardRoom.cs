@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LA SALA DE GUARDIA (Berón 2026-11-05; docs/sala-de-guardia.md): el nivel 4 de la torre de Servicios, junto a la Sala de asambleas. Aquí se observa todo el santuario.
+/// LA SALA DE GUARDIA (Berón 2026-11-05; docs/areas/sala-de-guardia.md): el nivel 4 de la torre de Servicios, junto a la Sala de asambleas. Aquí se observa todo el santuario.
 /// <see cref="GuardWatch"/> lee el estado real con accesos estáticos (como <see cref="MarineBase"/>.Instance): si un sistema no está en la escena, su pantalla lo dice y no falla.
 /// LO SIMULADO: el santuario no tiene terremotos ni maremotos; <see cref="GuardWatchRule"/> da un parte diario determinista, sin efecto en el mundo, y la pantalla lo dice.
 /// Tampoco hay simulación de fuego: esa pantalla lee la emergencia nuclear.

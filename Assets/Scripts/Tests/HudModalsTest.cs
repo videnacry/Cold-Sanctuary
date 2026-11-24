@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DE LA PILA DE BOTONES Y SUS VENTANAS (grupo 93; docs/interfaz-botones.md, Berón 2026-11-05):
+/// PRUEBA DE LA PILA DE BOTONES Y SUS VENTANAS (grupo 93; docs/sistemas/interfaz-botones.md, Berón 2026-11-05):
 ///  · la pila va a la derecha y encima del botón de F10, sin pisarlo ni pisarse, y lejos del lanzador de la izquierda;
 ///  · las teclas no chocan con F1 ni con F10;
 ///  · las ventanas son de una en una; Esc, el botón y su tecla (<see cref="HudModals.Toggle"/>) las cierran;

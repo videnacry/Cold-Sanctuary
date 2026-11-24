@@ -39,7 +39,7 @@ public class Anima : MonoBehaviour, IAptitudes
     [HideInInspector] public float mindStatusCalculationFog; // 0–1 NIEBLA COGNITIVA por estrés agudo (adrenalina/cortisol →
                                                          // visión de túnel, Yerkes-Dodson). La sube AcuteStressResponse;
                                                          // ENTURBIA los cálculos de acción (EvaluateThreat/SenseThreats/
-                                                         // Volition/…). docs/microcosmos-dungbeetle-level.md §3.
+                                                         // Volition/…). docs/microcosmos/microcosmos-dungbeetle-level.md §3.
     [HideInInspector] public float physicalBoost;        // 0–1 IMPULSO físico transitorio del subidón de adrenalina (más
                                                          // velocidad/fuerza/agilidad efectivas); lo fija AcuteStressResponse,
                                                          // financiado por glucosa (se paga). Los consumidores lo leen como (1+boost).
@@ -53,7 +53,7 @@ public class Anima : MonoBehaviour, IAptitudes
     [HideInInspector] public float velocity = 1f;
     [HideInInspector] public float physicalResistance = 1f;
 
-    // Aptitudes (1.0 = media real de la especie/arquetipo; escalan con tareas/origen — ver docs/creature-stats.md)
+    // Aptitudes (1.0 = media real de la especie/arquetipo; escalan con tareas/origen — ver docs/sistemas/creature-stats.md)
     // Hogar UNIVERSAL de las 12 aptitudes (docs §Progresión): todo Anima las tiene. Los animales
     // usan activamente agility/perception (evolucionan); el resto quedan latentes por ahora (default 1).
     [HideInInspector] public float agility      = 1f;
@@ -68,12 +68,12 @@ public class Anima : MonoBehaviour, IAptitudes
     [HideInInspector] public float creativity   = 1f;
     [HideInInspector] public float sociability  = 1f;
     [HideInInspector] public float discipline   = 1f;
-    // Extendidas para deep-sim emocional (docs/emotion-model.md §6); aún NO en IAptitudes:
+    // Extendidas para deep-sim emocional (docs/sistemas/emotion-model.md §6); aún NO en IAptitudes:
     [HideInInspector] public float afabilidad   = 1f;   // agreeableness: calidez/cooperación vs frialdad
     [HideInInspector] public float sensibilidad = 1f;   // reactividad EMOCIONAL (cuánto oscilan los humores).
                                                         // OJO: distinta de Animal.sensibility (rango de detección de amenazas).
     [HideInInspector] public float armadura     = 0.1f; // textura/coraza (piel/escamas/exoesqueleto): puntos de
-                                                        // depredador + defensa (docs/stats-as-truth.md §2, Predation).
+                                                        // depredador + defensa (docs/sistemas/stats-as-truth.md §2, Predation).
     [HideInInspector] public float armament     = 0f;   // ARMA ofensiva ⟂ MASA (colmillo/veneno/garra/aguijón/parásito):
                                                         // deja que un cuerpo pequeño hiera a uno grande (avispa>cucaracha).
                                                         // 0 = sin arma especial (el daño sale de masa/fuerza). La pone la
@@ -108,7 +108,7 @@ public class Anima : MonoBehaviour, IAptitudes
     public virtual float Discipline   => discipline;
 
     // Medio actual + afinidad por medio (tierra/agua/aire). El rendimiento físico se multiplica
-    // por la afinidad del medio en que está la criatura. Ver docs/creature-stats.md §Modificadores de medio.
+    // por la afinidad del medio en que está la criatura. Ver docs/sistemas/creature-stats.md §Modificadores de medio.
     [HideInInspector] public Medium currentMedium = Medium.Land;
     // Afinidad por medio como DATA (la fija el arquetipo vía SpeciesBody/SoulComposition, ya no un override por clase).
     [HideInInspector] public float landAffinity  = 1f;
@@ -126,7 +126,7 @@ public class Anima : MonoBehaviour, IAptitudes
     public List<Bond> bonds = new List<Bond>();
 
     // CONFIANZA por CAPACIDAD/hechizo (0–100): la "maestría" que crece con el uso EXITOSO y mengua con el fracaso —
-    // el **bond hacia el hechizo** (docs/capabilities-and-embodiment.md §4). Mismo mecanismo que los bonds, indexado
+    // el **bond hacia el hechizo** (docs/sistemas/capabilities-and-embodiment.md §4). Mismo mecanismo que los bonds, indexado
     // por NOMBRE de hechizo en vez de por ITarget. Es el motor del temperamento-HISTÓRICO: el tiburón que muerde con
     // éxito gana confianza en "Morder" → se atreve más. La selección de la mente ponderará por esta confianza (D2/D3).
     public Dictionary<string, float> spellConfidence = new Dictionary<string, float>();
@@ -136,7 +136,7 @@ public class Anima : MonoBehaviour, IAptitudes
     // Hooks de AGENCIA (percibir→decidir→actuar). Default NO-OP: un `Anima` sin agencia no reacciona por sí mismo
     // (equivale al antiguo `Anima`). La agencia se DESPIERTA por configuración: `Animal` los sobreescribe con
     // conducta real (cazar/pastar/huir) y corre el bucle; a futuro, un componente de agencia hará lo mismo sobre
-    // cualquier `Anima`. Ver docs/consciousness-mechanics.md §4.
+    // cualquier `Anima`. Ver docs/sistemas/consciousness-mechanics.md §4.
 
     /// <summary>Respuesta al hambre. Default no-op; `Animal` caza/pasta.</summary>
     protected virtual void RespondToHunger() { }
@@ -208,7 +208,7 @@ public class Anima : MonoBehaviour, IAptitudes
 
     /// <summary>Registra el USO de una capacidad: el éxito la REFUERZA (más rápido de joven, como los bonds —
     /// `EffectiveBondGrowthRate`), el fracaso la MERMA. Es el aprendizaje-por-resultado que vuelve la agresividad/
-    /// destreza un HISTÓRICO (docs/capabilities-and-embodiment.md §4). Decaimiento pasivo sin uso = hook (un tick).</summary>
+    /// destreza un HISTÓRICO (docs/sistemas/capabilities-and-embodiment.md §4). Decaimiento pasivo sin uso = hook (un tick).</summary>
     public void RecordUse(string spell, bool success, float amount = 5f)
     {
         if (string.IsNullOrEmpty(spell)) return;
@@ -218,7 +218,7 @@ public class Anima : MonoBehaviour, IAptitudes
 
     /// <summary>DECAIMIENTO pasivo de la confianza sin uso (la maestría se enfría lentamente): baja todas las
     /// capacidades por `amount`. El uso activo (`RecordUse` con éxito) la supera de sobra. Llamar desde un tick
-    /// pasivo. Ver docs/capabilities-and-embodiment.md §4 (D-cola).</summary>
+    /// pasivo. Ver docs/sistemas/capabilities-and-embodiment.md §4 (D-cola).</summary>
     public void DecayConfidence(float amount)
     {
         if (amount <= 0f || spellConfidence.Count == 0) return;
@@ -227,7 +227,7 @@ public class Anima : MonoBehaviour, IAptitudes
             spellConfidence[k] = Mathf.Max(0f, spellConfidence[k] - amount);
     }
 
-    /// <summary>¿Puede este ser usar la capacidad/hechizo `spellId`? DOS VÍAS SIEMPRE (docs/capabilities-and-embodiment.md
+    /// <summary>¿Puede este ser usar la capacidad/hechizo `spellId`? DOS VÍAS SIEMPRE (docs/sistemas/capabilities-and-embodiment.md
     /// §2): la ANATOMÍA (`bodyEnabled`, que el llamante deduce de la parte — colmillo/ojo/`armament`) O la MAGIA
     /// (aprendido en el `Grimoire`). Cada hechizo es global; anatomía y grimorio son dos habilitadores del MISMO hechizo.
     /// Ej.: `Morder` = `self.CanUse("morder", armament > 0)`; `Ver` = `self.CanUse("ver", tieneOjo)`.</summary>

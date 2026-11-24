@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LA MAGNATE (docs/anyma-factory-and-control.md §Magnate) — la maestra del santuario. **Estado "infinito"**: stats y
+/// LA MAGNATE (docs/sistemas/anyma-factory-and-control.md §Magnate) — la maestra del santuario. **Estado "infinito"**: stats y
 /// margas al tope (no hay límite numérico definido → se modela como un estado), **sin necesidades** (no come ni
 /// duerme), **imposeíble de poseer** (relevancia altísima). No la mueven apremios sino sus **pensamientos custom**: su
 /// trabajo de GUARDIANA es (1) **proteger la vida** —al aparecer, pacifica a los depredadores cercanos (todas las
@@ -153,7 +153,7 @@ public class Magnate : MonoBehaviour
                 if (!_orch.Done) return;
                 _orch = null;
                 _newcomer.presented = true;   // ya es del santuario: su iniciación de la sala empieza aquí
-                // Lo ENTREGA al de turno de la sala: su primera clase OBLIGADA (docs/novela.md, «5. Sala de yoga»: upa-yoga de
+                // Lo ENTREGA al de turno de la sala: su primera clase OBLIGADA (docs/historia/novela.md, «5. Sala de yoga»: upa-yoga de
                 // cuello, paso a paso) y después el tanque al río de Sakshi (Berón 2026-10-27).
                 AreaInitiator ya = AreaInitiator.Begin(AreaInitiator.Kind.Yoga, _newcomer, _a);
                 Debug.Log($"[Magnate] entrega a «{t.name}» a {(ya != null ? ya.Who : "nadie")} (de turno en la sala de yoga) para su iniciación.");

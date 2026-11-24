@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LOS ESTILOS DE LA TANDA 3 DE HISTORIAS (docs/microcosmos-historias-3.md, 2026-11-05): los nombres de época y lugar de cada edificio
+/// LOS ESTILOS DE LA TANDA 3 DE HISTORIAS (docs/microcosmos/microcosmos-historias-3.md, 2026-11-05): los nombres de época y lugar de cada edificio
 /// del pueblo y los frutales de sus entradas nuevas del catálogo (<see cref="MicroStyles.All"/>): Andes republicanos, mapuche, inca,
 /// haudenosaunee, Egipto ptolemaico, Virginia de 1960, Viena de 1824, las Provincias Unidas de 1637, la Amazonía peruana, España de hoy y la
 /// feria inventada. En una entrada de esta tabla, LO QUE NO ESTÁ NO EXISTÍA (<see cref="MicroStyles.CivicName"/> da null y no se construye).

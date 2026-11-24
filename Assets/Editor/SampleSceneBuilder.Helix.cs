@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// EL MODELO DEL ÁRBOL PARA TODOS LOS EDIFICIOS (Berón 2026-10-30/31; docs/edificio-arbol.md §Migración): el constructor GENÉRICO
+/// EL MODELO DEL ÁRBOL PARA TODOS LOS EDIFICIOS (Berón 2026-10-30/31; docs/areas/edificio-arbol.md §Migración): el constructor GENÉRICO
 /// del edificio en hélice (<see cref="HelixTower"/>). Lo usan el Árbol de los Campos (SampleSceneBuilder.Tree.cs: sus cultivos)
 /// y las torres migradas (Servicios, Entrenamiento, Ciencias, Producción: sus áreas).
 /// - <see cref="BeginHelix"/>: la raíz (con su <see cref="ArbolCampos"/>: niveles y rutas a nado), en su sitio y su giro.
@@ -209,7 +209,7 @@ public static partial class SampleSceneBuilder
             Transform d = hx.spareFloor != null ? hx.spareFloor(k) : null;
             if (d == null || hx.decks[k] == null) HelixFloor(hx, k, d, new Vector2(h.floorSize, h.floorSize), $"Piso_libre_{k}");
         }
-        if (hx.building == TorreProduccion) SubmarineGarage(hx);   // el garaje del submarino de obra (docs/submarino-de-obra.md)
+        if (hx.building == TorreProduccion) SubmarineGarage(hx);   // el garaje del submarino de obra (docs/areas/submarino-de-obra.md)
         // Los ANILLOS de los pisos (RingDeck en U con su balcón contra el tronco) y dónde va cada puerta.
         for (int k = 1; k <= P; k++)
         {
@@ -505,7 +505,7 @@ public static partial class SampleSceneBuilder
         land.position = parent.TransformPoint(landing);
         TreeDoorExit ex = d.gameObject.AddComponent<TreeDoorExit>();
         ex.landing = land; ex.zoneCenter = new Vector3(0f, h * 0.5f, -1.1f); ex.zoneSize = new Vector3(w + 0.8f, h + 2.4f, 3.6f);
-        MaskPoints(d, parent, w, wallThick);   // el perchero de máscaras de fuera y la estación de dentro (docs/mascaras-de-oxigeno.md)
+        MaskPoints(d, parent, w, wallThick);   // el perchero de máscaras de fuera y la estación de dentro (docs/areas/mascaras-de-oxigeno.md)
         return field;
     }
 

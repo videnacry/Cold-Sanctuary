@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Input de "juego" del jugador para el farming no-violento (docs/world-topology-and-planes.md §4.1, MVP).
+/// Input de "juego" del jugador para el farming no-violento (docs/sistemas/world-topology-and-planes.md §4.1, MVP).
 ///
 /// Acércate a una criatura (<see cref="PlayableCreature"/>) y pulsa la tecla de juego para darle un
 /// 'toque': baja su tensión. Repite rápido hasta serenarla. Luego, cuando esté serena, dale de comer

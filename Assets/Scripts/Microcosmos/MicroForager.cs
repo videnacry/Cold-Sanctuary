@@ -5,7 +5,7 @@ using UnityEngine;
 /// RECOLECTORA de la tribu (los mirmidones): busca lo más cercano que una hormiga real llevaría al nido —un resto de
 /// comida, una SEMILLA de la flora (las hormigas granívoras cosechan semillas: MacMahon et al. 2000) o la MELAZA de un
 /// pulgón que ordeña (Stadler & Dixon 2005)—, lo carga sobre la cabeza y lo lleva a la guarida; vuelta a empezar.
-/// La flora y los pulgones son <see cref="Affordance"/> (docs/natural-interactions.md): se gastan y rebrotan.
+/// La flora y los pulgones son <see cref="Affordance"/> (docs/sistemas/natural-interactions.md): se gastan y rebrotan.
 /// </summary>
 public class MicroForager : MonoBehaviour
 {

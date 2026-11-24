@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 
 /// <summary>
-/// Config ESCALAR por especie (docs/anima-dissolving-animal.md, etapa 5): los valores que antes eran overrides en
+/// Config ESCALAR por especie (docs/sistemas/anima-dissolving-animal.md, etapa 5): los valores que antes eran overrides en
 /// cada clase de especie (PackFactor, bond, reservas, IEdible, umbrales post-natales…) pasan a DATA. La lee `Animal`
 /// vía <see cref="SpeciesBody.profile"/>. Un paso más para vaciar las clases de especie (rumbo a la composición).
 /// </summary>
@@ -52,7 +52,7 @@ public class SpeciesProfile
             // Fauna de hielo
             { "Penguin",  new SpeciesProfile(0.4f, 0.1f, 2.0f, 2.0f, 0.4f, 0.45f, 5.0f, 0.5f, 40.0f, 1.2f, 0.5f, OrganicMaterial.Fish) },  // colonia; presa
             { "Orca",     new SpeciesProfile(0.8f, 0.4f, 1.2f, 12.0f, 1.5f, 0.15f, 3.0f, 0.6f, 150.0f, 1.8f, 0.4f, OrganicMaterial.Meat) }, // apex; caza en pod
-            // Territorio polar (docs/reglas-animales.md)
+            // Territorio polar (docs/reglas/reglas-animales.md)
             { "Walrus",   new SpeciesProfile(0.7f, 0.2f, 1.5f, 6.0f, 2.0f, 0.25f, 4.0f, 0.6f, 200.0f, 1.5f, 0.6f, OrganicMaterial.Fish) },   // manadas de cientos; grasa enorme
             { "EmperorPenguin", new SpeciesProfile(0.6f, 0.1f, 2.0f, 2.0f, 0.5f, 0.4f, 5.0f, 0.5f, 60.0f, 1.2f, 0.5f, OrganicMaterial.Fish) },   // colonia; las reservas pagan el ayuno
             { "Reindeer", new SpeciesProfile(0.5f, 0.1f, 1.8f, 2.0f, 0.5f, 0.5f, 9.0f, 0.2f, 25.0f, 0.5f, 0.5f, OrganicMaterial.Meat) },   // manada
@@ -78,7 +78,7 @@ public class SpeciesProfile
             { "Grasshopper", new SpeciesProfile(0.4f, 0.3f, 1.0f, 1.0f, 0.3f, 0.5f, 4.0f, 0.3f,  2.0f, 0.6f, 0.5f, OrganicMaterial.Meat) },  // gregario; presa base
             { "Meerkat",     new SpeciesProfile(0.9f, 0.4f, 1.6f, 0.8f, 0.4f, 0.3f, 3.0f, 0.8f,  2.0f, 0.5f, 0.4f, OrganicMaterial.Meat) },  // cooperativa; bond rápido; madriguera segura
             { "SnowBee",     new SpeciesProfile(0.9f, 0.3f, 1.5f, 0.6f, 0.3f, 0.3f, 3.0f, 0.9f,  1.5f, 0.5f, 0.4f, OrganicMaterial.Meat) },  // colonia; nido seguro; aguijón
-            // Especies de las eras (docs/era-species-behavior.md)
+            // Especies de las eras (docs/sistemas/era-species-behavior.md)
             { "Scorpion",    new SpeciesProfile(0.0f, 0.8f, 0.3f, 3.0f, 1.0f, 0.2f, 6.0f, 0.7f,  4.0f, 0.4f, 0.35f, OrganicMaterial.Meat) }, // solitario; aguanta meses sin comer
             { "CamelSpider", new SpeciesProfile(0.0f, 0.9f, 0.2f, 3.5f, 0.5f, 0.3f, 6.0f, 0.5f,  2.5f, 0.9f, 0.3f,  OrganicMaterial.Meat) }, // voraz: se atiborra
             { "Woodlouse",   new SpeciesProfile(0.6f, 0.2f, 1.2f, 0.6f, 1.0f, 0.5f, 8.0f, 0.5f,  1.0f, 0.4f, 0.6f,  OrganicMaterial.Meat) }, // se agrega; coraza calcificada

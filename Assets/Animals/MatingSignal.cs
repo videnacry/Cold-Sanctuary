@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// SEÑAL DE CORTEJO a distancia (docs/era-species-behavior.md §3): la LUCIÉRNAGA destella, y la CIGARRA y el GRILLO cantan. La da el
+/// SEÑAL DE CORTEJO a distancia (docs/sistemas/era-species-behavior.md §3): la LUCIÉRNAGA destella, y la CIGARRA y el GRILLO cantan. La da el
 /// hábito «Signal» del <see cref="Ethogram"/> (posado en un tallo/tronco) y SOLO si el ser está en celo
 /// (<see cref="EstrusState"/>): un macho saciado y en celo llama; uno hambriento come; uno joven no llama. Así el coro sale
 /// de los stats de cada individuo, no de un temporizador global.

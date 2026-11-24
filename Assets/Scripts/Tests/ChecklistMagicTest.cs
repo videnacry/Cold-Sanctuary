@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Automatiza por `TestProbe` los ítems de MAGIA de `docs/testing-checklist.md` §19a–§19g (que pedían el HUD del
+/// Automatiza por `TestProbe` los ítems de MAGIA de `docs/qa/testing-checklist.md` §19a–§19g (que pedían el HUD del
 /// sandbox `Magia_AUTO`): comer antes/después de desbloquear, `Grimoire.Learn("awaken-reserves")`, apetito/antojo/
 /// selectividad, costes reales de fuego/agua/tierra/viento, `Pay` todo-o-nada, aura tras lanzar, abastecer, el reparto
 /// de `DecompositionJob`, las fases del `DecompositionMinigame`, los topes que escalan con stats, el `powerBonus`

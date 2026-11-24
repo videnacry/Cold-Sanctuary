@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LAS REGLAS DE EDIFICACIÓN DE LOS MICROCOSMOS Y MESOCOSMOS (docs/microcosmos-reglas-edificacion.md; Berón 2026-11-01: «en el
-/// microcosmos de Bruce Lee la cocina y los muebles parecían cubos»), revisadas el 2026-11-18 (docs/plan-microcosmos-realismo.md
+/// LAS REGLAS DE EDIFICACIÓN DE LOS MICROCOSMOS Y MESOCOSMOS (docs/reglas/microcosmos-reglas-edificacion.md; Berón 2026-11-01: «en el
+/// microcosmos de Bruce Lee la cocina y los muebles parecían cubos»), revisadas el 2026-11-18 (docs/microcosmos/plan-microcosmos-realismo.md
 /// §3: insectos-humanos a la MITAD, s = <see cref="FolkScale"/>, con las patas recogidas, y vuelven los muros con vista de corte).
 /// Los números salen del cuerpo encogido (<see cref="FolkScale"/>; para volver a afinarlo a 0,4 basta con cambiar esa constante):
 /// 1. PASO: entre dos muebles cualesquiera, <see cref="Passage"/> (2,4 m con s = 0,5) libres: dos cuerpos recogidos se cruzan andando.
@@ -234,14 +234,14 @@ public static class MicroBuildRules
         if (log)
         {
             if (bad.Count == 0) Debug.Log($"[Reglas] {label}: OK ({pieces.Count} muebles a ≥ {passage:0.0} m, edificios con vista de corte y puerta, necesidades: {string.Join(", ", have)}).");
-            else Debug.LogWarning($"[Reglas] {label}: {bad.Count} violaciones de docs/microcosmos-reglas-edificacion.md — " + string.Join(" · ", bad.GetRange(0, Mathf.Min(12, bad.Count))) + (bad.Count > 12 ? " …" : ""));
+            else Debug.LogWarning($"[Reglas] {label}: {bad.Count} violaciones de docs/reglas/microcosmos-reglas-edificacion.md — " + string.Join(" · ", bad.GetRange(0, Mathf.Min(12, bad.Count))) + (bad.Count > 12 ? " …" : ""));
             if (tips.Count > 0) Debug.Log($"[Reglas] {label}: consejos (P5, P6, C4) — " + string.Join(" · ", tips.GetRange(0, Mathf.Min(8, tips.Count))));
         }
         return bad;
     }
 
     /// <summary>
-    /// LOS CONSEJOS de docs/plan-microcosmos-realismo.md §3 que aún no son faltas (2026-11-18; pasarán a reglas cuando el piloto,
+    /// LOS CONSEJOS de docs/microcosmos/plan-microcosmos-realismo.md §3 que aún no son faltas (2026-11-18; pasarán a reglas cuando el piloto,
     /// Microcosmos_ElonMusk, las cumpla):
     /// - P5 · un HITO reconocible (MicroPiece «<see cref="Landmark"/>») en cada microcosmos (raíz con <see cref="MicroFloor"/>);
     /// - P6 · un TRANSPORTE DE ÉPOCA que se use (MicroPiece «<see cref="Vehicle"/>»);
@@ -277,7 +277,7 @@ public static class MicroBuildRules
     }
 
     /// <summary>
-    /// LAS REGLAS DE LOS EDIFICIOS (8–12, 2026-11-03; docs/microcosmos-reglas-edificacion.md):
+    /// LAS REGLAS DE LOS EDIFICIOS (8–12, 2026-11-03; docs/reglas/microcosmos-reglas-edificacion.md):
     /// 8. cada edificio (AreaFunctionSite) lleva su ACTIVIDAD (trabajo, descanso, recuperacion u ocio), su INTERACCIÓN y su capacidad;
     /// 9. está ADAPTADO A PERSONAS Y A INSECTOS-HUMANOS: al menos un mueble a la medida de cada uno (MicroPiece.fitted);
     /// 10. su ESTILO sale del CATÁLOGO: su región es una de MicroStyles.Region y cada mueble lleva un estilo (MicroPiece.style) del catálogo;
@@ -324,7 +324,7 @@ public static class MicroBuildRules
     }
 
     /// <summary>
-    /// (2026-11-04) LA ESCALA DEL MOBILIARIO CÍVICO (reglas 13–15, docs/microcosmos-suelo-y-elementos.md §Escala; <see cref="MicroCivicScale"/>):
+    /// (2026-11-04) LA ESCALA DEL MOBILIARIO CÍVICO (reglas 13–15, docs/microcosmos/microcosmos-suelo-y-elementos.md §Escala; <see cref="MicroCivicScale"/>):
     /// 13. TODO ASIENTO ES UTILIZABLE: cada silla y cada banco (MicroPiece «silla»/«banco») lleva su <see cref="MicroSeat"/> con sitios;
     /// 14. los PLATOS de las mesas dan una comida (≥ <see cref="MicroCivicScale.PlateFor"/>) y las OLLAS de las cocinas, 2 L por comensal;
     /// 15. las ESTATUAS son monumentales y modelan INSECTOS-HUMANOS (nada de figura humana), y las fuentes miden lo de una plaza.

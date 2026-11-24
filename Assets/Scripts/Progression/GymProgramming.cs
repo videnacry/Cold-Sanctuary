@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-/// <summary>Objetivo del plan (docs/gimnasio-maquinas.md §15): cada uno fija series, repeticiones, descanso y RPE.</summary>
+/// <summary>Objetivo del plan (docs/areas/gimnasio-maquinas.md §15): cada uno fija series, repeticiones, descanso y RPE.</summary>
 public enum TrainingGoal { Fuerza, Hipertrofia, Resistencia, Salud }
 
 /// <summary>Reparto de la semana (§15.1): cuerpo entero, torso/pierna, empuje/tirón/pierna y la rutina Weider («bro split»).</summary>
@@ -10,7 +10,7 @@ public enum TrainingSplit { CuerpoEntero, TorsoPierna, EmpujeTironPierna, Weider
 
 /// <summary>
 /// PLANES DE ENTRENAMIENTO REALES del gimnasio (Berón 2026-11-04: «hay que actualizar a los demás humanos para que realicen
-/// entrenamientos reales (series, repeticiones… rutinas donde se varían músculos por días)»; docs/gimnasio-maquinas.md §15).
+/// entrenamientos reales (series, repeticiones… rutinas donde se varían músculos por días)»; docs/areas/gimnasio-maquinas.md §15).
 /// Datos puros, sin escena (los usan la jornada, el entrenador, el panel y las pruebas):
 ///  · cada humano del personal tiene un <see cref="TrainingPlan"/>: reparto, días de la semana, objetivo y por qué;
 ///  · <see cref="Prescribe"/> da la rutina de un día: calentamiento, ejercicios (máquina, series × repeticiones, carga, descanso,
@@ -191,7 +191,7 @@ public static class GymProgramming
         public override string ToString() => $"{who}: {SplitName(split)} · {goal} · {Days(days)} ({days.Length} d/sem, cada músculo {PerMuscleFrequency}×/sem)";
     }
 
-    /// <summary>Perfil de partida de cada persona del personal: reparto, días, objetivo, fuerza y por qué (docs/diseno-personajes.md).</summary>
+    /// <summary>Perfil de partida de cada persona del personal: reparto, días, objetivo, fuerza y por qué (docs/sistemas/diseno-personajes.md).</summary>
     class Profile { public TrainingSplit s; public TrainingGoal g; public int[] d; public float k; public string why; }
     static Dictionary<string, Profile> _profiles;
     static Profile P(TrainingSplit s, TrainingGoal g, float k, string why, params int[] d) => new Profile { s = s, g = g, d = d, k = k, why = why };
@@ -220,7 +220,7 @@ public static class GymProgramming
     };
 
     /// <summary>¿Puede tener plan de gimnasio? Los humanos del santuario sí; los humanos-insecto de los microcosmos no: en sus
-    /// eras no hay gimnasio (docs/gimnasio-maquinas.md §15.6).</summary>
+    /// eras no hay gimnasio (docs/areas/gimnasio-maquinas.md §15.6).</summary>
     public static bool Eligible(string who) => !string.IsNullOrEmpty(who) && System.Array.IndexOf(WorkdayDirector.Staff, who) >= 0;
 
     static readonly Dictionary<string, TrainingPlan> _plans = new Dictionary<string, TrainingPlan>();

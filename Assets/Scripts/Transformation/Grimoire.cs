@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// GRIMORIO — registro de hechizos APRENDIDOS por un `Anima` (docs/magic-metabolism-progression.md).
+/// GRIMORIO — registro de hechizos APRENDIDOS por un `Anima` (docs/sistemas/magic-metabolism-progression.md).
 /// El PRIMER hechizo (`awakenSpellId`) es "Despertar las Reservas": al aprenderlo se crean las pools de
 /// magia (<see cref="MagicReserves.Unlock"/>) con su límite. A partir de ahí:
 ///   • el exceso de comer/descomponer llena las pools (ver `Metabolism.Absorb`),

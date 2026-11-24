@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.AI;
 
 /// <summary>
-/// Un DESEO seleccionable (docs/volition-selection-engine.md §3): cuánto lo quiere el ser AHORA (`NeedProbe`, de sus
+/// Un DESEO seleccionable (docs/sistemas/volition-selection-engine.md §3): cuánto lo quiere el ser AHORA (`NeedProbe`, de sus
 /// drives) y qué acción despacha (`Dispatch`, un handler que YA existe). El destino es que un `Deseo` sea una
 /// `MindPhrase(PhraseCategory.Deseo)` con este binding resuelto por catálogo (D3b3); por ahora es solo el binding.
 /// </summary>
@@ -45,7 +45,7 @@ public class DispatchStep : QueuedSpell
 }
 
 /// <summary>
-/// Catálogo de DESEOS (docs/volition-selection-engine.md §5): `key → { NeedProbe, Dispatch }`. Cada `Dispatch` llama
+/// Catálogo de DESEOS (docs/sistemas/volition-selection-engine.md §5): `key → { NeedProbe, Dispatch }`. Cada `Dispatch` llama
 /// a un handler que YA existe — el motor de volición reubica la DECISIÓN, no reescribe la conducta.
 ///
 /// **D3b1 (paridad):** solo `eat` (= lo único que decidía `ActiveBehaveTick` además del reflejo de amenaza). En D3b2
@@ -82,7 +82,7 @@ public static class DesireCatalog
             }),
 
         // BUSCAR PAREJA (reproducción paso 1): en celo, dirigirse al gradiente de Estrus (otras animas en celo). Dormido
-        // hasta que Volition esté activo (D3b2); el cortejo/concepción llega en el paso 2. docs/environmental-navigation.md.
+        // hasta que Volition esté activo (D3b2); el cortejo/concepción llega en el paso 2. docs/sistemas/environmental-navigation.md.
         new Desire("mate",
             self => { EstrusState e = self.GetComponent<EstrusState>(); return e != null && e.InEstrus ? W_MATE : 0f; },
             self =>
@@ -126,7 +126,7 @@ public static class DesireCatalog
             },
             "mate"),
 
-        // ── APREMIOS SOCIALES como DESEOS (docs/consciousness-mechanics.md §4: la sim social es capacidad de Anima por
+        // ── APREMIOS SOCIALES como DESEOS (docs/sistemas/consciousness-mechanics.md §4: la sim social es capacidad de Anima por
         // config; compite en la MISMA arena que comer/celo → de la pugna, resuelta por los stats propios, emerge la
         // personalidad). Reusan el registro de bonds por-miembro (Anima.bonds). Solo mueven vía NavMesh (Animal).
 
@@ -168,7 +168,7 @@ public static class DesireCatalog
             },
             "tend"),
 
-        // ── PROCESOS NATURALES (LifeHistory; docs/ciclo-de-vida.md) ──
+        // ── PROCESOS NATURALES (LifeHistory; docs/sistemas/ciclo-de-vida.md) ──
         // BEBER: con sed, al bebedero o comer nieve (los que sacan el agua de la comida no lo sienten: Hydration).
         new Desire("drink",
             self => { Hydration h = self.GetComponent<Hydration>(); return h != null && !Confined(self) ? h.Need * W_DRINK : 0f; },
@@ -216,7 +216,7 @@ public static class DesireCatalog
             self => GoHome(self),
             "homebound"),
 
-        // HÁBITO NATURAL (docs/natural-interactions.md): lo que la especie HACE en la naturaleza con su entorno —chupar
+        // HÁBITO NATURAL (docs/sistemas/natural-interactions.md): lo que la especie HACE en la naturaleza con su entorno —chupar
         // savia, cortar hierba para el termitero, acechar en un respiradero, llevar guijarros al nido, asolearse— sobre un
         // Affordance real, según su Ethogram. Gana al merodeo al azar (explore) cuando el ser está en calma y tiene algo
         // que hacer cerca; el hambre/amenaza/cría lo superan. Lo ejecuta el componente Habit (se añade solo).
@@ -235,7 +235,7 @@ public static class DesireCatalog
             self => self.GetComponent<Habit>()?.Step(),
             "habit"),
 
-        // EXPLORAR (impulso de base del ser SACIADO — curiosidad/neophilia, docs/environmental-navigation.md §N5/N8):
+        // EXPLORAR (impulso de base del ser SACIADO — curiosidad/neophilia, docs/sistemas/environmental-navigation.md §N5/N8):
         // necesidad BAJA (solo gana cuando no hay hambre/amenaza/social) y ESCALADA por la mente curiosa (razón+creatividad)
         // → los curiosos exploran más; los apáticos se quedan. Despacha un vagabundeo corto.
         new Desire("explore",
@@ -1126,7 +1126,7 @@ public static class DesireCatalog
         if (_homeLogs++ < 20) Debug.Log($"[Fauna] «{self.name}» no puede volver a casa desde ({self.transform.position.x:0},{self.transform.position.z:0}) (hogar en ({self.HomeOrigin.x:0},{self.HomeOrigin.z:0})): lo deja estar un rato.");
     }
 
-    // ── PESOS DE LA ARENA (docs/consciousness-mechanics.md §4) — afinables. Filosofía: la SUPERVIVENCIA gana cuando
+    // ── PESOS DE LA ARENA (docs/sistemas/consciousness-mechanics.md §4) — afinables. Filosofía: la SUPERVIVENCIA gana cuando
     // aprieta (eat = hambre, que puede ser >1; la amenaza es reflejo aparte), pero lo SOCIAL gana cuando el ser está
     // saciado. El celo NO debe atropellar a comer. La resolución final depende de los STATS propios → personalidad.
     const float W_MATE    = 0.6f;    // celo moderado (antes 1.0 → atropellaba el hambre media)
@@ -1237,7 +1237,7 @@ public static class DesireCatalog
         }
     }
 
-    // ── PROCESOS NATURALES de las especies del santuario (LifeHistory; docs/ciclo-de-vida.md) ──────────────────────────
+    // ── PROCESOS NATURALES de las especies del santuario (LifeHistory; docs/sistemas/ciclo-de-vida.md) ──────────────────────────
 
     // BEBER: al bebedero si lo hay a mano; si no, come nieve allí mismo (el pingüino en tierra, el malamute sin bebedero).
     static void Drink(Animal self)

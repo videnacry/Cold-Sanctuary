@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// PRUEBA 68 · EL SUELO Y LOS ELEMENTOS DE LOS MICROCOSMOS, SIN CARGAR ESCENAS (docs/microcosmos-suelo-y-elementos.md; Berón
+/// PRUEBA 68 · EL SUELO Y LOS ELEMENTOS DE LOS MICROCOSMOS, SIN CARGAR ESCENAS (docs/microcosmos/microcosmos-suelo-y-elementos.md; Berón
 /// 2026-11-04). Casos pequeños para cada pedido:
 /// 1. la FLORA ENCIMA: una planta bajo una losa se ve enterrada; Settle la sube; una planta dentro de un collider se ve y se quita;
 /// 2. la CAPA DE TIERRA: 10 cm (MicroGround.SoilThickness);
@@ -165,7 +165,7 @@ public class MicroSueloTest : MonoBehaviour, ITestUnit
 }
 
 /// <summary>
-/// PRUEBA 67 · EL SUELO Y LOS ELEMENTOS EN LOS MICROCOSMOS CONSTRUIDOS (docs/microcosmos-suelo-y-elementos.md). Carga en aditivo, UNO A
+/// PRUEBA 67 · EL SUELO Y LOS ELEMENTOS EN LOS MICROCOSMOS CONSTRUIDOS (docs/microcosmos/microcosmos-suelo-y-elementos.md). Carga en aditivo, UNO A
 /// UNO y con espera acotada, los microcosmos de <see cref="scenes"/> (por defecto: Bolívar, Ambrosio, el Hospital, el río de Sakshi
 /// sobre la Sala de Yoga y la Cocina; los que no estén en Build Settings fallan y se siguen) y en cada uno mira:
 /// (1) ninguna planta enterrada ni dentro de un collider (MicroGround.ValidateFlora);

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// ALMA por MEZCLA (docs/soul-composition-blend.md + soul-relations-reincarnation.md §1). Compone el ser desde
+/// ALMA por MEZCLA (docs/sistemas/soul-composition-blend.md + soul-relations-reincarnation.md §1). Compone el ser desde
 /// arquetipos de **cuerpo** (físico + tamaño) y **mente** (mental + tono) con **dominio (%)** + `shareDomain`, más
 /// **`bonusPacks`** (stats aditivos que NO tocan personalidad). El blend es por **DISTRIBUCIÓN**: cada arquetipo
 /// se reescala al presupuesto del **primario** conservando su forma → un 1% empuja la forma un 1% (no despreciable).

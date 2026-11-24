@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Primera misión JUGABLE (WASD) que además es un TEST del juego real (docs/testing-checklist.md §33). El jugador
+/// Primera misión JUGABLE (WASD) que además es un TEST del juego real (docs/qa/testing-checklist.md §33). El jugador
 /// camina hasta un marcador ("el refugio"); al llegar, reporta por `TestProbe` — el **mismo canal `[TEST]`** que los
 /// sandboxes de laboratorio, así el compañero ve laboratorio y juego real juntos (grep `[TEST]`). Comprueba también que
 /// el jugador **se movió de verdad** (recorrido > umbral) → prueba que hubo input WASD, no un spawn sobre la meta.

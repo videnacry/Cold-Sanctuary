@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.AI;
 
 /// <summary>
-/// PRUEBA DEL TERRITORIO POLAR (Berón 2026-11-05; docs/territorio-polar.md, docs/reglas-animales.md):
+/// PRUEBA DEL TERRITORIO POLAR (Berón 2026-11-05; docs/areas/territorio-polar.md, docs/reglas/reglas-animales.md):
 /// 1. CATÁLOGOS: cada especie nueva está en todas sus tablas (una que falta cae en silencio a un valor por defecto), con su plan de cuerpo.
 /// 2. ESPECIES: viven en el santuario, a su tamaño real, en su sitio (la isla, la laguna, la colonia).
 /// 3. CICLO: las tablas dicen lo que su ficha (gestación, huevo, lactancia, guarida); el ciclo entero corre en su escena (grupo 58).

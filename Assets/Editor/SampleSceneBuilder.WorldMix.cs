@@ -1,8 +1,8 @@
 using UnityEngine;
 
 /// <summary>
-/// LA MEZCLA DEL MUNDO EN EL HUERTO Y EN CONSTRUCCIÓN (Berón 2026-11-05; reglas S14 y F14; docs/huertos-y-cultivos.md §Métodos del mundo,
-/// docs/construccion-sostenible.md §Técnicas del mundo). Cada pieza es una técnica real, a escala, con su origen en el cartel; no sustituyen a la maquinaria ni a los cultivos.
+/// LA MEZCLA DEL MUNDO EN EL HUERTO Y EN CONSTRUCCIÓN (Berón 2026-11-05; reglas S14 y F14; docs/areas/huertos-y-cultivos.md §Métodos del mundo,
+/// docs/areas/construccion-sostenible.md §Técnicas del mundo). Cada pieza es una técnica real, a escala, con su origen en el cartel; no sustituyen a la maquinaria ni a los cultivos.
 /// </summary>
 public static partial class SampleSceneBuilder
 {

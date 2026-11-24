@@ -24,7 +24,7 @@ public static class InfirmaryProps
             C(t, p + Vector3.up * 0.25f, new Vector3(0.05f, 0.45f, 0.05f), Steel, 0f, "Pata");
             C(t, p + Vector3.up * 0.04f, new Vector3(0.06f, 0.08f, 0.1f), Black, 0f, "Rueda");
         }
-        // Colchón de 2,10 m, el de los pacientes altos (docs/medidas-muebles.md): con 2,00 el de 1,85 m cabía justo.
+        // Colchón de 2,10 m, el de los pacientes altos (docs/areas/medidas-muebles.md): con 2,00 el de 1,85 m cabía justo.
         C(t, new Vector3(0f, 0.5f, 0f), new Vector3(1f, 0.08f, 2.15f), Steel, 0f, "Somier");
         C(t, new Vector3(0f, 0.62f, 0f), new Vector3(0.95f, 0.16f, 2.1f), White, 0f, "Colchon");
         C(t, new Vector3(0f, 0.74f, 0.25f), new Vector3(0.96f, 0.06f, 1.4f), blanket, 0f, "Manta");
@@ -52,7 +52,7 @@ public static class InfirmaryProps
     {
         Transform t = KitchenProps.Root(parent, name, pos, yaw);
         // Plano de 2,20 × 0,85 m (Berón 2026-10-29: Kushal cabía muy justo; regla 1, la persona más grande ≈ 2 m: ~10 cm en
-        // cada punta y los brazos sobre el plano), superficie a 0,80 m y sin respaldo inclinado (docs/medidas-muebles.md). Antes
+        // cada punta y los brazos sobre el plano), superficie a 0,80 m y sin respaldo inclinado (docs/areas/medidas-muebles.md). Antes
         // 2,00 × 0,70 (para 1,85 m). ArrivalExam.PatientSpot lee la altura del «Acolchado».
         C(t, new Vector3(0f, 0.35f, 0f), new Vector3(0.72f, 0.7f, 2.0f), Wood, 0f, "Base");
         C(t, new Vector3(0f, 0.75f, 0f), new Vector3(0.85f, 0.1f, 2.2f), Blue, 0f, "Acolchado");
@@ -224,7 +224,7 @@ public static class InfirmaryProps
         return t;
     }
 
-    // ── HOSPITAL (docs/hospital.md): lo que un hospital AISLADO necesita para tratar todos los casos ────────────────
+    // ── HOSPITAL (docs/areas/hospital.md): lo que un hospital AISLADO necesita para tratar todos los casos ────────────────
 
     /// <summary>Mesa quirúrgica articulada sobre columna, con reposabrazos en cruz y la sábana verde.</summary>
     public static Transform OperatingTable(Transform parent, string name, Vector3 pos, float yaw)

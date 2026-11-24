@@ -1,6 +1,6 @@
 using UnityEngine;
 
-/// <summary>LOS MAPAS A MANO DE LA TANDA 4 (2026-11-12; petición 75, regla M9; docs/microcosmos-mapas-a-mano.md §Tanda 4): las historias que el jugador ve
+/// <summary>LOS MAPAS A MANO DE LA TANDA 4 (2026-11-12; petición 75, regla M9; docs/microcosmos/microcosmos-mapas-a-mano.md §Tanda 4): las historias que el jugador ve
 /// primero, con su lugar real. Mismo marco que el plano del pueblo (<c>CivicBuilder.TownPlans</c>): metros desde la «Historia», x al este, z al norte.
 /// Nada se siembra sobre el escenario de la historia (≤ 30 m del origen): ahí están sus personas y sus sitios.</summary>
 public static partial class MicroStoryMaps
@@ -115,7 +115,7 @@ public static partial class MicroStoryMaps
     // The Chantry (la casa de Jenner, junto a la iglesia de Santa María) es el escenario. Mayo en el valle del Severn: los prados de las vacas lecheras al
     // suroeste, hacia el Little Avon y el estuario; el majuelo en flor en los setos (el «may»), prímulas en las orillas y botón de oro en los prados; el
     // castillo de arenisca al sureste. La viruela vacuna salió de la mano de Sarah Nelmes, que ordeñaba a «Blossom»: en el microcosmos, las vacas son
-    // PULGONES (las hormigas ordeñan pulgones, docs/natural-interactions.md).
+    // PULGONES (las hormigas ordeñan pulgones, docs/sistemas/natural-interactions.md).
     static Map MapBerkeley() => new Map
     {
         display = "Berkeley", place = "Berkeley, Gloucestershire (valle del Severn), 14 de mayo de 1796", status = Status.Hecho,

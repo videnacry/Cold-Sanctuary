@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Motor de VOLICIÓN (docs/volition-selection-engine.md): elige QUÉ hacer puntuando los <see cref="Desire"/> del
+/// Motor de VOLICIÓN (docs/sistemas/volition-selection-engine.md): elige QUÉ hacer puntuando los <see cref="Desire"/> del
 /// <see cref="DesireCatalog"/> por su necesidad, y despacha el ganador — reemplazando la prioridad FIJA de
 /// `Animal.ActiveBehaveTick`. Lo conduce el `AiBrain` (solo si su `useVolition` está activo); la posesión lo suprime
 /// aguas arriba (el `PlayerBrain` toma el mando). La amenaza se atiende como REFLEJO cada tick (paridad con hoy);
@@ -80,7 +80,7 @@ public class Volition : MonoBehaviour
     /// <returns>true si despachó el deseo directamente (no por la cola ni «nada que hacer»).</returns>
     bool SelectAndDispatch(Animal self)
     {
-        // ARENA de arbitraje (docs/consciousness-mechanics.md §4): los deseos COMPITEN; la resolución depende de los
+        // ARENA de arbitraje (docs/sistemas/consciousness-mechanics.md §4): los deseos COMPITEN; la resolución depende de los
         // STATS propios → personalidad. Se pondera por: NECESIDAD (drives) × HÁBITO (confianza-por-uso: lo practicado
         // se elige más) + BOND (ya dentro del NeedProbe social) + DISCIPLINA (histéresis: no cambiar de deseo por un
         // margen pequeño). Así dos seres con la misma necesidad eligen distinto según quiénes son.

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// EL CATÁLOGO DE RETOS DE CÓDIGO DE LOS MICROCOSMOS (docs/plan-microcosmos-realismo.md §4.4; CodeShip reglas.md §4: «todo se hace con
+/// EL CATÁLOGO DE RETOS DE CÓDIGO DE LOS MICROCOSMOS (docs/microcosmos/plan-microcosmos-realismo.md §4.4; CodeShip reglas.md §4: «todo se hace con
 /// retos de código»). Datos: cada reto dice en qué escena va, después de qué paso de su historia (<see cref="StoryMission"/>) y en qué
 /// sitio se resuelve. <see cref="Inject"/> los mete en la historia al arrancar, como pasos <see cref="StoryMission.Kind.Code"/>, sin
 /// reconstruir la escena (la escena del microcosmos no cambia; solo la lista de pasos en memoria). Acertar el reto cumple el paso.

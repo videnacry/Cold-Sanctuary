@@ -1,6 +1,6 @@
 using UnityEngine;
 
-// Págalo polar (Stercorarius maccormicki). Vuela con SnowPetrelLife, sin NavMesh. Ficha: docs/fauna-fria-santuarios.md.
+// Págalo polar (Stercorarius maccormicki). Vuela con SnowPetrelLife, sin NavMesh. Ficha: docs/fauna/fauna-fria-santuarios.md.
 public class PolarSkuaBehavior : Animal
 {
     protected override string SpeciesArchetype => "PolarSkua";

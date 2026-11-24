@@ -1,19 +1,19 @@
 using System.Collections.Generic;
 
 /// <summary>
-/// Perfil de CICLO DE VIDA por especie (docs/anima-dissolving-animal.md, etapa 5): duraciones/escala de las 3 etapas
+/// Perfil de CICLO DE VIDA por especie (docs/sistemas/anima-dissolving-animal.md, etapa 5): duraciones/escala de las 3 etapas
 /// (Childhood/Adolescence/Adulthood) + las listas de EVENTS por etapa (que varían: las territoriales llevan HomeBound;
 /// los adultos, Feed). Antes eran campos por clase; ahora DATA (valores extraídos 1:1 por script). `Animal` crea las
 /// etapas en `Init` desde aquí (cada ser las suyas, porque se mutan: sizePotential). Los PREPS son default de Animal.
 ///
-/// INSECTOS (docs/insect-biology-audit.md): las 3 etapas se LEEN según el desarrollo de la especie (`development`):
+/// INSECTOS (docs/fauna/insect-biology-audit.md): las 3 etapas se LEEN según el desarrollo de la especie (`development`):
 /// - `Complete` (holometábolo: hormiga, abeja, mariquita, pelotero, hormiga león): cría = **larva**, juvenil = **pupa**
 ///   (inmóvil, no come; la lleva <see cref="Metamorphosis"/>), adulto = imago. La pupa ya tiene casi el tamaño final.
 /// - `Incomplete` (hemimetábolo: grillo, saltamontes, mantis, termita, pulgón): cría y juvenil = **ninfas** sin alas.
 /// - `Direct` (mamíferos, arañas): crecen sin cambiar de forma.
 /// - `Larval` (cangrejo: zoea → megalopa; ácaro de terciopelo: larva de 6 patas → ninfa): cría = **larva** activa,
 ///   juvenil = **ninfa** (forma intermedia), sin pupa.
-/// FAUNA DE CADA ERA (docs/microcosmos-fauna-eras.md): escorpión, solífugo, ácaro, cochinilla, cangrejo fantasma,
+/// FAUNA DE CADA ERA (docs/microcosmos/microcosmos-fauna-eras.md): escorpión, solífugo, ácaro, cochinilla, cangrejo fantasma,
 /// caracol, babosa, lombriz, cigarra, luciérnaga, tijereta, cucaracha y Boreus, con sus duraciones reales.
 /// </summary>
 public class StageProfile
@@ -48,7 +48,7 @@ public class StageProfile
         _catalog = new Dictionary<string, StageProfile>
         {
             // DÍAS REALES de vida (LifeStage los pasa al año del santuario, como la gestación). La CRÍA dura lo que la LACTANCIA
-            // (mientras es cría no forrajea: la alimentan; docs/ciclo-de-vida.md): oso polar 2,5 años con la madre (Derocher et
+            // (mientras es cría no forrajea: la alimentan; docs/sistemas/ciclo-de-vida.md): oso polar 2,5 años con la madre (Derocher et
             // al. 1993) y madura a los ~4–5; foca común 24 días; ballena jorobada ~1 año; pingüino emperador ~150 días hasta el
             // plumaje impermeable, cría a los 3–5 años y vive ~20.
             { "Bear", new StageProfile { childDays=900, childMin=98, childMax=99, teenDays=730, teenMin=70, teenMax=78, adultDays=7300, adultMin=0, adultMax=20,
@@ -68,7 +68,7 @@ public class StageProfile
             // Fauna de hielo
             { "Penguin", new StageProfile { childDays=53, childMin=50, childMax=80, teenDays=1100, teenMin=60, teenMax=80, adultDays=3800, adultMin=0, adultMax=20,
                 childEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound }, teenEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest }, adultEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound, LifeStage.Events.Feed } } },
-            // TERRITORIO POLAR (fuentes por especie en docs/reglas-animales.md): cría = lactancia o hasta volar/nadar; joven = hasta criar.
+            // TERRITORIO POLAR (fuentes por especie en docs/reglas/reglas-animales.md): cría = lactancia o hasta volar/nadar; joven = hasta criar.
             { "Walrus", new StageProfile { childDays=730, childMin=50, childMax=80, teenDays=1800, teenMin=60, teenMax=85, adultDays=12000, adultMin=0, adultMax=20,
                 childEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound }, teenEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest }, adultEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound, LifeStage.Events.Feed } } },
             { "EmperorPenguin", new StageProfile { childDays=141, childMin=50, childMax=80, teenDays=1680, teenMin=60, teenMax=80, adultDays=5500, adultMin=0, adultMax=20,
@@ -95,7 +95,7 @@ public class StageProfile
                 childEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound }, teenEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest }, adultEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound, LifeStage.Events.Feed } } },
             { "Wolf", new StageProfile { childDays=77, childMin=98, childMax=99, teenDays=730, teenMin=70, teenMax=78, adultDays=3285, adultMin=0, adultMax=20,
                 childEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound }, teenEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound }, adultEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound, LifeStage.Events.Feed } } },
-            // Insectos (días de juego). [A] = aproximación de entomología general; ver docs/insect-biology-audit.md
+            // Insectos (días de juego). [A] = aproximación de entomología general; ver docs/fauna/insect-biology-audit.md
             // Hormiga: larva (≈2 sem, la alimentan las obreras en el nido) → pupa (≈2 sem) → obrera (meses) [A]
             { "Ant", new StageProfile { development=Development.Complete, childDays=14, childMin=98, childMax=99, teenDays=14, teenMin=5, teenMax=15, adultDays=90, adultMin=0, adultMax=20,
                 childEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Rest, LifeStage.Events.HomeBound }, teenEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Rest }, adultEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound, LifeStage.Events.Feed } } },
@@ -105,7 +105,7 @@ public class StageProfile
             // Mariquita: la larva caza pulgones (≈2–3 sem) → pupa (≈1 sem) → adulto (meses) [A]
             { "Ladybug", new StageProfile { development=Development.Complete, larvaForages=true, childDays=14, childMin=98, childMax=99, teenDays=7, teenMin=5, teenMax=15, adultDays=90, adultMin=0, adultMax=20,
                 childEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest }, teenEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Rest }, adultEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.Feed } } },
-            // Araña de las nieves (FICTICIA: orbicular de ~30 cm adaptada al frío; docs/ciclo-de-vida.md). Derivada de arañas reales:
+            // Araña de las nieves (FICTICIA: orbicular de ~30 cm adaptada al frío; docs/sistemas/ciclo-de-vida.md). Derivada de arañas reales:
             // el tamaño de Theraphosa blondi (madura en 3–6 años, la hembra vive 15–25) y el frío, que alarga el desarrollo (las
             // arañas lobo del Ártico tardan ≥2 años, Bowden & Buddle 2012, doi 10.1139/z2012-038). Cría = arañita que vive del
             // vitelo junto al saco (~1 mes, sin comer); joven 3 años de mudas; adulta 6 años (los machos, menos).
@@ -132,7 +132,7 @@ public class StageProfile
             // obrera. En frío viven como «abejas de invierno»: varios meses (verano ≈1 mes). doi 10.1242/jeb.247314
             { "SnowBee", new StageProfile { development=Development.Complete, childDays=9, childMin=98, childMax=99, teenDays=12, teenMin=5, teenMax=15, adultDays=150, adultMin=0, adultMax=20,
                 childEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Rest, LifeStage.Events.HomeBound }, teenEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Rest }, adultEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound, LifeStage.Events.Feed } } },
-            // ── Fauna de cada era (docs/microcosmos-fauna-eras.md) ──
+            // ── Fauna de cada era (docs/microcosmos/microcosmos-fauna-eras.md) ──
             // Escorpión (buthido): vivíparo; las crías viajan sobre la madre hasta la 1.ª muda (~8–15 d, sin comer) → 5–6 mudas;
             // madura en ~8–10 meses y vive ~3 años (Centruroides gracilis en laboratorio: Francke & Jones 1982, J. Arachnol. 10:223)
             { "Scorpion", new StageProfile { childDays=12, childMin=98, childMax=99, teenDays=290, teenMin=70, teenMax=80, adultDays=1100, adultMin=0, adultMax=20,

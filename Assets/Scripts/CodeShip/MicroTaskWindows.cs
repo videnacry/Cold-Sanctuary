@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LAS VENTANAS «TAREAS» Y «ÁREAS» (portadas de CodeShip: src/ui/task-board.ts y src/ui/areas-window.ts; docs/plan-microcosmos-realismo.md
+/// LAS VENTANAS «TAREAS» Y «ÁREAS» (portadas de CodeShip: src/ui/task-board.ts y src/ui/areas-window.ts; docs/microcosmos/plan-microcosmos-realismo.md
 /// §4.1–4.2). Van en el sistema de ventanas de <see cref="HudModals"/> (de una en una, Esc las cierra) y se abren desde el menú árbol
 /// (<see cref="MicroRootMenu"/>) o con F6 / F7.
 ///  · TAREAS: todas las tareas de ahora para el jugador en esta escena (<see cref="TaskSources"/>), por grupos, cada una con su distancia,

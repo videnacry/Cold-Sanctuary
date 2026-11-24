@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// MARCA DE CHARLA (docs/conversaciones.md): pone a un <see cref="Anima"/> en las charlas entre personas aunque no tenga
+/// MARCA DE CHARLA (docs/sistemas/conversaciones.md): pone a un <see cref="Anima"/> en las charlas entre personas aunque no tenga
 /// <see cref="PersonLife"/> ni sea del personal de la jornada (un personaje de una historia, un visitante), o lo saca de ellas
 /// (<see cref="optOut"/>: alguien que la historia necesita callado). Sin esta marca entran solas todas las personas: los que
 /// llevan <see cref="PersonLife"/> (humanos e insectos-humanos) y el personal del santuario (<see cref="WorkdayDirector.staff"/>).

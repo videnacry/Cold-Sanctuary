@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Cámara-CABEZA del **modo primera persona** (docs/kitchen-simulation.md §3b). Va **en la cámara de 1ª
+/// Cámara-CABEZA del **modo primera persona** (docs/areas/kitchen-simulation.md §3b). Va **en la cámara de 1ª
 /// persona** del jugador. La retícula (<see cref="VirtualPointer"/>) está fija en el centro de esa cámara;
 /// para apuntar, **giras la cabeza** con las teclas de cámara **I/K/J/L** (mecanografía) — pero con
 /// **restricciones** de giro (yaw/pitch limitados), como una cabeza real: no da la vuelta entera. Se congela

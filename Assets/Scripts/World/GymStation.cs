@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>Tipos de estación del gimnasio. Los 10 primeros son las máquinas de placas (docs/gimnasio-maquinas.md; el
+/// <summary>Tipos de estación del gimnasio. Los 10 primeros son las máquinas de placas (docs/areas/gimnasio-maquinas.md; el
 /// circuito de 10 estaciones de <see cref="WorkdayDirector"/>). Detrás, sin cambiar el orden, el resto del edificio de
-/// entrenamiento (docs/entrenamiento-areas.md §4): peso libre (piso 0), cardio y zona libre (piso 1), calistenia, parkour
+/// entrenamiento (docs/areas/entrenamiento-areas.md §4): peso libre (piso 0), cardio y zona libre (piso 1), calistenia, parkour
 /// y crossfit (piso 2).</summary>
 public enum GymMachineType
 {
@@ -22,7 +22,7 @@ public enum GymMachineType
 }
 
 /// <summary>
-/// MÁQUINA DEL GIMNASIO EN USO (docs/gimnasio-maquinas.md, §13): cada <c>Maquina_*</c> lleva una. Sabe su tipo, su
+/// MÁQUINA DEL GIMNASIO EN USO (docs/areas/gimnasio-maquinas.md, §13): cada <c>Maquina_*</c> lleva una. Sabe su tipo, su
 /// <see cref="puesto"/> (hijo vacío «Puesto»: dónde va la raíz del usuario y hacia dónde mira), la altura de su pelvis
 /// (<see cref="rootHeight"/>, para 1,85 m) y las dos posturas de una repetición (A ↔ B, «Postura de uso»). Como
 /// <see cref="HospitalStation"/>, hay un registro estático y cada máquina la ocupa una sola persona a la vez
@@ -187,7 +187,7 @@ public class GymStation : MonoBehaviour
 }
 
 /// <summary>
-/// POSTURAS DE USO de cada máquina (docs/gimnasio-maquinas.md, tablas «Postura de uso»): A = inicio, B = final de la
+/// POSTURAS DE USO de cada máquina (docs/areas/gimnasio-maquinas.md, tablas «Postura de uso»): A = inicio, B = final de la
 /// repetición. Euler locales del rig de cubos; en los pares izquierda/derecha, Z (y Y) cambia de signo en la derecha.
 /// </summary>
 public static class GymPoses
@@ -208,7 +208,7 @@ public static class GymPoses
         return s;
     }
 
-    /// <summary>Segundos de cada mitad de la repetición (A → B o B → A) a ritmo real (docs/entrenamiento-areas.md §4): la
+    /// <summary>Segundos de cada mitad de la repetición (A → B o B → A) a ritmo real (docs/areas/entrenamiento-areas.md §4): la
     /// cinta da un paso cada ~0,35 s, la bici una vuelta cada ~0,8 s; las máquinas de placas y el resto, 1,5 s.</summary>
     public static float RepHalf(GymMachineType t)
     {

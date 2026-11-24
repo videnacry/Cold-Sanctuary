@@ -17,7 +17,7 @@ using UnityEngine;
 ///  · CON UN MODAL ABIERTO (<see cref="CsUi.ModalOpen"/>: el Grimorio, Misiones, Tareas, Áreas, la pausa, un reto, un diálogo…) EL MANDO SE
 ///    OCULTA y suelta lo que tuviera pulsado; vuelve al cerrarlo. El toque que pulsó un botón del mando no llega como clic a la ventana que
 ///    abre (en CodeShip, swallowGhostClick).
-/// Solo se crea en la web ligera con pantalla táctil (<see cref="WebLigera"/>). Diseño y lista de cambios: docs/mandos-tactiles.md §6.
+/// Solo se crea en la web ligera con pantalla táctil (<see cref="WebLigera"/>). Diseño y lista de cambios: docs/sistemas/mandos-tactiles.md §6.
 /// </summary>
 [DefaultExecutionOrder(-1000)]   // antes que el jugador y las misiones: lo que pulsa este fotograma lo leen este mismo fotograma
 public class TouchControls : MonoBehaviour

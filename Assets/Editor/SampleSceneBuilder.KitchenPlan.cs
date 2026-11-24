@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// COCINA DEL RESTAURANTE EN TODA LA PLANTA (docs/restaurant-plan.md §3–6, Berón 2026-10-23):
+/// COCINA DEL RESTAURANTE EN TODA LA PLANTA (docs/areas/restaurant-plan.md §3–6, Berón 2026-10-23):
 ///  · En el centro, el PASE (barra de servicio, mesa de emplatado, encimera de ingredientes, despensa y estantería).
 ///  · Alrededor, en ANILLO, OCHO PUESTOS COMPLETOS (uno por persona del equipo: si la cocina se satura, los de preparación y
 ///    limpieza también cocinan). Cada puesto es una U con todo lo que pide la carta (Gastronomy.Equipment), así los ocho
@@ -66,7 +66,7 @@ public static partial class SampleSceneBuilder
 
         // ── LAS CUATRO FRANJAS DE LOS BORDES ── (en el marco del ÁREA)
         // La recepción y las cámaras, al lado −Z (con su paso al centro, al pie de la escalera sur del comedor); ya no llega
-        // ningún puente (docs/alfombras-plan.md).
+        // ningún puente (docs/areas/alfombras-plan.md).
         const float along = 0f;
         const int front = 3;
         int opposite = front ^ 1;

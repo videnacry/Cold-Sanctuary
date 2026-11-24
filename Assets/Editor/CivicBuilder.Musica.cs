@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LOS PUEBLOS DE LA MÚSICA (docs/microcosmos-musica.md; Berón 2026-11-05). Cada historia en su pueblo real, sobre su PLANO
+/// LOS PUEBLOS DE LA MÚSICA (docs/microcosmos/microcosmos-musica.md; Berón 2026-11-05). Cada historia en su pueblo real, sobre su PLANO
 /// (<see cref="MusicPlans"/>, formato de <c>PlanText</c>; caben a 1:1 en el barrio de los pisos de 36 × 26 m, ±1000 × ±720 m), con
 /// su estilo de época y lugar (MicroStyles: caribe_hispano, jamaica_moderna, corea_moderna, britanico_moderno, norteamerica_norte…), las
 /// cuatro categorías (trabajo, ocio, entrenamiento y recuperación), un hogar para cada personaje (Homes) y su frutal en cada residencia.

@@ -1,6 +1,12 @@
+---
+resumen: "<!-- GENERADO por docs/qa/migracion/generar.pl el 2026-11-13 desde docs/historial/auditoria-peticiones.md, docs/reglas/manual-de-diseno.md y los tests. Desde aquí se mantiene a mano. -->"
+temas: [historia, pruebas]
+estado: vigente
+codigo: [TestImpact, TestProbe]
+---
 # Registro de estados
 
-<!-- GENERADO por docs/qa/migracion/generar.pl el 2026-11-13 desde docs/auditoria-peticiones.md, docs/manual-de-diseno.md y los tests. Desde aquí se mantiene a mano. -->
+<!-- GENERADO por docs/qa/migracion/generar.pl el 2026-11-13 desde docs/historial/auditoria-peticiones.md, docs/reglas/manual-de-diseno.md y los tests. Desde aquí se mantiene a mano. -->
 
 Una fila por caso de [casos.md](casos.md). **Sin run log no hay «Probado»**. Estados:
 `Probado (suite gN)` · `Probado (en vivo)` · `Probado (retro)` (solo de la migración, con run log reconstruido) · `Parcial` · `FAIL` · `Inestable` (pasa y falla en el mismo commit) · `Crónico` (el mismo check falla en ≥ 3 rondas seguidas: pide `B-nn` y dueño) · `Solo test` · `Solo código` (programado y compilado, sin ejecutar) · `Sin probar` · `No aplica` · `Retirado`.

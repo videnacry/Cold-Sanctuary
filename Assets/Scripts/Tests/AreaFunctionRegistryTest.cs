@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// TEST DEL REGISTRO DE FUNCIONES DE ÁREA (docs/microcosmos-civilizaciones.md §2). El catálogo de la jornada del santuario
+/// TEST DEL REGISTRO DE FUNCIONES DE ÁREA (docs/microcosmos/microcosmos-civilizaciones.md §2). El catálogo de la jornada del santuario
 /// (<see cref="AreaWork.Catalog"/>) ahora sale de <see cref="AreaFunctions"/>: debe ser EXACTAMENTE el de antes (mismos ids en
 /// el mismo orden, horas, obligatorias, grupos, quién dirige, «también va a…» y la que recorre las áreas), los efectos de
 /// terminar una misión deben estar en el registro, y los edificios de los microcosmos deben filtrar por época (sin vacunas
@@ -24,13 +24,13 @@ public class AreaFunctionRegistryTest : MonoBehaviour, ITestUnit
         "tex_limpieza", "mec_limpieza", "con_almacen", "cri_tomas", "cri_recintos", "cri_vinculo", "gym_limpieza", "gym_mantener",
         "pla_operar", "pla_isotopos", "pla_ronda", "pla_ciclotron", "fis_experimentos", "qui_sintesis", "qui_residuos",
         "bio_cultivo", "bio_pcr", "nuc_turno", "gua_carnivoros", "gua_sala", "gua_alimentador", "gua_alimentador_2", "hue_transplante",
-        // (2026-11-04) los pisos nuevos: Informática (el clúster de IA) y el Aula (docs/piso-informatica.md, docs/piso-aula.md)
+        // (2026-11-04) los pisos nuevos: Informática (el clúster de IA) y el Aula (docs/areas/piso-informatica.md, docs/areas/piso-aula.md)
         "ifo_sysadmin", "ifo_refrigeracion", "ifo_energia", "aul_clase", "aul_estudio",
-        // (2026-11-05) la asamblea y la música (docs/piso-asambleas.md, docs/piso-musica.md)
+        // (2026-11-05) la asamblea y la música (docs/areas/piso-asambleas.md, docs/areas/piso-musica.md)
         "asa_orden", "asa_acta", "asa_mediar", "son_grabar", "son_ensayo", "son_equipo",
-        // (2026-11-04/05) las profesiones (docs/personajes-mesocosmos.md §Profesiones)
+        // (2026-11-04/05) las profesiones (docs/historia/personajes-mesocosmos.md §Profesiones)
         "aul_legal", "aul_lenguas", "coc_cuentas", "con_proyectos", "con_proyectos2", "coc_avisos", "yog_ashtanga", "aul_letras", "hos_plantas", "hos_pediatria", "mec_alfombras", "lan_control",
-        // (2026-11-08) el Huerto vertical de la torre de Producción (docs/produccion-maquinaria.md)
+        // (2026-11-08) el Huerto vertical de la torre de Producción (docs/areas/produccion-maquinaria.md)
         "huv_siembra", "huv_cosecha", "huv_solucion",
     };
 

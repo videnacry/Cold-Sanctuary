@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Cerebro de IA que hace que el ser SIGA a un objetivo (docs/anima-architecture.md §11.5). Es el que
+/// Cerebro de IA que hace que el ser SIGA a un objetivo (docs/sistemas/anima-architecture.md §11.5). Es el que
 /// permite "liberar la mente de Kushal para que siga a su compañero por la cocina", y el primer ladrillo
 /// de las acciones entre personajes (acompañar, ir juntos a un área). Sin objetivo no reclama el mando;
 /// con objetivo pide una relevancia algo mayor que el idle para conducir mientras haya a quién seguir.

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// MÁSCARAS PARA RESPIRAR EN LOS EDIFICIOS-ÁRBOL (Berón 2026-11-03; docs/mascaras-de-oxigeno.md). «Máscaras para poder respirar de
+/// MÁSCARAS PARA RESPIRAR EN LOS EDIFICIOS-ÁRBOL (Berón 2026-11-03; docs/areas/mascaras-de-oxigeno.md). «Máscaras para poder respirar de
 /// modo que los personajes puedan nadar indefinidamente: están en las entradas y también hay estaciones dentro». Dos clases de
 /// puesto (<see cref="MaskStation"/>):
 ///   · PERCHERO de la entrada (<see cref="MaskStation.Kind.Rack"/>): fuera, junto a cada puerta del tronco, de las columnas de las

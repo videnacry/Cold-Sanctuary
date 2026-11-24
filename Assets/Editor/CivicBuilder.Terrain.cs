@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// EL RELIEVE DE LOS PUEBLOS, CON ASPECTO REAL (docs/microcosmos-pueblos-mapas.md §Relieve; Berón 2026-11-03: «¿un cono gris? ¿es
+/// EL RELIEVE DE LOS PUEBLOS, CON ASPECTO REAL (docs/microcosmos/microcosmos-pueblos-mapas.md §Relieve; Berón 2026-11-03: «¿un cono gris? ¿es
 /// una montaña? entonces debería tener una apariencia realista y lo mismo con lagos, colinas, acantilados, etc.»). Mallas
 /// LOW-POLY facetadas (cada triángulo con su normal: el estilo del juego), hechas a mano en el editor:
 /// - MONTES Y COLINAS (<see cref="Peak"/>): una malla radial (anillos × radios) cuya altura es un perfil de montaña (pie ancho,

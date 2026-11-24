@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// POSICIONES RESERVADAS DE UN PISO (docs/reglas-plataformas.md, regla 8; Berón 2026-10-28): cada piso crea de antemano sus
+/// POSICIONES RESERVADAS DE UN PISO (docs/reglas/reglas-plataformas.md, regla 8; Berón 2026-10-28): cada piso crea de antemano sus
 /// plazas para lo que pondrá ahí el MICROCOSMOS de su área (la plantilla, <c>MicrocosmTemplate</c>):
 /// - <see cref="Kind.Historia"/>: la estructura de la historia (la guarida, la cueva, el bancal…): la primera es la principal,
 ///   el punto del suelo más alejado de los muebles; las demás, otros huecos grandes para estructuras de la historia;

@@ -1,6 +1,6 @@
 /// <summary>
 /// Una etapa del ciclo post-natal. Cada especie declara un array de estas
-/// como propiedad virtual en su clase Animal. Ver docs/behavior-system.md §Fase 6.
+/// como propiedad virtual en su clase Animal. Ver docs/sistemas/behavior-system.md §Fase 6.
 /// </summary>
 [System.Serializable]
 public class PostNatalStage

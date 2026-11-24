@@ -6,10 +6,10 @@ using UnityEngine;
 /// nombre real, su color y su porte), en qué proporción, y qué artrópodos viven allí en la ESTACIÓN de la historia
 /// (en invierno casi todos están aletargados: solo salen los activos). Cada especie real se dibuja con el cuerpo de cubos
 /// de su grupo (InsectMorphology: una hormiga tejedora es una «Ant» naranja; un abejorro, una «SnowBee» a rayas).
-/// Datos y fuentes: docs/microcosmos-biomas.md. Sin bioma propio (las áreas del santuario de hoy), el genérico de siempre.
+/// Datos y fuentes: docs/microcosmos/microcosmos-biomas.md. Sin bioma propio (las áreas del santuario de hoy), el genérico de siempre.
 /// Las especies sin cuerpo propio hasta 2026-10-24 (escorpión, solífugo, ácaro, cochinilla, cangrejo, caracol, babosa,
 /// lombriz, cigarra, luciérnaga, tijereta, cucaracha) ya tienen su ficha (InsectMorphology.Fauna.cs): aquí van con su
-/// nombre real; ver docs/microcosmos-fauna-eras.md.
+/// nombre real; ver docs/microcosmos/microcosmos-fauna-eras.md.
 /// Escala: 1 cm real de planta ≈ 0,25 m en el microcosmos (la brizna de hierba de 5 cm ≈ 12 m); los bichos, ≈ 0,3 m por mm.
 /// </summary>
 public static partial class MicroBiome
@@ -32,7 +32,7 @@ public static partial class MicroBiome
 
     /// <summary>Un ANIMAL DEL PUEBLO (los caballos de los carros, los gatos de las casas…) en un mundo de insectos: va con el cuerpo
     /// de su ANÁLOGO entre los artrópodos (el canon: las vacas son pulgones, Berkeley) y a la talla del animal real
-    /// (<see cref="length"/>, en m, sin la escala de hormiga: el pueblo es a escala humana). Ver docs/microcosmos-fauna-eras.md.</summary>
+    /// (<see cref="length"/>, en m, sin la escala de hormiga: el pueblo es a escala humana). Ver docs/microcosmos/microcosmos-fauna-eras.md.</summary>
     public struct Pet
     {
         public string species; public int count; public float length; public Color tint; public string name;
@@ -60,9 +60,9 @@ public static partial class MicroBiome
     /// <summary>El bioma del microcosmos llamado <paramref name="display"/> (o null: el genérico).</summary>
     public static Biome For(string display)
     {
-        Biome famous = FamousBiome(display) ?? HistoBiome(display);   // los famosos (MicroBiome.Famosos.cs, docs/microcosmos-famosos.md) y la tanda 3 (Assets/Editor/Historias/)
+        Biome famous = FamousBiome(display) ?? HistoBiome(display);   // los famosos (MicroBiome.Famosos.cs, docs/microcosmos/microcosmos-famosos.md) y la tanda 3 (Assets/Editor/Historias/)
         if (famous != null) return famous;
-        Biome music = MusicBiome(display);   // la música (MicroBiome.Musica.cs, docs/microcosmos-musica.md)
+        Biome music = MusicBiome(display);   // la música (MicroBiome.Musica.cs, docs/microcosmos/microcosmos-musica.md)
         if (music != null) return music;
         switch (display)
         {
@@ -351,7 +351,7 @@ public static partial class MicroBiome
                 new Bug("Spider", 3, 40, C(0.85f, 0.75f, 0.2f), "Araña de seda dorada (Nephila pilipes)"),
                 new Bug("Firefly", 4, 10, C(0.3f, 0.22f, 0.15f), "Luciérnaga (Luciola)") } };
 
-            // ══ CIENTÍFICOS E HISTÓRICOS (docs/microcosmos-cientificos.md) ══════════════════════════════════════════════
+            // ══ CIENTÍFICOS E HISTÓRICOS (docs/microcosmos/microcosmos-cientificos.md) ══════════════════════════════════════════════
             // En las CIUDADES (París 1898, Berna 1905, Pasadena 1953, Bagdad ~820) no hay flora ni fauna salvaje: solo lo plantado
             // por la gente (árboles de calle, jardines, palmeras) y los animales del pueblo (townFauna: caballos, asnos, gatos…,
             // con el cuerpo de su análogo), ningún bicho suelto. En el campo (Woolsthorpe, Berkeley, Sils
@@ -380,7 +380,7 @@ public static partial class MicroBiome
                 new Bug("DungBeetle", 3, 7, C(0.15f, 0.12f, 0.1f), "Afodio (Aphodius), en el excremento de oveja") } };
 
             // ── Berkeley (Gloucestershire), 14 de mayo de 1796: el valle del Severn, prados de vacas lecheras en primavera ──
-            //    En el microcosmos, las VACAS son PULGONES (las hormigas ordeñan pulgones: docs/natural-interactions.md).
+            //    En el microcosmos, las VACAS son PULGONES (las hormigas ordeñan pulgones: docs/sistemas/natural-interactions.md).
             case "Berkeley": return new Biome { title = "Berkeley, valle del Severn, primavera de 1796", ground = C(0.36f, 0.46f, 0.24f), plants = new[] {
                 new Plant(Kind.Grass, 20, "Cola de zorra (Alopecurus pratensis)", 50, C(0.4f, 0.6f, 0.3f), C(0.6f, 0.6f, 0.45f)),
                 new Plant(Kind.Flower, 8, "Prímula (Primula veris)", 20, C(0.35f, 0.55f, 0.25f), C(0.98f, 0.82f, 0.2f)),
@@ -496,7 +496,7 @@ public static partial class MicroBiome
                 new Bug("SnowBee", 3, 16, C(0.15f, 0.12f, 0.08f), "Abejorro (Bombus terrestris)") } };
 
             // ── Las CIUDADES: sin flora ni bichos salvajes; solo lo plantado (a escala de pueblo: AreaMicrocosmos.Nature, modo
-            //    pueblo) y los ANIMALES DEL PUEBLO (townFauna) con el cuerpo de su análogo (docs/microcosmos-fauna-eras.md):
+            //    pueblo) y los ANIMALES DEL PUEBLO (townFauna) con el cuerpo de su análogo (docs/microcosmos/microcosmos-fauna-eras.md):
             //    · bestias de tiro y de carga (caballo, mula, asno, camello) → PULGÓN, como las vacas de Berkeley (las hormigas «crían
             //      ganado» de pulgones), a la talla del animal (caballo 2,4 m, asno 1,6 m, camello 3 m);
             //    · gatos y perros de las casas → COCHINILLA hormiguera (Platyarthrus hoffmannseggii, el huésped blanco que vive en los

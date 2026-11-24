@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// ARAÑA DE LAS NIEVES (docs/ice-sanctuary-ecology.md §2): araña MODIFICADA para el hielo, de ~30 cm, que vive en los
+/// ARAÑA DE LAS NIEVES (docs/fauna/ice-sanctuary-ecology.md §2): araña MODIFICADA para el hielo, de ~30 cm, que vive en los
 /// árboles carnívoros y caza a las abejas de las nieves que anidan en ellos. Anima compuesta como cualquier animal:
 /// arquetipo de araña (8 ojos = percepción, emboscada = calma), veneno (armamento) y su dieta prefiere la abeja de las
 /// nieves (DietPreference). Su vida de acecho en el tronco la lleva <see cref="SnowSpiderLife"/>.
@@ -11,7 +11,7 @@ public class SnowSpiderBehavior : Animal
     protected override string SpeciesArchetype => "Spider";
     protected override string BodyArchetype => "SnowSpider";   // todo de araña salvo el físico: ~30 cm, no 7 mm
     // …y su HISTORIA DE VIDA: araña orbicular de clima frío (lenta, longeva, guarda su saco de huevos), no la araña lobo del
-    // microcosmos (StageProfile, Reproduction.Calendar, LifeHistory y Forager «SnowSpider»; docs/ciclo-de-vida.md).
+    // microcosmos (StageProfile, Reproduction.Calendar, LifeHistory y Forager «SnowSpider»; docs/sistemas/ciclo-de-vida.md).
     protected override string LifeArchetype => "SnowSpider";
 
     void Start() => base.Init();

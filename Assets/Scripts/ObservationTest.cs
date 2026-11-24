@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Test de la OBSERVACIÓN/ecuanimidad (docs/apremios-guardian-observacion.md §4, testing-checklist §44), por `TestProbe`:
+/// Test de la OBSERVACIÓN/ecuanimidad (docs/sistemas/apremios-guardian-observacion.md §4, testing-checklist §44), por `TestProbe`:
 /// un ser PROMEDIO no recibe amortiguación (factor ~1 → el estrés existente no cambia); un ser SERENO (temple alto) y/o
 /// ENTRENADO (`ObservationSkill`) tiene observación > 0 y SUFRE MENOS por la misma carga (factor < 1). Determinista.
 /// </summary>

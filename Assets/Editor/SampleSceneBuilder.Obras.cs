@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// OBRAS CON SU ACABADO YA DISEÑADO (Berón 2026-10-28; docs/obras-dojo-ballet.md): el Dojo (MMA, kickboxing y karate) y
+/// OBRAS CON SU ACABADO YA DISEÑADO (Berón 2026-10-28; docs/areas/obras-dojo-ballet.md): el Dojo (MMA, kickboxing y karate) y
 /// la Sala de Ballet siguen EN OBRAS, pero lo que quedará al terminar ya está montado dentro, en un «Acabado» oculto que
 /// <see cref="ConstructionProject"/> muestra el día que se completa. Cada obra pide su EQUIPO: el día cuenta cuando han
 /// trabajado todas sus personas (una lleva el material, dos trabajan).
@@ -71,7 +71,7 @@ public static partial class SampleSceneBuilder
             KitchenProps.C(bags, new Vector3(0f, 2.55f, i * 1.6f), new Vector3(0.02f, 0.9f, 0.02f), OHemp, 0f, "Cadena");
         }
         // MAKIWARAS y estantería de equipo junto al pasillo central; el botiquín pegado al vestuario, en la esquina suroeste (con los
-        // sacos: 2 m libres entre los muebles, docs/obras-dojo-ballet.md).
+        // sacos: 2 m libres entre los muebles, docs/areas/obras-dojo-ballet.md).
         for (int i = 0; i < 2; i++) KitchenProps.C(r, new Vector3(0.3f + i * 1.2f, 0.6f, 4.3f), new Vector3(0.2f, 1.2f, 0.1f), OGuadua, 0f, "Makiwara");
         Transform shelf = KitchenProps.C(r, new Vector3(-0.3f, 0.9f, 2f), new Vector3(0.4f, 1.8f, 4f), OGuadua, 0f, "Estanteria_equipo");
         shelf.gameObject.AddComponent<WorldLabel>().text = "Guantes, espinilleras, paos, cascos y protectores";

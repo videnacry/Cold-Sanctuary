@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// LAKAMHA' (PALENQUE), 683 (docs/microcosmos-maya-pakal.md). La ciudad de K'inich Janaab Pakal sobre su plano real
+/// LAKAMHA' (PALENQUE), 683 (docs/microcosmos/microcosmos-maya-pakal.md). La ciudad de K'inich Janaab Pakal sobre su plano real
 /// (CivicBuilder.Plans, «Palenque»): el PALACIO en terrazas (la Casa E, la Casa Blanca donde está el Tablero Oval de su coronación,
 /// y la torre), el TEMPLO DE LAS INSCRIPCIONES (nueve cuerpos escalonados; aquí cuatro terrazas con su rampa: los 617 glifos de sus
 /// tableros arriba), el JUEGO DE PELOTA, la casa de los escribas, la cocina del Palacio, el Grupo de las Cruces (la Cruz Foliada:
@@ -61,7 +61,7 @@ internal static partial class CivicBuilder
 }
 
 /// <summary>
-/// EGINA (la Grecia heroica del mito de los mirmidones, ~1250 a. C.; docs/microcosmos-myrmidons.md): la ciudad de Éaco sobre su
+/// EGINA (la Grecia heroica del mito de los mirmidones, ~1250 a. C.; docs/microcosmos/microcosmos-myrmidons.md): la ciudad de Éaco sobre su
 /// plano (CivicBuilder.Plans, «Egina»): el puerto y la colina de Kolona (el santuario de Apolo, el asentamiento de la Edad del
 /// Bronce) al oeste, el monte Oros con el santuario de Zeus Helenio al sureste, el palacio de Éaco, el taller del alfarero y los
 /// olivares. (Walter y Felten 1981, Alt-Ägina; Pausanias II.29–30.)

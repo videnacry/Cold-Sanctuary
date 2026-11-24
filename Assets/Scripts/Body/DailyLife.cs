@@ -68,7 +68,7 @@ public class DineSpell : QueuedSpell
 
     int _phase;              // 0 ir a la barra · 1 le sirven · 2 ir a la mesa · 3 comer · 4 levantarse · 5 devolver la bandeja
     Transform _seat;
-    /// <summary>(2026-11-04) LA ORQUESTA DE LA COMIDA (docs/actividades-y-uniformes.md §2): bandeja, plato a la mesa, cubiertos, bocados con
+    /// <summary>(2026-11-04) LA ORQUESTA DE LA COMIDA (docs/sistemas/actividades-y-uniformes.md §2): bandeja, plato a la mesa, cubiertos, bocados con
     /// el plato que mengua, tragos, recoger y devolver la bandeja en la barra. null antes de que le sirvan.</summary>
     public MealRitual Meal { get; private set; }
     public float returnTimeout = 60f;

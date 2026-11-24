@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// ENFERMEDAD como **hechizo-estado** (docs/environmental-navigation.md §4.2). Un ser enfermo: (1) tiene `Anima.sickness`
+/// ENFERMEDAD como **hechizo-estado** (docs/sistemas/environmental-navigation.md §4.2). Un ser enfermo: (1) tiene `Anima.sickness`
 /// &gt; 0 → `Predation` le baja poder Y defensa (**presa fácil**); (2) deposita el canal `Sickness` en la `TraceField`
 /// (los demás lo **evitan**, el depredador prioriza al **débil**); (3) **se recupera** solo con el tiempo — o antes por
 /// la **cura de la enfermería** (`Heal`). Abre el área de Enfermería. Auto-añadido en `Animal.Init`.

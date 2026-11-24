@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// EL PARQUE ENERGÉTICO (Berón 2026-11-05; docs/energia.md): un CASQUETE ARTIFICIAL en la esquina noroeste del mar con su árbol bajo. En el árbol, el control, el taller
+/// EL PARQUE ENERGÉTICO (Berón 2026-11-05; docs/areas/energia.md): un CASQUETE ARTIFICIAL en la esquina noroeste del mar con su árbol bajo. En el árbol, el control, el taller
 /// de los paneles y el garaje; en el casquete, el campo solar con las mesas que piden los pisos (y las plazas para los que vengan), 3 aerogeneradores en las esquinas con su
 /// pala negra, cámaras y radar, la turbina mareal piloto con sonar y el almacén (baterías y silo de arena). Mismo casquete y pruebas de sitio que la lanzadera y el sitio
 /// nuclear (<see cref="BuildArtificialCap"/>, <see cref="NearestToSite"/>).
@@ -23,7 +23,7 @@ public static partial class SampleSceneBuilder
         Helix hx = BeginHelix(_energyRoot, EnergyRule.Building, TowerRoot(EnergyRule.Building), site, 0f, h, rotates: false);
         hx.pickDoors = true;
         hx.tipContent = EnergyTip;
-        hx.santuarioLabel = $"{EnergyRule.Building}: paneles, viento, mareal y almacén (docs/energia.md)";
+        hx.santuarioLabel = $"{EnergyRule.Building}: paneles, viento, mareal y almacén (docs/areas/energia.md)";
         _energyHx = hx;
         BuildArtificialCap(_energyRoot, hx, site, EnergyRule.CapHalf);
         Transform f = HelixFloor(hx, 1, null, new Vector2(h.floorSize, h.floorSize), EnergyFloorName);
@@ -69,7 +69,7 @@ public static partial class SampleSceneBuilder
         Label(rack, "Módulos, inversores y cable de repuesto", 2.8f);
         SanctuaryArea a = f.gameObject.AddComponent<SanctuaryArea>();
         a.areaType = SanctuaryAreaType.EnergyPark; a.displayName = EnergyRule.Area; a.progressionTier = 3;
-        a.description = "Control de la energía y taller de los paneles solares (docs/energia.md)";
+        a.description = "Control de la energía y taller de los paneles solares (docs/areas/energia.md)";
     }
 
     /// <summary>Cada piso declara su demanda.</summary>
@@ -93,7 +93,7 @@ public static partial class SampleSceneBuilder
             }
         }
         // (2026-11-08) Los LED de las fachadas de fotobiorreactores (el Árbol y Ciencias): su potencia MEDIA del año (FotobioSpec.LedMeanKW; en la
-        // noche polar, la entera: FotobioSpec.LedKW). docs/fotobiorreactores.md, docs/energia.md.
+        // noche polar, la entera: FotobioSpec.LedKW). docs/areas/fotobiorreactores.md, docs/areas/energia.md.
         foreach (FotobioFacade fb in Object.FindObjectsByType<FotobioFacade>(FindObjectsInactive.Include, FindObjectsSortMode.None))
             FloorEnergy.DeclareFloor(fb.gameObject, FotobioEnergyName(fb), 0f, 0f, FotobioSpec.LedMeanKW(fb.areaM2));
         // Las casas de árbol, si algún santuario las construye (no son un piso: las cuelga el parque).
@@ -232,7 +232,7 @@ public static partial class SampleSceneBuilder
         return s;
     }
 
-    // LA DISUASIÓN (docs/energia.md §7): figuras con ojos, ocultas hasta que salta un detector, el dragón de drones en su hangar y la caja para las aves heridas. Ni las figuras ni el dragón cuentan para la seguridad.
+    // LA DISUASIÓN (docs/areas/energia.md §7): figuras con ojos, ocultas hasta que salta un detector, el dragón de drones en su hangar y la caja para las aves heridas. Ni las figuras ni el dragón cuentan para la seguridad.
     static void BuildDeterrents(AereoBase es, Transform root, Vector3 site)
     {
         float H = EnergyRule.CapHalf - 3f;
@@ -310,7 +310,7 @@ public static partial class SampleSceneBuilder
         Label(rp, "Refugio de aves: se curan y se sueltan aquí, lejos de las turbinas. Con guantes y mascarilla: gripe aviar", 2f);
     }
 
-    /// <summary>LA REGLA (docs/energia.md): distancia, turbinas lejos de las islas y del árbol, y oferta ≥ demanda. Si no cumple, error en el registro.</summary>
+    /// <summary>LA REGLA (docs/areas/energia.md): distancia, turbinas lejos de las islas y del árbol, y oferta ≥ demanda. Si no cumple, error en el registro.</summary>
     static void ValidateEnergySite(string when)
     {
         if (_energyRoot == null) return;

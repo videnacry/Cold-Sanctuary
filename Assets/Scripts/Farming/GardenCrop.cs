@@ -3,7 +3,7 @@ using UnityEngine;
 
 /// <summary>
 /// CULTIVO de bloques: flora MODIFICADA del santuario (crece en el hielo, tonos claros) que da los ingredientes
-/// vegetales de TODOS los platillos del restaurante (docs/huertos-y-cultivos.md). Cada especie usa una FORMA real
+/// vegetales de TODOS los platillos del restaurante (docs/areas/huertos-y-cultivos.md). Cada especie usa una FORMA real
 /// (cereal, legumbre, roseta, bulbo, raíz, rizoma, mata con fruto, cactus, frutal, palmera, enredadera, hongo, alga…)
 /// con sus colores y su tamaño. Las piezas se FUSIONAN en una malla por color: una planta = 2–4 renderers, no 30 cubos.
 /// Tiene «mordiscos»: un visitante hambriento que llega le quita uno (encoge) y rebrota con el tiempo.
@@ -28,10 +28,10 @@ public class GardenCrop : MonoBehaviour
         Limon, Lima, Naranja, Mango, Guanabana, Almendro, Olivo, Cacao, Canela, Laurel,
         // palmeras, enredadera, fibra, hongo y alga
         Coco, Datil, Pimienta, Lino, Shiitake, Alga,
-        // ampliación para la carta del restaurante (docs/cocina-profesional.md)
+        // ampliación para la carta del restaurante (docs/areas/cocina-profesional.md)
         Trigo, MaizMorado, Haba, Arveja, Melloco, Papa, Perejil, Romero, Azafran, Achiote, Sesamo, Wasabi, Pepino,
         Frutilla, Hierbaluisa, Cedron, Cana, Naranjilla, Mortino, Babaco, Clavo, Cafe, Aguacate,
-        // materiales de construcción (docs/construccion-sostenible.md)
+        // materiales de construcción (docs/areas/construccion-sostenible.md)
         Bambu, Canamo,
     }
 

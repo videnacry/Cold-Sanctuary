@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DEL TRANSPORTE DE ÉPOCA QUE SE USA (docs/plan-microcosmos-realismo.md §3.3, P6; <see cref="MicroVehicle"/>), sin cargar escenas:
+/// PRUEBA DEL TRANSPORTE DE ÉPOCA QUE SE USA (docs/microcosmos/plan-microcosmos-realismo.md §3.3, P6; <see cref="MicroVehicle"/>), sin cargar escenas:
 /// 1. alguien con CharacterController sube (queda en el asiento, con su controlador apagado) y nadie más puede subir a la vez;
 /// 2. con el acelerador avanza hacia delante, sin pasar de su velocidad máxima, y con la dirección gira; marcha atrás, más despacio;
 /// 3. baja a un lado, con su controlador encendido otra vez, y el vehículo frena solo;

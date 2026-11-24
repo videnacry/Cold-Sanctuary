@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// PRUEBA DE LA PLANTA NUCLEAR BAJO EL MAR (Berón 2026-11-08; docs/sitio-nuclear.md §25): la Central Nuclear y la Planta Atómica viven enteras en el
+/// PRUEBA DE LA PLANTA NUCLEAR BAJO EL MAR (Berón 2026-11-08; docs/areas/sitio-nuclear.md §25): la Central Nuclear y la Planta Atómica viven enteras en el
 /// santuario 2 (el Marino), junto a las cavernas; en el santuario 1 solo queda su ESTACIÓN DE ALFOMBRAS con la Línea, como el muelle del Aéreo.
 /// 1. ARRIBA: ninguna pieza del sitio por encima del agua (y > 0) salvo la estación; ni el árbol del sitio ni sus áreas en el santuario 1.
 /// 2. LA ESTACIÓN: una pista de la red del santuario (como el muelle aéreo), a mano del andén de la Línea; sin escaleras.

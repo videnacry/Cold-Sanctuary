@@ -1,5 +1,5 @@
 /// <summary>
-/// LOS MAPAS A MANO DE LA MÚSICA (docs/microcosmos-musica.md; regla M9). Todos «Hecho»: el piso ordenado para el lugar real, cada rodal de
+/// LOS MAPAS A MANO DE LA MÚSICA (docs/microcosmos/microcosmos-musica.md; regla M9). Todos «Hecho»: el piso ordenado para el lugar real, cada rodal de
 /// flora y cada bicho en su sitio (metros desde la «Historia», x al este, z al norte; el mismo marco que <c>CivicBuilder.MusicPlans</c>).
 /// </summary>
 public static partial class MicroStoryMaps

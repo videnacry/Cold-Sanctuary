@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Genera y contabiliza suciedad en una zona (docs/kitchen-simulation.md §5, paso A). La cocina se ensucia
+/// Genera y contabiliza suciedad en una zona (docs/areas/kitchen-simulation.md §5, paso A). La cocina se ensucia
 /// sola con el tiempo; al pasar de un **umbral** se dispara la **misión de limpieza**; cuando queda limpia,
 /// se completa. Las manchas se borran **una a una** (`CleanNearest`). MVP del Mesocosmos (aquí se "limpia";
 /// el puente al MicroKitchen —extraer la mancha en el mundo-insecto— es el paso D).

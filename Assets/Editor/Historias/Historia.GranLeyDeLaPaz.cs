@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LA GRAN LEY DE LA PAZ (docs/microcosmos-historias-3.md, con la justificación de la elección). La historia de los pueblos nativos de
+/// LA GRAN LEY DE LA PAZ (docs/microcosmos/microcosmos-historias-3.md, con la justificación de la elección). La historia de los pueblos nativos de
 /// Norteamérica que resume mejor lo que fueron y siguen siendo: cinco naciones enfrentadas (mohawk, oneida, onondaga, cayuga y seneca) se unen
 /// en la Confederación Haudenosaunee, gracias al Pacificador, a Ayenwatha (Hiawatha), a Jigonsaseh, la madre de las naciones, y a la curación
 /// de Tadodaho. Es una TRADICIÓN VIVA de un pueblo que existe hoy: se cuenta como la cuentan sus naciones, resumida, sin recrear ninguna

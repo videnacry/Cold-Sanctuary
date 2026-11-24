@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// HACER LA ACTIVIDAD, NO SOLO LLEGAR (docs/actividades-y-uniformes.md; Berón 2026-11-04: «parece que solo van al piso que les toca y
+/// HACER LA ACTIVIDAD, NO SOLO LLEGAR (docs/sistemas/actividades-y-uniformes.md; Berón 2026-11-04: «parece que solo van al piso que les toca y
 /// no hacen nada, deberían realizar las actividades … también aplican a los insectos-humanos … deben tener sus orquestas/animaciones
 /// para completar sus tareas/jornada/ocio/recuperación»). Una ACTUACIÓN (<see cref="Performance"/>) es una partitura de PASOS
 /// (<see cref="Step"/>) que se repite mientras dura la misión o la actividad: cada paso tiene su postura base (de pie, sentado,

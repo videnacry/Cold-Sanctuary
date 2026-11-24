@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// PRUEBA DE LOS DOS SANTUARIOS Y LA LÍNEA (Berón 2026-11-05; docs/sitio-nuclear.md §7–§20):
+/// PRUEBA DE LOS DOS SANTUARIOS Y LA LÍNEA (Berón 2026-11-05; docs/areas/sitio-nuclear.md §7–§20):
 /// 1. SANTUARIO 1: mar somero, placas finas, falda de roca corta, sin tubos hondos, submarino de obra a −12 y nado limitado por el fondo.
 /// 2. LÓGICA SIN ESCENA: con el Santuario Marino descargado, la alerta de la roca, el refugio y las misiones funcionan, y un cuerpo baja y sube sin cargar nada.
 /// 3. LÍNEA Y RED: estación, alfombras, jornada, el minuto, emergencia, escape, refugio y desconexión.
@@ -109,7 +109,7 @@ public class NuclearAccessTest : MonoBehaviour, ITestUnit
         TestProbe.Check("segunda salida, lejos del tubo", shaft != null && Flat(shaft.position, top) >= 20f && Mathf.Abs(line.escapeTop.position.y) < 0.5f);
         var pads = FindObjectsByType<CarpetPad>(FindObjectsSortMode.None);
         CarpetPad pad = pads.FirstOrDefault(p => p != null && p.displayName == SiteLine.AreaName);
-        // (2026-11-08, docs/sitio-nuclear.md §25) Sin árbol del sitio: la pista de la estación es de la RED DEL SANTUARIO, como el muelle del Aéreo.
+        // (2026-11-08, docs/areas/sitio-nuclear.md §25) Sin árbol del sitio: la pista de la estación es de la RED DEL SANTUARIO, como el muelle del Aéreo.
         CarpetPad ground = pads.FirstOrDefault(p => p != null && p.kind == CarpetPad.Kind.Santuario && p != pad);
         TestProbe.Check("se llega en alfombra: una pista de la red del santuario, a mano del andén", pad != null && pad.kind == CarpetPad.Kind.Santuario && ground != null && ground.Destinations().Contains(pad) && Vector3.Distance(pad.transform.position, top) < 9f);
         TestProbe.Check("la pista de la estación es la suya (CarpetPad.For en ella da ella)", pad != null && CarpetPad.For(pad.transform.position + Vector3.up * 0.2f) == pad);
@@ -256,7 +256,7 @@ public class NuclearAccessTest : MonoBehaviour, ITestUnit
             string[] kit = { "Esclusa_refugio", "Botella_oxigeno", "Deposito_agua", "Depurador_CO2", "Baterias_refugio", "Telefono_fibra", "Radio_traves_roca", "Osmosis_inversa", "Electrolizador", "Depurador_amina", "Sondeo_mar", "Perforadora_sondeos", "Preventor_sondeo", "Despensa_refugio", "Estante_hidroponia", "Panel_espirulina", "Deposito_abono", "Cable_reactor" };
             var noKit = rf != null ? kit.Where(k => Named(rf, k) == null).ToList() : kit.ToList();
             TestProbe.Check("el refugio, entero y centrado en el pilar", rf != null && noKit.Count == 0 && Mathf.Abs(rf.position.z - Named(m, "Estacion_inferior").position.z) < 0.5f, string.Join(", ", noKit));
-            // (2026-11-08, docs/sitio-nuclear.md §25) La planta nuclear vive aquí desde la ronda 28 («Planta_nuclear_marina»): sus piezas salieron del santuario 1 (su árbol y sus pisos), no son nuevas.
+            // (2026-11-08, docs/areas/sitio-nuclear.md §25) La planta nuclear vive aquí desde la ronda 28 («Planta_nuclear_marina»): sus piezas salieron del santuario 1 (su árbol y sus pisos), no son nuevas.
             // El tope de siempre vale para lo de las cavernas; la planta tiene el suyo, el de los pisos que eran del árbol del sitio.
             Transform plantRoot = Named(m, "Planta_nuclear_marina");
             int all = m.GetComponentsInChildren<Transform>(true).Length, plantN = plantRoot != null ? plantRoot.GetComponentsInChildren<Transform>(true).Length : 0;

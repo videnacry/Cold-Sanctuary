@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// El VIGILANTE de la ropa y la vajilla (docs/actividades-y-uniformes.md): una vez por segundo, a quien nada sin tener aún quien le
+/// El VIGILANTE de la ropa y la vajilla (docs/sistemas/actividades-y-uniformes.md): una vez por segundo, a quien nada sin tener aún quien le
 /// cambie la ropa le pone un <see cref="UniformWearer"/> (así se pone el neopreno al entrar en el agua y se lo quita al salir), y
 /// recoge la vajilla de las comidas que quedaron a medias (<see cref="MealRitual.Sweep"/>: alguien dejó de comer porque se le cortó la
 /// necesidad o la historia lo llamó). Se crea solo al cargar la escena.

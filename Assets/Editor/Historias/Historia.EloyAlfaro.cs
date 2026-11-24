@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// ELOY ALFARO Y EL TREN DE QUITO (docs/microcosmos-historias-3.md). Chimbacalle, 25 de junio de 1908: el primer tren que llega de Durán a
+/// ELOY ALFARO Y EL TREN DE QUITO (docs/microcosmos/microcosmos-historias-3.md). Chimbacalle, 25 de junio de 1908: el primer tren que llega de Durán a
 /// Quito el día en que Alfaro cumple 66 años. La historia va de la obra (la cuadrilla, la Nariz del Diablo) y de lo que cambió con ella
 /// (escuela laica, registro civil, telégrafo). La guerra civil y su muerte en 1912 quedan en una línea de la ficha.
 /// Las frases son de juego; los hechos, de las fuentes del doc.

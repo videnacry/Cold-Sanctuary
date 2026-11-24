@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// NASATYA (Ambrosio renacido): enorme, manso y fortísimo, recostado en una POSTURA RARA (eco de su deformidad); de vez
 /// en cuando se acomoda. El «tell» de su vida pasada.
-/// Y, como en la novela (docs/novela.md, «7. Avatar en la Cocina»: lo ve «moverse ligero y veloz llevando restos, y se une
+/// Y, como en la novela (docs/historia/novela.md, «7. Avatar en la Cocina»: lo ve «moverse ligero y veloz llevando restos, y se une
 /// a ayudarlo»), entre rato y rato recostado se levanta y lleva restos a la guarida, deprisa (una recolectora más,
 /// <see cref="MicroForager"/>, más rápida). Cada viaje tiene tope: si no entrega a tiempo, vuelve a recostarse.
 /// </summary>

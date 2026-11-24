@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Las HERRAMIENTAS del jugador para reparar (docs/forge-simulation.md §5). Gate global simple: sin
+/// Las HERRAMIENTAS del jugador para reparar (docs/areas/forge-simulation.md §5). Gate global simple: sin
 /// herramientas no se puede reparar; se **toman/devuelven** en un <see cref="ServiceHub"/> (Mecánica o
 /// Construcción). Obliga al bucle: tomar → ir al área → reparar → volver y devolver.
 /// </summary>

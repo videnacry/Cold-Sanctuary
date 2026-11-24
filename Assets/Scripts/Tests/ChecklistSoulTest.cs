@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Automatiza por `TestProbe` los ítems del ALMA de `docs/testing-checklist.md` §20–§22 (que pedían leer los logs
+/// Automatiza por `TestProbe` los ítems del ALMA de `docs/qa/testing-checklist.md` §20–§22 (que pedían leer los logs
 /// `[Alma]` del sandbox `AlmaBlend_AUTO`/`AlmaCompartida_AUTO`): mezclas por distribución (Panterilia, oso con mente
 /// humana, bonusPack3, el 1% que importa, tamaños), conversión Relativa vs Literal, tono de mente por blend, los 4
 /// compañeros por composición, el alma compartida (poder y bonds), la familiarización del `BondPillar` y el karma de

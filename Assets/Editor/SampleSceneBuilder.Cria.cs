@@ -2,7 +2,7 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// ÁREA DE CRÍA (docs/cria-simulation.md): el corazón del santuario. Una sala de crías del HIELO, como un centro de
+/// ÁREA DE CRÍA (docs/areas/cria-simulation.md): el corazón del santuario. Una sala de crías del HIELO, como un centro de
 /// rescate: recintos con CRÍAS DE VERDAD (`Animal` en etapa de cría, no cápsulas) de las especies del Santuario 1
 /// —oseznos polares en su guarida cálida, focas con su piscina, la guardería de pingüinos y los cachorros de
 /// malamute—, la cocina de leche (biberones, báscula, nevera), el almacén (biberón / comida / paja) y un pasillo ancho.

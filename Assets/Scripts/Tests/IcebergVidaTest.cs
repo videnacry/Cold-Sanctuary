@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DE LA VIDA EN LOS ICEBERGS (Berón 2026-11-05; docs/vida-en-icebergs.md): animales de verdad, no figuras; con sitio al que subir, comida cerca, motivo para quedarse
+/// PRUEBA DE LA VIDA EN LOS ICEBERGS (Berón 2026-11-05; docs/fauna/vida-en-icebergs.md): animales de verdad, no figuras; con sitio al que subir, comida cerca, motivo para quedarse
 /// y un descanso que va con el iceberg; y contados en la cadena alimenticia.
 /// </summary>
 public class IcebergVidaTest : MonoBehaviour, ITestUnit

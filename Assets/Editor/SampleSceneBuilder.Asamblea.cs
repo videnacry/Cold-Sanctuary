@@ -2,7 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// LA SALA DE ASAMBLEAS (Berón 2026-11-05: «crea la sala de asamblea, asegúrate de investigar todo lo referente a diseño (época/lugar) … en el santuario se crean las
-/// áreas como mix de lo mejor del mundo»; docs/piso-asambleas.md). El piso que esperaban Angostura, Onondaga, Madrid, Gettysburg y la Feria. En la torre de Servicios,
+/// áreas como mix de lo mejor del mundo»; docs/areas/piso-asambleas.md). El piso que esperaban Angostura, Onondaga, Madrid, Gettysburg y la Feria. En la torre de Servicios,
 /// encima de la Carne Cultivada (nivel 4 de la hélice: mismas caras que el nivel 2, así que no cambia la planta de la torre). Mezcla, con el origen en cada pieza:
 /// - el CÍRCULO sin cabecera: la casa larga haudenosaunee, la kgotla de Botsuana, el panchayat (nadie preside desde lo alto: filas en cuadrado, mirando al centro);
 /// - la PIEDRA DE LA PALABRA: el Lögberg del Althing islandés (quien habla, de pie en el centro; 12 cm con su rampa: sin escalones, S5);

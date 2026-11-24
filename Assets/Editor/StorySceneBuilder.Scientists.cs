@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// MICROCOSMOS DE CIENTÍFICOS E HISTÓRICOS (docs/microcosmos-cientificos.md; Berón 2026-11-01). Doce historias, cada una en
+/// MICROCOSMOS DE CIENTÍFICOS E HISTÓRICOS (docs/microcosmos/microcosmos-cientificos.md; Berón 2026-11-01). Doce historias, cada una en
 /// el PUEBLO donde ocurrió (CivicBuilder.Towns: el pueblo llena el piso entero) y sobre el área del santuario que mejor la
 /// cuenta: Pitágoras (Gimnasio), Heródoto (Huerto), al-Juarismi y Tesla (Construcción), Newton y Einstein (Planta Atómica),
 /// Jenner (Biología), Bolívar (Cocina), Nietzsche (Sala de Yoga), los Curie y Patterson (Química) y Ananenko y su escuadrón

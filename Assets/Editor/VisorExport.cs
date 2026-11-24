@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// VISOR WEB SIN BUILD (PB-168, docs/visor-web.md). Vuelca una escena (cubos y primitivas con su color, en coordenadas de mundo) y sus
+/// VISOR WEB SIN BUILD (PB-168, docs/plataforma/visor-web.md). Vuelca una escena (cubos y primitivas con su color, en coordenadas de mundo) y sus
 /// retos de código (historia, puestos y duelo de ideas) a <c>Builds/Visor/&lt;escena&gt;/</c>, para verla en el visor three.js de
 /// <c>tools/visor/index.html</c> sin Play ni build WebGL (que tarda 30–60 min). Tarda segundos; abre la escena en modo aditivo y la cierra
 /// sin guardar, así que no toca la escena que esté abierta.
@@ -78,7 +78,7 @@ public static class VisorExport
         string retos = RetosJson(s, all);
         File.WriteAllText(Path.Combine(dir, "retos.json"), retos, new UTF8Encoding(false));
         Debug.Log($"[Visor] {s.name}: {n} objetos ({drawn} visibles) y retos → {Path.GetFullPath(dir)} ({new FileInfo(sceneFile).Length / 1024} KB). " +
-                  "Ábrelo con tools/visor/index.html (docs/visor-web.md).");
+                  "Ábrelo con tools/visor/index.html (docs/plataforma/visor-web.md).");
         return dir;
     }
 

@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// EL MICROCOSMOS DE LA PLANTA ATÓMICA (docs/atomic-plant.md §Microcosmos): la planta ×10, y en su suelo tres grandes
+/// EL MICROCOSMOS DE LA PLANTA ATÓMICA (docs/areas/atomic-plant.md §Microcosmos): la planta ×10, y en su suelo tres grandes
 /// de la física, cada uno junto a su experimento: NEWTON (la gravedad: el cañón y la órbita), MARIE CURIE (la
 /// radiactividad: el electrómetro y el cuarzo) y EINSTEIN (E = mc²: la balanza de la fisión). E junto a uno abre su
 /// lección (<see cref="PhysicsLesson"/>); al hacer las tres, la <see cref="HistoryCard"/> cuenta la historia real, con

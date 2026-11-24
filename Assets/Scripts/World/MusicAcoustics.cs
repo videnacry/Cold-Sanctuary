@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// CUÁNTO SONIDO PARA EL CRISTAL (Berón 2026-11-05: «se pueden aprovechar las paredes transparentes para bloquear sonido»; docs/piso-musica.md §Acústica).
+/// CUÁNTO SONIDO PARA EL CRISTAL (Berón 2026-11-05: «se pueden aprovechar las paredes transparentes para bloquear sonido»; docs/areas/piso-musica.md §Acústica).
 /// El juego no simula el sonido: esto es la CUENTA con la que se dimensionaron las salas, y la prueba 86 la comprueba. Un paño suelto, con la puerta abierta
 /// y sin tapa no aísla casi nada: por eso cada sala lleva DOBLE cristal laminado con cámara y tapa de cristal, y sus puertas se cierran solas (<see cref="SoundDoor"/>).
 /// Cifras (Rw, dB): cristal laminado de 12,5 mm ~40; doble acristalamiento acústico de catálogo 44–52, y en obra hasta 8 menos; la meta entre salas de ensayo

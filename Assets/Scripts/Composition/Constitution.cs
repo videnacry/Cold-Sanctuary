@@ -10,7 +10,7 @@ public class ElementAmount
 }
 
 /// <summary>
-/// CONSTITUCIÓN química de un ser (docs/stats-as-truth.md §9) — el **fundamento** de los stats base, por
+/// CONSTITUCIÓN química de un ser (docs/sistemas/stats-as-truth.md §9) — el **fundamento** de los stats base, por
 /// **niveles de organización**: **elementos** (símbolos reales de la tabla periódica, `Chemistry`) →
 /// **compuestos** (proteína/ATP/minerales/lípidos) → **células** (músculo/**glóbulos**=Fe+proteína/neurona/
 /// hueso) → **stats base**. Los elementos se validan contra `PeriodicTableManager` y son **alimentables**

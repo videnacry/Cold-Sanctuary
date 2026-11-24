@@ -1,15 +1,21 @@
+---
+resumen: "Ficha con la plantilla de README.md. Id en el código: Neo. Revisada: 2026-11-08. Veracidad de cada dato (regla M39, veracidad-frases.md): documentada = lo dijo Berón (sus mensajes o la…"
+temas: [personajes]
+estado: vigente
+codigo: [PersonLife, Bedroom, BodyAging, WorkdayDirector]
+---
 # Neo
 
 > Ficha con la plantilla de [README.md](README.md). Id en el código: `Neo`. Revisada: 2026-11-08.
-> Veracidad de cada dato (regla M39, [veracidad-frases.md](../veracidad-frases.md)): **documentada** = lo dijo Berón (sus mensajes o la
+> Veracidad de cada dato (regla M39, [veracidad-frases.md](../sistemas/veracidad-frases.md)): **documentada** = lo dijo Berón (sus mensajes o la
 > ficha larga que contó él); **atestiguada** = se ve en su foto; **recreada** = decisión de juego hecha a partir de un dato
 > suyo; **inventada** = la puso el juego o un agente, sin base. ⚠️ = sin confirmar. **Falta** = no se sabe.
 > Persona real (familia o amigos de Berón): solo rasgos visibles, sin suponer edad (J13).
 
 ## 1. Identidad y aspecto
 
-- Niño, hijo de Ducristin y Gallarle (Berón 2026-11-04). *documentada · [personajes-mesocosmos.md §Neo](../personajes-mesocosmos.md) · nota de Berón 2026-11-04*
-- Pelo castaño oscuro, camiseta roja bajo un chaleco beige; sin `Fem()`. *atestiguada (foto `neo`) · [diseno-personajes.md §Familia y amigos](../diseno-personajes.md) · [CubeHair.cs:226](../../Assets/Scripts/Avatar/CubeHair.cs#L226)*
+- Niño, hijo de Ducristin y Gallarle (Berón 2026-11-04). *documentada · [personajes-mesocosmos.md §Neo](../historia/personajes-mesocosmos.md) · nota de Berón 2026-11-04*
+- Pelo castaño oscuro, camiseta roja bajo un chaleco beige; sin `Fem()`. *atestiguada (foto `neo`) · [diseno-personajes.md §Familia y amigos](../sistemas/diseno-personajes.md) · [CubeHair.cs:226](../../Assets/Scripts/Avatar/CubeHair.cs#L226)*
 - ~1,2 m; su cuerpo crece con `PersonLife`. *inventada (estimada) · [CubeHair.cs:225](../../Assets/Scripts/Avatar/CubeHair.cs#L225)*
 - Edad: **Falta**.
 
@@ -29,13 +35,13 @@
 
 ## 5. Profesión y lo que sabe hacer
 
-- Ninguna: es un niño. *documentada · [personajes-mesocosmos.md §Neo](../personajes-mesocosmos.md)*
+- Ninguna: es un niño. *documentada · [personajes-mesocosmos.md §Neo](../historia/personajes-mesocosmos.md)*
 
 ## 6. Puesto y áreas
 
-- No está en la jornada (`WorkdayDirector.Staff`) ni tiene plan de gimnasio. *recreada · [personajes-mesocosmos.md §Neo](../personajes-mesocosmos.md)*
+- No está en la jornada (`WorkdayDirector.Staff`) ni tiene plan de gimnasio. *recreada · [personajes-mesocosmos.md §Neo](../historia/personajes-mesocosmos.md)*
 - Sale en el Aula, con su madre. *recreada · [SampleSceneBuilder.Construction.cs:191](../../Assets/Editor/SampleSceneBuilder.Construction.cs#L191)*
-- Guardería y juego de niños: aún no existen; con Ivelyna (pediatra), irá allí. *recreada · [personajes-mesocosmos.md §Neo](../personajes-mesocosmos.md)*
+- Guardería y juego de niños: aún no existen; con Ivelyna (pediatra), irá allí. *recreada · [personajes-mesocosmos.md §Neo](../historia/personajes-mesocosmos.md)*
 
 ## 7. Relaciones
 
@@ -45,7 +51,7 @@
 ## 8. Horario y costumbres
 
 - De niño sigue a su madre (`FollowMother`). *recreada ⚠️ (el builder dice «pendiente de confirmar con Berón») · [PersonLife.cs:130](../../Assets/Scripts/Body/PersonLife.cs#L130) · [SampleSceneBuilder.cs:3072](../../Assets/Editor/SampleSceneBuilder.cs#L3072)*
-- Cuenta en el aforo del ring de almohadas y en los residentes. *recreada · [guerra-de-almohadas.md](../guerra-de-almohadas.md)*
+- Cuenta en el aforo del ring de almohadas y en los residentes. *recreada · [guerra-de-almohadas.md](../areas/guerra-de-almohadas.md)*
 
 ## 9. Microcosmos y santuario
 

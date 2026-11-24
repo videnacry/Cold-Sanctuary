@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Perfil de las aptitudes de un `Anima` (docs/stats-as-truth.md §4). Se **captura** para poder revertir y se
+/// Perfil de las aptitudes de un `Anima` (docs/sistemas/stats-as-truth.md §4). Se **captura** para poder revertir y se
 /// **aplica** al transformar de verdad. `Might` = potencia resumida para el **combate de stats** de la
 /// transformación (y base de la depredación por stats más adelante).
 /// </summary>
@@ -33,7 +33,7 @@ public class StatProfile
 }
 
 /// <summary>
-/// Una **forma** de transformación (docs/stats-as-truth.md §4): apariencia (escala/modelo — los modelos viven
+/// Una **forma** de transformación (docs/sistemas/stats-as-truth.md §4): apariencia (escala/modelo — los modelos viven
 /// fuera del repo) + el **perfil de stats genérico** de esa forma. Customización: una hormiga gigante = escala
 /// alta + `bodyMass` alto; pequeña = lo contrario.
 /// </summary>

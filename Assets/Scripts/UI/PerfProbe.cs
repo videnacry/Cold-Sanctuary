@@ -36,7 +36,7 @@ public class PerfProbe : MonoBehaviour
 
     public void Run(int frames = 240) => StartCoroutine(Measure(frames));
 
-    /// <summary>MEDIDA A/B (docs/rendimiento.md): mide con los lotes estáticos, sin ellos y otra vez con ellos, en el mismo sitio. La
+    /// <summary>MEDIDA A/B (docs/plataforma/rendimiento.md): mide con los lotes estáticos, sin ellos y otra vez con ellos, en el mismo sitio. La
     /// diferencia entre la 1.ª y la 2.ª es lo que dan los lotes; entre la 1.ª y la 3.ª, el ruido de la medida.</summary>
     public void RunAB(int frames = 120) => StartCoroutine(MeasureAB(frames));
 

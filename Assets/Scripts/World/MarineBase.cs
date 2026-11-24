@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// EL SANTUARIO MARINO, la escena (docs/sitio-nuclear.md §20): solo sitios e instrumentos a la vista. La lógica vive arriba (<see cref="CavernRock"/>, <see cref="Refuge"/>, <see cref="SiteLine"/>),
+/// EL SANTUARIO MARINO, la escena (docs/areas/sitio-nuclear.md §20): solo sitios e instrumentos a la vista. La lógica vive arriba (<see cref="CavernRock"/>, <see cref="Refuge"/>, <see cref="SiteLine"/>),
 /// para que las misiones funcionen sin cargar esta escena. Nada de arriba apunta aquí: todo cruza por <see cref="Instance"/>, que solo existe mientras la escena está cargada.
 /// Mientras Kushal está abajo, oscurece la niebla, y al subir la devuelve.
 /// </summary>

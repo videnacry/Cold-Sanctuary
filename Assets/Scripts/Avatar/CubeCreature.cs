@@ -29,7 +29,7 @@ public static class CubeCreature
         public float bulk = 0.42f;                                // grosor del tronco respecto a la altura
         public Color fur = Color.white, belly = Color.white, eye = new Color(0.15f, 0.12f, 0.1f), accent = Color.gray;
         public bool antlers, wings, tallDorsal;
-        // Rasgos de ficha (docs/reglas-animales.md): colmillos y bigotera (morsa), cuernos y faldón de lana (buey), puntas negras en las
+        // Rasgos de ficha (docs/reglas/reglas-animales.md): colmillos y bigotera (morsa), cuernos y faldón de lana (buey), puntas negras en las
         // orejas (liebre), parches auriculares (emperador), anillo blanco del ojo (Adelia), sin manchas, y colores propios de cabeza y patas.
         public bool tusks, horns, skirt, earTips, earPatch, eyeRing, noSpots;
         public Color headFur = Color.clear, legs = Color.clear, patch = Color.gray;
@@ -43,7 +43,7 @@ public static class CubeCreature
         string s = (species ?? "").ToLowerInvariant();
         if (s.Contains("whale")) return new Spec { plan = Plan.Cetacean, length = 12f, height = 2.6f, width = 2.4f, head = new Vector3(2.2f, 2.2f, 3f), snout = 0f, fur = C(0.48f, 0.58f, 0.68f), belly = C(0.86f, 0.9f, 0.92f), tail = 0f };
         if (s.Contains("orca")) return new Spec { plan = Plan.Cetacean, length = 7f, height = 1.6f, width = 1.4f, head = new Vector3(1.3f, 1.3f, 1.6f), snout = 0f, fur = C(0.16f, 0.17f, 0.2f), belly = C(0.96f, 0.96f, 0.96f), tallDorsal = true };
-        // TERRITORIO POLAR (medidas y colores de su ficha, docs/reglas-animales.md).
+        // TERRITORIO POLAR (medidas y colores de su ficha, docs/reglas/reglas-animales.md).
         if (s.Contains("polarskua")) return new Spec { plan = Plan.FlyingBird, length = 0.53f, height = 0.14f, width = 1.35f, head = new Vector3(0.08f, 0.08f, 0.09f), snout = 0.04f, ear = Vector2.zero, fur = C(0.42f, 0.34f, 0.26f), belly = C(0.62f, 0.52f, 0.4f), accent = C(0.1f, 0.1f, 0.1f) };
         if (s.Contains("capepetrel")) return new Spec { plan = Plan.FlyingBird, length = 0.38f, height = 0.1f, width = 0.85f, head = new Vector3(0.06f, 0.06f, 0.07f), snout = 0.025f, ear = Vector2.zero, fur = C(0.2f, 0.2f, 0.22f), belly = C(0.95f, 0.95f, 0.95f), accent = C(0.1f, 0.1f, 0.1f) };
         if (s.Contains("wanderingalbatross")) return new Spec { plan = Plan.FlyingBird, length = 1.2f, height = 0.26f, width = 3.0f, head = new Vector3(0.14f, 0.14f, 0.16f), snout = 0.12f, ear = Vector2.zero, fur = C(0.97f, 0.97f, 0.96f), belly = C(0.98f, 0.98f, 0.98f), accent = C(0.9f, 0.7f, 0.7f) };

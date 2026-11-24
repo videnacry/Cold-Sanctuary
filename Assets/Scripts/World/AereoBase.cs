@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// EL SANTUARIO AÉREO, la escena (docs/sitio-nuclear.md §23): la lanzadera entera y lo que se ve del parque. La lógica de la energía vive abajo (<see cref="EnergySite"/>), porque
+/// EL SANTUARIO AÉREO, la escena (docs/areas/sitio-nuclear.md §23): la lanzadera entera y lo que se ve del parque. La lógica de la energía vive abajo (<see cref="EnergySite"/>), porque
 /// da luz a todo el santuario esté esto cargado o no. Al cargarse, le presta sus piezas (<see cref="EnergySite.Attach"/>); al descargarse, se las quita. Nada de abajo apunta aquí.
 /// </summary>
 public class AereoBase : MonoBehaviour

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LA FACHADA DE FOTOBIORREACTORES DEL ÁRBOL DE LOS CAMPOS (Berón 2026-10-31; docs/fotobiorreactores.md, medidas en
+/// LA FACHADA DE FOTOBIORREACTORES DEL ÁRBOL DE LOS CAMPOS (Berón 2026-10-31; docs/areas/fotobiorreactores.md, medidas en
 /// <see cref="FotobioSpec"/>): espirulina (Arthrospira, la de MELiSSA) en tubos de vidrio y paneles planos, fuera del agua del
 /// tronco (dentro, el agua se pondría verde y taparía a los nadadores).
 /// - TRONCO: arpas de 28 tubos horizontales (Ø 7 cm) en módulos de 3 × 4 m con sus colectores, a 1,4 m de la pared de acrílico,
@@ -21,7 +21,7 @@ public static partial class SampleSceneBuilder
     /// <summary>Monta la fachada del Árbol de los Campos (tronco y quillas) en <paramref name="tree"/> (la raíz «Arbol_de_los_Campos»).</summary>
     static void BuildFotobio(Transform tree) => BuildFotobio(tree, TreeSpec.Helix, 0, TreeSpec.GroundSide, TreeSpec.Building, true);
 
-    /// <summary>(2026-11-08) LA SEGUNDA FACHADA, en el tronco de la torre-árbol <paramref name="hx"/> (Ciencias: docs/fotobiorreactores.md §2026-11-08):
+    /// <summary>(2026-11-08) LA SEGUNDA FACHADA, en el tronco de la torre-árbol <paramref name="hx"/> (Ciencias: docs/areas/fotobiorreactores.md §2026-11-08):
     /// las mismas arpas (4 caras × 1 vano × 10 módulos, 480 m²), sin quillas; su cuadro al pie, en la cara de su puerta del suelo.</summary>
     static void BuildFotobioTower(Helix hx) { if (hx == null) { Debug.LogWarning("[Fotobio] No hay torre para la segunda fachada."); return; } BuildFotobio(hx.root, hx.h, 1, hx.groundSide, hx.building, false); }
 

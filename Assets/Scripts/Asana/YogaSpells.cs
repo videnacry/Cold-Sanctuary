@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// HECHIZO-POSTURA de UNA parte del cuerpo (docs/typed-spells-and-queues.md §4.1): manda una señal a un `BodyPart` para
+/// HECHIZO-POSTURA de UNA parte del cuerpo (docs/sistemas/typed-spells-and-queues.md §4.1): manda una señal a un `BodyPart` para
 /// que adopte una orientación. Si el anima **no tiene** esa parte (el `CreatureRig` no la mapea), la señal no hace nada
 /// y lo dice ("no tengo X disponible"). Es el ladrillo de las posturas de yoga escritas por el jugador
 /// (p. ej. espaldaRecta / hombrosAbajo). Rota el hueso del rig hacia el objetivo durante `hold` segundos.

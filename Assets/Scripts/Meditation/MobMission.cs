@@ -4,7 +4,7 @@ using UnityEngine.Events;
 
 /// <summary>
 /// Category of mental practice a mission belongs to.
-/// Mirrors docs/magic-plane-and-meditation.md §7 (visualization is a family, not one mission)
+/// Mirrors docs/sistemas/magic-plane-and-meditation.md §7 (visualization is a family, not one mission)
 /// and §9 (each technique is its own category of mission).
 /// </summary>
 public enum MissionCategory

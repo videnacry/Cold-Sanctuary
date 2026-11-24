@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// PANEL DEL HORARIO LIBRE (docs/horario-libre.md): la semana de ocio y cuidado de cada personaje de la escena, como el panel de
+/// PANEL DEL HORARIO LIBRE (docs/sistemas/horario-libre.md): la semana de ocio y cuidado de cada personaje de la escena, como el panel de
 /// Progreso (centrado, con su rueda) y el itinerario de la jornada. Filas: los personajes; columnas: las franjas libres del día
 /// (16, 17, 18, 20 y 21 h); la franja de ahora, resaltada, con lo que hace cada uno (✓ ya la hace, → va hacia allí, ‖ espera a
 /// una necesidad). Debajo, el reparto de la semana (uniformidad: diferencia entre quien más y quien menos hizo cada actividad) y el

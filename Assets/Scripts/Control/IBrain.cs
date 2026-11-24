@@ -1,5 +1,5 @@
 /// <summary>
-/// Un "cerebro" que puede conducir a un `Anima` (docs/anima-architecture.md §11.5). El
+/// Un "cerebro" que puede conducir a un `Anima` (docs/sistemas/anima-architecture.md §11.5). El
 /// <see cref="AnimaController"/> elige cada frame el cerebro de MAYOR relevancia y le cede el mando.
 /// Implementaciones: la IA propia del ser (<see cref="AiBrain"/>) o el input del jugador vía posesión
 /// (<see cref="PlayerBrain"/>). "El jugador es solo un input" → un cerebro más, intercambiable.

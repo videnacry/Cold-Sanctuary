@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Clasificación de una frase (docs/anima-architecture.md §6/§10). TODO es una frase: una vivencia, una
+/// Clasificación de una frase (docs/sistemas/anima-architecture.md §6/§10). TODO es una frase: una vivencia, una
 /// asana, un hechizo, un pensamiento elemental idle, un deseo base.
 /// </summary>
 public enum PhraseCategory
@@ -24,7 +24,7 @@ public enum ThoughtLifecycle
 }
 
 /// <summary>
-/// Una "frase" del pensamiento (docs/anima-architecture.md §6, §10.2): pertenece a una CATEGORÍA y a un
+/// Una "frase" del pensamiento (docs/sistemas/anima-architecture.md §6, §10.2): pertenece a una CATEGORÍA y a un
 /// tono elemental, tiene forma positiva y negativa, y partes con ciclo de vida — [nace, crece, se
 /// reproduce]. La 4ª etapa (muere/silencio) NO es texto: es el silencio al que solo llega una mente muy
 /// poderosa.
@@ -63,7 +63,7 @@ public class MindPhrase
 
     /// <summary>Clave de CAPACIDAD para la confianza (D3a): si se fija, la selección pondera esta frase por
     /// `Anima.Confidence(capability)` (el bond-hacia-el-hechizo) — lo dominado se elige más. Vacío = frase normal,
-    /// sin ponderar por confianza. Ver docs/capabilities-and-embodiment.md §5.</summary>
+    /// sin ponderar por confianza. Ver docs/sistemas/capabilities-and-embodiment.md §5.</summary>
     public readonly string capability;
     /// <summary>Gate por RECEPTOR/capacidad anatómica (E2): si se fija, la frase (p.ej. `Ver`) solo es seleccionable
     /// si el ser TIENE el receptor — alguna `CompositionPart.grants` lo concede. Vacío = sin gate anatómico.</summary>
@@ -86,7 +86,7 @@ public class MindPhrase
 }
 
 /// <summary>
-/// Biblioteca COMPARTIDA de frases (flyweight, docs/anima-architecture.md §6, §11). Reúne las pools de
+/// Biblioteca COMPARTIDA de frases (flyweight, docs/sistemas/anima-architecture.md §6, §11). Reúne las pools de
 /// todas las categorías: elementales (idle), vivencias (biografías), deseos base… Asanas y hechizos se
 /// enlazarán desde sus sistemas. Consulta por tono/categoría/fuente y reparto de vivencias al crear seres.
 /// </summary>

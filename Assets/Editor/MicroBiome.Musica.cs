@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// FLORA Y FAUNA DE LOS PUEBLOS DE LA MÚSICA (docs/microcosmos-musica.md), con su lugar y su estación. En las ciudades (Montreal, Gary,
+/// FLORA Y FAUNA DE LOS PUEBLOS DE LA MÚSICA (docs/microcosmos/microcosmos-musica.md), con su lugar y su estación. En las ciudades (Montreal, Gary,
 /// Belfast, Seúl, Long Island) solo lo plantado y los animales del pueblo con el cuerpo de su análogo; en el campo, la del lugar.
 /// La colocación a mano de cada planta y bicho está en MicroStoryMaps.Musica (los nombres empiezan igual).
 /// </summary>

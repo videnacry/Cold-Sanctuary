@@ -18,7 +18,7 @@ public class StatBonus
 }
 
 /// <summary>
-/// Una parte de composición (docs/stats-as-truth.md §5): adorno / prenda / miembro en un slot, con su visual y
+/// Una parte de composición (docs/sistemas/stats-as-truth.md §5): adorno / prenda / miembro en un slot, con su visual y
 /// su aporte de stats. Puede referenciar una `ClothingRecipe` (toma su slot y su `defenseRating`→armadura).
 /// </summary>
 [System.Serializable]
@@ -35,7 +35,7 @@ public class CompositionPart
     [Tooltip("Tejido VIVO/biológico (miembro, ropa-viva): DOBLE SENTIDO — el huésped lo modula y se adapta " +
              "progresivamente. Si es false (rígido: metal/coraza inerte): aporte plano, sin modular.")]
     public bool living = true;
-    [Tooltip("Capacidades/RECEPTORES que esta parte habilita (E2, docs/capabilities-and-embodiment.md §2): " +
+    [Tooltip("Capacidades/RECEPTORES que esta parte habilita (E2, docs/sistemas/capabilities-and-embodiment.md §2): " +
              "ojo→\"see\", oído→\"hear\", colmillo→\"bite\", aguijón→\"sting\". Un hechizo gateado por capacidad " +
              "requiere que ALGUNA parte lo conceda → así el sentido/arma sale de la anatomía, no de un escalar.")]
     public string[] grants;
@@ -45,7 +45,7 @@ public class CompositionPart
 }
 
 /// <summary>
-/// COMPOSICIÓN de un ser (docs/stats-as-truth.md §5, **fase 2**): partes slotables (adornos/ropa/miembros) que
+/// COMPOSICIÓN de un ser (docs/sistemas/stats-as-truth.md §5, **fase 2**): partes slotables (adornos/ropa/miembros) que
 /// dan **apariencia** y **stats**. Modelo: la **constitución** (la química/base del cuerpo = los campos de
 /// `Anima`, que **evolución/transformación mutan libremente**) es el HUÉSPED; cada parte aporta un **delta
 /// GESTIONADO** (resta el viejo, suma el nuevo cada frame) → **nunca pisa** a evolución/transform.
@@ -99,7 +99,7 @@ public class CharacterComposition : MonoBehaviour
 
     /// <summary>¿ALGUNA parte equipada concede esta capacidad/RECEPTOR? (E2). Es la "forma de verificar tener
     /// receptor visual/auditivo/etc." para gatear los hechizos sensoriales/físicos por anatomía — lo lee
-    /// `Mind.PassesGate` cuando una frase fija `gateCapability`. Ver docs/capabilities-and-embodiment.md §2.</summary>
+    /// `Mind.PassesGate` cuando una frase fija `gateCapability`. Ver docs/sistemas/capabilities-and-embodiment.md §2.</summary>
     public bool Grants(string capability)
     {
         if (string.IsNullOrEmpty(capability)) return false;

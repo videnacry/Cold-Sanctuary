@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DE LAS REGLAS DE PERSONAJES (grupo 95; docs/reglas-personajes.md, Berón 2026-11-05):
+/// PRUEBA DE LAS REGLAS DE PERSONAJES (grupo 95; docs/reglas/reglas-personajes.md, Berón 2026-11-05):
 ///  · cada persona del mesocosmos tiene su ficha docs/personajes/&lt;nombre&gt;.md. El repo y el proyecto de Unity son carpetas distintas: si desde
 ///    aquí no se ven los docs (COLD_SANCTUARY_REPO), lo dice y lo comprueba tools/check-personajes.sh, que no necesita Unity;
 ///  · cada puesto tiene su base documentada (<see cref="Professions.Basis"/>), y nadie tiene un puesto de yoga sin ella;
@@ -59,7 +59,7 @@ public class PersonajesReglasTest : MonoBehaviour, ITestUnit
         TestProbe.Check("Consol no dirige la clase de Hatha ni Josedrilo se queda sin ella", !Professions.Practises(WorkdayDirector.AshtangaTeacher, "Sala de Yoga", "yog_guia") && Professions.Practises(WorkdayDirector.YogaTeacher, "Sala de Yoga", "yog_guia"));
         TestProbe.Check("Consol tiene su misión de preparar la clase", Professions.Practises(WorkdayDirector.AshtangaTeacher, "Sala de Yoga", "yog_ashtanga") && AreaWork.Catalog.Any(m => m.id == "yog_ashtanga"));
         TestProbe.Check("Consol da la clase de las 14 h", Professions.LeadOn("Sala de Yoga", 3) == WorkdayDirector.AshtangaTeacher);
-        TestProbe.Check("Fernando es de la Energía (docs/energia.md)", Professions.Practises("Fernando", "Energía", "sol_mantenimiento"));
+        TestProbe.Check("Fernando es de la Energía (docs/areas/energia.md)", Professions.Practises("Fernando", "Energía", "sol_mantenimiento"));
 
         // ── Las dos clases ──
         var primary = YogaLibrary.Find(WorkdayDirector.AshtangaSession).Build().OfType<AsanaPoseSpell>().ToList();

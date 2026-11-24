@@ -1,6 +1,12 @@
+---
+resumen: "<!-- GENERADO por docs/qa/migracion/generar.pl el 2026-11-13 desde docs/historial/auditoria-peticiones.md, docs/reglas/manual-de-diseno.md y los tests. Desde aquí se mantiene a mano. -->"
+temas: [historia, pruebas]
+estado: vigente
+codigo: [CarpetPad, MicroGround, SeaRule, Bedroom, FloorForms, Professions, ArbolCampos, AreaCapacity]
+---
 # Catálogo de casos
 
-<!-- GENERADO por docs/qa/migracion/generar.pl el 2026-11-13 desde docs/auditoria-peticiones.md, docs/manual-de-diseno.md y los tests. Desde aquí se mantiene a mano. -->
+<!-- GENERADO por docs/qa/migracion/generar.pl el 2026-11-13 desde docs/historial/auditoria-peticiones.md, docs/reglas/manual-de-diseno.md y los tests. Desde aquí se mantiene a mano. -->
 
 IDs estables: **no se renumeran ni se borran** (un caso que ya no vale se tacha y pasa a `Retirado` en el registro). Formato del ID: 2–3 letras de área + 2 cifras.
 El estado de cada caso está en [registro.md](registro.md). «Unidad» y «Grupo» son la prueba del `TestRunner` que lo comprueba (`int Group =>`); «—» si aún no tiene.
@@ -314,11 +320,11 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | MIC-91 | MIC | Fase 2: con ganas van al retrete de su hogar, dentro de la nave | MuskNeedsTest | 125 | M18, M26 | — | plan fase 2; añadido el 2026-11-18 |
 | MIC-92 | MIC | Fase 2: de noche, con sueño, duermen en su catre de la nave | MuskNeedsTest | 125 | M18, M26 | — | plan fase 2; añadido el 2026-11-18 |
 | MIC-93 | MIC | Fase 2: sin teletransportes (MicroJornada.Fallbacks y HomeNeedSpell.Fallbacks no suben): todo andando | MuskNeedsTest | 125 | M26 | — | plan fase 2 («debe fallar si Fallbacks > 0»); añadido el 2026-11-18 |
-| MIC-94 | MIC | Omelek (escena 3 de la historia de Musk): fecha 2008, puesto aislado sin pueblo (MicroBuildRules.Outposts), montado con el cuerpo encogido | OmelekTest | 126 | M40 | — | docs/microcosmos-musk-historia.md; añadido el 2026-11-18 |
-| MIC-95 | MIC | Omelek: el hito (Falcon 1 vertical en su plataforma) y la lancha del equipo que se usa | OmelekTest | 126 | M44 | — | docs/microcosmos-musk-historia.md; añadido el 2026-11-18 |
-| MIC-96 | MIC | Omelek: contenedores y hangar cerrados con vista de corte y puertas ≥ 1,2 × 1,25 m (la del contenedor, ensanchada) | OmelekTest | 126 | M24, M43 | — | docs/microcosmos-musk-historia.md; añadido el 2026-11-18 |
-| MIC-97 | MIC | Omelek: los sitios con su nombre fijo (para los retos de CodeShip) y la historia de 8 pasos con objetivo | OmelekTest | 126 | M9 | — | docs/microcosmos-musk-historia.md; añadido el 2026-11-18 |
-| MIC-98 | MIC | Omelek: las seis necesidades en los contenedores y 0 faltas de las reglas de edificación | OmelekTest | 126 | M23, M26 | — | docs/microcosmos-musk-historia.md; añadido el 2026-11-18 |
+| MIC-94 | MIC | Omelek (escena 3 de la historia de Musk): fecha 2008, puesto aislado sin pueblo (MicroBuildRules.Outposts), montado con el cuerpo encogido | OmelekTest | 126 | M40 | — | docs/microcosmos/microcosmos-musk-historia.md; añadido el 2026-11-18 |
+| MIC-95 | MIC | Omelek: el hito (Falcon 1 vertical en su plataforma) y la lancha del equipo que se usa | OmelekTest | 126 | M44 | — | docs/microcosmos/microcosmos-musk-historia.md; añadido el 2026-11-18 |
+| MIC-96 | MIC | Omelek: contenedores y hangar cerrados con vista de corte y puertas ≥ 1,2 × 1,25 m (la del contenedor, ensanchada) | OmelekTest | 126 | M24, M43 | — | docs/microcosmos/microcosmos-musk-historia.md; añadido el 2026-11-18 |
+| MIC-97 | MIC | Omelek: los sitios con su nombre fijo (para los retos de CodeShip) y la historia de 8 pasos con objetivo | OmelekTest | 126 | M9 | — | docs/microcosmos/microcosmos-musk-historia.md; añadido el 2026-11-18 |
+| MIC-98 | MIC | Omelek: las seis necesidades en los contenedores y 0 faltas de las reglas de edificación | OmelekTest | 126 | M23, M26 | — | docs/microcosmos/microcosmos-musk-historia.md; añadido el 2026-11-18 |
 | MIC-99 | MIC | Musk recrea su historia (Berón 2026-11-18): cada fragmento en su lugar real y fechado, un barrio con todo el detalle (edificios, interiores, muebles, maquinaria, utensilios, calles, vegetación, animales) y la ciudad de fondo | — | — | — | PB-162 | añadido el 2026-11-18 |
 
 ## HOS · Hospital
@@ -393,20 +399,20 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | ID | Área | Qué tiene que pasar | Unidad | Grupo | Reglas | PB | Origen |
 |---|---|---|---|---|---|---|---|
 | UI-01 | UI | UI: horario sobre F10, recursos en una ventana, ventana de misiones y jornada | HudModalsTest | 93 | F10 | PB-090 | auditoría #90, L50, L53 |
-| UI-02 | UI | los 16 botones de la Switch, 8 por lado, con tecla y nombre | JoyConTest | 141 | — | PB-167 | docs/mandos-tactiles.md; añadido el 2026-11-19 |
-| UI-03 | UI | la asignación de CodeShip (A Saltar, B Correr, + Misiones, − Áreas, captura Vista, inicio Menú) | JoyConTest | 141 | — | PB-167 | docs/mandos-tactiles.md; añadido el 2026-11-19 |
-| UI-04 | UI | el mando cabe y nada se pisa en móvil horizontal y vertical, tableta 4:3, monitor y móvil pequeño | JoyConTest | 141 | — | PB-167 | docs/mandos-tactiles.md; añadido el 2026-11-19 |
-| UI-05 | UI | el tema de los menús (CsTheme) genera sus texturas | JoyConTest | 141 | — | PB-167 | docs/mandos-tactiles.md; añadido el 2026-11-19 |
-| UI-06 | UI | tocar X pulsa Usar (F) un fotograma | JoyConTest | 141 | — | PB-167 | docs/mandos-tactiles.md; añadido el 2026-11-19 |
-| UI-07 | UI | mantener A mantiene Saltar y soltarlo lo suelta | JoyConTest | 141 | — | PB-167 | docs/mandos-tactiles.md; añadido el 2026-11-19 |
-| UI-08 | UI | B (Correr) se queda puesto y el segundo toque lo quita | JoyConTest | 141 | — | PB-167 | docs/mandos-tactiles.md; añadido el 2026-11-19 |
-| UI-09 | UI | con un menú abierto, el juego no ve ZL pero los diálogos sí (Esc y la cruceta) | JoyConTest | 141 | — | PB-167 | docs/mandos-tactiles.md; añadido el 2026-11-19 |
-| UI-10 | UI | cada hechizo del lanzador tiene su reto de código bien formado (Grimorio) | JoyConTest | 141 | — | PB-167 | docs/mandos-tactiles.md §5; añadido el 2026-11-20 |
-| UI-11 | UI | el botón R del mando abre el Grimorio (F8) | JoyConTest | 141 | — | PB-167 | docs/mandos-tactiles.md §5; añadido el 2026-11-20 |
-| UI-12 | UI | en el Grimorio, elegir un hechizo abre su reto; fallar no lo lanza y acertar sí | JoyConTest | 141 | — | PB-167 | docs/mandos-tactiles.md §5; añadido el 2026-11-20 |
-| UI-13 | UI | el mando mide y se coloca como en el santuario 1 de CodeShip (iPhone 13) y ocupa la misma parte de cualquier pantalla; el botón de pausa del móvil no pisa el mando | JoyConTest | 141 | — | PB-169 | docs/mandos-tactiles.md §6; añadido el 2026-11-20 |
-| UI-14 | UI | el mando se oculta con un modal abierto (Misiones, Grimorio, diálogo, menú ☰) y vuelve al cerrarlo | JoyConTest | 141 | — | PB-169 | docs/mandos-tactiles.md §6.3; añadido el 2026-11-20 |
-| UI-15 | UI | las hojas (Grimorio, ajustes, reto) van donde en CodeShip: vertical abajo, horizontal a la derecha | JoyConTest | 141 | — | PB-169 | docs/mandos-tactiles.md §6.4; añadido el 2026-11-20 |
+| UI-02 | UI | los 16 botones de la Switch, 8 por lado, con tecla y nombre | JoyConTest | 141 | — | PB-167 | docs/sistemas/mandos-tactiles.md; añadido el 2026-11-19 |
+| UI-03 | UI | la asignación de CodeShip (A Saltar, B Correr, + Misiones, − Áreas, captura Vista, inicio Menú) | JoyConTest | 141 | — | PB-167 | docs/sistemas/mandos-tactiles.md; añadido el 2026-11-19 |
+| UI-04 | UI | el mando cabe y nada se pisa en móvil horizontal y vertical, tableta 4:3, monitor y móvil pequeño | JoyConTest | 141 | — | PB-167 | docs/sistemas/mandos-tactiles.md; añadido el 2026-11-19 |
+| UI-05 | UI | el tema de los menús (CsTheme) genera sus texturas | JoyConTest | 141 | — | PB-167 | docs/sistemas/mandos-tactiles.md; añadido el 2026-11-19 |
+| UI-06 | UI | tocar X pulsa Usar (F) un fotograma | JoyConTest | 141 | — | PB-167 | docs/sistemas/mandos-tactiles.md; añadido el 2026-11-19 |
+| UI-07 | UI | mantener A mantiene Saltar y soltarlo lo suelta | JoyConTest | 141 | — | PB-167 | docs/sistemas/mandos-tactiles.md; añadido el 2026-11-19 |
+| UI-08 | UI | B (Correr) se queda puesto y el segundo toque lo quita | JoyConTest | 141 | — | PB-167 | docs/sistemas/mandos-tactiles.md; añadido el 2026-11-19 |
+| UI-09 | UI | con un menú abierto, el juego no ve ZL pero los diálogos sí (Esc y la cruceta) | JoyConTest | 141 | — | PB-167 | docs/sistemas/mandos-tactiles.md; añadido el 2026-11-19 |
+| UI-10 | UI | cada hechizo del lanzador tiene su reto de código bien formado (Grimorio) | JoyConTest | 141 | — | PB-167 | docs/sistemas/mandos-tactiles.md §5; añadido el 2026-11-20 |
+| UI-11 | UI | el botón R del mando abre el Grimorio (F8) | JoyConTest | 141 | — | PB-167 | docs/sistemas/mandos-tactiles.md §5; añadido el 2026-11-20 |
+| UI-12 | UI | en el Grimorio, elegir un hechizo abre su reto; fallar no lo lanza y acertar sí | JoyConTest | 141 | — | PB-167 | docs/sistemas/mandos-tactiles.md §5; añadido el 2026-11-20 |
+| UI-13 | UI | el mando mide y se coloca como en el santuario 1 de CodeShip (iPhone 13) y ocupa la misma parte de cualquier pantalla; el botón de pausa del móvil no pisa el mando | JoyConTest | 141 | — | PB-169 | docs/sistemas/mandos-tactiles.md §6; añadido el 2026-11-20 |
+| UI-14 | UI | el mando se oculta con un modal abierto (Misiones, Grimorio, diálogo, menú ☰) y vuelve al cerrarlo | JoyConTest | 141 | — | PB-169 | docs/sistemas/mandos-tactiles.md §6.3; añadido el 2026-11-20 |
+| UI-15 | UI | las hojas (Grimorio, ajustes, reto) van donde en CodeShip: vertical abajo, horizontal a la derecha | JoyConTest | 141 | — | PB-169 | docs/sistemas/mandos-tactiles.md §6.4; añadido el 2026-11-20 |
 
 
 ## CS · CodeShip (retos de código, tareas e «Ir», menú)
@@ -530,12 +536,12 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | OP-06 | OP | Regla operativa OP-06 (operacion.md) | — | — | W5, W6 | — | qa-propuesta.md §7 |
 | OP-07 | OP | Regla operativa OP-07 (operacion.md) | — | — | — | — | qa-propuesta.md §7 |
 | OP-08 | OP | Regla operativa OP-08 (operacion.md) | — | — | W3 | — | qa-propuesta.md §7 |
-| CS-82 | CS | cada sitio nuevo de Hawthorne (lote 2) tiene su misión, por su nombre exacto | ChoreLibraryTest | 120 | — | PB-163 | claude/ui-codeship (sitios del lote 2 de Hawthorne, docs/microcosmos-musk-historia.md §4); añadido el 2026-11-18 |
-| CS-83 | CS | las clases nuevas: soldar, ensayos, datos, sala limpia, comida segura, recibir, garita, incendios, cruzar y la pista | ChoreLibraryTest | 120 | — | PB-163 | claude/ui-codeship (sitios del lote 2 de Hawthorne, docs/microcosmos-musk-historia.md §4); añadido el 2026-11-18 |
-| CS-96 | CS | la FSW, el gesto del banco; la garita y el cruce, mirar a un lado y a otro; el extintor, barrer de lado a lado | ChoreLibraryTest | 120 | — | PB-163 | claude/ui-codeship (sitios del lote 2 de Hawthorne, docs/microcosmos-musk-historia.md §4); añadido el 2026-11-18 |
+| CS-82 | CS | cada sitio nuevo de Hawthorne (lote 2) tiene su misión, por su nombre exacto | ChoreLibraryTest | 120 | — | PB-163 | claude/ui-codeship (sitios del lote 2 de Hawthorne, docs/microcosmos/microcosmos-musk-historia.md §4); añadido el 2026-11-18 |
+| CS-83 | CS | las clases nuevas: soldar, ensayos, datos, sala limpia, comida segura, recibir, garita, incendios, cruzar y la pista | ChoreLibraryTest | 120 | — | PB-163 | claude/ui-codeship (sitios del lote 2 de Hawthorne, docs/microcosmos/microcosmos-musk-historia.md §4); añadido el 2026-11-18 |
+| CS-96 | CS | la FSW, el gesto del banco; la garita y el cruce, mirar a un lado y a otro; el extintor, barrer de lado a lado | ChoreLibraryTest | 120 | — | PB-163 | claude/ui-codeship (sitios del lote 2 de Hawthorne, docs/microcosmos/microcosmos-musk-historia.md §4); añadido el 2026-11-18 |
 | CS-97 | CS | misiones de vínculo (amistad, estudiante, combatir al lado, proteger) con ≥ 3 retos de diálogo cada una, con quien habla y lo que pasó de verdad | ChoreLibraryTest | 120 | — | PB-166 | hilo «Rehacer distrito Hawthorne desde cero»; añadido el 2026-11-20 |
 | CS-98 | CS | la historia de Musk lleva retos de diálogo con su fuente | ChoreLibraryTest | 120 | — | PB-166 | hilo «Rehacer distrito Hawthorne desde cero»; añadido el 2026-11-20 |
-| CS-88 | CS | con los sitios del lote 2, gimnasio, yoga, botiquín, perro y los puestos nuevos ya no son marcadores «supuesto» | ChoreLibraryTest | 120 | — | PB-163 | claude/ui-codeship (sitios del lote 2 de Hawthorne, docs/microcosmos-musk-historia.md §4); añadido el 2026-11-18 |
+| CS-88 | CS | con los sitios del lote 2, gimnasio, yoga, botiquín, perro y los puestos nuevos ya no son marcadores «supuesto» | ChoreLibraryTest | 120 | — | PB-163 | claude/ui-codeship (sitios del lote 2 de Hawthorne, docs/microcosmos/microcosmos-musk-historia.md §4); añadido el 2026-11-18 |
 
 ## Bugs y huecos
 
@@ -544,7 +550,7 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | ID | Tipo | Qué | Casos | Dueño | Estado | Hallazgo |
 |---|---|---|---|---|---|---|
 | B-01 | Fallo | g50: fauna atascada > 20 s, dando vueltas o volcada. Falla en todas las rondas que corrieron g50 desde r71 (crónico) | CV-03, CV-05, ARB-86, JOR-19, JOR-22, JOR-39, JOR-45, JOR-48, JOR-49, REN-06, REN-07 | probador → trabajador de fauna | Resuelto en r127 (2026-11-18): g50 49/0 y suite 4770/0, la primera limpia | H1 |
-| B-02 | Fallo | El script de marcas vació docs/checklist.md y docs/auditoria-peticiones.md (82878fc): leía un temporal que no existía | OP-04 | probador | Arreglado en 1bdfe1c; falta el aviso automático (QaCheck §6.9) | H2 |
+| B-02 | Fallo | El script de marcas vació docs/checklist.md y docs/historial/auditoria-peticiones.md (82878fc): leía un temporal que no existía | OP-04 | probador | Arreglado en 1bdfe1c; falta el aviso automático (QaCheck §6.9) | H2 |
 | B-03 | Fallo | Ficheros sueltos en Unity tras cambiar de rama: TmpCheck y .cs que ya no están en git | OP-05 | probador | Arreglado con sync --prune (r83, r84); falta el aviso automático (QaCheck §6.10) | H3 |
 | HC-01 | Hueco | Valores de los bonusPacks de Irosene, Lizmibet y Linduarda: los decide Berón | PB-140 | Berón | Cerrado: lo decide PB-164 (Berón 2026-11-18 21:34) | — |
 | HC-02 | Hueco | Afinar con OpenStreetMap los huecos históricos (la parte abierta de PB-082, L282) | PB-082 | sin dueño | Abierto | — |

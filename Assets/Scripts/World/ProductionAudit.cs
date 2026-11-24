@@ -5,7 +5,7 @@ using UnityEngine;
 
 /// <summary>
 /// LA MAQUINARIA DE LAS ÁREAS DE PRODUCCIÓN (Berón 2026-11-05: «la maquinaria debe actualizarse para poder abastecer la producción requerida y esto es una regla de
-/// las áreas de producción»; manual, regla P19; docs/produccion-maquinaria.md). Lo que un área produce sale de sus MÁQUINAS, no de un número: cada línea dice qué
+/// las áreas de producción»; manual, regla P19; docs/areas/produccion-maquinaria.md). Lo que un área produce sale de sus MÁQUINAS, no de un número: cada línea dice qué
 /// necesita el santuario al día y qué da cada máquina de cada etapa, cuenta las que hay en la escena y su capacidad es la de la etapa más corta (el cuello de botella).
 /// Se comprueba al final del Blockout y en el grupo 103; toda área con <see cref="AreaProducer"/> debe tener línea o estar declarada como exenta y por qué.
 /// </summary>
@@ -61,7 +61,7 @@ public static class ProductionAudit
         return Mathf.Max(plan, kg);
     }
 
-    // Capacidades por máquina: [A] valores de referencia de diseño (docs/produccion-maquinaria.md). La carne sale de las cuentas del propio laboratorio.
+    // Capacidades por máquina: [A] valores de referencia de diseño (docs/areas/produccion-maquinaria.md). La carne sale de las cuentas del propio laboratorio.
     public static readonly Line[] Lines =
     {
         new Line { area = "Carne Cultivada", product = "carne cultivada", unit = "kg", demand = () => PredatorKgPerDay() + 2f, stages = new[] {

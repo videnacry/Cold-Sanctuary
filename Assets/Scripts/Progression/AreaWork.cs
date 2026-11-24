@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 /// <summary>
-/// CATÁLOGO DE MISIONES DE TRABAJO por área (docs/jornada-y-rotacion.md; base: docs/area-missions-spec.md, los
+/// CATÁLOGO DE MISIONES DE TRABAJO por área (docs/sistemas/jornada-y-rotacion.md; base: docs/areas/area-missions-spec.md, los
 /// «simulacros» de cada área). Cada día el <c>WorkdayDirector</c> pide la lista del día: las OBLIGATORIAS (el área debe
 /// estar cubierta todos los días) y las demás. Construcción añade, por cada obra abierta, llevar el material del día y
 /// trabajarlo, y una reparación del día en alguna área humana. Las claves de área son las de <see cref="SanctuaryArea.displayName"/>.
@@ -10,14 +10,14 @@ using System.Linq;
 public static class AreaWork
 {
     public const string Guard = "Guardia";   // no es un SanctuaryArea: la patrulla, los puestos de vigía y el alimentador
-    public const string GuardRoom = "Sala de guardia";   // un sitio de la jornada, no un SanctuaryArea (docs/sala-de-guardia.md)
-    public const string Hospital = "Hospital";   // la antigua Enfermería (docs/hospital.md)
+    public const string GuardRoom = "Sala de guardia";   // un sitio de la jornada, no un SanctuaryArea (docs/areas/sala-de-guardia.md)
+    public const string Hospital = "Hospital";   // la antigua Enfermería (docs/areas/hospital.md)
 
     static WorkRoster.Mission M(string area, string id, string title, float h, bool mandatory = false) => new WorkRoster.Mission(area, id, title, h, mandatory);
     static WorkRoster.Mission Also(WorkRoster.Mission m, params string[] areas) { m.also = areas; return m; }   // la tarea hace ir también a esas áreas
 
     /// <summary>Misiones fijas de cada área (sin las de obras, que dependen de qué obras haya abiertas).</summary>
-    /// <remarks>Sale del REGISTRO DE FUNCIONES (<see cref="AreaFunctions"/>, docs/microcosmos-civilizaciones.md §2): las mismas
+    /// <remarks>Sale del REGISTRO DE FUNCIONES (<see cref="AreaFunctions"/>, docs/microcosmos/microcosmos-civilizaciones.md §2): las mismas
     /// misiones y en el mismo orden de siempre, ahora definidas una vez y reutilizables por los edificios de los microcosmos.</remarks>
     public static readonly WorkRoster.Mission[] Catalog = AreaFunctions.SanctuaryMissions();
 
@@ -49,17 +49,17 @@ public static class AreaWork
     {
         var l = new List<WorkRoster.Mission>();
         foreach (var m in Catalog) l.Add(m.Copy());
-        // FRUTALES DE LOS TECHOS (docs/jardines-frutales.md): la ronda diaria, partida en tantas personas como haga falta.
+        // FRUTALES DE LOS TECHOS (docs/areas/jardines-frutales.md): la ronda diaria, partida en tantas personas como haga falta.
         l.AddRange(FruitGardener.Missions());
-        // FOTOBIORREACTORES DEL ÁRBOL (docs/fotobiorreactores.md): el cuidado diario del cultivo de espirulina (1 h, en Biología).
+        // FOTOBIORREACTORES DEL ÁRBOL (docs/areas/fotobiorreactores.md): el cuidado diario del cultivo de espirulina (1 h, en Biología).
         l.AddRange(FotobioFacade.Missions());
-        // LANZADERA DE COHETES (docs/lanzadera-de-cohetes.md): control de misión, seguridad de la plataforma y la fábrica.
+        // LANZADERA DE COHETES (docs/areas/lanzadera-de-cohetes.md): control de misión, seguridad de la plataforma y la fábrica.
         l.AddRange(LaunchSite.Missions());
-        // SITIO NUCLEAR (docs/sitio-nuclear.md): vigilancia, revisión de lo pasivo y el simulacro semanal.
+        // SITIO NUCLEAR (docs/areas/sitio-nuclear.md): vigilancia, revisión de lo pasivo y el simulacro semanal.
         l.AddRange(NuclearSite.Missions(day));
-        // PARQUE ENERGÉTICO (docs/energia.md): los paneles (mantener, instalar, reparar), las turbinas y el almacén.
+        // PARQUE ENERGÉTICO (docs/areas/energia.md): los paneles (mantener, instalar, reparar), las turbinas y el almacén.
         l.AddRange(EnergySite.Missions(day));
-        l.AddRange(HunterCell.Missions(day));   // el árbol cazador (docs/contencion-arbol-cazador.md)
+        l.AddRange(HunterCell.Missions(day));   // el árbol cazador (docs/areas/contencion-arbol-cazador.md)
         // COCINA: cada elaboración que hace falta (harina, queso, pasta, masa madre…) es una misión, con su tiempo activo;
         // el reposo (fermentar, madurar) corre solo después.
         KitchenLarder larder = KitchenLarder.Instance;

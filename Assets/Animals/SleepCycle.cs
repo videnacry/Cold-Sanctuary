@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// SUEÑO DÍA/NOCHE (docs/ice-sanctuary-ecology.md §4): dispara la compuerta <see cref="Anima.asleep"/> según el RELOJ
+/// SUEÑO DÍA/NOCHE (docs/fauna/ice-sanctuary-ecology.md §4): dispara la compuerta <see cref="Anima.asleep"/> según el RELOJ
 /// del día (<see cref="TimeController.IsDay"/>, que corre con <see cref="Clock"/>). Mientras duerme, el ser **no elige
 /// deseos, no busca comida y no corrige su medio** (compuertas ya existentes en `Volition`/`ActiveBehaveTick`/
 /// `CorrectMedium` con `if (!asleep)`). Auto-añadido en `Animal.Init`.
@@ -26,7 +26,7 @@ public class SleepCycle : MonoBehaviour
     /// de noche; hormiga león: el adulto vuela de noche (la larva acecha a cualquier hora); araña (arquetipo araña lobo):
     /// caza sobre todo de noche. Abejas, mariquitas, saltamontes, mantis y peloteros diurnos (el pelotero rodador se
     /// orienta por el sol; los nocturnos usan la Vía Láctea, doi 10.1016/j.cub.2012.12.034). [A] salvo cita.
-    /// Especies de las eras (docs/era-species-behavior.md): nocturnos el escorpión, el solífugo (lucífugo), la cochinilla,
+    /// Especies de las eras (docs/sistemas/era-species-behavior.md): nocturnos el escorpión, el solífugo (lucífugo), la cochinilla,
     /// el caracol y la babosa (de día solo con lluvia: Rowson et al. 2014), la luciérnaga (corteja al anochecer), la
     /// tijereta, la cucaracha, el cangrejo fantasma («fantasma» por eso) y la lombriz (sale a la superficie de noche: Darwin
     /// 1881). Diurnos la cigarra (canta con calor), la pulga de las nieves (activa en invierno, de día) y el ácaro de

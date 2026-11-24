@@ -107,7 +107,7 @@ public class MobWorldLoader : MonoBehaviour
             if (_returnAnchor != null) { _returnLocal = _returnAnchor.InverseTransformPoint(_returnPos); _returnLocalRot = Quaternion.Inverse(_returnAnchor.rotation) * _returnRot; }
             if (spawn != null) TeleportPlayer(spawn.position, spawn.rotation);
             else Debug.LogWarning($"[MobWorldLoader] '{sceneName}' sin MobSpawnPoint — el jugador no se teletransportó.");
-            // EL BLOQUEO DE HUMANOS (InsectOnly, docs/microcosmos-civilizaciones.md §3): en un microcosmos nadie entra con cuerpo
+            // EL BLOQUEO DE HUMANOS (InsectOnly, docs/microcosmos/microcosmos-civilizaciones.md §3): en un microcosmos nadie entra con cuerpo
             // humano; el jugador llega como su insecto (Kushal, el mirmidón) y recupera su cuerpo al salir.
             if (InsectOnly.IsInsectWorld(SceneManager.GetSceneByName(sceneName))) InsectOnly.Admit(_player.gameObject);
         }

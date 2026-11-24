@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DE LA VIDA BAJO EL HIELO (Berón 2026-11-05; docs/hielo-y-respiraderos.md):
+/// PRUEBA DE LA VIDA BAJO EL HIELO (Berón 2026-11-05; docs/fauna/hielo-y-respiraderos.md):
 /// 1. FAUNA: ningún marino está dentro de una placa de hielo ni pasa bajo ella: las placas y la isla son paredes (P20).
 /// 2. RESPIRADEROS: están en hielo fijo fino (o sea, donde los hay de verdad), abiertos al mar, junto a la grieta de marea, nunca en las placas.
 /// 3. SUBMARINO: su ruta entre árboles, a −12 m, pasa por debajo de la falda de roca (−6 m).

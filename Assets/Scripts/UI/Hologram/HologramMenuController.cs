@@ -9,7 +9,7 @@ public enum HologramCorner { TopLeft, TopRight, BottomLeft, BottomRight }
 /// <summary>
 /// Orchestrates the whole holographic menu: a corner "Menú" hologram opens Magia / Yoga /
 /// Sistema, each with their own content and layout. Purpose-built rather than a generic tree
-/// interpreter — the 3-level structure is fixed and known, see docs/ui-holographic-menu.md
+/// interpreter — the 3-level structure is fixed and known, see docs/sistemas/ui-holographic-menu.md
 /// for the full design rationale (including the open question of where the "full asana/spell"
 /// shortcut holograms should sit long-term).
 /// </summary>
@@ -131,7 +131,7 @@ public class HologramMenuController : MonoBehaviour
     // Hechizos: un holograma por hechizo completo desbloqueado, para lanzarlo directo sin
     // pasar elemento por elemento. Sin datos todavia (no existe un "Spell" ScriptableObject
     // ni una nocion de hechizo desbloqueado en el codigo) — placeholder de layout, ver TODO
-    // en docs/ui-holographic-menu.md.
+    // en docs/sistemas/ui-holographic-menu.md.
     void OpenHechizosShortcuts()
     {
         ClearSubmenu();
@@ -157,7 +157,7 @@ public class HologramMenuController : MonoBehaviour
 
     // Asanas: un holograma por asana completa desbloqueada (AsanaDetector.unlockedAsanas),
     // para ejecutarla directo. unlockedAsanas esta vacio hasta que se creen los assets Asana
-    // — ver DEVLOG "2. Interfaz de Posturas / Asanas" y el TODO en docs/ui-holographic-menu.md.
+    // — ver DEVLOG "2. Interfaz de Posturas / Asanas" y el TODO en docs/sistemas/ui-holographic-menu.md.
     void OpenAsanasShortcuts()
     {
         ClearSubmenu();
@@ -288,7 +288,7 @@ public class HologramMenuController : MonoBehaviour
     // Approximate periodic table shape: one column per ElementGroup, elements stacked within
     // their column in discovery order. Not chemically exact (real periods/lanthanides would
     // need atomic-number-aware row math) — good enough for "looks like the periodic table"
-    // at a glance. See TODO in docs/ui-holographic-menu.md.
+    // at a glance. See TODO in docs/sistemas/ui-holographic-menu.md.
     void ArrangePeriodicGrid(List<string> symbols)
     {
         var byGroup = new Dictionary<PeriodicTableManager.ElementGroup, List<string>>();

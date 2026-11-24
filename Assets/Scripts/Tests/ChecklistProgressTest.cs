@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Automatiza por `TestProbe` ítems de PROGRESIÓN/MENTE de `docs/testing-checklist.md` que quedaron sin verificar
+/// Automatiza por `TestProbe` ítems de PROGRESIÓN/MENTE de `docs/qa/testing-checklist.md` que quedaron sin verificar
 /// en las pasadas manuales: la rama "pierde el control" de `PlayableCreature` (§3), la marga de Yoga desbloquea el
 /// maná y cada marga sube los puntos del alma (§4), la longitud de frase por poder mental, el `ThoughtField` (tono y
 /// humor) y el reparto Estricta/Libre (§8-§9), el `physicalResistance` por defecto (§10) y el log `[ECO]` (§39).

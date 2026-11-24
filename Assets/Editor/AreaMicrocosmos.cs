@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// EL MICROCOSMOS DE CADA ÁREA (docs/microcosmos-areas.md): es como si de pronto el mundo fuera de insectos. El JUGADOR
+/// EL MICROCOSMOS DE CADA ÁREA (docs/microcosmos/microcosmos-areas.md): es como si de pronto el mundo fuera de insectos. El JUGADOR
 /// (≈ 1,8 m) es una HORMIGA, y las hormigas son los HUMANOS del microcosmos: bípedas, con cara e intelecto humano. Todo lo
 /// demás está a su escala:
 /// - el ÁREA del santuario, ×100 (AreaScale; sus muebles son montañas; la historia y su pueblo, en su BARRIO: el piso × 10);
@@ -16,7 +16,7 @@ using UnityEngine;
 ///   Medea renacida, una hormiga poderosísima, que con Nasatya (Ambrosio renacido) es blanda.
 /// - Huerto: La Sembradora (Ruth renacida) enseña a la tribu a cultivar el hongo.
 /// - Resto de áreas: la tribu viviendo en su área gigante.
-/// EL MAPA ES SOLO EL PISO (docs/reglas-plataformas.md, regla 11; Berón 2026-10-29): el piso elegido ×10, con MUROS en su
+/// EL MAPA ES SOLO EL PISO (docs/reglas/reglas-plataformas.md, regla 11; Berón 2026-10-29): el piso elegido ×10, con MUROS en su
 /// borde para que nada salga; fuera no se puebla nada. La flora, la fauna, los personajes y las estructuras de la historia van
 /// DENTRO (a ×10 los 2 m de paso son 20 m: cabe todo). Registro: «[Microcosmos] escena: dentro N plantas, M fauna…; fuera 0».
 /// </summary>
@@ -56,7 +56,7 @@ public static class AreaMicrocosmos
         //    alrededor. Los otros pisos del edificio son hermanos del área y no se copian.
         // (2026-11-19, PB-165) SUELO PROPIO (MicrocosmSpec.ownGround; Berón: «debemos volver a empezar de cero»): el microcosmos NO carga
         // ni agranda el piso del santuario; es un rectángulo liso de ese tamaño, cerrado por sus muros, y la historia lo llena entero
-        // (Hawthorne 2008: un distrito urbano denso, docs/hawthorne-distrito.md).
+        // (Hawthorne 2008: un distrito urbano denso, docs/microcosmos/hawthorne-distrito.md).
         bool ownGround = spec != null && spec.ownGround.x > 1f && spec.ownGround.y > 1f;
         GameObject src = ownGround ? null : GameObject.Find(areaGo), giant = null;
         // (El control de misión está en el Santuario Aéreo: su microcosmos, Hawthorne, necesita esa escena abierta. Se cierra en Finish.)
@@ -130,7 +130,7 @@ public static class AreaMicrocosmos
         int floorPieces0 = giant != null ? giant.GetComponentsInChildren<Renderer>(true).Length : 0;
         Phase("piso gigante e inventario");
 
-        // 1b) ERA AVANZADA (regla 5 de docs/microcosmos-reglas-edificacion.md, MicroBuildRules.IsTownEra): el pueblo o la ciudad
+        // 1b) ERA AVANZADA (regla 5 de docs/reglas/microcosmos-reglas-edificacion.md, MicroBuildRules.IsTownEra): el pueblo o la ciudad
         //     real de la historia ocupa TODO SU BARRIO (×100, 2026-11-02: el barrio es el piso × Legacy alrededor de la plaza de la
         //     historia; el resto del piso es el santuario gigante). Se quitan los muebles gigantes que pisan el barrio (queda su
         //     suelo) y la historia recibe el barrio entero (FloorBounds); se hace en cuanto se sabe dónde va la historia.
@@ -202,7 +202,7 @@ public static class AreaMicrocosmos
         // una cuadrilla pequeña con su guarida, a un lado del claro de la historia (dentro de él: la flora no la tapa).
         // ERA CON ESTRUCTURAS (Berón 2026-11-01: «en todos los mapas se ha creado hormigas-humanas recolectoras con una guarida y eso
         // es erróneo, cada era tiene sus estructuras humanas»): la cuadrilla con guarida solo en las eras SIN estructuras (antes de
-        // las aldeas, Eras.HasStructures); en las civilizadas la gente vive de sus edificios (CivicBuilder, docs/microcosmos-civilizaciones.md).
+        // las aldeas, Eras.HasStructures); en las civilizadas la gente vive de sus edificios (CivicBuilder, docs/microcosmos/microcosmos-civilizaciones.md).
         int year = spec != null ? spec.year : (era.HasValue ? era.Value.year : Eras.Present);
         if ((spec == null || spec.foragers) && !Eras.HasStructures(year) && cast.GetComponentInChildren<MicroForager>(true) == null) dressed += ForagingBand(cast, new Vector3(0f, 0f, 26f), 6);
 
@@ -354,7 +354,7 @@ public static class AreaMicrocosmos
             }
             _inventory = null;
         }
-        // EL PISO AL QUE PERTENECE (reglas de los microcosmos, docs/microcosmos-areas.md §Reglas): montado ENCIMA de ese piso del
+        // EL PISO AL QUE PERTENECE (reglas de los microcosmos, docs/microcosmos/microcosmos-areas.md §Reglas): montado ENCIMA de ese piso del
         // santuario, en su forma finalizada; y si el piso no representa la historia, «pendiente de piso representativo».
         mfl.platform = areaGo; mfl.finishedForm = giant != null || ownGround; mfl.ownGround = ownGround; mfl.obraRemoved = _obraRemoved;
         mfl.floorPieces = floorPieces0;
@@ -365,7 +365,7 @@ public static class AreaMicrocosmos
         Debug.Log($"[Microcosmos] {sceneLabel}: dentro {mfl.floraInside} plantas, {mfl.faunaInside} fauna, {mfl.charactersInside} personajes; encima de {mfl.furnitureTops} muebles {mfl.floraOnTops} plantas y {mfl.faunaOnTops} bichos; fuera {mfl.outside} (piso {rect.size.x:0} × {rect.size.z:0} m, muros de {wallH:0} m{(nudged > 0 ? $", {nudged} piezas corridas hacia dentro" : "")}{(pruned > 0 ? $", {pruned} piezas del área fuera del piso quitadas" : "")}).");
         if (mfl.outside > 0) Debug.LogWarning($"[Microcosmos] {sceneLabel}: {mfl.outside} piezas de flora, fauna o historia FUERA de los muros (regla 11).");
 
-        // EL BLOQUEO DE HUMANOS (InsectOnly, docs/microcosmos-civilizaciones.md §3): ninguna escena de microcosmos se guarda con un
+        // EL BLOQUEO DE HUMANOS (InsectOnly, docs/microcosmos/microcosmos-civilizaciones.md §3): ninguna escena de microcosmos se guarda con un
         // cuerpo humano (un personaje de historia vestido de humano se convierte en su insecto).
         InsectOnly.EnforceRoot(root.transform);
         Phase("censo, dependencias y bloqueo de humanos");
@@ -1220,7 +1220,7 @@ public static class AreaMicrocosmos
             Ant(root, $"Recolectora_{i + 1}", new Vector3(Mathf.Cos(a) * 12f, 0f, Mathf.Sin(a) * 12f), new Color(0.4f, 0.25f, 0.18f), 1.8f, 1f).AddComponent<MicroForager>();
             n++;
         }
-        // CÓMO NACIÓ LA COCINA (docs/novela.md): la historia jugable. Sus piezas van en el claro de la historia (la plaza de
+        // CÓMO NACIÓ LA COCINA (docs/historia/novela.md): la historia jugable. Sus piezas van en el claro de la historia (la plaza de
         // historia del piso, ×10; FitStory la mete entera dentro de los muros): el HOGAR (piedras alrededor de la brasa y la
         // piedra caliente donde se tuesta lo primero) y los RESTOS DEL HOGAR que Kushal y Nasatya llevan al fuego (no son
         // MicroFood: las recolectoras no se los llevan a la guarida).
@@ -1246,7 +1246,7 @@ public static class AreaMicrocosmos
     static int GardenStory(Transform root)
     {
         // ~9500 a. C.: ya hay ALDEA (Eras.HasStructures): la tribu lleva lo recogido al GRANERO REDONDO, no a una guarida, y vive en
-        // casas redondas (CivicBuilder.FirstVillage, docs/microcosmos-civilizaciones.md §8).
+        // casas redondas (CivicBuilder.FirstVillage, docs/microcosmos/microcosmos-civilizaciones.md §8).
         CivicBuilder.RoundGranary(root, new Vector3(-14f, 0f, 0f));
         Transform bed = new GameObject("Bancal_de_hongos").transform; bed.SetParent(root, false); bed.localPosition = new Vector3(10f, 0f, 2f);
         Box(bed, "Lecho", new Vector3(0f, 0.15f, 0f), new Vector3(10f, 0.3f, 7f), Mat("Micro_Lecho", new Color(0.35f, 0.28f, 0.2f)), true);
@@ -1304,7 +1304,7 @@ public static class AreaMicrocosmos
 
     // ── Piezas ────────────────────────────────────────────────────────────────────────────────────────────────────
 
-    // (2026-11-18) EL CUERPO ENCOGIDO (docs/plan-microcosmos-realismo.md §3.1, E1): Ant y Folk reciben la estatura de la PERSONA
+    // (2026-11-18) EL CUERPO ENCOGIDO (docs/microcosmos/plan-microcosmos-realismo.md §3.1, E1): Ant y Folk reciben la estatura de la PERSONA
     // (1,6–1,85 m, como hasta ahora en todos los builders) y la encogen aquí, en un solo sitio, × MicroBuildRules.FolkScale; con ella,
     // la cápsula, el agente (radio = medio ancho recogido, velocidad × s: si no, el paso de CubeInsect se satura y las patas patinan)
     // y la altura del rótulo.
@@ -1329,7 +1329,7 @@ public static class AreaMicrocosmos
         return g;
     }
 
-    // Un INSECTO-HUMANO de era civilizada (docs/microcosmos-civilizaciones.md §5–6): su insecto (InsectCast, o <paramref name="species"/>),
+    // Un INSECTO-HUMANO de era civilizada (docs/microcosmos/microcosmos-civilizaciones.md §5–6): su insecto (InsectCast, o <paramref name="species"/>),
     // erguido a su estatura, con cara humana y pelo; todas las especies de tamaño parecido. Lleva su linaje (FolkLineage).
     // <paramref name="height"/> es la estatura de la PERSONA: el cuerpo mide eso × MicroBuildRules.FolkScale.
     internal static GameObject Folk(Transform root, string name, Vector3 pos, float height, float bulk = 1f, string species = null, Color? body = null, bool? female = null)
@@ -1347,7 +1347,7 @@ public static class AreaMicrocosmos
         Transform ins = g.transform.Find("Insecto");
         if (ins != null && bulk != 1f) ins.localScale = new Vector3(ins.localScale.x * bulk, ins.localScale.y, ins.localScale.z * Mathf.Sqrt(bulk));
         var lin = g.AddComponent<FolkLineage>(); lin.species = sp; lin.female = isFemale;
-        PersonLife.Equip(g, isFemale);   // el MISMO ciclo de vida que un humano: necesidades, edad, pareja, hijos y vejez (docs/ciclo-de-vida.md §Humanos)
+        PersonLife.Equip(g, isFemale);   // el MISMO ciclo de vida que un humano: necesidades, edad, pareja, hijos y vejez (docs/sistemas/ciclo-de-vida.md §Humanos)
         WorldLabel wl = g.AddComponent<WorldLabel>(); wl.text = name; wl.height = LabelHeight(height);
         return g;
     }
@@ -1413,7 +1413,7 @@ public static class AreaMicrocosmos
         }
     }
 
-    // FLORA y FAUNA a escala de hormiga por toda la superficie (docs/natural-interactions.md). Nada es solo decorado:
+    // FLORA y FAUNA a escala de hormiga por toda la superficie (docs/sistemas/natural-interactions.md). Nada es solo decorado:
     // cada planta, piedra o mancha de arena lleva el Affordance de lo que los insectos hacen con ella de verdad.
     //   · Brizna (pasto): hierba que comen saltamontes y grillos y que cortan las termitas; savia para el pulgón; posadero
     //     para asolearse (saltamontes) o tender la tela (araña); y espiga de SEMILLAS que cosechan los mirmidones.
@@ -2033,7 +2033,7 @@ public static class AreaMicrocosmos
                 holder.gameObject.AddComponent<MicroSize>().length = len;
                 GameObject a = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
                 a.transform.SetParent(holder, false); a.transform.localPosition = Vector3.zero;
-                // FORMA REAL (docs/insect-morphology.md): el cuerpo de cubos articulado de su especie sustituye al modelo;
+                // FORMA REAL (docs/sistemas/insect-morphology.md): el cuerpo de cubos articulado de su especie sustituye al modelo;
                 // la conducta, el ciclo de vida y la biología siguen siendo los del prefab.
                 foreach (Renderer x in a.GetComponentsInChildren<Renderer>(true)) x.enabled = false;
                 // POBLACIÓN MEZCLADA: la mayoría ADULTOS (erguidos cuando están lúcidos) y algunas crías (larva, ninfa o

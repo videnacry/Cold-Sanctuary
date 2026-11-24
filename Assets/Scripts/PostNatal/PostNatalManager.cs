@@ -6,7 +6,7 @@ using UnityEngine;
 /// ejecuta entryActions al entrar a cada stage, corre el ciclo de decisión de la madre
 /// y el ciclo autónomo de las crías cuando la madre se aleja.
 /// Inicializado desde Animal.Init() si PostNatalStages != null.
-/// Ver docs/behavior-system.md §Fase 6.
+/// Ver docs/sistemas/behavior-system.md §Fase 6.
 /// </summary>
 public class PostNatalManager : MonoBehaviour
 {

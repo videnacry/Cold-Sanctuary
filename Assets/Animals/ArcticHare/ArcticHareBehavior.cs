@@ -1,6 +1,6 @@
 using UnityEngine;
 
-// Liebre ártica (Lepus arcticus): ramonea sauce ártico. Ficha: docs/reglas-animales.md (Fichas).
+// Liebre ártica (Lepus arcticus): ramonea sauce ártico. Ficha: docs/reglas/reglas-animales.md (Fichas).
 public class ArcticHareBehavior : Animal
 {
     protected override string SpeciesArchetype => "ArcticHare";

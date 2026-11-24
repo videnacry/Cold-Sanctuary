@@ -39,7 +39,7 @@ if (-not $SoloProbar) {
     $total = (Get-ChildItem -Path $Origen -Recurse -File | Where-Object { $_.FullName -notlike "*_BurstDebugInformation_DoNotShip*" } | Measure-Object Length -Sum).Sum
     Write-Host ("Sitio {0}: {1:0} MB. Copiando a {2}..." -f $version, ($total / 1MB), $Repo)
 
-    # 0) Visor sin build (docs/visor-web.md): index.html + datos/ van en visor/ del sitio, porque cada subida rehace el repo de Pages.
+    # 0) Visor sin build (docs/plataforma/visor-web.md): index.html + datos/ van en visor/ del sitio, porque cada subida rehace el repo de Pages.
     if (Test-Path (Join-Path $Visor "index.html")) {
         & robocopy $Visor (Join-Path $Origen "visor") /MIR /R:2 /W:2 /NFL /NDL /NJH /NJS /NP | Out-Null
         if ($LASTEXITCODE -ge 8) { Write-Error "robocopy del visor fallo ($LASTEXITCODE)."; exit 2 }

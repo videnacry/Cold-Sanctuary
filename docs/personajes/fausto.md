@@ -1,14 +1,19 @@
+---
+resumen: "Ficha con la plantilla de README.md. Id en el código: Fausto. Revisada: 2026-11-08. Veracidad de cada dato (regla M39, veracidad-frases.md): documentada = lo dijo Berón (sus mensajes o la…"
+temas: [personajes]
+estado: vigente
+---
 # Fausto
 
 > Ficha con la plantilla de [README.md](README.md). Id en el código: `Fausto`. Revisada: 2026-11-08.
-> Veracidad de cada dato (regla M39, [veracidad-frases.md](../veracidad-frases.md)): **documentada** = lo dijo Berón (sus mensajes o la
+> Veracidad de cada dato (regla M39, [veracidad-frases.md](../sistemas/veracidad-frases.md)): **documentada** = lo dijo Berón (sus mensajes o la
 > ficha larga que contó él); **atestiguada** = se ve en su foto o captura; **recreada** = decisión de juego hecha a partir de un dato
 > suyo; **inventada** = la puso el juego o un agente, sin base. ⚠️ = la ficha larga lo marca «confirmar». **Falta** = no se sabe.
 
 ## 1. Identidad y aspecto
 
-- Persona real. *documentada · [personajes-mesocosmos.md §Profesiones y parejas](../personajes-mesocosmos.md)*
-- **Pendiente de foto.** Aspecto provisional del código: 1,70 m, pelo rizado castaño, ropa de taller gris verdosa. *inventada · [CubeHair.cs:237](../../Assets/Scripts/Avatar/CubeHair.cs#L237)*. El doc de diseño dice 1,72 m y «ropa de taller gris»: [diseno-personajes.md §Familia y amigos](../diseno-personajes.md).
+- Persona real. *documentada · [personajes-mesocosmos.md §Profesiones y parejas](../historia/personajes-mesocosmos.md)*
+- **Pendiente de foto.** Aspecto provisional del código: 1,70 m, pelo rizado castaño, ropa de taller gris verdosa. *inventada · [CubeHair.cs:237](../../Assets/Scripts/Avatar/CubeHair.cs#L237)*. El doc de diseño dice 1,72 m y «ropa de taller gris»: [diseno-personajes.md §Familia y amigos](../sistemas/diseno-personajes.md).
 - Edad y origen: **Falta**.
 
 ## 2. Origen e historia
@@ -26,7 +31,7 @@
 
 ## 5. Profesión y lo que sabe hacer
 
-- **Mecánico**. *documentada (Berón 2026-11-04: «Irosene y Fausto son pareja (Fausto es mecánico)») · [personajes-mesocosmos.md §Profesiones y parejas](../personajes-mesocosmos.md) · [Professions.cs:134](../../Assets/Scripts/Progression/Professions.cs#L134)*
+- **Mecánico**. *documentada (Berón 2026-11-04: «Irosene y Fausto son pareja (Fausto es mecánico)») · [personajes-mesocosmos.md §Profesiones y parejas](../historia/personajes-mesocosmos.md) · [Professions.cs:134](../../Assets/Scripts/Progression/Professions.cs#L134)*
 - Lleva el área Mecánica entera, que antes llevaba Ducristin. *recreada · [Professions.cs:62](../../Assets/Scripts/Progression/Professions.cs#L62)*
 
 ## 6. Puesto y áreas
@@ -35,7 +40,7 @@
 
 ## 7. Relaciones
 
-- Pareja de **Irosene**; comparten casa del árbol. *documentada (Berón 2026-11-04) · [personajes-mesocosmos.md §Parejas](../personajes-mesocosmos.md) · [ResidentialBuilder.cs:42](../../Assets/Editor/ResidentialBuilder.cs#L42) · [character-irosene.md §Lugar en el santuario](../character-irosene.md)*
+- Pareja de **Irosene**; comparten casa del árbol. *documentada (Berón 2026-11-04) · [personajes-mesocosmos.md §Parejas](../historia/personajes-mesocosmos.md) · [ResidentialBuilder.cs:42](../../Assets/Editor/ResidentialBuilder.cs#L42) · [character-irosene.md §Lugar en el santuario](fichas-antiguas/character-irosene.md)*
 - Familia y amigos: **Falta**. (La ficha de Irosene habla de un sobrino de su primer esposo que se volvería su pareja unos 20 años después, ⚠️; no dice que sea Fausto: ver §11.)
 
 ## 8. Horario y costumbres
@@ -45,7 +50,7 @@
 
 ## 9. Microcosmos y santuario
 
-- Insecto: ninguno propio. *recreada · [microcosmos-civilizaciones.md §5](../microcosmos-civilizaciones.md)*
+- Insecto: ninguno propio. *recreada · [microcosmos-civilizaciones.md §5](../microcosmos/microcosmos-civilizaciones.md)*
 - Santuario y nivel: **Falta**.
 
 ## 10. En el código

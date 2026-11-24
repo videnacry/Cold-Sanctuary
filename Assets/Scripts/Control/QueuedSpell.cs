@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Un HECHIZO EN COLA (docs/typed-spells-and-queues.md): la unidad que ejecuta la <see cref="ActionQueue"/>. Como
+/// Un HECHIZO EN COLA (docs/sistemas/typed-spells-and-queues.md): la unidad que ejecuta la <see cref="ActionQueue"/>. Como
 /// "toda acción es un hechizo", caminar/tomar/agacharse son QueuedSpell. `Tick` avanza el hechizo y devuelve true
 /// cuando TERMINA (la cola pasa al siguiente). Base pura (no MonoBehaviour) para poder encolarse/reordenarse.
 /// </summary>
@@ -142,7 +142,7 @@ public class WalkToSpell : QueuedSpell
 }
 
 /// <summary>MERODEAR: ir a un punto aleatorio cerca (acción "random" que un anima libre se encola a sí misma en el
-/// carril opcional, docs/typed-spells-and-queues.md §4). Camina como `WalkToSpell` hacia un destino efímero.</summary>
+/// carril opcional, docs/sistemas/typed-spells-and-queues.md §4). Camina como `WalkToSpell` hacia un destino efímero.</summary>
 public class WanderSpell : QueuedSpell
 {
     Vector3 _dest; bool _picked, _arrived; float _until, _restUntil; int _mySteps = -1;
@@ -216,7 +216,7 @@ public class BodyReflexSpell : QueuedSpell
     public override bool Tick(Anima self) => _asr == null || !_asr.InTakeover;   // se mantiene mientras haya toma de mando
 }
 
-/// <summary>IR A UN SITIO DE OTRO PISO O EDIFICIO (docs/alfombras-plan.md): sin escaleras ni puentes, sigue la cadena de
+/// <summary>IR A UN SITIO DE OTRO PISO O EDIFICIO (docs/areas/alfombras-plan.md): sin escaleras ni puentes, sigue la cadena de
 /// alfombras voladoras (<see cref="CarpetPad.Route"/>) y anda dentro de cada piso. Lo usa, p. ej., quien se va a dormir a
 /// su casa del árbol.</summary>
 public class CarpetWalkSpell : QueuedSpell

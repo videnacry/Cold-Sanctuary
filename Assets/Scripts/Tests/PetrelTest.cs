@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DEL PETREL DE LAS NIEVES (Berón 2026-11-05; docs/reglas-animales.md): vuela de verdad, sin NavMesh; se posa en los icebergs; anida en la roca de la isla, nunca en hielo; está
+/// PRUEBA DEL PETREL DE LAS NIEVES (Berón 2026-11-05; docs/reglas/reglas-animales.md): vuela de verdad, sin NavMesh; se posa en los icebergs; anida en la roca de la isla, nunca en hielo; está
 /// en todas sus tablas y en la cadena alimenticia. Su ciclo entero corre en su escena (grupo 58).
 /// </summary>
 public class PetrelTest : MonoBehaviour, ITestUnit

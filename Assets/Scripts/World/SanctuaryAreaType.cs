@@ -8,7 +8,7 @@ public enum SanctuaryAreaType
     CubCare,              // Criado — first area for newcomers with low stats
     Cleaning,             // Limpieza — Panterilia's first domain
     Kitchen,              // Cocina — Goluis's domain
-    Infirmary,            // Hospital (antes Enfermería): personas abajo, animales arriba (docs/hospital.md)
+    Infirmary,            // Hospital (antes Enfermería): personas abajo, animales arriba (docs/areas/hospital.md)
     VeterinaryClinic,     // Veterinaria — cuidado médico animal
     YogaRoom,             // Sala de yoga — asanas y ejercicios básicos
 
@@ -37,15 +37,15 @@ public enum SanctuaryAreaType
     Ballet,               // Sala de ballet — en obras al empezar
     MartialArts,          // Dojo de artes marciales — en obras al empezar
     Calisthenics,         // Parque de calistenia — en obras al empezar
-    AtomicPlant,          // Planta atómica — reactor de investigación (isótopos para el hospital, física), docs/atomic-plant.md
-    Chemistry,            // Química — investigación: síntesis abajo, análisis arriba (docs/laboratorios-investigacion.md)
+    AtomicPlant,          // Planta atómica — reactor de investigación (isótopos para el hospital, física), docs/areas/atomic-plant.md
+    Chemistry,            // Química — investigación: síntesis abajo, análisis arriba (docs/areas/laboratorios-investigacion.md)
     Biology,              // Biología — investigación BSL-2: cultivo abajo, molecular arriba
     NuclearPower,         // Central nuclear — producción: microrreactor de 5 MWe y calefacción de distrito
-    LaunchControl,        // Control de misión de la lanzadera de cohetes (docs/lanzadera-de-cohetes.md)
-    Informatics,          // Informática — el clúster de IA local del santuario, su refrigeración líquida y su abastecimiento (docs/piso-informatica.md)
-    Classroom,            // Aula universitaria — aula de clases y sala de estudio para todos a la vez (docs/piso-aula.md)
-    Assembly,             // Sala de asambleas — lo mejor de las asambleas del mundo, para todos a la vez (docs/piso-asambleas.md)
-    Music,                // Música — sala de grabación y escenario de conciertos, para todos a la vez (docs/piso-musica.md)
-    EnergyPark,           // Parque Energético: control y taller de los paneles (docs/energia.md)
-    VerticalFarm,         // Huerto vertical — estantes con LED en la torre de Producción (docs/produccion-maquinaria.md §2026-11-08)
+    LaunchControl,        // Control de misión de la lanzadera de cohetes (docs/areas/lanzadera-de-cohetes.md)
+    Informatics,          // Informática — el clúster de IA local del santuario, su refrigeración líquida y su abastecimiento (docs/areas/piso-informatica.md)
+    Classroom,            // Aula universitaria — aula de clases y sala de estudio para todos a la vez (docs/areas/piso-aula.md)
+    Assembly,             // Sala de asambleas — lo mejor de las asambleas del mundo, para todos a la vez (docs/areas/piso-asambleas.md)
+    Music,                // Música — sala de grabación y escenario de conciertos, para todos a la vez (docs/areas/piso-musica.md)
+    EnergyPark,           // Parque Energético: control y taller de los paneles (docs/areas/energia.md)
+    VerticalFarm,         // Huerto vertical — estantes con LED en la torre de Producción (docs/areas/produccion-maquinaria.md §2026-11-08)
 }

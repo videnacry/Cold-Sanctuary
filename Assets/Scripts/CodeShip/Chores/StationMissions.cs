@@ -31,7 +31,7 @@ public class StationMission
 }
 
 /// <summary>
-/// LAS MISIONES DE LOS PUESTOS (docs/plan-microcosmos-realismo.md §4.4; Berón 2026-11-18: «las misiones se crean como las de codeship»). En cada
+/// LAS MISIONES DE LOS PUESTOS (docs/microcosmos/plan-microcosmos-realismo.md §4.4; Berón 2026-11-18: «las misiones se crean como las de codeship»). En cada
 /// escena cargada que tenga misiones en <see cref="MissionSites"/>, pone cada plantilla de <see cref="MissionLibrary"/> en su mueble, y:
 ///  · las enseña en la lista de Tareas (grupo «Trabajo y necesidades», con su categoría de CodeShip) y en el menú (Trabajar, Necesidades), con «Ir»;
 ///  · al llegar (o con R junto al puesto: la acción principal de la columna de contexto, <see cref="ContextColumn"/>) abre la hoja con sus retos en

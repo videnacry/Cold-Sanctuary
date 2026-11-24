@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Lado RECEPTOR de una petición entre personajes (docs/anima-architecture.md §11.7). Solo tiene que
+/// Lado RECEPTOR de una petición entre personajes (docs/sistemas/anima-architecture.md §11.7). Solo tiene que
 /// contestar sí/no. En este MVP decide con una probabilidad tuneable; más adelante leerá el vínculo
 /// (bond), los humores y las inclinaciones del ser (si lo pedido va muy en contra, dirá que no). Sin este
 /// componente, un ser acepta por defecto.

@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// LOS ICEBERGS (docs/sitio-nuclear.md §14 y §20). Pocas piezas y sin colisiones bajo el agua: el PC tiene 16 GB. Se dibuja lo que asoma y su quilla hasta el fondo somero; su masa real está en la regla.
+/// LOS ICEBERGS (docs/areas/sitio-nuclear.md §14 y §20). Pocas piezas y sin colisiones bajo el agua: el PC tiene 16 GB. Se dibuja lo que asoma y su quilla hasta el fondo somero; su masa real está en la regla.
 /// </summary>
 public static partial class SampleSceneBuilder
 {
@@ -21,7 +21,7 @@ public static partial class SampleSceneBuilder
         }
     }
 
-    // Sus animales: adultos, nadando frente a la repisa (docs/vida-en-icebergs.md).
+    // Sus animales: adultos, nadando frente a la repisa (docs/fauna/vida-en-icebergs.md).
     static void BuildIcebergVisitors(Transform root, Iceberg b, int seals, int penguins)
     {
         void Put(string species, int n)

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-/// <summary>LAS AVES FRÍAS QUE VUELAN con <see cref="SnowPetrelLife"/> (docs/fauna-fria-santuarios.md), y las del santuario aéreo: pocas, por memoria.</summary>
+/// <summary>LAS AVES FRÍAS QUE VUELAN con <see cref="SnowPetrelLife"/> (docs/fauna/fauna-fria-santuarios.md), y las del santuario aéreo: pocas, por memoria.</summary>
 public static class ColdBirds
 {
     public static readonly Dictionary<string, int> AirBudget = new Dictionary<string, int> { { "PolarSkua", 2 }, { "CapePetrel", 4 }, { "WanderingAlbatross", 2 }, { "ArcticTern", 2 } };
@@ -11,7 +11,7 @@ public static class ColdBirds
 
 
 /// <summary>
-/// EL DÍA DE UN PETREL DE LAS NIEVES (Berón 2026-11-05; docs/reglas-animales.md, ficha; docs/vida-en-icebergs.md). Vuela: no usa NavMesh.
+/// EL DÍA DE UN PETREL DE LAS NIEVES (Berón 2026-11-05; docs/reglas/reglas-animales.md, ficha; docs/fauna/vida-en-icebergs.md). Vuela: no usa NavMesh.
 ///   · HAMBRE → al banco de kril o de peces más cercano; baja a coger de la superficie, como los petreles.
 ///   · DESCANSA → en lo alto de un iceberg (se ven bandadas posadas en ellos). Se queda unas horas y va con él si deriva.
 ///   · CRÍA → nunca en un iceberg: en su nido de la roca de la isla. Pareja, huevo, relevo y pollo.

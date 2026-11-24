@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// CORRIENTE DE RÍO (docs/microcosmos-sakshi-origin.md §4) — una ZONA (trigger) que **arrastra aguas abajo** a las
+/// CORRIENTE DE RÍO (docs/microcosmos/microcosmos-sakshi-origin.md §4) — una ZONA (trigger) que **arrastra aguas abajo** a las
 /// ánimas que caen dentro, con **combate de stats** (la masa resiste: una hormiga grande aguanta, una cría pequeña
 /// como Sakshi no) y **daño por arrastre** (el zarandeo **debilita**: drena ATP + estresa) → quien sale del río llega
 /// SIN FUERZAS y solo puede **observar** (no huir) — la ventana de bond del nivel.

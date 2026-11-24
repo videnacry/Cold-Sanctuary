@@ -1,6 +1,6 @@
 using UnityEngine;
 
-// Albatros viajero (Diomedea exulans). Vuela con SnowPetrelLife, sin NavMesh. Ficha: docs/fauna-fria-santuarios.md.
+// Albatros viajero (Diomedea exulans). Vuela con SnowPetrelLife, sin NavMesh. Ficha: docs/fauna/fauna-fria-santuarios.md.
 public class WanderingAlbatrossBehavior : Animal
 {
     protected override string SpeciesArchetype => "WanderingAlbatross";

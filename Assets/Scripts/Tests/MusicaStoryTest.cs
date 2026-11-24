@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// TEST DE LOS MICROCOSMOS DE LA MÚSICA (docs/microcosmos-musica.md; grupo 86). Carga UNA A UNA (aditiva, espera acotada, y la descarga
+/// TEST DE LOS MICROCOSMOS DE LA MÚSICA (docs/microcosmos/microcosmos-musica.md; grupo 86). Carga UNA A UNA (aditiva, espera acotada, y la descarga
 /// antes de la siguiente: la memoria) las escenas de la música y mira en cada una:
 /// - su mapa a mano hecho (flora, fauna, orden del piso y edificios) y su fila en la tabla de pisos;
 /// - su fecha, su región y su piso (representativo o «pendiente de piso representativo»);
@@ -50,7 +50,7 @@ public class MusicaStoryTest : MonoBehaviour, ITestUnit
         foreach (var c in Cases) yield return One(c.scene, c.display, c.hero, c.year, c.region, c.platform, c.rep, c.fruits);
     }
 
-    /// <summary>EL PISO DE MÚSICA (docs/piso-musica.md): sus misiones, su uniforme y, con la escena construida, su sitio y su capacidad.</summary>
+    /// <summary>EL PISO DE MÚSICA (docs/areas/piso-musica.md): sus misiones, su uniforme y, con la escena construida, su sitio y su capacidad.</summary>
     static void Floor()
     {
         TestProbe.Begin("Piso de Música: misiones, uniforme, torre y capacidad");
@@ -61,7 +61,7 @@ public class MusicaStoryTest : MonoBehaviour, ITestUnit
         }
         TestProbe.Check("ningún microcosmos sigue pendiente de sala de grabación", !System.Array.Exists(MicroFloors.Table, m => m.pending.Contains("grabación")));
         TestProbe.Check("Viena 1824 está en el piso de Música", MicroFloors.Of("Viena 1824") != null && MicroFloors.Of("Viena 1824").platform == "Music_Area");
-        // La cuenta acústica (docs/piso-musica.md §Acústica): sin tapa o con la puerta abierta, el cristal casi no aísla.
+        // La cuenta acústica (docs/areas/piso-musica.md §Acústica): sin tapa o con la puerta abierta, el cristal casi no aísla.
         var cell = new Vector2(8.4f, 6.2f);
         TestProbe.Check("sala cerrada de doble cristal: ≥ 40 dB", MusicAcoustics.Room(cell, false) >= 40f, $"{MusicAcoustics.Room(cell, false):0} dB");
         TestProbe.Check("entre dos salas vecinas llega a la meta", MusicAcoustics.BetweenRooms(cell) >= MusicAcoustics.TargetBetweenRooms, $"{MusicAcoustics.BetweenRooms(cell):0} dB");

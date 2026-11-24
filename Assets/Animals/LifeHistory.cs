@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 
 /// <summary>
-/// HISTORIA NATURAL de las especies del santuario (docs/ciclo-de-vida.md; Berón 2026-11-01: «que realice todos sus
+/// HISTORIA NATURAL de las especies del santuario (docs/sistemas/ciclo-de-vida.md; Berón 2026-11-01: «que realice todos sus
 /// procesos naturales»): lo que NO estaba en ninguna tabla y faltaba para cerrar el ciclo de vida de verdad —
 ///   · de dónde sacan el AGUA (beben, comen nieve o la sacan de la comida: <see cref="Hydration"/>),
 ///   · cómo CRÍAN (lactancia, regurgitación, guardar el saco de huevos; quién: madre o los dos),
@@ -10,7 +10,7 @@ using System.Collections.Generic;
 ///   · si pone HUEVOS (<see cref="Egg"/>: quién incuba y cuánto).
 /// Las duraciones van en MESES REALES y se escalan al año del santuario (<see cref="TimeController.SecondsForMonths"/>), igual
 /// que la gestación (<see cref="Reproduction.Calendar"/>) y las etapas de vida (<see cref="StageProfile"/>, en días reales).
-/// Lo de cada especie sale de su biología real (fuentes en docs/ciclo-de-vida.md); [A] = valor de referencia general.
+/// Lo de cada especie sale de su biología real (fuentes en docs/sistemas/ciclo-de-vida.md); [A] = valor de referencia general.
 /// Una especie sin entrada no tiene estos procesos (los insectos del microcosmos siguen como estaban).
 /// </summary>
 public class LifeHistory
@@ -146,7 +146,7 @@ public class LifeHistory
             eggLabel = "La hembra forma el huevo (cópula → puesta)", layLabel = "Pone el huevo en el nido de guijarros",
             incubateLabel = "El macho hace el primer turno largo en el nido (ella se va al mar)", hatchLabel = "Eclosión (nace el polluelo)",
             sources = "Davis 1988 (Auk 105:428); NZ Birds Online (Adelie penguin); Animal Diversity Web" } },
-        // Págalo polar (Stercorarius maccormicki): docs/fauna-fria-santuarios.md. Como el petrel: nido en roca y un turno de incubación.
+        // Págalo polar (Stercorarius maccormicki): docs/fauna/fauna-fria-santuarios.md. Como el petrel: nido en roca y un turno de incubación.
         { "PolarSkua", new LifeHistory {
             water = Water.SeaOrSnow, drinkHours = 8f, waterLabel = "Bebe agua de mar o come nieve",
             care = Care.Regurgitation, biparental = true, careLabel = "Crianza: los padres van y vienen a alimentar al pollo",
@@ -154,8 +154,8 @@ public class LifeHistory
             eggs = true, incubationMonths = 0.95f, incubator = Incubator.Male, eggNest = true, eggChillHours = 4f,
             eggLabel = "La hembra forma el huevo", layLabel = "Pone en su nido de roca",
             incubateLabel = "El macho hace el turno en el nido", hatchLabel = "Eclosión (nace el pollo)",
-            sources = "docs/fauna-fria-santuarios.md" } },
-        // Petrel damero (Daption capense): docs/fauna-fria-santuarios.md. Como el petrel: nido en roca y un turno de incubación.
+            sources = "docs/fauna/fauna-fria-santuarios.md" } },
+        // Petrel damero (Daption capense): docs/fauna/fauna-fria-santuarios.md. Como el petrel: nido en roca y un turno de incubación.
         { "CapePetrel", new LifeHistory {
             water = Water.SeaOrSnow, drinkHours = 8f, waterLabel = "Bebe agua de mar o come nieve",
             care = Care.Regurgitation, biparental = true, careLabel = "Crianza: los padres van y vienen a alimentar al pollo",
@@ -163,8 +163,8 @@ public class LifeHistory
             eggs = true, incubationMonths = 1.5f, incubator = Incubator.Male, eggNest = true, eggChillHours = 4f,
             eggLabel = "La hembra forma el huevo", layLabel = "Pone en su nido de roca",
             incubateLabel = "El macho hace el turno en el nido", hatchLabel = "Eclosión (nace el pollo)",
-            sources = "docs/fauna-fria-santuarios.md" } },
-        // Albatros viajero (Diomedea exulans): docs/fauna-fria-santuarios.md. Como el petrel: nido en roca y un turno de incubación.
+            sources = "docs/fauna/fauna-fria-santuarios.md" } },
+        // Albatros viajero (Diomedea exulans): docs/fauna/fauna-fria-santuarios.md. Como el petrel: nido en roca y un turno de incubación.
         { "WanderingAlbatross", new LifeHistory {
             water = Water.SeaOrSnow, drinkHours = 8f, waterLabel = "Bebe agua de mar o come nieve",
             care = Care.Regurgitation, biparental = true, careLabel = "Crianza: los padres van y vienen a alimentar al pollo",
@@ -172,8 +172,8 @@ public class LifeHistory
             eggs = true, incubationMonths = 2.6f, incubator = Incubator.Male, eggNest = true, eggChillHours = 4f,
             eggLabel = "La hembra forma el huevo", layLabel = "Pone en su nido de roca",
             incubateLabel = "El macho hace el turno en el nido", hatchLabel = "Eclosión (nace el pollo)",
-            sources = "docs/fauna-fria-santuarios.md" } },
-        // Charrán ártico (Sterna paradisaea): docs/fauna-fria-santuarios.md. Como el petrel: nido en roca y un turno de incubación.
+            sources = "docs/fauna/fauna-fria-santuarios.md" } },
+        // Charrán ártico (Sterna paradisaea): docs/fauna/fauna-fria-santuarios.md. Como el petrel: nido en roca y un turno de incubación.
         { "ArcticTern", new LifeHistory {
             water = Water.SeaOrSnow, drinkHours = 8f, waterLabel = "Bebe agua de mar o come nieve",
             care = Care.Regurgitation, biparental = true, careLabel = "Crianza: los padres van y vienen a alimentar al pollo",
@@ -181,7 +181,7 @@ public class LifeHistory
             eggs = true, incubationMonths = 0.73f, incubator = Incubator.Male, eggNest = true, eggChillHours = 4f,
             eggLabel = "La hembra forma el huevo", layLabel = "Pone en su nido de roca",
             incubateLabel = "El macho hace el turno en el nido", hatchLabel = "Eclosión (nace el pollo)",
-            sources = "docs/fauna-fria-santuarios.md" } },
+            sources = "docs/fauna/fauna-fria-santuarios.md" } },
         // PETREL DE LAS NIEVES (Pagodroma nivea). Un huevo en grieta o repisa de roca, incubación 41–49 d por los dos (aquí el macho hace el turno que vale por todos,
         // como en Adelia), pollo ~46 d, primera cría a los ~11 años (WorldSpecies; BirdForum).
         { "SnowPetrel", new LifeHistory {
@@ -251,8 +251,8 @@ public class LifeHistory
         { "SnowBee", new LifeHistory {
             water = Water.FromHoney, waterLabel = "Agua: la de la miel y el néctar (y la condensación del racimo)",
             care = Care.Hive, careLabel = "Las nodrizas alimentan a las larvas",
-            sources = "docs/abejas-y-panal.md; Winston 1987, The Biology of the Honey Bee [A]" } },
-        // ARAÑA DE LAS NIEVES (ficticia: araña orbicular de ~30 cm adaptada al frío; ver docs/ciclo-de-vida.md). Agua: de la
+            sources = "docs/fauna/abejas-y-panal.md; Winston 1987, The Biology of the Honey Bee [A]" } },
+        // ARAÑA DE LAS NIEVES (ficticia: araña orbicular de ~30 cm adaptada al frío; ver docs/sistemas/ciclo-de-vida.md). Agua: de la
         // hemolinfa de sus presas (y gotas en la tela) [A]. La madre teje un saco de huevos en su tela y lo guarda hasta la
         // eclosión (como Theraphosa: 6–8 semanas); las arañitas viven del vitelo y no se alimentan: luego se dispersan.
         { "SnowSpider", new LifeHistory {

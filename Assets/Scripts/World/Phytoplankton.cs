@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// FITOPLANCTON: el "césped del mar" — el PRODUCTOR base de la cadena marina (docs/ice-sanctuary-ecology.md §2.2).
+/// FITOPLANCTON: el "césped del mar" — el PRODUCTOR base de la cadena marina (docs/fauna/ice-sanctuary-ecology.md §2.2).
 /// Vive de agua+luz: fotosintetiza y regenera su biomasa con el tiempo (más de día). Inmóvil (deriva imperceptible).
 /// Es ITarget + IEdible: los enjambres (krill/pez) lo PASTAN por cercanía (Swarm.GrazePhytoplankton) → su biomasa baja
 /// y el enjambre crece. Nunca "muere": si lo agotan, se recupera desde casi 0. Barato: un MonoBehaviour marcador con
@@ -23,7 +23,7 @@ public class Phytoplankton : MonoBehaviour, ITarget, IEdible
     [Tooltip("Masa (kg) por unidad de biomasa, para Mass/Grams.")]
     public float perBiomassMass = 0.1f;
 
-    [Header("Cultivo en un edificio-árbol (las cortinas del fondo abierto; docs/mascaras-de-oxigeno.md §Fitoplancton)")]
+    [Header("Cultivo en un edificio-árbol (las cortinas del fondo abierto; docs/areas/mascaras-de-oxigeno.md §Fitoplancton)")]
     [Tooltip("Edificio-árbol cuyo jardinero lo cuida (vacío = fitoplancton del mar, sin cuidados).")]
     public string building = "";
     [Tooltip("Estado del cultivo (1 = óptimo): luz, nutrientes y cortinas limpias. Baja cada día; lo repone el jardinero.")]

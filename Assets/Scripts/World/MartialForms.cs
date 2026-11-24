@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// EL MAESTRO QUE ENSEÑA CON EL CUERPO (docs/microcosmos-bruce-lee.md): hace en bucle una forma de <see cref="JeetKuneDo"/>
+/// EL MAESTRO QUE ENSEÑA CON EL CUERPO (docs/microcosmos/microcosmos-bruce-lee.md): hace en bucle una forma de <see cref="JeetKuneDo"/>
 /// (la guardia, los golpes en cadena, el muñeco, el juego de pies, el golpe de una pulgada…). Si está en una historia por
 /// pasos (<see cref="StoryMission"/>), cada paso elige su forma (<see cref="formByStep"/>) y su sitio (<see cref="spotByStep"/>):
 /// el maestro va a la estación de ese paso (Hong Kong, la bahía, Seattle, Long Beach, Los Ángeles…) y mira al jugador.

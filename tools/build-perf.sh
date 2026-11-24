@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Mide los FPS FUERA DEL EDITOR (docs/rendimiento.md). Dos partes:
+# Mide los FPS FUERA DEL EDITOR (docs/plataforma/rendimiento.md). Dos partes:
 #   tools/build-perf.sh build [final|dev]   construye solo SampleScene en Builds/Perf(Dev). Unity en batchmode: el editor
 #                                           debe estar CERRADO y hace falta licencia. Con el editor abierto, usar el menú
 #                                           Tools/Cold Sanctuary/Rendimiento/Build de medida.

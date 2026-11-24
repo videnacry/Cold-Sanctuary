@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LOS PISOS DE YOGA (Berón 2026-11-04; docs/yoga-pisos.md). «En la sala de yoga retira el anillo de yoga, pues no creo que desde el
+/// LOS PISOS DE YOGA (Berón 2026-11-04; docs/areas/yoga-pisos.md). «En la sala de yoga retira el anillo de yoga, pues no creo que desde el
 /// anillo puedan ver ni interactuar con el profesor; en su lugar vamos a crear otro piso de yoga… hatha en un piso y ashtanga en
 /// otro… la versión más occidental y la versión más conservadora, ambas con sus estatuas o elementos distintivos.»
 ///
@@ -186,7 +186,7 @@ public static partial class SampleSceneBuilder
 
     /// <summary>EL KUND (sala tradicional): un estanque de 6 × 3 m en la banda del lado del tronco (−Z), a ras del suelo: su agua
     /// (0,9 m) la trae del tronco un canal por el suelo y la SUJETA EL CAMPO MAGNÉTICO entre cuatro bobinas de cobre, como en las
-    /// puertas del árbol (docs/edificio-arbol.md): se entra andando, sin escalones. Antes de la práctica, cada alumno se sienta en
+    /// puertas del árbol (docs/areas/edificio-arbol.md): se entra andando, sin escalones. Antes de la práctica, cada alumno se sienta en
     /// el agua <see cref="YogaHall.ImmersionSeconds"/> s (como en los Theerthakund de Isha, antes del Dhyanalinga).</summary>
     static void BuildKund(Transform hallT, float cx)
     {

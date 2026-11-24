@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LA REGLA DEL SITIO NUCLEAR (Berón 2026-11-05; docs/sitio-nuclear.md): los dos reactores del santuario van en su propio casquete artificial,
+/// LA REGLA DEL SITIO NUCLEAR (Berón 2026-11-05; docs/areas/sitio-nuclear.md): los dos reactores del santuario van en su propio casquete artificial,
 /// lejos y a sotavento, en un árbol BAJO: lo que protege de un reactor es la distancia, la contención y el agua, no la altura.
 /// - Distancia: ≥ <see cref="MinDistance"/> m a todo edificio e isla del santuario (lo más lejos que permite el mapa).
 /// - Viento: el sitio queda a sotavento de <see cref="PrevailingWindTo"/> (el juego no simula viento: es una decisión de diseño fija).
@@ -41,7 +41,7 @@ public static class NuclearSiteRule
     /// <summary>La referencia pasiva: 72 h sin operador (el depósito por gravedad del AP1000).</summary>
     public const float ReferenceHours = 72f;
 
-    // ── LA PLANTA BAJO EL MAR (Berón 2026-11-08; docs/sitio-nuclear.md §25) ──
+    // ── LA PLANTA BAJO EL MAR (Berón 2026-11-08; docs/areas/sitio-nuclear.md §25) ──
     /// <summary>Lo único que queda arriba: la ESTACIÓN DE ALFOMBRAS con la cabeza de la Línea, en un casquete pequeño en el sitio de siempre.</summary>
     public const string StationName = "Estacion_nuclear", EmergencyName = "Centro_emergencias";
     /// <summary>Medio lado (m) de la estación: el andén, la caseta de la Línea, la pista de alfombras y la tapa del pozo de escape, con 2 m entre todo.</summary>
@@ -79,7 +79,7 @@ public static class NuclearSiteRule
 }
 
 /// <summary>
-/// EL SITIO NUCLEAR en juego (docs/sitio-nuclear.md): vigilancia, válvulas pasivas que fallan abiertas y el plan de emergencia. Una EMERGENCIA
+/// EL SITIO NUCLEAR en juego (docs/areas/sitio-nuclear.md): vigilancia, válvulas pasivas que fallan abiertas y el plan de emergencia. Una EMERGENCIA
 /// para el reactor de investigación, abre las válvulas (el agua del tronco baja sola) y enciende las balizas; el microrreactor se enfría
 /// solo, sin nada que accionar. Mientras dure, quien esté en la zona de exclusión se va al hospital (<see cref="WorkdayDirector.EvacuateSite"/>) y
 /// nadie entra. Un SIMULACRO prueba válvulas y balizas sin parar nada.
@@ -99,7 +99,7 @@ public class NuclearSite : MonoBehaviour
     public List<Transform> seaProbes = new List<Transform>();
     [Tooltip("Balizas de alarma (apagadas en normal).")]
     public List<GameObject> beacons = new List<GameObject>();
-    [Tooltip("(2026-11-08) El muelle del submarino de obra en la estación: su plaza, sobre la escotilla y el elevador (docs/sitio-nuclear.md §25).")]
+    [Tooltip("(2026-11-08) El muelle del submarino de obra en la estación: su plaza, sobre la escotilla y el elevador (docs/areas/sitio-nuclear.md §25).")]
     public Transform submarineBerth;
     [Tooltip("Agua (m³) que enfría sin bombas (el mar, por la toma pasiva de cada sala).")]
     public float gravityWaterM3;
@@ -113,7 +113,7 @@ public class NuclearSite : MonoBehaviour
     /// <summary>¿Se está evacuando el sitio? (la jornada no manda a nadie allí)</summary>
     public static bool Evacuating => Instance != null && Instance.State == Alert.Emergencia;
     public static bool IsSiteArea(string area) => area == PlantArea || area == PowerArea || area == SiteLine.AreaName;
-    /// <summary>(2026-11-08) ¿El área está entera BAJO EL MAR, en el Santuario Marino? La Central Nuclear y la Planta Atómica (docs/sitio-nuclear.md §25): en el
+    /// <summary>(2026-11-08) ¿El área está entera BAJO EL MAR, en el Santuario Marino? La Central Nuclear y la Planta Atómica (docs/areas/sitio-nuclear.md §25): en el
     /// santuario 1 solo queda su estación de alfombras con la Línea.</summary>
     public static bool Underwater(string area) => area == PlantArea || area == PowerArea;
     float _nextCount;
@@ -176,7 +176,7 @@ public class NuclearSite : MonoBehaviour
         l.Add(new WorkRoster.Mission(PowerArea, "nuc_pasivos", "Revisar lo pasivo: válvulas del tronco a la piscina, toma de agua de mar y recinto de contención", 1f) { also = new[] { PlantArea } });
         int week = ((day % 7) + 7) % 7;
         if (week == 0) l.Add(new WorkRoster.Mission(PowerArea, "nuc_simulacro", "Simulacro de emergencia: parada, válvulas, balizas y salida del turno", 1f));
-        // LA ROCA (docs/sitio-nuclear.md §7): se lee a diario; una bajada a la semana, o en cuanto hay AVISO; en ALARMA nadie baja y se refuerza desde arriba.
+        // LA ROCA (docs/areas/sitio-nuclear.md §7): se lee a diario; una bajada a la semana, o en cuanto hay AVISO; en ALARMA nadie baja y se refuerza desde arriba.
         // EL ICEBERG (§14): si viene hacia aquí, remolcarlo es lo primero: es lo único que de verdad para uno.
         if (Iceberg.Threatening(IcebergRule.Site.Nuclear) != null) l.Add(new WorkRoster.Mission(PowerArea, Iceberg.TowMission, "Iceberg a la vista: seguirlo por radar y sonar y remolcarlo fuera de la zona", SiteLineRule.MissionHours, true));
         CavernRock rock = CavernRock.Instance;

@@ -4,7 +4,7 @@ Berón (2026-11-08): «hace falta una lista de personajes y que cada uno tenga s
 otros y equilibrarlos. Los primeros que se crearon dan más información que otros, y hay que seguir rellenándolos todos. Poned enlaces que
 repartan la información de los personajes por el código».
 
-Reglas: [manual-de-diseno.md §9.1](../manual-de-diseno.md) (P2, P10 y P24) y [reglas-personajes.md](../reglas-personajes.md).
+Reglas: [manual-de-diseno.md §9.1](../reglas/manual-de-diseno.md) (P2, P10 y P24) y [reglas-personajes.md](../reglas/reglas-personajes.md).
 
 ## La plantilla
 
@@ -25,7 +25,7 @@ Cada ficha tiene estas 11 secciones, en este orden. Copia [linduarda.md](linduar
 | 11 | Preguntas para Berón | Lo que falta o se contradice |
 | — | Solo documentación, no mostrar en el juego | Solo si hace falta: nombres reales y datos que el juego no debe enseñar nunca (Berón 2026-11-08) |
 
-**Cada dato lleva su veracidad y su fuente** (M39, [veracidad-frases.md](../veracidad-frases.md)):
+**Cada dato lleva su veracidad y su fuente** (M39, [veracidad-frases.md](../sistemas/veracidad-frases.md)):
 
 | Veracidad | Cuándo |
 |---|---|
@@ -107,10 +107,10 @@ No cuentan para equilibrar: viven en su microcosmos (J12) o solo en la historia.
 | [Leo](leo.md) | F | L | P | F | P | P | L | P | P | 9 | solo en las historias; no tiene cuerpo en el juego |
 
 Los personajes históricos y los insectos-humanos de cada microcosmos (Newton, Curie, Bruce Lee, Ambrosio, Sakshi, el grupo fundador…)
-tienen su ficha en el doc de su microcosmos: [microcosmos-famosos.md](../microcosmos-famosos.md),
-[microcosmos-historias.md](../microcosmos-historias.md), [microcosmos-historias-3.md](../microcosmos-historias-3.md),
-[microcosmos-musica.md](../microcosmos-musica.md), [founding-trio-stories.md](../founding-trio-stories.md),
-[mob-characters.md](../mob-characters.md).
+tienen su ficha en el doc de su microcosmos: [microcosmos-famosos.md](../microcosmos/microcosmos-famosos.md),
+[microcosmos-historias.md](../microcosmos/microcosmos-historias.md), [microcosmos-historias-3.md](../microcosmos/microcosmos-historias-3.md),
+[microcosmos-musica.md](../microcosmos/microcosmos-musica.md), [founding-trio-stories.md](../historia/founding-trio-stories.md),
+[mob-characters.md](../historia/mob-characters.md).
 
 ## Contradicciones entre fuentes (2026-11-08)
 
@@ -120,7 +120,7 @@ Están en la sección 11 de cada ficha, como preguntas. Las principales (las con
    Néstor, el primer esposo de su historia (nombres reales: solo en sus fichas, sección «Solo documentación»). **Sigue abierto**: si
    Alicita es la hija «Alicia», exesposa de Josedrilo, si Josedrilo es el padre de Leo y si Lizmibet es su consuegra ⚠️.
 2. **Médicas sin profesión.** Linduarda y Lizmibet no tienen entrada en `Professions.All`; `Professions.Medical` no incluye a Malena,
-   aunque [reglas-personajes.md](../reglas-personajes.md) cuenta 4 médicas.
+   aunque [reglas-personajes.md](../reglas/reglas-personajes.md) cuenta 4 médicas.
 3. **Linduarda y los animales.** Su ficha dice Una Salud, pero la jornada la excluye de cuidar a los animales ingresados.
 4. **El santuario y el nivel de Irosene**: Tier 4 submarino, «3er santuario V1» o, según la regla del 2026-11-08, por encima de
    santuario 1 nivel 1. En el juego vive en el santuario 1 como todos.
@@ -133,7 +133,7 @@ Están en la sección 11 de cada ficha, como preguntas. Las principales (las con
 9. **Andrea** está en la lista de nombres femeninos de los microcosmos (`AreaMicrocosmos.FemaleNames`), y es un hombre.
 10. **Textos viejos** de los planes de gimnasio (Nesvitor «el mayor de las cuentas», Ducristin «mecánico», Alicita «huerto», Maite
     «registros y vacunación») y de `SanctuaryDirector` (Nesvitor «consejero», Ducristin «la mecánica»).
-11. **Aspectos provisionales distintos** en el código y en [diseno-personajes.md](../diseno-personajes.md): Julian y Fausto.
+11. **Aspectos provisionales distintos** en el código y en [diseno-personajes.md](../sistemas/diseno-personajes.md): Julian y Fausto.
 12. **Fernando** lleva toda el área de Energía (también las patrullas `ene_`), y Berón solo dijo paneles solares; no está en
     `Professions.Unconfirmed` (P7).
 13. **Traoré** guarda un aspecto militar (boina y uniforme) aunque su microcosmos es solo civil (J6).
@@ -142,7 +142,7 @@ Están en la sección 11 de cada ficha, como preguntas. Las principales (las con
 ## Cómo se mantiene
 
 - **Al llegar alguien**: su ficha nueva desde la plantilla, su fila en esta tabla y el comentario «ficha:» en cada sitio del código donde
-  se define (lista de [reglas-personajes.md](../reglas-personajes.md) §Lista para añadir a alguien).
+  se define (lista de [reglas-personajes.md](../reglas/reglas-personajes.md) §Lista para añadir a alguien).
 - **Al saber algo nuevo** (un mensaje de Berón, una foto, un cambio de puesto): se escribe en su ficha con su veracidad y su fuente, se
   quita el «Falta» o la pregunta que contesta y se recalcula su fila.
 - **Al cambiar el código** de una persona: se actualiza el enlace de la sección 10 (los números de línea cambian).

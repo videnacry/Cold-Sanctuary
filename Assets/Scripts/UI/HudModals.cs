@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LA PILA DE BOTONES DE LA DERECHA Y SUS VENTANAS (Berón 2026-11-05, docs/interfaz-botones.md): encima del botón de F10, y con su
+/// LA PILA DE BOTONES DE LA DERECHA Y SUS VENTANAS (Berón 2026-11-05, docs/sistemas/interfaz-botones.md): encima del botón de F10, y con su
 /// mismo ancho, van «Horario libre», «Recursos» y «Misiones y jornada». Cada uno abre una ventana centrada, de una en una; se cierra
 /// con Esc, con su botón de la pila, con su tecla o con «cerrar». Las teclas F2, F3 y F4 estaban libres (F1 es HudGate y F10 la pausa).
 /// Las ventanas leen las mismas fuentes que los paneles que ya había (<see cref="LeisureDirector"/>, <see cref="SanctuaryResources"/>,

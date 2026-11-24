@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DEL DESHIERBE CON CUIDADO (Berón 2026-11-05; docs/deshierbe-cuidadoso.md): hay malas hierbas de verdad; se levantan con raíz; las nativas van al
+/// PRUEBA DEL DESHIERBE CON CUIDADO (Berón 2026-11-05; docs/areas/deshierbe-cuidadoso.md): hay malas hierbas de verdad; se levantan con raíz; las nativas van al
 /// vivero y de ahí a la tundra; las no nativas, a bolsa cerrada e incinerador, nunca a la tierra.
 /// </summary>
 public class DeshierbeTest : MonoBehaviour, ITestUnit

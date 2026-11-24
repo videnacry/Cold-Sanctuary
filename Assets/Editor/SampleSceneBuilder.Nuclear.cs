@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// EL SITIO NUCLEAR (Berón 2026-11-05; docs/sitio-nuclear.md). Desde el 2026-11-08 (§25: «mover la planta nuclear completamente bajo el agua, como parte del
+/// EL SITIO NUCLEAR (Berón 2026-11-05; docs/areas/sitio-nuclear.md). Desde el 2026-11-08 (§25: «mover la planta nuclear completamente bajo el agua, como parte del
 /// santuario 2»), la Central Nuclear y la Planta Atómica, con todos sus pisos y su maquinaria, están en el SANTUARIO MARINO, junto a las cavernas
 /// (<see cref="BuildMarinePlant"/>). En el santuario 1, en el sitio de siempre, solo queda la ESTACIÓN: un casquete pequeño con la cabeza de la Línea, su pista
 /// de alfombras de la red del santuario (como el muelle del Aéreo), la tapa del pozo de escape, la chimenea de la ventilación filtrada de las salas, el radar
@@ -25,7 +25,7 @@ public static partial class SampleSceneBuilder
         Transform st = new GameObject(NuclearSiteRule.StationName).transform; st.SetParent(_nuclearRoot, false); st.position = site;
         float H = NuclearSiteRule.StationHalf;
         Color capC = new Color(0.82f, 0.85f, 0.88f);
-        // El casquete pequeño: una losa flotante de 40 × 40 m, su pretil y sus 4 tendones al fondo somero (docs/sitio-nuclear.md §9).
+        // El casquete pequeño: una losa flotante de 40 × 40 m, su pretil y sus 4 tendones al fondo somero (docs/areas/sitio-nuclear.md §9).
         Transform cap = new GameObject("Casquete_artificial").transform; cap.SetParent(st, false); cap.localPosition = Vector3.zero;
         Solid(cap, new Vector3(0f, -0.75f, 0f), new Vector3(2f * H, 1.5f, 2f * H), capC, "Casquete_artificial");
         // (2026-11-11, petición #1: sin barandillas ni pretiles de borde) el casquete ya no lleva pretil: el borde se ve y se salta, como las placas.
@@ -63,7 +63,7 @@ public static partial class SampleSceneBuilder
         KitchenProps.C(gar, new Vector3(0f, -4f, 0f), new Vector3(TreeSpec.VehicleBeam + 0.6f, 8f, TreeSpec.VehicleLength + 0.6f), new Color(0.6f, 0.6f, 0.58f), 0f, "Pozo_escotilla");
         Transform berth = new GameObject("Muelle_submarino").transform; berth.SetParent(gar, false); berth.localPosition = new Vector3(0f, 0.05f, 0f);
         ns.submarineBerth = berth;
-        // Lo que piden los pisos de abajo sigue en el balance del santuario 1 (docs/energia.md).
+        // Lo que piden los pisos de abajo sigue en el balance del santuario 1 (docs/areas/energia.md).
         GameObject pf = new GameObject("Pisos_planta_marina"); pf.transform.SetParent(_nuclearRoot, false);
         FloorEnergy.DeclareFloor(pf, NuclearSiteRule.PlantFloorsName, 0f, 0f, NuclearSiteRule.PlantFloorsKW);
     }
@@ -151,7 +151,7 @@ public static partial class SampleSceneBuilder
         }
     }
 
-    /// <summary>LA REGLA (docs/sitio-nuclear.md): distancia, sotavento y agua pasiva. Si no cumple, error en el registro.</summary>
+    /// <summary>LA REGLA (docs/areas/sitio-nuclear.md): distancia, sotavento y agua pasiva. Si no cumple, error en el registro.</summary>
     static void ValidateNuclearSite(string when)
     {
         if (_nuclearRoot == null) return;

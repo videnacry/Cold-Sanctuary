@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// ALMACÉN DE MATERIAL de Construcción (docs/construccion-sostenible.md). El santuario es AUTOSUSTENTABLE: todo lo que
+/// ALMACÉN DE MATERIAL de Construcción (docs/areas/construccion-sostenible.md). El santuario es AUTOSUSTENTABLE: todo lo que
 /// se construye sale de PLANTAS (y de los animales sin hacerles daño), cultivado y transformado aquí mismo:
 ///  · GUADUA (bambú estructural) del BAMBUSAL: se corta la caña madura (3–5 años, se repone sola: el rizoma rebrota), se
 ///    CURA (avinagrado en pie y secado) y se TRATA con bórax (inmersión) antes de usarla: unos días hasta estar lista.

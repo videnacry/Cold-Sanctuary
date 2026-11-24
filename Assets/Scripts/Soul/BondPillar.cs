@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// PILAR SOCIAL / de BONDS por COMPOSICIÓN (docs/anima-architecture.md · soul-relations-reincarnation §2 —
+/// PILAR SOCIAL / de BONDS por COMPOSICIÓN (docs/sistemas/anima-architecture.md · soul-relations-reincarnation §2 —
 /// fase 5). **No hay vía directa con el jugador**: cada `Anima` **familiariza con CUALQUIER otro ser cercano**
 /// (un `ITarget` — animal, jugador vía `PlayerTarget`, etc.) **según las circunstancias** (aquí: la cercanía).
 /// Usa el sistema de bonds **universal de `Anima`** (`GrowBond`/`GetBond`, con etapa-de-vida × trauma × aura),

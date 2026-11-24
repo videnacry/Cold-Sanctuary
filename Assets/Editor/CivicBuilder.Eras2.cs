@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LAS ERAS QUE FALTABAN (docs/microcosmos-civilizaciones.md §8–9): Planta Atómica (1666/1898/1905), Varsovia 1942 (Irena
+/// LAS ERAS QUE FALTABAN (docs/microcosmos/microcosmos-civilizaciones.md §8–9): Planta Atómica (1666/1898/1905), Varsovia 1942 (Irena
 /// Sendler), Le Chambon-sur-Lignon 1942, Uruk (~3500 a. C., Mesopotamia) y la primera aldea (~9500 a. C., el Huerto). Donde la
 /// historia ya trae sus edificios (los pueblos de las simulaciones de compasión, hechos macizos), se les añade el SITIO del
 /// registro y sus puestos delante de la puerta (<see cref="Porch"/>); donde no, se construyen (<see cref="Building"/>).

@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// EL COMPROBADOR DE QA EN EL EDITOR (2026-11-13, docs/qa-propuesta.md §6): «Tools/Cold Sanctuary/QA/Comprobar» corre <see cref="QaCheck"/>
+/// EL COMPROBADOR DE QA EN EL EDITOR (2026-11-13, docs/qa/qa-propuesta.md §6): «Tools/Cold Sanctuary/QA/Comprobar» corre <see cref="QaCheck"/>
 /// sobre el repositorio (el de Temp/qa-root.txt, que escribe tools/sync-to-unity.sh; o COLD_SANCTUARY_REPO; o el propio proyecto), lo
 /// escribe en la consola y en Logs/qa-check.txt. Desde la línea de órdenes:
 ///   Unity -batchmode -projectPath … -executeMethod QaCheckTool.FromCommandLine [-qaRoot RUTA]   (sale con 0 si cuadra, 1 si no, 2 sin docs/qa)

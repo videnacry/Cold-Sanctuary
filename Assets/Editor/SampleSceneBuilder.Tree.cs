@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// EL ÁRBOL DE LOS CAMPOS v2 (Berón 2026-10-30; docs/edificio-arbol.md, medidas en <see cref="TreeSpec"/> y el modelo genérico
+/// EL ÁRBOL DE LOS CAMPOS v2 (Berón 2026-10-30; docs/areas/edificio-arbol.md, medidas en <see cref="TreeSpec"/> y el modelo genérico
 /// <see cref="HelixTower"/>, construido con SampleSceneBuilder.Helix.cs, el mismo que las torres): los campos de cultivo en un
 /// edificio en HÉLICE, en el lóbulo Sur:Milpa.
 /// - TRONCO CUADRADO de agua (22 m, pared de acrílico de 1 m, transparente como el tanque de virtualización: se ve nadar a la
@@ -56,7 +56,7 @@ public static partial class SampleSceneBuilder
             garden.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);   // su lado abierto (+Z del área) mira a la puerta
             GameObject go = MakePlot(garden.transform, guild, garden.transform.TransformPoint(new Vector3(-3f, 0.1f, 0f)), new Vector2(6f, 18f), TreeSpec.Seeds[k - 1], false);
             go.transform.localRotation = Quaternion.Euler(0f, 90f, 0f);   // (sus filas, a lo largo del área: caben todas las del gremio)
-            // El INCINERADOR de plantas no nativas (docs/deshierbe-cuidadoso.md): nada de eso vuelve al suelo.
+            // El INCINERADOR de plantas no nativas (docs/areas/deshierbe-cuidadoso.md): nada de eso vuelve al suelo.
             Transform burn = KitchenProps.Root(garden.transform, "Incinerador_maleza", new Vector3(7f, 0f, 0f));
             KitchenProps.C(burn, new Vector3(0f, 0.6f, 0f), new Vector3(1.2f, 1.2f, 1.2f), KitchenProps.DarkSteel, 0f, "Camara");
             KitchenProps.C(burn, new Vector3(0f, 1.8f, 0f), new Vector3(0.3f, 1.2f, 0.3f), KitchenProps.Steel, 0f, "Chimenea_con_filtro");

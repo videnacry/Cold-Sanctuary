@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// LA LANZADERA DE COHETES (Berón 2026-11-04; docs/lanzadera-de-cohetes.md): un CASQUETE ARTIFICIAL lejos del santuario (≥ 300 m de
+/// LA LANZADERA DE COHETES (Berón 2026-11-04; docs/areas/lanzadera-de-cohetes.md): un CASQUETE ARTIFICIAL lejos del santuario (≥ 300 m de
 /// cualquier edificio o isla: la distancia de edificio habitado para la explosión de un cohete de la clase Electron) con un
 /// EDIFICIO-ÁRBOL REFORZADO que sostiene la plataforma por encima de todo lo demás (<see cref="LaunchHeightRule"/>): su corona lleva el
 /// cohete, el deflector y la trinchera de llamas, el diluvio de agua, la cubeta de contención y el escudo contra cascotes. Pisos:
@@ -79,12 +79,12 @@ public static partial class SampleSceneBuilder
         foreach (var (x0, x1, z0, z1) in new[] { (-H, -hole, -H, H), (hole, H, -H, H), (-hole, hole, -H, -hole), (-hole, hole, hole, H) })
             Solid(cap, new Vector3((x0 + x1) * 0.5f, -0.75f, (z0 + z1) * 0.5f), new Vector3(x1 - x0, 1.5f, z1 - z0), capC, "Casquete_artificial");
         // (2026-11-11, petición #1: sin barandillas ni pretiles de borde) el casquete ya no lleva pretil: el borde se ve y se salta, como las placas.
-        // Con el mar a su hondura real, un casquete no se queda solo en su sitio: 4 tendones al lecho, como una plataforma de patas tensadas (docs/sitio-nuclear.md §9).
+        // Con el mar a su hondura real, un casquete no se queda solo en su sitio: 4 tendones al lecho, como una plataforma de patas tensadas (docs/areas/sitio-nuclear.md §9).
         float tendon = -SeaRule.FloorY;
         for (int a = -1; a <= 1; a += 2)
             for (int b = -1; b <= 1; b += 2)
                 PolarLandscapeBuilder.IgnoreForNav(KitchenProps.C(cap, new Vector3(a * (H - 6f), -tendon * 0.5f - 1f, b * (H - 6f)), new Vector3(0.8f, tendon, 0.8f), new Color(0.3f, 0.32f, 0.35f), 0f, "Tendon_casquete").gameObject);
-        // LA DETECCIÓN (docs/sitio-nuclear.md §14): radar en un mástil y sonar de quillas bajo el borde, en cada casquete. Lo que no se ve no se remolca.
+        // LA DETECCIÓN (docs/areas/sitio-nuclear.md §14): radar en un mástil y sonar de quillas bajo el borde, en cada casquete. Lo que no se ve no se remolca.
         Vector3 mast = new Vector3(H - 8f, 0f, 0f);
         KitchenProps.C(cap, mast + new Vector3(0f, 5f, 0f), new Vector3(0.3f, 10f, 0.3f), TreeSteel, 0f, "Mastil_radar");
         KitchenProps.C(cap, mast + new Vector3(0f, 10.2f, 0f), new Vector3(2.4f, 0.4f, 0.4f), new Color(0.25f, 0.27f, 0.3f), 0f, "Radar_hielo");
@@ -132,7 +132,7 @@ public static partial class SampleSceneBuilder
         Label(KitchenProps.C(f, new Vector3(0f, 6.6f, 11f), Vector3.one * 0.1f, screen, 0f, "Cartel_control"), $"{LaunchSite.ControlArea}: telemetría, meteorología y la cuenta atrás", 1f);
         SanctuaryArea a = f.gameObject.AddComponent<SanctuaryArea>();
         a.areaType = SanctuaryAreaType.LaunchControl; a.displayName = LaunchSite.ControlArea;
-        a.description = "Control de misión de la lanzadera de cohetes (docs/lanzadera-de-cohetes.md)";
+        a.description = "Control de misión de la lanzadera de cohetes (docs/areas/lanzadera-de-cohetes.md)";
     }
 
     // Una plaza pintada para el submarino de obra (14 × 5 m + 1 m alrededor).
@@ -222,8 +222,8 @@ public static partial class SampleSceneBuilder
         }
         KitchenProps.C(um, new Vector3(0f, 22.2f, 0f), new Vector3(1.9f, 0.4f, 1.9f), red, 0f, "Remate_torre");
         foreach (float y in new[] { 13f, 8f }) KitchenProps.C(um, new Vector3(-2f, y, 2f), new Vector3(0.3f, 0.3f, 5f), steel, -45f, "Brazo_umbilical");
-        Label(KitchenProps.C(deck, new Vector3(0f, 24f, 0f), Vector3.one * 0.1f, red, 0f, "Cartel_plataforma"), "Plataforma de lanzamiento (regla de altura: docs/lanzadera-de-cohetes.md)", 2f);
-        // LOS PROPULSORES Y LOS PIROTÉCNICOS (docs/sitio-nuclear.md §6): al aire, en el casquete y lejos del árbol y entre sí. Bajo tierra no:
+        Label(KitchenProps.C(deck, new Vector3(0f, 24f, 0f), Vector3.one * 0.1f, red, 0f, "Cartel_plataforma"), "Plataforma de lanzamiento (regla de altura: docs/areas/lanzadera-de-cohetes.md)", 2f);
+        // LOS PROPULSORES Y LOS PIROTÉCNICOS (docs/areas/sitio-nuclear.md §6): al aire, en el casquete y lejos del árbol y entre sí. Bajo tierra no:
         // el oxígeno y los vapores se acumulan y una explosión confinada es peor. La fábrica se queda arriba: allí las etapas están vacías.
         Vector3 cc = tree.position;
         Mesh sphere = RocketModel.Lathe("Deposito_esfera", new[] { (0f, 0f), (2.6f, 0.7f), (3.8f, 2.4f), (4.2f, 4.5f), (3.8f, 6.6f), (2.6f, 8.3f), (0f, 9f) }, 12);
@@ -245,7 +245,7 @@ public static partial class SampleSceneBuilder
         ValidateLaunchHeight("al terminar la lanzadera");
     }
 
-    /// <summary>LA REGLA (docs/lanzadera-de-cohetes.md): con todo lo elevado ya puesto, la plataforma ≥ máx(lo más alto, aves) + margen.
+    /// <summary>LA REGLA (docs/areas/lanzadera-de-cohetes.md): con todo lo elevado ya puesto, la plataforma ≥ máx(lo más alto, aves) + margen.
     /// Si no, FALLA (error en el registro) y la sube. Se llama al terminar la lanzadera y al final del Blockout.</summary>
     static void ValidateLaunchHeight(string when)
     {

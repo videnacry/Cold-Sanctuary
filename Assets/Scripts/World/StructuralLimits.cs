@@ -1,9 +1,9 @@
 /// <summary>
-/// LÍMITES DE LA ESTRUCTURA (Berón 2026-10-28; docs/columnas-sismicas.md §Límite de diseño): las megacolumnas de las
+/// LÍMITES DE LA ESTRUCTURA (Berón 2026-10-28; docs/areas/columnas-sismicas.md §Límite de diseño): las megacolumnas de las
 /// 8 puntas de cada plataforma están dimensionadas para edificios de hasta <see cref="MaxFloors"/> pisos. Si algún día un
 /// edificio tiene más, la construcción lo avisa (error en consola) y la prueba de la vida del santuario falla: hay que
 /// reforzar las columnas (más diámetro o más chapa, ver el doc) antes de subir más pisos.
-/// LA RAÍZ DEL ÁRBOL DE LOS CAMPOS (docs/edificio-arbol.md) tiene su propia comprobación (<see cref="RootCheck"/>): es la
+/// LA RAÍZ DEL ÁRBOL DE LOS CAMPOS (docs/areas/edificio-arbol.md) tiene su propia comprobación (<see cref="RootCheck"/>): es la
 /// ÚNICA columna (un tronco CUADRADO de agua) de los pisos en voladizo, las ramas con sus campos de punta y su techo.
 /// </summary>
 public static class StructuralLimits

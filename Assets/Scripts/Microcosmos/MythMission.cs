@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// EGINA, EL REINO DE LOS MIRMIDONES (docs/microcosmos-myrmidons.md): el mito de Ovidio contado de forma humana. Éaco
+/// EGINA, EL REINO DE LOS MIRMIDONES (docs/microcosmos/microcosmos-myrmidons.md): el mito de Ovidio contado de forma humana. Éaco
 /// sueña con un reino de virtud y grandeza; Zeus, su padre, con muchos contactos e influencia, va a ver a todos los
 /// insecto-humanos que conoce y los anima a unirse y a trabajar por el bien común. El jugador ayuda (E: hablar con
 /// alguien que aún no se ha unido). Unidos, cargan piedra de la cantera y alzan el templo (<see cref="GreekBuildSite"/>);

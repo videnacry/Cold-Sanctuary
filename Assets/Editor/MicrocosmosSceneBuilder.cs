@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Genera la ESCENA propia del MICROCOSMOS **Scene1 (Ambrosio / el alba)** — el nivel introductorio de la cueva y el
-/// pulgón (docs/microcosmos-level1.md, microcosmos-insects.md §13). El microcosmos es su PROPIO plano: sus niveles son
+/// pulgón (docs/microcosmos/microcosmos-level1.md, microcosmos-insects.md §13). El microcosmos es su PROPIO plano: sus niveles son
 /// escenas separadas, NO objetos dentro de la escena del mesocosmos (Santuario 1). Scene1 (Ambrosio, anterior en la
 /// historia) y <see cref="MobWorldSceneBuilder"/> (Mesopotamia, la ciudad-insecto) son escenas **HERMANAS** del mismo
 /// microcosmos. Escenas-desde-código: la .unity no se versiona (como SampleScene/Mesopotamia) pero se regenera aquí.
@@ -72,11 +72,11 @@ public static class MicrocosmosSceneBuilder
             n++;
             return g;
         }
-        // La familia (docs/microcosmos-level1.md): Ambrosio es un PULGÓN grande y manso; Sakshi, la anciana que lo crió.
+        // La familia (docs/microcosmos/microcosmos-level1.md): Ambrosio es un PULGÓN grande y manso; Sakshi, la anciana que lo crió.
         Member("Ambrosio", new Vector3(-1.6f, 0f, -5.6f), new Color(0.74f, 0.84f, 0.5f), 2.0f, 1.6f, aphid: true);
         Member("Sakshi", new Vector3(-1.6f, 0f, -4f), new Color(0.38f, 0.42f, 0.48f), 1.6f, 0.9f, weak: true);
         Member("Shanidar", new Vector3(1.6f, 0f, -4f), new Color(0.5f, 0.45f, 0.4f), 1.6f, 0.95f, weak: true);
-        // Los otros dos viejos de los cuatro que «desertaron para quedarse con ellos» (docs/novela.md).
+        // Los otros dos viejos de los cuatro que «desertaron para quedarse con ellos» (docs/historia/novela.md).
         Member("Anciano_Pintor", new Vector3(-4f, 0f, -3.7f), new Color(0.55f, 0.5f, 0.42f), 1.55f, 0.9f, weak: true);
         Member("Anciana", new Vector3(4f, 0f, -3.7f), new Color(0.48f, 0.4f, 0.45f), 1.5f, 0.85f, weak: true);
         Member("Atlas", new Vector3(-2.4f, 0f, -5.4f), new Color(0.3f, 0.2f, 0.15f), 2.0f, 1.25f);
@@ -90,7 +90,7 @@ public static class MicrocosmosSceneBuilder
 
 
     // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
-    //  SCENE0 — Origen de Sakshi (el PRIMER viaje de Kushal). ANTERIOR a Scene1 (Ambrosio). docs/microcosmos-sakshi-origin.md
+    //  SCENE0 — Origen de Sakshi (el PRIMER viaje de Kushal). ANTERIOR a Scene1 (Ambrosio). docs/microcosmos/microcosmos-sakshi-origin.md
     // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
     public const string SceneName0 = "Microcosmos_Scene0_SakshiRio";
     const string ScenePath0 = "Assets/Scenes/" + SceneName0 + ".unity";
@@ -100,7 +100,7 @@ public static class MicrocosmosSceneBuilder
     /// <summary>
     /// EL RÍO DE SAKSHI, hecho con la PLANTILLA (Berón 2026-10-27): el microcosmos de la SALA DE YOGA (su plataforma ×10),
     /// antes de Ambrosio, al amanecer, con la flora y los insectos de la taiga. La Magnate envía aquí al recién llegado tras
-    /// su primera clase de yoga. Historia: <see cref="SakshiRiverStory"/> (docs/microcosmos-sakshi-origin.md).
+    /// su primera clase de yoga. Historia: <see cref="SakshiRiverStory"/> (docs/microcosmos/microcosmos-sakshi-origin.md).
     /// </summary>
     public static void BuildScene0()
     {
@@ -177,7 +177,7 @@ public static class MicrocosmosSceneBuilder
 
     // INSECTOS NEUTROS de ambiente: usa el FACTORY/prefabs de fauna para poblar la escena con bichos que NO afectan al
     // nivel (dan vida/sonido real). Carga el prefab por ruta (editor); si no existe (fbx pendiente), se salta. Dispersa
-    // unos pocos de cada especie lejos de la orilla de Sakshi. docs/anyma-factory-and-control.md.
+    // unos pocos de cada especie lejos de la orilla de Sakshi. docs/sistemas/anyma-factory-and-control.md.
     static void BuildAmbientInsects(Transform root)
     {
         GameObject amb = new GameObject("InsectosAmbiente"); amb.transform.SetParent(root);
