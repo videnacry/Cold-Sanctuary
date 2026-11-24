@@ -899,6 +899,7 @@ Código y compilación hechos; falta la prueba en vivo.
 - [ ] Lemming, la presa que le falta a la tundra (recomendaciones en `reglas-animales.md`).
 
 ## Siguiente (código)
+- [ ] **PB-170 Portar el santuario 1 de CodeShip** (Berón 2026-11-24): por prioridad en [`portar-codeship-s1.md`](sistemas/portar-codeship-s1.md); el rediseño de pisos/árboles espera su decisión.
 - [ ] **Alma compartida (resto)**: `HelpRequest` ya hace "ir juntos" (MVP); falta **compartir pensamientos**
       (misma frase → instancia de mente/madre compartida) y que el sí/no lea bond/humores/inclinaciones.
 - [ ] **Re-autorar vivencias** de Ötzi/Sembradora/Guardián con el canon de `founding-trio-stories.md`

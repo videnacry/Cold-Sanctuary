@@ -5,6 +5,7 @@ el PR, en `git log` y en [`docs/checklist.md`](docs/checklist.md) (Historial).
 Al fusionar un PR, añade su línea en «Sin publicar» o en el mes en curso.
 
 ## Sin publicar
+- PB-170: propuesta para portar los cambios del santuario 1 de CodeShip (listas 6.ª–16.ª) en [`docs/sistemas/portar-codeship-s1.md`](docs/sistemas/portar-codeship-s1.md).
 - Docs organizados por carpeta (191 movidos con `git mv`, 3568 referencias reescritas en docs y `.cs`), cabecera `resumen/temas/estado/codigo` en cada doc, índice generado y buscador `tools/docs.py` (`find`, `de`, `temas`, `check`) con su CI `docs.yml`.
 - Documentación para ahorrar tokens: `CLAUDE.md` corto, [`docs/ARQUITECTURA.md`](docs/ARQUITECTURA.md) (mapa de carpetas y sistemas), [`docs/README.md`](docs/README.md) (índice de docs) y este `CHANGELOG.md`.
 
