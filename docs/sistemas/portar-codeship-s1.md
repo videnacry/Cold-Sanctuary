@@ -2,7 +2,7 @@
 resumen: "PB-170 (Berón 2026-11-24): qué cambió en el santuario 1 de CodeShip entre el 20 y el 24 de noviembre (listas 6.ª a 16.ª, #64–#134) y qué se puede portar a Cold Sanctuary, por prioridad, respetando la regla de oro y el manual."
 temas: [codeship, retos, microcosmos, construccion]
 estado: vigente
-codigo: [CodeChallengeSheet, SpellChallenge, VirtualizationTank]
+codigo: [CodeChallengeSheet, VirtualizationTank]
 ---
 # Portar a Cold Sanctuary los cambios del santuario 1 de CodeShip (PB-170)
 
