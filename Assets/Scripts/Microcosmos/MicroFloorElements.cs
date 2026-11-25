@@ -144,6 +144,7 @@ public static class MicroFloorElements
         string n = t.name;
         if (FloorForms.IsObra(t) || n == FloorForms.ConstructionName || n == FloorForms.MicroName) return true;
         if (n.StartsWith("Anillo") || n == "Estructura_Elevada" || n.EndsWith("_VirtualizationMachine")) return true;
+        if (n == "Garaje_submarinos") return true;   // (2026-11-25, F1b) el garaje del submarino de obra comparte el piso de la Mecánica: no es parte del taller (los microcosmos de Mecánica no lo copian)
         if (IsInnerFloor(n)) return true;   // (las plantas de un área en otro piso son otras plataformas, como los anillos. «Planta» casaba con la fila de la maceta y la planta entera contaba como un mueble sin versión en la copia gigante)
         return false;
     }

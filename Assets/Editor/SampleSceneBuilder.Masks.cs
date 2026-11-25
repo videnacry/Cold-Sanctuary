@@ -166,7 +166,9 @@ public static partial class SampleSceneBuilder
         }
         float half = hx.h.floorSize * 0.5f;
         Color paint = new Color(0.98f, 0.82f, 0.1f);
-        Transform g = new GameObject("Plaza_submarino").transform; g.SetParent(deck, false); g.localPosition = new Vector3(0f, 0.02f, 2f);
+        // Sobre la alfombra del área («Mat», 0,1 m) si el garaje va en el piso de la Mecánica: si no, la tapaba (Blockout 2026-11-25).
+        float floorTop = deck.parent != null && deck.parent.Find("Mat") != null ? 0.11f : 0.02f;
+        Transform g = new GameObject("Plaza_submarino").transform; g.SetParent(deck, false); g.localPosition = new Vector3(0f, floorTop, 2f);
         float L = TreeSpec.VehicleLength + 2f, B = TreeSpec.VehicleBeam + 2f;
         foreach (float s in new[] { -1f, 1f })
         {
@@ -176,7 +178,7 @@ public static partial class SampleSceneBuilder
         Label(KitchenProps.C(g, new Vector3(B * 0.5f + 1.5f, 2.5f, 0f), Vector3.one * 0.1f, paint, 0f, "Cartel_garaje"), "Garaje del submarino de obra: maquinaria y material a cualquier piso por la vía marina", 0.6f);
         GameObject sub = new GameObject("Submarino_obra");
         sub.transform.SetParent(deck, false);
-        sub.transform.localPosition = new Vector3(0f, 0.05f, 2f);
+        sub.transform.localPosition = new Vector3(0f, floorTop + 0.03f, 2f);
         sub.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);   // mirando a la puerta (el lado −Z del piso, contra el tronco)
         sub.AddComponent<ConstructionSubmarine>();
         PolarLandscapeBuilder.IgnoreForNav(g.gameObject);
