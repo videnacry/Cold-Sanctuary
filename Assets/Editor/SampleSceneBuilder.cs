@@ -3474,7 +3474,7 @@ public static partial class SampleSceneBuilder
         //  · PRODUCCIÓN (más baja, junto al Árbol de los Campos): Construcción · Mecánica · Estudio Textil. La maquinaria
         //    pesada, abajo.
         //    Un ÁRBOL: sus 3 pisos en orden, el HUERTO VERTICAL (2026-11-08: los pisos de estantes LED que pida la demanda de verdura, regla P19;
-        //    docs/areas/produccion-maquinaria.md) y el garaje del submarino en el primer piso libre; los niveles que hagan falta (2 pisos por nivel; hoy 3).
+        //    docs/areas/produccion-maquinaria.md); el garaje del submarino va en el piso de la Mecánica (F1b, SubmarineGarage); los niveles que hagan falta (2 pisos por nivel; hoy 2).
         var (farmRacks, farmFloors) = VerticalFarmPlan();
         int prodLevels = Mathf.Max(2, Mathf.CeilToInt((3 + farmFloors) / 2f));   // (2026-11-25, F1b: el garaje va en el piso de la Mecánica, SubmarineGarage)
         BeginTreeTower(areasGroup.transform, TorreProduccion, ProduccionCenter, ProduccionSize, ProduccionYaw, prodLevels, ProduccionFirstY, 4f);
