@@ -907,7 +907,8 @@ Código y compilación hechos; falta la prueba en vivo.
   - [x] **F1a** (2026-11-25, sin Unity; pedido de Berón «Si» a abrir F1): losas de 40 × 40 en todas las torres-árbol; Entrenamiento y Producción apartados 5 y 3 m (holgura de 16 m simulada); avisos `[Pisos]` de pisos a medias o con huecos (T27, `FurnitureSpacing.FillOf`); `TrainingCentres.Amplios` apagado (un piso por centro); W9: el ocio de los centros por plazas (`LeisureDirector.CapacityOf`); prueba `PisosF1Test` (143). Falta compilar en el PC de Berón y correr 143, 142, 57, 65, 75.
   - [x] Blockout de F0 + F1a en el PC de Berón (2026-11-25): compila; 244 PASS / 3 FAIL (75: Aula e Informática en obras sin línea, arreglado; 113: falta detalle, añadido).
   - [x] F1b: Mecánica + garaje en un piso (2026-11-25).
-  - [ ] **F1b** resto de fusiones de pisos (cría + carne, asambleas + guardia, gimnasio + cardio, salas de yoga/música/ballet/bailes, hospital, laboratorios, mecánica + garaje, textil + huerto) en el Blockout, de una en una, con sus avisos `[Pisos]` (pide permiso para Unity); W9 de las salas nuevas (§5).
+  - [x] F1b: Cría + carne cultivada en un piso (2026-11-25): la Carne, zona del piso de la Cría; Blockout con `[Espacio]` 0 y la Cría al 55 %.
+  - [ ] **F1b** resto de fusiones de pisos (asambleas + guardia, gimnasio + cardio, salas de yoga/música/ballet/bailes, hospital, laboratorios, textil + huerto) en el Blockout, de una en una, con sus avisos `[Pisos]` (pide permiso para Unity); W9 de las salas nuevas (§5).
   - [ ] F2 estructura · F4 cima · F3 mapa en anillos · F5 globo y pulpo · F6 prueba en vivo (orden D6).
 - [ ] **Alma compartida (resto)**: `HelpRequest` ya hace "ir juntos" (MVP); falta **compartir pensamientos**
       (misma frase → instancia de mente/madre compartida) y que el sí/no lea bond/humores/inclinaciones.

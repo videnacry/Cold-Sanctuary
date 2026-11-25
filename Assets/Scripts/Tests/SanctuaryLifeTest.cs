@@ -390,9 +390,14 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
             return true;
         }
         TestProbe.Check("las áreas de cada torre van de abajo arriba (apiladas, o en orden en los pisos de su árbol)",
-            Stacked("Kitchen_Area", "Infirmary_Area", "CubCare_Area", "CulturedMeatLab_Area") && Stacked("Gym_Area", "Calisthenics_Area", "YogaRoom_Area", "Ballet_Area", "MartialArts_Area")
+            Stacked("Kitchen_Area", "Infirmary_Area", "CubCare_Area") && Stacked("Gym_Area", "Calisthenics_Area", "YogaRoom_Area", "Ballet_Area", "MartialArts_Area")
             && (GameObject.Find("NuclearPower_Area") == null || Stacked("NuclearPower_Area", "AtomicPlant_Area")) &&   // (ronda 31: la central está bajo el mar, en el Santuario Marino; lo comprueba la línea de arriba)
             Stacked("Chemistry_Area", "Biology_Area") && Stacked("Construction_Area", "VehicleWorkshop_Area", "TextileStudio_Area"));
+        // (2026-11-25, F1b del rediseño de pisos) La CARNE CULTIVADA es una zona del piso de la Cría (Cría 0,6 + Carne 0,4): su área cuelga de él.
+        GameObject meatGo = GameObject.Find("CulturedMeatLab_Area"), criaFloorGo = GameObject.Find("CubCare_Area");
+        if (meatGo != null && criaFloorGo != null)
+            TestProbe.Check("la Carne cultivada es una zona del piso de la Cría (F1b: un piso para las dos)", meatGo.transform.parent == criaFloorGo.transform && meatGo.GetComponentInParent<TreeFloor>() == criaFloorGo.GetComponent<TreeFloor>(),
+                $"padre {(meatGo.transform.parent != null ? meatGo.transform.parent.name : "-")}");
         // La Cría va ENCIMA de la planta más alta del hospital (la veterinaria): apilada, 11 m sobre ella; en el árbol, su piso siguiente.
         GameObject vetFloor = GameObject.Find("Planta_veterinaria"), criaGo = GameObject.Find("CubCare_Area");
         if (vetFloor != null && criaGo != null)

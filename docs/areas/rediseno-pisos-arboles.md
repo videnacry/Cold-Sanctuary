@@ -174,7 +174,7 @@ libre para la puerta: en un piso de 40 m quedan 40 × 35,4 m útiles):
 
 | Fusión | Problema medido | Cómo |
 |---|---|---|
-| Cría + carne cultivada | Las dos usan la planta de 26 × 20 m: juntas (girada cada una a 20 × 26 en una mitad) piden 20 + 2 + 20 = 42 m de ancho | Compactar el laboratorio a ~16 m (cuota 0,4) |
+| Cría + carne cultivada | Las dos usan la planta de 26 × 20 m: juntas (girada cada una a 20 × 26 en una mitad) piden 20 + 2 + 20 = 42 m de ancho | **HECHA 2026-11-25**: la Carne cultivada es una ZONA del piso de la Cría (su área cuelga del piso, como el Huerto en el Árbol de los Campos; `CriaMeatZone`). La Cría (26 × 20) va girada en la mitad −X (x −20…0) y el laboratorio en la +X (18 × 30 m, `CulturedMeatLab.CompactSize`, distribución en filas con 2 m entre equipos y la esquina +X +Z para su tanque); el pasillo de 2,3 m sube desde la puerta del tronco, con su umbral libre (z ≥ −11). Blockout: `[Espacio]` 0, el piso de la Cría pasa del 19 % al 55 %; Servicios sigue en 4 niveles con un piso libre (7 pisos), para Asambleas + guardia |
 | Asambleas + guardia | Las dos llenan su piso de 40 × 38 con coordenadas fijas (el muro de pantallas a z = 14,5) | Rehacer la guardia en un cuarto (cuota 0,25) |
 | Gimnasio + cardio | El gimnasio ocupa 36 × 26 con sus 30 máquinas; al cardio le quedarían ~9 m | Repartir máquinas y cardio en el piso entero (2–3 de cada) |
 | Salas (yoga, música, ballet, bailes) | Cada sala de yoga mide 18 × 26 (no cabe en un cuarto de 20 × 20); el auditorio de 60 butacas no cabe en un cuarto (D4: a Asambleas) | Salas de yoga de 8 esterillas en 20 × 20; cabina de música (`SoundRoom`) en un cuarto; ballet (18 × 8,6 m) en un cuarto; bailes nuevo |
