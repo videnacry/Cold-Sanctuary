@@ -15,6 +15,33 @@ public static partial class SampleSceneBuilder
     static readonly Color CrStraw = new Color(0.86f, 0.77f, 0.5f), CrWall = new Color(0.78f, 0.84f, 0.86f), CrWood = new Color(0.62f, 0.5f, 0.38f),
         CrWater = new Color(0.35f, 0.6f, 0.78f, 0.8f), CrSnow = new Color(0.93f, 0.95f, 0.97f);
 
+    // ── F1b (2026-11-25, docs/areas/rediseno-pisos-arboles.md §4 y §6 ter): Cría 0,6 + Carne cultivada 0,4 en UN piso ─────────────
+    // El piso de 40 × 40 m (la puerta del tronco en −Z: su umbral, ~4,6 m, libre). La Cría (26 × 20) va GIRADA en la mitad −X (20 × 26 m,
+    // x de −20 a 0) con su pasillo y su cocina de leche mirando al laboratorio; el laboratorio, en la mitad +X (18 × 30 m, x de 2,3 a
+    // 20,3), con su «Mat» propio. Entre los dos, el pasillo de 2,3 m que sube desde la puerta (y 2 m entre sus aseos). Las dos, en z ≥ −11.
+    static readonly Vector3 CriaZoneAt = new Vector3(-10f, 0.1f, 2f), MeatZoneAt = new Vector3(11.3f, 0f, 3.5f);
+
+    /// <summary>La Carne cultivada pasa a ser una ZONA del piso de la Cría: su área cuelga del piso (como el Huerto en el Árbol de los
+    /// Campos: el piso lleva su <c>TreeFloor</c>, y las rutas y la jornada la encuentran en él), desplazada a la mitad +X, con su «Mat» del
+    /// tamaño de la zona y sin las paredes de su caja (las del piso son las de la Cría).</summary>
+    static void CriaMeatZone(Transform criaFloor, Transform meat)
+    {
+        meat.SetParent(criaFloor, false);
+        meat.localPosition = MeatZoneAt; meat.localRotation = Quaternion.identity;
+        Vector2 z = CulturedMeatLab.CompactSize;
+        Transform mat = meat.Find("Mat");
+        if (mat != null) { mat.localPosition = new Vector3(0f, 0.07f, 0f); mat.localScale = new Vector3(z.x, 0.1f, z.y); }   // (encima de la alfombra de la Cría)
+        foreach (string w in new[] { "Wall_Back", "Wall_Left", "Wall_Right" }) { Transform t = meat.Find(w); if (t != null) Object.DestroyImmediate(t.gameObject); }
+    }
+
+    /// <summary>La sala de crías, girada 90° en la mitad −X del piso compartido (su lado abierto, +Z, mira al laboratorio).</summary>
+    static void PlaceCriaRoot(Transform area)
+    {
+        Transform r = area.Find("Cria");
+        if (r == null) return;
+        r.localPosition = CriaZoneAt; r.localRotation = Quaternion.Euler(0f, 90f, 0f);
+    }
+
     static void FurnishCria(Transform area, Vector2 size)
     {
         Transform r = new GameObject("Cria").transform; r.SetParent(area, false); r.localPosition = new Vector3(0f, 0.1f, 0f);

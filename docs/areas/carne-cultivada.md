@@ -11,7 +11,7 @@ El santuario tiene un área propia para esto, el **Laboratorio de carne cultivad
 La enfermería solo aporta la **biopsia**: unos gramos de músculo de un animal vivo, con anestesia local. El laboratorio
 produce carne para los osos y los demás carnívoros **sin matar a ningún animal**.
 
-Está en su piso de la torre de Servicios. Las raciones salen al **almacén del alimentador** ([alimentador.md](alimentador.md)),
+Está en la torre de Servicios, en la mitad +X del piso de la Cría (2026-11-25, F1b del rediseño de pisos: Cría 0,6 + Carne 0,4). Las raciones salen al **almacén del alimentador** ([alimentador.md](alimentador.md)),
 junto al territorio de los osos. Funciona con la energía solar del santuario. Código: `Assets/Scripts/World/CulturedMeatLab.cs`.
 
 ## Cómo se hace la carne cultivada (proceso real)

@@ -3427,7 +3427,12 @@ public static partial class SampleSceneBuilder
         BeginTreeTower(areasGroup.transform, TorreServicios, ServiciosCenter, ServiciosSize, ServiciosYaw, 4);
         Floor(kitchen.transform);
         Floor(hospital.transform); Floor(Child(hospital.transform, "Planta_hospitalizacion")); Floor(Child(hospital.transform, "Planta_veterinaria"));   // las amuebla BuildHospital
-        Floor(cria.transform); Floor(meat.transform);
+        Floor(cria.transform);
+        // (2026-11-25, fase F1b del rediseño de pisos: Cría 0,6 + Carne cultivada 0,4, docs/areas/rediseno-pisos-arboles.md §6 ter) La CARNE
+        // CULTIVADA ya no tiene piso propio: es una ZONA del piso de la Cría (como el Huerto en el Árbol de los Campos), su área hija del piso,
+        // en la mitad +X (18 × 30 m, CulturedMeatLab.CompactSize); la Cría, girada, en la mitad −X. El umbral de la puerta del tronco (−Z) queda
+        // libre. Con 7 pisos la torre sigue en 4 niveles: el que sobra queda libre para la siguiente fusión (Asambleas y guardia).
+        CriaMeatZone(cria.transform, meat.transform);
         SanctuaryArea assembly = BuildAssembly(areasGroup.transform); areas.Add(assembly);   // (2026-11-05) docs/areas/piso-asambleas.md
         BuildGuardRoom(areasGroup.transform);   // (2026-11-05) el piso libre del nivel 4: docs/areas/sala-de-guardia.md
         //  · ENTRENAMIENTO: Gimnasio · Cardio y zona libre · Calistenia, parkour y crossfit · Yoga (Hatha) · Yoga (Ashtanga) · Ballet
@@ -3485,8 +3490,8 @@ public static partial class SampleSceneBuilder
         for (int k = 0; k < gymF.Count; k++) { FurnishGym(gymF[k], size[gymF[k]], 3 * k); Centre(gymF[k], "Gimnasio", k + 1); }   // máquinas de placas y peso libre (cada piso, sus copias 3k…3k+2)
         FurnishGymCardio(cardio, size[cardio]);                          // cardio, abdominales, estiramientos y sacos
         for (int k = 0; k < calF.Count; k++) { FurnishCalisthenics(calF[k], size[calF[k]]); Centre(calF[k], "Calistenia", k + 1); }   // calistenia, parkour y crossfit (ya construidos)
-        Vector2 criaLayout = new Vector2(26f, 20f);                      // la sala de crías y el laboratorio, con su distribución de 26 × 20, centrada en su piso
-        FurnishCria(cria.transform, criaLayout);
+        Vector2 criaLayout = new Vector2(26f, 20f);                      // la sala de crías, con su distribución de 26 × 20 (girada en la mitad −X de su piso: CriaMeatZone)
+        FurnishCria(cria.transform, criaLayout); PlaceCriaRoot(cria.transform);
         // EN OBRAS, con su equipo de 3 y su acabado ya diseñado (docs/areas/obras-dojo-ballet.md): aparece al terminar.
         for (int k = 0; k < balF.Count; k++) { PrepareSite(balF[k], size[balF[k]], k == 0 ? "Sala de Ballet" : $"Sala de Ballet (piso {k + 1})", 6, 3, FinishedBallet); Centre(balF[k], "Ballet", k + 1); }
         for (int k = 0; k < dojF.Count; k++) { PrepareSite(dojF[k], size[dojF[k]], k == 0 ? "Dojo (MMA, kickboxing y karate)" : $"Dojo (piso {k + 1})", 6, 3, FinishedDojo); Centre(dojF[k], "Dojo", k + 1); }
@@ -3495,14 +3500,14 @@ public static partial class SampleSceneBuilder
         Aseos(yoga.transform, new Vector3(-s2.x * 0.5f + 3.1f, 0.1f, s2.y * 0.5f - 0.8f), 180f);   // piso de Hatha: contra el borde +Z, esquina −X (en la sala occidental; los del piso de Ashtanga los pone FurnishYoga)
         s2 = size[mech.transform]; Aseos(mech.transform, new Vector3(-s2.x * 0.5f + 0.2f + 1.9f, 0.1f, s2.y * 0.5f - 0.9f), 180f, 1);
         s2 = size[textile.transform]; Aseos(textile.transform, new Vector3(3.5f, 0.1f, -s2.y * 0.5f + 0.9f), 0f, 1);   // textil (al fondo, junto a los ovillos)
-        s2 = criaLayout; Aseos(meat.transform, new Vector3(s2.x * 0.5f - 0.2f - 1.9f, 0.1f, -s2.y * 0.5f + 0.9f), 0f, 1);   // laboratorio
+        Aseos(meat.transform, new Vector3(-CulturedMeatLab.CompactSize.x * 0.5f + 0.8f, 0.1f, 2f), 90f, 1);   // laboratorio: contra su borde −X, la puerta al laboratorio (F1b)
         s2 = size[works.transform]; Aseos(works.transform, new Vector3(s2.x * 0.5f - 0.2f - 1.9f, 0.1f, s2.y * 0.5f - 0.9f), 180f, 1);   // construcción
         // El ALMACÉN DE RACIONES del alimentador, en el piso del laboratorio (Berón 2026-11-05: «retira el comedero»; docs/areas/alimentador.md).
         GameObject feeder = new GameObject("Almacen_raciones"); feeder.transform.SetParent(meat.transform, false);
-        feeder.transform.localPosition = new Vector3(7.5f, 0f, 4.5f);   // libre: 2 m de la cámara fría y de la formadora
+        feeder.transform.localPosition = new Vector3(-0.4f, 0f, 8f);   // (F1b) en la fila de la consola: 2 m de la consola y de la centrífuga 2
         KitchenProps.C(feeder.transform, new Vector3(0f, 0.7f, 0f), new Vector3(1.4f, 1.4f, 0.7f), KitchenProps.DarkSteel, 0f, "Camara_raciones");
         WorldLabel fwl = feeder.AddComponent<WorldLabel>(); fwl.text = "Raciones para el alimentador"; fwl.height = 1.8f;
-        CulturedMeatLab.Build(meat.transform, criaLayout, feeder.transform);
+        CulturedMeatLab.Build(meat.transform, CulturedMeatLab.CompactSize, feeder.transform, compact: true);
         //  · CIENCIAS (docs/areas/edificios-investigacion.md): Física (reactor TRIGA, ciclotrón y la sala de experimentos con su anillo
         //    y la torre de Foucault) · Química (síntesis y análisis) · Biología (cultivo y molecular). El reactor de
         //    investigación va abajo: su piscina baja como un pilar hasta el suelo.

@@ -177,9 +177,16 @@ public class CulturedMeatLab : MonoBehaviour
 
     // ── Maquinaria (cubos) ────────────────────────────────────────────────────────────────────
 
-    /// <summary>Monta la maquinaria del laboratorio dentro de <paramref name="area"/> (suelo local y = 0, entrada a +Z).</summary>
-    public static CulturedMeatLab Build(Transform area, Vector2 size, Transform feeder)
+    /// <summary>La ZONA del laboratorio en el piso de la Cría (2026-11-25, fase F1b del rediseño de pisos, docs/areas/rediseno-pisos-arboles.md:
+    /// Cría 0,6 + Carne cultivada 0,4 en un piso de 40 × 40 m).</summary>
+    public static readonly Vector2 CompactSize = new Vector2(18f, 30f);   // (sus equipos en z ≤ 12,4: la franja +Z, libre para el tanque)
+
+    /// <summary>Monta la maquinaria del laboratorio dentro de <paramref name="area"/> (suelo local y = 0, entrada a +Z).
+    /// <paramref name="compact"/>: la distribución de la zona del piso compartido con la Cría (<see cref="CompactSize"/>, 18 × 30 m), en filas con 2 m
+    /// libres entre equipos y la esquina +X +Z libre para el tanque de virtualización; sin él, la de siempre (su planta propia de 26 × 20).</summary>
+    public static CulturedMeatLab Build(Transform area, Vector2 size, Transform feeder, bool compact = false)
     {
+        Vector3 P(Vector3 wide, float cx, float cz) => compact ? new Vector3(cx, wide.y, cz) : wide;
         Color steel = KitchenProps.Steel, dark = KitchenProps.DarkSteel, white = KitchenProps.White;
         Color glass = new Color(0.82f, 0.94f, 1f, 0.25f), broth = new Color(0.95f, 0.75f, 0.6f, 0.75f), screen = new Color(0.12f, 0.25f, 0.32f);
         Transform r = new GameObject("Laboratorio_CarneCultivada").transform; r.SetParent(area, false);
@@ -188,57 +195,57 @@ public class CulturedMeatLab : MonoBehaviour
 
         // Entre equipo y equipo, 2 m libres (FurnitureSpacing.Standard, Berón 2026-10-28); la mesa del microscopio va pegada a la campana.
         // 1 · Campana de flujo laminar (cabina de bioseguridad) para la biopsia, con microscopio al lado.
-        Transform hood = KitchenProps.Root(r, "Campana_flujo_laminar", new Vector3(-hx + 1.2f, 0f, -hz + 1f));
+        Transform hood = KitchenProps.Root(r, "Campana_flujo_laminar", P(new Vector3(-hx + 1.2f, 0f, -hz + 1f), -7f, -12f));
         KitchenProps.C(hood, new Vector3(0f, 0.45f, 0f), new Vector3(1.6f, 0.9f, 0.8f), white, 0f, "Mueble");
         KitchenProps.C(hood, new Vector3(0f, 1.35f, 0f), new Vector3(1.6f, 0.9f, 0.8f), white, 0f, "Cabina");
         KitchenProps.C(hood, new Vector3(0f, 1.3f, 0.41f), new Vector3(1.4f, 0.6f, 0.02f), glass, 0f, "Cristal");
         KitchenProps.C(hood, new Vector3(0f, 1.95f, 0f), new Vector3(1.6f, 0.3f, 0.8f), steel, 0f, "Filtro_HEPA");
         L(hood, "Campana de flujo laminar (biopsia → células satélite)", 2.3f);
-        Transform mic = KitchenProps.Root(r, "Microscopio", new Vector3(-hx + 2.4f, 0.9f, -hz + 0.9f));
-        KitchenProps.C(r, new Vector3(-hx + 2.4f, 0.45f, -hz + 0.9f), new Vector3(0.7f, 0.9f, 0.6f), white, 0f, "Mesa");
+        Transform mic = KitchenProps.Root(r, "Microscopio", P(new Vector3(-hx + 2.4f, 0.9f, -hz + 0.9f), -5.8f, -12.1f));
+        KitchenProps.C(r, P(new Vector3(-hx + 2.4f, 0.45f, -hz + 0.9f), -5.8f, -12.1f), new Vector3(0.7f, 0.9f, 0.6f), white, 0f, "Mesa");
         KitchenProps.C(mic, new Vector3(0f, 0.15f, 0f), new Vector3(0.18f, 0.3f, 0.22f), dark, 0f, "Cuerpo");
         KitchenProps.C(mic, new Vector3(0f, 0.32f, -0.04f), new Vector3(0.05f, 0.12f, 0.05f), dark, 0f, "Ocular");
         L(mic, "Microscopio", 0.6f);
 
         // 2 · Banco de células: tanque criogénico de nitrógeno líquido.
-        Transform cryo = KitchenProps.Root(r, "Tanque_criogenico", new Vector3(-hx + 0.8f, 0f, 0.2f));
+        Transform cryo = KitchenProps.Root(r, "Tanque_criogenico", P(new Vector3(-hx + 0.8f, 0f, 0.2f), -7.8f, -3.5f));
         KitchenProps.C(cryo, new Vector3(0f, 0.55f, 0f), new Vector3(0.7f, 1.1f, 0.7f), steel, 45f, "Deposito");
         KitchenProps.C(cryo, new Vector3(0f, 1.15f, 0f), new Vector3(0.35f, 0.1f, 0.35f), dark, 0f, "Tapa");
         KitchenProps.C(cryo, new Vector3(0f, 1.25f, 0f), new Vector3(0.6f, 0.08f, 0.6f), new Color(0.9f, 0.97f, 1f, 0.35f), 0f, "Vapor_N2");
         L(cryo, "Banco de células (N₂ líquido, −196 °C)", 1.6f);
-        Transform inc = KitchenProps.Root(r, "Incubadora_CO2", new Vector3(-hx + 0.8f, 0f, 3.2f));
+        Transform inc = KitchenProps.Root(r, "Incubadora_CO2", P(new Vector3(-hx + 0.8f, 0f, 3.2f), -7.8f, -7f));
         KitchenProps.C(inc, new Vector3(0f, 0.6f, 0f), new Vector3(0.75f, 1.2f, 0.75f), white, 0f, "Incubadora");
         KitchenProps.C(inc, new Vector3(0.38f, 0.6f, 0f), new Vector3(0.02f, 1f, 0.6f), glass, 0f, "Puerta");
         L(inc, "Incubadora (37 °C, 5 % CO₂)", 1.5f);
 
         // 3 · Preparación del medio: depósito con agitador y filtro estéril; autoclave.
-        Transform med = KitchenProps.Root(r, "Preparacion_medio", new Vector3(-hx + 1.2f, 0f, hz - 1.3f));
+        Transform med = KitchenProps.Root(r, "Preparacion_medio", P(new Vector3(-hx + 1.2f, 0f, hz - 1.3f), -7.4f, 8f));
         KitchenProps.C(med, new Vector3(0f, 0.6f, 0f), new Vector3(0.9f, 1.2f, 0.9f), steel, 0f, "Deposito_mezcla");
         KitchenProps.C(med, new Vector3(0f, 1.3f, 0f), new Vector3(0.12f, 0.2f, 0.12f), dark, 0f, "Motor_agitador");
         KitchenProps.C(med, new Vector3(0.7f, 0.9f, 0f), new Vector3(0.25f, 0.5f, 0.25f), white, 0f, "Filtro_0_2um");
         KitchenProps.C(med, new Vector3(0.35f, 0.9f, 0f), new Vector3(0.5f, 0.05f, 0.05f), steel, 0f, "Tubo");
         L(med, "Medio de cultivo (sin suero) + filtro estéril 0,2 µm", 1.7f);
-        Transform auto = KitchenProps.Root(r, "Autoclave", new Vector3(-hx + 5.2f, 0f, hz - 1.0f));
+        Transform auto = KitchenProps.Root(r, "Autoclave", P(new Vector3(-hx + 5.2f, 0f, hz - 1.0f), -8.2f, 12f));
         KitchenProps.C(auto, new Vector3(0f, 0.5f, 0f), new Vector3(0.8f, 1f, 0.7f), steel, 0f, "Autoclave");
         KitchenProps.C(auto, new Vector3(0f, 0.55f, 0.36f), new Vector3(0.45f, 0.45f, 0.03f), dark, 0f, "Puerta_redonda");
         L(auto, "Autoclave (esteriliza)", 1.3f);
 
         // 4 · Biorreactores de tanque agitado: semilla (pequeño) y producción (grande), con camisa, sensores y agitador.
-        Bioreactor(r, "Biorreactor_semilla", new Vector3(-3.2f, 0f, -hz + 1.4f), 0.45f, 1.2f, glass, broth, steel, dark);
+        Bioreactor(r, "Biorreactor_semilla", P(new Vector3(-3.2f, 0f, -hz + 1.4f), -1.5f, -12f), 0.45f, 1.2f, glass, broth, steel, dark);
         L(r.Find("Biorreactor_semilla"), "Biorreactor semilla (50 L, microportadores)", 1.9f);
         float plannedKg = PlannedKgPerDay, litres = LitresFor(plannedKg); int levels = LevelsFor(plannedKg);
         float k3 = Mathf.Pow(litres / 500f, 1f / 3f), rad = 0.8f * k3, tall = 2.1f * k3;   // (mismas proporciones; a 1500 L, 1,15 m de radio: 2 m libres entre ellos)
-        Bioreactor(r, "Biorreactor_produccion", new Vector3(1.4f, 0f, -hz + 1.6f), rad, tall, glass, broth, steel, dark);
+        Bioreactor(r, "Biorreactor_produccion", P(new Vector3(1.4f, 0f, -hz + 1.6f), 5.3f, -11.8f), rad, tall, glass, broth, steel, dark);
         L(r.Find("Biorreactor_produccion"), $"Biorreactor de producción ({litres:0} L · 37 °C · pH 7,3 · O₂)", tall + 0.8f);
-        Bioreactor(r, "Biorreactor_produccion_2", new Vector3(5.75f, 0f, -hz + 1.6f), rad, tall, glass, broth, steel, dark);   // regla P19: la demanda pide tres
+        Bioreactor(r, "Biorreactor_produccion_2", P(new Vector3(5.75f, 0f, -hz + 1.6f), 5.3f, -6.3f), rad, tall, glass, broth, steel, dark);   // regla P19: la demanda pide tres
         L(r.Find("Biorreactor_produccion_2"), $"Biorreactor de producción 2 ({litres:0} L)", tall + 0.8f);
-        Bioreactor(r, "Biorreactor_produccion_3", new Vector3(-1f, 0f, -4f), rad, tall, glass, broth, steel, dark);
+        Bioreactor(r, "Biorreactor_produccion_3", P(new Vector3(-1f, 0f, -4f), -0.8f, -6.3f), rad, tall, glass, broth, steel, dark);
         L(r.Find("Biorreactor_produccion_3"), $"Biorreactor de producción 3 ({litres:0} L)", tall + 0.8f);
 
         // 5 · Biorreactor de perfusión con andamio (diferenciación en fibras, con estiramiento).
         for (int u = 0; u < Scaffolds; u++)   // regla P19: seis unidades, en dos alturas
         {
-        Transform perf = KitchenProps.Root(r, u == 0 ? "Biorreactor_andamio" : $"Biorreactor_andamio_{u + 1}", new Vector3(hx - 1.5f - (u % 3) * 3.9f, 0f, u < 3 ? -0.4f : -3.6f));
+        Transform perf = KitchenProps.Root(r, u == 0 ? "Biorreactor_andamio" : $"Biorreactor_andamio_{u + 1}", P(new Vector3(hx - 1.5f - (u % 3) * 3.9f, 0f, u < 3 ? -0.4f : -3.6f), -3.6f + (u % 3) * 4.8f, u < 3 ? 0f : 3.5f));
         KitchenProps.C(perf, new Vector3(0f, 0.45f, 0f), new Vector3(1.8f, 0.9f, 1f), steel, 0f, "Base");
         KitchenProps.C(perf, new Vector3(0f, 1.1f, 0f), new Vector3(1.7f, 0.4f, 0.9f), glass, 0f, "Camara");
         KitchenProps.C(perf, new Vector3(0f, 1.65f, 0f), new Vector3(1.7f, 0.4f, 0.9f), glass, 0f, "Camara_alta");
@@ -250,29 +257,29 @@ public class CulturedMeatLab : MonoBehaviour
         }
 
         // 6 · Cosecha: centrífuga, formadora y cámara fría.
-        Transform cen = KitchenProps.Root(r, "Centrifuga", new Vector3(hx - 1.0f, 0f, hz - 1.4f));
+        Transform cen = KitchenProps.Root(r, "Centrifuga", P(new Vector3(hx - 1.0f, 0f, hz - 1.4f), -5.2f, 12f));
         KitchenProps.C(cen, new Vector3(0f, 0.45f, 0f), new Vector3(0.8f, 0.9f, 0.8f), white, 0f, "Centrifuga");
         KitchenProps.C(cen, new Vector3(0f, 0.92f, 0f), new Vector3(0.6f, 0.04f, 0.6f), dark, 45f, "Tapa");
         L(cen, "Centrífuga (cosecha y lavado)", 1.3f);
-        Transform cen2 = KitchenProps.Root(r, "Centrifuga_2", new Vector3(hx - 7f, 0f, hz - 1.4f));
+        Transform cen2 = KitchenProps.Root(r, "Centrifuga_2", P(new Vector3(hx - 7f, 0f, hz - 1.4f), 3f, 8f));
         KitchenProps.C(cen2, new Vector3(0f, 0.45f, 0f), new Vector3(0.8f, 0.9f, 0.8f), white, 0f, "Centrifuga");
         KitchenProps.C(cen2, new Vector3(0f, 0.92f, 0f), new Vector3(0.6f, 0.04f, 0.6f), dark, 45f, "Tapa");
         L(cen2, "Centrífuga 2", 1.3f);
-        Transform form = KitchenProps.Root(r, "Formadora", new Vector3(hx - 4.0f, 0f, hz - 1.3f));
+        Transform form = KitchenProps.Root(r, "Formadora", P(new Vector3(hx - 4.0f, 0f, hz - 1.3f), -2.2f, 12f));
         KitchenProps.C(form, new Vector3(0f, 0.45f, 0f), new Vector3(1f, 0.9f, 0.7f), steel, 0f, "Mesa");
         KitchenProps.C(form, new Vector3(0f, 1.1f, 0f), new Vector3(0.5f, 0.4f, 0.5f), dark, 0f, "Prensa");
         L(form, "Formadora de piezas", 1.6f);
-        Transform form2 = KitchenProps.Root(r, "Formadora_2", new Vector3(hx - 10f, 0f, hz - 1.3f));
+        Transform form2 = KitchenProps.Root(r, "Formadora_2", P(new Vector3(hx - 10f, 0f, hz - 1.3f), 0.9f, 12f));
         KitchenProps.C(form2, new Vector3(0f, 0.45f, 0f), new Vector3(1f, 0.9f, 0.7f), steel, 0f, "Mesa");
         KitchenProps.C(form2, new Vector3(0f, 1.1f, 0f), new Vector3(0.5f, 0.4f, 0.5f), dark, 0f, "Prensa");
         L(form2, "Formadora de piezas 2", 1.6f);
-        Transform cold = KitchenProps.Root(r, "Camara_fria", new Vector3(hx - 0.6f, 0f, 3.5f));
+        Transform cold = KitchenProps.Root(r, "Camara_fria", P(new Vector3(hx - 0.6f, 0f, 3.5f), 7f, 7.3f));
         KitchenProps.C(cold, new Vector3(0f, 1f, 0f), new Vector3(0.9f, 2f, 1.4f), white, 0f, "Camara");
         KitchenProps.C(cold, new Vector3(-0.46f, 1f, 0f), new Vector3(0.02f, 1.8f, 1.2f), steel, 0f, "Puerta");
         L(cold, "Cámara fría (4 °C)", 2.3f);
 
         // Consola de control con el estado del lote.
-        Transform con = KitchenProps.Root(r, "Consola_lote", new Vector3(0f, 0f, 0.8f));
+        Transform con = KitchenProps.Root(r, "Consola_lote", P(new Vector3(0f, 0f, 0.8f), -3.9f, 8f));
         KitchenProps.C(con, new Vector3(0f, 0.5f, 0f), new Vector3(1.2f, 1f, 0.5f), white, 0f, "Mueble");
         KitchenProps.C(con, new Vector3(0f, 1.3f, 0f), new Vector3(1.1f, 0.6f, 0.05f), screen, 0f, "Pantalla");
 
