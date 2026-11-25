@@ -145,15 +145,20 @@ public static partial class SampleSceneBuilder
 
 public static partial class SampleSceneBuilder
 {
-    /// <summary>EL GARAJE DEL SUBMARINO DE OBRA (Berón 2026-11-03; docs/areas/submarino-de-obra.md): el primer piso libre de la torre de
-    /// Producción (la de Construcción) pasa a ser «Garaje de submarinos», con su plaza pintada y el submarino aparcado mirando a la
-    /// puerta. Si la torre no tiene piso libre, la plaza va en el piso de Construcción.</summary>
+    /// <summary>EL GARAJE DEL SUBMARINO DE OBRA (Berón 2026-11-03; docs/areas/submarino-de-obra.md): su plaza pintada y el submarino aparcado
+    /// mirando a la puerta. (2026-11-25, fase F1b del rediseño de pisos: piso MIXTO «Mecánica y garaje», cuotas 0,5 + 0,5) Va en el piso de la
+    /// MECÁNICA, en su «Garaje_submarinos» (el taller de los vehículos y el garaje juntos; un piso menos en Producción). Si no hay Mecánica,
+    /// el primer piso libre de la torre; si tampoco, el de Construcción.</summary>
     static void SubmarineGarage(Helix hx)
     {
         Transform deck = null;
-        for (int k = 1; k <= hx.Platforms; k++) if (hx.decks[k] != null && hx.decks[k].name.StartsWith("Piso_libre_")) { deck = hx.decks[k]; break; }
-        if (deck != null) deck.name = "Garaje_submarinos";
-        else
+        for (int k = 1; k <= hx.Platforms && deck == null; k++)
+            if (hx.decks[k] != null && hx.decks[k].name == "VehicleWorkshop_Area")
+            {
+                deck = new GameObject("Garaje_submarinos").transform; deck.SetParent(hx.decks[k], false);   // (mismo marco que el piso: la puerta en −Z)
+            }
+        for (int k = 1; k <= hx.Platforms && deck == null; k++) if (hx.decks[k] != null && hx.decks[k].name.StartsWith("Piso_libre_")) { deck = hx.decks[k]; deck.name = "Garaje_submarinos"; }
+        if (deck == null)
         {
             for (int k = 1; k <= hx.Platforms && deck == null; k++)
                 if (hx.decks[k] != null && hx.decks[k].GetComponentInChildren<SanctuaryArea>() is SanctuaryArea a && a.name.StartsWith("Construction")) deck = hx.decks[k];
@@ -161,7 +166,9 @@ public static partial class SampleSceneBuilder
         }
         float half = hx.h.floorSize * 0.5f;
         Color paint = new Color(0.98f, 0.82f, 0.1f);
-        Transform g = new GameObject("Plaza_submarino").transform; g.SetParent(deck, false); g.localPosition = new Vector3(0f, 0.02f, 2f);
+        // Sobre la alfombra del área («Mat», 0,1 m) si el garaje va en el piso de la Mecánica: si no, la tapaba (Blockout 2026-11-25).
+        float floorTop = deck.parent != null && deck.parent.Find("Mat") != null ? 0.11f : 0.02f;
+        Transform g = new GameObject("Plaza_submarino").transform; g.SetParent(deck, false); g.localPosition = new Vector3(0f, floorTop, 2f);
         float L = TreeSpec.VehicleLength + 2f, B = TreeSpec.VehicleBeam + 2f;
         foreach (float s in new[] { -1f, 1f })
         {
@@ -171,10 +178,10 @@ public static partial class SampleSceneBuilder
         Label(KitchenProps.C(g, new Vector3(B * 0.5f + 1.5f, 2.5f, 0f), Vector3.one * 0.1f, paint, 0f, "Cartel_garaje"), "Garaje del submarino de obra: maquinaria y material a cualquier piso por la vía marina", 0.6f);
         GameObject sub = new GameObject("Submarino_obra");
         sub.transform.SetParent(deck, false);
-        sub.transform.localPosition = new Vector3(0f, 0.05f, 2f);
+        sub.transform.localPosition = new Vector3(0f, floorTop + 0.03f, 2f);
         sub.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);   // mirando a la puerta (el lado −Z del piso, contra el tronco)
         sub.AddComponent<ConstructionSubmarine>();
         PolarLandscapeBuilder.IgnoreForNav(g.gameObject);
-        Debug.Log($"[Submarino] Garaje en «{deck.name}» de {hx.building} (piso de {2f * half:0} m), con el submarino de obra aparcado.");
+        Debug.Log($"[Submarino] Garaje en «{(deck.parent != null && deck.parent != hx.root ? deck.parent.name + "/" : "")}{deck.name}» de {hx.building} (piso de {2f * half:0} m), con el submarino de obra aparcado.");
     }
 }

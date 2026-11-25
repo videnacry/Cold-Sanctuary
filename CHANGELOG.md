@@ -5,6 +5,7 @@ el PR, en `git log` y en [`docs/checklist.md`](docs/checklist.md) (Historial).
 Al fusionar un PR, añade su línea en «Sin publicar» o en el mes en curso.
 
 ## Sin publicar
+- PB-170 F1b: piso mixto «Mecánica y garaje» (Producción, 3 → 2 niveles); `AreaCapacity.Check` da línea a las actividades con todos sus puestos en obras (prueba 75); detalle en la prueba 113.
 - PB-170 F1a del rediseño de pisos: losas de 40 × 40 m en todas las torres-árbol (Entrenamiento y Producción apartados 5 y 3 m), regla T27 y avisos `[Pisos]` de pisos a medias (`FurnitureSpacing.FillOf`), un piso por centro de entrenamiento (`Amplios` apagado), ocio de los centros por plazas y prueba 143.
 - PB-170 F0 del rediseño de pisos: J16/S13/J36 y T1 reescritas (un piso por actividad, entrenamiento por plazas), regla T26 y `FloorOrganization` (marcas de cada piso y reorganización por cálculo), reparto del entrenamiento por plazas en `WorkRoster` y prueba 142.
 - PB-170: plan del rediseño de pisos y edificios-árbol portado de CodeShip, en [`docs/areas/rediseno-pisos-arboles.md`](docs/areas/rediseno-pisos-arboles.md) (espera decisión).

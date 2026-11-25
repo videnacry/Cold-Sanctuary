@@ -175,7 +175,7 @@ public static partial class SampleSceneBuilder
         Put("Adaguchi", "Construction_Area", new Vector3(0f, 1f, 3f));             // submarinismo (los submarinos de obra y la ambulancia) y cocina
         Put("Karen", "Classroom_Area", new Vector3(2f, 1f, 2f));                   // asuntos legales y lenguas: su mesa, en el Aula
         Put("Ducristin", "Classroom_Area", new Vector3(-2f, 1f, 2f));              // gerente de banca y profesor: da clase en el Aula (y las finanzas, en el restaurante)
-        Put("Fausto", "VehicleWorkshop_Area", new Vector3(2f, 1f, 2f));            // mecánico (la mecánica, antes de Ducristin)
+        Put("Fausto", "VehicleWorkshop_Area", new Vector3(8f, 1f, 2f));            // mecánico (la mecánica, antes de Ducristin)
         Put("Julian", "Construction_Area", new Vector3(1.5f, 1f, 3.5f));           // dirección de proyectos, con Alicita (pendiente de foto)
         Put("Irosene_Post", "Classroom_Area", new Vector3(0f, 1f, -1f));                // letras: poesía, narración y lecturas en el Aula
         Put("David", "Informatics_Area", new Vector3(2f, 1f, 2f));                 // informática: el clúster de IA
@@ -186,7 +186,7 @@ public static partial class SampleSceneBuilder
         Put("Malena", "Infirmary_Area", new Vector3(-5f, 1f, -3f));                // pediatra, con Ivelyna
         Put("Consol", "YogaRoom_Area", new Vector3(-9f, 1.5f, 0f));                // MAESTRA DE ASHTANGA: sale en el piso de la Sala de Yoga, en la otra sala (las clases de Ashtanga, en su planta)
         { GameObject dock = GameObject.Find("Enlace_aereo"); if (dock != null && GameObject.Find("Fernando") is GameObject fe) fe.transform.position = dock.transform.position + new Vector3(-6f, 1f, 6f); }   // Fernando: en el muelle del Santuario Aéreo
-        Put("Luciana", "VehicleWorkshop_Area", new Vector3(-2f, 1f, 2f));          // piloto: la flota de alfombras (y el control de misión)
+        Put("Luciana", "VehicleWorkshop_Area", new Vector3(-8f, 1f, 2f));          // piloto: la flota de alfombras (y el control de misión)
         Put("Gallarle", "Classroom_Area", new Vector3(-3f, 1f, -1f));              // con su pareja, Ducristin (pendiente de foto y de profesión)
         Put("Neo", "Classroom_Area", new Vector3(-4f, 1f, -2f));                   // su hijo (niño): va con su madre (PersonLife), sin jornada
     }

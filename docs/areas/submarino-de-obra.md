@@ -55,8 +55,9 @@ de los árboles a 8 m) y la prueba `SubmarineTest` (grupo 73).
 
 - **Anfibio**: anda por tierra (sobre los pisos, con sus orugas, a 2,5 m/s) y nada (a 4 m/s, de morro hacia donde va: así cruza el
   hueco del fondo y sube por el tronco).
-- **Garaje**: el piso libre de la torre de **Producción** (la de Construcción) es el **«Garaje de submarinos»**, con su plaza pintada;
-  el submarino aparca allí mirando a la puerta.
+- **Garaje**: el **«Garaje de submarinos»**, con su plaza pintada, en el piso de la **Mecánica** de la torre de **Producción** (desde el
+  2026-11-25, fase F1b del [rediseño de pisos](rediseno-pisos-arboles.md): piso mixto «Mecánica y garaje»; antes, el piso libre de la torre).
+  El submarino aparca allí mirando a la puerta; Fausto y Luciana empiezan a sus lados (±8 m).
 - **Viaje**: cuando una obra (`ConstructionProject`: las salas en obras, p. ej. ballet o dojo en Entrenamiento) no tiene el material
   del día, carga en el garaje la excavadora y los palés, va por tierra a la puerta del garaje, entra al agua del tronco, baja y sale
   por el fondo al mar, cruza bajo el hielo (a −12 m), sube por el tronco del árbol de la obra, sale por la puerta de ese piso, anda

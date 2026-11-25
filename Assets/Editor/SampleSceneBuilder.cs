@@ -3471,11 +3471,11 @@ public static partial class SampleSceneBuilder
         //    Un ÁRBOL: sus 3 pisos en orden, el HUERTO VERTICAL (2026-11-08: los pisos de estantes LED que pida la demanda de verdura, regla P19;
         //    docs/areas/produccion-maquinaria.md) y el garaje del submarino en el primer piso libre; los niveles que hagan falta (2 pisos por nivel; hoy 3).
         var (farmRacks, farmFloors) = VerticalFarmPlan();
-        int prodLevels = Mathf.Max(2, Mathf.CeilToInt((3 + farmFloors + 1) / 2f));
+        int prodLevels = Mathf.Max(2, Mathf.CeilToInt((3 + farmFloors) / 2f));   // (2026-11-25, F1b: el garaje va en el piso de la Mecánica, SubmarineGarage)
         BeginTreeTower(areasGroup.transform, TorreProduccion, ProduccionCenter, ProduccionSize, ProduccionYaw, prodLevels, ProduccionFirstY, 4f);
         Floor(works.transform); Floor(mech.transform); Floor(textile.transform);
         if (farmRacks > 0) { SanctuaryArea farm = BuildVerticalFarm(areasGroup.transform); areas.Add(farm); }
-        Debug.Log($"[Torres] Producción: {prodLevels} niveles (Construcción, Mecánica, Estudio Textil, {farmFloors} piso(s) de Huerto vertical con {farmRacks} estantes y el garaje).");
+        Debug.Log($"[Torres] Producción: {prodLevels} niveles (Construcción, Mecánica y garaje, Estudio Textil, {farmFloors} piso(s) de Huerto vertical con {farmRacks} estantes).");
         BuildResidenceTower(areasGroup.transform);   // la Residencia: edificio-árbol en la isla (docs/areas/residencia.md)
         // Los EDIFICIOS que juntan varias áreas llevan el nombre de su torre (el de su planta baja diría solo una).
         BuildingNames[kitchen.transform] = TorreServicios; BuildingNames[gym.transform] = TorreEntrenamiento; BuildingNames[works.transform] = TorreProduccion;
