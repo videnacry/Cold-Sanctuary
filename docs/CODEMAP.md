@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 1042 tipos._
+_Total: 1043 tipos._
 
 
 ## Animals
@@ -810,6 +810,7 @@ _Total: 1042 tipos._
 - **PillowFight** (class) — `Assets/Scripts/Progression/PillowFight.cs` — LA GUERRA DE ALMOHADAS en el ring de la arboleda (docs/areas/guerra-de-almohadas.md; Berón 2026-11-04).
 - **PillowFightTest** (class) — `Assets/Scripts/Tests/PillowFightTest.cs` — PRUEBA DE LA GUERRA DE ALMOHADAS (grupo 89; docs/areas/guerra-de-almohadas.md; Berón 2026-11-04).
 - **PillowRing** (class) — `Assets/Scripts/World/PillowRing.cs` — RING DE ALMOHADAS de la arboleda residencial (Berón 2026-11-04:
+- **PisosF1Test** (class) — `Assets/Scripts/Tests/PisosF1Test.cs` — PRUEBA DE LA FASE F1 DEL REDISEÑO DE PISOS (grupo 143; PB-170, docs/areas/rediseno-pisos-arboles.md §6 ter):
 - **PlaneMessenger** (class) — `Assets/Scripts/Prologue/PlaneMessenger.cs` — Mensajes que cruzan entre planos (docs/areas/area-progression.md "Apertura"):
 - **PlantEquipment** (class) — `Assets/Scripts/AtomicPlant/PlantEquipment.cs` — LOS EQUIPOS DE LA PLANTA que no son la consola, cada uno con su trabajo real (F):
 - **PlantNotice** (class) — `Assets/Scripts/AtomicPlant/PlantNotice.cs` — Avisos de la planta atómica en pantalla (vía , que también los deja en el log).

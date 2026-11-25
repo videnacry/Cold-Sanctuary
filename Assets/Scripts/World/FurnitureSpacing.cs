@@ -256,6 +256,72 @@ public static class FurnitureSpacing
         return n;
     }
 
+    // ── PISOS LLENOS (fase F1 del rediseño de pisos, PB-170; CodeShip reglas 2.9 y 2.10; docs/areas/rediseno-pisos-arboles.md) ──
+    // Un piso de 40 × 40 m no puede quedar MEDIO VACÍO (al menos la mitad del piso con algo a ≤ NearFill m) ni con GRANDES HUECOS
+    // (ningún punto a más de MaxGap m de algo), salvo una franja de JumpEdge m en el borde para tirarse al agua. Lo pequeño se separa
+    // (hasta ×1,8, con los 2 m de paso de siempre) en vez de dejar el piso a medias. Es un AVISO del constructor, como los pasillos.
+
+    /// <summary>Distancia (m) a la que un punto del piso cuenta como «con algo cerca».</summary>
+    public const float NearFill = 3f;
+    /// <summary>Lo más lejos (m) que puede quedar un punto del piso de algo (fuera de la franja del borde).</summary>
+    public const float MaxGap = 6f;
+    /// <summary>Franja libre del borde para tirarse (m): ahí no cuenta el hueco.</summary>
+    public const float JumpEdge = 2.5f;
+
+    /// <summary>Cómo de lleno está un piso: la parte con algo cerca (en todo el piso y en cada CUARTO: 0 −X−Z, 1 +X−Z, 2 −X+Z, 3 +X+Z) y el
+    /// punto más lejos de todo (fuera del borde).</summary>
+    public struct Fill
+    {
+        public float near, worstGap; public Vector2 worstAt; public float[] quarters;
+        public bool HalfEmpty => near < 0.5f;
+        public bool Gaps => worstGap > MaxGap;
+        public bool Ok => !HalfEmpty && !Gaps;
+        public override string ToString()
+        {
+            string q = quarters == null ? "" : string.Join(" · ", System.Array.ConvertAll(quarters, v => $"{v * 100f:0} %"));
+            return $"{near * 100f:0} % del piso con algo a ≤ {NearFill:0} m (pide ≥ 50 %); el punto más solo, a {worstGap:0.0} m de todo en ({worstAt.x:0}, {worstAt.y:0}) (pide ≤ {MaxGap:0} m salvo {JumpEdge:0.0} m de borde); cuartos −X−Z · +X−Z · −X+Z · +X+Z: {q}";
+        }
+    }
+
+    /// <summary>Lo lleno de un piso cuadrado de lado <paramref name="side"/> centrado en el origen, con estas huellas en planta (x, z):
+    /// muebles, salas, el tronco… Se mide en una rejilla de <paramref name="step"/> m.</summary>
+    public static Fill FillOf(float side, IList<Rect> items, float step = 1f)
+    {
+        var f = new Fill { quarters = new float[4] };
+        float h = side * 0.5f, inner = h - JumpEdge;
+        int n = Mathf.Max(1, Mathf.RoundToInt(side / step)), near = 0, total = 0;
+        int[] qNear = new int[4], qTotal = new int[4];
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < n; j++)
+            {
+                Vector2 p = new Vector2(-h + (i + 0.5f) * side / n, -h + (j + 0.5f) * side / n);
+                float d = float.MaxValue;
+                for (int k = 0; k < items.Count && d > 0f; k++)
+                {
+                    Rect r = items[k];
+                    float dx = Mathf.Max(r.xMin - p.x, 0f, p.x - r.xMax), dz = Mathf.Max(r.yMin - p.y, 0f, p.y - r.yMax);
+                    d = Mathf.Min(d, Mathf.Sqrt(dx * dx + dz * dz));
+                }
+                int q = (p.x < 0f ? 0 : 1) + (p.y < 0f ? 0 : 2);
+                total++; qTotal[q]++;
+                if (d <= NearFill) { near++; qNear[q]++; }
+                if (Mathf.Abs(p.x) <= inner && Mathf.Abs(p.y) <= inner && d > f.worstGap) { f.worstGap = d; f.worstAt = p; }
+            }
+        f.near = near / (float)Mathf.Max(1, total);
+        for (int q = 0; q < 4; q++) f.quarters[q] = qNear[q] / (float)Mathf.Max(1, qTotal[q]);
+        return f;
+    }
+
+    /// <summary>Las huellas en planta de los muebles de un piso de árbol (<paramref name="deck"/>, con su <see cref="TreeFloor"/>), en su
+    /// marco: solo las de su altura (no las de un piso propio de encima ni las de un anillo).</summary>
+    public static List<Rect> Footprints(Transform deck)
+    {
+        var l = new List<Rect>();
+        foreach (var (_, b) in Items(deck))
+            if (b.min.y < 3f && b.max.y > -0.5f) l.Add(new Rect(b.min.x, b.min.z, b.size.x, b.size.z));
+        return l;
+    }
+
     /// <summary>Revisa todas las áreas y avisa por consola de cada par demasiado junto.</summary>
     public static int Report()
     {

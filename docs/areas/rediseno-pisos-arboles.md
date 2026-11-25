@@ -1,8 +1,8 @@
 ---
-resumen: "PB-170, plan W2 (2026-11-25): portar de CodeShip el rediseño de pisos y edificios-árbol (pisos de 40 × 40 m, un piso por actividad y por afinidad, pisos solo del tronco con tornapuntas y rejilla de madera, árboles en un anillo exterior sobre bases negras con un mar central, globo de agua con el pulpo, cima con castillos y toboganes, reorganización por cálculo), con su reajuste de jornada, reparto y horario libre (W9). D1 decidido por Berón (2026-11-25): uno por actividad, por plazas; D2–D6 según la recomendación («Sigue», 2026-11-25). F0 hecha (reglas, marcas, reparto por plazas; sin Unity)."
+resumen: "PB-170, plan W2 (2026-11-25): portar de CodeShip el rediseño de pisos y edificios-árbol (pisos de 40 × 40 m, un piso por actividad y por afinidad, pisos solo del tronco con tornapuntas y rejilla de madera, árboles en un anillo exterior sobre bases negras con un mar central, globo de agua con el pulpo, cima con castillos y toboganes, reorganización por cálculo), con su reajuste de jornada, reparto y horario libre (W9). D1 decidido por Berón (2026-11-25): uno por actividad, por plazas; D2–D6 según la recomendación («Sigue», 2026-11-25). F0 hecha (reglas, marcas, reparto por plazas; sin Unity). F1a hecha (losas de 40 m, avisos de pisos a medias, un piso por centro y ocio por plazas; sin Unity); F1b (las fusiones de pisos) pide el Blockout."
 temas: [construccion, jornada, codeship, agua, reglas]
 estado: vigente
-codigo: [FloorOrganization, HelixTower, SampleSceneBuilder, TrainingCentres, AreaCapacity, WorkRoster, LeisureDirector, LeisureRoster, SanctuaryArea, StructuralLimits, CarpetPad, PolarLandscapeBuilder, Bedroom, PlatformSlots, AreaMicrocosmos, VirtualizationTank]
+codigo: [FloorOrganization, FurnitureSpacing, LeisureDirector, HelixTower, SampleSceneBuilder, TrainingCentres, AreaCapacity, WorkRoster, LeisureDirector, LeisureRoster, SanctuaryArea, StructuralLimits, CarpetPad, PolarLandscapeBuilder, Bedroom, PlatformSlots, AreaMicrocosmos, VirtualizationTank]
 retos: []
 ---
 # Plan: rediseño de pisos y edificios-árbol (portado del santuario 1 de CodeShip)
@@ -150,6 +150,38 @@ Solo código y docs; falta compilar en el PC de Berón (`tools/verify-compile.sh
 | Prueba | `OrganizacionPisosTest` (grupo 142) |
 
 **W9 en F0:** las horas de tarea no cambian (salen de `AreaFunctions`); cambia solo el reparto del entrenamiento (por plazas en vez de «cada centro cabe entero») y, con los edificios amplios aún en pie, el resultado es el mismo que antes (las plazas sobran). El horario libre (`LeisureRoster`) ya iba por plazas: se reajusta en F1 con las salas nuevas (tabla del §5).
+
+## 6 ter. F1a hecha (2026-11-25); F1b, con el Blockout
+
+F1 se partió en dos: lo que se puede hacer y medir sin Unity (**F1a**, este PR) y las **fusiones de pisos** (**F1b**), que piden
+rehacer distribuciones a ojo en el Blockout (W5) porque las de hoy no caben juntas tal cual (medido abajo).
+
+| Qué (F1a) | Dónde |
+|---|---|
+| **Losa de 40 × 40 m en todas las torres-árbol** (`BeginTreeTower`; antes la del área más grande: Entrenamiento 36, Ciencias 32, Producción 26). El área se amuebla en su planta de siempre, centrada en la losa; el Árbol de los Campos, el parque de energía y la lanzadera no cambian | `SampleSceneBuilder.BeginTreeTower`, `FloorOrganization.FloorSide` |
+| **Árboles apartados** para guardar los 16 m en 3D (simulación de losas, puntas, anillos de punta, ramas y troncos, la misma cuenta que `TreeBuildingsTest` §3; reproduce sus 16,3 y 28,1 m de hoy): con pisos de 40 m el Entrenamiento quedaba a 12,3 m del Árbol de los Campos y Producción a 14,4 m. **Entrenamiento (−77, 52) → (−77, 57)** y **Producción (−180, −140) → (−183, −140)**: 17,3 m los dos (Servicios–Entrenamiento 17,7; Residencia–Campos 17,5). Siguen en sus lóbulos (Norte:Bosque_Comestible, r 26; Isla:Tundra, r 66) | `SampleSceneBuilder.Towers` |
+| **Avisos de pisos a medias** (reglas 2.9 y 2.10 de CodeShip, nueva **T27**): al final del Blockout, cada piso de 40 m de una torre-árbol con menos de la mitad del piso con algo a ≤ 3 m, o con un punto a más de 6 m de todo (salvo la franja de 2,5 m del borde, para tirarse), sale como `[Pisos]` con su ocupación por **cuartos** (para saber dónde cabe un componente). El tronco cuenta como «algo». Aviso, no error | `FurnitureSpacing.FillOf`/`Footprints`, `SampleSceneBuilder.ReportFloorFill` |
+| **Un piso por centro**: `TrainingCentres.Amplios = false`. Con 30 miembros: Gimnasio 1, Calistenia 1, Hatha 1, Ashtanga 1, Ballet 1, Dojo 1 (antes 1, 1, 2, 2, 2, 2): el Entrenamiento baja de ~16 pisos a ~12 (con cardio, Aula y Música) | `TrainingCentres` |
+| **W9, horario libre por plazas**: pesas, Hatha, Ashtanga, baile y artes marciales ya no son «para todos»: van por las plazas del piso de su centro (16 esterillas por estilo de yoga, 20 ballet, 25 dojo, 30 gimnasio) y quien no cabe lo hace otro día. Para todos quedan los sitios que miden para todos (huerto, plaza, restaurante, auditorio, Asambleas; J36) | `LeisureDirector.AtCentre`/`CapacityOf` |
+| Prueba | `PisosF1Test` (grupo 143) |
+
+**W9 en F1a:** las horas de tarea no cambian (salen de `AreaFunctions`); el entrenamiento de las 8 y las 14 ya iba por plazas (F0) y
+ahora las plazas son reales (16 por estilo de yoga en vez de 32): con 30 miembros, la suma (147) sigue llegando. El ocio de los centros
+pasa a ir por turnos. Los viajes casi no cambian (5 y 3 m). La iniciación de yoga sigue en la Sala de Yoga.
+
+**F1b (pide el Blockout, W5): las fusiones de §4.** Medido sobre las distribuciones de hoy (el umbral del tronco, 4,6 m en −Z, queda
+libre para la puerta: en un piso de 40 m quedan 40 × 35,4 m útiles):
+
+| Fusión | Problema medido | Cómo |
+|---|---|---|
+| Cría + carne cultivada | Las dos usan la planta de 26 × 20 m: juntas (girada cada una a 20 × 26 en una mitad) piden 20 + 2 + 20 = 42 m de ancho | Compactar el laboratorio a ~16 m (cuota 0,4) |
+| Asambleas + guardia | Las dos llenan su piso de 40 × 38 con coordenadas fijas (el muro de pantallas a z = 14,5) | Rehacer la guardia en un cuarto (cuota 0,25) |
+| Gimnasio + cardio | El gimnasio ocupa 36 × 26 con sus 30 máquinas; al cardio le quedarían ~9 m | Repartir máquinas y cardio en el piso entero (2–3 de cada) |
+| Salas (yoga, música, ballet, bailes) | Cada sala de yoga mide 18 × 26 (no cabe en un cuarto de 20 × 20); el auditorio de 60 butacas no cabe en un cuarto (D4: a Asambleas) | Salas de yoga de 8 esterillas en 20 × 20; cabina de música (`SoundRoom`) en un cuarto; ballet (18 × 8,6 m) en un cuarto; bailes nuevo |
+| Hospital (urgencias + hospitalización), laboratorios (química + biología), mecánica + garaje, textil + huerto vertical | Varios pisos con distribución propia cada uno | Uno a uno, con los avisos `[Pisos]` del Blockout como guía |
+
+Cada fusión es un piso menos: se hacen de una en una en el Blockout del santuario (pide permiso a Berón: él juega en ese Editor),
+mirando sus avisos `[Pisos]` y `[Espacio]`, y su prueba (grupos 53, 57, 75, 113, 143).
 
 ## 7. Decisiones para Berón
 

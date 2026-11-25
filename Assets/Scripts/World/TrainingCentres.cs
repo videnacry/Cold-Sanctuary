@@ -8,7 +8,7 @@ using UnityEngine;
 /// Solo si la suma no llega se añade un piso, al centro con más plazas por piso (<see cref="FloorsFor(string,int)"/>).
 /// LOS EDIFICIOS DE HOY («amplios», <see cref="Amplios"/>): la J16 antigua (Berón 2026-11-04: «si las 2 de yoga existentes no son
 /// suficientes se crea una más…»): cada centro con ⌈miembros / plazas de un piso⌉ pisos, para todos a la vez. Se guardan para cuando
-/// haya más gente; el constructor los sigue levantando hasta la fase F1 del rediseño, que apaga <see cref="Amplios"/>.
+/// haya más gente. La fase F1 del rediseño (2026-11-25) apagó <see cref="Amplios"/>: el constructor levanta un piso por centro.
 /// Los miembros salen de la lista del personal (<see cref="AreaCapacity.DefaultMembers"/>; nunca un número fijo). La comprobación es
 /// la de la regla de capacidad (<see cref="AreaCapacity"/>, grupo 75). El Aula lleva su propia regla (AulaFloors: estudio para todos).
 /// </summary>
@@ -34,9 +34,10 @@ public static class TrainingCentres
 
     public static Spec? Of(string centre) { foreach (Spec s in All) if (s.name == centre) return s; return null; }
 
-    /// <summary>Los EDIFICIOS AMPLIOS (los de hoy, J16 antigua: cada centro para todos a la vez). Encendido hasta la fase F1 del
-    /// rediseño de pisos, que construye un piso por actividad (docs/areas/rediseno-pisos-arboles.md §6).</summary>
-    public static bool Amplios = true;
+    /// <summary>Los EDIFICIOS AMPLIOS (los de antes, J16 antigua: cada centro para todos a la vez). APAGADO desde la fase F1 del rediseño
+    /// de pisos (2026-11-25): un piso por actividad y el entrenamiento repartido por plazas (docs/areas/rediseno-pisos-arboles.md §6 ter).
+    /// Se enciende solo cuando haya más gente de la que caben, sumando, en un piso de cada centro.</summary>
+    public static bool Amplios = false;
 
     /// <summary>Pisos que necesita UN centro con <paramref name="perFloor"/> plazas por piso para que quepan, él solo, <paramref name="members"/>
     /// miembros (la cuenta de los edificios amplios).</summary>

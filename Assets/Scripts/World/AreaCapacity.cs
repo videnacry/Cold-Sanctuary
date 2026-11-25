@@ -117,11 +117,11 @@ public static class AreaCapacity
                 lines.Add(new Line { area = "Gimnasio (con cardio)", activity = "máquinas", category = AreaSeat.Category.Entrenamiento, have = n, need = Need(AreaSeat.Category.Entrenamiento, members) });
                 gym = true;
             }
-            // El YOGA: dos salas (Hatha, el piso de la Sala de Yoga; Ashtanga, su planta propia), cada una para todos.
+            // El YOGA: dos centros (Hatha, el piso de la Sala de Yoga; Ashtanga, su planta propia); desde la fase F1, un piso de cada uno (J16 reescrita: la suma llega a todos).
             if (a.name == "YogaRoom_Area")
             {
-                // (2026-11-04, regla J16) Por el ESTILO de su sala (YogaHall), en TODOS los pisos del estilo: si un piso no llega, el
-                // constructor añade otro (TrainingCentres.FloorsFor; «Planta_hatha_2», «Planta_ashtanga_2»…).
+                // Por el ESTILO de su sala (YogaHall), en TODOS los pisos del estilo: si la suma de los centros no llega, el constructor
+                // añade un piso (TrainingCentres.FloorsFor; «Planta_hatha_2», «Planta_ashtanga_2»…).
                 int h = 0, s2 = 0;
                 foreach (Transform t in a.GetComponentsInChildren<Transform>(true))
                 {

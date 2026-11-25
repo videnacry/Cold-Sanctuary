@@ -182,10 +182,28 @@ public class LeisureDirector : MonoBehaviour
         ("descanso", "Descansar en casa", LeisureRoster.Kind.Descanso, new[] { "casa" }, 0, "tumbado"),
     };
 
-    /// <summary>REGLA J16: actividades de ocio que dan cabida a TODOS los miembros a la vez (su capacidad es la de los miembros). Fuera
-    /// quedan «Jugar con las crías» (pocas personas por camada, para no agobiarlas) y «Manualidades» (una herramienta por persona: los
-    /// telares y la rueca del estudio textil), que van por turnos.</summary>
-    public static readonly HashSet<string> AllMembers = new HashSet<string> { "pesas", "yoga", "ashtanga", "huerto", "lectura", "tertulia", "baile", "artes", "concierto", "asamblea" };
+    /// <summary>REGLA J36: actividades de ocio que dan cabida a TODOS los miembros a la vez (su capacidad es la de los miembros): las de
+    /// los sitios que miden para todos (el restaurante, el huerto, la plaza, el auditorio y la Sala de asambleas). Fuera quedan «Jugar con
+    /// las crías» (pocas personas por camada, para no agobiarlas) y «Manualidades» (una herramienta por persona), que van por turnos, y,
+    /// desde la fase F1 del rediseño de pisos (2026-11-25; J16 reescrita: un piso por actividad), las de los centros de entrenamiento
+    /// (<see cref="AtCentre"/>): van por las plazas de su centro.</summary>
+    public static readonly HashSet<string> AllMembers = new HashSet<string> { "huerto", "lectura", "tertulia", "concierto", "asamblea" };
+
+    /// <summary>(Fase F1, W9) El ocio que se hace en un CENTRO DE ENTRENAMIENTO y su centro (<see cref="TrainingCentres"/>): su capacidad
+    /// es la de los pisos del centro (un piso desde F1), no la de todos los miembros; quien no cabe hoy lo hace otro día (<see cref="LeisureRoster"/>).</summary>
+    public static readonly Dictionary<string, string> AtCentre = new Dictionary<string, string>
+    {
+        { "pesas", "Gimnasio" }, { "yoga", "Yoga Hatha" }, { "ashtanga", "Yoga Ashtanga" }, { "baile", "Ballet" }, { "artes", "Dojo" },
+    };
+
+    /// <summary>Las plazas de una actividad de ocio: las de todos los miembros (J36), las de los pisos de su centro (J16, F1) o las suyas.</summary>
+    public static int CapacityOf(string id, int baseCap, int members)
+    {
+        if (AllMembers.Contains(id)) return Mathf.Max(baseCap, members);
+        if (AtCentre.TryGetValue(id, out string centre) && TrainingCentres.Of(centre) is TrainingCentres.Spec s)
+            return TrainingCentres.Amplios ? Mathf.Max(baseCap, members) : Mathf.Max(baseCap, s.perFloor * TrainingCentres.FloorsFor(centre, members));
+        return baseCap;
+    }
 
     /// <summary>LAS SESIONES SEMANALES DE TODOS (Berón 2026-11-05): una franja fija, día 0–6 de la semana y franja de <see cref="LeisureRoster.SlotHours"/>, con plaza para todos
     /// los miembros. La asamblea, el primer día a las 18 h; el concierto, el cuarto a las 17 h (no a las 20 h, la de las clases con maestro). Fuera de ella no entran en el reparto.</summary>
@@ -246,9 +264,9 @@ public class LeisureDirector : MonoBehaviour
                 if (a != null) { v = new Venue { title = a.displayName, anchor = a.transform }; break; }
             }
             if (v == null) continue;   // no hay sitio abierto: la actividad no entra esta semana
-            // REGLA J16: los centros de ocio dan cabida a TODOS los miembros a la vez (los que salen de la lista del personal). Las que no
-            // (crías y textil) son pequeñas por su naturaleza y van por turnos (docs/areas/centros-para-todos.md).
-            int cap = AllMembers.Contains(d.id) ? Mathf.Max(d.cap, AreaCapacity.Members()) : d.cap;
+            // REGLA J36: los sitios para todos dan cabida a TODOS los miembros a la vez; los centros de entrenamiento, sus plazas (J16
+            // reescrita, F1); crías y textil son pequeñas por su naturaleza y van por turnos (docs/areas/centros-para-todos.md).
+            int cap = CapacityOf(d.id, d.cap, AreaCapacity.Members());
             v.capacity = cap; v.index = k++;
             var act = new LeisureRoster.Activity(d.id, d.title, d.kind, v.title, cap, d.pose);
             ApplyWeekly(act);

@@ -109,6 +109,7 @@ En la prueba, el ID va al principio del texto del `TestProbe.Check`: `"[CV-03] �
 | JOR-54 | JOR | Regla J37: Solo lo básico queda terminado (Berón 2026-11-09): los servicios básicos de humanos y animales (hospital, cocina, guardia, huerto, cría, carne cultivada, energía, mecánica), la construcción, el gimnasio y el yoga. Lo dem… | RepartoSantuariosTest | 113 | J37 | — | manual §«Se comprueba en» |
 | JOR-55 | JOR | Turnos de guardia desactivados para todos (Berón 2026-11-16): `WorkRoster.guardShifts` apagado por defecto; la patrulla y la sala de guardia no se reparten, ni a personas ni a clones; el alimentador no cuenta como guardia | RepartoSantuariosTest | 113 | — | PB-159 | añadido el 2026-11-18 |
 | JOR-56 | JOR | Regla J16 reescrita: entrenamiento de las 8 y las 14 por plazas entre los centros; la suma de plazas llega a todos | OrganizacionPisosTest | 142 | — | PB-170 | añadido el 2026-11-25 |
+| JOR-58 | JOR | Regla T27: pisos de 40 × 40 m no medio vacíos ni con huecos de > 6 m (salvo 2,5 m de borde); un piso por centro; el ocio de los centros por plazas | PisosF1Test | 143 | — | PB-170 | añadido el 2026-11-25 |
 | JOR-57 | JOR | Regla T26: marcas de cada piso (puro/mixto, cuota) y reorganización por cálculo; la Residencia sube a la cima de Ciencias | OrganizacionPisosTest | 142 | — | PB-170 | añadido el 2026-11-25 |
 
 ## YOG · Yoga
