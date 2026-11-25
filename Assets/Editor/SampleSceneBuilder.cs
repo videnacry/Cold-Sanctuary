@@ -3507,7 +3507,7 @@ public static partial class SampleSceneBuilder
         feeder.transform.localPosition = new Vector3(-0.4f, 0f, 8f);   // (F1b) en la fila de la consola: 2 m de la consola y de la centrífuga 2
         KitchenProps.C(feeder.transform, new Vector3(0f, 0.7f, 0f), new Vector3(1.4f, 1.4f, 0.7f), KitchenProps.DarkSteel, 0f, "Camara_raciones");
         WorldLabel fwl = feeder.AddComponent<WorldLabel>(); fwl.text = "Raciones para el alimentador"; fwl.height = 1.8f;
-        CulturedMeatLab.Build(meat.transform, CulturedMeatLab.CompactSize, feeder.transform, compact: true);
+        CulturedMeatLab.Build(meat.transform, feeder.transform);
         //  · CIENCIAS (docs/areas/edificios-investigacion.md): Física (reactor TRIGA, ciclotrón y la sala de experimentos con su anillo
         //    y la torre de Foucault) · Química (síntesis y análisis) · Biología (cultivo y molecular). El reactor de
         //    investigación va abajo: su piscina baja como un pilar hasta el suelo.
