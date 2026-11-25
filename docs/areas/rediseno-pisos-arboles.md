@@ -1,5 +1,5 @@
 ---
-resumen: "PB-170, plan W2 (2026-11-25): portar de CodeShip el rediseño de pisos y edificios-árbol (pisos de 40 × 40 m, un piso por actividad y por afinidad, pisos solo del tronco con tornapuntas y rejilla de madera, árboles en un anillo exterior sobre bases negras con un mar central, globo de agua con el pulpo, cima con castillos y toboganes, reorganización por cálculo), con su reajuste de jornada, reparto y horario libre (W9). Espera la decisión de Berón; no se ha construido nada."
+resumen: "PB-170, plan W2 (2026-11-25): portar de CodeShip el rediseño de pisos y edificios-árbol (pisos de 40 × 40 m, un piso por actividad y por afinidad, pisos solo del tronco con tornapuntas y rejilla de madera, árboles en un anillo exterior sobre bases negras con un mar central, globo de agua con el pulpo, cima con castillos y toboganes, reorganización por cálculo), con su reajuste de jornada, reparto y horario libre (W9). D1 decidido por Berón (2026-11-25): uno por actividad, por plazas; D2–D6 pendientes. No se ha construido nada."
 temas: [construccion, jornada, codeship, agua, reglas]
 estado: propuesta
 codigo: [HelixTower, SampleSceneBuilder, TrainingCentres, AreaCapacity, WorkRoster, LeisureDirector, LeisureRoster, SanctuaryArea, StructuralLimits, CarpetPad, PolarLandscapeBuilder, Bedroom, PlatformSlots, AreaMicrocosmos, VirtualizationTank]
@@ -140,7 +140,7 @@ el globo se hace más pequeño.
 
 | # | Pregunta | Mi recomendación |
 |---|---|---|
-| **D1** | ¿Pisos para los miembros actuales (uno por actividad, entrenamiento repartido por plazas) o mantener J16/J36 (cada centro para todos a la vez)? | **Uno por actividad**, con la cima y Asambleas para todos a la vez (C1) |
+| **D1** | ¿Pisos para los miembros actuales (uno por actividad, entrenamiento repartido por plazas) o mantener J16/J36 (cada centro para todos a la vez)? | **DECIDIDO (Berón 2026-11-25): uno por actividad, por plazas**; la cima y Asambleas, para todos a la vez (C1) |
 | D2 | ¿Árboles al anillo exterior sobre bases negras en el mar (los casquetes, solo de los animales)? | Sí (C4) |
 | D3 | ¿Globo con el pulpo en el santuario 1, o en el Santuario Marino? | En el s1, solo con su fauna somera (C5) |
 | D4 | ¿Dónde va el auditorio de música (60 butacas)? | En Asambleas (sala para todos) |
