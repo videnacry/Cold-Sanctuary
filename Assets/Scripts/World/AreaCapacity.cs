@@ -93,11 +93,12 @@ public static class AreaCapacity
             // Los AreaSeat del área, por actividad.
             var sum = new Dictionary<string, (AreaSeat.Category c, int n)>();
             var building = new Dictionary<string, int>();   // los puestos de los pisos en obras, por actividad
+            var buildingCat = new Dictionary<string, AreaSeat.Category>();
             foreach (AreaSeat s in a.GetComponentsInChildren<AreaSeat>(true))
             {
                 // (2026-11-04) Un piso EN OBRAS no da servicio: sus puestos no cuentan hasta que se termine (el ballet, el dojo).
                 ConstructionProject site = s.GetComponentInParent<ConstructionProject>(true);
-                if (site != null && !site.Finished) { string p = $"{name} · {s.activity} (en obras)"; if (!pending.Contains(p)) pending.Add(p); building.TryGetValue(s.activity, out int b); building[s.activity] = b + s.seats; continue; }
+                if (site != null && !site.Finished) { string p = $"{name} · {s.activity} (en obras)"; if (!pending.Contains(p)) pending.Add(p); building.TryGetValue(s.activity, out int b); building[s.activity] = b + s.seats; buildingCat[s.activity] = s.category; continue; }
                 sum.TryGetValue(s.activity, out var v);
                 sum[s.activity] = (s.category, v.n + s.seats);
                 if (s.category == AreaSeat.Category.Estudio) study = true;
@@ -108,6 +109,11 @@ public static class AreaCapacity
                 building.TryGetValue(kv.Key, out int planned);
                 lines.Add(new Line { area = name, activity = kv.Key, category = kv.Value.c, have = kv.Value.n, planned = planned, need = Need(kv.Value.c, members) });
             }
+            // (2026-11-25) Una actividad con TODOS sus puestos en obras (el Aula, Informática… al empezar la partida) también lleva su línea:
+            // 0 terminados y los de la obra, que cuentan para la regla (como el ballet y el dojo). Antes no salía y la prueba 75 no la encontraba.
+            foreach (var kv in building)
+                if (!sum.ContainsKey(kv.Key))
+                    lines.Add(new Line { area = name, activity = kv.Key, category = buildingCat[kv.Key], have = 0, planned = kv.Value, need = Need(buildingCat[kv.Key], members) });
             // El GIMNASIO: sus máquinas (el piso del gimnasio y el de cardio cuentan juntos: es un mismo centro).
             if (a.name == "Gym_Area")
             {

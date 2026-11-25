@@ -145,15 +145,20 @@ public static partial class SampleSceneBuilder
 
 public static partial class SampleSceneBuilder
 {
-    /// <summary>EL GARAJE DEL SUBMARINO DE OBRA (Berón 2026-11-03; docs/areas/submarino-de-obra.md): el primer piso libre de la torre de
-    /// Producción (la de Construcción) pasa a ser «Garaje de submarinos», con su plaza pintada y el submarino aparcado mirando a la
-    /// puerta. Si la torre no tiene piso libre, la plaza va en el piso de Construcción.</summary>
+    /// <summary>EL GARAJE DEL SUBMARINO DE OBRA (Berón 2026-11-03; docs/areas/submarino-de-obra.md): su plaza pintada y el submarino aparcado
+    /// mirando a la puerta. (2026-11-25, fase F1b del rediseño de pisos: piso MIXTO «Mecánica y garaje», cuotas 0,5 + 0,5) Va en el piso de la
+    /// MECÁNICA, en su «Garaje_submarinos» (el taller de los vehículos y el garaje juntos; un piso menos en Producción). Si no hay Mecánica,
+    /// el primer piso libre de la torre; si tampoco, el de Construcción.</summary>
     static void SubmarineGarage(Helix hx)
     {
         Transform deck = null;
-        for (int k = 1; k <= hx.Platforms; k++) if (hx.decks[k] != null && hx.decks[k].name.StartsWith("Piso_libre_")) { deck = hx.decks[k]; break; }
-        if (deck != null) deck.name = "Garaje_submarinos";
-        else
+        for (int k = 1; k <= hx.Platforms && deck == null; k++)
+            if (hx.decks[k] != null && hx.decks[k].name == "VehicleWorkshop_Area")
+            {
+                deck = new GameObject("Garaje_submarinos").transform; deck.SetParent(hx.decks[k], false);   // (mismo marco que el piso: la puerta en −Z)
+            }
+        for (int k = 1; k <= hx.Platforms && deck == null; k++) if (hx.decks[k] != null && hx.decks[k].name.StartsWith("Piso_libre_")) { deck = hx.decks[k]; deck.name = "Garaje_submarinos"; }
+        if (deck == null)
         {
             for (int k = 1; k <= hx.Platforms && deck == null; k++)
                 if (hx.decks[k] != null && hx.decks[k].GetComponentInChildren<SanctuaryArea>() is SanctuaryArea a && a.name.StartsWith("Construction")) deck = hx.decks[k];
@@ -175,6 +180,6 @@ public static partial class SampleSceneBuilder
         sub.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);   // mirando a la puerta (el lado −Z del piso, contra el tronco)
         sub.AddComponent<ConstructionSubmarine>();
         PolarLandscapeBuilder.IgnoreForNav(g.gameObject);
-        Debug.Log($"[Submarino] Garaje en «{deck.name}» de {hx.building} (piso de {2f * half:0} m), con el submarino de obra aparcado.");
+        Debug.Log($"[Submarino] Garaje en «{(deck.parent != null && deck.parent != hx.root ? deck.parent.name + "/" : "")}{deck.name}» de {hx.building} (piso de {2f * half:0} m), con el submarino de obra aparcado.");
     }
 }

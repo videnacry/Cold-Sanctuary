@@ -178,7 +178,15 @@ libre para la puerta: en un piso de 40 m quedan 40 × 35,4 m útiles):
 | Asambleas + guardia | Las dos llenan su piso de 40 × 38 con coordenadas fijas (el muro de pantallas a z = 14,5) | Rehacer la guardia en un cuarto (cuota 0,25) |
 | Gimnasio + cardio | El gimnasio ocupa 36 × 26 con sus 30 máquinas; al cardio le quedarían ~9 m | Repartir máquinas y cardio en el piso entero (2–3 de cada) |
 | Salas (yoga, música, ballet, bailes) | Cada sala de yoga mide 18 × 26 (no cabe en un cuarto de 20 × 20); el auditorio de 60 butacas no cabe en un cuarto (D4: a Asambleas) | Salas de yoga de 8 esterillas en 20 × 20; cabina de música (`SoundRoom`) en un cuarto; ballet (18 × 8,6 m) en un cuarto; bailes nuevo |
-| Hospital (urgencias + hospitalización), laboratorios (química + biología), mecánica + garaje, textil + huerto vertical | Varios pisos con distribución propia cada uno | Uno a uno, con los avisos `[Pisos]` del Blockout como guía |
+| **Mecánica + garaje (HECHA 2026-11-25)** | El Blockout dio la Mecánica al 14 % y el garaje (un piso libre) al 5 % | La plaza del submarino (7 × 16 m) en el centro del piso de la Mecánica (`SubmarineGarage`); Producción baja de 3 niveles a 2 |
+| Hospital (urgencias + hospitalización), laboratorios (química + biología), textil + huerto vertical | Varios pisos con distribución propia cada uno | Uno a uno, con los avisos `[Pisos]` del Blockout como guía |
+
+**Primer Blockout de F0 + F1a (2026-11-25, PC de Berón):** compila sin errores; `[Capacidad]` 0 por debajo; `[Centros]` un piso por
+centro (Entrenamiento: 7 pisos en 6 niveles); `[Pisos]` 40 de 40 pisos a medias (esperado: se amueblan en su planta de antes; los más
+vacíos, los pisos libres y las obras al 5 %, la cocina al 7 %, la Mecánica al 14 %; los más llenos, hospitalización 81 %, veterinaria 71 %,
+gimnasio 70 %). Pruebas: 244 PASS / 3 FAIL: 57, 65, 142 y 143 en verde; en 75 el Aula e Informática, con todos sus puestos en obras al
+empezar, no tenían línea (arreglado: `AreaCapacity.Check` da la línea con 0 hechos y los de la obra); en 113, «nadie trabaja fuera de su
+sitio» falló sin detalle (ahora lo da, para la próxima pasada).
 
 Cada fusión es un piso menos: se hacen de una en una en el Blockout del santuario (pide permiso a Berón: él juega en ese Editor),
 mirando sus avisos `[Pisos]` y `[Espacio]`, y su prueba (grupos 53, 57, 75, 113, 143).

@@ -464,7 +464,10 @@ public class RepartoSantuariosTest : MonoBehaviour, ITestUnit
             WorkRoster.DayPlan t = wd.today;
             foreach (var kv in t.hoursByArea.OrderBy(k => k.Key)) Debug.Log($"[Reparto] {kv.Key} ({SanctuaryPlacement.PlaceOfArea(kv.Key)}): {kv.Value:0.#} h, pide {t.quota[kv.Key]} persona(s).");
             foreach (string s in WorkRoster.Balance(t, wd.roster.workers.Count)) Debug.Log("[Reparto] " + s);
-            TestProbe.Check("en el santuario: nadie trabaja fuera de su sitio ni más allá de su casa", t.work.Where(a => !a.worker.clone && t.place.ContainsKey(a.worker)).All(a => t.place[a.worker].Equals(SanctuaryPlacement.PlaceOfArea(a.mission.area)) && SanctuaryPlacement.CanAccess(a.worker.home, t.place[a.worker])));
+            var outOfPlace = t.work.Where(a => !a.worker.clone && t.place.ContainsKey(a.worker))
+                .Where(a => !(t.place[a.worker].Equals(SanctuaryPlacement.PlaceOfArea(a.mission.area)) && SanctuaryPlacement.CanAccess(a.worker.home, t.place[a.worker])))
+                .Select(a => $"{a.worker.name} → {a.mission.area} (sitio {SanctuaryPlacement.PlaceOfArea(a.mission.area)}, está en {t.place[a.worker]}, casa {a.worker.home})").ToList();
+            TestProbe.Check("en el santuario: nadie trabaja fuera de su sitio ni más allá de su casa", outOfPlace.Count == 0, string.Join(" · ", outOfPlace.Take(6)));
             TestProbe.Check("en el santuario: cada clon tiene su área apuntada", t.clones.Count == t.cloneAreas.Count, $"{t.clones.Count} clones · {string.Join(", ", t.cloneAreas)}");
             TestProbe.Check("en el santuario: nada pasa a mañana ni queda imposible", t.backlog.Count == 0 && t.impossible.Count == 0 && wd.roster.pending.Count == 0, string.Join(", ", t.impossible.Take(6).Select(x => x.id)));
             TestProbe.Check("en el santuario: nadie pasa de 5 h ni trabaja después de las 16:00", t.work.Where(a => !a.worker.clone).GroupBy(a => a.worker).All(g => g.Sum(a => a.mission.hours) <= WorkRoster.WorkHours + 1e-3f) && t.work.All(a => a.start + a.mission.hours <= WorkRoster.StartHour + 8f + 1e-3f));
