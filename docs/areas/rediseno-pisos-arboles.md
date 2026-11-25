@@ -1,0 +1,148 @@
+---
+resumen: "PB-170, plan W2 (2026-11-25): portar de CodeShip el rediseño de pisos y edificios-árbol (pisos de 40 × 40 m, un piso por actividad y por afinidad, pisos solo del tronco con tornapuntas y rejilla de madera, árboles en un anillo exterior sobre bases negras con un mar central, globo de agua con el pulpo, cima con castillos y toboganes, reorganización por cálculo), con su reajuste de jornada, reparto y horario libre (W9). Espera la decisión de Berón; no se ha construido nada."
+temas: [construccion, jornada, codeship, agua, reglas]
+estado: propuesta
+codigo: [HelixTower, SampleSceneBuilder, TrainingCentres, AreaCapacity, WorkRoster, LeisureDirector, LeisureRoster, SanctuaryArea, StructuralLimits, CarpetPad, PolarLandscapeBuilder, Bedroom, PlatformSlots, AreaMicrocosmos, VirtualizationTank]
+retos: []
+---
+# Plan: rediseño de pisos y edificios-árbol (portado del santuario 1 de CodeShip)
+
+Pedido de Berón (2026-11-24, PB-170): «en CodeShip se han realizado importantes cambios sobre su sanctuary1, quizás se
+podrían aplicar aquí». Eligió portar primero el **rediseño de pisos y árboles**. Por la regla **W2** esto es solo el
+**plan**: investigación, choques con lo que hay y fases. No se construye ni se abre Unity hasta que Berón lo apruebe.
+
+**Fuente:** `Catravcul/CodeShip`, rama `integracion` (`63a5b86`, 2026-11-24): `docs/design/santuario1.md` (listas 8.ª a
+16.ª, pedidos #64–#134), `docs/design/reglas.md` §2.7, 7b, 7c, 2.9, 2.10 y 2.13, `docs/design/organizacion.md` y
+`src/modules/sanctuary-one/data/site.ts` (`TOWERS_PREVIOS`, `PISO_TAGS`). Resumen del porte: [portar-codeship-s1.md](../sistemas/portar-codeship-s1.md).
+
+## 1. Qué hizo CodeShip (lo que se porta)
+
+| Pedidos | Cambio | Regla de CodeShip |
+|---|---|---|
+| #64, #65, #82, #98, #102 | **Edificios para los miembros actuales**: un piso por actividad (un gimnasio, una sala de yoga, un aula…) y **pisos por afinidad** (las salas pequeñas se juntan: calistenia + parkour + crossfit, yoga + música + ballet + bailes, combate, química + biología, mecánica + garaje, textil + huerto vertical, asambleas + guardia, cría + carne cultivada). Los edificios amplios de antes **se guardan** (`TOWERS_AMPLIOS`) para cuando haya gente. 63 → 33 → 23 pisos | 7b |
+| #82, #92, #104, #105 | **Todos los pisos de 40 × 40 m** (el de la cocina), ninguno medio vacío (la mitad del piso con algo a menos de 3 m) y sin grandes huecos (ningún punto a más de 6 m de algo, salvo 2,5 m de borde para tirarse); lo pequeño se separa hasta ×1,8 | 2.9, 2.10 |
+| #66–#70, #76 | **Los pisos solo nacen del tronco** (2 por nivel, lados opuestos, en molinete), **sin patas**: los sostienen **dos tornapuntas** diagonales al tronco. **Las ramas solo van a las puntas de frutales**, con el tubo de Cold Sanctuary. **Armazón de madera**: postes en las esquinas, viga por nivel y **rejilla cada 4 m** (ajustable 4/8/16 m), que nunca cruza una puerta. Aros delgados y suelos de madera marrón con textura de tablas | 2.7 |
+| #71–#74, #78, #83, #88 | **Mapa en anillos**: en el centro un **mar circular** sin hielo (ballenas, orcas, focas, delfines); alrededor, casquetes e isla; **en el borde, los árboles**, cada uno sobre su **base negra** cuadrada en el mar (casco de 3 m, cubierta a la altura del hielo, 10 m para andar) con su estación de alfombras (muelle si la copa la tapa). Ningún piso ni punta sobre un casquete: el hielo es de los animales | 7c |
+| #75, #79, #86, #87, #99, #107, #108 | **Globo de agua**: sobre una boquilla que sale del mar, una esfera de agua de ~140 m de radio (más alta que cualquier árbol), hecha de capas de celdas de 8 m. Se nada dentro; la luz baja con la profundidad. Ballenas arriba, delfines abajo, focas y delfines suben y bajan por la boquilla. Las alfombras vuelan por encima | — |
+| #119, #123 | **El pulpo que se desarrolla** dentro de su huevo transparente en el centro del globo: estadios de Naef I–XX de *Octopus vulgaris* (Naef 1928), dos inversiones, ojos que se pigmentan, cromatóforos, vitelo que se gasta, eclosión y paralarva; luego otro huevo. Ajuste de duración (1, 3, 10 min o 2 h). Paralarva = 1/3 del globo | — |
+| #84 | Alfombras al **doble de velocidad** (12 m/s) acelerando y frenando como un coche (2,5 m/s²) | — |
+| #129–#132 | **Cima gigante** (110 × 110 m) en la copa: la Residencia con **4 castillos** (30 aposentos con sus literas), **toboganes reales** (gravedad con rozamiento μ = 0,25, EN 1176-3) al **ring de almohadas**, aula, lectura, cocina compartida, aseos y **jardín en el borde**; entrada por el centro (la copa del tronco) y la estación de alfombras como apéndice del borde. Guerra de almohadas con tesoros | 2.13 |
+| #124, #133 | Una sola **gran pecera de simulación** (9 × 9 m, 9 máscaras), en el piso de Informática | — |
+| #134 | **Reorganización por cálculo**: cada piso lleva marcas (componentes con categoría y **cuota**, 1 = un piso; puro o mixto) y unas reglas deciden: cuota ≤ 1 piso · ≤ 1,9 piso con anillo · ≤ 9 cima · ≤ 11,25 cima con anillo · más, se reparte; un mixto desbordado manda fuera lo que no crece; un árbol que se queda solo con su cima la cede al de menos pisos y desaparece. Nunca se reorganiza a mano | 2.13 |
+
+**No se porta** (ya decidido en [portar-codeship-s1.md](../sistemas/portar-codeship-s1.md)): la «distribución nuestra» (puesto
+fijo por turno, choca con la regla de oro) y los 4 animales por persona (aquí el multiplicador es 3).
+
+## 2. Cómo está hoy Cold Sanctuary
+
+Todos los edificios ya son edificios-árbol (`HelixTower`, [edificio-arbol.md](edificio-arbol.md)): tronco de agua de
+20 × 20 m, pisos pegados a sus caras en molinete (2 por nivel, cada 22 m, primero a 64 m), puntas con frutales al final de
+ramas de agua de 10 × 10 m, anillos en U 8 m sobre algunos pisos, techo con alfombras y paneles. Es decir, **la mitad de la
+regla 2.7 ya la tenemos** (pisos del tronco, molinete, tornapuntas CFST, exoesqueleto de nervios).
+
+| Árbol | Pisos hoy (30 miembros) | Medida de piso |
+|---|---|---|
+| Servicios | Restaurante · Hospital: urgencias · hospitalización · veterinario · Cría · Carne cultivada · Asambleas · Guardia (8) | 40 × 38 |
+| Entrenamiento | Gimnasio · Cardio · Calistenia · Hatha ×2 · Ashtanga ×2 · Ballet ×2 · Dojo ×2 · Aula ×N · Música ×N (~15, techo ~240 m) | 36 × 26 |
+| Ciencias | Química ×2 · Biología ×2 · Informática · fachada de fotobiorreactores (la física se fue al Santuario Marino) | 32 × 20 |
+| Producción | Construcción · Mecánica · Textil · Huerto vertical ×N · Garaje del submarino | 26 × 20 |
+| Árbol de los Campos | 4 pisos y 4 puntas de cultivos (gira) | 32 / 16 |
+| Residencia (Isla:Cabo) | Plaza con el ring · 5 pisos de habitaciones (30 camas-litera con tobogán) | 40 × 40 |
+
+Los árboles están **sobre lóbulos de hielo** (`PolarLandscapeBuilder.Islands`), entre los casquetes y la laguna.
+
+## 3. Choques con las reglas vigentes (hay que decidirlos antes de construir)
+
+| # | Choque | Regla aquí | Propuesta |
+|---|---|---|---|
+| C1 | **Un piso por actividad** frente a «los centros de entrenamiento y estudio sirven a TODOS los miembros a la vez» y «las salas no se encogen» | **S13 = J16**, **J36** (`AreaCapacity`, `TrainingCentres.FloorsFor`) | Reescribir J16: **la suma** de plazas de los centros de entrenamiento abiertos ≥ miembros (no cada centro); el entrenamiento de las 8 y las 14 reparte a la gente **por plazas** entre los centros, como ya hace el horario libre. Lo de «todos a la vez» (J36: fiestas con los de todos los santuarios) se queda en dos sitios que sí miden para todos: la **cima** (ring y plaza) y el piso de **Asambleas** |
+| C2 | Pisos de 40 × 40 para todos frente a «del lado mayor de su área más grande» | edificio-arbol §Migración | Adoptar 40 × 40 en todos los árboles salvo el de los Campos (sus bancales ya están medidos); las salas pequeñas se separan hasta ×1,8 con `FurnitureSpacing` |
+| C3 | Armazón de **madera** frente al exoesqueleto de **acero CFST** que carga el tronco (73 % del acrílico) | T1, `StructuralLimits.RootCheck` | No se quita acero: la madera es **revestimiento** de los nervios y zunchos que ya hay (mismos ejes) y la rejilla cada 4 m se alinea con ellos. Así no cambian las cuentas ni se cruza una puerta (ya probado por `TreeBuildingsTest`, grupo 57) |
+| C4 | Árboles en el **mar** sobre bases negras frente a troncos en hielo firme | edificio-arbol (sitios) | Base flotante como casco (ficción marcada, como en CodeShip); el pie del tronco baja al agua. El radio del anillo se calcula con la fórmula de las islas (sin Unity), a mitad de camino entre el borde de los casquetes y el del mapa, con ≥ 16 m en 3D entre árboles |
+| C5 | Un **globo con toda la vida marina** en el santuario 1 frente al **Santuario Marino** (s2), que es el del mar profundo | progresion-santuarios, memoria del proyecto | En el globo solo las especies de mar somero del s1 que ya hay (ballenas, orcas, focas, morsas); el delfín mular de CodeShip no vive en el polo: no se añade. Del pulpo, la ciencia es la de *O. vulgaris* (la mejor estudiada); se marca que no es polar, o se cambia por un pulpo antártico (*Pareledone*) con los mismos estadios si Berón lo prefiere |
+| C6 | La **Residencia desaparece** y su cima pasa a Ciencias | residencia.md, pijamadas, `Bedroom` | Las 30 camas-litera pasan a los **aposentos** de los castillos (mismo `Bedroom`, 4 plazas, tobogán propio sustituido por los dos del castillo). Pijamadas y «descansar en casa» siguen a `Bedroom`, no al árbol |
+| C7 | **Niebla** `fogDensity = 0,008`: a 300 m solo se ve el 9 % | plano-edificios §Riesgos | Bajarla o usar niebla por distancia lineal: si no, los árboles del anillo exterior desaparecen desde el centro |
+| C8 | Menos pisos = menos **plazas del microcosmos** (`PlatformSlots`: 4 historias, 8 personajes, 12 fauna y 60 flora por piso) | microcosmos | Las plazas pasan a ir **por componente** del piso (cuota × plazas), no por piso; así no se pierden historias |
+
+## 4. Los árboles propuestos (30 miembros)
+
+Partiendo de `TOWERS_PREVIOS` de CodeShip, adaptado a lo que aquí existe:
+
+| Árbol | Pisos (de abajo arriba) | Antes → ahora |
+|---|---|---|
+| **Servicios** | Restaurante (anillo del comedor) · **Hospital** (urgencias, consultas, paritorios, 2 quirófanos, UCI y aislamiento; camas en su anillo) · Hospital veterinario (anillo de grandes animales) · **Cría y carne cultivada** · **Asambleas y guardia** | 8 → 5 |
+| **Entrenamiento** | **Gimnasio** (placas, peso libre, abdominales, spinning y cardio en todo el piso; 2–3 de cada máquina) · **Calistenia, parkour y crossfit** · **Combate** (judo, karate, kickboxing, MMA) · **Salas** (yoga, música, ballet y bailes sociales, una por cuarto) | ~15 → 4 |
+| **Ciencias** + la **cima** | **Laboratorios** (química y biología) · **Informática** con la gran pecera · fachada de fotobiorreactores · **cima de la Residencia** (castillos, ring, aula, lectura, cocina compartida, jardín) | 5 → 2 + cima |
+| **Producción** | Construcción · **Mecánica y garaje** · **Textil y huerto vertical** | 5–6 → 3 |
+| **Árbol de los Campos** | Sin cambios (sus cultivos) | igual |
+| Residencia | Desaparece: sube a la cima de Ciencias por la regla 3 de la reorganización | 6 → 0 |
+
+Las **marcas** (cuotas) van en datos, como `PISO_TAGS`: p. ej. Asambleas 0,75 + Guardia 0,25; Cría 0,6 + Carne 0,4;
+Informática 0,8 + Pecera 0,15; Residencia = 110² / 40² ≈ 7,6 → cima. Los edificios de hoy se guardan como «amplios»
+(una constante o una rama `edificios-amplios`), para cuando haya más gente.
+
+**Lo que hay que comprobar al fusionar:** el hospital v2 pedía ≥ 2 médicos (mejor 4) a la vez en cada tarea y camas por
+servicio ([hospital-plan.md](hospital-plan.md)); se cuenta que el piso único y su anillo los admiten antes de fusionar. Las
+salas de música aisladas (`SoundRoom`) caben en un cuarto de «Salas» solo con su caja de cristal; el auditorio de 60
+butacas no: va a la cima o a Asambleas (decisión D4).
+
+## 5. Reajuste de jornada, reparto y horario libre (W9)
+
+El trabajo sale de las **horas de tarea de cada área** (`AreaFunctions`), no de los pisos, y se divide por igual entre los
+humanos disponibles. Ninguna área desaparece, así que **las horas no cambian**; cambia dónde se hacen y cuánto se viaja.
+
+| Qué | Cambio | Código |
+|---|---|---|
+| **Puesto = edificio entero** | Con los pisos mixtos, cada área sigue siendo una (`WorkRoster.AreaGroup`); el Aula pasa a Ciencias (la cima), la Residencia deja de ser un edificio. `SanctuaryArea.InBuilding` y `InfirmaryGate` se recalculan con los pisos nuevos (el hospital en un piso facilita el `Contains`) | `SanctuaryArea`, `InfirmaryGate` |
+| **Entrenamiento (8–9 y 14–15)** | Hoy rota `(i + d) mod n` porque cada centro cabe entero (J16). Con un piso por actividad, el reparto respeta **plazas** (gimnasio 30, funcional 40, combate 25, salas ≈ 4 × 8): es la misma lógica que `LeisureRoster` (menos veces, más días sin hacerlo). El gimnasio sigue yendo por el plan de cada uno (`GymProgramming`) | `WorkRoster`, `TrainingCentres`, `AreaCapacity` |
+| **Viajes** | Árboles más lejos (anillo exterior) pero alfombras al doble y con aceleración; se recalcula el tiempo de viaje que la jornada descuenta y los 90 s «de camino» de la Magnate (en vuelo ya no trae a nadie) | `CarpetPad`, `MagnateWarden` |
+| **Misiones con `also`** | Cosecha → Cocina, carne → Cocina y Cría (ahora en el mismo piso), Tc-99m → Hospital: solo cambian rutas | `Mission.also` |
+| **Ronda de frutales** | Las terrazas de la Residencia pasan al **jardín del borde de la cima** (una ruta andando en vez de vuelos entre habitaciones: más corta) | ronda de frutales |
+| **Iniciación** | Sin cambios de orden (enfermería → tanque → yoga); la iniciación de yoga va a la sala de yoga de «Salas» | iniciaciones |
+| **Clones de la Magnate** | Siguen llenando huecos; si un piso mixto deja un área sin nadie, su clon va a ese cuarto | `WorkRoster` |
+
+**Horario libre** (`LeisureDirector.SanctuaryActivities`): los sitios y plazas cambian así.
+
+| Actividad | Hoy | Después |
+|---|---|---|
+| Pesas y saco | Gimnasio | Gimnasio |
+| Hatha libre / Ashtanga autoguiado | Pisos de Hatha y Ashtanga (8 + 8) | Cuarto de yoga de «Salas» (a sus horas, como en CodeShip) |
+| Bailar | Ballet → Calistenia → Gimnasio | **Bailes sociales** (nueva sala) → Ballet |
+| Artes marciales | Dojo → Gimnasio | Combate |
+| Leer | Plaza de la Residencia | Lectura de la cima |
+| Jugar con las crías | Cría | Cría y carne cultivada |
+| Manualidades | Estudio Textil | Textil y huerto |
+| Tertulia | Restaurante | Restaurante |
+| **Guerra de almohadas** (sábado 20 h, todos) | Ring de la plaza (25 plazas: **no llegan a 30**) | Ring de la cima, medido para todos los miembros de todos los santuarios (J36) |
+| **Pijamada** (viernes 21 h) | Cama-litera del anfitrión | Aposento del anfitrión en su castillo |
+| Descansar en casa | Su habitación | Su aposento |
+| **Nuevas** | — | Bajar por los **toboganes**; guerra de almohadas con **tesoros** por castillos |
+
+La **regla de oro** no cambia: los pisos por afinidad juntan actividades, no personas; todo va por rotación.
+
+## 6. Fases (cada una, su PR; en cada una: código, CODEMAP, docs, prueba en escena)
+
+| Fase | Qué | Unity |
+|---|---|---|
+| **F0 · Reglas y datos** | Reescribir J16/S13/J36 y T1 en el manual; marcas de pisos (componentes, cuota, puro/mixto) y la **reorganización por cálculo** como clase pura (`FloorOrganization`, sin escena) con su prueba; capacidad del entrenamiento por plazas en `WorkRoster`; guardar los edificios de hoy como «amplios» | No (compila en el PC de Berón) |
+| **F1 · Pisos 40 × 40 y fusiones** | `BeginTreeTower` con piso fijo de 40 × 40; pisos mixtos por cuartos o mitades; reglas de «no medio vacío» y «ningún punto a más de 6 m» como avisos del constructor (como `FurnitureSpacing`); borde libre de 2,5 m para tirarse | Sí: Blockout solo del santuario (W5) |
+| **F2 · Estructura** | Sin patas (si quedan), dos tornapuntas por piso, ramas solo a las puntas, revestimiento de madera y rejilla cada 4 m sobre el exoesqueleto, aros delgados, suelos de tablas; `StructuralLimits` revisa cada piso de 40 m | Sí |
+| **F3 · Mapa en anillos** | Mar central sin hielo, casquetes movidos con sus nidos y colonias (`Islands`, `PolarHabitats`), árboles en el anillo exterior sobre bases negras con su estación de alfombras; niebla; alfombras ×2 con aceleración | Sí (NavMesh nuevo) |
+| **F4 · La cima** | Cima de 110 × 110 sobre Ciencias con tornapuntas, castillos, aposentos (`Bedroom`), toboganes con física real, ring y guerra con tesoros; la Residencia desaparece; pijamadas y lectura reubicadas | Sí |
+| **F5 · Globo y pulpo** | Boquilla y globo de capas de agua (`WaterZone` por capa, sin un sólido por celda), luz por profundidad, fauna marina del s1 repartida; el huevo con los estadios de Naef y su ajuste de duración | Sí; **medir rendimiento** antes (W5, W13) |
+| **F6 · Prueba en vivo** | Un único probador (W3): grupos 53, 57, 65 (horario libre), 75 (capacidad), 113 (reparto), jornada de un día completo | Sí, con permiso |
+
+**Rendimiento** (el PC tiene 16 GB): F1 y F4 bajan objetos (de ~40 pisos a ~15 y una cima); F5 es el riesgo: un globo de
+240 m es mucho agua transparente. Se construye por capas, con LOD y sin colisionadores por celda; si pasa del presupuesto,
+el globo se hace más pequeño.
+
+## 7. Decisiones para Berón
+
+| # | Pregunta | Mi recomendación |
+|---|---|---|
+| **D1** | ¿Pisos para los miembros actuales (uno por actividad, entrenamiento repartido por plazas) o mantener J16/J36 (cada centro para todos a la vez)? | **Uno por actividad**, con la cima y Asambleas para todos a la vez (C1) |
+| D2 | ¿Árboles al anillo exterior sobre bases negras en el mar (los casquetes, solo de los animales)? | Sí (C4) |
+| D3 | ¿Globo con el pulpo en el santuario 1, o en el Santuario Marino? | En el s1, solo con su fauna somera (C5) |
+| D4 | ¿Dónde va el auditorio de música (60 butacas)? | En Asambleas (sala para todos) |
+| D5 | ¿La Residencia sube a la cima de Ciencias, como en CodeShip? | Sí: que lo decidan las reglas de reorganización |
+| D6 | ¿Orden de fases? | F0 → F1 → F2 → F4 → F3 → F5: primero lo que baja objetos, el globo al final |
