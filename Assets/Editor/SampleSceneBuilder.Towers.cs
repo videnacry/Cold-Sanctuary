@@ -33,11 +33,14 @@ public static partial class SampleSceneBuilder
     // ya sin subir (primer piso a 64 m, como todos). Holguras del simulador: Árbol–Entrenamiento 16,3 m, Servicios–Entrenamiento 16,5,
     // Ciencias–Producción 17,2, Servicios–Producción 18,0.
     public static readonly Vector3 ServiciosCenter = new Vector3(55f, 0f, 102f);     // lóbulo Norte:Enfermeria (donde estuvo el hospital; antes (50, 92))
-    public static readonly Vector3 EntrenamientoCenter = new Vector3(-77f, 0f, 52f);  // lóbulo Norte:Bosque_Comestible (antes en el hub, (10, 0); sus cultivos ya están en el Árbol de los Campos)
+    // 2026-11-25 (fase F1 del rediseño de pisos, PB-170: todos los pisos de 40 × 40 m): con los pisos más anchos, el Entrenamiento quedaba a
+    // 12,3 m del Árbol de los Campos y Producción a 14,4 m; se apartan 5 m (Entrenamiento, al N) y 3 m (Producción, al O): 17,3 m los dos
+    // (simulación de las losas, puntas, anillos, ramas y troncos, como TreeBuildingsTest; docs/areas/rediseno-pisos-arboles.md §6 ter).
+    public static readonly Vector3 EntrenamientoCenter = new Vector3(-77f, 0f, 57f);  // lóbulo Norte:Bosque_Comestible (antes (−77, 52); y antes en el hub, (10, 0))
     public static readonly Vector3 CienciasCenter = new Vector3(92f, 0f, -117f);     // lóbulo Sur:Biologia (antes (92, −107))
     // 2026-11-05 (Berón: «en la isla debe haber alguno de los edificios […] la isla reemplace a uno o más casquetes»): Producción, con el comedero y los
     // osos, se va a la tundra y el casquete Este desaparece (docs/areas/territorio-polar.md). Holgura de mig/Clear.cs: 28,1 m al Árbol de los Campos.
-    public static readonly Vector3 ProduccionCenter = new Vector3(-180f, 0f, -140f);   // lóbulo Isla:Tundra     // lóbulo Este:Mecanica_Osos (antes (114, 0), en Este:Paso; y antes aún en Sur:Rotacion)
+    public static readonly Vector3 ProduccionCenter = new Vector3(-183f, 0f, -140f);   // lóbulo Isla:Tundra (antes (−180, −140); y antes en Este:Mecanica_Osos, Este:Paso y Sur:Rotacion)
     public const float ServiciosYaw = 0f, EntrenamientoYaw = 90f, CienciasYaw = 90f, ProduccionYaw = 90f;
     public const float ProduccionFirstY = 64f;   // (antes 96 m, por encima de Servicios y Ciencias; en su sitio nuevo ya no hace falta)
     // (El Entrenamiento usa GymSize, 36 × 26.)
@@ -57,9 +60,13 @@ public static partial class SampleSceneBuilder
     /// <summary>Empieza una TORRE-ÁRBOL: tronco cuadrado de agua en <paramref name="center"/>, girada <paramref name="yaw"/>, con
     /// <paramref name="levels"/> niveles de hélice (2 pisos y 2 puntas cada uno) desde el primer piso del Árbol de los Campos. Los
     /// siguientes <see cref="TowerFloor"/> van a sus pisos, en orden; las puntas llevan frutales en maceta (<see cref="PlaceRooftopOrchards"/>).</summary>
+    /// <remarks>(2026-11-25, fase F1 del rediseño de pisos, PB-170; CodeShip regla 2.9) TODOS LOS PISOS DE 40 × 40 m (<see cref="FloorOrganization.FloorSide"/>,
+    /// el de la cocina): la losa es siempre de 40 m; <paramref name="size"/> es la planta en que se amuebla el área, centrada en la losa. Lo que
+    /// queda medio vacío o con huecos lo avisa <see cref="ReportFloorFill"/>.</remarks>
     static Helix BeginTreeTower(Transform parent, string building, Vector3 center, Vector2 size, float yaw, int levels, float firstY = 0f, float tipGap = 10f)
     {
-        Helix hx = BeginHelix(parent, building, TowerRoot(building), center, yaw, TowerHelix(size, levels, firstY, tipGap), rotates: false);
+        Vector2 slab = Vector2.Max(size, Vector2.one * FloorOrganization.FloorSide);
+        Helix hx = BeginHelix(parent, building, TowerRoot(building), center, yaw, TowerHelix(slab, levels, firstY, tipGap), rotates: false);
         hx.pickDoors = true;
         hx.tipContent = (k, tip) => { tip.name = $"Terraza_punta_{k}"; _orchardTips.Add((tip, building)); return "frutales"; };
         _towerHelix = hx; _towerCenter = center; _towerSize = size; _towerTop = null;
@@ -113,6 +120,31 @@ public static partial class SampleSceneBuilder
     {
         List<Transform> fl = FloorsOf(BaseOf(floor));
         return Mathf.Max(1, fl.IndexOf(floor) + 1);
+    }
+
+    /// <summary>AVISO DE PISOS A MEDIAS (fase F1 del rediseño de pisos; <see cref="FurnitureSpacing.FillOf"/>): cada piso de 40 m de una torre-árbol
+    /// (no el Árbol de los Campos, que gira con sus bancales medidos) con menos de la mitad ocupada o con un punto a más de 6 m de todo (salvo
+    /// los 2,5 m del borde). El tronco cuenta como «algo» (su umbral queda libre para la puerta). Devuelve cuántos pisos avisan.</summary>
+    static int ReportFloorFill()
+    {
+        int bad = 0, total = 0;
+        foreach (var kv in _helixFloor)
+        {
+            Transform deck = kv.Key; Helix hx = kv.Value.hx;
+            if (deck == null || hx.rotates || hx.h.floorSize < FloorOrganization.FloorSide - 0.01f) continue;
+            float S = hx.h.floorSize, oh = hx.h.OuterHalf;
+            var items = FurnitureSpacing.Footprints(deck);
+            items.Add(new Rect(-S * 0.5f, -S * 0.5f - 2f * oh, 2f * oh, 2f * oh));   // el tronco, en el marco del piso
+            FurnitureSpacing.Fill f = FurnitureSpacing.FillOf(S, items);
+            total++;
+            if (f.Ok) continue;
+            bad++;
+            SanctuaryArea a = deck.GetComponent<SanctuaryArea>();
+            bool works = deck.GetComponentInChildren<ConstructionProject>() != null;
+            Debug.LogWarning($"[Pisos] «{hx.building}» piso {kv.Value.k} ({(a != null ? a.displayName : deck.name)}{(works ? ", en obras" : "")}): {(f.HalfEmpty ? "MEDIO VACÍO; " : "")}{(f.Gaps ? "HUECO GRANDE; " : "")}{f}. Separar lo pequeño (hasta ×1,8) o juntar otro componente (docs/areas/rediseno-pisos-arboles.md).");
+        }
+        Debug.Log($"[Pisos] {bad} de {total} pisos de 40 × 40 m a medias o con huecos (reglas 2.9 y 2.10 de CodeShip; aviso, no error).");
+        return bad;
     }
 
     /// <summary>Un PISO PROPIO de un área (hija suya, p. ej. la planta veterinaria del hospital), como siguiente piso de la torre.

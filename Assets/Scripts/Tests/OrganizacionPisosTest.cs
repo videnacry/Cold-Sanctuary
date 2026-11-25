@@ -109,8 +109,9 @@ public class OrganizacionPisosTest : MonoBehaviour, ITestUnit
         TestProbe.Check($"con {sum} plazas en un piso de cada centro, 30 miembros: un piso de cada uno", TrainingCentres.All.All(s => TrainingCentres.FloorsBySeats(s.name, 30) == 1));
         TestProbe.Check("si la suma no llega, el piso que falta va al centro con más plazas por piso (la Calistenia, 40)",
             TrainingCentres.FloorsBySeats("Calistenia", sum + 1) == 2 && TrainingCentres.FloorsBySeats("Gimnasio", sum + 1) == 1);
-        TestProbe.Check("los edificios de hoy se guardan como «amplios» (cada centro para todos) hasta la fase F1",
-            TrainingCentres.Amplios && TrainingCentres.FloorsFor("Yoga Hatha", 30) == TrainingCentres.FloorsFor(16, 30));
+        TestProbe.Check("fase F1: los edificios «amplios» (cada centro para todos) quedan apagados y el constructor levanta uno por centro",
+            !TrainingCentres.Amplios && TrainingCentres.All.All(s => TrainingCentres.FloorsFor(s.name, 30) == 1)
+            && TrainingCentres.FloorsFor(16, 30) == 2);   // (la cuenta amplia se guarda: un centro de 16 plazas para 30, dos pisos)
         TestProbe.End();
     }
 }

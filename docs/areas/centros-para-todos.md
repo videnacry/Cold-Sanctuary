@@ -71,7 +71,10 @@ No hay un segundo validador: es `AreaCapacity` con `CapacidadPisosTest` (grupo 7
 - **Ashtanga** (entrenamiento de las 14 h): si la clase de la sala del día está llena, el siguiente que llega abre clase en la
   siguiente sala del estilo (`YogaHall.Ordered`): primero la otra versión, luego los demás pisos.
 - **Ocio «para todos»** (`LeisureDirector.AllMembers`): su capacidad son los miembros.
-  - Son pesas, Hatha libre, Ashtanga autoguiado, huerto, lectura, tertulia, baile y artes marciales.
+  - Son huerto, lectura, tertulia, concierto y asamblea (los sitios que miden para todos, J36).
+  - **Desde la fase F1** (2026-11-25, `TrainingCentres.Amplios` apagado): pesas, Hatha libre, Ashtanga autoguiado, baile y artes
+    marciales van por las **plazas del piso de su centro** (`LeisureDirector.AtCentre`/`CapacityOf`: 30, 16, 16, 20 y 25); quien no
+    cabe lo hace otro día. Antes eran «para todos».
   - El yoga reparte sus plazas entre las esterillas de **todas** las salas del estilo, en todos los pisos.
   - La lectura usa ahora 4 columnas en los lados de la plataforma central de la arboleda: caben 40.
 - **Por turnos**, con justificación:

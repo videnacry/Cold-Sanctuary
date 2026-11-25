@@ -161,6 +161,7 @@ public static partial class SampleSceneBuilder
         BuildPolarIce(root.transform);   // banquisa: casquetes de hielo con canales y puentes + sotobosque polar
         PlaceGroundCarpetAreas();        // al pie de cada edificio, en el hielo (ya hecho), sus alfombras para subir
         FurnitureSpacing.Report();       // muebles sin su pasillo mínimo (máquinas, mesas, camas…): aviso por consola
+        ReportFloorFill();               // (F1, PB-170) pisos de 40 × 40 m a medias o con huecos de más de 6 m: aviso por consola
         EnsureFloorForms();              // cada piso con su forma finalizada y su forma en construcción (FloorForms; los microcosmos, sobre la finalizada)
         ValidateNuclearSite("al final del Blockout");   // la regla del sitio nuclear, con todo ya puesto
         ValidateEnergySite("al final del Blockout");   // oferta ≥ demanda, con todos los pisos ya puestos (docs/areas/energia.md)
@@ -3437,7 +3438,8 @@ public static partial class SampleSceneBuilder
         //    el dojo y demás áreas de estudio y entrenamiento») Cada centro lleva los PISOS que necesita para TODOS los miembros a la vez:
         //    ⌈miembros / plazas de un piso⌉ (TrainingCentres; los miembros salen de la lista del personal, nunca un número fijo). Los pisos
         //    de más de un centro van juntos, encima del primero; la torre sube los niveles que hagan falta (dos pisos por nivel) y
-        //    encima van los del Aula. Hoy (18 miembros) el yoga pide 2 pisos de Hatha y 2 de Ashtanga.
+        //    encima van los del Aula. (2026-11-25, fase F1 del rediseño de pisos: J16 reescrita, TrainingCentres.Amplios apagado) UN piso por
+        //    centro mientras la suma de plazas llegue a los miembros; si no, el que falta va al centro con más plazas por piso.
         int members = AreaCapacity.DefaultMembers;   // la lista del personal (WorkdayDirector.Staff), como el Aula
         Transform cardio = new GameObject("Cardio y zona libre").transform; cardio.SetParent(areasGroup.transform, false);   // un piso del gimnasio (no un área aparte)
         Transform ashtanga = Child(yoga.transform, "Planta_ashtanga");   // el piso de Ashtanga: planta propia de la Sala de Yoga (sus misiones y su jornada son las del área)
