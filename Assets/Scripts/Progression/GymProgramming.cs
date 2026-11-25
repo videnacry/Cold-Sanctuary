@@ -391,24 +391,28 @@ public static class GymProgramming
     // ── Los días de gimnasio en la jornada ──────────────────────────────────────────────────────
     /// <summary>Los DÍAS DEL PLAN en el reparto del entrenamiento de las 14 h: quien tiene gimnasio ese día en su plan va al
     /// gimnasio (y el entrenador, siempre); a quien la rotación mandaba al gimnasio un día sin gimnasio en su plan, se le da el
-    /// siguiente entrenamiento abierto. Si el gimnasio no está abierto, no cambia nada.</summary>
-    public static int ApplyGymDays(WorkRoster.DayPlan plan, IList<string> open, IList<WorkRoster.Worker> workers)
+    /// siguiente entrenamiento abierto. Si el gimnasio no está abierto, no cambia nada. Con <paramref name="seats"/> (el reparto
+    /// del día, regla J16 por plazas, D1 2026-11-25) se respetan las plazas: primero salen del gimnasio los que no tienen día, al
+    /// siguiente centro con plaza, y después entran los que sí, mientras quede plaza (el entrenador entra siempre).</summary>
+    public static int ApplyGymDays(WorkRoster.DayPlan plan, IList<string> open, IList<WorkRoster.Worker> workers, WorkRoster seats = null)
     {
         if (plan == null || open == null || !open.Contains(GymArea)) return 0;
         int changed = 0;
-        for (int i = 0; i < workers.Count; i++)
-        {
-            WorkRoster.Worker w = workers[i];
-            if (w.clone) continue;
-            TrainingPlan p = For(w.name, plan.day);
-            if (p == null) continue;
-            plan.training.TryGetValue(w, out string was);
-            string want = was;
-            if (w.name == Trainer || p.Trains(plan.day)) want = GymArea;
-            else if (was == GymArea)
-                for (int k = 1; k <= open.Count; k++) { string o = open[(i + plan.day + k) % open.Count]; if (o != GymArea) { want = o; break; } }
-            if (want != was) { plan.training[w] = want; changed++; }
-        }
+        for (int pass = 0; pass < 2; pass++)   // 0: salir del gimnasio · 1: entrar
+            for (int i = 0; i < workers.Count; i++)
+            {
+                WorkRoster.Worker w = workers[i];
+                if (w.clone) continue;
+                TrainingPlan p = For(w.name, plan.day);
+                if (p == null) continue;
+                plan.training.TryGetValue(w, out string was);
+                bool wants = w.name == Trainer || p.Trains(plan.day);
+                string want = was;
+                if (pass == 1 && wants && was != GymArea && (w.name == Trainer || seats == null || seats.HasSeat(plan.training, GymArea))) want = GymArea;
+                else if (pass == 0 && !wants && was == GymArea)
+                    for (int k = 1; k <= open.Count; k++) { string o = open[(i + plan.day + k) % open.Count]; if (o != GymArea && (seats == null || seats.HasSeat(plan.training, o))) { want = o; break; } }
+                if (want != was) { plan.training[w] = want; changed++; }
+            }
         return changed;
     }
 }

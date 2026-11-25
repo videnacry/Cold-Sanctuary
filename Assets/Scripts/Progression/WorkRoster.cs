@@ -132,6 +132,45 @@ public class WorkRoster
     public readonly List<string> areas = new List<string>();          // orden base de áreas (día 0)
     public readonly List<Worker> workers = new List<Worker>();         // orden fijo del personal
     public readonly List<string> trainingAreas = new List<string>();   // entrenamientos abiertos (yoga, gimnasio…)
+    /// <summary>LAS PLAZAS de cada entrenamiento abierto (regla J16 reescrita, D1 de Berón 2026-11-25: un piso por actividad y el
+    /// entrenamiento de las 8 y las 14 repartido POR PLAZAS entre los centros; docs/areas/rediseno-pisos-arboles.md). Las llena
+    /// <c>WorkdayDirector</c> con <see cref="AreaCapacity.SeatsOf"/>; un centro sin entrada (o con 0) no tiene tope.</summary>
+    public readonly Dictionary<string, int> trainingSeats = new Dictionary<string, int>();
+    public int SeatsOf(string area) => trainingSeats.TryGetValue(area, out int s) && s > 0 ? s : int.MaxValue;
+    /// <summary>Cuántos van ya a <paramref name="area"/> en un reparto.</summary>
+    public static int Seated(IDictionary<Worker, string> slot, string area) => slot.Values.Count(v => v == area);
+    /// <summary>¿Queda plaza en <paramref name="area"/> en ese reparto?</summary>
+    public bool HasSeat(IDictionary<Worker, string> slot, string area) => Seated(slot, area) < SeatsOf(area);
+
+    /// <summary>EL CENTRO DE ENTRENAMIENTO de una persona (J16, D1): el de su rotación, <c>(i + offset) mod n</c>; si está lleno, el
+    /// siguiente con plaza; si ninguno tiene (la suma de plazas no llega a los miembros: J16 incumplida, lo avisa
+    /// <see cref="AreaCapacity"/>), el menos lleno, para que nadie se quede sin entrenar.</summary>
+    public string SeatFor(IDictionary<Worker, string> slot, int i, int offset)
+    {
+        int n = trainingAreas.Count;
+        if (n == 0) return null;
+        int first = ((i + offset) % n + n) % n;
+        for (int k = 0; k < n; k++) { string a = trainingAreas[(first + k) % n]; if (HasSeat(slot, a)) return a; }
+        return trainingAreas.OrderBy(a => Seated(slot, a) / (float)SeatsOf(a)).ThenBy(a => (trainingAreas.IndexOf(a) - first + n) % n).First();
+    }
+
+    /// <summary>Reparte un entrenamiento (el de las 8 o el de las 14) POR PLAZAS. <paramref name="fixedSeats"/> (los maestros de una
+    /// clase) se sientan primero. Quien elige primero rota cada día (empieza la persona <c>día mod personas</c>), así el que se queda
+    /// sin su centro no es siempre el mismo.</summary>
+    public Dictionary<Worker, string> SeatTraining(int day, int offset, IDictionary<Worker, string> fixedSeats = null)
+    {
+        var slot = new Dictionary<Worker, string>();
+        if (trainingAreas.Count == 0) return slot;
+        if (fixedSeats != null) foreach (var kv in fixedSeats) slot[kv.Key] = kv.Value;
+        int n = workers.Count;
+        for (int k = 0; k < n; k++)
+        {
+            int i = ((day + k) % n + n) % n;
+            if (slot.ContainsKey(workers[i])) continue;
+            slot[workers[i]] = SeatFor(slot, i, offset);
+        }
+        return slot;
+    }
     public List<Mission> pending = new List<Mission>();                // pendientes de días anteriores
 
     /// <summary>LOS TURNOS DE GUARDIA (Berón 2026-11-16: «que la magnate ya no haga guardias de los turnos y que nadie lo haga … dicha tarea pasa
@@ -347,21 +386,25 @@ public class WorkRoster
                 plan.share[kv.Key] = mine.Count == 0 ? 0f : System.Math.Min(WorkHours, kv.Value / mine.Count);
             }
 
-        // EL ENTRENAMIENTO DE LAS 8:00: rota con otra cuenta, para no repetir el de las 14 h.
+        // EL ENTRENAMIENTO (regla J16 reescrita, D1 de Berón 2026-11-25): POR PLAZAS entre los centros abiertos. Cada persona va al de su
+        // rotación (persona i, día d → área (i + d) mod n; el de las 8:00, con otra cuenta, para no repetir el de las 14 h) y, si está
+        // lleno, al siguiente con plaza (SeatTraining).
         if (initiationModel && trainingAreas.Count > 0)
-            for (int i = 0; i < workers.Count; i++) plan.morning[workers[i]] = trainingAreas[(i + day + 1) % trainingAreas.Count];
-        // ENTRENAMIENTO (de tarde): rota también entre los abiertos (persona i, día d → área (i + d) mod n).
+            foreach (var kv in SeatTraining(day, day + 1)) plan.morning[kv.Key] = kv.Value;
         if (trainingAreas.Count > 0)
-            for (int i = 0; i < workers.Count; i++) plan.training[workers[i]] = trainingAreas[(i + day) % trainingAreas.Count];
-        // (2026-11-04) LOS MAESTROS de una clase de entrenamiento (el baile: Panterilia y Gohageneis, un día cada uno) dan la suya si su
-        // sala está abierta (terminada); si no, entrenan como los demás.
-        if (useProfessions)
-            foreach (var kv in Professions.ClassLeads)
-            {
-                if (!trainingAreas.Contains(kv.Key)) continue;
-                Worker t = Find(Professions.LeadOn(kv.Key, day));
-                if (t != null && !t.clone) plan.training[t] = kv.Key;
-            }
+        {
+            // (2026-11-04) LOS MAESTROS de una clase de entrenamiento (el baile: Panterilia y Gohageneis, un día cada uno) dan la suya si
+            // su sala está abierta (terminada), y se sientan primero; si no, entrenan como los demás.
+            var leads = new Dictionary<Worker, string>();
+            if (useProfessions)
+                foreach (var kv in Professions.ClassLeads)
+                {
+                    if (!trainingAreas.Contains(kv.Key)) continue;
+                    Worker t = Find(Professions.LeadOn(kv.Key, day));
+                    if (t != null && !t.clone) leads[t] = kv.Key;
+                }
+            foreach (var kv in SeatTraining(day, day, leads)) plan.training[kv.Key] = kv.Value;
+        }
         return plan;
     }
 

@@ -112,7 +112,7 @@ Es un **primer juego de requisitos**: la lista de tareas con riesgo es decisión
 | Línea de las cavernas | La mayoría de días no tiene tareas: nadie va al Marino | — |
 | Horario libre | No cambia: empieza a las 16:00; quien está fuera no se conduce y vuelve para la fiesta | `LeisureDirector` (salta a `RemoteStaff.Hidden`) |
 | HUD | No cambia: «16:00 Libre» | `Itinerary` |
-| Capacidad (S13 = J16) | **No cambia**: todo sigue para todos los miembros | `AreaCapacity`; el Marino y el Aéreo no miran el número de miembros |
+| Capacidad (S13 = J16) | **Reescrita el 2026-11-25** (D1): el entrenamiento, por plazas (la suma de los centros llega a todos); la fiesta (ring de la cima) y las Asambleas, para todos los miembros de todos los santuarios | `AreaCapacity`; el Marino y el Aéreo no miran el número de miembros |
 | Microcosmos (`MicroJornada`) | No cambia | — |
 | Pruebas | 113 nueva; en 28, las de la rotación pura dicen que lo son y la del juego pide que nada pase a mañana; 104 y 50 vuelven a las de antes | Ver el informe de la rama |
 
@@ -125,7 +125,7 @@ Es un **primer juego de requisitos**: la lista de tareas con riesgo es decisión
 5. El **orden de áreas rota** una posición cada día: la última pasa a ser la primera. **El orden del personal también cambia cada día** (Berón 2026-11-08; antes no cambiaba): es una permutación sembrada con el día (`WorkRoster.DayOrder`), y dos días seguidos nunca dan el mismo orden. Kushal va siempre el primero (el jugador tiene su jornada entera). Con el reparto puro (`sanctuaryModel` apagado, solo en pruebas de la rotación) sigue el orden fijo.
 6. **Clones de la Magnate** (Berón 2026-11-08): con el reparto por santuarios, un clon por **área que se queda sin nadie** y clones de 5 h para **todo lo que no cabe en los humanos**, obligatorio o no. Las clases de iniciación sin maestro siguen siendo suyas (J32). En el reparto puro, solo para las obligatorias sin cubrir.
 7. **Pendientes:** en el reparto puro, el resto pasa a mañana y es lo primero que se asigna. Con el reparto por santuarios **nada pasa a mañana**. Solo queda en el registro (`DayPlan.impossible`, debe estar vacío) lo que ni un clon puede hacer.
-8. **Entrenamiento**: rota entre los entrenamientos abiertos (persona *i*, día *d* → *(i + d) mod n*).
+8. **Entrenamiento**: rota entre los entrenamientos abiertos (persona *i*, día *d* → *(i + d) mod n*) **por plazas** (J16 reescrita, 2026-11-25): si el centro de su rotación está lleno, al siguiente con plaza; quien elige primero rota cada día y los maestros se sientan antes (`WorkRoster.SeatTraining`; plazas de `AreaCapacity.SeatsOf`). Ver [rediseno-pisos-arboles.md](../areas/rediseno-pisos-arboles.md) §6 bis.
    Desde el 2026-11-04, **el gimnasio va por los días del plan de cada uno** (`GymProgramming.ApplyGymDays`; el entrenador, Andrea,
    siempre): quien tiene gimnasio ese día en su plan va; a quien la rotación mandaba un día sin gimnasio en su plan, se le da el
    siguiente entrenamiento abierto ([gimnasio-maquinas.md](../areas/gimnasio-maquinas.md) §15).

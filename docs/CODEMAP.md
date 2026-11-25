@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 1040 tipos._
+_Total: 1042 tipos._
 
 
 ## Animals
@@ -477,6 +477,7 @@ _Total: 1040 tipos._
 - **FireTier** (enum) — `Assets/Scripts/Transformation/FireSpell.cs` — Presets documentados de fuego (docs/sistemas/magic-metabolism-progression.md §13).
 - **FloorEnergy** (class) — `Assets/Scripts/World/FloorEnergy.cs` — LA DEMANDA DE UN PISO (Berón 2026-11-05; docs/areas/energia.md):
 - **FloorForms** (class) — `Assets/Scripts/World/FloorForms.cs` — LAS TRES FORMAS DE CADA PISO DEL SANTUARIO (la tercera, la de MICROCOSMOS, desde 2026-11-04:
+- **FloorOrganization** (class) — `Assets/Scripts/World/FloorOrganization.cs` — LAS MARCAS DE CADA PISO Y LA REORGANIZACIÓN POR CÁLCULO (fase F0 del rediseño de pisos, PB-170; docs/areas/rediseno-pisos-arboles.md; portado de CodeShip `organizacion.ts`, regla 2.13.
 - **FlyingCarpet** (class) — `Assets/Scripts/World/FlyingCarpet.cs` — ALFOMBRA VOLADORA (una esterilla grande de la pista de aterrizaje).
 - **FolkCouple** (class) — `Assets/Scripts/Microcosmos/FolkCouple.cs` — UNA PAREJA de insectos-humanos de una era civilizada (docs/microcosmos/microcosmos-civilizaciones.md §7):
 - **FolkLineage** (class) — `Assets/Scripts/Microcosmos/FolkLineage.cs` — El LINAJE de un insecto-humano:
@@ -776,6 +777,7 @@ _Total: 1040 tipos._
 - **OmelekTest** (class) — `Assets/Scripts/Tests/OmelekTest.cs` — PRUEBA DEL SEGUNDO ESCENARIO DE LA HISTORIA DE MUSK:
 - **Orchestra** (class) — `Assets/Scripts/World/Orchestra.cs` — ORQUESTA (coreografía; Berón 2026-10-29):
 - **OrganicMaterial** (enum) — `Assets/Scripts/OrganicMaterial.cs`
+- **OrganizacionPisosTest** (class) — `Assets/Scripts/Tests/OrganizacionPisosTest.cs` — PRUEBA DE LA FASE F0 DEL REDISEÑO DE PISOS (grupo 142; PB-170, docs/areas/rediseno-pisos-arboles.md; D1 de Berón 2026-11-25:
 - **PacifySpell** (class) — `Assets/Scripts/Soul/PacifySpell.cs` — HECHIZO DE PACIFICACIÓN (docs/sistemas/spells-suprahechizo-and-thoughts.md §5) — serena a un objetivo:
 - **PackAwareness** (class) — `Assets/Scripts/Microcosmos/PackAwareness.cs` — CONCIENCIA DE MANADA — lógica de ayuda emergente entre compañeros.
 - **PakalStoryTest** (class) — `Assets/Scripts/Tests/PakalStoryTest.cs` — TEST DEL MICROCOSMOS MAYA:
@@ -986,7 +988,7 @@ _Total: 1040 tipos._
 - **TraceChannel** (enum) — `Assets/Scripts/World/TraceField.cs` — Canales de rastro/subproducto (docs/sistemas/environmental-navigation.md §4.2).
 - **TraceFieldTest** (class) — `Assets/Scripts/TraceFieldTest.cs` — Sandbox AUTOEJECUTABLE de la rejilla de feromonas (`TraceField`), reportando por `TestProbe` (PASS/FAIL en `Editor.log`, grep `[TEST]`).
 - **TrackerBehavior** (class) — `Assets/Scripts/UI/FollowingArrays/FollowingElementBehavior/TrackerBehavior.cs`
-- **TrainingCentres** (class) — `Assets/Scripts/World/TrainingCentres.cs` — CUÁNTOS PISOS NECESITA CADA CENTRO DE ENTRENAMIENTO (regla J16 / S13, Berón 2026-11-04:
+- **TrainingCentres** (class) — `Assets/Scripts/World/TrainingCentres.cs` — CUÁNTOS PISOS NECESITA CADA CENTRO DE ENTRENAMIENTO (regla J16 / S13; docs/areas/centros-para-todos.md y docs/areas/rediseno-pisos-arboles.md).
 - **TrainingGoal** (enum) — `Assets/Scripts/Progression/GymProgramming.cs` — Objetivo del plan (docs/areas/gimnasio-maquinas.md §15):
 - **TransformationSpell** (class) — `Assets/Scripts/Transformation/TransformationSpell.cs` — Hechizo de **TRANSFORMACIÓN por combate de stats** (docs/sistemas/stats-as-truth.md §4).
 - **TransitionCondition** (class) — `Assets/Scripts/PostNatal/TransitionCondition.cs` — Condición que debe cumplirse para avanzar al siguiente PostNatalStage.

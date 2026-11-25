@@ -902,7 +902,10 @@ Código y compilación hechos; falta la prueba en vivo.
 - [ ] **PB-170 Portar el santuario 1 de CodeShip** (Berón 2026-11-24): por prioridad en [`portar-codeship-s1.md`](sistemas/portar-codeship-s1.md); el rediseño de pisos/árboles espera su decisión.
   - [x] Plan W2 del rediseño de pisos y árboles (2026-11-25): [`rediseno-pisos-arboles.md`](areas/rediseno-pisos-arboles.md) (fases F0–F6, W9, decisiones D1–D6).
   - [x] D1 (Berón 2026-11-25): un piso por actividad, entrenamiento por plazas; J16/J36 se reescriben.
-  - [ ] Berón decide D2–D6; luego F0 (reglas J16/S13/J36 y T1, marcas de pisos, reorganización por cálculo, entrenamiento por plazas).
+  - [x] Berón dijo «Sigue» (2026-11-25): D2–D6 siguen la recomendación del plan.
+  - [x] **F0** (2026-11-25, sin Unity): J16/S13/J36 y T1 reescritas, T26 nueva (marcas y reorganización); `FloorOrganization` (marcas de cada piso, reglas, árboles propuestos); entrenamiento de las 8 y las 14 por plazas (`WorkRoster.SeatTraining`, `AreaCapacity.SeatsOf`, gimnasio con plazas); `TrainingCentres.Amplios` guarda los edificios de hoy; prueba `OrganizacionPisosTest` (142). Falta compilar en el PC de Berón y correr 142, 75, 104 y 113.
+  - [ ] **F1** pisos de 40 × 40 y fusiones (apaga `TrainingCentres.Amplios`; centros nuevos: funcional, combate, salas), con W9 (horario libre a las salas nuevas).
+  - [ ] F2 estructura · F4 cima · F3 mapa en anillos · F5 globo y pulpo · F6 prueba en vivo (orden D6).
 - [ ] **Alma compartida (resto)**: `HelpRequest` ya hace "ir juntos" (MVP); falta **compartir pensamientos**
       (misma frase → instancia de mente/madre compartida) y que el sí/no lea bond/humores/inclinaciones.
 - [ ] **Re-autorar vivencias** de Ötzi/Sembradora/Guardián con el canon de `founding-trio-stories.md`

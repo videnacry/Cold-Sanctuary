@@ -1,8 +1,8 @@
 ---
-resumen: "PB-170, plan W2 (2026-11-25): portar de CodeShip el rediseño de pisos y edificios-árbol (pisos de 40 × 40 m, un piso por actividad y por afinidad, pisos solo del tronco con tornapuntas y rejilla de madera, árboles en un anillo exterior sobre bases negras con un mar central, globo de agua con el pulpo, cima con castillos y toboganes, reorganización por cálculo), con su reajuste de jornada, reparto y horario libre (W9). D1 decidido por Berón (2026-11-25): uno por actividad, por plazas; D2–D6 pendientes. No se ha construido nada."
+resumen: "PB-170, plan W2 (2026-11-25): portar de CodeShip el rediseño de pisos y edificios-árbol (pisos de 40 × 40 m, un piso por actividad y por afinidad, pisos solo del tronco con tornapuntas y rejilla de madera, árboles en un anillo exterior sobre bases negras con un mar central, globo de agua con el pulpo, cima con castillos y toboganes, reorganización por cálculo), con su reajuste de jornada, reparto y horario libre (W9). D1 decidido por Berón (2026-11-25): uno por actividad, por plazas; D2–D6 según la recomendación («Sigue», 2026-11-25). F0 hecha (reglas, marcas, reparto por plazas; sin Unity)."
 temas: [construccion, jornada, codeship, agua, reglas]
-estado: propuesta
-codigo: [HelixTower, SampleSceneBuilder, TrainingCentres, AreaCapacity, WorkRoster, LeisureDirector, LeisureRoster, SanctuaryArea, StructuralLimits, CarpetPad, PolarLandscapeBuilder, Bedroom, PlatformSlots, AreaMicrocosmos, VirtualizationTank]
+estado: vigente
+codigo: [FloorOrganization, HelixTower, SampleSceneBuilder, TrainingCentres, AreaCapacity, WorkRoster, LeisureDirector, LeisureRoster, SanctuaryArea, StructuralLimits, CarpetPad, PolarLandscapeBuilder, Bedroom, PlatformSlots, AreaMicrocosmos, VirtualizationTank]
 retos: []
 ---
 # Plan: rediseño de pisos y edificios-árbol (portado del santuario 1 de CodeShip)
@@ -136,12 +136,27 @@ La **regla de oro** no cambia: los pisos por afinidad juntan actividades, no per
 240 m es mucho agua transparente. Se construye por capas, con LOD y sin colisionadores por celda; si pasa del presupuesto,
 el globo se hace más pequeño.
 
+## 6 bis. F0 hecha (2026-11-25)
+
+Solo código y docs; falta compilar en el PC de Berón (`tools/verify-compile.sh`) y correr los grupos 142, 75, 104 y 113.
+
+| Qué | Dónde |
+|---|---|
+| Reglas reescritas: **J16** (reparto por plazas; la suma llega a todos), **S13** (= J16), **J36** (para todos a la vez: la cima y Asambleas), **P9**, **T1** (madera = revestimiento del acero) y nueva **T26** (marcas y reorganización) | [manual-de-diseno.md](../reglas/manual-de-diseno.md) |
+| **Marcas de cada piso** (componentes, categoría, cuota, plazas; puro/mixto) y las 4 reglas de la reorganización (dónde cabe, mixto desbordado, solo con cima, desequilibrio), portadas de `organizacion.ts`. `Proposed()` son los árboles del §4; `Reorganize(Proposed())` sube la Residencia a una cima y se la cede a Ciencias (D5) | `FloorOrganization` |
+| **Entrenamiento por plazas** (8–9 y 14–15): cada uno al centro de su rotación y, si está lleno, al siguiente con plaza; quien elige primero rota cada día; los maestros primero; sin plazas para todos, al menos lleno (nadie sin entrenar). La jornada lee las plazas una vez al día de cada centro abierto (máquinas, esterillas, `AreaSeat`). El gimnasio respeta sus plazas en los días del plan. Kushal, al incorporarse, también | `WorkRoster.SeatTraining`/`SeatFor`, `AreaCapacity.SeatsOf`, `WorkdayDirector.OpenTraining`, `GymProgramming.ApplyGymDays`, `PlayerWorkday` |
+| **Validador J16**: cada centro ≥ 1 plaza y la línea «Entrenamiento (suma de plazas)» ≥ miembros; Aula, ring y Asambleas siguen para todos | `AreaCapacity.Check`, `CapacidadPisosTest` (75) |
+| **Edificios amplios**: `TrainingCentres.Amplios = true` sigue levantando los de hoy (⌈miembros / plazas⌉ pisos por centro); F1 lo apaga y usa `FloorsBySeats` (un piso por centro; si la suma no llega, otro al de más plazas) | `TrainingCentres` |
+| Prueba | `OrganizacionPisosTest` (grupo 142) |
+
+**W9 en F0:** las horas de tarea no cambian (salen de `AreaFunctions`); cambia solo el reparto del entrenamiento (por plazas en vez de «cada centro cabe entero») y, con los edificios amplios aún en pie, el resultado es el mismo que antes (las plazas sobran). El horario libre (`LeisureRoster`) ya iba por plazas: se reajusta en F1 con las salas nuevas (tabla del §5).
+
 ## 7. Decisiones para Berón
 
 | # | Pregunta | Mi recomendación |
 |---|---|---|
 | **D1** | ¿Pisos para los miembros actuales (uno por actividad, entrenamiento repartido por plazas) o mantener J16/J36 (cada centro para todos a la vez)? | **DECIDIDO (Berón 2026-11-25): uno por actividad, por plazas**; la cima y Asambleas, para todos a la vez (C1) |
-| D2 | ¿Árboles al anillo exterior sobre bases negras en el mar (los casquetes, solo de los animales)? | Sí (C4) |
+| D2 | ¿Árboles al anillo exterior sobre bases negras en el mar (los casquetes, solo de los animales)? | Sí (C4) · **«Sigue» 2026-11-25: según la recomendación (D2–D6)** |
 | D3 | ¿Globo con el pulpo en el santuario 1, o en el Santuario Marino? | En el s1, solo con su fauna somera (C5) |
 | D4 | ¿Dónde va el auditorio de música (60 butacas)? | En Asambleas (sala para todos) |
 | D5 | ¿La Residencia sube a la cima de Ciencias, como en CodeShip? | Sí: que lo decidan las reglas de reorganización |

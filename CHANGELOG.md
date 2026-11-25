@@ -5,6 +5,7 @@ el PR, en `git log` y en [`docs/checklist.md`](docs/checklist.md) (Historial).
 Al fusionar un PR, añade su línea en «Sin publicar» o en el mes en curso.
 
 ## Sin publicar
+- PB-170 F0 del rediseño de pisos: J16/S13/J36 y T1 reescritas (un piso por actividad, entrenamiento por plazas), regla T26 y `FloorOrganization` (marcas de cada piso y reorganización por cálculo), reparto del entrenamiento por plazas en `WorkRoster` y prueba 142.
 - PB-170: plan del rediseño de pisos y edificios-árbol portado de CodeShip, en [`docs/areas/rediseno-pisos-arboles.md`](docs/areas/rediseno-pisos-arboles.md) (espera decisión).
 - PB-170: propuesta para portar los cambios del santuario 1 de CodeShip (listas 6.ª–16.ª) en [`docs/sistemas/portar-codeship-s1.md`](docs/sistemas/portar-codeship-s1.md).
 - Docs organizados por carpeta (191 movidos con `git mv`, 3568 referencias reescritas en docs y `.cs`), cabecera `resumen/temas/estado/codigo` en cada doc, índice generado y buscador `tools/docs.py` (`find`, `de`, `temas`, `check`) con su CI `docs.yml`.
