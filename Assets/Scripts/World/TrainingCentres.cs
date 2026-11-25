@@ -1,16 +1,16 @@
 using UnityEngine;
 
 /// <summary>
-/// CUÁNTOS PISOS NECESITA CADA CENTRO DE ENTRENAMIENTO (regla J16 / S13, Berón 2026-11-04: «los centros de entrenamiento y de ocio
-/// deben dar servicio a todos los miembros a la vez»; «algunas áreas tienen más de un piso justo para abastecer a todos los miembros
-/// y se pueden agregar pisos, si las 2 de yoga existentes no son suficientes se crea una más y lo mismo con el dojo y demás áreas de
-/// estudio y entrenamiento»; docs/areas/centros-para-todos.md).
-/// El constructor de la torre del Entrenamiento pide <see cref="FloorsFor"/> pisos de cada centro, ⌈miembros / plazas de un piso⌉, con
-/// los miembros de la lista del personal (<see cref="AreaCapacity.DefaultMembers"/>; nunca un número fijo), y los apila en el
-/// edificio-árbol como cualquier otro piso (hélice, 22 m entre niveles, anillos, alfombras, máscaras). La comprobación es la de la
-/// regla de capacidad (<see cref="AreaCapacity"/>, grupo 75): cuenta las estaciones del gimnasio, las esterillas de cada estilo de
-/// yoga y los <see cref="AreaSeat"/> de la calistenia, el ballet y el dojo, en todos sus pisos. El Aula lleva la misma regla en su
-/// propio constructor (AulaFloors).
+/// CUÁNTOS PISOS NECESITA CADA CENTRO DE ENTRENAMIENTO (regla J16 / S13; docs/areas/centros-para-todos.md y
+/// docs/areas/rediseno-pisos-arboles.md).
+/// J16 REESCRITA (D1 de Berón 2026-11-25: «uno por actividad, por plazas»): cada centro lleva UN piso, y la SUMA de las plazas de
+/// todos llega a los miembros; el entrenamiento de las 8 y las 14 reparte a la gente por plazas (<see cref="WorkRoster.SeatTraining"/>).
+/// Solo si la suma no llega se añade un piso, al centro con más plazas por piso (<see cref="FloorsFor(string,int)"/>).
+/// LOS EDIFICIOS DE HOY («amplios», <see cref="Amplios"/>): la J16 antigua (Berón 2026-11-04: «si las 2 de yoga existentes no son
+/// suficientes se crea una más…»): cada centro con ⌈miembros / plazas de un piso⌉ pisos, para todos a la vez. Se guardan para cuando
+/// haya más gente; el constructor los sigue levantando hasta la fase F1 del rediseño, que apaga <see cref="Amplios"/>.
+/// Los miembros salen de la lista del personal (<see cref="AreaCapacity.DefaultMembers"/>; nunca un número fijo). La comprobación es
+/// la de la regla de capacidad (<see cref="AreaCapacity"/>, grupo 75). El Aula lleva su propia regla (AulaFloors: estudio para todos).
 /// </summary>
 public static class TrainingCentres
 {
@@ -34,7 +34,36 @@ public static class TrainingCentres
 
     public static Spec? Of(string centre) { foreach (Spec s in All) if (s.name == centre) return s; return null; }
 
-    /// <summary>Pisos que necesita un centro con <paramref name="perFloor"/> plazas por piso para <paramref name="members"/> miembros.</summary>
+    /// <summary>Los EDIFICIOS AMPLIOS (los de hoy, J16 antigua: cada centro para todos a la vez). Encendido hasta la fase F1 del
+    /// rediseño de pisos, que construye un piso por actividad (docs/areas/rediseno-pisos-arboles.md §6).</summary>
+    public static bool Amplios = true;
+
+    /// <summary>Pisos que necesita UN centro con <paramref name="perFloor"/> plazas por piso para que quepan, él solo, <paramref name="members"/>
+    /// miembros (la cuenta de los edificios amplios).</summary>
     public static int FloorsFor(int perFloor, int members) => Mathf.Max(1, Mathf.CeilToInt(members / (float)Mathf.Max(1, perFloor)));
-    public static int FloorsFor(string centre, int members) { Spec? s = Of(centre); return s.HasValue ? FloorsFor(s.Value.perFloor, members) : 1; }
+
+    /// <summary>Las plazas de todos los centros con un piso cada uno.</summary>
+    public static int SeatsOnePerActivity() { int n = 0; foreach (Spec s in All) n += s.perFloor; return n; }
+
+    /// <summary>Pisos de un centro con la J16 reescrita (por plazas): uno; si la suma de todos no llega a <paramref name="members"/>, los
+    /// pisos que faltan van, uno a uno, al centro con más plazas por piso (así se añaden los menos pisos posibles).</summary>
+    public static int FloorsBySeats(string centre, int members)
+    {
+        Spec? me = Of(centre);
+        if (!me.HasValue) return 1;
+        int[] floors = new int[All.Length]; int seats = 0;
+        for (int i = 0; i < All.Length; i++) { floors[i] = 1; seats += All[i].perFloor; }
+        int best = 0;
+        for (int i = 1; i < All.Length; i++) if (All[i].perFloor > All[best].perFloor) best = i;
+        while (seats < members) { floors[best]++; seats += All[best].perFloor; }
+        for (int i = 0; i < All.Length; i++) if (All[i].name == centre) return floors[i];
+        return 1;
+    }
+
+    /// <summary>Los pisos que levanta el constructor para un centro: los amplios (cada uno para todos) o por plazas (J16 reescrita).</summary>
+    public static int FloorsFor(string centre, int members)
+    {
+        if (!Amplios) return FloorsBySeats(centre, members);
+        Spec? s = Of(centre); return s.HasValue ? FloorsFor(s.Value.perFloor, members) : 1;
+    }
 }

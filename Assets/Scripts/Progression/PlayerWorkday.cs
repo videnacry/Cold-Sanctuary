@@ -195,7 +195,10 @@ public class PlayerWorkday : MonoBehaviour
             Debug.Log($"[Jornada] Incorporación de Kushal: {start:00.0} h «{pick.title}» ({pick.area}).");
         }
         if (wd.roster.trainingAreas.Count > 0)
-            wd.today.training[me] = wd.roster.trainingAreas[(wd.roster.workers.IndexOf(me) + day) % wd.roster.trainingAreas.Count];
+        {
+            wd.today.training.Remove(me);
+            wd.today.training[me] = wd.roster.SeatFor(wd.today.training, wd.roster.workers.IndexOf(me), day);   // por plazas (J16, D1)
+        }
         return n;
     }
 

@@ -6,6 +6,8 @@ codigo: [AreaCapacity, YogaHall, AreaSeat, CapacidadPisosTest, LeisureDirector, 
 ---
 # Centros para todos los miembros a la vez (regla J16)
 
+> **Reescrita el 2026-11-25** (D1 del [rediseño de pisos](rediseno-pisos-arboles.md)): un piso por actividad y el entrenamiento **por plazas**; la suma de plazas llega a todos. Lo de abajo describe los **edificios amplios** (los de hoy, `TrainingCentres.Amplios`), que se guardan para cuando haya más gente.
+
 Berón (2026-11-04):
 - «los centros de entrenamiento y de ocio deben dar servicio a todos los miembros a la vez»;
 - «ten en cuenta que algunas áreas tienen más de un piso justo para abastecer a todos los miembros y se pueden agregar pisos, si las 2

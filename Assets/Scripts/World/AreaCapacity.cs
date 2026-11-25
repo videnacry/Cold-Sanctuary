@@ -4,12 +4,15 @@ using UnityEngine;
 /// <summary>
 /// REGLA DE CAPACIDAD (Berón 2026-11-04; docs/reglas/manual-de-diseno.md, regla S13 = J16: ES LA MISMA REGLA y este validador es su ÚNICA
 /// fuente; quien compruebe J16 —el horario libre, el ring de almohadas— llama a <see cref="Check"/> o <see cref="CheckActivities"/>). Cada piso o área tiene máquinas e infraestructura
-/// para que VARIAS personas hagan la misma tarea a la vez, como en el restaurante o el hospital. Los centros de ENTRENAMIENTO y
-/// de ESTUDIO son su propia categoría y deben servir a TODOS los miembros del santuario a la vez: el gimnasio, las dos salas de
-/// yoga (Hatha y Ashtanga), el ring de almohadas y la sala de estudio (el Aula).
+/// para que VARIAS personas hagan la misma tarea a la vez, como en el restaurante o el hospital.
+/// J16 REESCRITA (D1 de Berón 2026-11-25, docs/areas/rediseno-pisos-arboles.md): un piso por actividad. Los centros de ENTRENAMIENTO
+/// ya no sirven cada uno a todos: la SUMA de sus plazas (las de los centros terminados) llega a todos los miembros, y el
+/// entrenamiento de las 8 y las 14 reparte a la gente por plazas (<see cref="WorkRoster.SeatTraining"/>). Siguen siendo para TODOS a
+/// la vez el ring de almohadas (la fiesta, J36), la sala de estudio (el Aula) y las Asambleas.
 /// <see cref="Check"/> cuenta los puestos de cada área (los <see cref="AreaSeat"/>; en el gimnasio sus <see cref="GymStation"/>;
 /// en el yoga sus esterillas «Esterilla_N») y los compara con lo que pide la regla: trabajo ≥ <see cref="MinWorkSeats"/>;
-/// entrenamiento y estudio ≥ el número de miembros (<see cref="Members"/>).
+/// cada centro de entrenamiento ≥ 1 y todos juntos ≥ el número de miembros (<see cref="Members"/>; línea <see cref="TrainingTotal"/>);
+/// estudio y ocio ≥ el número de miembros.
 /// </summary>
 public static class AreaCapacity
 {
@@ -28,7 +31,33 @@ public static class AreaCapacity
 
     /// <summary>Lo que pide la regla para una actividad de esa categoría: trabajo, varias personas; entrenamiento, estudio y ocio,
     /// todos los miembros.</summary>
-    public static int Need(AreaSeat.Category c, int members) => c == AreaSeat.Category.Trabajo ? MinWorkSeats : members;
+    public static int Need(AreaSeat.Category c, int members) => c == AreaSeat.Category.Trabajo ? MinWorkSeats : c == AreaSeat.Category.Entrenamiento ? 1 : members;
+    /// <summary>La línea de la SUMA de plazas de entrenamiento (J16 reescrita): todos los centros juntos, para todos los miembros.</summary>
+    public const string TrainingTotal = "Entrenamiento (suma de plazas)";
+
+    /// <summary>Las PLAZAS de entrenamiento de un área (J16, D1): las máquinas del gimnasio (con su piso de cardio), las esterillas del
+    /// yoga y los <see cref="AreaSeat"/> de entrenamiento, sin los pisos en obras. La usa la jornada para repartir por plazas, una
+    /// vez al día (<c>WorkdayDirector.OpenTraining</c>).</summary>
+    public static int SeatsOf(Transform a)
+    {
+        if (a == null) return 0;
+        int n = 0;
+        foreach (AreaSeat s in a.GetComponentsInChildren<AreaSeat>(true))
+        {
+            if (s.category != AreaSeat.Category.Entrenamiento) continue;
+            ConstructionProject site = s.GetComponentInParent<ConstructionProject>(true);
+            if (site == null || site.Finished) n += s.seats;
+        }
+        if (a.name == "Gym_Area")
+        {
+            n += a.GetComponentsInChildren<GymStation>(true).Length;
+            Transform cardio = GameObject.Find("Cardio y zona libre")?.transform;
+            if (cardio != null && !cardio.IsChildOf(a)) n += cardio.GetComponentsInChildren<GymStation>(true).Length;
+        }
+        if (a.name == "YogaRoom_Area")
+            foreach (Transform t in a.GetComponentsInChildren<Transform>(true)) if (t.name.StartsWith("Esterilla_")) n++;
+        return n;
+    }
 
     /// <summary>LA MISMA REGLA para listas de actividades sin escena (el catálogo del horario libre, LeisureRoster: título y
     /// capacidad; <paramref name="unlimited"/> = sin tope). La usan quienes comprueban J16: AreaCapacity es la única fuente
@@ -85,7 +114,7 @@ public static class AreaCapacity
                 int n = a.GetComponentsInChildren<GymStation>(true).Length;
                 Transform cardio = GameObject.Find("Cardio y zona libre")?.transform;
                 if (cardio != null) n += cardio.GetComponentsInChildren<GymStation>(true).Length;
-                lines.Add(new Line { area = "Gimnasio (con cardio)", activity = "máquinas", category = AreaSeat.Category.Entrenamiento, have = n, need = members });
+                lines.Add(new Line { area = "Gimnasio (con cardio)", activity = "máquinas", category = AreaSeat.Category.Entrenamiento, have = n, need = Need(AreaSeat.Category.Entrenamiento, members) });
                 gym = true;
             }
             // El YOGA: dos salas (Hatha, el piso de la Sala de Yoga; Ashtanga, su planta propia), cada una para todos.
@@ -100,11 +129,16 @@ public static class AreaCapacity
                     YogaHall hall = t.GetComponentInParent<YogaHall>(true);
                     if (hall != null && hall.style == YogaHall.Style.Ashtanga) s2++; else h++;
                 }
-                lines.Add(new Line { area = "Yoga Hatha", activity = "esterillas", category = AreaSeat.Category.Entrenamiento, have = h, need = members });
-                lines.Add(new Line { area = "Yoga Ashtanga", activity = "esterillas", category = AreaSeat.Category.Entrenamiento, have = s2, need = members });
+                lines.Add(new Line { area = "Yoga Hatha", activity = "esterillas", category = AreaSeat.Category.Entrenamiento, have = h, need = Need(AreaSeat.Category.Entrenamiento, members) });
+                lines.Add(new Line { area = "Yoga Ashtanga", activity = "esterillas", category = AreaSeat.Category.Entrenamiento, have = s2, need = Need(AreaSeat.Category.Entrenamiento, members) });
                 hatha = true; ashtanga = s2 > 0;
             }
         }
+        // (J16 reescrita, D1 2026-11-25) LA SUMA de las plazas de entrenamiento: entre todos los centros caben todos los miembros.
+        int tHave = 0, tPlanned = 0;
+        foreach (Line l in lines) if (l.category == AreaSeat.Category.Entrenamiento) { tHave += l.have; tPlanned += l.planned; }
+        if (gym || hatha || tHave + tPlanned > 0)
+            lines.Add(new Line { area = TrainingTotal, activity = "plazas", category = AreaSeat.Category.Entrenamiento, have = tHave, planned = tPlanned, need = members });
         // El RING DE ALMOHADAS (ocio de todos a la vez; docs/areas/guerra-de-almohadas.md): su capacidad, la de su colchón.
         foreach (PillowRing r in Object.FindObjectsByType<PillowRing>(FindObjectsInactive.Include, FindObjectsSortMode.None))   // (no PillowRing.All: se llena en OnEnable, y esta regla corre también fuera de Play)
         {

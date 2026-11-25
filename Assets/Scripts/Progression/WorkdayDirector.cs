@@ -71,14 +71,17 @@ public class WorkdayDirector : MonoBehaviour
     static bool IsTraining(SanctuaryAreaType t) => t == SanctuaryAreaType.Gym || t == SanctuaryAreaType.Ballet || t == SanctuaryAreaType.MartialArts || t == SanctuaryAreaType.Calisthenics;
 
     /// <summary>Entrenamientos abiertos: yoga, gimnasio y las obras de entrenamiento ya terminadas.</summary>
-    public List<string> OpenTraining()
+    public List<string> OpenTraining(Dictionary<string, int> seats = null)
     {
         var l = new List<string>();
         foreach (SanctuaryArea a in FindObjectsByType<SanctuaryArea>(FindObjectsSortMode.None))
         {
             bool training = a.areaType == SanctuaryAreaType.YogaRoom || IsTraining(a.areaType);
             ConstructionProject cp = a.GetComponent<ConstructionProject>();
-            if (training && (cp == null || cp.Finished)) l.Add(a.displayName);
+            if (!training || (cp != null && !cp.Finished)) continue;
+            if (!l.Contains(a.displayName)) l.Add(a.displayName);
+            // (J16 reescrita, D1 2026-11-25) Sus PLAZAS, para repartir el entrenamiento por plazas: una vez al día, no por frame.
+            if (seats != null) { seats.TryGetValue(a.displayName, out int n); seats[a.displayName] = n + AreaCapacity.SeatsOf(a.transform); }
         }
         l.Sort(System.StringComparer.Ordinal);
         return l;
@@ -122,7 +125,7 @@ public class WorkdayDirector : MonoBehaviour
         SyncStaff();
         if (KitchenLarder.Instance != null) KitchenLarder.Instance.autoPlan = false;   // en el santuario cada elaboración es una misión de alguien
         PopulationPlan.Humans = Mathf.Max(PopulationPlan.Humans, roster.workers.Count + 2);   // el personal + la Magnate + el recién llegado: la fauna se dimensiona con ellos
-        roster.trainingAreas.Clear(); roster.trainingAreas.AddRange(OpenTraining());
+        roster.trainingAreas.Clear(); roster.trainingSeats.Clear(); roster.trainingAreas.AddRange(OpenTraining(roster.trainingSeats));   // con sus plazas (J16, D1)
         foreach (GameObject c in _clones.Values) if (c != null) Destroy(c);
         _clones.Clear(); _done.Clear(); _started.Clear();
         _lunched.Clear(); _lunchStocked = false; _dinnerStocked = false; _heading.Clear();   // [Jornada] la comida de hoy
@@ -150,7 +153,7 @@ public class WorkdayDirector : MonoBehaviour
         foreach (string why in today.cloneReasons) Debug.Log($"[Reparto] Día {day} · {why}");   // (2026-11-09) cada clon, con su motivo
         if (!roster.guardShifts) Debug.Log($"[Reparto] Día {day} · turnos de guardia desactivados (WorkRoster.guardShifts apagado; Berón 2026-11-16): {today.guardsOff.Count} sin repartir, {today.guardsOff.Sum(m => m.hours):0.#} h para lo demás");
         _orders.Clear(); _cloneOrders.Clear();   // (las órdenes guardadas eran del plan de ayer)
-        int gymDays = GymProgramming.ApplyGymDays(today, roster.trainingAreas, roster.workers);   // los días de gimnasio de cada plan
+        int gymDays = GymProgramming.ApplyGymDays(today, roster.trainingAreas, roster.workers, roster);   // los días de gimnasio de cada plan
         if (gymDays > 0) Debug.Log($"[Gimnasio] Día {day}: {gymDays} cambios en el entrenamiento de las 14 h por los días de cada plan; al gimnasio: {string.Join(", ", today.training.Where(kv => kv.Value == GymArea).Select(kv => kv.Key.name))}.");
         plannedDay = day;
         foreach (WorkRoster.Worker c in today.clones) _clones[c] = SpawnMagnateBody(c.name);

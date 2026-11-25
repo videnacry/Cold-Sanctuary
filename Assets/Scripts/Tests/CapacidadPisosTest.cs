@@ -5,9 +5,9 @@ using UnityEngine;
 /// <summary>
 /// TEST DE LA REGLA DE CAPACIDAD (grupo 75; manual C8, Berón 2026-11-04). Primero el VALIDADOR con un área de prueba (dos puestos
 /// de trabajo pasan, uno no; un aula de estudio por debajo de los miembros falla). Después, en la escena (si está construida):
-/// cada actividad de trabajo con ≥ 2 puestos, y el ENTRENAMIENTO y el ESTUDIO para TODOS los miembros a la vez: el gimnasio (con su
-/// piso de cardio), las dos salas de yoga (Hatha y Ashtanga) y el Aula (clase y estudio). El ring de almohadas aún no existe: se
-/// apunta como pendiente.
+/// cada actividad de trabajo con ≥ 2 puestos; el ENTRENAMIENTO por plazas (J16 reescrita, D1 2026-11-25: cada centro con plazas y
+/// la SUMA de todos para todos los miembros: gimnasio con su cardio, yoga Hatha y Ashtanga, calistenia, dojo, ballet); el ESTUDIO
+/// (el Aula: clase y estudio) y el ring de almohadas, para TODOS a la vez.
 /// </summary>
 public class CapacidadPisosTest : MonoBehaviour, ITestUnit
 {
@@ -41,6 +41,9 @@ public class CapacidadPisosTest : MonoBehaviour, ITestUnit
         Dojo(root.transform); Dojo(obra.transform);
         lines = AreaCapacity.Check(new[] { root.transform }, 18, out _);
         TestProbe.Check("un centro de dos pisos con uno en obras: cumple, y solo da servicio el terminado", L("dojo").ok && L("dojo").have == 10 && L("dojo").planned == 10, L("dojo").ToString());
+        // (J16 reescrita, D1 de Berón 2026-11-25) Un centro de entrenamiento ya no tiene que caber entero: basta que entre todos sumen plazas para todos.
+        var total = lines.Find(l => l.area == AreaCapacity.TrainingTotal);
+        TestProbe.Check("J16 por plazas: el dojo (10 + 10 en obras) no es para 18 él solo, pero la suma de plazas de entrenamiento sí llega", L("dojo").need == 1 && total.need == 18 && total.ok, total.ToString());
         Destroy(root);
         TestProbe.End();
         yield return null;
