@@ -34,6 +34,8 @@ sobre su base negra en un anillo exterior con un mar central (#71–#74, #83), e
 desarrolla (#75, #79, #86–#87, #108, #119, #123), la cima gigante con residencia, plaza y castillos con toboganes
 (#130, #132) y las reglas de reorganización (#134). Más el microcosmos nuevo de la **Academia de Platón** (#115).
 
+**Plan (W2, 2026-11-25):** [rediseno-pisos-arboles.md](../areas/rediseno-pisos-arboles.md): choques con J16/J36 y T1, árboles propuestos, reajuste W9, fases F0–F6 y decisiones D1–D6.
+
 ## Qué no se porta
 
 - «Distribución nuestra» de CodeShip: el puesto fijo por turno choca con la regla de oro (aquí manda `WorkRoster`
