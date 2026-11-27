@@ -2,28 +2,23 @@ using UnityEngine;
 
 /// <summary>
 /// ÁREAS DE ENTRENAMIENTO (docs/sistemas/jornada-y-rotacion.md): las 2 h diarias de entrenamiento son virtualizaciones de estas
-/// áreas. El EDIFICIO DEL GIMNASIO (docs/areas/entrenamiento-areas.md §3) tiene 3 pisos de 36 × 26 m: máquinas de placas y peso
-/// libre (piso 0), cardio y zona libre (piso 1), y calistenia, parkour y crossfit (piso 2). Cada equipo deja 2 m libres
+/// áreas. El GIMNASIO (docs/areas/entrenamiento-areas.md §3) es un piso de 40 × 40 m (F1b, 2026-11-27): máquinas de placas, peso
+/// libre, cardio y zona libre; la calistenia, el parkour y el crossfit, otro piso. Cada equipo deja 2 m libres
 /// hasta el de al lado y lleva su <see cref="GymStation"/> con las posturas A/B del doc. La sala de BALLET y el DOJO de
 /// artes marciales siguen EN OBRAS: cada uno tiene a pie de obra el material de un día de trabajo, andamio y paredes a
 /// medio levantar (<see cref="ConstructionProject"/>), y el equipo de Construcción los va terminando.
 /// </summary>
 public static partial class SampleSceneBuilder
 {
+    /// <summary>(Revisión de #326) La caja del piso del gimnasio con su cardio: 40 × 38, como la de la Cría y la del Textil (el suelo de caucho llega
+    /// de z −15 a 19,6 y las filas de máquinas y de peso libre, a z 19,3: con la caja de <see cref="GymSize"/> quedaban fuera del área).</summary>
+    static readonly Vector2 GymFloorBox = new Vector2(40f, 38f);
+
     static readonly Color TRubber = new Color(0.18f, 0.18f, 0.2f), TIron = new Color(0.35f, 0.36f, 0.4f), TChrome = new Color(0.78f, 0.8f, 0.84f),
         TRed = new Color(0.75f, 0.2f, 0.2f), TWood = new Color(0.7f, 0.52f, 0.34f);
     static readonly Color TPad = new Color(0.12f, 0.12f, 0.14f), TDisc = new Color(0.08f, 0.08f, 0.09f), TAcc = new Color(0.85f, 0.65f, 0.15f),
         TTurf = new Color(0.25f, 0.5f, 0.27f), TTile = new Color(0.1f, 0.11f, 0.12f), TMat = new Color(0.3f, 0.45f, 0.4f),
         TBumper = new Color(0.15f, 0.3f, 0.6f), TPlatWood = new Color(0.8f, 0.64f, 0.42f);
-
-    /// <summary>Centro (local del piso, sobre la losa) y giro de la ZONA DE ALFOMBRAS de 7,6 × 4,4 m de cada piso del gimnasio
-    /// (docs/areas/entrenamiento-areas.md §3.2–3.4). Los Furnish* la dejan libre, con ≥ 2 m hasta el equipo más cercano. En el
-    /// piso 2 va girada 90° (4,4 en X × 7,6 en Z).</summary>
-    static Vector3 GymCarpetSpot(int floor, out float yaw)
-    {
-        yaw = floor == 2 ? 90f : 0f;
-        return floor == 0 ? new Vector3(-8f, 0f, -9.8f) : floor == 1 ? new Vector3(-8f, 0f, 9.8f) : new Vector3(-1.2f, 0f, -8.2f);
-    }
 
     /// <summary>Centro de la huella (x, z) de cada tipo de <see cref="GymMachine"/> respecto a su origen: el doc da centros de
     /// huella, así que al colocarlas se resta esto.</summary>
@@ -33,11 +28,10 @@ public static partial class SampleSceneBuilder
         new Vector2(0.2f, 0.075f), new Vector2(-0.18f, 0.095f), new Vector2(0f, -0.15f), new Vector2(0f, -0.21f), new Vector2(0.15f, -0.05f)
     };
 
-    /// <summary>PISO 0 DEL GIMNASIO (docs/areas/entrenamiento-areas.md §3.2), 36 × 26 m: las 30 máquinas de placas (10 tipos × 3) en
-    /// 5 filas mirando hacia −Z, el pasillo central (x de 2 a 4,2) y el bloque de PESO LIBRE: 2 estantes de mancuernas, 4 bancos
-    /// regulables, 3 jaulas de sentadillas, 2 press de banca planos y 1 inclinado, Smith, plataforma de peso muerto, árboles de
-    /// discos y soporte de barras. 2 m libres entre huellas. Sin entreplanta: se cambia de piso en alfombra (la zona de
-    /// alfombras, en <see cref="GymCarpetSpot"/>, queda libre).</summary>
+    /// <summary>EL GIMNASIO (docs/areas/entrenamiento-areas.md §3.2): las 20 máquinas de placas (10 tipos × 2) en 5 filas mirando hacia −Z y
+    /// el PESO LIBRE: 2 estantes de mancuernas, 2 bancos regulables, 2 jaulas de sentadillas, press plano e inclinado, Smith, plataforma de
+    /// peso muerto, árboles de discos y soporte de barras. 2 m libres entre huellas. El cardio y la zona libre, en el mismo piso
+    /// (<see cref="FurnishGymCardio"/>).</summary>
     // (2026-11-27, fase F1b del rediseño de pisos, docs/areas/rediseno-pisos-arboles.md §6 ter) GIMNASIO Y CARDIO EN UN PISO de 40 × 40 m
     // (la puerta del tronco en −Z, su umbral libre: nada por debajo de z = −13,6): las MÁQUINAS DE PLACAS (2 de cada tipo) en el cuarto −X +Z,
     // el PESO LIBRE en el +X +Z, el CARDIO en el −X −Z y la ZONA LIBRE en el +X −Z; las esterillas, en una fila entre las máquinas y el cardio.
@@ -156,7 +150,7 @@ public static partial class SampleSceneBuilder
         KitchenProps.Fit(sh); sh.gameObject.AddComponent<WorldLabel>().text = "Material: fitballs, rodillos, bandas";
         GWallBars(r, "Espalderas_estiramiento", new Vector3(12.5f, 0f, -11.5f), 180f, 2, 0);   // miran hacia +Z
         WorldLabel zl = KitchenProps.Root(r, "Zona_libre", new Vector3(10.5f, 0f, 4.5f)).gameObject.AddComponent<WorldLabel>(); zl.text = "Zona libre: abdominales y estiramientos"; zl.height = 2.6f;
-        floor.gameObject.AddComponent<WorldLabel>().text = "Gimnasio · cardio y zona libre";
+        // (revisión de #326) Sin cartel de piso: el del área («Gimnasio (abierto)», FurnishGym) es el del mismo piso.
     }
 
     /// <summary>PISO 2 DEL GIMNASIO (docs/areas/entrenamiento-areas.md §3.4): CALISTENIA (dominadas a 3 alturas, monkey bars,

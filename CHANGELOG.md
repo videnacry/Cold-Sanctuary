@@ -5,6 +5,7 @@ el PR, en `git log` y en [`docs/checklist.md`](docs/checklist.md) (Historial).
 Al fusionar un PR, añade su línea en «Sin publicar» o en el mes en curso.
 
 ## Sin publicar
+- Revisión de #326: la caja del gimnasio, de 40 × 38 (`FitAreaBox`, compartido con el Textil); sin restos de «Cardio y zona libre» en `AreaCapacity`; `GymCarpetSpot` (sin uso) fuera; gimnasio de 20 plazas también en `FloorOrganization`.
 - PB-170 F1b: piso «Gimnasio y cardio» (10 máquinas × 2, cardio y zona libre en un piso de 40 × 40; Gimnasio 20 plazas); TankSpot fuera de las zonas de otras áreas; la guardia ya no sale del piso.
 - Revisión de #324: la caja del piso del Textil, de 40 × 38 (sus bordillos cruzaban el huerto y el estudio; su «Mat» dejaba fuera parte del estudio).
 - PB-170 F1b: piso mixto «Textil y huerto vertical» (el huerto, zona de 18 × 30 m del piso del Textil).

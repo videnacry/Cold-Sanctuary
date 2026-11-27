@@ -3436,7 +3436,7 @@ public static partial class SampleSceneBuilder
         CriaMeatZone(cria.transform, meat.transform);
         SanctuaryArea assembly = BuildAssembly(areasGroup.transform); areas.Add(assembly);   // (2026-11-05) docs/areas/piso-asambleas.md
         BuildGuardRoom(assembly.transform);   // (2026-11-05; docs/areas/sala-de-guardia.md) (2026-11-25, F1b) una zona del piso de Asambleas, en su cuarto +X +Z
-        //  · ENTRENAMIENTO: Gimnasio · Cardio y zona libre · Calistenia, parkour y crossfit · Yoga (Hatha) · Yoga (Ashtanga) · Ballet
+        //  · ENTRENAMIENTO: Gimnasio (con cardio y zona libre) · Calistenia, parkour y crossfit · Yoga (Hatha) · Yoga (Ashtanga) · Ballet
         //    · Dojo. Lo pesado y ruidoso (las máquinas) abajo; lo silencioso (los dos pisos de yoga y las salas en obras) arriba.
         //    Un ÁRBOL (Berón 2026-11-04: se quitó el anillo de yoga y el yoga pasó a sus propios pisos, docs/areas/yoga-pisos.md): los niveles
         //    que pidan sus pisos (regla J16, abajo) y sus pisos en orden; una punta con frutales en cada hueco de la hélice.
@@ -3490,6 +3490,7 @@ public static partial class SampleSceneBuilder
         FurnishConstruction(works.transform, size[works.transform]);   // maquinaria, material, herramientas y taller de obra
         for (int k = 0; k < gymF.Count; k++) { FurnishGym(gymF[k], size[gymF[k]], 2 * k); Centre(gymF[k], "Gimnasio", k + 1); }   // máquinas de placas y peso libre (cada piso, sus copias 2k y 2k+1)
         FurnishGymCardio(gymF[0], size[gymF[0]]);                        // cardio, abdominales, estiramientos y sacos, en el piso del gimnasio (F1b)
+        FitAreaBox(gym.transform, GymFloorBox);                          // (revisión de #326) la caja de 36 × 26 dejaba fuera las filas de z > 14 (máquinas, peso libre)
         for (int k = 0; k < calF.Count; k++) { FurnishCalisthenics(calF[k], size[calF[k]]); Centre(calF[k], "Calistenia", k + 1); }   // calistenia, parkour y crossfit (ya construidos)
         Vector2 criaLayout = new Vector2(26f, 20f);                      // la sala de crías, con su distribución de 26 × 20 (girada en la mitad −X de su piso: CriaMeatZone)
         FurnishCria(cria.transform, criaLayout); PlaceCriaRoot(cria.transform);
@@ -3785,6 +3786,21 @@ public static partial class SampleSceneBuilder
         sanctuaryArea.displayName = displayName;
         sanctuaryArea.progressionTier = progressionTier;
         return sanctuaryArea;
+    }
+
+    /// <summary>(F1b del rediseño de pisos) Agranda la CAJA de un área (<see cref="BuildAreaBox"/>) a <paramref name="box"/>, centrada: su «Mat»
+    /// (el que lee <c>SanctuaryArea.Contains</c> y la energía del piso, <c>FloorEnergy</c>) y los bordillos de sus lados, para que cubra todo lo que el
+    /// área amuebla en su piso de 40 m (el Textil con su huerto, el gimnasio con su cardio). Wall_Back ya lo quita la torre.</summary>
+    static void FitAreaBox(Transform area, Vector2 box)
+    {
+        Transform mat = area.Find("Mat");
+        if (mat != null) mat.localScale = new Vector3(box.x, 0.1f, box.y);
+        for (int sx = -1; sx <= 1; sx += 2)
+        {
+            Transform w = area.Find(sx < 0 ? "Wall_Left" : "Wall_Right");
+            if (w == null) continue;
+            w.localPosition = new Vector3(sx * box.x * 0.5f, w.localPosition.y, 0f); w.localScale = new Vector3(w.localScale.x, w.localScale.y, box.y);
+        }
     }
 
     static void CreateWallSegment(Transform parent, string name, Vector3 localPos, Vector3 scale, Material mat)

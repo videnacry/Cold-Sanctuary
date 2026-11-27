@@ -50,9 +50,7 @@ public static class AreaCapacity
         }
         if (a.name == "Gym_Area")
         {
-            n += a.GetComponentsInChildren<GymStation>(true).Length;
-            Transform cardio = GameObject.Find("Cardio y zona libre")?.transform;
-            if (cardio != null && !cardio.IsChildOf(a)) n += cardio.GetComponentsInChildren<GymStation>(true).Length;
+            n += a.GetComponentsInChildren<GymStation>(true).Length;   // (F1b, 2026-11-27) el cardio va en el mismo piso: ya cuenta aquí
         }
         if (a.name == "YogaRoom_Area")
             foreach (Transform t in a.GetComponentsInChildren<Transform>(true)) if (t.name.StartsWith("Esterilla_")) n++;
@@ -114,12 +112,10 @@ public static class AreaCapacity
             foreach (var kv in building)
                 if (!sum.ContainsKey(kv.Key))
                     lines.Add(new Line { area = name, activity = kv.Key, category = buildingCat[kv.Key], have = 0, planned = kv.Value, need = Need(buildingCat[kv.Key], members) });
-            // El GIMNASIO: sus máquinas (el piso del gimnasio y el de cardio cuentan juntos: es un mismo centro).
+            // El GIMNASIO: sus máquinas, con el cardio (F1b, 2026-11-27: en el mismo piso, hijo del área).
             if (a.name == "Gym_Area")
             {
                 int n = a.GetComponentsInChildren<GymStation>(true).Length;
-                Transform cardio = GameObject.Find("Cardio y zona libre")?.transform;
-                if (cardio != null) n += cardio.GetComponentsInChildren<GymStation>(true).Length;
                 lines.Add(new Line { area = "Gimnasio (con cardio)", activity = "máquinas", category = AreaSeat.Category.Entrenamiento, have = n, need = Need(AreaSeat.Category.Entrenamiento, members) });
                 gym = true;
             }
