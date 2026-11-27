@@ -5,6 +5,7 @@ el PR, en `git log` y en [`docs/checklist.md`](docs/checklist.md) (Historial).
 Al fusionar un PR, añade su línea en «Sin publicar» o en el mes en curso.
 
 ## Sin publicar
+- PB-170 F1b: laboratorios de Química y Biología, cada uno en un piso (antes dos cada uno); Ciencias de 4 niveles a 2.
 - PB-170 F1b (W9, #330): la sala de bailes es el primer sitio de «Bailar» en el horario libre (si su piso no está en obras).
 - Revisión de #328 (piso «Salas»): fusionado; restos menores en PENDIENTES y checklist.
 - PB-170 F1b: piso «Salas» (Ballet en obras y sala de bailes en el último piso de estudios de Música; Entrenamiento con un piso menos); la prueba 64 compara pisos de yoga por índice.
