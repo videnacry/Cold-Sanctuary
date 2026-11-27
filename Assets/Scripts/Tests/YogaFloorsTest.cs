@@ -49,8 +49,8 @@ public class YogaFloorsTest : MonoBehaviour, ITestUnit
 
         // ── 2. Los dos pisos y sus cuatro salas ──
         TestProbe.Check("dos pisos de yoga: el de Hatha (Sala de Yoga) y el de Ashtanga (Planta_ashtanga), pisos distintos de la torre",
-            room != null && ash != null && room.GetComponent<TreeFloor>() != null && ash.GetComponent<TreeFloor>() != null && Mathf.Abs(ash.position.y - room.position.y) > 10f,
-            room != null && ash != null ? $"Hatha a {room.position.y:0} m, Ashtanga a {ash.position.y:0} m" : "falta alguno");
+            room != null && ash != null && room.GetComponent<TreeFloor>() != null && ash.GetComponent<TreeFloor>() != null && ash.GetComponent<TreeFloor>().index != room.GetComponent<TreeFloor>().index,   // (2026-11-27) pisos distintos de la hélice: desde F1b pueden caer en el mismo nivel (caras opuestas), a la misma altura
+            room != null && ash != null ? $"Hatha a {room.position.y:0} m (piso {room.GetComponent<TreeFloor>()?.index}), Ashtanga a {ash.position.y:0} m (piso {ash.GetComponent<TreeFloor>()?.index})" : "falta alguno");
         var halls = YogaHall.All.Where(h => h != null).ToList();
         foreach (YogaHall.Style st in new[] { YogaHall.Style.Hatha, YogaHall.Style.Ashtanga })
             foreach (YogaHall.Version v in new[] { YogaHall.Version.Occidental, YogaHall.Version.Tradicional })
