@@ -41,9 +41,9 @@ public static partial class SampleSceneBuilder
 
     /// <summary>Coloca los bloques en filas sobre una planta de <paramref name="size"/>: 2 m entre bloques y 2 m al borde,
     /// fuera de las <paramref name="keepOut"/> (el área de alfombras, la máquina de virtualización). Devuelve los que no cupieron.</summary>
-    static List<LabBlock> PackFloor(Transform floor, Vector2 size, List<LabBlock> blocks, List<Rect> keepOut)
+    static List<LabBlock> PackFloor(Transform floor, Vector2 size, List<LabBlock> blocks, List<Rect> keepOut, float gap = 2.1f)
     {
-        const float gap = 2.1f, margin = 2f;   // 2 m libres y un poco más: la caja real de cada bloque sobresale unos cm de su huella
+        const float margin = 2f;   // (gap: 2 m libres y un poco más, 2,1 por omisión: la caja real de cada bloque sobresale unos cm de su huella)
         var left = new List<LabBlock>();
         float x0 = -size.x * 0.5f + margin, x1 = size.x * 0.5f - margin, z = -size.y * 0.5f + margin, zMax = size.y * 0.5f - margin;
         float x = x0, rowD = 0f;
@@ -197,6 +197,13 @@ public static partial class SampleSceneBuilder
 
     // ── QUÍMICA ──────────────────────────────────────────────────────────────────────────────────────────────────
 
+    /// <summary>(2026-11-28, F1b) Los LABORATORIOS de Ciencias, cada uno en UN piso: la caja del área (la del piso entero) y la planta donde se
+    /// reparten sus bloques (z ±15,5: el umbral del tronco, en −Z, queda libre).</summary>
+    static readonly Vector2 LabFloorBox = new Vector2(40f, 38f), LabPackSize = new Vector2(40f, 31f);
+    /// <summary>Paso entre bloques de los laboratorios en un piso: 3,2 m (las cajas de la campana, la ducha y las salas sobresalen hasta 0,1 m de su
+    /// huella, y así el piso se llena por igual en vez de dejar la mitad +Z vacía).</summary>
+    const float LabGap = 3.2f;
+
     static SanctuaryArea BuildChemistry(Transform areasGroup)
     {
         SanctuaryArea a = BuildAreaBox(areasGroup, "Chemistry_Area", "Química", SanctuaryAreaType.Chemistry, 3, CienciasCenter, CienciasSize, new Color(0.78f, 0.85f, 0.9f));
@@ -212,12 +219,8 @@ public static partial class SampleSceneBuilder
         wet.AddRange(Times(2, "Ducha de seguridad", 1.0f, 1.3f, SafetyShower));
         wet.Add(new LabBlock("Residuos químicos", 1.2f, 0.6f, t => { for (int i = 0; i < 3; i++) KitchenProps.C(t, new Vector3(-0.4f + i * 0.4f, 0.35f, 0f), new Vector3(0.32f, 0.7f, 0.4f), i == 0 ? LabRed : i == 1 ? LabYellow : LabBlue, 0f, "Bidon"); }));
         wet.AddRange(Times(2, "Puesto de cuaderno", 1.6f, 1.0f, t => { Bench(t, 1.6f, 1f, new Color(0.55f, 0.45f, 0.35f)); KitchenProps.C(t, new Vector3(0f, 1.15f, 0.25f), new Vector3(0.6f, 0.4f, 0.04f), LabDark, 0f, "Monitor"); }));
-        Transform g = new GameObject("Planta_sintesis").transform; g.SetParent(a.transform, false); g.localPosition = Vector3.up * 0.1f;
-        LogLeft("Química (síntesis)", PackFloor(g, cs, wet, CarpetKeepOut(cs)));
-        // Piso de arriba: ANÁLISIS (los instrumentos, lejos de los disolventes).
-        Transform up = InnerFloor(a.transform, "Planta_analisis", a.transform);
-        Vector2 us = FloorSize(up, cs);
-        Solid(up, new Vector3(0f, 0.05f, 0f), new Vector3(us.x, 0.1f, us.y), new Color(0.8f, 0.84f, 0.86f), "Suelo_analisis");
+        // (2026-11-28, F1b del rediseño de pisos) SÍNTESIS Y ANÁLISIS EN UN PISO de 40 × 40 (antes, dos pisos al 31 % y al 26 %): primero lo
+        // húmedo (junto a las duchas y los armarios) y después los instrumentos, en filas con 2 m entre bloques (PackFloor).
         var dry = new List<LabBlock>
         {
             new LabBlock("Sala de RMN 400 MHz", 4.0f, 3.0f, t => { Room(t, 4f, 3f, new Color(0.85f, 0.88f, 0.92f), "Sala_RMN"); Vessel(KitchenProps.Root(t, "Iman", new Vector3(0f, 0f, 0.3f)), 0.45f, 1.6f, LabSteel, "Iman_superconductor"); KitchenProps.C(t, new Vector3(0f, 0.02f, -1.2f), new Vector3(3.6f, 0.02f, 0.08f), LabYellow, 0f, "Linea_5_gauss"); }),
@@ -230,7 +233,10 @@ public static partial class SampleSceneBuilder
         dry.Add(new LabBlock("Hornos y muflas", 2.0f, 0.75f, t => { Bench(t, 2f, 0.75f, LabBench); for (int i = 0; i < 2; i++) KitchenProps.C(t, new Vector3(-0.5f + i * 1f, 1.2f, 0f), new Vector3(0.6f, 0.5f, 0.55f), LabDark, 0f, "Mufla"); }));
         dry.Add(new LabBlock("Cuarto de balanzas", 2.5f, 2.0f, t => { Room(t, 2.5f, 2f, new Color(0.9f, 0.9f, 0.88f), "Cuarto_balanzas"); Bench(KitchenProps.Root(t, "Mesa_antivibracion", new Vector3(0f, 0f, 0.55f)), 2.2f, 0.6f, LabDark); for (int i = 0; i < 4; i++) KitchenProps.C(t, new Vector3(-0.8f + i * 0.53f, 1.05f, 0.55f), new Vector3(0.3f, 0.22f, 0.3f), LabGlass, 0f, "Balanza"); }));
         dry.AddRange(Times(2, "Puesto de análisis", 1.6f, 1.0f, t => { Bench(t, 1.6f, 1f, new Color(0.55f, 0.45f, 0.35f)); KitchenProps.C(t, new Vector3(0f, 1.15f, 0.25f), new Vector3(0.6f, 0.4f, 0.04f), LabDark, 0f, "Monitor"); }));
-        LogLeft("Química (análisis)", PackFloor(up, us, dry, CarpetKeepOut(us, -us.x * 0.3f)));
+        FitAreaBox(a.transform, LabFloorBox);
+        Transform g = new GameObject("Planta_sintesis").transform; g.SetParent(a.transform, false); g.localPosition = Vector3.up * 0.1f;
+        var all = new List<LabBlock>(wet); all.AddRange(dry);
+        LogLeft("Química (síntesis y análisis)", PackFloor(g, LabPackSize, all, CarpetKeepOut(LabPackSize), LabGap));
         return a;
     }
 
@@ -255,12 +261,8 @@ public static partial class SampleSceneBuilder
         cult.Add(new LabBlock("Cámara fría (4 °C)", 2.5f, 2.5f, t => Room(t, 2.5f, 2.5f, new Color(0.8f, 0.88f, 0.95f), "Camara_fria")));
         cult.Add(new LabBlock("Autoclave y fregadero", 2.5f, 0.9f, t => { Bench(t, 2.5f, 0.9f, LabSteel); KitchenProps.C(t, new Vector3(-0.6f, 1.4f, 0f), new Vector3(0.9f, 0.9f, 0.8f), LabSteel, 0f, "Autoclave"); KitchenProps.C(t, new Vector3(0.7f, 0.88f, 0f), new Vector3(0.6f, 0.1f, 0.5f), LabDark, 0f, "Pila"); }));
         cult.Add(new LabBlock("Lavamanos y lavaojos", 1.0f, 1.3f, SafetyShower));
-        Transform g = new GameObject("Planta_cultivo").transform; g.SetParent(a.transform, false); g.localPosition = Vector3.up * 0.1f;
-        LogLeft("Biología (cultivo)", PackFloor(g, bs, cult, CarpetKeepOut(bs)));
-        // Piso de arriba: MOLECULAR, en sentido único (pre-PCR limpio → extracción → post-PCR y secuenciación).
-        Transform up = InnerFloor(a.transform, "Planta_molecular", a.transform);
-        Vector2 us = FloorSize(up, bs);
-        Solid(up, new Vector3(0f, 0.05f, 0f), new Vector3(us.x, 0.1f, us.y), new Color(0.82f, 0.88f, 0.82f), "Suelo_molecular");
+        // (2026-11-28, F1b del rediseño de pisos) CULTIVO Y MOLECULAR EN UN PISO de 40 × 40 (antes, dos pisos al 37 % y al 27 %): primero el
+        // cultivo y después lo molecular en sentido único (pre-PCR → extracción → post-PCR y secuenciación), en filas con 2 m entre bloques.
         var mol = new List<LabBlock>();
         mol.AddRange(Times(4, "Estación pre-PCR", 1.8f, 0.75f, t => { Bench(t, 1.8f, 0.75f, LabWhite); KitchenProps.C(t, new Vector3(0f, 1.3f, 0f), new Vector3(1.6f, 0.7f, 0.6f), LabGlass, 0f, "Campana_PCR"); }));
         mol.AddRange(Times(4, "Mesa de extracción de ADN", 1.8f, 0.75f, t => { Bench(t, 1.8f, 0.75f, LabBench); for (int i = 0; i < 2; i++) KitchenProps.C(t, new Vector3(-0.5f + i * 1f, 1.05f, 0f), new Vector3(0.35f, 0.2f, 0.35f), LabWhite, 0f, "Microcentrifuga"); }));
@@ -270,7 +272,10 @@ public static partial class SampleSceneBuilder
         mol.Add(new LabBlock("Lavamanos y lavaojos (arriba)", 1.0f, 1.3f, SafetyShower));
         mol.AddRange(Times(2, "Nevera y congelador de −20 °C", 0.7f, 0.75f, t => Tall(t, 0.7f, 0.75f, 1.8f, LabWhite, "Nevera_reactivos", LabBlue)));
         mol.AddRange(Times(4, "Puesto de análisis de datos", 1.6f, 1.0f, t => { Bench(t, 1.6f, 1f, new Color(0.55f, 0.45f, 0.35f)); KitchenProps.C(t, new Vector3(0f, 1.15f, 0.25f), new Vector3(0.6f, 0.4f, 0.04f), LabDark, 0f, "Monitor"); }));
-        LogLeft("Biología (molecular)", PackFloor(up, us, mol, CarpetKeepOut(us, -us.x * 0.3f)));
+        FitAreaBox(a.transform, LabFloorBox);
+        Transform g = new GameObject("Planta_cultivo").transform; g.SetParent(a.transform, false); g.localPosition = Vector3.up * 0.1f;
+        var all = new List<LabBlock>(cult); all.AddRange(mol);
+        LogLeft("Biología (cultivo y molecular)", PackFloor(g, LabPackSize, all, CarpetKeepOut(LabPackSize), LabGap));
         return a;
     }
 

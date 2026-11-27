@@ -3516,7 +3516,7 @@ public static partial class SampleSceneBuilder
         //    y la torre de Foucault) · Química (síntesis y análisis) · Biología (cultivo y molecular). El reactor de
         //    investigación va abajo: su piscina baja como un pilar hasta el suelo.
         //    Un ÁRBOL: 4 niveles; sus 7 pisos en orden (el reactor abajo: su piscina cuelga 4 m bajo la losa) y uno libre; 8 puntas con frutales.
-        Helix ciencias = BeginTreeTower(areasGroup.transform, TorreCiencias, CienciasCenter, CienciasSize, CienciasYaw, 4);
+        Helix ciencias = BeginTreeTower(areasGroup.transform, TorreCiencias, CienciasCenter, CienciasSize, CienciasYaw, 2);   // (2026-11-28, F1b) 3 pisos (Química, Biología e Informática; cada laboratorio en uno) y uno libre: 2 niveles
         SanctuaryArea chem = BuildChemistry(areasGroup.transform); areas.Add(chem);
         SanctuaryArea bio = BuildBiology(areasGroup.transform); areas.Add(bio);
         // (2026-11-04) INFORMÁTICA (docs/areas/piso-informatica.md): el piso libre de Ciencias, encima de Biología: el clúster de IA local.
