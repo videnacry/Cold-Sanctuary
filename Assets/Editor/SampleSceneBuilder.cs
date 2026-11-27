@@ -3513,9 +3513,9 @@ public static partial class SampleSceneBuilder
         WorldLabel fwl = feeder.AddComponent<WorldLabel>(); fwl.text = "Raciones para el alimentador"; fwl.height = 1.8f;
         CulturedMeatLab.Build(meat.transform, feeder.transform);
         //  · CIENCIAS (docs/areas/edificios-investigacion.md): Física (reactor TRIGA, ciclotrón y la sala de experimentos con su anillo
-        //    y la torre de Foucault) · Química (síntesis y análisis) · Biología (cultivo y molecular). El reactor de
-        //    investigación va abajo: su piscina baja como un pilar hasta el suelo.
-        //    Un ÁRBOL: 4 niveles; sus 7 pisos en orden (el reactor abajo: su piscina cuelga 4 m bajo la losa) y uno libre; 8 puntas con frutales.
+        //    y la torre de Foucault) · Química (síntesis y análisis) · Biología (cultivo y molecular).
+        //    Un ÁRBOL: 2 niveles (F1b): Química, Biología e Informática, un piso cada una, y uno libre; sus puntas con frutales. (El reactor y la sala de
+        //    experimentos están bajo el mar desde el 2026-11-08: BuildMarinePlant.)
         Helix ciencias = BeginTreeTower(areasGroup.transform, TorreCiencias, CienciasCenter, CienciasSize, CienciasYaw, 2);   // (2026-11-28, F1b) 3 pisos (Química, Biología e Informática; cada laboratorio en uno) y uno libre: 2 niveles
         SanctuaryArea chem = BuildChemistry(areasGroup.transform); areas.Add(chem);
         SanctuaryArea bio = BuildBiology(areasGroup.transform); areas.Add(bio);
