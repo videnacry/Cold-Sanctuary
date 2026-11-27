@@ -5,7 +5,7 @@ using UnityEngine;
 /// TORRES TEMÁTICAS (Berón 2026-10-29; docs/areas/plano-edificios.md): POCOS edificios con MUCHOS pisos (las megacolumnas ya están
 /// dimensionadas para 30, <see cref="StructuralLimits"/>), cada uno con un tema:
 ///  · SERVICIOS (personas y animales): Restaurante · Hospital (3 plantas) · Cría · Carne Cultivada;
-///  · ENTRENAMIENTO: Gimnasio · Cardio y zona libre · Calistenia · Sala de Yoga · Sala de Ballet · Dojo;
+///  · ENTRENAMIENTO: Gimnasio (con cardio y zona libre) · Calistenia · Sala de Yoga · Sala de Ballet · Dojo;
 ///  · CIENCIAS: Química (2) · Biología (2) · Informática;
 ///  · PRODUCCIÓN (huertos, jardines y construcción): Huerto · Rotación · Construcción · Mecánica · Estudio Textil.
 /// Los reactores (Central Nuclear y Planta Atómica, con el ciclotrón y la sala de experimentos) van en el SITIO NUCLEAR (docs/areas/sitio-nuclear.md).

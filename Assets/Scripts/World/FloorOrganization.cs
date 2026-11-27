@@ -173,7 +173,7 @@ public static class FloorOrganization
 
     /// <summary>LOS ÁRBOLES PROPUESTOS para los miembros de hoy (§4 del plan, D1 de Berón 2026-11-25: un piso por actividad y por
     /// afinidad), con sus marcas, ANTES de aplicar las reglas: la Residencia aún es su propio árbol. Plazas de entrenamiento: gimnasio
-    /// 30 (10 máquinas × 3), funcional 40, combate 25, cada sala 8.</summary>
+    /// 20 (10 máquinas × 2, F1b), funcional 40, combate 25, cada sala 8.</summary>
     public static List<Building> Proposed()
     {
         const Category S = Category.Servicios, E = Category.Entrenamiento, Ci = Category.Ciencias, P = Category.Produccion, Ca = Category.Campos, V = Category.Vivienda;
@@ -185,7 +185,7 @@ public static class FloorOrganization
                 new Floor("cria-carne-cultivada", C("cria", "Cría", S, 0.6f), C("carne-cultivada", "Carne cultivada", Ci, 0.4f)),
                 new Floor("asambleas-guardia", C("asambleas", "Asambleas", S, 0.75f), C("guardia", "Sala de guardia", S, 0.25f))),
             new Building("entrenamiento", "Entrenamiento",
-                Pure("gimnasio", "Gimnasio", E, 30),
+                Pure("gimnasio", "Gimnasio", E, 20),
                 new Floor("funcional", C("calistenia", "Calistenia", E, 0.35f, 16), C("parkour", "Parkour", E, 0.3f, 8), C("crossfit", "CrossFit", E, 0.35f, 16)),
                 new Floor("combate", C("judo", "Judo", E, 0.25f, 7), C("karate", "Karate", E, 0.25f, 6), C("kickboxing", "Kickboxing", E, 0.25f, 6), C("mma", "MMA", E, 0.25f, 6)),
                 new Floor("salas", C("yoga", "Yoga", E, 0.25f, 8), C("musica", "Música", E, 0.25f, 8), C("ballet", "Ballet", E, 0.25f, 8), C("bailes", "Bailes sociales", E, 0.25f, 8))),

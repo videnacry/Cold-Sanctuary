@@ -25,7 +25,7 @@ Son la lista del personal (`WorkdayDirector.Staff`, con Kushal). Hoy son 18.
 
 | Centro | Plazas por piso | De dónde salen | Pisos hoy |
 |---|---|---|---|
-| Gimnasio | 30 estaciones | 10 tipos de máquina de placas × 3 copias (el cardio y el peso libre, aparte) | 1 |
+| Gimnasio | 20 estaciones | 10 tipos de máquina de placas × 2 copias (F1b, 2026-11-27; el cardio y el peso libre, en el mismo piso) | 1 |
 | Calistenia, parkour y crossfit | 40 | calistenia ~18 (dominadas 3, anillas 2, paralelas bajas 4, espalderas 3…), parkour ~6, crossfit ~16 | 1 |
 | Yoga Hatha | 16 esterillas | dos salas de 8; con 2 m entre esterillas y a ≤ 9 m del maestro no caben más en 18 × 26 m | **2** |
 | Yoga Ashtanga | 16 esterillas | igual | **2** |
