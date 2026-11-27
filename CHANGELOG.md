@@ -5,6 +5,7 @@ el PR, en `git log` y en [`docs/checklist.md`](docs/checklist.md) (Historial).
 Al fusionar un PR, añade su línea en «Sin publicar» o en el mes en curso.
 
 ## Sin publicar
+- Revisión de #324: la caja del piso del Textil, de 40 × 38 (sus bordillos cruzaban el huerto y el estudio; su «Mat» dejaba fuera parte del estudio).
 - PB-170 F1b: piso mixto «Textil y huerto vertical» (el huerto, zona de 18 × 30 m del piso del Textil).
 - PB-170 F1b: piso mixto «Asambleas y guardia» (la guardia, zona de 16,5 × 18 m del piso de Asambleas; Servicios, 4 → 3 niveles).
 - PB-170 F1b: piso mixto «Cría y carne cultivada» (el laboratorio, zona de 18 × 30 m del piso de la Cría; Servicios con un piso libre).
