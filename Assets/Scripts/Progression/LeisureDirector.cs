@@ -176,7 +176,7 @@ public class LeisureDirector : MonoBehaviour
         ("tertulia", "Tertulia en el restaurante", LeisureRoster.Kind.Ocio, new[] { "Cocina" }, 8, "sentado"),
         ("asamblea", "Ir a la asamblea de la semana: hablar y escuchar", LeisureRoster.Kind.Ocio, new[] { "Sala de asambleas", "Cocina" }, 8, "sentado"),   // (2026-11-05) docs/areas/piso-asambleas.md
         ("concierto", "Ir al concierto o tocar en el escenario", LeisureRoster.Kind.Ocio, new[] { "Música", "Cocina" }, 8, "sentado"),   // (2026-11-05) docs/areas/piso-musica.md
-        ("baile", "Bailar", LeisureRoster.Kind.Ocio, new[] { "Sala de Ballet", "Calistenia", "Gimnasio" }, 6, "baile"),
+        ("baile", "Bailar", LeisureRoster.Kind.Ocio, new[] { "Sala de bailes", "Sala de Ballet", "Calistenia", "Gimnasio" }, 6, "baile"),
         ("artes", "Artes marciales con Gohageneis y Luciana",   // (2026-11-04: antes con Goku, que se fue a su microcosmos; 2026-11-05: y Luciana)
           LeisureRoster.Kind.Ocio, new[] { "Dojo (artes marciales)", "Gimnasio" }, 6, "ejercicio"),
         ("descanso", "Descansar en casa", LeisureRoster.Kind.Descanso, new[] { "casa" }, 0, "tumbado"),
@@ -252,6 +252,15 @@ public class LeisureDirector : MonoBehaviour
                         foreach (YogaHall h in YogaHall.Ordered(named.style, named.version)) if (h.gameObject.scene == gr.scene) v.halls.Add(h);
                         break;
                     }
+                    continue;
+                }
+                if (w == "Sala de bailes")
+                {
+                    // (2026-11-28, F1b, piso «Salas») La sala de bailes (no es un área: una pista del último piso de estudios de Música); si su piso
+                    // está en obras (Música lo está hasta que se termine), no cuenta y el baile sigue a la siguiente.
+                    GameObject b = GameObject.Find("Sala_de_bailes");
+                    ConstructionProject bcp = b != null ? b.GetComponentInParent<ConstructionProject>() : null;
+                    if (b != null && b.scene == gr.scene && (bcp == null || bcp.Finished)) { v = new Venue { title = "la sala de bailes", anchor = b.transform }; break; }
                     continue;
                 }
                 if (w == "Residencia")
