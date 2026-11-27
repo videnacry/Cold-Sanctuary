@@ -26,6 +26,7 @@ public static partial class SampleSceneBuilder
     /// huerto en el piso del Estudio Textil: su mitad +X, 18 × 30 m (como el laboratorio en el piso de la Cría); el textil, girado, en la −X.</summary>
     static readonly Vector2 FarmZoneSize = new Vector2(18f, 30f);
     static readonly Vector3 FarmZoneAt = new Vector3(11.3f, 0f, 3.5f), TextileZoneAt = new Vector3(-10f, 0f, 2f);
+    static readonly Vector2 TextileFloorBox = new Vector2(40f, 38f);   // (la caja del piso compartido, como la de la Cría: el estudio y el huerto dentro)
 
     /// <summary>El estudio textil (su planta de 26 × 20), girado 90° en la mitad −X de su piso: su lado +Z (maniquíes y tendedero) mira al huerto.</summary>
     static void PlaceTextileRoot(Transform area)
@@ -33,6 +34,18 @@ public static partial class SampleSceneBuilder
         Transform r = area.Find("Estudio_Textil");
         if (r == null) return;
         r.localPosition = TextileZoneAt; r.localRotation = Quaternion.Euler(0f, 90f, 0f);
+        // (revisión de #324) La caja del área (BuildAreaBox, 26 × 20) ya no es la del estudio girado: sus bordillos de x ±13 cruzaban el
+        // huerto (+X) y el estudio (−X), y su «Mat», que SanctuaryArea.Contains lee centrado, dejaba fuera la franja x −20…−13 del estudio.
+        // Como la caja de la Cría (ServiciosSize): el «Mat» del piso entero y los bordillos en sus bordes (Wall_Back ya lo quita la torre).
+        Vector2 box = TextileFloorBox;
+        Transform mat = area.Find("Mat");
+        if (mat != null) mat.localScale = new Vector3(box.x, 0.1f, box.y);
+        for (int sx = -1; sx <= 1; sx += 2)
+        {
+            Transform w = area.Find(sx < 0 ? "Wall_Left" : "Wall_Right");
+            if (w == null) continue;
+            w.localPosition = new Vector3(sx * box.x * 0.5f, w.localPosition.y, 0f); w.localScale = new Vector3(w.localScale.x, w.localScale.y, box.y);
+        }
     }
 
     /// <summary>EL HUERTO VERTICAL como SIGUIENTE PISO (o pisos) de la torre que se está levantando (Producción). Devuelve su área.
