@@ -3477,16 +3477,16 @@ public static partial class SampleSceneBuilder
         //    Un ÁRBOL: sus 3 pisos en orden, el HUERTO VERTICAL (2026-11-08: los pisos de estantes LED que pida la demanda de verdura, regla P19;
         //    docs/areas/produccion-maquinaria.md); el garaje del submarino va en el piso de la Mecánica (F1b, SubmarineGarage); los niveles que hagan falta (2 pisos por nivel; hoy 2).
         var (farmRacks, farmFloors) = VerticalFarmPlan();
-        int prodLevels = Mathf.Max(2, Mathf.CeilToInt((3 + farmFloors) / 2f));   // (2026-11-25, F1b: el garaje va en el piso de la Mecánica, SubmarineGarage)
+        int prodLevels = Mathf.Max(2, Mathf.CeilToInt((3 + Mathf.Max(0, farmFloors - 1)) / 2f));   // (2026-11-25, F1b: el garaje va en el piso de la Mecánica, SubmarineGarage; el primer piso del huerto vertical, en el del Textil)
         BeginTreeTower(areasGroup.transform, TorreProduccion, ProduccionCenter, ProduccionSize, ProduccionYaw, prodLevels, ProduccionFirstY, 4f);
         Floor(works.transform); Floor(mech.transform); Floor(textile.transform);
-        if (farmRacks > 0) { SanctuaryArea farm = BuildVerticalFarm(areasGroup.transform); areas.Add(farm); }
-        Debug.Log($"[Torres] Producción: {prodLevels} niveles (Construcción, Mecánica y garaje, Estudio Textil, {farmFloors} piso(s) de Huerto vertical con {farmRacks} estantes).");
+        if (farmRacks > 0) { SanctuaryArea farm = BuildVerticalFarm(areasGroup.transform, textile.transform); areas.Add(farm); }
+        Debug.Log($"[Torres] Producción: {prodLevels} niveles (Construcción, Mecánica y garaje, Textil y huerto vertical ({farmRacks} estantes; {farmFloors} piso(s) de huerto: el primero, zona del piso del Textil)).");
         BuildResidenceTower(areasGroup.transform);   // la Residencia: edificio-árbol en la isla (docs/areas/residencia.md)
         // Los EDIFICIOS que juntan varias áreas llevan el nombre de su torre (el de su planta baja diría solo una).
         BuildingNames[kitchen.transform] = TorreServicios; BuildingNames[gym.transform] = TorreEntrenamiento; BuildingNames[works.transform] = TorreProduccion;
         FurnishYogaFloors(hatF, ashF, size[yoga.transform]);   // los pisos de yoga (regla J16: los que pidan los miembros), cada uno con su sala occidental y su sala tradicional
-        FurnishTextile(textile.transform, size[textile.transform]);   // el estudio textil de Irosene: telares, rueca, lanas, tintes, corte y costura
+        FurnishTextile(textile.transform, size[textile.transform]); PlaceTextileRoot(textile.transform);   // el estudio textil de Irosene: telares, rueca, lanas, tintes, corte y costura
         FurnishConstruction(works.transform, size[works.transform]);   // maquinaria, material, herramientas y taller de obra
         for (int k = 0; k < gymF.Count; k++) { FurnishGym(gymF[k], size[gymF[k]], 3 * k); Centre(gymF[k], "Gimnasio", k + 1); }   // máquinas de placas y peso libre (cada piso, sus copias 3k…3k+2)
         FurnishGymCardio(cardio, size[cardio]);                          // cardio, abdominales, estiramientos y sacos
@@ -3500,7 +3500,7 @@ public static partial class SampleSceneBuilder
         Vector2 s2 = size[yoga.transform];
         Aseos(yoga.transform, new Vector3(-s2.x * 0.5f + 3.1f, 0.1f, s2.y * 0.5f - 0.8f), 180f);   // piso de Hatha: contra el borde +Z, esquina −X (en la sala occidental; los del piso de Ashtanga los pone FurnishYoga)
         s2 = size[mech.transform]; Aseos(mech.transform, new Vector3(-s2.x * 0.5f + 0.2f + 1.9f, 0.1f, s2.y * 0.5f - 0.9f), 180f, 1);
-        s2 = size[textile.transform]; Aseos(textile.transform, new Vector3(3.5f, 0.1f, -s2.y * 0.5f + 0.9f), 0f, 1);   // textil (al fondo, junto a los ovillos)
+        s2 = size[textile.transform]; Aseos(textile.transform.Find("Estudio_Textil") ?? textile.transform, new Vector3(3.5f, 0.1f, -s2.y * 0.5f + 0.9f), 0f, 1);   // textil (al fondo, junto a los ovillos; gira con su sala, F1b)
         Aseos(meat.transform, new Vector3(-CulturedMeatLab.CompactSize.x * 0.5f + 0.8f, 0.1f, 2f), 90f, 1);   // laboratorio: contra su borde −X, la puerta al laboratorio (F1b)
         s2 = size[works.transform]; Aseos(works.transform, new Vector3(s2.x * 0.5f - 0.2f - 1.9f, 0.1f, s2.y * 0.5f - 0.9f), 180f, 1);   // construcción
         // El ALMACÉN DE RACIONES del alimentador, en el piso del laboratorio (Berón 2026-11-05: «retira el comedero»; docs/areas/alimentador.md).

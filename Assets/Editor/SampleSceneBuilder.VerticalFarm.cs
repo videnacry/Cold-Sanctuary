@@ -22,22 +22,46 @@ public static partial class SampleSceneBuilder
         return (racks, racks > 0 ? VerticalFarm.FloorsFor(racks) : 0);
     }
 
-    /// <summary>EL HUERTO VERTICAL como SIGUIENTE PISO (o pisos) de la torre que se está levantando (Producción). Devuelve su área.</summary>
-    static SanctuaryArea BuildVerticalFarm(Transform areasGroup)
+    /// <summary>(2026-11-25, fase F1b del rediseño de pisos: Textil 0,6 + Huerto vertical 0,4, docs/areas/rediseno-pisos-arboles.md §6 ter) La ZONA del
+    /// huerto en el piso del Estudio Textil: su mitad +X, 18 × 30 m (como el laboratorio en el piso de la Cría); el textil, girado, en la −X.</summary>
+    static readonly Vector2 FarmZoneSize = new Vector2(18f, 30f);
+    static readonly Vector3 FarmZoneAt = new Vector3(11.3f, 0f, 3.5f), TextileZoneAt = new Vector3(-10f, 0f, 2f);
+
+    /// <summary>El estudio textil (su planta de 26 × 20), girado 90° en la mitad −X de su piso: su lado +Z (maniquíes y tendedero) mira al huerto.</summary>
+    static void PlaceTextileRoot(Transform area)
+    {
+        Transform r = area.Find("Estudio_Textil");
+        if (r == null) return;
+        r.localPosition = TextileZoneAt; r.localRotation = Quaternion.Euler(0f, 90f, 0f);
+    }
+
+    /// <summary>EL HUERTO VERTICAL como SIGUIENTE PISO (o pisos) de la torre que se está levantando (Producción). Devuelve su área.
+    /// Con <paramref name="zoneOf"/> (F1b), su primer piso es una ZONA de ese piso (el del Estudio Textil): su área cuelga de él, en la mitad +X
+    /// (<see cref="FarmZoneSize"/>), con su «Mat» y sin las paredes de su caja; si la demanda pide más estantes, los pisos de más van encima, como antes.</summary>
+    static SanctuaryArea BuildVerticalFarm(Transform areasGroup, Transform zoneOf = null)
     {
         float fields = VerticalFarm.FieldsKgDay(), demand = VerticalFarm.DemandKgDay;
         var (racks, floors) = VerticalFarmPlan();
         SanctuaryArea a = BuildAreaBox(areasGroup, VerticalFarm.AreaObject, VerticalFarm.AreaName, SanctuaryAreaType.VerticalFarm, 2, ProduccionCenter, ProduccionSize, new Color(0.55f, 0.75f, 0.5f));
         a.description = "Estantes de cultivo con LED: la verdura que no dan los bancales del Árbol (docs/areas/produccion-maquinaria.md)";
         VerticalFarm vf = a.gameObject.AddComponent<VerticalFarm>();
-        Vector2 s = TowerFloor(a.transform);
+        Vector2 s;
+        if (zoneOf != null)
+        {
+            a.transform.SetParent(zoneOf, false); a.transform.localPosition = FarmZoneAt; a.transform.localRotation = Quaternion.identity;
+            s = FarmZoneSize;
+            Transform mat = a.transform.Find("Mat");
+            if (mat != null) { mat.localPosition = new Vector3(0f, 0.07f, 0f); mat.localScale = new Vector3(s.x, 0.1f, s.y); }   // (encima de la alfombra del textil)
+            foreach (string w in new[] { "Wall_Back", "Wall_Left", "Wall_Right" }) { Transform t = a.transform.Find(w); if (t != null) Object.DestroyImmediate(t.gameObject); }
+        }
+        else s = TowerFloor(a.transform);
         int left = racks;
         for (int k = 0; k < floors; k++)
         {
-            Transform floor = a.transform;
-            if (k > 0) { floor = new GameObject($"Planta_huerto_vertical_{k + 1}").transform; floor.SetParent(a.transform, false); TowerFloor(floor); }
+            Transform floor = a.transform; Vector2 sk = s;
+            if (k > 0) { floor = new GameObject($"Planta_huerto_vertical_{k + 1}").transform; floor.SetParent(a.transform, false); sk = TowerFloor(floor); }
             int here = Mathf.Min(left, VerticalFarm.RacksPerFloor); left -= here;
-            FurnishVerticalFarm(floor, s, here, k == 0);
+            FurnishVerticalFarm(floor, sk, here, k == 0);
         }
         vf.racksBuilt = vf.Racks;
         WorldLabel wl = a.gameObject.AddComponent<WorldLabel>(); wl.height = 5f;
@@ -70,7 +94,9 @@ public static partial class SampleSceneBuilder
             blocks.Add(new LabBlock("Compostador de raíces", 1.2f, 1.0f, t => Composter(t)));
             blocks.Add(new LabBlock("Descanso y fuente de agua", 1.8f, 0.8f, t => RestCorner(t)));
         }
-        LogLeft(VerticalFarm.AreaName, PackFloor(g, s, blocks, CarpetKeepOut(s)));
+        var keepOut = CarpetKeepOut(s);
+        if (first) keepOut.Add(new Rect(-s.x * 0.5f, s.y * 0.5f - 2.6f, 4.6f, 2.6f));   // (F1b) sus aseos, en la esquina −X +Z: que no les caiga un bloque encima
+        LogLeft(VerticalFarm.AreaName, PackFloor(g, s, blocks, keepOut));
         if (first) Aseos(floor, new Vector3(-s.x * 0.5f + 0.2f + 1.9f, 0.1f, s.y * 0.5f - 0.9f), 180f, 1);
     }
 
