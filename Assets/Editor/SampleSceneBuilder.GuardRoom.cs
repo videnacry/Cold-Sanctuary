@@ -16,9 +16,11 @@ public static partial class SampleSceneBuilder
 {
     static readonly Color GrDesk = new Color(0.3f, 0.32f, 0.36f), GrScreen = new Color(0.1f, 0.24f, 0.28f), GrAlert = new Color(0.62f, 0.14f, 0.12f), GrGlow = new Color(0.3f, 0.85f, 0.6f);
 
-    /// <summary>La zona de la guardia en el piso de Asambleas: 16,5 × 18 m (x de 4,05 a 20,55 y z de 1 a 19 del piso; sus muebles, de x 4,1 a 19,8; su centro, <see cref="GuardZoneAt"/>).</summary>
-    public static readonly Vector2 GuardZoneSize = new Vector2(16.5f, 18f);
-    static readonly Vector3 GuardZoneAt = new Vector3(12.3f, 0f, 10f);
+    /// <summary>La zona de la guardia en el piso de Asambleas: 15,9 × 18 m (x de 3,8 a 19,7 y z de 1 a 19 del piso; su centro, <see cref="GuardZoneAt"/>). Sus muebles
+    /// van 0,55 m hacia +X dentro de la zona (<see cref="GuardFurnitureShift"/>): así guardan 2 m con la fila exterior de la asamblea y el suelo de la sala no sale del piso.</summary>
+    public static readonly Vector2 GuardZoneSize = new Vector2(15.9f, 18f);
+    const float GuardFurnitureShift = 0.55f;
+    static readonly Vector3 GuardZoneAt = new Vector3(11.75f, 0f, 10f);
 
     /// <summary>La sala de guardia, ZONA del piso de Asambleas (<paramref name="assemblyFloor"/>): cuelga del piso (su <c>TreeFloor</c>; las rutas
     /// y la jornada la encuentran en él) con el nombre de siempre (<see cref="GuardRoom.FloorName"/>) y su <see cref="GuardRoom"/>.</summary>
@@ -55,8 +57,8 @@ public static partial class SampleSceneBuilder
 
     static void FurnishGuardRoom(Transform floor, Vector2 s)
     {
-        Transform g = new GameObject("Planta_guardia").transform; g.SetParent(floor, false); g.localPosition = Vector3.up * 0.11f;   // (sobre el suelo de la asamblea)
-        Solid(g, new Vector3(0f, -0.05f, 0f), new Vector3(s.x - 0.2f, 0.1f, s.y - 0.2f), new Color(0.34f, 0.36f, 0.4f), "Suelo_de_sala");
+        Transform g = new GameObject("Planta_guardia").transform; g.SetParent(floor, false); g.localPosition = new Vector3(GuardFurnitureShift, 0.11f, 0f);   // (sobre el suelo de la asamblea)
+        Solid(g, new Vector3(-GuardFurnitureShift, -0.05f, 0f), new Vector3(s.x - 0.2f, 0.1f, s.y - 0.2f), new Color(0.34f, 0.36f, 0.4f), "Suelo_de_sala");
 
         // EL MURO DE PANTALLAS (Houston): una pantalla suelta por lectura sobre postes, no una pared (S6). Un solo tramo, al fondo (+Z) de la zona:
         // (F1b) en dos alturas de 4, para caber en los 16,5 m de la zona.

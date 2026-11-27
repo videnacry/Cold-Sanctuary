@@ -38,86 +38,86 @@ public static partial class SampleSceneBuilder
     /// regulables, 3 jaulas de sentadillas, 2 press de banca planos y 1 inclinado, Smith, plataforma de peso muerto, árboles de
     /// discos y soporte de barras. 2 m libres entre huellas. Sin entreplanta: se cambia de piso en alfombra (la zona de
     /// alfombras, en <see cref="GymCarpetSpot"/>, queda libre).</summary>
-    static void FurnishGym(Transform area, Vector2 size, int copyBase = 0)   // copyBase: la primera copia de cada máquina en este piso (regla J16: un piso más del gimnasio, copias 3, 4, 5…)
+    // (2026-11-27, fase F1b del rediseño de pisos, docs/areas/rediseno-pisos-arboles.md §6 ter) GIMNASIO Y CARDIO EN UN PISO de 40 × 40 m
+    // (la puerta del tronco en −Z, su umbral libre: nada por debajo de z = −13,6): las MÁQUINAS DE PLACAS (2 de cada tipo) en el cuarto −X +Z,
+    // el PESO LIBRE en el +X +Z, el CARDIO en el −X −Z y la ZONA LIBRE en el +X −Z; las esterillas, en una fila entre las máquinas y el cardio.
+    // Huellas medidas en el Blockout (TmpCheck «Huellas gimnasio»): 2 m libres entre todas.
+
+    static void FurnishGym(Transform area, Vector2 size, int copyBase = 0)   // copyBase: la primera copia de cada máquina en este piso (regla J16: un piso más del gimnasio)
     {
         Transform r = new GameObject("Gimnasio").transform; r.SetParent(area, false); r.localPosition = new Vector3(0f, 0.1f, 0f);
-        KitchenProps.C(r, new Vector3(0f, 0.01f, 0f), new Vector3(size.x - 0.4f, 0.02f, size.y - 0.4f), TRubber, 0f, "Suelo_caucho");
-        // MÁQUINAS DE PLACAS (x de −17 a 2, z de −4,5 a 12): 5 filas de 6, dos tipos por fila. El orden alterna tren superior e
-        // inferior, como el circuito de gimnasio-maquinas.md §13, y las 10 estaciones están en este piso.
+        KitchenProps.C(r, new Vector3(0f, 0.01f, 2.3f), new Vector3(39f, 0.02f, 34.6f), TRubber, 0f, "Suelo_caucho");   // (F1b) el piso entero, salvo el umbral
+        // MÁQUINAS DE PLACAS (x de −17 a −5,6, z de 2,9 a 19,3): 5 filas de 4, dos tipos por fila y 2 copias de cada uno (F1b; antes 3). El orden
+        // alterna tren superior e inferior, como el circuito de gimnasio-maquinas.md §13, y las 10 estaciones están en este piso.
         string[] types = { "Press de pecho", "Press de hombros", "Jalón al pecho (espalda)", "Remo sentado", "Prensa de piernas",
                            "Extensión de cuádriceps", "Curl femoral", "Hip thrust (glúteos)", "Gemelos", "Curl de bíceps y tríceps" };
-        float[] rowZ = { 11.3f, 7.9f, 4.05f, -0.1f, -3.8f };
+        float[] rowZ = { 18.7f, 15.3f, 11.45f, 7.3f, 3.6f };
         int[,] rowTypes = { { 0, 1 }, { 2, 3 }, { 4, 8 }, { 5, 6 }, { 7, 9 } };
         float[][] rowX =
         {
-            new[] { -16.5f, -13.5f, -10.5f, -7.5f, -4.5f, -1.5f },
-            new[] { -16.4f, -13.2f, -10.0f, -6.9f, -3.9f, -0.9f },
-            new[] { -16.1f, -12.3f, -8.5f, -5.0f, -1.8f, 1.4f },
-            new[] { -16.35f, -13.05f, -9.75f, -6.5f, -3.3f, -0.1f },
-            new[] { -16.25f, -12.75f, -9.25f, -6.0f, -3.0f, 0f },
+            new[] { -16.5f, -13.5f, -10.3f, -7.1f },
+            new[] { -16.4f, -13.2f, -10.0f, -7.2f },
+            new[] { -16.1f, -12.3f, -8.9f, -6.0f },
+            new[] { -16.35f, -13.05f, -9.8f, -6.5f },
+            new[] { -16.25f, -12.75f, -9.3f, -6.1f },
         };
         for (int row = 0; row < 5; row++)
-            for (int j = 0; j < 6; j++)
+            for (int j = 0; j < 4; j++)
             {
-                int t = rowTypes[row, j / 3], c = j % 3;
+                int t = rowTypes[row, j / 2], c = j % 2;
                 Vector2 o = GymMachineCenter[t];
                 GymMachine(r, $"{types[t]} {copyBase + c + 1}", t, copyBase + c, new Vector3(rowX[row][j] - o.x, 0f, rowZ[row] - o.y), j == 0 ? 1f : -1f);   // la primera columna, junto al borde: se llega por su derecha
             }
-        WorldLabel ml = KitchenProps.Root(r, "Zona_maquinas", new Vector3(-7.5f, 0f, 4f)).gameObject.AddComponent<WorldLabel>(); ml.text = "Máquinas de placas"; ml.height = 3.2f;
+        WorldLabel ml = KitchenProps.Root(r, "Zona_maquinas", new Vector3(-11f, 0f, 11.4f)).gameObject.AddComponent<WorldLabel>(); ml.text = "Máquinas de placas"; ml.height = 3.2f;
 
-        // PESO LIBRE (x de 4 a 17): columnas en x = 5,3 · 9,5 · 13,7.
-        GDumbbellRack(r, "Estante_mancuernas_1", new Vector3(6f, 0f, 11.6f));
-        GDumbbellRack(r, "Estante_mancuernas_2", new Vector3(12.5f, 0f, 11.6f));
-        float[] fid = { 4.5f, 7.6f, 10.7f, 13.8f };
-        for (int i = 0; i < 4; i++) GymFID(r, $"Banco regulable {i + 1}", i, new Vector3(fid[i], 0f, 7.5f));
-        float[] col = { 5.3f, 9.5f, 13.7f };
-        for (int i = 0; i < 3; i++) GymRack(r, $"Jaula de sentadillas {i + 1}", i, new Vector3(col[i], 0f, 2.5f));
-        GymBench(r, "Press de banca plano 1", 0, new Vector3(5.3f, 0f, -2.5f), false);
-        GymBench(r, "Press de banca plano 2", 1, new Vector3(9.5f, 0f, -2.5f), false);
-        GymBench(r, "Press de banca inclinado 1", 0, new Vector3(13.7f, 0f, -2.5f), true);
-        GymSmith(r, "Máquina Smith 1", 0, new Vector3(6f, 0f, -8f));
-        GymPlatform(r, "Plataforma de peso muerto 1", GymMachineType.PesoMuerto, 0, new Vector3(12.5f, 0f, -8f), TDisc);
-        GPlateTree(r, new Vector3(17.1f, 0f, 2.5f)); GPlateTree(r, new Vector3(17.1f, 0f, -2.5f));
-        GBarHolder(r, new Vector3(17.1f, 0f, -8f), 6);
-        WorldLabel fl = KitchenProps.Root(r, "Zona_peso_libre", new Vector3(10.5f, 0f, 0f)).gameObject.AddComponent<WorldLabel>(); fl.text = "Peso libre"; fl.height = 3.2f;
+        // PESO LIBRE (x de −2 a 17,4, z de 9,8 a 18,9): tres filas.
+        GDumbbellRack(r, "Estante_mancuernas_1", new Vector3(-1f, 0f, 18.6f));
+        GDumbbellRack(r, "Estante_mancuernas_2", new Vector3(5f, 0f, 18.6f));
+        float[] fid = { -1.5f, 2.5f };
+        for (int i = 0; i < 2; i++) GymFID(r, $"Banco regulable {i + 1}", i, new Vector3(fid[i], 0f, 15.3f));
+        float[] col = { 7.5f, 12f };
+        for (int i = 0; i < 2; i++) GymRack(r, $"Jaula de sentadillas {i + 1}", i, new Vector3(col[i], 0f, 15.3f));
+        GymBench(r, "Press de banca plano 1", 0, new Vector3(-1f, 0f, 11f), false);
+        GymBench(r, "Press de banca inclinado 1", 0, new Vector3(3.5f, 0f, 11f), true);
+        GymSmith(r, "Máquina Smith 1", 0, new Vector3(8f, 0f, 11f));
+        GymPlatform(r, "Plataforma de peso muerto 1", GymMachineType.PesoMuerto, 0, new Vector3(13f, 0f, 11f), TDisc);
+        GPlateTree(r, new Vector3(17.1f, 0f, 18.6f)); GPlateTree(r, new Vector3(17.1f, 0f, 15.3f));
+        GBarHolder(r, new Vector3(17.1f, 0f, 11f), 6);
+        WorldLabel fl = KitchenProps.Root(r, "Zona_peso_libre", new Vector3(7f, 0f, 13.2f)).gameObject.AddComponent<WorldLabel>(); fl.text = "Peso libre"; fl.height = 3.2f;
 
-        // FRANJA DELANTERA: fuente de agua y toallas, a los lados de la zona de alfombras (x de −11,8 a −4,2).
-        Transform fu = KitchenProps.Root(r, "Fuente_de_agua", new Vector3(-15.4f, 0f, -10.5f));
+        // FUENTE DE AGUA Y TOALLAS, en la fila de los estantes de mancuernas.
+        Transform fu = KitchenProps.Root(r, "Fuente_de_agua", new Vector3(13.5f, 0f, 18.6f));
         KitchenProps.C(fu, new Vector3(0f, 0.5f, 0f), new Vector3(0.5f, 1f, 0.4f), TChrome, 0f, "Fuente");
         KitchenProps.C(fu, new Vector3(0f, 1.02f, -0.05f), new Vector3(0.4f, 0.04f, 0.25f), TIron, 0f, "Pila");
         KitchenProps.Fit(fu); fu.gameObject.AddComponent<WorldLabel>().text = "Fuente de agua";
-        Transform tw = KitchenProps.Root(r, "Toallas", new Vector3(0f, 0f, -10.5f));
+        Transform tw = KitchenProps.Root(r, "Toallas", new Vector3(10f, 0f, 18.6f));
         KitchenProps.C(tw, new Vector3(0f, 0.6f, 0f), new Vector3(0.8f, 1.2f, 0.4f), TWood, 0f, "Mueble");
         for (int i = 0; i < 4; i++) KitchenProps.C(tw, new Vector3(-0.27f + i * 0.18f, 1.26f, 0f), new Vector3(0.15f, 0.12f, 0.3f), new Color(0.95f, 0.95f, 0.92f), 0f, "Toalla");
         KitchenProps.Fit(tw); tw.gameObject.AddComponent<WorldLabel>().text = "Toallas";
         area.gameObject.AddComponent<WorldLabel>().text = "Gimnasio (abierto)";
     }
 
-    /// <summary>PISO 1 DEL GIMNASIO (docs/areas/entrenamiento-areas.md §3.3): CARDIO mirando al frente (−Z, el paisaje), con 2 m
-    /// entre máquinas y 2 m detrás de cada fila (6 cintas, 4 elípticas, 2 escaladoras, 4 bicis, 2 reclinadas y 4 remos), y la
-    /// ZONA LIBRE: 12 esterillas (abdominales y estiramientos), 2 sillas romanas, 2 bancos declinados, 2 de hiperextensiones,
-    /// 2 sacos de boxeo, la estantería de material y espalderas. La zona de alfombras (<see cref="GymCarpetSpot"/>) queda
-    /// libre.</summary>
     static void FurnishGymCardio(Transform floor, Vector2 size)
     {
         Transform r = new GameObject("Gimnasio_cardio").transform; r.SetParent(floor, false); r.localPosition = new Vector3(0f, 0.1f, 0f);
-        KitchenProps.C(r, new Vector3(0f, 0.01f, 0f), new Vector3(size.x - 0.4f, 0.02f, size.y - 0.4f), TRubber, 0f, "Suelo_caucho");
-        // CARDIO (x de −17 a −1,6): las filas, de delante (−Z) atrás; z = centro de la huella.
-        float[] c1 = { -16.55f, -13.65f, -10.75f, -7.85f, -4.95f, -2.05f };
-        for (int i = 0; i < 6; i++) GymCardio(r, GymMachineType.Cinta, i, new Vector3(c1[i], 0f, -10.95f));
-        float[] c2 = { -16.6f, -13.85f, -11.1f, -8.35f };
-        for (int i = 0; i < 4; i++) GymCardio(r, GymMachineType.Eliptica, i, new Vector3(c2[i], 0f, -6.825f));
-        GymCardio(r, GymMachineType.Escaladora, 0, new Vector3(-5.575f, 0f, -7.1f));
-        GymCardio(r, GymMachineType.Escaladora, 1, new Vector3(-2.775f, 0f, -7.1f));
-        float[] c3 = { -16.7f, -14.1f, -11.5f, -8.9f };
-        for (int i = 0; i < 4; i++) GymCardio(r, GymMachineType.BiciVertical, i, new Vector3(c3[i], 0f, -3.15f));
-        GymCardio(r, GymMachineType.BiciReclinada, 0, new Vector3(-6.25f, 0f, -2.95f));
-        GymCardio(r, GymMachineType.BiciReclinada, 1, new Vector3(-3.55f, 0f, -2.95f));
-        for (int i = 0; i < 4; i++) GymCardio(r, GymMachineType.RemoErgometro, i, new Vector3(c3[i], 0f, 1.05f));   // copias 0–3 (las 4–5 están en el crossfit)
-        WorldLabel cl = KitchenProps.Root(r, "Zona_cardio", new Vector3(-9f, 0f, -5f)).gameObject.AddComponent<WorldLabel>(); cl.text = "Cardio"; cl.height = 3.2f;
+        // (F1b) Sin suelo propio: el del gimnasio cubre el piso entero.
+        // CARDIO (x de −17 a 1, z de −13,6 a −7): dos filas mirando al frente (−Z); 2–3 de cada máquina (F1b; antes 4–6).
+        float[] c1 = { -16.55f, -13.65f, -10.75f };
+        for (int i = 0; i < 3; i++) GymCardio(r, GymMachineType.Cinta, i, new Vector3(c1[i], 0f, -12.5f));
+        float[] c2 = { -7.85f, -5.1f };
+        for (int i = 0; i < 2; i++) GymCardio(r, GymMachineType.Eliptica, i, new Vector3(c2[i], 0f, -12.5f));
+        GymCardio(r, GymMachineType.Escaladora, 0, new Vector3(-2.3f, 0f, -12.5f));
+        GymCardio(r, GymMachineType.Escaladora, 1, new Vector3(0.6f, 0f, -12.5f));
+        float[] c3 = { -16.7f, -14.1f };
+        for (int i = 0; i < 2; i++) GymCardio(r, GymMachineType.BiciVertical, i, new Vector3(c3[i], 0f, -8.2f));
+        GymCardio(r, GymMachineType.BiciReclinada, 0, new Vector3(-11.4f, 0f, -8.2f));
+        GymCardio(r, GymMachineType.BiciReclinada, 1, new Vector3(-8.7f, 0f, -8.2f));
+        float[] c4 = { -6.1f, -3.4f };
+        for (int i = 0; i < 2; i++) GymCardio(r, GymMachineType.RemoErgometro, i, new Vector3(c4[i], 0f, -8.2f));   // copias 0–1 (las 4–5 están en el crossfit)
+        WorldLabel cl = KitchenProps.Root(r, "Zona_cardio", new Vector3(-8f, 0f, -10.4f)).gameObject.AddComponent<WorldLabel>(); cl.text = "Cardio"; cl.height = 3.2f;
 
-        // ZONA LIBRE (x de 4 a 17): 12 esterillas de 1 × 2 m con 2 m entre ellas; la mitad para abdominales y la mitad para estirar.
-        float[] mx = { 4.5f, 7.5f, 10.5f, 13.5f }, mz = { 10.5f, 6.5f, 2.5f };
+        // ESTERILLAS: 6 de 1 × 2 m en una fila entre las máquinas y el cardio (F1b; antes 12); la mitad para abdominales y la mitad para estirar.
+        float[] mx = { -16.5f, -13.5f, -10.5f, -7.5f, -4.5f, -1.5f }, mz = { -2f };
         int crunch = 0, stretch = 0, k = 0;
         foreach (float z in mz)
             foreach (float x in mx)
@@ -129,8 +129,8 @@ public static partial class SampleSceneBuilder
         GymCaptainsChair(r, "Silla romana 2", 1, new Vector3(7.5f, 0f, -2.5f));
         GymDeclineBench(r, "Banco declinado 1", 0, new Vector3(10.5f, 0f, -2.8f));
         GymDeclineBench(r, "Banco declinado 2", 1, new Vector3(13.1f, 0f, -2.8f));
-        GymHyperext(r, "Hiperextensiones 1", 0, new Vector3(4.5f, 0f, -7f));
-        GymHyperext(r, "Hiperextensiones 2", 1, new Vector3(7.5f, 0f, -7f));
+        GymHyperext(r, "Hiperextensiones 1", 0, new Vector3(4.2f, 0f, -7f));
+        GymHyperext(r, "Hiperextensiones 2", 1, new Vector3(7.1f, 0f, -7f));   // (F1b) 2 m hasta el pórtico de los sacos
         // SACOS DE BOXEO colgados de un pórtico de 2,6 m; cada uno con su zona de golpeo de Ø 2,4 m.
         Transform por = KitchenProps.Root(r, "Portico_sacos", new Vector3(12.5f, 0f, -7f));
         for (int s = -1; s <= 1; s += 2) GBar(por, new Vector3(s * 2.9f, 0f, 0f), new Vector3(s * 2.9f, 2.6f, 0f), 0.1f, TIron, "Poste");

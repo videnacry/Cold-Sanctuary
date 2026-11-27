@@ -72,6 +72,7 @@ public static class FurnitureSpacing
     {
         new[] { "Estante_bumpers", "Estante_kettlebells", "Cajones_pliometricos", "Balones_medicinales", "Soporte_barras" },
         new[] { "Barras_dominadas", "Escalera_horizontal", "Portico_anillas" },
+        new[] { "Portico_sacos", "Saco_" },   // (2026-11-27, F1b) los sacos cuelgan del pórtico: al subir el cardio al piso del gimnasio (un área) se empezaron a medir
     };
 
     /// <summary>Parejas de muebles distintos que se usan juntos y van pegados (con el mismo número, si lo llevan).</summary>

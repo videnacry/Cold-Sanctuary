@@ -111,13 +111,22 @@ public static partial class SampleSceneBuilder
     }
 
     /// <summary>Dónde poner el TANQUE de virtualización de un área (local): junto al borde, empezando por la esquina +X +Z,
-    /// el primer punto que deja 2 m libres hasta cualquier mueble (FurnitureSpacing); si no hay, el más holgado.</summary>
+    /// el primer punto que deja 2 m libres hasta cualquier mueble (FurnitureSpacing); si no hay, el más holgado. (2026-11-27, F1b) Nunca dentro de
+    /// la ZONA de otra área que cuelga de este piso (el huerto en el del Textil, la carne en el de la Cría): ese tanque sería de la otra.</summary>
     static Vector3 TankSpot(Transform area, Vector2 sz, Transform self = null, float radius = 1.6f)
     {
         float inset = radius + 0.3f;   // medio tanque (con su puerta) y lo que se aparta del borde
         var items = FurnitureSpacing.Items(area);
         float hx = sz.x * 0.5f - inset, hz = sz.y * 0.5f - inset;
         Vector3 best = new Vector3(hx, 1f, hz); float bestFree = float.MinValue;
+        var zones = new List<Rect>();
+        foreach (SanctuaryArea z in area.GetComponentsInChildren<SanctuaryArea>(true))
+        {
+            if (z.transform == area) continue;
+            Transform m = z.transform.Find("Mat"); if (m == null) continue;
+            Vector3 c = area.InverseTransformPoint(m.position); float w = m.lossyScale.x, d = m.lossyScale.z;
+            zones.Add(new Rect(c.x - w * 0.5f - radius, c.z - d * 0.5f - radius, w + 2f * radius, d + 2f * radius));
+        }
         var ring = new List<Vector3>();
         for (float x = hx; x >= -hx; x -= 1f) ring.Add(new Vector3(x, 1f, hz));    // fondo (+Z), de +X a −X
         for (float z = hz; z >= -hz; z -= 1f) ring.Add(new Vector3(hx, 1f, z));    // lado +X
@@ -125,6 +134,7 @@ public static partial class SampleSceneBuilder
         for (float x = hx; x >= -hx; x -= 1f) ring.Add(new Vector3(x, 1f, -hz));   // frente (−Z)
         foreach (Vector3 l in ring)
         {
+            if (zones.Exists(zr => zr.Contains(new Vector2(l.x, l.z)))) continue;
             Vector3 w = area.TransformPoint(l);
             float free = float.MaxValue;
             foreach (var (it, b) in items) if (self == null || (it != self && !it.IsChildOf(self))) free = Mathf.Min(free, FurnitureSpacing.DistXZ(b, FurnitureSpacing.Local(area, w)) - radius);
