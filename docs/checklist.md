@@ -908,7 +908,8 @@ Código y compilación hechos; falta la prueba en vivo.
   - [x] Blockout de F0 + F1a en el PC de Berón (2026-11-25): compila; 244 PASS / 3 FAIL (75: Aula e Informática en obras sin línea, arreglado; 113: falta detalle, añadido).
   - [x] F1b: Mecánica + garaje en un piso (2026-11-25).
   - [x] F1b: Cría + carne cultivada en un piso (2026-11-25): la Carne, zona del piso de la Cría; Blockout con `[Espacio]` 0 y la Cría al 55 %.
-  - [ ] **F1b** resto de fusiones de pisos (asambleas + guardia, gimnasio + cardio, salas de yoga/música/ballet/bailes, hospital, laboratorios, textil + huerto) en el Blockout, de una en una, con sus avisos `[Pisos]` (pide permiso para Unity); W9 de las salas nuevas (§5).
+  - [x] F1b: Asambleas + guardia en un piso (2026-11-27): la guardia, zona de 16,5 × 18 m del piso de Asambleas; Servicios en 3 niveles; Blockout con `[Espacio]` 0 y Asambleas al 84 %.
+  - [ ] **F1b** resto de fusiones de pisos (gimnasio + cardio, salas de yoga/música/ballet/bailes, hospital, laboratorios, textil + huerto) en el Blockout, de una en una, con sus avisos `[Pisos]` (pide permiso para Unity); W9 de las salas nuevas (§5).
   - [ ] F2 estructura · F4 cima · F3 mapa en anillos · F5 globo y pulpo · F6 prueba en vivo (orden D6).
 - [ ] **Alma compartida (resto)**: `HelpRequest` ya hace "ir juntos" (MVP); falta **compartir pensamientos**
       (misma frase → instancia de mente/madre compartida) y que el sí/no lea bond/humores/inclinaciones.

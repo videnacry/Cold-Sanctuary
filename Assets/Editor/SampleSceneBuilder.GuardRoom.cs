@@ -1,7 +1,9 @@
 using UnityEngine;
 
 /// <summary>
-/// LA SALA DE GUARDIA (docs/areas/sala-de-guardia.md): el piso libre del nivel 4 de Servicios, a 130 m, el más alto libre, junto a la Sala de asambleas y encima del hospital.
+/// LA SALA DE GUARDIA (docs/areas/sala-de-guardia.md): desde el 2026-11-25 (fase F1b del rediseño de pisos: Asambleas 0,75 + guardia 0,25,
+/// docs/areas/rediseno-pisos-arboles.md §6 ter) una ZONA del piso de la Sala de asambleas, en su cuarto +X +Z (<see cref="GuardZoneSize"/>);
+/// antes, el piso libre del nivel 4 de Servicios.
 /// No es un <see cref="SanctuaryArea"/>, como el piso de cardio: la jornada la conoce como un sitio (<see cref="GuardRoom"/>). Mezcla, con el origen en cada pieza:
 /// - el MURO DE PANTALLAS y las filas de CONSOLAS: el control de misión de Houston;
 /// - la MESA DE RADAR: los centros de tráfico marítimo (Hong Kong);
@@ -14,13 +16,19 @@ public static partial class SampleSceneBuilder
 {
     static readonly Color GrDesk = new Color(0.3f, 0.32f, 0.36f), GrScreen = new Color(0.1f, 0.24f, 0.28f), GrAlert = new Color(0.62f, 0.14f, 0.12f), GrGlow = new Color(0.3f, 0.85f, 0.6f);
 
-    static void BuildGuardRoom(Transform areasGroup)
+    /// <summary>La zona de la guardia en el piso de Asambleas: 16,5 × 18 m (x de 4,05 a 20,55 y z de 1 a 19 del piso; sus muebles, de x 4,1 a 19,8; su centro, <see cref="GuardZoneAt"/>).</summary>
+    public static readonly Vector2 GuardZoneSize = new Vector2(16.5f, 18f);
+    static readonly Vector3 GuardZoneAt = new Vector3(12.3f, 0f, 10f);
+
+    /// <summary>La sala de guardia, ZONA del piso de Asambleas (<paramref name="assemblyFloor"/>): cuelga del piso (su <c>TreeFloor</c>; las rutas
+    /// y la jornada la encuentran en él) con el nombre de siempre (<see cref="GuardRoom.FloorName"/>) y su <see cref="GuardRoom"/>.</summary>
+    static void BuildGuardRoom(Transform assemblyFloor)
     {
-        Transform floor = new GameObject(GuardRoom.FloorName).transform; floor.SetParent(areasGroup, false);
-        Vector2 s = TowerFloor(floor);
-        floor.gameObject.AddComponent<GuardRoom>();
-        floor.gameObject.AddComponent<WorldLabel>().text = "Sala de guardia: icebergs, radar, roca, sismos y mar";
-        FurnishGuardRoom(floor, s);
+        Transform zone = new GameObject(GuardRoom.FloorName).transform; zone.SetParent(assemblyFloor, false);
+        zone.localPosition = GuardZoneAt; zone.localRotation = Quaternion.identity;
+        zone.gameObject.AddComponent<GuardRoom>();
+        zone.gameObject.AddComponent<WorldLabel>().text = "Sala de guardia: icebergs, radar, roca, sismos y mar";
+        FurnishGuardRoom(zone, GuardZoneSize);
     }
 
     static Transform GrPiece(Transform g, string name, Vector3 at, string label, float labelHeight)
@@ -47,32 +55,33 @@ public static partial class SampleSceneBuilder
 
     static void FurnishGuardRoom(Transform floor, Vector2 s)
     {
-        Transform g = new GameObject("Planta_guardia").transform; g.SetParent(floor, false); g.localPosition = Vector3.up * 0.1f;
+        Transform g = new GameObject("Planta_guardia").transform; g.SetParent(floor, false); g.localPosition = Vector3.up * 0.11f;   // (sobre el suelo de la asamblea)
         Solid(g, new Vector3(0f, -0.05f, 0f), new Vector3(s.x - 0.2f, 0.1f, s.y - 0.2f), new Color(0.34f, 0.36f, 0.4f), "Suelo_de_sala");
-        float hx = s.x * 0.5f, hz = s.y * 0.5f;
 
-        // EL MURO DE PANTALLAS (Houston): una pantalla suelta por lectura sobre postes, no una pared (S6). Un solo tramo.
+        // EL MURO DE PANTALLAS (Houston): una pantalla suelta por lectura sobre postes, no una pared (S6). Un solo tramo, al fondo (+Z) de la zona:
+        // (F1b) en dos alturas de 4, para caber en los 16,5 m de la zona.
         Transform wall = new GameObject("Muro_de_pantallas").transform; wall.SetParent(g, false); wall.gameObject.AddComponent<FurnitureLine>();
-        wall.localPosition = new Vector3(0f, 0f, 14.5f);
+        wall.localPosition = new Vector3(0f, 0f, 8f);
         Material normal = KitchenProps.Mat(GrScreen), alert = KitchenProps.Mat(GrAlert);
         GuardWatch.Feed[] feeds = GuardWatch.Feeds;
         for (int i = 0; i < feeds.Length; i++)
         {
-            Transform sc = KitchenProps.Root(wall, $"Pantalla_{feeds[i]}", new Vector3((i - (feeds.Length - 1) * 0.5f) * 4.4f, 0f, 0f));
-            KitchenProps.C(sc, new Vector3(0f, 0.9f, 0f), new Vector3(0.14f, 1.8f, 0.14f), KitchenProps.DarkSteel, 0f, "Poste");
-            Transform panel = KitchenProps.C(sc, new Vector3(0f, 2.5f, 0f), new Vector3(3.6f, 2f, 0.1f), GrScreen, 0f, "Pantalla");
+            int col = i % 4, tier = i / 4;
+            Transform sc = KitchenProps.Root(wall, $"Pantalla_{feeds[i]}", new Vector3((col - 1.5f) * 3.8f, 0f, tier * 0.16f));
+            KitchenProps.C(sc, new Vector3(tier * 0.3f, 0.9f + tier * 1.1f, 0f), new Vector3(0.14f, 1.8f + tier * 2.2f, 0.14f), KitchenProps.DarkSteel, 0f, "Poste");
+            Transform panel = KitchenProps.C(sc, new Vector3(0f, 2.5f + tier * 2.2f, 0f), new Vector3(3.6f, 2f, 0.1f), GrScreen, 0f, "Pantalla");
             KitchenProps.Fit(sc);
-            WorldLabel w = sc.gameObject.AddComponent<WorldLabel>(); w.text = GuardWatch.Title(feeds[i]); w.height = 3.8f;
+            WorldLabel w = sc.gameObject.AddComponent<WorldLabel>(); w.text = GuardWatch.Title(feeds[i]); w.height = 3.8f + tier * 2.2f;
             GuardScreen gs = sc.gameObject.AddComponent<GuardScreen>();
             gs.feed = feeds[i]; gs.panel = panel.GetComponent<Renderer>(); gs.normal = normal; gs.alert = alert;
         }
 
         // LAS CONSOLAS (las filas del control de misión): miran al muro.
-        GrConsoles(g, "Consolas_fila_1", 9.5f, 6);
-        GrConsoles(g, "Consolas_fila_2", 5.5f, 6);
+        GrConsoles(g, "Consolas_fila_1", 4f, 4);
+        GrConsoles(g, "Consolas_fila_2", 0.6f, 4);
 
         // LA MESA DE RADAR (centros de tráfico marítimo): el barrido gira.
-        Transform radar = GrPiece(g, "Mesa de radar (tráfico marítimo)", new Vector3(-14f, 0f, -3f), "Mesa de radar", 1.8f);
+        Transform radar = GrPiece(g, "Mesa de radar (tráfico marítimo)", new Vector3(-6f, 0f, -3.4f), "Mesa de radar", 1.8f);
         KitchenProps.C(radar, new Vector3(0f, 0.45f, 0f), new Vector3(2.6f, 0.9f, 2.6f), GrDesk, 0f, "Mesa");
         KitchenProps.C(radar, new Vector3(0f, 0.92f, 0f), new Vector3(2.2f, 0.04f, 2.2f), GrScreen, 0f, "Pantalla_radar");
         Transform pivot = KitchenProps.Root(radar, "Barrido", new Vector3(0f, 0.96f, 0f));
@@ -82,7 +91,7 @@ public static partial class SampleSceneBuilder
         AreaSeat.Add(radar.gameObject, "radar", AreaSeat.Category.Trabajo, 2);
 
         // LA CARTA DE HIELO (Patrulla Internacional del Hielo): el límite del hielo, a mano.
-        Transform ice = GrPiece(g, "Carta de hielo (Patrulla Internacional del Hielo)", new Vector3(-7f, 0f, -3f), "Carta de hielo", 1.6f);
+        Transform ice = GrPiece(g, "Carta de hielo (Patrulla Internacional del Hielo)", new Vector3(-1f, 0f, -3.4f), "Carta de hielo", 1.6f);
         Bench(ice, 3f, 1.6f, GrDesk);
         KitchenProps.C(ice, new Vector3(0f, 0.92f, 0f), new Vector3(2.7f, 0.02f, 1.3f), new Color(0.86f, 0.9f, 0.92f), 0f, "Carta");
         for (int i = 0; i < 5; i++) KitchenProps.C(ice, new Vector3(-1f + i * 0.5f, 0.97f, (i % 2 == 0 ? 0.3f : -0.2f)), new Vector3(0.12f, 0.08f, 0.1f), Color.white, 0f, "Marca_iceberg");
@@ -90,7 +99,7 @@ public static partial class SampleSceneBuilder
         AreaSeat.Add(ice.gameObject, "carta de hielo", AreaSeat.Category.Trabajo, 2);
 
         // EL SISMÓGRAFO (Japón): el tambor gira y la aguja escribe.
-        Transform seis = GrPiece(g, "Sismógrafo (agencia meteorológica de Japón)", new Vector3(7f, 0f, -3f), "Sismógrafo", 1.8f);
+        Transform seis = GrPiece(g, "Sismógrafo (agencia meteorológica de Japón)", new Vector3(4f, 0f, -3.4f), "Sismógrafo", 1.8f);
         Bench(seis, 2.6f, 1f, GrDesk);
         Transform drum = KitchenProps.Root(seis, "Tambor", new Vector3(0f, 1.15f, 0f));
         KitchenProps.C(drum, Vector3.zero, new Vector3(1.6f, 0.4f, 0.4f), new Color(0.92f, 0.9f, 0.84f), 0f, "Papel");
@@ -99,7 +108,7 @@ public static partial class SampleSceneBuilder
         KitchenProps.Fit(seis);
 
         // EL MAREÓGRAFO Y LA BOYA (DART): el nivel del mar confirma o cancela el aviso.
-        Transform sea = GrPiece(g, "Mareógrafo y boya DART (sistema del Pacífico)", new Vector3(14f, 0f, -3f), "Mareógrafo y boya", 2.8f);
+        Transform sea = GrPiece(g, "Mareógrafo y boya DART (sistema del Pacífico)", new Vector3(5.15f, 0f, -7.6f), "Mareógrafo y boya", 2.8f);
         KitchenProps.C(sea, new Vector3(0f, 1.1f, 0f), new Vector3(0.5f, 2.2f, 0.5f), GrDesk, 0f, "Columna_de_nivel");
         KitchenProps.C(sea, new Vector3(0f, 1f, -0.27f), new Vector3(0.1f, 1.6f, 0.02f), GrGlow, 0f, "Nivel");
         KitchenProps.C(sea, new Vector3(1.3f, 0.35f, 0f), new Vector3(1.2f, 0.7f, 1.2f), new Color(0.9f, 0.7f, 0.15f), 0f, "Maqueta_boya");
@@ -107,21 +116,21 @@ public static partial class SampleSceneBuilder
         KitchenProps.Fit(sea);
 
         // LA RADIO, EL TABLERO Y EL PUESTO DE RESPALDO.
-        Transform radio = GrPiece(g, "Radio VHF (tráfico marítimo)", new Vector3(-14f, 0f, -10f), "Radio VHF", 2.2f);
+        Transform radio = GrPiece(g, "Radio VHF (tráfico marítimo)", new Vector3(-7.4f, 0f, -7.6f), "Radio VHF", 2.2f);
         KitchenProps.C(radio, new Vector3(0f, 0.9f, 0f), new Vector3(1.6f, 1.8f, 0.6f), GrDesk, 0f, "Armario_de_radio");
         for (int i = 0; i < 3; i++) KitchenProps.C(radio, new Vector3(0f, 0.5f + i * 0.45f, -0.32f), new Vector3(1.2f, 0.25f, 0.04f), GrScreen, 0f, "Radio");
         KitchenProps.Fit(radio);
-        Transform board = GrPiece(g, "Tablero de guardia", new Vector3(-6f, 0f, -10f), "Tablero de guardia", 2.4f);
+        Transform board = GrPiece(g, "Tablero de guardia", new Vector3(-3.5f, 0f, -7.6f), "Tablero de guardia", 2.4f);
         KitchenProps.C(board, new Vector3(0f, 1.3f, 0f), new Vector3(2f, 1.4f, 0.1f), new Color(0.86f, 0.78f, 0.62f), 0f, "Tablero");
         KitchenProps.C(board, new Vector3(0f, 0.3f, 0f), new Vector3(0.14f, 0.6f, 0.14f), KitchenProps.DarkSteel, 0f, "Pie");
         KitchenProps.Fit(board);
         board.gameObject.AddComponent<GuardBoard>();
-        Transform spare = GrPiece(g, "Puesto de respaldo (centros gemelos de Japón)", new Vector3(14f, 0f, -10f), "Puesto de respaldo", 1.8f);
+        Transform spare = GrPiece(g, "Puesto de respaldo (centros gemelos de Japón)", new Vector3(1.25f, 0f, -7.6f), "Puesto de respaldo", 1.8f);
         Bench(spare, 3.2f, 1.2f, GrDesk);
         KitchenProps.C(spare, new Vector3(0f, 1.25f, 0.3f), new Vector3(1.4f, 0.8f, 0.06f), GrScreen, 0f, "Monitor");
         KitchenProps.Fit(spare);
         AreaSeat.Add(spare.gameObject, "vigilancia", AreaSeat.Category.Trabajo, 2);
 
-        Aseos(floor, new Vector3(-hx + 2.1f, 0.1f, hz - 0.9f), 180f, 1);
+        // (F1b) Sin aseos propios: los del piso, junto a la zona (FurnishAssembly).
     }
 }

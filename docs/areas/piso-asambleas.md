@@ -12,7 +12,7 @@ mejor del mundo con lo que puede tener maquinaria/diseño con componentes de div
 ## Dónde va
 
 Torre de **Servicios** (la vida común: comer, curarse, reunirse), encima de la Carne Cultivada. La torre pasa de 3 a **4 niveles de hélice**: el nuevo usa las mismas caras que el nivel 2, así
-que la planta no cambia y las holguras horizontales con las otras torres deberían seguir iguales. Queda un piso libre en el nivel 4. Área `Assembly_Area`, «Sala de asambleas»,
+que la planta no cambia y las holguras horizontales con las otras torres deberían seguir iguales. (2026-11-25, F1b) Comparte su piso con la Sala de guardia (en su cuarto +X +Z): la asamblea ocupa los otros tres, con el círculo en (−8, −2), y Servicios vuelve a 3 niveles. Área `Assembly_Area`, «Sala de asambleas»,
 `SanctuaryAreaType.Assembly` (`SampleSceneBuilder.Asamblea.cs`). Piso de 40 × 38 m.
 
 ## La investigación: cómo se reúne la gente
