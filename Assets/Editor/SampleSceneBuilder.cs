@@ -3383,7 +3383,7 @@ public static partial class SampleSceneBuilder
 
             // ── ENTRENAMIENTO (2 h diarias, docs/sistemas/jornada-y-rotacion.md y docs/areas/entrenamiento-areas.md) ──
             BuildAreaBox(areasGroup.transform, "Gym_Area", "Gimnasio", SanctuaryAreaType.Gym, 1,
-                EntrenamientoCenter, GymSize, new Color(0.55f, 0.6f, 0.7f)),   // P0 (P1: cardio y zona libre)
+                EntrenamientoCenter, GymSize, new Color(0.55f, 0.6f, 0.7f)),   // P0, con el cardio y la zona libre en el mismo piso (F1b)
             BuildAreaBox(areasGroup.transform, "Calisthenics_Area", "Calistenia", SanctuaryAreaType.Calisthenics, 1,
                 EntrenamientoCenter, GymSize, new Color(0.65f, 0.75f, 0.6f)),   // P2 · calistenia, parkour y crossfit
             BuildAreaBox(areasGroup.transform, "YogaRoom_Area", "Sala de Yoga", SanctuaryAreaType.YogaRoom, 1,
@@ -3447,7 +3447,7 @@ public static partial class SampleSceneBuilder
         //    encima van los del Aula. (2026-11-25, fase F1 del rediseño de pisos: J16 reescrita, TrainingCentres.Amplios apagado) UN piso por
         //    centro mientras la suma de plazas llegue a los miembros; si no, el que falta va al centro con más plazas por piso.
         int members = AreaCapacity.DefaultMembers;   // la lista del personal (WorkdayDirector.Staff), como el Aula
-        Transform cardio = new GameObject("Cardio y zona libre").transform; cardio.SetParent(areasGroup.transform, false);   // un piso del gimnasio (no un área aparte)
+        // (2026-11-27, F1b del rediseño de pisos) El CARDIO Y LA ZONA LIBRE ya no tienen piso propio: van en el piso del gimnasio (FurnishGymCardio).
         Transform ashtanga = Child(yoga.transform, "Planta_ashtanga");   // el piso de Ashtanga: planta propia de la Sala de Yoga (sus misiones y su jornada son las del área)
         List<Transform> Copies(Transform main, Transform parentOfCopies, string centre, string prefix)
         {
@@ -3462,7 +3462,7 @@ public static partial class SampleSceneBuilder
         var balF = Copies(ballet.transform, ballet.transform, "Ballet", "Planta_ballet");
         var dojF = Copies(dojo.transform, dojo.transform, "Dojo", "Planta_dojo");
         var entFloors = new List<Transform>();
-        entFloors.AddRange(gymF); entFloors.Add(cardio); entFloors.AddRange(calF); entFloors.AddRange(hatF); entFloors.AddRange(ashF); entFloors.AddRange(balF); entFloors.AddRange(dojF);
+        entFloors.AddRange(gymF); entFloors.AddRange(calF); entFloors.AddRange(hatF); entFloors.AddRange(ashF); entFloors.AddRange(balF); entFloors.AddRange(dojF);
         // Dos pisos por nivel; encima, los del Aula (AulaFloors, docs/areas/piso-aula.md: la sala de estudio, con la misma regla).
         int entLevels = Mathf.CeilToInt((entFloors.Count + AulaFloors() + MusicFloors()) / 2f);   // + los pisos de Música (docs/areas/piso-musica.md), encima del Aula
         Debug.Log($"[Centros] {members} miembros: Gimnasio {gymF.Count}, Calistenia {calF.Count}, Yoga Hatha {hatF.Count}, Yoga Ashtanga {ashF.Count}, Ballet {balF.Count}, Dojo {dojF.Count} pisos; la torre del Entrenamiento, {entFloors.Count} pisos en {entLevels} niveles.");
@@ -3488,8 +3488,8 @@ public static partial class SampleSceneBuilder
         FurnishYogaFloors(hatF, ashF, size[yoga.transform]);   // los pisos de yoga (regla J16: los que pidan los miembros), cada uno con su sala occidental y su sala tradicional
         FurnishTextile(textile.transform, size[textile.transform]); PlaceTextileRoot(textile.transform);   // el estudio textil de Irosene: telares, rueca, lanas, tintes, corte y costura
         FurnishConstruction(works.transform, size[works.transform]);   // maquinaria, material, herramientas y taller de obra
-        for (int k = 0; k < gymF.Count; k++) { FurnishGym(gymF[k], size[gymF[k]], 3 * k); Centre(gymF[k], "Gimnasio", k + 1); }   // máquinas de placas y peso libre (cada piso, sus copias 3k…3k+2)
-        FurnishGymCardio(cardio, size[cardio]);                          // cardio, abdominales, estiramientos y sacos
+        for (int k = 0; k < gymF.Count; k++) { FurnishGym(gymF[k], size[gymF[k]], 2 * k); Centre(gymF[k], "Gimnasio", k + 1); }   // máquinas de placas y peso libre (cada piso, sus copias 2k y 2k+1)
+        FurnishGymCardio(gymF[0], size[gymF[0]]);                        // cardio, abdominales, estiramientos y sacos, en el piso del gimnasio (F1b)
         for (int k = 0; k < calF.Count; k++) { FurnishCalisthenics(calF[k], size[calF[k]]); Centre(calF[k], "Calistenia", k + 1); }   // calistenia, parkour y crossfit (ya construidos)
         Vector2 criaLayout = new Vector2(26f, 20f);                      // la sala de crías, con su distribución de 26 × 20 (girada en la mitad −X de su piso: CriaMeatZone)
         FurnishCria(cria.transform, criaLayout); PlaceCriaRoot(cria.transform);

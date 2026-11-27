@@ -24,7 +24,7 @@ public static class TrainingCentres
     /// su <see cref="AreaSeat"/> (vacía si AreaCapacity lo cuenta por sí mismo: máquinas del gimnasio, esterillas del yoga).</summary>
     public static readonly Spec[] All =
     {
-        new Spec("Gimnasio", "", 30, "estaciones del circuito", "10 tipos de máquina de placas × 3 copias en el piso del gimnasio (más el cardio y el peso libre)"),
+        new Spec("Gimnasio", "", 20, "estaciones del circuito", "10 tipos de máquina de placas × 2 copias (F1b, 2026-11-27: gimnasio y cardio en un piso de 40 × 40; más el cardio y el peso libre)"),
         new Spec("Calistenia", "calistenia, parkour y crossfit", 40, "puestos", "calistenia ~18 (dominadas 3, anillas 2, paralelas bajas 4, espalderas 3…), parkour ~6 a la vez, crossfit ~16 (rig, GHD, plataformas, ergómetros)"),
         new Spec("Yoga Hatha", "", 16, "esterillas", "dos salas por piso (occidental y tradicional) de 8 esterillas: con ≥ 2 m entre ellas y a ≤ 9 m del maestro no caben más en 18 × 26 m"),
         new Spec("Yoga Ashtanga", "", 16, "esterillas", "como el de Hatha: dos salas de 8 esterillas por piso"),
