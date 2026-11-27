@@ -5,6 +5,7 @@ el PR, en `git log` y en [`docs/checklist.md`](docs/checklist.md) (Historial).
 Al fusionar un PR, añade su línea en «Sin publicar» o en el mes en curso.
 
 ## Sin publicar
+- Revisión de #328 (piso «Salas»): fusionado; restos menores en PENDIENTES y checklist.
 - PB-170 F1b: piso «Salas» (Ballet en obras y sala de bailes en el último piso de estudios de Música; Entrenamiento con un piso menos); la prueba 64 compara pisos de yoga por índice.
 - Revisión de #326: la caja del gimnasio, de 40 × 38 (`FitAreaBox`, compartido con el Textil); sin restos de «Cardio y zona libre» en `AreaCapacity`; `GymCarpetSpot` (sin uso) fuera; gimnasio de 20 plazas también en `FloorOrganization`.
 - PB-170 F1b: piso «Gimnasio y cardio» (10 máquinas × 2, cardio y zona libre en un piso de 40 × 40; Gimnasio 20 plazas); TankSpot fuera de las zonas de otras áreas; la guardia ya no sale del piso.
