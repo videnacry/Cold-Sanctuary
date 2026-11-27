@@ -128,7 +128,7 @@ public static partial class SampleSceneBuilder
         for (int k = 0; k < floors; k++)
         {
             Transform f = new GameObject($"Planta_musica_{k + 2}").transform; f.SetParent(a.transform, false);
-            FurnishStudioFloor(f, TowerFloor(f), k);
+            FurnishStudioFloor(f, TowerFloor(f), k, salas: k == floors - 1);
         }
         WorldLabel wl = a.gameObject.AddComponent<WorldLabel>(); wl.text = "Música: escenarios, estudios y salas de ensayo"; wl.height = 4f;
         Debug.Log($"[Música] {WorkdayDirector.Staff.Length} miembros: 2 escenarios, {MusicRows * MusicRowSeats + 16} butacas y {floors} piso(s) de estudios: {2 * floors} estudios y {4 * floors} salas de ensayo ({floors * MusicRehearsalSeats} plazas).");
@@ -163,11 +163,13 @@ public static partial class SampleSceneBuilder
 
     // UN PISO DE ESTUDIOS: la franja del tronco (4,6 m), libre para la puerta; dos filas de cuatro salas y un pasillo de 3 m entre ellas, y los aseos al fondo.
     // Fila del tronco: 4 salas de ensayo. Fila del fondo: 2 estudios, cada uno con su control y su sala de grabación, cristal con cristal.
-    static void FurnishStudioFloor(Transform floor, Vector2 s, int index)
+    // (2026-11-27, F1b del rediseño de pisos) El ÚLTIMO piso de estudios es el piso «SALAS»: sus dos filas de salas bajan junto al umbral del tronco
+    // (z de −14,4 a 1) y en la mitad +Z quedan el BALLET (zona de su área, en obras: BalletZone) y la SALA DE BAILES (FurnishBailes).
+    static void FurnishStudioFloor(Transform floor, Vector2 s, int index, bool salas = false)
     {
         Transform g = new GameObject("Planta_estudios").transform; g.SetParent(floor, false); g.localPosition = Vector3.up * 0.1f;
-        Solid(g, new Vector3(0f, -0.05f, 0f), new Vector3(s.x - 0.2f, 0.1f, s.y - 0.2f), new Color(0.42f, 0.34f, 0.3f), "Suelo_de_madera");
-        float hx = s.x * 0.5f, hz = s.y * 0.5f, zSouth = -hz + 7.7f, zNorth = -hz + 16.9f;
+        Solid(g, new Vector3(0f, -0.05f, salas ? 2.3f : 0f), new Vector3(salas ? 39f : s.x - 0.2f, 0.1f, salas ? 34.6f : s.y - 0.2f), new Color(0.42f, 0.34f, 0.3f), "Suelo_de_madera");
+        float hx = s.x * 0.5f, hz = s.y * 0.5f, zSouth = -hz + (salas ? 1.7f : 7.7f), zNorth = -hz + (salas ? 10.9f : 16.9f);
         float X(int col) => -13.35f + col * 8.9f;
         for (int c = 0; c < 4; c++)
         {
@@ -203,6 +205,45 @@ public static partial class SampleSceneBuilder
             WorldLabel bw = booth.gameObject.AddComponent<WorldLabel>(); bw.text = $"Estudio {n}: sala de grabación"; bw.height = 2.2f;
             SoundRoom(g, $"Sonica_grabacion_{n}", take, MusicCell, 2);
         }
-        Aseos(floor, new Vector3(-hx + 2.1f, 0.1f, hz - 0.9f), 180f, 1);
+        if (!salas) { Aseos(floor, new Vector3(-hx + 2.1f, 0.1f, hz - 0.9f), 180f, 1); return; }
+        Aseos(floor, new Vector3(16f, 0.1f, 5f), 0f, 1);   // (piso «Salas») entre los estudios y la sala de bailes
+        FurnishBailes(floor);
+    }
+
+    /// <summary>La zona del BALLET en el piso «Salas» (F1b): 18,4 × 14 m en la mitad +Z, cuarto −X (su suelo flotante de 18 × 8,6, el espejo y las
+    /// barras caben). Sigue en obras: <see cref="PrepareSite"/> le prepara su «Acabado».</summary>
+    public static readonly Vector2 BalletZoneSize = new Vector2(18.4f, 14f);
+    static readonly Vector3 BalletZoneAt = new Vector3(-9f, 0f, 11f);
+
+    /// <summary>El área del Ballet pasa a ser una ZONA del último piso de estudios de Música (el piso «Salas»): cuelga del piso (su <c>TreeFloor</c>),
+    /// con su «Mat» del tamaño de la zona y sin las paredes de su caja.</summary>
+    static void BalletZone(Transform ballet, Transform music)
+    {
+        Transform floor = music.Find($"Planta_musica_{MusicStudioFloors() + 1}");
+        if (floor == null) { Debug.LogError("[Salas] no encuentro el último piso de estudios de Música: el ballet se queda sin piso."); return; }
+        ballet.SetParent(floor, false); ballet.localPosition = BalletZoneAt; ballet.localRotation = Quaternion.identity;
+        Transform mat = ballet.Find("Mat");
+        if (mat != null) { mat.localPosition = new Vector3(0f, 0.07f, 0f); mat.localScale = new Vector3(BalletZoneSize.x, 0.1f, BalletZoneSize.y); }
+        foreach (string w in new[] { "Wall_Back", "Wall_Left", "Wall_Right" }) { Transform t = ballet.Find(w); if (t != null) Object.DestroyImmediate(t.gameObject); }
+        Debug.Log($"[Salas] Piso «Salas» ({floor.name}): salas de ensayo y estudios, el Ballet (en obras) y la sala de bailes.");
+    }
+
+    /// <summary>LA SALA DE BAILES (bailes sociales; F1b, piso «Salas»): pista de madera de 14 × 11 m en la mitad +Z, cuarto +X, con sus altavoces y su
+    /// equipo de música. 20 plazas de entrenamiento (cuentan en la suma de J16).</summary>
+    static void FurnishBailes(Transform floor)
+    {
+        Transform r = new GameObject("Sala_de_bailes").transform; r.SetParent(floor, false); r.localPosition = new Vector3(10.5f, 0.1f, 11.5f);
+        KitchenProps.C(r, new Vector3(0f, 0.01f, 0f), new Vector3(14f, 0.02f, 11f), new Color(0.72f, 0.56f, 0.38f), 0f, "Suelo_pista_de_baile");
+        Transform pista = KitchenProps.Root(r, "Pista_de_baile", Vector3.zero);
+        AreaSeat.Add(pista.gameObject, "baile", AreaSeat.Category.Entrenamiento, 20);
+        WorldLabel pl = pista.gameObject.AddComponent<WorldLabel>(); pl.text = "Sala de bailes (salsa, tango, folclore…)"; pl.height = 2.6f;
+        Transform sp = KitchenProps.Root(r, "Altavoces_baile", new Vector3(0f, 0f, 5f));
+        Speaker(sp, new Vector3(-6f, 0f, 0f), "Altavoz"); Speaker(sp, new Vector3(6f, 0f, 0f), "Altavoz");
+        KitchenProps.Fit(sp);
+        Transform eq = KitchenProps.Root(r, "Equipo_sonido_baile", new Vector3(0f, 0f, -4.5f));
+        Bench(eq, 2f, 0.8f, new Color(0.3f, 0.3f, 0.33f));
+        KitchenProps.C(eq, new Vector3(0f, 1f, 0f), new Vector3(1.2f, 0.12f, 0.5f), StageBlack, 0f, "Mesa_de_mezclas_baile");
+        KitchenProps.Fit(eq);
+        eq.gameObject.AddComponent<WorldLabel>().text = "Equipo de música";
     }
 }

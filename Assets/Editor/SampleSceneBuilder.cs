@@ -3462,7 +3462,7 @@ public static partial class SampleSceneBuilder
         var balF = Copies(ballet.transform, ballet.transform, "Ballet", "Planta_ballet");
         var dojF = Copies(dojo.transform, dojo.transform, "Dojo", "Planta_dojo");
         var entFloors = new List<Transform>();
-        entFloors.AddRange(gymF); entFloors.AddRange(calF); entFloors.AddRange(hatF); entFloors.AddRange(ashF); entFloors.AddRange(balF); entFloors.AddRange(dojF);
+        entFloors.AddRange(gymF); entFloors.AddRange(calF); entFloors.AddRange(hatF); entFloors.AddRange(ashF); entFloors.AddRange(balF.GetRange(1, balF.Count - 1));   /* (F1b, 2026-11-27) el primer piso del Ballet es una zona del piso «Salas» (BalletZone) */ entFloors.AddRange(dojF);
         // Dos pisos por nivel; encima, los del Aula (AulaFloors, docs/areas/piso-aula.md: la sala de estudio, con la misma regla).
         int entLevels = Mathf.CeilToInt((entFloors.Count + AulaFloors() + MusicFloors()) / 2f);   // + los pisos de Música (docs/areas/piso-musica.md), encima del Aula
         Debug.Log($"[Centros] {members} miembros: Gimnasio {gymF.Count}, Calistenia {calF.Count}, Yoga Hatha {hatF.Count}, Yoga Ashtanga {ashF.Count}, Ballet {balF.Count}, Dojo {dojF.Count} pisos; la torre del Entrenamiento, {entFloors.Count} pisos en {entLevels} niveles.");
@@ -3472,6 +3472,8 @@ public static partial class SampleSceneBuilder
         SanctuaryArea aula = BuildClassroom(areasGroup.transform); areas.Add(aula);
         // (2026-11-05) LA MÚSICA (docs/areas/piso-musica.md): encima del Aula: sala de grabación y escenario de conciertos.
         SanctuaryArea music = BuildMusic(areasGroup.transform); areas.Add(music);
+        // (2026-11-27, F1b del rediseño de pisos: piso «Salas») El BALLET (en obras, con su Acabado) va en el último piso de estudios de Música, junto a la sala de bailes.
+        BalletZone(ballet.transform, music.transform);
         //  · PRODUCCIÓN (más baja, junto al Árbol de los Campos): Construcción · Mecánica · Estudio Textil. La maquinaria
         //    pesada, abajo.
         //    Un ÁRBOL: sus 3 pisos en orden, el HUERTO VERTICAL (2026-11-08: los pisos de estantes LED que pida la demanda de verdura, regla P19;
@@ -3495,7 +3497,7 @@ public static partial class SampleSceneBuilder
         Vector2 criaLayout = new Vector2(26f, 20f);                      // la sala de crías, con su distribución de 26 × 20 (girada en la mitad −X de su piso: CriaMeatZone)
         FurnishCria(cria.transform, criaLayout); PlaceCriaRoot(cria.transform);
         // EN OBRAS, con su equipo de 3 y su acabado ya diseñado (docs/areas/obras-dojo-ballet.md): aparece al terminar.
-        for (int k = 0; k < balF.Count; k++) { PrepareSite(balF[k], size[balF[k]], k == 0 ? "Sala de Ballet" : $"Sala de Ballet (piso {k + 1})", 6, 3, FinishedBallet); Centre(balF[k], "Ballet", k + 1); }
+        for (int k = 0; k < balF.Count; k++) { PrepareSite(balF[k], k == 0 ? BalletZoneSize : size[balF[k]], k == 0 ? "Sala de Ballet" : $"Sala de Ballet (piso {k + 1})", 6, 3, FinishedBallet); Centre(balF[k], "Ballet", k + 1); }
         for (int k = 0; k < dojF.Count; k++) { PrepareSite(dojF[k], size[dojF[k]], k == 0 ? "Dojo (MMA, kickboxing y karate)" : $"Dojo (piso {k + 1})", 6, 3, FinishedDojo); Centre(dojF[k], "Dojo", k + 1); }
         // ASEOS en cada área humana (el restaurante y la enfermería los ponen al amueblarse).
         Vector2 s2 = size[yoga.transform];

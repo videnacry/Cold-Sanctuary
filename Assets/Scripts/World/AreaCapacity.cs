@@ -41,9 +41,10 @@ public static class AreaCapacity
     public static int SeatsOf(Transform a)
     {
         if (a == null) return 0;
-        int n = 0;
+        int n = 0; SanctuaryArea own = a.GetComponent<SanctuaryArea>();
         foreach (AreaSeat s in a.GetComponentsInChildren<AreaSeat>(true))
         {
+            if (own != null && s.GetComponentInParent<SanctuaryArea>(true) != own) continue;   // (2026-11-27, F1b) los de un área-ZONA de este piso son de ella
             if (s.category != AreaSeat.Category.Entrenamiento) continue;
             ConstructionProject site = s.GetComponentInParent<ConstructionProject>(true);
             if (site == null || site.Finished) n += s.seats;
@@ -87,6 +88,7 @@ public static class AreaCapacity
         foreach (Transform a in areas)
         {
             if (a == null) continue;
+            SanctuaryArea own = a.GetComponent<SanctuaryArea>();
             string name = a.GetComponent<SanctuaryArea>() is SanctuaryArea sa ? sa.displayName : a.name;
             // Los AreaSeat del área, por actividad.
             var sum = new Dictionary<string, (AreaSeat.Category c, int n)>();
@@ -94,6 +96,7 @@ public static class AreaCapacity
             var buildingCat = new Dictionary<string, AreaSeat.Category>();
             foreach (AreaSeat s in a.GetComponentsInChildren<AreaSeat>(true))
             {
+                if (own != null && s.GetComponentInParent<SanctuaryArea>(true) != own) continue;   // (2026-11-27, F1b) los puestos de un área-ZONA de este piso (el Ballet en el de Música) son de ella
                 // (2026-11-04) Un piso EN OBRAS no da servicio: sus puestos no cuentan hasta que se termine (el ballet, el dojo).
                 ConstructionProject site = s.GetComponentInParent<ConstructionProject>(true);
                 if (site != null && !site.Finished) { string p = $"{name} · {s.activity} (en obras)"; if (!pending.Contains(p)) pending.Add(p); building.TryGetValue(s.activity, out int b); building[s.activity] = b + s.seats; buildingCat[s.activity] = s.category; continue; }

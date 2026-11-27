@@ -918,7 +918,8 @@ Código y compilación hechos; falta la prueba en vivo.
     - [ ] Restos de la revisión de #326 (no bloquean): (1) `PlatformSlots` del gimnasio sigue en 36 × 26 (`size[gymF]` = `GymSize`), como el del Textil; (2) las docs de investigación (`entrenamiento-areas.md` §3, `gimnasio-maquinas.md`) aún hablan de 30 máquinas y 3 pisos: añadirles la nota de F1b.
     - [ ] Reconstruir `Microcosmos_Tregua1914` (sale sobre `Gym_Area` y su piso ahora lleva el cardio: «REVISAR MICROCOSMOS»).
     - [ ] H16: g65 cuenta la Sala de Ballet como obra tras las pruebas largas (ver `docs/qa/hallazgos.md`).
-  - [ ] **F1b** resto de fusiones de pisos (salas de yoga/música/ballet/bailes, hospital, laboratorios) en el Blockout, de una en una, con sus avisos `[Pisos]` (pide permiso para Unity); W9 de las salas nuevas (§5).
+  - [x] F1b: piso «Salas» (2026-11-28): el Ballet (en obras) y la sala de bailes en el último piso de estudios de Música; arreglo de la prueba 64 (Hatha y Ashtanga en pisos distintos por índice, no por altura: regresión de la fusión 5).
+  - [ ] **F1b** resto de fusiones de pisos (salas de yoga y auditorio, a la espera de Berón; hospital, laboratorios) en el Blockout, de una en una, con sus avisos `[Pisos]` (pide permiso para Unity); W9 de las salas nuevas (§5).
   - [ ] F2 estructura · F4 cima · F3 mapa en anillos · F5 globo y pulpo · F6 prueba en vivo (orden D6).
 - [ ] **Alma compartida (resto)**: `HelpRequest` ya hace "ir juntos" (MVP); falta **compartir pensamientos**
       (misma frase → instancia de mente/madre compartida) y que el sí/no lea bond/humores/inclinaciones.
