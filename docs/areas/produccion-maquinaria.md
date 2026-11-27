@@ -47,7 +47,7 @@ A 3 kg/m² al año, 24,8 kg/día piden **3017 m²**; los 8 bancales del Árbol d
 
 ## 2026-11-08: el Huerto vertical (Berón lo aprobó)
 
-**Dónde.** Un piso nuevo de la **torre de Producción** (la de la isla, en la tundra, −180, 0, −140), encima del Estudio Textil: `VerticalFarm_Area`, «Huerto vertical» (`SampleSceneBuilder.BuildVerticalFarm`, medidas en `VerticalFarm`). La torre pasa de 2 a **3 niveles** (sus pisos: Construcción, Mecánica, Estudio Textil, Huerto vertical y el garaje del submarino en el primer piso libre; queda otro libre). Los niveles salen de los pisos que haga falta: `⌈(3 + pisos del huerto + garaje) / 2⌉`. El nivel 3 tiene la misma planta que el 1, 44 m más arriba: no se acerca en planta a ningún vecino.
+**Dónde.** (2026-11-27, F1b del rediseño de pisos: Textil 0,6 + Huerto 0,4) La mitad +X del piso del Estudio Textil; antes, un piso nuevo de la **torre de Producción** (la de la isla, en la tundra, −180, 0, −140), encima del Estudio Textil: `VerticalFarm_Area`, «Huerto vertical» (`SampleSceneBuilder.BuildVerticalFarm`, medidas en `VerticalFarm`). La torre pasa de 2 a **3 niveles** (sus pisos: Construcción, Mecánica, Estudio Textil, Huerto vertical y el garaje del submarino en el primer piso libre; queda otro libre). Los niveles salen de los pisos que haga falta: `⌈(3 + pisos del huerto + garaje) / 2⌉`. El nivel 3 tiene la misma planta que el 1, 44 m más arriba: no se acerca en planta a ningún vecino.
 
 **Cuánto: sale de la demanda (regla P19).**
 - Demanda: `PopulationPlan.People` × 0,8 kg = **32 × 0,8 = 25,6 kg/día**. `People` cuenta la lista del personal (30) + la Magnate + el recién llegado, también al construir (antes la línea usaba `Humans`, que al construir vale 11).
