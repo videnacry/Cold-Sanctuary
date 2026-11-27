@@ -3424,17 +3424,18 @@ public static partial class SampleSceneBuilder
         //  · SERVICIOS: Restaurante · Hospital (urgencias · quirófanos y UCI · veterinario) · Cría · Carne Cultivada · Sala de asambleas.
         //    Un ÁRBOL (docs/areas/edificio-arbol.md §Migración): 4 niveles de hélice (2026-11-05: el cuarto, para la Sala de asambleas: las mismas caras
         //    del nivel 2, así que la planta no cambia), sus 7 pisos en orden (nivel 1, lados a y c; nivel 2, b y d; nivel 3, a y c; nivel 4, b) y uno libre.
-        BeginTreeTower(areasGroup.transform, TorreServicios, ServiciosCenter, ServiciosSize, ServiciosYaw, 4);
+        //    (2026-11-25, F1b: Cría + Carne y Asambleas + guardia, cada pareja en un piso) 6 pisos en 3 niveles.
+        BeginTreeTower(areasGroup.transform, TorreServicios, ServiciosCenter, ServiciosSize, ServiciosYaw, 3);
         Floor(kitchen.transform);
         Floor(hospital.transform); Floor(Child(hospital.transform, "Planta_hospitalizacion")); Floor(Child(hospital.transform, "Planta_veterinaria"));   // las amuebla BuildHospital
         Floor(cria.transform);
         // (2026-11-25, fase F1b del rediseño de pisos: Cría 0,6 + Carne cultivada 0,4, docs/areas/rediseno-pisos-arboles.md §6 ter) La CARNE
         // CULTIVADA ya no tiene piso propio: es una ZONA del piso de la Cría (como el Huerto en el Árbol de los Campos), su área hija del piso,
         // en la mitad +X (18 × 30 m, CulturedMeatLab.CompactSize); la Cría, girada, en la mitad −X. El umbral de la puerta del tronco (−Z) queda
-        // libre. Con 7 pisos la torre sigue en 4 niveles: el que sobra queda libre para la siguiente fusión (Asambleas y guardia).
+        // libre.
         CriaMeatZone(cria.transform, meat.transform);
         SanctuaryArea assembly = BuildAssembly(areasGroup.transform); areas.Add(assembly);   // (2026-11-05) docs/areas/piso-asambleas.md
-        BuildGuardRoom(areasGroup.transform);   // (2026-11-05) el piso libre del nivel 4: docs/areas/sala-de-guardia.md
+        BuildGuardRoom(assembly.transform);   // (2026-11-05; docs/areas/sala-de-guardia.md) (2026-11-25, F1b) una zona del piso de Asambleas, en su cuarto +X +Z
         //  · ENTRENAMIENTO: Gimnasio · Cardio y zona libre · Calistenia, parkour y crossfit · Yoga (Hatha) · Yoga (Ashtanga) · Ballet
         //    · Dojo. Lo pesado y ruidoso (las máquinas) abajo; lo silencioso (los dos pisos de yoga y las salas en obras) arriba.
         //    Un ÁRBOL (Berón 2026-11-04: se quitó el anillo de yoga y el yoga pasó a sus propios pisos, docs/areas/yoga-pisos.md): los niveles

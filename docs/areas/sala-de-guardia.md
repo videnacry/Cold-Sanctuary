@@ -12,7 +12,7 @@ Código: `World/GuardRoom.cs` (`GuardWatch`, `GuardWatchRule`, `GuardRoom`, `Gua
 
 ## Dónde
 
-**El piso libre del nivel 4 de Servicios, a 130 m.** Es el más alto de los libres.
+**Desde el 2026-11-25 (F1b del rediseño de pisos, Asambleas 0,75 + guardia 0,25): una zona del piso de la Sala de asambleas**, su cuarto +X +Z (16,5 × 18 m), con el muro de pantallas en dos alturas y dos filas de 4 consolas. Antes, el piso libre del nivel 4 de Servicios, a 130 m.
 
 | Opción | Por qué sí o no |
 |---|---|

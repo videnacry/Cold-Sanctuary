@@ -82,7 +82,7 @@ public static partial class SampleSceneBuilder
         {
             if (t.name.StartsWith("Planta_habitaciones_")) FloorEnergy.DeclareFloor(t.gameObject, "Residencia, " + t.name.Replace('_', ' '), 0f, 0f, t.GetComponentsInChildren<Bedroom>(true).Length * EnergyRule.HomeKW);
             else if (t.name == ResidentialBuilder.PlazaName) FloorEnergy.DeclareFloor(t.gameObject, "Residencia, plaza", Area(t, ResidenciaSize), EnergyRule.PlazaW, 0f);
-            else if (t.name == GuardRoom.FloorName) FloorEnergy.DeclareFloor(t.gameObject, AreaWork.GuardRoom, Area(t, ServiciosSize), EnergyRule.GuardRoomW, EnergyRule.GuardRoomKW);
+            else if (t.name == GuardRoom.FloorName) FloorEnergy.DeclareFloor(t.gameObject, AreaWork.GuardRoom, GuardZoneSize.x * GuardZoneSize.y, EnergyRule.GuardRoomW, EnergyRule.GuardRoomKW);   // (F1b: zona del piso de Asambleas)
             else if (t.TryGetComponent(out HunterCell _))
             {
                 // (Vive en el Santuario Marino, cargado o no: lo declara arriba, como la roca.)

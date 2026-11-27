@@ -5,6 +5,7 @@ el PR, en `git log` y en [`docs/checklist.md`](docs/checklist.md) (Historial).
 Al fusionar un PR, añade su línea en «Sin publicar» o en el mes en curso.
 
 ## Sin publicar
+- PB-170 F1b: piso mixto «Asambleas y guardia» (la guardia, zona de 16,5 × 18 m del piso de Asambleas; Servicios, 4 → 3 niveles).
 - PB-170 F1b: piso mixto «Cría y carne cultivada» (el laboratorio, zona de 18 × 30 m del piso de la Cría; Servicios con un piso libre).
 - PB-170 F1b: piso mixto «Mecánica y garaje» (Producción, 3 → 2 niveles); `AreaCapacity.Check` da línea a las actividades con todos sus puestos en obras (prueba 75); detalle en la prueba 113.
 - PB-170 F1a del rediseño de pisos: losas de 40 × 40 m en todas las torres-árbol (Entrenamiento y Producción apartados 5 y 3 m), regla T27 y avisos `[Pisos]` de pisos a medias (`FurnitureSpacing.FillOf`), un piso por centro de entrenamiento (`Amplios` apagado), ocio de los centros por plazas y prueba 143.
