@@ -909,6 +909,7 @@ Código y compilación hechos; falta la prueba en vivo.
   - [x] F1b: Mecánica + garaje en un piso (2026-11-25).
   - [x] F1b: Cría + carne cultivada en un piso (2026-11-25): la Carne, zona del piso de la Cría; Blockout con `[Espacio]` 0 y la Cría al 55 %.
   - [x] F1b: Asambleas + guardia en un piso (2026-11-27): la guardia, zona de 16,5 × 18 m del piso de Asambleas; Servicios en 3 niveles; Blockout con `[Espacio]` 0 y Asambleas al 84 %.
+    - [ ] Restos de la revisión de #322 (no bloquean): (1) el área `Assembly_Area` declara su energía con el piso entero (40 × 38) y la guardia vuelve a declarar sus 297 m²: ~5 kW contados dos veces (restar la zona, como haga falta también con la carne en la Cría); (2) el suelo «Suelo_de_sala» de la guardia va de x 4,15 a 20,45 y el del piso acaba en 19,9: sobresale 0,55 m por +X (bajar `GuardZoneAt.x` a ~11,75 o estrechar la zona y repetir `[Espacio]`); (3) `AreaCapacity` cuenta los puestos de la guardia (radar, carta de hielo, vigilancia) como actividades de la Sala de asambleas.
   - [ ] **F1b** resto de fusiones de pisos (gimnasio + cardio, salas de yoga/música/ballet/bailes, hospital, laboratorios, textil + huerto) en el Blockout, de una en una, con sus avisos `[Pisos]` (pide permiso para Unity); W9 de las salas nuevas (§5).
   - [ ] F2 estructura · F4 cima · F3 mapa en anillos · F5 globo y pulpo · F6 prueba en vivo (orden D6).
 - [ ] **Alma compartida (resto)**: `HelpRequest` ya hace "ir juntos" (MVP); falta **compartir pensamientos**
