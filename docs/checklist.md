@@ -918,12 +918,15 @@ Código y compilación hechos; falta la prueba en vivo.
     - [ ] Restos de la revisión de #326 (no bloquean): (1) `PlatformSlots` del gimnasio sigue en 36 × 26 (`size[gymF]` = `GymSize`), como el del Textil; (2) las docs de investigación (`entrenamiento-areas.md` §3, `gimnasio-maquinas.md`) aún hablan de 30 máquinas y 3 pisos: añadirles la nota de F1b.
     - [ ] Reconstruir `Microcosmos_Tregua1914` (sale sobre `Gym_Area` y su piso ahora lleva el cardio: «REVISAR MICROCOSMOS»).
     - [ ] Reconstruir `Microcosmos_Blackpink` (salía sobre el piso del Ballet, que ahora es una zona del piso «Salas»).
+    - [ ] Reconstruir `Microcosmos_Jenner` (sobre Biología, −planta_molecular), `Microcosmos_Curie` y `Microcosmos_Patterson` (sobre Química, −planta_analisis): fusión de laboratorios (#332).
     - [ ] Restos de la revisión de #328 (no bloquean): ~~(1) el ocio «Bailar» no usa la sala de bailes~~ hecho en #330 (primer sitio de «Bailar», si Música no está en obras); (2) el Acabado del Ballet sobresale 0,5 m de su «Mat» por −Z; (3) con `Amplios`, los `Planta_ballet_k` (hijos del área) se moverían con `BalletZone`; (4) la energía de Música cuenta un solo piso (ya antes).
     - [ ] H16: g65 cuenta la Sala de Ballet como obra tras las pruebas largas (ver `docs/qa/hallazgos.md`).
   - [x] F1b: piso «Salas» (2026-11-27): el Ballet (en obras) y la sala de bailes en el último piso de estudios de Música; arreglo de la prueba 64 (Hatha y Ashtanga en pisos distintos por índice, no por altura: regresión de la fusión 5).
   - [x] F1b: laboratorios (2026-11-28): Química y Biología, cada una en un piso (síntesis + análisis, cultivo + molecular); Ciencias en 2 niveles.
     - [ ] Restos de la revisión de #332 (no bloquean): energía de los laboratorios por `PlatformSlots` de 32 × 20 (no por su piso de 40 × 31); mitad +Z de Química libre (~20 × 15 m).
-  - [ ] **F1b** resto de fusiones de pisos (salas de yoga y auditorio; hospital: a la espera de Berón) en el Blockout, de una en una, con sus avisos `[Pisos]` (pide permiso para Unity); W9 de las salas nuevas (§5).
+  - [x] F1b, petición de Berón del 2026-11-28: «yoga en 2 pisos con salas de 20 m y conciertos en el círculo de la asamblea (elegido)». Hecho: salas de 20 × 26 (8 esterillas: una 9.ª no cabe con los 2 m), el piso de conciertos sin butacas (2 salas de ensayo y el almacén de instrumentos), el concierto en las 72 plazas de la asamblea.
+  - [ ] F1b, petición de Berón del 2026-11-28: «hospital: medir un piso gigante en la cima de Servicios o un anillo más grande (idea de Berón)».
+  - [ ] **F1b** resto de fusiones de pisos (hospital: a la espera de Berón) en el Blockout, de una en una, con sus avisos `[Pisos]` (pide permiso para Unity); W9 de las salas nuevas (§5).
   - [ ] F2 estructura · F4 cima · F3 mapa en anillos · F5 globo y pulpo · F6 prueba en vivo (orden D6).
 - [ ] **Alma compartida (resto)**: `HelpRequest` ya hace "ir juntos" (MVP); falta **compartir pensamientos**
       (misma frase → instancia de mente/madre compartida) y que el sí/no lea bond/humores/inclinaciones.

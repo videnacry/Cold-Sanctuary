@@ -102,7 +102,7 @@ lámparas), `WorkdayDirector` (jornada), `LeisureDirector` (ocio). Prueba: `Yoga
 | Lo que pidió Berón | «crear **otro** piso»: Hatha en uno y Ashtanga en otro | cuatro pisos nuevos |
 | Torre del Entrenamiento | de 3 a **4 niveles**: 7 pisos y 1 libre | 5 niveles: 9 pisos y 1 libre (+44 m de alto) |
 | Holgura con los vecinos (simulador `mig`, ≥ 16 m) | **sin cambios**: Árbol–Entrenamiento 16,3 m, Servicios–Entrenamiento 16,5 m | no simulado |
-| Sitio por sala | 18 × 26 m: 8 esterillas de 3 × 3,6 m a ≥ 2 m, tarima y bandas de 4 m en cada extremo | 36 × 26 m: sobra |
+| Sitio por sala | 20 × 26 m desde el 2026-11-28 (antes 18): 8 esterillas de 3 × 3,6 m a ≥ 2 m, tarima y bandas de 4 m en cada extremo | 36 × 26 m: sobra |
 | Clases | una clase por **estilo** y día; la versión (sala) cambia por día | igual, con el doble de nado entre pisos |
 
 Una sala por versión dentro del piso de su estilo deja juntos al maestro y a los alumnos de un estilo, y la torre solo crece un

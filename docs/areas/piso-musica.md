@@ -16,7 +16,7 @@ Torre del Entrenamiento, encima del Aula (`SampleSceneBuilder.Musica.cs`; área 
 
 | Piso | Qué hay | Puestos (`AreaSeat`) |
 |---|---|---|
-| **Conciertos** (`Music_Area`) | Escenario grande y 5 filas de butacas. Segundo escenario y 2 filas, en su sala de doble cristal. Banco del técnico. Aseos | «concierto» (ocio) 50 + 16; «tocar en concierto» 6 + 4; «sonido» 2 |
+| **Conciertos** (`Music_Area`) | Escenario grande y, desde el 2026-11-28 (D4), sin butacas: dos salas de ensayo y el almacén de instrumentos (los conciertos, en el círculo de la Sala de asambleas). Segundo escenario, sin sillas, en su sala de doble cristal (ensayo general). Banco del técnico. Aseos | «concierto» (ocio) 50 + 16; «tocar en concierto» 6 + 4; «sonido» 2 |
 | **Estudios 1 y 2** (`Planta_musica_2` y `_3`) | Cada uno: 4 salas de ensayo y 2 estudios (control + sala de grabación). Aseos | «ensayar» (entrenamiento) 5 por sala; «grabar» 4 y «mezcla» 2 por estudio |
 
 Total: **2 escenarios, 4 estudios, 8 salas de ensayo** con 40 plazas: pueden ensayar a la vez los 28 miembros, en 6 grupos de 5 o en 8 grupos más pequeños. Los pisos de estudios salen de

@@ -131,7 +131,7 @@ public static partial class SampleSceneBuilder
             FurnishStudioFloor(f, TowerFloor(f), k, salas: k == floors - 1);
         }
         WorldLabel wl = a.gameObject.AddComponent<WorldLabel>(); wl.text = "Música: escenarios, estudios y salas de ensayo"; wl.height = 4f;
-        Debug.Log($"[Música] {WorkdayDirector.Staff.Length} miembros: 2 escenarios, {MusicRows * MusicRowSeats + 16} butacas y {floors} piso(s) de estudios: {2 * floors} estudios y {4 * floors} salas de ensayo ({floors * MusicRehearsalSeats} plazas).");
+        Debug.Log($"[Música] {WorkdayDirector.Staff.Length} miembros: 2 escenarios (los conciertos, en la Sala de asambleas: D4), 2 salas de ensayo en el piso de conciertos y {floors} piso(s) de estudios: {2 * floors} estudios y {4 * floors} salas de ensayo ({floors * MusicRehearsalSeats} plazas).");
         return a;
     }
 
@@ -142,11 +142,25 @@ public static partial class SampleSceneBuilder
         Solid(g, new Vector3(0f, -0.05f, 0f), new Vector3(s.x - 0.2f, 0.1f, s.y - 0.2f), new Color(0.42f, 0.34f, 0.3f), "Suelo_de_madera");
         float hx = s.x * 0.5f, hz = s.y * 0.5f;
         BuildStage(g, "Escenario de conciertos", new Vector3(-10f, 0f, -hz + 3.4f), new Vector2(10.5f, 4.8f), true);
-        for (int r = 0; r < MusicRows; r++) SeatRow(g, $"Fila de sillas {r + 1} ({MusicRowSeats} plazas)", new Vector3(-8f, 0f, -3.6f + r * 2.8f), MusicRowSeats);
+        // (2026-11-28, F1b, decisión D4 de Berón) SIN BUTACAS: los conciertos son en el círculo de la Sala de asambleas (72 plazas, para todos).
+        // Donde iban las 5 filas, dos SALAS DE ENSAYO más y el ALMACÉN DE INSTRUMENTOS; los dos escenarios quedan para ensayos generales y grabar.
+        for (int c = 0; c < 2; c++)
+        {
+            int n = 4 * MusicStudioFloors() + c + 1;
+            Vector3 at = new Vector3(-13.35f + c * 8.9f, 0f, 2f);
+            Transform band = KitchenProps.Root(g, $"Banda de ensayo {n}", at);
+            DrumKit(band, new Vector3(-0.8f, 0f, 0.18f)); GuitarAmp(band, new Vector3(0.9f, 0f, 0.18f));
+            KitchenProps.Fit(band);
+            AreaSeat.Add(band.gameObject, "ensayar", AreaSeat.Category.Entrenamiento, MusicBandSize);
+            WorldLabel bwl = band.gameObject.AddComponent<WorldLabel>(); bwl.text = $"Sala de ensayo {n}"; bwl.height = 2.4f;
+            SoundRoom(g, $"Sonica_ensayo_{n}", at, MusicCell, 0);
+        }
+        Transform store = KitchenProps.Shelving(g, "Almacen de instrumentos", new Vector3(-8.9f, 0f, hz - 1.2f), 180f, 7);
+        store.gameObject.AddComponent<WorldLabel>().text = "Almacén de instrumentos (fundas, atriles, cables y recambios)";
         // EL SEGUNDO ESCENARIO, en su sala de doble cristal: dos conciertos o dos ensayos generales a la vez, sin pisarse.
         Vector3 hall = new Vector3(10.5f, 0f, -2.2f);
         BuildStage(g, "Segundo escenario", new Vector3(hall.x, 0f, -7.9f), new Vector2(6f, 3f), false);
-        for (int r = 0; r < 2; r++) SeatRow(g, $"Fila de sillas pequeña {r + 1} (8 plazas)", new Vector3(hall.x, 0f, -1.2f + r * 2.8f), 8);
+        // (D4) Sin sus 16 sillas: el segundo escenario es la sala de ensayo general (los conciertos, en la asamblea).
         SoundRoom(g, "Sonica_escenario_2", hall, new Vector2(13f, 20.4f), 3);
         // EL BANCO DEL TÉCNICO (cuerdas, cables, válvulas).
         Transform repair = KitchenProps.Root(g, "Banco del técnico de sonido", new Vector3(5.5f, 0f, hz - 2.2f));
