@@ -3501,7 +3501,7 @@ public static partial class SampleSceneBuilder
         for (int k = 0; k < dojF.Count; k++) { PrepareSite(dojF[k], size[dojF[k]], k == 0 ? "Dojo (MMA, kickboxing y karate)" : $"Dojo (piso {k + 1})", 6, 3, FinishedDojo); Centre(dojF[k], "Dojo", k + 1); }
         // ASEOS en cada área humana (el restaurante y la enfermería los ponen al amueblarse).
         Vector2 s2 = size[yoga.transform];
-        Aseos(yoga.transform, new Vector3(-s2.x * 0.5f + 3.1f, 0.1f, s2.y * 0.5f - 0.8f), 180f);   // piso de Hatha: contra el borde +Z, esquina −X (en la sala occidental; los del piso de Ashtanga los pone FurnishYoga)
+        Aseos(yoga.transform, new Vector3(-s2.x * 0.5f + 2.1f, 0.1f, s2.y * 0.5f - 0.8f), 180f);   // piso de Hatha: contra el borde +Z, esquina −X (en la sala occidental; los del piso de Ashtanga los pone FurnishYoga)
         s2 = size[mech.transform]; Aseos(mech.transform, new Vector3(-s2.x * 0.5f + 0.2f + 1.9f, 0.1f, s2.y * 0.5f - 0.9f), 180f, 1);
         s2 = size[textile.transform]; Aseos(textile.transform.Find("Estudio_Textil") ?? textile.transform, new Vector3(3.5f, 0.1f, -s2.y * 0.5f + 0.9f), 0f, 1);   // textil (al fondo, junto a los ovillos; gira con su sala, F1b)
         Aseos(meat.transform, new Vector3(-CulturedMeatLab.CompactSize.x * 0.5f + 0.8f, 0.1f, 2f), 90f, 1);   // laboratorio: contra su borde −X, la puerta al laboratorio (F1b)

@@ -71,8 +71,10 @@ public class MusicaStoryTest : MonoBehaviour, ITestUnit
         if (area == null) { TestProbe.Check("el piso está en la escena (reconstruye SampleScene)", false); TestProbe.End(); return; }
         TestProbe.Check("es del tipo Music", area.areaType == SanctuaryAreaType.Music);
         var lines = AreaCapacity.Check(new[] { area.transform }, AreaCapacity.Members(), out _);
-        foreach (string act in new[] { "concierto", "tocar en concierto", "grabar", "mezcla", "ensayar", "sonido" })
+        foreach (string act in new[] { "tocar en concierto", "grabar", "mezcla", "ensayar", "sonido" })   // (2026-11-28, D4) el «concierto», en la Sala de asambleas: abajo
             TestProbe.Check($"capacidad: {act}", lines.Exists(l => l.area == "Música" && l.activity == act && l.ok), string.Join(" · ", lines.ConvertAll(l => l.ToString())));
+        GameObject asm = GameObject.Find("Assembly_Area");
+        TestProbe.Check("capacidad: concierto, en el círculo de la Sala de asambleas (D4)", asm != null && AreaCapacity.Check(new[] { asm.transform }, AreaCapacity.Members(), out _).Exists(l => l.activity == "concierto" && l.ok), asm == null ? "no está la Sala de asambleas" : "");
         int rooms = 0, lids = 0; foreach (Transform t in area.GetComponentsInChildren<Transform>(true)) { if (t.name.StartsWith("Sala_cristal_Sonica_") && t.name.EndsWith("_fuera")) rooms++; if (t.name.StartsWith("Tapa_cristal_")) lids++; }
         TestProbe.Check("cada sala aislada lleva doble cristal y tapa", rooms >= 9 && lids == rooms, $"{rooms} salas, {lids} tapas");
         int stages = 0, studios = 0, bands = 0; foreach (Transform t in area.GetComponentsInChildren<Transform>(true)) { if (t.name == "Escenario de conciertos" || t.name == "Segundo escenario") stages++; if (t.name.StartsWith("Cabina de grabación")) studios++; if (t.name.StartsWith("Banda de ensayo")) bands++; }

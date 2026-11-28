@@ -8,7 +8,7 @@ using UnityEngine;
 ///
 /// DOS PISOS con DOS SALAS cada uno (no cuatro pisos): el piso de HATHA es el de la Sala de Yoga (YogaRoom_Area) y el de ASHTANGA
 /// su planta propia («Planta_ashtanga», el siguiente piso de la torre del Entrenamiento, que sube a 4 niveles: 7 pisos y uno libre).
-/// Cada piso (36 × 26 m de área) se parte en dos salas de 18 × 26: la OCCIDENTAL (−X: suelo de madera, esterillas de colores,
+/// Cada piso (40 × 26 m de área desde el 2026-11-28) se parte en dos salas de 20 × 26: la OCCIDENTAL (−X: suelo de madera, esterillas de colores,
 /// estante de accesorios, Buda en Hatha y Ganesha en Ashtanga, sin espejo) y la TRADICIONAL (+X: suelo de tierra, alfombras de
 /// algodón, asiento de kusha y algodón para el maestro, el KUND para sumergirse antes de practicar —agua del tronco, sujeta por
 /// el campo magnético como en sus puertas, sin escalones—, lámparas de aceite y su elemento: un linga como el Dhyanalinga en Hatha;
@@ -18,8 +18,10 @@ using UnityEngine;
 /// </summary>
 public static partial class SampleSceneBuilder
 {
-    // Medidas de una sala (marco de la sala: su tarima en el origen; ±9 m en X, ±13 m en Z).
-    const float YogaHallHalfX = 9f, YogaMatSideX = 5.5f, YogaMatEndZ = 5.1f, YogaHeadZ = 11f, YogaKundZ = -10.5f;
+    // Medidas de una sala (marco de la sala: su tarima en el origen; ±10 m en X, ±13 m en Z). (2026-11-28, F1b, Berón: opción 1) Las salas se
+    // ensanchan de 18 a 20 m para usar el piso de 40 m; sus 8 esterillas no cambian: una 9.ª no cabe con los 2 m de paso (una columna más de
+    // esterillas-alfombra de 3 × 3,6 m pide 5 m, y solo se ganan 1 m por lado).
+    const float YogaHallHalfX = 10f, YogaMatSideX = 5.5f, YogaMatEndZ = 5.1f, YogaHeadZ = 11f, YogaKundZ = -10.5f;
     static readonly float[] YogaMatRowsZ = { -5f, 0f, 5f };
 
     /// <summary>Amuebla los dos pisos de yoga: el de Hatha (<paramref name="area"/>) y el de Ashtanga (<paramref name="ashtanga"/>).</summary>
@@ -40,7 +42,7 @@ public static partial class SampleSceneBuilder
                 o.floorNo = t.floorNo = k + 1;
                 halls.Add(o); halls.Add(t);
                 if (style == YogaHall.Style.Ashtanga || k > 0)   // sus aseos (los del primer piso de Hatha los pone quien amuebla el área)
-                    Aseos(floors[k], new Vector3(-size.x * 0.5f + 3.1f, 0.1f, size.y * 0.5f - 0.8f), 180f);
+                    Aseos(floors[k], new Vector3(-size.x * 0.5f + 2.1f, 0.1f, size.y * 0.5f - 0.8f), 180f);   // (2026-11-28) 1 m más al borde: 2 m hasta la estatua de la sala de 20 m
                 Debug.Log($"[Yoga] {centre}, piso {k + 1}: {o.Mats().Count + t.Mats().Count} esterillas.");
             }
         }
@@ -82,7 +84,7 @@ public static partial class SampleSceneBuilder
         // EL SUELO: madera clara (occidental) o tierra apisonada (tradicional). Un «Suelo»: no estorba a las puertas ni a la vista.
         Color wood = new Color(0.8f, 0.65f, 0.45f), earth = new Color(0.5f, 0.38f, 0.26f);
         KitchenProps.C(h, new Vector3(0f, 0.003f, 0f), new Vector3(2f * YogaHallHalfX - 0.4f, 0.006f, 25.6f), trad ? earth : wood, 0f, trad ? "Suelo_tierra" : "Suelo_madera");
-        if (!trad) for (float x = -YogaHallHalfX + 1.2f; x < YogaHallHalfX - 0.5f; x += 1.2f)
+        if (!trad) for (float x = -9f + 1.2f; x < 9f - 0.5f; x += 1.2f)   // (las juntas, las de la sala de 18 m: así los microcosmos de las salas no cambian su inventario)
                 KitchenProps.C(h, new Vector3(x, 0.0065f, 0f), new Vector3(0.03f, 0.002f, 25.6f), new Color(0.64f, 0.52f, 0.36f), 0f, "Suelo_junta");
 
         // LAS ESTERILLAS (alfombras-esterilla): 8 en un solo anillo alrededor de la tarima, de cara a ella. Su red es la de la sala

@@ -33,6 +33,7 @@ public static partial class SampleSceneBuilder
         KitchenProps.Fit(row);
         row.localRotation = Quaternion.Euler(0f, yaw, 0f);
         AreaSeat.Add(row.gameObject, "asamblea", AreaSeat.Category.Ocio, seats);
+        AreaSeat.Add(row.gameObject, "concierto", AreaSeat.Category.Ocio, seats);   // (2026-11-28, D4 de Berón) los conciertos, aquí: el círculo es para todos
     }
 
     static SanctuaryArea BuildAssembly(Transform areasGroup)
