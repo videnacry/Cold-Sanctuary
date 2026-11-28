@@ -3,7 +3,8 @@ using UnityEngine;
 /// <summary>
 /// EL ÁREA DE MÚSICA (Berón 2026-11-05: «si no existe área de música créala» y «tendría que haber más de un escenario y estudio de grabación … para que varios
 /// grupos puedan practicar simultáneamente … paredes transparentes para bloquear sonido»; docs/areas/piso-musica.md). En la torre del Entrenamiento, encima del Aula:
-/// - el PISO DE CONCIERTOS: el escenario grande con 50 butacas y, tras su mampara, el segundo escenario con 16;
+/// - el PISO DE CONCIERTOS: el escenario grande, 2 salas de ensayo y el almacén de instrumentos y, tras su mampara, el segundo escenario (ensayo general);
+///   desde el 2026-11-28 (D4) sin butacas: el público de los conciertos se sienta en el círculo de la Sala de asambleas;
 /// - los PISOS DE ESTUDIOS (⌈miembros / <see cref="MusicRehearsalSeats"/>⌉): cada uno, 2 estudios de grabación (control + sala) y 4 salas de ensayo.
 /// Cada sala que debe aislarse es una <see cref="SoundRoom"/>: doble cristal con cámara y tapa de cristal (<see cref="MusicAcoustics"/>). Todos pueden ensayar
 /// a la vez (regla S13 = J16). El umbral de cada puerta del tronco (7,4 × 4,4 m) queda libre (F5) y hay 2 m de paso, dentro y fuera de cada sala.
@@ -11,8 +12,6 @@ using UnityEngine;
 public static partial class SampleSceneBuilder
 {
     public const string MusicArea = "Music_Area";
-    /// <summary>Butacas por fila y filas del escenario grande: 50 plazas.</summary>
-    public const int MusicRowSeats = 10, MusicRows = 5;
     /// <summary>Personas por banda en una sala de ensayo, y plazas de ensayo de cada piso de estudios (4 salas).</summary>
     public const int MusicBandSize = 5, MusicRehearsalSeats = 4 * MusicBandSize;
     /// <summary>Medida exterior de una sala de un piso de estudios (x, z), con su doble cristal: su banda + 2 m a cada lado.</summary>
@@ -23,7 +22,7 @@ public static partial class SampleSceneBuilder
     /// <summary>Pisos del área: el de conciertos y los de estudios.</summary>
     public static int MusicFloors() => 1 + MusicStudioFloors();
 
-    static readonly Color StageBlack = new Color(0.16f, 0.15f, 0.16f), StageWood = new Color(0.58f, 0.43f, 0.3f), SeatRed = new Color(0.5f, 0.14f, 0.16f), CableBlack = new Color(0.1f, 0.1f, 0.11f);
+    static readonly Color StageBlack = new Color(0.16f, 0.15f, 0.16f), StageWood = new Color(0.58f, 0.43f, 0.3f), CableBlack = new Color(0.1f, 0.1f, 0.11f);
 
     /// <summary>UNA SALA QUE AÍSLA EL SONIDO: dos cajas de cristal, una dentro de otra, con su cámara de aire, y una tapa de cristal (por arriba, una sala abierta
     /// no aísla nada: docs/areas/piso-musica.md §Acústica). <paramref name="outer"/> es la medida de fuera.</summary>
@@ -109,15 +108,6 @@ public static partial class SampleSceneBuilder
         return stage;
     }
 
-    static void SeatRow(Transform g, string name, Vector3 at, int seats)
-    {
-        Transform row = KitchenProps.Root(g, name, at);
-        KitchenProps.C(row, new Vector3(0f, 0.225f, 0f), new Vector3(seats * 0.7f, 0.45f, 0.5f), SeatRed, 0f, "Silla_asiento");
-        KitchenProps.C(row, new Vector3(0f, 0.65f, 0.27f), new Vector3(seats * 0.7f, 0.5f, 0.06f), SeatRed, 0f, "Silla_respaldo");
-        KitchenProps.Fit(row);
-        AreaSeat.Add(row.gameObject, "concierto", AreaSeat.Category.Ocio, seats);
-    }
-
     /// <summary>EL ÁREA DE MÚSICA: el piso de conciertos y, encima, sus pisos de estudios (plantas propias, como el Aula).</summary>
     static SanctuaryArea BuildMusic(Transform areasGroup)
     {
@@ -131,7 +121,7 @@ public static partial class SampleSceneBuilder
             FurnishStudioFloor(f, TowerFloor(f), k, salas: k == floors - 1);
         }
         WorldLabel wl = a.gameObject.AddComponent<WorldLabel>(); wl.text = "Música: escenarios, estudios y salas de ensayo"; wl.height = 4f;
-        Debug.Log($"[Música] {WorkdayDirector.Staff.Length} miembros: 2 escenarios (los conciertos, en la Sala de asambleas: D4), 2 salas de ensayo en el piso de conciertos y {floors} piso(s) de estudios: {2 * floors} estudios y {4 * floors} salas de ensayo ({floors * MusicRehearsalSeats} plazas).");
+        Debug.Log($"[Música] {WorkdayDirector.Staff.Length} miembros: 2 escenarios (los conciertos, en la Sala de asambleas: D4), {2 * floors} estudios y {4 * floors + 2} salas de ensayo (2 en el piso de conciertos y {floors} piso(s) de estudios: {(floors + 0.5f) * MusicRehearsalSeats:0} plazas).");
         return a;
     }
 

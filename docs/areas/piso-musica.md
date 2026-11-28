@@ -16,7 +16,7 @@ Torre del Entrenamiento, encima del Aula (`SampleSceneBuilder.Musica.cs`; área 
 
 | Piso | Qué hay | Puestos (`AreaSeat`) |
 |---|---|---|
-| **Conciertos** (`Music_Area`) | Escenario grande y, desde el 2026-11-28 (D4), sin butacas: dos salas de ensayo y el almacén de instrumentos (los conciertos, en el círculo de la Sala de asambleas). Segundo escenario, sin sillas, en su sala de doble cristal (ensayo general). Banco del técnico. Aseos | «concierto» (ocio) 50 + 16; «tocar en concierto» 6 + 4; «sonido» 2 |
+| **Conciertos** (`Music_Area`) | Escenario grande y, desde el 2026-11-28 (D4), sin butacas: dos salas de ensayo y el almacén de instrumentos (los conciertos, en el círculo de la Sala de asambleas). Segundo escenario, sin sillas, en su sala de doble cristal (ensayo general). Banco del técnico. Aseos | «ensayar» 2 × 5; «tocar en concierto» 6 + 4; «sonido» 2 (el «concierto» de ocio: 72 en la Sala de asambleas) |
 | **Estudios 1 y 2** (`Planta_musica_2` y `_3`) | Cada uno: 4 salas de ensayo y 2 estudios (control + sala de grabación). Aseos | «ensayar» (entrenamiento) 5 por sala; «grabar» 4 y «mezcla» 2 por estudio |
 
 Total: **2 escenarios, 4 estudios, 8 salas de ensayo** con 40 plazas: pueden ensayar a la vez los 28 miembros, en 6 grupos de 5 o en 8 grupos más pequeños. Los pisos de estudios salen de
@@ -58,7 +58,7 @@ Aplicando la ley de la pared compuesta a una sala de 8,4 × 6,2 m:
 ## Vida en el santuario
 
 - **Misiones** (no obligatorias, 2,5 h): `son_grabar`, `son_ensayo`, `son_equipo`, por la rotación normal. Con pasos en `VirtualMissions`, `PlayerTasks` y `Performances`.
-- **Uniforme**: `Uniforms.Kind.Musica`. **Horario libre**: «concierto», para todos, con la Cocina de reserva.
+- **Uniforme**: `Uniforms.Kind.Musica`. **Horario libre**: «concierto», para todos, en el círculo de la Sala de asambleas (D4, 2026-11-28), con la Cocina de reserva.
 - **Máquina de virtualización**: `WireMeditationArea`; se entra a 8 microcosmos (Vega Baja, Montreal, Gary, Kingston, Belfast, Long Island, Grandes aportes y Viena 1824). Seúl sigue en la Sala de Ballet.
 
 ## Auditoría de reglas (2026-11-05)
@@ -78,7 +78,7 @@ Aplicando la ley de la pared compuesta a una sala de 8,4 × 6,2 m:
 | S9 30 pisos | Por cálculo | 16 pisos en la torre (28 miembros) | 28, `StructuralLimits` |
 | S10 plazas reservadas | **Sin comprobar** | Las calcula `Slots`; las salas de cristal le quitan sitio | 28, 40 |
 | S11 energía solar | Pendiente | `FloorEnergy` no ha llegado a `claude/edificios` | energía (ver abajo) |
-| S13 = J16 capacidad | Por cálculo | Ensayo 40 ≥ 28, concierto 66 ≥ 28, trabajo ≥ 2 | 75, 86 |
+| S13 = J16 capacidad | Por cálculo | Ensayo 40 + 10 ≥ 28, concierto 72 (asamblea) ≥ 28, trabajo ≥ 2 | 75, 86 |
 | F1, F2 formas del piso | Por diseño | `EnsureFloorForms` recorre todas las áreas | 67, 68 |
 | F4 misma medida | Por diseño | 36 × 26 m, `TowerFloor` | 57 |
 | F5 umbrales | Por cálculo | Zona de 7,4 × 4,4 m libre: x −4,1…3,3 en conciertos; franja de 4,6 m en estudios | 57 |

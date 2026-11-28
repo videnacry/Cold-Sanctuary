@@ -6,6 +6,7 @@ Al fusionar un PR, añade su línea en «Sin publicar» o en el mes en curso.
 
 ## Sin publicar
 - PB-170 F1b: salas de yoga de 20 m (2 pisos, 8 esterillas) y conciertos en el círculo de la asamblea (D4); el piso de conciertos, sin butacas, con 2 salas de ensayo y el almacén de instrumentos.
+- Revisión de #334: fuera el código muerto de las butacas de Música (`SeatRow`, `SeatRed`, `MusicRows`, `MusicRowSeats`), el «concierto» del horario libre ya no pasa por Música y piso-musica.md con las plazas nuevas.
 - Revisión de #332 (laboratorios): fusionado; comentario de la torre de Ciencias al día y restos menores en PENDIENTES.
 - PB-170 F1b: laboratorios de Química y Biología, cada uno en un piso (antes dos cada uno); Ciencias de 4 niveles a 2.
 - PB-170 F1b (W9, #330): la sala de bailes es el primer sitio de «Bailar» en el horario libre (si su piso no está en obras).
